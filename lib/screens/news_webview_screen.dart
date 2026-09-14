@@ -79,6 +79,9 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   // Quando tutti i reader testuali sono insufficienti, la WebView ripulita
   // deve avere priorità anche se in _readerText era rimasto un riassunto RSS.
   bool _pureWebViewMode = false;
+  // Repubblica: se la pagina espone chiaramente un articolo riservato,
+  // evitiamo di mostrare come fallback una WebView ferma sul paywall.
+  bool _paywallDetected = false;
 
   // Soglia minima per accettare il testo HTTP come reader mode
   static const _httpMinLength = 150;
@@ -1263,13 +1266,152 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
 
     unawaited(AppLogger.log(
       'News reader UI: Tinyfish ultimo fallback non disponibile; '
-      'preparo la WebView ripulita length=${text.length} '
-      'previousLength=$existingLength',
+      'verifico eventuale paywall prima della WebView ripulita '
+      'length=${text.length} previousLength=$existingLength',
     ));
+
+    if (_isRepubblicaUrl(pageUrl) &&
+        await _detectRepubblicaPaywall(pageUrl: pageUrl)) {
+      if (!mounted || generation != _webViewPageGeneration) return;
+      setState(() {
+        _paywallDetected = true;
+        _pureWebViewMode = false;
+        _readerTitle = null;
+        _readerText = null;
+        _readerBestTextLength = 0;
+        _readerPreparing = false;
+      });
+      unawaited(AppLogger.log(
+        'News reader UI: paywall Repubblica rilevato; '
+        'mostro avviso invece della WebView url=$pageUrl',
+      ));
+      return;
+    }
+
     await _revealCleanPureWebView(
       pageUrl: pageUrl,
       generation: generation,
     );
+  }
+
+  Future<bool> _detectRepubblicaPaywall({required String pageUrl}) async {
+    if (!_isRepubblicaUrl(pageUrl)) return false;
+    try {
+      final result = await _controller.runJavaScriptReturningResult(r'''
+        (function () {
+          function normalizedText(el) {
+            return ((el && (el.innerText || el.textContent)) || '')
+              .toLowerCase()
+              .replace(/\s+/g, ' ')
+              .trim();
+          }
+          function isVisible(el) {
+            if (!el) return false;
+            var style = window.getComputedStyle(el);
+            if (!style || style.display === 'none' || style.visibility === 'hidden') return false;
+            var rect = el.getBoundingClientRect();
+            return rect.width > 0 && rect.height > 0;
+          }
+
+          var root = document.querySelector('article') ||
+                     document.querySelector('main article') ||
+                     document.querySelector('[role="main"] article') ||
+                     document.querySelector('main') ||
+                     document.querySelector('[role="main"]');
+          var rootText = normalizedText(root);
+          var bodyText = normalizedText(document.body);
+          var articleText = rootText || bodyText;
+
+          // Il semplice pulsante "Abbonati" nell'header non basta: cerchiamo
+          // frasi che indicano esplicitamente che il corpo è riservato.
+          var strongPhrase = /(?:articolo|contenuto)\s+(?:è\s+)?riservato|riservato\s+agli?\s+abbonati|solo\s+per\s+gli?\s+abbonati|abbonati\s+per\s+(?:leggere|continuare)|accedi\s+per\s+(?:leggere|continuare)|continua\s+a\s+leggere[^.]{0,80}abbon/.test(articleText);
+
+          var paywallSelectors = [
+            '[id*="paywall" i]', '[class*="paywall" i]',
+            '[id*="subscription" i]', '[class*="subscription" i]',
+            '[id*="subscribe" i]', '[class*="subscribe" i]'
+          ];
+          var visiblePaywall = false;
+          paywallSelectors.some(function(selector) {
+            try {
+              return Array.from(document.querySelectorAll(selector)).some(function(el) {
+                if (!isVisible(el)) return false;
+                var t = normalizedText(el);
+                if (!t) return false;
+                if (/abbon|riservat|accedi|subscription|subscribe/.test(t)) {
+                  visiblePaywall = true;
+                  return true;
+                }
+                return false;
+              });
+            } catch (e) {
+              return false;
+            }
+          });
+
+          var paragraphChars = 0;
+          if (root) {
+            root.querySelectorAll('p').forEach(function(p) {
+              var t = normalizedText(p);
+              if (t.length >= 40) paragraphChars += t.length;
+            });
+          }
+          var articleShort = paragraphChars < 900 && articleText.length < 1800;
+
+          // Servono sempre due condizioni: articolo corto e un segnale forte
+          // di paywall. In questo modo il normale link "Abbonati" del sito
+          // non fa classificare come riservati gli articoli gratuiti.
+          return articleShort && (strongPhrase || visiblePaywall);
+        })()
+      ''');
+      final detected = result == true ||
+          result.toString().replaceAll('\"', '').toLowerCase() == 'true';
+      unawaited(AppLogger.log(
+        'News reader paywall: Repubblica detected=$detected url=$pageUrl',
+      ));
+      return detected;
+    } catch (e) {
+      unawaited(AppLogger.log(
+        'News reader paywall: controllo Repubblica fallito url=$pageUrl: $e',
+      ));
+      return false;
+    }
+  }
+
+  void _showOriginalPaywalledPage() {
+    setState(() {
+      _paywallDetected = false;
+      _pureWebViewMode = true;
+      _readerPreparing = false;
+    });
+    unawaited(AppLogger.log(
+      'News reader paywall: apertura pagina originale richiesta dall utente',
+    ));
+  }
+
+  String _paywallMessage(BuildContext context) {
+    switch (Localizations.localeOf(context).languageCode) {
+      case 'it':
+        return 'Questo articolo è riservato agli abbonati.';
+      case 'de':
+        return 'Dieser Artikel ist Abonnenten vorbehalten.';
+      case 'es':
+        return 'Este artículo está reservado para suscriptores.';
+      case 'fr':
+        return 'Cet article est réservé aux abonnés.';
+      case 'pt':
+        return 'Este artigo é reservado a assinantes.';
+      case 'pl':
+        return 'Ten artykuł jest dostępny tylko dla subskrybentów.';
+      case 'cs':
+        return 'Tento článek je určen pouze předplatitelům.';
+      case 'uk':
+        return 'Ця стаття доступна лише передплатникам.';
+      case 'zh':
+        return '此文章仅供订阅用户阅读。';
+      default:
+        return 'This article is reserved for subscribers.';
+    }
   }
 
   Future<void> _revealCleanPureWebView({
@@ -2072,6 +2214,34 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   }
 
   Widget _buildBody(AppLocalizations l10n) {
+    if (_paywallDetected && !_readerPreparing) {
+      final summary = widget.article.summary.trim();
+      return ListView(
+        padding: const EdgeInsets.all(20),
+        children: [
+          Text(
+            widget.article.title,
+            style: Theme.of(context).textTheme.headlineSmall,
+          ),
+          const SizedBox(height: 16),
+          Text(_paywallMessage(context)),
+          if (summary.isNotEmpty) ...[
+            const SizedBox(height: 16),
+            Text(summary),
+          ],
+          const SizedBox(height: 24),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: ElevatedButton.icon(
+              onPressed: _showOriginalPaywalledPage,
+              icon: const Icon(Icons.open_in_browser),
+              label: Text(l10n.openOriginalArticle),
+            ),
+          ),
+        ],
+      );
+    }
+
     if (_pureWebViewMode && !_readerPreparing) {
       return WebViewWidget(controller: _controller);
     }
