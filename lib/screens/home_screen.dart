@@ -160,6 +160,15 @@ class _HomeScreenState extends State<HomeScreen> {
           onPressed: () => AccessibilityFeedbackService.goNamed(context,
               routeName: '/audiodescriptions'),
         ),
+      if ((_isSecretCodeValid || _isTvCodeValid || _isRaiPlayValid) &&
+          isItalian)
+        _HomeButton(
+          label: 'Audiodescrizioni Sonarpad',
+          onPressed: () => AccessibilityFeedbackService.goNamed(
+            context,
+            routeName: '/sonarpad_audiodescriptions',
+          ),
+        ),
     ];
 
     final utilityItems = [
@@ -337,6 +346,13 @@ class _HomeScreenState extends State<HomeScreen> {
               label: l10n.audiodescriptionTitle,
               onPressed: () => AccessibilityFeedbackService.goNamed(context,
                   routeName: '/audiodescriptions')),
+        if ((_isSecretCodeValid || _isTvCodeValid || _isRaiPlayValid) &&
+            isItalian)
+          _HomeButton(
+              label: 'Audiodescrizioni Sonarpad',
+              onPressed: () => AccessibilityFeedbackService.goNamed(
+                  context,
+                  routeName: '/sonarpad_audiodescriptions')),
         _HomeButton(
             label: l10n.importFromWikipedia,
             onPressed: () => AccessibilityFeedbackService.goNamed(context,

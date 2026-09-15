@@ -53,20 +53,6 @@ class _AudiodescriptionAllScreenState extends State<AudiodescriptionAllScreen> {
     }
   }
 
-  void _onSearch(String query) {
-    setState(() {
-      if (query.trim().isEmpty) {
-        _filteredGroups = _groups.where((g) => g.title != 'Film').toList();
-      } else {
-        final q = query.trim().toLowerCase();
-        _filteredGroups = _groups
-            .where(
-                (g) => g.title != 'Film' && g.title.toLowerCase().contains(q))
-            .toList();
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -74,22 +60,6 @@ class _AudiodescriptionAllScreenState extends State<AudiodescriptionAllScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.audiodescriptionAll),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(60),
-          child: Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: l10n.audiodescriptionSearch,
-                filled: true,
-                border:
-                    OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-              ),
-              onChanged: _onSearch,
-            ),
-          ),
-        ),
       ),
       body: _loading
           ? Center(

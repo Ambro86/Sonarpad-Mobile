@@ -1787,11 +1787,19 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
     let raw = min(max(row.sliderValue + delta, row.sliderMin), row.sliderMax)
     let steps = ((raw - row.sliderMin) / row.sliderStep).rounded()
     row.sliderValue = min(max(row.sliderMin + steps * row.sliderStep, row.sliderMin), row.sliderMax)
-    let spokenValue = liveSliderSpokenValue(
-      for: row,
-      newValue: row.sliderValue,
-      fallback: announcedValue
-    )
+    // document_slider_step stores an option index as sliderValue, while its
+    // accessibility value is the actual percentage (1%...30%). Do not turn
+    // the internal index into a percentage announcement.
+    let spokenValue: String
+    if row.id == "document_slider_step", let announcedValue = announcedValue {
+      spokenValue = announcedValue
+    } else {
+      spokenValue = liveSliderSpokenValue(
+        for: row,
+        newValue: row.sliderValue,
+        fallback: announcedValue
+      )
+    }
     row.value = spokenValue
     row.valueLabel = spokenValue
     sections[indexPath.section].rows[indexPath.row] = row

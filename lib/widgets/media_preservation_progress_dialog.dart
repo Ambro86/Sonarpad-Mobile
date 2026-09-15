@@ -29,6 +29,7 @@ Future<MediaPreservationResult?> preserveMediaWithProgress(
   BuildContext context, {
   required String title,
   required Future<String> Function() resolveUrl,
+  String? fileName,
 }) async {
   final l10n = AppLocalizations.of(context);
   final token = MediaPreservationCancellationToken();
@@ -140,6 +141,7 @@ Future<MediaPreservationResult?> preserveMediaWithProgress(
     final result = await MediaPreservationService().preserveMp3(
       url: url,
       title: title,
+      fileName: fileName,
       cancellationToken: token,
       onProgress: (progress) {
         final fraction = progress.fraction;

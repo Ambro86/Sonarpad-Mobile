@@ -98,6 +98,7 @@ class MediaPreservationService {
   Future<MediaPreservationResult> preserveMp3({
     required String url,
     required String title,
+    String? fileName,
     void Function(MediaPreservationProgress progress)? onProgress,
     MediaPreservationCancellationToken? cancellationToken,
   }) async {
@@ -111,12 +112,12 @@ class MediaPreservationService {
       cancellationToken?._bind(_client.close);
     }
 
-    final fileName = _safeMp3FileName(title);
+    final resolvedFileName = _safeMediaFileName(fileName ?? title);
     final tempDir = await getTemporaryDirectory();
     final tempFile = File(
       p.join(
         tempDir.path,
-        'sonarpad_preserve_${DateTime.now().microsecondsSinceEpoch}_$fileName',
+        'sonarpad_preserve_${DateTime.now().microsecondsSinceEpoch}_$resolvedFileName',
       ),
     );
 
@@ -205,7 +206,7 @@ class MediaPreservationService {
         await _library.load();
         final document = await _library.importFile(
           tempFile,
-          originalName: fileName,
+          originalName: resolvedFileName,
         );
         try {
           await _library.add(document);
@@ -232,7 +233,7 @@ class MediaPreservationService {
         await SharePlus.instance.share(
           ShareParams(
             files: [XFile(tempFile.path)],
-            text: fileName,
+            text: resolvedFileName,
           ),
         );
         await AppLogger.log('Media preserve: Share Sheet fallback completed');
@@ -255,14 +256,14 @@ class MediaPreservationService {
     }
   }
 
-  String _safeMp3FileName(String title) {
+  String _safeMediaFileName(String title) {
     var safe = title
         .replaceAll(RegExp(r'[\\/:*?"<>|]'), ' ')
         .replaceAll(RegExp(r'\s+'), ' ')
         .trim();
     if (safe.isEmpty) safe = 'media';
     if (safe.length > 120) safe = safe.substring(0, 120).trim();
-    if (safe.toLowerCase().endsWith('.mp3')) return safe;
+    if (RegExp(r'\.[A-Za-z0-9]{2,5}$').hasMatch(safe)) return safe;
     return '$safe.mp3';
   }
 }

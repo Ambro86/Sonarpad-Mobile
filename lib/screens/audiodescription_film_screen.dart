@@ -36,19 +36,6 @@ class _AudiodescriptionFilmScreenState
     _filteredItems = _sortedItems;
   }
 
-  void _onSearch(String query) {
-    setState(() {
-      if (query.trim().isEmpty) {
-        _filteredItems = _sortedItems;
-      } else {
-        final q = query.trim().toLowerCase();
-        _filteredItems = _sortedItems
-            .where((i) => i.title.toLowerCase().contains(q))
-            .toList();
-      }
-    });
-  }
-
   Future<void> _play(AudiodescriptionItem item) async {
     try {
       final resolvedUrl = await _service.resolveAudioUrl(item.audioUrl);
@@ -90,22 +77,6 @@ class _AudiodescriptionFilmScreenState
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.audiodescriptionFilm),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(60),
-          child: Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: l10n.audiodescriptionSearch,
-                filled: true,
-                border:
-                    OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-              ),
-              onChanged: _onSearch,
-            ),
-          ),
-        ),
       ),
       body: useSharedAccessibleViewModel
           ? UniversalAccessibleList(

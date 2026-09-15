@@ -9,6 +9,7 @@ import '../services/audiodescription_service.dart';
 import '../widgets/media_preservation_progress_dialog.dart';
 import 'audiodescription_all_screen.dart';
 import 'audiodescription_scheduled_screen.dart';
+import 'audiodescription_search_results_screen.dart';
 import '../models/podcast.dart';
 import 'podcast_episode_player_screen.dart';
 import '../utils/status_message.dart';
@@ -29,7 +30,6 @@ class _AudiodescriptionRecentScreenState
   final _service = AudiodescriptionService();
 
   List<AudiodescriptionItem> _items = [];
-  List<AudiodescriptionItem> _filteredItems = [];
   bool _loading = true;
   String _error = '';
 
@@ -46,7 +46,6 @@ class _AudiodescriptionRecentScreenState
       if (mounted) {
         setState(() {
           _items = items;
-          _filteredItems = items;
           _loading = false;
         });
       }
@@ -60,19 +59,16 @@ class _AudiodescriptionRecentScreenState
     }
   }
 
-  void _onSearch(String query) {
-    setState(() {
-      if (query.trim().isEmpty) {
-        _filteredItems = _items;
-      } else {
-        final q = query.trim().toLowerCase();
-        _filteredItems = _items
-            .where((i) =>
-                i.title.toLowerCase().contains(q) ||
-                i.description.toLowerCase().contains(q))
-            .toList();
-      }
-    });
+  Future<void> _searchAll(String query) async {
+    final trimmed = query.trim();
+    if (trimmed.isEmpty) return;
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        settings: const RouteSettings(name: '/audiodescriptions/search'),
+        builder: (_) => AudiodescriptionSearchResultsScreen(query: trimmed),
+      ),
+    );
   }
 
   Future<void> _play(AudiodescriptionItem item) async {
@@ -128,7 +124,8 @@ class _AudiodescriptionRecentScreenState
                 border:
                     OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
               ),
-              onChanged: _onSearch,
+              textInputAction: TextInputAction.search,
+              onSubmitted: _searchAll,
             ),
           ),
         ),
@@ -153,7 +150,7 @@ class _AudiodescriptionRecentScreenState
                           rows: [
                             const AccessibleListRow(id: 'scheduled', title: _scheduledAudiodescriptionsTitle),
                             AccessibleListRow(id: 'all', title: l10n.audiodescriptionAll),
-                            ..._filteredItems.asMap().entries.map((entry) => AccessibleListRow(
+                            ..._items.asMap().entries.map((entry) => AccessibleListRow(
                                   id: 'item_${entry.key}',
                                   title: entry.value.title,
                                   subtitle: '${entry.value.date} ${entry.value.description}'.trim(),
@@ -177,8 +174,8 @@ class _AudiodescriptionRecentScreenState
                           final index = int.tryParse(event.id!.substring(5));
                           if (index != null &&
                               index >= 0 &&
-                              index < _filteredItems.length) {
-                            await _preserveMedia(_filteredItems[index]);
+                              index < _items.length) {
+                            await _preserveMedia(_items[index]);
                           }
                           return;
                         }
@@ -195,13 +192,13 @@ class _AudiodescriptionRecentScreenState
                           ));
                         } else if (event.id!.startsWith('item_')) {
                           final index = int.tryParse(event.id!.substring(5));
-                          if (index != null && index >= 0 && index < _filteredItems.length) await _play(_filteredItems[index]);
+                          if (index != null && index >= 0 && index < _items.length) await _play(_items[index]);
                         }
                       },
                     )
                   : ListView.separated(
                   padding: const EdgeInsets.all(16),
-                  itemCount: _filteredItems.length + 2,
+                  itemCount: _items.length + 2,
                   separatorBuilder: (_, _) => const Divider(),
                   itemBuilder: (context, index) {
                     if (index == 0) {
@@ -245,7 +242,7 @@ class _AudiodescriptionRecentScreenState
                       );
                     }
 
-                    final item = _filteredItems[index - 2];
+                    final item = _items[index - 2];
                     return Semantics(
                       container: true,
                       customSemanticsActions: {
