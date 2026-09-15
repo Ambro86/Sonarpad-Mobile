@@ -61,6 +61,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   mk.Player? _mediaKitPlayer;
   mkv.VideoController? _mediaKitController;
   bool _isVideoEnabled = false;
+  bool _restoreAndroidTvVideoOffAfterBootstrap = false;
   bool _displayVideoInPortrait = false;
   bool _isFavorite = false;
   bool _mediaKitPlaying = false;
@@ -115,6 +116,8 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     }
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       _isVideoEnabled = await _settings.isVideoEnabled();
+      _restoreAndroidTvVideoOffAfterBootstrap =
+          !_isVideoEnabled && _usesAndroidTvVideoFirstBootstrap;
       _displayVideoInPortrait = await _settings.displayVideoInPortrait();
       _isFavorite = await _loadIsFavorite();
       _isRecordingFeatureUnlocked = await _loadRecordingFeatureAccess();
@@ -201,9 +204,12 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
 
       // Su iOS manteniamo MediaKit per i canali TV: AVPlayer può perdere
       // immediatamente la connessione con alcuni master HLS televisivi.
-      // Su Android, invece, i normali HLS tornano alla pipeline nativa già
-      // esistente (video_player con video attivo, just_audio in audio-only),
-      // che preserva meglio la resa audio. DASH/MPD e Rai AD restano MediaKit.
+      // Su Android i normali HLS usano video_player quando il video è attivo.
+      // Se la preferenza salvata è audio-only, facciamo prima un bootstrap
+      // temporaneo con audio+video e passiamo al ramo audio solo dopo che
+      // video_player ha realmente iniziato la riproduzione. Alcuni flussi TV
+      // falliscono infatti se il video viene escluso prima dell'avvio.
+      // DASH/MPD e Rai AD restano MediaKit.
       if (_requiresTvMediaKitPlayback) {
         await AppLogger.log(
           'RadioPlayer: TV MediaKit playback selected '
@@ -218,7 +224,8 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         return;
       }
 
-      if (widget.isVideoSupported && _isVideoEnabled) {
+      if (widget.isVideoSupported &&
+          (_isVideoEnabled || _restoreAndroidTvVideoOffAfterBootstrap)) {
         await _audio.stop();
         await _disposeMediaKitPlayer();
         _videoController?.dispose();
@@ -242,6 +249,16 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         await _videoController!.play();
         if (Platform.isIOS) {
           await _mediaCommands.invokeMethod('setMagicTapPlaying', true);
+        }
+        if (_restoreAndroidTvVideoOffAfterBootstrap) {
+          _restoreAndroidTvVideoOffAfterBootstrap = false;
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (!mounted || _isVideoEnabled) return;
+            AppLogger.log(
+              'RadioPlayer: Android TV video-first bootstrap completed; restoring audio-only preference',
+            );
+            unawaited(_applyVideoSetting(false));
+          });
         }
       } else {
         if (Platform.isIOS && _videoController != null) {
@@ -831,6 +848,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   }
 
   void _toggleVideo(bool enable) {
+    _restoreAndroidTvVideoOffAfterBootstrap = false;
     AppLogger.log(
       'RadioPlayer: enable video switch changed enable=$enable requiresVideoPlayback=$_requiresVideoPlayback requiresRaiADMediaKit=$_requiresRaiAudioDescriptionMediaKitPlayback position=$_mediaKitLastPosition duration=$_mediaKitLastDuration buffering=$_mediaKitBuffering playing=$_mediaKitPlaying',
     );
@@ -1311,6 +1329,13 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
 
   bool get _hasPendingScheduledRecording =>
       _recordingService.hasPendingScheduleFor(_recordingTarget.id);
+
+  bool get _usesAndroidTvVideoFirstBootstrap =>
+      Platform.isAndroid &&
+      widget.isVideoSupported &&
+      widget.tvChannel != null &&
+      !TvService().isRaiAudioDescriptionChannel(widget.tvChannel!) &&
+      !TvService.isDashStreamUrl(widget.station.streamUrl);
 
   bool get _requiresRaiAudioDescriptionMediaKitPlayback =>
       widget.isVideoSupported &&
@@ -1820,7 +1845,9 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
 
     return Column(
       children: [
-        if (_videoController != null && _videoController!.value.isInitialized)
+        if (_isVideoEnabled &&
+            _videoController != null &&
+            _videoController!.value.isInitialized)
           Padding(padding: const EdgeInsets.all(12), child: _buildVideoPlayerSurface(_videoController!)),
         if (_mediaKitController != null && _isVideoEnabled)
           Padding(padding: const EdgeInsets.all(12), child: _buildMediaKitVideoSurface()),
@@ -1898,7 +1925,8 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
               contentPadding: EdgeInsets.zero,
             ),
           ],
-          if (_videoController != null &&
+          if (_isVideoEnabled &&
+              _videoController != null &&
               _videoController!.value.isInitialized) ...[
             const SizedBox(height: 24),
             _buildVideoPlayerSurface(_videoController!),

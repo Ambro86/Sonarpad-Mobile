@@ -118,7 +118,7 @@ class _AudiodescriptionSearchResultsScreenState
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.audiodescriptionSearch),
+        title: Text(l10n.searchResults),
       ),
       body: _loading
           ? Center(
