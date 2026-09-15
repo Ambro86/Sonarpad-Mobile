@@ -171,7 +171,7 @@ class _SonarpadAudiodescriptionsScreenState
     return AccessibleListRow(
       id: id,
       title: item.title,
-      subtitle: item.dateLabel.isEmpty ? null : item.dateLabel,
+      subtitle: _sonarpadAudiodescriptionSubtitle(item),
       actions: const [
         AccessibleCustomAction(id: 'open', label: 'Apri'),
         AccessibleCustomAction(
@@ -221,6 +221,7 @@ class _SonarpadAudiodescriptionsScreenState
   }
 
   Widget _legacyItem(SonarpadAudiodescriptionItem item) {
+    final subtitle = _sonarpadAudiodescriptionSubtitle(item);
     return Semantics(
       container: true,
       customSemanticsActions: {
@@ -230,7 +231,7 @@ class _SonarpadAudiodescriptionsScreenState
       },
       child: ListTile(
         title: Text(item.title),
-        subtitle: item.dateLabel.isEmpty ? null : Text(item.dateLabel),
+        subtitle: subtitle == null ? null : Text(subtitle),
         onTap: () => _open(item),
         trailing: ExcludeSemantics(
           child: Row(
@@ -280,8 +281,9 @@ class _SonarpadAudiodescriptionsAllScreenState
     });
     try {
       final code = (await _settings.getTvSecretCode()).trim();
-      final items = await _service.fetchAll(
+      final items = await _service.fetchFolder(
         code,
+        '',
         chronological: _chronological,
       );
       if (!mounted) return;
@@ -306,10 +308,15 @@ class _SonarpadAudiodescriptionsAllScreenState
   }
 
   Future<void> _open(SonarpadAudiodescriptionItem item) async {
+    if (item.isFolder) {
+      await _openSonarpadAudiodescriptionFolder(context, item);
+      return;
+    }
     _openSonarpadAudiodescription(context, item);
   }
 
   Future<void> _preserve(SonarpadAudiodescriptionItem item) async {
+    if (item.isFolder) return;
     await _preserveSonarpadAudiodescription(context, item);
   }
 
@@ -393,6 +400,143 @@ class _SonarpadAudiodescriptionsAllScreenState
         }
         return _legacyCatalogItem(
           _items[index - 1],
+          onOpen: _open,
+          onPreserve: _preserve,
+        );
+      },
+    );
+  }
+}
+
+class SonarpadAudiodescriptionsFolderScreen extends StatefulWidget {
+  const SonarpadAudiodescriptionsFolderScreen({
+    super.key,
+    required this.folderPath,
+    required this.title,
+    required this.plot,
+  });
+
+  final String folderPath;
+  final String title;
+  final String plot;
+
+  @override
+  State<SonarpadAudiodescriptionsFolderScreen> createState() =>
+      _SonarpadAudiodescriptionsFolderScreenState();
+}
+
+class _SonarpadAudiodescriptionsFolderScreenState
+    extends State<SonarpadAudiodescriptionsFolderScreen> {
+  final _service = SonarpadAudiodescriptionsService();
+  final _settings = AppSettingsService();
+
+  List<SonarpadAudiodescriptionItem> _items = const [];
+  bool _loading = true;
+  String _error = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    try {
+      final code = (await _settings.getTvSecretCode()).trim();
+      final items = await _service.fetchFolder(code, widget.folderPath);
+      if (!mounted) return;
+      setState(() {
+        _items = items;
+        _loading = false;
+      });
+    } catch (error) {
+      if (!mounted) return;
+      setState(() {
+        _loading = false;
+        _error = error.toString();
+      });
+    }
+  }
+
+  Future<void> _open(SonarpadAudiodescriptionItem item) async {
+    if (item.isFolder) {
+      await _openSonarpadAudiodescriptionFolder(context, item);
+      return;
+    }
+    _openSonarpadAudiodescription(context, item);
+  }
+
+  Future<void> _preserve(SonarpadAudiodescriptionItem item) async {
+    if (item.isFolder) return;
+    await _preserveSonarpadAudiodescription(context, item);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text(widget.title)),
+      body: _loading
+          ? const Center(child: CircularProgressIndicator())
+          : _error.isNotEmpty
+              ? Center(child: Text(_error))
+              : useSharedAccessibleViewModel
+                  ? UniversalAccessibleList(
+                      sections: [
+                        AccessibleListSection(
+                          rows: [
+                            if (widget.plot.isNotEmpty)
+                              AccessibleListRow(
+                                id: 'folder_plot',
+                                kind: 'text',
+                                title: 'Trama',
+                                valueLabel: widget.plot,
+                                accessibilityButtonTrait: false,
+                              ),
+                            ..._items.asMap().entries.map(
+                                  (entry) => _sharedCatalogRow(
+                                    'folder_${entry.key}',
+                                    entry.value,
+                                  ),
+                                ),
+                          ],
+                        ),
+                      ],
+                      onEvent: (event) async {
+                        if (event.id?.startsWith('folder_') != true) return;
+                        final index = int.tryParse(
+                          event.id!.substring('folder_'.length),
+                        );
+                        if (index == null || index >= _items.length) return;
+                        final item = _items[index];
+                        if (event.type == 'activate' ||
+                            (event.type == 'customAction' &&
+                                event.action == 'open')) {
+                          await _open(item);
+                        } else if (event.type == 'customAction' &&
+                            event.action == 'preserve_media') {
+                          await _preserve(item);
+                        }
+                      },
+                    )
+                  : _legacyFolder(),
+    );
+  }
+
+  Widget _legacyFolder() {
+    return ListView.separated(
+      padding: const EdgeInsets.all(16),
+      itemCount: _items.length + (widget.plot.isNotEmpty ? 1 : 0),
+      separatorBuilder: (_, _) => const Divider(),
+      itemBuilder: (context, index) {
+        if (widget.plot.isNotEmpty && index == 0) {
+          return ListTile(
+            title: const Text('Trama'),
+            subtitle: Text(widget.plot),
+          );
+        }
+        final itemIndex = index - (widget.plot.isNotEmpty ? 1 : 0);
+        return _legacyCatalogItem(
+          _items[itemIndex],
           onOpen: _open,
           onPreserve: _preserve,
         );
@@ -512,6 +656,19 @@ class _SonarpadAudiodescriptionsSearchScreenState
   }
 }
 
+String? _sonarpadAudiodescriptionSubtitle(
+  SonarpadAudiodescriptionItem item,
+) {
+  final parts = <String>[];
+  if (item.plot.isNotEmpty) {
+    parts.add('Trama: ${item.plot}');
+  }
+  if (item.dateLabel.isNotEmpty) {
+    parts.add(item.dateLabel);
+  }
+  return parts.isEmpty ? null : parts.join('\n');
+}
+
 AccessibleListRow _sharedCatalogRow(
   String id,
   SonarpadAudiodescriptionItem item,
@@ -519,22 +676,26 @@ AccessibleListRow _sharedCatalogRow(
   return AccessibleListRow(
     id: id,
     title: item.title,
-    subtitle: item.dateLabel.isEmpty ? null : item.dateLabel,
-    actions: const [
-      AccessibleCustomAction(id: 'open', label: 'Apri'),
-      AccessibleCustomAction(
-        id: 'preserve_media',
-        label: 'Conserva file media',
-      ),
-    ],
-    visualActions: const [
-      AccessibleVisualAction(id: 'open', label: 'Apri', icon: 'play'),
-      AccessibleVisualAction(
-        id: 'preserve_media',
-        label: 'Scarica',
-        icon: 'download',
-      ),
-    ],
+    subtitle: _sonarpadAudiodescriptionSubtitle(item),
+    actions: item.isFolder
+        ? const [AccessibleCustomAction(id: 'open', label: 'Apri')]
+        : const [
+            AccessibleCustomAction(id: 'open', label: 'Apri'),
+            AccessibleCustomAction(
+              id: 'preserve_media',
+              label: 'Conserva file media',
+            ),
+          ],
+    visualActions: item.isFolder
+        ? const [AccessibleVisualAction(id: 'open', label: 'Apri', icon: 'open')]
+        : const [
+            AccessibleVisualAction(id: 'open', label: 'Apri', icon: 'play'),
+            AccessibleVisualAction(
+              id: 'preserve_media',
+              label: 'Scarica',
+              icon: 'download',
+            ),
+          ],
   );
 }
 
@@ -543,28 +704,50 @@ Widget _legacyCatalogItem(
   required Future<void> Function(SonarpadAudiodescriptionItem item) onOpen,
   required Future<void> Function(SonarpadAudiodescriptionItem item) onPreserve,
 }) {
-  return Semantics(
-    container: true,
-    customSemanticsActions: {
-      CustomSemanticsAction(label: 'Apri'): () => unawaited(onOpen(item)),
+  final subtitle = _sonarpadAudiodescriptionSubtitle(item);
+  final actions = <CustomSemanticsAction, VoidCallback>{
+    CustomSemanticsAction(label: 'Apri'): () => unawaited(onOpen(item)),
+    if (!item.isFolder)
       CustomSemanticsAction(label: 'Conserva file media'): () =>
           unawaited(onPreserve(item)),
-    },
+  };
+  return Semantics(
+    container: true,
+    customSemanticsActions: actions,
     child: ListTile(
       title: Text(item.title),
-      subtitle: item.dateLabel.isEmpty ? null : Text(item.dateLabel),
+      subtitle: subtitle == null ? null : Text(subtitle),
       onTap: () => onOpen(item),
       trailing: ExcludeSemantics(
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextButton(onPressed: () => onOpen(item), child: const Text('Apri')),
-            TextButton(
-              onPressed: () => onPreserve(item),
-              child: const Text('Scarica'),
-            ),
+            if (!item.isFolder)
+              TextButton(
+                onPressed: () => onPreserve(item),
+                child: const Text('Scarica'),
+              ),
           ],
         ),
+      ),
+    ),
+  );
+}
+
+Future<void> _openSonarpadAudiodescriptionFolder(
+  BuildContext context,
+  SonarpadAudiodescriptionItem item,
+) async {
+  await Navigator.of(context).push(
+    MaterialPageRoute(
+      settings: const RouteSettings(
+        name: '/sonarpad_audiodescriptions/folder',
+      ),
+      builder: (_) => SonarpadAudiodescriptionsFolderScreen(
+        folderPath: item.path,
+        title: item.title,
+        plot: item.plot,
       ),
     ),
   );
@@ -586,7 +769,7 @@ void _openSonarpadAudiodescription(
       builder: (_) => PodcastEpisodePlayerScreen(
         episode: PodcastEpisode(
           title: item.title,
-          description: '',
+          description: item.plot,
           audioUrl: item.streamUrl,
           id: item.path,
           publishedAt: item.modifiedAt ?? DateTime.now(),
