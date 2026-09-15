@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 
+import '../l10n/app_localizations.dart';
 import '../models/podcast.dart';
 import '../services/app_settings_service.dart';
 import '../services/sonarpad_audiodescriptions_service.dart';
@@ -11,9 +12,6 @@ import '../widgets/media_preservation_progress_dialog.dart';
 import '../widgets/universal_accessible_view.dart';
 import 'podcast_episode_player_screen.dart';
 
-const _sonarpadAudiodescriptionsTitle = 'Audiodescrizioni Sonarpad';
-const _allSonarpadAudiodescriptionsTitle =
-    'Tutte le audiodescrizioni Sonarpad';
 
 class SonarpadAudiodescriptionsScreen extends StatefulWidget {
   const SonarpadAudiodescriptionsScreen({super.key});
@@ -100,11 +98,11 @@ class _SonarpadAudiodescriptionsScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text(_sonarpadAudiodescriptionsTitle)),
+      appBar: AppBar(title: Text(AppLocalizations.of(context).sonarpadAudiodescriptionsTitle)),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _error.isNotEmpty
-              ? Center(child: Text(_error))
+              ? Center(child: Text(AppLocalizations.of(context).audiodescriptionError))
               : useSharedAccessibleViewModel
                   ? UniversalAccessibleList(
                       sections: [
@@ -112,18 +110,17 @@ class _SonarpadAudiodescriptionsScreenState
                           rows: [
                             AccessibleListRow(
                               id: 'search_query',
-                              title: 'Cerca',
+                              title: AppLocalizations.of(context).search,
                               kind: 'textField',
                               value: _searchController.text,
-                              placeholder:
-                                  'Cerca un film, una serie o una puntata',
+                              placeholder: AppLocalizations.of(context).sonarpadAudiodescriptionsSearchHint,
                               textInputAction: 'search',
                               clearAsSearch: true,
                               onSubmitted: _search,
                             ),
-                            const AccessibleListRow(
+                            AccessibleListRow(
                               id: 'all',
-                              title: _allSonarpadAudiodescriptionsTitle,
+                              title: AppLocalizations.of(context).sonarpadAudiodescriptionsAll,
                             ),
                             ..._items.asMap().entries.map(
                                   (entry) => _catalogRow(
@@ -168,22 +165,23 @@ class _SonarpadAudiodescriptionsScreenState
     String id,
     SonarpadAudiodescriptionItem item,
   ) {
+    final l10n = AppLocalizations.of(context);
     return AccessibleListRow(
       id: id,
       title: item.title,
-      subtitle: _sonarpadAudiodescriptionSubtitle(item),
-      actions: const [
-        AccessibleCustomAction(id: 'open', label: 'Apri'),
+      subtitle: _sonarpadAudiodescriptionSubtitle(item, l10n),
+      actions: [
+        AccessibleCustomAction(id: 'open', label: l10n.openItem),
         AccessibleCustomAction(
           id: 'preserve_media',
-          label: 'Conserva file media',
+          label: l10n.preserveMedia,
         ),
       ],
-      visualActions: const [
-        AccessibleVisualAction(id: 'open', label: 'Apri', icon: 'play'),
+      visualActions: [
+        AccessibleVisualAction(id: 'open', label: l10n.openItem, icon: 'play'),
         AccessibleVisualAction(
           id: 'preserve_media',
-          label: 'Scarica',
+          label: l10n.download,
           icon: 'download',
         ),
       ],
@@ -199,9 +197,9 @@ class _SonarpadAudiodescriptionsScreenState
         if (index == 0) {
           return TextField(
             controller: _searchController,
-            decoration: const InputDecoration(
-              labelText: 'Cerca',
-              hintText: 'Cerca un film, una serie o una puntata',
+            decoration: InputDecoration(
+              labelText: AppLocalizations.of(context).search,
+              hintText: AppLocalizations.of(context).sonarpadAudiodescriptionsSearchHint,
             ),
             textInputAction: TextInputAction.search,
             onSubmitted: _search,
@@ -209,7 +207,7 @@ class _SonarpadAudiodescriptionsScreenState
         }
         if (index == 1) {
           return ListTile(
-            title: const Text(_allSonarpadAudiodescriptionsTitle),
+            title: Text(AppLocalizations.of(context).sonarpadAudiodescriptionsAll),
             trailing: const Icon(Icons.chevron_right),
             onTap: _openAll,
           );
@@ -221,12 +219,13 @@ class _SonarpadAudiodescriptionsScreenState
   }
 
   Widget _legacyItem(SonarpadAudiodescriptionItem item) {
-    final subtitle = _sonarpadAudiodescriptionSubtitle(item);
+    final l10n = AppLocalizations.of(context);
+    final subtitle = _sonarpadAudiodescriptionSubtitle(item, l10n);
     return Semantics(
       container: true,
       customSemanticsActions: {
-        CustomSemanticsAction(label: 'Apri'): () => unawaited(_open(item)),
-        CustomSemanticsAction(label: 'Conserva file media'): () =>
+        CustomSemanticsAction(label: l10n.openItem): () => unawaited(_open(item)),
+        CustomSemanticsAction(label: l10n.preserveMedia): () =>
             unawaited(_preserve(item)),
       },
       child: ListTile(
@@ -237,10 +236,10 @@ class _SonarpadAudiodescriptionsScreenState
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              TextButton(onPressed: () => _open(item), child: const Text('Apri')),
+              TextButton(onPressed: () => _open(item), child: Text(l10n.openItem)),
               TextButton(
                 onPressed: () => _preserve(item),
-                child: const Text('Scarica'),
+                child: Text(l10n.download),
               ),
             ],
           ),
@@ -323,11 +322,11 @@ class _SonarpadAudiodescriptionsAllScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text(_allSonarpadAudiodescriptionsTitle)),
+      appBar: AppBar(title: Text(AppLocalizations.of(context).sonarpadAudiodescriptionsAll)),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _error.isNotEmpty
-              ? Center(child: Text(_error))
+              ? Center(child: Text(AppLocalizations.of(context).audiodescriptionError))
               : useSharedAccessibleViewModel
                   ? UniversalAccessibleList(
                       sections: [
@@ -335,25 +334,28 @@ class _SonarpadAudiodescriptionsAllScreenState
                           rows: [
                             AccessibleListRow(
                               id: 'sort',
-                              title: 'Ordina per',
+                              title: AppLocalizations.of(context).sortBy,
                               kind: 'picker',
                               value: _chronological ? 'recent' : 'alpha',
                               valueLabel:
-                                  _chronological ? 'Cronologico' : 'Alfabetico',
-                              options: const [
+                                  _chronological
+                                  ? AppLocalizations.of(context).sortChronological
+                                  : AppLocalizations.of(context).sortAlphabetical,
+                              options: [
                                 AccessibleOption(
                                   value: 'alpha',
-                                  label: 'Alfabetico',
+                                  label: AppLocalizations.of(context).sortAlphabetical,
                                 ),
                                 AccessibleOption(
                                   value: 'recent',
-                                  label: 'Cronologico',
+                                  label: AppLocalizations.of(context).sortChronological,
                                 ),
                               ],
                               onValueChanged: _changeSort,
                             ),
                             ..._items.asMap().entries.map(
                                   (entry) => _sharedCatalogRow(
+                                    context,
                                     'all_${entry.key}',
                                     entry.value,
                                   ),
@@ -390,15 +392,22 @@ class _SonarpadAudiodescriptionsAllScreenState
         if (index == 0) {
           return DropdownButtonFormField<String>(
             initialValue: _chronological ? 'recent' : 'alpha',
-            decoration: const InputDecoration(labelText: 'Ordina per'),
-            items: const [
-              DropdownMenuItem(value: 'alpha', child: Text('Alfabetico')),
-              DropdownMenuItem(value: 'recent', child: Text('Cronologico')),
+            decoration: InputDecoration(labelText: AppLocalizations.of(context).sortBy),
+            items: [
+              DropdownMenuItem(
+                value: 'alpha',
+                child: Text(AppLocalizations.of(context).sortAlphabetical),
+              ),
+              DropdownMenuItem(
+                value: 'recent',
+                child: Text(AppLocalizations.of(context).sortChronological),
+              ),
             ],
             onChanged: _changeSort,
           );
         }
         return _legacyCatalogItem(
+          context,
           _items[index - 1],
           onOpen: _open,
           onPreserve: _preserve,
@@ -478,7 +487,7 @@ class _SonarpadAudiodescriptionsFolderScreenState
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _error.isNotEmpty
-              ? Center(child: Text(_error))
+              ? Center(child: Text(AppLocalizations.of(context).audiodescriptionError))
               : useSharedAccessibleViewModel
                   ? UniversalAccessibleList(
                       sections: [
@@ -488,12 +497,13 @@ class _SonarpadAudiodescriptionsFolderScreenState
                               AccessibleListRow(
                                 id: 'folder_plot',
                                 kind: 'text',
-                                title: 'Trama',
+                                title: AppLocalizations.of(context).cinemaOverviewLabel,
                                 valueLabel: widget.plot,
                                 accessibilityButtonTrait: false,
                               ),
                             ..._items.asMap().entries.map(
                                   (entry) => _sharedCatalogRow(
+                                    context,
                                     'folder_${entry.key}',
                                     entry.value,
                                   ),
@@ -530,12 +540,13 @@ class _SonarpadAudiodescriptionsFolderScreenState
       itemBuilder: (context, index) {
         if (widget.plot.isNotEmpty && index == 0) {
           return ListTile(
-            title: const Text('Trama'),
+            title: Text(AppLocalizations.of(context).cinemaOverviewLabel),
             subtitle: Text(widget.plot),
           );
         }
         final itemIndex = index - (widget.plot.isNotEmpty ? 1 : 0);
         return _legacyCatalogItem(
+          context,
           _items[itemIndex],
           onOpen: _open,
           onPreserve: _preserve,
@@ -602,13 +613,13 @@ class _SonarpadAudiodescriptionsSearchScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Risultati ricerca')),
+      appBar: AppBar(title: Text(AppLocalizations.of(context).searchResults)),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _error.isNotEmpty
-              ? Center(child: Text(_error))
+              ? Center(child: Text(AppLocalizations.of(context).audiodescriptionError))
               : _items.isEmpty
-                  ? const Center(child: Text('Nessun risultato.'))
+                  ? Center(child: Text(AppLocalizations.of(context).audiodescriptionEmpty))
                   : useSharedAccessibleViewModel
                       ? UniversalAccessibleList(
                           sections: [
@@ -618,6 +629,7 @@ class _SonarpadAudiodescriptionsSearchScreenState
                                   .entries
                                   .map(
                                     (entry) => _sharedCatalogRow(
+                                      context,
                                       'search_${entry.key}',
                                       entry.value,
                                     ),
@@ -647,6 +659,7 @@ class _SonarpadAudiodescriptionsSearchScreenState
                           itemCount: _items.length,
                           separatorBuilder: (_, _) => const Divider(),
                           itemBuilder: (context, index) => _legacyCatalogItem(
+                            context,
                             _items[index],
                             onOpen: _open,
                             onPreserve: _preserve,
@@ -658,10 +671,11 @@ class _SonarpadAudiodescriptionsSearchScreenState
 
 String? _sonarpadAudiodescriptionSubtitle(
   SonarpadAudiodescriptionItem item,
+  AppLocalizations l10n,
 ) {
   final parts = <String>[];
   if (item.plot.isNotEmpty) {
-    parts.add('Trama: ${item.plot}');
+    parts.add('${l10n.cinemaOverviewLabel} ${item.plot}');
   }
   if (item.dateLabel.isNotEmpty) {
     parts.add(item.dateLabel);
@@ -670,29 +684,31 @@ String? _sonarpadAudiodescriptionSubtitle(
 }
 
 AccessibleListRow _sharedCatalogRow(
+  BuildContext context,
   String id,
   SonarpadAudiodescriptionItem item,
 ) {
+  final l10n = AppLocalizations.of(context);
   return AccessibleListRow(
     id: id,
     title: item.title,
-    subtitle: _sonarpadAudiodescriptionSubtitle(item),
+    subtitle: _sonarpadAudiodescriptionSubtitle(item, l10n),
     actions: item.isFolder
-        ? const [AccessibleCustomAction(id: 'open', label: 'Apri')]
-        : const [
-            AccessibleCustomAction(id: 'open', label: 'Apri'),
+        ? [AccessibleCustomAction(id: 'open', label: l10n.openItem)]
+        : [
+            AccessibleCustomAction(id: 'open', label: l10n.openItem),
             AccessibleCustomAction(
               id: 'preserve_media',
-              label: 'Conserva file media',
+              label: l10n.preserveMedia,
             ),
           ],
     visualActions: item.isFolder
-        ? const [AccessibleVisualAction(id: 'open', label: 'Apri', icon: 'open')]
-        : const [
-            AccessibleVisualAction(id: 'open', label: 'Apri', icon: 'play'),
+        ? [AccessibleVisualAction(id: 'open', label: l10n.openItem, icon: 'open')]
+        : [
+            AccessibleVisualAction(id: 'open', label: l10n.openItem, icon: 'play'),
             AccessibleVisualAction(
               id: 'preserve_media',
-              label: 'Scarica',
+              label: l10n.download,
               icon: 'download',
             ),
           ],
@@ -700,15 +716,17 @@ AccessibleListRow _sharedCatalogRow(
 }
 
 Widget _legacyCatalogItem(
+  BuildContext context,
   SonarpadAudiodescriptionItem item, {
   required Future<void> Function(SonarpadAudiodescriptionItem item) onOpen,
   required Future<void> Function(SonarpadAudiodescriptionItem item) onPreserve,
 }) {
-  final subtitle = _sonarpadAudiodescriptionSubtitle(item);
+  final l10n = AppLocalizations.of(context);
+  final subtitle = _sonarpadAudiodescriptionSubtitle(item, l10n);
   final actions = <CustomSemanticsAction, VoidCallback>{
-    CustomSemanticsAction(label: 'Apri'): () => unawaited(onOpen(item)),
+    CustomSemanticsAction(label: l10n.openItem): () => unawaited(onOpen(item)),
     if (!item.isFolder)
-      CustomSemanticsAction(label: 'Conserva file media'): () =>
+      CustomSemanticsAction(label: l10n.preserveMedia): () =>
           unawaited(onPreserve(item)),
   };
   return Semantics(
@@ -722,11 +740,11 @@ Widget _legacyCatalogItem(
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            TextButton(onPressed: () => onOpen(item), child: const Text('Apri')),
+            TextButton(onPressed: () => onOpen(item), child: Text(l10n.openItem)),
             if (!item.isFolder)
               TextButton(
                 onPressed: () => onPreserve(item),
-                child: const Text('Scarica'),
+                child: Text(l10n.download),
               ),
           ],
         ),
@@ -758,7 +776,7 @@ void _openSonarpadAudiodescription(
   SonarpadAudiodescriptionItem item,
 ) {
   if (item.streamUrl.isEmpty) {
-    showStatusMessage(context, 'Contenuto non disponibile.');
+    showStatusMessage(context, AppLocalizations.of(context).contentUnavailable);
     return;
   }
   Navigator.of(context).push(
@@ -788,7 +806,7 @@ Future<void> _preserveSonarpadAudiodescription(
   SonarpadAudiodescriptionItem item,
 ) async {
   if (item.downloadUrl.isEmpty) {
-    showStatusMessage(context, 'Download non disponibile.');
+    showStatusMessage(context, AppLocalizations.of(context).downloadUnavailable);
     return;
   }
   await preserveMediaWithProgress(

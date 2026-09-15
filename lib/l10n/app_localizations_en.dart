@@ -3687,4 +3687,29 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get continueRecording => 'Continue recording';
 
+
+  @override
+  String get sonarpadAudiodescriptionsTitle => 'Sonarpad Audio Descriptions';
+
+  @override
+  String get sonarpadAudiodescriptionsAll => 'All Sonarpad audio descriptions';
+
+  @override
+  String get sonarpadAudiodescriptionsSearchHint => 'Search for a film, series or episode';
+
+  @override
+  String get sortBy => 'Sort by';
+
+  @override
+  String get sortAlphabetical => 'Alphabetical';
+
+  @override
+  String get sortChronological => 'Chronological';
+
+  @override
+  String get contentUnavailable => 'Content unavailable.';
+
+  @override
+  String get downloadUnavailable => 'Download unavailable.';
+
 }

@@ -2950,5 +2950,37 @@
   "weatherAirQualityExtremelyPoor": "Extremadamente mala",
   "@weatherAirQualityExtremelyPoor": {
     "description": "Localized text for weatherAirQualityExtremelyPoor."
+  },
+  "sonarpadAudiodescriptionsTitle": "Audiodescripciones Sonarpad",
+  "@sonarpadAudiodescriptionsTitle": {
+    "description": "Title of the Sonarpad audio descriptions section."
+  },
+  "sonarpadAudiodescriptionsAll": "Todas las audiodescripciones Sonarpad",
+  "@sonarpadAudiodescriptionsAll": {
+    "description": "Entry that opens the complete Sonarpad audio descriptions catalog."
+  },
+  "sonarpadAudiodescriptionsSearchHint": "Buscar una película, serie o episodio",
+  "@sonarpadAudiodescriptionsSearchHint": {
+    "description": "Search hint for the Sonarpad audio descriptions catalog."
+  },
+  "sortBy": "Ordenar por",
+  "@sortBy": {
+    "description": "Generic label for a sort selector."
+  },
+  "sortAlphabetical": "Alfabético",
+  "@sortAlphabetical": {
+    "description": "Alphabetical sort option."
+  },
+  "sortChronological": "Cronológico",
+  "@sortChronological": {
+    "description": "Chronological sort option."
+  },
+  "contentUnavailable": "Contenido no disponible.",
+  "@contentUnavailable": {
+    "description": "Shown when a media item cannot be opened."
+  },
+  "downloadUnavailable": "Descarga no disponible.",
+  "@downloadUnavailable": {
+    "description": "Shown when a media item cannot be downloaded."
   }
 }

@@ -3695,4 +3695,29 @@ class AppLocalizationsCs extends AppLocalizations {
   @override
   String get continueRecording => 'Pokračovat v nahrávání';
 
+
+  @override
+  String get sonarpadAudiodescriptionsTitle => 'Audiopopisy Sonarpad';
+
+  @override
+  String get sonarpadAudiodescriptionsAll => 'Všechny audiopopisy Sonarpad';
+
+  @override
+  String get sonarpadAudiodescriptionsSearchHint => 'Hledat film, seriál nebo epizodu';
+
+  @override
+  String get sortBy => 'Seřadit podle';
+
+  @override
+  String get sortAlphabetical => 'Abecedně';
+
+  @override
+  String get sortChronological => 'Chronologicky';
+
+  @override
+  String get contentUnavailable => 'Obsah není dostupný.';
+
+  @override
+  String get downloadUnavailable => 'Stažení není dostupné.';
+
 }

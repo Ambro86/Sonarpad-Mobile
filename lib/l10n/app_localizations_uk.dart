@@ -3312,4 +3312,29 @@ class AppLocalizationsUk extends AppLocalizations {
   @override
   String get continueRecording => 'Продовжити запис';
 
+
+  @override
+  String get sonarpadAudiodescriptionsTitle => 'Аудіодескрипції Sonarpad';
+
+  @override
+  String get sonarpadAudiodescriptionsAll => 'Усі аудіодескрипції Sonarpad';
+
+  @override
+  String get sonarpadAudiodescriptionsSearchHint => 'Шукати фільм, серіал або епізод';
+
+  @override
+  String get sortBy => 'Сортувати за';
+
+  @override
+  String get sortAlphabetical => 'За абеткою';
+
+  @override
+  String get sortChronological => 'Хронологічно';
+
+  @override
+  String get contentUnavailable => 'Вміст недоступний.';
+
+  @override
+  String get downloadUnavailable => 'Завантаження недоступне.';
+
 }

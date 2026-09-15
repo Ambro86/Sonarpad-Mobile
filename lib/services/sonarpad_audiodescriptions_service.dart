@@ -2,6 +2,15 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
+enum SonarpadAudiodescriptionsServiceError { missingCode, invalidResponse }
+
+class SonarpadAudiodescriptionsServiceException implements Exception {
+  const SonarpadAudiodescriptionsServiceException(this.error);
+
+  final SonarpadAudiodescriptionsServiceError error;
+}
+
+
 class SonarpadAudiodescriptionItem {
   const SonarpadAudiodescriptionItem({
     required this.type,
@@ -137,7 +146,9 @@ class SonarpadAudiodescriptionsService {
   }) async {
     final code = sonarpadCode.trim();
     if (code.isEmpty) {
-      throw Exception('Codice Sonarpad mancante.');
+      throw const SonarpadAudiodescriptionsServiceException(
+        SonarpadAudiodescriptionsServiceError.missingCode,
+      );
     }
 
     final body = <String, Object?>{
@@ -176,7 +187,9 @@ class SonarpadAudiodescriptionsService {
       );
     }
     if (root == null || root['ok'] != true) {
-      throw Exception('Risposta non valida dal catalogo Sonarpad.');
+      throw const SonarpadAudiodescriptionsServiceException(
+        SonarpadAudiodescriptionsServiceError.invalidResponse,
+      );
     }
 
     final rawItems = root['items'];

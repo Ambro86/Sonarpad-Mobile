@@ -3593,6 +3593,31 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get continueRecording => 'Continuar gravação';
 
+
+  @override
+  String get sonarpadAudiodescriptionsTitle => 'Audiodescrições Sonarpad';
+
+  @override
+  String get sonarpadAudiodescriptionsAll => 'Todas as audiodescrições Sonarpad';
+
+  @override
+  String get sonarpadAudiodescriptionsSearchHint => 'Pesquisar um filme, série ou episódio';
+
+  @override
+  String get sortBy => 'Ordenar por';
+
+  @override
+  String get sortAlphabetical => 'Alfabético';
+
+  @override
+  String get sortChronological => 'Cronológico';
+
+  @override
+  String get contentUnavailable => 'Conteúdo indisponível.';
+
+  @override
+  String get downloadUnavailable => 'Download indisponível.';
+
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
@@ -7183,5 +7208,30 @@ class AppLocalizationsPtBr extends AppLocalizations {
 
   @override
   String get continueRecording => 'Continuar gravação';
+
+
+  @override
+  String get sonarpadAudiodescriptionsTitle => 'Audiodescrições Sonarpad';
+
+  @override
+  String get sonarpadAudiodescriptionsAll => 'Todas as audiodescrições Sonarpad';
+
+  @override
+  String get sonarpadAudiodescriptionsSearchHint => 'Pesquisar um filme, série ou episódio';
+
+  @override
+  String get sortBy => 'Ordenar por';
+
+  @override
+  String get sortAlphabetical => 'Alfabético';
+
+  @override
+  String get sortChronological => 'Cronológico';
+
+  @override
+  String get contentUnavailable => 'Conteúdo indisponível.';
+
+  @override
+  String get downloadUnavailable => 'Download indisponível.';
 
 }

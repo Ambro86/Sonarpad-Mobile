@@ -132,7 +132,7 @@ class _AudiodescriptionSearchResultsScreenState
               ),
             )
           : _error.isNotEmpty
-              ? Center(child: Text('${l10n.audiodescriptionError}: $_error'))
+              ? Center(child: Text(l10n.audiodescriptionError))
               : _results.isEmpty
                   ? Center(child: Text(l10n.audiodescriptionEmpty))
                   : useSharedAccessibleViewModel

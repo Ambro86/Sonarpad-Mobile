@@ -163,7 +163,7 @@ class _HomeScreenState extends State<HomeScreen> {
       if ((_isSecretCodeValid || _isTvCodeValid || _isRaiPlayValid) &&
           isItalian)
         _HomeButton(
-          label: 'Audiodescrizioni Sonarpad',
+          label: l10n.sonarpadAudiodescriptionsTitle,
           onPressed: () => AccessibilityFeedbackService.goNamed(
             context,
             routeName: '/sonarpad_audiodescriptions',
@@ -349,7 +349,7 @@ class _HomeScreenState extends State<HomeScreen> {
         if ((_isSecretCodeValid || _isTvCodeValid || _isRaiPlayValid) &&
             isItalian)
           _HomeButton(
-              label: 'Audiodescrizioni Sonarpad',
+              label: l10n.sonarpadAudiodescriptionsTitle,
               onPressed: () => AccessibilityFeedbackService.goNamed(
                   context,
                   routeName: '/sonarpad_audiodescriptions')),

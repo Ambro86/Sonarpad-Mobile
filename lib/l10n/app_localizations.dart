@@ -5969,6 +5969,30 @@ abstract class AppLocalizations {
 
   /// Leaves the player while keeping the current recording active.
   String get continueRecording;
+  /// Title of the Sonarpad audio descriptions section.
+  String get sonarpadAudiodescriptionsTitle;
+
+  /// Entry that opens the complete Sonarpad audio descriptions catalog.
+  String get sonarpadAudiodescriptionsAll;
+
+  /// Search hint for the Sonarpad audio descriptions catalog.
+  String get sonarpadAudiodescriptionsSearchHint;
+
+  /// Generic label for a sort selector.
+  String get sortBy;
+
+  /// Alphabetical sort option.
+  String get sortAlphabetical;
+
+  /// Chronological sort option.
+  String get sortChronological;
+
+  /// Shown when a media item cannot be opened.
+  String get contentUnavailable;
+
+  /// Shown when a media item cannot be downloaded.
+  String get downloadUnavailable;
+
 }
 
 class _AppLocalizationsDelegate

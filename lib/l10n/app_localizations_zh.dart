@@ -3319,4 +3319,29 @@ class AppLocalizationsZhCn extends AppLocalizations {
   @override
   String get continueRecording => '继续录制';
 
+
+  @override
+  String get sonarpadAudiodescriptionsTitle => 'Sonarpad 音频描述';
+
+  @override
+  String get sonarpadAudiodescriptionsAll => '所有 Sonarpad 音频描述';
+
+  @override
+  String get sonarpadAudiodescriptionsSearchHint => '搜索电影、剧集或单集';
+
+  @override
+  String get sortBy => '排序方式';
+
+  @override
+  String get sortAlphabetical => '按字母顺序';
+
+  @override
+  String get sortChronological => '按时间顺序';
+
+  @override
+  String get contentUnavailable => '内容不可用。';
+
+  @override
+  String get downloadUnavailable => '下载不可用。';
+
 }
