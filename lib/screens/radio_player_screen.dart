@@ -61,7 +61,6 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   mk.Player? _mediaKitPlayer;
   mkv.VideoController? _mediaKitController;
   bool _isVideoEnabled = false;
-  bool _restoreAndroidTvVideoOffAfterBootstrap = false;
   bool _displayVideoInPortrait = false;
   bool _isFavorite = false;
   bool _mediaKitPlaying = false;
@@ -116,8 +115,6 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     }
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       _isVideoEnabled = await _settings.isVideoEnabled();
-      _restoreAndroidTvVideoOffAfterBootstrap =
-          !_isVideoEnabled && _usesAndroidTvVideoFirstBootstrap;
       _displayVideoInPortrait = await _settings.displayVideoInPortrait();
       _isFavorite = await _loadIsFavorite();
       _isRecordingFeatureUnlocked = await _loadRecordingFeatureAccess();
@@ -202,14 +199,10 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         return;
       }
 
-      // Su iOS manteniamo MediaKit per i canali TV: AVPlayer può perdere
-      // immediatamente la connessione con alcuni master HLS televisivi.
-      // Su Android i normali HLS usano video_player quando il video è attivo.
-      // Se la preferenza salvata è audio-only, facciamo prima un bootstrap
-      // temporaneo con audio+video e passiamo al ramo audio solo dopo che
-      // video_player ha realmente iniziato la riproduzione. Alcuni flussi TV
-      // falliscono infatti se il video viene escluso prima dell'avvio.
-      // DASH/MPD e Rai AD restano MediaKit.
+      // Tutti i canali TV usano sempre MediaKit su Android e iOS, anche
+      // quando il video è disattivato. In questo modo entrambe le piattaforme
+      // seguono lo stesso percorso di riproduzione; quando il video è spento
+      // viene disabilitata soltanto la traccia video.
       if (_requiresTvMediaKitPlayback) {
         await AppLogger.log(
           'RadioPlayer: TV MediaKit playback selected '
@@ -224,8 +217,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         return;
       }
 
-      if (widget.isVideoSupported &&
-          (_isVideoEnabled || _restoreAndroidTvVideoOffAfterBootstrap)) {
+      if (widget.isVideoSupported && _isVideoEnabled) {
         await _audio.stop();
         await _disposeMediaKitPlayer();
         _videoController?.dispose();
@@ -249,16 +241,6 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         await _videoController!.play();
         if (Platform.isIOS) {
           await _mediaCommands.invokeMethod('setMagicTapPlaying', true);
-        }
-        if (_restoreAndroidTvVideoOffAfterBootstrap) {
-          _restoreAndroidTvVideoOffAfterBootstrap = false;
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (!mounted || _isVideoEnabled) return;
-            AppLogger.log(
-              'RadioPlayer: Android TV video-first bootstrap completed; restoring audio-only preference',
-            );
-            unawaited(_applyVideoSetting(false));
-          });
         }
       } else {
         if (Platform.isIOS && _videoController != null) {
@@ -318,6 +300,24 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     }
 
     final player = mk.Player();
+    if (Platform.isAndroid) {
+      final platformPlayer = player.platform;
+      if (platformPlayer is mk.NativePlayer) {
+        try {
+          await platformPlayer.setProperty(
+            'ao',
+            'audiotrack,opensles',
+          );
+          AppLogger.log(
+            'RadioPlayer: Android MediaKit audio output prefers audiotrack with opensles fallback',
+          );
+        } catch (error) {
+          AppLogger.log(
+            'RadioPlayer: unable to set Android MediaKit audio output preference: $error',
+          );
+        }
+      }
+    }
     final controller = mkv.VideoController(player);
     _mediaKitPlayer = player;
     _mediaKitController = controller;
@@ -848,7 +848,6 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   }
 
   void _toggleVideo(bool enable) {
-    _restoreAndroidTvVideoOffAfterBootstrap = false;
     AppLogger.log(
       'RadioPlayer: enable video switch changed enable=$enable requiresVideoPlayback=$_requiresVideoPlayback requiresRaiADMediaKit=$_requiresRaiAudioDescriptionMediaKitPlayback position=$_mediaKitLastPosition duration=$_mediaKitLastDuration buffering=$_mediaKitBuffering playing=$_mediaKitPlaying',
     );
@@ -1330,22 +1329,13 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   bool get _hasPendingScheduledRecording =>
       _recordingService.hasPendingScheduleFor(_recordingTarget.id);
 
-  bool get _usesAndroidTvVideoFirstBootstrap =>
-      Platform.isAndroid &&
-      widget.isVideoSupported &&
-      widget.tvChannel != null &&
-      !TvService().isRaiAudioDescriptionChannel(widget.tvChannel!) &&
-      !TvService.isDashStreamUrl(widget.station.streamUrl);
-
   bool get _requiresRaiAudioDescriptionMediaKitPlayback =>
       widget.isVideoSupported &&
       widget.tvChannel != null &&
       TvService().isRaiAudioDescriptionChannel(widget.tvChannel!);
 
   bool get _requiresTvMediaKitPlayback =>
-      widget.isVideoSupported &&
-      widget.tvChannel != null &&
-      !Platform.isAndroid;
+      widget.isVideoSupported && widget.tvChannel != null;
 
   bool get _requiresVideoPlayback =>
       widget.isVideoSupported &&
