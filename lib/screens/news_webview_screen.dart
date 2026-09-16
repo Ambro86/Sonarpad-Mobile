@@ -291,6 +291,17 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
             ));
           },
           onNavigationRequest: (NavigationRequest request) {
+            if (_isRepubblicaPaywallNavigation(request.url)) {
+              _markRepubblicaPaywallDetected(
+                _allowedMainArticleUrl ?? widget.article.link,
+                source: 'navigation',
+              );
+              unawaited(AppLogger.log(
+                'News WebView: navigazione paywall Repubblica bloccata '
+                'url=${request.url}',
+              ));
+              return NavigationDecision.prevent;
+            }
             if (_shouldBlockEmbeddedMediaNavigation(request.url)) {
               unawaited(AppLogger.log(
                 'News WebView: navigazione bloccata per contenuto media '
@@ -791,6 +802,37 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
     return host == 'repubblica.it' || host.endsWith('.repubblica.it');
   }
 
+
+  bool _isShortRepubblicaReaderText(String pageUrl, String text) =>
+      _isRepubblicaUrl(pageUrl) &&
+      text.trim().length >= _httpMinLength &&
+      text.trim().length < _httpShortThreshold;
+
+  bool _isRepubblicaPaywallNavigation(String url) {
+    final uri = Uri.tryParse(url.trim());
+    if (uri == null) return false;
+    final host = uri.host.toLowerCase();
+    return host == 'shop.repubblica.it' &&
+        uri.path.toLowerCase().contains('repubblica_paywall');
+  }
+
+  void _markRepubblicaPaywallDetected(String pageUrl, {String? source}) {
+    if (!mounted || _paywallDetected) return;
+    setState(() {
+      _paywallDetected = true;
+      _pureWebViewMode = false;
+      _readerTitle = null;
+      _readerText = null;
+      _readerBestTextLength = 0;
+      _readerPreparing = false;
+    });
+    unawaited(AppLogger.log(
+      'News reader UI: paywall Repubblica rilevato'
+      '${source == null ? '' : ' source=$source'}; '
+      'mostro avviso invece della WebView url=$pageUrl',
+    ));
+  }
+
   bool _isGoogleNewsUrl(String url) {
     final uri = Uri.tryParse(url.trim());
     if (uri == null) return false;
@@ -965,10 +1007,12 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
         'length=${text.length} existingLength=$existingLen '
         'onlyRssSummary=$onlyRssSummary url=$finalUrl',
       ));
+      final shortRepubblica = _isShortRepubblicaReaderText(finalUrl, text);
       if (text.length >= _httpMinLength &&
           text.length > existingLen &&
           !_isOnlyArticleTitle(text) &&
-          !onlyRssSummary) {
+          !onlyRssSummary &&
+          !shortRepubblica) {
         setState(() {
           _pureWebViewMode = false;
           _readerTitle = widget.article.title;
@@ -980,6 +1024,12 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
           'News reader final URL HTTP: testo accettato length=${text.length}',
         ));
         return;
+      }
+      if (shortRepubblica) {
+        unawaited(AppLogger.log(
+          'News reader final URL HTTP: testo Repubblica breve tenuto '
+          'provvisorio length=${text.length}; attendo controllo paywall WebView',
+        ));
       }
     } catch (e) {
       unawaited(AppLogger.log(
@@ -1019,7 +1069,12 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
           'length=${text.length}',
         ));
       }
-      if (text.length >= _httpMinLength && !onlyTitle && !onlyRssSummary) {
+      final readerUrl = _resolvedArticleUrlForReader ?? widget.article.link;
+      final shortRepubblica = _isShortRepubblicaReaderText(readerUrl, text);
+      if (text.length >= _httpMinLength &&
+          !onlyTitle &&
+          !onlyRssSummary &&
+          !shortRepubblica) {
         setState(() {
           _pureWebViewMode = false;
           _readerTitle = widget.article.title;
@@ -1027,6 +1082,11 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
           _readerBestTextLength = text.length;
           _readerPreparing = false;
         });
+      } else if (shortRepubblica) {
+        unawaited(AppLogger.log(
+          'News reader HTTP: testo Repubblica breve tenuto provvisorio '
+          'length=${text.length}; attendo controllo paywall WebView',
+        ));
       }
     } catch (e) {
       debugPrint('Sonarpad reader: rhttp reader failed: $e');
@@ -1114,6 +1174,25 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
           if (text.length >= 400 &&
               text.length > httpLen &&
               !_isOnlyArticleTitle(text)) {
+            if (_isShortRepubblicaReaderText(pageUrl, text)) {
+              final paywall = await _detectRepubblicaPaywall(pageUrl: pageUrl);
+              if (!mounted || generation != _webViewPageGeneration) return;
+              if (paywall) {
+                _markRepubblicaPaywallDetected(
+                  pageUrl,
+                  source: 'visible_text_${i + 1}',
+                );
+                return;
+              }
+              if (i + 1 < maxVisibleExtractionAttempts) {
+                unawaited(AppLogger.log(
+                  'News reader WebView: testo Repubblica breve ancora '
+                  'provvisorio al tentativo ${i + 1}; riprovo il paywall '
+                  'prima di mostrarlo',
+                ));
+                continue;
+              }
+            }
             setState(() {
               _pureWebViewMode = false;
               _readerTitle = widget.article.title;
@@ -1250,6 +1329,13 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
     if (text.length >= _httpMinLength &&
         text.length > existingLength &&
         !_isOnlyArticleTitle(text)) {
+      if (_isShortRepubblicaReaderText(pageUrl, text) &&
+          await _detectRepubblicaPaywall(pageUrl: pageUrl)) {
+        if (!mounted || generation != _webViewPageGeneration) return;
+        _markRepubblicaPaywallDetected(pageUrl, source: 'tinyfish_fallback');
+        return;
+      }
+      if (!mounted || generation != _webViewPageGeneration) return;
       setState(() {
         _pureWebViewMode = false;
         _readerTitle = widget.article.title;
@@ -1273,18 +1359,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
     if (_isRepubblicaUrl(pageUrl) &&
         await _detectRepubblicaPaywall(pageUrl: pageUrl)) {
       if (!mounted || generation != _webViewPageGeneration) return;
-      setState(() {
-        _paywallDetected = true;
-        _pureWebViewMode = false;
-        _readerTitle = null;
-        _readerText = null;
-        _readerBestTextLength = 0;
-        _readerPreparing = false;
-      });
-      unawaited(AppLogger.log(
-        'News reader UI: paywall Repubblica rilevato; '
-        'mostro avviso invece della WebView url=$pageUrl',
-      ));
+      _markRepubblicaPaywallDetected(pageUrl, source: 'final_check');
       return;
     }
 
