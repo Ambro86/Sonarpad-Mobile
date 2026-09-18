@@ -1150,6 +1150,14 @@
   "@settingsSonarTubePlayerActions": {
     "description": "Button that opens the SonarTube player button selector."
   },
+  "settingsSonarTubeAutoplay": "Automatické přehrávání",
+  "@settingsSonarTubeAutoplay": {
+    "description": "Toggle for automatically playing the next SonarTube item."
+  },
+  "settingsSonarTubeAutoplayHint": "Po skončení videa nebo skladby SonarTube automaticky přehraje další položku, pokud je k dispozici.",
+  "@settingsSonarTubeAutoplayHint": {
+    "description": "Description of SonarTube autoplay behavior."
+  },
   "settingsVideoLandscapeFullscreen": "Vodorovné video přes celou obrazovku",
   "@settingsVideoLandscapeFullscreen": {
     "description": "Title for the setting that shows video full-screen in landscape orientation."

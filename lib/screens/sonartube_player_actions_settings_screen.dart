@@ -16,6 +16,7 @@ class _SonarTubePlayerActionsSettingsScreenState
     extends State<SonarTubePlayerActionsSettingsScreen> {
   final _settings = AppSettingsService();
   Set<String> _selected = const <String>{};
+  bool _autoplay = false;
   bool _loading = true;
 
   @override
@@ -26,11 +27,18 @@ class _SonarTubePlayerActionsSettingsScreenState
 
   Future<void> _load() async {
     final selected = await _settings.loadSonarTubePlayerActions();
+    final autoplay = await _settings.isSonarTubeAutoplayEnabled();
     if (!mounted) return;
     setState(() {
       _selected = selected;
+      _autoplay = autoplay;
       _loading = false;
     });
+  }
+
+  Future<void> _setAutoplay(bool enabled) async {
+    setState(() => _autoplay = enabled);
+    await _settings.setSonarTubeAutoplayEnabled(enabled);
   }
 
   Future<void> _setSelected(String id, bool enabled) async {
@@ -107,6 +115,20 @@ class _SonarTubePlayerActionsSettingsScreenState
                           kind: 'text',
                           accessibilityButtonTrait: false,
                         ),
+                        AccessibleListRow(
+                          id: 'sonartube_autoplay',
+                          title: l10n.settingsSonarTubeAutoplay,
+                          subtitle: l10n.settingsSonarTubeAutoplayHint,
+                          kind: 'toggle',
+                          toggleValue: _autoplay,
+                          flutterChild: SwitchListTile(
+                            key: const ValueKey('settings_sonartube_autoplay'),
+                            title: Text(l10n.settingsSonarTubeAutoplay),
+                            subtitle: Text(l10n.settingsSonarTubeAutoplayHint),
+                            value: _autoplay,
+                            onChanged: _setAutoplay,
+                          ),
+                        ),
                         for (final action in actions)
                           AccessibleListRow(
                             id: 'sonartube_player_action_${action.$1}',
@@ -128,6 +150,10 @@ class _SonarTubePlayerActionsSettingsScreenState
                   ],
                   onEvent: (event) async {
                     if (event.type != 'toggle' || event.id == null) return;
+                    if (event.id == 'sonartube_autoplay') {
+                      await _setAutoplay(event.value == true);
+                      return;
+                    }
                     const prefix = 'sonartube_player_action_';
                     if (!event.id!.startsWith(prefix)) return;
                     final id = event.id!.substring(prefix.length);
@@ -149,6 +175,14 @@ class _SonarTubePlayerActionsSettingsScreenState
                       style: Theme.of(context).textTheme.headlineSmall,
                     ),
                     const SizedBox(height: 12),
+                    SwitchListTile(
+                      key: const ValueKey('settings_sonartube_autoplay'),
+                      title: Text(l10n.settingsSonarTubeAutoplay),
+                      subtitle: Text(l10n.settingsSonarTubeAutoplayHint),
+                      value: _autoplay,
+                      onChanged: _setAutoplay,
+                      contentPadding: EdgeInsets.zero,
+                    ),
                     for (final action in actions)
                       CheckboxListTile(
                         key: ValueKey(

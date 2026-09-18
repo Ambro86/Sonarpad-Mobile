@@ -4813,6 +4813,18 @@ abstract class AppLocalizations {
   /// **'Personalizza i pulsanti del player SonarTube'**
   String get settingsSonarTubePlayerActions;
 
+  /// Toggle for automatically playing the next SonarTube item.
+  ///
+  /// In it, this message translates to:
+  /// **'Riproduzione automatica'**
+  String get settingsSonarTubeAutoplay;
+
+  /// Description of SonarTube autoplay behavior.
+  ///
+  /// In it, this message translates to:
+  /// **'Quando un video o brano termina, SonarTube passa automaticamente al successivo, se disponibile.'**
+  String get settingsSonarTubeAutoplayHint;
+
   /// Title for the setting that shows video full-screen in landscape orientation.
   ///
   /// In it, this message translates to:

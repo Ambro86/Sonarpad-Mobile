@@ -1153,6 +1153,14 @@
   "@settingsSonarTubePlayerActions": {
     "description": "Button that opens the SonarTube player button selector."
   },
+  "settingsSonarTubeAutoplay": "Reprodução automática",
+  "@settingsSonarTubeAutoplay": {
+    "description": "Toggle for automatically playing the next SonarTube item."
+  },
+  "settingsSonarTubeAutoplayHint": "Quando um vídeo ou faixa termina, o SonarTube reproduz automaticamente o próximo, se estiver disponível.",
+  "@settingsSonarTubeAutoplayHint": {
+    "description": "Description of SonarTube autoplay behavior."
+  },
   "settingsVideoLandscapeFullscreen": "Vídeo horizontal em tela cheia",
   "@settingsVideoLandscapeFullscreen": {
     "description": "Title for the setting that shows video full-screen in landscape orientation."

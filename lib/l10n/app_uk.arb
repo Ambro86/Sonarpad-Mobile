@@ -3349,6 +3349,14 @@
   "@settingsSonarTubePlayerActions": {
     "description": "Button that opens the SonarTube player button selector."
   },
+  "settingsSonarTubeAutoplay": "Автоматичне відтворення",
+  "@settingsSonarTubeAutoplay": {
+    "description": "Toggle for automatically playing the next SonarTube item."
+  },
+  "settingsSonarTubeAutoplayHint": "Коли відео або трек завершується, SonarTube автоматично відтворює наступний, якщо він доступний.",
+  "@settingsSonarTubeAutoplayHint": {
+    "description": "Description of SonarTube autoplay behavior."
+  },
   "settingsVideoLandscapeFullscreen": "Відео на весь екран у горизонтальній орієнтації",
   "@settingsVideoLandscapeFullscreen": {
     "description": "Title for the setting that shows video full-screen in landscape orientation."

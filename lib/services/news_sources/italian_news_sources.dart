@@ -46,10 +46,6 @@ final italianNewsSources = [
     ),
   ),
   NewsRssSource(
-    name: 'La Repubblica',
-    uri: Uri.parse('https://www.repubblica.it/rss/homepage/rss2.0.xml'),
-  ),
-  NewsRssSource(
     name: 'ANSA',
     uri: Uri.parse('https://www.ansa.it/sito/ansait_rss.xml'),
   ),

@@ -1147,6 +1147,14 @@
   "@settingsSonarTubePlayerActions": {
     "description": "Button that opens the SonarTube player button selector."
   },
+  "settingsSonarTubeAutoplay": "自动播放",
+  "@settingsSonarTubeAutoplay": {
+    "description": "Toggle for automatically playing the next SonarTube item."
+  },
+  "settingsSonarTubeAutoplayHint": "视频或音轨结束后，如果有下一项，SonarTube 会自动播放下一项。",
+  "@settingsSonarTubeAutoplayHint": {
+    "description": "Description of SonarTube autoplay behavior."
+  },
   "settingsVideoLandscapeFullscreen": "横屏全屏视频",
   "@settingsVideoLandscapeFullscreen": {
     "description": "Title for the setting that shows video full-screen in landscape orientation."

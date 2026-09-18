@@ -48,6 +48,7 @@ class PodcastEpisodePlayerScreen extends StatefulWidget {
     this.nextEpisodeLabel,
     this.showPreviousEpisodeAction = true,
     this.showNextEpisodeAction = true,
+    this.autoNavigateNext = false,
     this.extraActions = const <PodcastPlayerExtraAction>[],
   });
 
@@ -75,6 +76,7 @@ class PodcastEpisodePlayerScreen extends StatefulWidget {
   final String? nextEpisodeLabel;
   final bool showPreviousEpisodeAction;
   final bool showNextEpisodeAction;
+  final bool autoNavigateNext;
   final List<PodcastPlayerExtraAction> extraActions;
 
   @override
@@ -91,6 +93,7 @@ class _PodcastEpisodePlayerScreenState
   final _settings = AppSettingsService();
   final _podcastService = PodcastService();
   StreamSubscription<dynamic>? _mediaEventsSubscription;
+  StreamSubscription<void>? _audioCompletionSubscription;
 
   VideoPlayerController? _videoController;
   bool _videoUsesExternalAudio = false;
@@ -110,6 +113,7 @@ class _PodcastEpisodePlayerScreenState
   bool _restoreVideoOffAfterBootstrap = false;
   bool _refreshingEpisode = false;
   bool _switchingVideoMode = false;
+  String? _autoAdvanceHandledMediaId;
 
   PodcastEpisode get _episode => _refreshedEpisode ?? widget.episode;
 
@@ -230,12 +234,16 @@ class _PodcastEpisodePlayerScreenState
 
         _videoController!.addListener(() {
           if (!mounted || _videoController == null) return;
-          final currentSecond = _videoController!.value.position.inSeconds;
+          final value = _videoController!.value;
+          final currentSecond = value.position.inSeconds;
           if (currentSecond > 0 && currentSecond % 15 == 0) {
             if (_lastVideoBookmarkSecond != currentSecond) {
-               _lastVideoBookmarkSecond = currentSecond;
-               _saveVideoBookmark();
+              _lastVideoBookmarkSecond = currentSecond;
+              _saveVideoBookmark();
             }
+          }
+          if (value.isCompleted) {
+            unawaited(_handlePlaybackCompleted());
           }
         });
 
@@ -405,17 +413,40 @@ class _PodcastEpisodePlayerScreenState
     }
   }
 
+  bool get _hasNavigablePrevious =>
+      widget.navigateEpisode != null &&
+      (widget.hasPreviousEpisode?.call() ?? false);
+
+  bool get _hasNavigableNext =>
+      widget.navigateEpisode != null &&
+      (widget.hasNextEpisode?.call() ?? false);
+
   bool get _canNavigatePrevious =>
       widget.showPreviousEpisodeAction &&
-      widget.navigateEpisode != null &&
       widget.previousEpisodeLabel != null &&
-      (widget.hasPreviousEpisode?.call() ?? false);
+      _hasNavigablePrevious;
 
   bool get _canNavigateNext =>
       widget.showNextEpisodeAction &&
-      widget.navigateEpisode != null &&
       widget.nextEpisodeLabel != null &&
-      (widget.hasNextEpisode?.call() ?? false);
+      _hasNavigableNext;
+
+  Future<void> _handlePlaybackCompleted() async {
+    if (!widget.autoNavigateNext || !mounted) return;
+    final mediaId = _getStableId();
+    if (_autoAdvanceHandledMediaId == mediaId) return;
+    _autoAdvanceHandledMediaId = mediaId;
+
+    if (!_hasNavigableNext) {
+      AppLogger.log(
+        'PodcastPlayer: autoplay reached end of queue; no next item, $_logSubject',
+      );
+      return;
+    }
+
+    AppLogger.log('PodcastPlayer: autoplay advancing to next item, $_logSubject');
+    await _navigateAdjacentEpisode(1, silentFailure: true);
+  }
 
   Future<void> _runExtraAction(PodcastPlayerExtraAction action) async {
     if (_loading) return;
@@ -429,11 +460,14 @@ class _PodcastEpisodePlayerScreenState
     if (mounted) setState(() {});
   }
 
-  Future<void> _navigateAdjacentEpisode(int direction) async {
+  Future<void> _navigateAdjacentEpisode(
+    int direction, {
+    bool silentFailure = false,
+  }) async {
     final navigate = widget.navigateEpisode;
     if (navigate == null || _loading || _refreshingEpisode) return;
-    if (direction < 0 && !_canNavigatePrevious) return;
-    if (direction > 0 && !_canNavigateNext) return;
+    if (direction < 0 && !_hasNavigablePrevious) return;
+    if (direction > 0 && !_hasNavigableNext) return;
 
     AppLogger.log(
       'PodcastPlayer: adjacent navigation start direction=$direction, $_logSubject',
@@ -468,6 +502,7 @@ class _PodcastEpisodePlayerScreenState
       _detectedChapters = null;
       _lastVideoBookmarkSecond = -1;
       _refreshedEpisode = replacement;
+      _autoAdvanceHandledMediaId = null;
       _restoreVideoOffAfterBootstrap = false;
       if (!mounted) return;
       setState(() {
@@ -483,7 +518,7 @@ class _PodcastEpisodePlayerScreenState
       AppLogger.log(
         'PodcastPlayer: adjacent navigation failed direction=$direction error=$error, $_logSubject',
       );
-      if (mounted) {
+      if (mounted && !silentFailure) {
         final l10n = AppLocalizations.of(context);
         setState(() => _error = l10n.episodeError(l10n.technicalErrorGeneric));
       }
@@ -708,6 +743,9 @@ class _PodcastEpisodePlayerScreenState
   @override
   void initState() {
     super.initState();
+    _audioCompletionSubscription = _audio.completionStream.listen((_) {
+      unawaited(_handlePlaybackCompleted());
+    });
     if (Platform.isIOS) {
       _mediaEventsSubscription =
           _mediaEvents.receiveBroadcastStream().listen((event) {
@@ -829,6 +867,7 @@ class _PodcastEpisodePlayerScreenState
     }
     _restoreSystemOrientation();
     unawaited(_mediaEventsSubscription?.cancel() ?? Future<void>.value());
+    unawaited(_audioCompletionSubscription?.cancel() ?? Future<void>.value());
     unawaited(_saveVideoBookmark());
     _videoController?.dispose();
     unawaited(_audio.stopAndDispose());

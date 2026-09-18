@@ -2586,6 +2586,12 @@ class AppLocalizationsPt extends AppLocalizations {
   String get settingsSonarTubePlayerActions => 'Personalizar os botões do leitor SonarTube';
 
   @override
+  String get settingsSonarTubeAutoplay => 'Reprodução automática';
+
+  @override
+  String get settingsSonarTubeAutoplayHint => 'Quando um vídeo ou faixa termina, o SonarTube reproduz automaticamente o próximo, se estiver disponível.';
+
+  @override
   String get settingsVideoLandscapeFullscreen => 'Vídeo horizontal em ecrã inteiro';
 
   @override
@@ -6200,6 +6206,12 @@ class AppLocalizationsPtBr extends AppLocalizations {
 
   @override
   String get settingsSonarTubePlayerActions => 'Personalizar os botões do player SonarTube';
+
+  @override
+  String get settingsSonarTubeAutoplay => 'Reprodução automática';
+
+  @override
+  String get settingsSonarTubeAutoplayHint => 'Quando um vídeo ou faixa termina, o SonarTube reproduz automaticamente o próximo, se estiver disponível.';
 
   @override
   String get settingsVideoLandscapeFullscreen => 'Vídeo horizontal em tela cheia';

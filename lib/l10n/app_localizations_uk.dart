@@ -2141,6 +2141,12 @@ class AppLocalizationsUk extends AppLocalizations {
   String get settingsSonarTubePlayerActions => 'Налаштувати кнопки програвача SonarTube';
 
   @override
+  String get settingsSonarTubeAutoplay => 'Автоматичне відтворення';
+
+  @override
+  String get settingsSonarTubeAutoplayHint => 'Коли відео або трек завершується, SonarTube автоматично відтворює наступний, якщо він доступний.';
+
+  @override
   String get settingsVideoLandscapeFullscreen => "Відео на весь екран у горизонтальній орієнтації";
 
   @override

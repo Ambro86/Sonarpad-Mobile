@@ -589,8 +589,9 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
       await _historyService.addRecentVideo(item);
       if (!mounted) return;
       final l10n = AppLocalizations.of(context);
-      final playerActions =
-          await AppSettingsService().loadSonarTubePlayerActions();
+      final settings = AppSettingsService();
+      final playerActions = await settings.loadSonarTubePlayerActions();
+      final autoplay = await settings.isSonarTubeAutoplayEnabled();
       if (!mounted) return;
 
       SonarTubeItem currentVideoItem() => navigationIndex >= 0
@@ -708,6 +709,7 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
             showNextEpisodeAction: playerActions.contains(
               AppSettingsService.sonarTubePlayerActionNext,
             ),
+            autoNavigateNext: autoplay,
             extraActions: extraPlayerActions,
           ),
         ),

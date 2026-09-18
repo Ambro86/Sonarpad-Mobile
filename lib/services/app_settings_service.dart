@@ -72,6 +72,7 @@ class AppSettingsService {
       'sonarpad_ios_flutter_accessible_renderer';
   static const _sonarTubePlayerActionsKey =
       'sonarpad_sonartube_player_actions';
+  static const _sonarTubeAutoplayKey = 'sonarpad_sonartube_autoplay';
 
   static const sonarTubePlayerActionPrevious = 'previous';
   static const sonarTubePlayerActionNext = 'next';
@@ -373,6 +374,16 @@ class AppSettingsService {
     final normalized = actions.where(sonarTubePlayerActionIds.contains).toList()
       ..sort();
     await prefs.setStringList(_sonarTubePlayerActionsKey, normalized);
+  }
+
+  Future<bool> isSonarTubeAutoplayEnabled() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_sonarTubeAutoplayKey) ?? false;
+  }
+
+  Future<void> setSonarTubeAutoplayEnabled(bool enabled) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_sonarTubeAutoplayKey, enabled);
   }
 
   Future<String> loadTtsLanguage() async {

@@ -2674,6 +2674,12 @@ class AppLocalizationsEs extends AppLocalizations {
   String get settingsSonarTubePlayerActions => 'Personalizar los botones del reproductor de SonarTube';
 
   @override
+  String get settingsSonarTubeAutoplay => 'Reproducción automática';
+
+  @override
+  String get settingsSonarTubeAutoplayHint => 'Cuando termina un vídeo o una pista, SonarTube reproduce automáticamente el siguiente, si está disponible.';
+
+  @override
   String get settingsVideoLandscapeFullscreen =>
       'Vídeo horizontal a pantalla completa';
 

@@ -2405,6 +2405,12 @@ class AppLocalizationsZhCn extends AppLocalizations {
   String get settingsSonarTubePlayerActions => '自定义 SonarTube 播放器按钮';
 
   @override
+  String get settingsSonarTubeAutoplay => '自动播放';
+
+  @override
+  String get settingsSonarTubeAutoplayHint => '视频或音轨结束后，如果有下一项，SonarTube 会自动播放下一项。';
+
+  @override
   String get settingsVideoLandscapeFullscreen => '横屏全屏视频';
 
   @override

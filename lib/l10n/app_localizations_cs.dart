@@ -2655,6 +2655,12 @@ class AppLocalizationsCs extends AppLocalizations {
   String get settingsSonarTubePlayerActions => 'Přizpůsobit tlačítka přehrávače SonarTube';
 
   @override
+  String get settingsSonarTubeAutoplay => 'Automatické přehrávání';
+
+  @override
+  String get settingsSonarTubeAutoplayHint => 'Po skončení videa nebo skladby SonarTube automaticky přehraje další položku, pokud je k dispozici.';
+
+  @override
   String get settingsVideoLandscapeFullscreen =>
       'Vodorovné video přes celou obrazovku';
 

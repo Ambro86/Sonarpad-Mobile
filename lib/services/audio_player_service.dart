@@ -137,6 +137,10 @@ class AudioPlayerService {
 
   Stream<Duration?> get durationStream => _player.durationStream;
 
+  Stream<void> get completionStream => _player.playerStateStream
+      .where((state) => state.processingState == ProcessingState.completed)
+      .map<void>((_) {});
+
   bool get isPlaying => _player.playing;
 
   Duration get position => _player.position;
