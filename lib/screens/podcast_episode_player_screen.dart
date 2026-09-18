@@ -445,7 +445,7 @@ class _PodcastEpisodePlayerScreenState
     }
 
     AppLogger.log('PodcastPlayer: autoplay advancing to next item, $_logSubject');
-    await _navigateAdjacentEpisode(1, silentFailure: true);
+    await _navigateAdjacentEpisodeSilently(1);
   }
 
   Future<void> _runExtraAction(PodcastPlayerExtraAction action) async {
@@ -460,9 +460,17 @@ class _PodcastEpisodePlayerScreenState
     if (mounted) setState(() {});
   }
 
-  Future<void> _navigateAdjacentEpisode(
+  Future<void> _navigateAdjacentEpisode(int direction) async {
+    await _navigateAdjacentEpisodeInternal(direction, silentFailure: false);
+  }
+
+  Future<void> _navigateAdjacentEpisodeSilently(int direction) async {
+    await _navigateAdjacentEpisodeInternal(direction, silentFailure: true);
+  }
+
+  Future<void> _navigateAdjacentEpisodeInternal(
     int direction, {
-    bool silentFailure = false,
+    required bool silentFailure,
   }) async {
     final navigate = widget.navigateEpisode;
     if (navigate == null || _loading || _refreshingEpisode) return;

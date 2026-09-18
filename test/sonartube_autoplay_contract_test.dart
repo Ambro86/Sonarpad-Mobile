@@ -48,7 +48,7 @@ void main() {
     expect(audio, contains('Stream<void> get completionStream'));
     expect(player, contains('widget.autoNavigateNext'));
     expect(player, contains('if (!_hasNavigableNext)'));
-    expect(player, contains('_navigateAdjacentEpisode(1, silentFailure: true)'));
+    expect(player, contains('_navigateAdjacentEpisodeSilently(1)'));
     expect(player, contains('if (mounted && !silentFailure)'));
     expect(player, contains('value.isCompleted'));
   });
