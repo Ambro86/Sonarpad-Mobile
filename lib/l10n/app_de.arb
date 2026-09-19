@@ -3345,7 +3345,7 @@
       }
     }
   },
-  "settingsSonarTubePlayerActions": "Schaltflächen des SonarTube-Players anpassen",
+  "settingsSonarTubePlayerActions": "Schaltflächen und Verhalten von SonarTube",
   "@settingsSonarTubePlayerActions": {
     "description": "Button that opens the SonarTube player button selector."
   },

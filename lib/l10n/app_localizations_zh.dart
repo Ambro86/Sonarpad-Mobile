@@ -2402,7 +2402,7 @@ class AppLocalizationsZhCn extends AppLocalizations {
   ) => '书签 ${order}，第 ${paragraph} 段。${preview}';
 
   @override
-  String get settingsSonarTubePlayerActions => '自定义 SonarTube 播放器按钮';
+  String get settingsSonarTubePlayerActions => 'SonarTube 按钮和行为';
 
   @override
   String get settingsSonarTubeAutoplay => '自动播放';

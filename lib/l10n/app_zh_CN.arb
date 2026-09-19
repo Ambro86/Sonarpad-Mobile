@@ -1143,7 +1143,7 @@
       }
     }
   },
-  "settingsSonarTubePlayerActions": "自定义 SonarTube 播放器按钮",
+  "settingsSonarTubePlayerActions": "SonarTube 按钮和行为",
   "@settingsSonarTubePlayerActions": {
     "description": "Button that opens the SonarTube player button selector."
   },

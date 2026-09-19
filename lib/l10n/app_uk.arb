@@ -3345,7 +3345,7 @@
       }
     }
   },
-  "settingsSonarTubePlayerActions": "Налаштувати кнопки програвача SonarTube",
+  "settingsSonarTubePlayerActions": "Кнопки та поведінка SonarTube",
   "@settingsSonarTubePlayerActions": {
     "description": "Button that opens the SonarTube player button selector."
   },

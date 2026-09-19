@@ -2138,7 +2138,7 @@ class AppLocalizationsUk extends AppLocalizations {
   String get documentKeepBookmarkMessage => "Кілька закладок вимкнено. Виберіть одну закладку, яку потрібно залишити; інші буде видалено.";
 
   @override
-  String get settingsSonarTubePlayerActions => 'Налаштувати кнопки програвача SonarTube';
+  String get settingsSonarTubePlayerActions => 'Кнопки та поведінка SonarTube';
 
   @override
   String get settingsSonarTubeAutoplay => 'Автоматичне відтворення';

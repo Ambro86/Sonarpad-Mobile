@@ -3345,7 +3345,7 @@
       }
     }
   },
-  "settingsSonarTubePlayerActions": "Personalizza i pulsanti del player SonarTube",
+  "settingsSonarTubePlayerActions": "Pulsanti e comportamento di SonarTube",
   "@settingsSonarTubePlayerActions": {
     "description": "Button that opens the SonarTube player button selector."
   },

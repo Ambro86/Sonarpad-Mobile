@@ -2652,7 +2652,7 @@ class AppLocalizationsCs extends AppLocalizations {
   }
 
   @override
-  String get settingsSonarTubePlayerActions => 'Přizpůsobit tlačítka přehrávače SonarTube';
+  String get settingsSonarTubePlayerActions => 'Tlačítka a chování SonarTube';
 
   @override
   String get settingsSonarTubeAutoplay => 'Automatické přehrávání';

@@ -2583,7 +2583,7 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get settingsSonarTubePlayerActions => 'Schaltflächen des SonarTube-Players anpassen';
+  String get settingsSonarTubePlayerActions => 'Schaltflächen und Verhalten von SonarTube';
 
   @override
   String get settingsSonarTubeAutoplay => 'Automatische Wiedergabe';

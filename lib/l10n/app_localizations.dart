@@ -4810,7 +4810,7 @@ abstract class AppLocalizations {
   /// Button that opens the SonarTube player button selector.
   ///
   /// In it, this message translates to:
-  /// **'Personalizza i pulsanti del player SonarTube'**
+  /// **'Pulsanti e comportamento di SonarTube'**
   String get settingsSonarTubePlayerActions;
 
   /// Toggle for automatically playing the next SonarTube item.

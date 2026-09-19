@@ -1146,7 +1146,7 @@
       }
     }
   },
-  "settingsSonarTubePlayerActions": "Přizpůsobit tlačítka přehrávače SonarTube",
+  "settingsSonarTubePlayerActions": "Tlačítka a chování SonarTube",
   "@settingsSonarTubePlayerActions": {
     "description": "Button that opens the SonarTube player button selector."
   },

@@ -1149,7 +1149,7 @@
       }
     }
   },
-  "settingsSonarTubePlayerActions": "Personnaliser les boutons du lecteur SonarTube",
+  "settingsSonarTubePlayerActions": "Boutons et comportement de SonarTube",
   "@settingsSonarTubePlayerActions": {
     "description": "Button that opens the SonarTube player button selector."
   },

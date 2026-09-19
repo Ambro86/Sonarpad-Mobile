@@ -2674,7 +2674,7 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get settingsSonarTubePlayerActions => 'Personnaliser les boutons du lecteur SonarTube';
+  String get settingsSonarTubePlayerActions => 'Boutons et comportement de SonarTube';
 
   @override
   String get settingsSonarTubeAutoplay => 'Lecture automatique';

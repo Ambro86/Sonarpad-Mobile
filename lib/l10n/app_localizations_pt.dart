@@ -2583,7 +2583,7 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
-  String get settingsSonarTubePlayerActions => 'Personalizar os botões do leitor SonarTube';
+  String get settingsSonarTubePlayerActions => 'Botões e comportamento do SonarTube';
 
   @override
   String get settingsSonarTubeAutoplay => 'Reprodução automática';
@@ -6205,7 +6205,7 @@ class AppLocalizationsPtBr extends AppLocalizations {
   }
 
   @override
-  String get settingsSonarTubePlayerActions => 'Personalizar os botões do player SonarTube';
+  String get settingsSonarTubePlayerActions => 'Botões e comportamento do SonarTube';
 
   @override
   String get settingsSonarTubeAutoplay => 'Reprodução automática';

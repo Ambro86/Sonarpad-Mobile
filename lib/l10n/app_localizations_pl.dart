@@ -2653,7 +2653,7 @@ class AppLocalizationsPl extends AppLocalizations {
   }
 
   @override
-  String get settingsSonarTubePlayerActions => 'Dostosuj przyciski odtwarzacza SonarTube';
+  String get settingsSonarTubePlayerActions => 'Przyciski i zachowanie SonarTube';
 
   @override
   String get settingsSonarTubeAutoplay => 'Automatyczne odtwarzanie';
