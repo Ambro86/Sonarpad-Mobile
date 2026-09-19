@@ -2055,16 +2055,29 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
 
   private func voiceOverFocusedRowId() -> String? {
     guard let focused = UIAccessibility.focusedElement(using: .notificationVoiceOver) else { return nil }
-    if let cell = focused as? SonarpadAccessibleTableCell {
+
+    // A newly pushed native list can coexist briefly with the accessibility
+    // object that was focused in the previous route. Row ids such as item_0,
+    // item_1, ... are intentionally reused across SonarTube screens; treating
+    // a cell owned by the previous table as if it belonged to this table makes
+    // apply() restore that same row id in the new screen. Scope focus lookup to
+    // this renderer's UITableView so a fresh route keeps the natural VoiceOver
+    // entry point (the Flutter AppBar Back button) instead of jumping into the
+    // collection.
+    func rowIdIfOwnedByCurrentTable(_ cell: SonarpadAccessibleTableCell) -> String? {
+      guard cell.isDescendant(of: tableView) else { return nil }
       return reconcileLiveCellIdentity(cell, reason: "focusedRowLookup")?.rowId ??
         (cell.rowId.isEmpty ? nil : cell.rowId)
+    }
+
+    if let cell = focused as? SonarpadAccessibleTableCell {
+      return rowIdIfOwnedByCurrentTable(cell)
     }
     if let view = focused as? UIView {
       var current: UIView? = view
       while let candidate = current {
         if let cell = candidate as? SonarpadAccessibleTableCell {
-          return reconcileLiveCellIdentity(cell, reason: "focusedRowLookup")?.rowId ??
-            (cell.rowId.isEmpty ? nil : cell.rowId)
+          return rowIdIfOwnedByCurrentTable(cell)
         }
         current = candidate.superview
       }
