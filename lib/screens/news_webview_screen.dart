@@ -1440,7 +1440,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
         })()
       ''');
       final detected = result == true ||
-          result.toString().replaceAll('\"', '').toLowerCase() == 'true';
+          result.toString().replaceAll('"', '').toLowerCase() == 'true';
       unawaited(AppLogger.log(
         'News reader paywall: Repubblica detected=$detected url=$pageUrl',
       ));

@@ -4562,5 +4562,25 @@
   "downloadUnavailable": "Завантаження недоступне.",
   "@downloadUnavailable": {
     "description": "Shown when a media item cannot be downloaded."
+  },
+  "sonarTubeChannelPlaylists": "Плейлисти каналу",
+  "@sonarTubeChannelPlaylists": {
+    "description": "Button and screen title for a channel's public playlists."
+  },
+  "sonarTubeChannelShorts": "Shorts каналу",
+  "@sonarTubeChannelShorts": {
+    "description": "Button and screen title for a channel's public Shorts."
+  },
+  "sonarTubeViewDescription": "Переглянути опис",
+  "@sonarTubeViewDescription": {
+    "description": "Secondary action that opens the complete SonarTube video description."
+  },
+  "sonarTubeDescription": "Опис",
+  "@sonarTubeDescription": {
+    "description": "Title for the SonarTube video description screen."
+  },
+  "sonarTubeNoDescription": "Для цього відео немає доступного опису.",
+  "@sonarTubeNoDescription": {
+    "description": "Message shown when a SonarTube video has no description."
   }
 }

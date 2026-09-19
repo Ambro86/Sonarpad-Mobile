@@ -165,6 +165,21 @@ class AppLocalizationsPt extends AppLocalizations {
   String get sonarTubeTranscribeVideo => 'Transcrever vídeo';
 
   @override
+  String get sonarTubeChannelPlaylists => 'Listas de reprodução do canal';
+
+  @override
+  String get sonarTubeChannelShorts => 'Shorts do canal';
+
+  @override
+  String get sonarTubeViewDescription => 'Ver descrição';
+
+  @override
+  String get sonarTubeDescription => 'Descrição';
+
+  @override
+  String get sonarTubeNoDescription => 'Não está disponível nenhuma descrição para este vídeo.';
+
+  @override
   String get sonarTubeTranscript => 'Transcrição';
 
   @override
@@ -3785,6 +3800,21 @@ class AppLocalizationsPtBr extends AppLocalizations {
 
   @override
   String get sonarTubeTranscribeVideo => 'Transcrever vídeo';
+
+  @override
+  String get sonarTubeChannelPlaylists => 'Playlists do canal';
+
+  @override
+  String get sonarTubeChannelShorts => 'Shorts do canal';
+
+  @override
+  String get sonarTubeViewDescription => 'Ver descrição';
+
+  @override
+  String get sonarTubeDescription => 'Descrição';
+
+  @override
+  String get sonarTubeNoDescription => 'Nenhuma descrição disponível para este vídeo.';
 
   @override
   String get sonarTubeTranscript => 'Transcrição';

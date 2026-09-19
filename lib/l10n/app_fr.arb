@@ -2990,5 +2990,25 @@
   "downloadUnavailable": "Téléchargement indisponible.",
   "@downloadUnavailable": {
     "description": "Shown when a media item cannot be downloaded."
+  },
+  "sonarTubeChannelPlaylists": "Playlists de la chaîne",
+  "@sonarTubeChannelPlaylists": {
+    "description": "Button and screen title for a channel's public playlists."
+  },
+  "sonarTubeChannelShorts": "Shorts de la chaîne",
+  "@sonarTubeChannelShorts": {
+    "description": "Button and screen title for a channel's public Shorts."
+  },
+  "sonarTubeViewDescription": "Voir la description",
+  "@sonarTubeViewDescription": {
+    "description": "Secondary action that opens the complete SonarTube video description."
+  },
+  "sonarTubeDescription": "Description",
+  "@sonarTubeDescription": {
+    "description": "Title for the SonarTube video description screen."
+  },
+  "sonarTubeNoDescription": "Aucune description n’est disponible pour cette vidéo.",
+  "@sonarTubeNoDescription": {
+    "description": "Message shown when a SonarTube video has no description."
   }
 }

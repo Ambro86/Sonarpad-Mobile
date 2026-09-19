@@ -1556,6 +1556,7 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
     case "channel": return "person.crop.circle"
     case "comments": return "bubble.left"
     case "transcript": return "text.alignleft"
+    case "description": return "doc.text"
     case "podcast_add": return "dot.radiowaves.left.and.right"
     case "remove": return "trash"
     case "edit": return "pencil"

@@ -2987,5 +2987,25 @@
   "downloadUnavailable": "Stažení není dostupné.",
   "@downloadUnavailable": {
     "description": "Shown when a media item cannot be downloaded."
+  },
+  "sonarTubeChannelPlaylists": "Playlisty kanálu",
+  "@sonarTubeChannelPlaylists": {
+    "description": "Button and screen title for a channel's public playlists."
+  },
+  "sonarTubeChannelShorts": "Shorts kanálu",
+  "@sonarTubeChannelShorts": {
+    "description": "Button and screen title for a channel's public Shorts."
+  },
+  "sonarTubeViewDescription": "Zobrazit popis",
+  "@sonarTubeViewDescription": {
+    "description": "Secondary action that opens the complete SonarTube video description."
+  },
+  "sonarTubeDescription": "Popis",
+  "@sonarTubeDescription": {
+    "description": "Title for the SonarTube video description screen."
+  },
+  "sonarTubeNoDescription": "Pro toto video není k dispozici žádný popis.",
+  "@sonarTubeNoDescription": {
+    "description": "Message shown when a SonarTube video has no description."
   }
 }

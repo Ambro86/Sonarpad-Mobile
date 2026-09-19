@@ -167,6 +167,21 @@ class AppLocalizationsEs extends AppLocalizations {
   String get sonarTubeTranscribeVideo => 'Transcribir video';
 
   @override
+  String get sonarTubeChannelPlaylists => 'Listas de reproducción del canal';
+
+  @override
+  String get sonarTubeChannelShorts => 'Shorts del canal';
+
+  @override
+  String get sonarTubeViewDescription => 'Ver descripción';
+
+  @override
+  String get sonarTubeDescription => 'Descripción';
+
+  @override
+  String get sonarTubeNoDescription => 'No hay ninguna descripción disponible para este vídeo.';
+
+  @override
   String get sonarTubeTranscript => 'Transcripción';
 
   @override

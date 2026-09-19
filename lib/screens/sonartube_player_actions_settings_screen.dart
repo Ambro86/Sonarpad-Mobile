@@ -81,6 +81,10 @@ class _SonarTubePlayerActionsSettingsScreenState
           AppSettingsService.sonarTubePlayerActionTranscript,
           l10n.sonarTubeTranscribeVideo,
         ),
+        (
+          AppSettingsService.sonarTubePlayerActionDescription,
+          l10n.sonarTubeViewDescription,
+        ),
       ];
 
   @override

@@ -5,57 +5,90 @@
     "it": [
       "Corretti alcuni problemi nelle Notizie che potevano mostrare parti della pagina o contenuti non pertinenti al posto del testo dell’articolo.",
       "Migliorata l’apertura degli articoli nelle Notizie: quando l’estrazione del testo non riesce, viene ora mostrata correttamente la pagina dell’articolo invece di fermarsi al solo titolo o a una breve anteprima.",
-      "Aggiunta nelle impostazioni del player SonarTube l’opzione Riproduzione automatica: quando è attiva, al termine di un video o brano SonarTube passa automaticamente al successivo, se disponibile."
+      "Aggiunta nelle impostazioni del player SonarTube l’opzione Riproduzione automatica: quando è attiva, al termine di un video o brano SonarTube passa automaticamente al successivo, se disponibile.",
+      "In SonarTube è ora possibile aprire le playlist pubbliche di un canale direttamente dalla pagina del canale, con supporto al caricamento di altri risultati.",
+      "In SonarTube è ora possibile aprire gli Shorts pubblicati da un canale direttamente dalla pagina del canale, con supporto al caricamento di altri risultati.",
+      "Aggiunta in SonarTube la funzione “Visualizza descrizione” per leggere la descrizione completa dei video. La voce Descrizione può anche essere aggiunta tra i pulsanti del player dalle impostazioni Pulsanti e comportamento di SonarTube."
     ],
     "en": [
       "Fixed some issues in News that could show page elements or unrelated content instead of the article text.",
       "Improved article opening in News: when text extraction fails, the article page is now shown correctly instead of stopping at only the title or a short preview.",
-      "Added an Autoplay option to the SonarTube player settings: when enabled, SonarTube automatically moves to the next video or track when playback ends, if one is available."
+      "Added an Autoplay option to the SonarTube player settings: when enabled, SonarTube automatically moves to the next video or track when playback ends, if one is available.",
+      "SonarTube can now open a channel’s public playlists directly from the channel page, with support for loading more results.",
+      "SonarTube can now open the Shorts published by a channel directly from the channel page, with support for loading more results.",
+      "Added a “View description” action in SonarTube to read the full video description. Description can also be added to the player buttons from the SonarTube Buttons and behavior settings."
     ],
     "fr": [
       "Correction de plusieurs problèmes dans les Actualités qui pouvaient afficher des éléments de la page ou du contenu sans rapport à la place du texte de l’article.",
       "Amélioration de l’ouverture des articles dans les Actualités : lorsque l’extraction du texte échoue, la page de l’article s’affiche désormais correctement au lieu de s’arrêter au seul titre ou à un court aperçu.",
-      "Ajout d’une option Lecture automatique dans les réglages du lecteur SonarTube : lorsqu’elle est activée, SonarTube passe automatiquement à la vidéo ou à la piste suivante à la fin de la lecture, si elle est disponible."
+      "Ajout d’une option Lecture automatique dans les réglages du lecteur SonarTube : lorsqu’elle est activée, SonarTube passe automatiquement à la vidéo ou à la piste suivante à la fin de la lecture, si elle est disponible.",
+      "SonarTube permet désormais d’ouvrir les playlists publiques d’une chaîne directement depuis sa page, avec prise en charge du chargement de résultats supplémentaires.",
+      "SonarTube permet désormais d’ouvrir les Shorts publiés par une chaîne directement depuis sa page, avec prise en charge du chargement de résultats supplémentaires.",
+      "Ajout de l’action « Voir la description » dans SonarTube pour lire la description complète des vidéos. Le bouton Description peut aussi être ajouté au lecteur depuis les réglages Boutons et comportement de SonarTube."
     ],
     "es": [
       "Se han corregido algunos problemas en Noticias que podían mostrar elementos de la página o contenido no relacionado en lugar del texto del artículo.",
       "Se ha mejorado la apertura de artículos en Noticias: cuando falla la extracción del texto, ahora se muestra correctamente la página del artículo en lugar de quedarse solo en el título o en una breve vista previa.",
-      "Se ha añadido una opción de Reproducción automática en los ajustes del reproductor de SonarTube: cuando está activada, SonarTube pasa automáticamente al siguiente vídeo o pista al terminar la reproducción, si está disponible."
+      "Se ha añadido una opción de Reproducción automática en los ajustes del reproductor de SonarTube: cuando está activada, SonarTube pasa automáticamente al siguiente vídeo o pista al terminar la reproducción, si está disponible.",
+      "SonarTube permite ahora abrir las listas de reproducción públicas de un canal directamente desde la página del canal, con compatibilidad para cargar más resultados.",
+      "SonarTube permite ahora abrir los Shorts publicados por un canal directamente desde la página del canal, con compatibilidad para cargar más resultados.",
+      "Se ha añadido la acción «Ver descripción» en SonarTube para leer la descripción completa de los vídeos. Descripción también puede añadirse a los botones del reproductor desde los ajustes Botones y comportamiento de SonarTube."
     ],
     "pt": [
       "Foram corrigidos alguns problemas nas Notícias que podiam mostrar elementos da página ou conteúdo não relacionado em vez do texto do artigo.",
       "Foi melhorada a abertura de artigos nas Notícias: quando a extração do texto falha, a página do artigo é agora apresentada corretamente em vez de ficar apenas no título ou numa breve pré-visualização.",
-      "Foi adicionada uma opção de Reprodução automática nas definições do leitor SonarTube: quando está ativada, o SonarTube passa automaticamente para o vídeo ou faixa seguinte no fim da reprodução, se estiver disponível."
+      "Foi adicionada uma opção de Reprodução automática nas definições do leitor SonarTube: quando está ativada, o SonarTube passa automaticamente para o vídeo ou faixa seguinte no fim da reprodução, se estiver disponível.",
+      "O SonarTube permite agora abrir as listas de reprodução públicas de um canal diretamente a partir da página do canal, com suporte para carregar mais resultados.",
+      "O SonarTube permite agora abrir os Shorts publicados por um canal diretamente a partir da página do canal, com suporte para carregar mais resultados.",
+      "Foi adicionada a ação «Ver descrição» no SonarTube para ler a descrição completa dos vídeos. A Descrição também pode ser adicionada aos botões do leitor nas definições Botões e comportamento do SonarTube."
     ],
     "pt_BR": [
       "Foram corrigidos alguns problemas nas Notícias que podiam mostrar elementos da página ou conteúdo não relacionado no lugar do texto do artigo.",
       "Foi melhorada a abertura de artigos nas Notícias: quando a extração do texto falha, a página do artigo agora é exibida corretamente em vez de ficar apenas no título ou em uma breve prévia.",
-      "Foi adicionada uma opção de Reprodução automática nas configurações do player SonarTube: quando ativada, o SonarTube passa automaticamente para o próximo vídeo ou faixa ao final da reprodução, se houver um disponível."
+      "Foi adicionada uma opção de Reprodução automática nas configurações do player SonarTube: quando ativada, o SonarTube passa automaticamente para o próximo vídeo ou faixa ao final da reprodução, se houver um disponível.",
+      "O SonarTube agora permite abrir as playlists públicas de um canal diretamente pela página do canal, com suporte para carregar mais resultados.",
+      "O SonarTube agora permite abrir os Shorts publicados por um canal diretamente pela página do canal, com suporte para carregar mais resultados.",
+      "Foi adicionada a ação “Ver descrição” no SonarTube para ler a descrição completa dos vídeos. Descrição também pode ser adicionada aos botões do player nas configurações Botões e comportamento do SonarTube."
     ],
     "pl": [
       "Naprawiono problemy w Wiadomościach, które mogły powodować wyświetlanie elementów strony lub niepowiązanych treści zamiast tekstu artykułu.",
       "Ulepszono otwieranie artykułów w Wiadomościach: gdy nie uda się wyodrębnić tekstu, wyświetlana jest teraz poprawnie strona artykułu zamiast samego tytułu lub krótkiego podglądu.",
-      "Dodano opcję automatycznego odtwarzania w ustawieniach odtwarzacza SonarTube: po jej włączeniu SonarTube automatycznie przechodzi do następnego filmu lub utworu po zakończeniu odtwarzania, jeśli jest dostępny."
+      "Dodano opcję automatycznego odtwarzania w ustawieniach odtwarzacza SonarTube: po jej włączeniu SonarTube automatycznie przechodzi do następnego filmu lub utworu po zakończeniu odtwarzania, jeśli jest dostępny.",
+      "SonarTube pozwala teraz otwierać publiczne playlisty kanału bezpośrednio ze strony kanału, z obsługą wczytywania kolejnych wyników.",
+      "SonarTube pozwala teraz otwierać Shorts opublikowane przez kanał bezpośrednio ze strony kanału, z obsługą wczytywania kolejnych wyników.",
+      "Dodano w SonarTube akcję „Wyświetl opis”, która umożliwia odczytanie pełnego opisu filmu. Przycisk Opis można również dodać do przycisków odtwarzacza w ustawieniach Przyciski i zachowanie SonarTube."
     ],
     "cs": [
       "Opraveny některé problémy ve Zprávách, kvůli kterým se místo textu článku mohly zobrazovat prvky stránky nebo nesouvisející obsah.",
       "Vylepšeno otevírání článků ve Zprávách: pokud se nepodaří získat text, nyní se správně zobrazí stránka článku místo pouhého názvu nebo krátkého náhledu.",
-      "Do nastavení přehrávače SonarTube byla přidána možnost Automatické přehrávání: po zapnutí SonarTube po skončení přehrávání automaticky přejde na další video nebo skladbu, pokud je k dispozici."
+      "Do nastavení přehrávače SonarTube byla přidána možnost Automatické přehrávání: po zapnutí SonarTube po skončení přehrávání automaticky přejde na další video nebo skladbu, pokud je k dispozici.",
+      "SonarTube nyní umožňuje otevírat veřejné playlisty kanálu přímo ze stránky kanálu, včetně načítání dalších výsledků.",
+      "SonarTube nyní umožňuje otevírat Shorts publikované kanálem přímo ze stránky kanálu, včetně načítání dalších výsledků.",
+      "V SonarTube byla přidána akce „Zobrazit popis“ pro přečtení úplného popisu videa. Tlačítko Popis lze také přidat mezi tlačítka přehrávače v nastavení Tlačítka a chování SonarTube."
     ],
     "de": [
       "Einige Probleme in den Nachrichten wurden behoben, durch die Seitenelemente oder unpassende Inhalte anstelle des eigentlichen Artikeltexts angezeigt werden konnten.",
       "Das Öffnen von Artikeln in den Nachrichten wurde verbessert: Wenn die Textextraktion fehlschlägt, wird nun die Artikelseite korrekt angezeigt, anstatt nur beim Titel oder einer kurzen Vorschau zu bleiben.",
-      "In den SonarTube-Player-Einstellungen wurde eine Option für automatische Wiedergabe hinzugefügt: Ist sie aktiviert, wechselt SonarTube nach dem Ende der Wiedergabe automatisch zum nächsten Video oder Titel, sofern einer verfügbar ist."
+      "In den SonarTube-Player-Einstellungen wurde eine Option für automatische Wiedergabe hinzugefügt: Ist sie aktiviert, wechselt SonarTube nach dem Ende der Wiedergabe automatisch zum nächsten Video oder Titel, sofern einer verfügbar ist.",
+      "SonarTube kann jetzt die öffentlichen Playlists eines Kanals direkt von der Kanalseite öffnen und weitere Ergebnisse nachladen.",
+      "SonarTube kann jetzt die von einem Kanal veröffentlichten Shorts direkt von der Kanalseite öffnen und weitere Ergebnisse nachladen.",
+      "In SonarTube wurde die Aktion „Beschreibung anzeigen“ hinzugefügt, um die vollständige Videobeschreibung zu lesen. Beschreibung kann in den Einstellungen Schaltflächen und Verhalten von SonarTube auch zu den Player-Schaltflächen hinzugefügt werden."
     ],
     "zh_CN": [
       "修复了“新闻”中的一些问题，这些问题可能导致显示网页元素或无关内容，而不是文章正文。",
       "改进了“新闻”中的文章打开方式：当正文提取失败时，现在会正确显示文章网页，而不会只停留在标题或简短预览。",
-      "SonarTube 播放器设置中新增“自动播放”选项：启用后，当当前视频或音轨播放结束时，如果有下一项，SonarTube 会自动播放下一项。"
+      "SonarTube 播放器设置中新增“自动播放”选项：启用后，当当前视频或音轨播放结束时，如果有下一项，SonarTube 会自动播放下一项。",
+      "SonarTube 现在可以直接从频道页面打开该频道的公开播放列表，并支持继续加载更多结果。",
+      "SonarTube 现在可以直接从频道页面打开该频道发布的 Shorts，并支持继续加载更多结果。",
+      "SonarTube 新增“查看说明”操作，可读取视频的完整说明。“说明”也可以在 SonarTube“按钮和行为”设置中添加到播放器按钮。"
     ],
     "uk": [
       "Виправлено деякі проблеми в Новинах, через які замість тексту статті могли відображатися елементи сторінки або сторонній вміст.",
       "Покращено відкриття статей у Новинах: якщо не вдається витягти текст, тепер коректно показується сторінка статті, а не лише заголовок або короткий попередній перегляд.",
-      "У налаштуваннях програвача SonarTube додано параметр автоматичного відтворення: коли його ввімкнено, після завершення відео або треку SonarTube автоматично переходить до наступного, якщо він доступний."
+      "У налаштуваннях програвача SonarTube додано параметр автоматичного відтворення: коли його ввімкнено, після завершення відео або треку SonarTube автоматично переходить до наступного, якщо він доступний.",
+      "SonarTube тепер дозволяє відкривати публічні плейлисти каналу безпосередньо зі сторінки каналу з підтримкою завантаження наступних результатів.",
+      "SonarTube тепер дозволяє відкривати Shorts, опубліковані каналом, безпосередньо зі сторінки каналу з підтримкою завантаження наступних результатів.",
+      "У SonarTube додано дію «Переглянути опис» для читання повного опису відео. Кнопку «Опис» також можна додати до кнопок програвача в налаштуваннях «Кнопки та поведінка SonarTube»."
     ]
   },
   {

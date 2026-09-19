@@ -57,6 +57,7 @@ void main() {
     expect(selector, contains('l10n.sonarTubeGoToChannel'));
     expect(selector, contains('l10n.sonarTubeViewComments'));
     expect(selector, contains('l10n.sonarTubeTranscribeVideo'));
+    expect(selector, contains('l10n.sonarTubeViewDescription'));
   });
 
   test('SonarTube passes only selected actions to the shared player', () {
@@ -68,6 +69,11 @@ void main() {
     expect(source, contains('extraActions: extraPlayerActions'));
     expect(source, contains("id: 'view_comments'"));
     expect(source, contains("id: 'transcribe_video'"));
+    expect(source, contains("id: 'view_description'"));
+    expect(
+      source,
+      contains('AppSettingsService.sonarTubePlayerActionDescription'),
+    );
     expect(source, contains('pauseBeforeOpen: true'));
   });
 

@@ -1560,6 +1560,7 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
         'channel' => Icons.account_circle_outlined,
         'comments' => Icons.comment_outlined,
         'transcript' => Icons.subject,
+        'description' => Icons.description_outlined,
         'podcast_add' => Icons.podcasts,
         'remove' => Icons.delete_outline,
         'edit' => Icons.edit_outlined,

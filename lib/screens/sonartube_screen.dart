@@ -23,10 +23,15 @@ class SonarTubeScreen extends StatefulWidget {
     this.service,
     this.favoritesService,
     this.historyService,
-  }) : assert(collection == null || searchQuery == null);
+    this.showChannelPlaylists = false,
+    this.showChannelShorts = false,
+  }) : assert(collection == null || searchQuery == null),
+       assert(!showChannelPlaylists || !showChannelShorts);
 
   final SonarTubeItem? collection;
   final String? searchQuery;
+  final bool showChannelPlaylists;
+  final bool showChannelShorts;
   final SonarTubeService? service;
   final SonarTubeFavoritesService? favoritesService;
   final SonarTubeHistoryService? historyService;
@@ -67,7 +72,15 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
   bool get _itemOpenInProgress => _openingItemKey != null;
 
   bool get _isCollection => widget.collection != null;
+  bool get _isChannelPlaylists =>
+      widget.showChannelPlaylists &&
+      widget.collection?.kind == SonarTubeItemKind.channel;
+  bool get _isChannelShorts =>
+      widget.showChannelShorts &&
+      widget.collection?.kind == SonarTubeItemKind.channel;
   bool get _isChannelCollection =>
+      !_isChannelPlaylists &&
+      !_isChannelShorts &&
       widget.collection?.kind == SonarTubeItemKind.channel;
   bool get _isPlaylistCollection =>
       widget.collection?.kind == SonarTubeItemKind.playlist;
@@ -78,6 +91,10 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
   @override
   void initState() {
     super.initState();
+    assert(
+      (!widget.showChannelPlaylists && !widget.showChannelShorts) ||
+          widget.collection?.kind == SonarTubeItemKind.channel,
+    );
     _loadFavoriteKeys();
     if (_isCollection) {
       WidgetsBinding.instance.addPostFrameCallback((_) => _loadCollection());
@@ -167,6 +184,75 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
     );
   }
 
+  String _collectionTitle(AppLocalizations l10n) => _isChannelPlaylists
+      ? l10n.sonarTubeChannelPlaylists
+      : _isChannelShorts
+          ? l10n.sonarTubeChannelShorts
+          : widget.collection!.title;
+
+  Future<void> _openChannelPlaylists() async {
+    if (!_isChannelCollection || !mounted) return;
+    await Navigator.push<void>(
+      context,
+      MaterialPageRoute(
+        settings: const RouteSettings(name: '/sonartube/channel-playlists'),
+        builder: (_) => SonarTubeScreen(
+          collection: widget.collection!,
+          showChannelPlaylists: true,
+          service: _service,
+          favoritesService: _favoritesService,
+          historyService: _historyService,
+        ),
+      ),
+    );
+    if (!mounted || !useSharedAccessibleViewModel) return;
+    await WidgetsBinding.instance.endOfFrame;
+    if (!mounted) return;
+    await _accessibleListController.focusTo(
+      'channel_playlists',
+      animated: false,
+    );
+  }
+
+  Widget _buildChannelPlaylistsButton(AppLocalizations l10n) {
+    return FilledButton.tonalIcon(
+      key: const ValueKey('sonartube_channel_playlists'),
+      onPressed: (_loading || _loadingMore) ? null : _openChannelPlaylists,
+      icon: const Icon(Icons.playlist_play),
+      label: Text(l10n.sonarTubeChannelPlaylists),
+    );
+  }
+
+  Future<void> _openChannelShorts() async {
+    if (!_isChannelCollection || !mounted) return;
+    await Navigator.push<void>(
+      context,
+      MaterialPageRoute(
+        settings: const RouteSettings(name: '/sonartube/channel-shorts'),
+        builder: (_) => SonarTubeScreen(
+          collection: widget.collection!,
+          showChannelShorts: true,
+          service: _service,
+          favoritesService: _favoritesService,
+          historyService: _historyService,
+        ),
+      ),
+    );
+    if (!mounted || !useSharedAccessibleViewModel) return;
+    await WidgetsBinding.instance.endOfFrame;
+    if (!mounted) return;
+    await _accessibleListController.focusTo('channel_shorts', animated: false);
+  }
+
+  Widget _buildChannelShortsButton(AppLocalizations l10n) {
+    return FilledButton.tonalIcon(
+      key: const ValueKey('sonartube_channel_shorts'),
+      onPressed: (_loading || _loadingMore) ? null : _openChannelShorts,
+      icon: const Icon(Icons.video_collection_outlined),
+      label: Text(l10n.sonarTubeChannelShorts),
+    );
+  }
+
   Future<void> _toggleFavorite(
     SonarTubeItem item, {
     String? accessibleRowId,
@@ -219,6 +305,7 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
         settings: const RouteSettings(name: '/sonartube/recent-videos'),
         builder: (_) => _SonarTubeRecentVideosScreen(
           historyService: _historyService,
+          service: _service,
           onOpenItem: _openItem,
         ),
       ),
@@ -292,10 +379,14 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
       _page = 1;
     });
     try {
-      final result = await _service.browse(
-        widget.collection!,
-        channelSort: _channelSort,
-      );
+      final result = _isChannelPlaylists
+          ? await _service.channelPlaylists(widget.collection!)
+          : _isChannelShorts
+              ? await _service.channelShorts(widget.collection!)
+              : await _service.browse(
+                  widget.collection!,
+                  channelSort: _channelSort,
+                );
       if (!mounted) return;
       setState(() {
         _items = result.items;
@@ -343,14 +434,30 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
           break;
         }
         final nextPage = currentPage + 1;
-        final result = _isCollection
-            ? await _service.browse(
+        final result = _isChannelPlaylists
+            ? await _service.channelPlaylists(
                 widget.collection!,
                 token: token,
                 page: nextPage,
-                channelSort: _channelSort,
               )
-            : await _service.search(_query!, token: token, page: nextPage);
+            : _isChannelShorts
+                ? await _service.channelShorts(
+                    widget.collection!,
+                    token: token,
+                    page: nextPage,
+                  )
+                : _isCollection
+                    ? await _service.browse(
+                        widget.collection!,
+                        token: token,
+                        page: nextPage,
+                        channelSort: _channelSort,
+                      )
+                    : await _service.search(
+                        _query!,
+                        token: token,
+                        page: nextPage,
+                      );
         currentPage = result.page;
         for (final item in result.items) {
           if (known.add(_sonarTubeItemKey(item))) {
@@ -536,6 +643,20 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
     );
   }
 
+  Future<void> _openDescription(SonarTubeItem item) async {
+    if (item.kind != SonarTubeItemKind.video || !mounted) return;
+    await Navigator.push<void>(
+      context,
+      MaterialPageRoute(
+        settings: const RouteSettings(name: '/sonartube/description'),
+        builder: (_) => _SonarTubeDescriptionScreen(
+          item: item,
+          service: _service,
+        ),
+      ),
+    );
+  }
+
   Future<void> _openItem(SonarTubeItem item) async {
     final itemKey = _sonarTubeItemKey(item);
     if (_openingItemKey != null) {
@@ -659,6 +780,16 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
             icon: Icons.subject,
             pauseBeforeOpen: true,
             onPressed: () => _openTranscript(currentVideoItem()),
+          ),
+        if (playerActions.contains(
+          AppSettingsService.sonarTubePlayerActionDescription,
+        ))
+          PodcastPlayerExtraAction(
+            id: 'view_description',
+            label: () => l10n.sonarTubeViewDescription,
+            icon: Icons.description_outlined,
+            pauseBeforeOpen: true,
+            onPressed: () => _openDescription(currentVideoItem()),
           ),
       ];
 
@@ -802,6 +933,12 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
           label: l10n.sonarTubeTranscribeVideo,
           icon: 'transcript',
         ),
+      if (item.kind == SonarTubeItemKind.video)
+        AccessibleVisualAction(
+          id: 'view_description',
+          label: l10n.sonarTubeViewDescription,
+          icon: 'description',
+        ),
     ];
   }
 
@@ -851,6 +988,13 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
               tooltip: l10n.sonarTubeTranscribeVideo,
               onPressed: enabled ? () => _openTranscript(item) : null,
               icon: const Icon(Icons.subject),
+            ),
+          if (item.kind == SonarTubeItemKind.video)
+            IconButton(
+              key: ValueKey('sonartube_description_${item.id}'),
+              tooltip: l10n.sonarTubeViewDescription,
+              onPressed: enabled ? () => _openDescription(item) : null,
+              icon: const Icon(Icons.description_outlined),
             ),
         ],
       ),
@@ -947,6 +1091,9 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
               if (item.kind == SonarTubeItemKind.video)
                 CustomSemanticsAction(label: l10n.sonarTubeTranscribeVideo):
                     () => _openTranscript(item),
+              if (item.kind == SonarTubeItemKind.video)
+                CustomSemanticsAction(label: l10n.sonarTubeViewDescription):
+                    () => _openDescription(item),
             }
           : null,
       child: ExcludeSemantics(child: card),
@@ -1019,11 +1166,11 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
       rows.add(
         AccessibleListRow(
           id: 'collection_title',
-          title: widget.collection!.title,
+          title: _collectionTitle(l10n),
           kind: 'text',
           accessibilityButtonTrait: false,
           flutterChild: Text(
-            widget.collection!.title,
+            _collectionTitle(l10n),
             key: const ValueKey('sonartube_collection_content_title'),
             style: Theme.of(context).textTheme.headlineSmall,
           ),
@@ -1095,6 +1242,28 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
           label: Text(label),
         ),
       ));
+    }
+    if (_isChannelCollection) {
+      rows.add(
+        AccessibleListRow(
+          id: 'channel_playlists',
+          title: l10n.sonarTubeChannelPlaylists,
+          kind: 'button',
+          enabled: !_loading && !_loadingMore,
+          flutterChild: _buildChannelPlaylistsButton(l10n),
+        ),
+      );
+    }
+    if (_isChannelCollection) {
+      rows.add(
+        AccessibleListRow(
+          id: 'channel_shorts',
+          title: l10n.sonarTubeChannelShorts,
+          kind: 'button',
+          enabled: !_loading && !_loadingMore,
+          flutterChild: _buildChannelShortsButton(l10n),
+        ),
+      );
     }
     if (_isChannelCollection) {
       rows.add(
@@ -1206,6 +1375,11 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
               id: 'transcribe_video',
               label: l10n.sonarTubeTranscribeVideo,
             ),
+          if (item.kind == SonarTubeItemKind.video)
+            AccessibleCustomAction(
+              id: 'view_description',
+              label: l10n.sonarTubeViewDescription,
+            ),
         ],
         visualActions: _sightedVisualActions(
           l10n,
@@ -1268,7 +1442,8 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
         if (event.type == 'customAction' &&
             (event.action == 'go_channel' ||
                 event.action == 'view_comments' ||
-                event.action == 'transcribe_video') &&
+                event.action == 'transcribe_video' ||
+                event.action == 'view_description') &&
             event.id?.startsWith('item_') == true) {
           final index = int.tryParse(event.id!.substring(5));
           if (index != null && index >= 0 && index < _items.length) {
@@ -1277,8 +1452,10 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
               await _openChannelForVideo(item);
             } else if (event.action == 'view_comments') {
               await _openComments(item);
-            } else {
+            } else if (event.action == 'transcribe_video') {
               await _openTranscript(item);
+            } else {
+              await _openDescription(item);
             }
           }
           return;
@@ -1308,6 +1485,10 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
             widget.collection!,
             accessibleRowId: 'playlist_favorite',
           );
+        } else if (event.id == 'channel_playlists' && _isChannelCollection) {
+          await _openChannelPlaylists();
+        } else if (event.id == 'channel_shorts' && _isChannelCollection) {
+          await _openChannelShorts();
         } else if (event.id == 'channel_sort' && _isChannelCollection) {
           await _chooseChannelSort();
         } else if (event.id == 'recent_videos') {
@@ -1440,6 +1621,11 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
                   id: 'transcribe_video',
                   label: l10n.sonarTubeTranscribeVideo,
                 ),
+              if (item.kind == SonarTubeItemKind.video)
+                AccessibleCustomAction(
+                  id: 'view_description',
+                  label: l10n.sonarTubeViewDescription,
+                ),
             ],
             visualActions: _sightedVisualActions(
               l10n,
@@ -1502,6 +1688,8 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
             await _openComments(item);
           } else if (event.action == 'transcribe_video') {
             await _openTranscript(item);
+          } else if (event.action == 'view_description') {
+            await _openDescription(item);
           }
           return;
         }
@@ -1661,9 +1849,9 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
             : null,
         title: _isCollection && useSharedAccessibleViewModel
             ? ExcludeSemantics(
-                child: Text(widget.collection!.title),
+                child: Text(_collectionTitle(l10n)),
               )
-            : Text(widget.collection?.title ?? l10n.sonarTubeTitle),
+            : Text(_isCollection ? _collectionTitle(l10n) : l10n.sonarTubeTitle),
       ),
       body: SafeArea(
         child: useSharedAccessibleViewModel
@@ -1744,7 +1932,7 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
                   : ListView.builder(
                       padding: const EdgeInsets.fromLTRB(12, 8, 12, 16),
                       itemCount: (_hasCollectionFavoriteButton ? 1 : 0) +
-                          (_isChannelCollection ? 1 : 0) +
+                          (_isChannelCollection ? 3 : 0) +
                           _items.length +
                           (!_loading && _items.isEmpty && _isCollection ? 1 : 0) +
                           (_nextToken == null ? 0 : 1),
@@ -1784,6 +1972,20 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
                           leadingControls++;
                         }
                         if (_isChannelCollection) {
+                          if (index == leadingControls) {
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 8),
+                              child: _buildChannelPlaylistsButton(l10n),
+                            );
+                          }
+                          leadingControls++;
+                          if (index == leadingControls) {
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 8),
+                              child: _buildChannelShortsButton(l10n),
+                            );
+                          }
+                          leadingControls++;
                           if (index == leadingControls) {
                             return Padding(
                               padding: const EdgeInsets.only(bottom: 8),
@@ -2060,6 +2262,197 @@ class _SonarTubeTranscriptScreenState
   }
 }
 
+class _SonarTubeDescriptionScreen extends StatefulWidget {
+  const _SonarTubeDescriptionScreen({
+    required this.item,
+    required this.service,
+  });
+
+  final SonarTubeItem item;
+  final SonarTubeService service;
+
+  @override
+  State<_SonarTubeDescriptionScreen> createState() =>
+      _SonarTubeDescriptionScreenState();
+}
+class _SonarTubeDescriptionScreenState
+    extends State<_SonarTubeDescriptionScreen> {
+  bool _loading = true;
+  bool _unavailable = false;
+  bool _failed = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    try {
+      final description = await widget.service.videoDescription(widget.item);
+      if (!mounted) return;
+      if (description.trim().isEmpty) {
+        setState(() {
+          _unavailable = true;
+          _loading = false;
+        });
+        return;
+      }
+      final l10n = AppLocalizations.of(context);
+      var safeTitle = widget.item.title
+          .replaceAll(RegExp(r'[\\/:*?"<>|]'), '_')
+          .replaceAll(RegExp(r'\s+'), ' ')
+          .trim();
+      if (safeTitle.isEmpty) safeTitle = l10n.sonarTubeDescription;
+      if (safeTitle.length > 120) safeTitle = safeTitle.substring(0, 120).trim();
+      final document = await DocumentLibraryService().createTextDocument(
+        name: '$safeTitle - ${l10n.sonarTubeDescription}.txt',
+        content: description,
+        isTemporary: true,
+      );
+      if (!mounted) return;
+      await Navigator.of(context).pushReplacement<void, void>(
+        MaterialPageRoute(
+          settings: const RouteSettings(name: '/documents/reader'),
+          builder: (_) => DocumentReaderScreen(document: document),
+        ),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _failed = true;
+        _loading = false;
+      });
+    }
+  }
+
+  Future<void> _retry() async {
+    if (_loading) return;
+    setState(() {
+      _loading = true;
+      _unavailable = false;
+      _failed = false;
+    });
+    await _load();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    widget.service.setLocaleName(l10n.localeName);
+    final flutterRows = <Widget>[
+      Text(
+        l10n.sonarTubeDescription,
+        key: const ValueKey('sonartube_description_title'),
+        style: Theme.of(context).textTheme.headlineSmall,
+      ),
+      Text(
+        widget.item.title,
+        style: Theme.of(context).textTheme.titleMedium,
+      ),
+    ];
+    final accessibleRows = <AccessibleListRow>[
+      AccessibleListRow(
+        id: 'title',
+        title: l10n.sonarTubeDescription,
+        kind: 'text',
+        accessibilityButtonTrait: false,
+        flutterChild: flutterRows[0],
+      ),
+      AccessibleListRow(
+        id: 'video_title',
+        title: widget.item.title,
+        kind: 'text',
+        accessibilityButtonTrait: false,
+        flutterChild: flutterRows[1],
+      ),
+    ];
+
+    if (_loading) {
+      final child = LinearProgressIndicator(semanticsLabel: l10n.loading);
+      flutterRows.add(child);
+      accessibleRows.add(
+        AccessibleListRow(
+          id: 'loading',
+          title: l10n.loading,
+          kind: 'text',
+          accessibilityButtonTrait: false,
+          flutterChild: child,
+        ),
+      );
+    } else if (_unavailable) {
+      final child = Text(
+        l10n.sonarTubeNoDescription,
+        textAlign: TextAlign.center,
+      );
+      flutterRows.add(child);
+      accessibleRows.add(
+        AccessibleListRow(
+          id: 'unavailable',
+          title: l10n.sonarTubeNoDescription,
+          kind: 'text',
+          accessibilityButtonTrait: false,
+          flutterChild: child,
+        ),
+      );
+    } else if (_failed) {
+      final message = l10n.error(l10n.technicalErrorGeneric);
+      final child = Text(message, textAlign: TextAlign.center);
+      final retryButton = FilledButton.tonal(
+        key: const ValueKey('sonartube_description_retry'),
+        onPressed: _retry,
+        child: Text(l10n.retry),
+      );
+      flutterRows.add(child);
+      flutterRows.add(retryButton);
+      accessibleRows.add(
+        AccessibleListRow(
+          id: 'error',
+          title: message,
+          kind: 'text',
+          accessibilityButtonTrait: false,
+          flutterChild: child,
+        ),
+      );
+      accessibleRows.add(
+        AccessibleListRow(
+          id: 'retry',
+          title: l10n.retry,
+          kind: 'button',
+          flutterChild: retryButton,
+        ),
+      );
+    }
+
+    return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        leading: BackButton(
+          key: const ValueKey('sonartube_description_back'),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
+      body: SafeArea(
+        child: useSharedAccessibleViewModel
+            ? UniversalAccessibleList(
+                sections: [AccessibleListSection(rows: accessibleRows)],
+                onEvent: (event) async {
+                  if (event.type == 'activate' && event.id == 'retry') {
+                    await _retry();
+                  }
+                },
+              )
+            : ListView.separated(
+                padding: const EdgeInsets.all(16),
+                itemCount: flutterRows.length,
+                separatorBuilder: (_, _) => const SizedBox(height: 12),
+                itemBuilder: (_, index) => flutterRows[index],
+              ),
+      ),
+    );
+  }
+}
+
 class _SonarTubeCommentsScreen extends StatefulWidget {
   const _SonarTubeCommentsScreen({
     required this.item,
@@ -2300,10 +2693,12 @@ class _SonarTubeCommentsScreenState extends State<_SonarTubeCommentsScreen> {
 class _SonarTubeRecentVideosScreen extends StatefulWidget {
   const _SonarTubeRecentVideosScreen({
     required this.historyService,
+    required this.service,
     required this.onOpenItem,
   });
 
   final SonarTubeHistoryService historyService;
+  final SonarTubeService service;
   final Future<void> Function(SonarTubeItem item) onOpenItem;
 
   @override
@@ -2380,6 +2775,19 @@ class _SonarTubeRecentVideosScreenState
           .where((candidate) => candidate.id != item.id)
           .toList(growable: false);
     });
+  }
+
+  Future<void> _openDescription(SonarTubeItem item) async {
+    await Navigator.push<void>(
+      context,
+      MaterialPageRoute(
+        settings: const RouteSettings(name: '/sonartube/description'),
+        builder: (_) => _SonarTubeDescriptionScreen(
+          item: item,
+          service: widget.service,
+        ),
+      ),
+    );
   }
 
   Future<void> _clearHistory() async {
@@ -2460,12 +2868,21 @@ class _SonarTubeRecentVideosScreenState
                 id: 'delete_video',
                 label: l10n.sonarTubeDeleteRecentVideo,
               ),
+              AccessibleCustomAction(
+                id: 'view_description',
+                label: l10n.sonarTubeViewDescription,
+              ),
             ],
             visualActions: [
               AccessibleVisualAction(
                 id: 'delete_video',
                 label: l10n.sonarTubeDeleteRecentVideo,
                 icon: 'remove',
+              ),
+              AccessibleVisualAction(
+                id: 'view_description',
+                label: l10n.sonarTubeViewDescription,
+                icon: 'description',
               ),
             ],
           );
@@ -2489,6 +2906,11 @@ class _SonarTubeRecentVideosScreenState
         if (event.type == 'customAction' &&
             event.action == 'delete_video') {
           await _deleteRecentVideo(item);
+          return;
+        }
+        if (event.type == 'customAction' &&
+            event.action == 'view_description') {
+          await _openDescription(item);
           return;
         }
         if (event.type == 'activate' && mounted) {
@@ -2547,6 +2969,9 @@ class _SonarTubeRecentVideosScreenState
                               CustomSemanticsAction(
                                 label: l10n.sonarTubeDeleteRecentVideo,
                               ): () => _deleteRecentVideo(item),
+                              CustomSemanticsAction(
+                                label: l10n.sonarTubeViewDescription,
+                              ): () => _openDescription(item),
                             },
                             child: ListTile(
                               leading: item.thumbnailUrl == null
@@ -2571,11 +2996,28 @@ class _SonarTubeRecentVideosScreenState
                                   ? null
                                   : Text(_subtitle(l10n, item)!),
                               trailing: ExcludeSemantics(
-                                child: IconButton(
-                                  key: ValueKey('sonartube_delete_recent_video_${item.id}'),
-                                  tooltip: l10n.sonarTubeDeleteRecentVideo,
-                                  icon: const Icon(Icons.delete_outline),
-                                  onPressed: () => _deleteRecentVideo(item),
+                                child: Wrap(
+                                  spacing: 2,
+                                  children: [
+                                    IconButton(
+                                      key: ValueKey(
+                                        'sonartube_description_recent_${item.id}',
+                                      ),
+                                      tooltip: l10n.sonarTubeViewDescription,
+                                      icon: const Icon(
+                                        Icons.description_outlined,
+                                      ),
+                                      onPressed: () => _openDescription(item),
+                                    ),
+                                    IconButton(
+                                      key: ValueKey(
+                                        'sonartube_delete_recent_video_${item.id}',
+                                      ),
+                                      tooltip: l10n.sonarTubeDeleteRecentVideo,
+                                      icon: const Icon(Icons.delete_outline),
+                                      onPressed: () => _deleteRecentVideo(item),
+                                    ),
+                                  ],
                                 ),
                               ),
                               enabled: !_openingRecentVideo,
@@ -2783,6 +3225,19 @@ class _SonarTubeFavoritesScreenState extends State<_SonarTubeFavoritesScreen> {
     );
   }
 
+  Future<void> _openDescription(SonarTubeItem item) async {
+    await Navigator.push<void>(
+      context,
+      MaterialPageRoute(
+        settings: const RouteSettings(name: '/sonartube/description'),
+        builder: (_) => _SonarTubeDescriptionScreen(
+          item: item,
+          service: widget.service,
+        ),
+      ),
+    );
+  }
+
   Widget _buildSharedAccessibleFavorites(AppLocalizations l10n) {
     final rows = <AccessibleListRow>[];
     if (_loading) {
@@ -2846,6 +3301,11 @@ class _SonarTubeFavoritesScreenState extends State<_SonarTubeFavoritesScreen> {
                   id: 'transcribe_video',
                   label: l10n.sonarTubeTranscribeVideo,
                 ),
+              if (item.kind == SonarTubeItemKind.video)
+                AccessibleCustomAction(
+                  id: 'view_description',
+                  label: l10n.sonarTubeViewDescription,
+                ),
             ],
             visualActions: [
               AccessibleVisualAction(
@@ -2870,6 +3330,12 @@ class _SonarTubeFavoritesScreenState extends State<_SonarTubeFavoritesScreen> {
                   id: 'transcribe_video',
                   label: l10n.sonarTubeTranscribeVideo,
                   icon: 'transcript',
+                ),
+              if (item.kind == SonarTubeItemKind.video)
+                AccessibleVisualAction(
+                  id: 'view_description',
+                  label: l10n.sonarTubeViewDescription,
+                  icon: 'description',
                 ),
             ],
           );
@@ -2896,6 +3362,9 @@ class _SonarTubeFavoritesScreenState extends State<_SonarTubeFavoritesScreen> {
         } else if (event.type == 'customAction' &&
             event.action == 'transcribe_video') {
           await _openTranscript(item);
+        } else if (event.type == 'customAction' &&
+            event.action == 'view_description') {
+          await _openDescription(item);
         } else if (event.type == 'activate') {
           await _openFavoriteItem(item);
         }
@@ -2971,6 +3440,10 @@ class _SonarTubeFavoritesScreenState extends State<_SonarTubeFavoritesScreen> {
                                 CustomSemanticsAction(
                                   label: l10n.sonarTubeTranscribeVideo,
                                 ): () => _openTranscript(item),
+                              if (item.kind == SonarTubeItemKind.video)
+                                CustomSemanticsAction(
+                                  label: l10n.sonarTubeViewDescription,
+                                ): () => _openDescription(item),
                             },
                             child: Card(
                               child: Column(
@@ -3055,6 +3528,15 @@ class _SonarTubeFavoritesScreenState extends State<_SonarTubeFavoritesScreen> {
                                               onPressed: () =>
                                                   _openTranscript(item),
                                               icon: const Icon(Icons.subject),
+                                            ),
+                                            IconButton(
+                                              tooltip: l10n
+                                                  .sonarTubeViewDescription,
+                                              onPressed: () =>
+                                                  _openDescription(item),
+                                              icon: const Icon(
+                                                Icons.description_outlined,
+                                              ),
                                             ),
                                           ],
                                         ),

@@ -393,6 +393,21 @@ abstract class AppLocalizations {
   /// Transcribe the selected SonarTube video.
   String get sonarTubeTranscribeVideo;
 
+  /// Open the public playlists of the selected SonarTube channel.
+  String get sonarTubeChannelPlaylists;
+
+  /// Open the public Shorts of the selected SonarTube channel.
+  String get sonarTubeChannelShorts;
+
+  /// Open the complete description of the selected SonarTube video.
+  String get sonarTubeViewDescription;
+
+  /// Title for the SonarTube video description screen.
+  String get sonarTubeDescription;
+
+  /// Message shown when a SonarTube video has no description.
+  String get sonarTubeNoDescription;
+
   /// Title for the SonarTube transcript screen.
   String get sonarTubeTranscript;
 

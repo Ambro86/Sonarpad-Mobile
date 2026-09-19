@@ -81,6 +81,7 @@ class AppSettingsService {
   static const sonarTubePlayerActionChannel = 'channel';
   static const sonarTubePlayerActionComments = 'comments';
   static const sonarTubePlayerActionTranscript = 'transcript';
+  static const sonarTubePlayerActionDescription = 'description';
 
   static const sonarTubePlayerActionIds = <String>{
     sonarTubePlayerActionPrevious,
@@ -90,6 +91,7 @@ class AppSettingsService {
     sonarTubePlayerActionChannel,
     sonarTubePlayerActionComments,
     sonarTubePlayerActionTranscript,
+    sonarTubePlayerActionDescription,
   };
 
   static const defaultSonarTubePlayerActions = <String>{

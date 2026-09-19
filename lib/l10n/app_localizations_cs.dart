@@ -166,6 +166,21 @@ class AppLocalizationsCs extends AppLocalizations {
   String get sonarTubeTranscribeVideo => 'Přepsat video';
 
   @override
+  String get sonarTubeChannelPlaylists => 'Playlisty kanálu';
+
+  @override
+  String get sonarTubeChannelShorts => 'Shorts kanálu';
+
+  @override
+  String get sonarTubeViewDescription => 'Zobrazit popis';
+
+  @override
+  String get sonarTubeDescription => 'Popis';
+
+  @override
+  String get sonarTubeNoDescription => 'Pro toto video není k dispozici žádný popis.';
+
+  @override
   String get sonarTubeTranscript => 'Přepis';
 
   @override

@@ -305,6 +305,61 @@ class SonarTubeService {
     return _filterUnplayableVideoEntries(result, videosOnly: true);
   }
 
+  Future<SonarTubePage> channelPlaylists(
+    SonarTubeItem channel, {
+    String? token,
+    int page = 1,
+  }) async {
+    if (channel.kind != SonarTubeItemKind.channel) {
+      throw ArgumentError('channel_required');
+    }
+    return _loadServerPage({
+      'hl': _youtubeLanguage,
+      'gl': _youtubeRegion,
+      'browse': channel.id,
+      'kind': 'channel_playlists',
+      'title': channel.title,
+      'format': 'json',
+      if (token != null && token.isNotEmpty) 'token': token,
+      'page': '$page',
+    });
+  }
+
+  Future<SonarTubePage> channelShorts(
+    SonarTubeItem channel, {
+    String? token,
+    int page = 1,
+  }) async {
+    if (channel.kind != SonarTubeItemKind.channel) {
+      throw ArgumentError('channel_required');
+    }
+    return _loadServerPage({
+      'hl': _youtubeLanguage,
+      'gl': _youtubeRegion,
+      'browse': channel.id,
+      'kind': 'channel_shorts',
+      'title': channel.title,
+      'format': 'json',
+      if (token != null && token.isNotEmpty) 'token': token,
+      'page': '$page',
+    });
+  }
+
+  Future<String> videoDescription(SonarTubeItem item) async {
+    if (item.kind != SonarTubeItemKind.video) {
+      throw ArgumentError('video_required');
+    }
+    final data = await _request({
+      'url': item.url.isEmpty ? item.id : item.url,
+      'metadata': '1',
+      'format': 'json',
+    });
+    final description = data['description'];
+    return description is String
+        ? description
+        : description?.toString() ?? '';
+  }
+
   String? _mixSeedVideoId(SonarTubeItem collection) {
     if (collection.kind != SonarTubeItemKind.playlist ||
         !collection.id.startsWith('RD')) {
