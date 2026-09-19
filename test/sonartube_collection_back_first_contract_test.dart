@@ -42,7 +42,8 @@ void main() {
     );
 
     expect(shared, contains("id: 'collection_title'"));
-    expect(shared, contains('title: widget.collection!.title'));
+    expect(shared, contains('title: _collectionTitle(l10n)'));
+    expect(source, contains('widget.collection!.title;'));
     expect(
       shared,
       contains("key: const ValueKey('sonartube_collection_content_title')"),
