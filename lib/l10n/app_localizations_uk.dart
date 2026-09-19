@@ -165,10 +165,15 @@ class AppLocalizationsUk extends AppLocalizations {
   String get sonarTubeTranscribeVideo => 'Транскрибувати відео';
 
   @override
-  String get sonarTubeChannelPlaylists => 'Плейлисти каналу';
+  String get sonarTubeChannelPlaylists => 'Плейлисти';
 
   @override
-  String get sonarTubeChannelShorts => 'Shorts каналу';
+  String get sonarTubeChannelShorts => 'Shorts';
+
+  @override
+  String sonarTubeVideoCount(int count) {
+    return '$count відео';
+  }
 
   @override
   String get sonarTubeViewDescription => 'Переглянути опис';

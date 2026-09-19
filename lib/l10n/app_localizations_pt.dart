@@ -165,10 +165,21 @@ class AppLocalizationsPt extends AppLocalizations {
   String get sonarTubeTranscribeVideo => 'Transcrever vídeo';
 
   @override
-  String get sonarTubeChannelPlaylists => 'Listas de reprodução do canal';
+  String get sonarTubeChannelPlaylists => 'Listas de reprodução';
 
   @override
-  String get sonarTubeChannelShorts => 'Shorts do canal';
+  String get sonarTubeChannelShorts => 'Shorts';
+
+  @override
+  String sonarTubeVideoCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count vídeos',
+      one: '1 vídeo',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get sonarTubeViewDescription => 'Ver descrição';
@@ -3802,10 +3813,21 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get sonarTubeTranscribeVideo => 'Transcrever vídeo';
 
   @override
-  String get sonarTubeChannelPlaylists => 'Playlists do canal';
+  String get sonarTubeChannelPlaylists => 'Playlists';
 
   @override
-  String get sonarTubeChannelShorts => 'Shorts do canal';
+  String get sonarTubeChannelShorts => 'Shorts';
+
+  @override
+  String sonarTubeVideoCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count vídeos',
+      one: '1 vídeo',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get sonarTubeViewDescription => 'Ver descrição';

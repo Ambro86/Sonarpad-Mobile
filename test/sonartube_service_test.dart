@@ -1586,6 +1586,7 @@ void main() {
                   'title': 'Playlist del canale',
                   'channel': 'Canale prova',
                   'channel_id': 'UCabcdefghijklmnopqrstuv',
+                  'video_count': 24,
                   'url': 'https://www.youtube.com/playlist?list=PLchannel001',
                 },
               ],
@@ -1631,6 +1632,7 @@ void main() {
 
     expect(first.items.single.kind, SonarTubeItemKind.playlist);
     expect(first.items.single.id, 'PLchannel001');
+    expect(first.items.single.videoCount, 24);
     expect(first.nextToken, 'playlist-next');
     expect(second.items.single.id, 'PLchannel002');
     expect(second.hasMore, isFalse);

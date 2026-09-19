@@ -165,10 +165,21 @@ class AppLocalizationsDe extends AppLocalizations {
   String get sonarTubeTranscribeVideo => 'Video transkribieren';
 
   @override
-  String get sonarTubeChannelPlaylists => 'Playlists des Kanals';
+  String get sonarTubeChannelPlaylists => 'Playlists';
 
   @override
-  String get sonarTubeChannelShorts => 'Shorts des Kanals';
+  String get sonarTubeChannelShorts => 'Shorts';
+
+  @override
+  String sonarTubeVideoCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Videos',
+      one: '1 Video',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get sonarTubeViewDescription => 'Beschreibung anzeigen';

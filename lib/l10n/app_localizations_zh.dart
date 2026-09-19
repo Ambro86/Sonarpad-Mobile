@@ -162,10 +162,15 @@ class AppLocalizationsZhCn extends AppLocalizations {
   String get sonarTubeTranscribeVideo => '转录视频';
 
   @override
-  String get sonarTubeChannelPlaylists => '频道播放列表';
+  String get sonarTubeChannelPlaylists => '播放列表';
 
   @override
-  String get sonarTubeChannelShorts => '频道 Shorts';
+  String get sonarTubeChannelShorts => 'Shorts';
+
+  @override
+  String sonarTubeVideoCount(int count) {
+    return '$count 个视频';
+  }
 
   @override
   String get sonarTubeViewDescription => '查看说明';

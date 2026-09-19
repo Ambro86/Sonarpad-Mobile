@@ -890,6 +890,8 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
       if (item.kind != SonarTubeItemKind.channel &&
           (item.channel?.isNotEmpty ?? false))
         item.channel!,
+      if (item.kind == SonarTubeItemKind.playlist && item.videoCount != null)
+        l10n.sonarTubeVideoCount(item.videoCount!),
       if (item.duration?.isNotEmpty ?? false)
         l10n.sourceDurationValue(item.duration!),
       if (item.published?.isNotEmpty ?? false) item.published!,

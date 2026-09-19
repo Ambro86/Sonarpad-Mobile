@@ -2985,13 +2985,20 @@
   "@downloadUnavailable": {
     "description": "Shown when a media item cannot be downloaded."
   },
-  "sonarTubeChannelPlaylists": "频道播放列表",
+  "sonarTubeChannelPlaylists": "播放列表",
   "@sonarTubeChannelPlaylists": {
     "description": "Button and screen title for a channel's public playlists."
   },
-  "sonarTubeChannelShorts": "频道 Shorts",
+  "sonarTubeChannelShorts": "Shorts",
   "@sonarTubeChannelShorts": {
     "description": "Button and screen title for a channel's public Shorts."
+  },
+  "sonarTubeVideoCount": "{count} 个视频",
+  "@sonarTubeVideoCount": {
+    "description": "Number of videos contained in a SonarTube playlist.",
+    "placeholders": {
+      "count": {"type": "int"}
+    }
   },
   "sonarTubeViewDescription": "查看说明",
   "@sonarTubeViewDescription": {

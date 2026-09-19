@@ -37,6 +37,7 @@ void main() {
       for (final key in const [
         'sonarTubeChannelPlaylists',
         'sonarTubeChannelShorts',
+        'sonarTubeVideoCount',
         'sonarTubeViewDescription',
         'sonarTubeDescription',
         'sonarTubeNoDescription',
@@ -45,4 +46,19 @@ void main() {
       }
     }
   });
+
+  test('playlist count is exposed without an extra request', () {
+    final service = File('lib/services/sonartube_service.dart').readAsStringSync();
+    final screen = File('lib/screens/sonartube_screen.dart').readAsStringSync();
+    expect(service, contains("videoCount: _int(raw['video_count'])"));
+    expect(screen, contains('l10n.sonarTubeVideoCount(item.videoCount!)'));
+  });
+
+
+  test('channel collection labels are concise', () {
+    final italian = File('lib/l10n/app_it.arb').readAsStringSync();
+    expect(italian, contains('\"sonarTubeChannelPlaylists\": \"Playlist\"'));
+    expect(italian, contains('\"sonarTubeChannelShorts\": \"Shorts\"'));
+  });
+
 }

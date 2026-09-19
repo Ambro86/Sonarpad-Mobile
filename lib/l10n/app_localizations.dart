@@ -399,6 +399,9 @@ abstract class AppLocalizations {
   /// Open the public Shorts of the selected SonarTube channel.
   String get sonarTubeChannelShorts;
 
+  /// Number of videos contained in a SonarTube playlist.
+  String sonarTubeVideoCount(int count);
+
   /// Open the complete description of the selected SonarTube video.
   String get sonarTubeViewDescription;
 

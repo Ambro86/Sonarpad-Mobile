@@ -77,6 +77,7 @@ class SonarTubeFavoritesService {
       subscribers: prefer(incoming.subscribers, existing.subscribers),
       handle: prefer(incoming.handle, existing.handle),
       description: prefer(incoming.description, existing.description),
+      videoCount: incoming.videoCount ?? existing.videoCount,
       isLive: incoming.isLive || existing.isLive,
     );
   }
@@ -97,6 +98,7 @@ class SonarTubeFavoritesService {
       subscribers: item.subscribers,
       handle: item.handle,
       description: item.description,
+      videoCount: item.videoCount,
       isLive: item.isLive,
     );
   }
@@ -146,6 +148,7 @@ class SonarTubeFavoritesService {
     'subscribers': item.subscribers,
     'handle': item.handle,
     'description': item.description,
+    'video_count': item.videoCount,
     'isLive': item.isLive,
   };
 
@@ -179,6 +182,7 @@ class SonarTubeFavoritesService {
       subscribers: raw['subscribers']?.toString(),
       handle: raw['handle']?.toString(),
       description: raw['description']?.toString(),
+      videoCount: int.tryParse(raw['video_count']?.toString() ?? ''),
       isLive: raw['isLive'] == true,
     );
   }

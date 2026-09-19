@@ -36,6 +36,7 @@ class SonarTubeItem {
     this.subscribers,
     this.handle,
     this.description,
+    this.videoCount,
     this.isLive = false,
   });
 
@@ -52,6 +53,7 @@ class SonarTubeItem {
   final String? subscribers;
   final String? handle;
   final String? description;
+  final int? videoCount;
   final bool isLive;
 }
 
@@ -2086,6 +2088,7 @@ class SonarTubeService {
       subscribers: _string(raw['subscribers']),
       handle: _string(raw['handle']),
       description: _string(raw['description']),
+      videoCount: _int(raw['video_count']),
       isLive: raw['live'] == true,
     );
   }

@@ -2985,13 +2985,20 @@
   "@downloadUnavailable": {
     "description": "Shown when a media item cannot be downloaded."
   },
-  "sonarTubeChannelPlaylists": "Channel playlists",
+  "sonarTubeChannelPlaylists": "Playlists",
   "@sonarTubeChannelPlaylists": {
     "description": "Button and screen title for a channel's public playlists."
   },
-  "sonarTubeChannelShorts": "Channel Shorts",
+  "sonarTubeChannelShorts": "Shorts",
   "@sonarTubeChannelShorts": {
     "description": "Button and screen title for a channel's public Shorts."
+  },
+  "sonarTubeVideoCount": "{count, plural, =1{1 video} other{{count} videos}}",
+  "@sonarTubeVideoCount": {
+    "description": "Number of videos contained in a SonarTube playlist.",
+    "placeholders": {
+      "count": {"type": "int"}
+    }
   },
   "sonarTubeViewDescription": "View description",
   "@sonarTubeViewDescription": {
