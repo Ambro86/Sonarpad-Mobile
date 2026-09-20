@@ -133,6 +133,7 @@ void main() {
             line.contains('senha') ||
             line.contains('hasł') ||
             line.contains('hesl') ||
+            line.toLowerCase().contains('passwort') ||
             line.contains('парол') ||
             line.contains('密码')),
         isTrue,

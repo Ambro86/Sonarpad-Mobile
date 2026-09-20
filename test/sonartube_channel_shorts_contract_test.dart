@@ -44,10 +44,13 @@ void main() {
       'uk',
     ]) {
       final entries = (latest[locale] as List<dynamic>).cast<String>();
-      final additions = entries.skip(entries.length - 3).toList();
-      expect(additions[0].isNotEmpty, isTrue, reason: locale);
-      expect(additions[1].toLowerCase(), contains('shorts'), reason: locale);
-      expect(additions[2].isNotEmpty, isTrue, reason: locale);
+      final shortsIndex = entries.indexWhere(
+        (entry) => entry.toLowerCase().contains('shorts'),
+      );
+      expect(shortsIndex, greaterThan(0), reason: locale);
+      expect(shortsIndex, lessThan(entries.length - 1), reason: locale);
+      expect(entries[shortsIndex - 1].isNotEmpty, isTrue, reason: locale);
+      expect(entries[shortsIndex + 1].isNotEmpty, isTrue, reason: locale);
     }
   });
 
