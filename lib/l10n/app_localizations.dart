@@ -5971,6 +5971,36 @@ abstract class AppLocalizations {
   String get preserveMediaError;
 
   /// Renames a saved radio or TV recording.
+  String get protectDocumentWithPassword;
+
+  String get removeDocumentPasswordProtection;
+
+  String get documentPassword;
+
+  String get confirmDocumentPassword;
+
+  String get chooseDocumentPassword;
+
+  String get enterCurrentDocumentPassword;
+
+  String get documentPasswordRequired;
+
+  String get documentPasswordsDoNotMatch;
+
+  String get incorrectDocumentPassword;
+
+  String get documentPasswordProtectionEnabled;
+
+  String get documentPasswordProtectionRemoved;
+
+  String get documentPasswordRequiredTitle;
+
+  String get enterDocumentPasswordToShare;
+
+  String get enterDocumentPasswordToOpen;
+
+  String get documentPasswordProtectedStatus;
+
   String get rename;
 
   /// Title for the recording rename screen.

@@ -475,8 +475,127 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     );
   }
 
+  bool _canPasswordProtectDocument(DocumentItem doc) =>
+      !doc.isFolder && !_isRemoteAudioDocument(doc);
+
+  Future<void> _toggleDocumentPasswordProtection(DocumentItem doc) async {
+    if (!_canPasswordProtectDocument(doc) || !mounted) return;
+    final l10n = AppLocalizations.of(context);
+
+    if (doc.isPasswordProtected) {
+      final password = await showDialog<String>(
+        context: context,
+        builder: (_) => _DocumentPasswordDialog(
+          title: l10n.removeDocumentPasswordProtection,
+          prompt: l10n.enterCurrentDocumentPassword,
+          passwordLabel: l10n.documentPassword,
+          confirmPasswordLabel: l10n.confirmDocumentPassword,
+          requiredMessage: l10n.documentPasswordRequired,
+          mismatchMessage: l10n.documentPasswordsDoNotMatch,
+          invalidMessage: l10n.incorrectDocumentPassword,
+          validator: (value) => _service.verifyDocumentPassword(doc, value),
+        ),
+      );
+      if (!mounted || password == null) return;
+      final removed = await _service.removeDocumentPasswordProtection(
+        doc.id,
+        password,
+      );
+      if (!mounted) return;
+      if (!removed) {
+        _showSnack(l10n.incorrectDocumentPassword);
+        return;
+      }
+      await _load();
+      if (!mounted) return;
+      setState(() {});
+      _showSnack(l10n.documentPasswordProtectionRemoved);
+      return;
+    }
+
+    final password = await showDialog<String>(
+      context: context,
+      builder: (_) => _DocumentPasswordDialog(
+        title: l10n.protectDocumentWithPassword,
+        prompt: l10n.chooseDocumentPassword,
+        passwordLabel: l10n.documentPassword,
+        confirmPasswordLabel: l10n.confirmDocumentPassword,
+        requiredMessage: l10n.documentPasswordRequired,
+        mismatchMessage: l10n.documentPasswordsDoNotMatch,
+        invalidMessage: l10n.incorrectDocumentPassword,
+        requireConfirmation: true,
+      ),
+    );
+    if (!mounted || password == null) return;
+    await _service.protectDocumentWithPassword(doc.id, password);
+    await _load();
+    if (!mounted) return;
+    setState(() {});
+    _showSnack(l10n.documentPasswordProtectionEnabled);
+  }
+
+  Future<bool> _authorizeDocumentShare(DocumentItem doc) async {
+    await _service.load();
+    var current = doc;
+    for (final candidate in _service.documents) {
+      if (candidate.id == doc.id) {
+        current = candidate;
+        break;
+      }
+    }
+    if (!current.isPasswordProtected) return true;
+    if (!mounted) return false;
+    final l10n = AppLocalizations.of(context);
+    final password = await showDialog<String>(
+      context: context,
+      builder: (_) => _DocumentPasswordDialog(
+        title: l10n.documentPasswordRequiredTitle,
+        prompt: l10n.enterDocumentPasswordToShare,
+        passwordLabel: l10n.documentPassword,
+        confirmPasswordLabel: l10n.confirmDocumentPassword,
+        requiredMessage: l10n.documentPasswordRequired,
+        mismatchMessage: l10n.documentPasswordsDoNotMatch,
+        invalidMessage: l10n.incorrectDocumentPassword,
+        validator: (value) =>
+            _service.verifyDocumentPassword(current, value),
+      ),
+    );
+    return password != null;
+  }
+
+  Future<bool> _authorizeDocumentOpen(DocumentItem doc) async {
+    await _service.load();
+    var current = doc;
+    for (final candidate in _service.documents) {
+      if (candidate.id == doc.id) {
+        current = candidate;
+        break;
+      }
+    }
+    if (!current.isPasswordProtected) return true;
+    if (!mounted) return false;
+    final l10n = AppLocalizations.of(context);
+    final password = await showDialog<String>(
+      context: context,
+      builder: (_) => _DocumentPasswordDialog(
+        title: l10n.documentPasswordRequiredTitle,
+        prompt: l10n.enterDocumentPasswordToOpen,
+        passwordLabel: l10n.documentPassword,
+        confirmPasswordLabel: l10n.confirmDocumentPassword,
+        requiredMessage: l10n.documentPasswordRequired,
+        mismatchMessage: l10n.documentPasswordsDoNotMatch,
+        invalidMessage: l10n.incorrectDocumentPassword,
+        validator: (value) =>
+            _service.verifyDocumentPassword(current, value),
+      ),
+    );
+    return password != null;
+  }
+
   Future<void> _shareLocalMediaDocument(DocumentItem doc) async {
     if (!_isLocalMediaDocument(doc)) return;
+    if (!await _authorizeDocumentShare(doc)) return;
+    if (!mounted) return;
     final l10n = AppLocalizations.of(context);
     try {
       final resolvedPath = await _service.resolveFilePath(doc);
@@ -597,7 +716,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
       }
 
       if (path != null && saveName != null && mounted) {
-        await _handleExportedFile(path, saveName);
+        await _handleExportedFile(path, saveName, doc);
       }
     } catch (e) {
       dev.log('Errore durante l\'esportazione: $e');
@@ -608,7 +727,11 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     }
   }
 
-  Future<void> _handleExportedFile(String path, String saveName) async {
+  Future<void> _handleExportedFile(
+    String path,
+    String saveName,
+    DocumentItem sourceDocument,
+  ) async {
     final l10n = AppLocalizations.of(context);
     final action = await showDialog<_ExportAction>(
       context: context,
@@ -638,6 +761,12 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     }
 
     if (action == _ExportAction.share) {
+      if (!await _authorizeDocumentShare(sourceDocument)) {
+        await AppLogger.log(
+          'Condivisione file esportato annullata: protezione password',
+        );
+        return;
+      }
       await AppLogger.log('Avvio condivisione file esportato: $path');
       await SharePlus.instance.share(
         ShareParams(
@@ -901,6 +1030,9 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
       return;
     }
 
+    if (!await _authorizeDocumentOpen(doc)) return;
+    if (!mounted) return;
+
     if (_isLibrivoxDocument(doc)) {
       try {
         final book = librivoxBookFromLibraryPath(doc.path);
@@ -1144,6 +1276,13 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
         ),
         if (!doc.isFolder)
           AccessibleCustomAction(id: 'rename', label: l10n.rename),
+        if (_canPasswordProtectDocument(doc))
+          AccessibleCustomAction(
+            id: 'password_protection',
+            label: doc.isPasswordProtected
+                ? l10n.removeDocumentPasswordProtection
+                : l10n.protectDocumentWithPassword,
+          ),
         if (_isLocalMediaDocument(doc))
           AccessibleCustomAction(id: 'share', label: l10n.share),
         if (!_isRemoteAudioDocument(doc) && !_isLocalMediaDocument(doc))
@@ -1166,7 +1305,8 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
         accessibilityLabel:
             '${doc.isFolder ? l10n.folderTypeLabel : l10n.documentTypeLabel} ${doc.displayName}, '
             '${doc.isFolder ? '' : '${l10n.documentTypeDescription(doc.extension.toUpperCase())}, '}'
-            '${l10n.documentAddedOn(formattedDate(doc.addedAt))}',
+            '${l10n.documentAddedOn(formattedDate(doc.addedAt))}'
+            '${doc.isPasswordProtected ? ', ${l10n.documentPasswordProtectedStatus}' : ''}',
         hint: doc.isFolder ? l10n.openFolderHint : l10n.openDocumentHint,
         kind: 'action',
         actions: actions,
@@ -1176,6 +1316,14 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
               id: 'rename',
               label: l10n.rename,
               icon: 'edit',
+            ),
+          if (_canPasswordProtectDocument(doc))
+            AccessibleVisualAction(
+              id: 'password_protection',
+              label: doc.isPasswordProtected
+                  ? l10n.removeDocumentPasswordProtection
+                  : l10n.protectDocumentWithPassword,
+              icon: doc.isPasswordProtected ? 'lock_open' : 'lock',
             ),
         ],
       ));
@@ -1196,6 +1344,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
           switch (event.action) {
             case 'remove': await _remove(doc.id); break;
             case 'rename': await _renameDocument(doc); break;
+            case 'password_protection': await _toggleDocumentPasswordProtection(doc); break;
             case 'share': await _shareLocalMediaDocument(doc); break;
             case 'export': await _exportDocument(doc); break;
             case 'move_up': await _handleAction(_DocumentAction.moveUp, doc); break;
@@ -1314,6 +1463,10 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                             onOpen: () => _openDocument(doc),
                             onRemove: () => _remove(doc.id),
                             onRename: () => _renameDocument(doc),
+                            canPasswordProtect:
+                                _canPasswordProtectDocument(doc),
+                            onPasswordProtection: () =>
+                                _toggleDocumentPasswordProtection(doc),
                             canShare: _isLocalMediaDocument(doc),
                             onShare: () => _shareLocalMediaDocument(doc),
                             onExport: () => _exportDocument(doc),
@@ -1346,6 +1499,8 @@ class _DocumentTile extends StatelessWidget {
   final VoidCallback onOpen;
   final VoidCallback onRemove;
   final VoidCallback onRename;
+  final bool canPasswordProtect;
+  final VoidCallback onPasswordProtection;
   final bool canShare;
   final VoidCallback onShare;
   final VoidCallback onExport;
@@ -1359,6 +1514,8 @@ class _DocumentTile extends StatelessWidget {
     required this.onOpen,
     required this.onRemove,
     required this.onRename,
+    required this.canPasswordProtect,
+    required this.onPasswordProtection,
     required this.canShare,
     required this.onShare,
     required this.onExport,
@@ -1440,6 +1597,12 @@ class _DocumentTile extends StatelessWidget {
                   : l10n.removeDocument): onRemove,
           if (!doc.isFolder)
             CustomSemanticsAction(label: l10n.rename): onRename,
+          if (canPasswordProtect)
+            CustomSemanticsAction(
+              label: doc.isPasswordProtected
+                  ? l10n.removeDocumentPasswordProtection
+                  : l10n.protectDocumentWithPassword,
+            ): onPasswordProtection,
           if (canShare) CustomSemanticsAction(label: l10n.share): onShare,
           if (doc.extension != 'librivox' &&
               doc.extension != 'archiveaudio' &&
@@ -1456,7 +1619,7 @@ class _DocumentTile extends StatelessWidget {
               onAction(_DocumentAction.moveToPosition),
       },
       label:
-          '${doc.isFolder ? l10n.folderTypeLabel : l10n.documentTypeLabel} $displayName, ${doc.isFolder ? '' : '${l10n.documentTypeDescription(doc.extension.toUpperCase())}, '}${l10n.documentAddedOn(_formattedDate(doc.addedAt))}',
+          '${doc.isFolder ? l10n.folderTypeLabel : l10n.documentTypeLabel} $displayName, ${doc.isFolder ? '' : '${l10n.documentTypeDescription(doc.extension.toUpperCase())}, '}${l10n.documentAddedOn(_formattedDate(doc.addedAt))}${doc.isPasswordProtected ? ', ${l10n.documentPasswordProtectedStatus}' : ''}',
       hint: doc.isFolder ? l10n.openFolderHint : l10n.openDocumentHint,
       child: ExcludeSemantics(
         child: Card(
@@ -1532,6 +1695,19 @@ class _DocumentTile extends StatelessWidget {
                       tooltip: l10n.rename,
                       onPressed: onRename,
                     ),
+                  if (canPasswordProtect)
+                    IconButton(
+                      key: ValueKey('document_password_${doc.id}'),
+                      icon: Icon(
+                        doc.isPasswordProtected
+                            ? Icons.lock_open_outlined
+                            : Icons.lock_outline,
+                      ),
+                      tooltip: doc.isPasswordProtected
+                          ? l10n.removeDocumentPasswordProtection
+                          : l10n.protectDocumentWithPassword,
+                      onPressed: onPasswordProtection,
+                    ),
                   // Pulsante rimuovi
                   ExcludeSemantics(
                     child: Semantics(
@@ -1553,6 +1729,126 @@ class _DocumentTile extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+
+class _DocumentPasswordDialog extends StatefulWidget {
+  const _DocumentPasswordDialog({
+    required this.title,
+    required this.prompt,
+    required this.passwordLabel,
+    required this.confirmPasswordLabel,
+    required this.requiredMessage,
+    required this.mismatchMessage,
+    required this.invalidMessage,
+    this.requireConfirmation = false,
+    this.validator,
+  });
+
+  final String title;
+  final String prompt;
+  final String passwordLabel;
+  final String confirmPasswordLabel;
+  final String requiredMessage;
+  final String mismatchMessage;
+  final String invalidMessage;
+  final bool requireConfirmation;
+  final bool Function(String password)? validator;
+
+  @override
+  State<_DocumentPasswordDialog> createState() =>
+      _DocumentPasswordDialogState();
+}
+
+class _DocumentPasswordDialogState extends State<_DocumentPasswordDialog> {
+  final _passwordController = TextEditingController();
+  final _confirmationController = TextEditingController();
+  String? _error;
+
+  @override
+  void dispose() {
+    _passwordController.dispose();
+    _confirmationController.dispose();
+    super.dispose();
+  }
+
+  void _submit() {
+    final password = _passwordController.text;
+    if (password.trim().isEmpty) {
+      setState(() => _error = widget.requiredMessage);
+      return;
+    }
+    if (widget.requireConfirmation &&
+        password != _confirmationController.text) {
+      setState(() => _error = widget.mismatchMessage);
+      return;
+    }
+    final validator = widget.validator;
+    if (validator != null && !validator(password)) {
+      setState(() => _error = widget.invalidMessage);
+      return;
+    }
+    Navigator.pop(context, password);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return AlertDialog(
+      title: Text(widget.title),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(widget.prompt),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _passwordController,
+              autofocus: true,
+              obscureText: true,
+              textInputAction: widget.requireConfirmation
+                  ? TextInputAction.next
+                  : TextInputAction.done,
+              decoration: InputDecoration(labelText: widget.passwordLabel),
+              onSubmitted: widget.requireConfirmation ? null : (_) => _submit(),
+            ),
+            if (widget.requireConfirmation) ...[
+              const SizedBox(height: 8),
+              TextField(
+                controller: _confirmationController,
+                obscureText: true,
+                textInputAction: TextInputAction.done,
+                decoration:
+                    InputDecoration(labelText: widget.confirmPasswordLabel),
+                onSubmitted: (_) => _submit(),
+              ),
+            ],
+            if (_error != null) ...[
+              const SizedBox(height: 12),
+              Semantics(
+                liveRegion: true,
+                child: Text(
+                  _error!,
+                  style: TextStyle(color: Theme.of(context).colorScheme.error),
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(l10n.cancel),
+        ),
+        TextButton(
+          onPressed: _submit,
+          child: Text(l10n.ok),
+        ),
+      ],
     );
   }
 }

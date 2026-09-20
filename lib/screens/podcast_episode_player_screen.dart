@@ -1449,6 +1449,8 @@ class _PodcastPositionControlState extends State<_PodcastPositionControl> {
   Duration _duration = Duration.zero;
   Duration _latestPosition = Duration.zero;
   Duration _visiblePosition = Duration.zero;
+  Duration? _pendingSeekTarget;
+  bool _seekDrainRunning = false;
   int _lastPositionLogSecond = -1;
 
   @override
@@ -1463,6 +1465,7 @@ class _PodcastPositionControlState extends State<_PodcastPositionControl> {
     });
     _refreshTimer = Timer.periodic(const Duration(seconds: 1), (_) {
       if (!mounted || _latestPosition == _visiblePosition) return;
+      if (_seekDrainRunning || _pendingSeekTarget != null) return;
       if (WidgetsBinding.instance.lifecycleState != AppLifecycleState.resumed) return;
       setState(() => _visiblePosition = _latestPosition);
     });
@@ -1477,6 +1480,37 @@ class _PodcastPositionControlState extends State<_PodcastPositionControl> {
   }
 
 
+  void _queueSeek(Duration target) {
+    _pendingSeekTarget = target;
+    if (_seekDrainRunning) return;
+    _seekDrainRunning = true;
+    unawaited(_drainSeekQueue());
+  }
+
+  Future<void> _drainSeekQueue() async {
+    try {
+      while (mounted) {
+        final target = _pendingSeekTarget;
+        if (target == null) break;
+        _pendingSeekTarget = null;
+        try {
+          await widget.audio.seek(target);
+        } catch (error) {
+          AppLogger.log(
+            'PodcastPlayer: position seek failed target=${target.inSeconds}s '
+            'error=$error, ${widget.logSubject}',
+          );
+        }
+      }
+    } finally {
+      _seekDrainRunning = false;
+      if (mounted && _pendingSeekTarget != null) {
+        _seekDrainRunning = true;
+        unawaited(_drainSeekQueue());
+      }
+    }
+  }
+
   void _seekBy(int seconds) {
     var newPos = _visiblePosition + Duration(seconds: seconds);
     if (newPos < Duration.zero) {
@@ -1488,7 +1522,7 @@ class _PodcastPositionControlState extends State<_PodcastPositionControl> {
       _visiblePosition = newPos;
       _latestPosition = newPos;
     });
-    widget.audio.seek(newPos);
+    _queueSeek(newPos);
   }
 
   int _computeCurrentStep() {
@@ -1562,7 +1596,7 @@ class _PodcastPositionControlState extends State<_PodcastPositionControl> {
                   _visiblePosition = newPos;
                   _latestPosition = newPos;
                 });
-                widget.audio.seek(newPos);
+                _queueSeek(newPos);
               },
             ),
           ),
@@ -1592,6 +1626,8 @@ class _VideoPositionControl extends StatefulWidget {
 class _VideoPositionControlState extends State<_VideoPositionControl> {
   Timer? _refreshTimer;
   Duration _visiblePosition = Duration.zero;
+  Duration? _pendingSeekTarget;
+  bool _seekDrainRunning = false;
   int _lastPositionLogSecond = -1;
 
   @override
@@ -1600,6 +1636,7 @@ class _VideoPositionControlState extends State<_VideoPositionControl> {
     _visiblePosition = widget.controller.value.position;
     _refreshTimer = Timer.periodic(const Duration(seconds: 1), (_) {
       if (!mounted) return;
+      if (_seekDrainRunning || _pendingSeekTarget != null) return;
       if (WidgetsBinding.instance.lifecycleState != AppLifecycleState.resumed) return;
       final position = widget.controller.value.position;
       if (position == _visiblePosition) return;
@@ -1613,10 +1650,41 @@ class _VideoPositionControlState extends State<_VideoPositionControl> {
     super.dispose();
   }
 
-  Future<void> _seekTo(Duration position) async {
+  void _queueSeek(Duration target) {
+    _pendingSeekTarget = target;
+    if (_seekDrainRunning) return;
+    _seekDrainRunning = true;
+    unawaited(_drainSeekQueue());
+  }
+
+  Future<void> _drainSeekQueue() async {
+    try {
+      while (mounted) {
+        final target = _pendingSeekTarget;
+        if (target == null) break;
+        _pendingSeekTarget = null;
+        try {
+          await widget.controller.seekTo(target);
+          await widget.audio?.seek(target);
+        } catch (error) {
+          AppLogger.log(
+            'PodcastPlayer: video position seek failed '
+            'target=${target.inSeconds}s error=$error, ${widget.logSubject}',
+          );
+        }
+      }
+    } finally {
+      _seekDrainRunning = false;
+      if (mounted && _pendingSeekTarget != null) {
+        _seekDrainRunning = true;
+        unawaited(_drainSeekQueue());
+      }
+    }
+  }
+
+  void _seekTo(Duration position) {
     setState(() => _visiblePosition = position);
-    await widget.controller.seekTo(position);
-    await widget.audio?.seek(position);
+    _queueSeek(position);
   }
 
   int _computeCurrentStep(Duration duration) {
@@ -1628,7 +1696,7 @@ class _VideoPositionControlState extends State<_VideoPositionControl> {
     return step;
   }
 
-  Future<void> _seekBy(int seconds) async {
+  void _seekBy(int seconds) {
     final duration = widget.controller.value.duration;
     var newPos = _visiblePosition + Duration(seconds: seconds);
     if (newPos < Duration.zero) {
@@ -1636,7 +1704,7 @@ class _VideoPositionControlState extends State<_VideoPositionControl> {
     } else if (duration > Duration.zero && newPos > duration) {
       newPos = duration;
     }
-    await _seekTo(newPos);
+    _seekTo(newPos);
   }
 
   @override
@@ -1690,7 +1758,7 @@ class _VideoPositionControlState extends State<_VideoPositionControl> {
               min: 0,
               max: durSecs,
               onChanged: (val) {
-                unawaited(_seekTo(Duration(seconds: val.toInt())));
+                _seekTo(Duration(seconds: val.toInt()));
               },
             ),
           ),

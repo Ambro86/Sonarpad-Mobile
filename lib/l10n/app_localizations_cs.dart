@@ -3698,6 +3698,51 @@ class AppLocalizationsCs extends AppLocalizations {
 
 
   @override
+  String get protectDocumentWithPassword => 'Chránit heslem';
+
+  @override
+  String get removeDocumentPasswordProtection => 'Odebrat ochranu heslem';
+
+  @override
+  String get documentPassword => 'Heslo';
+
+  @override
+  String get confirmDocumentPassword => 'Potvrdit heslo';
+
+  @override
+  String get chooseDocumentPassword => 'Zadejte heslo a potvrďte ho. Heslo bude vyžadováno před otevřením nebo sdílením tohoto dokumentu.';
+
+  @override
+  String get enterCurrentDocumentPassword => 'Zadejte aktuální heslo pro odebrání ochrany.';
+
+  @override
+  String get documentPasswordRequired => 'Zadejte heslo.';
+
+  @override
+  String get documentPasswordsDoNotMatch => 'Hesla se neshodují.';
+
+  @override
+  String get incorrectDocumentPassword => 'Nesprávné heslo.';
+
+  @override
+  String get documentPasswordProtectionEnabled => 'Ochrana heslem byla zapnuta.';
+
+  @override
+  String get documentPasswordProtectionRemoved => 'Ochrana heslem byla odebrána.';
+
+  @override
+  String get documentPasswordRequiredTitle => 'Vyžadováno heslo';
+
+  @override
+  String get enterDocumentPasswordToShare => 'Tento dokument je chráněn. Pro pokračování ve sdílení zadejte heslo.';
+
+  @override
+  String get enterDocumentPasswordToOpen => 'Tento dokument je chráněn. Pro jeho otevření zadejte heslo.';
+
+  @override
+  String get documentPasswordProtectedStatus => 'Chráněno heslem';
+
+  @override
   String get rename => 'Přejmenovat';
 
   @override

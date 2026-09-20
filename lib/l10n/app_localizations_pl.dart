@@ -3698,6 +3698,51 @@ class AppLocalizationsPl extends AppLocalizations {
 
 
   @override
+  String get protectDocumentWithPassword => 'Chroń hasłem';
+
+  @override
+  String get removeDocumentPasswordProtection => 'Usuń ochronę hasłem';
+
+  @override
+  String get documentPassword => 'Hasło';
+
+  @override
+  String get confirmDocumentPassword => 'Potwierdź hasło';
+
+  @override
+  String get chooseDocumentPassword => 'Wprowadź hasło i potwierdź je. Hasło będzie wymagane przed otwarciem lub udostępnieniem tego dokumentu.';
+
+  @override
+  String get enterCurrentDocumentPassword => 'Wprowadź bieżące hasło, aby usunąć ochronę.';
+
+  @override
+  String get documentPasswordRequired => 'Wprowadź hasło.';
+
+  @override
+  String get documentPasswordsDoNotMatch => 'Hasła nie są zgodne.';
+
+  @override
+  String get incorrectDocumentPassword => 'Nieprawidłowe hasło.';
+
+  @override
+  String get documentPasswordProtectionEnabled => 'Ochrona hasłem została włączona.';
+
+  @override
+  String get documentPasswordProtectionRemoved => 'Ochrona hasłem została usunięta.';
+
+  @override
+  String get documentPasswordRequiredTitle => 'Wymagane hasło';
+
+  @override
+  String get enterDocumentPasswordToShare => 'Ten dokument jest chroniony. Wprowadź hasło, aby kontynuować udostępnianie.';
+
+  @override
+  String get enterDocumentPasswordToOpen => 'Ten dokument jest chroniony. Wprowadź hasło, aby go otworzyć.';
+
+  @override
+  String get documentPasswordProtectedStatus => 'Chroniony hasłem';
+
+  @override
   String get rename => 'Zmień nazwę';
 
   @override

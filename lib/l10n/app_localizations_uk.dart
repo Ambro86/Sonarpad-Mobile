@@ -3309,6 +3309,51 @@ class AppLocalizationsUk extends AppLocalizations {
 
 
   @override
+  String get protectDocumentWithPassword => 'Захистити паролем';
+
+  @override
+  String get removeDocumentPasswordProtection => 'Зняти захист паролем';
+
+  @override
+  String get documentPassword => 'Пароль';
+
+  @override
+  String get confirmDocumentPassword => 'Підтвердити пароль';
+
+  @override
+  String get chooseDocumentPassword => 'Введіть пароль і підтвердьте його. Пароль буде потрібен перед відкриттям або поширенням цього документа.';
+
+  @override
+  String get enterCurrentDocumentPassword => 'Введіть поточний пароль, щоб зняти захист.';
+
+  @override
+  String get documentPasswordRequired => 'Введіть пароль.';
+
+  @override
+  String get documentPasswordsDoNotMatch => 'Паролі не збігаються.';
+
+  @override
+  String get incorrectDocumentPassword => 'Неправильний пароль.';
+
+  @override
+  String get documentPasswordProtectionEnabled => 'Захист паролем увімкнено.';
+
+  @override
+  String get documentPasswordProtectionRemoved => 'Захист паролем знято.';
+
+  @override
+  String get documentPasswordRequiredTitle => 'Потрібен пароль';
+
+  @override
+  String get enterDocumentPasswordToShare => 'Цей документ захищено. Введіть пароль, щоб продовжити поширення.';
+
+  @override
+  String get enterDocumentPasswordToOpen => 'Цей документ захищено. Введіть пароль, щоб відкрити його.';
+
+  @override
+  String get documentPasswordProtectedStatus => 'Захищено паролем';
+
+  @override
   String get rename => 'Перейменувати';
 
   @override

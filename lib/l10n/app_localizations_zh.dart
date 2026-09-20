@@ -3316,6 +3316,51 @@ class AppLocalizationsZhCn extends AppLocalizations {
 
 
   @override
+  String get protectDocumentWithPassword => '使用密码保护';
+
+  @override
+  String get removeDocumentPasswordProtection => '移除密码保护';
+
+  @override
+  String get documentPassword => '密码';
+
+  @override
+  String get confirmDocumentPassword => '确认密码';
+
+  @override
+  String get chooseDocumentPassword => '请输入并确认密码。打开或共享此文档前将要求输入该密码。';
+
+  @override
+  String get enterCurrentDocumentPassword => '请输入当前密码以移除保护。';
+
+  @override
+  String get documentPasswordRequired => '请输入密码。';
+
+  @override
+  String get documentPasswordsDoNotMatch => '两次输入的密码不一致。';
+
+  @override
+  String get incorrectDocumentPassword => '密码不正确。';
+
+  @override
+  String get documentPasswordProtectionEnabled => '已启用密码保护。';
+
+  @override
+  String get documentPasswordProtectionRemoved => '已移除密码保护。';
+
+  @override
+  String get documentPasswordRequiredTitle => '需要密码';
+
+  @override
+  String get enterDocumentPasswordToShare => '此文档受密码保护。请输入密码以继续共享。';
+
+  @override
+  String get enterDocumentPasswordToOpen => '此文档受密码保护。请输入密码以打开文档。';
+
+  @override
+  String get documentPasswordProtectedStatus => '受密码保护';
+
+  @override
   String get rename => '重命名';
 
   @override

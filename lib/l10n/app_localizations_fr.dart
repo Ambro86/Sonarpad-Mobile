@@ -3723,6 +3723,51 @@ class AppLocalizationsFr extends AppLocalizations {
 
 
   @override
+  String get protectDocumentWithPassword => 'Protéger par mot de passe';
+
+  @override
+  String get removeDocumentPasswordProtection => 'Supprimer la protection par mot de passe';
+
+  @override
+  String get documentPassword => 'Mot de passe';
+
+  @override
+  String get confirmDocumentPassword => 'Confirmer le mot de passe';
+
+  @override
+  String get chooseDocumentPassword => 'Saisissez un mot de passe et confirmez-le. Il sera demandé avant d’ouvrir ou de partager ce document.';
+
+  @override
+  String get enterCurrentDocumentPassword => 'Saisissez le mot de passe actuel pour supprimer la protection.';
+
+  @override
+  String get documentPasswordRequired => 'Saisissez un mot de passe.';
+
+  @override
+  String get documentPasswordsDoNotMatch => 'Les mots de passe ne correspondent pas.';
+
+  @override
+  String get incorrectDocumentPassword => 'Mot de passe incorrect.';
+
+  @override
+  String get documentPasswordProtectionEnabled => 'Protection par mot de passe activée.';
+
+  @override
+  String get documentPasswordProtectionRemoved => 'Protection par mot de passe supprimée.';
+
+  @override
+  String get documentPasswordRequiredTitle => 'Mot de passe requis';
+
+  @override
+  String get enterDocumentPasswordToShare => 'Ce document est protégé. Saisissez le mot de passe pour poursuivre le partage.';
+
+  @override
+  String get enterDocumentPasswordToOpen => 'Ce document est protégé. Saisissez le mot de passe pour l’ouvrir.';
+
+  @override
+  String get documentPasswordProtectedStatus => 'Protégé par mot de passe';
+
+  @override
   String get rename => 'Renommer';
 
   @override

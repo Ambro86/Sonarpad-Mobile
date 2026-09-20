@@ -88,10 +88,15 @@ class _SonarpadAudiodescriptionsScreenState
   }
 
   Future<void> _open(SonarpadAudiodescriptionItem item) async {
+    if (item.isFolder) {
+      await _openSonarpadAudiodescriptionFolder(context, item);
+      return;
+    }
     _openSonarpadAudiodescription(context, item);
   }
 
   Future<void> _preserve(SonarpadAudiodescriptionItem item) async {
+    if (item.isFolder) return;
     await _preserveSonarpadAudiodescription(context, item);
   }
 
@@ -165,27 +170,7 @@ class _SonarpadAudiodescriptionsScreenState
     String id,
     SonarpadAudiodescriptionItem item,
   ) {
-    final l10n = AppLocalizations.of(context);
-    return AccessibleListRow(
-      id: id,
-      title: item.title,
-      subtitle: _sonarpadAudiodescriptionSubtitle(item, l10n),
-      actions: [
-        AccessibleCustomAction(id: 'open', label: l10n.openItem),
-        AccessibleCustomAction(
-          id: 'preserve_media',
-          label: l10n.preserveMedia,
-        ),
-      ],
-      visualActions: [
-        AccessibleVisualAction(id: 'open', label: l10n.openItem, icon: 'play'),
-        AccessibleVisualAction(
-          id: 'preserve_media',
-          label: l10n.download,
-          icon: 'download',
-        ),
-      ],
-    );
+    return _sharedCatalogRow(context, id, item);
   }
 
   Widget _legacyHome() {
@@ -219,32 +204,11 @@ class _SonarpadAudiodescriptionsScreenState
   }
 
   Widget _legacyItem(SonarpadAudiodescriptionItem item) {
-    final l10n = AppLocalizations.of(context);
-    final subtitle = _sonarpadAudiodescriptionSubtitle(item, l10n);
-    return Semantics(
-      container: true,
-      customSemanticsActions: {
-        CustomSemanticsAction(label: l10n.openItem): () => unawaited(_open(item)),
-        CustomSemanticsAction(label: l10n.preserveMedia): () =>
-            unawaited(_preserve(item)),
-      },
-      child: ListTile(
-        title: Text(item.title),
-        subtitle: subtitle == null ? null : Text(subtitle),
-        onTap: () => _open(item),
-        trailing: ExcludeSemantics(
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextButton(onPressed: () => _open(item), child: Text(l10n.openItem)),
-              TextButton(
-                onPressed: () => _preserve(item),
-                child: Text(l10n.download),
-              ),
-            ],
-          ),
-        ),
-      ),
+    return _legacyCatalogItem(
+      context,
+      item,
+      onOpen: _open,
+      onPreserve: _preserve,
     );
   }
 }

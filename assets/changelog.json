@@ -8,7 +8,8 @@
       "Aggiunta nelle impostazioni del player SonarTube l’opzione Riproduzione automatica: quando è attiva, al termine di un video o brano SonarTube passa automaticamente al successivo, se disponibile.",
       "In SonarTube è ora possibile aprire le playlist pubbliche di un canale direttamente dalla pagina del canale, con supporto al caricamento di altri risultati.",
       "In SonarTube è ora possibile aprire gli Shorts pubblicati da un canale direttamente dalla pagina del canale, con supporto al caricamento di altri risultati.",
-      "Aggiunta in SonarTube la funzione “Visualizza descrizione” per leggere la descrizione completa dei video. La voce Descrizione può anche essere aggiunta tra i pulsanti del player dalle impostazioni Pulsanti e comportamento di SonarTube."
+      "Aggiunta in SonarTube la funzione “Visualizza descrizione” per leggere la descrizione completa dei video. La voce Descrizione può anche essere aggiunta tra i pulsanti del player dalle impostazioni Pulsanti e comportamento di SonarTube.",
+      "Nei Documenti è ora possibile proteggere un documento con password dalle azioni secondarie. La password corretta viene richiesta sia prima di aprire sia prima di condividere un documento protetto."
     ],
     "en": [
       "Fixed some issues in News that could show page elements or unrelated content instead of the article text.",
@@ -16,7 +17,8 @@
       "Added an Autoplay option to the SonarTube player settings: when enabled, SonarTube automatically moves to the next video or track when playback ends, if one is available.",
       "SonarTube can now open a channel’s public playlists directly from the channel page, with support for loading more results.",
       "SonarTube can now open the Shorts published by a channel directly from the channel page, with support for loading more results.",
-      "Added a “View description” action in SonarTube to read the full video description. Description can also be added to the player buttons from the SonarTube Buttons and behavior settings."
+      "Added a “View description” action in SonarTube to read the full video description. Description can also be added to the player buttons from the SonarTube Buttons and behavior settings.",
+      "Documents can now be protected with a password from the secondary actions. The correct password is required before either opening or sharing a protected document."
     ],
     "fr": [
       "Correction de plusieurs problèmes dans les Actualités qui pouvaient afficher des éléments de la page ou du contenu sans rapport à la place du texte de l’article.",
@@ -24,7 +26,8 @@
       "Ajout d’une option Lecture automatique dans les réglages du lecteur SonarTube : lorsqu’elle est activée, SonarTube passe automatiquement à la vidéo ou à la piste suivante à la fin de la lecture, si elle est disponible.",
       "SonarTube permet désormais d’ouvrir les playlists publiques d’une chaîne directement depuis sa page, avec prise en charge du chargement de résultats supplémentaires.",
       "SonarTube permet désormais d’ouvrir les Shorts publiés par une chaîne directement depuis sa page, avec prise en charge du chargement de résultats supplémentaires.",
-      "Ajout de l’action « Voir la description » dans SonarTube pour lire la description complète des vidéos. Le bouton Description peut aussi être ajouté au lecteur depuis les réglages Boutons et comportement de SonarTube."
+      "Ajout de l’action « Voir la description » dans SonarTube pour lire la description complète des vidéos. Le bouton Description peut aussi être ajouté au lecteur depuis les réglages Boutons et comportement de SonarTube.",
+      "Dans Documents, il est désormais possible de protéger un document par mot de passe depuis les actions secondaires. Le mot de passe correct est demandé avant d’ouvrir comme avant de partager un document protégé."
     ],
     "es": [
       "Se han corregido algunos problemas en Noticias que podían mostrar elementos de la página o contenido no relacionado en lugar del texto del artículo.",
@@ -32,7 +35,8 @@
       "Se ha añadido una opción de Reproducción automática en los ajustes del reproductor de SonarTube: cuando está activada, SonarTube pasa automáticamente al siguiente vídeo o pista al terminar la reproducción, si está disponible.",
       "SonarTube permite ahora abrir las listas de reproducción públicas de un canal directamente desde la página del canal, con compatibilidad para cargar más resultados.",
       "SonarTube permite ahora abrir los Shorts publicados por un canal directamente desde la página del canal, con compatibilidad para cargar más resultados.",
-      "Se ha añadido la acción «Ver descripción» en SonarTube para leer la descripción completa de los vídeos. Descripción también puede añadirse a los botones del reproductor desde los ajustes Botones y comportamiento de SonarTube."
+      "Se ha añadido la acción «Ver descripción» en SonarTube para leer la descripción completa de los vídeos. Descripción también puede añadirse a los botones del reproductor desde los ajustes Botones y comportamiento de SonarTube.",
+      "En Documentos ahora es posible proteger un documento con contraseña desde las acciones secundarias. La contraseña correcta se solicita tanto antes de abrir como antes de compartir un documento protegido."
     ],
     "pt": [
       "Foram corrigidos alguns problemas nas Notícias que podiam mostrar elementos da página ou conteúdo não relacionado em vez do texto do artigo.",
@@ -40,7 +44,8 @@
       "Foi adicionada uma opção de Reprodução automática nas definições do leitor SonarTube: quando está ativada, o SonarTube passa automaticamente para o vídeo ou faixa seguinte no fim da reprodução, se estiver disponível.",
       "O SonarTube permite agora abrir as listas de reprodução públicas de um canal diretamente a partir da página do canal, com suporte para carregar mais resultados.",
       "O SonarTube permite agora abrir os Shorts publicados por um canal diretamente a partir da página do canal, com suporte para carregar mais resultados.",
-      "Foi adicionada a ação «Ver descrição» no SonarTube para ler a descrição completa dos vídeos. A Descrição também pode ser adicionada aos botões do leitor nas definições Botões e comportamento do SonarTube."
+      "Foi adicionada a ação «Ver descrição» no SonarTube para ler a descrição completa dos vídeos. A Descrição também pode ser adicionada aos botões do leitor nas definições Botões e comportamento do SonarTube.",
+      "Nos Documentos, agora é possível proteger um documento com palavra-passe através das ações secundárias. A palavra-passe correta é pedida antes de abrir e também antes de partilhar um documento protegido."
     ],
     "pt_BR": [
       "Foram corrigidos alguns problemas nas Notícias que podiam mostrar elementos da página ou conteúdo não relacionado no lugar do texto do artigo.",
@@ -48,7 +53,8 @@
       "Foi adicionada uma opção de Reprodução automática nas configurações do player SonarTube: quando ativada, o SonarTube passa automaticamente para o próximo vídeo ou faixa ao final da reprodução, se houver um disponível.",
       "O SonarTube agora permite abrir as playlists públicas de um canal diretamente pela página do canal, com suporte para carregar mais resultados.",
       "O SonarTube agora permite abrir os Shorts publicados por um canal diretamente pela página do canal, com suporte para carregar mais resultados.",
-      "Foi adicionada a ação “Ver descrição” no SonarTube para ler a descrição completa dos vídeos. Descrição também pode ser adicionada aos botões do player nas configurações Botões e comportamento do SonarTube."
+      "Foi adicionada a ação “Ver descrição” no SonarTube para ler a descrição completa dos vídeos. Descrição também pode ser adicionada aos botões do player nas configurações Botões e comportamento do SonarTube.",
+      "Em Documentos, agora é possível proteger um documento com senha pelas ações secundárias. A senha correta é solicitada antes de abrir e também antes de compartilhar um documento protegido."
     ],
     "pl": [
       "Naprawiono problemy w Wiadomościach, które mogły powodować wyświetlanie elementów strony lub niepowiązanych treści zamiast tekstu artykułu.",
@@ -56,7 +62,8 @@
       "Dodano opcję automatycznego odtwarzania w ustawieniach odtwarzacza SonarTube: po jej włączeniu SonarTube automatycznie przechodzi do następnego filmu lub utworu po zakończeniu odtwarzania, jeśli jest dostępny.",
       "SonarTube pozwala teraz otwierać publiczne playlisty kanału bezpośrednio ze strony kanału, z obsługą wczytywania kolejnych wyników.",
       "SonarTube pozwala teraz otwierać Shorts opublikowane przez kanał bezpośrednio ze strony kanału, z obsługą wczytywania kolejnych wyników.",
-      "Dodano w SonarTube akcję „Wyświetl opis”, która umożliwia odczytanie pełnego opisu filmu. Przycisk Opis można również dodać do przycisków odtwarzacza w ustawieniach Przyciski i zachowanie SonarTube."
+      "Dodano w SonarTube akcję „Wyświetl opis”, która umożliwia odczytanie pełnego opisu filmu. Przycisk Opis można również dodać do przycisków odtwarzacza w ustawieniach Przyciski i zachowanie SonarTube.",
+      "W Dokumentach można teraz chronić dokument hasłem za pomocą akcji dodatkowych. Prawidłowe hasło jest wymagane zarówno przed otwarciem, jak i przed udostępnieniem chronionego dokumentu."
     ],
     "cs": [
       "Opraveny některé problémy ve Zprávách, kvůli kterým se místo textu článku mohly zobrazovat prvky stránky nebo nesouvisející obsah.",
@@ -64,7 +71,8 @@
       "Do nastavení přehrávače SonarTube byla přidána možnost Automatické přehrávání: po zapnutí SonarTube po skončení přehrávání automaticky přejde na další video nebo skladbu, pokud je k dispozici.",
       "SonarTube nyní umožňuje otevírat veřejné playlisty kanálu přímo ze stránky kanálu, včetně načítání dalších výsledků.",
       "SonarTube nyní umožňuje otevírat Shorts publikované kanálem přímo ze stránky kanálu, včetně načítání dalších výsledků.",
-      "V SonarTube byla přidána akce „Zobrazit popis“ pro přečtení úplného popisu videa. Tlačítko Popis lze také přidat mezi tlačítka přehrávače v nastavení Tlačítka a chování SonarTube."
+      "V SonarTube byla přidána akce „Zobrazit popis“ pro přečtení úplného popisu videa. Tlačítko Popis lze také přidat mezi tlačítka přehrávače v nastavení Tlačítka a chování SonarTube.",
+      "V Dokumentech lze nyní dokument chránit heslem pomocí sekundárních akcí. Správné heslo je vyžadováno jak před otevřením, tak před sdílením chráněného dokumentu."
     ],
     "de": [
       "Einige Probleme in den Nachrichten wurden behoben, durch die Seitenelemente oder unpassende Inhalte anstelle des eigentlichen Artikeltexts angezeigt werden konnten.",
@@ -72,7 +80,8 @@
       "In den SonarTube-Player-Einstellungen wurde eine Option für automatische Wiedergabe hinzugefügt: Ist sie aktiviert, wechselt SonarTube nach dem Ende der Wiedergabe automatisch zum nächsten Video oder Titel, sofern einer verfügbar ist.",
       "SonarTube kann jetzt die öffentlichen Playlists eines Kanals direkt von der Kanalseite öffnen und weitere Ergebnisse nachladen.",
       "SonarTube kann jetzt die von einem Kanal veröffentlichten Shorts direkt von der Kanalseite öffnen und weitere Ergebnisse nachladen.",
-      "In SonarTube wurde die Aktion „Beschreibung anzeigen“ hinzugefügt, um die vollständige Videobeschreibung zu lesen. Beschreibung kann in den Einstellungen Schaltflächen und Verhalten von SonarTube auch zu den Player-Schaltflächen hinzugefügt werden."
+      "In SonarTube wurde die Aktion „Beschreibung anzeigen“ hinzugefügt, um die vollständige Videobeschreibung zu lesen. Beschreibung kann in den Einstellungen Schaltflächen und Verhalten von SonarTube auch zu den Player-Schaltflächen hinzugefügt werden.",
+      "In Dokumente kann ein Dokument jetzt über die sekundären Aktionen mit einem Passwort geschützt werden. Das richtige Passwort wird sowohl vor dem Öffnen als auch vor dem Teilen eines geschützten Dokuments verlangt."
     ],
     "zh_CN": [
       "修复了“新闻”中的一些问题，这些问题可能导致显示网页元素或无关内容，而不是文章正文。",
@@ -80,7 +89,8 @@
       "SonarTube 播放器设置中新增“自动播放”选项：启用后，当当前视频或音轨播放结束时，如果有下一项，SonarTube 会自动播放下一项。",
       "SonarTube 现在可以直接从频道页面打开该频道的公开播放列表，并支持继续加载更多结果。",
       "SonarTube 现在可以直接从频道页面打开该频道发布的 Shorts，并支持继续加载更多结果。",
-      "SonarTube 新增“查看说明”操作，可读取视频的完整说明。“说明”也可以在 SonarTube“按钮和行为”设置中添加到播放器按钮。"
+      "SonarTube 新增“查看说明”操作，可读取视频的完整说明。“说明”也可以在 SonarTube“按钮和行为”设置中添加到播放器按钮。",
+      "“文档”现在可通过辅助操作为文档启用密码保护。打开或共享受保护的文档前，都需要输入正确的密码。"
     ],
     "uk": [
       "Виправлено деякі проблеми в Новинах, через які замість тексту статті могли відображатися елементи сторінки або сторонній вміст.",
@@ -88,7 +98,8 @@
       "У налаштуваннях програвача SonarTube додано параметр автоматичного відтворення: коли його ввімкнено, після завершення відео або треку SonarTube автоматично переходить до наступного, якщо він доступний.",
       "SonarTube тепер дозволяє відкривати публічні плейлисти каналу безпосередньо зі сторінки каналу з підтримкою завантаження наступних результатів.",
       "SonarTube тепер дозволяє відкривати Shorts, опубліковані каналом, безпосередньо зі сторінки каналу з підтримкою завантаження наступних результатів.",
-      "У SonarTube додано дію «Переглянути опис» для читання повного опису відео. Кнопку «Опис» також можна додати до кнопок програвача в налаштуваннях «Кнопки та поведінка SonarTube»."
+      "У SonarTube додано дію «Переглянути опис» для читання повного опису відео. Кнопку «Опис» також можна додати до кнопок програвача в налаштуваннях «Кнопки та поведінка SonarTube».",
+      "У Документах тепер можна захистити документ паролем через додаткові дії. Правильний пароль потрібно вводити як перед відкриттям, так і перед поширенням захищеного документа."
     ]
   },
   {

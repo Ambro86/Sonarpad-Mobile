@@ -3596,6 +3596,51 @@ class AppLocalizationsPt extends AppLocalizations {
 
 
   @override
+  String get protectDocumentWithPassword => 'Proteger com palavra-passe';
+
+  @override
+  String get removeDocumentPasswordProtection => 'Remover proteção por palavra-passe';
+
+  @override
+  String get documentPassword => 'Palavra-passe';
+
+  @override
+  String get confirmDocumentPassword => 'Confirmar palavra-passe';
+
+  @override
+  String get chooseDocumentPassword => 'Introduza uma palavra-passe e confirme-a. Será pedida antes de abrir ou partilhar este documento.';
+
+  @override
+  String get enterCurrentDocumentPassword => 'Introduza a palavra-passe atual para remover a proteção.';
+
+  @override
+  String get documentPasswordRequired => 'Introduza uma palavra-passe.';
+
+  @override
+  String get documentPasswordsDoNotMatch => 'As palavras-passe não coincidem.';
+
+  @override
+  String get incorrectDocumentPassword => 'Palavra-passe incorreta.';
+
+  @override
+  String get documentPasswordProtectionEnabled => 'Proteção por palavra-passe ativada.';
+
+  @override
+  String get documentPasswordProtectionRemoved => 'Proteção por palavra-passe removida.';
+
+  @override
+  String get documentPasswordRequiredTitle => 'Palavra-passe necessária';
+
+  @override
+  String get enterDocumentPasswordToShare => 'Este documento está protegido. Introduza a palavra-passe para continuar a partilha.';
+
+  @override
+  String get enterDocumentPasswordToOpen => 'Este documento está protegido. Introduza a palavra-passe para o abrir.';
+
+  @override
+  String get documentPasswordProtectedStatus => 'Protegido por palavra-passe';
+
+  @override
   String get rename => 'Renomear';
 
   @override
@@ -7242,6 +7287,51 @@ class AppLocalizationsPtBr extends AppLocalizations {
   @override
   String get preserveMediaError => 'Não foi possível salvar o conteúdo.';
 
+
+  @override
+  String get protectDocumentWithPassword => 'Proteger com senha';
+
+  @override
+  String get removeDocumentPasswordProtection => 'Remover proteção por senha';
+
+  @override
+  String get documentPassword => 'Senha';
+
+  @override
+  String get confirmDocumentPassword => 'Confirmar senha';
+
+  @override
+  String get chooseDocumentPassword => 'Digite uma senha e confirme-a. Ela será solicitada antes de abrir ou compartilhar este documento.';
+
+  @override
+  String get enterCurrentDocumentPassword => 'Digite a senha atual para remover a proteção.';
+
+  @override
+  String get documentPasswordRequired => 'Digite uma senha.';
+
+  @override
+  String get documentPasswordsDoNotMatch => 'As senhas não coincidem.';
+
+  @override
+  String get incorrectDocumentPassword => 'Senha incorreta.';
+
+  @override
+  String get documentPasswordProtectionEnabled => 'Proteção por senha ativada.';
+
+  @override
+  String get documentPasswordProtectionRemoved => 'Proteção por senha removida.';
+
+  @override
+  String get documentPasswordRequiredTitle => 'Senha necessária';
+
+  @override
+  String get enterDocumentPasswordToShare => 'Este documento está protegido. Digite a senha para continuar o compartilhamento.';
+
+  @override
+  String get enterDocumentPasswordToOpen => 'Este documento está protegido. Digite a senha para abri-lo.';
+
+  @override
+  String get documentPasswordProtectedStatus => 'Protegido por senha';
 
   @override
   String get rename => 'Renomear';

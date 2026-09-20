@@ -3690,6 +3690,51 @@ class AppLocalizationsEn extends AppLocalizations {
 
 
   @override
+  String get protectDocumentWithPassword => 'Protect with password';
+
+  @override
+  String get removeDocumentPasswordProtection => 'Remove password protection';
+
+  @override
+  String get documentPassword => 'Password';
+
+  @override
+  String get confirmDocumentPassword => 'Confirm password';
+
+  @override
+  String get chooseDocumentPassword => 'Enter a password and confirm it. The password will be required before opening or sharing this document.';
+
+  @override
+  String get enterCurrentDocumentPassword => 'Enter the current password to remove protection.';
+
+  @override
+  String get documentPasswordRequired => 'Enter a password.';
+
+  @override
+  String get documentPasswordsDoNotMatch => 'The passwords do not match.';
+
+  @override
+  String get incorrectDocumentPassword => 'Incorrect password.';
+
+  @override
+  String get documentPasswordProtectionEnabled => 'Password protection enabled.';
+
+  @override
+  String get documentPasswordProtectionRemoved => 'Password protection removed.';
+
+  @override
+  String get documentPasswordRequiredTitle => 'Password required';
+
+  @override
+  String get enterDocumentPasswordToShare => 'This document is protected. Enter the password to continue sharing.';
+
+  @override
+  String get enterDocumentPasswordToOpen => 'This document is protected. Enter the password to open it.';
+
+  @override
+  String get documentPasswordProtectedStatus => 'Password protected';
+
+  @override
   String get rename => 'Rename';
 
   @override

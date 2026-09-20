@@ -1564,6 +1564,8 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
         'podcast_add' => Icons.podcasts,
         'remove' => Icons.delete_outline,
         'edit' => Icons.edit_outlined,
+        'lock' => Icons.lock_outline,
+        'lock_open' => Icons.lock_open_outlined,
         'play' => Icons.play_arrow,
         'record' => Icons.fiber_manual_record,
         _ => Icons.more_horiz,

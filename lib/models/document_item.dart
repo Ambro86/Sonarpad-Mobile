@@ -13,6 +13,8 @@ class DocumentItem {
   final bool isTemporary;
   final bool isFolder;
   final String? parentId;
+  final String? passwordSalt;
+  final String? passwordHash;
 
   const DocumentItem({
     required this.id,
@@ -26,7 +28,12 @@ class DocumentItem {
     this.isTemporary = false,
     this.isFolder = false,
     this.parentId,
+    this.passwordSalt,
+    this.passwordHash,
   });
+
+  bool get isPasswordProtected =>
+      (passwordSalt?.isNotEmpty ?? false) && (passwordHash?.isNotEmpty ?? false);
 
   String get displayName {
     final suffix = '.${extension.toLowerCase()}';
@@ -41,6 +48,9 @@ class DocumentItem {
     String? path,
     String? parentId,
     bool clearParentId = false,
+    String? passwordSalt,
+    String? passwordHash,
+    bool clearPasswordProtection = false,
   }) {
     return DocumentItem(
       id: id,
@@ -54,6 +64,10 @@ class DocumentItem {
       isTemporary: isTemporary,
       isFolder: isFolder,
       parentId: clearParentId ? null : (parentId ?? this.parentId),
+      passwordSalt:
+          clearPasswordProtection ? null : (passwordSalt ?? this.passwordSalt),
+      passwordHash:
+          clearPasswordProtection ? null : (passwordHash ?? this.passwordHash),
     );
   }
 
@@ -69,6 +83,8 @@ class DocumentItem {
         'isTemporary': isTemporary,
         'isFolder': isFolder,
         if (parentId != null) 'parentId': parentId,
+        if (passwordSalt != null) 'passwordSalt': passwordSalt,
+        if (passwordHash != null) 'passwordHash': passwordHash,
       };
 
   factory DocumentItem.fromJson(Map<String, dynamic> json) => DocumentItem(
@@ -86,6 +102,8 @@ class DocumentItem {
         isTemporary: json['isTemporary'] as bool? ?? false,
         isFolder: json['isFolder'] as bool? ?? false,
         parentId: json['parentId'] as String?,
+        passwordSalt: json['passwordSalt'] as String?,
+        passwordHash: json['passwordHash'] as String?,
       );
 
   static DocumentItem? tryFromJson(Map<String, dynamic> json) {

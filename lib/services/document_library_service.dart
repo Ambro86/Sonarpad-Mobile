@@ -1,11 +1,13 @@
 import 'dart:convert';
 import 'dart:developer' as dev;
 import 'dart:io';
+import 'dart:math';
 
+import 'package:archive/archive_io.dart';
+import 'package:crypto/crypto.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:archive/archive_io.dart';
 
 import '../models/document_item.dart';
 import '../utils/app_logger.dart';
@@ -25,6 +27,66 @@ class DocumentLibraryService {
   Map<String, String?> _placements = <String, String?>{};
 
   List<DocumentItem> get documents => List.unmodifiable(_documents);
+
+  static String _passwordDigest(String password, String salt) =>
+      sha256.convert(utf8.encode('$salt:$password')).toString();
+
+  static String _generatePasswordSalt() {
+    final random = Random.secure();
+    final bytes = List<int>.generate(24, (_) => random.nextInt(256));
+    return base64UrlEncode(bytes);
+  }
+
+  bool verifyDocumentPassword(DocumentItem doc, String password) {
+    final salt = doc.passwordSalt;
+    final expectedHash = doc.passwordHash;
+    if (salt == null ||
+        salt.isEmpty ||
+        expectedHash == null ||
+        expectedHash.isEmpty) {
+      return true;
+    }
+    final actualHash = _passwordDigest(password, salt);
+    return _constantTimeEquals(actualHash, expectedHash);
+  }
+
+  bool _constantTimeEquals(String a, String b) {
+    if (a.length != b.length) return false;
+    var diff = 0;
+    for (var i = 0; i < a.length; i++) {
+      diff |= a.codeUnitAt(i) ^ b.codeUnitAt(i);
+    }
+    return diff == 0;
+  }
+
+  Future<void> protectDocumentWithPassword(String id, String password) async {
+    if (password.trim().isEmpty) {
+      throw ArgumentError.value(password, 'password', 'password_empty');
+    }
+    await load();
+    final index = _documents.indexWhere((doc) => doc.id == id);
+    if (index == -1) return;
+    final salt = _generatePasswordSalt();
+    _documents[index] = _documents[index].copyWith(
+      passwordSalt: salt,
+      passwordHash: _passwordDigest(password, salt),
+    );
+    await _save();
+  }
+
+  Future<bool> removeDocumentPasswordProtection(
+    String id,
+    String password,
+  ) async {
+    await load();
+    final index = _documents.indexWhere((doc) => doc.id == id);
+    if (index == -1) return false;
+    final doc = _documents[index];
+    if (!verifyDocumentPassword(doc, password)) return false;
+    _documents[index] = doc.copyWith(clearPasswordProtection: true);
+    await _save();
+    return true;
+  }
 
   Future<Directory> documentsFolder() async {
     final appDir = await getApplicationDocumentsDirectory();
@@ -568,7 +630,13 @@ class DocumentLibraryService {
     await load();
     final index = _documents.indexWhere((d) => d.id == doc.id);
     if (index != -1) {
-      _documents[index] = _withPersistedPlacement(doc);
+      final current = _documents[index];
+      final updated = _withPersistedPlacement(doc).copyWith(
+        passwordSalt: current.passwordSalt,
+        passwordHash: current.passwordHash,
+        clearPasswordProtection: !current.isPasswordProtected,
+      );
+      _documents[index] = updated;
       await _save();
     }
   }

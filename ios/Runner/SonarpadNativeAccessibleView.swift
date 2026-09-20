@@ -1560,6 +1560,8 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
     case "podcast_add": return "dot.radiowaves.left.and.right"
     case "remove": return "trash"
     case "edit": return "pencil"
+    case "lock": return "lock"
+    case "lock_open": return "lock.open"
     case "play": return "play.fill"
     case "record": return "record.circle"
     default: return "ellipsis.circle"

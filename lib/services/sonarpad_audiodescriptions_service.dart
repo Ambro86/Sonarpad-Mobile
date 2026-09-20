@@ -98,6 +98,7 @@ class SonarpadAudiodescriptionsService {
         action: 'recent',
         sort: 'recent',
         limit: limit,
+        groupRecentFolders: true,
       );
 
   Future<List<SonarpadAudiodescriptionItem>> fetchAll(
@@ -143,6 +144,7 @@ class SonarpadAudiodescriptionsService {
     String? query,
     String? folder,
     required int limit,
+    bool groupRecentFolders = false,
   }) async {
     final code = sonarpadCode.trim();
     if (code.isEmpty) {
@@ -157,6 +159,7 @@ class SonarpadAudiodescriptionsService {
       'limit': limit,
       'offset': 0,
       'show_branding': false,
+      if (groupRecentFolders) 'group_recent_folders': true,
       if (query != null && query.isNotEmpty) 'q': query,
       if (folder != null && folder.isNotEmpty) 'folder': folder,
     };
