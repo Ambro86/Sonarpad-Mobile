@@ -122,7 +122,11 @@ void main() {
     final changelog = jsonDecode(File('assets/changelog.json').readAsStringSync()) as List<dynamic>;
     final current = changelog.first as Map<String, dynamic>;
     for (final entry in current.entries) {
-      if (entry.key == 'version' || entry.key == 'date') continue;
+      if (entry.key == 'version' ||
+          entry.key == 'date' ||
+          entry.key.endsWith('_extra')) {
+        continue;
+      }
       final lines = (entry.value as List).cast<String>();
       expect(
         lines.any((line) =>

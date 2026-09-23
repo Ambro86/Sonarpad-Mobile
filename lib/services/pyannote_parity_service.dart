@@ -28,7 +28,7 @@ class PyannoteParityService {
   Future<PyannoteParityArtifacts> run({
     required String sourcePath,
     double? limitSeconds,
-    void Function(double progress, String status)? onProgress,
+    void Function(double progress)? onProgress,
   }) async {
     final documents = await getApplicationDocumentsDirectory();
     final outputDir = Directory(p.join(documents.path, 'pyannote_parity_tests'));
@@ -41,7 +41,7 @@ class PyannoteParityService {
     final wavPath = p.join(outputDir.path, '$prefix.canonical.wav');
     final jsonPath = p.join(outputDir.path, '$prefix.mobile.json');
 
-    onProgress?.call(0.0, 'Preparazione WAV canonico mono 16 kHz...');
+    onProgress?.call(0.0);
     final args = <String>[
       '-y',
       '-hide_banner',
@@ -72,20 +72,20 @@ class PyannoteParityService {
       final logs = (await session.getAllLogsAsString() ?? '').trim();
       throw StateError(
         logs.isEmpty
-            ? 'FFmpeg non è riuscito a creare il WAV di test.'
-            : 'FFmpeg non è riuscito a creare il WAV di test: $logs',
+            ? 'PYANNOTE_FFMPEG_FAILED'
+            : 'PYANNOTE_FFMPEG_FAILED:${logs.hashCode}',
       );
     }
     final wavFile = File(wavPath);
     if (!await wavFile.exists() || await wavFile.length() <= 44) {
-      throw StateError('Il WAV canonico di test è vuoto o mancante.');
+      throw StateError('PYANNOTE_CANONICAL_WAV_EMPTY');
     }
 
-    onProgress?.call(0.03, 'Caricamento pyannote mobile...');
+    onProgress?.call(0.03);
     final result = await PyannoteMobileService.instance.analyzeCanonicalWav(
       wavPath,
-      onProgress: (progress, status) {
-        onProgress?.call(0.03 + progress * 0.97, status);
+      onProgress: (progress) {
+        onProgress?.call(0.03 + progress * 0.97);
       },
     );
 

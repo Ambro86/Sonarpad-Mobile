@@ -3029,5 +3029,18 @@
   "sonarTubeNoDescription": "Pro toto video není k dispozici žádný popis.",
   "@sonarTubeNoDescription": {
     "description": "Message shown when a SonarTube video has no description."
-  }
+  },
+  "pyannoteTestTitle": "Mobilní test pyannote",
+  "pyannoteTestInstructions": "Tento test používá stejný model ONNX pyannote jako Windows. Pro první porovnání použijte rychlý test prvních 2 minut.",
+  "pyannoteQuickTest": "Rychlý test pyannote: první 2 minuty",
+  "pyannoteFullTest": "Úplný test pyannote: celý soubor",
+  "pyannoteShareArtifacts": "Sdílet kanonický WAV a mobilní výsledek JSON",
+  "pyannoteInitialStatus": "Vyberte zvukový nebo video soubor. Pro první porovnání použijte rychlý test.",
+  "pyannotePreparingQuick": "Příprava rychlého testu prvních 2 minut...",
+  "pyannotePreparingFull": "Příprava úplného testu...",
+  "pyannoteCompletedStatus": "Mobilní test dokončen. Sdílejte WAV a JSON a použijte stejný WAV v testu Windows.",
+  "pyannoteFilesUnavailable": "Soubory z posledního testu již nejsou k dispozici.",
+  "pyannoteFailure": "Test pyannote selhal.",
+  "pyannoteShareText": "Sonarpad: mobilní test shody pyannote. Přiložený kanonický WAV použijte také v testu Windows.",
+  "pyannoteShareSubject": "Test pyannote Sonarpad"
 }

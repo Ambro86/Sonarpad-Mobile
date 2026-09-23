@@ -139,9 +139,9 @@ class _SonarpadAudiodescriptionsScreenState
                               id: 'all',
                               title: AppLocalizations.of(context).sonarpadAudiodescriptionsAll,
                             ),
-                            const AccessibleListRow(
+                            AccessibleListRow(
                               id: 'pyannote_test',
-                              title: 'Test pyannote mobile',
+                              title: AppLocalizations.of(context).pyannoteTestTitle,
                             ),
                             ..._items.asMap().entries.map(
                                   (entry) => _catalogRow(
@@ -220,7 +220,7 @@ class _SonarpadAudiodescriptionsScreenState
         }
         if (index == 2) {
           return ListTile(
-            title: const Text('Test pyannote mobile'),
+            title: Text(AppLocalizations.of(context).pyannoteTestTitle),
             trailing: const Icon(Icons.chevron_right),
             onTap: _openPyannoteTest,
           );

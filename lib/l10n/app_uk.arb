@@ -4604,5 +4604,18 @@
   "sonarTubeNoDescription": "Для цього відео немає доступного опису.",
   "@sonarTubeNoDescription": {
     "description": "Message shown when a SonarTube video has no description."
-  }
+  },
+  "pyannoteTestTitle": "Мобільний тест pyannote",
+  "pyannoteTestInstructions": "Цей тест використовує ту саму модель ONNX pyannote, що й Windows. Для першого порівняння використайте швидкий тест перших 2 хвилин.",
+  "pyannoteQuickTest": "Швидкий тест pyannote: перші 2 хвилини",
+  "pyannoteFullTest": "Повний тест pyannote: увесь файл",
+  "pyannoteShareArtifacts": "Поділитися канонічним WAV і мобільним результатом JSON",
+  "pyannoteInitialStatus": "Виберіть аудіо- або відеофайл. Для першого порівняння використайте швидкий тест.",
+  "pyannotePreparingQuick": "Підготовка швидкого тесту перших 2 хвилин...",
+  "pyannotePreparingFull": "Підготовка повного тесту...",
+  "pyannoteCompletedStatus": "Мобільний тест завершено. Поділіться WAV і JSON та використайте той самий WAV у тесті Windows.",
+  "pyannoteFilesUnavailable": "Файли останнього тесту більше недоступні.",
+  "pyannoteFailure": "Тест pyannote не виконано.",
+  "pyannoteShareText": "Sonarpad: мобільний тест відповідності pyannote. Використайте вкладений канонічний WAV також у тесті Windows.",
+  "pyannoteShareSubject": "Тест pyannote Sonarpad"
 }

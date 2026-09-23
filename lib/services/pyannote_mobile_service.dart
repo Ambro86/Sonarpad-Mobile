@@ -94,8 +94,7 @@ class PyannoteMobileService {
     final hash = sha256.convert(modelBytes).toString();
     if (hash != expectedModelSha256) {
       throw StateError(
-        'Il modello pyannote incluso non corrisponde a quello di Windows. '
-        'SHA-256 atteso: $expectedModelSha256, trovato: $hash.',
+        'PYANNOTE_MODEL_SHA256_MISMATCH:$expectedModelSha256:$hash',
       );
     }
 
@@ -105,7 +104,7 @@ class PyannoteMobileService {
     if (session.inputNames.isEmpty || session.outputNames.isEmpty) {
       session.release();
       options.release();
-      throw StateError('Il modello pyannote ONNX non espone input/output validi.');
+      throw StateError('PYANNOTE_MODEL_IO_INVALID');
     }
 
     options.release();
@@ -116,7 +115,7 @@ class PyannoteMobileService {
   Future<PyannoteMobileResult> analyzeCanonicalWav(
     String wavPath, {
     double paddingSec = defaultPaddingSec,
-    void Function(double progress, String status)? onProgress,
+    void Function(double progress)? onProgress,
   }) async {
     await _ensureSession();
     final session = _session!;
@@ -124,14 +123,10 @@ class PyannoteMobileService {
     final wav = await _Pcm16Wave.open(wavPath);
     try {
       if (wav.channels != 1 || wav.bitsPerSample != 16 || wav.audioFormat != 1) {
-        throw StateError(
-          'Formato WAV non valido: serve PCM16 mono non compresso.',
-        );
+        throw StateError('PYANNOTE_WAV_FORMAT_INVALID');
       }
       if (wav.sampleRate != sampleRate) {
-        throw StateError(
-          'Sample rate non valido: atteso $sampleRate Hz, trovato ${wav.sampleRate} Hz.',
-        );
+        throw StateError('PYANNOTE_WAV_SAMPLE_RATE_INVALID');
       }
 
       final starts = _segmentationChunkStarts(wav.sampleCount, wav.sampleRate);
@@ -187,7 +182,7 @@ class PyannoteMobileService {
             <String, OrtValue>{inputName: input},
           );
           if (outputs == null || outputs.isEmpty || outputs.first == null) {
-            throw StateError('ONNX Runtime non ha restituito il tensore pyannote.');
+            throw StateError('PYANNOTE_RUNTIME_NO_OUTPUT');
           }
           _accumulateBatch(
             outputs.first!.value,
@@ -203,10 +198,7 @@ class PyannoteMobileService {
         }
 
         processedChunks += currentBatchSize;
-        onProgress?.call(
-          processedChunks / chunkCount,
-          'Pyannote: $processedChunks di $chunkCount finestre analizzate',
-        );
+        onProgress?.call(processedChunks / chunkCount);
       }
 
       final frameCounts = Uint8List(aggregateFrameCount);
@@ -250,8 +242,7 @@ class PyannoteMobileService {
   ) {
     if (outputValue is! List || outputValue.length != batchLength) {
       throw StateError(
-        'Forma output pyannote inattesa: batch=${outputValue is List ? outputValue.length : 'non-lista'}, '
-        'atteso=$batchLength.',
+        'PYANNOTE_OUTPUT_BATCH_SHAPE:${outputValue is List ? outputValue.length : 'non-lista'}:$batchLength',
       );
     }
 
@@ -259,8 +250,7 @@ class PyannoteMobileService {
       final chunk = outputValue[localChunk];
       if (chunk is! List || chunk.length != expectedFramesPerChunk) {
         throw StateError(
-          'Forma output pyannote inattesa alla finestra ${globalChunkStart + localChunk}: '
-          '${chunk is List ? chunk.length : 'non-lista'} frame, attesi $expectedFramesPerChunk.',
+          'PYANNOTE_OUTPUT_FRAME_SHAPE:${globalChunkStart + localChunk}:${chunk is List ? chunk.length : 'non-lista'}:$expectedFramesPerChunk',
         );
       }
       final startFrame = _closestSegmentationFrame(
@@ -271,8 +261,7 @@ class PyannoteMobileService {
         final scores = chunk[frame];
         if (scores is! List || scores.length != _powersetSpeakerCounts.length) {
           throw StateError(
-            'Forma output pyannote inattesa al frame $frame: '
-            '${scores is List ? scores.length : 'non-lista'} classi.',
+            'PYANNOTE_OUTPUT_CLASS_SHAPE:$frame:${scores is List ? scores.length : 'non-lista'}',
           );
         }
         var bestIndex = 0;
@@ -327,7 +316,7 @@ class PyannoteMobileService {
 
   static int _roundHalfToEven(double value) {
     if (!value.isFinite) {
-      throw StateError('Valore non finito durante l\'aggregazione pyannote.');
+      throw StateError('PYANNOTE_AGGREGATION_NONFINITE');
     }
     final floor = value.floor();
     final fraction = value - floor;
@@ -414,7 +403,7 @@ class _Pcm16Wave {
       if (header.length != 12 ||
           _ascii(header, 0, 4) != 'RIFF' ||
           _ascii(header, 8, 4) != 'WAVE') {
-        throw StateError('Il file scelto non è un WAV RIFF valido.');
+        throw StateError('PYANNOTE_WAV_RIFF_INVALID');
       }
 
       int? audioFormat;
@@ -435,7 +424,7 @@ class _Pcm16Wave {
         if (id == 'fmt ') {
           final fmt = await raf.read(math.min(size, 40));
           if (fmt.length < 16) {
-            throw StateError('Blocco fmt WAV incompleto.');
+            throw StateError('PYANNOTE_WAV_FMT_INCOMPLETE');
           }
           audioFormat = _u16le(fmt, 0);
           channels = _u16le(fmt, 2);
@@ -456,7 +445,7 @@ class _Pcm16Wave {
           bitsPerSample == null ||
           dataOffset == null ||
           dataLength == null) {
-        throw StateError('WAV privo dei blocchi fmt/data richiesti.');
+        throw StateError('PYANNOTE_WAV_CHUNKS_MISSING');
       }
 
       return _Pcm16Wave(

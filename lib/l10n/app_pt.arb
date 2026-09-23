@@ -3032,5 +3032,18 @@
   "sonarTubeNoDescription": "Não está disponível nenhuma descrição para este vídeo.",
   "@sonarTubeNoDescription": {
     "description": "Message shown when a SonarTube video has no description."
-  }
+  },
+  "pyannoteTestTitle": "Teste móvel do pyannote",
+  "pyannoteTestInstructions": "Este teste utiliza o mesmo modelo ONNX do pyannote que o Windows. Para a primeira comparação, use o teste rápido dos primeiros 2 minutos.",
+  "pyannoteQuickTest": "Teste rápido do pyannote: primeiros 2 minutos",
+  "pyannoteFullTest": "Teste completo do pyannote: ficheiro inteiro",
+  "pyannoteShareArtifacts": "Partilhar WAV canónico e resultado JSON móvel",
+  "pyannoteInitialStatus": "Escolha um ficheiro de áudio ou vídeo. Para a primeira comparação, use o teste rápido.",
+  "pyannotePreparingQuick": "A preparar o teste rápido dos primeiros 2 minutos...",
+  "pyannotePreparingFull": "A preparar o teste completo...",
+  "pyannoteCompletedStatus": "Teste móvel concluído. Partilhe o WAV e o JSON e use o mesmo WAV no teste do Windows.",
+  "pyannoteFilesUnavailable": "Os ficheiros do último teste já não estão disponíveis.",
+  "pyannoteFailure": "O teste do pyannote falhou.",
+  "pyannoteShareText": "Sonarpad: teste móvel de paridade do pyannote. Use também o WAV canónico anexado no teste do Windows.",
+  "pyannoteShareSubject": "Teste pyannote do Sonarpad"
 }
