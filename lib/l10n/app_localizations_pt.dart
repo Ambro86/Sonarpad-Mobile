@@ -27,7 +27,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get settingsThemeDark => 'Escuro';
 
   @override
-  String get settingsWeatherTemperatureUnit => 'Unidade de temperatura da meteorologia';
+  String get settingsWeatherTemperatureUnit =>
+      'Unidade de temperatura da meteorologia';
 
   @override
   String get weatherTemperatureCelsius => 'Celsius (°C)';
@@ -63,7 +64,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get sonarTubeSearchLabel => 'Pesquisar vídeos, canais ou listas';
 
   @override
-  String get sonarTubeSearchPrompt => 'Introduza uma pesquisa para encontrar vídeos, canais e listas.';
+  String get sonarTubeSearchPrompt =>
+      'Introduza uma pesquisa para encontrar vídeos, canais e listas.';
 
   @override
   String get sonarTubeNoResults => 'Nenhum vídeo encontrado.';
@@ -108,7 +110,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get sonarTubeChannelFavorites => 'Canais favoritos';
 
   @override
-  String get sonarTubeNoVideoFavorites => 'Nenhum vídeo ou lista de reprodução favorito.';
+  String get sonarTubeNoVideoFavorites =>
+      'Nenhum vídeo ou lista de reprodução favorito.';
 
   @override
   String get sonarTubeNoChannelFavorites => 'Nenhum canal favorito.';
@@ -129,10 +132,12 @@ class AppLocalizationsPt extends AppLocalizations {
   String get sonarTubeNoRecentVideos => 'Nenhum vídeo recente.';
 
   @override
-  String get sonarTubeConfirmClearHistory => 'Pretende mesmo limpar o histórico de vídeos recentes?';
+  String get sonarTubeConfirmClearHistory =>
+      'Pretende mesmo limpar o histórico de vídeos recentes?';
 
   @override
-  String get sonarTubeNoFavorites => 'Nenhum vídeo, canal ou lista de reprodução nos favoritos.';
+  String get sonarTubeNoFavorites =>
+      'Nenhum vídeo, canal ou lista de reprodução nos favoritos.';
 
   @override
   String get sonarTubeAddFavorite => 'Adicionar aos favoritos';
@@ -145,65 +150,6 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get sonarTubeNextTrack => 'Ir para o vídeo seguinte';
-
-  @override
-  String get sonarTubeGoToChannel => 'Ir para o canal';
-
-  @override
-  String get sonarTubeViewComments => 'Ver comentários';
-
-  @override
-  String get sonarTubeComments => 'Comentários';
-
-  @override
-  String get sonarTubeNoComments => 'Não há comentários disponíveis.';
-
-  @override
-  String get sonarTubeLoadMoreComments => 'Carregar mais comentários';
-
-  @override
-  String get sonarTubeTranscribeVideo => 'Transcrever vídeo';
-
-  @override
-  String get sonarTubeChannelPlaylists => 'Listas de reprodução';
-
-  @override
-  String get sonarTubeChannelShorts => 'Shorts';
-
-  @override
-  String sonarTubeVideoCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count vídeos',
-      one: '1 vídeo',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get sonarTubeViewDescription => 'Ver descrição';
-
-  @override
-  String get sonarTubeDescription => 'Descrição';
-
-  @override
-  String get sonarTubeNoDescription => 'Não está disponível nenhuma descrição para este vídeo.';
-
-  @override
-  String get sonarTubeTranscript => 'Transcrição';
-
-  @override
-  String get sonarTubeNoTranscript => 'Não existe transcrição disponível para este vídeo.';
-
-  @override
-  String get sonarTubeCopyTranscript => 'Copiar transcrição';
-
-  @override
-  String get sonarTubeTranscriptCopied => 'Transcrição copiada para a área de transferência';
-
-  @override
-  String get sonarTubeTranscriptSavedInDocuments => 'A transcrição foi guardada nos Documentos.';
 
   @override
   String get sonarTubeShareChannel => 'Partilhar canal';
@@ -306,16 +252,19 @@ class AppLocalizationsPt extends AppLocalizations {
   String get convertMediaNoOutput => 'Selecione uma pasta de gravação.';
 
   @override
-  String get convertMediaOutputNotWritable => 'A pasta escolhida não está diretamente acessível. O ficheiro será guardado na pasta interna do Sonarpad; quando a conversão terminar, poderá partilhá-lo ou guardá-lo na app Ficheiros.';
+  String get convertMediaOutputNotWritable =>
+      'A pasta escolhida não está diretamente acessível. O ficheiro será guardado na pasta interna do Sonarpad; quando a conversão terminar, poderá partilhá-lo ou guardá-lo na app Ficheiros.';
 
   @override
   String get convertMediaNoImage => 'Selecione uma imagem para o vídeo.';
 
   @override
-  String get convertMediaSamePath => 'O ficheiro convertido deve ser diferente do ficheiro de origem.';
+  String get convertMediaSamePath =>
+      'O ficheiro convertido deve ser diferente do ficheiro de origem.';
 
   @override
-  String get convertMediaInvalidBitrate => 'Introduza um bitrate válido entre 64 e 320 kbps.';
+  String get convertMediaInvalidBitrate =>
+      'Introduza um bitrate válido entre 64 e 320 kbps.';
 
   @override
   String convertMediaFailed(Object error) {
@@ -350,31 +299,38 @@ class AppLocalizationsPt extends AppLocalizations {
   String get sonarpadCodeValidTitle => 'Código válido';
 
   @override
-  String get sonarpadCodeValidMessage => 'O código Sonarpad está correto. Definições guardadas.';
+  String get sonarpadCodeValidMessage =>
+      'O código Sonarpad está correto. Definições guardadas.';
 
   @override
   String get sonarpadCodeInvalidTitle => 'Código inválido';
 
   @override
-  String get sonarpadCodeInvalidMessage => 'O código Sonarpad não é válido. Verifique se o copiou sem espaços adicionais.';
+  String get sonarpadCodeInvalidMessage =>
+      'O código Sonarpad não é válido. Verifique se o copiou sem espaços adicionais.';
 
   @override
-  String get infoDescription => 'Sonarpad é uma aplicação simples com muitas funções. Pensada para ser acessível com VoiceOver para pessoas cegas ou com deficiência visual, permite ouvir notícias, pesquisar e subscrever podcasts, importar artigos da Wikipédia, adicionar documentos à biblioteca, guardá-los e editá-los. Sonarpad é atualizado constantemente e cada função foi pensada para facilitar a vida diária.';
+  String get infoDescription =>
+      'Sonarpad é uma aplicação simples com muitas funções. Pensada para ser acessível com VoiceOver para pessoas cegas ou com deficiência visual, permite ouvir notícias, pesquisar e subscrever podcasts, importar artigos da Wikipédia, adicionar documentos à biblioteca, guardá-los e editá-los. Sonarpad é atualizado constantemente e cada função foi pensada para facilitar a vida diária.';
 
   @override
   String get infoAuthor => 'Autor: Ambrogio Riili';
 
   @override
-  String get donationsIntro => 'Sonarpad foi criado inicialmente para responder a necessidades pessoais, mas com o tempo tornou-se uma aplicação mais completa. O seu desenvolvimento exige trabalho constante: melhorar funções, corrigir erros, explorar novas ideias e testar cuidadosamente cada função.\n\nSe o Sonarpad lhe for útil e quiser apoiar o seu desenvolvimento, pode fazer um donativo.';
+  String get donationsIntro =>
+      'Sonarpad foi criado inicialmente para responder a necessidades pessoais, mas com o tempo tornou-se uma aplicação mais completa. O seu desenvolvimento exige trabalho constante: melhorar funções, corrigir erros, explorar novas ideias e testar cuidadosamente cada função.\n\nSe o Sonarpad lhe for útil e quiser apoiar o seu desenvolvimento, pode fazer um donativo.';
 
   @override
-  String get donationsPaypalDesc => 'Pode doar através do PayPal usando este link:\nhttps://www.paypal.me/ambrogio86\nPor favor, se possível, adicione "Sonarpad" como nota de pagamento.';
+  String get donationsPaypalDesc =>
+      'Pode doar através do PayPal usando este link:\nhttps://www.paypal.me/ambrogio86\nPor favor, se possível, adicione \"Sonarpad\" como nota de pagamento.';
 
   @override
-  String get donationsBankDesc => 'Também pode fazer um donativo por transferência bancária para a conta em nome de Ambrogio Riili.\nIBAN: IT77W0306901020100000064149\nSe possível, use uma descrição clara, por exemplo “Sonarpad”.';
+  String get donationsBankDesc =>
+      'Também pode fazer um donativo por transferência bancária para a conta em nome de Ambrogio Riili.\nIBAN: IT77W0306901020100000064149\nSe possível, use uma descrição clara, por exemplo “Sonarpad”.';
 
   @override
-  String get donationsThanks => 'Quem apoiar o projeto será mencionado na aplicação e no repositório GitHub, salvo se preferir ficar anónimo ou usar um pseudónimo.\n\nObrigado a Jiri Holzinger e Paola Vagata pela contribuição.\nPela tradução checa, obrigado a Radek Žalud e Jiri Holzinger.\nPela tradução espanhola, obrigado a Arturo Fernandez Rivas.\n\nUm grande agradecimento a Leonardo Graziano, Paolo Marcelli, Tiziano Ferraro e a todo o grupo Tecnologia accessibile por todo o seu apoio para melhorar, a cada dia, este maravilhoso projeto.';
+  String get donationsThanks =>
+      'Quem apoiar o projeto será mencionado na aplicação e no repositório GitHub, salvo se preferir ficar anónimo ou usar um pseudónimo.\n\nObrigado a Jiri Holzinger e Paola Vagata pela contribuição.\nPela tradução checa, obrigado a Radek Žalud e Jiri Holzinger.\nPela tradução espanhola, obrigado a Arturo Fernandez Rivas.\n\nUm grande agradecimento a Leonardo Graziano, Paolo Marcelli, Tiziano Ferraro e a todo o grupo Tecnologia accessibile por todo o seu apoio para melhorar, a cada dia, este maravilhoso projeto.';
 
   @override
   String get news => 'Notícias';
@@ -386,22 +342,26 @@ class AppLocalizationsPt extends AppLocalizations {
   String get podcasts => 'Podcasts';
 
   @override
-  String get podcastsHint => 'Subscreva podcasts, reproduza ou descarregue episódios';
+  String get podcastsHint =>
+      'Subscreva podcasts, reproduza ou descarregue episódios';
 
   @override
   String get importFromWikipedia => 'Wikipedia';
 
   @override
-  String get wikipediaHint => 'Pesquisar um artigo da Wikipédia e importar o texto';
+  String get wikipediaHint =>
+      'Pesquisar um artigo da Wikipédia e importar o texto';
 
   @override
   String get newsCategoryTop => 'Destaques';
 
   @override
-  String get settingsHomeGrouping => 'Agrupar os ícones da página inicial em categorias';
+  String get settingsHomeGrouping =>
+      'Agrupar os ícones da página inicial em categorias';
 
   @override
-  String get settingsHomeGroupingHint => 'Se desativado, os ícones principais aparecem numa única lista sem subpastas.';
+  String get settingsHomeGroupingHint =>
+      'Se desativado, os ícones principais aparecem numa única lista sem subpastas.';
 
   @override
   String get newsCategoryMyCity => 'A minha cidade';
@@ -445,7 +405,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get newsSourceName => 'Nome da fonte ou do site';
 
   @override
-  String get newsSourceUrlOrSearch => 'URL do site, feed RSS ou palavra de pesquisa';
+  String get newsSourceUrlOrSearch =>
+      'URL do site, feed RSS ou palavra de pesquisa';
 
   @override
   String get deleteNewsSource => 'Remover';
@@ -495,7 +456,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get loadingArticle => 'A carregar artigo';
 
   @override
-  String get noFullArticleFound => 'Artigo completo indisponível. A mostrar o resumo do feed.';
+  String get noFullArticleFound =>
+      'Artigo completo indisponível. A mostrar o resumo do feed.';
 
   @override
   String get italian => 'Italiano';
@@ -528,7 +490,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get extractingReaderArticleText => 'A extrair texto em modo leitor...';
 
   @override
-  String get extractingVisibleArticleText => 'A extrair texto visível da página...';
+  String get extractingVisibleArticleText =>
+      'A extrair texto visível da página...';
 
   @override
   String source(String source) {
@@ -603,7 +566,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get podcastName => 'Nome do podcast';
 
   @override
-  String get podcastSearchHint => 'Exemplo: tecnologia, história, nome do podcast...';
+  String get podcastSearchHint =>
+      'Exemplo: tecnologia, história, nome do podcast...';
 
   @override
   String get searchCountry => 'País da pesquisa';
@@ -721,7 +685,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get subscribedPodcasts => 'Podcasts subscritos';
 
   @override
-  String get noSubscribedPodcasts => 'Não tem podcasts subscritos. Pesquise um podcast e toque num resultado para subscrever.';
+  String get noSubscribedPodcasts =>
+      'Não tem podcasts subscritos. Pesquise um podcast e toque num resultado para subscrever.';
 
   @override
   String get localAudioFiles => 'Ficheiros de áudio locais';
@@ -754,7 +719,8 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
-  String get podcastInvalidOpmlFile => 'Ficheiro inválido. Selecione um ficheiro OPML ou XML.';
+  String get podcastInvalidOpmlFile =>
+      'Ficheiro inválido. Selecione um ficheiro OPML ou XML.';
 
   @override
   String get podcastExportComplete => 'Podcasts exportados';
@@ -768,7 +734,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get loadingEpisodes => 'A carregar episódios';
 
   @override
-  String get noAudioEpisodesFound => 'Nenhum episódio de áudio encontrado no feed.';
+  String get noAudioEpisodesFound =>
+      'Nenhum episódio de áudio encontrado no feed.';
 
   @override
   String get episodes => 'Episódios';
@@ -871,7 +838,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get addToLibrary => 'Adicionar à biblioteca';
 
   @override
-  String get documentImportSelectionMode => 'Quer selecionar um documento ou vários documentos?';
+  String get documentImportSelectionMode =>
+      'Quer selecionar um documento ou vários documentos?';
 
   @override
   String get documentImportSingle => 'Um documento';
@@ -892,7 +860,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get documentsAdded => 'Documentos adicionados';
 
   @override
-  String get importDocumentsFromITunes => 'Importar documentos do iTunes / Apple Devices';
+  String get importDocumentsFromITunes =>
+      'Importar documentos do iTunes / Apple Devices';
 
   @override
   String sharedDocumentsImportComplete(int count) {
@@ -931,7 +900,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get noExportableTextFound => 'Nenhum texto exportável encontrado.';
 
   @override
-  String get modifiedDocumentNoExportableText => 'O documento modificado não contém texto exportável.';
+  String get modifiedDocumentNoExportableText =>
+      'O documento modificado não contém texto exportável.';
 
   @override
   String get documentRemoved => 'Documento eliminado';
@@ -949,7 +919,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get writeNewDocument => 'Escrever novo documento';
 
   @override
-  String get addDocumentToLibraryHint => 'Adicionar documento à biblioteca. Procura os ficheiros do dispositivo e adiciona-os.';
+  String get addDocumentToLibraryHint =>
+      'Adicionar documento à biblioteca. Procura os ficheiros do dispositivo e adiciona-os.';
 
   @override
   String get documentTypeLabel => 'Documento';
@@ -992,7 +963,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get openFolderHint => 'Toque duas vezes para abrir a pasta';
 
   @override
-  String get openDocumentHint => 'Toque duas vezes para abrir e ler o documento';
+  String get openDocumentHint =>
+      'Toque duas vezes para abrir e ler o documento';
 
   @override
   String removeItem(String name) {
@@ -1015,16 +987,20 @@ class AppLocalizationsPt extends AppLocalizations {
   String get documentReaderTitle => 'Leitor de documentos';
 
   @override
-  String get documentReaderEditHint => 'Toque num parágrafo para editá-lo. Deslize para cima ou para baixo para adicionar um marcador.';
+  String get documentReaderEditHint =>
+      'Toque num parágrafo para editá-lo. Deslize para cima ou para baixo para adicionar um marcador.';
 
   @override
-  String get documentParagraphSelectionStartAction => 'Iniciar seleção de parágrafos';
+  String get documentParagraphSelectionStartAction =>
+      'Iniciar seleção de parágrafos';
 
   @override
-  String get documentParagraphSelectionTapHint => 'O modo de seleção está ativo. Toque duas vezes para selecionar ou desmarcar este parágrafo.';
+  String get documentParagraphSelectionTapHint =>
+      'O modo de seleção está ativo. Toque duas vezes para selecionar ou desmarcar este parágrafo.';
 
   @override
-  String get documentParagraphSelectionStarted => 'O modo de seleção está ativo. Parágrafo selecionado. Toque duas vezes nos outros parágrafos para selecioná-los.';
+  String get documentParagraphSelectionStarted =>
+      'O modo de seleção está ativo. Parágrafo selecionado. Toque duas vezes nos outros parágrafos para selecioná-los.';
 
   @override
   String documentParagraphSelectedAnnouncement(int count) {
@@ -1042,7 +1018,8 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
-  String get documentDeleteSelectedParagraphs => 'Eliminar parágrafos selecionados';
+  String get documentDeleteSelectedParagraphs =>
+      'Eliminar parágrafos selecionados';
 
   @override
   String documentDeleteSelectedParagraphsConfirmation(int count) {
@@ -1061,13 +1038,16 @@ class AppLocalizationsPt extends AppLocalizations {
   String get documentParagraphSelectionExited => 'Modo de seleção desativado.';
 
   @override
-  String get documentBookmarkHintSet => 'Deslize para cima ou para baixo para definir um marcador.';
+  String get documentBookmarkHintSet =>
+      'Deslize para cima ou para baixo para definir um marcador.';
 
   @override
-  String get documentEditParagraphActionHint => 'Toque duas vezes para editar este parágrafo. ';
+  String get documentEditParagraphActionHint =>
+      'Toque duas vezes para editar este parágrafo. ';
 
   @override
-  String get documentBookmarkHintReplace => 'Deslize para cima ou para baixo para eliminar o marcador existente ou substituí-lo por este parágrafo.';
+  String get documentBookmarkHintReplace =>
+      'Deslize para cima ou para baixo para eliminar o marcador existente ou substituí-lo por este parágrafo.';
 
   @override
   String get documentSetBookmarkAction => 'Adicionar novo marcador';
@@ -1076,7 +1056,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get documentRemoveBookmarkAction => 'Eliminar marcador';
 
   @override
-  String get documentReplaceBookmarkAction => 'Eliminar e adicionar um novo marcador';
+  String get documentReplaceBookmarkAction =>
+      'Eliminar e adicionar um novo marcador';
 
   @override
   String get searchInDocument => 'Pesquisar no documento';
@@ -1091,10 +1072,12 @@ class AppLocalizationsPt extends AppLocalizations {
   String get documentSearchFieldHint => 'Palavra ou frase para pesquisar';
 
   @override
-  String get documentSearchEmptyQuery => 'Introduza o texto que quer pesquisar.';
+  String get documentSearchEmptyQuery =>
+      'Introduza o texto que quer pesquisar.';
 
   @override
-  String get documentSearchResultsTitle => 'Resultados da pesquisa no documento';
+  String get documentSearchResultsTitle =>
+      'Resultados da pesquisa no documento';
 
   @override
   String noDocumentSearchResults(String query) {
@@ -1152,7 +1135,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get settingsTestingVoice => 'A testar...';
 
   @override
-  String get settingsVoiceTestText => 'Olá, este é um teste de leitura do Sonarpad.';
+  String get settingsVoiceTestText =>
+      'Olá, este é um teste de leitura do Sonarpad.';
 
   @override
   String settingsVoiceTestError(Object error) {
@@ -1168,7 +1152,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get settingsUnsavedTitle => 'Alterações não guardadas';
 
   @override
-  String get settingsUnsavedMessage => 'Tem alterações não guardadas. Quer guardá-las antes de sair?';
+  String get settingsUnsavedMessage =>
+      'Tem alterações não guardadas. Quer guardá-las antes de sair?';
 
   @override
   String get settingsExitWithoutSaving => 'Sair sem guardar';
@@ -1183,16 +1168,19 @@ class AppLocalizationsPt extends AppLocalizations {
   String get settingsAutoBookmark => 'Ativar marcador automático em multimédia';
 
   @override
-  String get settingsAutoBookmarkHint => 'O áudio ou vídeo continuará a partir do ponto onde ficou.';
+  String get settingsAutoBookmarkHint =>
+      'O áudio ou vídeo continuará a partir do ponto onde ficou.';
 
   @override
   String get settingsDocumentSliderStep => 'Passo do controlo dos documentos';
 
   @override
-  String get settingsDocumentSliderStepHint => 'Define quanto o controlo da posição do documento avança ou recua ao deslizar para cima ou para baixo.';
+  String get settingsDocumentSliderStepHint =>
+      'Define quanto o controlo da posição do documento avança ou recua ao deslizar para cima ou para baixo.';
 
   @override
-  String get settingsReadingSleepTimer => 'Temporizador de suspensão da leitura';
+  String get settingsReadingSleepTimer =>
+      'Temporizador de suspensão da leitura';
 
   @override
   String get settingsReadingSleepTimerOff => 'Desativado';
@@ -1203,16 +1191,19 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
-  String get settingsReadingSleepTimerHint => 'Para automaticamente a leitura do documento atual após o tempo escolhido e guarda o ponto de paragem. A contagem recomeça sempre que inicia a leitura de um documento.';
+  String get settingsReadingSleepTimerHint =>
+      'Para automaticamente a leitura do documento atual após o tempo escolhido e guarda o ponto de paragem. A contagem recomeça sempre que inicia a leitura de um documento.';
 
   @override
-  String get documentReadingSleepTimerStopped => 'Temporizador de suspensão: leitura parada e posição guardada.';
+  String get documentReadingSleepTimerStopped =>
+      'Temporizador de suspensão: leitura parada e posição guardada.';
 
   @override
   String get settingsSeekStep => 'Passo de avanço/recuo';
 
   @override
-  String get aiChatIntro => 'Sou a inteligência artificial do Sonarpad. Como posso ajudar?';
+  String get aiChatIntro =>
+      'Sou a inteligência artificial do Sonarpad. Como posso ajudar?';
 
   @override
   String get meteoTitle => 'Meteorologia';
@@ -1241,9 +1232,9 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get weatherChooseDay => 'Escolher dia';
 
-
   @override
-  String get tvRecordingChooseDay => weatherChooseDay;
+  String get tvRecordingChooseDay => 'Escolher dia';
+
   @override
   String get weatherCurrentTemperature => 'Temperatura atual';
 
@@ -1264,27 +1255,6 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get weatherRelativeHumidity => 'Humidade relativa';
-
-  @override
-  String get weatherAirQuality => 'Qualidade do ar';
-
-  @override
-  String get weatherAirQualityGood => 'Boa';
-
-  @override
-  String get weatherAirQualityFair => 'Razoável';
-
-  @override
-  String get weatherAirQualityModerate => 'Moderada';
-
-  @override
-  String get weatherAirQualityPoor => 'Má';
-
-  @override
-  String get weatherAirQualityVeryPoor => 'Muito má';
-
-  @override
-  String get weatherAirQualityExtremelyPoor => 'Extremamente má';
 
   @override
   String get settingsSecretCode => 'Código secreto Sonarpad';
@@ -1371,7 +1341,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get annulla => 'Cancelar';
 
   @override
-  String get compilaTuttiICampiPerRichiedereIlCodice => 'Preencha todos os campos para solicitar o código.';
+  String get compilaTuttiICampiPerRichiedereIlCodice =>
+      'Preencha todos os campos para solicitar o código.';
 
   @override
   String get selectFolder => 'Selecionar pasta';
@@ -1422,7 +1393,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get importFromProjectGutenberg => 'Importar do Project Gutenberg';
 
   @override
-  String get projectGutenbergImportUnavailable => 'A importação do Project Gutenberg ainda não está disponível.';
+  String get projectGutenbergImportUnavailable =>
+      'A importação do Project Gutenberg ainda não está disponível.';
 
   @override
   String get importFromInternetArchive => 'Importar do Internet Archive';
@@ -1502,7 +1474,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get librivoxNoAudioTracks => 'Não há faixas de áudio disponíveis.';
 
   @override
-  String get librivoxNotTextExportable => 'Os audiolivros do LibriVox não podem ser exportados como texto.';
+  String get librivoxNotTextExportable =>
+      'Os audiolivros do LibriVox não podem ser exportados como texto.';
 
   @override
   String sourceDurationValue(String duration) {
@@ -1560,7 +1533,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get applyAndSave => 'Aplicar e guardar';
 
   @override
-  String get textEditedAndSaved => 'Texto editado e guardado no documento atual.';
+  String get textEditedAndSaved =>
+      'Texto editado e guardado no documento atual.';
 
   @override
   String get saveError => 'Erro ao guardar';
@@ -1572,19 +1546,14 @@ class AppLocalizationsPt extends AppLocalizations {
   String get saveInLibrary => 'Guardar na biblioteca';
 
   @override
-  String get copyToClipboard => "Copiar para a área de transferência";
-
-  @override
-  String get textCopiedToClipboard => "Texto copiado para a área de transferência";
-
-  @override
   String get documentTextLabel => 'Texto do documento';
 
   @override
   String get modifiedInSonarpad => 'Modificado no Sonarpad';
 
   @override
-  String get noTextAvailableForDocument => 'Não há texto disponível para este documento.';
+  String get noTextAvailableForDocument =>
+      'Não há texto disponível para este documento.';
 
   @override
   String bookmarkSet(int index) {
@@ -1671,7 +1640,8 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
-  String get dropboxLoginPrompt => 'Inicie sessão no Dropbox para importar os seus documentos.';
+  String get dropboxLoginPrompt =>
+      'Inicie sessão no Dropbox para importar os seus documentos.';
 
   @override
   String get loginToDropbox => 'Iniciar sessão no Dropbox';
@@ -1699,7 +1669,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get goBack => '.. Voltar';
 
   @override
-  String get noSupportedFilesInFolder => 'Não há ficheiros compatíveis nesta pasta.';
+  String get noSupportedFilesInFolder =>
+      'Não há ficheiros compatíveis nesta pasta.';
 
   @override
   String get articleNotFound => 'Artigo não encontrado.';
@@ -1714,7 +1685,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get clearHistory => 'Limpar histórico';
 
   @override
-  String get confirmClearHistory => 'Quer mesmo limpar todas as pesquisas recentes?';
+  String get confirmClearHistory =>
+      'Quer mesmo limpar todas as pesquisas recentes?';
 
   @override
   String get clear => 'Limpar';
@@ -1723,13 +1695,15 @@ class AppLocalizationsPt extends AppLocalizations {
   String get noRecentSearches => 'Não há pesquisas recentes.';
 
   @override
-  String get logCopiedToClipboard => 'Registo copiado para a área de transferência';
+  String get logCopiedToClipboard =>
+      'Registo copiado para a área de transferência';
 
   @override
   String get logCleared => 'Log limpo';
 
   @override
-  String get parafarmacoDetailReadyAnnouncement => 'Ficha do produto carregada. Deslize para a direita para escolher as secções.';
+  String get parafarmacoDetailReadyAnnouncement =>
+      'Ficha do produto carregada. Deslize para a direita para escolher as secções.';
 
   @override
   String get systemLog => 'Registo do sistema';
@@ -1753,7 +1727,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get calendar => 'Calendário';
 
   @override
-  String get calendarHint => 'Abrir o calendário com santos, feriados e lembretes';
+  String get calendarHint =>
+      'Abrir o calendário com santos, feriados e lembretes';
 
   @override
   String get saintOfTheDay => 'Santo do dia';
@@ -1842,7 +1817,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get radio => 'Rádio';
 
   @override
-  String get radioHint => 'Procura estações de rádio, escuta transmissões e gere favoritos';
+  String get radioHint =>
+      'Procura estações de rádio, escuta transmissões e gere favoritos';
 
   @override
   String get radioTitle => 'Estações de rádio de todo o mundo';
@@ -1950,7 +1926,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get tvSearchResults => 'Resultados de canais de TV';
 
   @override
-  String get tvSearchEmptyQuery => 'Introduza o nome de um canal de TV para pesquisar.';
+  String get tvSearchEmptyQuery =>
+      'Introduza o nome de um canal de TV para pesquisar.';
 
   @override
   String tvSearchNoResults(String query) {
@@ -1978,10 +1955,12 @@ class AppLocalizationsPt extends AppLocalizations {
   String get radioAddSubmit => 'Verificar e adicionar';
 
   @override
-  String get radioAddMissingFields => 'Introduza o nome da rádio e o endereço da transmissão.';
+  String get radioAddMissingFields =>
+      'Introduza o nome da rádio e o endereço da transmissão.';
 
   @override
-  String get radioCommunityAdded => 'Rádio adicionada com sucesso à comunidade Sonarpad.';
+  String get radioCommunityAdded =>
+      'Rádio adicionada com sucesso à comunidade Sonarpad.';
 
   @override
   String radioCommunityAddError(Object error) {
@@ -2010,10 +1989,12 @@ class AppLocalizationsPt extends AppLocalizations {
   String get recordingInProgressStatus => 'Gravação em curso';
 
   @override
-  String get scheduledRecordingInProgressStatus => 'Gravação programada em curso';
+  String get scheduledRecordingInProgressStatus =>
+      'Gravação programada em curso';
 
   @override
-  String get recordingCannotOpenWhileInProgress => 'Não é possível abrir esta gravação porque ainda está em curso.';
+  String get recordingCannotOpenWhileInProgress =>
+      'Não é possível abrir esta gravação porque ainda está em curso.';
 
   @override
   String get blindLibrarySearchCatalog => 'Pesquisar no catálogo';
@@ -2132,13 +2113,16 @@ class AppLocalizationsPt extends AppLocalizations {
   String get routeCancel => 'Cancelar';
 
   @override
-  String get routeErrorMissingFields => 'Introduza o ponto de partida e o destino';
+  String get routeErrorMissingFields =>
+      'Introduza o ponto de partida e o destino';
 
   @override
-  String get routeErrorFromNotFound => 'Nenhum resultado encontrado para o endereço de partida';
+  String get routeErrorFromNotFound =>
+      'Nenhum resultado encontrado para o endereço de partida';
 
   @override
-  String get routeErrorToNotFound => 'Nenhum resultado encontrado para o endereço de destino';
+  String get routeErrorToNotFound =>
+      'Nenhum resultado encontrado para o endereço de destino';
 
   @override
   String get routeResultsTitle => 'Percursos disponíveis';
@@ -2455,7 +2439,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get concertsSearchTooltip => 'Pesquisar';
 
   @override
-  String get concertsInitialText => 'Escreva acima o nome da sua cidade para ver os concertos musicais programados.';
+  String get concertsInitialText =>
+      'Escreva acima o nome da sua cidade para ver os concertos musicais programados.';
 
   @override
   String get concertsEmpty => 'Nenhum concerto encontrado nesta cidade.';
@@ -2473,13 +2458,15 @@ class AppLocalizationsPt extends AppLocalizations {
   String get podcastSelectDate => 'Selecionar data';
 
   @override
-  String get podcastNoDatesAvailable => 'Nenhuma data disponível para estes episódios.';
+  String get podcastNoDatesAvailable =>
+      'Nenhuma data disponível para estes episódios.';
 
   @override
   String get podcastChapters => 'Capítulos';
 
   @override
-  String get podcastChaptersUnavailable => 'Não há capítulos disponíveis para este episódio.';
+  String get podcastChaptersUnavailable =>
+      'Não há capítulos disponíveis para este episódio.';
 
   @override
   String get podcastUnplayed => 'Episódios não reproduzidos';
@@ -2500,7 +2487,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get routeGoogleMapsAction => 'Google Maps';
 
   @override
-  String get routeOpenError => 'Não foi possível abrir a aplicação de navegação.';
+  String get routeOpenError =>
+      'Não foi possível abrir a aplicação de navegação.';
 
   @override
   String get routeSaveSuccess => 'Percurso guardado nos documentos';
@@ -2518,13 +2506,15 @@ class AppLocalizationsPt extends AppLocalizations {
   String get exportCompleteTitle => 'Exportação concluída';
 
   @override
-  String get exportCompleteMessage => 'O ficheiro foi criado corretamente. Quer guardá-lo no Sonarpad ou partilhá-lo?';
+  String get exportCompleteMessage =>
+      'O ficheiro foi criado corretamente. Quer guardá-lo no Sonarpad ou partilhá-lo?';
 
   @override
   String get saveInSonarpad => 'Guardar no Sonarpad';
 
   @override
-  String get exportSavedInSonarpad => 'Ficheiro guardado nos Documentos do Sonarpad.';
+  String get exportSavedInSonarpad =>
+      'Ficheiro guardado nos Documentos do Sonarpad.';
 
   @override
   String get audiobookExportProgressTitle => 'Criação do audiolivro';
@@ -2536,7 +2526,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get audiobookExportGeneratingAudio => 'A gerar áudio';
 
   @override
-  String get audiobookExportConvertingAudio => 'Conversão final do ficheiro de áudio...';
+  String get audiobookExportConvertingAudio =>
+      'Conversão final do ficheiro de áudio...';
 
   @override
   String get audiobookExportFinalizing => 'A finalizar...';
@@ -2556,28 +2547,35 @@ class AppLocalizationsPt extends AppLocalizations {
   String get sortPodcastsAlphabetically => 'Ordenar podcasts alfabeticamente';
 
   @override
-  String get sortRadioFavoritesAlphabetically => 'Ordenar favoritas alfabeticamente';
+  String get sortRadioFavoritesAlphabetically =>
+      'Ordenar favoritas alfabeticamente';
 
   @override
-  String get podcastsSortedAlphabetically => 'Podcasts ordenados alfabeticamente.';
+  String get podcastsSortedAlphabetically =>
+      'Podcasts ordenados alfabeticamente.';
 
   @override
-  String get radioFavoritesSortedAlphabetically => 'Rádios favoritas ordenadas alfabeticamente.';
+  String get radioFavoritesSortedAlphabetically =>
+      'Rádios favoritas ordenadas alfabeticamente.';
 
   @override
-  String get settingsIncludeFootnotesInText => 'Incluir notas de rodapé no texto';
+  String get settingsIncludeFootnotesInText =>
+      'Incluir notas de rodapé no texto';
 
   @override
-  String get settingsIncludeFootnotesInTextHint => 'Nos EPUB compatíveis, mostra a nota logo após o parágrafo que a referencia.';
+  String get settingsIncludeFootnotesInTextHint =>
+      'Nos EPUB compatíveis, mostra a nota logo após o parágrafo que a referencia.';
 
   @override
   String get documentFootnoteLabel => 'Nota de rodapé';
 
   @override
-  String get settingsMultipleDocumentBookmarks => 'Permitir vários marcadores nos documentos';
+  String get settingsMultipleDocumentBookmarks =>
+      'Permitir vários marcadores nos documentos';
 
   @override
-  String get settingsMultipleDocumentBookmarksHint => 'Se estiver desativado, fica apenas um marcador por documento. Se estiver ativado, pode guardar vários marcadores no mesmo documento.';
+  String get settingsMultipleDocumentBookmarksHint =>
+      'Se estiver desativado, fica apenas um marcador por documento. Se estiver ativado, pode guardar vários marcadores no mesmo documento.';
 
   @override
   String get documentGoToBookmarkAction => 'Ir para o marcador';
@@ -2592,7 +2590,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get documentKeepBookmarkTitle => 'Que marcador pretende manter?';
 
   @override
-  String get documentKeepBookmarkMessage => 'Os marcadores múltiplos estão desativados. Escolha um marcador para manter: os outros serão eliminados.';
+  String get documentKeepBookmarkMessage =>
+      'Os marcadores múltiplos estão desativados. Escolha um marcador para manter: os outros serão eliminados.';
 
   @override
   String documentBookmarkChoiceLabel(int order, int paragraph) {
@@ -2609,25 +2608,30 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
-  String get settingsSonarTubePlayerActions => 'Botões e comportamento do SonarTube';
+  String get settingsSonarTubePlayerActions =>
+      'Botões e comportamento do SonarTube';
 
   @override
   String get settingsSonarTubeAutoplay => 'Reprodução automática';
 
   @override
-  String get settingsSonarTubeAutoplayHint => 'Quando um vídeo ou faixa termina, o SonarTube reproduz automaticamente o próximo, se estiver disponível.';
+  String get settingsSonarTubeAutoplayHint =>
+      'Quando um vídeo ou faixa termina, o SonarTube reproduz automaticamente o próximo, se estiver disponível.';
 
   @override
-  String get settingsVideoLandscapeFullscreen => 'Vídeo horizontal em ecrã inteiro';
+  String get settingsVideoLandscapeFullscreen =>
+      'Vídeo horizontal em ecrã inteiro';
 
   @override
-  String get settingsVideoLandscapeFullscreenHint => 'Quando ativa o vídeo, este é mostrado em ecrã inteiro na orientação horizontal. As rádios só de áudio não mudam.';
+  String get settingsVideoLandscapeFullscreenHint =>
+      'Quando ativa o vídeo, este é mostrado em ecrã inteiro na orientação horizontal. As rádios só de áudio não mudam.';
 
   @override
   String get settingsPodcastCacheTitle => 'Cache de podcasts';
 
   @override
-  String get settingsPodcastCacheHint => 'Limpa apenas ficheiros temporários dos podcasts. Subscrições, histórico e áudio importado ficam intactos.';
+  String get settingsPodcastCacheHint =>
+      'Limpa apenas ficheiros temporários dos podcasts. Subscrições, histórico e áudio importado ficam intactos.';
 
   @override
   String settingsPodcastCacheSize(String size) {
@@ -2641,7 +2645,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get confirmClearPodcastCacheTitle => 'Limpar a cache de podcasts?';
 
   @override
-  String get confirmClearPodcastCacheMessage => 'Os ficheiros temporários dos podcasts serão eliminados. As subscrições e o histórico dos episódios não serão removidos.';
+  String get confirmClearPodcastCacheMessage =>
+      'Os ficheiros temporários dos podcasts serão eliminados. As subscrições e o histórico dos episódios não serão removidos.';
 
   @override
   String podcastCacheCleared(String size) {
@@ -2658,22 +2663,27 @@ class AppLocalizationsPt extends AppLocalizations {
   String get pharmacyProductsSectionTitle => 'Parafarmácia e suplementos';
 
   @override
-  String get pharmacyProductsLoadingTitle => 'A procurar parafarmácia e suplementos...';
+  String get pharmacyProductsLoadingTitle =>
+      'A procurar parafarmácia e suplementos...';
 
   @override
-  String get pharmacyProductsErrorTitle => 'Erro ao procurar parafarmácia e suplementos';
+  String get pharmacyProductsErrorTitle =>
+      'Erro ao procurar parafarmácia e suplementos';
 
   @override
-  String get pharmacyProductsNoResultsTitle => 'Nenhum produto de parafarmácia ou suplemento encontrado';
+  String get pharmacyProductsNoResultsTitle =>
+      'Nenhum produto de parafarmácia ou suplemento encontrado';
 
   @override
   String get mediaCutterTitle => 'Cortar ficheiro multimédia';
 
   @override
-  String get mediaCutterInstruction1 => 'Abre um ficheiro de áudio ou vídeo, reproduz e vai até ao ponto onde queres cortar.';
+  String get mediaCutterInstruction1 =>
+      'Abre um ficheiro de áudio ou vídeo, reproduz e vai até ao ponto onde queres cortar.';
 
   @override
-  String get mediaCutterInstruction2 => 'Coloque em pausa, prima Dividir, depois elimine as partes que não quer na secção Partes a guardar e prima Guardar.';
+  String get mediaCutterInstruction2 =>
+      'Coloque em pausa, prima Dividir, depois elimine as partes que não quer na secção Partes a guardar e prima Guardar.';
 
   @override
   String get mediaCutterOpenFile => 'Abrir ficheiro multimédia';
@@ -2687,7 +2697,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get mediaCutterPosition => 'Posição de corte';
 
   @override
-  String get mediaCutterPositionHint => 'Avança ou recua um segundo de cada vez.';
+  String get mediaCutterPositionHint =>
+      'Avança ou recua um segundo de cada vez.';
 
   @override
   String get mediaCutterHideVideoPreview => 'Ocultar vídeo';
@@ -2717,7 +2728,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get mediaCutterPartsTitle => 'Partes a guardar';
 
   @override
-  String get mediaCutterPartsHint => 'Toque numa parte para a ouvir. As partes eliminadas desaparecem da lista, são ignoradas durante a reprodução e não serão guardadas. Os efeitos são aplicados a toda a parte apenas quando o ficheiro multimédia é guardado.';
+  String get mediaCutterPartsHint =>
+      'Toque numa parte para a ouvir. As partes eliminadas desaparecem da lista, são ignoradas durante a reprodução e não serão guardadas. Os efeitos são aplicados a toda a parte apenas quando o ficheiro multimédia é guardado.';
 
   @override
   String mediaCutterPartLabel(int index) {
@@ -2739,16 +2751,19 @@ class AppLocalizationsPt extends AppLocalizations {
   String get mediaCutterUnsavedExitTitle => 'Ficheiro não guardado';
 
   @override
-  String get mediaCutterUnsavedExitMessage => 'O ficheiro não foi guardado. Tem a certeza de que quer sair?';
+  String get mediaCutterUnsavedExitMessage =>
+      'O ficheiro não foi guardado. Tem a certeza de que quer sair?';
 
   @override
   String get mediaCutterNoFile => 'Abre primeiro um ficheiro multimédia.';
 
   @override
-  String get mediaCutterInvalidSplitPoint => 'Escolhe um ponto dentro do ficheiro, não o início nem o fim.';
+  String get mediaCutterInvalidSplitPoint =>
+      'Escolhe um ponto dentro do ficheiro, não o início nem o fim.';
 
   @override
-  String get mediaCutterSplitAlreadyExists => 'Já existe uma divisão neste ponto.';
+  String get mediaCutterSplitAlreadyExists =>
+      'Já existe uma divisão neste ponto.';
 
   @override
   String mediaCutterSplitAdded(String position) {
@@ -2774,19 +2789,22 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
-  String get mediaCutterNoPartsToSave => 'Mantenha pelo menos uma parte antes de guardar.';
+  String get mediaCutterNoPartsToSave =>
+      'Mantenha pelo menos uma parte antes de guardar.';
 
   @override
   String get mediaCutterRestoreDeletedPart => 'Restaurar parte eliminada';
 
   @override
-  String get mediaCutterNoDeletedParts => 'Não há partes eliminadas para restaurar.';
+  String get mediaCutterNoDeletedParts =>
+      'Não há partes eliminadas para restaurar.';
 
   @override
   String get mediaCutterPartDeleteAction => 'Eliminar';
 
   @override
-  String get mediaCutterPartTapHint => 'Toque duas vezes para ouvir esta parte. Use as ações Modificar parte, Eliminar ou Ajustar efeitos.';
+  String get mediaCutterPartTapHint =>
+      'Toque duas vezes para ouvir esta parte. Use as ações Modificar parte, Eliminar ou Ajustar efeitos.';
 
   @override
   String mediaCutterPartDeleted(String start, String end) {
@@ -2805,7 +2823,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get mediaCutterPartEditAction => 'Modificar parte';
 
   @override
-  String get mediaCutterPartEditDescription => 'Desloque o início ou o fim da parte em 1 segundo e depois ouça a parte modificada.';
+  String get mediaCutterPartEditDescription =>
+      'Desloque o início ou o fim da parte em 1 segundo e depois ouça a parte modificada.';
 
   @override
   String mediaCutterPartAdjusted(String start, String end) {
@@ -2816,7 +2835,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get mediaCutterPartEffectsTitle => 'Efeitos da parte';
 
   @override
-  String get mediaCutterPartEffectsDescription => 'Ajuste o volume e o efeito apenas para esta parte.';
+  String get mediaCutterPartEffectsDescription =>
+      'Ajuste o volume e o efeito apenas para esta parte.';
 
   @override
   String get mediaCutterPartVolumeLabel => 'Volume da parte';
@@ -2952,7 +2972,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get mediaCutterPartPreviewAction => 'Ouvir pré-visualização';
 
   @override
-  String get mediaCutterPartEffectsSavedOnly => 'A pré-visualização usa o volume escolhido. Os efeitos de áudio são aplicados ao guardar.';
+  String get mediaCutterPartEffectsSavedOnly =>
+      'A pré-visualização usa o volume escolhido. Os efeitos de áudio são aplicados ao guardar.';
 
   @override
   String mediaCutterPartEffectsApplied(String start, String end) {
@@ -2968,13 +2989,15 @@ class AppLocalizationsPt extends AppLocalizations {
   String get mediaCutterGuidedModeTitle => 'Corte guiado';
 
   @override
-  String get mediaCutterGuidedModeDescription => 'Adequado para quem está a começar. Selecione um ponto inicial e um ponto final, ouça o corte e depois aplique-o.';
+  String get mediaCutterGuidedModeDescription =>
+      'Adequado para quem está a começar. Selecione um ponto inicial e um ponto final, ouça o corte e depois aplique-o.';
 
   @override
   String get mediaCutterAdvancedModeTitle => 'Corte avançado';
 
   @override
-  String get mediaCutterAdvancedModeDescription => 'Inspirado nos programas de edição multimédia mais conhecidos. Permite dividir um ficheiro em várias partes e eliminar as partes que não quer.';
+  String get mediaCutterAdvancedModeDescription =>
+      'Inspirado nos programas de edição multimédia mais conhecidos. Permite dividir um ficheiro em várias partes e eliminar as partes que não quer.';
 
   @override
   String get mediaCutterChangeCutMode => 'Alterar tipo de corte';
@@ -2995,16 +3018,20 @@ class AppLocalizationsPt extends AppLocalizations {
   String get mediaCutterGuidedModifyCut => 'Modificar corte';
 
   @override
-  String get mediaCutterGuidedMoveStartBackOneSecond => 'Recuar o início do corte 1 segundo';
+  String get mediaCutterGuidedMoveStartBackOneSecond =>
+      'Recuar o início do corte 1 segundo';
 
   @override
-  String get mediaCutterGuidedMoveStartForwardOneSecond => 'Avançar o início do corte 1 segundo';
+  String get mediaCutterGuidedMoveStartForwardOneSecond =>
+      'Avançar o início do corte 1 segundo';
 
   @override
-  String get mediaCutterGuidedMoveEndBackOneSecond => 'Recuar o fim do corte 1 segundo';
+  String get mediaCutterGuidedMoveEndBackOneSecond =>
+      'Recuar o fim do corte 1 segundo';
 
   @override
-  String get mediaCutterGuidedMoveEndForwardOneSecond => 'Avançar o fim do corte 1 segundo';
+  String get mediaCutterGuidedMoveEndForwardOneSecond =>
+      'Avançar o fim do corte 1 segundo';
 
   @override
   String get mediaCutterCutEditPrecisionLabel => 'Precisão da edição do corte';
@@ -3058,10 +3085,12 @@ class AppLocalizationsPt extends AppLocalizations {
   String get mediaCutterGuidedEffectsAction => 'Regular efeitos do ficheiro';
 
   @override
-  String get mediaCutterGuidedEffectsDescription => 'Regule o volume e os efeitos para todo o ficheiro resultante.';
+  String get mediaCutterGuidedEffectsDescription =>
+      'Regule o volume e os efeitos para todo o ficheiro resultante.';
 
   @override
-  String get mediaCutterGuidedFileTapHint => 'Toque duas vezes para reproduzir o ficheiro resultante. Use Regular efeitos do ficheiro para aplicar efeitos a todo o ficheiro.';
+  String get mediaCutterGuidedFileTapHint =>
+      'Toque duas vezes para reproduzir o ficheiro resultante. Use Regular efeitos do ficheiro para aplicar efeitos a todo o ficheiro.';
 
   @override
   String mediaCutterGuidedStartSet(String start) {
@@ -3079,7 +3108,8 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
-  String get mediaCutterGuidedNeedStartEnd => 'Defina primeiro o início e o fim do corte.';
+  String get mediaCutterGuidedNeedStartEnd =>
+      'Defina primeiro o início e o fim do corte.';
 
   @override
   String mediaCutterGuidedCutSummary(String start, String end) {
@@ -3092,7 +3122,8 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
-  String get mediaCutterGuidedPendingCutExitMessage => 'Tem um corte guiado que ainda não foi aplicado. Quer sair sem o conservar?';
+  String get mediaCutterGuidedPendingCutExitMessage =>
+      'Tem um corte guiado que ainda não foi aplicado. Quer sair sem o conservar?';
 
   @override
   String mediaCutterSplitAddedAnnouncement(int partNumber) {
@@ -3106,7 +3137,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get newsBrowseCommunitySources => 'Fontes da comunidade';
 
   @override
-  String get newsAddCommunityInstructions => 'Introduza o título da fonte e o URL do feed RSS ou do site. O Sonarpad usará o idioma de notícias selecionado e, se introduzir um site, tentará encontrar o feed automaticamente.';
+  String get newsAddCommunityInstructions =>
+      'Introduza o título da fonte e o URL do feed RSS ou do site. O Sonarpad usará o idioma de notícias selecionado e, se introduzir um site, tentará encontrar o feed automaticamente.';
 
   @override
   String get newsCommunitySourceName => 'Título da fonte';
@@ -3121,10 +3153,12 @@ class AppLocalizationsPt extends AppLocalizations {
   String get newsCommunityChecking => 'A verificar feed ou site...';
 
   @override
-  String get newsCommunityMissingFields => 'Introduza o título e o URL do feed ou do site.';
+  String get newsCommunityMissingFields =>
+      'Introduza o título e o URL do feed ou do site.';
 
   @override
-  String get newsCommunityAdded => 'Fonte adicionada corretamente à comunidade Sonarpad.';
+  String get newsCommunityAdded =>
+      'Fonte adicionada corretamente à comunidade Sonarpad.';
 
   @override
   String newsCommunityAddError(Object error) {
@@ -3140,7 +3174,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get newsCommunitySourcesTitle => 'Fontes da comunidade';
 
   @override
-  String get newsCommunitySourcesEmpty => 'Não há fontes da comunidade disponíveis para este idioma.';
+  String get newsCommunitySourcesEmpty =>
+      'Não há fontes da comunidade disponíveis para este idioma.';
 
   @override
   String newsCommunitySourcesError(Object error) {
@@ -3158,7 +3193,8 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
-  String get newsCommunitySourceTapHint => 'Toque para adicioná-la à sua biblioteca de notícias.';
+  String get newsCommunitySourceTapHint =>
+      'Toque para adicioná-la à sua biblioteca de notícias.';
 
   @override
   String get developerModeEnabled => 'Modo de programador ativado.';
@@ -3170,10 +3206,12 @@ class AppLocalizationsPt extends AppLocalizations {
   String get developerSectionTitle => 'Programador';
 
   @override
-  String get developerUseExperimentalFlutterRenderer => 'Usar o renderizador Flutter experimental';
+  String get developerUseExperimentalFlutterRenderer =>
+      'Usar o renderizador Flutter experimental';
 
   @override
-  String get developerUseExperimentalFlutterRendererHint => 'Desativa temporariamente o UIKit para comparar o VoiceOver com o Flutter puro.';
+  String get developerUseExperimentalFlutterRendererHint =>
+      'Desativa temporariamente o UIKit para comparar o VoiceOver com o Flutter puro.';
 
   @override
   String get letterJumpSelectLetter => 'Selecionar letra';
@@ -3188,10 +3226,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get settingsToggleOff => 'Desativado';
 
   @override
-  String get settingsShowOnlyMultilingualEdgeVoices => 'Mostrar apenas vozes multilingues';
-
-  @override
-  String get radioDirectoryLoading => 'A atualizar países e idiomas de rádio...';
+  String get radioDirectoryLoading =>
+      'A atualizar países e idiomas de rádio...';
 
   @override
   String get recentRadios => 'Rádios recentes';
@@ -3200,15 +3236,17 @@ class AppLocalizationsPt extends AppLocalizations {
   String get radioNextPage => 'Seguintes';
 
   @override
-  String radioPageOf(int current, int total) {
+  String radioPageOf(Object current, Object total) {
     return 'Página $current de $total';
   }
 
   @override
-  String get radioNoResultsWithQuery => 'Nenhuma rádio encontrada. Tente apenas o nome da estação, sem género, ou mude o idioma/país.';
+  String get radioNoResultsWithQuery =>
+      'Nenhuma rádio encontrada. Tente apenas o nome da estação, sem género, ou mude o idioma/país.';
 
   @override
-  String get radioNoResultsGeneric => 'Nenhuma rádio encontrada. Tente outro idioma, país ou género.';
+  String get radioNoResultsGeneric =>
+      'Nenhuma rádio encontrada. Tente outro idioma, país ou género.';
 
   @override
   String radioSearchRawError(Object error) {
@@ -3216,21 +3254,23 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
-  String get radioBrowserConnectionError => 'Erro de ligação ao Radio Browser. Tente novamente mais tarde.';
+  String get radioBrowserConnectionError =>
+      'Erro de ligação ao Radio Browser. Tente novamente mais tarde.';
 
   @override
   String get documentIndexLoadingMessage => 'A carregar índice... Aguarde.';
 
   @override
-  String get documentIndexUnavailableMessage => 'Índice não disponível para este EPUB.';
+  String get documentIndexUnavailableMessage =>
+      'Índice não disponível para este EPUB.';
 
   @override
-  String mediaCutterVolumeSummary(int percent) {
+  String mediaCutterVolumeSummary(Object percent) {
     return 'volume $percent%';
   }
 
   @override
-  String mediaCutterDurationSummary(String duration) {
+  String mediaCutterDurationSummary(Object duration) {
     return 'duração $duration';
   }
 
@@ -3265,7 +3305,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get mediaCutterDurationAnd => 'e';
 
   @override
-  String mediaCutterSeekStepButton(String step) {
+  String mediaCutterSeekStepButton(Object step) {
     return 'Regular o deslocamento do ficheiro multimédia: $step';
   }
 
@@ -3273,7 +3313,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get mediaCutterSeekStepTitle => 'Deslocamento do ficheiro multimédia';
 
   @override
-  String mediaCutterSeekStepSelected(String step) {
+  String mediaCutterSeekStepSelected(Object step) {
     return 'Deslocamento do ficheiro multimédia definido para $step.';
   }
 
@@ -3379,18 +3419,12 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get clearText => 'Limpar texto';
 
-
   @override
-
   String clearedTextAnnouncement(String value) {
-
     return '$value eliminado.';
-
   }
 
-
   @override
-
   String get textDeletedAnnouncement => 'Texto eliminado.';
 
   @override
@@ -3400,7 +3434,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get cinemaTrailerLoading => 'A carregar trailer';
 
   @override
-  String get cinemaNoTrailer => 'Não há nenhum trailer disponível para este filme';
+  String get cinemaNoTrailer =>
+      'Não há nenhum trailer disponível para este filme';
 
   @override
   String get radioScheduleHours => 'Horas';
@@ -3415,12 +3450,13 @@ class AppLocalizationsPt extends AppLocalizations {
   String get radioScheduleSelectMinutes => 'Selecionar os minutos';
 
   @override
-  String radioScheduleLabeledValue(String label, String value) {
+  String radioScheduleLabeledValue(Object label, Object value) {
     return '$label: $value';
   }
 
   @override
-  String get radioScheduleStopCurrentFirst => 'Termina a gravação em curso antes de programares uma nova.';
+  String get radioScheduleStopCurrentFirst =>
+      'Termina a gravação em curso antes de programares uma nova.';
 
   @override
   String get radioScheduleStartTime => 'Hora de início';
@@ -3432,15 +3468,16 @@ class AppLocalizationsPt extends AppLocalizations {
   String get radioScheduleDialogTitle => 'Programar gravação';
 
   @override
-  String get radioScheduleOpenRequirement => 'A gravação programada continua a funcionar enquanto navegas por outros ecrãs do Sonarpad. O Sonarpad tem de permanecer aberto; se a aplicação for fechada ou suspensa pelo sistema, o início da gravação não é garantido.';
+  String get radioScheduleOpenRequirement =>
+      'A gravação programada continua a funcionar enquanto navegas por outros ecrãs do Sonarpad. O Sonarpad tem de permanecer aberto; se a aplicação for fechada ou suspensa pelo sistema, o início da gravação não é garantido.';
 
   @override
-  String radioScheduleStartTimeValue(String time) {
+  String radioScheduleStartTimeValue(Object time) {
     return 'Hora de início: $time';
   }
 
   @override
-  String radioScheduleEndTimeValue(String time) {
+  String radioScheduleEndTimeValue(Object time) {
     return 'Hora de fim: $time';
   }
 
@@ -3448,18 +3485,20 @@ class AppLocalizationsPt extends AppLocalizations {
   String get radioScheduleOptionalTitle => 'Título opcional';
 
   @override
-  String get radioScheduleTitleHint => 'Deixa em branco para usar o nome da rádio ou TV';
+  String get radioScheduleTitleHint =>
+      'Deixa em branco para usar o nome da rádio ou TV';
 
   @override
   String get radioScheduleAction => 'Programar';
 
   @override
-  String radioScheduledRecordingRange(String start, String end) {
+  String radioScheduledRecordingRange(Object start, Object end) {
     return 'Gravação programada: $start - $end.';
   }
 
   @override
-  String get radioScheduledRecordingAlreadyActive => 'Gravação programada não iniciada: já existe outra gravação em curso.';
+  String get radioScheduledRecordingAlreadyActive =>
+      'Gravação programada não iniciada: já existe outra gravação em curso.';
 
   @override
   String get radioScheduledRecordingStarted => 'Gravação programada iniciada.';
@@ -3478,10 +3517,15 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
-  String get radioScheduledRecordingCancelled => 'Gravação programada cancelada.';
+  String get radioScheduledRecordingCancelled =>
+      'Gravação programada cancelada.';
 
   @override
-  String radioScheduledRecordingRangeWithTitle(String start, String end, String title) {
+  String radioScheduledRecordingRangeWithTitle(
+    Object start,
+    Object end,
+    Object title,
+  ) {
     return 'Gravação programada: $start - $end. Título: $title.';
   }
 
@@ -3496,8 +3540,6 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get radioCommunityLanguageTurkish => 'Turco';
-
-
 
   @override
   String get simplifiedChineseLanguageName => 'Chinês simplificado';
@@ -3540,7 +3582,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get mediaCutterChooseAudioTrack => 'Escolher ficheiro de áudio';
 
   @override
-  String mediaCutterAddedTrackSelected(String name) => 'Ficheiro de áudio selecionado: $name';
+  String mediaCutterAddedTrackSelected(String name) {
+    return 'Ficheiro de áudio selecionado: $name';
+  }
 
   @override
   String get mediaCutterOriginalTrackVolume => 'Volume da faixa original';
@@ -3558,20 +3602,37 @@ class AppLocalizationsPt extends AppLocalizations {
   String get mediaCutterFinalizeTrack => 'Finalizar';
 
   @override
-  String mediaCutterAddedTrackApplied(String name) => 'Nova faixa adicionada: $name';
+  String mediaCutterAddedTrackApplied(String name) {
+    return 'Nova faixa adicionada: $name';
+  }
 
   @override
-  String get mediaCutterAddedTrackInvalidAudio => 'O ficheiro selecionado não contém uma faixa de áudio válida.';
+  String get mediaCutterAddedTrackInvalidAudio =>
+      'O ficheiro selecionado não contém uma faixa de áudio válida.';
 
   @override
-  String get mediaCutterAddedTrackPreviewPreparing => 'A preparar a pré-visualização…';
+  String get mediaCutterAddedTrackPreviewPreparing =>
+      'A preparar a pré-visualização…';
 
   @override
-  String get mediaCutterAddedTrackPreviewFailed => 'Não foi possível criar a pré-visualização.';
+  String get mediaCutterAddedTrackPreviewFailed =>
+      'Não foi possível criar a pré-visualização.';
 
   @override
   String get mediaCutterMixingAddedTrack => 'A misturar a nova faixa';
 
+  @override
+  String get preserveMedia => 'Conservar conteúdo';
+
+  @override
+  String get preserveMediaSaving => 'A guardar o conteúdo…';
+
+  @override
+  String get preserveMediaSaved =>
+      'Conteúdo guardado nos Documentos do Sonarpad.';
+
+  @override
+  String get preserveMediaError => 'Não foi possível conservar o conteúdo.';
 
   @override
   String get mediaProcessingCompleted => 'Processamento concluído.';
@@ -3583,23 +3644,54 @@ class AppLocalizationsPt extends AppLocalizations {
   String get mediaCutterProcess => 'Processar';
 
   @override
-  String get preserveMedia => 'Conservar conteúdo';
+  String get sonarTubeGoToChannel => 'Ir para o canal';
 
   @override
-  String get preserveMediaSaving => 'A guardar o conteúdo…';
+  String get sonarTubeViewComments => 'Ver comentários';
 
   @override
-  String get preserveMediaSaved => 'Conteúdo guardado nos Documentos do Sonarpad.';
+  String get sonarTubeComments => 'Comentários';
 
   @override
-  String get preserveMediaError => 'Não foi possível conservar o conteúdo.';
+  String get sonarTubeNoComments => 'Não há comentários disponíveis.';
 
+  @override
+  String get sonarTubeLoadMoreComments => 'Carregar mais comentários';
+
+  @override
+  String get sonarTubeTranscribeVideo => 'Transcrever vídeo';
+
+  @override
+  String get sonarTubeTranscript => 'Transcrição';
+
+  @override
+  String get sonarTubeNoTranscript =>
+      'Não existe transcrição disponível para este vídeo.';
+
+  @override
+  String get sonarTubeCopyTranscript => 'Copiar transcrição';
+
+  @override
+  String get sonarTubeTranscriptCopied =>
+      'Transcrição copiada para a área de transferência';
+
+  @override
+  String get sonarTubeTranscriptSavedInDocuments =>
+      'A transcrição foi guardada nos Documentos.';
+
+  @override
+  String get copyToClipboard => 'Copiar para a área de transferência';
+
+  @override
+  String get textCopiedToClipboard =>
+      'Texto copiado para a área de transferência';
 
   @override
   String get protectDocumentWithPassword => 'Proteger com palavra-passe';
 
   @override
-  String get removeDocumentPasswordProtection => 'Remover proteção por palavra-passe';
+  String get removeDocumentPasswordProtection =>
+      'Remover proteção por palavra-passe';
 
   @override
   String get documentPassword => 'Palavra-passe';
@@ -3608,10 +3700,12 @@ class AppLocalizationsPt extends AppLocalizations {
   String get confirmDocumentPassword => 'Confirmar palavra-passe';
 
   @override
-  String get chooseDocumentPassword => 'Introduza uma palavra-passe e confirme-a. Será pedida antes de abrir ou partilhar este documento.';
+  String get chooseDocumentPassword =>
+      'Introduza uma palavra-passe e confirme-a. Será pedida antes de abrir ou partilhar este documento.';
 
   @override
-  String get enterCurrentDocumentPassword => 'Introduza a palavra-passe atual para remover a proteção.';
+  String get enterCurrentDocumentPassword =>
+      'Introduza a palavra-passe atual para remover a proteção.';
 
   @override
   String get documentPasswordRequired => 'Introduza uma palavra-passe.';
@@ -3623,19 +3717,23 @@ class AppLocalizationsPt extends AppLocalizations {
   String get incorrectDocumentPassword => 'Palavra-passe incorreta.';
 
   @override
-  String get documentPasswordProtectionEnabled => 'Proteção por palavra-passe ativada.';
+  String get documentPasswordProtectionEnabled =>
+      'Proteção por palavra-passe ativada.';
 
   @override
-  String get documentPasswordProtectionRemoved => 'Proteção por palavra-passe removida.';
+  String get documentPasswordProtectionRemoved =>
+      'Proteção por palavra-passe removida.';
 
   @override
   String get documentPasswordRequiredTitle => 'Palavra-passe necessária';
 
   @override
-  String get enterDocumentPasswordToShare => 'Este documento está protegido. Introduza a palavra-passe para continuar a partilha.';
+  String get enterDocumentPasswordToShare =>
+      'Este documento está protegido. Introduza a palavra-passe para continuar a partilha.';
 
   @override
-  String get enterDocumentPasswordToOpen => 'Este documento está protegido. Introduza a palavra-passe para o abrir.';
+  String get enterDocumentPasswordToOpen =>
+      'Este documento está protegido. Introduza a palavra-passe para o abrir.';
 
   @override
   String get documentPasswordProtectedStatus => 'Protegido por palavra-passe';
@@ -3647,38 +3745,68 @@ class AppLocalizationsPt extends AppLocalizations {
   String get renameRecording => 'Renomear gravação';
 
   @override
+  String get newRecordingName => 'Novo nome da gravação';
+
+  @override
+  String get recordingCannotRenameWhileInProgress =>
+      'Não é possível renomear uma gravação em curso.';
+
+  @override
+  String get recordingNameAlreadyExists =>
+      'Já existe uma gravação com este nome.';
+
+  @override
   String get renameDocument => 'Renomear documento';
 
   @override
   String get newDocumentName => 'Novo nome do documento';
 
   @override
-  String get documentNameAlreadyExists => 'Já existe um documento com este nome.';
+  String get documentNameAlreadyExists =>
+      'Já existe um documento com este nome.';
 
   @override
-  String get newRecordingName => 'Novo nome da gravação';
-
-  @override
-  String get recordingCannotRenameWhileInProgress => 'Não é possível renomear uma gravação em curso.';
-
-  @override
-  String get recordingNameAlreadyExists => 'Já existe uma gravação com este nome.';
-
-  @override
-  String get recordingExitPrompt => 'A gravação está em andamento. Deseja pará-la ou continuar a gravação?';
+  String get recordingExitPrompt =>
+      'A gravação está em andamento. Deseja pará-la ou continuar a gravação?';
 
   @override
   String get continueRecording => 'Continuar gravação';
 
+  @override
+  String get settingsShowOnlyMultilingualEdgeVoices =>
+      'Mostrar apenas vozes multilingues';
+
+  @override
+  String get weatherAirQuality => 'Qualidade do ar';
+
+  @override
+  String get weatherAirQualityGood => 'Boa';
+
+  @override
+  String get weatherAirQualityFair => 'Razoável';
+
+  @override
+  String get weatherAirQualityModerate => 'Moderada';
+
+  @override
+  String get weatherAirQualityPoor => 'Má';
+
+  @override
+  String get weatherAirQualityVeryPoor => 'Muito má';
+
+  @override
+  String get weatherAirQualityExtremelyPoor => 'Extremamente má';
 
   @override
   String get sonarpadAudiodescriptionsTitle => 'Audiodescrições Sonarpad';
 
   @override
-  String get sonarpadAudiodescriptionsAll => 'Todas as audiodescrições Sonarpad';
+  String get sonarpadAudiodescriptionsAll =>
+      'Todas as audiodescrições Sonarpad';
 
   @override
-  String get sonarpadAudiodescriptionsSearchHint => 'Pesquisar um filme, série ou episódio';
+  String get sonarpadAudiodescriptionsSearchHint =>
+      'Pesquisar um filme, série ou episódio';
 
   @override
   String get sortBy => 'Ordenar por';
@@ -3695,11 +3823,37 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get downloadUnavailable => 'Download indisponível.';
 
+  @override
+  String get sonarTubeChannelPlaylists => 'Listas de reprodução';
+
+  @override
+  String get sonarTubeChannelShorts => 'Shorts';
+
+  @override
+  String sonarTubeVideoCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count vídeos',
+      one: '1 vídeo',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get sonarTubeViewDescription => 'Ver descrição';
+
+  @override
+  String get sonarTubeDescription => 'Descrição';
+
+  @override
+  String get sonarTubeNoDescription =>
+      'Não está disponível nenhuma descrição para este vídeo.';
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
-class AppLocalizationsPtBr extends AppLocalizations {
-  AppLocalizationsPtBr([String locale = 'pt_BR']) : super(locale);
+class AppLocalizationsPtBr extends AppLocalizationsPt {
+  AppLocalizationsPtBr() : super('pt_BR');
 
   @override
   String get appTitle => 'Sonarpad';
@@ -3720,7 +3874,8 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get settingsThemeDark => 'Escuro';
 
   @override
-  String get settingsWeatherTemperatureUnit => 'Unidade de temperatura da meteorologia';
+  String get settingsWeatherTemperatureUnit =>
+      'Unidade de temperatura da meteorologia';
 
   @override
   String get weatherTemperatureCelsius => 'Celsius (°C)';
@@ -3756,7 +3911,8 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get sonarTubeSearchLabel => 'Pesquisar vídeos, canais ou listas';
 
   @override
-  String get sonarTubeSearchPrompt => 'Digite uma pesquisa para encontrar vídeos, canais ou playlists.';
+  String get sonarTubeSearchPrompt =>
+      'Digite uma pesquisa para encontrar vídeos, canais ou playlists.';
 
   @override
   String get sonarTubeNoResults => 'Nenhum vídeo encontrado.';
@@ -3822,10 +3978,12 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get sonarTubeNoRecentVideos => 'Nenhum vídeo recente.';
 
   @override
-  String get sonarTubeConfirmClearHistory => 'Deseja realmente limpar o histórico de vídeos recentes?';
+  String get sonarTubeConfirmClearHistory =>
+      'Deseja realmente limpar o histórico de vídeos recentes?';
 
   @override
-  String get sonarTubeNoFavorites => 'Nenhum vídeo, canal ou playlist nos favoritos.';
+  String get sonarTubeNoFavorites =>
+      'Nenhum vídeo, canal ou playlist nos favoritos.';
 
   @override
   String get sonarTubeAddFavorite => 'Adicionar aos favoritos';
@@ -3838,65 +3996,6 @@ class AppLocalizationsPtBr extends AppLocalizations {
 
   @override
   String get sonarTubeNextTrack => 'Ir para o próximo vídeo';
-
-  @override
-  String get sonarTubeGoToChannel => 'Ir para o canal';
-
-  @override
-  String get sonarTubeViewComments => 'Ver comentários';
-
-  @override
-  String get sonarTubeComments => 'Comentários';
-
-  @override
-  String get sonarTubeNoComments => 'Nenhum comentário disponível.';
-
-  @override
-  String get sonarTubeLoadMoreComments => 'Carregar mais comentários';
-
-  @override
-  String get sonarTubeTranscribeVideo => 'Transcrever vídeo';
-
-  @override
-  String get sonarTubeChannelPlaylists => 'Playlists';
-
-  @override
-  String get sonarTubeChannelShorts => 'Shorts';
-
-  @override
-  String sonarTubeVideoCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count vídeos',
-      one: '1 vídeo',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get sonarTubeViewDescription => 'Ver descrição';
-
-  @override
-  String get sonarTubeDescription => 'Descrição';
-
-  @override
-  String get sonarTubeNoDescription => 'Nenhuma descrição disponível para este vídeo.';
-
-  @override
-  String get sonarTubeTranscript => 'Transcrição';
-
-  @override
-  String get sonarTubeNoTranscript => 'Nenhuma transcrição disponível para este vídeo.';
-
-  @override
-  String get sonarTubeCopyTranscript => 'Copiar transcrição';
-
-  @override
-  String get sonarTubeTranscriptCopied => 'Transcrição copiada para a área de transferência';
-
-  @override
-  String get sonarTubeTranscriptSavedInDocuments => 'A transcrição foi salva em Documentos.';
 
   @override
   String get sonarTubeShareChannel => 'Compartilhar canal';
@@ -3999,16 +4098,19 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get convertMediaNoOutput => 'Selecione uma pasta de destino.';
 
   @override
-  String get convertMediaOutputNotWritable => 'A pasta escolhida não está diretamente acessível. O arquivo será salvo na pasta interna do Sonarpad; quando a conversão terminar, você poderá compartilhá-lo ou salvá-lo no app Arquivos.';
+  String get convertMediaOutputNotWritable =>
+      'A pasta escolhida não está diretamente acessível. O arquivo será salvo na pasta interna do Sonarpad; quando a conversão terminar, você poderá compartilhá-lo ou salvá-lo no app Arquivos.';
 
   @override
   String get convertMediaNoImage => 'Selecione uma imagem para o vídeo.';
 
   @override
-  String get convertMediaSamePath => 'O arquivo convertido deve ser diferente do arquivo de origem.';
+  String get convertMediaSamePath =>
+      'O arquivo convertido deve ser diferente do arquivo de origem.';
 
   @override
-  String get convertMediaInvalidBitrate => 'Digite um bitrate válido entre 64 e 320 kbps.';
+  String get convertMediaInvalidBitrate =>
+      'Digite um bitrate válido entre 64 e 320 kbps.';
 
   @override
   String convertMediaFailed(Object error) {
@@ -4043,31 +4145,38 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get sonarpadCodeValidTitle => 'Código válido';
 
   @override
-  String get sonarpadCodeValidMessage => 'O código Sonarpad está correto. Configurações salvas.';
+  String get sonarpadCodeValidMessage =>
+      'O código Sonarpad está correto. Configurações salvas.';
 
   @override
   String get sonarpadCodeInvalidTitle => 'Código inválido';
 
   @override
-  String get sonarpadCodeInvalidMessage => 'O código Sonarpad não é válido. Verifique se o copiou sem espaços adicionais.';
+  String get sonarpadCodeInvalidMessage =>
+      'O código Sonarpad não é válido. Verifique se o copiou sem espaços adicionais.';
 
   @override
-  String get infoDescription => 'Sonarpad é um aplicativo simples com muitas funções. Pensado para ser acessível com VoiceOver para pessoas cegas ou com deficiência visual, permite ouvir notícias, pesquisar e assinar podcasts, importar artigos da Wikipédia, adicionar documentos à biblioteca, salvá-los e editá-los. Sonarpad é atualizado constantemente e cada função foi pensada para facilitar a vida diária.';
+  String get infoDescription =>
+      'Sonarpad é um aplicativo simples com muitas funções. Pensado para ser acessível com VoiceOver para pessoas cegas ou com deficiência visual, permite ouvir notícias, pesquisar e assinar podcasts, importar artigos da Wikipédia, adicionar documentos à biblioteca, salvá-los e editá-los. Sonarpad é atualizado constantemente e cada função foi pensada para facilitar a vida diária.';
 
   @override
   String get infoAuthor => 'Autor: Ambrogio Riili';
 
   @override
-  String get donationsIntro => 'Sonarpad foi criado inicialmente para atender a necessidades pessoais, mas com o tempo se tornou um aplicativo mais completo. Seu desenvolvimento exige trabalho constante: melhorar funções, corrigir erros, explorar novas ideias e testar cuidadosamente cada função.\n\nSe o Sonarpad for útil para você e quiser apoiar seu desenvolvimento, pode fazer uma doação.';
+  String get donationsIntro =>
+      'Sonarpad foi criado inicialmente para atender a necessidades pessoais, mas com o tempo se tornou um aplicativo mais completo. Seu desenvolvimento exige trabalho constante: melhorar funções, corrigir erros, explorar novas ideias e testar cuidadosamente cada função.\n\nSe o Sonarpad for útil para você e quiser apoiar seu desenvolvimento, pode fazer uma doação.';
 
   @override
-  String get donationsPaypalDesc => 'Você pode doar pelo PayPal usando este link:\nhttps://www.paypal.me/ambrogio86\nSe possível, adicione “Sonarpad” como observação do pagamento.';
+  String get donationsPaypalDesc =>
+      'Você pode doar pelo PayPal usando este link:\nhttps://www.paypal.me/ambrogio86\nSe possível, adicione “Sonarpad” como observação do pagamento.';
 
   @override
-  String get donationsBankDesc => 'Você também pode fazer uma doação por transferência bancária para a conta em nome de Ambrogio Riili.\nIBAN: IT77W0306901020100000064149\nSe possível, use uma descrição clara, por exemplo “Sonarpad”.';
+  String get donationsBankDesc =>
+      'Você também pode fazer uma doação por transferência bancária para a conta em nome de Ambrogio Riili.\nIBAN: IT77W0306901020100000064149\nSe possível, use uma descrição clara, por exemplo “Sonarpad”.';
 
   @override
-  String get donationsThanks => 'Quem apoiar o projeto será mencionado no aplicativo e no repositório GitHub, a menos que prefira permanecer anônimo ou usar um pseudônimo.\n\nObrigado a Jiri Holzinger e Paola Vagata pela contribuição.\nPela tradução tcheca, obrigado a Radek Žalud e Jiri Holzinger.\nPela tradução espanhola, obrigado a Arturo Fernandez Rivas.\n\nUm grande agradecimento a Leonardo Graziano, Paolo Marcelli, Tiziano Ferraro e a todo o grupo Tecnologia accessibile por todo o apoio para melhorar, a cada dia, este maravilhoso projeto.';
+  String get donationsThanks =>
+      'Quem apoiar o projeto será mencionado no aplicativo e no repositório GitHub, a menos que prefira permanecer anônimo ou usar um pseudônimo.\n\nObrigado a Jiri Holzinger e Paola Vagata pela contribuição.\nPela tradução tcheca, obrigado a Radek Žalud e Jiri Holzinger.\nPela tradução espanhola, obrigado a Arturo Fernandez Rivas.\n\nUm grande agradecimento a Leonardo Graziano, Paolo Marcelli, Tiziano Ferraro e a todo o grupo Tecnologia accessibile por todo o apoio para melhorar, a cada dia, este maravilhoso projeto.';
 
   @override
   String get news => 'Notícias';
@@ -4085,16 +4194,19 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get importFromWikipedia => 'Wikipedia';
 
   @override
-  String get wikipediaHint => 'Pesquisar um artigo da Wikipédia e importar o texto';
+  String get wikipediaHint =>
+      'Pesquisar um artigo da Wikipédia e importar o texto';
 
   @override
   String get newsCategoryTop => 'Destaques';
 
   @override
-  String get settingsHomeGrouping => 'Agrupar os ícones da página inicial em categorias';
+  String get settingsHomeGrouping =>
+      'Agrupar os ícones da página inicial em categorias';
 
   @override
-  String get settingsHomeGroupingHint => 'Se desativado, os ícones principais aparecem em uma única lista, sem subpastas.';
+  String get settingsHomeGroupingHint =>
+      'Se desativado, os ícones principais aparecem em uma única lista, sem subpastas.';
 
   @override
   String get newsCategoryMyCity => 'Minha cidade';
@@ -4138,7 +4250,8 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get newsSourceName => 'Nome da fonte ou do site';
 
   @override
-  String get newsSourceUrlOrSearch => 'URL do site, feed RSS ou palavra de pesquisa';
+  String get newsSourceUrlOrSearch =>
+      'URL do site, feed RSS ou palavra de pesquisa';
 
   @override
   String get deleteNewsSource => 'Remover';
@@ -4188,7 +4301,8 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get loadingArticle => 'Carregando artigo';
 
   @override
-  String get noFullArticleFound => 'Artigo completo indisponível. Mostrando o resumo do feed.';
+  String get noFullArticleFound =>
+      'Artigo completo indisponível. Mostrando o resumo do feed.';
 
   @override
   String get italian => 'Italiano';
@@ -4221,7 +4335,8 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get extractingReaderArticleText => 'Extraindo texto em modo leitor...';
 
   @override
-  String get extractingVisibleArticleText => 'Extraindo texto visível da página...';
+  String get extractingVisibleArticleText =>
+      'Extraindo texto visível da página...';
 
   @override
   String source(String source) {
@@ -4296,7 +4411,8 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get podcastName => 'Nome do podcast';
 
   @override
-  String get podcastSearchHint => 'Exemplo: tecnologia, história, nome do podcast...';
+  String get podcastSearchHint =>
+      'Exemplo: tecnologia, história, nome do podcast...';
 
   @override
   String get searchCountry => 'País da pesquisa';
@@ -4414,7 +4530,8 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get subscribedPodcasts => 'Podcasts assinados';
 
   @override
-  String get noSubscribedPodcasts => 'Você ainda não assina nenhum podcast. Pesquise um podcast e toque em um resultado para assinar.';
+  String get noSubscribedPodcasts =>
+      'Você ainda não assina nenhum podcast. Pesquise um podcast e toque em um resultado para assinar.';
 
   @override
   String get localAudioFiles => 'Arquivos de áudio locais';
@@ -4447,7 +4564,8 @@ class AppLocalizationsPtBr extends AppLocalizations {
   }
 
   @override
-  String get podcastInvalidOpmlFile => 'Arquivo inválido. Selecione um arquivo OPML ou XML.';
+  String get podcastInvalidOpmlFile =>
+      'Arquivo inválido. Selecione um arquivo OPML ou XML.';
 
   @override
   String get podcastExportComplete => 'Podcasts exportados';
@@ -4461,7 +4579,8 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get loadingEpisodes => 'Carregando episódios';
 
   @override
-  String get noAudioEpisodesFound => 'Nenhum episódio de áudio encontrado no feed.';
+  String get noAudioEpisodesFound =>
+      'Nenhum episódio de áudio encontrado no feed.';
 
   @override
   String get episodes => 'Episódios';
@@ -4564,7 +4683,8 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get addToLibrary => 'Adicionar à biblioteca';
 
   @override
-  String get documentImportSelectionMode => 'Quer selecionar um documento ou vários documentos?';
+  String get documentImportSelectionMode =>
+      'Quer selecionar um documento ou vários documentos?';
 
   @override
   String get documentImportSingle => 'Um documento';
@@ -4585,7 +4705,8 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get documentsAdded => 'Documentos adicionados';
 
   @override
-  String get importDocumentsFromITunes => 'Importar documentos do iTunes / Apple Devices';
+  String get importDocumentsFromITunes =>
+      'Importar documentos do iTunes / Apple Devices';
 
   @override
   String sharedDocumentsImportComplete(int count) {
@@ -4624,7 +4745,8 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get noExportableTextFound => 'Nenhum texto exportável encontrado.';
 
   @override
-  String get modifiedDocumentNoExportableText => 'O documento modificado não contém texto exportável.';
+  String get modifiedDocumentNoExportableText =>
+      'O documento modificado não contém texto exportável.';
 
   @override
   String get documentRemoved => 'Documento excluído';
@@ -4642,7 +4764,8 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get writeNewDocument => 'Escrever novo documento';
 
   @override
-  String get addDocumentToLibraryHint => 'Adicionar documento à biblioteca. Procura os arquivos do dispositivo e adiciona-os.';
+  String get addDocumentToLibraryHint =>
+      'Adicionar documento à biblioteca. Procura os arquivos do dispositivo e adiciona-os.';
 
   @override
   String get documentTypeLabel => 'Documento';
@@ -4685,7 +4808,8 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get openFolderHint => 'Toque duas vezes para abrir a pasta';
 
   @override
-  String get openDocumentHint => 'Toque duas vezes para abrir e ler o documento';
+  String get openDocumentHint =>
+      'Toque duas vezes para abrir e ler o documento';
 
   @override
   String removeItem(String name) {
@@ -4708,16 +4832,20 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get documentReaderTitle => 'Leitor de documentos';
 
   @override
-  String get documentReaderEditHint => 'Toque num parágrafo para editá-lo. Deslize para cima ou para baixo para adicionar um marcador.';
+  String get documentReaderEditHint =>
+      'Toque num parágrafo para editá-lo. Deslize para cima ou para baixo para adicionar um marcador.';
 
   @override
-  String get documentParagraphSelectionStartAction => 'Iniciar seleção de parágrafos';
+  String get documentParagraphSelectionStartAction =>
+      'Iniciar seleção de parágrafos';
 
   @override
-  String get documentParagraphSelectionTapHint => 'O modo de seleção está ativo. Toque duas vezes para selecionar ou desmarcar este parágrafo.';
+  String get documentParagraphSelectionTapHint =>
+      'O modo de seleção está ativo. Toque duas vezes para selecionar ou desmarcar este parágrafo.';
 
   @override
-  String get documentParagraphSelectionStarted => 'O modo de seleção está ativo. Parágrafo selecionado. Toque duas vezes nos outros parágrafos para selecioná-los.';
+  String get documentParagraphSelectionStarted =>
+      'O modo de seleção está ativo. Parágrafo selecionado. Toque duas vezes nos outros parágrafos para selecioná-los.';
 
   @override
   String documentParagraphSelectedAnnouncement(int count) {
@@ -4735,7 +4863,8 @@ class AppLocalizationsPtBr extends AppLocalizations {
   }
 
   @override
-  String get documentDeleteSelectedParagraphs => 'Excluir parágrafos selecionados';
+  String get documentDeleteSelectedParagraphs =>
+      'Excluir parágrafos selecionados';
 
   @override
   String documentDeleteSelectedParagraphsConfirmation(int count) {
@@ -4754,13 +4883,16 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get documentParagraphSelectionExited => 'Modo de seleção desativado.';
 
   @override
-  String get documentBookmarkHintSet => 'Deslize para cima ou para baixo para definir um marcador.';
+  String get documentBookmarkHintSet =>
+      'Deslize para cima ou para baixo para definir um marcador.';
 
   @override
-  String get documentEditParagraphActionHint => 'Toque duas vezes para editar este parágrafo. ';
+  String get documentEditParagraphActionHint =>
+      'Toque duas vezes para editar este parágrafo. ';
 
   @override
-  String get documentBookmarkHintReplace => 'Deslize para cima ou para baixo para excluir o marcador existente ou substituí-lo por este parágrafo.';
+  String get documentBookmarkHintReplace =>
+      'Deslize para cima ou para baixo para excluir o marcador existente ou substituí-lo por este parágrafo.';
 
   @override
   String get documentSetBookmarkAction => 'Adicionar novo marcador';
@@ -4769,7 +4901,8 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get documentRemoveBookmarkAction => 'Excluir marcador';
 
   @override
-  String get documentReplaceBookmarkAction => 'Excluir e adicionar um novo marcador';
+  String get documentReplaceBookmarkAction =>
+      'Excluir e adicionar um novo marcador';
 
   @override
   String get searchInDocument => 'Pesquisar no documento';
@@ -4787,7 +4920,8 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get documentSearchEmptyQuery => 'Digite o texto que quer pesquisar.';
 
   @override
-  String get documentSearchResultsTitle => 'Resultados da pesquisa no documento';
+  String get documentSearchResultsTitle =>
+      'Resultados da pesquisa no documento';
 
   @override
   String noDocumentSearchResults(String query) {
@@ -4845,7 +4979,8 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get settingsTestingVoice => 'Testando...';
 
   @override
-  String get settingsVoiceTestText => 'Olá, este é um teste de leitura do Sonarpad.';
+  String get settingsVoiceTestText =>
+      'Olá, este é um teste de leitura do Sonarpad.';
 
   @override
   String settingsVoiceTestError(Object error) {
@@ -4861,7 +4996,8 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get settingsUnsavedTitle => 'Alterações não salvas';
 
   @override
-  String get settingsUnsavedMessage => 'Você tem alterações não salvas. Deseja salvá-las antes de sair?';
+  String get settingsUnsavedMessage =>
+      'Você tem alterações não salvas. Deseja salvá-las antes de sair?';
 
   @override
   String get settingsExitWithoutSaving => 'Sair sem salvar';
@@ -4876,16 +5012,19 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get settingsAutoBookmark => 'Ativar marcador automático em mídia';
 
   @override
-  String get settingsAutoBookmarkHint => 'O áudio ou vídeo continuará a partir do ponto onde ficou.';
+  String get settingsAutoBookmarkHint =>
+      'O áudio ou vídeo continuará a partir do ponto onde ficou.';
 
   @override
   String get settingsDocumentSliderStep => 'Passo do controle dos documentos';
 
   @override
-  String get settingsDocumentSliderStepHint => 'Define quanto o controle da posição do documento avança ou recua ao deslizar para cima ou para baixo.';
+  String get settingsDocumentSliderStepHint =>
+      'Define quanto o controle da posição do documento avança ou recua ao deslizar para cima ou para baixo.';
 
   @override
-  String get settingsReadingSleepTimer => 'Temporizador de suspensão da leitura';
+  String get settingsReadingSleepTimer =>
+      'Temporizador de suspensão da leitura';
 
   @override
   String get settingsReadingSleepTimerOff => 'Desativado';
@@ -4896,16 +5035,19 @@ class AppLocalizationsPtBr extends AppLocalizations {
   }
 
   @override
-  String get settingsReadingSleepTimerHint => 'Interrompe automaticamente a leitura do documento atual após o tempo escolhido e salva o ponto de parada. A contagem recomeça sempre que a leitura de um documento é iniciada.';
+  String get settingsReadingSleepTimerHint =>
+      'Interrompe automaticamente a leitura do documento atual após o tempo escolhido e salva o ponto de parada. A contagem recomeça sempre que a leitura de um documento é iniciada.';
 
   @override
-  String get documentReadingSleepTimerStopped => 'Temporizador de suspensão: leitura parada e posição salva.';
+  String get documentReadingSleepTimerStopped =>
+      'Temporizador de suspensão: leitura parada e posição salva.';
 
   @override
   String get settingsSeekStep => 'Passo de avanço/recuo';
 
   @override
-  String get aiChatIntro => 'Sou a inteligência artificial do Sonarpad. Como posso ajudar?';
+  String get aiChatIntro =>
+      'Sou a inteligência artificial do Sonarpad. Como posso ajudar?';
 
   @override
   String get meteoTitle => 'Meteorologia';
@@ -4934,9 +5076,9 @@ class AppLocalizationsPtBr extends AppLocalizations {
   @override
   String get weatherChooseDay => 'Escolher dia';
 
-
   @override
-  String get tvRecordingChooseDay => weatherChooseDay;
+  String get tvRecordingChooseDay => 'Escolher dia';
+
   @override
   String get weatherCurrentTemperature => 'Temperatura atual';
 
@@ -4957,27 +5099,6 @@ class AppLocalizationsPtBr extends AppLocalizations {
 
   @override
   String get weatherRelativeHumidity => 'Humidade relativa';
-
-  @override
-  String get weatherAirQuality => 'Qualidade do ar';
-
-  @override
-  String get weatherAirQualityGood => 'Boa';
-
-  @override
-  String get weatherAirQualityFair => 'Razoável';
-
-  @override
-  String get weatherAirQualityModerate => 'Moderada';
-
-  @override
-  String get weatherAirQualityPoor => 'Ruim';
-
-  @override
-  String get weatherAirQualityVeryPoor => 'Muito ruim';
-
-  @override
-  String get weatherAirQualityExtremelyPoor => 'Extremamente ruim';
 
   @override
   String get settingsSecretCode => 'Código secreto Sonarpad';
@@ -5064,7 +5185,8 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get annulla => 'Cancelar';
 
   @override
-  String get compilaTuttiICampiPerRichiedereIlCodice => 'Preencha todos os campos para solicitar o código.';
+  String get compilaTuttiICampiPerRichiedereIlCodice =>
+      'Preencha todos os campos para solicitar o código.';
 
   @override
   String get selectFolder => 'Selecionar pasta';
@@ -5115,7 +5237,8 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get importFromProjectGutenberg => 'Importar do Project Gutenberg';
 
   @override
-  String get projectGutenbergImportUnavailable => 'A importação do Project Gutenberg ainda não está disponível.';
+  String get projectGutenbergImportUnavailable =>
+      'A importação do Project Gutenberg ainda não está disponível.';
 
   @override
   String get importFromInternetArchive => 'Importar do Internet Archive';
@@ -5195,7 +5318,8 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get librivoxNoAudioTracks => 'Não há faixas de áudio disponíveis.';
 
   @override
-  String get librivoxNotTextExportable => 'Os audiolivros do LibriVox não podem ser exportados como texto.';
+  String get librivoxNotTextExportable =>
+      'Os audiolivros do LibriVox não podem ser exportados como texto.';
 
   @override
   String sourceDurationValue(String duration) {
@@ -5265,19 +5389,14 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get saveInLibrary => 'Salvar na biblioteca';
 
   @override
-  String get copyToClipboard => "Copiar para a área de transferência";
-
-  @override
-  String get textCopiedToClipboard => "Texto copiado para a área de transferência";
-
-  @override
   String get documentTextLabel => 'Texto do documento';
 
   @override
   String get modifiedInSonarpad => 'Modificado no Sonarpad';
 
   @override
-  String get noTextAvailableForDocument => 'Não há texto disponível para este documento.';
+  String get noTextAvailableForDocument =>
+      'Não há texto disponível para este documento.';
 
   @override
   String bookmarkSet(int index) {
@@ -5364,7 +5483,8 @@ class AppLocalizationsPtBr extends AppLocalizations {
   }
 
   @override
-  String get dropboxLoginPrompt => 'Faça login no Dropbox para importar seus documentos.';
+  String get dropboxLoginPrompt =>
+      'Faça login no Dropbox para importar seus documentos.';
 
   @override
   String get loginToDropbox => 'Fazer login no Dropbox';
@@ -5392,7 +5512,8 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get goBack => '.. Voltar';
 
   @override
-  String get noSupportedFilesInFolder => 'Não há arquivos compatíveis nesta pasta.';
+  String get noSupportedFilesInFolder =>
+      'Não há arquivos compatíveis nesta pasta.';
 
   @override
   String get articleNotFound => 'Artigo não encontrado.';
@@ -5407,7 +5528,8 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get clearHistory => 'Limpar histórico';
 
   @override
-  String get confirmClearHistory => 'Quer mesmo limpar todas as pesquisas recentes?';
+  String get confirmClearHistory =>
+      'Quer mesmo limpar todas as pesquisas recentes?';
 
   @override
   String get clear => 'Limpar';
@@ -5416,13 +5538,15 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get noRecentSearches => 'Não há pesquisas recentes.';
 
   @override
-  String get logCopiedToClipboard => 'Registro copiado para a área de transferência';
+  String get logCopiedToClipboard =>
+      'Registro copiado para a área de transferência';
 
   @override
   String get logCleared => 'Log limpo';
 
   @override
-  String get parafarmacoDetailReadyAnnouncement => 'Ficha do produto carregada. Deslize para a direita para escolher as secções.';
+  String get parafarmacoDetailReadyAnnouncement =>
+      'Ficha do produto carregada. Deslize para a direita para escolher as secções.';
 
   @override
   String get systemLog => 'Registro do sistema';
@@ -5446,7 +5570,8 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get calendar => 'Calendário';
 
   @override
-  String get calendarHint => 'Abrir o calendário com santos, feriados e lembretes';
+  String get calendarHint =>
+      'Abrir o calendário com santos, feriados e lembretes';
 
   @override
   String get saintOfTheDay => 'Santo do dia';
@@ -5535,7 +5660,8 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get radio => 'Rádio';
 
   @override
-  String get radioHint => 'Procura estações de rádio, escuta transmissões e gere favoritos';
+  String get radioHint =>
+      'Procura estações de rádio, escuta transmissões e gere favoritos';
 
   @override
   String get radioTitle => 'Estações de rádio de todo o mundo';
@@ -5643,7 +5769,8 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get tvSearchResults => 'Resultados de canais de TV';
 
   @override
-  String get tvSearchEmptyQuery => 'Digite o nome de um canal de TV para pesquisar.';
+  String get tvSearchEmptyQuery =>
+      'Digite o nome de um canal de TV para pesquisar.';
 
   @override
   String tvSearchNoResults(String query) {
@@ -5671,10 +5798,12 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get radioAddSubmit => 'Verificar e adicionar';
 
   @override
-  String get radioAddMissingFields => 'Digite o nome da rádio e o endereço da transmissão.';
+  String get radioAddMissingFields =>
+      'Digite o nome da rádio e o endereço da transmissão.';
 
   @override
-  String get radioCommunityAdded => 'Rádio adicionada com sucesso à comunidade Sonarpad.';
+  String get radioCommunityAdded =>
+      'Rádio adicionada com sucesso à comunidade Sonarpad.';
 
   @override
   String radioCommunityAddError(Object error) {
@@ -5703,10 +5832,12 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get recordingInProgressStatus => 'Gravação em andamento';
 
   @override
-  String get scheduledRecordingInProgressStatus => 'Gravação programada em andamento';
+  String get scheduledRecordingInProgressStatus =>
+      'Gravação programada em andamento';
 
   @override
-  String get recordingCannotOpenWhileInProgress => 'Não é possível abrir esta gravação porque ela ainda está em andamento.';
+  String get recordingCannotOpenWhileInProgress =>
+      'Não é possível abrir esta gravação porque ela ainda está em andamento.';
 
   @override
   String get blindLibrarySearchCatalog => 'Pesquisar no catálogo';
@@ -5828,10 +5959,12 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get routeErrorMissingFields => 'Digite o ponto de partida e o destino';
 
   @override
-  String get routeErrorFromNotFound => 'Nenhum resultado encontrado para o endereço de partida';
+  String get routeErrorFromNotFound =>
+      'Nenhum resultado encontrado para o endereço de partida';
 
   @override
-  String get routeErrorToNotFound => 'Nenhum resultado encontrado para o endereço de destino';
+  String get routeErrorToNotFound =>
+      'Nenhum resultado encontrado para o endereço de destino';
 
   @override
   String get routeResultsTitle => 'Percursos disponíveis';
@@ -6139,7 +6272,8 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get concertsTitle => 'Shows e eventos';
 
   @override
-  String get concertsSearchHint => 'Digite uma cidade (ex.: São Paulo, Rio de Janeiro)';
+  String get concertsSearchHint =>
+      'Digite uma cidade (ex.: São Paulo, Rio de Janeiro)';
 
   @override
   String get concertsSearchLabel => 'Pesquisar shows por cidade';
@@ -6148,7 +6282,8 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get concertsSearchTooltip => 'Pesquisar';
 
   @override
-  String get concertsInitialText => 'Digite acima o nome da sua cidade para ver os shows programados.';
+  String get concertsInitialText =>
+      'Digite acima o nome da sua cidade para ver os shows programados.';
 
   @override
   String get concertsEmpty => 'Nenhum show encontrado nesta cidade.';
@@ -6166,13 +6301,15 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get podcastSelectDate => 'Selecionar data';
 
   @override
-  String get podcastNoDatesAvailable => 'Nenhuma data disponível para estes episódios.';
+  String get podcastNoDatesAvailable =>
+      'Nenhuma data disponível para estes episódios.';
 
   @override
   String get podcastChapters => 'Capítulos';
 
   @override
-  String get podcastChaptersUnavailable => 'Não há capítulos disponíveis para este episódio.';
+  String get podcastChaptersUnavailable =>
+      'Não há capítulos disponíveis para este episódio.';
 
   @override
   String get podcastUnplayed => 'Episódios não reproduzidos';
@@ -6193,7 +6330,8 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get routeGoogleMapsAction => 'Google Maps';
 
   @override
-  String get routeOpenError => 'Não foi possível abrir o aplicativo de navegação.';
+  String get routeOpenError =>
+      'Não foi possível abrir o aplicativo de navegação.';
 
   @override
   String get routeSaveSuccess => 'Percurso salvo nos documentos';
@@ -6211,13 +6349,15 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get exportCompleteTitle => 'Exportação concluída';
 
   @override
-  String get exportCompleteMessage => 'O arquivo foi criado corretamente. Deseja salvá-lo no Sonarpad ou compartilhá-lo?';
+  String get exportCompleteMessage =>
+      'O arquivo foi criado corretamente. Deseja salvá-lo no Sonarpad ou compartilhá-lo?';
 
   @override
   String get saveInSonarpad => 'Salvar no Sonarpad';
 
   @override
-  String get exportSavedInSonarpad => 'Arquivo salvo nos Documentos do Sonarpad.';
+  String get exportSavedInSonarpad =>
+      'Arquivo salvo nos Documentos do Sonarpad.';
 
   @override
   String get audiobookExportProgressTitle => 'Criação do audiolivro';
@@ -6229,7 +6369,8 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get audiobookExportGeneratingAudio => 'Gerando áudio';
 
   @override
-  String get audiobookExportConvertingAudio => 'Conversão final do arquivo de áudio...';
+  String get audiobookExportConvertingAudio =>
+      'Conversão final do arquivo de áudio...';
 
   @override
   String get audiobookExportFinalizing => 'Finalizando...';
@@ -6249,28 +6390,35 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get sortPodcastsAlphabetically => 'Ordenar podcasts alfabeticamente';
 
   @override
-  String get sortRadioFavoritesAlphabetically => 'Ordenar favoritas alfabeticamente';
+  String get sortRadioFavoritesAlphabetically =>
+      'Ordenar favoritas alfabeticamente';
 
   @override
-  String get podcastsSortedAlphabetically => 'Podcasts ordenados alfabeticamente.';
+  String get podcastsSortedAlphabetically =>
+      'Podcasts ordenados alfabeticamente.';
 
   @override
-  String get radioFavoritesSortedAlphabetically => 'Rádios favoritas ordenadas alfabeticamente.';
+  String get radioFavoritesSortedAlphabetically =>
+      'Rádios favoritas ordenadas alfabeticamente.';
 
   @override
-  String get settingsIncludeFootnotesInText => 'Incluir notas de rodapé no texto';
+  String get settingsIncludeFootnotesInText =>
+      'Incluir notas de rodapé no texto';
 
   @override
-  String get settingsIncludeFootnotesInTextHint => 'Nos EPUB compatíveis, mostra a nota logo após o parágrafo que a referencia.';
+  String get settingsIncludeFootnotesInTextHint =>
+      'Nos EPUB compatíveis, mostra a nota logo após o parágrafo que a referencia.';
 
   @override
   String get documentFootnoteLabel => 'Nota de rodapé';
 
   @override
-  String get settingsMultipleDocumentBookmarks => 'Permitir vários marcadores nos documentos';
+  String get settingsMultipleDocumentBookmarks =>
+      'Permitir vários marcadores nos documentos';
 
   @override
-  String get settingsMultipleDocumentBookmarksHint => 'Se estiver desativado, fica apenas um marcador por documento. Se estiver ativado, pode salvar vários marcadores no mesmo documento.';
+  String get settingsMultipleDocumentBookmarksHint =>
+      'Se estiver desativado, fica apenas um marcador por documento. Se estiver ativado, pode salvar vários marcadores no mesmo documento.';
 
   @override
   String get documentGoToBookmarkAction => 'Ir para o marcador';
@@ -6285,7 +6433,8 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get documentKeepBookmarkTitle => 'Que marcador pretende manter?';
 
   @override
-  String get documentKeepBookmarkMessage => 'Os marcadores múltiplos estão desativados. Escolha um marcador para manter: os outros serão excluídos.';
+  String get documentKeepBookmarkMessage =>
+      'Os marcadores múltiplos estão desativados. Escolha um marcador para manter: os outros serão excluídos.';
 
   @override
   String documentBookmarkChoiceLabel(int order, int paragraph) {
@@ -6302,25 +6451,30 @@ class AppLocalizationsPtBr extends AppLocalizations {
   }
 
   @override
-  String get settingsSonarTubePlayerActions => 'Botões e comportamento do SonarTube';
+  String get settingsSonarTubePlayerActions =>
+      'Botões e comportamento do SonarTube';
 
   @override
   String get settingsSonarTubeAutoplay => 'Reprodução automática';
 
   @override
-  String get settingsSonarTubeAutoplayHint => 'Quando um vídeo ou faixa termina, o SonarTube reproduz automaticamente o próximo, se estiver disponível.';
+  String get settingsSonarTubeAutoplayHint =>
+      'Quando um vídeo ou faixa termina, o SonarTube reproduz automaticamente o próximo, se estiver disponível.';
 
   @override
-  String get settingsVideoLandscapeFullscreen => 'Vídeo horizontal em tela cheia';
+  String get settingsVideoLandscapeFullscreen =>
+      'Vídeo horizontal em tela cheia';
 
   @override
-  String get settingsVideoLandscapeFullscreenHint => 'Quando o vídeo está ativado, ele é exibido em tela cheia na orientação horizontal. As rádios somente de áudio não mudam.';
+  String get settingsVideoLandscapeFullscreenHint =>
+      'Quando o vídeo está ativado, ele é exibido em tela cheia na orientação horizontal. As rádios somente de áudio não mudam.';
 
   @override
   String get settingsPodcastCacheTitle => 'Cache de podcasts';
 
   @override
-  String get settingsPodcastCacheHint => 'Limpa apenas arquivos temporários dos podcasts. Assinaturas, histórico e áudio importado ficam intactos.';
+  String get settingsPodcastCacheHint =>
+      'Limpa apenas arquivos temporários dos podcasts. Assinaturas, histórico e áudio importado ficam intactos.';
 
   @override
   String settingsPodcastCacheSize(String size) {
@@ -6334,7 +6488,8 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get confirmClearPodcastCacheTitle => 'Limpar a cache de podcasts?';
 
   @override
-  String get confirmClearPodcastCacheMessage => 'Os arquivos temporários dos podcasts serão excluídos. As assinaturas e o histórico dos episódios não serão removidos.';
+  String get confirmClearPodcastCacheMessage =>
+      'Os arquivos temporários dos podcasts serão excluídos. As assinaturas e o histórico dos episódios não serão removidos.';
 
   @override
   String podcastCacheCleared(String size) {
@@ -6351,22 +6506,27 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get pharmacyProductsSectionTitle => 'Parafarmácia e suplementos';
 
   @override
-  String get pharmacyProductsLoadingTitle => 'Procurando parafarmácia e suplementos...';
+  String get pharmacyProductsLoadingTitle =>
+      'Procurando parafarmácia e suplementos...';
 
   @override
-  String get pharmacyProductsErrorTitle => 'Erro ao procurar parafarmácia e suplementos';
+  String get pharmacyProductsErrorTitle =>
+      'Erro ao procurar parafarmácia e suplementos';
 
   @override
-  String get pharmacyProductsNoResultsTitle => 'Nenhum produto de parafarmácia ou suplemento encontrado';
+  String get pharmacyProductsNoResultsTitle =>
+      'Nenhum produto de parafarmácia ou suplemento encontrado';
 
   @override
   String get mediaCutterTitle => 'Cortar arquivo de mídia';
 
   @override
-  String get mediaCutterInstruction1 => 'Abra um arquivo de áudio ou vídeo, reproduza e vá até o ponto em que deseja cortar.';
+  String get mediaCutterInstruction1 =>
+      'Abra um arquivo de áudio ou vídeo, reproduza e vá até o ponto em que deseja cortar.';
 
   @override
-  String get mediaCutterInstruction2 => 'Pause, toque em Dividir, depois exclua as partes que você não quer na seção Partes a salvar e toque em Salvar.';
+  String get mediaCutterInstruction2 =>
+      'Pause, toque em Dividir, depois exclua as partes que você não quer na seção Partes a salvar e toque em Salvar.';
 
   @override
   String get mediaCutterOpenFile => 'Abrir arquivo de mídia';
@@ -6380,7 +6540,8 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get mediaCutterPosition => 'Posição de corte';
 
   @override
-  String get mediaCutterPositionHint => 'Avança ou recua um segundo de cada vez.';
+  String get mediaCutterPositionHint =>
+      'Avança ou recua um segundo de cada vez.';
 
   @override
   String get mediaCutterHideVideoPreview => 'Ocultar vídeo';
@@ -6410,7 +6571,8 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get mediaCutterPartsTitle => 'Partes a salvar';
 
   @override
-  String get mediaCutterPartsHint => 'Toque em uma parte para ouvi-la. As partes excluídas desaparecem da lista, são ignoradas durante a reprodução e não serão salvas. Os efeitos são aplicados à parte inteira somente quando o arquivo de mídia é salvo.';
+  String get mediaCutterPartsHint =>
+      'Toque em uma parte para ouvi-la. As partes excluídas desaparecem da lista, são ignoradas durante a reprodução e não serão salvas. Os efeitos são aplicados à parte inteira somente quando o arquivo de mídia é salvo.';
 
   @override
   String mediaCutterPartLabel(int index) {
@@ -6432,16 +6594,19 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get mediaCutterUnsavedExitTitle => 'Arquivo não salvo';
 
   @override
-  String get mediaCutterUnsavedExitMessage => 'O arquivo não foi salvo. Tem certeza de que deseja sair?';
+  String get mediaCutterUnsavedExitMessage =>
+      'O arquivo não foi salvo. Tem certeza de que deseja sair?';
 
   @override
   String get mediaCutterNoFile => 'Abra primeiro um arquivo de mídia.';
 
   @override
-  String get mediaCutterInvalidSplitPoint => 'Escolha um ponto dentro do arquivo, não o início nem o fim.';
+  String get mediaCutterInvalidSplitPoint =>
+      'Escolha um ponto dentro do arquivo, não o início nem o fim.';
 
   @override
-  String get mediaCutterSplitAlreadyExists => 'Já existe uma divisão neste ponto.';
+  String get mediaCutterSplitAlreadyExists =>
+      'Já existe uma divisão neste ponto.';
 
   @override
   String mediaCutterSplitAdded(String position) {
@@ -6467,19 +6632,22 @@ class AppLocalizationsPtBr extends AppLocalizations {
   }
 
   @override
-  String get mediaCutterNoPartsToSave => 'Mantenha pelo menos uma parte antes de salvar.';
+  String get mediaCutterNoPartsToSave =>
+      'Mantenha pelo menos uma parte antes de salvar.';
 
   @override
   String get mediaCutterRestoreDeletedPart => 'Restaurar parte excluída';
 
   @override
-  String get mediaCutterNoDeletedParts => 'Não há partes excluídas para restaurar.';
+  String get mediaCutterNoDeletedParts =>
+      'Não há partes excluídas para restaurar.';
 
   @override
   String get mediaCutterPartDeleteAction => 'Excluir';
 
   @override
-  String get mediaCutterPartTapHint => 'Toque duas vezes para ouvir esta parte. Use as ações Modificar parte, Excluir ou Ajustar efeitos.';
+  String get mediaCutterPartTapHint =>
+      'Toque duas vezes para ouvir esta parte. Use as ações Modificar parte, Excluir ou Ajustar efeitos.';
 
   @override
   String mediaCutterPartDeleted(String start, String end) {
@@ -6498,7 +6666,8 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get mediaCutterPartEditAction => 'Modificar parte';
 
   @override
-  String get mediaCutterPartEditDescription => 'Desloque o início ou o fim da parte em 1 segundo e depois ouça a parte modificada.';
+  String get mediaCutterPartEditDescription =>
+      'Desloque o início ou o fim da parte em 1 segundo e depois ouça a parte modificada.';
 
   @override
   String mediaCutterPartAdjusted(String start, String end) {
@@ -6509,7 +6678,8 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get mediaCutterPartEffectsTitle => 'Efeitos da parte';
 
   @override
-  String get mediaCutterPartEffectsDescription => 'Ajuste o volume e o efeito apenas para esta parte.';
+  String get mediaCutterPartEffectsDescription =>
+      'Ajuste o volume e o efeito apenas para esta parte.';
 
   @override
   String get mediaCutterPartVolumeLabel => 'Volume da parte';
@@ -6645,7 +6815,8 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get mediaCutterPartPreviewAction => 'Ouvir prévia';
 
   @override
-  String get mediaCutterPartEffectsSavedOnly => 'A prévia usa o volume escolhido. Os efeitos de áudio são aplicados ao salvar.';
+  String get mediaCutterPartEffectsSavedOnly =>
+      'A prévia usa o volume escolhido. Os efeitos de áudio são aplicados ao salvar.';
 
   @override
   String mediaCutterPartEffectsApplied(String start, String end) {
@@ -6661,13 +6832,15 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get mediaCutterGuidedModeTitle => 'Corte guiado';
 
   @override
-  String get mediaCutterGuidedModeDescription => 'Adequado para quem está começando. Selecione um ponto inicial e um ponto final, ouça o corte e depois aplique-o.';
+  String get mediaCutterGuidedModeDescription =>
+      'Adequado para quem está começando. Selecione um ponto inicial e um ponto final, ouça o corte e depois aplique-o.';
 
   @override
   String get mediaCutterAdvancedModeTitle => 'Corte avançado';
 
   @override
-  String get mediaCutterAdvancedModeDescription => 'Inspirado nos programas de edição de mídia mais conhecidos. Permite dividir um arquivo em várias partes e excluir as partes que você não quer.';
+  String get mediaCutterAdvancedModeDescription =>
+      'Inspirado nos programas de edição de mídia mais conhecidos. Permite dividir um arquivo em várias partes e excluir as partes que você não quer.';
 
   @override
   String get mediaCutterChangeCutMode => 'Alterar tipo de corte';
@@ -6688,16 +6861,20 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get mediaCutterGuidedModifyCut => 'Modificar corte';
 
   @override
-  String get mediaCutterGuidedMoveStartBackOneSecond => 'Recuar o início do corte 1 segundo';
+  String get mediaCutterGuidedMoveStartBackOneSecond =>
+      'Recuar o início do corte 1 segundo';
 
   @override
-  String get mediaCutterGuidedMoveStartForwardOneSecond => 'Avançar o início do corte 1 segundo';
+  String get mediaCutterGuidedMoveStartForwardOneSecond =>
+      'Avançar o início do corte 1 segundo';
 
   @override
-  String get mediaCutterGuidedMoveEndBackOneSecond => 'Recuar o fim do corte 1 segundo';
+  String get mediaCutterGuidedMoveEndBackOneSecond =>
+      'Recuar o fim do corte 1 segundo';
 
   @override
-  String get mediaCutterGuidedMoveEndForwardOneSecond => 'Avançar o fim do corte 1 segundo';
+  String get mediaCutterGuidedMoveEndForwardOneSecond =>
+      'Avançar o fim do corte 1 segundo';
 
   @override
   String get mediaCutterCutEditPrecisionLabel => 'Precisão da edição do corte';
@@ -6751,10 +6928,12 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get mediaCutterGuidedEffectsAction => 'Ajustar efeitos do arquivo';
 
   @override
-  String get mediaCutterGuidedEffectsDescription => 'Regule o volume e os efeitos para todo o arquivo resultante.';
+  String get mediaCutterGuidedEffectsDescription =>
+      'Regule o volume e os efeitos para todo o arquivo resultante.';
 
   @override
-  String get mediaCutterGuidedFileTapHint => 'Toque duas vezes para reproduzir o arquivo resultante. Use Ajustar efeitos do arquivo para aplicar efeitos a todo o arquivo.';
+  String get mediaCutterGuidedFileTapHint =>
+      'Toque duas vezes para reproduzir o arquivo resultante. Use Ajustar efeitos do arquivo para aplicar efeitos a todo o arquivo.';
 
   @override
   String mediaCutterGuidedStartSet(String start) {
@@ -6772,7 +6951,8 @@ class AppLocalizationsPtBr extends AppLocalizations {
   }
 
   @override
-  String get mediaCutterGuidedNeedStartEnd => 'Defina primeiro o início e o fim do corte.';
+  String get mediaCutterGuidedNeedStartEnd =>
+      'Defina primeiro o início e o fim do corte.';
 
   @override
   String mediaCutterGuidedCutSummary(String start, String end) {
@@ -6785,7 +6965,8 @@ class AppLocalizationsPtBr extends AppLocalizations {
   }
 
   @override
-  String get mediaCutterGuidedPendingCutExitMessage => 'Tem um corte guiado que ainda não foi aplicado. Quer sair sem o conservar?';
+  String get mediaCutterGuidedPendingCutExitMessage =>
+      'Tem um corte guiado que ainda não foi aplicado. Quer sair sem o conservar?';
 
   @override
   String mediaCutterSplitAddedAnnouncement(int partNumber) {
@@ -6799,7 +6980,8 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get newsBrowseCommunitySources => 'Fontes da comunidade';
 
   @override
-  String get newsAddCommunityInstructions => 'Digite o título da fonte e o URL do feed RSS ou do site. O Sonarpad usará o idioma de notícias selecionado e, se digitar um site, tentará encontrar o feed automaticamente.';
+  String get newsAddCommunityInstructions =>
+      'Digite o título da fonte e o URL do feed RSS ou do site. O Sonarpad usará o idioma de notícias selecionado e, se digitar um site, tentará encontrar o feed automaticamente.';
 
   @override
   String get newsCommunitySourceName => 'Título da fonte';
@@ -6814,10 +6996,12 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get newsCommunityChecking => 'Verificando feed ou site...';
 
   @override
-  String get newsCommunityMissingFields => 'Digite o título e o URL do feed ou do site.';
+  String get newsCommunityMissingFields =>
+      'Digite o título e o URL do feed ou do site.';
 
   @override
-  String get newsCommunityAdded => 'Fonte adicionada corretamente à comunidade Sonarpad.';
+  String get newsCommunityAdded =>
+      'Fonte adicionada corretamente à comunidade Sonarpad.';
 
   @override
   String newsCommunityAddError(Object error) {
@@ -6833,7 +7017,8 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get newsCommunitySourcesTitle => 'Fontes da comunidade';
 
   @override
-  String get newsCommunitySourcesEmpty => 'Não há fontes da comunidade disponíveis para este idioma.';
+  String get newsCommunitySourcesEmpty =>
+      'Não há fontes da comunidade disponíveis para este idioma.';
 
   @override
   String newsCommunitySourcesError(Object error) {
@@ -6851,7 +7036,8 @@ class AppLocalizationsPtBr extends AppLocalizations {
   }
 
   @override
-  String get newsCommunitySourceTapHint => 'Toque para adicioná-la à sua biblioteca de notícias.';
+  String get newsCommunitySourceTapHint =>
+      'Toque para adicioná-la à sua biblioteca de notícias.';
 
   @override
   String get developerModeEnabled => 'Modo de programador ativado.';
@@ -6863,10 +7049,12 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get developerSectionTitle => 'Programador';
 
   @override
-  String get developerUseExperimentalFlutterRenderer => 'Usar o renderizador Flutter experimental';
+  String get developerUseExperimentalFlutterRenderer =>
+      'Usar o renderizador Flutter experimental';
 
   @override
-  String get developerUseExperimentalFlutterRendererHint => 'Desativa temporariamente o UIKit para comparar o VoiceOver com o Flutter puro.';
+  String get developerUseExperimentalFlutterRendererHint =>
+      'Desativa temporariamente o UIKit para comparar o VoiceOver com o Flutter puro.';
 
   @override
   String get letterJumpSelectLetter => 'Selecionar letra';
@@ -6881,10 +7069,8 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get settingsToggleOff => 'Desativado';
 
   @override
-  String get settingsShowOnlyMultilingualEdgeVoices => 'Mostrar apenas vozes multilíngues';
-
-  @override
-  String get radioDirectoryLoading => 'Atualizando países e idiomas de rádio...';
+  String get radioDirectoryLoading =>
+      'Atualizando países e idiomas de rádio...';
 
   @override
   String get recentRadios => 'Rádios recentes';
@@ -6893,15 +7079,17 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get radioNextPage => 'Seguintes';
 
   @override
-  String radioPageOf(int current, int total) {
+  String radioPageOf(Object current, Object total) {
     return 'Página $current de $total';
   }
 
   @override
-  String get radioNoResultsWithQuery => 'Nenhuma rádio encontrada. Tente apenas o nome da estação, sem gênero, ou mude o idioma/país.';
+  String get radioNoResultsWithQuery =>
+      'Nenhuma rádio encontrada. Tente apenas o nome da estação, sem gênero, ou mude o idioma/país.';
 
   @override
-  String get radioNoResultsGeneric => 'Nenhuma rádio encontrada. Tente outro idioma, país ou gênero.';
+  String get radioNoResultsGeneric =>
+      'Nenhuma rádio encontrada. Tente outro idioma, país ou gênero.';
 
   @override
   String radioSearchRawError(Object error) {
@@ -6909,21 +7097,23 @@ class AppLocalizationsPtBr extends AppLocalizations {
   }
 
   @override
-  String get radioBrowserConnectionError => 'Erro de ligação ao Radio Browser. Tente novamente mais tarde.';
+  String get radioBrowserConnectionError =>
+      'Erro de ligação ao Radio Browser. Tente novamente mais tarde.';
 
   @override
   String get documentIndexLoadingMessage => 'Carregando índice... Aguarde.';
 
   @override
-  String get documentIndexUnavailableMessage => 'Índice não disponível para este EPUB.';
+  String get documentIndexUnavailableMessage =>
+      'Índice não disponível para este EPUB.';
 
   @override
-  String mediaCutterVolumeSummary(int percent) {
+  String mediaCutterVolumeSummary(Object percent) {
     return 'volume $percent%';
   }
 
   @override
-  String mediaCutterDurationSummary(String duration) {
+  String mediaCutterDurationSummary(Object duration) {
     return 'duração $duration';
   }
 
@@ -6958,7 +7148,7 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get mediaCutterDurationAnd => 'e';
 
   @override
-  String mediaCutterSeekStepButton(String step) {
+  String mediaCutterSeekStepButton(Object step) {
     return 'Ajustar o deslocamento do arquivo de mídia: $step';
   }
 
@@ -6966,7 +7156,7 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get mediaCutterSeekStepTitle => 'Deslocamento do arquivo de mídia';
 
   @override
-  String mediaCutterSeekStepSelected(String step) {
+  String mediaCutterSeekStepSelected(Object step) {
     return 'Deslocamento do arquivo de mídia definido como $step.';
   }
 
@@ -7072,18 +7262,12 @@ class AppLocalizationsPtBr extends AppLocalizations {
   @override
   String get clearText => 'Limpar texto';
 
-
   @override
-
   String clearedTextAnnouncement(String value) {
-
     return '$value excluído.';
-
   }
 
-
   @override
-
   String get textDeletedAnnouncement => 'Texto excluído.';
 
   @override
@@ -7093,7 +7277,8 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get cinemaTrailerLoading => 'Carregando trailer';
 
   @override
-  String get cinemaNoTrailer => 'Não há nenhum trailer disponível para este filme';
+  String get cinemaNoTrailer =>
+      'Não há nenhum trailer disponível para este filme';
 
   @override
   String get radioScheduleHours => 'Horas';
@@ -7108,12 +7293,13 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get radioScheduleSelectMinutes => 'Selecionar os minutos';
 
   @override
-  String radioScheduleLabeledValue(String label, String value) {
+  String radioScheduleLabeledValue(Object label, Object value) {
     return '$label: $value';
   }
 
   @override
-  String get radioScheduleStopCurrentFirst => 'Termine a gravação em andamento antes de programar uma nova.';
+  String get radioScheduleStopCurrentFirst =>
+      'Termine a gravação em andamento antes de programar uma nova.';
 
   @override
   String get radioScheduleStartTime => 'Hora de início';
@@ -7125,15 +7311,16 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get radioScheduleDialogTitle => 'Programar gravação';
 
   @override
-  String get radioScheduleOpenRequirement => 'A gravação programada continua funcionando enquanto você navega por outras telas do Sonarpad. O Sonarpad precisa permanecer aberto; se o aplicativo for fechado ou suspenso pelo sistema, o início da gravação não é garantido.';
+  String get radioScheduleOpenRequirement =>
+      'A gravação programada continua funcionando enquanto você navega por outras telas do Sonarpad. O Sonarpad precisa permanecer aberto; se o aplicativo for fechado ou suspenso pelo sistema, o início da gravação não é garantido.';
 
   @override
-  String radioScheduleStartTimeValue(String time) {
+  String radioScheduleStartTimeValue(Object time) {
     return 'Hora de início: $time';
   }
 
   @override
-  String radioScheduleEndTimeValue(String time) {
+  String radioScheduleEndTimeValue(Object time) {
     return 'Hora de fim: $time';
   }
 
@@ -7141,18 +7328,20 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get radioScheduleOptionalTitle => 'Título opcional';
 
   @override
-  String get radioScheduleTitleHint => 'Deixa em branco para usar o nome da rádio ou TV';
+  String get radioScheduleTitleHint =>
+      'Deixa em branco para usar o nome da rádio ou TV';
 
   @override
   String get radioScheduleAction => 'Programar';
 
   @override
-  String radioScheduledRecordingRange(String start, String end) {
+  String radioScheduledRecordingRange(Object start, Object end) {
     return 'Gravação programada: $start - $end.';
   }
 
   @override
-  String get radioScheduledRecordingAlreadyActive => 'Gravação programada não iniciada: já existe outra gravação em andamento.';
+  String get radioScheduledRecordingAlreadyActive =>
+      'Gravação programada não iniciada: já existe outra gravação em andamento.';
 
   @override
   String get radioScheduledRecordingStarted => 'Gravação programada iniciada.';
@@ -7171,10 +7360,15 @@ class AppLocalizationsPtBr extends AppLocalizations {
   }
 
   @override
-  String get radioScheduledRecordingCancelled => 'Gravação programada cancelada.';
+  String get radioScheduledRecordingCancelled =>
+      'Gravação programada cancelada.';
 
   @override
-  String radioScheduledRecordingRangeWithTitle(String start, String end, String title) {
+  String radioScheduledRecordingRangeWithTitle(
+    Object start,
+    Object end,
+    Object title,
+  ) {
     return 'Gravação programada: $start - $end. Título: $title.';
   }
 
@@ -7189,8 +7383,6 @@ class AppLocalizationsPtBr extends AppLocalizations {
 
   @override
   String get radioCommunityLanguageTurkish => 'Turco';
-
-
 
   @override
   String get simplifiedChineseLanguageName => 'Chinês simplificado';
@@ -7233,7 +7425,9 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get mediaCutterChooseAudioTrack => 'Escolher arquivo de áudio';
 
   @override
-  String mediaCutterAddedTrackSelected(String name) => 'Arquivo de áudio selecionado: $name';
+  String mediaCutterAddedTrackSelected(String name) {
+    return 'Arquivo de áudio selecionado: $name';
+  }
 
   @override
   String get mediaCutterOriginalTrackVolume => 'Volume da faixa original';
@@ -7251,29 +7445,23 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get mediaCutterFinalizeTrack => 'Finalizar';
 
   @override
-  String mediaCutterAddedTrackApplied(String name) => 'Nova faixa adicionada: $name';
+  String mediaCutterAddedTrackApplied(String name) {
+    return 'Nova faixa adicionada: $name';
+  }
 
   @override
-  String get mediaCutterAddedTrackInvalidAudio => 'O arquivo selecionado não contém uma faixa de áudio válida.';
+  String get mediaCutterAddedTrackInvalidAudio =>
+      'O arquivo selecionado não contém uma faixa de áudio válida.';
 
   @override
   String get mediaCutterAddedTrackPreviewPreparing => 'Preparando a prévia…';
 
   @override
-  String get mediaCutterAddedTrackPreviewFailed => 'Não foi possível criar a prévia.';
+  String get mediaCutterAddedTrackPreviewFailed =>
+      'Não foi possível criar a prévia.';
 
   @override
   String get mediaCutterMixingAddedTrack => 'Mixando a nova faixa';
-
-
-  @override
-  String get mediaProcessingCompleted => 'Processamento concluído.';
-
-  @override
-  String get saveInSonarpadDocuments => 'Salvar nos Documentos do Sonarpad';
-
-  @override
-  String get mediaCutterProcess => 'Processar';
 
   @override
   String get preserveMedia => 'Salvar conteúdo';
@@ -7287,6 +7475,57 @@ class AppLocalizationsPtBr extends AppLocalizations {
   @override
   String get preserveMediaError => 'Não foi possível salvar o conteúdo.';
 
+  @override
+  String get mediaProcessingCompleted => 'Processamento concluído.';
+
+  @override
+  String get saveInSonarpadDocuments => 'Salvar nos Documentos do Sonarpad';
+
+  @override
+  String get mediaCutterProcess => 'Processar';
+
+  @override
+  String get sonarTubeGoToChannel => 'Ir para o canal';
+
+  @override
+  String get sonarTubeViewComments => 'Ver comentários';
+
+  @override
+  String get sonarTubeComments => 'Comentários';
+
+  @override
+  String get sonarTubeNoComments => 'Nenhum comentário disponível.';
+
+  @override
+  String get sonarTubeLoadMoreComments => 'Carregar mais comentários';
+
+  @override
+  String get sonarTubeTranscribeVideo => 'Transcrever vídeo';
+
+  @override
+  String get sonarTubeTranscript => 'Transcrição';
+
+  @override
+  String get sonarTubeNoTranscript =>
+      'Nenhuma transcrição disponível para este vídeo.';
+
+  @override
+  String get sonarTubeCopyTranscript => 'Copiar transcrição';
+
+  @override
+  String get sonarTubeTranscriptCopied =>
+      'Transcrição copiada para a área de transferência';
+
+  @override
+  String get sonarTubeTranscriptSavedInDocuments =>
+      'A transcrição foi salva em Documentos.';
+
+  @override
+  String get copyToClipboard => 'Copiar para a área de transferência';
+
+  @override
+  String get textCopiedToClipboard =>
+      'Texto copiado para a área de transferência';
 
   @override
   String get protectDocumentWithPassword => 'Proteger com senha';
@@ -7301,10 +7540,12 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get confirmDocumentPassword => 'Confirmar senha';
 
   @override
-  String get chooseDocumentPassword => 'Digite uma senha e confirme-a. Ela será solicitada antes de abrir ou compartilhar este documento.';
+  String get chooseDocumentPassword =>
+      'Digite uma senha e confirme-a. Ela será solicitada antes de abrir ou compartilhar este documento.';
 
   @override
-  String get enterCurrentDocumentPassword => 'Digite a senha atual para remover a proteção.';
+  String get enterCurrentDocumentPassword =>
+      'Digite a senha atual para remover a proteção.';
 
   @override
   String get documentPasswordRequired => 'Digite uma senha.';
@@ -7319,16 +7560,19 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get documentPasswordProtectionEnabled => 'Proteção por senha ativada.';
 
   @override
-  String get documentPasswordProtectionRemoved => 'Proteção por senha removida.';
+  String get documentPasswordProtectionRemoved =>
+      'Proteção por senha removida.';
 
   @override
   String get documentPasswordRequiredTitle => 'Senha necessária';
 
   @override
-  String get enterDocumentPasswordToShare => 'Este documento está protegido. Digite a senha para continuar o compartilhamento.';
+  String get enterDocumentPasswordToShare =>
+      'Este documento está protegido. Digite a senha para continuar o compartilhamento.';
 
   @override
-  String get enterDocumentPasswordToOpen => 'Este documento está protegido. Digite a senha para abri-lo.';
+  String get enterDocumentPasswordToOpen =>
+      'Este documento está protegido. Digite a senha para abri-lo.';
 
   @override
   String get documentPasswordProtectedStatus => 'Protegido por senha';
@@ -7340,38 +7584,68 @@ class AppLocalizationsPtBr extends AppLocalizations {
   String get renameRecording => 'Renomear gravação';
 
   @override
+  String get newRecordingName => 'Novo nome da gravação';
+
+  @override
+  String get recordingCannotRenameWhileInProgress =>
+      'Não é possível renomear uma gravação em andamento.';
+
+  @override
+  String get recordingNameAlreadyExists =>
+      'Já existe uma gravação com este nome.';
+
+  @override
   String get renameDocument => 'Renomear documento';
 
   @override
   String get newDocumentName => 'Novo nome do documento';
 
   @override
-  String get documentNameAlreadyExists => 'Já existe um documento com este nome.';
+  String get documentNameAlreadyExists =>
+      'Já existe um documento com este nome.';
 
   @override
-  String get newRecordingName => 'Novo nome da gravação';
-
-  @override
-  String get recordingCannotRenameWhileInProgress => 'Não é possível renomear uma gravação em andamento.';
-
-  @override
-  String get recordingNameAlreadyExists => 'Já existe uma gravação com este nome.';
-
-  @override
-  String get recordingExitPrompt => 'A gravação está em andamento. Deseja pará-la ou continuar a gravação?';
+  String get recordingExitPrompt =>
+      'A gravação está em andamento. Deseja pará-la ou continuar a gravação?';
 
   @override
   String get continueRecording => 'Continuar gravação';
 
+  @override
+  String get settingsShowOnlyMultilingualEdgeVoices =>
+      'Mostrar apenas vozes multilíngues';
+
+  @override
+  String get weatherAirQuality => 'Qualidade do ar';
+
+  @override
+  String get weatherAirQualityGood => 'Boa';
+
+  @override
+  String get weatherAirQualityFair => 'Razoável';
+
+  @override
+  String get weatherAirQualityModerate => 'Moderada';
+
+  @override
+  String get weatherAirQualityPoor => 'Ruim';
+
+  @override
+  String get weatherAirQualityVeryPoor => 'Muito ruim';
+
+  @override
+  String get weatherAirQualityExtremelyPoor => 'Extremamente ruim';
 
   @override
   String get sonarpadAudiodescriptionsTitle => 'Audiodescrições Sonarpad';
 
   @override
-  String get sonarpadAudiodescriptionsAll => 'Todas as audiodescrições Sonarpad';
+  String get sonarpadAudiodescriptionsAll =>
+      'Todas as audiodescrições Sonarpad';
 
   @override
-  String get sonarpadAudiodescriptionsSearchHint => 'Pesquisar um filme, série ou episódio';
+  String get sonarpadAudiodescriptionsSearchHint =>
+      'Pesquisar um filme, série ou episódio';
 
   @override
   String get sortBy => 'Ordenar por';
@@ -7388,4 +7662,30 @@ class AppLocalizationsPtBr extends AppLocalizations {
   @override
   String get downloadUnavailable => 'Download indisponível.';
 
+  @override
+  String get sonarTubeChannelPlaylists => 'Playlists';
+
+  @override
+  String get sonarTubeChannelShorts => 'Shorts';
+
+  @override
+  String sonarTubeVideoCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count vídeos',
+      one: '1 vídeo',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get sonarTubeViewDescription => 'Ver descrição';
+
+  @override
+  String get sonarTubeDescription => 'Descrição';
+
+  @override
+  String get sonarTubeNoDescription =>
+      'Nenhuma descrição disponível para este vídeo.';
 }

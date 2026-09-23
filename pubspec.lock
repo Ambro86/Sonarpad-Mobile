@@ -803,6 +803,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "9.5.0"
+  onnxruntime_plus:
+    dependency: "direct main"
+    description:
+      name: onnxruntime_plus
+      sha256: "05323f4f72c701416deba8db94f5e576f6853ca6f8d97d628ed9190eee6d77d8"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.5.0"
   package_config:
     dependency: transitive
     description:

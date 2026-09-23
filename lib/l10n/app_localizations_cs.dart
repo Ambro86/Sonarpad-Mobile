@@ -130,10 +130,12 @@ class AppLocalizationsCs extends AppLocalizations {
   String get sonarTubeNoRecentVideos => 'Žádná nedávná videa.';
 
   @override
-  String get sonarTubeConfirmClearHistory => 'Opravdu chcete vymazat historii nedávných videí?';
+  String get sonarTubeConfirmClearHistory =>
+      'Opravdu chcete vymazat historii nedávných videí?';
 
   @override
-  String get sonarTubeNoFavorites => 'Žádná oblíbená videa, kanály ani playlisty.';
+  String get sonarTubeNoFavorites =>
+      'Žádná oblíbená videa, kanály ani playlisty.';
 
   @override
   String get sonarTubeAddFavorite => 'Přidat do oblíbených';
@@ -146,65 +148,6 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get sonarTubeNextTrack => 'Přejít na následující video';
-
-  @override
-  String get sonarTubeGoToChannel => 'Přejít na kanál';
-
-  @override
-  String get sonarTubeViewComments => 'Zobrazit komentáře';
-
-  @override
-  String get sonarTubeComments => 'Komentáře';
-
-  @override
-  String get sonarTubeNoComments => 'Nejsou k dispozici žádné komentáře.';
-
-  @override
-  String get sonarTubeLoadMoreComments => 'Načíst další komentáře';
-
-  @override
-  String get sonarTubeTranscribeVideo => 'Přepsat video';
-
-  @override
-  String get sonarTubeChannelPlaylists => 'Playlisty';
-
-  @override
-  String get sonarTubeChannelShorts => 'Shorts';
-
-  @override
-  String sonarTubeVideoCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count videí',
-      one: '1 video',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get sonarTubeViewDescription => 'Zobrazit popis';
-
-  @override
-  String get sonarTubeDescription => 'Popis';
-
-  @override
-  String get sonarTubeNoDescription => 'Pro toto video není k dispozici žádný popis.';
-
-  @override
-  String get sonarTubeTranscript => 'Přepis';
-
-  @override
-  String get sonarTubeNoTranscript => 'Pro toto video není k dispozici žádný přepis.';
-
-  @override
-  String get sonarTubeCopyTranscript => 'Kopírovat přepis';
-
-  @override
-  String get sonarTubeTranscriptCopied => 'Přepis byl zkopírován do schránky';
-
-  @override
-  String get sonarTubeTranscriptSavedInDocuments => 'Přepis byl uložen do Dokumentů.';
 
   @override
   String get sonarTubeShareChannel => 'Sdílet kanál';
@@ -1281,9 +1224,9 @@ class AppLocalizationsCs extends AppLocalizations {
   @override
   String get weatherChooseDay => 'Vyberte den';
 
-
   @override
-  String get tvRecordingChooseDay => weatherChooseDay;
+  String get tvRecordingChooseDay => 'Vyberte den';
+
   @override
   String get weatherCurrentTemperature => 'Aktuální teplota';
 
@@ -1304,27 +1247,6 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get weatherRelativeHumidity => 'Relativní vlhkost';
-
-  @override
-  String get weatherAirQuality => 'Kvalita ovzduší';
-
-  @override
-  String get weatherAirQualityGood => 'Dobrá';
-
-  @override
-  String get weatherAirQualityFair => 'Uspokojivá';
-
-  @override
-  String get weatherAirQualityModerate => 'Střední';
-
-  @override
-  String get weatherAirQualityPoor => 'Špatná';
-
-  @override
-  String get weatherAirQualityVeryPoor => 'Velmi špatná';
-
-  @override
-  String get weatherAirQualityExtremelyPoor => 'Extrémně špatná';
 
   @override
   String get settingsSecretCode => 'Kód Sonarpadu pro další funkce';
@@ -1617,12 +1539,6 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get saveInLibrary => 'Uložit do knihovny';
-
-  @override
-  String get copyToClipboard => "Kopírovat do schránky";
-
-  @override
-  String get textCopiedToClipboard => "Text byl zkopírován do schránky";
 
   @override
   String get documentTextLabel => 'Text dokumentu';
@@ -2065,10 +1981,12 @@ class AppLocalizationsCs extends AppLocalizations {
   String get recordingInProgressStatus => 'Probíhá nahrávání';
 
   @override
-  String get scheduledRecordingInProgressStatus => 'Probíhá naplánované nahrávání';
+  String get scheduledRecordingInProgressStatus =>
+      'Probíhá naplánované nahrávání';
 
   @override
-  String get recordingCannotOpenWhileInProgress => 'Tuto nahrávku nelze otevřít, protože nahrávání stále probíhá.';
+  String get recordingCannotOpenWhileInProgress =>
+      'Tuto nahrávku nelze otevřít, protože nahrávání stále probíhá.';
 
   @override
   String get blindLibrarySearchCatalog => 'Prohledat katalog';
@@ -2684,7 +2602,8 @@ class AppLocalizationsCs extends AppLocalizations {
   String get settingsSonarTubeAutoplay => 'Automatické přehrávání';
 
   @override
-  String get settingsSonarTubeAutoplayHint => 'Po skončení videa nebo skladby SonarTube automaticky přehraje další položku, pokud je k dispozici.';
+  String get settingsSonarTubeAutoplayHint =>
+      'Po skončení videa nebo skladby SonarTube automaticky přehraje další položku, pokud je k dispozici.';
 
   @override
   String get settingsVideoLandscapeFullscreen =>
@@ -3263,6 +3182,7 @@ class AppLocalizationsCs extends AppLocalizations {
   @override
   String get newsCommunitySourceTapHint =>
       'Klepnutím přidáte zdroj do své knihovny zpráv.';
+
   @override
   String get developerModeEnabled => 'Vývojářský režim zapnut.';
 
@@ -3273,13 +3193,13 @@ class AppLocalizationsCs extends AppLocalizations {
   String get developerSectionTitle => 'Vývojář';
 
   @override
-  String get developerUseExperimentalFlutterRenderer => 'Použít experimentální renderer Flutteru';
+  String get developerUseExperimentalFlutterRenderer =>
+      'Použít experimentální renderer Flutteru';
 
   @override
   String get developerUseExperimentalFlutterRendererHint =>
       'Dočasně vypne UIKit, abyste mohli porovnat VoiceOver s čistým Flutterem.';
 
-  // Shared labels generated from ARB entries.
   @override
   String get letterJumpSelectLetter => 'Vybrat písmeno';
 
@@ -3293,9 +3213,6 @@ class AppLocalizationsCs extends AppLocalizations {
   String get settingsToggleOff => 'Vypnuto';
 
   @override
-  String get settingsShowOnlyMultilingualEdgeVoices => 'Zobrazit pouze vícejazyčné hlasy';
-
-  @override
   String get radioDirectoryLoading => 'Aktualizuji země a jazyky rádia...';
 
   @override
@@ -3305,15 +3222,17 @@ class AppLocalizationsCs extends AppLocalizations {
   String get radioNextPage => 'Další';
 
   @override
-  String radioPageOf(int current, int total) {
+  String radioPageOf(Object current, Object total) {
     return 'Stránka $current z $total';
   }
 
   @override
-  String get radioNoResultsWithQuery => 'Nebyly nalezeny žádné stanice. Zkuste zadat pouze název stanice bez žánru nebo změňte jazyk či zemi.';
+  String get radioNoResultsWithQuery =>
+      'Nebyly nalezeny žádné stanice. Zkuste zadat pouze název stanice bez žánru nebo změňte jazyk či zemi.';
 
   @override
-  String get radioNoResultsGeneric => 'Nebyly nalezeny žádné stanice. Zkuste jiný jazyk, zemi nebo žánr.';
+  String get radioNoResultsGeneric =>
+      'Nebyly nalezeny žádné stanice. Zkuste jiný jazyk, zemi nebo žánr.';
 
   @override
   String radioSearchRawError(Object error) {
@@ -3321,21 +3240,24 @@ class AppLocalizationsCs extends AppLocalizations {
   }
 
   @override
-  String get radioBrowserConnectionError => 'Chyba připojení k Radio Browseru. Zkuste to prosím později.';
+  String get radioBrowserConnectionError =>
+      'Chyba připojení k Radio Browseru. Zkuste to prosím později.';
 
   @override
-  String get documentIndexLoadingMessage => 'Načítání obsahu... Čekejte prosím.';
+  String get documentIndexLoadingMessage =>
+      'Načítání obsahu... Čekejte prosím.';
 
   @override
-  String get documentIndexUnavailableMessage => 'Obsah není pro tento EPUB dostupný.';
+  String get documentIndexUnavailableMessage =>
+      'Obsah není pro tento EPUB dostupný.';
 
   @override
-  String mediaCutterVolumeSummary(int percent) {
+  String mediaCutterVolumeSummary(Object percent) {
     return 'hlasitost $percent %';
   }
 
   @override
-  String mediaCutterDurationSummary(String duration) {
+  String mediaCutterDurationSummary(Object duration) {
     return 'délka $duration';
   }
 
@@ -3370,7 +3292,7 @@ class AppLocalizationsCs extends AppLocalizations {
   String get mediaCutterDurationAnd => 'a';
 
   @override
-  String mediaCutterSeekStepButton(String step) {
+  String mediaCutterSeekStepButton(Object step) {
     return 'Nastavit posun mediálního souboru: $step';
   }
 
@@ -3378,7 +3300,7 @@ class AppLocalizationsCs extends AppLocalizations {
   String get mediaCutterSeekStepTitle => 'Posun mediálního souboru';
 
   @override
-  String mediaCutterSeekStepSelected(String step) {
+  String mediaCutterSeekStepSelected(Object step) {
     return 'Posun mediálního souboru nastaven na $step.';
   }
 
@@ -3484,18 +3406,12 @@ class AppLocalizationsCs extends AppLocalizations {
   @override
   String get clearText => 'Vymazat text';
 
-
   @override
-
   String clearedTextAnnouncement(String value) {
-
     return '$value odstraněno.';
-
   }
 
-
   @override
-
   String get textDeletedAnnouncement => 'Text odstraněn.';
 
   @override
@@ -3505,7 +3421,8 @@ class AppLocalizationsCs extends AppLocalizations {
   String get cinemaTrailerLoading => 'Načítání upoutávky';
 
   @override
-  String get cinemaNoTrailer => 'Pro tento film není k dispozici žádná upoutávka';
+  String get cinemaNoTrailer =>
+      'Pro tento film není k dispozici žádná upoutávka';
 
   @override
   String get radioScheduleHours => 'Hodiny';
@@ -3520,12 +3437,13 @@ class AppLocalizationsCs extends AppLocalizations {
   String get radioScheduleSelectMinutes => 'Vyberte minuty';
 
   @override
-  String radioScheduleLabeledValue(String label, String value) {
+  String radioScheduleLabeledValue(Object label, Object value) {
     return '$label: $value';
   }
 
   @override
-  String get radioScheduleStopCurrentFirst => 'Před naplánováním nového záznamu ukončete probíhající nahrávání.';
+  String get radioScheduleStopCurrentFirst =>
+      'Před naplánováním nového záznamu ukončete probíhající nahrávání.';
 
   @override
   String get radioScheduleStartTime => 'Čas začátku';
@@ -3537,15 +3455,16 @@ class AppLocalizationsCs extends AppLocalizations {
   String get radioScheduleDialogTitle => 'Naplánovat nahrávání';
 
   @override
-  String get radioScheduleOpenRequirement => 'Naplánované nahrávání funguje i při přechodu na jiné obrazovky Sonarpadu. Sonarpad musí zůstat otevřený; pokud je aplikace zavřena nebo pozastavena systémem, spuštění nahrávání není zaručeno.';
+  String get radioScheduleOpenRequirement =>
+      'Naplánované nahrávání funguje i při přechodu na jiné obrazovky Sonarpadu. Sonarpad musí zůstat otevřený; pokud je aplikace zavřena nebo pozastavena systémem, spuštění nahrávání není zaručeno.';
 
   @override
-  String radioScheduleStartTimeValue(String time) {
+  String radioScheduleStartTimeValue(Object time) {
     return 'Čas začátku: $time';
   }
 
   @override
-  String radioScheduleEndTimeValue(String time) {
+  String radioScheduleEndTimeValue(Object time) {
     return 'Čas konce: $time';
   }
 
@@ -3553,21 +3472,24 @@ class AppLocalizationsCs extends AppLocalizations {
   String get radioScheduleOptionalTitle => 'Volitelný název';
 
   @override
-  String get radioScheduleTitleHint => 'Ponechte prázdné pro použití názvu rádia nebo TV';
+  String get radioScheduleTitleHint =>
+      'Ponechte prázdné pro použití názvu rádia nebo TV';
 
   @override
   String get radioScheduleAction => 'Naplánovat';
 
   @override
-  String radioScheduledRecordingRange(String start, String end) {
+  String radioScheduledRecordingRange(Object start, Object end) {
     return 'Naplánované nahrávání: $start - $end.';
   }
 
   @override
-  String get radioScheduledRecordingAlreadyActive => 'Naplánované nahrávání nebylo spuštěno: již probíhá jiné nahrávání.';
+  String get radioScheduledRecordingAlreadyActive =>
+      'Naplánované nahrávání nebylo spuštěno: již probíhá jiné nahrávání.';
 
   @override
-  String get radioScheduledRecordingStarted => 'Naplánované nahrávání spuštěno.';
+  String get radioScheduledRecordingStarted =>
+      'Naplánované nahrávání spuštěno.';
 
   @override
   String radioScheduledRecordingError(Object error) {
@@ -3583,15 +3505,21 @@ class AppLocalizationsCs extends AppLocalizations {
   }
 
   @override
-  String get radioScheduledRecordingCancelled => 'Naplánované nahrávání zrušeno.';
+  String get radioScheduledRecordingCancelled =>
+      'Naplánované nahrávání zrušeno.';
 
   @override
-  String radioScheduledRecordingRangeWithTitle(String start, String end, String title) {
+  String radioScheduledRecordingRangeWithTitle(
+    Object start,
+    Object end,
+    Object title,
+  ) {
     return 'Naplánované nahrávání: $start - $end. Název: $title.';
   }
 
   @override
   String get radioScheduleCancelAction => 'Zrušit naplánované nahrávání';
+
   @override
   String get radioLanguageTr => 'Turečtina';
 
@@ -3600,6 +3528,7 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get radioCommunityLanguageTurkish => 'Turečtina';
+
   @override
   String get simplifiedChineseLanguageName => 'Zjednodušená čínština';
 
@@ -3634,7 +3563,6 @@ class AppLocalizationsCs extends AppLocalizations {
   @override
   String get mediaCutterExportCompletion => 'Dokončení';
 
-
   @override
   String get mediaCutterAddTrack => 'Přidat novou stopu';
 
@@ -3642,7 +3570,9 @@ class AppLocalizationsCs extends AppLocalizations {
   String get mediaCutterChooseAudioTrack => 'Vybrat zvukový soubor';
 
   @override
-  String mediaCutterAddedTrackSelected(String name) => 'Vybraný zvukový soubor: $name';
+  String mediaCutterAddedTrackSelected(String name) {
+    return 'Vybraný zvukový soubor: $name';
+  }
 
   @override
   String get mediaCutterOriginalTrackVolume => 'Hlasitost původní stopy';
@@ -3660,29 +3590,23 @@ class AppLocalizationsCs extends AppLocalizations {
   String get mediaCutterFinalizeTrack => 'Dokončit';
 
   @override
-  String mediaCutterAddedTrackApplied(String name) => 'Nová stopa přidána: $name';
+  String mediaCutterAddedTrackApplied(String name) {
+    return 'Nová stopa přidána: $name';
+  }
 
   @override
-  String get mediaCutterAddedTrackInvalidAudio => 'Vybraný soubor neobsahuje platnou zvukovou stopu.';
+  String get mediaCutterAddedTrackInvalidAudio =>
+      'Vybraný soubor neobsahuje platnou zvukovou stopu.';
 
   @override
   String get mediaCutterAddedTrackPreviewPreparing => 'Příprava náhledu…';
 
   @override
-  String get mediaCutterAddedTrackPreviewFailed => 'Náhled se nepodařilo vytvořit.';
+  String get mediaCutterAddedTrackPreviewFailed =>
+      'Náhled se nepodařilo vytvořit.';
 
   @override
   String get mediaCutterMixingAddedTrack => 'Míchání nové stopy';
-
-
-  @override
-  String get mediaProcessingCompleted => 'Zpracování dokončeno.';
-
-  @override
-  String get saveInSonarpadDocuments => 'Uložit do Dokumentů Sonarpadu';
-
-  @override
-  String get mediaCutterProcess => 'Zpracovat';
 
   @override
   String get preserveMedia => 'Uchovat obsah';
@@ -3696,6 +3620,55 @@ class AppLocalizationsCs extends AppLocalizations {
   @override
   String get preserveMediaError => 'Obsah se nepodařilo uchovat.';
 
+  @override
+  String get mediaProcessingCompleted => 'Zpracování dokončeno.';
+
+  @override
+  String get saveInSonarpadDocuments => 'Uložit do Dokumentů Sonarpadu';
+
+  @override
+  String get mediaCutterProcess => 'Zpracovat';
+
+  @override
+  String get sonarTubeGoToChannel => 'Přejít na kanál';
+
+  @override
+  String get sonarTubeViewComments => 'Zobrazit komentáře';
+
+  @override
+  String get sonarTubeComments => 'Komentáře';
+
+  @override
+  String get sonarTubeNoComments => 'Nejsou k dispozici žádné komentáře.';
+
+  @override
+  String get sonarTubeLoadMoreComments => 'Načíst další komentáře';
+
+  @override
+  String get sonarTubeTranscribeVideo => 'Přepsat video';
+
+  @override
+  String get sonarTubeTranscript => 'Přepis';
+
+  @override
+  String get sonarTubeNoTranscript =>
+      'Pro toto video není k dispozici žádný přepis.';
+
+  @override
+  String get sonarTubeCopyTranscript => 'Kopírovat přepis';
+
+  @override
+  String get sonarTubeTranscriptCopied => 'Přepis byl zkopírován do schránky';
+
+  @override
+  String get sonarTubeTranscriptSavedInDocuments =>
+      'Přepis byl uložen do Dokumentů.';
+
+  @override
+  String get copyToClipboard => 'Kopírovat do schránky';
+
+  @override
+  String get textCopiedToClipboard => 'Text byl zkopírován do schránky';
 
   @override
   String get protectDocumentWithPassword => 'Chránit heslem';
@@ -3710,10 +3683,12 @@ class AppLocalizationsCs extends AppLocalizations {
   String get confirmDocumentPassword => 'Potvrdit heslo';
 
   @override
-  String get chooseDocumentPassword => 'Zadejte heslo a potvrďte ho. Heslo bude vyžadováno před otevřením nebo sdílením tohoto dokumentu.';
+  String get chooseDocumentPassword =>
+      'Zadejte heslo a potvrďte ho. Heslo bude vyžadováno před otevřením nebo sdílením tohoto dokumentu.';
 
   @override
-  String get enterCurrentDocumentPassword => 'Zadejte aktuální heslo pro odebrání ochrany.';
+  String get enterCurrentDocumentPassword =>
+      'Zadejte aktuální heslo pro odebrání ochrany.';
 
   @override
   String get documentPasswordRequired => 'Zadejte heslo.';
@@ -3725,19 +3700,23 @@ class AppLocalizationsCs extends AppLocalizations {
   String get incorrectDocumentPassword => 'Nesprávné heslo.';
 
   @override
-  String get documentPasswordProtectionEnabled => 'Ochrana heslem byla zapnuta.';
+  String get documentPasswordProtectionEnabled =>
+      'Ochrana heslem byla zapnuta.';
 
   @override
-  String get documentPasswordProtectionRemoved => 'Ochrana heslem byla odebrána.';
+  String get documentPasswordProtectionRemoved =>
+      'Ochrana heslem byla odebrána.';
 
   @override
   String get documentPasswordRequiredTitle => 'Vyžadováno heslo';
 
   @override
-  String get enterDocumentPasswordToShare => 'Tento dokument je chráněn. Pro pokračování ve sdílení zadejte heslo.';
+  String get enterDocumentPasswordToShare =>
+      'Tento dokument je chráněn. Pro pokračování ve sdílení zadejte heslo.';
 
   @override
-  String get enterDocumentPasswordToOpen => 'Tento dokument je chráněn. Pro jeho otevření zadejte heslo.';
+  String get enterDocumentPasswordToOpen =>
+      'Tento dokument je chráněn. Pro jeho otevření zadejte heslo.';
 
   @override
   String get documentPasswordProtectedStatus => 'Chráněno heslem';
@@ -3749,29 +3728,57 @@ class AppLocalizationsCs extends AppLocalizations {
   String get renameRecording => 'Přejmenovat nahrávku';
 
   @override
+  String get newRecordingName => 'Nový název nahrávky';
+
+  @override
+  String get recordingCannotRenameWhileInProgress =>
+      'Probíhající nahrávku nelze přejmenovat.';
+
+  @override
+  String get recordingNameAlreadyExists =>
+      'Nahrávka s tímto názvem již existuje.';
+
+  @override
   String get renameDocument => 'Přejmenovat dokument';
 
   @override
   String get newDocumentName => 'Nový název dokumentu';
 
   @override
-  String get documentNameAlreadyExists => 'Dokument s tímto názvem již existuje.';
+  String get documentNameAlreadyExists =>
+      'Dokument s tímto názvem již existuje.';
 
   @override
-  String get newRecordingName => 'Nový název nahrávky';
-
-  @override
-  String get recordingCannotRenameWhileInProgress => 'Probíhající nahrávku nelze přejmenovat.';
-
-  @override
-  String get recordingNameAlreadyExists => 'Nahrávka s tímto názvem již existuje.';
-
-  @override
-  String get recordingExitPrompt => 'Nahrávání probíhá. Chcete ho zastavit, nebo pokračovat v nahrávání?';
+  String get recordingExitPrompt =>
+      'Nahrávání probíhá. Chcete ho zastavit, nebo pokračovat v nahrávání?';
 
   @override
   String get continueRecording => 'Pokračovat v nahrávání';
 
+  @override
+  String get settingsShowOnlyMultilingualEdgeVoices =>
+      'Zobrazit pouze vícejazyčné hlasy';
+
+  @override
+  String get weatherAirQuality => 'Kvalita ovzduší';
+
+  @override
+  String get weatherAirQualityGood => 'Dobrá';
+
+  @override
+  String get weatherAirQualityFair => 'Uspokojivá';
+
+  @override
+  String get weatherAirQualityModerate => 'Střední';
+
+  @override
+  String get weatherAirQualityPoor => 'Špatná';
+
+  @override
+  String get weatherAirQualityVeryPoor => 'Velmi špatná';
+
+  @override
+  String get weatherAirQualityExtremelyPoor => 'Extrémně špatná';
 
   @override
   String get sonarpadAudiodescriptionsTitle => 'Audiopopisy Sonarpad';
@@ -3780,7 +3787,8 @@ class AppLocalizationsCs extends AppLocalizations {
   String get sonarpadAudiodescriptionsAll => 'Všechny audiopopisy Sonarpad';
 
   @override
-  String get sonarpadAudiodescriptionsSearchHint => 'Hledat film, seriál nebo epizodu';
+  String get sonarpadAudiodescriptionsSearchHint =>
+      'Hledat film, seriál nebo epizodu';
 
   @override
   String get sortBy => 'Seřadit podle';
@@ -3797,4 +3805,30 @@ class AppLocalizationsCs extends AppLocalizations {
   @override
   String get downloadUnavailable => 'Stažení není dostupné.';
 
+  @override
+  String get sonarTubeChannelPlaylists => 'Playlisty';
+
+  @override
+  String get sonarTubeChannelShorts => 'Shorts';
+
+  @override
+  String sonarTubeVideoCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count videí',
+      one: '1 video',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get sonarTubeViewDescription => 'Zobrazit popis';
+
+  @override
+  String get sonarTubeDescription => 'Popis';
+
+  @override
+  String get sonarTubeNoDescription =>
+      'Pro toto video není k dispozici žádný popis.';
 }

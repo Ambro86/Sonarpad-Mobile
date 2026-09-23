@@ -100,6 +100,9 @@
       "SonarTube тепер дозволяє відкривати Shorts, опубліковані каналом, безпосередньо зі сторінки каналу з підтримкою завантаження наступних результатів.",
       "У SonarTube додано дію «Переглянути опис» для читання повного опису відео. Кнопку «Опис» також можна додати до кнопок програвача в налаштуваннях «Кнопки та поведінка SonarTube».",
       "У Документах тепер можна захистити документ паролем через додаткові дії. Правильний пароль потрібно вводити як перед відкриттям, так і перед поширенням захищеного документа."
+    ],
+    "it_extra": [
+      "Aggiunta la nuova funzione “Audiodescrizioni Sonarpad”, dove verranno raccolte tutte le audiodescrizioni realizzate con questo programma. Al momento la funzione per creare le audiodescrizioni è presente solo su Windows e Mac, in quanto è ritenuta una funzione meno adatta ai dispositivi mobili. Si ringrazia Nicolò La Ferla per la disponibilità dello spazio che contiene i film audiodescritti."
     ]
   },
   {

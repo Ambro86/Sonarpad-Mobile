@@ -130,10 +130,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sonarTubeNoRecentVideos => 'No recent videos.';
 
   @override
-  String get sonarTubeConfirmClearHistory => 'Do you really want to clear the recent video history?';
+  String get sonarTubeConfirmClearHistory =>
+      'Do you really want to clear the recent video history?';
 
   @override
-  String get sonarTubeNoFavorites => 'No favorite videos, channels, or playlists.';
+  String get sonarTubeNoFavorites =>
+      'No favorite videos, channels, or playlists.';
 
   @override
   String get sonarTubeAddFavorite => 'Add to favorites';
@@ -146,65 +148,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sonarTubeNextTrack => 'Go to next video';
-
-  @override
-  String get sonarTubeGoToChannel => 'Go to channel';
-
-  @override
-  String get sonarTubeViewComments => 'View comments';
-
-  @override
-  String get sonarTubeComments => 'Comments';
-
-  @override
-  String get sonarTubeNoComments => 'No comments available.';
-
-  @override
-  String get sonarTubeLoadMoreComments => 'Load more comments';
-
-  @override
-  String get sonarTubeTranscribeVideo => 'Transcribe video';
-
-  @override
-  String get sonarTubeChannelPlaylists => 'Playlists';
-
-  @override
-  String get sonarTubeChannelShorts => 'Shorts';
-
-  @override
-  String sonarTubeVideoCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count videos',
-      one: '1 video',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get sonarTubeViewDescription => 'View description';
-
-  @override
-  String get sonarTubeDescription => 'Description';
-
-  @override
-  String get sonarTubeNoDescription => 'No description is available for this video.';
-
-  @override
-  String get sonarTubeTranscript => 'Transcript';
-
-  @override
-  String get sonarTubeNoTranscript => 'No transcript is available for this video.';
-
-  @override
-  String get sonarTubeCopyTranscript => 'Copy transcript';
-
-  @override
-  String get sonarTubeTranscriptCopied => 'Transcript copied to clipboard';
-
-  @override
-  String get sonarTubeTranscriptSavedInDocuments => 'The transcript has been saved in Documents.';
 
   @override
   String get sonarTubeShareChannel => 'Share channel';
@@ -1276,9 +1219,9 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get weatherChooseDay => 'Choose day';
 
-
   @override
-  String get tvRecordingChooseDay => weatherChooseDay;
+  String get tvRecordingChooseDay => 'Choose day';
+
   @override
   String get weatherCurrentTemperature => 'Current temperature';
 
@@ -1299,27 +1242,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get weatherRelativeHumidity => 'Relative humidity';
-
-  @override
-  String get weatherAirQuality => 'Air quality';
-
-  @override
-  String get weatherAirQualityGood => 'Good';
-
-  @override
-  String get weatherAirQualityFair => 'Fair';
-
-  @override
-  String get weatherAirQualityModerate => 'Moderate';
-
-  @override
-  String get weatherAirQualityPoor => 'Poor';
-
-  @override
-  String get weatherAirQualityVeryPoor => 'Very poor';
-
-  @override
-  String get weatherAirQualityExtremelyPoor => 'Extremely poor';
 
   @override
   String get settingsSecretCode => 'Sonarpad code for extra features';
@@ -1609,12 +1531,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get saveInLibrary => 'Save in library';
-
-  @override
-  String get copyToClipboard => "Copy to clipboard";
-
-  @override
-  String get textCopiedToClipboard => "Text copied to clipboard";
 
   @override
   String get documentTextLabel => 'Document text';
@@ -2058,10 +1974,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get recordingInProgressStatus => 'Recording in progress';
 
   @override
-  String get scheduledRecordingInProgressStatus => 'Scheduled recording in progress';
+  String get scheduledRecordingInProgressStatus =>
+      'Scheduled recording in progress';
 
   @override
-  String get recordingCannotOpenWhileInProgress => 'This recording cannot be opened because it is still in progress.';
+  String get recordingCannotOpenWhileInProgress =>
+      'This recording cannot be opened because it is still in progress.';
 
   @override
   String get blindLibrarySearchCatalog => 'Search the catalog';
@@ -2676,7 +2594,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsSonarTubeAutoplay => 'Autoplay';
 
   @override
-  String get settingsSonarTubeAutoplayHint => 'When a video or track ends, SonarTube automatically plays the next one, if available.';
+  String get settingsSonarTubeAutoplayHint =>
+      'When a video or track ends, SonarTube automatically plays the next one, if available.';
 
   @override
   String get settingsVideoLandscapeFullscreen => 'Landscape full-screen video';
@@ -3256,6 +3175,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get newsCommunitySourceTapHint =>
       'Tap to add it to your news library.';
+
   @override
   String get developerModeEnabled => 'Developer mode enabled.';
 
@@ -3266,12 +3186,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get developerSectionTitle => 'Developer';
 
   @override
-  String get developerUseExperimentalFlutterRenderer => 'Use experimental Flutter renderer';
+  String get developerUseExperimentalFlutterRenderer =>
+      'Use experimental Flutter renderer';
 
   @override
-  String get developerUseExperimentalFlutterRendererHint => 'Temporarily disables UIKit to compare VoiceOver with pure Flutter.';
+  String get developerUseExperimentalFlutterRendererHint =>
+      'Temporarily disables UIKit to compare VoiceOver with pure Flutter.';
 
-  // Shared labels generated from ARB entries.
   @override
   String get letterJumpSelectLetter => 'Select letter';
 
@@ -3285,10 +3206,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsToggleOff => 'Off';
 
   @override
-  String get settingsShowOnlyMultilingualEdgeVoices => 'Show only multilingual voices';
-
-  @override
-  String get radioDirectoryLoading => 'Updating radio countries and languages...';
+  String get radioDirectoryLoading =>
+      'Updating radio countries and languages...';
 
   @override
   String get recentRadios => 'Recent radios';
@@ -3297,15 +3216,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get radioNextPage => 'Next';
 
   @override
-  String radioPageOf(int current, int total) {
+  String radioPageOf(Object current, Object total) {
     return 'Page $current of $total';
   }
 
   @override
-  String get radioNoResultsWithQuery => 'No radios found. Try only the station name, without genre, or change language/country.';
+  String get radioNoResultsWithQuery =>
+      'No radios found. Try only the station name, without genre, or change language/country.';
 
   @override
-  String get radioNoResultsGeneric => 'No radios found. Try another language, country, or genre.';
+  String get radioNoResultsGeneric =>
+      'No radios found. Try another language, country, or genre.';
 
   @override
   String radioSearchRawError(Object error) {
@@ -3313,21 +3234,24 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get radioBrowserConnectionError => 'Connection error with Radio Browser. Please try again later.';
+  String get radioBrowserConnectionError =>
+      'Connection error with Radio Browser. Please try again later.';
 
   @override
-  String get documentIndexLoadingMessage => 'Loading table of contents... Please wait.';
+  String get documentIndexLoadingMessage =>
+      'Loading table of contents... Please wait.';
 
   @override
-  String get documentIndexUnavailableMessage => 'Table of contents not available for this EPUB.';
+  String get documentIndexUnavailableMessage =>
+      'Table of contents not available for this EPUB.';
 
   @override
-  String mediaCutterVolumeSummary(int percent) {
+  String mediaCutterVolumeSummary(Object percent) {
     return 'volume $percent%';
   }
 
   @override
-  String mediaCutterDurationSummary(String duration) {
+  String mediaCutterDurationSummary(Object duration) {
     return 'duration $duration';
   }
 
@@ -3362,7 +3286,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mediaCutterDurationAnd => 'and';
 
   @override
-  String mediaCutterSeekStepButton(String step) {
+  String mediaCutterSeekStepButton(Object step) {
     return 'Adjust media file movement: $step';
   }
 
@@ -3370,7 +3294,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mediaCutterSeekStepTitle => 'Media file movement';
 
   @override
-  String mediaCutterSeekStepSelected(String step) {
+  String mediaCutterSeekStepSelected(Object step) {
     return 'Media file movement set to $step.';
   }
 
@@ -3476,18 +3400,12 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get clearText => 'Clear text';
 
-
   @override
-
   String clearedTextAnnouncement(String value) {
-
     return '$value deleted.';
-
   }
 
-
   @override
-
   String get textDeletedAnnouncement => 'Text deleted.';
 
   @override
@@ -3512,12 +3430,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get radioScheduleSelectMinutes => 'Select minutes';
 
   @override
-  String radioScheduleLabeledValue(String label, String value) {
+  String radioScheduleLabeledValue(Object label, Object value) {
     return '$label: $value';
   }
 
   @override
-  String get radioScheduleStopCurrentFirst => 'Stop the current recording before scheduling a new one.';
+  String get radioScheduleStopCurrentFirst =>
+      'Stop the current recording before scheduling a new one.';
 
   @override
   String get radioScheduleStartTime => 'Start time';
@@ -3529,15 +3448,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get radioScheduleDialogTitle => 'Schedule recording';
 
   @override
-  String get radioScheduleOpenRequirement => 'Scheduled recording continues to work while you navigate to other Sonarpad screens. Sonarpad must remain open; if the app is closed or suspended by the system, starting the recording is not guaranteed.';
+  String get radioScheduleOpenRequirement =>
+      'Scheduled recording continues to work while you navigate to other Sonarpad screens. Sonarpad must remain open; if the app is closed or suspended by the system, starting the recording is not guaranteed.';
 
   @override
-  String radioScheduleStartTimeValue(String time) {
+  String radioScheduleStartTimeValue(Object time) {
     return 'Start time: $time';
   }
 
   @override
-  String radioScheduleEndTimeValue(String time) {
+  String radioScheduleEndTimeValue(Object time) {
     return 'End time: $time';
   }
 
@@ -3545,18 +3465,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get radioScheduleOptionalTitle => 'Optional title';
 
   @override
-  String get radioScheduleTitleHint => 'Leave blank to use the radio or TV name';
+  String get radioScheduleTitleHint =>
+      'Leave blank to use the radio or TV name';
 
   @override
   String get radioScheduleAction => 'Schedule';
 
   @override
-  String radioScheduledRecordingRange(String start, String end) {
+  String radioScheduledRecordingRange(Object start, Object end) {
     return 'Scheduled recording: $start - $end.';
   }
 
   @override
-  String get radioScheduledRecordingAlreadyActive => 'Scheduled recording not started: another recording is already in progress.';
+  String get radioScheduledRecordingAlreadyActive =>
+      'Scheduled recording not started: another recording is already in progress.';
 
   @override
   String get radioScheduledRecordingStarted => 'Scheduled recording started.';
@@ -3575,15 +3497,21 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get radioScheduledRecordingCancelled => 'Scheduled recording cancelled.';
+  String get radioScheduledRecordingCancelled =>
+      'Scheduled recording cancelled.';
 
   @override
-  String radioScheduledRecordingRangeWithTitle(String start, String end, String title) {
+  String radioScheduledRecordingRangeWithTitle(
+    Object start,
+    Object end,
+    Object title,
+  ) {
     return 'Scheduled recording: $start - $end. Title: $title.';
   }
 
   @override
   String get radioScheduleCancelAction => 'Cancel scheduled recording';
+
   @override
   String get radioLanguageTr => 'Turkish';
 
@@ -3592,6 +3520,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get radioCommunityLanguageTurkish => 'Turkish';
+
   @override
   String get simplifiedChineseLanguageName => 'Simplified Chinese';
 
@@ -3626,7 +3555,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get mediaCutterExportCompletion => 'Completion';
 
-
   @override
   String get mediaCutterAddTrack => 'Add new track';
 
@@ -3634,7 +3562,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mediaCutterChooseAudioTrack => 'Choose audio file';
 
   @override
-  String mediaCutterAddedTrackSelected(String name) => 'Selected audio file: $name';
+  String mediaCutterAddedTrackSelected(String name) {
+    return 'Selected audio file: $name';
+  }
 
   @override
   String get mediaCutterOriginalTrackVolume => 'Original track volume';
@@ -3652,29 +3582,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mediaCutterFinalizeTrack => 'Finalize';
 
   @override
-  String mediaCutterAddedTrackApplied(String name) => 'New track added: $name';
+  String mediaCutterAddedTrackApplied(String name) {
+    return 'New track added: $name';
+  }
 
   @override
-  String get mediaCutterAddedTrackInvalidAudio => 'The selected file does not contain a valid audio track.';
+  String get mediaCutterAddedTrackInvalidAudio =>
+      'The selected file does not contain a valid audio track.';
 
   @override
   String get mediaCutterAddedTrackPreviewPreparing => 'Preparing preview…';
 
   @override
-  String get mediaCutterAddedTrackPreviewFailed => 'Unable to create the preview.';
+  String get mediaCutterAddedTrackPreviewFailed =>
+      'Unable to create the preview.';
 
   @override
   String get mediaCutterMixingAddedTrack => 'Mixing the new track';
-
-
-  @override
-  String get mediaProcessingCompleted => 'Processing completed.';
-
-  @override
-  String get saveInSonarpadDocuments => 'Save in Sonarpad Documents';
-
-  @override
-  String get mediaCutterProcess => 'Process';
 
   @override
   String get preserveMedia => 'Preserve content';
@@ -3688,6 +3612,55 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get preserveMediaError => 'Unable to preserve the content.';
 
+  @override
+  String get mediaProcessingCompleted => 'Processing completed.';
+
+  @override
+  String get saveInSonarpadDocuments => 'Save in Sonarpad Documents';
+
+  @override
+  String get mediaCutterProcess => 'Process';
+
+  @override
+  String get sonarTubeGoToChannel => 'Go to channel';
+
+  @override
+  String get sonarTubeViewComments => 'View comments';
+
+  @override
+  String get sonarTubeComments => 'Comments';
+
+  @override
+  String get sonarTubeNoComments => 'No comments available.';
+
+  @override
+  String get sonarTubeLoadMoreComments => 'Load more comments';
+
+  @override
+  String get sonarTubeTranscribeVideo => 'Transcribe video';
+
+  @override
+  String get sonarTubeTranscript => 'Transcript';
+
+  @override
+  String get sonarTubeNoTranscript =>
+      'No transcript is available for this video.';
+
+  @override
+  String get sonarTubeCopyTranscript => 'Copy transcript';
+
+  @override
+  String get sonarTubeTranscriptCopied => 'Transcript copied to clipboard';
+
+  @override
+  String get sonarTubeTranscriptSavedInDocuments =>
+      'The transcript has been saved in Documents.';
+
+  @override
+  String get copyToClipboard => 'Copy to clipboard';
+
+  @override
+  String get textCopiedToClipboard => 'Text copied to clipboard';
 
   @override
   String get protectDocumentWithPassword => 'Protect with password';
@@ -3702,10 +3675,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get confirmDocumentPassword => 'Confirm password';
 
   @override
-  String get chooseDocumentPassword => 'Enter a password and confirm it. The password will be required before opening or sharing this document.';
+  String get chooseDocumentPassword =>
+      'Enter a password and confirm it. The password will be required before opening or sharing this document.';
 
   @override
-  String get enterCurrentDocumentPassword => 'Enter the current password to remove protection.';
+  String get enterCurrentDocumentPassword =>
+      'Enter the current password to remove protection.';
 
   @override
   String get documentPasswordRequired => 'Enter a password.';
@@ -3717,19 +3692,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get incorrectDocumentPassword => 'Incorrect password.';
 
   @override
-  String get documentPasswordProtectionEnabled => 'Password protection enabled.';
+  String get documentPasswordProtectionEnabled =>
+      'Password protection enabled.';
 
   @override
-  String get documentPasswordProtectionRemoved => 'Password protection removed.';
+  String get documentPasswordProtectionRemoved =>
+      'Password protection removed.';
 
   @override
   String get documentPasswordRequiredTitle => 'Password required';
 
   @override
-  String get enterDocumentPasswordToShare => 'This document is protected. Enter the password to continue sharing.';
+  String get enterDocumentPasswordToShare =>
+      'This document is protected. Enter the password to continue sharing.';
 
   @override
-  String get enterDocumentPasswordToOpen => 'This document is protected. Enter the password to open it.';
+  String get enterDocumentPasswordToOpen =>
+      'This document is protected. Enter the password to open it.';
 
   @override
   String get documentPasswordProtectedStatus => 'Password protected';
@@ -3741,29 +3720,57 @@ class AppLocalizationsEn extends AppLocalizations {
   String get renameRecording => 'Rename recording';
 
   @override
+  String get newRecordingName => 'New recording name';
+
+  @override
+  String get recordingCannotRenameWhileInProgress =>
+      'A recording in progress cannot be renamed.';
+
+  @override
+  String get recordingNameAlreadyExists =>
+      'A recording with this name already exists.';
+
+  @override
   String get renameDocument => 'Rename document';
 
   @override
   String get newDocumentName => 'New document name';
 
   @override
-  String get documentNameAlreadyExists => 'A document with this name already exists.';
+  String get documentNameAlreadyExists =>
+      'A document with this name already exists.';
 
   @override
-  String get newRecordingName => 'New recording name';
-
-  @override
-  String get recordingCannotRenameWhileInProgress => 'A recording in progress cannot be renamed.';
-
-  @override
-  String get recordingNameAlreadyExists => 'A recording with this name already exists.';
-
-  @override
-  String get recordingExitPrompt => 'Recording is in progress. Do you want to stop it or continue recording?';
+  String get recordingExitPrompt =>
+      'Recording is in progress. Do you want to stop it or continue recording?';
 
   @override
   String get continueRecording => 'Continue recording';
 
+  @override
+  String get settingsShowOnlyMultilingualEdgeVoices =>
+      'Show only multilingual voices';
+
+  @override
+  String get weatherAirQuality => 'Air quality';
+
+  @override
+  String get weatherAirQualityGood => 'Good';
+
+  @override
+  String get weatherAirQualityFair => 'Fair';
+
+  @override
+  String get weatherAirQualityModerate => 'Moderate';
+
+  @override
+  String get weatherAirQualityPoor => 'Poor';
+
+  @override
+  String get weatherAirQualityVeryPoor => 'Very poor';
+
+  @override
+  String get weatherAirQualityExtremelyPoor => 'Extremely poor';
 
   @override
   String get sonarpadAudiodescriptionsTitle => 'Sonarpad Audio Descriptions';
@@ -3772,7 +3779,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sonarpadAudiodescriptionsAll => 'All Sonarpad audio descriptions';
 
   @override
-  String get sonarpadAudiodescriptionsSearchHint => 'Search for a film, series or episode';
+  String get sonarpadAudiodescriptionsSearchHint =>
+      'Search for a film, series or episode';
 
   @override
   String get sortBy => 'Sort by';
@@ -3789,4 +3797,30 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get downloadUnavailable => 'Download unavailable.';
 
+  @override
+  String get sonarTubeChannelPlaylists => 'Playlists';
+
+  @override
+  String get sonarTubeChannelShorts => 'Shorts';
+
+  @override
+  String sonarTubeVideoCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count videos',
+      one: '1 video',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get sonarTubeViewDescription => 'View description';
+
+  @override
+  String get sonarTubeDescription => 'Description';
+
+  @override
+  String get sonarTubeNoDescription =>
+      'No description is available for this video.';
 }

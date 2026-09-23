@@ -112,6 +112,7 @@ abstract class AppLocalizations {
     Locale('pt'),
     Locale('pt', 'BR'),
     Locale('uk'),
+    Locale('zh'),
     Locale('zh', 'CN'),
   ];
 
@@ -241,12 +242,16 @@ abstract class AppLocalizations {
   /// **'Carica altri risultati'**
   String get sonarTubeLoadMore;
 
+  /// No description provided for @sonarTubeVideo.
+  ///
+  /// In it, this message translates to:
+  /// **'Video'**
+  String get sonarTubeVideo;
+
   /// No description provided for @sonarTubeChannel.
   ///
   /// In it, this message translates to:
   /// **'Canale'**
-  String get sonarTubeVideo;
-
   String get sonarTubeChannel;
 
   /// No description provided for @sonarTubePlaylist.
@@ -273,16 +278,28 @@ abstract class AppLocalizations {
   /// **'Preferiti'**
   String get sonarTubeFavorites;
 
-  /// Sort the videos of a SonarTube channel.
+  /// No description provided for @sonarTubeSortVideos.
+  ///
+  /// In it, this message translates to:
+  /// **'Ordina video'**
   String get sonarTubeSortVideos;
 
-  /// Show the newest channel videos first.
+  /// No description provided for @sonarTubeSortNewest.
+  ///
+  /// In it, this message translates to:
+  /// **'Più recenti'**
   String get sonarTubeSortNewest;
 
-  /// Show the oldest channel videos first.
+  /// No description provided for @sonarTubeSortOldest.
+  ///
+  /// In it, this message translates to:
+  /// **'Meno recenti'**
   String get sonarTubeSortOldest;
 
-  /// Show the most popular channel videos first.
+  /// No description provided for @sonarTubeSortPopular.
+  ///
+  /// In it, this message translates to:
+  /// **'Popolari'**
   String get sonarTubeSortPopular;
 
   /// No description provided for @sonarTubeVideoFavorites.
@@ -348,7 +365,7 @@ abstract class AppLocalizations {
   /// No description provided for @sonarTubeNoFavorites.
   ///
   /// In it, this message translates to:
-  /// **'Nessun canale o playlist preferito.'**
+  /// **'Nessun video, canale o playlist preferito.'**
   String get sonarTubeNoFavorites;
 
   /// No description provided for @sonarTubeAddFavorite.
@@ -374,57 +391,6 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Vai al video successivo'**
   String get sonarTubeNextTrack;
-
-  /// Open the channel that published the selected SonarTube video.
-  String get sonarTubeGoToChannel;
-
-  /// Open the comments for the selected SonarTube video.
-  String get sonarTubeViewComments;
-
-  /// Title for the SonarTube comments screen.
-  String get sonarTubeComments;
-
-  /// Message shown when a video has no accessible comments.
-  String get sonarTubeNoComments;
-
-  /// Load another page of SonarTube comments.
-  String get sonarTubeLoadMoreComments;
-
-  /// Transcribe the selected SonarTube video.
-  String get sonarTubeTranscribeVideo;
-
-  /// Open the public playlists of the selected SonarTube channel.
-  String get sonarTubeChannelPlaylists;
-
-  /// Open the public Shorts of the selected SonarTube channel.
-  String get sonarTubeChannelShorts;
-
-  /// Number of videos contained in a SonarTube playlist.
-  String sonarTubeVideoCount(int count);
-
-  /// Open the complete description of the selected SonarTube video.
-  String get sonarTubeViewDescription;
-
-  /// Title for the SonarTube video description screen.
-  String get sonarTubeDescription;
-
-  /// Message shown when a SonarTube video has no description.
-  String get sonarTubeNoDescription;
-
-  /// Title for the SonarTube transcript screen.
-  String get sonarTubeTranscript;
-
-  /// Message shown when a SonarTube transcript is unavailable.
-  String get sonarTubeNoTranscript;
-
-  /// Button that copies the complete SonarTube transcript.
-  String get sonarTubeCopyTranscript;
-
-  /// Confirmation shown after copying a SonarTube transcript.
-  String get sonarTubeTranscriptCopied;
-
-  /// Confirmation shown after saving a SonarTube transcript in Documents.
-  String get sonarTubeTranscriptSavedInDocuments;
 
   /// No description provided for @sonarTubeShareChannel.
   ///
@@ -897,7 +863,7 @@ abstract class AppLocalizations {
   /// Localized text for deleteNewsSource.
   ///
   /// In it, this message translates to:
-  /// **'Elimina sorgente'**
+  /// **'Rimuovi'**
   String get deleteNewsSource;
 
   /// Localized text for importRssSourcesFromOpml.
@@ -2300,8 +2266,8 @@ abstract class AppLocalizations {
 
   /// Localized text for tvRecordingChooseDay.
   ///
-  /// In en, this message translates to:
-  /// **'Choose day'**
+  /// In it, this message translates to:
+  /// **'Scegli il giorno'**
   String get tvRecordingChooseDay;
 
   /// Localized text for weatherCurrentTemperature.
@@ -2345,27 +2311,6 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Umidità relativa'**
   String get weatherRelativeHumidity;
-
-  /// Localized text for weatherAirQuality.
-  String get weatherAirQuality;
-
-  /// Localized text for weatherAirQualityGood.
-  String get weatherAirQualityGood;
-
-  /// Localized text for weatherAirQualityFair.
-  String get weatherAirQualityFair;
-
-  /// Localized text for weatherAirQualityModerate.
-  String get weatherAirQualityModerate;
-
-  /// Localized text for weatherAirQualityPoor.
-  String get weatherAirQualityPoor;
-
-  /// Localized text for weatherAirQualityVeryPoor.
-  String get weatherAirQualityVeryPoor;
-
-  /// Localized text for weatherAirQualityExtremelyPoor.
-  String get weatherAirQualityExtremelyPoor;
 
   /// Localized text for settingsSecretCode.
   ///
@@ -2911,12 +2856,6 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Salva nella libreria'**
   String get saveInLibrary;
-
-  /// Copy the complete temporary document text to the system clipboard.
-  String get copyToClipboard;
-
-  /// Confirmation shown after copying the complete temporary document text.
-  String get textCopiedToClipboard;
 
   /// Localized text for documentTextLabel.
   ///
@@ -3722,7 +3661,6 @@ abstract class AppLocalizations {
   /// **'Non è possibile aprire questa registrazione perché la registrazione è ancora in corso.'**
   String get recordingCannotOpenWhileInProgress;
 
-
   /// No description provided for @blindLibrarySearchCatalog.
   ///
   /// In it, this message translates to:
@@ -3759,13 +3697,13 @@ abstract class AppLocalizations {
   /// **'{count, plural, =1{Vuoi eliminare definitivamente una registrazione?} other{Vuoi eliminare definitivamente {count} registrazioni?}}'**
   String deleteRecordingsConfirmation(int count);
 
-  /// Confirmation shown after one recording has been deleted.
+  /// No description provided for @recordingDeleted.
   ///
   /// In it, this message translates to:
   /// **'Registrazione eliminata.'**
   String get recordingDeleted;
 
-  /// Confirmation shown after multiple recordings have been deleted.
+  /// No description provided for @recordingsDeleted.
   ///
   /// In it, this message translates to:
   /// **'Registrazioni eliminate.'**
@@ -4617,16 +4555,28 @@ abstract class AppLocalizations {
   /// **'Salva nei documenti'**
   String get routeSaveAction;
 
-  /// Opens the calculated route in an external navigation app.
+  /// No description provided for @routeOpenAction.
+  ///
+  /// In it, this message translates to:
+  /// **'Apri percorso'**
   String get routeOpenAction;
 
-  /// Localized Apple Maps app name.
+  /// No description provided for @routeAppleMapsAction.
+  ///
+  /// In it, this message translates to:
+  /// **'Mappe'**
   String get routeAppleMapsAction;
 
-  /// Google Maps app name.
+  /// No description provided for @routeGoogleMapsAction.
+  ///
+  /// In it, this message translates to:
+  /// **'Google Maps'**
   String get routeGoogleMapsAction;
 
-  /// Error shown when an external navigation app cannot be opened.
+  /// No description provided for @routeOpenError.
+  ///
+  /// In it, this message translates to:
+  /// **'Impossibile aprire il navigatore.'**
   String get routeOpenError;
 
   /// Localized text for routeSaveSuccess.
@@ -5098,7 +5048,7 @@ abstract class AppLocalizations {
   /// No description provided for @mediaCutterSaving.
   ///
   /// In it, this message translates to:
-  /// **'Salvataggio del file in corso...'**
+  /// **'Elaborazione in corso...'**
   String get mediaCutterSaving;
 
   /// No description provided for @mediaCutterSaved.
@@ -5797,262 +5747,1149 @@ abstract class AppLocalizations {
   /// **'Tocca per aggiungerla alla tua libreria notizie.'**
   String get newsCommunitySourceTapHint;
 
-  /// Localized text shown when hidden developer mode is enabled.
+  /// Localized text for developerModeEnabled.
+  ///
+  /// In it, this message translates to:
+  /// **'Modalità sviluppatore attiva.'**
   String get developerModeEnabled;
 
-  /// Localized text shown when hidden developer mode is disabled.
+  /// Localized text for developerModeDisabled.
+  ///
+  /// In it, this message translates to:
+  /// **'Modalità sviluppatore disattivata.'**
   String get developerModeDisabled;
 
-  /// Title of the hidden developer settings section.
+  /// Localized text for developerSectionTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Sviluppatore'**
   String get developerSectionTitle;
 
-  /// Label for the experimental pure-Flutter accessibility renderer toggle.
+  /// Localized text for developerUseExperimentalFlutterRenderer.
+  ///
+  /// In it, this message translates to:
+  /// **'Usa renderer Flutter sperimentale'**
   String get developerUseExperimentalFlutterRenderer;
 
-  /// Explanation of the experimental pure-Flutter accessibility renderer toggle.
+  /// Localized text for developerUseExperimentalFlutterRendererHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Disattiva temporaneamente UIKit per confrontare VoiceOver con Flutter puro.'**
   String get developerUseExperimentalFlutterRendererHint;
-  // Shared labels that previously lived as manual per-locale strings.
+
+  /// Localized text for letterJumpSelectLetter.
+  ///
+  /// In it, this message translates to:
+  /// **'Seleziona lettera'**
   String get letterJumpSelectLetter;
+
+  /// Localized text for letterJumpSelected.
+  ///
+  /// In it, this message translates to:
+  /// **'selezionata'**
   String get letterJumpSelected;
+
+  /// Localized text for settingsToggleOn.
+  ///
+  /// In it, this message translates to:
+  /// **'Attivo'**
   String get settingsToggleOn;
+
+  /// Localized text for settingsToggleOff.
+  ///
+  /// In it, this message translates to:
+  /// **'Disattivo'**
   String get settingsToggleOff;
 
-  /// Show only multilingual Edge voices in the voice picker.
-  String get settingsShowOnlyMultilingualEdgeVoices;
+  /// Localized text for radioDirectoryLoading.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiornamento di paesi e lingue radio...'**
   String get radioDirectoryLoading;
+
+  /// Localized text for recentRadios.
+  ///
+  /// In it, this message translates to:
+  /// **'Radio recenti'**
   String get recentRadios;
+
+  /// Localized text for radioNextPage.
+  ///
+  /// In it, this message translates to:
+  /// **'Successivi'**
   String get radioNextPage;
-  String radioPageOf(int current, int total);
+
+  /// Localized text for radioPageOf.
+  ///
+  /// In it, this message translates to:
+  /// **'Pagina {current} di {total}'**
+  String radioPageOf(Object current, Object total);
+
+  /// Localized text for radioNoResultsWithQuery.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessuna radio trovata. Prova solo con il nome della stazione, senza genere, oppure cambia lingua o nazione.'**
   String get radioNoResultsWithQuery;
+
+  /// Localized text for radioNoResultsGeneric.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessuna radio trovata. Prova con un’altra lingua, nazione o genere.'**
   String get radioNoResultsGeneric;
+
+  /// Localized text for radioSearchRawError.
+  ///
+  /// In it, this message translates to:
+  /// **'Errore ricerca radio: {error}'**
   String radioSearchRawError(Object error);
+
+  /// Localized text for radioBrowserConnectionError.
+  ///
+  /// In it, this message translates to:
+  /// **'Errore di connessione a Radio Browser. Riprova più tardi.'**
   String get radioBrowserConnectionError;
+
+  /// Localized text for documentIndexLoadingMessage.
+  ///
+  /// In it, this message translates to:
+  /// **'Caricamento indice in corso... Attendere.'**
   String get documentIndexLoadingMessage;
+
+  /// Localized text for documentIndexUnavailableMessage.
+  ///
+  /// In it, this message translates to:
+  /// **'Indice non disponibile per questo EPUB.'**
   String get documentIndexUnavailableMessage;
-  String mediaCutterVolumeSummary(int percent);
-  String mediaCutterDurationSummary(String duration);
+
+  /// Localized text for mediaCutterVolumeSummary.
+  ///
+  /// In it, this message translates to:
+  /// **'volume {percent}%'**
+  String mediaCutterVolumeSummary(Object percent);
+
+  /// Localized text for mediaCutterDurationSummary.
+  ///
+  /// In it, this message translates to:
+  /// **'durata {duration}'**
+  String mediaCutterDurationSummary(Object duration);
+
+  /// Localized text for mediaCutterDurationHourOne.
+  ///
+  /// In it, this message translates to:
+  /// **'ora'**
   String get mediaCutterDurationHourOne;
+
+  /// Localized text for mediaCutterDurationHourFew.
+  ///
+  /// In it, this message translates to:
+  /// **'ore'**
   String get mediaCutterDurationHourFew;
+
+  /// Localized text for mediaCutterDurationHourMany.
+  ///
+  /// In it, this message translates to:
+  /// **'ore'**
   String get mediaCutterDurationHourMany;
+
+  /// Localized text for mediaCutterDurationMinuteOne.
+  ///
+  /// In it, this message translates to:
+  /// **'minuto'**
   String get mediaCutterDurationMinuteOne;
+
+  /// Localized text for mediaCutterDurationMinuteFew.
+  ///
+  /// In it, this message translates to:
+  /// **'minuti'**
   String get mediaCutterDurationMinuteFew;
+
+  /// Localized text for mediaCutterDurationMinuteMany.
+  ///
+  /// In it, this message translates to:
+  /// **'minuti'**
   String get mediaCutterDurationMinuteMany;
+
+  /// Localized text for mediaCutterDurationSecondOne.
+  ///
+  /// In it, this message translates to:
+  /// **'secondo'**
   String get mediaCutterDurationSecondOne;
+
+  /// Localized text for mediaCutterDurationSecondFew.
+  ///
+  /// In it, this message translates to:
+  /// **'secondi'**
   String get mediaCutterDurationSecondFew;
+
+  /// Localized text for mediaCutterDurationSecondMany.
+  ///
+  /// In it, this message translates to:
+  /// **'secondi'**
   String get mediaCutterDurationSecondMany;
+
+  /// Localized text for mediaCutterDurationAnd.
+  ///
+  /// In it, this message translates to:
+  /// **'e'**
   String get mediaCutterDurationAnd;
-  String mediaCutterSeekStepButton(String step);
+
+  /// Localized text for mediaCutterSeekStepButton.
+  ///
+  /// In it, this message translates to:
+  /// **'Regola lo spostamento del file media: {step}'**
+  String mediaCutterSeekStepButton(Object step);
+
+  /// Localized text for mediaCutterSeekStepTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Spostamento del file media'**
   String get mediaCutterSeekStepTitle;
-  String mediaCutterSeekStepSelected(String step);
+
+  /// Localized text for mediaCutterSeekStepSelected.
+  ///
+  /// In it, this message translates to:
+  /// **'Spostamento del file media impostato a {step}.'**
+  String mediaCutterSeekStepSelected(Object step);
+
+  /// Localized text for mediaCutterPartEffectBackwards.
+  ///
+  /// In it, this message translates to:
+  /// **'Al contrario'**
   String get mediaCutterPartEffectBackwards;
+
+  /// Localized text for mediaCutterPartEffectTalkingGuitar.
+  ///
+  /// In it, this message translates to:
+  /// **'Chitarra parlante'**
   String get mediaCutterPartEffectTalkingGuitar;
+
+  /// Localized text for mediaCutterPartEffectMosquito.
+  ///
+  /// In it, this message translates to:
+  /// **'Zanzara'**
   String get mediaCutterPartEffectMosquito;
+
+  /// Localized text for mediaCutterPartEffectOneOfMany.
+  ///
+  /// In it, this message translates to:
+  /// **'Una voce in molte'**
   String get mediaCutterPartEffectOneOfMany;
+
+  /// Localized text for mediaCutterPartEffectOrganVocoder.
+  ///
+  /// In it, this message translates to:
+  /// **'Organo parlante'**
   String get mediaCutterPartEffectOrganVocoder;
+
+  /// Localized text for mediaCutterPartEffectWarped.
+  ///
+  /// In it, this message translates to:
+  /// **'Deformato'**
   String get mediaCutterPartEffectWarped;
+
+  /// Localized text for mediaCutterPartEffectSwirling.
+  ///
+  /// In it, this message translates to:
+  /// **'Vortice stereo'**
   String get mediaCutterPartEffectSwirling;
+
+  /// Localized text for mediaCutterPartEffectVader.
+  ///
+  /// In it, this message translates to:
+  /// **'Voce oscura cinematografica'**
   String get mediaCutterPartEffectVader;
+
+  /// Localized text for mediaCutterPartEffectMetallic.
+  ///
+  /// In it, this message translates to:
+  /// **'Metallico'**
   String get mediaCutterPartEffectMetallic;
+
+  /// Localized text for mediaCutterPartEffectSongbird.
+  ///
+  /// In it, this message translates to:
+  /// **'Uccellino'**
   String get mediaCutterPartEffectSongbird;
+
+  /// Localized text for mediaCutterPartEffectExterminator.
+  ///
+  /// In it, this message translates to:
+  /// **'Exterminator'**
   String get mediaCutterPartEffectExterminator;
+
+  /// Localized text for mediaCutterPartEffectRainAndThunder.
+  ///
+  /// In it, this message translates to:
+  /// **'Pioggia e tuoni'**
   String get mediaCutterPartEffectRainAndThunder;
+
+  /// Localized text for mediaCutterPartEffectJungle.
+  ///
+  /// In it, this message translates to:
+  /// **'Giungla'**
   String get mediaCutterPartEffectJungle;
+
+  /// Localized text for mediaCutterPartEffectCrowd.
+  ///
+  /// In it, this message translates to:
+  /// **'Folla'**
   String get mediaCutterPartEffectCrowd;
+
+  /// Localized text for mediaCutterPartEffectSlotMachines.
+  ///
+  /// In it, this message translates to:
+  /// **'Slot machine'**
   String get mediaCutterPartEffectSlotMachines;
+
+  /// Localized text for mediaCutterPartEffectTraffic.
+  ///
+  /// In it, this message translates to:
+  /// **'Traffico'**
   String get mediaCutterPartEffectTraffic;
+
+  /// Localized text for mediaCutterPartEffectSpaceship.
+  ///
+  /// In it, this message translates to:
+  /// **'Astronave'**
   String get mediaCutterPartEffectSpaceship;
+
+  /// Localized text for mediaCutterPartEffectCricket.
+  ///
+  /// In it, this message translates to:
+  /// **'Grillo'**
   String get mediaCutterPartEffectCricket;
+
+  /// Localized text for mediaCutterPartEffectSiren.
+  ///
+  /// In it, this message translates to:
+  /// **'Sirena'**
   String get mediaCutterPartEffectSiren;
+
+  /// Localized text for mediaCutterPartEffectSleighBells.
+  ///
+  /// In it, this message translates to:
+  /// **'Campanelli'**
   String get mediaCutterPartEffectSleighBells;
+
+  /// Localized text for mediaCutterPartEffectDj.
+  ///
+  /// In it, this message translates to:
+  /// **'DJ e scratch'**
   String get mediaCutterPartEffectDj;
+
+  /// Localized text for mediaCutterPartEffectApplause.
+  ///
+  /// In it, this message translates to:
+  /// **'Applausi'**
   String get mediaCutterPartEffectApplause;
+
+  /// Localized text for mediaCutterPartEffectBadMelody.
+  ///
+  /// In it, this message translates to:
+  /// **'Melodia stonata'**
   String get mediaCutterPartEffectBadMelody;
+
+  /// Localized text for mediaCutterPartEffectBadHarmony.
+  ///
+  /// In it, this message translates to:
+  /// **'Armonia dissonante'**
   String get mediaCutterPartEffectBadHarmony;
+
+  /// Localized text for mediaCutterPartEffectWarmVoice.
+  ///
+  /// In it, this message translates to:
+  /// **'Voce calda'**
   String get mediaCutterPartEffectWarmVoice;
+
+  /// Localized text for mediaCutterPartEffectTurtle.
+  ///
+  /// In it, this message translates to:
+  /// **'Tartaruga'**
   String get mediaCutterPartEffectTurtle;
+
+  /// Localized text for mediaCutterPartEffectHaunting.
+  ///
+  /// In it, this message translates to:
+  /// **'Infestato'**
   String get mediaCutterPartEffectHaunting;
 
+  /// Localized text for radioPreviousPage.
+  ///
+  /// In it, this message translates to:
+  /// **'Precedenti'**
   String get radioPreviousPage;
 
+  /// Localized text for noRecentRadios.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessuna radio recente.'**
   String get noRecentRadios;
 
+  /// Localized text for radioBrowseByCity.
+  ///
+  /// In it, this message translates to:
+  /// **'Sfoglia per città'**
   String get radioBrowseByCity;
+
+  /// Localized text for radioCityInputHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Inserisci il nome della città...'**
   String get radioCityInputHint;
+
+  /// Localized text for openItem.
+  ///
+  /// In it, this message translates to:
+  /// **'Apri'**
   String get openItem;
 
-
-  // Additional shared UI labels moved into ARB localization.
+  /// Localized text for clearSearch.
+  ///
+  /// In it, this message translates to:
+  /// **'Cancella ricerca'**
   String get clearSearch;
+
+  /// Localized text for clearText.
+  ///
+  /// In it, this message translates to:
+  /// **'Cancella testo'**
   String get clearText;
+
+  /// Accessibility announcement after clearing a non-secure text or search field.
+  ///
+  /// In it, this message translates to:
+  /// **'{value} eliminato.'**
   String clearedTextAnnouncement(String value);
+
+  /// Accessibility announcement after clearing a secure text field without speaking its contents.
+  ///
+  /// In it, this message translates to:
+  /// **'Testo eliminato.'**
   String get textDeletedAnnouncement;
+
+  /// Localized text for fileTypeLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'File'**
   String get fileTypeLabel;
+
+  /// Localized text for cinemaTrailerLoading.
+  ///
+  /// In it, this message translates to:
+  /// **'Caricamento trailer'**
   String get cinemaTrailerLoading;
+
+  /// Localized text for cinemaNoTrailer.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun trailer disponibile per questo film'**
   String get cinemaNoTrailer;
+
+  /// Localized text for radioScheduleHours.
+  ///
+  /// In it, this message translates to:
+  /// **'Ore'**
   String get radioScheduleHours;
+
+  /// Localized text for radioScheduleSelectHours.
+  ///
+  /// In it, this message translates to:
+  /// **'Seleziona le ore'**
   String get radioScheduleSelectHours;
+
+  /// Localized text for radioScheduleMinutes.
+  ///
+  /// In it, this message translates to:
+  /// **'Minuti'**
   String get radioScheduleMinutes;
+
+  /// Localized text for radioScheduleSelectMinutes.
+  ///
+  /// In it, this message translates to:
+  /// **'Seleziona i minuti'**
   String get radioScheduleSelectMinutes;
-  String radioScheduleLabeledValue(String label, String value);
+
+  /// Combines a localized schedule field label with its current value.
+  ///
+  /// In it, this message translates to:
+  /// **'{label}: {value}'**
+  String radioScheduleLabeledValue(Object label, Object value);
+
+  /// Localized text for radioScheduleStopCurrentFirst.
+  ///
+  /// In it, this message translates to:
+  /// **'Termina la registrazione in corso prima di programmarne una nuova.'**
   String get radioScheduleStopCurrentFirst;
+
+  /// Localized text for radioScheduleStartTime.
+  ///
+  /// In it, this message translates to:
+  /// **'Ora di inizio'**
   String get radioScheduleStartTime;
+
+  /// Localized text for radioScheduleEndTime.
+  ///
+  /// In it, this message translates to:
+  /// **'Ora di fine'**
   String get radioScheduleEndTime;
+
+  /// Localized text for radioScheduleDialogTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Programma registrazione'**
   String get radioScheduleDialogTitle;
+
+  /// Localized text for radioScheduleOpenRequirement.
+  ///
+  /// In it, this message translates to:
+  /// **'La registrazione programmata continua a funzionare mentre navighi nelle altre schermate di Sonarpad. Sonarpad deve restare aperto; se l’app viene chiusa o sospesa dal sistema, l’avvio non è garantito.'**
   String get radioScheduleOpenRequirement;
-  String radioScheduleStartTimeValue(String time);
-  String radioScheduleEndTimeValue(String time);
+
+  /// Localized text for radioScheduleStartTimeValue.
+  ///
+  /// In it, this message translates to:
+  /// **'Ora di inizio: {time}'**
+  String radioScheduleStartTimeValue(Object time);
+
+  /// Localized text for radioScheduleEndTimeValue.
+  ///
+  /// In it, this message translates to:
+  /// **'Ora di fine: {time}'**
+  String radioScheduleEndTimeValue(Object time);
+
+  /// Localized text for radioScheduleOptionalTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Titolo facoltativo'**
   String get radioScheduleOptionalTitle;
+
+  /// Localized text for radioScheduleTitleHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Lascia vuoto per usare il nome della radio o TV'**
   String get radioScheduleTitleHint;
+
+  /// Localized text for radioScheduleAction.
+  ///
+  /// In it, this message translates to:
+  /// **'Programma'**
   String get radioScheduleAction;
-  String radioScheduledRecordingRange(String start, String end);
+
+  /// Localized text for radioScheduledRecordingRange.
+  ///
+  /// In it, this message translates to:
+  /// **'Registrazione programmata: {start} - {end}.'**
+  String radioScheduledRecordingRange(Object start, Object end);
+
+  /// Localized text for radioScheduledRecordingAlreadyActive.
+  ///
+  /// In it, this message translates to:
+  /// **'Registrazione programmata non avviata: una registrazione è già in corso.'**
   String get radioScheduledRecordingAlreadyActive;
+
+  /// Localized text for radioScheduledRecordingStarted.
+  ///
+  /// In it, this message translates to:
+  /// **'Registrazione programmata avviata.'**
   String get radioScheduledRecordingStarted;
+
+  /// Localized text for radioScheduledRecordingError.
+  ///
+  /// In it, this message translates to:
+  /// **'Errore registrazione programmata: {error}'**
   String radioScheduledRecordingError(Object error);
+
+  /// Localized text for radioScheduledRecordingSaved.
+  ///
+  /// In it, this message translates to:
+  /// **'Registrazione programmata salvata.'**
   String get radioScheduledRecordingSaved;
+
+  /// Localized text for radioScheduledRecordingSaveError.
+  ///
+  /// In it, this message translates to:
+  /// **'Errore salvataggio registrazione programmata: {error}'**
   String radioScheduledRecordingSaveError(Object error);
+
+  /// Localized text for radioScheduledRecordingCancelled.
+  ///
+  /// In it, this message translates to:
+  /// **'Registrazione programmata annullata.'**
   String get radioScheduledRecordingCancelled;
-  String radioScheduledRecordingRangeWithTitle(String start, String end, String title);
+
+  /// Localized text for radioScheduledRecordingRangeWithTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Registrazione programmata: {start} - {end}. Titolo: {title}.'**
+  String radioScheduledRecordingRangeWithTitle(
+    Object start,
+    Object end,
+    Object title,
+  );
+
+  /// Localized text for radioScheduleCancelAction.
+  ///
+  /// In it, this message translates to:
+  /// **'Annulla registrazione programmata'**
   String get radioScheduleCancelAction;
+
+  /// Localized text for radioLanguageTr.
+  ///
+  /// In it, this message translates to:
+  /// **'Turco'**
   String get radioLanguageTr;
+
+  /// Localized text for radioCountryOptionTr.
+  ///
+  /// In it, this message translates to:
+  /// **'Turchia'**
   String get radioCountryOptionTr;
+
+  /// Localized text for radioCommunityLanguageTurkish.
+  ///
+  /// In it, this message translates to:
+  /// **'Turco'**
   String get radioCommunityLanguageTurkish;
 
-  /// Localized name of Simplified Chinese in the language selector.
+  /// Localized name for Simplified Chinese in the language selector.
+  ///
+  /// In it, this message translates to:
+  /// **'Cinese semplificato'**
   String get simplifiedChineseLanguageName;
 
   /// Localized country name for China.
+  ///
+  /// In it, this message translates to:
+  /// **'Cina'**
   String get chinaCountryName;
 
-  /// Generic localized message for legacy technical errors.
+  /// Generic localized message used when a service returns a legacy non-localized technical error.
+  ///
+  /// In it, this message translates to:
+  /// **'Errore tecnico. Riprova.'**
   String get technicalErrorGeneric;
 
   /// Localized title for the trailer player screen.
+  ///
+  /// In it, this message translates to:
+  /// **'Trailer: {title}'**
   String cinemaTrailerTitle(String title);
 
+  /// Progress label while exporting Media Cutter parts.
+  ///
+  /// In it, this message translates to:
+  /// **'Parte {index} di {total}'**
   String mediaCutterExportPartProgress(int index, int total);
+
+  /// Localized text for mediaCutterExportFinalVerification.
+  ///
+  /// In it, this message translates to:
+  /// **'Verifica finale'**
   String get mediaCutterExportFinalVerification;
+
+  /// Localized text for mediaCutterExportMergeParts.
+  ///
+  /// In it, this message translates to:
+  /// **'Unione delle parti'**
   String get mediaCutterExportMergeParts;
+
+  /// Localized text for mediaCutterExportFileCheck.
+  ///
+  /// In it, this message translates to:
+  /// **'Controllo del file'**
   String get mediaCutterExportFileCheck;
+
+  /// Localized text for mediaCutterExportPublishing.
+  ///
+  /// In it, this message translates to:
+  /// **'Pubblicazione'**
   String get mediaCutterExportPublishing;
+
+  /// Localized text for mediaCutterExportCompletion.
+  ///
+  /// In it, this message translates to:
+  /// **'Completamento'**
   String get mediaCutterExportCompletion;
+
+  /// Localized text for mediaCutterAddTrack.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiungi nuova traccia'**
   String get mediaCutterAddTrack;
+
+  /// Localized text for mediaCutterChooseAudioTrack.
+  ///
+  /// In it, this message translates to:
+  /// **'Scegli file audio'**
   String get mediaCutterChooseAudioTrack;
+
+  /// Localized text for mediaCutterAddedTrackSelected.
+  ///
+  /// In it, this message translates to:
+  /// **'File audio selezionato: {name}'**
   String mediaCutterAddedTrackSelected(String name);
+
+  /// Localized text for mediaCutterOriginalTrackVolume.
+  ///
+  /// In it, this message translates to:
+  /// **'Volume traccia originale'**
   String get mediaCutterOriginalTrackVolume;
+
+  /// Localized text for mediaCutterNewTrackVolume.
+  ///
+  /// In it, this message translates to:
+  /// **'Volume nuova traccia'**
   String get mediaCutterNewTrackVolume;
+
+  /// Localized text for mediaCutterLoopNewTrack.
+  ///
+  /// In it, this message translates to:
+  /// **'Riproduci la nuova traccia in loop'**
   String get mediaCutterLoopNewTrack;
+
+  /// Localized text for mediaCutterPreviewNewTrack.
+  ///
+  /// In it, this message translates to:
+  /// **'Ascolta anteprima'**
   String get mediaCutterPreviewNewTrack;
+
+  /// Localized text for mediaCutterFinalizeTrack.
+  ///
+  /// In it, this message translates to:
+  /// **'Finalizza'**
   String get mediaCutterFinalizeTrack;
+
+  /// Localized text for mediaCutterAddedTrackApplied.
+  ///
+  /// In it, this message translates to:
+  /// **'Nuova traccia aggiunta: {name}'**
   String mediaCutterAddedTrackApplied(String name);
+
+  /// Localized text for mediaCutterAddedTrackInvalidAudio.
+  ///
+  /// In it, this message translates to:
+  /// **'Il file selezionato non contiene una traccia audio valida.'**
   String get mediaCutterAddedTrackInvalidAudio;
+
+  /// Localized text for mediaCutterAddedTrackPreviewPreparing.
+  ///
+  /// In it, this message translates to:
+  /// **'Preparazione anteprima…'**
   String get mediaCutterAddedTrackPreviewPreparing;
+
+  /// Localized text for mediaCutterAddedTrackPreviewFailed.
+  ///
+  /// In it, this message translates to:
+  /// **'Impossibile creare l’anteprima.'**
   String get mediaCutterAddedTrackPreviewFailed;
+
+  /// Localized text for mediaCutterMixingAddedTrack.
+  ///
+  /// In it, this message translates to:
+  /// **'Mix della nuova traccia'**
   String get mediaCutterMixingAddedTrack;
 
-  /// Shown when media processing has completed and the user must choose a destination.
-  String get mediaProcessingCompleted;
-
-  /// Button that saves a generated media file in Sonarpad Documents.
-  String get saveInSonarpadDocuments;
-
-  /// Button that processes the current Media Cutter edits before choosing a destination.
-  String get mediaCutterProcess;
-
   /// Secondary action that downloads and preserves a playable MP3.
+  ///
+  /// In it, this message translates to:
+  /// **'Conserva contenuto'**
   String get preserveMedia;
 
   /// Status shown while a media file is being downloaded and preserved.
+  ///
+  /// In it, this message translates to:
+  /// **'Conservazione del contenuto…'**
   String get preserveMediaSaving;
 
-  /// Confirmation shown after saving the media in Sonarpad Documents.
+  /// Confirmation shown when a preserved media file is saved in Sonarpad Documents.
+  ///
+  /// In it, this message translates to:
+  /// **'Contenuto salvato nei Documenti di Sonarpad.'**
   String get preserveMediaSaved;
 
   /// Error shown when a playable media file cannot be preserved.
+  ///
+  /// In it, this message translates to:
+  /// **'Impossibile conservare il contenuto.'**
   String get preserveMediaError;
 
-  /// Renames a saved radio or TV recording.
+  /// Shown when media processing has completed and the user must choose a destination.
+  ///
+  /// In it, this message translates to:
+  /// **'Elaborazione completata.'**
+  String get mediaProcessingCompleted;
+
+  /// Button that saves a generated media file in Sonarpad Documents.
+  ///
+  /// In it, this message translates to:
+  /// **'Salva nei Documenti di Sonarpad'**
+  String get saveInSonarpadDocuments;
+
+  /// Button that processes the current Media Cutter edits before choosing a destination.
+  ///
+  /// In it, this message translates to:
+  /// **'Elabora'**
+  String get mediaCutterProcess;
+
+  /// No description provided for @sonarTubeGoToChannel.
+  ///
+  /// In it, this message translates to:
+  /// **'Vai al canale'**
+  String get sonarTubeGoToChannel;
+
+  /// No description provided for @sonarTubeViewComments.
+  ///
+  /// In it, this message translates to:
+  /// **'Visualizza commenti'**
+  String get sonarTubeViewComments;
+
+  /// No description provided for @sonarTubeComments.
+  ///
+  /// In it, this message translates to:
+  /// **'Commenti'**
+  String get sonarTubeComments;
+
+  /// No description provided for @sonarTubeNoComments.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun commento disponibile.'**
+  String get sonarTubeNoComments;
+
+  /// No description provided for @sonarTubeLoadMoreComments.
+  ///
+  /// In it, this message translates to:
+  /// **'Carica altri commenti'**
+  String get sonarTubeLoadMoreComments;
+
+  /// Secondary action that opens the transcript for a SonarTube video.
+  ///
+  /// In it, this message translates to:
+  /// **'Trascrivi video'**
+  String get sonarTubeTranscribeVideo;
+
+  /// Title for the SonarTube transcript screen.
+  ///
+  /// In it, this message translates to:
+  /// **'Trascrizione'**
+  String get sonarTubeTranscript;
+
+  /// Message shown when no transcript is available for a SonarTube video.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessuna trascrizione disponibile per questo video.'**
+  String get sonarTubeNoTranscript;
+
+  /// Button that copies the complete SonarTube transcript.
+  ///
+  /// In it, this message translates to:
+  /// **'Copia trascrizione'**
+  String get sonarTubeCopyTranscript;
+
+  /// Confirmation shown after copying a SonarTube transcript.
+  ///
+  /// In it, this message translates to:
+  /// **'Trascrizione copiata negli appunti'**
+  String get sonarTubeTranscriptCopied;
+
+  /// Confirmation shown after saving a SonarTube transcript in Documents.
+  ///
+  /// In it, this message translates to:
+  /// **'La trascrizione è stata salvata nei Documenti.'**
+  String get sonarTubeTranscriptSavedInDocuments;
+
+  /// Copy the complete temporary document text to the system clipboard.
+  ///
+  /// In it, this message translates to:
+  /// **'Copia negli appunti'**
+  String get copyToClipboard;
+
+  /// Confirmation shown after copying the complete temporary document text.
+  ///
+  /// In it, this message translates to:
+  /// **'Testo copiato negli appunti'**
+  String get textCopiedToClipboard;
+
+  /// No description provided for @protectDocumentWithPassword.
+  ///
+  /// In it, this message translates to:
+  /// **'Proteggi con password'**
   String get protectDocumentWithPassword;
 
+  /// No description provided for @removeDocumentPasswordProtection.
+  ///
+  /// In it, this message translates to:
+  /// **'Rimuovi protezione password'**
   String get removeDocumentPasswordProtection;
 
+  /// No description provided for @documentPassword.
+  ///
+  /// In it, this message translates to:
+  /// **'Password'**
   String get documentPassword;
 
+  /// No description provided for @confirmDocumentPassword.
+  ///
+  /// In it, this message translates to:
+  /// **'Conferma password'**
   String get confirmDocumentPassword;
 
+  /// No description provided for @chooseDocumentPassword.
+  ///
+  /// In it, this message translates to:
+  /// **'Inserisci una password e confermala. La password sarà richiesta prima di aprire o condividere questo documento.'**
   String get chooseDocumentPassword;
 
+  /// No description provided for @enterCurrentDocumentPassword.
+  ///
+  /// In it, this message translates to:
+  /// **'Inserisci la password corrente per rimuovere la protezione.'**
   String get enterCurrentDocumentPassword;
 
+  /// No description provided for @documentPasswordRequired.
+  ///
+  /// In it, this message translates to:
+  /// **'Inserisci una password.'**
   String get documentPasswordRequired;
 
+  /// No description provided for @documentPasswordsDoNotMatch.
+  ///
+  /// In it, this message translates to:
+  /// **'Le password non coincidono.'**
   String get documentPasswordsDoNotMatch;
 
+  /// No description provided for @incorrectDocumentPassword.
+  ///
+  /// In it, this message translates to:
+  /// **'Password non corretta.'**
   String get incorrectDocumentPassword;
 
+  /// No description provided for @documentPasswordProtectionEnabled.
+  ///
+  /// In it, this message translates to:
+  /// **'Protezione con password attivata.'**
   String get documentPasswordProtectionEnabled;
 
+  /// No description provided for @documentPasswordProtectionRemoved.
+  ///
+  /// In it, this message translates to:
+  /// **'Protezione con password rimossa.'**
   String get documentPasswordProtectionRemoved;
 
+  /// No description provided for @documentPasswordRequiredTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Password richiesta'**
   String get documentPasswordRequiredTitle;
 
+  /// No description provided for @enterDocumentPasswordToShare.
+  ///
+  /// In it, this message translates to:
+  /// **'Questo documento è protetto. Inserisci la password per continuare con la condivisione.'**
   String get enterDocumentPasswordToShare;
 
+  /// No description provided for @enterDocumentPasswordToOpen.
+  ///
+  /// In it, this message translates to:
+  /// **'Questo documento è protetto. Inserisci la password per aprirlo.'**
   String get enterDocumentPasswordToOpen;
 
+  /// No description provided for @documentPasswordProtectedStatus.
+  ///
+  /// In it, this message translates to:
+  /// **'Protetto da password'**
   String get documentPasswordProtectedStatus;
 
+  /// No description provided for @rename.
+  ///
+  /// In it, this message translates to:
+  /// **'Rinomina'**
   String get rename;
 
-  /// Title for the recording rename screen.
+  /// No description provided for @renameRecording.
+  ///
+  /// In it, this message translates to:
+  /// **'Rinomina registrazione'**
   String get renameRecording;
 
-  /// Title for the document rename screen.
-  String get renameDocument;
-
-  /// Label for the new document name field.
-  String get newDocumentName;
-
-  /// Shown when another document already uses the requested name.
-  String get documentNameAlreadyExists;
-
-  /// Label for the new recording name field.
+  /// No description provided for @newRecordingName.
+  ///
+  /// In it, this message translates to:
+  /// **'Nuovo nome della registrazione'**
   String get newRecordingName;
 
-  /// Shown when rename is requested while the recording is still active.
+  /// No description provided for @recordingCannotRenameWhileInProgress.
+  ///
+  /// In it, this message translates to:
+  /// **'Non è possibile rinominare una registrazione in corso.'**
   String get recordingCannotRenameWhileInProgress;
 
-  /// Shown when another recording already uses the requested name.
+  /// No description provided for @recordingNameAlreadyExists.
+  ///
+  /// In it, this message translates to:
+  /// **'Esiste già una registrazione con questo nome.'**
   String get recordingNameAlreadyExists;
 
-  /// Prompt shown when leaving a player while its recording is active.
+  /// No description provided for @renameDocument.
+  ///
+  /// In it, this message translates to:
+  /// **'Rinomina documento'**
+  String get renameDocument;
+
+  /// No description provided for @newDocumentName.
+  ///
+  /// In it, this message translates to:
+  /// **'Nuovo nome del documento'**
+  String get newDocumentName;
+
+  /// No description provided for @documentNameAlreadyExists.
+  ///
+  /// In it, this message translates to:
+  /// **'Esiste già un documento con questo nome.'**
+  String get documentNameAlreadyExists;
+
+  /// No description provided for @recordingExitPrompt.
+  ///
+  /// In it, this message translates to:
+  /// **'La registrazione è in corso. Vuoi fermarla o continuare la registrazione?'**
   String get recordingExitPrompt;
 
-  /// Leaves the player while keeping the current recording active.
+  /// No description provided for @continueRecording.
+  ///
+  /// In it, this message translates to:
+  /// **'Continua registrazione'**
   String get continueRecording;
+
+  /// Show only multilingual Edge voices in the voice picker.
+  ///
+  /// In it, this message translates to:
+  /// **'Visualizza solo le voci multilingue'**
+  String get settingsShowOnlyMultilingualEdgeVoices;
+
+  /// Localized text for weatherAirQuality.
+  ///
+  /// In it, this message translates to:
+  /// **'Qualità dell’aria'**
+  String get weatherAirQuality;
+
+  /// Localized text for weatherAirQualityGood.
+  ///
+  /// In it, this message translates to:
+  /// **'Buona'**
+  String get weatherAirQualityGood;
+
+  /// Localized text for weatherAirQualityFair.
+  ///
+  /// In it, this message translates to:
+  /// **'Discreta'**
+  String get weatherAirQualityFair;
+
+  /// Localized text for weatherAirQualityModerate.
+  ///
+  /// In it, this message translates to:
+  /// **'Moderata'**
+  String get weatherAirQualityModerate;
+
+  /// Localized text for weatherAirQualityPoor.
+  ///
+  /// In it, this message translates to:
+  /// **'Scarsa'**
+  String get weatherAirQualityPoor;
+
+  /// Localized text for weatherAirQualityVeryPoor.
+  ///
+  /// In it, this message translates to:
+  /// **'Molto scarsa'**
+  String get weatherAirQualityVeryPoor;
+
+  /// Localized text for weatherAirQualityExtremelyPoor.
+  ///
+  /// In it, this message translates to:
+  /// **'Estremamente scarsa'**
+  String get weatherAirQualityExtremelyPoor;
+
   /// Title of the Sonarpad audio descriptions section.
+  ///
+  /// In it, this message translates to:
+  /// **'Audiodescrizioni Sonarpad'**
   String get sonarpadAudiodescriptionsTitle;
 
   /// Entry that opens the complete Sonarpad audio descriptions catalog.
+  ///
+  /// In it, this message translates to:
+  /// **'Tutte le audiodescrizioni Sonarpad'**
   String get sonarpadAudiodescriptionsAll;
 
   /// Search hint for the Sonarpad audio descriptions catalog.
+  ///
+  /// In it, this message translates to:
+  /// **'Cerca un film, una serie o una puntata'**
   String get sonarpadAudiodescriptionsSearchHint;
 
   /// Generic label for a sort selector.
+  ///
+  /// In it, this message translates to:
+  /// **'Ordina per'**
   String get sortBy;
 
   /// Alphabetical sort option.
+  ///
+  /// In it, this message translates to:
+  /// **'Alfabetico'**
   String get sortAlphabetical;
 
   /// Chronological sort option.
+  ///
+  /// In it, this message translates to:
+  /// **'Cronologico'**
   String get sortChronological;
 
   /// Shown when a media item cannot be opened.
+  ///
+  /// In it, this message translates to:
+  /// **'Contenuto non disponibile.'**
   String get contentUnavailable;
 
   /// Shown when a media item cannot be downloaded.
+  ///
+  /// In it, this message translates to:
+  /// **'Download non disponibile.'**
   String get downloadUnavailable;
 
+  /// Button and screen title for a channel's public playlists.
+  ///
+  /// In it, this message translates to:
+  /// **'Playlist'**
+  String get sonarTubeChannelPlaylists;
+
+  /// Button and screen title for a channel's public Shorts.
+  ///
+  /// In it, this message translates to:
+  /// **'Shorts'**
+  String get sonarTubeChannelShorts;
+
+  /// Number of videos contained in a SonarTube playlist.
+  ///
+  /// In it, this message translates to:
+  /// **'{count, plural, =1{1 video} other{{count} video}}'**
+  String sonarTubeVideoCount(int count);
+
+  /// Secondary action that opens the complete SonarTube video description.
+  ///
+  /// In it, this message translates to:
+  /// **'Visualizza descrizione'**
+  String get sonarTubeViewDescription;
+
+  /// Title for the SonarTube video description screen.
+  ///
+  /// In it, this message translates to:
+  /// **'Descrizione'**
+  String get sonarTubeDescription;
+
+  /// Message shown when a SonarTube video has no description.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessuna descrizione disponibile per questo video.'**
+  String get sonarTubeNoDescription;
 }
 
 class _AppLocalizationsDelegate
@@ -6083,6 +6920,26 @@ class _AppLocalizationsDelegate
 }
 
 AppLocalizations lookupAppLocalizations(Locale locale) {
+  // Lookup logic when language+country codes are specified.
+  switch (locale.languageCode) {
+    case 'pt':
+      {
+        switch (locale.countryCode) {
+          case 'BR':
+            return AppLocalizationsPtBr();
+        }
+        break;
+      }
+    case 'zh':
+      {
+        switch (locale.countryCode) {
+          case 'CN':
+            return AppLocalizationsZhCn();
+        }
+        break;
+      }
+  }
+
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {
     case 'cs':
@@ -6100,14 +6957,11 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
     case 'pl':
       return AppLocalizationsPl();
     case 'pt':
-      if (locale.countryCode?.toUpperCase() == 'BR') {
-        return AppLocalizationsPtBr();
-      }
       return AppLocalizationsPt();
     case 'uk':
       return AppLocalizationsUk();
     case 'zh':
-      return AppLocalizationsZhCn();
+      return AppLocalizationsZh();
   }
 
   throw FlutterError(

@@ -1,0 +1,510 @@
+import 'dart:io';
+import 'dart:math' as math;
+import 'dart:typed_data';
+
+import 'package:crypto/crypto.dart';
+import 'package:flutter/services.dart';
+import 'package:onnxruntime_plus/onnxruntime_plus.dart';
+
+class PyannoteInterval {
+  const PyannoteInterval(this.start, this.end);
+
+  final double start;
+  final double end;
+
+  List<double> toJson() => <double>[start, end];
+}
+
+class PyannoteMobileResult {
+  const PyannoteMobileResult({
+    required this.durationSec,
+    required this.sampleCount,
+    required this.chunkCount,
+    required this.frameCounts,
+    required this.rawIntervals,
+    required this.protectedIntervals,
+    required this.modelSha256,
+    required this.runtimeVersion,
+    required this.inputName,
+    required this.outputNames,
+    required this.elapsedMs,
+  });
+
+  final double durationSec;
+  final int sampleCount;
+  final int chunkCount;
+  final Uint8List frameCounts;
+  final List<PyannoteInterval> rawIntervals;
+  final List<PyannoteInterval> protectedIntervals;
+  final String modelSha256;
+  final String runtimeVersion;
+  final String inputName;
+  final List<String> outputNames;
+  final int elapsedMs;
+
+  double get protectedSeconds => protectedIntervals.fold<double>(
+        0.0,
+        (value, interval) => value + interval.end - interval.start,
+      );
+}
+
+class PyannoteMobileService {
+  PyannoteMobileService._();
+
+  static final PyannoteMobileService instance = PyannoteMobileService._();
+
+  static const String modelAsset =
+      'assets/models/pyannote-segmentation/model.onnx';
+  static const String modelRevision =
+      '3533c8cf8e369892e6b79ff1bf80f7b0286a54ee';
+  static const String expectedModelSha256 =
+      '6575e57e9375c114545391ffecda0096060df55ae544d40472cdf412d115d35d';
+
+  static const int sampleRate = 16000;
+  static const double windowSec = 10.0;
+  static const double stepSec = 1.0;
+  static const double frameDurationSec = 0.0619375;
+  static const double frameStepSec = 0.016875;
+  static const int batchSize = 32;
+  static int get intraOpThreads =>
+      math.max(1, math.min(4, Platform.numberOfProcessors));
+  static const int expectedFramesPerChunk = 589;
+  static const double defaultPaddingSec = 0.25;
+
+  // Equivalent to summing the three columns of Windows POWERSET_MAPPING.
+  static const List<int> _powersetSpeakerCounts = <int>[0, 1, 1, 1, 2, 2, 2];
+
+  OrtSession? _session;
+  String? _modelSha256;
+  bool _ortInitialized = false;
+
+  Future<void> _ensureSession() async {
+    if (_session != null) return;
+
+    if (!_ortInitialized) {
+      OrtEnv.instance.init(logId: 'SonarpadPyannote');
+      _ortInitialized = true;
+    }
+
+    final modelData = await rootBundle.load(modelAsset);
+    final modelBytes = modelData.buffer.asUint8List(
+      modelData.offsetInBytes,
+      modelData.lengthInBytes,
+    );
+    final hash = sha256.convert(modelBytes).toString();
+    if (hash != expectedModelSha256) {
+      throw StateError(
+        'Il modello pyannote incluso non corrisponde a quello di Windows. '
+        'SHA-256 atteso: $expectedModelSha256, trovato: $hash.',
+      );
+    }
+
+    final options = OrtSessionOptions()
+      ..setIntraOpNumThreads(intraOpThreads);
+    final session = OrtSession.fromBuffer(modelBytes, options);
+    if (session.inputNames.isEmpty || session.outputNames.isEmpty) {
+      session.release();
+      options.release();
+      throw StateError('Il modello pyannote ONNX non espone input/output validi.');
+    }
+
+    options.release();
+    _session = session;
+    _modelSha256 = hash;
+  }
+
+  Future<PyannoteMobileResult> analyzeCanonicalWav(
+    String wavPath, {
+    double paddingSec = defaultPaddingSec,
+    void Function(double progress, String status)? onProgress,
+  }) async {
+    await _ensureSession();
+    final session = _session!;
+    final started = DateTime.now();
+    final wav = await _Pcm16Wave.open(wavPath);
+    try {
+      if (wav.channels != 1 || wav.bitsPerSample != 16 || wav.audioFormat != 1) {
+        throw StateError(
+          'Formato WAV non valido: serve PCM16 mono non compresso.',
+        );
+      }
+      if (wav.sampleRate != sampleRate) {
+        throw StateError(
+          'Sample rate non valido: atteso $sampleRate Hz, trovato ${wav.sampleRate} Hz.',
+        );
+      }
+
+      final starts = _segmentationChunkStarts(wav.sampleCount, wav.sampleRate);
+      final chunkCount = starts.length;
+      if (chunkCount == 0) {
+        return PyannoteMobileResult(
+          durationSec: wav.durationSec,
+          sampleCount: wav.sampleCount,
+          chunkCount: 0,
+          frameCounts: Uint8List(0),
+          rawIntervals: const <PyannoteInterval>[],
+          protectedIntervals: const <PyannoteInterval>[],
+          modelSha256: _modelSha256!,
+          runtimeVersion: OrtEnv.version,
+          inputName: session.inputNames.first,
+          outputNames: List<String>.from(session.outputNames),
+          elapsedMs: DateTime.now().difference(started).inMilliseconds,
+        );
+      }
+
+      final aggregateFrameCount = _aggregateFrameCount(chunkCount);
+      final summed = Float64List(aggregateFrameCount);
+      final contributors = Uint16List(aggregateFrameCount);
+      final windowSamples = (windowSec * wav.sampleRate).round();
+      final inputName = session.inputNames.first;
+      var processedChunks = 0;
+
+      for (var batchStart = 0;
+          batchStart < chunkCount;
+          batchStart += batchSize) {
+        final currentBatchSize = math.min(batchSize, chunkCount - batchStart);
+        final batch = Float32List(currentBatchSize * windowSamples);
+
+        for (var row = 0; row < currentBatchSize; row++) {
+          final startSample = starts[batchStart + row];
+          await wav.readNormalizedInto(
+            startSample: startSample,
+            maxSamples: windowSamples,
+            target: batch,
+            targetOffset: row * windowSamples,
+          );
+        }
+
+        final input = OrtValueTensor.createTensorWithDataList(
+          batch,
+          <int>[currentBatchSize, 1, windowSamples],
+        );
+        final runOptions = OrtRunOptions();
+        List<OrtValue?>? outputs;
+        try {
+          outputs = await session.runAsync(
+            runOptions,
+            <String, OrtValue>{inputName: input},
+          );
+          if (outputs == null || outputs.isEmpty || outputs.first == null) {
+            throw StateError('ONNX Runtime non ha restituito il tensore pyannote.');
+          }
+          _accumulateBatch(
+            outputs.first!.value,
+            batchStart,
+            currentBatchSize,
+            summed,
+            contributors,
+          );
+        } finally {
+          input.release();
+          runOptions.release();
+          outputs?.forEach((value) => value?.release());
+        }
+
+        processedChunks += currentBatchSize;
+        onProgress?.call(
+          processedChunks / chunkCount,
+          'Pyannote: $processedChunks di $chunkCount finestre analizzate',
+        );
+      }
+
+      final frameCounts = Uint8List(aggregateFrameCount);
+      for (var i = 0; i < aggregateFrameCount; i++) {
+        final divisor = contributors[i];
+        final average = divisor == 0 ? 0.0 : summed[i] / divisor;
+        frameCounts[i] = _roundHalfToEven(average).clamp(0, 255).toInt();
+      }
+
+      final rawIntervals = _countsToIntervals(frameCounts);
+      final protectedIntervals = _mergeIntervals(
+        rawIntervals,
+        paddingSec: paddingSec,
+        durationSec: wav.durationSec,
+      );
+
+      return PyannoteMobileResult(
+        durationSec: wav.durationSec,
+        sampleCount: wav.sampleCount,
+        chunkCount: chunkCount,
+        frameCounts: frameCounts,
+        rawIntervals: rawIntervals,
+        protectedIntervals: protectedIntervals,
+        modelSha256: _modelSha256!,
+        runtimeVersion: OrtEnv.version,
+        inputName: inputName,
+        outputNames: List<String>.from(session.outputNames),
+        elapsedMs: DateTime.now().difference(started).inMilliseconds,
+      );
+    } finally {
+      await wav.close();
+    }
+  }
+
+  void _accumulateBatch(
+    Object? outputValue,
+    int globalChunkStart,
+    int batchLength,
+    Float64List summed,
+    Uint16List contributors,
+  ) {
+    if (outputValue is! List || outputValue.length != batchLength) {
+      throw StateError(
+        'Forma output pyannote inattesa: batch=${outputValue is List ? outputValue.length : 'non-lista'}, '
+        'atteso=$batchLength.',
+      );
+    }
+
+    for (var localChunk = 0; localChunk < batchLength; localChunk++) {
+      final chunk = outputValue[localChunk];
+      if (chunk is! List || chunk.length != expectedFramesPerChunk) {
+        throw StateError(
+          'Forma output pyannote inattesa alla finestra ${globalChunkStart + localChunk}: '
+          '${chunk is List ? chunk.length : 'non-lista'} frame, attesi $expectedFramesPerChunk.',
+        );
+      }
+      final startFrame = _closestSegmentationFrame(
+        (globalChunkStart + localChunk) * stepSec + 0.5 * frameDurationSec,
+      );
+
+      for (var frame = 0; frame < expectedFramesPerChunk; frame++) {
+        final scores = chunk[frame];
+        if (scores is! List || scores.length != _powersetSpeakerCounts.length) {
+          throw StateError(
+            'Forma output pyannote inattesa al frame $frame: '
+            '${scores is List ? scores.length : 'non-lista'} classi.',
+          );
+        }
+        var bestIndex = 0;
+        var bestScore = (scores[0] as num).toDouble();
+        for (var classIndex = 1;
+            classIndex < _powersetSpeakerCounts.length;
+            classIndex++) {
+          final score = (scores[classIndex] as num).toDouble();
+          // NumPy argmax keeps the first index on ties.
+          if (score > bestScore) {
+            bestScore = score;
+            bestIndex = classIndex;
+          }
+        }
+        final aggregateIndex = startFrame + frame;
+        if (aggregateIndex < 0 || aggregateIndex >= summed.length) continue;
+        summed[aggregateIndex] += _powersetSpeakerCounts[bestIndex];
+        contributors[aggregateIndex] += 1;
+      }
+    }
+  }
+
+  static List<int> _segmentationChunkStarts(int numSamples, int sourceRate) {
+    final windowSamples = (windowSec * sourceRate).round();
+    final stepSamples = (stepSec * sourceRate).round();
+    final completeCount = numSamples >= windowSamples
+        ? 1 + (numSamples - windowSamples) ~/ stepSamples
+        : 0;
+    final hasLastChunk = numSamples < windowSamples ||
+        ((numSamples - windowSamples) % stepSamples > 0);
+    final starts = List<int>.generate(
+      completeCount,
+      (index) => index * stepSamples,
+      growable: true,
+    );
+    if (hasLastChunk) starts.add(completeCount * stepSamples);
+    return starts;
+  }
+
+  static int _aggregateFrameCount(int chunkCount) {
+    final endTime = windowSec +
+        (chunkCount - 1) * stepSec +
+        0.5 * frameDurationSec;
+    return _closestSegmentationFrame(endTime) + 1;
+  }
+
+  static int _closestSegmentationFrame(double timestamp) {
+    return _roundHalfToEven(
+      (timestamp - 0.5 * frameDurationSec) / frameStepSec,
+    );
+  }
+
+  static int _roundHalfToEven(double value) {
+    if (!value.isFinite) {
+      throw StateError('Valore non finito durante l\'aggregazione pyannote.');
+    }
+    final floor = value.floor();
+    final fraction = value - floor;
+    const epsilon = 1e-12;
+    if (fraction < 0.5 - epsilon) return floor;
+    if (fraction > 0.5 + epsilon) return floor + 1;
+    return floor.isEven ? floor : floor + 1;
+  }
+
+  static List<PyannoteInterval> _countsToIntervals(Uint8List frameCounts) {
+    final intervals = <PyannoteInterval>[];
+    int? startIndex;
+    for (var index = 0; index <= frameCounts.length; index++) {
+      final active = index < frameCounts.length && frameCounts[index] > 0;
+      if (active && startIndex == null) {
+        startIndex = index;
+      } else if (!active && startIndex != null) {
+        intervals.add(
+          PyannoteInterval(
+            startIndex * frameStepSec,
+            (index - 1) * frameStepSec + frameDurationSec,
+          ),
+        );
+        startIndex = null;
+      }
+    }
+    return intervals;
+  }
+
+  static List<PyannoteInterval> _mergeIntervals(
+    List<PyannoteInterval> intervals, {
+    required double paddingSec,
+    required double durationSec,
+  }) {
+    final normalized = <PyannoteInterval>[];
+    for (final interval in intervals) {
+      final start = math.max(0.0, interval.start - paddingSec);
+      final end = math.min(durationSec, interval.end + paddingSec);
+      if (end > start) normalized.add(PyannoteInterval(start, end));
+    }
+    normalized.sort((a, b) => a.start.compareTo(b.start));
+    final merged = <PyannoteInterval>[];
+    for (final interval in normalized) {
+      if (merged.isNotEmpty && interval.start <= merged.last.end) {
+        final previous = merged.removeLast();
+        merged.add(
+          PyannoteInterval(previous.start, math.max(previous.end, interval.end)),
+        );
+      } else {
+        merged.add(interval);
+      }
+    }
+    return merged;
+  }
+}
+
+class _Pcm16Wave {
+  _Pcm16Wave({
+    required this.file,
+    required this.audioFormat,
+    required this.channels,
+    required this.sampleRate,
+    required this.bitsPerSample,
+    required this.dataOffset,
+    required this.dataLength,
+  });
+
+  final RandomAccessFile file;
+  final int audioFormat;
+  final int channels;
+  final int sampleRate;
+  final int bitsPerSample;
+  final int dataOffset;
+  final int dataLength;
+
+  int get bytesPerSample => bitsPerSample ~/ 8;
+  int get sampleCount => dataLength ~/ (bytesPerSample * channels);
+  double get durationSec => sampleCount / sampleRate;
+
+  static Future<_Pcm16Wave> open(String path) async {
+    final raf = await File(path).open(mode: FileMode.read);
+    try {
+      final header = await raf.read(12);
+      if (header.length != 12 ||
+          _ascii(header, 0, 4) != 'RIFF' ||
+          _ascii(header, 8, 4) != 'WAVE') {
+        throw StateError('Il file scelto non è un WAV RIFF valido.');
+      }
+
+      int? audioFormat;
+      int? channels;
+      int? sampleRate;
+      int? bitsPerSample;
+      int? dataOffset;
+      int? dataLength;
+
+      final fileLength = await raf.length();
+      while ((await raf.position()) + 8 <= fileLength) {
+        final chunkHeader = await raf.read(8);
+        if (chunkHeader.length < 8) break;
+        final id = _ascii(chunkHeader, 0, 4);
+        final size = _u32le(chunkHeader, 4);
+        final payloadOffset = await raf.position();
+
+        if (id == 'fmt ') {
+          final fmt = await raf.read(math.min(size, 40));
+          if (fmt.length < 16) {
+            throw StateError('Blocco fmt WAV incompleto.');
+          }
+          audioFormat = _u16le(fmt, 0);
+          channels = _u16le(fmt, 2);
+          sampleRate = _u32le(fmt, 4);
+          bitsPerSample = _u16le(fmt, 14);
+        } else if (id == 'data') {
+          dataOffset = payloadOffset;
+          dataLength = size;
+        }
+
+        await raf.setPosition(payloadOffset + size + (size.isOdd ? 1 : 0));
+        if (audioFormat != null && dataOffset != null) break;
+      }
+
+      if (audioFormat == null ||
+          channels == null ||
+          sampleRate == null ||
+          bitsPerSample == null ||
+          dataOffset == null ||
+          dataLength == null) {
+        throw StateError('WAV privo dei blocchi fmt/data richiesti.');
+      }
+
+      return _Pcm16Wave(
+        file: raf,
+        audioFormat: audioFormat,
+        channels: channels,
+        sampleRate: sampleRate,
+        bitsPerSample: bitsPerSample,
+        dataOffset: dataOffset,
+        dataLength: dataLength,
+      );
+    } catch (_) {
+      await raf.close();
+      rethrow;
+    }
+  }
+
+  Future<int> readNormalizedInto({
+    required int startSample,
+    required int maxSamples,
+    required Float32List target,
+    required int targetOffset,
+  }) async {
+    if (startSample >= sampleCount || maxSamples <= 0) return 0;
+    final available = math.min(maxSamples, sampleCount - startSample);
+    final byteCount = available * 2;
+    await file.setPosition(dataOffset + startSample * 2);
+    final bytes = await file.read(byteCount);
+    final usableSamples = bytes.length ~/ 2;
+    for (var i = 0; i < usableSamples; i++) {
+      var raw = bytes[i * 2] | (bytes[i * 2 + 1] << 8);
+      if ((raw & 0x8000) != 0) raw -= 0x10000;
+      target[targetOffset + i] = raw / 32768.0;
+    }
+    return usableSamples;
+  }
+
+  Future<void> close() => file.close();
+
+  static String _ascii(List<int> bytes, int offset, int length) =>
+      String.fromCharCodes(bytes.sublist(offset, offset + length));
+
+  static int _u16le(List<int> bytes, int offset) =>
+      bytes[offset] | (bytes[offset + 1] << 8);
+
+  static int _u32le(List<int> bytes, int offset) =>
+      bytes[offset] |
+      (bytes[offset + 1] << 8) |
+      (bytes[offset + 2] << 16) |
+      (bytes[offset + 3] << 24);
+}
