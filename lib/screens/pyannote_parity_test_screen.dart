@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
@@ -18,7 +19,8 @@ class PyannoteParityTestScreen extends StatefulWidget {
       _PyannoteParityTestScreenState();
 }
 
-class _PyannoteParityTestScreenState extends State<PyannoteParityTestScreen> {
+class _PyannoteParityTestScreenState extends State<PyannoteParityTestScreen>
+    with WidgetsBindingObserver {
   final _service = const PyannoteParityService();
   final _benchmarkService = const PyannoteBenchmarkService();
   bool _running = false;
@@ -26,6 +28,30 @@ class _PyannoteParityTestScreenState extends State<PyannoteParityTestScreen> {
   String? _status;
   String? _technicalError;
   PyannoteParityArtifacts? _lastArtifacts;
+  String? _activeOperation;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    final operation = _activeOperation;
+    if (operation == null) return;
+    unawaited(
+      AppLogger.log(
+        'PYANNOTE[UI][LIFECYCLE] operation=$operation state=${state.name}',
+      ),
+    );
+  }
 
   Future<String?> _pickMedia({required String operation}) async {
     await AppLogger.log('PYANNOTE[UI] picker opening operation=$operation');
@@ -107,6 +133,7 @@ class _PyannoteParityTestScreenState extends State<PyannoteParityTestScreen> {
       _technicalError = null;
       _lastArtifacts = null;
       _status = l10n.pyannoteBenchmarkPreparing;
+      _activeOperation = 'benchmark_10m';
     });
     try {
       final report = await _benchmarkService.run(
@@ -137,7 +164,14 @@ class _PyannoteParityTestScreenState extends State<PyannoteParityTestScreen> {
         _technicalError = error.toString();
       });
     } finally {
-      if (mounted) setState(() => _running = false);
+      if (mounted) {
+        setState(() {
+          _running = false;
+          _activeOperation = null;
+        });
+      } else {
+        _activeOperation = null;
+      }
     }
   }
 

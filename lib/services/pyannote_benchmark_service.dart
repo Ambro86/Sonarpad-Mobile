@@ -10,6 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:onnxruntime_plus/onnxruntime_plus.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../utils/app_logger.dart';
 import 'pyannote_mobile_service.dart';
@@ -67,6 +68,22 @@ class PyannoteBenchmarkOutcome {
     this.protectedIntervalIoU,
     this.exactFrameMatch,
     this.speedupVsBaseline,
+    this.rawIntervals,
+    this.lostActiveFrames,
+    this.addedActiveFrames,
+    this.changedActiveSpeakerCountFrames,
+    this.lostActiveSeconds,
+    this.addedActiveSeconds,
+    this.fullyMissedSpeechIntervals,
+    this.fullyMissedSpeechSeconds,
+    this.partialMissedSpeechIntervals,
+    this.protectedLostSeconds,
+    this.protectedAddedSeconds,
+    this.maxContiguousLostMs,
+    this.boundaryLostFrames250ms,
+    this.interiorLostFrames250ms,
+    this.boundaryOnlyCandidate,
+    this.diffRuns,
   });
 
   final PyannoteBenchmarkConfig config;
@@ -88,6 +105,22 @@ class PyannoteBenchmarkOutcome {
   final double? protectedIntervalIoU;
   final bool? exactFrameMatch;
   final double? speedupVsBaseline;
+  final List<PyannoteInterval>? rawIntervals;
+  final int? lostActiveFrames;
+  final int? addedActiveFrames;
+  final int? changedActiveSpeakerCountFrames;
+  final double? lostActiveSeconds;
+  final double? addedActiveSeconds;
+  final int? fullyMissedSpeechIntervals;
+  final double? fullyMissedSpeechSeconds;
+  final int? partialMissedSpeechIntervals;
+  final double? protectedLostSeconds;
+  final double? protectedAddedSeconds;
+  final double? maxContiguousLostMs;
+  final int? boundaryLostFrames250ms;
+  final int? interiorLostFrames250ms;
+  final bool? boundaryOnlyCandidate;
+  final List<Map<String, Object?>>? diffRuns;
 
   Map<String, Object?> toJson() => <String, Object?>{
         'config': config.toJson(),
@@ -111,6 +144,21 @@ class PyannoteBenchmarkOutcome {
           'protected_seconds_delta': protectedSecondsDelta,
           'protected_interval_time_iou': protectedIntervalIoU,
           'speedup_vs_baseline': speedupVsBaseline,
+          'lost_active_frames': lostActiveFrames,
+          'added_active_frames': addedActiveFrames,
+          'changed_active_speaker_count_frames': changedActiveSpeakerCountFrames,
+          'lost_active_seconds': lostActiveSeconds,
+          'added_active_seconds': addedActiveSeconds,
+          'fully_missed_speech_intervals': fullyMissedSpeechIntervals,
+          'fully_missed_speech_seconds': fullyMissedSpeechSeconds,
+          'partial_missed_speech_intervals': partialMissedSpeechIntervals,
+          'protected_lost_seconds': protectedLostSeconds,
+          'protected_added_seconds': protectedAddedSeconds,
+          'max_contiguous_lost_ms': maxContiguousLostMs,
+          'boundary_lost_frames_250ms': boundaryLostFrames250ms,
+          'interior_lost_frames_250ms': interiorLostFrames250ms,
+          'boundary_only_candidate': boundaryOnlyCandidate,
+          'diff_runs': diffRuns,
         },
       };
 }
@@ -259,6 +307,38 @@ class PyannoteBenchmarkService {
           stepSec: 2.5,
         ),
         const PyannoteBenchmarkConfig(
+          id: 'precision_cpu_b32_t4_all_step1_25',
+          provider: 'CPUExecutionProvider',
+          batchSize: 32,
+          intraOpThreads: 4,
+          graphOptimization: GraphOptimizationLevel.ortEnableAll,
+          stepSec: 1.25,
+        ),
+        const PyannoteBenchmarkConfig(
+          id: 'precision_cpu_b32_t4_all_step1_5',
+          provider: 'CPUExecutionProvider',
+          batchSize: 32,
+          intraOpThreads: 4,
+          graphOptimization: GraphOptimizationLevel.ortEnableAll,
+          stepSec: 1.5,
+        ),
+        const PyannoteBenchmarkConfig(
+          id: 'precision_cpu_b32_t4_all_step1_75',
+          provider: 'CPUExecutionProvider',
+          batchSize: 32,
+          intraOpThreads: 4,
+          graphOptimization: GraphOptimizationLevel.ortEnableAll,
+          stepSec: 1.75,
+        ),
+        const PyannoteBenchmarkConfig(
+          id: 'precision_cpu_b32_t4_all_step2_0',
+          provider: 'CPUExecutionProvider',
+          batchSize: 32,
+          intraOpThreads: 4,
+          graphOptimization: GraphOptimizationLevel.ortEnableAll,
+          stepSec: 2.0,
+        ),
+        const PyannoteBenchmarkConfig(
           id: 'coreml_subgraph_b32_t4_all_step2_aggressive',
           provider: 'CoreMLExecutionProvider',
           batchSize: 32,
@@ -274,7 +354,24 @@ class PyannoteBenchmarkService {
     void Function(double progress)? onProgress,
   }) async {
     final started = DateTime.now();
-    final source = File(sourcePath);
+    bool? wakelockWasEnabled;
+    try {
+      try {
+        wakelockWasEnabled = await WakelockPlus.enabled;
+        await AppLogger.log(
+          'PYANNOTE[BENCH][WAKELOCK] before enabled=$wakelockWasEnabled; enabling for benchmark',
+        );
+        await WakelockPlus.enable();
+        await AppLogger.log(
+          'PYANNOTE[BENCH][WAKELOCK] enabled=${await WakelockPlus.enabled}',
+        );
+      } catch (error, stackTrace) {
+        await AppLogger.log(
+          'PYANNOTE[BENCH][WAKELOCK] enable FAILED type=${error.runtimeType} error=$error\n$stackTrace',
+        );
+      }
+
+      final source = File(sourcePath);
     final sourceExists = await source.exists();
     final sourceBytes = sourceExists ? await source.length() : -1;
     await AppLogger.log(
@@ -389,7 +486,11 @@ class PyannoteBenchmarkService {
         'inferenceMs=${item.inferenceMs} speedup=${item.speedupVsBaseline?.toStringAsFixed(3)} '
         'exact=${item.exactFrameMatch} differingFrames=${item.differingFrames} '
         'iou=${item.protectedIntervalIoU?.toStringAsFixed(9)} '
-        'protectedDelta=${item.protectedSecondsDelta?.toStringAsFixed(6)}',
+        'protectedDelta=${item.protectedSecondsDelta?.toStringAsFixed(6)} '
+        'lostFrames=${item.lostActiveFrames} addedFrames=${item.addedActiveFrames} '
+        'fullyMissed=${item.fullyMissedSpeechIntervals} '
+        'protectedLost=${item.protectedLostSeconds?.toStringAsFixed(6)} '
+        'boundaryOnly=${item.boundaryOnlyCandidate}',
       );
     }
 
@@ -417,11 +518,29 @@ class PyannoteBenchmarkService {
       'totalElapsedMs=${DateTime.now().difference(started).inMilliseconds}',
     );
     onProgress?.call(1.0);
-    return PyannoteBenchmarkReport(
-      canonicalWavPath: wavPath,
-      reportJsonPath: jsonPath,
-      outcomes: outcomes,
-    );
+      return PyannoteBenchmarkReport(
+        canonicalWavPath: wavPath,
+        reportJsonPath: jsonPath,
+        outcomes: outcomes,
+      );
+    } finally {
+      if (wakelockWasEnabled != null) {
+        try {
+          if (wakelockWasEnabled!) {
+            await WakelockPlus.enable();
+          } else {
+            await WakelockPlus.disable();
+          }
+          await AppLogger.log(
+            'PYANNOTE[BENCH][WAKELOCK] restored enabled=${await WakelockPlus.enabled} previous=$wakelockWasEnabled',
+          );
+        } catch (error, stackTrace) {
+          await AppLogger.log(
+            'PYANNOTE[BENCH][WAKELOCK] restore FAILED type=${error.runtimeType} error=$error\n$stackTrace',
+          );
+        }
+      }
+    }
   }
 
   Future<void> _createCanonicalTenMinuteWav(
@@ -535,6 +654,7 @@ class PyannoteBenchmarkService {
         frameCount: analysis.frameCounts.length,
         protectedIntervals: analysis.protectedIntervals,
         protectedSeconds: analysis.protectedSeconds,
+        rawIntervals: analysis.rawIntervals,
       );
     } finally {
       session?.release();
@@ -656,6 +776,7 @@ class PyannoteBenchmarkService {
       return _BenchmarkAnalysis(
         chunkCount: chunkCount,
         frameCounts: frameCounts,
+        rawIntervals: rawIntervals,
         protectedIntervals: protectedIntervals,
         protectedSeconds: protectedSeconds,
       );
@@ -674,18 +795,105 @@ class PyannoteBenchmarkService {
     var differing = 0;
     int? first;
     var maxDelta = 0;
+    var lostActiveFrames = 0;
+    var addedActiveFrames = 0;
+    var changedActiveSpeakerCountFrames = 0;
+    var boundaryLostFrames250ms = 0;
+    var interiorLostFrames250ms = 0;
+    const boundaryThresholdSec = 0.250;
+
+    String? activeKind;
+    var runStart = 0;
+    var runEnd = 0;
+    var runMaxDelta = 0;
+    final diffRuns = <Map<String, Object?>>[];
+
+    void flushRun() {
+      final kind = activeKind;
+      if (kind == null) return;
+      final startSec = runStart * PyannoteMobileService.frameStepSec;
+      final unclampedEnd = runEnd * PyannoteMobileService.frameStepSec +
+          PyannoteMobileService.frameDurationSec;
+      final endSec = math.min(benchmarkSeconds, unclampedEnd);
+      final durationMs = math.max(0.0, endSec - startSec) * 1000.0;
+      bool? nearBoundary;
+      if (kind == 'lost') {
+        nearBoundary = true;
+        for (var frame = runStart; frame <= runEnd; frame++) {
+          final center = frame * PyannoteMobileService.frameStepSec +
+              PyannoteMobileService.frameDurationSec / 2.0;
+          if (!_isNearAnyBoundary(
+            center,
+            baseline.rawIntervals ?? const <PyannoteInterval>[],
+            boundaryThresholdSec,
+          )) {
+            nearBoundary = false;
+            break;
+          }
+        }
+      }
+      diffRuns.add(<String, Object?>{
+        'kind': kind,
+        'start_frame': runStart,
+        'end_frame': runEnd,
+        'start_seconds': startSec,
+        'end_seconds': endSec,
+        'duration_ms': durationMs,
+        'max_speaker_count_delta': runMaxDelta,
+        'near_baseline_boundary_250ms': nearBoundary,
+      });
+      activeKind = null;
+      runMaxDelta = 0;
+    }
+
     for (var i = 0; i < maxLen; i++) {
-      final a = i < left.length ? left[i] : null;
-      final b = i < right.length ? right[i] : null;
+      final a = i < left.length ? left[i] : 0;
+      final b = i < right.length ? right[i] : 0;
+      String? kind;
       if (a != b) {
         differing++;
         first ??= i;
-        if (a != null && b != null) {
-          final delta = (a - b).abs();
-          if (delta > maxDelta) maxDelta = delta;
+        final delta = (a - b).abs();
+        if (delta > maxDelta) maxDelta = delta;
+        if (a > 0 && b == 0) {
+          kind = 'lost';
+          lostActiveFrames++;
+          final center = i * PyannoteMobileService.frameStepSec +
+              PyannoteMobileService.frameDurationSec / 2.0;
+          if (_isNearAnyBoundary(
+            center,
+            baseline.rawIntervals ?? const <PyannoteInterval>[],
+            boundaryThresholdSec,
+          )) {
+            boundaryLostFrames250ms++;
+          } else {
+            interiorLostFrames250ms++;
+          }
+        } else if (a == 0 && b > 0) {
+          kind = 'added';
+          addedActiveFrames++;
+        } else if (a > 0 && b > 0) {
+          kind = 'speaker_count_changed';
+          changedActiveSpeakerCountFrames++;
         }
       }
+
+      if (kind != activeKind) {
+        flushRun();
+        if (kind != null) {
+          activeKind = kind;
+          runStart = i;
+          runEnd = i;
+          runMaxDelta = (a - b).abs();
+        }
+      } else if (kind != null) {
+        runEnd = i;
+        final delta = (a - b).abs();
+        if (delta > runMaxDelta) runMaxDelta = delta;
+      }
     }
+    flushRun();
+
     final baseIntervals = baseline.protectedIntervals!;
     final currentIntervals = current.protectedIntervals!;
     final baseSeconds = baseline.protectedSeconds!;
@@ -696,6 +904,44 @@ class PyannoteBenchmarkService {
     final speedup = current.inferenceMs > 0
         ? baseline.inferenceMs / current.inferenceMs
         : null;
+
+    final baseRaw = baseline.rawIntervals ?? const <PyannoteInterval>[];
+    final currentRaw = current.rawIntervals ?? const <PyannoteInterval>[];
+    var fullyMissedSpeechIntervals = 0;
+    var fullyMissedSpeechSeconds = 0.0;
+    var partialMissedSpeechIntervals = 0;
+    for (final interval in baseRaw) {
+      final overlap = _intervalOverlapWithList(interval, currentRaw);
+      final duration = math.max(0.0, interval.end - interval.start).toDouble();
+      if (overlap <= 1e-12) {
+        fullyMissedSpeechIntervals++;
+        fullyMissedSpeechSeconds += duration;
+      } else if (overlap + 1e-9 < duration) {
+        partialMissedSpeechIntervals++;
+      }
+    }
+
+    final lostRuns = diffRuns.where((e) => e['kind'] == 'lost').toList();
+    final rawIntersection = _intersectionSeconds(baseRaw, currentRaw);
+    final baseRawSeconds = _intervalSeconds(baseRaw);
+    final currentRawSeconds = _intervalSeconds(currentRaw);
+    final lostActiveSeconds = math.max(0.0, baseRawSeconds - rawIntersection).toDouble();
+    final addedActiveSeconds = math.max(0.0, currentRawSeconds - rawIntersection).toDouble();
+    final maxContiguousLostMs = lostRuns.fold<double>(
+      0.0,
+      (value, run) {
+        final duration = (run['duration_ms'] as num).toDouble();
+        return duration > value ? duration : value;
+      },
+    );
+    final protectedLostSeconds = math.max(0.0, baseSeconds - intersection).toDouble();
+    final protectedAddedSeconds = math.max(0.0, currentSeconds - intersection).toDouble();
+    final boundaryOnlyCandidate =
+        lostActiveFrames > 0 &&
+        fullyMissedSpeechIntervals == 0 &&
+        interiorLostFrames250ms == 0 &&
+        changedActiveSpeakerCountFrames == 0;
+
     return PyannoteBenchmarkOutcome(
       config: current.config,
       success: current.success,
@@ -706,6 +952,7 @@ class PyannoteBenchmarkService {
       frameSha256: current.frameSha256,
       chunkCount: current.chunkCount,
       frameCount: current.frameCount,
+      rawIntervals: current.rawIntervals,
       protectedIntervals: current.protectedIntervals,
       protectedSeconds: current.protectedSeconds,
       error: current.error,
@@ -716,7 +963,52 @@ class PyannoteBenchmarkService {
       protectedIntervalIoU: iou,
       exactFrameMatch: differing == 0 && left.length == right.length,
       speedupVsBaseline: speedup,
+      lostActiveFrames: lostActiveFrames,
+      addedActiveFrames: addedActiveFrames,
+      changedActiveSpeakerCountFrames: changedActiveSpeakerCountFrames,
+      lostActiveSeconds: lostActiveSeconds,
+      addedActiveSeconds: addedActiveSeconds,
+      fullyMissedSpeechIntervals: fullyMissedSpeechIntervals,
+      fullyMissedSpeechSeconds: fullyMissedSpeechSeconds,
+      partialMissedSpeechIntervals: partialMissedSpeechIntervals,
+      protectedLostSeconds: protectedLostSeconds,
+      protectedAddedSeconds: protectedAddedSeconds,
+      maxContiguousLostMs: maxContiguousLostMs,
+      boundaryLostFrames250ms: boundaryLostFrames250ms,
+      interiorLostFrames250ms: interiorLostFrames250ms,
+      boundaryOnlyCandidate: boundaryOnlyCandidate,
+      diffRuns: diffRuns,
     );
+  }
+
+  static bool _isNearAnyBoundary(
+    double timestamp,
+    List<PyannoteInterval> intervals,
+    double thresholdSec,
+  ) {
+    for (final interval in intervals) {
+      if ((timestamp - interval.start).abs() <= thresholdSec ||
+          (timestamp - interval.end).abs() <= thresholdSec) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  static double _intervalOverlapWithList(
+    PyannoteInterval interval,
+    List<PyannoteInterval> others,
+  ) {
+    var total = 0.0;
+    for (final other in others) {
+      if (other.end <= interval.start) continue;
+      if (other.start >= interval.end) break;
+      total += math.max(
+        0.0,
+        math.min(interval.end, other.end) - math.max(interval.start, other.start),
+      );
+    }
+    return total;
   }
 
   static Future<void> _logOutcome(
@@ -745,6 +1037,37 @@ class PyannoteBenchmarkService {
       'speedup=${outcome.speedupVsBaseline?.toStringAsFixed(3)} '
       'baseline=${baseline?.config.id}',
     );
+    if (baseline == null) return;
+
+    await AppLogger.log(
+      'PYANNOTE[BENCH][VOICE] id=${outcome.config.id} '
+      'lostActiveFrames=${outcome.lostActiveFrames} '
+      'addedActiveFrames=${outcome.addedActiveFrames} '
+      'speakerCountChangedFrames=${outcome.changedActiveSpeakerCountFrames} '
+      'lostActiveSeconds=${outcome.lostActiveSeconds?.toStringAsFixed(6)} '
+      'addedActiveSeconds=${outcome.addedActiveSeconds?.toStringAsFixed(6)} '
+      'fullyMissedSpeechIntervals=${outcome.fullyMissedSpeechIntervals} '
+      'fullyMissedSpeechSeconds=${outcome.fullyMissedSpeechSeconds?.toStringAsFixed(6)} '
+      'partialMissedSpeechIntervals=${outcome.partialMissedSpeechIntervals} '
+      'protectedLostSeconds=${outcome.protectedLostSeconds?.toStringAsFixed(6)} '
+      'protectedAddedSeconds=${outcome.protectedAddedSeconds?.toStringAsFixed(6)} '
+      'maxContiguousLostMs=${outcome.maxContiguousLostMs?.toStringAsFixed(3)} '
+      'boundaryLostFrames250ms=${outcome.boundaryLostFrames250ms} '
+      'interiorLostFrames250ms=${outcome.interiorLostFrames250ms} '
+      'boundaryOnlyCandidate=${outcome.boundaryOnlyCandidate}',
+    );
+
+    for (final run in outcome.diffRuns ?? const <Map<String, Object?>>[]) {
+      await AppLogger.log(
+        'PYANNOTE[BENCH][DIFF] id=${outcome.config.id} '
+        'kind=${run['kind']} frames=${run['start_frame']}-${run['end_frame']} '
+        'start=${(run['start_seconds'] as num).toDouble().toStringAsFixed(6)} '
+        'end=${(run['end_seconds'] as num).toDouble().toStringAsFixed(6)} '
+        'durationMs=${(run['duration_ms'] as num).toDouble().toStringAsFixed(3)} '
+        'maxDelta=${run['max_speaker_count_delta']} '
+        'nearBoundary250ms=${run['near_baseline_boundary_250ms']}',
+      );
+    }
   }
 
   static void _accumulateBatch(
@@ -890,6 +1213,14 @@ class PyannoteBenchmarkService {
     return merged;
   }
 
+  static double _intervalSeconds(List<PyannoteInterval> intervals) {
+    return intervals.fold<double>(
+      0.0,
+      (sum, interval) =>
+          sum + math.max(0.0, interval.end - interval.start).toDouble(),
+    );
+  }
+
   static double _intersectionSeconds(
     List<PyannoteInterval> left,
     List<PyannoteInterval> right,
@@ -915,12 +1246,14 @@ class _BenchmarkAnalysis {
   const _BenchmarkAnalysis({
     required this.chunkCount,
     required this.frameCounts,
+    required this.rawIntervals,
     required this.protectedIntervals,
     required this.protectedSeconds,
   });
 
   final int chunkCount;
   final Uint8List frameCounts;
+  final List<PyannoteInterval> rawIntervals;
   final List<PyannoteInterval> protectedIntervals;
   final double protectedSeconds;
 }
