@@ -8,6 +8,7 @@ import 'package:ffmpeg_kit_flutter_new/return_code.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
+import '../utils/app_logger.dart';
 import 'pyannote_mobile_service.dart';
 
 class PyannoteParityArtifacts {
@@ -30,123 +31,195 @@ class PyannoteParityService {
     double? limitSeconds,
     void Function(double progress)? onProgress,
   }) async {
-    final documents = await getApplicationDocumentsDirectory();
-    final outputDir = Directory(p.join(documents.path, 'pyannote_parity_tests'));
-    await outputDir.create(recursive: true);
+    final started = DateTime.now();
+    await AppLogger.log(
+      'PYANNOTE[PARITY] run start '
+      'source="$sourcePath" limitSeconds=$limitSeconds '
+      'platform=${Platform.operatingSystem} '
+      'osVersion="${Platform.operatingSystemVersion}"',
+    );
 
-    final stamp = DateTime.now().toUtc().toIso8601String().replaceAll(':', '-');
-    final sourceBase = p.basenameWithoutExtension(sourcePath)
-        .replaceAll(RegExp(r'[^A-Za-z0-9._-]+'), '_');
-    final prefix = '${sourceBase}_$stamp';
-    final wavPath = p.join(outputDir.path, '$prefix.canonical.wav');
-    final jsonPath = p.join(outputDir.path, '$prefix.mobile.json');
-
-    onProgress?.call(0.0);
-    final args = <String>[
-      '-y',
-      '-hide_banner',
-      '-loglevel',
-      'error',
-      '-i',
-      sourcePath,
-      if (limitSeconds != null) ...<String>[
-        '-t',
-        limitSeconds.toStringAsFixed(3),
-      ],
-      '-vn',
-      '-map_metadata',
-      '-1',
-      '-ac',
-      '1',
-      '-ar',
-      '${PyannoteMobileService.sampleRate}',
-      '-c:a',
-      'pcm_s16le',
-      '-f',
-      'wav',
-      wavPath,
-    ];
-    final session = await FFmpegKit.executeWithArguments(args);
-    final returnCode = await session.getReturnCode();
-    if (!ReturnCode.isSuccess(returnCode)) {
-      final logs = (await session.getAllLogsAsString() ?? '').trim();
-      throw StateError(
-        logs.isEmpty
-            ? 'PYANNOTE_FFMPEG_FAILED'
-            : 'PYANNOTE_FFMPEG_FAILED:${logs.hashCode}',
+    try {
+      final sourceFile = File(sourcePath);
+      await AppLogger.log(
+        'PYANNOTE[PARITY] source exists=${await sourceFile.exists()} '
+        'bytes=${await sourceFile.exists() ? await sourceFile.length() : -1}',
       );
+
+      final documents = await getApplicationDocumentsDirectory();
+      final outputDir =
+          Directory(p.join(documents.path, 'pyannote_parity_tests'));
+      await outputDir.create(recursive: true);
+      await AppLogger.log(
+        'PYANNOTE[PARITY] outputDir="${outputDir.path}"',
+      );
+
+      final stamp =
+          DateTime.now().toUtc().toIso8601String().replaceAll(':', '-');
+      final sourceBase = p.basenameWithoutExtension(sourcePath)
+          .replaceAll(RegExp(r'[^A-Za-z0-9._-]+'), '_');
+      final prefix = '${sourceBase}_$stamp';
+      final wavPath = p.join(outputDir.path, '$prefix.canonical.wav');
+      final jsonPath = p.join(outputDir.path, '$prefix.mobile.json');
+
+      onProgress?.call(0.0);
+      final args = <String>[
+        '-y',
+        '-hide_banner',
+        '-loglevel',
+        'error',
+        '-i',
+        sourcePath,
+        if (limitSeconds != null) ...<String>[
+          '-t',
+          limitSeconds.toStringAsFixed(3),
+        ],
+        '-vn',
+        '-map_metadata',
+        '-1',
+        '-ac',
+        '1',
+        '-ar',
+        '${PyannoteMobileService.sampleRate}',
+        '-c:a',
+        'pcm_s16le',
+        '-f',
+        'wav',
+        wavPath,
+      ];
+
+      await AppLogger.log(
+        'PYANNOTE[FFMPEG] start '
+        'source="${p.basename(sourcePath)}" '
+        'target="${p.basename(wavPath)}" '
+        'limitSeconds=$limitSeconds ac=1 ar=${PyannoteMobileService.sampleRate} '
+        'codec=pcm_s16le',
+      );
+      final ffmpegStarted = DateTime.now();
+      final session = await FFmpegKit.executeWithArguments(args);
+      final returnCode = await session.getReturnCode();
+      final ffmpegElapsed =
+          DateTime.now().difference(ffmpegStarted).inMilliseconds;
+      await AppLogger.log(
+        'PYANNOTE[FFMPEG] finished '
+        'success=${ReturnCode.isSuccess(returnCode)} '
+        'returnCode=$returnCode elapsedMs=$ffmpegElapsed',
+      );
+
+      if (!ReturnCode.isSuccess(returnCode)) {
+        final logs = (await session.getAllLogsAsString() ?? '').trim();
+        await AppLogger.log(
+          'PYANNOTE[FFMPEG] FAILED logs="${logs.length > 4000 ? logs.substring(logs.length - 4000) : logs}"',
+        );
+        throw StateError(
+          logs.isEmpty
+              ? 'PYANNOTE_FFMPEG_FAILED'
+              : 'PYANNOTE_FFMPEG_FAILED:${logs.hashCode}',
+        );
+      }
+
+      final wavFile = File(wavPath);
+      final wavExists = await wavFile.exists();
+      final wavLength = wavExists ? await wavFile.length() : -1;
+      await AppLogger.log(
+        'PYANNOTE[FFMPEG] canonical WAV '
+        'exists=$wavExists bytes=$wavLength path="$wavPath"',
+      );
+      if (!wavExists || wavLength <= 44) {
+        throw StateError('PYANNOTE_CANONICAL_WAV_EMPTY');
+      }
+
+      onProgress?.call(0.03);
+      await AppLogger.log('PYANNOTE[PARITY] mobile analyzer start');
+      final result = await PyannoteMobileService.instance.analyzeCanonicalWav(
+        wavPath,
+        onProgress: (progress) {
+          onProgress?.call(0.03 + progress * 0.97);
+        },
+      );
+      await AppLogger.log(
+        'PYANNOTE[PARITY] mobile analyzer complete '
+        'runtime=${result.runtimeVersion} chunks=${result.chunkCount} '
+        'duration=${result.durationSec.toStringAsFixed(6)} '
+        'elapsedMs=${result.elapsedMs}',
+      );
+
+      final frameHash = sha256.convert(result.frameCounts).toString();
+      final payload = <String, Object?>{
+        'schema': 'sonarpad_pyannote_parity_v1',
+        'platform': 'mobile',
+        'created_at_utc': DateTime.now().toUtc().toIso8601String(),
+        'source_file': p.basename(sourcePath),
+        'canonical_wav_file': p.basename(wavPath),
+        'limit_seconds': limitSeconds,
+        'model': <String, Object?>{
+          'name': 'pyannote Community-1 segmentation ONNX',
+          'revision': PyannoteMobileService.modelRevision,
+          'sha256': result.modelSha256,
+        },
+        'runtime': <String, Object?>{
+          'onnxruntime_version': result.runtimeVersion,
+          'provider': 'CPUExecutionProvider',
+          'intra_op_threads': PyannoteMobileService.intraOpThreads,
+          'batch_size': PyannoteMobileService.batchSize,
+          'input_name': result.inputName,
+          'output_names': result.outputNames,
+        },
+        'audio': <String, Object?>{
+          'sample_rate': PyannoteMobileService.sampleRate,
+          'sample_count': result.sampleCount,
+          'duration_seconds': result.durationSec,
+        },
+        'parameters': <String, Object?>{
+          'window_seconds': PyannoteMobileService.windowSec,
+          'step_seconds': PyannoteMobileService.stepSec,
+          'frame_duration_seconds':
+              PyannoteMobileService.frameDurationSec,
+          'frame_step_seconds': PyannoteMobileService.frameStepSec,
+          'padding_seconds': PyannoteMobileService.defaultPaddingSec,
+        },
+        'analysis': <String, Object?>{
+          'elapsed_ms': result.elapsedMs,
+          'chunk_count': result.chunkCount,
+          'frame_count': result.frameCounts.length,
+          'frame_counts_sha256': frameHash,
+          'frame_counts_rle': _rle(result.frameCounts),
+          'raw_intervals':
+              result.rawIntervals.map((e) => e.toJson()).toList(),
+          'protected_intervals':
+              result.protectedIntervals.map((e) => e.toJson()).toList(),
+          'protected_seconds': result.protectedSeconds,
+          'protected_percent': result.durationSec <= 0
+              ? 0.0
+              : result.protectedSeconds / result.durationSec * 100.0,
+        },
+      };
+
+      await AppLogger.log(
+        'PYANNOTE[JSON] write start path="$jsonPath" frameSha256=$frameHash',
+      );
+      await File(jsonPath).writeAsString(
+        const JsonEncoder.withIndent('  ').convert(payload),
+        flush: true,
+      );
+      final jsonBytes = await File(jsonPath).length();
+      await AppLogger.log(
+        'PYANNOTE[JSON] write success bytes=$jsonBytes '
+        'totalElapsedMs=${DateTime.now().difference(started).inMilliseconds}',
+      );
+
+      return PyannoteParityArtifacts(
+        wavPath: wavPath,
+        jsonPath: jsonPath,
+        result: result,
+      );
+    } catch (error, stackTrace) {
+      await AppLogger.log(
+        'PYANNOTE[PARITY] run FAILED '
+        'type=${error.runtimeType} error=$error\n$stackTrace',
+      );
+      rethrow;
     }
-    final wavFile = File(wavPath);
-    if (!await wavFile.exists() || await wavFile.length() <= 44) {
-      throw StateError('PYANNOTE_CANONICAL_WAV_EMPTY');
-    }
-
-    onProgress?.call(0.03);
-    final result = await PyannoteMobileService.instance.analyzeCanonicalWav(
-      wavPath,
-      onProgress: (progress) {
-        onProgress?.call(0.03 + progress * 0.97);
-      },
-    );
-
-    final frameHash = sha256.convert(result.frameCounts).toString();
-    final payload = <String, Object?>{
-      'schema': 'sonarpad_pyannote_parity_v1',
-      'platform': 'mobile',
-      'created_at_utc': DateTime.now().toUtc().toIso8601String(),
-      'source_file': p.basename(sourcePath),
-      'canonical_wav_file': p.basename(wavPath),
-      'limit_seconds': limitSeconds,
-      'model': <String, Object?>{
-        'name': 'pyannote Community-1 segmentation ONNX',
-        'revision': PyannoteMobileService.modelRevision,
-        'sha256': result.modelSha256,
-      },
-      'runtime': <String, Object?>{
-        'onnxruntime_version': result.runtimeVersion,
-        'provider': 'CPUExecutionProvider',
-        'intra_op_threads': PyannoteMobileService.intraOpThreads,
-        'batch_size': PyannoteMobileService.batchSize,
-        'input_name': result.inputName,
-        'output_names': result.outputNames,
-      },
-      'audio': <String, Object?>{
-        'sample_rate': PyannoteMobileService.sampleRate,
-        'sample_count': result.sampleCount,
-        'duration_seconds': result.durationSec,
-      },
-      'parameters': <String, Object?>{
-        'window_seconds': PyannoteMobileService.windowSec,
-        'step_seconds': PyannoteMobileService.stepSec,
-        'frame_duration_seconds': PyannoteMobileService.frameDurationSec,
-        'frame_step_seconds': PyannoteMobileService.frameStepSec,
-        'padding_seconds': PyannoteMobileService.defaultPaddingSec,
-      },
-      'analysis': <String, Object?>{
-        'elapsed_ms': result.elapsedMs,
-        'chunk_count': result.chunkCount,
-        'frame_count': result.frameCounts.length,
-        'frame_counts_sha256': frameHash,
-        'frame_counts_rle': _rle(result.frameCounts),
-        'raw_intervals': result.rawIntervals.map((e) => e.toJson()).toList(),
-        'protected_intervals':
-            result.protectedIntervals.map((e) => e.toJson()).toList(),
-        'protected_seconds': result.protectedSeconds,
-        'protected_percent': result.durationSec <= 0
-            ? 0.0
-            : result.protectedSeconds / result.durationSec * 100.0,
-      },
-    };
-
-    await File(jsonPath).writeAsString(
-      const JsonEncoder.withIndent('  ').convert(payload),
-      flush: true,
-    );
-    return PyannoteParityArtifacts(
-      wavPath: wavPath,
-      jsonPath: jsonPath,
-      result: result,
-    );
   }
 
   static List<List<int>> _rle(Uint8List values) {

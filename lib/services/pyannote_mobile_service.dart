@@ -6,6 +6,8 @@ import 'package:crypto/crypto.dart';
 import 'package:flutter/services.dart';
 import 'package:onnxruntime_plus/onnxruntime_plus.dart';
 
+import '../utils/app_logger.dart';
+
 class PyannoteInterval {
   const PyannoteInterval(this.start, this.end);
 
@@ -79,37 +81,117 @@ class PyannoteMobileService {
   bool _ortInitialized = false;
 
   Future<void> _ensureSession() async {
-    if (_session != null) return;
-
-    if (!_ortInitialized) {
-      OrtEnv.instance.init(logId: 'SonarpadPyannote');
-      _ortInitialized = true;
-    }
-
-    final modelData = await rootBundle.load(modelAsset);
-    final modelBytes = modelData.buffer.asUint8List(
-      modelData.offsetInBytes,
-      modelData.lengthInBytes,
-    );
-    final hash = sha256.convert(modelBytes).toString();
-    if (hash != expectedModelSha256) {
-      throw StateError(
-        'PYANNOTE_MODEL_SHA256_MISMATCH:$expectedModelSha256:$hash',
+    if (_session != null) {
+      await AppLogger.log(
+        'PYANNOTE[ORT] session reuse input=${_session!.inputNames} '
+        'outputs=${_session!.outputNames}',
       );
+      return;
     }
 
-    final options = OrtSessionOptions()
-      ..setIntraOpNumThreads(intraOpThreads);
-    final session = OrtSession.fromBuffer(modelBytes, options);
-    if (session.inputNames.isEmpty || session.outputNames.isEmpty) {
-      session.release();
-      options.release();
-      throw StateError('PYANNOTE_MODEL_IO_INVALID');
-    }
+    await AppLogger.log(
+      'PYANNOTE[ORT] ensureSession start '
+      'platform=${Platform.operatingSystem} '
+      'osVersion="${Platform.operatingSystemVersion}" '
+      'processors=${Platform.numberOfProcessors} '
+      'intraOpThreads=$intraOpThreads '
+      'modelAsset=$modelAsset',
+    );
 
-    options.release();
-    _session = session;
-    _modelSha256 = hash;
+    try {
+      await AppLogger.log('PYANNOTE[MODEL] asset load start');
+      final modelData = await rootBundle.load(modelAsset);
+      final modelBytes = modelData.buffer.asUint8List(
+        modelData.offsetInBytes,
+        modelData.lengthInBytes,
+      );
+      final hash = sha256.convert(modelBytes).toString();
+      await AppLogger.log(
+        'PYANNOTE[MODEL] asset load success '
+        'bytes=${modelBytes.length} sha256=$hash '
+        'expected=$expectedModelSha256 revision=$modelRevision',
+      );
+
+      if (hash != expectedModelSha256) {
+        throw StateError(
+          'PYANNOTE_MODEL_SHA256_MISMATCH:$expectedModelSha256:$hash',
+        );
+      }
+
+      if (!_ortInitialized) {
+        await AppLogger.log(
+          'PYANNOTE[ORT] resolving OrtEnv.instance and OrtGetApiBase...',
+        );
+        try {
+          OrtEnv.instance.init(
+            level: OrtLoggingLevel.info,
+            logId: 'SonarpadPyannote',
+          );
+          _ortInitialized = true;
+          await AppLogger.log(
+            'PYANNOTE[ORT] OrtEnv.init success version=${OrtEnv.version}',
+          );
+        } catch (error, stackTrace) {
+          await AppLogger.log(
+            'PYANNOTE[ORT] OrtEnv.init FAILED '
+            'type=${error.runtimeType} error=$error\n$stackTrace',
+          );
+          rethrow;
+        }
+      } else {
+        await AppLogger.log(
+          'PYANNOTE[ORT] environment already initialized '
+          'version=${OrtEnv.version}',
+        );
+      }
+
+      await AppLogger.log(
+        'PYANNOTE[ORT] creating session options '
+        'intraOpThreads=$intraOpThreads',
+      );
+      final options = OrtSessionOptions()
+        ..setIntraOpNumThreads(intraOpThreads);
+
+      OrtSession? session;
+      try {
+        await AppLogger.log(
+          'PYANNOTE[ORT] OrtSession.fromBuffer start '
+          'modelBytes=${modelBytes.length}',
+        );
+        session = OrtSession.fromBuffer(modelBytes, options);
+        await AppLogger.log(
+          'PYANNOTE[ORT] OrtSession.fromBuffer success '
+          'inputs=${session.inputNames} outputs=${session.outputNames}',
+        );
+
+        if (session.inputNames.isEmpty || session.outputNames.isEmpty) {
+          throw StateError('PYANNOTE_MODEL_IO_INVALID');
+        }
+      } catch (error, stackTrace) {
+        session?.release();
+        await AppLogger.log(
+          'PYANNOTE[ORT] session creation FAILED '
+          'type=${error.runtimeType} error=$error\n$stackTrace',
+        );
+        rethrow;
+      } finally {
+        options.release();
+        await AppLogger.log('PYANNOTE[ORT] session options released');
+      }
+
+      _session = session;
+      _modelSha256 = hash;
+      await AppLogger.log(
+        'PYANNOTE[ORT] ensureSession complete '
+        'version=${OrtEnv.version} sha256=$hash',
+      );
+    } catch (error, stackTrace) {
+      await AppLogger.log(
+        'PYANNOTE[ORT] ensureSession FAILED '
+        'type=${error.runtimeType} error=$error\n$stackTrace',
+      );
+      rethrow;
+    }
   }
 
   Future<PyannoteMobileResult> analyzeCanonicalWav(
@@ -117,119 +199,243 @@ class PyannoteMobileService {
     double paddingSec = defaultPaddingSec,
     void Function(double progress)? onProgress,
   }) async {
-    await _ensureSession();
-    final session = _session!;
-    final started = DateTime.now();
-    final wav = await _Pcm16Wave.open(wavPath);
-    try {
-      if (wav.channels != 1 || wav.bitsPerSample != 16 || wav.audioFormat != 1) {
-        throw StateError('PYANNOTE_WAV_FORMAT_INVALID');
-      }
-      if (wav.sampleRate != sampleRate) {
-        throw StateError('PYANNOTE_WAV_SAMPLE_RATE_INVALID');
-      }
+    final overallStarted = DateTime.now();
+    await AppLogger.log(
+      'PYANNOTE[ANALYZE] start wav="$wavPath" '
+      'padding=$paddingSec sampleRateExpected=$sampleRate '
+      'window=$windowSec step=$stepSec batchSize=$batchSize',
+    );
 
-      final starts = _segmentationChunkStarts(wav.sampleCount, wav.sampleRate);
-      final chunkCount = starts.length;
-      if (chunkCount == 0) {
+    try {
+      await _ensureSession();
+      final session = _session!;
+      await AppLogger.log(
+        'PYANNOTE[ANALYZE] session ready '
+        'input=${session.inputNames.first} outputs=${session.outputNames}',
+      );
+
+      final wavFile = File(wavPath);
+      final wavExists = await wavFile.exists();
+      final wavBytes = wavExists ? await wavFile.length() : -1;
+      await AppLogger.log(
+        'PYANNOTE[WAV] before open exists=$wavExists bytes=$wavBytes',
+      );
+
+      final wav = await _Pcm16Wave.open(wavPath);
+      try {
+        await AppLogger.log(
+          'PYANNOTE[WAV] opened '
+          'format=${wav.audioFormat} channels=${wav.channels} '
+          'sampleRate=${wav.sampleRate} bits=${wav.bitsPerSample} '
+          'samples=${wav.sampleCount} duration=${wav.durationSec.toStringAsFixed(6)} '
+          'dataOffset=${wav.dataOffset} dataLength=${wav.dataLength}',
+        );
+
+        if (wav.channels != 1 ||
+            wav.bitsPerSample != 16 ||
+            wav.audioFormat != 1) {
+          throw StateError('PYANNOTE_WAV_FORMAT_INVALID');
+        }
+        if (wav.sampleRate != sampleRate) {
+          throw StateError('PYANNOTE_WAV_SAMPLE_RATE_INVALID');
+        }
+
+        final starts = _segmentationChunkStarts(
+          wav.sampleCount,
+          wav.sampleRate,
+        );
+        final chunkCount = starts.length;
+        await AppLogger.log(
+          'PYANNOTE[ANALYZE] chunk plan '
+          'chunkCount=$chunkCount firstStart=${starts.isEmpty ? -1 : starts.first} '
+          'lastStart=${starts.isEmpty ? -1 : starts.last}',
+        );
+
+        if (chunkCount == 0) {
+          final result = PyannoteMobileResult(
+            durationSec: wav.durationSec,
+            sampleCount: wav.sampleCount,
+            chunkCount: 0,
+            frameCounts: Uint8List(0),
+            rawIntervals: const <PyannoteInterval>[],
+            protectedIntervals: const <PyannoteInterval>[],
+            modelSha256: _modelSha256!,
+            runtimeVersion: OrtEnv.version,
+            inputName: session.inputNames.first,
+            outputNames: List<String>.from(session.outputNames),
+            elapsedMs:
+                DateTime.now().difference(overallStarted).inMilliseconds,
+          );
+          await AppLogger.log(
+            'PYANNOTE[ANALYZE] no chunks; returning empty result',
+          );
+          return result;
+        }
+
+        final aggregateFrameCount = _aggregateFrameCount(chunkCount);
+        final summed = Float64List(aggregateFrameCount);
+        final contributors = Uint16List(aggregateFrameCount);
+        final windowSamples = (windowSec * wav.sampleRate).round();
+        final inputName = session.inputNames.first;
+        var processedChunks = 0;
+        var batchNumber = 0;
+        final totalBatches = (chunkCount + batchSize - 1) ~/ batchSize;
+
+        await AppLogger.log(
+          'PYANNOTE[ANALYZE] buffers '
+          'aggregateFrames=$aggregateFrameCount '
+          'windowSamples=$windowSamples totalBatches=$totalBatches',
+        );
+
+        for (var batchStart = 0;
+            batchStart < chunkCount;
+            batchStart += batchSize) {
+          batchNumber++;
+          final batchStarted = DateTime.now();
+          final currentBatchSize =
+              math.min(batchSize, chunkCount - batchStart);
+          final batch =
+              Float32List(currentBatchSize * windowSamples);
+
+          await AppLogger.log(
+            'PYANNOTE[BATCH] $batchNumber/$totalBatches prepare '
+            'chunkStart=$batchStart size=$currentBatchSize '
+            'floatCount=${batch.length}',
+          );
+
+          for (var row = 0; row < currentBatchSize; row++) {
+            final startSample = starts[batchStart + row];
+            await wav.readNormalizedInto(
+              startSample: startSample,
+              maxSamples: windowSamples,
+              target: batch,
+              targetOffset: row * windowSamples,
+            );
+          }
+
+          await AppLogger.log(
+            'PYANNOTE[BATCH] $batchNumber/$totalBatches PCM loaded; '
+            'creating tensor shape=[$currentBatchSize,1,$windowSamples]',
+          );
+
+          final input = OrtValueTensor.createTensorWithDataList(
+            batch,
+            <int>[currentBatchSize, 1, windowSamples],
+          );
+          final runOptions = OrtRunOptions();
+          List<OrtValue?>? outputs;
+          try {
+            await AppLogger.log(
+              'PYANNOTE[BATCH] $batchNumber/$totalBatches '
+              'session.runAsync start inputName=$inputName',
+            );
+            outputs = await session.runAsync(
+              runOptions,
+              <String, OrtValue>{inputName: input},
+            );
+            await AppLogger.log(
+              'PYANNOTE[BATCH] $batchNumber/$totalBatches '
+              'session.runAsync returned '
+              'outputs=${outputs?.length ?? -1} '
+              'firstNull=${outputs == null || outputs.isEmpty ? true : outputs.first == null}',
+            );
+            if (outputs == null || outputs.isEmpty || outputs.first == null) {
+              throw StateError('PYANNOTE_RUNTIME_NO_OUTPUT');
+            }
+            _accumulateBatch(
+              outputs.first!.value,
+              batchStart,
+              currentBatchSize,
+              summed,
+              contributors,
+            );
+            await AppLogger.log(
+              'PYANNOTE[BATCH] $batchNumber/$totalBatches accumulated',
+            );
+          } catch (error, stackTrace) {
+            await AppLogger.log(
+              'PYANNOTE[BATCH] $batchNumber/$totalBatches FAILED '
+              'type=${error.runtimeType} error=$error\n$stackTrace',
+            );
+            rethrow;
+          } finally {
+            input.release();
+            runOptions.release();
+            outputs?.forEach((value) => value?.release());
+          }
+
+          processedChunks += currentBatchSize;
+          final elapsed =
+              DateTime.now().difference(batchStarted).inMilliseconds;
+          final progress = processedChunks / chunkCount;
+          await AppLogger.log(
+            'PYANNOTE[BATCH] $batchNumber/$totalBatches complete '
+            'processed=$processedChunks/$chunkCount '
+            'progress=${(progress * 100).toStringAsFixed(2)}% '
+            'elapsedMs=$elapsed',
+          );
+          onProgress?.call(progress);
+        }
+
+        await AppLogger.log(
+          'PYANNOTE[POST] aggregation rounding start '
+          'frames=$aggregateFrameCount',
+        );
+        final frameCounts = Uint8List(aggregateFrameCount);
+        for (var i = 0; i < aggregateFrameCount; i++) {
+          final divisor = contributors[i];
+          final average = divisor == 0 ? 0.0 : summed[i] / divisor;
+          frameCounts[i] =
+              _roundHalfToEven(average).clamp(0, 255).toInt();
+        }
+
+        final rawIntervals = _countsToIntervals(frameCounts);
+        final protectedIntervals = _mergeIntervals(
+          rawIntervals,
+          paddingSec: paddingSec,
+          durationSec: wav.durationSec,
+        );
+        final protectedSeconds = protectedIntervals.fold<double>(
+          0.0,
+          (value, interval) => value + interval.end - interval.start,
+        );
+        final frameHash = sha256.convert(frameCounts).toString();
+        final elapsedMs =
+            DateTime.now().difference(overallStarted).inMilliseconds;
+
+        await AppLogger.log(
+          'PYANNOTE[RESULT] success '
+          'runtime=${OrtEnv.version} chunks=$chunkCount '
+          'frames=${frameCounts.length} frameSha256=$frameHash '
+          'rawIntervals=${rawIntervals.length} '
+          'protectedIntervals=${protectedIntervals.length} '
+          'protectedSeconds=${protectedSeconds.toStringAsFixed(6)} '
+          'elapsedMs=$elapsedMs',
+        );
+
         return PyannoteMobileResult(
           durationSec: wav.durationSec,
           sampleCount: wav.sampleCount,
-          chunkCount: 0,
-          frameCounts: Uint8List(0),
-          rawIntervals: const <PyannoteInterval>[],
-          protectedIntervals: const <PyannoteInterval>[],
+          chunkCount: chunkCount,
+          frameCounts: frameCounts,
+          rawIntervals: rawIntervals,
+          protectedIntervals: protectedIntervals,
           modelSha256: _modelSha256!,
           runtimeVersion: OrtEnv.version,
-          inputName: session.inputNames.first,
+          inputName: inputName,
           outputNames: List<String>.from(session.outputNames),
-          elapsedMs: DateTime.now().difference(started).inMilliseconds,
+          elapsedMs: elapsedMs,
         );
+      } finally {
+        await wav.close();
+        await AppLogger.log('PYANNOTE[WAV] file closed');
       }
-
-      final aggregateFrameCount = _aggregateFrameCount(chunkCount);
-      final summed = Float64List(aggregateFrameCount);
-      final contributors = Uint16List(aggregateFrameCount);
-      final windowSamples = (windowSec * wav.sampleRate).round();
-      final inputName = session.inputNames.first;
-      var processedChunks = 0;
-
-      for (var batchStart = 0;
-          batchStart < chunkCount;
-          batchStart += batchSize) {
-        final currentBatchSize = math.min(batchSize, chunkCount - batchStart);
-        final batch = Float32List(currentBatchSize * windowSamples);
-
-        for (var row = 0; row < currentBatchSize; row++) {
-          final startSample = starts[batchStart + row];
-          await wav.readNormalizedInto(
-            startSample: startSample,
-            maxSamples: windowSamples,
-            target: batch,
-            targetOffset: row * windowSamples,
-          );
-        }
-
-        final input = OrtValueTensor.createTensorWithDataList(
-          batch,
-          <int>[currentBatchSize, 1, windowSamples],
-        );
-        final runOptions = OrtRunOptions();
-        List<OrtValue?>? outputs;
-        try {
-          outputs = await session.runAsync(
-            runOptions,
-            <String, OrtValue>{inputName: input},
-          );
-          if (outputs == null || outputs.isEmpty || outputs.first == null) {
-            throw StateError('PYANNOTE_RUNTIME_NO_OUTPUT');
-          }
-          _accumulateBatch(
-            outputs.first!.value,
-            batchStart,
-            currentBatchSize,
-            summed,
-            contributors,
-          );
-        } finally {
-          input.release();
-          runOptions.release();
-          outputs?.forEach((value) => value?.release());
-        }
-
-        processedChunks += currentBatchSize;
-        onProgress?.call(processedChunks / chunkCount);
-      }
-
-      final frameCounts = Uint8List(aggregateFrameCount);
-      for (var i = 0; i < aggregateFrameCount; i++) {
-        final divisor = contributors[i];
-        final average = divisor == 0 ? 0.0 : summed[i] / divisor;
-        frameCounts[i] = _roundHalfToEven(average).clamp(0, 255).toInt();
-      }
-
-      final rawIntervals = _countsToIntervals(frameCounts);
-      final protectedIntervals = _mergeIntervals(
-        rawIntervals,
-        paddingSec: paddingSec,
-        durationSec: wav.durationSec,
+    } catch (error, stackTrace) {
+      await AppLogger.log(
+        'PYANNOTE[ANALYZE] FAILED '
+        'type=${error.runtimeType} error=$error\n$stackTrace',
       );
-
-      return PyannoteMobileResult(
-        durationSec: wav.durationSec,
-        sampleCount: wav.sampleCount,
-        chunkCount: chunkCount,
-        frameCounts: frameCounts,
-        rawIntervals: rawIntervals,
-        protectedIntervals: protectedIntervals,
-        modelSha256: _modelSha256!,
-        runtimeVersion: OrtEnv.version,
-        inputName: inputName,
-        outputNames: List<String>.from(session.outputNames),
-        elapsedMs: DateTime.now().difference(started).inMilliseconds,
-      );
-    } finally {
-      await wav.close();
+      rethrow;
     }
   }
 

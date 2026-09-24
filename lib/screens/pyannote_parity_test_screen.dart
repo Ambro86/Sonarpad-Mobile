@@ -6,6 +6,7 @@ import 'package:share_plus/share_plus.dart';
 
 import '../l10n/app_localizations.dart';
 import '../services/pyannote_parity_service.dart';
+import '../utils/app_logger.dart';
 import '../widgets/universal_accessible_view.dart';
 
 class PyannoteParityTestScreen extends StatefulWidget {
@@ -25,14 +26,34 @@ class _PyannoteParityTestScreenState extends State<PyannoteParityTestScreen> {
   PyannoteParityArtifacts? _lastArtifacts;
 
   Future<void> _runTest({required bool fullFile}) async {
-    if (_running) return;
+    if (_running) {
+      await AppLogger.log(
+        'PYANNOTE[UI] run ignored because another test is running',
+      );
+      return;
+    }
+
+    await AppLogger.log(
+      'PYANNOTE[UI] picker opening fullFile=$fullFile',
+    );
     final picked = await FilePicker.pickFiles(
       allowMultiple: false,
       type: FileType.any,
       withData: false,
     );
     final path = picked?.files.single.path;
-    if (path == null || path.trim().isEmpty) return;
+    if (path == null || path.trim().isEmpty) {
+      await AppLogger.log('PYANNOTE[UI] picker cancelled or empty path');
+      return;
+    }
+
+    final selected = File(path);
+    final exists = await selected.exists();
+    final bytes = exists ? await selected.length() : -1;
+    await AppLogger.log(
+      'PYANNOTE[UI] file selected '
+      'path="$path" exists=$exists bytes=$bytes fullFile=$fullFile',
+    );
 
     final l10n = AppLocalizations.of(context);
     setState(() {
@@ -46,6 +67,10 @@ class _PyannoteParityTestScreenState extends State<PyannoteParityTestScreen> {
     });
 
     try {
+      await AppLogger.log(
+        'PYANNOTE[UI] service.run start '
+        'limitSeconds=${fullFile ? 'null' : '120.0'}',
+      );
       final artifacts = await _service.run(
         sourcePath: path,
         limitSeconds: fullFile ? null : 120.0,
@@ -57,25 +82,45 @@ class _PyannoteParityTestScreenState extends State<PyannoteParityTestScreen> {
         },
       );
       if (!mounted) return;
+      await AppLogger.log(
+        'PYANNOTE[UI] service.run success '
+        'wav="${artifacts.wavPath}" json="${artifacts.jsonPath}" '
+        'protectedIntervals=${artifacts.result.protectedIntervals.length} '
+        'protectedSeconds=${artifacts.result.protectedSeconds.toStringAsFixed(6)}',
+      );
       setState(() {
         _lastArtifacts = artifacts;
         _progress = 1.0;
         _status = l10n.pyannoteCompletedStatus;
       });
-    } catch (error) {
+    } catch (error, stackTrace) {
+      await AppLogger.log(
+        'PYANNOTE[UI] service.run FAILED '
+        'type=${error.runtimeType} error=$error\n$stackTrace',
+      );
       if (!mounted) return;
       setState(() {
         _status = l10n.pyannoteFailure;
         _technicalError = error.toString();
       });
     } finally {
+      await AppLogger.log('PYANNOTE[UI] run finished fullFile=$fullFile');
       if (mounted) setState(() => _running = false);
     }
   }
 
   Future<void> _shareLast() async {
     final artifacts = _lastArtifacts;
-    if (artifacts == null) return;
+    if (artifacts == null) {
+      await AppLogger.log(
+        'PYANNOTE[UI] share requested without artifacts',
+      );
+      return;
+    }
+    await AppLogger.log(
+      'PYANNOTE[UI] share artifacts requested '
+      'wav="${artifacts.wavPath}" json="${artifacts.jsonPath}"',
+    );
     final l10n = AppLocalizations.of(context);
     if (!await File(artifacts.wavPath).exists() ||
         !await File(artifacts.jsonPath).exists()) {

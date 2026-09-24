@@ -1,1 +1,7 @@
 #include "Generated.xcconfig"
+
+// ONNX Runtime is consumed through Dart FFI on iOS. Archived IPA builds may
+// otherwise strip the C entry point before DynamicLibrary.process() resolves it.
+STRIP_INSTALLED_PRODUCT = NO
+STRIP_STYLE = non-global-symbols
+OTHER_LDFLAGS = $(inherited) -Wl,-u,_OrtGetApiBase
