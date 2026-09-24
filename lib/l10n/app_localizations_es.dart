@@ -3919,4 +3919,20 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get pyannoteBenchmarkCompleted =>
       'Benchmark completado. Los resultados detallados se registraron en el log de Sonarpad.';
+
+  @override
+  String get pyannoteCandidateValidation5x10m =>
+      'Validar paso 2 + margen 0,35 en cinco fragmentos de 10 minutos';
+
+  @override
+  String get pyannoteCandidateValidationPreparing =>
+      'Ejecutando la validación de pyannote en cinco fragmentos de la película...';
+
+  @override
+  String get pyannoteCandidateValidationPassed =>
+      'Validación completada: paso 2 + margen 0,35 superó los criterios de seguridad. Consulta el registro para más detalles.';
+
+  @override
+  String get pyannoteCandidateValidationFailed =>
+      'Validación completada: paso 2 + margen 0,35 no superó todos los criterios de seguridad. Consulta el registro para más detalles.';
 }

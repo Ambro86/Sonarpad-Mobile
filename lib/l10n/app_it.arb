@@ -4631,5 +4631,21 @@
   "pyannoteBenchmarkCompleted": "Benchmark completato. I risultati dettagliati sono stati registrati nel log di Sonarpad.",
   "@pyannoteBenchmarkCompleted": {
     "description": "Localized text for pyannoteBenchmarkCompleted."
+  },
+  "pyannoteCandidateValidation5x10m": "Valida step 2 + padding 0,35 su 5 spezzoni da 10 minuti",
+  "@pyannoteCandidateValidation5x10m": {
+    "description": "Localized text for pyannoteCandidateValidation5x10m."
+  },
+  "pyannoteCandidateValidationPreparing": "Validazione pyannote in corso su 5 spezzoni del film...",
+  "@pyannoteCandidateValidationPreparing": {
+    "description": "Localized text for pyannoteCandidateValidationPreparing."
+  },
+  "pyannoteCandidateValidationPassed": "Validazione completata: step 2 + padding 0,35 ha superato i criteri di sicurezza. Controlla il log per i dettagli.",
+  "@pyannoteCandidateValidationPassed": {
+    "description": "Localized text for pyannoteCandidateValidationPassed."
+  },
+  "pyannoteCandidateValidationFailed": "Validazione completata: step 2 + padding 0,35 non ha superato tutti i criteri di sicurezza. Controlla il log per i dettagli.",
+  "@pyannoteCandidateValidationFailed": {
+    "description": "Localized text for pyannoteCandidateValidationFailed."
   }
 }

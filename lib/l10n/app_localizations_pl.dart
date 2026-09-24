@@ -3891,4 +3891,20 @@ class AppLocalizationsPl extends AppLocalizations {
   @override
   String get pyannoteBenchmarkCompleted =>
       'Benchmark zakończony. Szczegółowe wyniki zapisano w dzienniku Sonarpad.';
+
+  @override
+  String get pyannoteCandidateValidation5x10m =>
+      'Sprawdź krok 2 + margines 0,35 na pięciu 10-minutowych fragmentach';
+
+  @override
+  String get pyannoteCandidateValidationPreparing =>
+      'Trwa walidacja pyannote na pięciu fragmentach filmu...';
+
+  @override
+  String get pyannoteCandidateValidationPassed =>
+      'Walidacja zakończona: krok 2 + margines 0,35 spełnił kryteria bezpieczeństwa. Szczegóły są w dzienniku.';
+
+  @override
+  String get pyannoteCandidateValidationFailed =>
+      'Walidacja zakończona: krok 2 + margines 0,35 nie spełnił wszystkich kryteriów bezpieczeństwa. Szczegóły są w dzienniku.';
 }

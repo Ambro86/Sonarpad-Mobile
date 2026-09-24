@@ -75,12 +75,12 @@ class _PyannoteParityTestScreenState extends State<PyannoteParityTestScreen>
 
   Future<void> _runTest({required bool fullFile}) async {
     if (_running) return;
+    final l10n = AppLocalizations.of(context);
     final path = await _pickMedia(
       operation: fullFile ? 'full_parity' : 'quick_parity',
     );
-    if (path == null) return;
+    if (path == null || !mounted) return;
 
-    final l10n = AppLocalizations.of(context);
     setState(() {
       _running = true;
       _progress = 0.0;
@@ -124,9 +124,9 @@ class _PyannoteParityTestScreenState extends State<PyannoteParityTestScreen>
 
   Future<void> _runBenchmark() async {
     if (_running) return;
-    final path = await _pickMedia(operation: 'benchmark_10m');
-    if (path == null) return;
     final l10n = AppLocalizations.of(context);
+    final path = await _pickMedia(operation: 'benchmark_10m');
+    if (path == null || !mounted) return;
     setState(() {
       _running = true;
       _progress = 0.0;
@@ -157,6 +157,66 @@ class _PyannoteParityTestScreenState extends State<PyannoteParityTestScreen>
     } catch (error, stackTrace) {
       await AppLogger.log(
         'PYANNOTE[UI] benchmark FAILED type=${error.runtimeType} error=$error\n$stackTrace',
+      );
+      if (!mounted) return;
+      setState(() {
+        _status = l10n.pyannoteFailure;
+        _technicalError = error.toString();
+      });
+    } finally {
+      if (mounted) {
+        setState(() {
+          _running = false;
+          _activeOperation = null;
+        });
+      } else {
+        _activeOperation = null;
+      }
+    }
+  }
+
+  Future<void> _runCandidateValidation() async {
+    if (_running) return;
+    final l10n = AppLocalizations.of(context);
+    final path = await _pickMedia(operation: 'candidate_validation_5x10m');
+    if (path == null || !mounted) return;
+    setState(() {
+      _running = true;
+      _progress = 0.0;
+      _technicalError = null;
+      _lastArtifacts = null;
+      _status = l10n.pyannoteCandidateValidationPreparing;
+      _activeOperation = 'candidate_validation_5x10m';
+    });
+    try {
+      final report = await _benchmarkService.runCandidateValidation(
+        sourcePath: path,
+        onProgress: (progress) {
+          if (!mounted) return;
+          setState(() {
+            _progress = progress.clamp(0.0, 1.0).toDouble();
+          });
+        },
+      );
+      await AppLogger.log(
+        'PYANNOTE[UI] candidate validation completed '
+        'report="${report.reportJsonPath}" clips=${report.clipCount} '
+        'passed=${report.passed} speedup=${report.speedup.toStringAsFixed(3)} '
+        'protectedLost=${report.protectedLostSeconds.toStringAsFixed(6)} '
+        'fullyMissed=${report.fullyMissedSpeechIntervals} '
+        'interiorLost=${report.interiorLostFrames250ms}',
+      );
+      if (!mounted) return;
+      setState(() {
+        _progress = 1.0;
+        _status = report.passed
+            ? l10n.pyannoteCandidateValidationPassed
+            : l10n.pyannoteCandidateValidationFailed;
+      });
+    } catch (error, stackTrace) {
+      await AppLogger.log(
+        'PYANNOTE[UI] candidate validation FAILED '
+        'type=${error.runtimeType} error=$error\n$stackTrace',
       );
       if (!mounted) return;
       setState(() {
@@ -240,6 +300,13 @@ class _PyannoteParityTestScreenState extends State<PyannoteParityTestScreen>
                 kind: 'button',
                 enabled: !_running,
                 onActivate: _runBenchmark,
+              ),
+              AccessibleListRow(
+                id: 'candidate_validation_5x10m',
+                title: l10n.pyannoteCandidateValidation5x10m,
+                kind: 'button',
+                enabled: !_running,
+                onActivate: _runCandidateValidation,
               ),
               AccessibleListRow(
                 id: 'status',

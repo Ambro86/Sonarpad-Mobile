@@ -3053,5 +3053,21 @@
   "pyannoteBenchmarkCompleted": "基准测试已完成。详细结果已记录到 Sonarpad 日志中。",
   "@pyannoteBenchmarkCompleted": {
     "description": "Localized text for pyannoteBenchmarkCompleted."
+  },
+  "pyannoteCandidateValidation5x10m": "在五个 10 分钟片段上验证步长 2 + 0.35 填充",
+  "@pyannoteCandidateValidation5x10m": {
+    "description": "Localized text for pyannoteCandidateValidation5x10m."
+  },
+  "pyannoteCandidateValidationPreparing": "正在对影片的五个片段运行 pyannote 验证...",
+  "@pyannoteCandidateValidationPreparing": {
+    "description": "Localized text for pyannoteCandidateValidationPreparing."
+  },
+  "pyannoteCandidateValidationPassed": "验证完成：步长 2 + 0.35 填充通过安全标准。详情请查看 Sonarpad 日志。",
+  "@pyannoteCandidateValidationPassed": {
+    "description": "Localized text for pyannoteCandidateValidationPassed."
+  },
+  "pyannoteCandidateValidationFailed": "验证完成：步长 2 + 0.35 填充未通过全部安全标准。详情请查看 Sonarpad 日志。",
+  "@pyannoteCandidateValidationFailed": {
+    "description": "Localized text for pyannoteCandidateValidationFailed."
   }
 }

@@ -3056,5 +3056,21 @@
   "pyannoteBenchmarkCompleted": "Benchmark dokončen. Podrobné výsledky byly zapsány do protokolu Sonarpad.",
   "@pyannoteBenchmarkCompleted": {
     "description": "Localized text for pyannoteBenchmarkCompleted."
+  },
+  "pyannoteCandidateValidation5x10m": "Ověřit krok 2 + odsazení 0,35 na pěti 10minutových úsecích",
+  "@pyannoteCandidateValidation5x10m": {
+    "description": "Localized text for pyannoteCandidateValidation5x10m."
+  },
+  "pyannoteCandidateValidationPreparing": "Probíhá ověření pyannote na pěti úsecích filmu...",
+  "@pyannoteCandidateValidationPreparing": {
+    "description": "Localized text for pyannoteCandidateValidationPreparing."
+  },
+  "pyannoteCandidateValidationPassed": "Ověření dokončeno: krok 2 + odsazení 0,35 splnil bezpečnostní kritéria. Podrobnosti jsou v protokolu.",
+  "@pyannoteCandidateValidationPassed": {
+    "description": "Localized text for pyannoteCandidateValidationPassed."
+  },
+  "pyannoteCandidateValidationFailed": "Ověření dokončeno: krok 2 + odsazení 0,35 nesplnil všechna bezpečnostní kritéria. Podrobnosti jsou v protokolu.",
+  "@pyannoteCandidateValidationFailed": {
+    "description": "Localized text for pyannoteCandidateValidationFailed."
   }
 }

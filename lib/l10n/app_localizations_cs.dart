@@ -3888,4 +3888,20 @@ class AppLocalizationsCs extends AppLocalizations {
   @override
   String get pyannoteBenchmarkCompleted =>
       'Benchmark dokončen. Podrobné výsledky byly zapsány do protokolu Sonarpad.';
+
+  @override
+  String get pyannoteCandidateValidation5x10m =>
+      'Ověřit krok 2 + odsazení 0,35 na pěti 10minutových úsecích';
+
+  @override
+  String get pyannoteCandidateValidationPreparing =>
+      'Probíhá ověření pyannote na pěti úsecích filmu...';
+
+  @override
+  String get pyannoteCandidateValidationPassed =>
+      'Ověření dokončeno: krok 2 + odsazení 0,35 splnil bezpečnostní kritéria. Podrobnosti jsou v protokolu.';
+
+  @override
+  String get pyannoteCandidateValidationFailed =>
+      'Ověření dokončeno: krok 2 + odsazení 0,35 nesplnil všechna bezpečnostní kritéria. Podrobnosti jsou v protokolu.';
 }

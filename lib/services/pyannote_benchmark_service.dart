@@ -5,6 +5,7 @@ import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
 import 'package:ffmpeg_kit_flutter_new/ffmpeg_kit.dart';
+import 'package:ffmpeg_kit_flutter_new/ffprobe_kit.dart';
 import 'package:ffmpeg_kit_flutter_new/return_code.dart';
 import 'package:flutter/services.dart';
 import 'package:onnxruntime_plus/onnxruntime_plus.dart';
@@ -23,6 +24,7 @@ class PyannoteBenchmarkConfig {
     required this.intraOpThreads,
     required this.graphOptimization,
     required this.stepSec,
+    this.paddingSec = PyannoteMobileService.defaultPaddingSec,
     this.coreMLFlags,
   });
 
@@ -32,6 +34,7 @@ class PyannoteBenchmarkConfig {
   final int intraOpThreads;
   final GraphOptimizationLevel graphOptimization;
   final double stepSec;
+  final double paddingSec;
   final CoreMLFlags? coreMLFlags;
 
   bool get usesCoreML => coreMLFlags != null;
@@ -43,6 +46,7 @@ class PyannoteBenchmarkConfig {
         'intra_op_threads': intraOpThreads,
         'graph_optimization': graphOptimization.name,
         'step_seconds': stepSec,
+        'padding_seconds': paddingSec,
         'coreml_flags': coreMLFlags?.name,
       };
 }
@@ -173,6 +177,27 @@ class PyannoteBenchmarkReport {
   final String canonicalWavPath;
   final String reportJsonPath;
   final List<PyannoteBenchmarkOutcome> outcomes;
+}
+
+
+class PyannoteCandidateValidationReport {
+  const PyannoteCandidateValidationReport({
+    required this.reportJsonPath,
+    required this.clipCount,
+    required this.passed,
+    required this.speedup,
+    required this.protectedLostSeconds,
+    required this.fullyMissedSpeechIntervals,
+    required this.interiorLostFrames250ms,
+  });
+
+  final String reportJsonPath;
+  final int clipCount;
+  final bool passed;
+  final double speedup;
+  final double protectedLostSeconds;
+  final int fullyMissedSpeechIntervals;
+  final int interiorLostFrames250ms;
 }
 
 class PyannoteBenchmarkService {
@@ -526,7 +551,7 @@ class PyannoteBenchmarkService {
     } finally {
       if (wakelockWasEnabled != null) {
         try {
-          if (wakelockWasEnabled!) {
+          if (wakelockWasEnabled) {
             await WakelockPlus.enable();
           } else {
             await WakelockPlus.disable();
@@ -540,6 +565,357 @@ class PyannoteBenchmarkService {
           );
         }
       }
+    }
+  }
+
+  Future<PyannoteCandidateValidationReport> runCandidateValidation({
+    required String sourcePath,
+    void Function(double progress)? onProgress,
+  }) async {
+    final started = DateTime.now();
+    bool? wakelockWasEnabled;
+    try {
+      try {
+        wakelockWasEnabled = await WakelockPlus.enabled;
+        await AppLogger.log(
+          'PYANNOTE[VALIDATE][WAKELOCK] before enabled=$wakelockWasEnabled; enabling',
+        );
+        await WakelockPlus.enable();
+        await AppLogger.log(
+          'PYANNOTE[VALIDATE][WAKELOCK] enabled=${await WakelockPlus.enabled}',
+        );
+      } catch (error, stackTrace) {
+        await AppLogger.log(
+          'PYANNOTE[VALIDATE][WAKELOCK] enable FAILED type=${error.runtimeType} error=$error\n$stackTrace',
+        );
+      }
+
+      final source = File(sourcePath);
+      if (!await source.exists()) {
+        throw StateError('PYANNOTE_VALIDATE_SOURCE_MISSING');
+      }
+
+      final probe = await FFprobeKit.getMediaInformation(sourcePath);
+      final info = probe.getMediaInformation();
+      final durationSec = double.tryParse(info?.getDuration() ?? '') ?? 0.0;
+      if (durationSec <= 0.0) {
+        await AppLogger.log(
+          'PYANNOTE[VALIDATE][PROBE] invalid duration value=${info?.getDuration()}',
+        );
+        throw StateError('PYANNOTE_VALIDATE_DURATION_UNKNOWN');
+      }
+
+      final starts = _distributedClipStarts(durationSec);
+      await AppLogger.log(
+        'PYANNOTE[VALIDATE] start source="$sourcePath" duration=${durationSec.toStringAsFixed(3)} '
+        'clips=${starts.length} starts=${starts.map((e) => e.toStringAsFixed(3)).toList()} '
+        'baseline=step1.0/pad0.25 candidate=step2.0/pad0.35',
+      );
+
+      final documents = await getApplicationDocumentsDirectory();
+      final outputDir = Directory(p.join(documents.path, 'pyannote_benchmarks'));
+      await outputDir.create(recursive: true);
+      final stamp = DateTime.now().toUtc().toIso8601String().replaceAll(':', '-');
+      final sourceBase = p.basenameWithoutExtension(sourcePath)
+          .replaceAll(RegExp(r'[^A-Za-z0-9._-]+'), '_');
+      final reportPath = p.join(
+        outputDir.path,
+        '${sourceBase}_$stamp.step2_pad035_validation.json',
+      );
+
+      final modelData = await rootBundle.load(PyannoteMobileService.modelAsset);
+      final modelBytes = modelData.buffer.asUint8List(
+        modelData.offsetInBytes,
+        modelData.lengthInBytes,
+      );
+      final modelHash = sha256.convert(modelBytes).toString();
+      if (modelHash != PyannoteMobileService.expectedModelSha256) {
+        throw StateError('PYANNOTE_VALIDATE_MODEL_SHA256_MISMATCH');
+      }
+      OrtEnv.instance.ptr;
+
+      const baselineConfig = PyannoteBenchmarkConfig(
+        id: 'validation_baseline_step1_pad025',
+        provider: 'CPUExecutionProvider',
+        batchSize: 32,
+        intraOpThreads: 4,
+        graphOptimization: GraphOptimizationLevel.ortEnableAll,
+        stepSec: 1.0,
+        paddingSec: 0.25,
+      );
+      const candidateConfig = PyannoteBenchmarkConfig(
+        id: 'validation_candidate_step2_pad035',
+        provider: 'CPUExecutionProvider',
+        batchSize: 32,
+        intraOpThreads: 4,
+        graphOptimization: GraphOptimizationLevel.ortEnableAll,
+        stepSec: 2.0,
+        paddingSec: 0.35,
+      );
+
+      var baselineInferenceMs = 0;
+      var candidateInferenceMs = 0;
+      var totalProtectedLostSeconds = 0.0;
+      var totalProtectedAddedSeconds = 0.0;
+      var totalFullyMissed = 0;
+      var totalInteriorLost = 0;
+      var totalLostFrames = 0;
+      var totalAddedFrames = 0;
+      var maxContiguousLostMs = 0.0;
+      final clipResults = <Map<String, Object?>>[];
+      final totalRuns = starts.length * 2;
+      var completedRuns = 0;
+
+      for (var clipIndex = 0; clipIndex < starts.length; clipIndex++) {
+        final startSec = starts[clipIndex];
+        final remaining = math.max(0.0, durationSec - startSec);
+        final clipDuration = math.min(benchmarkSeconds, remaining).toDouble();
+        final wavPath = p.join(
+          outputDir.path,
+          '${sourceBase}_$stamp.clip${clipIndex + 1}_${startSec.toStringAsFixed(0)}s.wav',
+        );
+        await AppLogger.log(
+          'PYANNOTE[VALIDATE][CLIP] ${clipIndex + 1}/${starts.length} '
+          'extract start=${startSec.toStringAsFixed(3)} duration=${clipDuration.toStringAsFixed(3)}',
+        );
+        await _createCanonicalClipWav(
+          sourcePath: sourcePath,
+          wavPath: wavPath,
+          startSec: startSec,
+          durationSec: clipDuration,
+        );
+
+        try {
+          final baselineRaw = await _runConfig(
+            wavPath: wavPath,
+            modelBytes: modelBytes,
+            config: baselineConfig,
+            onProgress: (inner) {
+              final overall = (completedRuns + inner.clamp(0.0, 1.0)) / totalRuns;
+              onProgress?.call(overall.clamp(0.0, 0.999));
+            },
+          );
+          completedRuns++;
+          final baseline = _withComparison(baselineRaw, baselineRaw);
+          baselineInferenceMs += baseline.inferenceMs;
+
+          final candidateRaw = await _runConfig(
+            wavPath: wavPath,
+            modelBytes: modelBytes,
+            config: candidateConfig,
+            onProgress: (inner) {
+              final overall = (completedRuns + inner.clamp(0.0, 1.0)) / totalRuns;
+              onProgress?.call(overall.clamp(0.0, 0.999));
+            },
+          );
+          completedRuns++;
+          final candidate = _withComparison(candidateRaw, baseline);
+          candidateInferenceMs += candidate.inferenceMs;
+          totalProtectedLostSeconds += candidate.protectedLostSeconds ?? 0.0;
+          totalProtectedAddedSeconds += candidate.protectedAddedSeconds ?? 0.0;
+          totalFullyMissed += candidate.fullyMissedSpeechIntervals ?? 0;
+          totalInteriorLost += candidate.interiorLostFrames250ms ?? 0;
+          totalLostFrames += candidate.lostActiveFrames ?? 0;
+          totalAddedFrames += candidate.addedActiveFrames ?? 0;
+          maxContiguousLostMs = math.max(
+            maxContiguousLostMs,
+            candidate.maxContiguousLostMs ?? 0.0,
+          ).toDouble();
+
+          final clipSpeedup = candidate.inferenceMs > 0
+              ? baseline.inferenceMs / candidate.inferenceMs
+              : 0.0;
+          final clipPass = (candidate.protectedLostSeconds ?? double.infinity) <= 0.001 &&
+              (candidate.fullyMissedSpeechIntervals ?? 1) == 0 &&
+              (candidate.interiorLostFrames250ms ?? 1) == 0;
+          await AppLogger.log(
+            'PYANNOTE[VALIDATE][CLIP_RESULT] clip=${clipIndex + 1} '
+            'start=${startSec.toStringAsFixed(3)} baselineMs=${baseline.inferenceMs} '
+            'candidateMs=${candidate.inferenceMs} speedup=${clipSpeedup.toStringAsFixed(3)} '
+            'protectedLost=${candidate.protectedLostSeconds?.toStringAsFixed(6)} '
+            'protectedAdded=${candidate.protectedAddedSeconds?.toStringAsFixed(6)} '
+            'fullyMissed=${candidate.fullyMissedSpeechIntervals} '
+            'interiorLost=${candidate.interiorLostFrames250ms} '
+            'lostFrames=${candidate.lostActiveFrames} addedFrames=${candidate.addedActiveFrames} '
+            'maxContiguousLostMs=${candidate.maxContiguousLostMs?.toStringAsFixed(3)} '
+            'pass=$clipPass',
+          );
+
+          clipResults.add(<String, Object?>{
+            'clip_index': clipIndex + 1,
+            'start_seconds': startSec,
+            'duration_seconds': clipDuration,
+            'pass': clipPass,
+            'baseline': baseline.toJson(),
+            'candidate': candidate.toJson(),
+          });
+        } finally {
+          try {
+            final wav = File(wavPath);
+            if (await wav.exists()) await wav.delete();
+            await AppLogger.log(
+              'PYANNOTE[VALIDATE][CLEANUP] deleted clip wav="$wavPath"',
+            );
+          } catch (error) {
+            await AppLogger.log(
+              'PYANNOTE[VALIDATE][CLEANUP] failed wav="$wavPath" error=$error',
+            );
+          }
+        }
+      }
+
+      final speedup = candidateInferenceMs > 0
+          ? baselineInferenceMs / candidateInferenceMs
+          : 0.0;
+      final passed = totalProtectedLostSeconds <= 0.001 &&
+          totalFullyMissed == 0 &&
+          totalInteriorLost == 0;
+      await AppLogger.log(
+        'PYANNOTE[VALIDATE][FINAL] passed=$passed clips=${starts.length} '
+        'baselineInferenceMs=$baselineInferenceMs candidateInferenceMs=$candidateInferenceMs '
+        'speedup=${speedup.toStringAsFixed(3)} protectedLostSeconds=${totalProtectedLostSeconds.toStringAsFixed(6)} '
+        'protectedAddedSeconds=${totalProtectedAddedSeconds.toStringAsFixed(6)} '
+        'fullyMissedSpeechIntervals=$totalFullyMissed interiorLostFrames250ms=$totalInteriorLost '
+        'lostActiveFrames=$totalLostFrames addedActiveFrames=$totalAddedFrames '
+        'maxContiguousLostMs=${maxContiguousLostMs.toStringAsFixed(3)}',
+      );
+
+      final payload = <String, Object?>{
+        'schema': 'sonarpad_pyannote_candidate_validation_v1',
+        'created_at_utc': DateTime.now().toUtc().toIso8601String(),
+        'source_file': p.basename(sourcePath),
+        'source_duration_seconds': durationSec,
+        'clip_starts_seconds': starts,
+        'clip_seconds': benchmarkSeconds,
+        'model_sha256': modelHash,
+        'onnxruntime_version': OrtEnv.version,
+        'platform': Platform.operatingSystem,
+        'os_version': Platform.operatingSystemVersion,
+        'baseline_config': baselineConfig.toJson(),
+        'candidate_config': candidateConfig.toJson(),
+        'summary': <String, Object?>{
+          'passed': passed,
+          'clip_count': starts.length,
+          'baseline_inference_ms': baselineInferenceMs,
+          'candidate_inference_ms': candidateInferenceMs,
+          'speedup': speedup,
+          'protected_lost_seconds': totalProtectedLostSeconds,
+          'protected_added_seconds': totalProtectedAddedSeconds,
+          'fully_missed_speech_intervals': totalFullyMissed,
+          'interior_lost_frames_250ms': totalInteriorLost,
+          'lost_active_frames': totalLostFrames,
+          'added_active_frames': totalAddedFrames,
+          'max_contiguous_lost_ms': maxContiguousLostMs,
+          'elapsed_ms': DateTime.now().difference(started).inMilliseconds,
+        },
+        'clips': clipResults,
+      };
+      await File(reportPath).writeAsString(
+        const JsonEncoder.withIndent('  ').convert(payload),
+        flush: true,
+      );
+      await AppLogger.log(
+        'PYANNOTE[VALIDATE] report written path="$reportPath" bytes=${await File(reportPath).length()}',
+      );
+      onProgress?.call(1.0);
+      return PyannoteCandidateValidationReport(
+        reportJsonPath: reportPath,
+        clipCount: starts.length,
+        passed: passed,
+        speedup: speedup,
+        protectedLostSeconds: totalProtectedLostSeconds,
+        fullyMissedSpeechIntervals: totalFullyMissed,
+        interiorLostFrames250ms: totalInteriorLost,
+      );
+    } finally {
+      if (wakelockWasEnabled != null) {
+        try {
+          if (wakelockWasEnabled) {
+            await WakelockPlus.enable();
+          } else {
+            await WakelockPlus.disable();
+          }
+          await AppLogger.log(
+            'PYANNOTE[VALIDATE][WAKELOCK] restored enabled=${await WakelockPlus.enabled} previous=$wakelockWasEnabled',
+          );
+        } catch (error, stackTrace) {
+          await AppLogger.log(
+            'PYANNOTE[VALIDATE][WAKELOCK] restore FAILED type=${error.runtimeType} error=$error\n$stackTrace',
+          );
+        }
+      }
+    }
+  }
+
+  static List<double> _distributedClipStarts(double durationSec) {
+    if (durationSec <= benchmarkSeconds + 1.0) return <double>[0.0];
+    final lastStart = math.max(0.0, durationSec - benchmarkSeconds).toDouble();
+    final candidates = <double>[
+      0.0,
+      lastStart * 0.25,
+      lastStart * 0.50,
+      lastStart * 0.75,
+      lastStart,
+    ];
+    final starts = <double>[];
+    for (final value in candidates) {
+      final rounded = (value * 1000.0).round() / 1000.0;
+      if (starts.every((existing) => (existing - rounded).abs() >= 1.0)) {
+        starts.add(rounded);
+      }
+    }
+    return starts;
+  }
+
+  Future<void> _createCanonicalClipWav({
+    required String sourcePath,
+    required String wavPath,
+    required double startSec,
+    required double durationSec,
+  }) async {
+    final started = DateTime.now();
+    final args = <String>[
+      '-y',
+      '-hide_banner',
+      '-loglevel',
+      'error',
+      '-ss',
+      startSec.toStringAsFixed(3),
+      '-i',
+      sourcePath,
+      '-t',
+      durationSec.toStringAsFixed(3),
+      '-vn',
+      '-map_metadata',
+      '-1',
+      '-ac',
+      '1',
+      '-ar',
+      '${PyannoteMobileService.sampleRate}',
+      '-c:a',
+      'pcm_s16le',
+      '-f',
+      'wav',
+      wavPath,
+    ];
+    final session = await FFmpegKit.executeWithArguments(args);
+    final returnCode = await session.getReturnCode();
+    final success = ReturnCode.isSuccess(returnCode);
+    await AppLogger.log(
+      'PYANNOTE[VALIDATE][FFMPEG] start=${startSec.toStringAsFixed(3)} '
+      'duration=${durationSec.toStringAsFixed(3)} success=$success returnCode=$returnCode '
+      'elapsedMs=${DateTime.now().difference(started).inMilliseconds}',
+    );
+    if (!success) {
+      final logs = (await session.getAllLogsAsString() ?? '').trim();
+      if (logs.isNotEmpty) {
+        await AppLogger.log('PYANNOTE[VALIDATE][FFMPEG] logs=$logs');
+      }
+      throw StateError('PYANNOTE_VALIDATE_FFMPEG_FAILED');
+    }
+    final file = File(wavPath);
+    if (!await file.exists() || await file.length() <= 44) {
+      throw StateError('PYANNOTE_VALIDATE_WAV_EMPTY');
     }
   }
 
@@ -699,7 +1075,7 @@ class PyannoteBenchmarkService {
       await AppLogger.log(
         'PYANNOTE[BENCH][RUN] id=${config.id} wavSeconds=${wav.durationSec.toStringAsFixed(6)} '
         'chunks=$chunkCount frames=$aggregateFrameCount batches=$totalBatches '
-        'batch=${config.batchSize} threads=${config.intraOpThreads} step=${config.stepSec}',
+        'batch=${config.batchSize} threads=${config.intraOpThreads} step=${config.stepSec} padding=${config.paddingSec}',
       );
 
       for (var batchStart = 0;
@@ -766,7 +1142,7 @@ class PyannoteBenchmarkService {
       final rawIntervals = _countsToIntervals(frameCounts);
       final protectedIntervals = _mergeIntervals(
         rawIntervals,
-        paddingSec: PyannoteMobileService.defaultPaddingSec,
+        paddingSec: config.paddingSec,
         durationSec: wav.durationSec,
       );
       final protectedSeconds = protectedIntervals.fold<double>(
@@ -1026,7 +1402,7 @@ class PyannoteBenchmarkService {
       'PYANNOTE[BENCH][RESULT] id=${outcome.config.id} success=true '
       'provider=${outcome.config.provider} batch=${outcome.config.batchSize} '
       'threads=${outcome.config.intraOpThreads} graph=${outcome.config.graphOptimization.name} '
-      'step=${outcome.config.stepSec} sessionCreateMs=${outcome.sessionCreateMs} '
+      'step=${outcome.config.stepSec} padding=${outcome.config.paddingSec} sessionCreateMs=${outcome.sessionCreateMs} '
       'inferenceMs=${outcome.inferenceMs} totalMs=${outcome.totalMs} '
       'chunks=${outcome.chunkCount} frames=${outcome.frameCount} '
       'frameSha256=${outcome.frameSha256} exact=${outcome.exactFrameMatch} '

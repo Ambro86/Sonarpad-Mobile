@@ -3903,4 +3903,20 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get pyannoteBenchmarkCompleted =>
       'Benchmark abgeschlossen. Die detaillierten Ergebnisse wurden im Sonarpad-Protokoll gespeichert.';
+
+  @override
+  String get pyannoteCandidateValidation5x10m =>
+      'Schritt 2 + Padding 0,35 mit fünf 10-Minuten-Ausschnitten prüfen';
+
+  @override
+  String get pyannoteCandidateValidationPreparing =>
+      'Pyannote-Validierung mit fünf Filmausschnitten läuft...';
+
+  @override
+  String get pyannoteCandidateValidationPassed =>
+      'Validierung abgeschlossen: Schritt 2 + Padding 0,35 erfüllt die Sicherheitskriterien. Details stehen im Protokoll.';
+
+  @override
+  String get pyannoteCandidateValidationFailed =>
+      'Validierung abgeschlossen: Schritt 2 + Padding 0,35 erfüllt nicht alle Sicherheitskriterien. Details stehen im Protokoll.';
 }

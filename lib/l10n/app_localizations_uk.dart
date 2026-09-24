@@ -3884,4 +3884,20 @@ class AppLocalizationsUk extends AppLocalizations {
   @override
   String get pyannoteBenchmarkCompleted =>
       'Тест завершено. Докладні результати записано в журнал Sonarpad.';
+
+  @override
+  String get pyannoteCandidateValidation5x10m =>
+      'Перевірити крок 2 + відступ 0,35 на п’яти 10-хвилинних фрагментах';
+
+  @override
+  String get pyannoteCandidateValidationPreparing =>
+      'Виконується перевірка pyannote на п’яти фрагментах фільму...';
+
+  @override
+  String get pyannoteCandidateValidationPassed =>
+      'Перевірку завершено: крок 2 + відступ 0,35 пройшов критерії безпеки. Подробиці дивіться в журналі.';
+
+  @override
+  String get pyannoteCandidateValidationFailed =>
+      'Перевірку завершено: крок 2 + відступ 0,35 не пройшов усі критерії безпеки. Подробиці дивіться в журналі.';
 }

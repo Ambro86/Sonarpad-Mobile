@@ -3908,6 +3908,22 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get pyannoteBenchmarkCompleted =>
       'Benchmark concluído. Os resultados detalhados foram registrados no log do Sonarpad.';
+
+  @override
+  String get pyannoteCandidateValidation5x10m =>
+      'Validar passo 2 + margem 0,35 em cinco trechos de 10 minutos';
+
+  @override
+  String get pyannoteCandidateValidationPreparing =>
+      'Executando a validação do pyannote em cinco trechos do filme...';
+
+  @override
+  String get pyannoteCandidateValidationPassed =>
+      'Validação concluída: passo 2 + margem 0,35 passou nos critérios de segurança. Consulte o log para detalhes.';
+
+  @override
+  String get pyannoteCandidateValidationFailed =>
+      'Validação concluída: passo 2 + margem 0,35 não passou em todos os critérios de segurança. Consulte o log para detalhes.';
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
@@ -7806,4 +7822,20 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   @override
   String get pyannoteBenchmarkCompleted =>
       'Benchmark concluído. Os resultados detalhados foram registrados no log do Sonarpad.';
+
+  @override
+  String get pyannoteCandidateValidation5x10m =>
+      'Validar passo 2 + margem 0,35 em cinco trechos de 10 minutos';
+
+  @override
+  String get pyannoteCandidateValidationPreparing =>
+      'Executando a validação do pyannote em cinco trechos do filme...';
+
+  @override
+  String get pyannoteCandidateValidationPassed =>
+      'Validação concluída: passo 2 + margem 0,35 passou nos critérios de segurança. Consulte o log para detalhes.';
+
+  @override
+  String get pyannoteCandidateValidationFailed =>
+      'Validação concluída: passo 2 + margem 0,35 não passou em todos os critérios de segurança. Consulte o log para detalhes.';
 }

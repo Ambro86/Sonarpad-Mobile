@@ -6986,6 +6986,30 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Benchmark completato. I risultati dettagliati sono stati registrati nel log di Sonarpad.'**
   String get pyannoteBenchmarkCompleted;
+
+  /// Localized text for pyannoteCandidateValidation5x10m.
+  ///
+  /// In it, this message translates to:
+  /// **'Valida step 2 + padding 0,35 su 5 spezzoni da 10 minuti'**
+  String get pyannoteCandidateValidation5x10m;
+
+  /// Localized text for pyannoteCandidateValidationPreparing.
+  ///
+  /// In it, this message translates to:
+  /// **'Validazione pyannote in corso su 5 spezzoni del film...'**
+  String get pyannoteCandidateValidationPreparing;
+
+  /// Localized text for pyannoteCandidateValidationPassed.
+  ///
+  /// In it, this message translates to:
+  /// **'Validazione completata: step 2 + padding 0,35 ha superato i criteri di sicurezza. Controlla il log per i dettagli.'**
+  String get pyannoteCandidateValidationPassed;
+
+  /// Localized text for pyannoteCandidateValidationFailed.
+  ///
+  /// In it, this message translates to:
+  /// **'Validazione completata: step 2 + padding 0,35 non ha superato tutti i criteri di sicurezza. Controlla il log per i dettagli.'**
+  String get pyannoteCandidateValidationFailed;
 }
 
 class _AppLocalizationsDelegate

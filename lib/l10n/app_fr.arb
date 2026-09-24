@@ -3059,5 +3059,21 @@
   "pyannoteBenchmarkCompleted": "Benchmark terminé. Les résultats détaillés ont été enregistrés dans le journal de Sonarpad.",
   "@pyannoteBenchmarkCompleted": {
     "description": "Localized text for pyannoteBenchmarkCompleted."
+  },
+  "pyannoteCandidateValidation5x10m": "Valider le pas 2 + marge 0,35 sur cinq extraits de 10 minutes",
+  "@pyannoteCandidateValidation5x10m": {
+    "description": "Localized text for pyannoteCandidateValidation5x10m."
+  },
+  "pyannoteCandidateValidationPreparing": "Validation pyannote en cours sur cinq extraits du film...",
+  "@pyannoteCandidateValidationPreparing": {
+    "description": "Localized text for pyannoteCandidateValidationPreparing."
+  },
+  "pyannoteCandidateValidationPassed": "Validation terminée : pas 2 + marge 0,35 a satisfait aux critères de sécurité. Consultez le journal pour les détails.",
+  "@pyannoteCandidateValidationPassed": {
+    "description": "Localized text for pyannoteCandidateValidationPassed."
+  },
+  "pyannoteCandidateValidationFailed": "Validation terminée : pas 2 + marge 0,35 n’a pas satisfait à tous les critères de sécurité. Consultez le journal pour les détails.",
+  "@pyannoteCandidateValidationFailed": {
+    "description": "Localized text for pyannoteCandidateValidationFailed."
   }
 }

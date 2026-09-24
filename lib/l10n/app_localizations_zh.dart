@@ -3747,6 +3747,21 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get pyannoteBenchmarkCompleted => '基准测试已完成。详细结果已记录到 Sonarpad 日志中。';
+
+  @override
+  String get pyannoteCandidateValidation5x10m => '在五个 10 分钟片段上验证步长 2 + 0.35 填充';
+
+  @override
+  String get pyannoteCandidateValidationPreparing =>
+      '正在对影片的五个片段运行 pyannote 验证...';
+
+  @override
+  String get pyannoteCandidateValidationPassed =>
+      '验证完成：步长 2 + 0.35 填充通过安全标准。详情请查看 Sonarpad 日志。';
+
+  @override
+  String get pyannoteCandidateValidationFailed =>
+      '验证完成：步长 2 + 0.35 填充未通过全部安全标准。详情请查看 Sonarpad 日志。';
 }
 
 /// The translations for Chinese, as used in China (`zh_CN`).
@@ -7492,4 +7507,19 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get pyannoteBenchmarkCompleted => '基准测试已完成。详细结果已记录到 Sonarpad 日志中。';
+
+  @override
+  String get pyannoteCandidateValidation5x10m => '在五个 10 分钟片段上验证步长 2 + 0.35 填充';
+
+  @override
+  String get pyannoteCandidateValidationPreparing =>
+      '正在对影片的五个片段运行 pyannote 验证...';
+
+  @override
+  String get pyannoteCandidateValidationPassed =>
+      '验证完成：步长 2 + 0.35 填充通过安全标准。详情请查看 Sonarpad 日志。';
+
+  @override
+  String get pyannoteCandidateValidationFailed =>
+      '验证完成：步长 2 + 0.35 填充未通过全部安全标准。详情请查看 Sonarpad 日志。';
 }
