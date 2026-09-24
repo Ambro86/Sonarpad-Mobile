@@ -3696,6 +3696,57 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get sonarTubeNoDescription => '此视频没有可用的说明。';
+
+  @override
+  String get pyannoteTestTitle => '移动版 pyannote 测试';
+
+  @override
+  String get pyannoteTestInstructions =>
+      '此测试使用与 Windows 相同的 pyannote ONNX 模型。首次比较请使用前 2 分钟的快速测试。';
+
+  @override
+  String get pyannoteQuickTest => 'pyannote 快速测试：前 2 分钟';
+
+  @override
+  String get pyannoteFullTest => 'pyannote 完整测试：整个文件';
+
+  @override
+  String get pyannoteShareArtifacts => '共享标准 WAV 和移动端 JSON 结果';
+
+  @override
+  String get pyannoteInitialStatus => '请选择音频或视频文件。首次比较请使用快速测试。';
+
+  @override
+  String get pyannotePreparingQuick => '正在准备前 2 分钟的快速测试...';
+
+  @override
+  String get pyannotePreparingFull => '正在准备完整测试...';
+
+  @override
+  String get pyannoteCompletedStatus =>
+      '移动端测试已完成。请共享 WAV 和 JSON，并在 Windows 测试中使用同一个 WAV。';
+
+  @override
+  String get pyannoteFilesUnavailable => '上一次测试的文件已不可用。';
+
+  @override
+  String get pyannoteFailure => 'pyannote 测试失败。';
+
+  @override
+  String get pyannoteShareText =>
+      'Sonarpad：移动版 pyannote 一致性测试。Windows 测试也请使用随附的标准 WAV。';
+
+  @override
+  String get pyannoteShareSubject => 'Sonarpad pyannote 测试';
+
+  @override
+  String get pyannoteBenchmark10Min => 'pyannote 基准测试：前 10 分钟';
+
+  @override
+  String get pyannoteBenchmarkPreparing => '正在对前 10 分钟运行 pyannote 基准测试...';
+
+  @override
+  String get pyannoteBenchmarkCompleted => '基准测试已完成。详细结果已记录到 Sonarpad 日志中。';
 }
 
 /// The translations for Chinese, as used in China (`zh_CN`).
@@ -7390,4 +7441,55 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get sonarTubeNoDescription => '此视频没有可用的说明。';
+
+  @override
+  String get pyannoteTestTitle => '移动版 pyannote 测试';
+
+  @override
+  String get pyannoteTestInstructions =>
+      '此测试使用与 Windows 相同的 pyannote ONNX 模型。首次比较请使用前 2 分钟的快速测试。';
+
+  @override
+  String get pyannoteQuickTest => 'pyannote 快速测试：前 2 分钟';
+
+  @override
+  String get pyannoteFullTest => 'pyannote 完整测试：整个文件';
+
+  @override
+  String get pyannoteShareArtifacts => '共享标准 WAV 和移动端 JSON 结果';
+
+  @override
+  String get pyannoteInitialStatus => '请选择音频或视频文件。首次比较请使用快速测试。';
+
+  @override
+  String get pyannotePreparingQuick => '正在准备前 2 分钟的快速测试...';
+
+  @override
+  String get pyannotePreparingFull => '正在准备完整测试...';
+
+  @override
+  String get pyannoteCompletedStatus =>
+      '移动端测试已完成。请共享 WAV 和 JSON，并在 Windows 测试中使用同一个 WAV。';
+
+  @override
+  String get pyannoteFilesUnavailable => '上一次测试的文件已不可用。';
+
+  @override
+  String get pyannoteFailure => 'pyannote 测试失败。';
+
+  @override
+  String get pyannoteShareText =>
+      'Sonarpad：移动版 pyannote 一致性测试。Windows 测试也请使用随附的标准 WAV。';
+
+  @override
+  String get pyannoteShareSubject => 'Sonarpad pyannote 测试';
+
+  @override
+  String get pyannoteBenchmark10Min => 'pyannote 基准测试：前 10 分钟';
+
+  @override
+  String get pyannoteBenchmarkPreparing => '正在对前 10 分钟运行 pyannote 基准测试...';
+
+  @override
+  String get pyannoteBenchmarkCompleted => '基准测试已完成。详细结果已记录到 Sonarpad 日志中。';
 }

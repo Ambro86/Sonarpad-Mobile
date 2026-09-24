@@ -3012,7 +3012,9 @@
   "@sonarTubeVideoCount": {
     "description": "Number of videos contained in a SonarTube playlist.",
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "sonarTubeViewDescription": "查看说明",
@@ -3039,5 +3041,17 @@
   "pyannoteFilesUnavailable": "上一次测试的文件已不可用。",
   "pyannoteFailure": "pyannote 测试失败。",
   "pyannoteShareText": "Sonarpad：移动版 pyannote 一致性测试。Windows 测试也请使用随附的标准 WAV。",
-  "pyannoteShareSubject": "Sonarpad pyannote 测试"
+  "pyannoteShareSubject": "Sonarpad pyannote 测试",
+  "pyannoteBenchmark10Min": "pyannote 基准测试：前 10 分钟",
+  "@pyannoteBenchmark10Min": {
+    "description": "Localized text for pyannoteBenchmark10Min."
+  },
+  "pyannoteBenchmarkPreparing": "正在对前 10 分钟运行 pyannote 基准测试...",
+  "@pyannoteBenchmarkPreparing": {
+    "description": "Localized text for pyannoteBenchmarkPreparing."
+  },
+  "pyannoteBenchmarkCompleted": "基准测试已完成。详细结果已记录到 Sonarpad 日志中。",
+  "@pyannoteBenchmarkCompleted": {
+    "description": "Localized text for pyannoteBenchmarkCompleted."
+  }
 }

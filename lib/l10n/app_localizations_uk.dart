@@ -3826,4 +3826,62 @@ class AppLocalizationsUk extends AppLocalizations {
   @override
   String get sonarTubeNoDescription =>
       'Для цього відео немає доступного опису.';
+
+  @override
+  String get pyannoteTestTitle => 'Мобільний тест pyannote';
+
+  @override
+  String get pyannoteTestInstructions =>
+      'Цей тест використовує ту саму модель ONNX pyannote, що й Windows. Для першого порівняння використайте швидкий тест перших 2 хвилин.';
+
+  @override
+  String get pyannoteQuickTest => 'Швидкий тест pyannote: перші 2 хвилини';
+
+  @override
+  String get pyannoteFullTest => 'Повний тест pyannote: увесь файл';
+
+  @override
+  String get pyannoteShareArtifacts =>
+      'Поділитися канонічним WAV і мобільним результатом JSON';
+
+  @override
+  String get pyannoteInitialStatus =>
+      'Виберіть аудіо- або відеофайл. Для першого порівняння використайте швидкий тест.';
+
+  @override
+  String get pyannotePreparingQuick =>
+      'Підготовка швидкого тесту перших 2 хвилин...';
+
+  @override
+  String get pyannotePreparingFull => 'Підготовка повного тесту...';
+
+  @override
+  String get pyannoteCompletedStatus =>
+      'Мобільний тест завершено. Поділіться WAV і JSON та використайте той самий WAV у тесті Windows.';
+
+  @override
+  String get pyannoteFilesUnavailable =>
+      'Файли останнього тесту більше недоступні.';
+
+  @override
+  String get pyannoteFailure => 'Тест pyannote не виконано.';
+
+  @override
+  String get pyannoteShareText =>
+      'Sonarpad: мобільний тест відповідності pyannote. Використайте вкладений канонічний WAV також у тесті Windows.';
+
+  @override
+  String get pyannoteShareSubject => 'Тест pyannote Sonarpad';
+
+  @override
+  String get pyannoteBenchmark10Min =>
+      'Тест швидкодії pyannote: перші 10 хвилин';
+
+  @override
+  String get pyannoteBenchmarkPreparing =>
+      'Виконується тест швидкодії pyannote для перших 10 хвилин...';
+
+  @override
+  String get pyannoteBenchmarkCompleted =>
+      'Тест завершено. Докладні результати записано в журнал Sonarpad.';
 }

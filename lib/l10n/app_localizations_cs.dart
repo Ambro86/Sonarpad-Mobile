@@ -3831,4 +3831,61 @@ class AppLocalizationsCs extends AppLocalizations {
   @override
   String get sonarTubeNoDescription =>
       'Pro toto video není k dispozici žádný popis.';
+
+  @override
+  String get pyannoteTestTitle => 'Mobilní test pyannote';
+
+  @override
+  String get pyannoteTestInstructions =>
+      'Tento test používá stejný model ONNX pyannote jako Windows. Pro první porovnání použijte rychlý test prvních 2 minut.';
+
+  @override
+  String get pyannoteQuickTest => 'Rychlý test pyannote: první 2 minuty';
+
+  @override
+  String get pyannoteFullTest => 'Úplný test pyannote: celý soubor';
+
+  @override
+  String get pyannoteShareArtifacts =>
+      'Sdílet kanonický WAV a mobilní výsledek JSON';
+
+  @override
+  String get pyannoteInitialStatus =>
+      'Vyberte zvukový nebo video soubor. Pro první porovnání použijte rychlý test.';
+
+  @override
+  String get pyannotePreparingQuick =>
+      'Příprava rychlého testu prvních 2 minut...';
+
+  @override
+  String get pyannotePreparingFull => 'Příprava úplného testu...';
+
+  @override
+  String get pyannoteCompletedStatus =>
+      'Mobilní test dokončen. Sdílejte WAV a JSON a použijte stejný WAV v testu Windows.';
+
+  @override
+  String get pyannoteFilesUnavailable =>
+      'Soubory z posledního testu již nejsou k dispozici.';
+
+  @override
+  String get pyannoteFailure => 'Test pyannote selhal.';
+
+  @override
+  String get pyannoteShareText =>
+      'Sonarpad: mobilní test shody pyannote. Přiložený kanonický WAV použijte také v testu Windows.';
+
+  @override
+  String get pyannoteShareSubject => 'Test pyannote Sonarpad';
+
+  @override
+  String get pyannoteBenchmark10Min => 'Benchmark pyannote: prvních 10 minut';
+
+  @override
+  String get pyannoteBenchmarkPreparing =>
+      'Probíhá benchmark pyannote pro prvních 10 minut...';
+
+  @override
+  String get pyannoteBenchmarkCompleted =>
+      'Benchmark dokončen. Podrobné výsledky byly zapsány do protokolu Sonarpad.';
 }

@@ -3846,4 +3846,61 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get sonarTubeNoDescription =>
       'Für dieses Video ist keine Beschreibung verfügbar.';
+
+  @override
+  String get pyannoteTestTitle => 'Mobiler pyannote-Test';
+
+  @override
+  String get pyannoteTestInstructions =>
+      'Dieser Test verwendet dasselbe pyannote-ONNX-Modell wie Windows. Verwende für den ersten Vergleich den Schnelltest mit den ersten 2 Minuten.';
+
+  @override
+  String get pyannoteQuickTest => 'Pyannote-Schnelltest: erste 2 Minuten';
+
+  @override
+  String get pyannoteFullTest => 'Vollständiger pyannote-Test: gesamte Datei';
+
+  @override
+  String get pyannoteShareArtifacts =>
+      'Kanonische WAV-Datei und mobiles JSON-Ergebnis teilen';
+
+  @override
+  String get pyannoteInitialStatus =>
+      'Wähle eine Audio- oder Videodatei. Verwende für den ersten Vergleich den Schnelltest.';
+
+  @override
+  String get pyannotePreparingQuick =>
+      'Schnelltest für die ersten 2 Minuten wird vorbereitet...';
+
+  @override
+  String get pyannotePreparingFull => 'Vollständiger Test wird vorbereitet...';
+
+  @override
+  String get pyannoteCompletedStatus =>
+      'Mobiler Test abgeschlossen. Teile WAV und JSON und verwende dieselbe WAV-Datei im Windows-Test.';
+
+  @override
+  String get pyannoteFilesUnavailable =>
+      'Die Dateien des letzten Tests sind nicht mehr verfügbar.';
+
+  @override
+  String get pyannoteFailure => 'Pyannote-Test fehlgeschlagen.';
+
+  @override
+  String get pyannoteShareText =>
+      'Sonarpad: mobiler pyannote-Paritätstest. Verwende die angehängte kanonische WAV-Datei auch im Windows-Test.';
+
+  @override
+  String get pyannoteShareSubject => 'Sonarpad pyannote-Test';
+
+  @override
+  String get pyannoteBenchmark10Min => 'Pyannote-Benchmark: erste 10 Minuten';
+
+  @override
+  String get pyannoteBenchmarkPreparing =>
+      'Pyannote-Benchmark für die ersten 10 Minuten läuft...';
+
+  @override
+  String get pyannoteBenchmarkCompleted =>
+      'Benchmark abgeschlossen. Die detaillierten Ergebnisse wurden im Sonarpad-Protokoll gespeichert.';
 }

@@ -3844,4 +3844,61 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get sonarTubeNoDescription =>
       'Nessuna descrizione disponibile per questo video.';
+
+  @override
+  String get pyannoteTestTitle => 'Test pyannote mobile';
+
+  @override
+  String get pyannoteTestInstructions =>
+      'Questo test usa lo stesso modello ONNX pyannote di Windows. Per il primo confronto usa il test rapido sui primi 2 minuti.';
+
+  @override
+  String get pyannoteQuickTest => 'Test rapido pyannote: primi 2 minuti';
+
+  @override
+  String get pyannoteFullTest => 'Test completo pyannote: intero file';
+
+  @override
+  String get pyannoteShareArtifacts =>
+      'Condividi WAV canonico e risultato JSON mobile';
+
+  @override
+  String get pyannoteInitialStatus =>
+      'Scegli un file audio o video. Per il primo confronto usa il test rapido.';
+
+  @override
+  String get pyannotePreparingQuick =>
+      'Preparazione del test rapido sui primi 2 minuti...';
+
+  @override
+  String get pyannotePreparingFull => 'Preparazione del test completo...';
+
+  @override
+  String get pyannoteCompletedStatus =>
+      'Test mobile completato. Condividi WAV e JSON e usa lo stesso WAV nel test Windows.';
+
+  @override
+  String get pyannoteFilesUnavailable =>
+      'I file dell’ultimo test non sono più disponibili.';
+
+  @override
+  String get pyannoteFailure => 'Test pyannote non riuscito.';
+
+  @override
+  String get pyannoteShareText =>
+      'Sonarpad: test di parità pyannote mobile. Usa il WAV canonico allegato anche nel test Windows.';
+
+  @override
+  String get pyannoteShareSubject => 'Test pyannote Sonarpad';
+
+  @override
+  String get pyannoteBenchmark10Min => 'Benchmark pyannote: primi 10 minuti';
+
+  @override
+  String get pyannoteBenchmarkPreparing =>
+      'Benchmark pyannote in corso sui primi 10 minuti...';
+
+  @override
+  String get pyannoteBenchmarkCompleted =>
+      'Benchmark completato. I risultati dettagliati sono stati registrati nel log di Sonarpad.';
 }

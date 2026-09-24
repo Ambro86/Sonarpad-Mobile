@@ -3823,4 +3823,61 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get sonarTubeNoDescription =>
       'No description is available for this video.';
+
+  @override
+  String get pyannoteTestTitle => 'Mobile pyannote test';
+
+  @override
+  String get pyannoteTestInstructions =>
+      'This test uses the same pyannote ONNX model as Windows. For the first comparison, use the quick test on the first 2 minutes.';
+
+  @override
+  String get pyannoteQuickTest => 'Quick pyannote test: first 2 minutes';
+
+  @override
+  String get pyannoteFullTest => 'Full pyannote test: entire file';
+
+  @override
+  String get pyannoteShareArtifacts =>
+      'Share canonical WAV and mobile JSON result';
+
+  @override
+  String get pyannoteInitialStatus =>
+      'Choose an audio or video file. For the first comparison, use the quick test.';
+
+  @override
+  String get pyannotePreparingQuick =>
+      'Preparing quick test on the first 2 minutes...';
+
+  @override
+  String get pyannotePreparingFull => 'Preparing full test...';
+
+  @override
+  String get pyannoteCompletedStatus =>
+      'Mobile test completed. Share WAV and JSON and use the same WAV in the Windows test.';
+
+  @override
+  String get pyannoteFilesUnavailable =>
+      'The files from the last test are no longer available.';
+
+  @override
+  String get pyannoteFailure => 'Pyannote test failed.';
+
+  @override
+  String get pyannoteShareText =>
+      'Sonarpad: mobile pyannote parity test. Use the attached canonical WAV in the Windows test too.';
+
+  @override
+  String get pyannoteShareSubject => 'Sonarpad pyannote test';
+
+  @override
+  String get pyannoteBenchmark10Min => 'Pyannote benchmark: first 10 minutes';
+
+  @override
+  String get pyannoteBenchmarkPreparing =>
+      'Running pyannote benchmark on the first 10 minutes...';
+
+  @override
+  String get pyannoteBenchmarkCompleted =>
+      'Benchmark completed. Detailed results were recorded in the Sonarpad log.';
 }

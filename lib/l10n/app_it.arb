@@ -4590,7 +4590,9 @@
   "@sonarTubeVideoCount": {
     "description": "Number of videos contained in a SonarTube playlist.",
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "sonarTubeViewDescription": "Visualizza descrizione",
@@ -4617,5 +4619,17 @@
   "pyannoteFilesUnavailable": "I file dell’ultimo test non sono più disponibili.",
   "pyannoteFailure": "Test pyannote non riuscito.",
   "pyannoteShareText": "Sonarpad: test di parità pyannote mobile. Usa il WAV canonico allegato anche nel test Windows.",
-  "pyannoteShareSubject": "Test pyannote Sonarpad"
+  "pyannoteShareSubject": "Test pyannote Sonarpad",
+  "pyannoteBenchmark10Min": "Benchmark pyannote: primi 10 minuti",
+  "@pyannoteBenchmark10Min": {
+    "description": "Localized text for pyannoteBenchmark10Min."
+  },
+  "pyannoteBenchmarkPreparing": "Benchmark pyannote in corso sui primi 10 minuti...",
+  "@pyannoteBenchmarkPreparing": {
+    "description": "Localized text for pyannoteBenchmarkPreparing."
+  },
+  "pyannoteBenchmarkCompleted": "Benchmark completato. I risultati dettagliati sono stati registrati nel log di Sonarpad.",
+  "@pyannoteBenchmarkCompleted": {
+    "description": "Localized text for pyannoteBenchmarkCompleted."
+  }
 }

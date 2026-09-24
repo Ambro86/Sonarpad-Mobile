@@ -6890,6 +6890,102 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Nessuna descrizione disponibile per questo video.'**
   String get sonarTubeNoDescription;
+
+  /// No description provided for @pyannoteTestTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Test pyannote mobile'**
+  String get pyannoteTestTitle;
+
+  /// No description provided for @pyannoteTestInstructions.
+  ///
+  /// In it, this message translates to:
+  /// **'Questo test usa lo stesso modello ONNX pyannote di Windows. Per il primo confronto usa il test rapido sui primi 2 minuti.'**
+  String get pyannoteTestInstructions;
+
+  /// No description provided for @pyannoteQuickTest.
+  ///
+  /// In it, this message translates to:
+  /// **'Test rapido pyannote: primi 2 minuti'**
+  String get pyannoteQuickTest;
+
+  /// No description provided for @pyannoteFullTest.
+  ///
+  /// In it, this message translates to:
+  /// **'Test completo pyannote: intero file'**
+  String get pyannoteFullTest;
+
+  /// No description provided for @pyannoteShareArtifacts.
+  ///
+  /// In it, this message translates to:
+  /// **'Condividi WAV canonico e risultato JSON mobile'**
+  String get pyannoteShareArtifacts;
+
+  /// No description provided for @pyannoteInitialStatus.
+  ///
+  /// In it, this message translates to:
+  /// **'Scegli un file audio o video. Per il primo confronto usa il test rapido.'**
+  String get pyannoteInitialStatus;
+
+  /// No description provided for @pyannotePreparingQuick.
+  ///
+  /// In it, this message translates to:
+  /// **'Preparazione del test rapido sui primi 2 minuti...'**
+  String get pyannotePreparingQuick;
+
+  /// No description provided for @pyannotePreparingFull.
+  ///
+  /// In it, this message translates to:
+  /// **'Preparazione del test completo...'**
+  String get pyannotePreparingFull;
+
+  /// No description provided for @pyannoteCompletedStatus.
+  ///
+  /// In it, this message translates to:
+  /// **'Test mobile completato. Condividi WAV e JSON e usa lo stesso WAV nel test Windows.'**
+  String get pyannoteCompletedStatus;
+
+  /// No description provided for @pyannoteFilesUnavailable.
+  ///
+  /// In it, this message translates to:
+  /// **'I file dell’ultimo test non sono più disponibili.'**
+  String get pyannoteFilesUnavailable;
+
+  /// No description provided for @pyannoteFailure.
+  ///
+  /// In it, this message translates to:
+  /// **'Test pyannote non riuscito.'**
+  String get pyannoteFailure;
+
+  /// No description provided for @pyannoteShareText.
+  ///
+  /// In it, this message translates to:
+  /// **'Sonarpad: test di parità pyannote mobile. Usa il WAV canonico allegato anche nel test Windows.'**
+  String get pyannoteShareText;
+
+  /// No description provided for @pyannoteShareSubject.
+  ///
+  /// In it, this message translates to:
+  /// **'Test pyannote Sonarpad'**
+  String get pyannoteShareSubject;
+
+  /// Localized text for pyannoteBenchmark10Min.
+  ///
+  /// In it, this message translates to:
+  /// **'Benchmark pyannote: primi 10 minuti'**
+  String get pyannoteBenchmark10Min;
+
+  /// Localized text for pyannoteBenchmarkPreparing.
+  ///
+  /// In it, this message translates to:
+  /// **'Benchmark pyannote in corso sui primi 10 minuti...'**
+  String get pyannoteBenchmarkPreparing;
+
+  /// Localized text for pyannoteBenchmarkCompleted.
+  ///
+  /// In it, this message translates to:
+  /// **'Benchmark completato. I risultati dettagliati sono stati registrati nel log di Sonarpad.'**
+  String get pyannoteBenchmarkCompleted;
 }
 
 class _AppLocalizationsDelegate

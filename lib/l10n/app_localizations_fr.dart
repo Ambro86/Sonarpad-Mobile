@@ -3866,4 +3866,62 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get sonarTubeNoDescription =>
       'Aucune description n’est disponible pour cette vidéo.';
+
+  @override
+  String get pyannoteTestTitle => 'Test pyannote mobile';
+
+  @override
+  String get pyannoteTestInstructions =>
+      'Ce test utilise le même modèle ONNX pyannote que Windows. Pour la première comparaison, utilisez le test rapide sur les 2 premières minutes.';
+
+  @override
+  String get pyannoteQuickTest => 'Test rapide pyannote : 2 premières minutes';
+
+  @override
+  String get pyannoteFullTest => 'Test complet pyannote : fichier entier';
+
+  @override
+  String get pyannoteShareArtifacts =>
+      'Partager le WAV canonique et le résultat JSON mobile';
+
+  @override
+  String get pyannoteInitialStatus =>
+      'Choisissez un fichier audio ou vidéo. Pour la première comparaison, utilisez le test rapide.';
+
+  @override
+  String get pyannotePreparingQuick =>
+      'Préparation du test rapide sur les 2 premières minutes...';
+
+  @override
+  String get pyannotePreparingFull => 'Préparation du test complet...';
+
+  @override
+  String get pyannoteCompletedStatus =>
+      'Test mobile terminé. Partagez le WAV et le JSON et utilisez le même WAV pour le test Windows.';
+
+  @override
+  String get pyannoteFilesUnavailable =>
+      'Les fichiers du dernier test ne sont plus disponibles.';
+
+  @override
+  String get pyannoteFailure => 'Le test pyannote a échoué.';
+
+  @override
+  String get pyannoteShareText =>
+      'Sonarpad : test de parité pyannote mobile. Utilisez également le WAV canonique joint pour le test Windows.';
+
+  @override
+  String get pyannoteShareSubject => 'Test pyannote Sonarpad';
+
+  @override
+  String get pyannoteBenchmark10Min =>
+      'Benchmark pyannote : 10 premières minutes';
+
+  @override
+  String get pyannoteBenchmarkPreparing =>
+      'Benchmark pyannote en cours sur les 10 premières minutes...';
+
+  @override
+  String get pyannoteBenchmarkCompleted =>
+      'Benchmark terminé. Les résultats détaillés ont été enregistrés dans le journal de Sonarpad.';
 }

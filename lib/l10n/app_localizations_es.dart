@@ -3860,4 +3860,63 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get sonarTubeNoDescription =>
       'No hay ninguna descripción disponible para este vídeo.';
+
+  @override
+  String get pyannoteTestTitle => 'Prueba móvil de pyannote';
+
+  @override
+  String get pyannoteTestInstructions =>
+      'Esta prueba usa el mismo modelo ONNX de pyannote que Windows. Para la primera comparación, usa la prueba rápida de los primeros 2 minutos.';
+
+  @override
+  String get pyannoteQuickTest =>
+      'Prueba rápida de pyannote: primeros 2 minutos';
+
+  @override
+  String get pyannoteFullTest => 'Prueba completa de pyannote: archivo entero';
+
+  @override
+  String get pyannoteShareArtifacts =>
+      'Compartir WAV canónico y resultado JSON móvil';
+
+  @override
+  String get pyannoteInitialStatus =>
+      'Elige un archivo de audio o vídeo. Para la primera comparación, usa la prueba rápida.';
+
+  @override
+  String get pyannotePreparingQuick =>
+      'Preparando la prueba rápida de los primeros 2 minutos...';
+
+  @override
+  String get pyannotePreparingFull => 'Preparando la prueba completa...';
+
+  @override
+  String get pyannoteCompletedStatus =>
+      'Prueba móvil completada. Comparte el WAV y el JSON y usa el mismo WAV en la prueba de Windows.';
+
+  @override
+  String get pyannoteFilesUnavailable =>
+      'Los archivos de la última prueba ya no están disponibles.';
+
+  @override
+  String get pyannoteFailure => 'La prueba de pyannote ha fallado.';
+
+  @override
+  String get pyannoteShareText =>
+      'Sonarpad: prueba de paridad móvil de pyannote. Usa también el WAV canónico adjunto en la prueba de Windows.';
+
+  @override
+  String get pyannoteShareSubject => 'Prueba pyannote de Sonarpad';
+
+  @override
+  String get pyannoteBenchmark10Min =>
+      'Benchmark de pyannote: primeros 10 minutos';
+
+  @override
+  String get pyannoteBenchmarkPreparing =>
+      'Ejecutando el benchmark de pyannote en los primeros 10 minutos...';
+
+  @override
+  String get pyannoteBenchmarkCompleted =>
+      'Benchmark completado. Los resultados detallados se registraron en el log de Sonarpad.';
 }

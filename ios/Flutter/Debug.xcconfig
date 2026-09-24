@@ -1,1 +1,4 @@
 #include "Generated.xcconfig"
+OTHER_LDFLAGS=$(inherited) -Wl,-u,_OrtGetApiBase -Wl,-u,_OrtSessionOptionsAppendExecutionProvider_CoreML
+STRIP_INSTALLED_PRODUCT=NO
+STRIP_STYLE=non-global-symbols
