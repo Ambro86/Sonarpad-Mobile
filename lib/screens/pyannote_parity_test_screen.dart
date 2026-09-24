@@ -175,6 +175,60 @@ class _PyannoteParityTestScreenState extends State<PyannoteParityTestScreen>
     }
   }
 
+  Future<void> _runXnnpackBenchmark() async {
+    if (_running) return;
+    final l10n = AppLocalizations.of(context);
+    final path = await _pickMedia(operation: 'xnnpack_benchmark_10m');
+    if (path == null || !mounted) return;
+    setState(() {
+      _running = true;
+      _progress = 0.0;
+      _technicalError = null;
+      _lastArtifacts = null;
+      _status = l10n.pyannoteXnnpackBenchmarkPreparing;
+      _activeOperation = 'xnnpack_benchmark_10m';
+    });
+    try {
+      final report = await _benchmarkService.runXnnpackBenchmark(
+        sourcePath: path,
+        onProgress: (progress) {
+          if (!mounted) return;
+          setState(() {
+            _progress = progress.clamp(0.0, 1.0).toDouble();
+          });
+        },
+      );
+      await AppLogger.log(
+        'PYANNOTE[UI] XNNPACK benchmark completed '
+        'report="${report.reportJsonPath}" outcomes=${report.outcomes.length}',
+      );
+      if (!mounted) return;
+      setState(() {
+        _progress = 1.0;
+        _status = l10n.pyannoteXnnpackBenchmarkCompleted;
+      });
+    } catch (error, stackTrace) {
+      await AppLogger.log(
+        'PYANNOTE[UI] XNNPACK benchmark FAILED '
+        'type=${error.runtimeType} error=$error\n$stackTrace',
+      );
+      if (!mounted) return;
+      setState(() {
+        _status = l10n.pyannoteFailure;
+        _technicalError = error.toString();
+      });
+    } finally {
+      if (mounted) {
+        setState(() {
+          _running = false;
+          _activeOperation = null;
+        });
+      } else {
+        _activeOperation = null;
+      }
+    }
+  }
+
   Future<void> _runCandidateValidation() async {
     if (_running) return;
     final l10n = AppLocalizations.of(context);
@@ -249,10 +303,7 @@ class _PyannoteParityTestScreenState extends State<PyannoteParityTestScreen>
     }
     await SharePlus.instance.share(
       ShareParams(
-        files: <XFile>[
-          XFile(artifacts.wavPath),
-          XFile(artifacts.jsonPath),
-        ],
+        files: <XFile>[XFile(artifacts.wavPath), XFile(artifacts.jsonPath)],
         text: l10n.pyannoteShareText,
         subject: l10n.pyannoteShareSubject,
       ),
@@ -300,6 +351,13 @@ class _PyannoteParityTestScreenState extends State<PyannoteParityTestScreen>
                 kind: 'button',
                 enabled: !_running,
                 onActivate: _runBenchmark,
+              ),
+              AccessibleListRow(
+                id: 'xnnpack_benchmark_10m',
+                title: l10n.pyannoteXnnpackBenchmark10Min,
+                kind: 'button',
+                enabled: !_running,
+                onActivate: _runXnnpackBenchmark,
               ),
               AccessibleListRow(
                 id: 'candidate_validation_5x10m',

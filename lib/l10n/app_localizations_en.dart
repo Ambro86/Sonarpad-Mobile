@@ -3896,4 +3896,16 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get pyannoteCandidateValidationFailed =>
       'Validation completed: step 2 + 0.35 padding did not pass all safety criteria. Check the log for details.';
+
+  @override
+  String get pyannoteXnnpackBenchmark10Min =>
+      'CPU vs XNNPACK benchmark: first 10 minutes';
+
+  @override
+  String get pyannoteXnnpackBenchmarkPreparing =>
+      'Comparing CPU and XNNPACK on the first 10 minutes...';
+
+  @override
+  String get pyannoteXnnpackBenchmarkCompleted =>
+      'CPU vs XNNPACK benchmark completed. Check the log for parity and speed.';
 }

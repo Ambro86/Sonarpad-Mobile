@@ -3075,5 +3075,17 @@
   "pyannoteCandidateValidationFailed": "Validação concluída: passo 2 + margem 0,35 não passou em todos os critérios de segurança. Consulte o log para detalhes.",
   "@pyannoteCandidateValidationFailed": {
     "description": "Localized text for pyannoteCandidateValidationFailed."
+  },
+  "pyannoteXnnpackBenchmark10Min": "Benchmark CPU vs XNNPACK: primeiros 10 minutos",
+  "@pyannoteXnnpackBenchmark10Min": {
+    "description": "Localized text for pyannoteXnnpackBenchmark10Min."
+  },
+  "pyannoteXnnpackBenchmarkPreparing": "Comparando CPU e XNNPACK nos primeiros 10 minutos...",
+  "@pyannoteXnnpackBenchmarkPreparing": {
+    "description": "Localized text for pyannoteXnnpackBenchmarkPreparing."
+  },
+  "pyannoteXnnpackBenchmarkCompleted": "Benchmark CPU vs XNNPACK concluído. Verifique o registo para paridade e velocidade.",
+  "@pyannoteXnnpackBenchmarkCompleted": {
+    "description": "Localized text for pyannoteXnnpackBenchmarkCompleted."
   }
 }

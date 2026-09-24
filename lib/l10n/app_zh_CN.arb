@@ -3069,5 +3069,17 @@
   "pyannoteCandidateValidationFailed": "验证完成：步长 2 + 0.35 填充未通过全部安全标准。详情请查看 Sonarpad 日志。",
   "@pyannoteCandidateValidationFailed": {
     "description": "Localized text for pyannoteCandidateValidationFailed."
+  },
+  "pyannoteXnnpackBenchmark10Min": "CPU 与 XNNPACK 基准测试：前 10 分钟",
+  "@pyannoteXnnpackBenchmark10Min": {
+    "description": "Localized text for pyannoteXnnpackBenchmark10Min."
+  },
+  "pyannoteXnnpackBenchmarkPreparing": "正在比较前 10 分钟的 CPU 与 XNNPACK...",
+  "@pyannoteXnnpackBenchmarkPreparing": {
+    "description": "Localized text for pyannoteXnnpackBenchmarkPreparing."
+  },
+  "pyannoteXnnpackBenchmarkCompleted": "CPU 与 XNNPACK 基准测试完成。请查看日志中的一致性和速度结果。",
+  "@pyannoteXnnpackBenchmarkCompleted": {
+    "description": "Localized text for pyannoteXnnpackBenchmarkCompleted."
   }
 }

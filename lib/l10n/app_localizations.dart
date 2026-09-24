@@ -7010,6 +7010,24 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Validazione completata: step 2 + padding 0,35 non ha superato tutti i criteri di sicurezza. Controlla il log per i dettagli.'**
   String get pyannoteCandidateValidationFailed;
+
+  /// Localized text for pyannoteXnnpackBenchmark10Min.
+  ///
+  /// In it, this message translates to:
+  /// **'Benchmark CPU vs XNNPACK: primi 10 minuti'**
+  String get pyannoteXnnpackBenchmark10Min;
+
+  /// Localized text for pyannoteXnnpackBenchmarkPreparing.
+  ///
+  /// In it, this message translates to:
+  /// **'Confronto CPU e XNNPACK sui primi 10 minuti...'**
+  String get pyannoteXnnpackBenchmarkPreparing;
+
+  /// Localized text for pyannoteXnnpackBenchmarkCompleted.
+  ///
+  /// In it, this message translates to:
+  /// **'Benchmark CPU vs XNNPACK completato. Controlla il log per parità e velocità.'**
+  String get pyannoteXnnpackBenchmarkCompleted;
 }
 
 class _AppLocalizationsDelegate

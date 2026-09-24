@@ -3762,6 +3762,17 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get pyannoteCandidateValidationFailed =>
       '验证完成：步长 2 + 0.35 填充未通过全部安全标准。详情请查看 Sonarpad 日志。';
+
+  @override
+  String get pyannoteXnnpackBenchmark10Min => 'CPU 与 XNNPACK 基准测试：前 10 分钟';
+
+  @override
+  String get pyannoteXnnpackBenchmarkPreparing =>
+      '正在比较前 10 分钟的 CPU 与 XNNPACK...';
+
+  @override
+  String get pyannoteXnnpackBenchmarkCompleted =>
+      'CPU 与 XNNPACK 基准测试完成。请查看日志中的一致性和速度结果。';
 }
 
 /// The translations for Chinese, as used in China (`zh_CN`).
@@ -7522,4 +7533,15 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
   @override
   String get pyannoteCandidateValidationFailed =>
       '验证完成：步长 2 + 0.35 填充未通过全部安全标准。详情请查看 Sonarpad 日志。';
+
+  @override
+  String get pyannoteXnnpackBenchmark10Min => 'CPU 与 XNNPACK 基准测试：前 10 分钟';
+
+  @override
+  String get pyannoteXnnpackBenchmarkPreparing =>
+      '正在比较前 10 分钟的 CPU 与 XNNPACK...';
+
+  @override
+  String get pyannoteXnnpackBenchmarkCompleted =>
+      'CPU 与 XNNPACK 基准测试完成。请查看日志中的一致性和速度结果。';
 }

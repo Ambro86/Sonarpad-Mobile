@@ -4647,5 +4647,17 @@
   "pyannoteCandidateValidationFailed": "Перевірку завершено: крок 2 + відступ 0,35 не пройшов усі критерії безпеки. Подробиці дивіться в журналі.",
   "@pyannoteCandidateValidationFailed": {
     "description": "Localized text for pyannoteCandidateValidationFailed."
+  },
+  "pyannoteXnnpackBenchmark10Min": "Тест CPU проти XNNPACK: перші 10 хвилин",
+  "@pyannoteXnnpackBenchmark10Min": {
+    "description": "Localized text for pyannoteXnnpackBenchmark10Min."
+  },
+  "pyannoteXnnpackBenchmarkPreparing": "Порівняння CPU та XNNPACK на перших 10 хвилинах...",
+  "@pyannoteXnnpackBenchmarkPreparing": {
+    "description": "Localized text for pyannoteXnnpackBenchmarkPreparing."
+  },
+  "pyannoteXnnpackBenchmarkCompleted": "Тест CPU проти XNNPACK завершено. Перевірте журнал щодо паритету та швидкості.",
+  "@pyannoteXnnpackBenchmarkCompleted": {
+    "description": "Localized text for pyannoteXnnpackBenchmarkCompleted."
   }
 }

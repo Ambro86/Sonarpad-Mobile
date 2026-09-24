@@ -3900,4 +3900,16 @@ class AppLocalizationsUk extends AppLocalizations {
   @override
   String get pyannoteCandidateValidationFailed =>
       'Перевірку завершено: крок 2 + відступ 0,35 не пройшов усі критерії безпеки. Подробиці дивіться в журналі.';
+
+  @override
+  String get pyannoteXnnpackBenchmark10Min =>
+      'Тест CPU проти XNNPACK: перші 10 хвилин';
+
+  @override
+  String get pyannoteXnnpackBenchmarkPreparing =>
+      'Порівняння CPU та XNNPACK на перших 10 хвилинах...';
+
+  @override
+  String get pyannoteXnnpackBenchmarkCompleted =>
+      'Тест CPU проти XNNPACK завершено. Перевірте журнал щодо паритету та швидкості.';
 }

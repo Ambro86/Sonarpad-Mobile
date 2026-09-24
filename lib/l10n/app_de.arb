@@ -4647,5 +4647,17 @@
   "pyannoteCandidateValidationFailed": "Validierung abgeschlossen: Schritt 2 + Padding 0,35 erfüllt nicht alle Sicherheitskriterien. Details stehen im Protokoll.",
   "@pyannoteCandidateValidationFailed": {
     "description": "Localized text for pyannoteCandidateValidationFailed."
+  },
+  "pyannoteXnnpackBenchmark10Min": "CPU-vs.-XNNPACK-Benchmark: erste 10 Minuten",
+  "@pyannoteXnnpackBenchmark10Min": {
+    "description": "Localized text for pyannoteXnnpackBenchmark10Min."
+  },
+  "pyannoteXnnpackBenchmarkPreparing": "CPU und XNNPACK werden in den ersten 10 Minuten verglichen...",
+  "@pyannoteXnnpackBenchmarkPreparing": {
+    "description": "Localized text for pyannoteXnnpackBenchmarkPreparing."
+  },
+  "pyannoteXnnpackBenchmarkCompleted": "CPU-vs.-XNNPACK-Benchmark abgeschlossen. Prüfe das Protokoll auf Parität und Geschwindigkeit.",
+  "@pyannoteXnnpackBenchmarkCompleted": {
+    "description": "Localized text for pyannoteXnnpackBenchmarkCompleted."
   }
 }

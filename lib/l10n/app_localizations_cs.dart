@@ -3904,4 +3904,16 @@ class AppLocalizationsCs extends AppLocalizations {
   @override
   String get pyannoteCandidateValidationFailed =>
       'Ověření dokončeno: krok 2 + odsazení 0,35 nesplnil všechna bezpečnostní kritéria. Podrobnosti jsou v protokolu.';
+
+  @override
+  String get pyannoteXnnpackBenchmark10Min =>
+      'Benchmark CPU vs XNNPACK: prvních 10 minut';
+
+  @override
+  String get pyannoteXnnpackBenchmarkPreparing =>
+      'Porovnávání CPU a XNNPACK na prvních 10 minutách...';
+
+  @override
+  String get pyannoteXnnpackBenchmarkCompleted =>
+      'Benchmark CPU vs XNNPACK dokončen. Zkontrolujte protokol pro shodu a rychlost.';
 }

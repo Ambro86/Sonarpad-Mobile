@@ -40,15 +40,15 @@ class PyannoteBenchmarkConfig {
   bool get usesCoreML => coreMLFlags != null;
 
   Map<String, Object?> toJson() => <String, Object?>{
-        'id': id,
-        'provider': provider,
-        'batch_size': batchSize,
-        'intra_op_threads': intraOpThreads,
-        'graph_optimization': graphOptimization.name,
-        'step_seconds': stepSec,
-        'padding_seconds': paddingSec,
-        'coreml_flags': coreMLFlags?.name,
-      };
+    'id': id,
+    'provider': provider,
+    'batch_size': batchSize,
+    'intra_op_threads': intraOpThreads,
+    'graph_optimization': graphOptimization.name,
+    'step_seconds': stepSec,
+    'padding_seconds': paddingSec,
+    'coreml_flags': coreMLFlags?.name,
+  };
 }
 
 class PyannoteBenchmarkOutcome {
@@ -127,44 +127,44 @@ class PyannoteBenchmarkOutcome {
   final List<Map<String, Object?>>? diffRuns;
 
   Map<String, Object?> toJson() => <String, Object?>{
-        'config': config.toJson(),
-        'success': success,
-        'session_create_ms': sessionCreateMs,
-        'inference_ms': inferenceMs,
-        'total_ms': totalMs,
-        'frame_sha256': frameSha256,
-        'chunk_count': chunkCount,
-        'frame_count': frameCount,
-        'protected_seconds': protectedSeconds,
-        'error': error,
-        'comparison_to_baseline': <String, Object?>{
-          'exact_frame_match': exactFrameMatch,
-          'differing_frames': differingFrames,
-          'first_differing_frame': firstDifferingFrame,
-          'first_differing_second': firstDifferingFrame == null
-              ? null
-              : firstDifferingFrame! * PyannoteMobileService.frameStepSec,
-          'max_speaker_count_delta': maxSpeakerCountDelta,
-          'protected_seconds_delta': protectedSecondsDelta,
-          'protected_interval_time_iou': protectedIntervalIoU,
-          'speedup_vs_baseline': speedupVsBaseline,
-          'lost_active_frames': lostActiveFrames,
-          'added_active_frames': addedActiveFrames,
-          'changed_active_speaker_count_frames': changedActiveSpeakerCountFrames,
-          'lost_active_seconds': lostActiveSeconds,
-          'added_active_seconds': addedActiveSeconds,
-          'fully_missed_speech_intervals': fullyMissedSpeechIntervals,
-          'fully_missed_speech_seconds': fullyMissedSpeechSeconds,
-          'partial_missed_speech_intervals': partialMissedSpeechIntervals,
-          'protected_lost_seconds': protectedLostSeconds,
-          'protected_added_seconds': protectedAddedSeconds,
-          'max_contiguous_lost_ms': maxContiguousLostMs,
-          'boundary_lost_frames_250ms': boundaryLostFrames250ms,
-          'interior_lost_frames_250ms': interiorLostFrames250ms,
-          'boundary_only_candidate': boundaryOnlyCandidate,
-          'diff_runs': diffRuns,
-        },
-      };
+    'config': config.toJson(),
+    'success': success,
+    'session_create_ms': sessionCreateMs,
+    'inference_ms': inferenceMs,
+    'total_ms': totalMs,
+    'frame_sha256': frameSha256,
+    'chunk_count': chunkCount,
+    'frame_count': frameCount,
+    'protected_seconds': protectedSeconds,
+    'error': error,
+    'comparison_to_baseline': <String, Object?>{
+      'exact_frame_match': exactFrameMatch,
+      'differing_frames': differingFrames,
+      'first_differing_frame': firstDifferingFrame,
+      'first_differing_second': firstDifferingFrame == null
+          ? null
+          : firstDifferingFrame! * PyannoteMobileService.frameStepSec,
+      'max_speaker_count_delta': maxSpeakerCountDelta,
+      'protected_seconds_delta': protectedSecondsDelta,
+      'protected_interval_time_iou': protectedIntervalIoU,
+      'speedup_vs_baseline': speedupVsBaseline,
+      'lost_active_frames': lostActiveFrames,
+      'added_active_frames': addedActiveFrames,
+      'changed_active_speaker_count_frames': changedActiveSpeakerCountFrames,
+      'lost_active_seconds': lostActiveSeconds,
+      'added_active_seconds': addedActiveSeconds,
+      'fully_missed_speech_intervals': fullyMissedSpeechIntervals,
+      'fully_missed_speech_seconds': fullyMissedSpeechSeconds,
+      'partial_missed_speech_intervals': partialMissedSpeechIntervals,
+      'protected_lost_seconds': protectedLostSeconds,
+      'protected_added_seconds': protectedAddedSeconds,
+      'max_contiguous_lost_ms': maxContiguousLostMs,
+      'boundary_lost_frames_250ms': boundaryLostFrames250ms,
+      'interior_lost_frames_250ms': interiorLostFrames250ms,
+      'boundary_only_candidate': boundaryOnlyCandidate,
+      'diff_runs': diffRuns,
+    },
+  };
 }
 
 class PyannoteBenchmarkReport {
@@ -178,7 +178,6 @@ class PyannoteBenchmarkReport {
   final String reportJsonPath;
   final List<PyannoteBenchmarkOutcome> outcomes;
 }
-
 
 class PyannoteCandidateValidationReport {
   const PyannoteCandidateValidationReport({
@@ -208,171 +207,171 @@ class PyannoteBenchmarkService {
   static const List<int> _powersetSpeakerCounts = <int>[0, 1, 1, 1, 2, 2, 2];
 
   static List<PyannoteBenchmarkConfig> _configs() => <PyannoteBenchmarkConfig>[
-        const PyannoteBenchmarkConfig(
-          id: 'baseline_cpu_b32_t4_all_step1',
-          provider: 'CPUExecutionProvider',
-          batchSize: 32,
-          intraOpThreads: 4,
-          graphOptimization: GraphOptimizationLevel.ortEnableAll,
-          stepSec: 1.0,
-        ),
-        const PyannoteBenchmarkConfig(
-          id: 'cpu_b32_t1_all_step1',
-          provider: 'CPUExecutionProvider',
-          batchSize: 32,
-          intraOpThreads: 1,
-          graphOptimization: GraphOptimizationLevel.ortEnableAll,
-          stepSec: 1.0,
-        ),
-        const PyannoteBenchmarkConfig(
-          id: 'cpu_b32_t2_all_step1',
-          provider: 'CPUExecutionProvider',
-          batchSize: 32,
-          intraOpThreads: 2,
-          graphOptimization: GraphOptimizationLevel.ortEnableAll,
-          stepSec: 1.0,
-        ),
-        const PyannoteBenchmarkConfig(
-          id: 'cpu_b32_t6_all_step1',
-          provider: 'CPUExecutionProvider',
-          batchSize: 32,
-          intraOpThreads: 6,
-          graphOptimization: GraphOptimizationLevel.ortEnableAll,
-          stepSec: 1.0,
-        ),
-        const PyannoteBenchmarkConfig(
-          id: 'cpu_b16_t4_all_step1',
-          provider: 'CPUExecutionProvider',
-          batchSize: 16,
-          intraOpThreads: 4,
-          graphOptimization: GraphOptimizationLevel.ortEnableAll,
-          stepSec: 1.0,
-        ),
-        const PyannoteBenchmarkConfig(
-          id: 'cpu_b64_t4_all_step1',
-          provider: 'CPUExecutionProvider',
-          batchSize: 64,
-          intraOpThreads: 4,
-          graphOptimization: GraphOptimizationLevel.ortEnableAll,
-          stepSec: 1.0,
-        ),
-        const PyannoteBenchmarkConfig(
-          id: 'cpu_b96_t6_all_step1_aggressive',
-          provider: 'CPUExecutionProvider',
-          batchSize: 96,
-          intraOpThreads: 6,
-          graphOptimization: GraphOptimizationLevel.ortEnableAll,
-          stepSec: 1.0,
-        ),
-        const PyannoteBenchmarkConfig(
-          id: 'cpu_b32_t4_basic_step1',
-          provider: 'CPUExecutionProvider',
-          batchSize: 32,
-          intraOpThreads: 4,
-          graphOptimization: GraphOptimizationLevel.ortEnableBasic,
-          stepSec: 1.0,
-        ),
-        const PyannoteBenchmarkConfig(
-          id: 'cpu_b32_t4_extended_step1',
-          provider: 'CPUExecutionProvider',
-          batchSize: 32,
-          intraOpThreads: 4,
-          graphOptimization: GraphOptimizationLevel.ortEnableExtended,
-          stepSec: 1.0,
-        ),
-        const PyannoteBenchmarkConfig(
-          id: 'coreml_default_b32_t4_all_step1',
-          provider: 'CoreMLExecutionProvider',
-          batchSize: 32,
-          intraOpThreads: 4,
-          graphOptimization: GraphOptimizationLevel.ortEnableAll,
-          stepSec: 1.0,
-          coreMLFlags: CoreMLFlags.useNone,
-        ),
-        const PyannoteBenchmarkConfig(
-          id: 'coreml_subgraph_b32_t4_all_step1',
-          provider: 'CoreMLExecutionProvider',
-          batchSize: 32,
-          intraOpThreads: 4,
-          graphOptimization: GraphOptimizationLevel.ortEnableAll,
-          stepSec: 1.0,
-          coreMLFlags: CoreMLFlags.enableOnSubgraph,
-        ),
-        const PyannoteBenchmarkConfig(
-          id: 'coreml_ane_b32_t4_all_step1',
-          provider: 'CoreMLExecutionProvider',
-          batchSize: 32,
-          intraOpThreads: 4,
-          graphOptimization: GraphOptimizationLevel.ortEnableAll,
-          stepSec: 1.0,
-          coreMLFlags: CoreMLFlags.onlyEnableDeviceWithANE,
-        ),
-        const PyannoteBenchmarkConfig(
-          id: 'cpu_b64_t6_all_step1_5_aggressive',
-          provider: 'CPUExecutionProvider',
-          batchSize: 64,
-          intraOpThreads: 6,
-          graphOptimization: GraphOptimizationLevel.ortEnableAll,
-          stepSec: 1.5,
-        ),
-        const PyannoteBenchmarkConfig(
-          id: 'cpu_b64_t6_all_step2_aggressive',
-          provider: 'CPUExecutionProvider',
-          batchSize: 64,
-          intraOpThreads: 6,
-          graphOptimization: GraphOptimizationLevel.ortEnableAll,
-          stepSec: 2.0,
-        ),
-        const PyannoteBenchmarkConfig(
-          id: 'cpu_b64_t6_all_step2_5_aggressive',
-          provider: 'CPUExecutionProvider',
-          batchSize: 64,
-          intraOpThreads: 6,
-          graphOptimization: GraphOptimizationLevel.ortEnableAll,
-          stepSec: 2.5,
-        ),
-        const PyannoteBenchmarkConfig(
-          id: 'precision_cpu_b32_t4_all_step1_25',
-          provider: 'CPUExecutionProvider',
-          batchSize: 32,
-          intraOpThreads: 4,
-          graphOptimization: GraphOptimizationLevel.ortEnableAll,
-          stepSec: 1.25,
-        ),
-        const PyannoteBenchmarkConfig(
-          id: 'precision_cpu_b32_t4_all_step1_5',
-          provider: 'CPUExecutionProvider',
-          batchSize: 32,
-          intraOpThreads: 4,
-          graphOptimization: GraphOptimizationLevel.ortEnableAll,
-          stepSec: 1.5,
-        ),
-        const PyannoteBenchmarkConfig(
-          id: 'precision_cpu_b32_t4_all_step1_75',
-          provider: 'CPUExecutionProvider',
-          batchSize: 32,
-          intraOpThreads: 4,
-          graphOptimization: GraphOptimizationLevel.ortEnableAll,
-          stepSec: 1.75,
-        ),
-        const PyannoteBenchmarkConfig(
-          id: 'precision_cpu_b32_t4_all_step2_0',
-          provider: 'CPUExecutionProvider',
-          batchSize: 32,
-          intraOpThreads: 4,
-          graphOptimization: GraphOptimizationLevel.ortEnableAll,
-          stepSec: 2.0,
-        ),
-        const PyannoteBenchmarkConfig(
-          id: 'coreml_subgraph_b32_t4_all_step2_aggressive',
-          provider: 'CoreMLExecutionProvider',
-          batchSize: 32,
-          intraOpThreads: 4,
-          graphOptimization: GraphOptimizationLevel.ortEnableAll,
-          stepSec: 2.0,
-          coreMLFlags: CoreMLFlags.enableOnSubgraph,
-        ),
-      ];
+    const PyannoteBenchmarkConfig(
+      id: 'baseline_cpu_b32_t4_all_step1',
+      provider: 'CPUExecutionProvider',
+      batchSize: 32,
+      intraOpThreads: 4,
+      graphOptimization: GraphOptimizationLevel.ortEnableAll,
+      stepSec: 1.0,
+    ),
+    const PyannoteBenchmarkConfig(
+      id: 'cpu_b32_t1_all_step1',
+      provider: 'CPUExecutionProvider',
+      batchSize: 32,
+      intraOpThreads: 1,
+      graphOptimization: GraphOptimizationLevel.ortEnableAll,
+      stepSec: 1.0,
+    ),
+    const PyannoteBenchmarkConfig(
+      id: 'cpu_b32_t2_all_step1',
+      provider: 'CPUExecutionProvider',
+      batchSize: 32,
+      intraOpThreads: 2,
+      graphOptimization: GraphOptimizationLevel.ortEnableAll,
+      stepSec: 1.0,
+    ),
+    const PyannoteBenchmarkConfig(
+      id: 'cpu_b32_t6_all_step1',
+      provider: 'CPUExecutionProvider',
+      batchSize: 32,
+      intraOpThreads: 6,
+      graphOptimization: GraphOptimizationLevel.ortEnableAll,
+      stepSec: 1.0,
+    ),
+    const PyannoteBenchmarkConfig(
+      id: 'cpu_b16_t4_all_step1',
+      provider: 'CPUExecutionProvider',
+      batchSize: 16,
+      intraOpThreads: 4,
+      graphOptimization: GraphOptimizationLevel.ortEnableAll,
+      stepSec: 1.0,
+    ),
+    const PyannoteBenchmarkConfig(
+      id: 'cpu_b64_t4_all_step1',
+      provider: 'CPUExecutionProvider',
+      batchSize: 64,
+      intraOpThreads: 4,
+      graphOptimization: GraphOptimizationLevel.ortEnableAll,
+      stepSec: 1.0,
+    ),
+    const PyannoteBenchmarkConfig(
+      id: 'cpu_b96_t6_all_step1_aggressive',
+      provider: 'CPUExecutionProvider',
+      batchSize: 96,
+      intraOpThreads: 6,
+      graphOptimization: GraphOptimizationLevel.ortEnableAll,
+      stepSec: 1.0,
+    ),
+    const PyannoteBenchmarkConfig(
+      id: 'cpu_b32_t4_basic_step1',
+      provider: 'CPUExecutionProvider',
+      batchSize: 32,
+      intraOpThreads: 4,
+      graphOptimization: GraphOptimizationLevel.ortEnableBasic,
+      stepSec: 1.0,
+    ),
+    const PyannoteBenchmarkConfig(
+      id: 'cpu_b32_t4_extended_step1',
+      provider: 'CPUExecutionProvider',
+      batchSize: 32,
+      intraOpThreads: 4,
+      graphOptimization: GraphOptimizationLevel.ortEnableExtended,
+      stepSec: 1.0,
+    ),
+    const PyannoteBenchmarkConfig(
+      id: 'coreml_default_b32_t4_all_step1',
+      provider: 'CoreMLExecutionProvider',
+      batchSize: 32,
+      intraOpThreads: 4,
+      graphOptimization: GraphOptimizationLevel.ortEnableAll,
+      stepSec: 1.0,
+      coreMLFlags: CoreMLFlags.useNone,
+    ),
+    const PyannoteBenchmarkConfig(
+      id: 'coreml_subgraph_b32_t4_all_step1',
+      provider: 'CoreMLExecutionProvider',
+      batchSize: 32,
+      intraOpThreads: 4,
+      graphOptimization: GraphOptimizationLevel.ortEnableAll,
+      stepSec: 1.0,
+      coreMLFlags: CoreMLFlags.enableOnSubgraph,
+    ),
+    const PyannoteBenchmarkConfig(
+      id: 'coreml_ane_b32_t4_all_step1',
+      provider: 'CoreMLExecutionProvider',
+      batchSize: 32,
+      intraOpThreads: 4,
+      graphOptimization: GraphOptimizationLevel.ortEnableAll,
+      stepSec: 1.0,
+      coreMLFlags: CoreMLFlags.onlyEnableDeviceWithANE,
+    ),
+    const PyannoteBenchmarkConfig(
+      id: 'cpu_b64_t6_all_step1_5_aggressive',
+      provider: 'CPUExecutionProvider',
+      batchSize: 64,
+      intraOpThreads: 6,
+      graphOptimization: GraphOptimizationLevel.ortEnableAll,
+      stepSec: 1.5,
+    ),
+    const PyannoteBenchmarkConfig(
+      id: 'cpu_b64_t6_all_step2_aggressive',
+      provider: 'CPUExecutionProvider',
+      batchSize: 64,
+      intraOpThreads: 6,
+      graphOptimization: GraphOptimizationLevel.ortEnableAll,
+      stepSec: 2.0,
+    ),
+    const PyannoteBenchmarkConfig(
+      id: 'cpu_b64_t6_all_step2_5_aggressive',
+      provider: 'CPUExecutionProvider',
+      batchSize: 64,
+      intraOpThreads: 6,
+      graphOptimization: GraphOptimizationLevel.ortEnableAll,
+      stepSec: 2.5,
+    ),
+    const PyannoteBenchmarkConfig(
+      id: 'precision_cpu_b32_t4_all_step1_25',
+      provider: 'CPUExecutionProvider',
+      batchSize: 32,
+      intraOpThreads: 4,
+      graphOptimization: GraphOptimizationLevel.ortEnableAll,
+      stepSec: 1.25,
+    ),
+    const PyannoteBenchmarkConfig(
+      id: 'precision_cpu_b32_t4_all_step1_5',
+      provider: 'CPUExecutionProvider',
+      batchSize: 32,
+      intraOpThreads: 4,
+      graphOptimization: GraphOptimizationLevel.ortEnableAll,
+      stepSec: 1.5,
+    ),
+    const PyannoteBenchmarkConfig(
+      id: 'precision_cpu_b32_t4_all_step1_75',
+      provider: 'CPUExecutionProvider',
+      batchSize: 32,
+      intraOpThreads: 4,
+      graphOptimization: GraphOptimizationLevel.ortEnableAll,
+      stepSec: 1.75,
+    ),
+    const PyannoteBenchmarkConfig(
+      id: 'precision_cpu_b32_t4_all_step2_0',
+      provider: 'CPUExecutionProvider',
+      batchSize: 32,
+      intraOpThreads: 4,
+      graphOptimization: GraphOptimizationLevel.ortEnableAll,
+      stepSec: 2.0,
+    ),
+    const PyannoteBenchmarkConfig(
+      id: 'coreml_subgraph_b32_t4_all_step2_aggressive',
+      provider: 'CoreMLExecutionProvider',
+      batchSize: 32,
+      intraOpThreads: 4,
+      graphOptimization: GraphOptimizationLevel.ortEnableAll,
+      stepSec: 2.0,
+      coreMLFlags: CoreMLFlags.enableOnSubgraph,
+    ),
+  ];
 
   Future<PyannoteBenchmarkReport> run({
     required String sourcePath,
@@ -397,152 +396,166 @@ class PyannoteBenchmarkService {
       }
 
       final source = File(sourcePath);
-    final sourceExists = await source.exists();
-    final sourceBytes = sourceExists ? await source.length() : -1;
-    await AppLogger.log(
-      'PYANNOTE[BENCH] start source="$sourcePath" exists=$sourceExists '
-      'bytes=$sourceBytes limitSeconds=$benchmarkSeconds platform=${Platform.operatingSystem} '
-      'osVersion="${Platform.operatingSystemVersion}" processors=${Platform.numberOfProcessors}',
-    );
-    if (!sourceExists) {
-      throw StateError('PYANNOTE_BENCH_SOURCE_MISSING');
-    }
-
-    final documents = await getApplicationDocumentsDirectory();
-    final outputDir = Directory(p.join(documents.path, 'pyannote_benchmarks'));
-    await outputDir.create(recursive: true);
-    final stamp = DateTime.now().toUtc().toIso8601String().replaceAll(':', '-');
-    final sourceBase = p.basenameWithoutExtension(sourcePath)
-        .replaceAll(RegExp(r'[^A-Za-z0-9._-]+'), '_');
-    final wavPath = p.join(outputDir.path, '${sourceBase}_$stamp.benchmark10m.wav');
-    final jsonPath = p.join(outputDir.path, '${sourceBase}_$stamp.benchmark.json');
-
-    onProgress?.call(0.0);
-    await _createCanonicalTenMinuteWav(sourcePath, wavPath);
-    onProgress?.call(0.02);
-
-    final modelData = await rootBundle.load(PyannoteMobileService.modelAsset);
-    final modelBytes = modelData.buffer.asUint8List(
-      modelData.offsetInBytes,
-      modelData.lengthInBytes,
-    );
-    final modelHash = sha256.convert(modelBytes).toString();
-    await AppLogger.log(
-      'PYANNOTE[BENCH][MODEL] bytes=${modelBytes.length} sha256=$modelHash '
-      'expected=${PyannoteMobileService.expectedModelSha256}',
-    );
-    if (modelHash != PyannoteMobileService.expectedModelSha256) {
-      throw StateError('PYANNOTE_BENCH_MODEL_SHA256_MISMATCH');
-    }
-
-    try {
-      // Accessing ptr initializes the singleton environment if another pyannote
-      // test has not already initialized it.
-      OrtEnv.instance.ptr;
+      final sourceExists = await source.exists();
+      final sourceBytes = sourceExists ? await source.length() : -1;
       await AppLogger.log(
-        'PYANNOTE[BENCH][ORT] environment ready version=${OrtEnv.version} '
-        'availableProviders=${OrtEnv.instance.availableProviders().map((e) => e.value).toList()}',
+        'PYANNOTE[BENCH] start source="$sourcePath" exists=$sourceExists '
+        'bytes=$sourceBytes limitSeconds=$benchmarkSeconds platform=${Platform.operatingSystem} '
+        'osVersion="${Platform.operatingSystemVersion}" processors=${Platform.numberOfProcessors}',
       );
-    } catch (error, stackTrace) {
-      await AppLogger.log(
-        'PYANNOTE[BENCH][ORT] environment FAILED type=${error.runtimeType} '
-        'error=$error\n$stackTrace',
-      );
-      rethrow;
-    }
+      if (!sourceExists) {
+        throw StateError('PYANNOTE_BENCH_SOURCE_MISSING');
+      }
 
-    final configs = _configs();
-    final outcomes = <PyannoteBenchmarkOutcome>[];
-    PyannoteBenchmarkOutcome? baseline;
-
-    for (var index = 0; index < configs.length; index++) {
-      final config = configs[index];
-      await AppLogger.log(
-        'PYANNOTE[BENCH][CONFIG] ${index + 1}/${configs.length} START '
-        '${jsonEncode(config.toJson())}',
+      final documents = await getApplicationDocumentsDirectory();
+      final outputDir = Directory(
+        p.join(documents.path, 'pyannote_benchmarks'),
       );
-      PyannoteBenchmarkOutcome outcome;
+      await outputDir.create(recursive: true);
+      final stamp = DateTime.now().toUtc().toIso8601String().replaceAll(
+        ':',
+        '-',
+      );
+      final sourceBase = p
+          .basenameWithoutExtension(sourcePath)
+          .replaceAll(RegExp(r'[^A-Za-z0-9._-]+'), '_');
+      final wavPath = p.join(
+        outputDir.path,
+        '${sourceBase}_$stamp.benchmark10m.wav',
+      );
+      final jsonPath = p.join(
+        outputDir.path,
+        '${sourceBase}_$stamp.benchmark.json',
+      );
+
+      onProgress?.call(0.0);
+      await _createCanonicalTenMinuteWav(sourcePath, wavPath);
+      onProgress?.call(0.02);
+
+      final modelData = await rootBundle.load(PyannoteMobileService.modelAsset);
+      final modelBytes = modelData.buffer.asUint8List(
+        modelData.offsetInBytes,
+        modelData.lengthInBytes,
+      );
+      final modelHash = sha256.convert(modelBytes).toString();
+      await AppLogger.log(
+        'PYANNOTE[BENCH][MODEL] bytes=${modelBytes.length} sha256=$modelHash '
+        'expected=${PyannoteMobileService.expectedModelSha256}',
+      );
+      if (modelHash != PyannoteMobileService.expectedModelSha256) {
+        throw StateError('PYANNOTE_BENCH_MODEL_SHA256_MISMATCH');
+      }
+
       try {
-        outcome = await _runConfig(
-          wavPath: wavPath,
-          modelBytes: modelBytes,
-          config: config,
-          onProgress: (inner) {
-            final overall = 0.02 +
-                ((index + inner.clamp(0.0, 1.0)) / configs.length) * 0.96;
-            onProgress?.call(overall.clamp(0.0, 0.98));
-          },
+        // Accessing ptr initializes the singleton environment if another pyannote
+        // test has not already initialized it.
+        OrtEnv.instance.ptr;
+        await AppLogger.log(
+          'PYANNOTE[BENCH][ORT] environment ready version=${OrtEnv.version} '
+          'availableProviders=${OrtEnv.instance.availableProviders().map((e) => e.value).toList()}',
         );
       } catch (error, stackTrace) {
         await AppLogger.log(
-          'PYANNOTE[BENCH][CONFIG] ${config.id} FAILED '
-          'type=${error.runtimeType} error=$error\n$stackTrace',
+          'PYANNOTE[BENCH][ORT] environment FAILED type=${error.runtimeType} '
+          'error=$error\n$stackTrace',
         );
-        outcome = PyannoteBenchmarkOutcome(
-          config: config,
-          success: false,
-          sessionCreateMs: 0,
-          inferenceMs: 0,
-          totalMs: 0,
-          error: '$error',
+        rethrow;
+      }
+
+      final configs = _configs();
+      final outcomes = <PyannoteBenchmarkOutcome>[];
+      PyannoteBenchmarkOutcome? baseline;
+
+      for (var index = 0; index < configs.length; index++) {
+        final config = configs[index];
+        await AppLogger.log(
+          'PYANNOTE[BENCH][CONFIG] ${index + 1}/${configs.length} START '
+          '${jsonEncode(config.toJson())}',
+        );
+        PyannoteBenchmarkOutcome outcome;
+        try {
+          outcome = await _runConfig(
+            wavPath: wavPath,
+            modelBytes: modelBytes,
+            config: config,
+            onProgress: (inner) {
+              final overall =
+                  0.02 +
+                  ((index + inner.clamp(0.0, 1.0)) / configs.length) * 0.96;
+              onProgress?.call(overall.clamp(0.0, 0.98));
+            },
+          );
+        } catch (error, stackTrace) {
+          await AppLogger.log(
+            'PYANNOTE[BENCH][CONFIG] ${config.id} FAILED '
+            'type=${error.runtimeType} error=$error\n$stackTrace',
+          );
+          outcome = PyannoteBenchmarkOutcome(
+            config: config,
+            success: false,
+            sessionCreateMs: 0,
+            inferenceMs: 0,
+            totalMs: 0,
+            error: '$error',
+          );
+        }
+
+        if (index == 0 && outcome.success) {
+          baseline = outcome;
+          outcome = _withComparison(outcome, outcome);
+        } else if (outcome.success && baseline != null) {
+          outcome = _withComparison(outcome, baseline);
+        }
+        outcomes.add(outcome);
+        await _logOutcome(outcome, baseline);
+      }
+
+      final successful = outcomes.where((e) => e.success).toList()
+        ..sort((a, b) => a.totalMs.compareTo(b.totalMs));
+      await AppLogger.log('PYANNOTE[BENCH][SUMMARY] ===== FINAL RANKING =====');
+      for (var i = 0; i < successful.length; i++) {
+        final item = successful[i];
+        await AppLogger.log(
+          'PYANNOTE[BENCH][SUMMARY] rank=${i + 1} id=${item.config.id} '
+          'provider=${item.config.provider} batch=${item.config.batchSize} '
+          'threads=${item.config.intraOpThreads} step=${item.config.stepSec} '
+          'graph=${item.config.graphOptimization.name} totalMs=${item.totalMs} '
+          'inferenceMs=${item.inferenceMs} speedup=${item.speedupVsBaseline?.toStringAsFixed(3)} '
+          'exact=${item.exactFrameMatch} differingFrames=${item.differingFrames} '
+          'iou=${item.protectedIntervalIoU?.toStringAsFixed(9)} '
+          'protectedDelta=${item.protectedSecondsDelta?.toStringAsFixed(6)} '
+          'lostFrames=${item.lostActiveFrames} addedFrames=${item.addedActiveFrames} '
+          'fullyMissed=${item.fullyMissedSpeechIntervals} '
+          'protectedLost=${item.protectedLostSeconds?.toStringAsFixed(6)} '
+          'boundaryOnly=${item.boundaryOnlyCandidate}',
         );
       }
 
-      if (index == 0 && outcome.success) {
-        baseline = outcome;
-        outcome = _withComparison(outcome, outcome);
-      } else if (outcome.success && baseline != null) {
-        outcome = _withComparison(outcome, baseline);
-      }
-      outcomes.add(outcome);
-      await _logOutcome(outcome, baseline);
-    }
-
-    final successful = outcomes.where((e) => e.success).toList()
-      ..sort((a, b) => a.totalMs.compareTo(b.totalMs));
-    await AppLogger.log('PYANNOTE[BENCH][SUMMARY] ===== FINAL RANKING =====');
-    for (var i = 0; i < successful.length; i++) {
-      final item = successful[i];
-      await AppLogger.log(
-        'PYANNOTE[BENCH][SUMMARY] rank=${i + 1} id=${item.config.id} '
-        'provider=${item.config.provider} batch=${item.config.batchSize} '
-        'threads=${item.config.intraOpThreads} step=${item.config.stepSec} '
-        'graph=${item.config.graphOptimization.name} totalMs=${item.totalMs} '
-        'inferenceMs=${item.inferenceMs} speedup=${item.speedupVsBaseline?.toStringAsFixed(3)} '
-        'exact=${item.exactFrameMatch} differingFrames=${item.differingFrames} '
-        'iou=${item.protectedIntervalIoU?.toStringAsFixed(9)} '
-        'protectedDelta=${item.protectedSecondsDelta?.toStringAsFixed(6)} '
-        'lostFrames=${item.lostActiveFrames} addedFrames=${item.addedActiveFrames} '
-        'fullyMissed=${item.fullyMissedSpeechIntervals} '
-        'protectedLost=${item.protectedLostSeconds?.toStringAsFixed(6)} '
-        'boundaryOnly=${item.boundaryOnlyCandidate}',
+      final payload = <String, Object?>{
+        'schema': 'sonarpad_pyannote_benchmark_v1',
+        'created_at_utc': DateTime.now().toUtc().toIso8601String(),
+        'source_file': p.basename(sourcePath),
+        'canonical_wav_file': p.basename(wavPath),
+        'benchmark_seconds': benchmarkSeconds,
+        'model_sha256': modelHash,
+        'onnxruntime_version': OrtEnv.version,
+        'platform': Platform.operatingSystem,
+        'os_version': Platform.operatingSystemVersion,
+        'processors': Platform.numberOfProcessors,
+        'total_benchmark_elapsed_ms': DateTime.now()
+            .difference(started)
+            .inMilliseconds,
+        'results': outcomes.map((e) => e.toJson()).toList(),
+      };
+      await File(jsonPath).writeAsString(
+        const JsonEncoder.withIndent('  ').convert(payload),
+        flush: true,
       );
-    }
-
-    final payload = <String, Object?>{
-      'schema': 'sonarpad_pyannote_benchmark_v1',
-      'created_at_utc': DateTime.now().toUtc().toIso8601String(),
-      'source_file': p.basename(sourcePath),
-      'canonical_wav_file': p.basename(wavPath),
-      'benchmark_seconds': benchmarkSeconds,
-      'model_sha256': modelHash,
-      'onnxruntime_version': OrtEnv.version,
-      'platform': Platform.operatingSystem,
-      'os_version': Platform.operatingSystemVersion,
-      'processors': Platform.numberOfProcessors,
-      'total_benchmark_elapsed_ms':
-          DateTime.now().difference(started).inMilliseconds,
-      'results': outcomes.map((e) => e.toJson()).toList(),
-    };
-    await File(jsonPath).writeAsString(
-      const JsonEncoder.withIndent('  ').convert(payload),
-      flush: true,
-    );
-    await AppLogger.log(
-      'PYANNOTE[BENCH] report written path="$jsonPath" bytes=${await File(jsonPath).length()} '
-      'totalElapsedMs=${DateTime.now().difference(started).inMilliseconds}',
-    );
-    onProgress?.call(1.0);
+      await AppLogger.log(
+        'PYANNOTE[BENCH] report written path="$jsonPath" bytes=${await File(jsonPath).length()} '
+        'totalElapsedMs=${DateTime.now().difference(started).inMilliseconds}',
+      );
+      onProgress?.call(1.0);
       return PyannoteBenchmarkReport(
         canonicalWavPath: wavPath,
         reportJsonPath: jsonPath,
@@ -562,6 +575,268 @@ class PyannoteBenchmarkService {
         } catch (error, stackTrace) {
           await AppLogger.log(
             'PYANNOTE[BENCH][WAKELOCK] restore FAILED type=${error.runtimeType} error=$error\n$stackTrace',
+          );
+        }
+      }
+    }
+  }
+
+  Future<PyannoteBenchmarkReport> runXnnpackBenchmark({
+    required String sourcePath,
+    void Function(double progress)? onProgress,
+  }) async {
+    final started = DateTime.now();
+    bool? wakelockWasEnabled;
+    try {
+      try {
+        wakelockWasEnabled = await WakelockPlus.enabled;
+        await AppLogger.log(
+          'PYANNOTE[XNNPACK][WAKELOCK] before enabled=$wakelockWasEnabled; enabling',
+        );
+        await WakelockPlus.enable();
+        await AppLogger.log(
+          'PYANNOTE[XNNPACK][WAKELOCK] enabled=${await WakelockPlus.enabled}',
+        );
+      } catch (error, stackTrace) {
+        await AppLogger.log(
+          'PYANNOTE[XNNPACK][WAKELOCK] enable FAILED '
+          'type=${error.runtimeType} error=$error\n$stackTrace',
+        );
+      }
+
+      final source = File(sourcePath);
+      final sourceExists = await source.exists();
+      final sourceBytes = sourceExists ? await source.length() : -1;
+      await AppLogger.log(
+        'PYANNOTE[XNNPACK] start source="$sourcePath" exists=$sourceExists '
+        'bytes=$sourceBytes limitSeconds=$benchmarkSeconds '
+        'platform=${Platform.operatingSystem} '
+        'osVersion="${Platform.operatingSystemVersion}" '
+        'processors=${Platform.numberOfProcessors}',
+      );
+      if (!sourceExists) {
+        throw StateError('PYANNOTE_XNNPACK_SOURCE_MISSING');
+      }
+
+      final documents = await getApplicationDocumentsDirectory();
+      final outputDir = Directory(
+        p.join(documents.path, 'pyannote_benchmarks'),
+      );
+      await outputDir.create(recursive: true);
+      final stamp = DateTime.now().toUtc().toIso8601String().replaceAll(
+        ':',
+        '-',
+      );
+      final sourceBase = p
+          .basenameWithoutExtension(sourcePath)
+          .replaceAll(RegExp(r'[^A-Za-z0-9._-]+'), '_');
+      final wavPath = p.join(
+        outputDir.path,
+        '${sourceBase}_$stamp.xnnpack10m.wav',
+      );
+      final jsonPath = p.join(
+        outputDir.path,
+        '${sourceBase}_$stamp.xnnpack.json',
+      );
+
+      onProgress?.call(0.0);
+      await _createCanonicalTenMinuteWav(sourcePath, wavPath);
+      onProgress?.call(0.05);
+
+      final modelData = await rootBundle.load(PyannoteMobileService.modelAsset);
+      final modelBytes = modelData.buffer.asUint8List(
+        modelData.offsetInBytes,
+        modelData.lengthInBytes,
+      );
+      final modelHash = sha256.convert(modelBytes).toString();
+      if (modelHash != PyannoteMobileService.expectedModelSha256) {
+        throw StateError('PYANNOTE_XNNPACK_MODEL_SHA256_MISMATCH');
+      }
+
+      OrtEnv.instance.ptr;
+      final providers = OrtEnv.instance.availableProviders();
+      final xnnpackAvailable = providers.contains(OrtProvider.xnnpack);
+      await AppLogger.log(
+        'PYANNOTE[XNNPACK][ORT] version=${OrtEnv.version} '
+        'availableProviders=${providers.map((e) => e.value).toList()} '
+        'xnnpackAvailable=$xnnpackAvailable',
+      );
+      if (!xnnpackAvailable) {
+        throw StateError('PYANNOTE_XNNPACK_PROVIDER_UNAVAILABLE');
+      }
+
+      final configs = <PyannoteBenchmarkConfig>[
+        const PyannoteBenchmarkConfig(
+          id: 'xnn_ref_cpu_b32_t4_step1',
+          provider: 'CPUExecutionProvider',
+          batchSize: 32,
+          intraOpThreads: 4,
+          graphOptimization: GraphOptimizationLevel.ortEnableAll,
+          stepSec: 1.0,
+          paddingSec: 0.25,
+        ),
+        const PyannoteBenchmarkConfig(
+          id: 'xnnpack_b32_t2_step1',
+          provider: 'XnnpackExecutionProvider',
+          batchSize: 32,
+          intraOpThreads: 2,
+          graphOptimization: GraphOptimizationLevel.ortEnableAll,
+          stepSec: 1.0,
+          paddingSec: 0.25,
+        ),
+        const PyannoteBenchmarkConfig(
+          id: 'xnnpack_b32_t4_step1',
+          provider: 'XnnpackExecutionProvider',
+          batchSize: 32,
+          intraOpThreads: 4,
+          graphOptimization: GraphOptimizationLevel.ortEnableAll,
+          stepSec: 1.0,
+          paddingSec: 0.25,
+        ),
+        const PyannoteBenchmarkConfig(
+          id: 'xnnpack_b32_t6_step1',
+          provider: 'XnnpackExecutionProvider',
+          batchSize: 32,
+          intraOpThreads: 6,
+          graphOptimization: GraphOptimizationLevel.ortEnableAll,
+          stepSec: 1.0,
+          paddingSec: 0.25,
+        ),
+      ];
+
+      final outcomes = <PyannoteBenchmarkOutcome>[];
+      PyannoteBenchmarkOutcome? baseline;
+
+      for (var index = 0; index < configs.length; index++) {
+        final config = configs[index];
+        await AppLogger.log(
+          'PYANNOTE[XNNPACK][CONFIG] ${index + 1}/${configs.length} START '
+          '${jsonEncode(config.toJson())}',
+        );
+        PyannoteBenchmarkOutcome outcome;
+        try {
+          outcome = await _runConfig(
+            wavPath: wavPath,
+            modelBytes: modelBytes,
+            config: config,
+            onProgress: (inner) {
+              final overall =
+                  0.05 +
+                  ((index + inner.clamp(0.0, 1.0)) / configs.length) * 0.90;
+              onProgress?.call(overall.clamp(0.0, 0.95));
+            },
+          );
+        } catch (error, stackTrace) {
+          await AppLogger.log(
+            'PYANNOTE[XNNPACK][CONFIG] ${config.id} FAILED '
+            'type=${error.runtimeType} error=$error\n$stackTrace',
+          );
+          outcome = PyannoteBenchmarkOutcome(
+            config: config,
+            success: false,
+            sessionCreateMs: 0,
+            inferenceMs: 0,
+            totalMs: 0,
+            error: '$error',
+          );
+        }
+
+        if (index == 0 && outcome.success) {
+          baseline = outcome;
+          outcome = _withComparison(outcome, outcome);
+        } else if (outcome.success && baseline != null) {
+          outcome = _withComparison(outcome, baseline);
+        }
+        outcomes.add(outcome);
+
+        await AppLogger.log(
+          'PYANNOTE[XNNPACK][RESULT] id=${config.id} '
+          'success=${outcome.success} provider=${config.provider} '
+          'threads=${config.intraOpThreads} '
+          'sessionCreateMs=${outcome.sessionCreateMs} '
+          'inferenceMs=${outcome.inferenceMs} totalMs=${outcome.totalMs} '
+          'frameSha256=${outcome.frameSha256} '
+          'exact=${outcome.exactFrameMatch} '
+          'differingFrames=${outcome.differingFrames} '
+          'protectedLost=${outcome.protectedLostSeconds?.toStringAsFixed(6)} '
+          'speedup=${outcome.speedupVsBaseline?.toStringAsFixed(3)} '
+          'error=${outcome.error}',
+        );
+      }
+
+      final exactXnnpack =
+          outcomes
+              .where(
+                (item) =>
+                    item.success &&
+                    item.config.provider == OrtProvider.xnnpack.value &&
+                    item.exactFrameMatch == true &&
+                    (item.differingFrames ?? -1) == 0 &&
+                    (item.protectedLostSeconds ?? double.infinity) <= 0.000001,
+              )
+              .toList()
+            ..sort((a, b) => a.inferenceMs.compareTo(b.inferenceMs));
+
+      final best = exactXnnpack.isEmpty ? null : exactXnnpack.first;
+      await AppLogger.log(
+        'PYANNOTE[XNNPACK][FINAL] '
+        'baselineInferenceMs=${baseline?.inferenceMs} '
+        'baselineHash=${baseline?.frameSha256} '
+        'exactCandidates=${exactXnnpack.length} '
+        'best=${best?.config.id} '
+        'bestInferenceMs=${best?.inferenceMs} '
+        'bestHash=${best?.frameSha256} '
+        'bestSpeedup=${best?.speedupVsBaseline?.toStringAsFixed(3)} '
+        'allExact=${exactXnnpack.length == 3}',
+      );
+
+      final payload = <String, Object?>{
+        'schema': 'sonarpad_pyannote_xnnpack_benchmark_v1',
+        'created_at_utc': DateTime.now().toUtc().toIso8601String(),
+        'source_file': p.basename(sourcePath),
+        'canonical_wav_file': p.basename(wavPath),
+        'benchmark_seconds': benchmarkSeconds,
+        'model_sha256': modelHash,
+        'onnxruntime_version': OrtEnv.version,
+        'platform': Platform.operatingSystem,
+        'os_version': Platform.operatingSystemVersion,
+        'processors': Platform.numberOfProcessors,
+        'xnnpack_available': xnnpackAvailable,
+        'total_elapsed_ms': DateTime.now().difference(started).inMilliseconds,
+        'best_exact_xnnpack': best?.config.id,
+        'results': outcomes.map((e) => e.toJson()).toList(),
+      };
+      await File(jsonPath).writeAsString(
+        const JsonEncoder.withIndent('  ').convert(payload),
+        flush: true,
+      );
+      await AppLogger.log(
+        'PYANNOTE[XNNPACK] report written path="$jsonPath" '
+        'bytes=${await File(jsonPath).length()}',
+      );
+      onProgress?.call(1.0);
+      return PyannoteBenchmarkReport(
+        canonicalWavPath: wavPath,
+        reportJsonPath: jsonPath,
+        outcomes: outcomes,
+      );
+    } finally {
+      if (wakelockWasEnabled != null) {
+        try {
+          if (wakelockWasEnabled) {
+            await WakelockPlus.enable();
+          } else {
+            await WakelockPlus.disable();
+          }
+          await AppLogger.log(
+            'PYANNOTE[XNNPACK][WAKELOCK] restored '
+            'enabled=${await WakelockPlus.enabled} '
+            'previous=$wakelockWasEnabled',
+          );
+        } catch (error, stackTrace) {
+          await AppLogger.log(
+            'PYANNOTE[XNNPACK][WAKELOCK] restore FAILED '
+            'type=${error.runtimeType} error=$error\n$stackTrace',
           );
         }
       }
@@ -613,10 +888,16 @@ class PyannoteBenchmarkService {
       );
 
       final documents = await getApplicationDocumentsDirectory();
-      final outputDir = Directory(p.join(documents.path, 'pyannote_benchmarks'));
+      final outputDir = Directory(
+        p.join(documents.path, 'pyannote_benchmarks'),
+      );
       await outputDir.create(recursive: true);
-      final stamp = DateTime.now().toUtc().toIso8601String().replaceAll(':', '-');
-      final sourceBase = p.basenameWithoutExtension(sourcePath)
+      final stamp = DateTime.now().toUtc().toIso8601String().replaceAll(
+        ':',
+        '-',
+      );
+      final sourceBase = p
+          .basenameWithoutExtension(sourcePath)
           .replaceAll(RegExp(r'[^A-Za-z0-9._-]+'), '_');
       final reportPath = p.join(
         outputDir.path,
@@ -691,7 +972,8 @@ class PyannoteBenchmarkService {
             modelBytes: modelBytes,
             config: baselineConfig,
             onProgress: (inner) {
-              final overall = (completedRuns + inner.clamp(0.0, 1.0)) / totalRuns;
+              final overall =
+                  (completedRuns + inner.clamp(0.0, 1.0)) / totalRuns;
               onProgress?.call(overall.clamp(0.0, 0.999));
             },
           );
@@ -704,7 +986,8 @@ class PyannoteBenchmarkService {
             modelBytes: modelBytes,
             config: candidateConfig,
             onProgress: (inner) {
-              final overall = (completedRuns + inner.clamp(0.0, 1.0)) / totalRuns;
+              final overall =
+                  (completedRuns + inner.clamp(0.0, 1.0)) / totalRuns;
               onProgress?.call(overall.clamp(0.0, 0.999));
             },
           );
@@ -717,15 +1000,15 @@ class PyannoteBenchmarkService {
           totalInteriorLost += candidate.interiorLostFrames250ms ?? 0;
           totalLostFrames += candidate.lostActiveFrames ?? 0;
           totalAddedFrames += candidate.addedActiveFrames ?? 0;
-          maxContiguousLostMs = math.max(
-            maxContiguousLostMs,
-            candidate.maxContiguousLostMs ?? 0.0,
-          ).toDouble();
+          maxContiguousLostMs = math
+              .max(maxContiguousLostMs, candidate.maxContiguousLostMs ?? 0.0)
+              .toDouble();
 
           final clipSpeedup = candidate.inferenceMs > 0
               ? baseline.inferenceMs / candidate.inferenceMs
               : 0.0;
-          final clipPass = (candidate.protectedLostSeconds ?? double.infinity) <= 0.001 &&
+          final clipPass =
+              (candidate.protectedLostSeconds ?? double.infinity) <= 0.001 &&
               (candidate.fullyMissedSpeechIntervals ?? 1) == 0 &&
               (candidate.interiorLostFrames250ms ?? 1) == 0;
           await AppLogger.log(
@@ -767,7 +1050,8 @@ class PyannoteBenchmarkService {
       final speedup = candidateInferenceMs > 0
           ? baselineInferenceMs / candidateInferenceMs
           : 0.0;
-      final passed = totalProtectedLostSeconds <= 0.001 &&
+      final passed =
+          totalProtectedLostSeconds <= 0.001 &&
           totalFullyMissed == 0 &&
           totalInteriorLost == 0;
       await AppLogger.log(
@@ -995,11 +1279,30 @@ class PyannoteBenchmarkService {
         await AppLogger.log(
           'PYANNOTE[BENCH][COREML] append result id=${config.id} appended=$appended',
         );
+      } else if (config.provider == OrtProvider.xnnpack.value) {
+        await AppLogger.log(
+          'PYANNOTE[BENCH][XNNPACK] append provider id=${config.id} '
+          'xnnpackThreads=${config.intraOpThreads}',
+        );
+        final appended = options.appendXnnpackProvider();
+        await AppLogger.log(
+          'PYANNOTE[BENCH][XNNPACK] append result id=${config.id} appended=$appended',
+        );
+        if (!appended) {
+          throw StateError('PYANNOTE_XNNPACK_APPEND_FAILED');
+        }
+        options.setIntraOpNumThreads(1);
+        await AppLogger.log(
+          'PYANNOTE[BENCH][XNNPACK] id=${config.id} '
+          'xnnpackThreads=${config.intraOpThreads} ortIntraOpThreads=1',
+        );
       }
 
       final sessionStarted = DateTime.now();
       session = OrtSession.fromBuffer(modelBytes, options);
-      sessionCreateMs = DateTime.now().difference(sessionStarted).inMilliseconds;
+      sessionCreateMs = DateTime.now()
+          .difference(sessionStarted)
+          .inMilliseconds;
       await AppLogger.log(
         'PYANNOTE[BENCH][SESSION] id=${config.id} createdMs=$sessionCreateMs '
         'inputs=${session.inputNames} outputs=${session.outputNames}',
@@ -1015,8 +1318,9 @@ class PyannoteBenchmarkService {
         config: config,
         onProgress: onProgress,
       );
-      final inferenceMs =
-          DateTime.now().difference(inferenceStarted).inMilliseconds;
+      final inferenceMs = DateTime.now()
+          .difference(inferenceStarted)
+          .inMilliseconds;
       final totalMs = DateTime.now().difference(totalStarted).inMilliseconds;
       return PyannoteBenchmarkOutcome(
         config: config,
@@ -1046,7 +1350,9 @@ class PyannoteBenchmarkService {
   }) async {
     final wav = await _Pcm16Wave.open(wavPath);
     try {
-      if (wav.channels != 1 || wav.bitsPerSample != 16 || wav.audioFormat != 1) {
+      if (wav.channels != 1 ||
+          wav.bitsPerSample != 16 ||
+          wav.audioFormat != 1) {
         throw StateError('PYANNOTE_BENCH_WAV_FORMAT_INVALID');
       }
       if (wav.sampleRate != PyannoteMobileService.sampleRate) {
@@ -1064,8 +1370,8 @@ class PyannoteBenchmarkService {
       );
       final summed = Float64List(aggregateFrameCount);
       final contributors = Uint16List(aggregateFrameCount);
-      final windowSamples =
-          (PyannoteMobileService.windowSec * wav.sampleRate).round();
+      final windowSamples = (PyannoteMobileService.windowSec * wav.sampleRate)
+          .round();
       final inputName = session.inputNames.first;
       final totalBatches =
           (chunkCount + config.batchSize - 1) ~/ config.batchSize;
@@ -1078,13 +1384,17 @@ class PyannoteBenchmarkService {
         'batch=${config.batchSize} threads=${config.intraOpThreads} step=${config.stepSec} padding=${config.paddingSec}',
       );
 
-      for (var batchStart = 0;
-          batchStart < chunkCount;
-          batchStart += config.batchSize) {
+      for (
+        var batchStart = 0;
+        batchStart < chunkCount;
+        batchStart += config.batchSize
+      ) {
         batchNumber++;
         final batchStarted = DateTime.now();
-        final currentBatchSize =
-            math.min(config.batchSize, chunkCount - batchStart);
+        final currentBatchSize = math.min(
+          config.batchSize,
+          chunkCount - batchStart,
+        );
         final batch = Float32List(currentBatchSize * windowSamples);
         for (var row = 0; row < currentBatchSize; row++) {
           await wav.readNormalizedInto(
@@ -1095,17 +1405,17 @@ class PyannoteBenchmarkService {
           );
         }
 
-        final input = OrtValueTensor.createTensorWithDataList(
-          batch,
-          <int>[currentBatchSize, 1, windowSamples],
-        );
+        final input = OrtValueTensor.createTensorWithDataList(batch, <int>[
+          currentBatchSize,
+          1,
+          windowSamples,
+        ]);
         final runOptions = OrtRunOptions();
         List<OrtValue?>? outputs;
         try {
-          outputs = await session.runAsync(
-            runOptions,
-            <String, OrtValue>{inputName: input},
-          );
+          outputs = await session.runAsync(runOptions, <String, OrtValue>{
+            inputName: input,
+          });
           if (outputs == null || outputs.isEmpty || outputs.first == null) {
             throw StateError('PYANNOTE_BENCH_RUNTIME_NO_OUTPUT');
           }
@@ -1188,7 +1498,8 @@ class PyannoteBenchmarkService {
       final kind = activeKind;
       if (kind == null) return;
       final startSec = runStart * PyannoteMobileService.frameStepSec;
-      final unclampedEnd = runEnd * PyannoteMobileService.frameStepSec +
+      final unclampedEnd =
+          runEnd * PyannoteMobileService.frameStepSec +
           PyannoteMobileService.frameDurationSec;
       final endSec = math.min(benchmarkSeconds, unclampedEnd);
       final durationMs = math.max(0.0, endSec - startSec) * 1000.0;
@@ -1196,7 +1507,8 @@ class PyannoteBenchmarkService {
       if (kind == 'lost') {
         nearBoundary = true;
         for (var frame = runStart; frame <= runEnd; frame++) {
-          final center = frame * PyannoteMobileService.frameStepSec +
+          final center =
+              frame * PyannoteMobileService.frameStepSec +
               PyannoteMobileService.frameDurationSec / 2.0;
           if (!_isNearAnyBoundary(
             center,
@@ -1234,7 +1546,8 @@ class PyannoteBenchmarkService {
         if (a > 0 && b == 0) {
           kind = 'lost';
           lostActiveFrames++;
-          final center = i * PyannoteMobileService.frameStepSec +
+          final center =
+              i * PyannoteMobileService.frameStepSec +
               PyannoteMobileService.frameDurationSec / 2.0;
           if (_isNearAnyBoundary(
             center,
@@ -1301,17 +1614,22 @@ class PyannoteBenchmarkService {
     final rawIntersection = _intersectionSeconds(baseRaw, currentRaw);
     final baseRawSeconds = _intervalSeconds(baseRaw);
     final currentRawSeconds = _intervalSeconds(currentRaw);
-    final lostActiveSeconds = math.max(0.0, baseRawSeconds - rawIntersection).toDouble();
-    final addedActiveSeconds = math.max(0.0, currentRawSeconds - rawIntersection).toDouble();
-    final maxContiguousLostMs = lostRuns.fold<double>(
-      0.0,
-      (value, run) {
-        final duration = (run['duration_ms'] as num).toDouble();
-        return duration > value ? duration : value;
-      },
-    );
-    final protectedLostSeconds = math.max(0.0, baseSeconds - intersection).toDouble();
-    final protectedAddedSeconds = math.max(0.0, currentSeconds - intersection).toDouble();
+    final lostActiveSeconds = math
+        .max(0.0, baseRawSeconds - rawIntersection)
+        .toDouble();
+    final addedActiveSeconds = math
+        .max(0.0, currentRawSeconds - rawIntersection)
+        .toDouble();
+    final maxContiguousLostMs = lostRuns.fold<double>(0.0, (value, run) {
+      final duration = (run['duration_ms'] as num).toDouble();
+      return duration > value ? duration : value;
+    });
+    final protectedLostSeconds = math
+        .max(0.0, baseSeconds - intersection)
+        .toDouble();
+    final protectedAddedSeconds = math
+        .max(0.0, currentSeconds - intersection)
+        .toDouble();
     final boundaryOnlyCandidate =
         lostActiveFrames > 0 &&
         fullyMissedSpeechIntervals == 0 &&
@@ -1381,7 +1699,8 @@ class PyannoteBenchmarkService {
       if (other.start >= interval.end) break;
       total += math.max(
         0.0,
-        math.min(interval.end, other.end) - math.max(interval.start, other.start),
+        math.min(interval.end, other.end) -
+            math.max(interval.start, other.start),
       );
     }
     return total;
@@ -1473,9 +1792,11 @@ class PyannoteBenchmarkService {
         }
         var bestIndex = 0;
         var bestScore = (scores[0] as num).toDouble();
-        for (var classIndex = 1;
-            classIndex < _powersetSpeakerCounts.length;
-            classIndex++) {
+        for (
+          var classIndex = 1;
+          classIndex < _powersetSpeakerCounts.length;
+          classIndex++
+        ) {
           final score = (scores[classIndex] as num).toDouble();
           if (score > bestScore) {
             bestScore = score;
@@ -1495,13 +1816,14 @@ class PyannoteBenchmarkService {
     int sourceRate,
     double stepSec,
   ) {
-    final windowSamples =
-        (PyannoteMobileService.windowSec * sourceRate).round();
+    final windowSamples = (PyannoteMobileService.windowSec * sourceRate)
+        .round();
     final stepSamples = (stepSec * sourceRate).round();
     final completeCount = numSamples >= windowSamples
         ? 1 + (numSamples - windowSamples) ~/ stepSamples
         : 0;
-    final hasLastChunk = numSamples < windowSamples ||
+    final hasLastChunk =
+        numSamples < windowSamples ||
         ((numSamples - windowSamples) % stepSamples > 0);
     final starts = List<int>.generate(
       completeCount,
@@ -1514,7 +1836,8 @@ class PyannoteBenchmarkService {
 
   static int _aggregateFrameCount(int chunkCount, double stepSec) {
     if (chunkCount <= 0) return 0;
-    final endTime = PyannoteMobileService.windowSec +
+    final endTime =
+        PyannoteMobileService.windowSec +
         (chunkCount - 1) * stepSec +
         0.5 * PyannoteMobileService.frameDurationSec;
     return _closestSegmentationFrame(endTime) + 1;
@@ -1607,7 +1930,10 @@ class PyannoteBenchmarkService {
     while (i < left.length && j < right.length) {
       final a = left[i];
       final b = right[j];
-      total += math.max(0.0, math.min(a.end, b.end) - math.max(a.start, b.start));
+      total += math.max(
+        0.0,
+        math.min(a.end, b.end) - math.max(a.start, b.start),
+      );
       if (a.end <= b.end) {
         i++;
       } else {

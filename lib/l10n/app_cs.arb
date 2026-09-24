@@ -3072,5 +3072,17 @@
   "pyannoteCandidateValidationFailed": "Ověření dokončeno: krok 2 + odsazení 0,35 nesplnil všechna bezpečnostní kritéria. Podrobnosti jsou v protokolu.",
   "@pyannoteCandidateValidationFailed": {
     "description": "Localized text for pyannoteCandidateValidationFailed."
+  },
+  "pyannoteXnnpackBenchmark10Min": "Benchmark CPU vs XNNPACK: prvních 10 minut",
+  "@pyannoteXnnpackBenchmark10Min": {
+    "description": "Localized text for pyannoteXnnpackBenchmark10Min."
+  },
+  "pyannoteXnnpackBenchmarkPreparing": "Porovnávání CPU a XNNPACK na prvních 10 minutách...",
+  "@pyannoteXnnpackBenchmarkPreparing": {
+    "description": "Localized text for pyannoteXnnpackBenchmarkPreparing."
+  },
+  "pyannoteXnnpackBenchmarkCompleted": "Benchmark CPU vs XNNPACK dokončen. Zkontrolujte protokol pro shodu a rychlost.",
+  "@pyannoteXnnpackBenchmarkCompleted": {
+    "description": "Localized text for pyannoteXnnpackBenchmarkCompleted."
   }
 }

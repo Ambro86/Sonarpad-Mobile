@@ -3924,6 +3924,18 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get pyannoteCandidateValidationFailed =>
       'Validação concluída: passo 2 + margem 0,35 não passou em todos os critérios de segurança. Consulte o log para detalhes.';
+
+  @override
+  String get pyannoteXnnpackBenchmark10Min =>
+      'Benchmark CPU vs XNNPACK: primeiros 10 minutos';
+
+  @override
+  String get pyannoteXnnpackBenchmarkPreparing =>
+      'Comparando CPU e XNNPACK nos primeiros 10 minutos...';
+
+  @override
+  String get pyannoteXnnpackBenchmarkCompleted =>
+      'Benchmark CPU vs XNNPACK concluído. Verifique o registo para paridade e velocidade.';
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
@@ -7838,4 +7850,16 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   @override
   String get pyannoteCandidateValidationFailed =>
       'Validação concluída: passo 2 + margem 0,35 não passou em todos os critérios de segurança. Consulte o log para detalhes.';
+
+  @override
+  String get pyannoteXnnpackBenchmark10Min =>
+      'Benchmark CPU vs XNNPACK: primeiros 10 minutos';
+
+  @override
+  String get pyannoteXnnpackBenchmarkPreparing =>
+      'Comparando CPU e XNNPACK nos primeiros 10 minutos...';
+
+  @override
+  String get pyannoteXnnpackBenchmarkCompleted =>
+      'Benchmark CPU vs XNNPACK concluído. Verifique o log para paridade e velocidade.';
 }

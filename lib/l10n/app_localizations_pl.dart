@@ -3907,4 +3907,16 @@ class AppLocalizationsPl extends AppLocalizations {
   @override
   String get pyannoteCandidateValidationFailed =>
       'Walidacja zakończona: krok 2 + margines 0,35 nie spełnił wszystkich kryteriów bezpieczeństwa. Szczegóły są w dzienniku.';
+
+  @override
+  String get pyannoteXnnpackBenchmark10Min =>
+      'Benchmark CPU vs XNNPACK: pierwsze 10 minut';
+
+  @override
+  String get pyannoteXnnpackBenchmarkPreparing =>
+      'Porównywanie CPU i XNNPACK na pierwszych 10 minutach...';
+
+  @override
+  String get pyannoteXnnpackBenchmarkCompleted =>
+      'Benchmark CPU vs XNNPACK zakończony. Sprawdź dziennik pod kątem zgodności i szybkości.';
 }
