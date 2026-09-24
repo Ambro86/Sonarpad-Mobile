@@ -162,4 +162,3 @@ class _PyannoteParityTestScreenState extends State<PyannoteParityTestScreen> {
     );
   }
 }
-
