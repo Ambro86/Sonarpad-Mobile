@@ -7028,6 +7028,111 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Benchmark CPU vs XNNPACK completato. Controlla il log per parità e velocità.'**
   String get pyannoteXnnpackBenchmarkCompleted;
+  String get audioDescriptionCreateAiTitle;
+  String get audioDescriptionChooseVideo;
+  String get audioDescriptionAiService;
+  String get audioDescriptionUseGeminiKey;
+  String get audioDescriptionUseSonarpadAi;
+  String get audioDescriptionGeminiApiKey;
+  String get audioDescriptionGeminiModel;
+  String get audioDescriptionRefreshModels;
+  String get audioDescriptionRefreshingModels;
+  String get audioDescriptionSonarpadCode;
+  String get audioDescriptionActivateSonarpad;
+  String get audioDescriptionActivatingSonarpad;
+  String get audioDescriptionServerManagedModel;
+  String get audioDescriptionLanguage;
+  String get audioDescriptionDetailLevel;
+  String get audioDescriptionDetailConcise;
+  String get audioDescriptionDetailNormal;
+  String get audioDescriptionDetailDetailed;
+  String get audioDescriptionDetailIntensive;
+  String get audioDescriptionExtendedPauses;
+  String get audioDescriptionRecognizeCharacters;
+  String get audioDescriptionSaveProject;
+  String get audioDescriptionCreate;
+  String get audioDescriptionVoiceTesting;
+  String get audioDescriptionApiKeyRequired;
+  String get audioDescriptionModelsUpdated;
+  String get audioDescriptionModelsError;
+  String get audioDescriptionSonarpadCodeRequired;
+  String get audioDescriptionSonarpadActivated;
+  String get audioDescriptionSonarpadActivationError;
+  String get audioDescriptionEdgeVoiceReady;
+  String get audioDescriptionChooseVideoFirst;
+  String get audioDescriptionStagePreparing;
+  String get audioDescriptionStageDialogue;
+  String get audioDescriptionStageVideo;
+  String get audioDescriptionStageGemini;
+  String get audioDescriptionStageTts;
+  String get audioDescriptionStageMixing;
+  String get audioDescriptionCompleted;
+  String get audioDescriptionCancelled;
+  String get audioDescriptionCancelling;
+  String get audioDescriptionGenerationFailed;
+  String get audioDescriptionGetGeminiKey;
+  String get audioDescriptionKeepCharacterCatalog;
+  String get audioDescriptionCharacterCatalogChoose;
+  String get audioDescriptionCharacterCatalogNew;
+  String get audioDescriptionCharacterCatalogNameTitle;
+  String get audioDescriptionCharacterCatalogNamePrompt;
+  String get audioDescriptionCharacterCatalogNameError;
+  String get audioDescriptionCharacterCatalogSaved;
+  String get audioDescriptionCharacterCatalogSaveWarning;
+  String get audioDescriptionRecognizeScreenText;
+
+
+    /// Audio-description fallback UI.
+    String get audioDescriptionHighDemandTitle;
+  
+    /// Audio-description fallback UI.
+    String get audioDescriptionHighDemandMessage;
+  
+    /// Audio-description fallback UI.
+    String get audioDescriptionContinueWaiting;
+  
+    /// Audio-description fallback UI.
+    String get audioDescriptionStopGeneration;
+  
+    /// Audio-description fallback UI.
+    String get audioDescriptionQuotaTitle;
+  
+    /// Audio-description fallback UI.
+    String get audioDescriptionQuotaMessage;
+  
+    /// Audio-description fallback UI.
+    String get audioDescriptionSwitchModel;
+  
+    /// Audio-description fallback UI.
+    /// Audio-description stage: isolated Brief retry.
+    String get audioDescriptionStageBriefRetry;
+  
+    /// Prompt shown before the final dialogue-overlap fallback.
+    String get audioDescriptionBriefRetryTitle;
+  
+    String get audioDescriptionBriefRetryMessage;
+  
+    String get audioDescriptionRetryBrief;
+  
+    String get audioDescriptionOverlapTitle;
+  
+    /// Audio-description fallback UI.
+    String get audioDescriptionOverlapMessage;
+  
+    /// Audio-description fallback UI.
+    String get audioDescriptionAllowOverlap;
+  
+    /// Audio-description fallback UI.
+    String get audioDescriptionResumeTitle;
+  
+    /// Audio-description fallback UI.
+    String get audioDescriptionResumeMessage;
+  
+    /// Audio-description fallback UI.
+    String get audioDescriptionResume;
+  
+    /// Audio-description fallback UI.
+    String get audioDescriptionRestart;
 }
 
 class _AppLocalizationsDelegate
@@ -7108,4 +7213,5 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
     'on GitHub with a reproducible sample app and the gen-l10n configuration '
     'that was used.',
   );
+
 }

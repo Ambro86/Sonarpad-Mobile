@@ -3081,5 +3081,285 @@
   "pyannoteXnnpackBenchmarkCompleted": "CPU 与 XNNPACK 基准测试完成。请查看日志中的一致性和速度结果。",
   "@pyannoteXnnpackBenchmarkCompleted": {
     "description": "Localized text for pyannoteXnnpackBenchmarkCompleted."
+  },
+  "audioDescriptionCreateAiTitle": "使用 AI 创建音频描述",
+  "@audioDescriptionCreateAiTitle": {
+    "description": "Localized text for audioDescriptionCreateAiTitle."
+  },
+  "audioDescriptionChooseVideo": "选择视频",
+  "@audioDescriptionChooseVideo": {
+    "description": "Localized text for audioDescriptionChooseVideo."
+  },
+  "audioDescriptionAiService": "AI 服务",
+  "@audioDescriptionAiService": {
+    "description": "Localized text for audioDescriptionAiService."
+  },
+  "audioDescriptionUseGeminiKey": "使用 Gemini API 密钥",
+  "@audioDescriptionUseGeminiKey": {
+    "description": "Localized text for audioDescriptionUseGeminiKey."
+  },
+  "audioDescriptionUseSonarpadAi": "使用 Sonarpad AI 服务",
+  "@audioDescriptionUseSonarpadAi": {
+    "description": "Localized text for audioDescriptionUseSonarpadAi."
+  },
+  "audioDescriptionGeminiApiKey": "Gemini API 密钥",
+  "@audioDescriptionGeminiApiKey": {
+    "description": "Localized text for audioDescriptionGeminiApiKey."
+  },
+  "audioDescriptionGeminiModel": "Gemini 模型",
+  "@audioDescriptionGeminiModel": {
+    "description": "Localized text for audioDescriptionGeminiModel."
+  },
+  "audioDescriptionRefreshModels": "刷新模型列表",
+  "@audioDescriptionRefreshModels": {
+    "description": "Localized text for audioDescriptionRefreshModels."
+  },
+  "audioDescriptionRefreshingModels": "正在刷新模型...",
+  "@audioDescriptionRefreshingModels": {
+    "description": "Localized text for audioDescriptionRefreshingModels."
+  },
+  "audioDescriptionSonarpadCode": "Sonarpad AI 个人代码",
+  "@audioDescriptionSonarpadCode": {
+    "description": "Localized text for audioDescriptionSonarpadCode."
+  },
+  "audioDescriptionActivateSonarpad": "激活 / 验证 Sonarpad AI",
+  "@audioDescriptionActivateSonarpad": {
+    "description": "Localized text for audioDescriptionActivateSonarpad."
+  },
+  "audioDescriptionActivatingSonarpad": "正在激活 Sonarpad AI...",
+  "@audioDescriptionActivatingSonarpad": {
+    "description": "Localized text for audioDescriptionActivatingSonarpad."
+  },
+  "audioDescriptionServerManagedModel": "由 Sonarpad AI 服务管理",
+  "@audioDescriptionServerManagedModel": {
+    "description": "Localized text for audioDescriptionServerManagedModel."
+  },
+  "audioDescriptionLanguage": "音频描述语言",
+  "@audioDescriptionLanguage": {
+    "description": "Localized text for audioDescriptionLanguage."
+  },
+  "audioDescriptionDetailLevel": "详细程度",
+  "@audioDescriptionDetailLevel": {
+    "description": "Localized text for audioDescriptionDetailLevel."
+  },
+  "audioDescriptionDetailConcise": "简短",
+  "@audioDescriptionDetailConcise": {
+    "description": "Localized text for audioDescriptionDetailConcise."
+  },
+  "audioDescriptionDetailNormal": "普通",
+  "@audioDescriptionDetailNormal": {
+    "description": "Localized text for audioDescriptionDetailNormal."
+  },
+  "audioDescriptionDetailDetailed": "详细",
+  "@audioDescriptionDetailDetailed": {
+    "description": "Localized text for audioDescriptionDetailDetailed."
+  },
+  "audioDescriptionDetailIntensive": "密集",
+  "@audioDescriptionDetailIntensive": {
+    "description": "Localized text for audioDescriptionDetailIntensive."
+  },
+  "audioDescriptionExtendedPauses": "当描述无法放入静音间隙时启用延长暂停",
+  "@audioDescriptionExtendedPauses": {
+    "description": "Localized text for audioDescriptionExtendedPauses."
+  },
+  "audioDescriptionRecognizeCharacters": "尝试识别角色并使用其姓名",
+  "@audioDescriptionRecognizeCharacters": {
+    "description": "Localized text for audioDescriptionRecognizeCharacters."
+  },
+  "audioDescriptionSaveProject": "同时保存项目以便以后编辑",
+  "@audioDescriptionSaveProject": {
+    "description": "Localized text for audioDescriptionSaveProject."
+  },
+  "audioDescriptionCreate": "创建音频描述",
+  "@audioDescriptionCreate": {
+    "description": "Localized text for audioDescriptionCreate."
+  },
+  "audioDescriptionVoiceTesting": "正在测试语音...",
+  "@audioDescriptionVoiceTesting": {
+    "description": "Localized text for audioDescriptionVoiceTesting."
+  },
+  "audioDescriptionApiKeyRequired": "请输入 Gemini API 密钥。",
+  "@audioDescriptionApiKeyRequired": {
+    "description": "Localized text for audioDescriptionApiKeyRequired."
+  },
+  "audioDescriptionModelsUpdated": "Gemini 模型列表已更新。",
+  "@audioDescriptionModelsUpdated": {
+    "description": "Localized text for audioDescriptionModelsUpdated."
+  },
+  "audioDescriptionModelsError": "无法刷新 Gemini 模型列表。",
+  "@audioDescriptionModelsError": {
+    "description": "Localized text for audioDescriptionModelsError."
+  },
+  "audioDescriptionSonarpadCodeRequired": "请输入你的 Sonarpad AI 个人代码。",
+  "@audioDescriptionSonarpadCodeRequired": {
+    "description": "Localized text for audioDescriptionSonarpadCodeRequired."
+  },
+  "audioDescriptionSonarpadActivated": "Sonarpad AI 已在此设备上激活。",
+  "@audioDescriptionSonarpadActivated": {
+    "description": "Localized text for audioDescriptionSonarpadActivated."
+  },
+  "audioDescriptionSonarpadActivationError": "无法激活或验证 Sonarpad AI。",
+  "@audioDescriptionSonarpadActivationError": {
+    "description": "Localized text for audioDescriptionSonarpadActivationError."
+  },
+  "audioDescriptionEdgeVoiceReady": "所选 Edge 语音可用。",
+  "@audioDescriptionEdgeVoiceReady": {
+    "description": "Localized text for audioDescriptionEdgeVoiceReady."
+  },
+  "audioDescriptionChooseVideoFirst": "请先选择视频文件。",
+  "@audioDescriptionChooseVideoFirst": {
+    "description": "Localized text for audioDescriptionChooseVideoFirst."
+  },
+  "audioDescriptionStagePreparing": "正在准备视频...",
+  "@audioDescriptionStagePreparing": {
+    "description": "Localized text for audioDescriptionStagePreparing."
+  },
+  "audioDescriptionStageDialogue": "正在使用 pyannote 检测对话...",
+  "@audioDescriptionStageDialogue": {
+    "description": "Localized text for audioDescriptionStageDialogue."
+  },
+  "audioDescriptionStageVideo": "正在准备视频片段...",
+  "@audioDescriptionStageVideo": {
+    "description": "Localized text for audioDescriptionStageVideo."
+  },
+  "audioDescriptionStageGemini": "正在使用 AI 生成音频描述...",
+  "@audioDescriptionStageGemini": {
+    "description": "Localized text for audioDescriptionStageGemini."
+  },
+  "audioDescriptionStageTts": "正在创建语音...",
+  "@audioDescriptionStageTts": {
+    "description": "Localized text for audioDescriptionStageTts."
+  },
+  "audioDescriptionStageMixing": "正在创建带音频描述的 MP3...",
+  "@audioDescriptionStageMixing": {
+    "description": "Localized text for audioDescriptionStageMixing."
+  },
+  "audioDescriptionCompleted": "音频描述已完成。",
+  "@audioDescriptionCompleted": {
+    "description": "Localized text for audioDescriptionCompleted."
+  },
+  "audioDescriptionCancelled": "已取消创建音频描述。",
+  "@audioDescriptionCancelled": {
+    "description": "Localized text for audioDescriptionCancelled."
+  },
+  "audioDescriptionCancelling": "正在取消...",
+  "@audioDescriptionCancelling": {
+    "description": "Localized text for audioDescriptionCancelling."
+  },
+  "audioDescriptionGenerationFailed": "创建音频描述失败。",
+  "@audioDescriptionGenerationFailed": {
+    "description": "Localized text for audioDescriptionGenerationFailed."
+  },
+  "audioDescriptionGetGeminiKey": "获取 Gemini API 密钥",
+  "@audioDescriptionGetGeminiKey": {
+    "description": "Localized text for audioDescriptionGetGeminiKey."
+  },
+  "audioDescriptionKeepCharacterCatalog": "保留角色目录：适合连续剧",
+  "@audioDescriptionKeepCharacterCatalog": {
+    "description": "Localized text for audioDescriptionKeepCharacterCatalog."
+  },
+  "audioDescriptionCharacterCatalogChoose": "选择已保存的角色目录",
+  "@audioDescriptionCharacterCatalogChoose": {
+    "description": "Localized text for audioDescriptionCharacterCatalogChoose."
+  },
+  "audioDescriptionCharacterCatalogNew": "新建目录",
+  "@audioDescriptionCharacterCatalogNew": {
+    "description": "Localized text for audioDescriptionCharacterCatalogNew."
+  },
+  "audioDescriptionCharacterCatalogNameTitle": "角色目录",
+  "@audioDescriptionCharacterCatalogNameTitle": {
+    "description": "Localized text for audioDescriptionCharacterCatalogNameTitle."
+  },
+  "audioDescriptionCharacterCatalogNamePrompt": "要如何命名角色目录？",
+  "@audioDescriptionCharacterCatalogNamePrompt": {
+    "description": "Localized text for audioDescriptionCharacterCatalogNamePrompt."
+  },
+  "audioDescriptionCharacterCatalogNameError": "请输入角色目录名称。",
+  "@audioDescriptionCharacterCatalogNameError": {
+    "description": "Localized text for audioDescriptionCharacterCatalogNameError."
+  },
+  "audioDescriptionCharacterCatalogSaved": "角色目录已更新。",
+  "@audioDescriptionCharacterCatalogSaved": {
+    "description": "Localized text for audioDescriptionCharacterCatalogSaved."
+  },
+  "audioDescriptionCharacterCatalogSaveWarning": "音频描述已创建，但无法保存角色目录：",
+  "@audioDescriptionCharacterCatalogSaveWarning": {
+    "description": "Localized text for audioDescriptionCharacterCatalogSaveWarning."
+  },
+  "audioDescriptionRecognizeScreenText": "识别重要的屏幕文字并纳入音频描述",
+  "@audioDescriptionRecognizeScreenText": {
+    "description": "Localized text for audioDescriptionRecognizeScreenText."
+  },
+  "audioDescriptionHighDemandTitle": "AI 服务繁忙",
+  "@audioDescriptionHighDemandTitle": {
+    "description": "Audio-description fallback UI: audioDescriptionHighDemandTitle."
+  },
+  "audioDescriptionHighDemandMessage": "多次尝试后 AI 服务仍不可用。是否继续等待并重试？",
+  "@audioDescriptionHighDemandMessage": {
+    "description": "Audio-description fallback UI: audioDescriptionHighDemandMessage."
+  },
+  "audioDescriptionContinueWaiting": "继续等待",
+  "@audioDescriptionContinueWaiting": {
+    "description": "Audio-description fallback UI: audioDescriptionContinueWaiting."
+  },
+  "audioDescriptionStopGeneration": "停止",
+  "@audioDescriptionStopGeneration": {
+    "description": "Audio-description fallback UI: audioDescriptionStopGeneration."
+  },
+  "audioDescriptionQuotaTitle": "Gemini 配额已用尽",
+  "@audioDescriptionQuotaTitle": {
+    "description": "Audio-description fallback UI: audioDescriptionQuotaTitle."
+  },
+  "audioDescriptionQuotaMessage": "当前 Gemini 模型的配额已用尽。你可以选择其他模型、继续等待或停止。",
+  "@audioDescriptionQuotaMessage": {
+    "description": "Audio-description fallback UI: audioDescriptionQuotaMessage."
+  },
+  "audioDescriptionSwitchModel": "选择其他模型",
+  "@audioDescriptionSwitchModel": {
+    "description": "Audio-description fallback UI: audioDescriptionSwitchModel."
+  },
+  "audioDescriptionOverlapTitle": "最终备用方案",
+  "@audioDescriptionOverlapTitle": {
+    "description": "Audio-description fallback UI: audioDescriptionOverlapTitle."
+  },
+  "audioDescriptionOverlapMessage": "生成的描述都无法安全放入无对白区间。是否使用最终备用方案，允许旁白可能覆盖对白？此功能绝不会自动启用。",
+  "@audioDescriptionOverlapMessage": {
+    "description": "Audio-description fallback UI: audioDescriptionOverlapMessage."
+  },
+  "audioDescriptionAllowOverlap": "使用最终备用方案",
+  "@audioDescriptionAllowOverlap": {
+    "description": "Audio-description fallback UI: audioDescriptionAllowOverlap."
+  },
+  "audioDescriptionResumeTitle": "发现之前的音频描述任务",
+  "@audioDescriptionResumeTitle": {
+    "description": "Audio-description fallback UI: audioDescriptionResumeTitle."
+  },
+  "audioDescriptionResumeMessage": "Sonarpad 找到兼容的检查点。要从上次完成的片段继续，还是从头开始？",
+  "@audioDescriptionResumeMessage": {
+    "description": "Audio-description fallback UI: audioDescriptionResumeMessage."
+  },
+  "audioDescriptionResume": "继续",
+  "@audioDescriptionResume": {
+    "description": "Audio-description fallback UI: audioDescriptionResume."
+  },
+  "audioDescriptionRestart": "重新开始",
+  "@audioDescriptionRestart": {
+    "description": "Audio-description fallback UI: audioDescriptionRestart."
+  },
+  "audioDescriptionStageBriefRetry": "正在使用简短描述重新分析...",
+  "@audioDescriptionStageBriefRetry": {
+    "description": "Audio-description fallback UI: audioDescriptionStageBriefRetry."
+  },
+  "audioDescriptionBriefRetryTitle": "使用简短描述重试",
+  "@audioDescriptionBriefRetryTitle": {
+    "description": "Audio-description fallback UI: audioDescriptionBriefRetryTitle."
+  },
+  "audioDescriptionBriefRetryMessage": "生成的描述都无法安全放入无对白片段。在允许旁白覆盖对白之前，是否使用非常简短的描述重新分析一次？",
+  "@audioDescriptionBriefRetryMessage": {
+    "description": "Audio-description fallback UI: audioDescriptionBriefRetryMessage."
+  },
+  "audioDescriptionRetryBrief": "以简短模式重试",
+  "@audioDescriptionRetryBrief": {
+    "description": "Audio-description fallback UI: audioDescriptionRetryBrief."
   }
 }

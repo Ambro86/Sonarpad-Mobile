@@ -3084,5 +3084,285 @@
   "pyannoteXnnpackBenchmarkCompleted": "Benchmark CPU vs XNNPACK dokončen. Zkontrolujte protokol pro shodu a rychlost.",
   "@pyannoteXnnpackBenchmarkCompleted": {
     "description": "Localized text for pyannoteXnnpackBenchmarkCompleted."
+  },
+  "audioDescriptionCreateAiTitle": "Vytvořit audiopopis pomocí AI",
+  "@audioDescriptionCreateAiTitle": {
+    "description": "Localized text for audioDescriptionCreateAiTitle."
+  },
+  "audioDescriptionChooseVideo": "Vybrat video",
+  "@audioDescriptionChooseVideo": {
+    "description": "Localized text for audioDescriptionChooseVideo."
+  },
+  "audioDescriptionAiService": "Služba AI",
+  "@audioDescriptionAiService": {
+    "description": "Localized text for audioDescriptionAiService."
+  },
+  "audioDescriptionUseGeminiKey": "Použít klíč API Gemini",
+  "@audioDescriptionUseGeminiKey": {
+    "description": "Localized text for audioDescriptionUseGeminiKey."
+  },
+  "audioDescriptionUseSonarpadAi": "Použít službu Sonarpad AI",
+  "@audioDescriptionUseSonarpadAi": {
+    "description": "Localized text for audioDescriptionUseSonarpadAi."
+  },
+  "audioDescriptionGeminiApiKey": "Klíč API Gemini",
+  "@audioDescriptionGeminiApiKey": {
+    "description": "Localized text for audioDescriptionGeminiApiKey."
+  },
+  "audioDescriptionGeminiModel": "Model Gemini",
+  "@audioDescriptionGeminiModel": {
+    "description": "Localized text for audioDescriptionGeminiModel."
+  },
+  "audioDescriptionRefreshModels": "Obnovit seznam modelů",
+  "@audioDescriptionRefreshModels": {
+    "description": "Localized text for audioDescriptionRefreshModels."
+  },
+  "audioDescriptionRefreshingModels": "Obnovování modelů...",
+  "@audioDescriptionRefreshingModels": {
+    "description": "Localized text for audioDescriptionRefreshingModels."
+  },
+  "audioDescriptionSonarpadCode": "Osobní kód Sonarpad AI",
+  "@audioDescriptionSonarpadCode": {
+    "description": "Localized text for audioDescriptionSonarpadCode."
+  },
+  "audioDescriptionActivateSonarpad": "Aktivovat / ověřit Sonarpad AI",
+  "@audioDescriptionActivateSonarpad": {
+    "description": "Localized text for audioDescriptionActivateSonarpad."
+  },
+  "audioDescriptionActivatingSonarpad": "Aktivace Sonarpad AI...",
+  "@audioDescriptionActivatingSonarpad": {
+    "description": "Localized text for audioDescriptionActivatingSonarpad."
+  },
+  "audioDescriptionServerManagedModel": "Spravuje služba Sonarpad AI",
+  "@audioDescriptionServerManagedModel": {
+    "description": "Localized text for audioDescriptionServerManagedModel."
+  },
+  "audioDescriptionLanguage": "Jazyk audiopopisu",
+  "@audioDescriptionLanguage": {
+    "description": "Localized text for audioDescriptionLanguage."
+  },
+  "audioDescriptionDetailLevel": "Úroveň podrobnosti",
+  "@audioDescriptionDetailLevel": {
+    "description": "Localized text for audioDescriptionDetailLevel."
+  },
+  "audioDescriptionDetailConcise": "Stručná",
+  "@audioDescriptionDetailConcise": {
+    "description": "Localized text for audioDescriptionDetailConcise."
+  },
+  "audioDescriptionDetailNormal": "Normální",
+  "@audioDescriptionDetailNormal": {
+    "description": "Localized text for audioDescriptionDetailNormal."
+  },
+  "audioDescriptionDetailDetailed": "Podrobná",
+  "@audioDescriptionDetailDetailed": {
+    "description": "Localized text for audioDescriptionDetailDetailed."
+  },
+  "audioDescriptionDetailIntensive": "Intenzivní",
+  "@audioDescriptionDetailIntensive": {
+    "description": "Localized text for audioDescriptionDetailIntensive."
+  },
+  "audioDescriptionExtendedPauses": "Povolit prodloužené pauzy, když se popis nevejde do ticha",
+  "@audioDescriptionExtendedPauses": {
+    "description": "Localized text for audioDescriptionExtendedPauses."
+  },
+  "audioDescriptionRecognizeCharacters": "Pokusit se rozpoznat postavy a používat jejich jména",
+  "@audioDescriptionRecognizeCharacters": {
+    "description": "Localized text for audioDescriptionRecognizeCharacters."
+  },
+  "audioDescriptionSaveProject": "Uložit také projekt pro budoucí úpravy",
+  "@audioDescriptionSaveProject": {
+    "description": "Localized text for audioDescriptionSaveProject."
+  },
+  "audioDescriptionCreate": "Vytvořit audiopopis",
+  "@audioDescriptionCreate": {
+    "description": "Localized text for audioDescriptionCreate."
+  },
+  "audioDescriptionVoiceTesting": "Testování hlasu...",
+  "@audioDescriptionVoiceTesting": {
+    "description": "Localized text for audioDescriptionVoiceTesting."
+  },
+  "audioDescriptionApiKeyRequired": "Zadejte klíč API Gemini.",
+  "@audioDescriptionApiKeyRequired": {
+    "description": "Localized text for audioDescriptionApiKeyRequired."
+  },
+  "audioDescriptionModelsUpdated": "Seznam modelů Gemini byl aktualizován.",
+  "@audioDescriptionModelsUpdated": {
+    "description": "Localized text for audioDescriptionModelsUpdated."
+  },
+  "audioDescriptionModelsError": "Seznam modelů Gemini se nepodařilo obnovit.",
+  "@audioDescriptionModelsError": {
+    "description": "Localized text for audioDescriptionModelsError."
+  },
+  "audioDescriptionSonarpadCodeRequired": "Zadejte svůj osobní kód Sonarpad AI.",
+  "@audioDescriptionSonarpadCodeRequired": {
+    "description": "Localized text for audioDescriptionSonarpadCodeRequired."
+  },
+  "audioDescriptionSonarpadActivated": "Sonarpad AI je na tomto zařízení aktivní.",
+  "@audioDescriptionSonarpadActivated": {
+    "description": "Localized text for audioDescriptionSonarpadActivated."
+  },
+  "audioDescriptionSonarpadActivationError": "Sonarpad AI se nepodařilo aktivovat nebo ověřit.",
+  "@audioDescriptionSonarpadActivationError": {
+    "description": "Localized text for audioDescriptionSonarpadActivationError."
+  },
+  "audioDescriptionEdgeVoiceReady": "Vybraný hlas Edge je dostupný.",
+  "@audioDescriptionEdgeVoiceReady": {
+    "description": "Localized text for audioDescriptionEdgeVoiceReady."
+  },
+  "audioDescriptionChooseVideoFirst": "Nejprve vyberte soubor videa.",
+  "@audioDescriptionChooseVideoFirst": {
+    "description": "Localized text for audioDescriptionChooseVideoFirst."
+  },
+  "audioDescriptionStagePreparing": "Příprava videa...",
+  "@audioDescriptionStagePreparing": {
+    "description": "Localized text for audioDescriptionStagePreparing."
+  },
+  "audioDescriptionStageDialogue": "Detekce dialogů pomocí pyannote...",
+  "@audioDescriptionStageDialogue": {
+    "description": "Localized text for audioDescriptionStageDialogue."
+  },
+  "audioDescriptionStageVideo": "Příprava segmentů videa...",
+  "@audioDescriptionStageVideo": {
+    "description": "Localized text for audioDescriptionStageVideo."
+  },
+  "audioDescriptionStageGemini": "Generování audiopopisů pomocí AI...",
+  "@audioDescriptionStageGemini": {
+    "description": "Localized text for audioDescriptionStageGemini."
+  },
+  "audioDescriptionStageTts": "Vytváření hlasů...",
+  "@audioDescriptionStageTts": {
+    "description": "Localized text for audioDescriptionStageTts."
+  },
+  "audioDescriptionStageMixing": "Vytváření MP3 s audiopopisem...",
+  "@audioDescriptionStageMixing": {
+    "description": "Localized text for audioDescriptionStageMixing."
+  },
+  "audioDescriptionCompleted": "Audiopopis dokončen.",
+  "@audioDescriptionCompleted": {
+    "description": "Localized text for audioDescriptionCompleted."
+  },
+  "audioDescriptionCancelled": "Vytváření audiopopisu zrušeno.",
+  "@audioDescriptionCancelled": {
+    "description": "Localized text for audioDescriptionCancelled."
+  },
+  "audioDescriptionCancelling": "Rušení...",
+  "@audioDescriptionCancelling": {
+    "description": "Localized text for audioDescriptionCancelling."
+  },
+  "audioDescriptionGenerationFailed": "Audiopopis se nepodařilo vytvořit.",
+  "@audioDescriptionGenerationFailed": {
+    "description": "Localized text for audioDescriptionGenerationFailed."
+  },
+  "audioDescriptionGetGeminiKey": "Získat klíč API Gemini",
+  "@audioDescriptionGetGeminiKey": {
+    "description": "Localized text for audioDescriptionGetGeminiKey."
+  },
+  "audioDescriptionKeepCharacterCatalog": "Zachovat katalog postav: užitečné pro seriál",
+  "@audioDescriptionKeepCharacterCatalog": {
+    "description": "Localized text for audioDescriptionKeepCharacterCatalog."
+  },
+  "audioDescriptionCharacterCatalogChoose": "Vybrat uložený katalog postav",
+  "@audioDescriptionCharacterCatalogChoose": {
+    "description": "Localized text for audioDescriptionCharacterCatalogChoose."
+  },
+  "audioDescriptionCharacterCatalogNew": "Nový katalog",
+  "@audioDescriptionCharacterCatalogNew": {
+    "description": "Localized text for audioDescriptionCharacterCatalogNew."
+  },
+  "audioDescriptionCharacterCatalogNameTitle": "Katalog postav",
+  "@audioDescriptionCharacterCatalogNameTitle": {
+    "description": "Localized text for audioDescriptionCharacterCatalogNameTitle."
+  },
+  "audioDescriptionCharacterCatalogNamePrompt": "Jak chcete katalog postav pojmenovat?",
+  "@audioDescriptionCharacterCatalogNamePrompt": {
+    "description": "Localized text for audioDescriptionCharacterCatalogNamePrompt."
+  },
+  "audioDescriptionCharacterCatalogNameError": "Zadejte název katalogu postav.",
+  "@audioDescriptionCharacterCatalogNameError": {
+    "description": "Localized text for audioDescriptionCharacterCatalogNameError."
+  },
+  "audioDescriptionCharacterCatalogSaved": "Katalog postav byl aktualizován.",
+  "@audioDescriptionCharacterCatalogSaved": {
+    "description": "Localized text for audioDescriptionCharacterCatalogSaved."
+  },
+  "audioDescriptionCharacterCatalogSaveWarning": "Audiopopis byl vytvořen, ale katalog postav se nepodařilo uložit:",
+  "@audioDescriptionCharacterCatalogSaveWarning": {
+    "description": "Localized text for audioDescriptionCharacterCatalogSaveWarning."
+  },
+  "audioDescriptionRecognizeScreenText": "Rozpoznat důležitý text na obrazovce a zahrnout jej do audiopopisu",
+  "@audioDescriptionRecognizeScreenText": {
+    "description": "Localized text for audioDescriptionRecognizeScreenText."
+  },
+  "audioDescriptionHighDemandTitle": "Služba AI je velmi vytížená",
+  "@audioDescriptionHighDemandTitle": {
+    "description": "Audio-description fallback UI: audioDescriptionHighDemandTitle."
+  },
+  "audioDescriptionHighDemandMessage": "Služba AI je po několika pokusech stále nedostupná. Pokračovat v čekání a opakování?",
+  "@audioDescriptionHighDemandMessage": {
+    "description": "Audio-description fallback UI: audioDescriptionHighDemandMessage."
+  },
+  "audioDescriptionContinueWaiting": "Pokračovat v čekání",
+  "@audioDescriptionContinueWaiting": {
+    "description": "Audio-description fallback UI: audioDescriptionContinueWaiting."
+  },
+  "audioDescriptionStopGeneration": "Zastavit",
+  "@audioDescriptionStopGeneration": {
+    "description": "Audio-description fallback UI: audioDescriptionStopGeneration."
+  },
+  "audioDescriptionQuotaTitle": "Kvóta Gemini vyčerpána",
+  "@audioDescriptionQuotaTitle": {
+    "description": "Audio-description fallback UI: audioDescriptionQuotaTitle."
+  },
+  "audioDescriptionQuotaMessage": "Aktuální model Gemini vyčerpal kvótu. Můžete vybrat jiný model, pokračovat v čekání nebo zastavit.",
+  "@audioDescriptionQuotaMessage": {
+    "description": "Audio-description fallback UI: audioDescriptionQuotaMessage."
+  },
+  "audioDescriptionSwitchModel": "Vybrat jiný model",
+  "@audioDescriptionSwitchModel": {
+    "description": "Audio-description fallback UI: audioDescriptionSwitchModel."
+  },
+  "audioDescriptionOverlapTitle": "Poslední nouzová možnost",
+  "@audioDescriptionOverlapTitle": {
+    "description": "Audio-description fallback UI: audioDescriptionOverlapTitle."
+  },
+  "audioDescriptionOverlapMessage": "Žádný vytvořený popis se bezpečně nevejde do míst bez dialogu. Použít poslední nouzový režim, který může vložit vyprávění přes dialog? Nikdy se nezapíná automaticky.",
+  "@audioDescriptionOverlapMessage": {
+    "description": "Audio-description fallback UI: audioDescriptionOverlapMessage."
+  },
+  "audioDescriptionAllowOverlap": "Použít nouzový režim",
+  "@audioDescriptionAllowOverlap": {
+    "description": "Audio-description fallback UI: audioDescriptionAllowOverlap."
+  },
+  "audioDescriptionResumeTitle": "Nalezena předchozí práce audiopopisu",
+  "@audioDescriptionResumeTitle": {
+    "description": "Audio-description fallback UI: audioDescriptionResumeTitle."
+  },
+  "audioDescriptionResumeMessage": "Sonarpad našel kompatibilní kontrolní bod. Pokračovat od posledního dokončeného úseku, nebo začít od začátku?",
+  "@audioDescriptionResumeMessage": {
+    "description": "Audio-description fallback UI: audioDescriptionResumeMessage."
+  },
+  "audioDescriptionResume": "Pokračovat",
+  "@audioDescriptionResume": {
+    "description": "Audio-description fallback UI: audioDescriptionResume."
+  },
+  "audioDescriptionRestart": "Začít znovu",
+  "@audioDescriptionRestart": {
+    "description": "Audio-description fallback UI: audioDescriptionRestart."
+  },
+  "audioDescriptionStageBriefRetry": "Opakování analýzy s krátkými popisy...",
+  "@audioDescriptionStageBriefRetry": {
+    "description": "Audio-description fallback UI: audioDescriptionStageBriefRetry."
+  },
+  "audioDescriptionBriefRetryTitle": "Zkusit znovu s krátkými popisy",
+  "@audioDescriptionBriefRetryTitle": {
+    "description": "Audio-description fallback UI: audioDescriptionBriefRetryTitle."
+  },
+  "audioDescriptionBriefRetryMessage": "Žádný vygenerovaný popis se bezpečně nevejde do míst bez dialogu. Chcete před povolením komentáře přes dialog jednou zopakovat analýzu s velmi krátkými popisy?",
+  "@audioDescriptionBriefRetryMessage": {
+    "description": "Audio-description fallback UI: audioDescriptionBriefRetryMessage."
+  },
+  "audioDescriptionRetryBrief": "Zkusit znovu v režimu Krátké",
+  "@audioDescriptionRetryBrief": {
+    "description": "Audio-description fallback UI: audioDescriptionRetryBrief."
   }
 }

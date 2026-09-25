@@ -3087,5 +3087,285 @@
   "pyannoteXnnpackBenchmarkCompleted": "Benchmark CPU vs XNNPACK concluído. Verifique o log para paridade e velocidade.",
   "@pyannoteXnnpackBenchmarkCompleted": {
     "description": "Localized text for pyannoteXnnpackBenchmarkCompleted."
+  },
+  "audioDescriptionCreateAiTitle": "Criar audiodescrição com IA",
+  "@audioDescriptionCreateAiTitle": {
+    "description": "Localized text for audioDescriptionCreateAiTitle."
+  },
+  "audioDescriptionChooseVideo": "Escolher vídeo",
+  "@audioDescriptionChooseVideo": {
+    "description": "Localized text for audioDescriptionChooseVideo."
+  },
+  "audioDescriptionAiService": "Serviço de IA",
+  "@audioDescriptionAiService": {
+    "description": "Localized text for audioDescriptionAiService."
+  },
+  "audioDescriptionUseGeminiKey": "Usar chave API Gemini",
+  "@audioDescriptionUseGeminiKey": {
+    "description": "Localized text for audioDescriptionUseGeminiKey."
+  },
+  "audioDescriptionUseSonarpadAi": "Usar serviço Sonarpad AI",
+  "@audioDescriptionUseSonarpadAi": {
+    "description": "Localized text for audioDescriptionUseSonarpadAi."
+  },
+  "audioDescriptionGeminiApiKey": "Chave API Gemini",
+  "@audioDescriptionGeminiApiKey": {
+    "description": "Localized text for audioDescriptionGeminiApiKey."
+  },
+  "audioDescriptionGeminiModel": "Modelo Gemini",
+  "@audioDescriptionGeminiModel": {
+    "description": "Localized text for audioDescriptionGeminiModel."
+  },
+  "audioDescriptionRefreshModels": "Atualizar lista de modelos",
+  "@audioDescriptionRefreshModels": {
+    "description": "Localized text for audioDescriptionRefreshModels."
+  },
+  "audioDescriptionRefreshingModels": "A atualizar modelos...",
+  "@audioDescriptionRefreshingModels": {
+    "description": "Localized text for audioDescriptionRefreshingModels."
+  },
+  "audioDescriptionSonarpadCode": "Código pessoal Sonarpad AI",
+  "@audioDescriptionSonarpadCode": {
+    "description": "Localized text for audioDescriptionSonarpadCode."
+  },
+  "audioDescriptionActivateSonarpad": "Ativar / verificar Sonarpad AI",
+  "@audioDescriptionActivateSonarpad": {
+    "description": "Localized text for audioDescriptionActivateSonarpad."
+  },
+  "audioDescriptionActivatingSonarpad": "A ativar Sonarpad AI...",
+  "@audioDescriptionActivatingSonarpad": {
+    "description": "Localized text for audioDescriptionActivatingSonarpad."
+  },
+  "audioDescriptionServerManagedModel": "Gerido pelo serviço Sonarpad AI",
+  "@audioDescriptionServerManagedModel": {
+    "description": "Localized text for audioDescriptionServerManagedModel."
+  },
+  "audioDescriptionLanguage": "Idioma da audiodescrição",
+  "@audioDescriptionLanguage": {
+    "description": "Localized text for audioDescriptionLanguage."
+  },
+  "audioDescriptionDetailLevel": "Nível de detalhe",
+  "@audioDescriptionDetailLevel": {
+    "description": "Localized text for audioDescriptionDetailLevel."
+  },
+  "audioDescriptionDetailConcise": "Breve",
+  "@audioDescriptionDetailConcise": {
+    "description": "Localized text for audioDescriptionDetailConcise."
+  },
+  "audioDescriptionDetailNormal": "Normal",
+  "@audioDescriptionDetailNormal": {
+    "description": "Localized text for audioDescriptionDetailNormal."
+  },
+  "audioDescriptionDetailDetailed": "Detalhada",
+  "@audioDescriptionDetailDetailed": {
+    "description": "Localized text for audioDescriptionDetailDetailed."
+  },
+  "audioDescriptionDetailIntensive": "Intensiva",
+  "@audioDescriptionDetailIntensive": {
+    "description": "Localized text for audioDescriptionDetailIntensive."
+  },
+  "audioDescriptionExtendedPauses": "Ativar pausas prolongadas quando uma descrição não cabe num silêncio",
+  "@audioDescriptionExtendedPauses": {
+    "description": "Localized text for audioDescriptionExtendedPauses."
+  },
+  "audioDescriptionRecognizeCharacters": "Tentar reconhecer personagens e usar os seus nomes",
+  "@audioDescriptionRecognizeCharacters": {
+    "description": "Localized text for audioDescriptionRecognizeCharacters."
+  },
+  "audioDescriptionSaveProject": "Salvar também o projeto para edição futura",
+  "@audioDescriptionSaveProject": {
+    "description": "Localized text for audioDescriptionSaveProject."
+  },
+  "audioDescriptionCreate": "Criar audiodescrição",
+  "@audioDescriptionCreate": {
+    "description": "Localized text for audioDescriptionCreate."
+  },
+  "audioDescriptionVoiceTesting": "A testar a voz...",
+  "@audioDescriptionVoiceTesting": {
+    "description": "Localized text for audioDescriptionVoiceTesting."
+  },
+  "audioDescriptionApiKeyRequired": "Introduza uma chave API Gemini.",
+  "@audioDescriptionApiKeyRequired": {
+    "description": "Localized text for audioDescriptionApiKeyRequired."
+  },
+  "audioDescriptionModelsUpdated": "Lista de modelos Gemini atualizada.",
+  "@audioDescriptionModelsUpdated": {
+    "description": "Localized text for audioDescriptionModelsUpdated."
+  },
+  "audioDescriptionModelsError": "Não foi possível atualizar a lista de modelos Gemini.",
+  "@audioDescriptionModelsError": {
+    "description": "Localized text for audioDescriptionModelsError."
+  },
+  "audioDescriptionSonarpadCodeRequired": "Digite seu código pessoal Sonarpad AI.",
+  "@audioDescriptionSonarpadCodeRequired": {
+    "description": "Localized text for audioDescriptionSonarpadCodeRequired."
+  },
+  "audioDescriptionSonarpadActivated": "Sonarpad AI está ativo neste dispositivo.",
+  "@audioDescriptionSonarpadActivated": {
+    "description": "Localized text for audioDescriptionSonarpadActivated."
+  },
+  "audioDescriptionSonarpadActivationError": "Não foi possível ativar ou verificar Sonarpad AI.",
+  "@audioDescriptionSonarpadActivationError": {
+    "description": "Localized text for audioDescriptionSonarpadActivationError."
+  },
+  "audioDescriptionEdgeVoiceReady": "A voz Edge selecionada está disponível.",
+  "@audioDescriptionEdgeVoiceReady": {
+    "description": "Localized text for audioDescriptionEdgeVoiceReady."
+  },
+  "audioDescriptionChooseVideoFirst": "Escolha primeiro um arquivo de vídeo.",
+  "@audioDescriptionChooseVideoFirst": {
+    "description": "Localized text for audioDescriptionChooseVideoFirst."
+  },
+  "audioDescriptionStagePreparing": "A preparar o vídeo...",
+  "@audioDescriptionStagePreparing": {
+    "description": "Localized text for audioDescriptionStagePreparing."
+  },
+  "audioDescriptionStageDialogue": "A detetar diálogos com pyannote...",
+  "@audioDescriptionStageDialogue": {
+    "description": "Localized text for audioDescriptionStageDialogue."
+  },
+  "audioDescriptionStageVideo": "A preparar segmentos de vídeo...",
+  "@audioDescriptionStageVideo": {
+    "description": "Localized text for audioDescriptionStageVideo."
+  },
+  "audioDescriptionStageGemini": "A gerar audiodescrições com IA...",
+  "@audioDescriptionStageGemini": {
+    "description": "Localized text for audioDescriptionStageGemini."
+  },
+  "audioDescriptionStageTts": "A criar as vozes...",
+  "@audioDescriptionStageTts": {
+    "description": "Localized text for audioDescriptionStageTts."
+  },
+  "audioDescriptionStageMixing": "A criar o MP3 audiodescrito...",
+  "@audioDescriptionStageMixing": {
+    "description": "Localized text for audioDescriptionStageMixing."
+  },
+  "audioDescriptionCompleted": "Audiodescrição concluída.",
+  "@audioDescriptionCompleted": {
+    "description": "Localized text for audioDescriptionCompleted."
+  },
+  "audioDescriptionCancelled": "Criação da audiodescrição cancelada.",
+  "@audioDescriptionCancelled": {
+    "description": "Localized text for audioDescriptionCancelled."
+  },
+  "audioDescriptionCancelling": "A cancelar...",
+  "@audioDescriptionCancelling": {
+    "description": "Localized text for audioDescriptionCancelling."
+  },
+  "audioDescriptionGenerationFailed": "Falha ao criar a audiodescrição.",
+  "@audioDescriptionGenerationFailed": {
+    "description": "Localized text for audioDescriptionGenerationFailed."
+  },
+  "audioDescriptionGetGeminiKey": "Obter uma chave API Gemini",
+  "@audioDescriptionGetGeminiKey": {
+    "description": "Localized text for audioDescriptionGetGeminiKey."
+  },
+  "audioDescriptionKeepCharacterCatalog": "Manter o catálogo de personagens: útil para uma série",
+  "@audioDescriptionKeepCharacterCatalog": {
+    "description": "Localized text for audioDescriptionKeepCharacterCatalog."
+  },
+  "audioDescriptionCharacterCatalogChoose": "Escolher um catálogo de personagens salvo",
+  "@audioDescriptionCharacterCatalogChoose": {
+    "description": "Localized text for audioDescriptionCharacterCatalogChoose."
+  },
+  "audioDescriptionCharacterCatalogNew": "Novo catálogo",
+  "@audioDescriptionCharacterCatalogNew": {
+    "description": "Localized text for audioDescriptionCharacterCatalogNew."
+  },
+  "audioDescriptionCharacterCatalogNameTitle": "Catálogo de personagens",
+  "@audioDescriptionCharacterCatalogNameTitle": {
+    "description": "Localized text for audioDescriptionCharacterCatalogNameTitle."
+  },
+  "audioDescriptionCharacterCatalogNamePrompt": "Como você quer chamar o catálogo de personagens?",
+  "@audioDescriptionCharacterCatalogNamePrompt": {
+    "description": "Localized text for audioDescriptionCharacterCatalogNamePrompt."
+  },
+  "audioDescriptionCharacterCatalogNameError": "Digite um nome para o catálogo de personagens.",
+  "@audioDescriptionCharacterCatalogNameError": {
+    "description": "Localized text for audioDescriptionCharacterCatalogNameError."
+  },
+  "audioDescriptionCharacterCatalogSaved": "Catálogo de personagens atualizado.",
+  "@audioDescriptionCharacterCatalogSaved": {
+    "description": "Localized text for audioDescriptionCharacterCatalogSaved."
+  },
+  "audioDescriptionCharacterCatalogSaveWarning": "A audiodescrição foi criada, mas não foi possível salvar o catálogo de personagens:",
+  "@audioDescriptionCharacterCatalogSaveWarning": {
+    "description": "Localized text for audioDescriptionCharacterCatalogSaveWarning."
+  },
+  "audioDescriptionRecognizeScreenText": "Reconhecer texto importante na tela e incluí-lo na audiodescrição",
+  "@audioDescriptionRecognizeScreenText": {
+    "description": "Localized text for audioDescriptionRecognizeScreenText."
+  },
+  "audioDescriptionHighDemandTitle": "Serviço de IA muito ocupado",
+  "@audioDescriptionHighDemandTitle": {
+    "description": "Audio-description fallback UI: audioDescriptionHighDemandTitle."
+  },
+  "audioDescriptionHighDemandMessage": "O serviço de IA continua indisponível após várias tentativas. Continuar aguardando e tentando novamente?",
+  "@audioDescriptionHighDemandMessage": {
+    "description": "Audio-description fallback UI: audioDescriptionHighDemandMessage."
+  },
+  "audioDescriptionContinueWaiting": "Continuar aguardando",
+  "@audioDescriptionContinueWaiting": {
+    "description": "Audio-description fallback UI: audioDescriptionContinueWaiting."
+  },
+  "audioDescriptionStopGeneration": "Interromper",
+  "@audioDescriptionStopGeneration": {
+    "description": "Audio-description fallback UI: audioDescriptionStopGeneration."
+  },
+  "audioDescriptionQuotaTitle": "Cota do Gemini esgotada",
+  "@audioDescriptionQuotaTitle": {
+    "description": "Audio-description fallback UI: audioDescriptionQuotaTitle."
+  },
+  "audioDescriptionQuotaMessage": "O modelo Gemini atual esgotou a cota. Você pode escolher outro modelo, continuar aguardando ou interromper.",
+  "@audioDescriptionQuotaMessage": {
+    "description": "Audio-description fallback UI: audioDescriptionQuotaMessage."
+  },
+  "audioDescriptionSwitchModel": "Escolher outro modelo",
+  "@audioDescriptionSwitchModel": {
+    "description": "Audio-description fallback UI: audioDescriptionSwitchModel."
+  },
+  "audioDescriptionOverlapTitle": "Alternativa final",
+  "@audioDescriptionOverlapTitle": {
+    "description": "Audio-description fallback UI: audioDescriptionOverlapTitle."
+  },
+  "audioDescriptionOverlapMessage": "Nenhuma descrição gerada cabe com segurança nos espaços sem diálogo. Quer usar a alternativa final que pode colocar narração sobre o diálogo? Ela nunca é ativada automaticamente.",
+  "@audioDescriptionOverlapMessage": {
+    "description": "Audio-description fallback UI: audioDescriptionOverlapMessage."
+  },
+  "audioDescriptionAllowOverlap": "Usar alternativa final",
+  "@audioDescriptionAllowOverlap": {
+    "description": "Audio-description fallback UI: audioDescriptionAllowOverlap."
+  },
+  "audioDescriptionResumeTitle": "Foi encontrado um trabalho de audiodescrição anterior",
+  "@audioDescriptionResumeTitle": {
+    "description": "Audio-description fallback UI: audioDescriptionResumeTitle."
+  },
+  "audioDescriptionResumeMessage": "O Sonarpad encontrou um ponto de controle compatível. Retomar do último trecho concluído ou recomeçar do início?",
+  "@audioDescriptionResumeMessage": {
+    "description": "Audio-description fallback UI: audioDescriptionResumeMessage."
+  },
+  "audioDescriptionResume": "Retomar",
+  "@audioDescriptionResume": {
+    "description": "Audio-description fallback UI: audioDescriptionResume."
+  },
+  "audioDescriptionRestart": "Recomeçar",
+  "@audioDescriptionRestart": {
+    "description": "Audio-description fallback UI: audioDescriptionRestart."
+  },
+  "audioDescriptionStageBriefRetry": "Repetindo a análise com descrições breves...",
+  "@audioDescriptionStageBriefRetry": {
+    "description": "Audio-description fallback UI: audioDescriptionStageBriefRetry."
+  },
+  "audioDescriptionBriefRetryTitle": "Tentar novamente com descrições breves",
+  "@audioDescriptionBriefRetryTitle": {
+    "description": "Audio-description fallback UI: audioDescriptionBriefRetryTitle."
+  },
+  "audioDescriptionBriefRetryMessage": "Nenhuma descrição gerada cabe com segurança nos espaços sem diálogo. Antes de permitir narração sobre os diálogos, deseja repetir uma vez a análise com descrições bem breves?",
+  "@audioDescriptionBriefRetryMessage": {
+    "description": "Audio-description fallback UI: audioDescriptionBriefRetryMessage."
+  },
+  "audioDescriptionRetryBrief": "Tentar novamente no modo Breve",
+  "@audioDescriptionRetryBrief": {
+    "description": "Audio-description fallback UI: audioDescriptionRetryBrief."
   }
 }

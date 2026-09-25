@@ -3952,4 +3952,214 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get pyannoteXnnpackBenchmarkCompleted =>
       'Benchmark CPU vs XNNPACK terminé. Consultez le journal pour la parité et la vitesse.';
+  @override
+  String get audioDescriptionCreateAiTitle => "Créer une audiodescription avec l’IA";
+
+  @override
+  String get audioDescriptionChooseVideo => "Choisir une vidéo";
+
+  @override
+  String get audioDescriptionAiService => "Service IA";
+
+  @override
+  String get audioDescriptionUseGeminiKey => "Utiliser une clé API Gemini";
+
+  @override
+  String get audioDescriptionUseSonarpadAi => "Utiliser le service Sonarpad AI";
+
+  @override
+  String get audioDescriptionGeminiApiKey => "Clé API Gemini";
+
+  @override
+  String get audioDescriptionGeminiModel => "Modèle Gemini";
+
+  @override
+  String get audioDescriptionRefreshModels => "Actualiser la liste des modèles";
+
+  @override
+  String get audioDescriptionRefreshingModels => "Actualisation des modèles...";
+
+  @override
+  String get audioDescriptionSonarpadCode => "Code personnel Sonarpad AI";
+
+  @override
+  String get audioDescriptionActivateSonarpad => "Activer / vérifier Sonarpad AI";
+
+  @override
+  String get audioDescriptionActivatingSonarpad => "Activation de Sonarpad AI...";
+
+  @override
+  String get audioDescriptionServerManagedModel => "Géré par le service Sonarpad AI";
+
+  @override
+  String get audioDescriptionLanguage => "Langue de l’audiodescription";
+
+  @override
+  String get audioDescriptionDetailLevel => "Niveau de détail";
+
+  @override
+  String get audioDescriptionDetailConcise => "Brève";
+
+  @override
+  String get audioDescriptionDetailNormal => "Normal";
+
+  @override
+  String get audioDescriptionDetailDetailed => "Détaillée";
+
+  @override
+  String get audioDescriptionDetailIntensive => "Intensive";
+
+  @override
+  String get audioDescriptionExtendedPauses => "Activer les pauses prolongées lorsqu’une description ne tient pas dans un silence";
+
+  @override
+  String get audioDescriptionRecognizeCharacters => "Essayer de reconnaître les personnages et utiliser leurs noms";
+
+  @override
+  String get audioDescriptionSaveProject => "Enregistrer aussi le projet pour des modifications ultérieures";
+
+  @override
+  String get audioDescriptionCreate => "Créer l’audiodescription";
+
+  @override
+  String get audioDescriptionVoiceTesting => "Test de la voix...";
+
+  @override
+  String get audioDescriptionApiKeyRequired => "Saisissez une clé API Gemini.";
+
+  @override
+  String get audioDescriptionModelsUpdated => "Liste des modèles Gemini mise à jour.";
+
+  @override
+  String get audioDescriptionModelsError => "Impossible d’actualiser la liste des modèles Gemini.";
+
+  @override
+  String get audioDescriptionSonarpadCodeRequired => "Saisissez votre code personnel Sonarpad AI.";
+
+  @override
+  String get audioDescriptionSonarpadActivated => "Sonarpad AI est actif sur cet appareil.";
+
+  @override
+  String get audioDescriptionSonarpadActivationError => "Impossible d’activer ou de vérifier Sonarpad AI.";
+
+  @override
+  String get audioDescriptionEdgeVoiceReady => "La voix Edge sélectionnée est disponible.";
+
+  @override
+  String get audioDescriptionChooseVideoFirst => "Choisissez d’abord un fichier vidéo.";
+
+  @override
+  String get audioDescriptionStagePreparing => "Préparation de la vidéo...";
+
+  @override
+  String get audioDescriptionStageDialogue => "Détection des dialogues avec pyannote...";
+
+  @override
+  String get audioDescriptionStageVideo => "Préparation des segments vidéo...";
+
+  @override
+  String get audioDescriptionStageGemini => "Génération des audiodescriptions avec l’IA...";
+
+  @override
+  String get audioDescriptionStageTts => "Création des voix...";
+
+  @override
+  String get audioDescriptionStageMixing => "Création du MP3 audiodescrit...";
+
+  @override
+  String get audioDescriptionCompleted => "Audiodescription terminée.";
+
+  @override
+  String get audioDescriptionCancelled => "Création de l’audiodescription annulée.";
+
+  @override
+  String get audioDescriptionCancelling => "Annulation...";
+
+  @override
+  String get audioDescriptionGenerationFailed => "Échec de la création de l’audiodescription.";
+
+  @override
+  String get audioDescriptionGetGeminiKey => "Obtenir une clé API Gemini";
+
+  @override
+  String get audioDescriptionKeepCharacterCatalog => "Conserver le catalogue des personnages : utile pour une série";
+
+  @override
+  String get audioDescriptionCharacterCatalogChoose => "Choisir un catalogue de personnages enregistré";
+
+  @override
+  String get audioDescriptionCharacterCatalogNew => "Nouveau catalogue";
+
+  @override
+  String get audioDescriptionCharacterCatalogNameTitle => "Catalogue des personnages";
+
+  @override
+  String get audioDescriptionCharacterCatalogNamePrompt => "Comment souhaitez-vous nommer le catalogue des personnages ?";
+
+  @override
+  String get audioDescriptionCharacterCatalogNameError => "Saisissez un nom pour le catalogue des personnages.";
+
+  @override
+  String get audioDescriptionCharacterCatalogSaved => "Catalogue des personnages mis à jour.";
+
+  @override
+  String get audioDescriptionCharacterCatalogSaveWarning => "L’audiodescription a été créée, mais le catalogue des personnages n’a pas pu être enregistré :";
+
+  @override
+  String get audioDescriptionRecognizeScreenText => "Reconnaître le texte important à l’écran et l’inclure dans l’audiodescription";
+
+
+  @override
+  String get audioDescriptionHighDemandTitle => 'Service IA très sollicité';
+
+  @override
+  String get audioDescriptionHighDemandMessage => 'Le service IA est toujours indisponible après plusieurs tentatives. Continuer à attendre et réessayer ?';
+
+  @override
+  String get audioDescriptionContinueWaiting => 'Continuer à attendre';
+
+  @override
+  String get audioDescriptionStopGeneration => 'Arrêter';
+
+  @override
+  String get audioDescriptionQuotaTitle => 'Quota Gemini épuisé';
+
+  @override
+  String get audioDescriptionQuotaMessage => 'Le modèle Gemini actuel a épuisé son quota. Vous pouvez choisir un autre modèle, continuer à attendre ou arrêter.';
+
+  @override
+  String get audioDescriptionSwitchModel => 'Choisir un autre modèle';
+
+  @override
+  String get audioDescriptionStageBriefRetry => 'Nouvelle analyse avec des descriptions brèves...';
+
+  @override
+  String get audioDescriptionBriefRetryTitle => 'Réessayer avec des descriptions brèves';
+
+  @override
+  String get audioDescriptionBriefRetryMessage => 'Aucune description générée ne tient de manière sûre dans les espaces sans dialogue. Avant d’autoriser une narration sur les dialogues, voulez-vous relancer une fois l’analyse avec des descriptions très brèves ?';
+
+  @override
+  String get audioDescriptionRetryBrief => 'Réessayer en mode Bref';
+
+  @override
+  String get audioDescriptionOverlapTitle => 'Solution de dernier recours';
+
+  @override
+  String get audioDescriptionOverlapMessage => 'Aucune description générée ne tient en toute sécurité dans les espaces sans dialogue. Voulez-vous utiliser le dernier recours qui peut placer la narration sur les dialogues ? Il n’est jamais activé automatiquement.';
+
+  @override
+  String get audioDescriptionAllowOverlap => 'Utiliser le dernier recours';
+
+  @override
+  String get audioDescriptionResumeTitle => 'Travail d’audiodescription précédent trouvé';
+
+  @override
+  String get audioDescriptionResumeMessage => 'Sonarpad a trouvé un point de reprise compatible. Reprendre depuis le dernier segment terminé ou recommencer depuis le début ?';
+
+  @override
+  String get audioDescriptionResume => 'Reprendre';
+
+  @override
+  String get audioDescriptionRestart => 'Recommencer';
 }

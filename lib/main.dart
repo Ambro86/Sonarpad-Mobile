@@ -18,6 +18,8 @@ import 'services/changelog_service.dart';
 import 'services/document_library_service.dart';
 import 'screens/changelog_screen.dart';
 import 'screens/convert_media_screen.dart';
+import 'screens/create_ai_audiodescription_screen.dart';
+import 'screens/audio_description_project_editor_screen.dart';
 import 'screens/media_cutter_screen.dart';
 import 'screens/documents_screen.dart';
 import 'screens/document_reader_screen.dart';
@@ -427,6 +429,8 @@ class _SonarpadAppState extends State<SonarpadApp> {
         '/podcasts': (_) => const PodcastScreen(),
         '/sonartube': (_) => const SonarTubeScreen(),
         '/convert_media': (_) => const ConvertMediaScreen(),
+        '/create_ai_audiodescription': (_) => const CreateAiAudiodescriptionScreen(),
+        '/edit_audio_description_project': (_) => const AudioDescriptionProjectEditorScreen(),
         '/media_cutter': (_) => const MediaCutterScreen(),
         '/radio': (_) => const RadioScreen(),
         '/radio/recordings': (_) => const RadioRecordingsScreen(),

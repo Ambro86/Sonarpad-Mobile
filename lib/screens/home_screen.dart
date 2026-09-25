@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
 import '../main.dart';
+import '../services/audio_description_project_strings.dart';
 import '../services/accessibility_feedback_service.dart';
 import '../widgets/universal_accessible_view.dart';
 import '../services/app_settings_service.dart';
@@ -114,6 +115,16 @@ class _HomeScreenState extends State<HomeScreen> {
           context,
           routeName: '/sonartube',
         ),
+      ),
+      _HomeButton(
+        label: l10n.audioDescriptionCreateAiTitle,
+        onPressed: () => AccessibilityFeedbackService.goNamed(context,
+            routeName: '/create_ai_audiodescription'),
+      ),
+      _HomeButton(
+        label: AudioDescriptionProjectStrings.of(context)['menu'],
+        onPressed: () => AccessibilityFeedbackService.goNamed(context,
+            routeName: '/edit_audio_description_project'),
       ),
       _HomeButton(
         label: l10n.convertMediaTitle,
@@ -305,6 +316,14 @@ class _HomeScreenState extends State<HomeScreen> {
             label: l10n.sonarTubeTitle,
             onPressed: () => AccessibilityFeedbackService.goNamed(context,
                 routeName: '/sonartube')),
+        _HomeButton(
+            label: l10n.audioDescriptionCreateAiTitle,
+            onPressed: () => AccessibilityFeedbackService.goNamed(context,
+                routeName: '/create_ai_audiodescription')),
+        _HomeButton(
+            label: AudioDescriptionProjectStrings.of(context)['menu'],
+            onPressed: () => AccessibilityFeedbackService.goNamed(context,
+                routeName: '/edit_audio_description_project')),
         _HomeButton(
             label: l10n.convertMediaTitle,
             onPressed: () => AccessibilityFeedbackService.goNamed(context,

@@ -11,7 +11,6 @@ import '../utils/status_message.dart';
 import '../widgets/media_preservation_progress_dialog.dart';
 import '../widgets/universal_accessible_view.dart';
 import 'podcast_episode_player_screen.dart';
-import 'pyannote_parity_test_screen.dart';
 
 
 class SonarpadAudiodescriptionsScreen extends StatefulWidget {
@@ -88,16 +87,6 @@ class _SonarpadAudiodescriptionsScreenState
     );
   }
 
-  void _openPyannoteTest() {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        settings: const RouteSettings(
-          name: '/sonarpad_audiodescriptions/pyannote-test',
-        ),
-        builder: (_) => const PyannoteParityTestScreen(),
-      ),
-    );
-  }
 
   Future<void> _open(SonarpadAudiodescriptionItem item) async {
     if (item.isFolder) {
@@ -139,10 +128,6 @@ class _SonarpadAudiodescriptionsScreenState
                               id: 'all',
                               title: AppLocalizations.of(context).sonarpadAudiodescriptionsAll,
                             ),
-                            AccessibleListRow(
-                              id: 'pyannote_test',
-                              title: AppLocalizations.of(context).pyannoteTestTitle,
-                            ),
                             ..._items.asMap().entries.map(
                                   (entry) => _catalogRow(
                                     'recent_${entry.key}',
@@ -161,11 +146,6 @@ class _SonarpadAudiodescriptionsScreenState
                         }
                         if (event.id == 'all' && event.type == 'activate') {
                           _openAll();
-                          return;
-                        }
-                        if (event.id == 'pyannote_test' &&
-                            event.type == 'activate') {
-                          _openPyannoteTest();
                           return;
                         }
                         if (event.id?.startsWith('recent_') != true) return;
@@ -197,7 +177,7 @@ class _SonarpadAudiodescriptionsScreenState
   Widget _legacyHome() {
     return ListView.separated(
       padding: const EdgeInsets.all(16),
-      itemCount: _items.length + 3,
+      itemCount: _items.length + 2,
       separatorBuilder: (_, _) => const Divider(),
       itemBuilder: (context, index) {
         if (index == 0) {
@@ -218,14 +198,7 @@ class _SonarpadAudiodescriptionsScreenState
             onTap: _openAll,
           );
         }
-        if (index == 2) {
-          return ListTile(
-            title: Text(AppLocalizations.of(context).pyannoteTestTitle),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: _openPyannoteTest,
-          );
-        }
-        final item = _items[index - 3];
+        final item = _items[index - 2];
         return _legacyItem(item);
       },
     );

@@ -3931,4 +3931,214 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get pyannoteXnnpackBenchmarkCompleted =>
       'CPU-vs.-XNNPACK-Benchmark abgeschlossen. Prüfe das Protokoll auf Parität und Geschwindigkeit.';
+  @override
+  String get audioDescriptionCreateAiTitle => "Audiodeskription mit KI erstellen";
+
+  @override
+  String get audioDescriptionChooseVideo => "Video auswählen";
+
+  @override
+  String get audioDescriptionAiService => "KI-Dienst";
+
+  @override
+  String get audioDescriptionUseGeminiKey => "Gemini-API-Schlüssel verwenden";
+
+  @override
+  String get audioDescriptionUseSonarpadAi => "Sonarpad-AI-Dienst verwenden";
+
+  @override
+  String get audioDescriptionGeminiApiKey => "Gemini-API-Schlüssel";
+
+  @override
+  String get audioDescriptionGeminiModel => "Gemini-Modell";
+
+  @override
+  String get audioDescriptionRefreshModels => "Modellliste aktualisieren";
+
+  @override
+  String get audioDescriptionRefreshingModels => "Modelle werden aktualisiert...";
+
+  @override
+  String get audioDescriptionSonarpadCode => "Persönlicher Sonarpad-AI-Code";
+
+  @override
+  String get audioDescriptionActivateSonarpad => "Sonarpad AI aktivieren / prüfen";
+
+  @override
+  String get audioDescriptionActivatingSonarpad => "Sonarpad AI wird aktiviert...";
+
+  @override
+  String get audioDescriptionServerManagedModel => "Vom Sonarpad-AI-Dienst verwaltet";
+
+  @override
+  String get audioDescriptionLanguage => "Sprache der Audiodeskription";
+
+  @override
+  String get audioDescriptionDetailLevel => "Detailgrad";
+
+  @override
+  String get audioDescriptionDetailConcise => "Kurz";
+
+  @override
+  String get audioDescriptionDetailNormal => "Normal";
+
+  @override
+  String get audioDescriptionDetailDetailed => "Detailliert";
+
+  @override
+  String get audioDescriptionDetailIntensive => "Intensiv";
+
+  @override
+  String get audioDescriptionExtendedPauses => "Erweiterte Pausen aktivieren, wenn eine Beschreibung nicht in eine Sprechpause passt";
+
+  @override
+  String get audioDescriptionRecognizeCharacters => "Figuren möglichst erkennen und ihre Namen verwenden";
+
+  @override
+  String get audioDescriptionSaveProject => "Projekt auch für spätere Bearbeitung speichern";
+
+  @override
+  String get audioDescriptionCreate => "Audiodeskription erstellen";
+
+  @override
+  String get audioDescriptionVoiceTesting => "Stimme wird getestet...";
+
+  @override
+  String get audioDescriptionApiKeyRequired => "Gib einen Gemini-API-Schlüssel ein.";
+
+  @override
+  String get audioDescriptionModelsUpdated => "Gemini-Modellliste aktualisiert.";
+
+  @override
+  String get audioDescriptionModelsError => "Gemini-Modellliste konnte nicht aktualisiert werden.";
+
+  @override
+  String get audioDescriptionSonarpadCodeRequired => "Gib deinen persönlichen Sonarpad-AI-Code ein.";
+
+  @override
+  String get audioDescriptionSonarpadActivated => "Sonarpad AI ist auf diesem Gerät aktiv.";
+
+  @override
+  String get audioDescriptionSonarpadActivationError => "Sonarpad AI konnte nicht aktiviert oder geprüft werden.";
+
+  @override
+  String get audioDescriptionEdgeVoiceReady => "Die ausgewählte Edge-Stimme ist verfügbar.";
+
+  @override
+  String get audioDescriptionChooseVideoFirst => "Wähle zuerst eine Videodatei aus.";
+
+  @override
+  String get audioDescriptionStagePreparing => "Video wird vorbereitet...";
+
+  @override
+  String get audioDescriptionStageDialogue => "Dialoge werden mit pyannote erkannt...";
+
+  @override
+  String get audioDescriptionStageVideo => "Videosegmente werden vorbereitet...";
+
+  @override
+  String get audioDescriptionStageGemini => "Audiodeskriptionen werden mit KI erzeugt...";
+
+  @override
+  String get audioDescriptionStageTts => "Stimmen werden erzeugt...";
+
+  @override
+  String get audioDescriptionStageMixing => "Audiobeschriebenes MP3 wird erstellt...";
+
+  @override
+  String get audioDescriptionCompleted => "Audiodeskription abgeschlossen.";
+
+  @override
+  String get audioDescriptionCancelled => "Erstellung der Audiodeskription abgebrochen.";
+
+  @override
+  String get audioDescriptionCancelling => "Abbruch läuft...";
+
+  @override
+  String get audioDescriptionGenerationFailed => "Audiodeskription konnte nicht erstellt werden.";
+
+  @override
+  String get audioDescriptionGetGeminiKey => "Gemini-API-Schlüssel abrufen";
+
+  @override
+  String get audioDescriptionKeepCharacterCatalog => "Figurenkatalog beibehalten: nützlich für Serien";
+
+  @override
+  String get audioDescriptionCharacterCatalogChoose => "Gespeicherten Figurenkatalog auswählen";
+
+  @override
+  String get audioDescriptionCharacterCatalogNew => "Neuer Katalog";
+
+  @override
+  String get audioDescriptionCharacterCatalogNameTitle => "Figurenkatalog";
+
+  @override
+  String get audioDescriptionCharacterCatalogNamePrompt => "Wie soll der Figurenkatalog heißen?";
+
+  @override
+  String get audioDescriptionCharacterCatalogNameError => "Gib einen Namen für den Figurenkatalog ein.";
+
+  @override
+  String get audioDescriptionCharacterCatalogSaved => "Figurenkatalog aktualisiert.";
+
+  @override
+  String get audioDescriptionCharacterCatalogSaveWarning => "Die Audiodeskription wurde erstellt, aber der Figurenkatalog konnte nicht gespeichert werden:";
+
+  @override
+  String get audioDescriptionRecognizeScreenText => "Wichtige Bildschirmtexte erkennen und in die Audiodeskription einbeziehen";
+
+
+  @override
+  String get audioDescriptionHighDemandTitle => 'KI-Dienst stark ausgelastet';
+
+  @override
+  String get audioDescriptionHighDemandMessage => 'Der KI-Dienst ist nach mehreren Versuchen weiterhin nicht verfügbar. Weiter warten und erneut versuchen?';
+
+  @override
+  String get audioDescriptionContinueWaiting => 'Weiter warten';
+
+  @override
+  String get audioDescriptionStopGeneration => 'Stoppen';
+
+  @override
+  String get audioDescriptionQuotaTitle => 'Gemini-Kontingent erschöpft';
+
+  @override
+  String get audioDescriptionQuotaMessage => 'Das aktuelle Gemini-Modell hat sein Kontingent ausgeschöpft. Du kannst ein anderes Modell wählen, weiter warten oder stoppen.';
+
+  @override
+  String get audioDescriptionSwitchModel => 'Anderes Modell wählen';
+
+  @override
+  String get audioDescriptionStageBriefRetry => 'Analyse mit kurzen Beschreibungen wird wiederholt...';
+
+  @override
+  String get audioDescriptionBriefRetryTitle => 'Mit kurzen Beschreibungen erneut versuchen';
+
+  @override
+  String get audioDescriptionBriefRetryMessage => 'Keine erzeugte Beschreibung passt sicher in die dialogfreien Abschnitte. Soll die Analyse vor einer Überlagerung von Dialogen einmal mit sehr kurzen Beschreibungen wiederholt werden?';
+
+  @override
+  String get audioDescriptionRetryBrief => 'Im Modus Kurz erneut versuchen';
+
+  @override
+  String get audioDescriptionOverlapTitle => 'Letzter Fallback';
+
+  @override
+  String get audioDescriptionOverlapMessage => 'Keine erzeugte Beschreibung passt sicher in dialogfreie Stellen. Soll der letzte Fallback verwendet werden, der Erzählung über Dialog legen kann? Er wird niemals automatisch aktiviert.';
+
+  @override
+  String get audioDescriptionAllowOverlap => 'Letzten Fallback verwenden';
+
+  @override
+  String get audioDescriptionResumeTitle => 'Frühere Audiodeskriptionsarbeit gefunden';
+
+  @override
+  String get audioDescriptionResumeMessage => 'Sonarpad hat einen kompatiblen Prüfpunkt gefunden. Vom letzten fertigen Chunk fortsetzen oder von vorn beginnen?';
+
+  @override
+  String get audioDescriptionResume => 'Fortsetzen';
+
+  @override
+  String get audioDescriptionRestart => 'Neu starten';
 }

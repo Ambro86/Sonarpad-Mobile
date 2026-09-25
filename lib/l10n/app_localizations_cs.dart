@@ -3916,4 +3916,214 @@ class AppLocalizationsCs extends AppLocalizations {
   @override
   String get pyannoteXnnpackBenchmarkCompleted =>
       'Benchmark CPU vs XNNPACK dokončen. Zkontrolujte protokol pro shodu a rychlost.';
+  @override
+  String get audioDescriptionCreateAiTitle => "Vytvořit audiopopis pomocí AI";
+
+  @override
+  String get audioDescriptionChooseVideo => "Vybrat video";
+
+  @override
+  String get audioDescriptionAiService => "Služba AI";
+
+  @override
+  String get audioDescriptionUseGeminiKey => "Použít klíč API Gemini";
+
+  @override
+  String get audioDescriptionUseSonarpadAi => "Použít službu Sonarpad AI";
+
+  @override
+  String get audioDescriptionGeminiApiKey => "Klíč API Gemini";
+
+  @override
+  String get audioDescriptionGeminiModel => "Model Gemini";
+
+  @override
+  String get audioDescriptionRefreshModels => "Obnovit seznam modelů";
+
+  @override
+  String get audioDescriptionRefreshingModels => "Obnovování modelů...";
+
+  @override
+  String get audioDescriptionSonarpadCode => "Osobní kód Sonarpad AI";
+
+  @override
+  String get audioDescriptionActivateSonarpad => "Aktivovat / ověřit Sonarpad AI";
+
+  @override
+  String get audioDescriptionActivatingSonarpad => "Aktivace Sonarpad AI...";
+
+  @override
+  String get audioDescriptionServerManagedModel => "Spravuje služba Sonarpad AI";
+
+  @override
+  String get audioDescriptionLanguage => "Jazyk audiopopisu";
+
+  @override
+  String get audioDescriptionDetailLevel => "Úroveň podrobnosti";
+
+  @override
+  String get audioDescriptionDetailConcise => "Stručná";
+
+  @override
+  String get audioDescriptionDetailNormal => "Normální";
+
+  @override
+  String get audioDescriptionDetailDetailed => "Podrobná";
+
+  @override
+  String get audioDescriptionDetailIntensive => "Intenzivní";
+
+  @override
+  String get audioDescriptionExtendedPauses => "Povolit prodloužené pauzy, když se popis nevejde do ticha";
+
+  @override
+  String get audioDescriptionRecognizeCharacters => "Pokusit se rozpoznat postavy a používat jejich jména";
+
+  @override
+  String get audioDescriptionSaveProject => "Uložit také projekt pro budoucí úpravy";
+
+  @override
+  String get audioDescriptionCreate => "Vytvořit audiopopis";
+
+  @override
+  String get audioDescriptionVoiceTesting => "Testování hlasu...";
+
+  @override
+  String get audioDescriptionApiKeyRequired => "Zadejte klíč API Gemini.";
+
+  @override
+  String get audioDescriptionModelsUpdated => "Seznam modelů Gemini byl aktualizován.";
+
+  @override
+  String get audioDescriptionModelsError => "Seznam modelů Gemini se nepodařilo obnovit.";
+
+  @override
+  String get audioDescriptionSonarpadCodeRequired => "Zadejte svůj osobní kód Sonarpad AI.";
+
+  @override
+  String get audioDescriptionSonarpadActivated => "Sonarpad AI je na tomto zařízení aktivní.";
+
+  @override
+  String get audioDescriptionSonarpadActivationError => "Sonarpad AI se nepodařilo aktivovat nebo ověřit.";
+
+  @override
+  String get audioDescriptionEdgeVoiceReady => "Vybraný hlas Edge je dostupný.";
+
+  @override
+  String get audioDescriptionChooseVideoFirst => "Nejprve vyberte soubor videa.";
+
+  @override
+  String get audioDescriptionStagePreparing => "Příprava videa...";
+
+  @override
+  String get audioDescriptionStageDialogue => "Detekce dialogů pomocí pyannote...";
+
+  @override
+  String get audioDescriptionStageVideo => "Příprava segmentů videa...";
+
+  @override
+  String get audioDescriptionStageGemini => "Generování audiopopisů pomocí AI...";
+
+  @override
+  String get audioDescriptionStageTts => "Vytváření hlasů...";
+
+  @override
+  String get audioDescriptionStageMixing => "Vytváření MP3 s audiopopisem...";
+
+  @override
+  String get audioDescriptionCompleted => "Audiopopis dokončen.";
+
+  @override
+  String get audioDescriptionCancelled => "Vytváření audiopopisu zrušeno.";
+
+  @override
+  String get audioDescriptionCancelling => "Rušení...";
+
+  @override
+  String get audioDescriptionGenerationFailed => "Audiopopis se nepodařilo vytvořit.";
+
+  @override
+  String get audioDescriptionGetGeminiKey => "Získat klíč API Gemini";
+
+  @override
+  String get audioDescriptionKeepCharacterCatalog => "Zachovat katalog postav: užitečné pro seriál";
+
+  @override
+  String get audioDescriptionCharacterCatalogChoose => "Vybrat uložený katalog postav";
+
+  @override
+  String get audioDescriptionCharacterCatalogNew => "Nový katalog";
+
+  @override
+  String get audioDescriptionCharacterCatalogNameTitle => "Katalog postav";
+
+  @override
+  String get audioDescriptionCharacterCatalogNamePrompt => "Jak chcete katalog postav pojmenovat?";
+
+  @override
+  String get audioDescriptionCharacterCatalogNameError => "Zadejte název katalogu postav.";
+
+  @override
+  String get audioDescriptionCharacterCatalogSaved => "Katalog postav byl aktualizován.";
+
+  @override
+  String get audioDescriptionCharacterCatalogSaveWarning => "Audiopopis byl vytvořen, ale katalog postav se nepodařilo uložit:";
+
+  @override
+  String get audioDescriptionRecognizeScreenText => "Rozpoznat důležitý text na obrazovce a zahrnout jej do audiopopisu";
+
+
+  @override
+  String get audioDescriptionHighDemandTitle => 'Služba AI je velmi vytížená';
+
+  @override
+  String get audioDescriptionHighDemandMessage => 'Služba AI je po několika pokusech stále nedostupná. Pokračovat v čekání a opakování?';
+
+  @override
+  String get audioDescriptionContinueWaiting => 'Pokračovat v čekání';
+
+  @override
+  String get audioDescriptionStopGeneration => 'Zastavit';
+
+  @override
+  String get audioDescriptionQuotaTitle => 'Kvóta Gemini vyčerpána';
+
+  @override
+  String get audioDescriptionQuotaMessage => 'Aktuální model Gemini vyčerpal kvótu. Můžete vybrat jiný model, pokračovat v čekání nebo zastavit.';
+
+  @override
+  String get audioDescriptionSwitchModel => 'Vybrat jiný model';
+
+  @override
+  String get audioDescriptionStageBriefRetry => 'Opakování analýzy s krátkými popisy...';
+
+  @override
+  String get audioDescriptionBriefRetryTitle => 'Zkusit znovu s krátkými popisy';
+
+  @override
+  String get audioDescriptionBriefRetryMessage => 'Žádný vygenerovaný popis se bezpečně nevejde do míst bez dialogu. Chcete před povolením komentáře přes dialog jednou zopakovat analýzu s velmi krátkými popisy?';
+
+  @override
+  String get audioDescriptionRetryBrief => 'Zkusit znovu v režimu Krátké';
+
+  @override
+  String get audioDescriptionOverlapTitle => 'Poslední nouzová možnost';
+
+  @override
+  String get audioDescriptionOverlapMessage => 'Žádný vytvořený popis se bezpečně nevejde do míst bez dialogu. Použít poslední nouzový režim, který může vložit vyprávění přes dialog? Nikdy se nezapíná automaticky.';
+
+  @override
+  String get audioDescriptionAllowOverlap => 'Použít nouzový režim';
+
+  @override
+  String get audioDescriptionResumeTitle => 'Nalezena předchozí práce audiopopisu';
+
+  @override
+  String get audioDescriptionResumeMessage => 'Sonarpad našel kompatibilní kontrolní bod. Pokračovat od posledního dokončeného úseku, nebo začít od začátku?';
+
+  @override
+  String get audioDescriptionResume => 'Pokračovat';
+
+  @override
+  String get audioDescriptionRestart => 'Začít znovu';
 }

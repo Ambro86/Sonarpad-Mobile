@@ -162,3 +162,7 @@ parti è incorporato.
 ## Localizzazioni
 
 Le regole per ARB, Calendario/citazioni e controllo delle stringhe hard-coded sono documentate in `LOCALIZATION_ARCHITECTURE.md`.
+
+## Modifica progetto audiodescrizione mobile
+
+Da **Media -> Modifica progetto audiodescrizione** è possibile aprire un file `.sonarpad-ad.json`, modificare le descrizioni con controllo reale della durata TTS, ascoltare l'anteprima, eliminare descrizioni, cambiare voce verificando tutte le frasi, riesportare l'MP3 ed esportare SRT/VTT. I nuovi progetti usano il formato Windows `sonarpad-audio-description-project` v1 e restano leggibili anche dal mobile se creati con il precedente schema mobile.

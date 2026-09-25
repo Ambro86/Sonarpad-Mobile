@@ -3912,4 +3912,214 @@ class AppLocalizationsUk extends AppLocalizations {
   @override
   String get pyannoteXnnpackBenchmarkCompleted =>
       'Тест CPU проти XNNPACK завершено. Перевірте журнал щодо паритету та швидкості.';
+  @override
+  String get audioDescriptionCreateAiTitle => "Створити аудіоопис за допомогою ШІ";
+
+  @override
+  String get audioDescriptionChooseVideo => "Вибрати відео";
+
+  @override
+  String get audioDescriptionAiService => "Служба ШІ";
+
+  @override
+  String get audioDescriptionUseGeminiKey => "Використовувати ключ API Gemini";
+
+  @override
+  String get audioDescriptionUseSonarpadAi => "Використовувати службу Sonarpad AI";
+
+  @override
+  String get audioDescriptionGeminiApiKey => "Ключ API Gemini";
+
+  @override
+  String get audioDescriptionGeminiModel => "Модель Gemini";
+
+  @override
+  String get audioDescriptionRefreshModels => "Оновити список моделей";
+
+  @override
+  String get audioDescriptionRefreshingModels => "Оновлення моделей...";
+
+  @override
+  String get audioDescriptionSonarpadCode => "Особистий код Sonarpad AI";
+
+  @override
+  String get audioDescriptionActivateSonarpad => "Активувати / перевірити Sonarpad AI";
+
+  @override
+  String get audioDescriptionActivatingSonarpad => "Активація Sonarpad AI...";
+
+  @override
+  String get audioDescriptionServerManagedModel => "Керується службою Sonarpad AI";
+
+  @override
+  String get audioDescriptionLanguage => "Мова аудіоопису";
+
+  @override
+  String get audioDescriptionDetailLevel => "Рівень деталізації";
+
+  @override
+  String get audioDescriptionDetailConcise => "Короткий";
+
+  @override
+  String get audioDescriptionDetailNormal => "Звичайний";
+
+  @override
+  String get audioDescriptionDetailDetailed => "Детальний";
+
+  @override
+  String get audioDescriptionDetailIntensive => "Інтенсивний";
+
+  @override
+  String get audioDescriptionExtendedPauses => "Дозволити подовжені паузи, якщо опис не вміщується в тишу";
+
+  @override
+  String get audioDescriptionRecognizeCharacters => "Намагатися розпізнавати персонажів і використовувати їхні імена";
+
+  @override
+  String get audioDescriptionSaveProject => "Також зберегти проєкт для подальшого редагування";
+
+  @override
+  String get audioDescriptionCreate => "Створити аудіоопис";
+
+  @override
+  String get audioDescriptionVoiceTesting => "Перевірка голосу...";
+
+  @override
+  String get audioDescriptionApiKeyRequired => "Введіть ключ API Gemini.";
+
+  @override
+  String get audioDescriptionModelsUpdated => "Список моделей Gemini оновлено.";
+
+  @override
+  String get audioDescriptionModelsError => "Не вдалося оновити список моделей Gemini.";
+
+  @override
+  String get audioDescriptionSonarpadCodeRequired => "Введіть особистий код Sonarpad AI.";
+
+  @override
+  String get audioDescriptionSonarpadActivated => "Sonarpad AI активний на цьому пристрої.";
+
+  @override
+  String get audioDescriptionSonarpadActivationError => "Не вдалося активувати або перевірити Sonarpad AI.";
+
+  @override
+  String get audioDescriptionEdgeVoiceReady => "Вибраний голос Edge доступний.";
+
+  @override
+  String get audioDescriptionChooseVideoFirst => "Спочатку виберіть відеофайл.";
+
+  @override
+  String get audioDescriptionStagePreparing => "Підготовка відео...";
+
+  @override
+  String get audioDescriptionStageDialogue => "Виявлення діалогів за допомогою pyannote...";
+
+  @override
+  String get audioDescriptionStageVideo => "Підготовка сегментів відео...";
+
+  @override
+  String get audioDescriptionStageGemini => "Створення аудіоописів за допомогою ШІ...";
+
+  @override
+  String get audioDescriptionStageTts => "Створення голосів...";
+
+  @override
+  String get audioDescriptionStageMixing => "Створення MP3 з аудіоописом...";
+
+  @override
+  String get audioDescriptionCompleted => "Аудіоопис завершено.";
+
+  @override
+  String get audioDescriptionCancelled => "Створення аудіоопису скасовано.";
+
+  @override
+  String get audioDescriptionCancelling => "Скасування...";
+
+  @override
+  String get audioDescriptionGenerationFailed => "Не вдалося створити аудіоопис.";
+
+  @override
+  String get audioDescriptionGetGeminiKey => "Отримати ключ API Gemini";
+
+  @override
+  String get audioDescriptionKeepCharacterCatalog => "Зберігати каталог персонажів: корисно для серіалу";
+
+  @override
+  String get audioDescriptionCharacterCatalogChoose => "Вибрати збережений каталог персонажів";
+
+  @override
+  String get audioDescriptionCharacterCatalogNew => "Новий каталог";
+
+  @override
+  String get audioDescriptionCharacterCatalogNameTitle => "Каталог персонажів";
+
+  @override
+  String get audioDescriptionCharacterCatalogNamePrompt => "Як назвати каталог персонажів?";
+
+  @override
+  String get audioDescriptionCharacterCatalogNameError => "Введіть назву каталогу персонажів.";
+
+  @override
+  String get audioDescriptionCharacterCatalogSaved => "Каталог персонажів оновлено.";
+
+  @override
+  String get audioDescriptionCharacterCatalogSaveWarning => "Аудіоопис створено, але каталог персонажів не вдалося зберегти:";
+
+  @override
+  String get audioDescriptionRecognizeScreenText => "Розпізнавати важливий текст на екрані та включати його в аудіоопис";
+
+
+  @override
+  String get audioDescriptionHighDemandTitle => 'Сервіс ШІ дуже завантажений';
+
+  @override
+  String get audioDescriptionHighDemandMessage => 'Сервіс ШІ досі недоступний після кількох спроб. Продовжувати чекати й повторювати?';
+
+  @override
+  String get audioDescriptionContinueWaiting => 'Продовжити очікування';
+
+  @override
+  String get audioDescriptionStopGeneration => 'Зупинити';
+
+  @override
+  String get audioDescriptionQuotaTitle => 'Квоту Gemini вичерпано';
+
+  @override
+  String get audioDescriptionQuotaMessage => 'Поточна модель Gemini вичерпала квоту. Можна вибрати іншу модель, продовжити очікування або зупинити.';
+
+  @override
+  String get audioDescriptionSwitchModel => 'Вибрати іншу модель';
+
+  @override
+  String get audioDescriptionStageBriefRetry => 'Повторний аналіз із короткими описами...';
+
+  @override
+  String get audioDescriptionBriefRetryTitle => 'Повторити з короткими описами';
+
+  @override
+  String get audioDescriptionBriefRetryMessage => 'Жоден створений опис не вміщується безпечно в проміжках без діалогу. Перш ніж дозволити озвучення поверх діалогів, повторити аналіз один раз із дуже короткими описами?';
+
+  @override
+  String get audioDescriptionRetryBrief => 'Повторити в режимі «Коротко»';
+
+  @override
+  String get audioDescriptionOverlapTitle => 'Останній резервний варіант';
+
+  @override
+  String get audioDescriptionOverlapMessage => 'Жоден створений опис не вміщується безпечно в паузах без діалогу. Використати останній резервний режим, який може накласти озвучення на діалог? Він ніколи не вмикається автоматично.';
+
+  @override
+  String get audioDescriptionAllowOverlap => 'Використати резервний режим';
+
+  @override
+  String get audioDescriptionResumeTitle => 'Знайдено попередню роботу з аудіодескрипції';
+
+  @override
+  String get audioDescriptionResumeMessage => 'Sonarpad знайшов сумісну контрольну точку. Продовжити з останнього завершеного фрагмента чи почати спочатку?';
+
+  @override
+  String get audioDescriptionResume => 'Продовжити';
+
+  @override
+  String get audioDescriptionRestart => 'Почати спочатку';
 }

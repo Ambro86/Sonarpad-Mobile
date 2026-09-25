@@ -57,8 +57,8 @@ void main() {
 
   test('channel collection labels are concise', () {
     final italian = File('lib/l10n/app_it.arb').readAsStringSync();
-    expect(italian, contains('\"sonarTubeChannelPlaylists\": \"Playlist\"'));
-    expect(italian, contains('\"sonarTubeChannelShorts\": \"Shorts\"'));
+    expect(italian, contains('"sonarTubeChannelPlaylists": "Playlist"'));
+    expect(italian, contains('"sonarTubeChannelShorts": "Shorts"'));
   });
 
 }
