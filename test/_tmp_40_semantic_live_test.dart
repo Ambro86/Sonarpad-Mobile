@@ -198,7 +198,7 @@ void main() {
                 .split('\n')
                 .map(normalize)
                 .any((line) => line == label || line.startsWith('$label '));
-          }, skip: _runLiveParafarmacoTests ? false : 'Live parafarmaco test: enable with --dart-define=RUN_LIVE_PARAFARMACO_TESTS=true');
+          });
           if (headingHits.isNotEmpty) {
             failures.add(
               '$query/${type.name}: mescola intestazioni ${headingHits.join(', ')}: ${displayed.substring(0, displayed.length < 160 ? displayed.length : 160)}',

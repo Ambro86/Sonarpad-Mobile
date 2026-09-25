@@ -7133,51 +7133,6 @@ abstract class AppLocalizations {
   
     /// Audio-description fallback UI.
     String get audioDescriptionRestart;
-  // Audio description project editor.
-  String get audioDescriptionProjectEditorMenu;
-  String get audioDescriptionProjectEditorTitle;
-  String get audioDescriptionProjectEditorOpen;
-  String get audioDescriptionProjectEditorProject;
-  String get audioDescriptionProjectEditorChooseSource;
-  String get audioDescriptionProjectEditorSource;
-  String get audioDescriptionProjectEditorDescription;
-  String get audioDescriptionProjectEditorText;
-  String get audioDescriptionProjectEditorPreview;
-  String get audioDescriptionProjectEditorApply;
-  String get audioDescriptionProjectEditorDelete;
-  String get audioDescriptionProjectEditorDeleteConfirm;
-  String get audioDescriptionProjectEditorDeleteLast;
-  String get audioDescriptionProjectEditorChangeVoice;
-  String get audioDescriptionProjectEditorEngine;
-  String get audioDescriptionProjectEditorEdge;
-  String get audioDescriptionProjectEditorSystem;
-  String get audioDescriptionProjectEditorLanguage;
-  String get audioDescriptionProjectEditorVoice;
-  String get audioDescriptionProjectEditorReexport;
-  String get audioDescriptionProjectEditorSrt;
-  String get audioDescriptionProjectEditorVtt;
-  String get audioDescriptionProjectEditorNormal;
-  String get audioDescriptionProjectEditorExtended;
-  String get audioDescriptionProjectEditorReady;
-  String get audioDescriptionProjectEditorApplied;
-  String get audioDescriptionProjectEditorDeleted;
-  String get audioDescriptionProjectEditorVoiceChanged;
-  String audioDescriptionProjectEditorTooLong(String actual, String available);
-  String get audioDescriptionProjectEditorSourceMissing;
-  String get audioDescriptionProjectEditorInvalidProject;
-  String get audioDescriptionProjectEditorUnsaved;
-  String get audioDescriptionProjectEditorWorking;
-  String get audioDescriptionProjectEditorCompleted;
-  String get audioDescriptionProjectEditorSelectFirst;
-  String get audioDescriptionProjectEditorSelectDescription;
-  String audioDescriptionProjectEditorDetails(String source, String start, String end, String duration, String mode);
-  String get audioDescriptionProjectEditorShare;
-  String get audioDescriptionProjectEditorSaveDocuments;
-  String get audioDescriptionProjectEditorSaved;
-  String get audioDescriptionProjectEditorCancel;
-  String audioDescriptionProjectEditorDescriptionOption(String index, String time, String text);
-  String audioDescriptionLanguageCountry(String language, String country);
-
 }
 
 class _AppLocalizationsDelegate

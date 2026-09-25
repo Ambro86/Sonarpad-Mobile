@@ -43,5 +43,9 @@ void main() {
     if (!warnings.contains('non è disponibile')) {
       expect(warnings, isNot(contains('Conservare in luogo')));
     }
-  }, skip: _runLiveParafarmacoTests ? false : 'Live parafarmaco test: enable with --dart-define=RUN_LIVE_PARAFARMACO_TESTS=true');
+  },
+    skip: _runLiveParafarmacoTests
+        ? false
+        : 'Live parafarmaco test: enable with --dart-define=RUN_LIVE_PARAFARMACO_TESTS=true',
+  );
 }
