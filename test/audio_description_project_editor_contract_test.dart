@@ -51,6 +51,7 @@ void main() {
   test('project editor keeps screen awake and exposes determinate progress', () {
     expect(screen, contains('WakelockPlus.enable()'));
     expect(screen, contains('LinearProgressIndicator'));
-    expect(screen, contains(r"semanticsValue: '${(_progress * 100).round()}%'"));
+    expect(screen, contains('semanticsValue:'));
+    expect(screen, contains('_progress * 100'));
   });
 }

@@ -4139,4 +4139,176 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get audioDescriptionRestart => 'Ricomincia';
+
+  @override
+  String get audioDescriptionProjectEditorMenu =>
+      'Modifica progetto audiodescrizione';
+
+  @override
+  String get audioDescriptionProjectEditorTitle =>
+      'Modifica progetto audiodescrizione';
+
+  @override
+  String get audioDescriptionProjectEditorOpen =>
+      'Apri progetto audiodescrizione';
+
+  @override
+  String get audioDescriptionProjectEditorProject =>
+      'Progetto';
+
+  @override
+  String get audioDescriptionProjectEditorChooseSource =>
+      'Scegli video originale';
+
+  @override
+  String get audioDescriptionProjectEditorSource =>
+      'Video originale';
+
+  @override
+  String get audioDescriptionProjectEditorDescription =>
+      'Descrizione';
+
+  @override
+  String get audioDescriptionProjectEditorText =>
+      'Testo della descrizione';
+
+  @override
+  String get audioDescriptionProjectEditorPreview =>
+      'Riproduci descrizione';
+
+  @override
+  String get audioDescriptionProjectEditorApply =>
+      'Applica modifica';
+
+  @override
+  String get audioDescriptionProjectEditorDelete =>
+      'Elimina descrizione';
+
+  @override
+  String get audioDescriptionProjectEditorDeleteConfirm =>
+      'Eliminare la descrizione selezionata dal progetto?';
+
+  @override
+  String get audioDescriptionProjectEditorDeleteLast =>
+      'Non è possibile eliminare l’unica descrizione del progetto.';
+
+  @override
+  String get audioDescriptionProjectEditorChangeVoice =>
+      'Applica voce al progetto';
+
+  @override
+  String get audioDescriptionProjectEditorEngine =>
+      'Motore di lettura';
+
+  @override
+  String get audioDescriptionProjectEditorEdge =>
+      'Voce Microsoft Edge';
+
+  @override
+  String get audioDescriptionProjectEditorSystem =>
+      'Voce di sistema / VoiceOver / Android';
+
+  @override
+  String get audioDescriptionProjectEditorLanguage =>
+      'Lingua della voce';
+
+  @override
+  String get audioDescriptionProjectEditorVoice =>
+      'Voce';
+
+  @override
+  String get audioDescriptionProjectEditorReexport =>
+      'Esporta nuovamente MP3';
+
+  @override
+  String get audioDescriptionProjectEditorSrt =>
+      'Esporta come SRT';
+
+  @override
+  String get audioDescriptionProjectEditorVtt =>
+      'Esporta come VTT';
+
+  @override
+  String get audioDescriptionProjectEditorNormal =>
+      'normale con ducking';
+
+  @override
+  String get audioDescriptionProjectEditorExtended =>
+      'pausa estesa';
+
+  @override
+  String get audioDescriptionProjectEditorReady =>
+      'Progetto pronto.';
+
+  @override
+  String get audioDescriptionProjectEditorApplied =>
+      'Descrizione verificata e salvata nel progetto.';
+
+  @override
+  String get audioDescriptionProjectEditorDeleted =>
+      'Descrizione eliminata e progetto salvato.';
+
+  @override
+  String get audioDescriptionProjectEditorVoiceChanged =>
+      'Voce cambiata e tutte le descrizioni sono state verificate.';
+
+  @override
+  String audioDescriptionProjectEditorTooLong(String actual, String available) =>
+      'La descrizione sintetizzata dura $actual secondi, ma sono disponibili solo $available secondi. Il testo precedente non è stato modificato.';
+
+  @override
+  String get audioDescriptionProjectEditorSourceMissing =>
+      'Il video originale non è disponibile. Sceglilo prima di riesportare l’MP3.';
+
+  @override
+  String get audioDescriptionProjectEditorInvalidProject =>
+      'Il file selezionato non è un progetto audiodescrizione Sonarpad valido.';
+
+  @override
+  String get audioDescriptionProjectEditorUnsaved =>
+      'Applica prima la modifica corrente, poi riesporta l’MP3.';
+
+  @override
+  String get audioDescriptionProjectEditorWorking =>
+      'Elaborazione progetto…';
+
+  @override
+  String get audioDescriptionProjectEditorCompleted =>
+      'Progetto esportato.';
+
+  @override
+  String get audioDescriptionProjectEditorSelectFirst =>
+      'Apri prima un progetto.';
+
+  @override
+  String get audioDescriptionProjectEditorSelectDescription =>
+      'Seleziona una descrizione.';
+
+  @override
+  String audioDescriptionProjectEditorDetails(String source, String start, String end, String duration, String mode) =>
+      'Scena $source s; MP3 $start-$end s; voce $duration s; $mode';
+
+  @override
+  String get audioDescriptionProjectEditorShare =>
+      'Condividi';
+
+  @override
+  String get audioDescriptionProjectEditorSaveDocuments =>
+      'Salva in Documenti Sonarpad';
+
+  @override
+  String get audioDescriptionProjectEditorSaved =>
+      'File salvati in Documenti Sonarpad.';
+
+  @override
+  String get audioDescriptionProjectEditorCancel =>
+      'Annulla';
+
+  @override
+  String audioDescriptionProjectEditorDescriptionOption(String index, String time, String text) =>
+      '$index. $time s. $text';
+
+  @override
+  String audioDescriptionLanguageCountry(String language, String country) =>
+      '$language ($country)';
 }

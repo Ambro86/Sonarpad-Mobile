@@ -832,11 +832,17 @@ class _CreateAiAudiodescriptionScreenState
         AccessibleOption(value: 'fr', label: l10n.french),
         AccessibleOption(
           value: 'pt',
-          label: '${l10n.radioLanguagePt} (${l10n.radioCountryOptionPt})',
+          label: l10n.audioDescriptionLanguageCountry(
+            l10n.radioLanguagePt,
+            l10n.radioCountryOptionPt,
+          ),
         ),
         AccessibleOption(
           value: 'pt_BR',
-          label: '${l10n.radioLanguagePt} (${l10n.radioCountryOptionBr})',
+          label: l10n.audioDescriptionLanguageCountry(
+            l10n.radioLanguagePt,
+            l10n.radioCountryOptionBr,
+          ),
         ),
         AccessibleOption(value: 'pl', label: l10n.radioLanguagePl),
         AccessibleOption(value: 'cs', label: l10n.radioLanguageCs),

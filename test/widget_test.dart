@@ -16,16 +16,17 @@ void main() {
       (WidgetTester tester) async {
     SharedPreferences.setMockInitialValues({
       'sonarpad_app_language': 'it',
-      'sonarpad_home_grouping_enabled': true,
+      'sonarpad_home_grouping_enabled': false,
     });
     await tester.pumpWidget(const SonarpadApp());
     await tester.pump(const Duration(seconds: 1));
 
     expect(find.text('Documenti', skipOffstage: false), findsOneWidget);
-    expect(find.text('Radio', skipOffstage: false), findsOneWidget);
     expect(find.text('Calendario', skipOffstage: false), findsOneWidget);
     expect(find.text('Notizie', skipOffstage: false), findsOneWidget);
     expect(find.text('Podcast', skipOffstage: false), findsOneWidget);
+    await tester.scrollUntilVisible(find.text('Radio'), 200);
+    expect(find.text('Radio'), findsOneWidget);
     await tester.scrollUntilVisible(find.text('Impostazioni'), 200);
     expect(find.text('Impostazioni'), findsOneWidget);
   });

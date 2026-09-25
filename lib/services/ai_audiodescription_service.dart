@@ -2861,7 +2861,7 @@ If there is nothing useful to describe, return an empty audio_descriptions array
     var stable = 0;
     while (DateTime.now().isBefore(deadline)) {
       _checkCancel();
-      if (ttsError != null) throw StateError('$ttsError');
+      if (ttsError != null) throw StateError(ttsError.toString());
       if (await output.exists()) {
         final length = await output.length();
         if (length > 512 && length == previous) {
@@ -4553,7 +4553,10 @@ If there is nothing useful to describe, return an empty audio_descriptions array
     _checkCancel();
     if (!ReturnCode.isSuccess(code)) {
       final logs = await session.getAllLogsAsString() ?? '';
-      throw StateError('FFMPEG_${label.toUpperCase().replaceAll(' ', '_')}_FAILED: ${_short(logs)}');
+      throw _AdProviderException(
+        AdFailureKind.fileProcessingFailed,
+        _short(logs),
+      );
     }
   }
 

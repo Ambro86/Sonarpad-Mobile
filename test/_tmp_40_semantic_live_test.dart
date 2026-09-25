@@ -4,6 +4,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/io_client.dart';
 import 'package:sonarpad_mobile_starter/services/parafarmaco_service.dart';
 
+const _runLiveParafarmacoTests = bool.fromEnvironment(
+  'RUN_LIVE_PARAFARMACO_TESTS',
+  defaultValue: false,
+);
+
 void main() {
   test('40 parafarmaci aprono solo la sezione richiesta', () async {
     HttpOverrides.global = null;
@@ -193,7 +198,7 @@ void main() {
                 .split('\n')
                 .map(normalize)
                 .any((line) => line == label || line.startsWith('$label '));
-          });
+          }, skip: _runLiveParafarmacoTests ? false : 'Live parafarmaco test: enable with --dart-define=RUN_LIVE_PARAFARMACO_TESTS=true');
           if (headingHits.isNotEmpty) {
             failures.add(
               '$query/${type.name}: mescola intestazioni ${headingHits.join(', ')}: ${displayed.substring(0, displayed.length < 160 ? displayed.length : 160)}',
@@ -242,5 +247,10 @@ void main() {
     expect(opened, 40, reason: failures.join('\n'));
     expect(checkedSections, 160, reason: failures.join('\n'));
     expect(failures, isEmpty, reason: failures.join('\n'));
-  }, timeout: const Timeout(Duration(minutes: 5)));
+  },
+    timeout: const Timeout(Duration(minutes: 5)),
+    skip: _runLiveParafarmacoTests
+        ? false
+        : 'Live parafarmaco test: enable with --dart-define=RUN_LIVE_PARAFARMACO_TESTS=true',
+  );
 }

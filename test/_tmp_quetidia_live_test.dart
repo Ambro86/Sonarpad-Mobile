@@ -4,6 +4,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/io_client.dart';
 import 'package:sonarpad_mobile_starter/services/parafarmaco_service.dart';
 
+const _runLiveParafarmacoTests = bool.fromEnvironment(
+  'RUN_LIVE_PARAFARMACO_TESTS',
+  defaultValue: false,
+);
+
 void main() {
   test('Quetidia A cosa serve non mostra valori medi o ingredienti', () async {
     HttpOverrides.global = null;
@@ -38,5 +43,5 @@ void main() {
     if (!warnings.contains('non è disponibile')) {
       expect(warnings, isNot(contains('Conservare in luogo')));
     }
-  });
+  }, skip: _runLiveParafarmacoTests ? false : 'Live parafarmaco test: enable with --dart-define=RUN_LIVE_PARAFARMACO_TESTS=true');
 }
