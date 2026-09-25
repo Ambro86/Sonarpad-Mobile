@@ -20,7 +20,9 @@ import '../utils/status_message.dart';
 import '../widgets/universal_accessible_view.dart';
 
 class AudioDescriptionProjectEditorScreen extends StatefulWidget {
-  const AudioDescriptionProjectEditorScreen({super.key});
+  const AudioDescriptionProjectEditorScreen({super.key, this.initialProjectPath});
+
+  final String? initialProjectPath;
 
   @override
   State<AudioDescriptionProjectEditorScreen> createState() =>
@@ -57,6 +59,12 @@ class _AudioDescriptionProjectEditorScreenState
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     unawaited(_loadVoiceLists());
+    final path = widget.initialProjectPath;
+    if (path != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) unawaited(_loadProject(path));
+      });
+    }
   }
 
   @override

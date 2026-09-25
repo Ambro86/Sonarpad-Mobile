@@ -14,6 +14,7 @@ import '../l10n/app_localizations.dart';
 import '../models/document_item.dart';
 import '../models/podcast.dart';
 import '../services/app_settings_service.dart';
+import '../services/audio_description_project_library.dart';
 import '../services/audiobook_export_service.dart';
 import '../services/document_library_service.dart';
 import '../services/document_text_extractor.dart';
@@ -26,6 +27,7 @@ import 'package:sonarpad_mobile_starter/utils/accessibility_list_behavior.dart';
 import '../utils/document_unicode_normalizer.dart';
 import '../widgets/universal_accessible_view.dart';
 import 'document_editor_screen.dart';
+import 'audio_description_project_editor_screen.dart';
 import 'document_reader_screen.dart';
 import 'document_rename_screen.dart';
 import 'dropbox_browser_screen.dart';
@@ -1032,6 +1034,24 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
 
     if (!await _authorizeDocumentOpen(doc)) return;
     if (!mounted) return;
+
+    if (doc.extension.toLowerCase() == 'json') {
+      final path = await _service.resolveFilePath(doc);
+      final isProject = await isAudioDescriptionProjectFile(path);
+      if (!mounted) return;
+      if (isProject) {
+        await Navigator.of(context).push(
+          MaterialPageRoute<void>(
+            settings: const RouteSettings(name: '/edit_audio_description_project'),
+            builder: (_) => AudioDescriptionProjectEditorScreen(
+              initialProjectPath: path,
+            ),
+          ),
+        );
+        if (mounted) await _load();
+        return;
+      }
+    }
 
     if (_isLibrivoxDocument(doc)) {
       try {

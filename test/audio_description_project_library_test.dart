@@ -38,6 +38,22 @@ DocumentItem _doc(String id, {String? parent, bool protected = false}) =>
     );
 
 void main() {
+  test('recognizes both project formats and rejects other JSON or missing files', () async {
+    final root = await Directory.systemTemp.createTemp('ad-recognition-');
+    addTearDown(() => root.delete(recursive: true));
+    final file = File('${root.path}/project.json');
+    for (final marker in ['format', 'schema']) {
+      await file.writeAsString('{"$marker":"sonarpad-audio-description-project"}');
+      expect(await isAudioDescriptionProjectFile(file.path), isTrue);
+    }
+    for (final contents in ['{}', '[]', 'null', '{"format":"other"}', 'broken']) {
+      await file.writeAsString(contents);
+      expect(await isAudioDescriptionProjectFile(file.path), isFalse);
+    }
+    await file.delete();
+    expect(await isAudioDescriptionProjectFile(file.path), isFalse);
+  });
+
   test(
     'finds saved and renamed projects in all folders using current resolved paths',
     () async {
