@@ -4,6 +4,7 @@ import 'dart:io';
 import 'dart:math' as math;
 
 import 'package:ffmpeg_kit_flutter_new/ffmpeg_kit.dart';
+import 'package:ffmpeg_kit_flutter_new/ffmpeg_session.dart';
 import 'package:ffmpeg_kit_flutter_new/ffprobe_kit.dart';
 import 'package:ffmpeg_kit_flutter_new/return_code.dart';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -1136,6 +1137,7 @@ class AiAudioDescriptionService {
         sourceDurationSec: probe.durationSec,
         hasAudio: probe.hasAudio,
         placements: inserted,
+        onProgress: (value) => _emit(onProgress, 'mixing', 0.88 + value * 0.10),
       );
       final output = File(outputPath);
       if (!await output.exists() || await output.length() < 1024) {
@@ -2977,6 +2979,7 @@ If there is nothing useful to describe, return an empty audio_descriptions array
     required double sourceDurationSec,
     required bool hasAudio,
     required List<_Placement> placements,
+    void Function(double)? onProgress,
   }) async {
     final included = placements.where((p) => p.included).toList()
       ..sort((a, b) => a.originalStart.compareTo(b.originalStart));
@@ -3057,7 +3060,14 @@ If there is nothing useful to describe, return an empty audio_descriptions array
       '-map', '[outa]', '-vn', '-c:a', 'libmp3lame', '-b:a', '192k',
       '-id3v2_version', '3', outputPath,
     ]);
-    await _runFfmpeg(args, 'final mix');
+    final outputDuration = sourceDurationSec +
+        extensions.fold<double>(0, (sum, item) => sum + item.extraPause);
+    await _runFfmpeg(
+      args,
+      'final mix',
+      durationSec: outputDuration,
+      onProgress: onProgress,
+    );
   }
 
   Future<void> _writeProject({
@@ -3727,6 +3737,9 @@ If there is nothing useful to describe, return an empty audio_descriptions array
         sourceDurationSec: probe.durationSec,
         hasAudio: probe.hasAudio,
         placements: placements,
+        onProgress: (value) => onProgress?.call(
+          AiAudioDescriptionProgress('project_export', 0.70 + value * 0.28),
+        ),
       );
       if (!await File(mp3Path).exists() || await File(mp3Path).length() <= 0) {
         throw StateError('AUDIO_DESCRIPTION_PROJECT_EXPORT_INVALID');
@@ -4633,11 +4646,41 @@ If there is nothing useful to describe, return an empty audio_descriptions array
     return null;
   }
 
-  Future<void> _runFfmpeg(List<String> args, String label) async {
+  Future<void> _runFfmpeg(
+    List<String> args,
+    String label, {
+    double? durationSec,
+    void Function(double)? onProgress,
+  }) async {
     _checkCancel();
     await AppLogger.log('Audio description mobile FFmpeg: $label start');
     _checkCancel();
-    final session = await FFmpegKit.executeWithArguments(args);
+    final FFmpegSession session;
+    if (onProgress != null && durationSec != null && durationSec > 0) {
+      final completed = Completer<FFmpegSession>();
+      var lastPercent = -1;
+      final started = await FFmpegKit.executeWithArgumentsAsync(
+        args,
+        (result) {
+          if (!completed.isCompleted) completed.complete(result);
+        },
+        null,
+        (statistics) {
+          if (_cancelRequested || completed.isCompleted) return;
+          final value = (statistics.getTime() / (durationSec * 1000))
+              .clamp(0.0, 0.99).toDouble();
+          final percent = (value * 100).floor();
+          if (percent > lastPercent) {
+            lastPercent = percent;
+            onProgress(value);
+          }
+        },
+      );
+      if (_cancelRequested) await FFmpegKit.cancel(started.getSessionId());
+      session = await completed.future;
+    } else {
+      session = await FFmpegKit.executeWithArguments(args);
+    }
     final code = await session.getReturnCode();
     _checkCancel();
     if (!ReturnCode.isSuccess(code)) {
@@ -4647,6 +4690,7 @@ If there is nothing useful to describe, return an empty audio_descriptions array
         _short(logs),
       );
     }
+    onProgress?.call(1.0);
   }
 
   Future<Directory> _createOperationDirectory() async {

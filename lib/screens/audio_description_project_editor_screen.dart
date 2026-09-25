@@ -444,11 +444,20 @@ class _AudioDescriptionProjectEditorScreenState
             sourcePathOverride: source,
             onProgress: (progress) {
               if (!mounted) return;
+              final l10n = AppLocalizations.of(context);
+              final label = switch (progress.stage) {
+                'project_tts' => l10n.audioDescriptionStageTts,
+                'project_export' => l10n.audioDescriptionStageMixing,
+                'completed' => l10n.audioDescriptionCompleted,
+                _ => l10n.audioDescriptionStagePreparing,
+              };
               setState(() {
-                _progress = progress.value.clamp(0.0, 1.0).toDouble();
+                if (progress.value > _progress) {
+                  _progress = progress.value.clamp(0.0, 1.0).toDouble();
+                }
                 _status = progress.detail == null
-                    ? progress.stage
-                    : '${progress.stage} ${progress.detail}';
+                    ? label
+                    : '$label ${progress.detail}';
               });
             },
           ));
@@ -767,10 +776,18 @@ class _AudioDescriptionProjectEditorScreenState
                     ),
                     if (_running)
                       AccessibleListRow(
+                        id: 'progress',
+                        title: _status,
+                        value: '${(_progress * 100).round()}%',
+                        kind: 'text',
+                        accessibilityButtonTrait: false,
+                      ),
+                    if (_running)
+                      AccessibleListRow(
                         id: 'cancel',
                         title: strings['cancel'],
                       ),
-                    if (_status.isNotEmpty)
+                    if (!_running && _status.isNotEmpty)
                       AccessibleListRow(
                         id: 'status',
                         title: l10n.info,
@@ -852,7 +869,7 @@ class _AudioDescriptionProjectEditorScreenState
                       await _changeVoice();
                       break;
                     case 'reexport':
-                      await _reexport();
+                      unawaited(_reexport());
                       break;
                     case 'export_srt':
                       await _exportSubtitle('srt');
