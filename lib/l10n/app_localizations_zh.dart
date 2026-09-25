@@ -3773,163 +3773,163 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get pyannoteXnnpackBenchmarkCompleted =>
       'CPU 与 XNNPACK 基准测试完成。请查看日志中的一致性和速度结果。';
-  @override
-  String get audioDescriptionCreateAiTitle => "使用 AI 创建音频描述";
 
   @override
-  String get audioDescriptionChooseVideo => "选择视频";
+  String get audioDescriptionCreateAiTitle => '使用 AI 创建音频描述';
 
   @override
-  String get audioDescriptionAiService => "AI 服务";
+  String get audioDescriptionChooseVideo => '选择视频';
 
   @override
-  String get audioDescriptionUseGeminiKey => "使用 Gemini API 密钥";
+  String get audioDescriptionAiService => 'AI 服务';
 
   @override
-  String get audioDescriptionUseSonarpadAi => "使用 Sonarpad AI 服务";
+  String get audioDescriptionUseGeminiKey => '使用 Gemini API 密钥';
 
   @override
-  String get audioDescriptionGeminiApiKey => "Gemini API 密钥";
+  String get audioDescriptionUseSonarpadAi => '使用 Sonarpad AI 服务';
 
   @override
-  String get audioDescriptionGeminiModel => "Gemini 模型";
+  String get audioDescriptionGeminiApiKey => 'Gemini API 密钥';
 
   @override
-  String get audioDescriptionRefreshModels => "刷新模型列表";
+  String get audioDescriptionGeminiModel => 'Gemini 模型';
 
   @override
-  String get audioDescriptionRefreshingModels => "正在刷新模型...";
+  String get audioDescriptionRefreshModels => '刷新模型列表';
 
   @override
-  String get audioDescriptionSonarpadCode => "Sonarpad AI 个人代码";
+  String get audioDescriptionRefreshingModels => '正在刷新模型...';
 
   @override
-  String get audioDescriptionActivateSonarpad => "激活 / 验证 Sonarpad AI";
+  String get audioDescriptionSonarpadCode => 'Sonarpad AI 个人代码';
 
   @override
-  String get audioDescriptionActivatingSonarpad => "正在激活 Sonarpad AI...";
+  String get audioDescriptionActivateSonarpad => '激活 / 验证 Sonarpad AI';
 
   @override
-  String get audioDescriptionServerManagedModel => "由 Sonarpad AI 服务管理";
+  String get audioDescriptionActivatingSonarpad => '正在激活 Sonarpad AI...';
 
   @override
-  String get audioDescriptionLanguage => "音频描述语言";
+  String get audioDescriptionServerManagedModel => '由 Sonarpad AI 服务管理';
 
   @override
-  String get audioDescriptionDetailLevel => "详细程度";
+  String get audioDescriptionLanguage => '音频描述语言';
 
   @override
-  String get audioDescriptionDetailConcise => "简短";
+  String get audioDescriptionDetailLevel => '详细程度';
 
   @override
-  String get audioDescriptionDetailNormal => "普通";
+  String get audioDescriptionDetailConcise => '简短';
 
   @override
-  String get audioDescriptionDetailDetailed => "详细";
+  String get audioDescriptionDetailNormal => '普通';
 
   @override
-  String get audioDescriptionDetailIntensive => "密集";
+  String get audioDescriptionDetailDetailed => '详细';
 
   @override
-  String get audioDescriptionExtendedPauses => "当描述无法放入静音间隙时启用延长暂停";
+  String get audioDescriptionDetailIntensive => '密集';
 
   @override
-  String get audioDescriptionRecognizeCharacters => "尝试识别角色并使用其姓名";
+  String get audioDescriptionExtendedPauses => '当描述无法放入静音间隙时启用延长暂停';
 
   @override
-  String get audioDescriptionSaveProject => "同时保存项目以便以后编辑";
+  String get audioDescriptionRecognizeCharacters => '尝试识别角色并使用其姓名';
 
   @override
-  String get audioDescriptionCreate => "创建音频描述";
+  String get audioDescriptionSaveProject => '同时保存项目以便以后编辑';
 
   @override
-  String get audioDescriptionVoiceTesting => "正在测试语音...";
+  String get audioDescriptionCreate => '创建音频描述';
 
   @override
-  String get audioDescriptionApiKeyRequired => "请输入 Gemini API 密钥。";
+  String get audioDescriptionVoiceTesting => '正在测试语音...';
 
   @override
-  String get audioDescriptionModelsUpdated => "Gemini 模型列表已更新。";
+  String get audioDescriptionApiKeyRequired => '请输入 Gemini API 密钥。';
 
   @override
-  String get audioDescriptionModelsError => "无法刷新 Gemini 模型列表。";
+  String get audioDescriptionModelsUpdated => 'Gemini 模型列表已更新。';
 
   @override
-  String get audioDescriptionSonarpadCodeRequired => "请输入你的 Sonarpad AI 个人代码。";
+  String get audioDescriptionModelsError => '无法刷新 Gemini 模型列表。';
 
   @override
-  String get audioDescriptionSonarpadActivated => "Sonarpad AI 已在此设备上激活。";
+  String get audioDescriptionSonarpadCodeRequired => '请输入你的 Sonarpad AI 个人代码。';
 
   @override
-  String get audioDescriptionSonarpadActivationError => "无法激活或验证 Sonarpad AI。";
+  String get audioDescriptionSonarpadActivated => 'Sonarpad AI 已在此设备上激活。';
 
   @override
-  String get audioDescriptionEdgeVoiceReady => "所选 Edge 语音可用。";
+  String get audioDescriptionSonarpadActivationError => '无法激活或验证 Sonarpad AI。';
 
   @override
-  String get audioDescriptionChooseVideoFirst => "请先选择视频文件。";
+  String get audioDescriptionEdgeVoiceReady => '所选 Edge 语音可用。';
 
   @override
-  String get audioDescriptionStagePreparing => "正在准备视频...";
+  String get audioDescriptionChooseVideoFirst => '请先选择视频文件。';
 
   @override
-  String get audioDescriptionStageDialogue => "正在使用 pyannote 检测对话...";
+  String get audioDescriptionStagePreparing => '正在准备视频...';
 
   @override
-  String get audioDescriptionStageVideo => "正在准备视频片段...";
+  String get audioDescriptionStageDialogue => '正在使用 pyannote 检测对话...';
 
   @override
-  String get audioDescriptionStageGemini => "正在使用 AI 生成音频描述...";
+  String get audioDescriptionStageVideo => '正在准备视频片段...';
 
   @override
-  String get audioDescriptionStageTts => "正在创建语音...";
+  String get audioDescriptionStageGemini => '正在使用 AI 生成音频描述...';
 
   @override
-  String get audioDescriptionStageMixing => "正在创建带音频描述的 MP3...";
+  String get audioDescriptionStageTts => '正在创建语音...';
 
   @override
-  String get audioDescriptionCompleted => "音频描述已完成。";
+  String get audioDescriptionStageMixing => '正在创建带音频描述的 MP3...';
 
   @override
-  String get audioDescriptionCancelled => "已取消创建音频描述。";
+  String get audioDescriptionCompleted => '音频描述已完成。';
 
   @override
-  String get audioDescriptionCancelling => "正在取消...";
+  String get audioDescriptionCancelled => '已取消创建音频描述。';
 
   @override
-  String get audioDescriptionGenerationFailed => "创建音频描述失败。";
+  String get audioDescriptionCancelling => '正在取消...';
 
   @override
-  String get audioDescriptionGetGeminiKey => "获取 Gemini API 密钥";
-
-
-  @override
-  String get audioDescriptionKeepCharacterCatalog => "保留角色目录：适合连续剧";
+  String get audioDescriptionGenerationFailed => '创建音频描述失败。';
 
   @override
-  String get audioDescriptionCharacterCatalogChoose => "选择已保存的角色目录";
+  String get audioDescriptionGetGeminiKey => '获取 Gemini API 密钥';
 
   @override
-  String get audioDescriptionCharacterCatalogNew => "新建目录";
+  String get audioDescriptionKeepCharacterCatalog => '保留角色目录：适合连续剧';
 
   @override
-  String get audioDescriptionCharacterCatalogNameTitle => "角色目录";
+  String get audioDescriptionCharacterCatalogChoose => '选择已保存的角色目录';
 
   @override
-  String get audioDescriptionCharacterCatalogNamePrompt => "要如何命名角色目录？";
+  String get audioDescriptionCharacterCatalogNew => '新建目录';
 
   @override
-  String get audioDescriptionCharacterCatalogNameError => "请输入角色目录名称。";
+  String get audioDescriptionCharacterCatalogNameTitle => '角色目录';
 
   @override
-  String get audioDescriptionCharacterCatalogSaved => "角色目录已更新。";
+  String get audioDescriptionCharacterCatalogNamePrompt => '要如何命名角色目录？';
 
   @override
-  String get audioDescriptionCharacterCatalogSaveWarning => "音频描述已创建，但无法保存角色目录：";
+  String get audioDescriptionCharacterCatalogNameError => '请输入角色目录名称。';
 
   @override
-  String get audioDescriptionRecognizeScreenText => "识别重要的屏幕文字并纳入音频描述";
+  String get audioDescriptionCharacterCatalogSaved => '角色目录已更新。';
 
+  @override
+  String get audioDescriptionCharacterCatalogSaveWarning =>
+      '音频描述已创建，但无法保存角色目录：';
+
+  @override
+  String get audioDescriptionRecognizeScreenText => '识别重要的屏幕文字并纳入音频描述';
 
   @override
   String get audioDescriptionHighDemandTitle => 'AI 服务繁忙';
@@ -3947,28 +3947,18 @@ class AppLocalizationsZh extends AppLocalizations {
   String get audioDescriptionQuotaTitle => 'Gemini 配额已用尽';
 
   @override
-  String get audioDescriptionQuotaMessage => '当前 Gemini 模型的配额已用尽。你可以选择其他模型、继续等待或停止。';
+  String get audioDescriptionQuotaMessage =>
+      '当前 Gemini 模型的配额已用尽。你可以选择其他模型、继续等待或停止。';
 
   @override
   String get audioDescriptionSwitchModel => '选择其他模型';
 
   @override
-  String get audioDescriptionStageBriefRetry => '正在使用简短描述重新分析...';
-
-  @override
-  String get audioDescriptionBriefRetryTitle => '使用简短描述重试';
-
-  @override
-  String get audioDescriptionBriefRetryMessage => '生成的描述都无法安全放入无对白片段。在允许旁白覆盖对白之前，是否使用非常简短的描述重新分析一次？';
-
-  @override
-  String get audioDescriptionRetryBrief => '以简短模式重试';
-
-  @override
   String get audioDescriptionOverlapTitle => '最终备用方案';
 
   @override
-  String get audioDescriptionOverlapMessage => '生成的描述都无法安全放入无对白区间。是否使用最终备用方案，允许旁白可能覆盖对白？此功能绝不会自动启用。';
+  String get audioDescriptionOverlapMessage =>
+      '生成的描述都无法安全放入无对白区间。是否使用最终备用方案，允许旁白可能覆盖对白？此功能绝不会自动启用。';
 
   @override
   String get audioDescriptionAllowOverlap => '使用最终备用方案';
@@ -3977,13 +3967,41 @@ class AppLocalizationsZh extends AppLocalizations {
   String get audioDescriptionResumeTitle => '发现之前的音频描述任务';
 
   @override
-  String get audioDescriptionResumeMessage => 'Sonarpad 找到兼容的检查点。要从上次完成的片段继续，还是从头开始？';
+  String get audioDescriptionResumeMessage =>
+      'Sonarpad 找到兼容的检查点。要从上次完成的片段继续，还是从头开始？';
 
   @override
   String get audioDescriptionResume => '继续';
 
   @override
   String get audioDescriptionRestart => '重新开始';
+
+  @override
+  String get audioDescriptionStageBriefRetry => '正在使用简短描述重新分析...';
+
+  @override
+  String get audioDescriptionBriefRetryTitle => '使用简短描述重试';
+
+  @override
+  String get audioDescriptionBriefRetryMessage =>
+      '生成的描述都无法安全放入无对白片段。在允许旁白覆盖对白之前，是否使用非常简短的描述重新分析一次？';
+
+  @override
+  String get audioDescriptionRetryBrief => '以简短模式重试';
+
+  @override
+  String audioDescriptionProjectEditorDescriptionOption(
+    String index,
+    String time,
+    String text,
+  ) {
+    return '$index. $time s. $text';
+  }
+
+  @override
+  String audioDescriptionLanguageCountry(String language, String country) {
+    return '$language ($country)';
+  }
 }
 
 /// The translations for Chinese, as used in China (`zh_CN`).
@@ -7755,33 +7773,163 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
   @override
   String get pyannoteXnnpackBenchmarkCompleted =>
       'CPU 与 XNNPACK 基准测试完成。请查看日志中的一致性和速度结果。';
-  @override
-  String get audioDescriptionKeepCharacterCatalog => "保留角色目录：适合连续剧";
 
   @override
-  String get audioDescriptionCharacterCatalogChoose => "选择已保存的角色目录";
+  String get audioDescriptionCreateAiTitle => '使用 AI 创建音频描述';
 
   @override
-  String get audioDescriptionCharacterCatalogNew => "新建目录";
+  String get audioDescriptionChooseVideo => '选择视频';
 
   @override
-  String get audioDescriptionCharacterCatalogNameTitle => "角色目录";
+  String get audioDescriptionAiService => 'AI 服务';
 
   @override
-  String get audioDescriptionCharacterCatalogNamePrompt => "要如何命名角色目录？";
+  String get audioDescriptionUseGeminiKey => '使用 Gemini API 密钥';
 
   @override
-  String get audioDescriptionCharacterCatalogNameError => "请输入角色目录名称。";
+  String get audioDescriptionUseSonarpadAi => '使用 Sonarpad AI 服务';
 
   @override
-  String get audioDescriptionCharacterCatalogSaved => "角色目录已更新。";
+  String get audioDescriptionGeminiApiKey => 'Gemini API 密钥';
 
   @override
-  String get audioDescriptionCharacterCatalogSaveWarning => "音频描述已创建，但无法保存角色目录：";
-
+  String get audioDescriptionGeminiModel => 'Gemini 模型';
 
   @override
-  String get audioDescriptionRecognizeScreenText => "识别重要的屏幕文字并纳入音频描述";
+  String get audioDescriptionRefreshModels => '刷新模型列表';
+
+  @override
+  String get audioDescriptionRefreshingModels => '正在刷新模型...';
+
+  @override
+  String get audioDescriptionSonarpadCode => 'Sonarpad AI 个人代码';
+
+  @override
+  String get audioDescriptionActivateSonarpad => '激活 / 验证 Sonarpad AI';
+
+  @override
+  String get audioDescriptionActivatingSonarpad => '正在激活 Sonarpad AI...';
+
+  @override
+  String get audioDescriptionServerManagedModel => '由 Sonarpad AI 服务管理';
+
+  @override
+  String get audioDescriptionLanguage => '音频描述语言';
+
+  @override
+  String get audioDescriptionDetailLevel => '详细程度';
+
+  @override
+  String get audioDescriptionDetailConcise => '简短';
+
+  @override
+  String get audioDescriptionDetailNormal => '普通';
+
+  @override
+  String get audioDescriptionDetailDetailed => '详细';
+
+  @override
+  String get audioDescriptionDetailIntensive => '密集';
+
+  @override
+  String get audioDescriptionExtendedPauses => '当描述无法放入静音间隙时启用延长暂停';
+
+  @override
+  String get audioDescriptionRecognizeCharacters => '尝试识别角色并使用其姓名';
+
+  @override
+  String get audioDescriptionSaveProject => '同时保存项目以便以后编辑';
+
+  @override
+  String get audioDescriptionCreate => '创建音频描述';
+
+  @override
+  String get audioDescriptionVoiceTesting => '正在测试语音...';
+
+  @override
+  String get audioDescriptionApiKeyRequired => '请输入 Gemini API 密钥。';
+
+  @override
+  String get audioDescriptionModelsUpdated => 'Gemini 模型列表已更新。';
+
+  @override
+  String get audioDescriptionModelsError => '无法刷新 Gemini 模型列表。';
+
+  @override
+  String get audioDescriptionSonarpadCodeRequired => '请输入你的 Sonarpad AI 个人代码。';
+
+  @override
+  String get audioDescriptionSonarpadActivated => 'Sonarpad AI 已在此设备上激活。';
+
+  @override
+  String get audioDescriptionSonarpadActivationError => '无法激活或验证 Sonarpad AI。';
+
+  @override
+  String get audioDescriptionEdgeVoiceReady => '所选 Edge 语音可用。';
+
+  @override
+  String get audioDescriptionChooseVideoFirst => '请先选择视频文件。';
+
+  @override
+  String get audioDescriptionStagePreparing => '正在准备视频...';
+
+  @override
+  String get audioDescriptionStageDialogue => '正在使用 pyannote 检测对话...';
+
+  @override
+  String get audioDescriptionStageVideo => '正在准备视频片段...';
+
+  @override
+  String get audioDescriptionStageGemini => '正在使用 AI 生成音频描述...';
+
+  @override
+  String get audioDescriptionStageTts => '正在创建语音...';
+
+  @override
+  String get audioDescriptionStageMixing => '正在创建带音频描述的 MP3...';
+
+  @override
+  String get audioDescriptionCompleted => '音频描述已完成。';
+
+  @override
+  String get audioDescriptionCancelled => '已取消创建音频描述。';
+
+  @override
+  String get audioDescriptionCancelling => '正在取消...';
+
+  @override
+  String get audioDescriptionGenerationFailed => '创建音频描述失败。';
+
+  @override
+  String get audioDescriptionGetGeminiKey => '获取 Gemini API 密钥';
+
+  @override
+  String get audioDescriptionKeepCharacterCatalog => '保留角色目录：适合连续剧';
+
+  @override
+  String get audioDescriptionCharacterCatalogChoose => '选择已保存的角色目录';
+
+  @override
+  String get audioDescriptionCharacterCatalogNew => '新建目录';
+
+  @override
+  String get audioDescriptionCharacterCatalogNameTitle => '角色目录';
+
+  @override
+  String get audioDescriptionCharacterCatalogNamePrompt => '要如何命名角色目录？';
+
+  @override
+  String get audioDescriptionCharacterCatalogNameError => '请输入角色目录名称。';
+
+  @override
+  String get audioDescriptionCharacterCatalogSaved => '角色目录已更新。';
+
+  @override
+  String get audioDescriptionCharacterCatalogSaveWarning =>
+      '音频描述已创建，但无法保存角色目录：';
+
+  @override
+  String get audioDescriptionRecognizeScreenText => '识别重要的屏幕文字并纳入音频描述';
 
   @override
   String get audioDescriptionHighDemandTitle => 'AI 服务繁忙';
@@ -7799,28 +7947,18 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
   String get audioDescriptionQuotaTitle => 'Gemini 配额已用尽';
 
   @override
-  String get audioDescriptionQuotaMessage => '当前 Gemini 模型的配额已用尽。你可以选择其他模型、继续等待或停止。';
+  String get audioDescriptionQuotaMessage =>
+      '当前 Gemini 模型的配额已用尽。你可以选择其他模型、继续等待或停止。';
 
   @override
   String get audioDescriptionSwitchModel => '选择其他模型';
 
   @override
-  String get audioDescriptionStageBriefRetry => '正在使用简短描述重新分析...';
-
-  @override
-  String get audioDescriptionBriefRetryTitle => '使用简短描述重试';
-
-  @override
-  String get audioDescriptionBriefRetryMessage => '生成的描述都无法安全放入无对白片段。在允许旁白覆盖对白之前，是否使用非常简短的描述重新分析一次？';
-
-  @override
-  String get audioDescriptionRetryBrief => '以简短模式重试';
-
-  @override
   String get audioDescriptionOverlapTitle => '最终备用方案';
 
   @override
-  String get audioDescriptionOverlapMessage => '生成的描述都无法安全放入无对白区间。是否使用最终备用方案，允许旁白可能覆盖对白？此功能绝不会自动启用。';
+  String get audioDescriptionOverlapMessage =>
+      '生成的描述都无法安全放入无对白区间。是否使用最终备用方案，允许旁白可能覆盖对白？此功能绝不会自动启用。';
 
   @override
   String get audioDescriptionAllowOverlap => '使用最终备用方案';
@@ -7829,11 +7967,39 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
   String get audioDescriptionResumeTitle => '发现之前的音频描述任务';
 
   @override
-  String get audioDescriptionResumeMessage => 'Sonarpad 找到兼容的检查点。要从上次完成的片段继续，还是从头开始？';
+  String get audioDescriptionResumeMessage =>
+      'Sonarpad 找到兼容的检查点。要从上次完成的片段继续，还是从头开始？';
 
   @override
   String get audioDescriptionResume => '继续';
 
   @override
   String get audioDescriptionRestart => '重新开始';
+
+  @override
+  String get audioDescriptionStageBriefRetry => '正在使用简短描述重新分析...';
+
+  @override
+  String get audioDescriptionBriefRetryTitle => '使用简短描述重试';
+
+  @override
+  String get audioDescriptionBriefRetryMessage =>
+      '生成的描述都无法安全放入无对白片段。在允许旁白覆盖对白之前，是否使用非常简短的描述重新分析一次？';
+
+  @override
+  String get audioDescriptionRetryBrief => '以简短模式重试';
+
+  @override
+  String audioDescriptionProjectEditorDescriptionOption(
+    String index,
+    String time,
+    String text,
+  ) {
+    return '$index. $time s. $text';
+  }
+
+  @override
+  String audioDescriptionLanguageCountry(String language, String country) {
+    return '$language ($country)';
+  }
 }

@@ -4939,5 +4939,30 @@
   "audioDescriptionRetryBrief": "Im Modus Kurz erneut versuchen",
   "@audioDescriptionRetryBrief": {
     "description": "Audio-description fallback UI: audioDescriptionRetryBrief."
+  },
+  "audioDescriptionProjectEditorDescriptionOption": "{index}. {time} s. {text}",
+  "@audioDescriptionProjectEditorDescriptionOption": {
+    "placeholders": {
+      "index": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      },
+      "text": {
+        "type": "String"
+      }
+    }
+  },
+  "audioDescriptionLanguageCountry": "{language} ({country})",
+  "@audioDescriptionLanguageCountry": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      },
+      "country": {
+        "type": "String"
+      }
+    }
   }
 }

@@ -7028,111 +7028,442 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Benchmark CPU vs XNNPACK completato. Controlla il log per parità e velocità.'**
   String get pyannoteXnnpackBenchmarkCompleted;
+
+  /// Localized text for audioDescriptionCreateAiTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Crea audiodescrizione con IA'**
   String get audioDescriptionCreateAiTitle;
+
+  /// Localized text for audioDescriptionChooseVideo.
+  ///
+  /// In it, this message translates to:
+  /// **'Scegli video'**
   String get audioDescriptionChooseVideo;
+
+  /// Localized text for audioDescriptionAiService.
+  ///
+  /// In it, this message translates to:
+  /// **'Servizio IA'**
   String get audioDescriptionAiService;
+
+  /// Localized text for audioDescriptionUseGeminiKey.
+  ///
+  /// In it, this message translates to:
+  /// **'Usa chiave API Gemini'**
   String get audioDescriptionUseGeminiKey;
+
+  /// Localized text for audioDescriptionUseSonarpadAi.
+  ///
+  /// In it, this message translates to:
+  /// **'Usa servizio Sonarpad AI'**
   String get audioDescriptionUseSonarpadAi;
+
+  /// Localized text for audioDescriptionGeminiApiKey.
+  ///
+  /// In it, this message translates to:
+  /// **'Chiave API Gemini'**
   String get audioDescriptionGeminiApiKey;
+
+  /// Localized text for audioDescriptionGeminiModel.
+  ///
+  /// In it, this message translates to:
+  /// **'Modello Gemini'**
   String get audioDescriptionGeminiModel;
+
+  /// Localized text for audioDescriptionRefreshModels.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiorna elenco modelli'**
   String get audioDescriptionRefreshModels;
+
+  /// Localized text for audioDescriptionRefreshingModels.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiornamento modelli in corso...'**
   String get audioDescriptionRefreshingModels;
+
+  /// Localized text for audioDescriptionSonarpadCode.
+  ///
+  /// In it, this message translates to:
+  /// **'Codice personale Sonarpad AI'**
   String get audioDescriptionSonarpadCode;
+
+  /// Localized text for audioDescriptionActivateSonarpad.
+  ///
+  /// In it, this message translates to:
+  /// **'Attiva / verifica Sonarpad AI'**
   String get audioDescriptionActivateSonarpad;
+
+  /// Localized text for audioDescriptionActivatingSonarpad.
+  ///
+  /// In it, this message translates to:
+  /// **'Attivazione Sonarpad AI in corso...'**
   String get audioDescriptionActivatingSonarpad;
+
+  /// Localized text for audioDescriptionServerManagedModel.
+  ///
+  /// In it, this message translates to:
+  /// **'Gestito dal servizio Sonarpad AI'**
   String get audioDescriptionServerManagedModel;
+
+  /// Localized text for audioDescriptionLanguage.
+  ///
+  /// In it, this message translates to:
+  /// **'Lingua dell’audiodescrizione'**
   String get audioDescriptionLanguage;
+
+  /// Localized text for audioDescriptionDetailLevel.
+  ///
+  /// In it, this message translates to:
+  /// **'Livello di dettaglio'**
   String get audioDescriptionDetailLevel;
+
+  /// Localized text for audioDescriptionDetailConcise.
+  ///
+  /// In it, this message translates to:
+  /// **'Breve'**
   String get audioDescriptionDetailConcise;
+
+  /// Localized text for audioDescriptionDetailNormal.
+  ///
+  /// In it, this message translates to:
+  /// **'Normale'**
   String get audioDescriptionDetailNormal;
+
+  /// Localized text for audioDescriptionDetailDetailed.
+  ///
+  /// In it, this message translates to:
+  /// **'Dettagliata'**
   String get audioDescriptionDetailDetailed;
+
+  /// Localized text for audioDescriptionDetailIntensive.
+  ///
+  /// In it, this message translates to:
+  /// **'Intensiva'**
   String get audioDescriptionDetailIntensive;
+
+  /// Localized text for audioDescriptionExtendedPauses.
+  ///
+  /// In it, this message translates to:
+  /// **'Abilita pause estese quando una descrizione non entra nel silenzio'**
   String get audioDescriptionExtendedPauses;
+
+  /// Localized text for audioDescriptionRecognizeCharacters.
+  ///
+  /// In it, this message translates to:
+  /// **'Prova a riconoscere i personaggi e usa i loro nomi'**
   String get audioDescriptionRecognizeCharacters;
+
+  /// Localized text for audioDescriptionSaveProject.
+  ///
+  /// In it, this message translates to:
+  /// **'Salva anche il progetto per modifiche future'**
   String get audioDescriptionSaveProject;
+
+  /// Localized text for audioDescriptionCreate.
+  ///
+  /// In it, this message translates to:
+  /// **'Crea audiodescrizione'**
   String get audioDescriptionCreate;
+
+  /// Localized text for audioDescriptionVoiceTesting.
+  ///
+  /// In it, this message translates to:
+  /// **'Test voce in corso...'**
   String get audioDescriptionVoiceTesting;
+
+  /// Localized text for audioDescriptionApiKeyRequired.
+  ///
+  /// In it, this message translates to:
+  /// **'Inserisci una chiave API Gemini.'**
   String get audioDescriptionApiKeyRequired;
+
+  /// Localized text for audioDescriptionModelsUpdated.
+  ///
+  /// In it, this message translates to:
+  /// **'Elenco modelli Gemini aggiornato.'**
   String get audioDescriptionModelsUpdated;
+
+  /// Localized text for audioDescriptionModelsError.
+  ///
+  /// In it, this message translates to:
+  /// **'Impossibile aggiornare l’elenco dei modelli Gemini.'**
   String get audioDescriptionModelsError;
+
+  /// Localized text for audioDescriptionSonarpadCodeRequired.
+  ///
+  /// In it, this message translates to:
+  /// **'Inserisci il codice personale Sonarpad AI.'**
   String get audioDescriptionSonarpadCodeRequired;
+
+  /// Localized text for audioDescriptionSonarpadActivated.
+  ///
+  /// In it, this message translates to:
+  /// **'Sonarpad AI è attivo su questo dispositivo.'**
   String get audioDescriptionSonarpadActivated;
+
+  /// Localized text for audioDescriptionSonarpadActivationError.
+  ///
+  /// In it, this message translates to:
+  /// **'Impossibile attivare o verificare Sonarpad AI.'**
   String get audioDescriptionSonarpadActivationError;
+
+  /// Localized text for audioDescriptionEdgeVoiceReady.
+  ///
+  /// In it, this message translates to:
+  /// **'La voce Edge selezionata è disponibile.'**
   String get audioDescriptionEdgeVoiceReady;
+
+  /// Localized text for audioDescriptionChooseVideoFirst.
+  ///
+  /// In it, this message translates to:
+  /// **'Scegli prima un file video.'**
   String get audioDescriptionChooseVideoFirst;
+
+  /// Localized text for audioDescriptionStagePreparing.
+  ///
+  /// In it, this message translates to:
+  /// **'Preparazione del video...'**
   String get audioDescriptionStagePreparing;
+
+  /// Localized text for audioDescriptionStageDialogue.
+  ///
+  /// In it, this message translates to:
+  /// **'Rilevamento dialoghi con pyannote...'**
   String get audioDescriptionStageDialogue;
+
+  /// Localized text for audioDescriptionStageVideo.
+  ///
+  /// In it, this message translates to:
+  /// **'Preparazione dei segmenti video...'**
   String get audioDescriptionStageVideo;
+
+  /// Localized text for audioDescriptionStageGemini.
+  ///
+  /// In it, this message translates to:
+  /// **'Generazione delle audiodescrizioni con IA...'**
   String get audioDescriptionStageGemini;
+
+  /// Localized text for audioDescriptionStageTts.
+  ///
+  /// In it, this message translates to:
+  /// **'Creazione delle voci...'**
   String get audioDescriptionStageTts;
+
+  /// Localized text for audioDescriptionStageMixing.
+  ///
+  /// In it, this message translates to:
+  /// **'Creazione dell’MP3 audiodescritto...'**
   String get audioDescriptionStageMixing;
+
+  /// Localized text for audioDescriptionCompleted.
+  ///
+  /// In it, this message translates to:
+  /// **'Audiodescrizione completata.'**
   String get audioDescriptionCompleted;
+
+  /// Localized text for audioDescriptionCancelled.
+  ///
+  /// In it, this message translates to:
+  /// **'Creazione audiodescrizione annullata.'**
   String get audioDescriptionCancelled;
+
+  /// Localized text for audioDescriptionCancelling.
+  ///
+  /// In it, this message translates to:
+  /// **'Annullamento in corso...'**
   String get audioDescriptionCancelling;
+
+  /// Localized text for audioDescriptionGenerationFailed.
+  ///
+  /// In it, this message translates to:
+  /// **'Creazione audiodescrizione non riuscita.'**
   String get audioDescriptionGenerationFailed;
+
+  /// Localized text for audioDescriptionGetGeminiKey.
+  ///
+  /// In it, this message translates to:
+  /// **'Ottieni una chiave API Gemini'**
   String get audioDescriptionGetGeminiKey;
+
+  /// Localized text for audioDescriptionKeepCharacterCatalog.
+  ///
+  /// In it, this message translates to:
+  /// **'Mantieni il catalogo dei personaggi: utile per una serie'**
   String get audioDescriptionKeepCharacterCatalog;
+
+  /// Localized text for audioDescriptionCharacterCatalogChoose.
+  ///
+  /// In it, this message translates to:
+  /// **'Scegli un catalogo dei personaggi salvato'**
   String get audioDescriptionCharacterCatalogChoose;
+
+  /// Localized text for audioDescriptionCharacterCatalogNew.
+  ///
+  /// In it, this message translates to:
+  /// **'Nuovo catalogo'**
   String get audioDescriptionCharacterCatalogNew;
+
+  /// Localized text for audioDescriptionCharacterCatalogNameTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Catalogo dei personaggi'**
   String get audioDescriptionCharacterCatalogNameTitle;
+
+  /// Localized text for audioDescriptionCharacterCatalogNamePrompt.
+  ///
+  /// In it, this message translates to:
+  /// **'Come vuoi chiamare il catalogo dei personaggi?'**
   String get audioDescriptionCharacterCatalogNamePrompt;
+
+  /// Localized text for audioDescriptionCharacterCatalogNameError.
+  ///
+  /// In it, this message translates to:
+  /// **'Inserisci un nome per il catalogo dei personaggi.'**
   String get audioDescriptionCharacterCatalogNameError;
+
+  /// Localized text for audioDescriptionCharacterCatalogSaved.
+  ///
+  /// In it, this message translates to:
+  /// **'Catalogo dei personaggi aggiornato.'**
   String get audioDescriptionCharacterCatalogSaved;
+
+  /// Localized text for audioDescriptionCharacterCatalogSaveWarning.
+  ///
+  /// In it, this message translates to:
+  /// **'Audiodescrizione creata, ma non è stato possibile salvare il catalogo dei personaggi:'**
   String get audioDescriptionCharacterCatalogSaveWarning;
+
+  /// Localized text for audioDescriptionRecognizeScreenText.
+  ///
+  /// In it, this message translates to:
+  /// **'Riconosci il testo importante sullo schermo e includilo nell’audiodescrizione'**
   String get audioDescriptionRecognizeScreenText;
 
+  /// Audio-description fallback UI: audioDescriptionHighDemandTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Servizio IA molto occupato'**
+  String get audioDescriptionHighDemandTitle;
 
-    /// Audio-description fallback UI.
-    String get audioDescriptionHighDemandTitle;
-  
-    /// Audio-description fallback UI.
-    String get audioDescriptionHighDemandMessage;
-  
-    /// Audio-description fallback UI.
-    String get audioDescriptionContinueWaiting;
-  
-    /// Audio-description fallback UI.
-    String get audioDescriptionStopGeneration;
-  
-    /// Audio-description fallback UI.
-    String get audioDescriptionQuotaTitle;
-  
-    /// Audio-description fallback UI.
-    String get audioDescriptionQuotaMessage;
-  
-    /// Audio-description fallback UI.
-    String get audioDescriptionSwitchModel;
-  
-    /// Audio-description fallback UI.
-    /// Audio-description stage: isolated Brief retry.
-    String get audioDescriptionStageBriefRetry;
-  
-    /// Prompt shown before the final dialogue-overlap fallback.
-    String get audioDescriptionBriefRetryTitle;
-  
-    String get audioDescriptionBriefRetryMessage;
-  
-    String get audioDescriptionRetryBrief;
-  
-    String get audioDescriptionOverlapTitle;
-  
-    /// Audio-description fallback UI.
-    String get audioDescriptionOverlapMessage;
-  
-    /// Audio-description fallback UI.
-    String get audioDescriptionAllowOverlap;
-  
-    /// Audio-description fallback UI.
-    String get audioDescriptionResumeTitle;
-  
-    /// Audio-description fallback UI.
-    String get audioDescriptionResumeMessage;
-  
-    /// Audio-description fallback UI.
-    String get audioDescriptionResume;
-  
-    /// Audio-description fallback UI.
-    String get audioDescriptionRestart;
+  /// Audio-description fallback UI: audioDescriptionHighDemandMessage.
+  ///
+  /// In it, this message translates to:
+  /// **'Il servizio IA è ancora indisponibile dopo diversi tentativi. Continuare ad attendere e riprovare?'**
+  String get audioDescriptionHighDemandMessage;
+
+  /// Audio-description fallback UI: audioDescriptionContinueWaiting.
+  ///
+  /// In it, this message translates to:
+  /// **'Continua ad attendere'**
+  String get audioDescriptionContinueWaiting;
+
+  /// Audio-description fallback UI: audioDescriptionStopGeneration.
+  ///
+  /// In it, this message translates to:
+  /// **'Interrompi'**
+  String get audioDescriptionStopGeneration;
+
+  /// Audio-description fallback UI: audioDescriptionQuotaTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Quota Gemini esaurita'**
+  String get audioDescriptionQuotaTitle;
+
+  /// Audio-description fallback UI: audioDescriptionQuotaMessage.
+  ///
+  /// In it, this message translates to:
+  /// **'Il modello Gemini attuale ha esaurito la quota. Puoi scegliere un altro modello, continuare ad attendere oppure interrompere.'**
+  String get audioDescriptionQuotaMessage;
+
+  /// Audio-description fallback UI: audioDescriptionSwitchModel.
+  ///
+  /// In it, this message translates to:
+  /// **'Scegli un altro modello'**
+  String get audioDescriptionSwitchModel;
+
+  /// Audio-description fallback UI: audioDescriptionOverlapTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Fallback finale'**
+  String get audioDescriptionOverlapTitle;
+
+  /// Audio-description fallback UI: audioDescriptionOverlapMessage.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessuna descrizione generata entra in modo sicuro negli spazi senza dialogo. Vuoi usare il fallback finale che può inserire la narrazione sopra i dialoghi? Non viene mai attivato automaticamente.'**
+  String get audioDescriptionOverlapMessage;
+
+  /// Audio-description fallback UI: audioDescriptionAllowOverlap.
+  ///
+  /// In it, this message translates to:
+  /// **'Usa fallback finale'**
+  String get audioDescriptionAllowOverlap;
+
+  /// Audio-description fallback UI: audioDescriptionResumeTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Trovato un lavoro di audiodescrizione precedente'**
+  String get audioDescriptionResumeTitle;
+
+  /// Audio-description fallback UI: audioDescriptionResumeMessage.
+  ///
+  /// In it, this message translates to:
+  /// **'Sonarpad ha trovato un checkpoint compatibile. Riprendere dall’ultimo chunk completato oppure ricominciare dall’inizio?'**
+  String get audioDescriptionResumeMessage;
+
+  /// Audio-description fallback UI: audioDescriptionResume.
+  ///
+  /// In it, this message translates to:
+  /// **'Riprendi'**
+  String get audioDescriptionResume;
+
+  /// Audio-description fallback UI: audioDescriptionRestart.
+  ///
+  /// In it, this message translates to:
+  /// **'Ricomincia'**
+  String get audioDescriptionRestart;
+
+  /// Audio-description fallback UI: audioDescriptionStageBriefRetry.
+  ///
+  /// In it, this message translates to:
+  /// **'Nuova analisi con descrizioni brevi...'**
+  String get audioDescriptionStageBriefRetry;
+
+  /// Audio-description fallback UI: audioDescriptionBriefRetryTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Riprova con descrizioni brevi'**
+  String get audioDescriptionBriefRetryTitle;
+
+  /// Audio-description fallback UI: audioDescriptionBriefRetryMessage.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessuna descrizione generata entra in modo sicuro negli spazi senza dialogo. Prima di consentire la narrazione sopra i dialoghi, vuoi ripetere una volta l’analisi usando descrizioni molto brevi?'**
+  String get audioDescriptionBriefRetryMessage;
+
+  /// Audio-description fallback UI: audioDescriptionRetryBrief.
+  ///
+  /// In it, this message translates to:
+  /// **'Riprova in modalità Breve'**
+  String get audioDescriptionRetryBrief;
+
+  /// No description provided for @audioDescriptionProjectEditorDescriptionOption.
+  ///
+  /// In it, this message translates to:
+  /// **'{index}. {time} s. {text}'**
+  String audioDescriptionProjectEditorDescriptionOption(
+    String index,
+    String time,
+    String text,
+  );
+
+  /// No description provided for @audioDescriptionLanguageCountry.
+  ///
+  /// In it, this message translates to:
+  /// **'{language} ({country})'**
+  String audioDescriptionLanguageCountry(String language, String country);
 }
 
 class _AppLocalizationsDelegate
@@ -7213,5 +7544,4 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
     'on GitHub with a reproducible sample app and the gen-l10n configuration '
     'that was used.',
   );
-
 }

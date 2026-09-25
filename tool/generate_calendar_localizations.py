@@ -35,5 +35,6 @@ for index, (name, field, dart_type) in enumerate(sections):
     parts.append(json.dumps(values, ensure_ascii=False, indent=2))
     parts.append(';\n' if index == len(sections) - 1 else ';\n\n')
 
-OUTPUT.write_text(''.join(parts), encoding='utf-8')
+# Keep generated output identical on Windows, macOS and Linux.
+OUTPUT.write_bytes(''.join(parts).encode('utf-8'))
 print(f'Generated {OUTPUT} for {len(locales)} locales: {", ".join(locales)}')

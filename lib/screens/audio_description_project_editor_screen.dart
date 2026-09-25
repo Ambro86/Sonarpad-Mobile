@@ -517,7 +517,11 @@ class _AudioDescriptionProjectEditorScreenState
       final short = item.text.length > 70 ? '${item.text.substring(0, 70)}…' : item.text;
       return AccessibleOption(
         value: '$index',
-        label: '${index + 1}. ${item.sourceStartSec.toStringAsFixed(1)} s. $short',
+        label: AppLocalizations.of(context).audioDescriptionProjectEditorDescriptionOption(
+          '${index + 1}',
+          item.sourceStartSec.toStringAsFixed(1),
+          short,
+        ),
       );
     });
   }
@@ -550,7 +554,7 @@ class _AudioDescriptionProjectEditorScreenState
         .where((value) => value.isNotEmpty)
         .toList();
     return <AccessibleOption>[
-      const AccessibleOption(value: '', label: 'Default'),
+      AccessibleOption(value: '', label: AppLocalizations.of(context).settingsDefaultVoice),
       ...values.map((value) => AccessibleOption(value: value, label: value)),
     ];
   }
