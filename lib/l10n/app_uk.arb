@@ -4964,5 +4964,33 @@
         "type": "String"
       }
     }
+  },
+  "audioDescriptionCancelConfirmation": "Ви впевнені, що хочете скасувати створення аудіодескрипції?",
+  "@audioDescriptionCancelConfirmation": {
+    "description": "Confirmation before cancelling an active audio description generation."
+  },
+  "audioDescriptionEditProject": "Редагувати наявний проєкт",
+  "@audioDescriptionEditProject": {
+    "description": "Audio description project selection: audioDescriptionEditProject"
+  },
+  "audioDescriptionFindProject": "Шукати в Документах Sonarpad",
+  "@audioDescriptionFindProject": {
+    "description": "Audio description project selection: audioDescriptionFindProject"
+  },
+  "audioDescriptionBrowseProject": "Огляд…",
+  "@audioDescriptionBrowseProject": {
+    "description": "Audio description project selection: audioDescriptionBrowseProject"
+  },
+  "audioDescriptionNoSavedProjects": "У Документах Sonarpad не знайдено проєктів.",
+  "@audioDescriptionNoSavedProjects": {
+    "description": "Audio description project selection: audioDescriptionNoSavedProjects"
+  },
+  "audioDescriptionContinueAi": "Продовжити аудіодескрипцію зі ШІ",
+  "@audioDescriptionContinueAi": {
+    "description": "Audio description resume: audioDescriptionContinueAi"
+  },
+  "audioDescriptionNoCheckpoint": "Для цього відео не знайдено перерваної аудіодескрипції. Виберіть оригінальне відео, використане раніше.",
+  "@audioDescriptionNoCheckpoint": {
+    "description": "Audio description resume: audioDescriptionNoCheckpoint"
   }
 }

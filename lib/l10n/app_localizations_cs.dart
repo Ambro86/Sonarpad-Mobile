@@ -4169,4 +4169,28 @@ class AppLocalizationsCs extends AppLocalizations {
   String audioDescriptionLanguageCountry(String language, String country) {
     return '$language ($country)';
   }
+
+  @override
+  String get audioDescriptionCancelConfirmation =>
+      'Opravdu chcete zrušit vytváření audiopopisu?';
+
+  @override
+  String get audioDescriptionEditProject => 'Upravit existující projekt';
+
+  @override
+  String get audioDescriptionFindProject => 'Hledat v Dokumentech Sonarpad';
+
+  @override
+  String get audioDescriptionBrowseProject => 'Procházet…';
+
+  @override
+  String get audioDescriptionNoSavedProjects =>
+      'V Dokumentech Sonarpad nebyly nalezeny žádné projekty.';
+
+  @override
+  String get audioDescriptionContinueAi => 'Pokračovat v audiopopisu s AI';
+
+  @override
+  String get audioDescriptionNoCheckpoint =>
+      'Pro toto video nebyl nalezen přerušený audiopopis. Vyberte dříve použité původní video.';
 }

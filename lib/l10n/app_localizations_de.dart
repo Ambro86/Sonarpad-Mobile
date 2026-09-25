@@ -4192,4 +4192,28 @@ class AppLocalizationsDe extends AppLocalizations {
   String audioDescriptionLanguageCountry(String language, String country) {
     return '$language ($country)';
   }
+
+  @override
+  String get audioDescriptionCancelConfirmation =>
+      'Möchten Sie die Erstellung der Audiodeskription wirklich abbrechen?';
+
+  @override
+  String get audioDescriptionEditProject => 'Vorhandenes Projekt bearbeiten';
+
+  @override
+  String get audioDescriptionFindProject => 'In Sonarpad-Dokumenten suchen';
+
+  @override
+  String get audioDescriptionBrowseProject => 'Durchsuchen…';
+
+  @override
+  String get audioDescriptionNoSavedProjects =>
+      'Keine Projekte in Sonarpad-Dokumenten gefunden.';
+
+  @override
+  String get audioDescriptionContinueAi => 'KI-Audiodeskription fortsetzen';
+
+  @override
+  String get audioDescriptionNoCheckpoint =>
+      'Für dieses Video wurde keine unterbrochene Audiodeskription gefunden. Wählen Sie das zuvor verwendete Originalvideo.';
 }

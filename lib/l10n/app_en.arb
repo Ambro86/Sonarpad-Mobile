@@ -3386,5 +3386,33 @@
         "type": "String"
       }
     }
+  },
+  "audioDescriptionCancelConfirmation": "Are you sure you want to cancel audio description creation?",
+  "@audioDescriptionCancelConfirmation": {
+    "description": "Confirmation before cancelling an active audio description generation."
+  },
+  "audioDescriptionEditProject": "Edit existing project",
+  "@audioDescriptionEditProject": {
+    "description": "Audio description project selection: audioDescriptionEditProject"
+  },
+  "audioDescriptionFindProject": "Search Sonarpad Documents",
+  "@audioDescriptionFindProject": {
+    "description": "Audio description project selection: audioDescriptionFindProject"
+  },
+  "audioDescriptionBrowseProject": "Browse…",
+  "@audioDescriptionBrowseProject": {
+    "description": "Audio description project selection: audioDescriptionBrowseProject"
+  },
+  "audioDescriptionNoSavedProjects": "No projects found in Sonarpad Documents.",
+  "@audioDescriptionNoSavedProjects": {
+    "description": "Audio description project selection: audioDescriptionNoSavedProjects"
+  },
+  "audioDescriptionContinueAi": "Continue AI audio description",
+  "@audioDescriptionContinueAi": {
+    "description": "Audio description resume: audioDescriptionContinueAi"
+  },
+  "audioDescriptionNoCheckpoint": "No interrupted audio description found for this video. Select the original video used previously.",
+  "@audioDescriptionNoCheckpoint": {
+    "description": "Audio description resume: audioDescriptionNoCheckpoint"
   }
 }

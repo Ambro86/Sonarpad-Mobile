@@ -8,9 +8,16 @@ void main() {
   final main = File('lib/main.dart').readAsStringSync();
   final home = File('lib/screens/home_screen.dart').readAsStringSync();
 
-  test('project editor is reachable from Media and registered as a route', () {
+  test('project editor is inside creation and registered as a route', () {
     expect(main, contains("'/edit_audio_description_project'"));
-    expect(home, contains("routeName: '/edit_audio_description_project'"));
+    expect(home, isNot(contains("routeName: '/edit_audio_description_project'")));
+    final creation = File('lib/screens/create_ai_audiodescription_screen.dart').readAsStringSync();
+    expect(creation, contains("pushNamed('/edit_audio_description_project')"));
+    expect(creation.indexOf("id: 'continue_description'"), greaterThan(creation.indexOf("id: 'create'")));
+    expect(creation.indexOf("id: 'edit_project'"), greaterThan(creation.indexOf("id: 'continue_description'")));
+    expect(creation, contains('requireCheckpoint: resumeOnly'));
+    expect(service, contains('if (requireCheckpoint && checkpoint == null)'));
+
   });
 
   test('editor supports open, preview, apply, delete and re-export', () {

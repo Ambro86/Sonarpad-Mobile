@@ -4002,6 +4002,27 @@ class AppLocalizationsZh extends AppLocalizations {
   String audioDescriptionLanguageCountry(String language, String country) {
     return '$language ($country)';
   }
+
+  @override
+  String get audioDescriptionCancelConfirmation => '确定要取消创建音频描述吗？';
+
+  @override
+  String get audioDescriptionEditProject => '编辑现有项目';
+
+  @override
+  String get audioDescriptionFindProject => '搜索 Sonarpad 文档';
+
+  @override
+  String get audioDescriptionBrowseProject => '浏览…';
+
+  @override
+  String get audioDescriptionNoSavedProjects => '在 Sonarpad 文档中未找到项目。';
+
+  @override
+  String get audioDescriptionContinueAi => '继续 AI 音频描述';
+
+  @override
+  String get audioDescriptionNoCheckpoint => '未找到此视频未完成的音频描述。请选择之前使用的原始视频。';
 }
 
 /// The translations for Chinese, as used in China (`zh_CN`).
@@ -8002,4 +8023,25 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
   String audioDescriptionLanguageCountry(String language, String country) {
     return '$language ($country)';
   }
+
+  @override
+  String get audioDescriptionCancelConfirmation => '确定要取消创建音频描述吗？';
+
+  @override
+  String get audioDescriptionEditProject => '编辑现有项目';
+
+  @override
+  String get audioDescriptionFindProject => '搜索 Sonarpad 文档';
+
+  @override
+  String get audioDescriptionBrowseProject => '浏览…';
+
+  @override
+  String get audioDescriptionNoSavedProjects => '在 Sonarpad 文档中未找到项目。';
+
+  @override
+  String get audioDescriptionContinueAi => '继续 AI 音频描述';
+
+  @override
+  String get audioDescriptionNoCheckpoint => '未找到此视频未完成的音频描述。请选择之前使用的原始视频。';
 }

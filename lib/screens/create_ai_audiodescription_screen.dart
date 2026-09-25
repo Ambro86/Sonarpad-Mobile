@@ -36,6 +36,8 @@ class _CreateAiAudiodescriptionScreenState
   bool _loading = true;
   bool _running = false;
   bool _generationActive = false;
+  bool _confirmingCancel = false;
+  bool _cancelling = false;
   bool _testingVoice = false;
   bool _refreshingModels = false;
   bool _activatingSonarpad = false;
@@ -420,7 +422,19 @@ class _CreateAiAudiodescriptionScreenState
     return value;
   }
 
-  Future<void> _create() async {
+  Future<void> _continueDescription() async {
+    if (_running) return;
+    try {
+      if (_sourcePath == null) await _chooseVideo();
+      if (!mounted || _sourcePath == null) return;
+      await _create(resumeOnly: true);
+    } catch (error, stackTrace) {
+      await AppLogger.log('Audio description UI: resume failed $error\n$stackTrace');
+      if (mounted) showStatusMessage(context, AppLocalizations.of(context).technicalErrorGeneric);
+    }
+  }
+
+  Future<void> _create({bool resumeOnly = false}) async {
     if (_running) return;
     final l10n = AppLocalizations.of(context);
     final sourcePath = _sourcePath;
@@ -428,6 +442,11 @@ class _CreateAiAudiodescriptionScreenState
       showStatusMessage(context, l10n.audioDescriptionChooseVideoFirst);
       return;
     }
+    if (resumeOnly && !await _service.hasResumeCheckpoint(sourcePath)) {
+      if (mounted) showStatusMessage(context, l10n.audioDescriptionNoCheckpoint);
+      return;
+    }
+    if (!mounted) return;
     if (_provider == 'gemini' && _apiKey.trim().isEmpty) {
       showStatusMessage(context, l10n.audioDescriptionApiKeyRequired);
       return;
@@ -455,6 +474,7 @@ class _CreateAiAudiodescriptionScreenState
     setState(() {
       _running = true;
       _generationActive = true;
+      _cancelling = false;
       _progress = 0;
       _stage = l10n.audioDescriptionStagePreparing;
       _technicalError = null;
@@ -464,7 +484,7 @@ class _CreateAiAudiodescriptionScreenState
         sourcePath: sourcePath,
         settings: _currentSettings(),
         onProgress: (progress) {
-          if (!mounted) return;
+          if (!mounted || _cancelling) return;
           setState(() {
             if (progress.value > _progress) {
               _progress = progress.value;
@@ -477,6 +497,7 @@ class _CreateAiAudiodescriptionScreenState
         onBriefRetry: _askBriefRetryFallback,
         onOverlapConsent: _askOverlapFallback,
         onResumeCheckpoint: _askResumeCheckpoint,
+        requireCheckpoint: resumeOnly,
       );
       _generationActive = false;
       if (!mounted) return;
@@ -486,23 +507,25 @@ class _CreateAiAudiodescriptionScreenState
       await AppLogger.log('Audio description UI: generation error=$error\n$stackTrace');
       if (!mounted) return;
       final cancelled = error.toString().contains('AUDIO_DESCRIPTION_CANCELLED');
+      final noCheckpoint = error is AudioDescriptionResumeUnavailableException;
       setState(() {
-        _technicalError = cancelled ? null : error.toString();
+        _technicalError = cancelled || noCheckpoint ? null : error.toString();
         _stage = cancelled
             ? l10n.audioDescriptionCancelled
-            : l10n.audioDescriptionGenerationFailed;
+            : noCheckpoint ? l10n.audioDescriptionNoCheckpoint : l10n.audioDescriptionGenerationFailed;
       });
       showStatusMessage(
         context,
         cancelled
             ? l10n.audioDescriptionCancelled
-            : l10n.audioDescriptionGenerationFailed,
+            : noCheckpoint ? l10n.audioDescriptionNoCheckpoint : l10n.audioDescriptionGenerationFailed,
       );
     } finally {
       _generationActive = false;
       if (mounted) {
         setState(() {
           _running = false;
+          _cancelling = false;
           _progress = 0;
         });
       }
@@ -720,10 +743,21 @@ class _CreateAiAudiodescriptionScreenState
     return result == true;
   }
 
-  void _cancel() {
-    _service.cancel();
-    if (mounted) {
-      setState(() => _stage = AppLocalizations.of(context).audioDescriptionCancelling);
+  Future<void> _cancel() async {
+    if (!_generationActive || _confirmingCancel || _cancelling) return;
+    _confirmingCancel = true;
+    final l10n = AppLocalizations.of(context);
+    try {
+      final confirmed = await showAudioDescriptionCancelConfirmation(context);
+      if (!mounted || confirmed != true || !_generationActive) return;
+      setState(() {
+        _cancelling = true;
+        _stage = l10n.audioDescriptionCancelling;
+      });
+      _service.cancel();
+      unawaited(AppLogger.log('Audio description UI: cancellation confirmed'));
+    } finally {
+      _confirmingCancel = false;
     }
   }
 
@@ -1196,6 +1230,7 @@ class _CreateAiAudiodescriptionScreenState
                       AccessibleListRow(
                         id: 'cancel',
                         title: l10n.cancel,
+                        enabled: !_cancelling,
                       ),
                     if (!_running && _stage.isNotEmpty)
                       AccessibleListRow(
@@ -1213,6 +1248,21 @@ class _CreateAiAudiodescriptionScreenState
                         kind: 'text',
                         accessibilityButtonTrait: false,
                       ),
+                    AccessibleListRow(
+                      id: 'continue_description',
+                      title: l10n.audioDescriptionContinueAi,
+                      enabled: !_running,
+                      onActivate: () { unawaited(_continueDescription()); },
+                    ),
+                    AccessibleListRow(
+                      id: 'edit_project',
+                      title: l10n.audioDescriptionEditProject,
+                      enabled: !_running,
+                      onActivate: () async {
+                        if (_running) return;
+                        await Navigator.of(context).pushNamed('/edit_audio_description_project');
+                      },
+                    ),
                   ],
                 ),
               ],
@@ -1312,10 +1362,10 @@ class _CreateAiAudiodescriptionScreenState
                       await _testVoice();
                       break;
                     case 'create':
-                      await _create();
+                      unawaited(_create());
                       break;
                     case 'cancel':
-                      _cancel();
+                      await _cancel();
                       break;
                   }
                 }
@@ -1329,3 +1379,25 @@ class _CreateAiAudiodescriptionScreenState
 }
 
 enum _DoneAction { share, saveDocuments }
+
+Future<bool> showAudioDescriptionCancelConfirmation(BuildContext context) async {
+  final l10n = AppLocalizations.of(context);
+  final confirmed = await showDialog<bool>(
+    context: context,
+    builder: (dialogContext) => AlertDialog(
+      title: Text(l10n.cancel),
+      content: Text(l10n.audioDescriptionCancelConfirmation),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(dialogContext, false),
+          child: Text(l10n.no),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.pop(dialogContext, true),
+          child: Text(l10n.yes),
+        ),
+      ],
+    ),
+  );
+  return confirmed == true;
+}

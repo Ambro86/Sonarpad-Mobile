@@ -9,6 +9,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../l10n/app_localizations.dart';
+import 'audio_description_project_picker_screen.dart';
 import '../services/ai_audiodescription_service.dart';
 import '../services/app_settings_service.dart';
 import '../services/audio_description_project_strings.dart';
@@ -115,15 +116,33 @@ class _AudioDescriptionProjectEditorScreenState
 
   Future<void> _openProject() async {
     if (_running) return;
+    final path = await Navigator.of(context).push<String>(MaterialPageRoute(
+      builder: (_) => const AudioDescriptionProjectPickerScreen(),
+    ));
+    if (!mounted || path == null) return;
+    await _loadProject(path);
+  }
+
+  Future<void> _browseProject() async {
+    if (_running) return;
+    try {
+      final result = await FilePicker.pickFiles(
+        type: FileType.custom,
+        allowMultiple: false,
+        withData: false,
+        allowedExtensions: const ['json'],
+      );
+      final path = result?.files.single.path;
+      if (!mounted || path == null || path.trim().isEmpty) return;
+      await _loadProject(path);
+    } catch (error, stackTrace) {
+      await AppLogger.log('Audio description project editor: browse failed $error\n$stackTrace');
+      if (mounted) showStatusMessage(context, AppLocalizations.of(context).technicalErrorGeneric);
+    }
+  }
+
+  Future<void> _loadProject(String path) async {
     final s = AudioDescriptionProjectStrings.of(context);
-    final result = await FilePicker.pickFiles(
-      type: FileType.custom,
-      allowMultiple: false,
-      withData: false,
-      allowedExtensions: const ['json'],
-    );
-    final path = result?.files.single.path;
-    if (path == null || path.trim().isEmpty) return;
     try {
       final project = await _service.loadEditableProject(path);
       final sourceExists = project.sourcePath.isNotEmpty &&
@@ -596,7 +615,12 @@ class _AudioDescriptionProjectEditorScreenState
                 AccessibleListSection(rows: [
                   AccessibleListRow(
                     id: 'open_project',
-                    title: strings['open'],
+                    title: l10n.audioDescriptionFindProject,
+                    enabled: !_running,
+                  ),
+                  AccessibleListRow(
+                    id: 'browse_project',
+                    title: l10n.audioDescriptionBrowseProject,
                     enabled: !_running,
                   ),
                   if (project != null)
@@ -800,6 +824,9 @@ class _AudioDescriptionProjectEditorScreenState
                   switch (id) {
                     case 'open_project':
                       await _openProject();
+                      break;
+                    case 'browse_project':
+                      await _browseProject();
                       break;
                     case 'choose_source':
                       await _chooseSource();

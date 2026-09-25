@@ -3386,5 +3386,33 @@
         "type": "String"
       }
     }
+  },
+  "audioDescriptionCancelConfirmation": "确定要取消创建音频描述吗？",
+  "@audioDescriptionCancelConfirmation": {
+    "description": "Confirmation before cancelling an active audio description generation."
+  },
+  "audioDescriptionEditProject": "编辑现有项目",
+  "@audioDescriptionEditProject": {
+    "description": "Audio description project selection: audioDescriptionEditProject"
+  },
+  "audioDescriptionFindProject": "搜索 Sonarpad 文档",
+  "@audioDescriptionFindProject": {
+    "description": "Audio description project selection: audioDescriptionFindProject"
+  },
+  "audioDescriptionBrowseProject": "浏览…",
+  "@audioDescriptionBrowseProject": {
+    "description": "Audio description project selection: audioDescriptionBrowseProject"
+  },
+  "audioDescriptionNoSavedProjects": "在 Sonarpad 文档中未找到项目。",
+  "@audioDescriptionNoSavedProjects": {
+    "description": "Audio description project selection: audioDescriptionNoSavedProjects"
+  },
+  "audioDescriptionContinueAi": "继续 AI 音频描述",
+  "@audioDescriptionContinueAi": {
+    "description": "Audio description resume: audioDescriptionContinueAi"
+  },
+  "audioDescriptionNoCheckpoint": "未找到此视频未完成的音频描述。请选择之前使用的原始视频。",
+  "@audioDescriptionNoCheckpoint": {
+    "description": "Audio description resume: audioDescriptionNoCheckpoint"
   }
 }

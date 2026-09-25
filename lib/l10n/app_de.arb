@@ -4964,5 +4964,33 @@
         "type": "String"
       }
     }
+  },
+  "audioDescriptionCancelConfirmation": "Möchten Sie die Erstellung der Audiodeskription wirklich abbrechen?",
+  "@audioDescriptionCancelConfirmation": {
+    "description": "Confirmation before cancelling an active audio description generation."
+  },
+  "audioDescriptionEditProject": "Vorhandenes Projekt bearbeiten",
+  "@audioDescriptionEditProject": {
+    "description": "Audio description project selection: audioDescriptionEditProject"
+  },
+  "audioDescriptionFindProject": "In Sonarpad-Dokumenten suchen",
+  "@audioDescriptionFindProject": {
+    "description": "Audio description project selection: audioDescriptionFindProject"
+  },
+  "audioDescriptionBrowseProject": "Durchsuchen…",
+  "@audioDescriptionBrowseProject": {
+    "description": "Audio description project selection: audioDescriptionBrowseProject"
+  },
+  "audioDescriptionNoSavedProjects": "Keine Projekte in Sonarpad-Dokumenten gefunden.",
+  "@audioDescriptionNoSavedProjects": {
+    "description": "Audio description project selection: audioDescriptionNoSavedProjects"
+  },
+  "audioDescriptionContinueAi": "KI-Audiodeskription fortsetzen",
+  "@audioDescriptionContinueAi": {
+    "description": "Audio description resume: audioDescriptionContinueAi"
+  },
+  "audioDescriptionNoCheckpoint": "Für dieses Video wurde keine unterbrochene Audiodeskription gefunden. Wählen Sie das zuvor verwendete Originalvideo.",
+  "@audioDescriptionNoCheckpoint": {
+    "description": "Audio description resume: audioDescriptionNoCheckpoint"
   }
 }

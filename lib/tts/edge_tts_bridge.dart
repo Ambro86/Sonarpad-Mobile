@@ -9,6 +9,20 @@ import 'package:crypto/crypto.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class EdgeTtsBridge {
+  HttpClient? _activeClient;
+  WebSocket? _activeSocket;
+  bool _cancelled = false;
+
+  void cancel() {
+    _cancelled = true;
+    _activeClient?.close(force: true);
+    unawaited(_activeSocket?.close());
+  }
+
+  void _checkCancelled() {
+    if (_cancelled) throw StateError('AUDIO_DESCRIPTION_CANCELLED');
+  }
+
   static const String _trustedClientToken = "6A5AA1D4EAFF4E9FB37E23D68491D6F4";
   static const String _wssUrlBase =
       "wss://speech.platform.bing.com/consumer/speech/synthesize/readaloud/edge/v1";
@@ -22,6 +36,7 @@ class EdgeTtsBridge {
     double? speed,
     double? pitch,
   }) async {
+    _checkCancelled();
     final dir = await getTemporaryDirectory();
     final outPath = p.join(
       dir.path,
@@ -57,6 +72,7 @@ class EdgeTtsBridge {
     try {
       final audioData =
           await _downloadAudio(text, voice, rateStr, pitchStr, logFile);
+      _checkCancelled();
       if (audioData.isEmpty) {
         throw Exception("Edge TTS ha restituito audio vuoto");
       }
@@ -171,7 +187,9 @@ class EdgeTtsBridge {
       await logFile.writeAsString('connessione websocket...\n',
           mode: FileMode.append);
 
+      _checkCancelled();
       final client = HttpClient();
+      _activeClient = client;
       client.userAgent =
           "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1 Edg/132.0.0.0";
 
@@ -182,6 +200,8 @@ class EdgeTtsBridge {
         "Accept-Language": "it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7",
         "Cookie": "muid=${_generateMuid()};"
       }).timeout(const Duration(seconds: 20));
+      _activeSocket = ws;
+      _checkCancelled();
 
       await logFile.writeAsString('websocket connesso\n',
           mode: FileMode.append);
@@ -228,6 +248,9 @@ class EdgeTtsBridge {
       return audioData;
     } finally {
       await ws?.close();
+      _activeSocket = null;
+      _activeClient?.close(force: true);
+      _activeClient = null;
     }
   }
 

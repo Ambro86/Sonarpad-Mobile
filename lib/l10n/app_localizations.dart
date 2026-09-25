@@ -7464,6 +7464,48 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'{language} ({country})'**
   String audioDescriptionLanguageCountry(String language, String country);
+
+  /// Confirmation before cancelling an active audio description generation.
+  ///
+  /// In it, this message translates to:
+  /// **'Sei sicuro di voler annullare la creazione dell’audiodescrizione?'**
+  String get audioDescriptionCancelConfirmation;
+
+  /// Audio description project selection: audioDescriptionEditProject
+  ///
+  /// In it, this message translates to:
+  /// **'Modifica progetto esistente'**
+  String get audioDescriptionEditProject;
+
+  /// Audio description project selection: audioDescriptionFindProject
+  ///
+  /// In it, this message translates to:
+  /// **'Cerca nei Documenti Sonarpad'**
+  String get audioDescriptionFindProject;
+
+  /// Audio description project selection: audioDescriptionBrowseProject
+  ///
+  /// In it, this message translates to:
+  /// **'Sfoglia…'**
+  String get audioDescriptionBrowseProject;
+
+  /// Audio description project selection: audioDescriptionNoSavedProjects
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun progetto trovato nei Documenti Sonarpad.'**
+  String get audioDescriptionNoSavedProjects;
+
+  /// Audio description resume: audioDescriptionContinueAi
+  ///
+  /// In it, this message translates to:
+  /// **'Continua audiodescrizione con IA'**
+  String get audioDescriptionContinueAi;
+
+  /// Audio description resume: audioDescriptionNoCheckpoint
+  ///
+  /// In it, this message translates to:
+  /// **'Nessuna audiodescrizione interrotta trovata per questo video. Seleziona il video originale usato in precedenza.'**
+  String get audioDescriptionNoCheckpoint;
 }
 
 class _AppLocalizationsDelegate

@@ -19,6 +19,7 @@ import '../utils/app_logger.dart';
 import 'app_cache_service.dart';
 import 'app_settings_service.dart';
 import 'audio_description_fallbacks.dart';
+import 'audio_description_mix.dart';
 import 'pyannote_mobile_service.dart';
 import 'voice_dictionary_service.dart';
 
@@ -555,13 +556,44 @@ class AiAudioDescriptionService {
   static const _duckVolume = 0.251188643150958;
   static const _extendedTailPadding = 0.12;
 
-  final http.Client _http;
+  http.Client _http;
+  bool _httpClosed = false;
+  EdgeTtsBridge? _activeEdgeTts;
+  FlutterTts? _activeSystemTts;
   final Set<String> _validatedGeminiModels = <String>{};
   bool _cancelRequested = false;
+  Completer<void> _cancelSignal = Completer<void>();
 
   void cancel() {
+    if (_cancelRequested) return;
     _cancelRequested = true;
-    unawaited(FFmpegKit.cancel());
+    _cancelSignal.complete();
+    unawaited(AppLogger.log('Audio description mobile: cancellation requested'));
+    _http.close();
+    _httpClosed = true;
+    _activeEdgeTts?.cancel();
+    final tts = _activeSystemTts;
+    if (tts != null) {
+      unawaited(tts.stop().catchError((Object error) {
+        return AppLogger.log('Audio description mobile: TTS stop failed $error');
+      }));
+    }
+    unawaited(FFmpegKit.cancel().catchError((Object error) {
+      return AppLogger.log('Audio description mobile: FFmpeg cancel failed $error');
+    }));
+  }
+
+  void _ensureHttpClient() {
+    if (_httpClosed) {
+      _http = http.Client();
+      _httpClosed = false;
+    }
+  }
+
+  void _resetCancellation() {
+    _ensureHttpClient();
+    _cancelRequested = false;
+    _cancelSignal = Completer<void>();
   }
 
   void dispose() {
@@ -569,6 +601,7 @@ class AiAudioDescriptionService {
   }
 
   Future<List<String>> fetchGeminiModels(String apiKey) async {
+    _ensureHttpClient();
     final key = apiKey.trim();
     if (key.isEmpty) throw StateError('GEMINI_API_KEY_REQUIRED');
     final uri = Uri.parse('$_geminiBase/models').replace(
@@ -606,6 +639,7 @@ class AiAudioDescriptionService {
   }
 
   Future<String> activateSonarpadAi(String code) async {
+    _ensureHttpClient();
     final trimmed = code.trim();
     if (trimmed.isEmpty) throw StateError('SONARPAD_AI_CODE_REQUIRED');
     final response = await _http
@@ -784,8 +818,9 @@ class AiAudioDescriptionService {
     AiAudioDescriptionBriefRetryCallback? onBriefRetry,
     AiAudioDescriptionOverlapConsentCallback? onOverlapConsent,
     AiAudioDescriptionResumeCallback? onResumeCheckpoint,
+    bool requireCheckpoint = false,
   }) async {
-    _cancelRequested = false;
+    _resetCancellation();
     final source = File(sourcePath);
     if (!await source.exists()) throw StateError('AUDIO_DESCRIPTION_SOURCE_MISSING');
     await AiAudioDescriptionPreferences.save(settings);
@@ -826,6 +861,7 @@ class AiAudioDescriptionService {
       final pyannote = await PyannoteMobileService.instance.analyzeCanonicalWav(
         canonicalWav,
         paddingSec: PyannoteMobileService.defaultPaddingSec,
+        checkCancelled: _checkCancel,
         onProgress: (value) {
           _emit(onProgress, 'pyannote', 0.06 + value * 0.16);
         },
@@ -861,8 +897,11 @@ class AiAudioDescriptionService {
         durationSec: pyannote.durationSec,
         chunkCount: chunkCount,
       );
+      if (requireCheckpoint && checkpoint == null) {
+        throw const AudioDescriptionResumeUnavailableException();
+      }
       if (checkpoint != null) {
-        final resume = onResumeCheckpoint == null
+        final resume = requireCheckpoint || onResumeCheckpoint == null
             ? true
             : await onResumeCheckpoint(checkpoint.path);
         if (resume) {
@@ -1144,6 +1183,7 @@ class AiAudioDescriptionService {
       } catch (_) {}
 
       await _deleteCheckpoint(sourcePath);
+      _checkCancel();
       _emit(onProgress, 'completed', 1.0);
       return AiAudioDescriptionResult(
         mp3Path: outputPath,
@@ -1154,12 +1194,20 @@ class AiAudioDescriptionService {
         characterCatalogWarning: characterCatalogWarning,
       );
     } catch (error, stackTrace) {
-      await AppLogger.log('Audio description mobile: FAILED $error\n$stackTrace');
+      await AppLogger.log(_cancelRequested
+          ? 'Audio description mobile: cancellation cleanup started'
+          : 'Audio description mobile: FAILED $error\n$stackTrace');
       try {
         if (await operationDir.exists()) await operationDir.delete(recursive: true);
       } catch (_) {}
+      if (_cancelRequested) {
+        await AppLogger.log('Audio description mobile: cancellation completed');
+      }
+      _checkCancel();
       rethrow;
     } finally {
+      _activeEdgeTts = null;
+      _activeSystemTts = null;
       if (oldWakelock != null) {
         try {
           if (oldWakelock) {
@@ -1180,7 +1228,9 @@ class AiAudioDescriptionService {
   }
 
   Future<_ProbeInfo> _probe(String path) async {
+    _checkCancel();
     final session = await FFprobeKit.getMediaInformation(path);
+    _checkCancel();
     final code = await session.getReturnCode();
     final info = session.getMediaInformation();
     if (!ReturnCode.isSuccess(code) || info == null) {
@@ -1347,6 +1397,23 @@ class AiAudioDescriptionService {
     }
     if (duration > cursor) appendGap(cursor, duration);
     return result;
+  }
+
+  Future<bool> hasResumeCheckpoint(String sourcePath) async {
+    try {
+      final file = await _checkpointFile(sourcePath);
+      if (!await file.exists()) return false;
+      final data = jsonDecode(await file.readAsString());
+      return data is Map &&
+          data['schema'] == 'sonarpad-mobile-ad-checkpoint-v1' &&
+          data['completed_chunks'] is num &&
+          (data['completed_chunks'] as num) > 0 &&
+          data['descriptions'] is List;
+    } on FileSystemException {
+      return false;
+    } on FormatException {
+      return false;
+    }
   }
 
   Future<File> _checkpointFile(String sourcePath) async {
@@ -2699,6 +2766,7 @@ If there is nothing useful to describe, return an empty audio_descriptions array
           await target.delete();
         } catch (_) {}
       } catch (error) {
+        _checkCancel();
         if (AudioDescriptionFallbacks.isPermanentTtsError(error.toString())) {
           rethrow;
         }
@@ -2726,18 +2794,23 @@ If there is nothing useful to describe, return an empty audio_descriptions array
         if (settings.ttsEngine == 'system') {
           await _synthesizeSystem(flutterTts, text, target);
         } else {
-          final edge = await EdgeTtsBridge().speakToFile(
+          final bridge = EdgeTtsBridge();
+          _activeEdgeTts = bridge;
+          final edge = await bridge.speakToFile(
             text: text,
             voice: settings.edgeVoice,
             speed: speed,
             pitch: pitch,
           );
+          _activeEdgeTts = null;
+          _checkCancel();
           await edge.copy(target.path);
           try {
             await edge.delete();
           } catch (_) {}
           await _trimEdgeTrailingSilenceBestEffort(target.path);
         }
+        _checkCancel();
         if (!await target.exists() || await target.length() <= 512) {
           throw StateError('TTS_EMPTY_OUTPUT');
         }
@@ -2749,6 +2822,7 @@ If there is nothing useful to describe, return an empty audio_descriptions array
         }
         return;
       } catch (error) {
+        _checkCancel();
         if (AudioDescriptionFallbacks.isPermanentTtsError(error.toString())) {
           rethrow;
         }
@@ -2766,6 +2840,7 @@ If there is nothing useful to describe, return an empty audio_descriptions array
     try {
       final duration = await _audioDuration(path);
       if (duration < 0.100) return;
+      _checkCancel();
       final volumeSession = await FFmpegKit.executeWithArguments(<String>[
         '-hide_banner', '-nostats', '-i', path,
         '-af', 'volumedetect', '-f', 'null', '-',
@@ -2777,6 +2852,7 @@ If there is nothing useful to describe, return an empty audio_descriptions array
       ).firstMatch(volumeLogs);
       final meanDb = double.tryParse(meanMatch?.group(1) ?? '') ?? -20.0;
       final thresholdDb = math.max(-55.0, meanDb - 35.0);
+      _checkCancel();
       final silenceSession = await FFmpegKit.executeWithArguments(<String>[
         '-hide_banner', '-nostats', '-i', path,
         '-af', 'silencedetect=noise=${thresholdDb.toStringAsFixed(2)}dB:d=0.06',
@@ -2811,6 +2887,7 @@ If there is nothing useful to describe, return an empty audio_descriptions array
       );
       if (trimEnd == null) return;
       final temporary = '$path.edge-trim.mp3';
+      _checkCancel();
       final session = await FFmpegKit.executeWithArguments(<String>[
         '-y', '-hide_banner', '-loglevel', 'error', '-i', path,
         '-af', 'atrim=end=${trimEnd.toStringAsFixed(6)},asetpts=PTS-STARTPTS',
@@ -2836,6 +2913,7 @@ If there is nothing useful to describe, return an empty audio_descriptions array
   }
 
   Future<bool> _ttsFileHasAudibleSignal(String path) async {
+    _checkCancel();
     final session = await FFmpegKit.executeWithArguments(<String>[
       '-hide_banner', '-nostats', '-i', path,
       '-af', 'volumedetect', '-f', 'null', '-',
@@ -2855,7 +2933,13 @@ If there is nothing useful to describe, return an empty audio_descriptions array
       ttsError = message;
       if (!completer.isCompleted) completer.complete();
     });
-    await tts.synthesizeToFile(text, output.path, true);
+    _checkCancel();
+    _activeSystemTts = tts;
+    await Future.any<dynamic>([
+      tts.synthesizeToFile(text, output.path, true),
+      _cancelSignal.future.then<dynamic>((_) => throw const _AudioDescriptionCancelled()),
+    ]);
+    _checkCancel();
     final deadline = DateTime.now().add(const Duration(seconds: 90));
     var previous = -1;
     var stable = 0;
@@ -2878,7 +2962,9 @@ If there is nothing useful to describe, return an empty audio_descriptions array
   }
 
   Future<double> _audioDuration(String path) async {
+    _checkCancel();
     final session = await FFprobeKit.getMediaInformation(path);
+    _checkCancel();
     final code = await session.getReturnCode();
     final info = session.getMediaInformation();
     if (!ReturnCode.isSuccess(code) || info == null) return 0.0;
@@ -2962,7 +3048,9 @@ If there is nothing useful to describe, return an empty audio_descriptions array
       ttsLabels.add('[$ttsLabel]');
     }
     final duckedBase = duckIndex == 0 ? '[base0]' : '[duck${duckIndex - 1}]';
-    filter.write('$duckedBase${ttsLabels.join()}amix=inputs=${ttsLabels.length + 1}:duration=longest:dropout_transition=0,alimiter=limit=0.97[outa]');
+    filter.write('$duckedBase${ttsLabels.join()}${audioDescriptionMixFilter(ttsLabels.length + 1)}[outa]');
+    await AppLogger.log('Audio description mobile: final mix '
+        'voices=${ttsLabels.length} normalize=false duckingDb=-12 limiter=0.97');
 
     args.addAll(<String>[
       '-filter_complex', filter.toString(),
@@ -3381,7 +3469,7 @@ If there is nothing useful to describe, return an empty audio_descriptions array
     required String text,
     bool resetCancellation = true,
   }) async {
-    if (resetCancellation) _cancelRequested = false;
+    if (resetCancellation) _resetCancellation();
     final normalized = text.trim();
     if (normalized.isEmpty) throw StateError('AUDIO_DESCRIPTION_PROJECT_EMPTY_TEXT');
     if (index < 0 || index >= project.descriptions.length) {
@@ -3502,7 +3590,7 @@ If there is nothing useful to describe, return an empty audio_descriptions array
     required double pitch,
     void Function(double progress)? onProgress,
   }) async {
-    _cancelRequested = false;
+    _resetCancellation();
     final voice = ttsEngine == 'edge' ? edgeVoice : (systemVoice ?? '');
     final candidate = project.copyWith(
       ttsEngine: ttsEngine,
@@ -3534,7 +3622,7 @@ If there is nothing useful to describe, return an empty audio_descriptions array
     String? sourcePathOverride,
     void Function(AiAudioDescriptionProgress progress)? onProgress,
   }) async {
-    _cancelRequested = false;
+    _resetCancellation();
     final sourcePath = (sourcePathOverride?.trim().isNotEmpty ?? false)
         ? sourcePathOverride!.trim()
         : project.sourcePath;
@@ -4548,6 +4636,7 @@ If there is nothing useful to describe, return an empty audio_descriptions array
   Future<void> _runFfmpeg(List<String> args, String label) async {
     _checkCancel();
     await AppLogger.log('Audio description mobile FFmpeg: $label start');
+    _checkCancel();
     final session = await FFmpegKit.executeWithArguments(args);
     final code = await session.getReturnCode();
     _checkCancel();
@@ -4868,4 +4957,10 @@ class _AudioDescriptionCancelled implements Exception {
   const _AudioDescriptionCancelled();
   @override
   String toString() => 'AUDIO_DESCRIPTION_CANCELLED';
+}
+
+class AudioDescriptionResumeUnavailableException implements Exception {
+  const AudioDescriptionResumeUnavailableException();
+  @override
+  String toString() => 'AUDIO_DESCRIPTION_RESUME_UNAVAILABLE';
 }

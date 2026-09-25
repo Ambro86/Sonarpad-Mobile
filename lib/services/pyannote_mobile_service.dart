@@ -202,6 +202,7 @@ class PyannoteMobileService {
     String wavPath, {
     double paddingSec = defaultPaddingSec,
     void Function(double progress)? onProgress,
+    void Function()? checkCancelled,
   }) async {
     final overallStarted = DateTime.now();
     await AppLogger.log(
@@ -211,7 +212,9 @@ class PyannoteMobileService {
     );
 
     try {
+      checkCancelled?.call();
       await _ensureSession();
+      checkCancelled?.call();
       final session = _session!;
       await AppLogger.log(
         'PYANNOTE[ANALYZE] session ready '
@@ -294,6 +297,7 @@ class PyannoteMobileService {
         for (var batchStart = 0;
             batchStart < chunkCount;
             batchStart += batchSize) {
+          checkCancelled?.call();
           batchNumber++;
           final batchStarted = DateTime.now();
           final currentBatchSize =
@@ -317,6 +321,7 @@ class PyannoteMobileService {
             'creating tensor shape=[$currentBatchSize,1,$windowSamples]',
           );
 
+          checkCancelled?.call();
           final input = OrtValueTensor.createTensorWithDataList(
             batch,
             <int>[currentBatchSize, 1, windowSamples],
@@ -363,6 +368,7 @@ class PyannoteMobileService {
             outputs?.forEach((value) => value?.release());
           }
 
+          checkCancelled?.call();
           processedChunks += currentBatchSize;
           final elapsed =
               DateTime.now().difference(batchStarted).inMilliseconds;

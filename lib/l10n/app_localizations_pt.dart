@@ -4192,6 +4192,30 @@ class AppLocalizationsPt extends AppLocalizations {
   String audioDescriptionLanguageCountry(String language, String country) {
     return '$language ($country)';
   }
+
+  @override
+  String get audioDescriptionCancelConfirmation =>
+      'Tem a certeza de que pretende cancelar a criação da audiodescrição?';
+
+  @override
+  String get audioDescriptionEditProject => 'Modificar projeto existente';
+
+  @override
+  String get audioDescriptionFindProject => 'Procurar nos Documentos Sonarpad';
+
+  @override
+  String get audioDescriptionBrowseProject => 'Procurar ficheiro…';
+
+  @override
+  String get audioDescriptionNoSavedProjects =>
+      'Nenhum projeto encontrado nos Documentos Sonarpad.';
+
+  @override
+  String get audioDescriptionContinueAi => 'Continuar audiodescrição com IA';
+
+  @override
+  String get audioDescriptionNoCheckpoint =>
+      'Não foi encontrada uma audiodescrição interrompida para este vídeo. Selecione o vídeo original utilizado anteriormente.';
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
@@ -8374,4 +8398,28 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   String audioDescriptionLanguageCountry(String language, String country) {
     return '$language ($country)';
   }
+
+  @override
+  String get audioDescriptionCancelConfirmation =>
+      'Tem certeza de que deseja cancelar a criação da audiodescrição?';
+
+  @override
+  String get audioDescriptionEditProject => 'Editar projeto existente';
+
+  @override
+  String get audioDescriptionFindProject => 'Pesquisar nos Documentos Sonarpad';
+
+  @override
+  String get audioDescriptionBrowseProject => 'Procurar arquivo…';
+
+  @override
+  String get audioDescriptionNoSavedProjects =>
+      'Nenhum projeto encontrado nos Documentos Sonarpad.';
+
+  @override
+  String get audioDescriptionContinueAi => 'Continuar audiodescrição com IA';
+
+  @override
+  String get audioDescriptionNoCheckpoint =>
+      'Nenhuma audiodescrição interrompida foi encontrada para este vídeo. Selecione o vídeo original usado anteriormente.';
 }

@@ -4164,4 +4164,28 @@ class AppLocalizationsUk extends AppLocalizations {
   String audioDescriptionLanguageCountry(String language, String country) {
     return '$language ($country)';
   }
+
+  @override
+  String get audioDescriptionCancelConfirmation =>
+      'Ви впевнені, що хочете скасувати створення аудіодескрипції?';
+
+  @override
+  String get audioDescriptionEditProject => 'Редагувати наявний проєкт';
+
+  @override
+  String get audioDescriptionFindProject => 'Шукати в Документах Sonarpad';
+
+  @override
+  String get audioDescriptionBrowseProject => 'Огляд…';
+
+  @override
+  String get audioDescriptionNoSavedProjects =>
+      'У Документах Sonarpad не знайдено проєктів.';
+
+  @override
+  String get audioDescriptionContinueAi => 'Продовжити аудіодескрипцію зі ШІ';
+
+  @override
+  String get audioDescriptionNoCheckpoint =>
+      'Для цього відео не знайдено перерваної аудіодескрипції. Виберіть оригінальне відео, використане раніше.';
 }
