@@ -313,9 +313,10 @@ void main() {
       expect(screen, contains('if (progress.value > _progress)'));
     });
     test('Pyannote heavy PCM preparation stays off the UI isolate', () {
-      expect(pyannote, contains("import 'dart:isolate';"));
-      expect(pyannote, contains('Isolate.run('));
-      expect(pyannote, contains('_readNormalizedBatchTransfer'));
+      final reader = File('lib/services/pyannote_pcm_reader.dart').readAsStringSync();
+      expect(pyannote, contains('await readPyannotePcmBatch('));
+      expect(pyannote, isNot(contains('Isolate.run')));
+      expect(reader, contains('Isolate.run('));
       expect(pyannote, contains('session.runAsync('));
     });
   });

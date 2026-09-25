@@ -1,7 +1,8 @@
 import 'dart:io';
 import 'dart:math' as math;
-import 'dart:isolate';
 import 'dart:typed_data';
+
+import 'pyannote_pcm_reader.dart';
 
 import 'package:crypto/crypto.dart';
 import 'package:flutter/services.dart';
@@ -303,19 +304,13 @@ class PyannoteMobileService {
             'floatCount=${currentBatchSize * windowSamples} isolate=true',
           );
 
-          final batchTransfer = await Isolate.run(
-            () => _readNormalizedBatchTransfer(
-              wavPath: wavPath,
-              dataOffset: wav.dataOffset,
-              sampleCount: wav.sampleCount,
-              windowSamples: windowSamples,
-              starts: starts.sublist(
-                batchStart,
-                batchStart + currentBatchSize,
-              ),
-            ),
+          final batch = await readPyannotePcmBatch(
+            wavPath: wavPath,
+            dataOffset: wav.dataOffset,
+            sampleCount: wav.sampleCount,
+            windowSamples: windowSamples,
+            starts: starts.sublist(batchStart, batchStart + currentBatchSize),
           );
-          final batch = batchTransfer.materialize().asFloat32List();
 
           await AppLogger.log(
             'PYANNOTE[BATCH] $batchNumber/$totalBatches PCM loaded off-main-isolate; '
@@ -583,39 +578,6 @@ class PyannoteMobileService {
   }
 }
 
-
-Future<TransferableTypedData> _readNormalizedBatchTransfer({
-  required String wavPath,
-  required int dataOffset,
-  required int sampleCount,
-  required int windowSamples,
-  required List<int> starts,
-}) async {
-  final batch = Float32List(starts.length * windowSamples);
-  final file = await File(wavPath).open(mode: FileMode.read);
-  try {
-    for (var row = 0; row < starts.length; row++) {
-      final startSample = starts[row];
-      if (startSample >= sampleCount) continue;
-      final available = math.min(windowSamples, sampleCount - startSample);
-      final byteCount = available * 2;
-      await file.setPosition(dataOffset + startSample * 2);
-      final bytes = await file.read(byteCount);
-      final usableSamples = bytes.length ~/ 2;
-      final targetOffset = row * windowSamples;
-      for (var i = 0; i < usableSamples; i++) {
-        var raw = bytes[i * 2] | (bytes[i * 2 + 1] << 8);
-        if ((raw & 0x8000) != 0) raw -= 0x10000;
-        batch[targetOffset + i] = raw / 32768.0;
-      }
-    }
-    return TransferableTypedData.fromList(
-      <Uint8List>[batch.buffer.asUint8List()],
-    );
-  } finally {
-    await file.close();
-  }
-}
 
 class _Pcm16Wave {
   _Pcm16Wave({
