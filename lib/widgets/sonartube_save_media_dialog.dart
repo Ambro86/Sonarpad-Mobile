@@ -87,7 +87,11 @@ Future<void> saveSonarTubeMediaWithDestination(
   }
 
   final destination = MediaExportDestinationService();
-  while (context.mounted) {
+  while (true) {
+    if (!context.mounted) {
+      await exporter.cleanup(filePath);
+      return;
+    }
     final action = await showDialog<_SonarTubeDoneAction>(
       context: context,
       barrierDismissible: false,
@@ -171,6 +175,4 @@ Future<void> saveSonarTubeMediaWithDestination(
       }
     }
   }
-
-  await exporter.cleanup(filePath);
 }

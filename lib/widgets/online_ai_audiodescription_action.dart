@@ -52,7 +52,7 @@ Future<void> _prepareAndOpenAiAudiodescription(
     barrierDismissible: false,
     builder: (dialogContext) {
       progressContext = dialogContext;
-      return const PopScope(
+      return PopScope(
         canPop: false,
         child: AlertDialog(
           content: Semantics(
