@@ -3560,6 +3560,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get technicalErrorGeneric => 'Errore tecnico. Riprova.';
 
   @override
+  String get onlineVideoPreparationFailed => 'Impossibile preparare il video.';
+
+  @override
   String cinemaTrailerTitle(String title) {
     return 'Trailer: $title';
   }

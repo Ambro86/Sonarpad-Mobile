@@ -3546,6 +3546,9 @@ class AppLocalizationsUk extends AppLocalizations {
   String get technicalErrorGeneric => 'Технічна помилка. Спробуйте ще раз.';
 
   @override
+  String get onlineVideoPreparationFailed => 'Не вдалося підготувати відео.';
+
+  @override
   String cinemaTrailerTitle(String title) {
     return 'Трейлер: $title';
   }

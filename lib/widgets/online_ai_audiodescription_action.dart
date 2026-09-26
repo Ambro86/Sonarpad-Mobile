@@ -58,7 +58,7 @@ Future<void> _prepareAndOpenAiAudiodescription(
           content: Semantics(
             liveRegion: true,
             container: true,
-            label: 'Preparazione del video in corso',
+            label: l10n.sonarTubeResolving,
             child: ExcludeSemantics(
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -68,7 +68,7 @@ Future<void> _prepareAndOpenAiAudiodescription(
                     child: CircularProgressIndicator(strokeWidth: 2),
                   ),
                   SizedBox(width: 16),
-                  Flexible(child: Text('Preparazione del video in corso…')),
+                  Flexible(child: Text(l10n.sonarTubeResolving)),
                 ],
               ),
             ),

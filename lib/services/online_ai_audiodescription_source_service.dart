@@ -26,7 +26,7 @@ class OnlineAiAudiodescriptionSourceService {
     required SonarTubeItem item,
   }) async {
     if (item.kind != SonarTubeItemKind.video || item.isLive) {
-      throw StateError('The selected SonarTube item cannot be imported.');
+      throw StateError(item.id);
     }
 
     final exporter = SonarTubeMediaExportService();
@@ -51,7 +51,7 @@ class OnlineAiAudiodescriptionSourceService {
   }) async {
     final normalizedUrl = url.trim();
     if (normalizedUrl.isEmpty) {
-      throw FormatException('Empty video URL');
+      throw const FormatException();
     }
 
     final exportsDir = await AppCacheService.directory(

@@ -6382,6 +6382,12 @@ abstract class AppLocalizations {
   /// **'Errore tecnico. Riprova.'**
   String get technicalErrorGeneric;
 
+  /// Error shown when an online video cannot be prepared for AI audio description.
+  ///
+  /// In it, this message translates to:
+  /// **'Impossibile preparare il video.'**
+  String get onlineVideoPreparationFailed;
+
   /// Localized title for the trailer player screen.
   ///
   /// In it, this message translates to:

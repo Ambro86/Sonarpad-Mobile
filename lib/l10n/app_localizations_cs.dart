@@ -3549,6 +3549,9 @@ class AppLocalizationsCs extends AppLocalizations {
   String get technicalErrorGeneric => 'Technická chyba. Zkuste to znovu.';
 
   @override
+  String get onlineVideoPreparationFailed => 'Video se nepodařilo připravit.';
+
+  @override
   String cinemaTrailerTitle(String title) {
     return 'Upoutávka: $title';
   }

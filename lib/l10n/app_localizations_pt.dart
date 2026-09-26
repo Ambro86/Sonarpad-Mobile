@@ -3561,6 +3561,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get technicalErrorGeneric => 'Erro técnico. Tente novamente.';
 
   @override
+  String get onlineVideoPreparationFailed => 'Não foi possível preparar o vídeo.';
+
+  @override
   String cinemaTrailerTitle(String title) {
     return 'Trailer: $title';
   }
@@ -7779,6 +7782,9 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get technicalErrorGeneric => 'Erro técnico. Tente novamente.';
+
+  @override
+  String get onlineVideoPreparationFailed => 'Não foi possível preparar o vídeo.';
 
   @override
   String cinemaTrailerTitle(String title) {

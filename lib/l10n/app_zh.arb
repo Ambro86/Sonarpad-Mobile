@@ -2133,6 +2133,10 @@
   "@technicalErrorGeneric": {
     "description": "Generic localized message used when a service returns a legacy non-localized technical error."
   },
+  "onlineVideoPreparationFailed": "无法准备视频。",
+  "@onlineVideoPreparationFailed": {
+    "description": "Localized error shown when an online video cannot be prepared for AI audio description."
+  },
   "cinemaTrailerTitle": "预告片：{title}",
   "@cinemaTrailerTitle": {
     "description": "Localized title for the trailer player screen.",

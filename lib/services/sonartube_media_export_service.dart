@@ -17,10 +17,10 @@ class SonarTubeMediaExportService {
     required SonarTubeItem item,
   }) async {
     if (item.kind != SonarTubeItemKind.video) {
-      throw ArgumentError('SonarTube media export requires a video item.');
+      throw ArgumentError.value(item.kind);
     }
     if (item.isLive) {
-      throw StateError('Live SonarTube streams cannot be exported.');
+      throw StateError(item.id);
     }
 
     final media = await service.resolve(item);

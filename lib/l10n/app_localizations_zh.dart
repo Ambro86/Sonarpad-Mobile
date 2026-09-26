@@ -3437,6 +3437,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get technicalErrorGeneric => '技术错误。请重试。';
 
   @override
+  String get onlineVideoPreparationFailed => '无法准备视频。';
+
+  @override
   String cinemaTrailerTitle(String title) {
     return '预告片：$title';
   }
@@ -7466,6 +7469,9 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get technicalErrorGeneric => '技术错误。请重试。';
+
+  @override
+  String get onlineVideoPreparationFailed => '无法准备视频。';
 
   @override
   String cinemaTrailerTitle(String title) {

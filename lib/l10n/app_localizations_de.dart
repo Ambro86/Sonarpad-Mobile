@@ -3562,6 +3562,9 @@ class AppLocalizationsDe extends AppLocalizations {
       'Technischer Fehler. Bitte versuche es erneut.';
 
   @override
+  String get onlineVideoPreparationFailed => 'Das Video konnte nicht vorbereitet werden.';
+
+  @override
   String cinemaTrailerTitle(String title) {
     return 'Trailer: $title';
   }

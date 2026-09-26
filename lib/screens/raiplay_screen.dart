@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import '../l10n/app_localizations.dart';
 import 'package:flutter/semantics.dart';
 
 import '../models/podcast.dart';
@@ -157,7 +159,11 @@ class _RaiPlayScreenState extends State<RaiPlayScreen> {
       );
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Impossibile preparare il video.')),
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context).onlineVideoPreparationFailed,
+            ),
+          ),
         );
       }
     }
