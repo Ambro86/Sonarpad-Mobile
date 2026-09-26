@@ -1044,28 +1044,69 @@ class _CreateAiAudiodescriptionScreenState
     ];
   }
 
+  Widget _buildRunningBody(AppLocalizations l10n) {
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+          child: LinearProgressIndicator(
+            value: _progress.clamp(0.0, 1.0).toDouble(),
+            semanticsLabel: _stage,
+            semanticsValue: '${(_progress * 100).round()}%',
+          ),
+        ),
+        Expanded(
+          child: UniversalAccessibleList(
+            key: const ValueKey('audio_description_running'),
+            initialFocusId: 'progress',
+            sections: [
+              AccessibleListSection(
+                rows: [
+                  AccessibleListRow(
+                    id: 'progress',
+                    title: _stage,
+                    value: '${(_progress * 100).round()}%',
+                    kind: 'text',
+                    accessibilityButtonTrait: false,
+                  ),
+                  AccessibleListRow(
+                    id: 'cancel',
+                    title: l10n.cancel,
+                    enabled: !_cancelling,
+                  ),
+                ],
+              ),
+            ],
+            onEvent: (event) async {
+              if (event.type == 'activate' && event.id == 'cancel') {
+                await _cancel();
+              }
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.audioDescriptionCreateAiTitle)),
+      appBar: AppBar(
+        automaticallyImplyLeading: !_running,
+        title: Text(l10n.audioDescriptionCreateAiTitle),
+      ),
       body: _loading
           ? Center(
               child: CircularProgressIndicator(semanticsLabel: l10n.loading),
             )
-          : Column(
+          : _running
+              ? _buildRunningBody(l10n)
+              : Column(
               children: [
-                if (_running)
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-                    child: LinearProgressIndicator(
-                      value: _progress.clamp(0.0, 1.0).toDouble(),
-                      semanticsLabel: _stage,
-                      semanticsValue: '${(_progress * 100).round()}%',
-                    ),
-                  ),
                 Expanded(
                   child: UniversalAccessibleList(
+                    key: const ValueKey('audio_description_settings'),
                     initialFocusId: 'choose_video',
               sections: [
                 AccessibleListSection(

@@ -106,6 +106,8 @@ class _PodcastEpisodePlayerScreenState
   List<PodcastChapter>? _detectedChapters;
   String? _error;
   int _seekStep = 60;
+  double _accessibleVolume = 1.0;
+  bool _accessibleVolumeLoaded = false;
   int _lastVideoBookmarkSecond = -1;
   Timer? _diagnosticHeartbeat;
   AppLifecycleState? _lastLifecycleState;
@@ -223,7 +225,11 @@ class _PodcastEpisodePlayerScreenState
             '$_logSubject',
           );
         } else {
-          await _videoController!.setVolume(1);
+          final savedVolume =
+              (await _settings.loadMediaVolume()).clamp(0.0, 1.0).toDouble();
+          _accessibleVolume = savedVolume;
+          _accessibleVolumeLoaded = true;
+          await _videoController!.setVolume(savedVolume);
         }
         if (Platform.isIOS) {
           await _mediaCommands.invokeMethod(
@@ -801,12 +807,43 @@ class _PodcastEpisodePlayerScreenState
 
   Future<void> _loadSettings() async {
     AppLogger.log('PodcastPlayer: load seek step start, $_logSubject');
-    final step = await AppSettingsService().loadSeekSliderStep();
-    if (mounted) setState(() => _seekStep = step);
+    final results = await Future.wait<Object>([
+      _settings.loadSeekSliderStep(),
+      _settings.loadMediaVolume(),
+    ]);
+    final step = results[0] as int;
+    final volume = (results[1] as double).clamp(0.0, 1.0).toDouble();
+    if (mounted) {
+      setState(() {
+        _seekStep = step;
+        _accessibleVolume = volume;
+        _accessibleVolumeLoaded = true;
+      });
+    }
     AppLogger.log(
       'PodcastPlayer: load seek step completed step=$step mounted=$mounted, '
       '$_logSubject',
     );
+  }
+
+  void _setAccessibleVolume(double value) {
+    final clamped = value.clamp(0.0, 1.0).toDouble();
+    if (mounted) {
+      setState(() {
+        _accessibleVolume = clamped;
+        _accessibleVolumeLoaded = true;
+      });
+    } else {
+      _accessibleVolume = clamped;
+      _accessibleVolumeLoaded = true;
+    }
+    final controller = _videoController;
+    if (controller != null && !_videoUsesExternalAudio) {
+      unawaited(controller.setVolume(clamped));
+    } else {
+      unawaited(_audio.setVolume(clamped));
+    }
+    unawaited(_settings.saveMediaVolume(clamped));
   }
 
   @override
@@ -1041,10 +1078,11 @@ class _PodcastEpisodePlayerScreenState
                 logSubject: _logSubject,
               ),
             ],
-            if (_videoUsesExternalAudio) ...[
-              const SizedBox(height: 12),
-              VolumeSlider(audioPlayer: _audio),
-            ],
+            const SizedBox(height: 12),
+            if (_videoUsesExternalAudio)
+              VolumeSlider(audioPlayer: _audio)
+            else
+              _VideoVolumeSlider(controller: _videoController!),
             ],
           ),
         ),
@@ -1152,6 +1190,24 @@ class _PodcastEpisodePlayerScreenState
             kind: 'button',
             enabled: !_loading,
           ),
+        if (_accessibleVolumeLoaded)
+          AccessibleListRow(
+            id: 'accessible_volume',
+            title: l10n.adjustVolume,
+            kind: 'slider',
+            value: '${(_accessibleVolume * 100).round()}%',
+            valueLabel: '${(_accessibleVolume * 100).round()}%',
+            sliderValue: _accessibleVolume,
+            sliderMin: 0.0,
+            sliderMax: 1.0,
+            sliderStep: 0.1,
+            sliderIncreasedValueLabel:
+                '${((_accessibleVolume + 0.1).clamp(0.0, 1.0) * 100).round()}%',
+            sliderDecreasedValueLabel:
+                '${((_accessibleVolume - 0.1).clamp(0.0, 1.0) * 100).round()}%',
+            nativeSliderAccessibilityElement: true,
+            enabled: !_loading,
+          ),
         for (final action in widget.extraActions)
           AccessibleListRow(
             id: 'extra_${action.id}',
@@ -1163,7 +1219,10 @@ class _PodcastEpisodePlayerScreenState
       return UniversalAccessibleList(
         sections: [AccessibleListSection(rows: rows)],
         onEvent: (event) async {
-          if (event.id == 'chapters' && event.type == 'activate') {
+          if (event.id == 'accessible_volume' && event.type == 'slider') {
+            final value = (event.value as num?)?.toDouble();
+            if (value != null) _setAccessibleVolume(value);
+          } else if (event.id == 'chapters' && event.type == 'activate') {
             await _openChapters();
           } else if (event.id == 'video' && event.type == 'toggle') {
             _toggleVideo(event.value == true);
@@ -1228,11 +1287,6 @@ class _PodcastEpisodePlayerScreenState
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: _PodcastPositionControl(audio: _audio, seekStep: _seekStep, logSubject: _logSubject),
-          ),
-        if (_videoController == null || _videoUsesExternalAudio)
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-            child: VolumeSlider(audioPlayer: _audio),
           ),
       ],
     );
@@ -1416,13 +1470,105 @@ class _PodcastEpisodePlayerScreenState
                   seekStep: _seekStep,
                   logSubject: _logSubject,
                 ),
-              if (_videoController == null || _videoUsesExternalAudio) ...[
-                const SizedBox(height: 24),
+              const SizedBox(height: 24),
+              if (_videoController != null && !_videoUsesExternalAudio)
+                _VideoVolumeSlider(controller: _videoController!)
+              else
                 VolumeSlider(audioPlayer: _audio),
-              ],
             ],
           ),
         ),
+    );
+  }
+}
+
+class _VideoVolumeSlider extends StatefulWidget {
+  const _VideoVolumeSlider({required this.controller});
+
+  final VideoPlayerController controller;
+
+  @override
+  State<_VideoVolumeSlider> createState() => _VideoVolumeSliderState();
+}
+
+class _VideoVolumeSliderState extends State<_VideoVolumeSlider> {
+  final AppSettingsService _settings = AppSettingsService();
+  double _volume = 1.0;
+  bool _initialized = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadVolume();
+  }
+
+  @override
+  void didUpdateWidget(covariant _VideoVolumeSlider oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.controller != widget.controller && _initialized) {
+      unawaited(widget.controller.setVolume(_volume));
+    }
+  }
+
+  Future<void> _loadVolume() async {
+    final volume = await _settings.loadMediaVolume();
+    if (!mounted) return;
+    final clamped = volume.clamp(0.0, 1.0).toDouble();
+    await widget.controller.setVolume(clamped);
+    if (!mounted) return;
+    setState(() {
+      _volume = clamped;
+      _initialized = true;
+    });
+  }
+
+  void _setVolume(double value) {
+    final clamped = value.clamp(0.0, 1.0).toDouble();
+    setState(() => _volume = clamped);
+    unawaited(widget.controller.setVolume(clamped));
+    unawaited(_settings.saveMediaVolume(clamped));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!_initialized) return const SizedBox();
+
+    final l10n = AppLocalizations.of(context);
+    final percentage = (_volume * 100).round();
+    final increasedPercentage =
+        ((_volume + 0.1).clamp(0.0, 1.0) * 100).round();
+    final decreasedPercentage =
+        ((_volume - 0.1).clamp(0.0, 1.0) * 100).round();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        ExcludeSemantics(
+          child: Text(
+            l10n.volumeValue(percentage),
+            textAlign: TextAlign.center,
+          ),
+        ),
+        Semantics(
+          key: const ValueKey('video_volume_slider_semantics'),
+          slider: true,
+          label: l10n.adjustVolume,
+          value: '$percentage%',
+          increasedValue: '$increasedPercentage%',
+          decreasedValue: '$decreasedPercentage%',
+          onIncrease: () => _setVolume((_volume + 0.1).clamp(0.0, 1.0)),
+          onDecrease: () => _setVolume((_volume - 0.1).clamp(0.0, 1.0)),
+          child: ExcludeSemantics(
+            child: Slider(
+              value: _volume,
+              min: 0.0,
+              max: 1.0,
+              divisions: 10,
+              onChanged: _setVolume,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

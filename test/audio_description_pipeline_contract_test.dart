@@ -287,6 +287,11 @@ void main() {
       expect(service, contains('_duckPreDuckSec = 0.180'));
       expect(service, contains('_duckReleaseSec = 0.600'));
       expect(service, contains('_buildWindowsDuckingExpression'));
+      expect(service, contains('_buildWindowsDuckingExpressions'));
+      expect(service, contains('_maxDuckingIntervalsPerFilter = 12'));
+      expect(service, contains("final expression = StringBuffer('1')"));
+      expect(service, contains('intervals.sublist(start, end)'));
+      expect(service, isNot(contains(r',$expression,')));
       expect(service, contains('cos(PI*'));
       expect(service, contains(':eval=frame'));
     });

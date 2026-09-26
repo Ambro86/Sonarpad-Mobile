@@ -19,11 +19,23 @@ void main() {
 
   test('Windows-parity AI options have the requested defaults', () {
     expect(screen, contains('bool _extendedPauses = false;'));
+    expect(service, contains("static const _extendedKey = 'ad_mobile_extended_v2';"));
+    expect(service, contains("'extended': prefs.getBool(_extendedKey) ?? false"));
     expect(screen, contains('bool _recognizeScreenText = true;'));
     expect(screen, contains('bool _createVideoOutput = false;'));
     expect(screen, contains("id: 'extended'"));
     expect(screen, contains("id: 'create_video_output'"));
     expect(screen, contains("id: 'screen_text'"));
+  });
+
+  test('running AI creation uses a clean progress-only accessible screen', () {
+    expect(screen, contains('Widget _buildRunningBody(AppLocalizations l10n)'));
+    expect(screen, contains("key: const ValueKey('audio_description_running')"));
+    expect(screen, contains("initialFocusId: 'progress'"));
+    expect(screen, contains("id: 'progress'"));
+    expect(screen, contains("id: 'cancel'"));
+    expect(screen, contains('automaticallyImplyLeading: !_running'));
+    expect(screen, contains('? _buildRunningBody(l10n)'));
   });
 
   test('evidence remains cognitive metadata and is not mandatory for parsing', () {

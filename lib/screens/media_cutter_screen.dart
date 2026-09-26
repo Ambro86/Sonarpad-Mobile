@@ -6957,8 +6957,11 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         AccessibleListRow(
           id: 'rotation',
           title: l10n.mediaCutterVideoRotation,
+          subtitle: _videoRotationLabel(l10n, _videoRotation),
+          accessibilityLabel: l10n.mediaCutterVideoRotation,
           kind: 'picker',
           value: _videoRotation.name,
+          valueLabel: _videoRotationLabel(l10n, _videoRotation),
           enabled: !_loading && !_saving,
           options: [
             for (final rotation in _VideoRotation.values)

@@ -431,7 +431,7 @@ class AiAudioDescriptionPreferences {
   static const _modelKey = 'ad_mobile_gemini_model';
   static const _languageKey = 'ad_mobile_language';
   static const _verbosityKey = 'ad_mobile_verbosity';
-  static const _extendedKey = 'ad_mobile_extended';
+  static const _extendedKey = 'ad_mobile_extended_v2';
   static const _charactersKey = 'ad_mobile_characters';
   static const _screenTextKey = 'ad_mobile_screen_text';
   static const _keepCatalogKey = 'ad_mobile_keep_character_catalog';
@@ -573,6 +573,7 @@ class AiAudioDescriptionService {
   static const _duckAttackSec = 0.280;
   static const _duckPreDuckSec = 0.180;
   static const _duckReleaseSec = 0.600;
+  static const _maxDuckingIntervalsPerFilter = 12;
   static const _extendedTailPadding = 0.12;
   static const _windowsAudioContextOnlyRule =
       'The soundtrack and dialogue are context only. You may use spoken names, titles, '
@@ -4062,13 +4063,25 @@ $screenTextSchema$coreDirectives
           .map((placement) => (placement.finalStart, placement.finalEnd))
           .toList(),
     );
-    final duckExpression = _buildWindowsDuckingExpression(duckIntervals);
+    await AppLogger.log(
+      'Audio description mobile: building ducking envelope '
+      'intervals=${duckIntervals.length}',
+    );
+    final duckExpressions = _buildWindowsDuckingExpressions(duckIntervals);
+    await AppLogger.log(
+      'Audio description mobile: ducking envelope ready '
+      'intervals=${duckIntervals.length} filters=${duckExpressions.length} '
+      'chars=${duckExpressions.fold<int>(0, (sum, item) => sum + item.length)}',
+    );
     var duckedBase = '[base0]';
-    if (duckExpression != '1') {
+    for (var index = 0; index < duckExpressions.length; index++) {
+      final expression = duckExpressions[index];
+      if (expression == '1') continue;
+      final outputLabel = 'duckedbase$index';
       filter.write(
-        "[base0]volume='$duckExpression':eval=frame[duckedbase];",
+        "${duckedBase}volume='$expression':eval=frame[$outputLabel];",
       );
-      duckedBase = '[duckedbase]';
+      duckedBase = '[$outputLabel]';
     }
     filter.write('$duckedBase${ttsLabels.join()}${audioDescriptionMixFilter(ttsLabels.length + 1)}[outa]');
     await AppLogger.log('Audio description mobile: final mix '
@@ -4225,10 +4238,42 @@ $screenTextSchema$coreDirectives
     return merged;
   }
 
+  List<String> _buildWindowsDuckingExpressions(
+    List<(double, double)> intervals,
+  ) {
+    if (intervals.isEmpty) return const <String>['1'];
+    final expressions = <String>[];
+    for (var start = 0;
+        start < intervals.length;
+        start += _maxDuckingIntervalsPerFilter) {
+      final end = math.min(
+        intervals.length,
+        start + _maxDuckingIntervalsPerFilter,
+      );
+      expressions.add(
+        _buildWindowsDuckingExpression(intervals.sublist(start, end)),
+      );
+    }
+    return expressions;
+  }
+
   String _buildWindowsDuckingExpression(List<(double, double)> intervals) {
     if (intervals.isEmpty) return '1';
-    var expression = '1';
-    for (final interval in intervals.reversed) {
+
+    // Keep the Windows sample envelope but express each interval as a delta
+    // from unity instead of recursively nesting if() expressions. The old
+    // implementation duplicated the already-built expression twice per
+    // interval, so its size grew exponentially and iOS could terminate the
+    // process before FFmpeg started on films with many narrations.
+    //
+    // FFmpeg's expression evaluator also has practical complexity limits for
+    // one very large expression. Intervals are already sorted and merged so
+    // their attack/release windows cannot overlap; splitting them into small
+    // independent volume filters is therefore mathematically equivalent. Each
+    // filter is 1.0 outside its own intervals, and chaining the filters keeps
+    // the exact -12 dB / 280 ms / 180 ms / 600 ms Windows envelope.
+    final expression = StringBuffer('1');
+    for (final interval in intervals) {
       final start = interval.$1;
       final end = interval.$2;
       final fullDuckStart = math.max(0.0, start - _duckPreDuckSec);
@@ -4238,17 +4283,21 @@ $screenTextSchema$coreDirectives
           '(t-${attackStart.toStringAsFixed(6)})/${_duckAttackSec.toStringAsFixed(3)}';
       final releasePosition =
           '(t-${end.toStringAsFixed(6)})/${_duckReleaseSec.toStringAsFixed(3)}';
-      final attackGain =
-          '1+($_duckVolume-1)*(0.5-0.5*cos(PI*$attackPosition))';
-      final releaseGain =
-          '$_duckVolume+(1-$_duckVolume)*(0.5-0.5*cos(PI*$releasePosition))';
-      expression =
-          'if(lt(t,${attackStart.toStringAsFixed(6)}),$expression,'
-          'if(lt(t,${fullDuckStart.toStringAsFixed(6)}),$attackGain,'
-          'if(lte(t,${end.toStringAsFixed(6)}),$_duckVolume,'
-          'if(lte(t,${releaseEnd.toStringAsFixed(6)}),$releaseGain,$expression))))';
+
+      expression
+        ..write('+gte(t,${attackStart.toStringAsFixed(6)})')
+        ..write('*lt(t,${fullDuckStart.toStringAsFixed(6)})')
+        ..write('*(($_duckVolume-1)')
+        ..write('*(0.5-0.5*cos(PI*$attackPosition)))')
+        ..write('+gte(t,${fullDuckStart.toStringAsFixed(6)})')
+        ..write('*lte(t,${end.toStringAsFixed(6)})')
+        ..write('*($_duckVolume-1)')
+        ..write('+gt(t,${end.toStringAsFixed(6)})')
+        ..write('*lte(t,${releaseEnd.toStringAsFixed(6)})')
+        ..write('*(($_duckVolume-1)')
+        ..write('*(0.5+0.5*cos(PI*$releasePosition)))');
     }
-    return expression;
+    return expression.toString();
   }
 
   Future<void> _writeProject({

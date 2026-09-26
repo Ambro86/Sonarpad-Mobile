@@ -35,4 +35,18 @@ void main() {
       ),
     );
   });
+  test('cinema trailer player exposes volume for inline video audio', () {
+    final player = File(
+      'lib/screens/podcast_episode_player_screen.dart',
+    ).readAsStringSync();
+
+    expect(player, contains('class _VideoVolumeSlider extends StatefulWidget'));
+    expect(player, contains("ValueKey('video_volume_slider_semantics')"));
+    expect(player, contains('label: l10n.adjustVolume'));
+    expect(
+      player,
+      contains('_VideoVolumeSlider(controller: _videoController!)'),
+    );
+  });
+
 }
