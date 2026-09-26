@@ -394,6 +394,14 @@ class _CreateAiAudiodescriptionScreenState
         systemVoice: _systemVoice,
       );
 
+  Future<void> _persistCharacterCatalogPreference() async {
+    await AiAudioDescriptionPreferences.saveCharacterCatalogPreference(
+      recognizeCharacters: _recognizeCharacters,
+      keepCatalog: _keepCharacterCatalog,
+      catalogName: _characterCatalogName,
+    );
+  }
+
   Future<String?> _askCharacterCatalogName() async {
     final l10n = AppLocalizations.of(context);
     final controller = TextEditingController();
@@ -495,6 +503,8 @@ class _CreateAiAudiodescriptionScreenState
         _characterCatalogName = name;
         _characterCatalogs = refreshed;
       });
+      await _persistCharacterCatalogPreference();
+      if (!mounted) return;
       showStatusMessage(
         context,
         l10n.audioDescriptionCharacterCatalogLoaded,
@@ -517,6 +527,18 @@ class _CreateAiAudiodescriptionScreenState
     try {
       if (_sourcePath == null) await _chooseVideo();
       if (!mounted || _sourcePath == null) return;
+      final resumeCatalog = await _service.resumeCharacterCatalogName(_sourcePath!);
+      if (resumeCatalog != null && resumeCatalog.isNotEmpty) {
+        final available = await _service.listCharacterCatalogs();
+        if (!mounted) return;
+        setState(() {
+          _recognizeCharacters = true;
+          _keepCharacterCatalog = true;
+          _characterCatalogName = resumeCatalog;
+          _characterCatalogs = available;
+        });
+        await _persistCharacterCatalogPreference();
+      }
       await _create(resumeOnly: true);
     } catch (error, stackTrace) {
       await AppLogger.log('Audio description UI: resume failed $error\n$stackTrace');
@@ -560,6 +582,7 @@ class _CreateAiAudiodescriptionScreenState
             ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
         }
       });
+      await _persistCharacterCatalogPreference();
     }
     setState(() {
       _running = true;
@@ -1485,6 +1508,9 @@ class _CreateAiAudiodescriptionScreenState
                         break;
                     }
                   });
+                  if (id == 'character_catalog') {
+                    await _persistCharacterCatalogPreference();
+                  }
                 } else if (event.type == 'toggle') {
                   final value = event.value == true;
                   setState(() {
@@ -1510,6 +1536,9 @@ class _CreateAiAudiodescriptionScreenState
                         break;
                     }
                   });
+                  if (id == 'characters' || id == 'keep_character_catalog') {
+                    await _persistCharacterCatalogPreference();
+                  }
                 } else if (event.type == 'textChanged') {
                   final value = event.value?.toString() ?? '';
                   setState(() {

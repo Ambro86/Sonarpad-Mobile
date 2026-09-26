@@ -93,6 +93,16 @@ void main() {
     expect(service, contains('_soundAlreadyObviousRule'));
   });
 
+  test('character catalog selection persists and resume restores its exact catalog', () {
+    expect(service, contains('saveCharacterCatalogPreference'));
+    expect(screen, contains('_persistCharacterCatalogPreference'));
+    expect(screen, contains('resumeCharacterCatalogName'));
+    expect(service, contains("'character_catalog_name': characterCatalogName"));
+    expect(service, contains("'keep_character_catalog': keepCharacterCatalog"));
+    expect(service, contains('checkpoint.characterCatalogName'));
+    expect(service, contains('await _syncCatalogsFromSonarpadDocuments();'));
+  });
+
   test('new UI strings exist in every ARB locale', () {
     const keys = <String>[
       'audioDescriptionCreateVideoOutput',

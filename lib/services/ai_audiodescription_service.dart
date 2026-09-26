@@ -67,7 +67,12 @@ class AiAudioDescriptionSettings {
   final String systemLanguage;
   final String? systemVoice;
 
-  AiAudioDescriptionSettings copyWith({String? verbosity, String? geminiModel}) =>
+  AiAudioDescriptionSettings copyWith({
+    String? verbosity,
+    String? geminiModel,
+    bool? keepCharacterCatalog,
+    String? characterCatalogName,
+  }) =>
       AiAudioDescriptionSettings(
         provider: provider,
         geminiApiKey: geminiApiKey,
@@ -78,8 +83,8 @@ class AiAudioDescriptionSettings {
         allowExtendedPauses: allowExtendedPauses,
         recognizeCharacters: recognizeCharacters,
         recognizeScreenText: recognizeScreenText,
-        keepCharacterCatalog: keepCharacterCatalog,
-        characterCatalogName: characterCatalogName,
+        keepCharacterCatalog: keepCharacterCatalog ?? this.keepCharacterCatalog,
+        characterCatalogName: characterCatalogName ?? this.characterCatalogName,
         saveProject: saveProject,
         createVideoOutput: createVideoOutput,
         ttsEngine: ttsEngine,
@@ -504,6 +509,22 @@ class AiAudioDescriptionPreferences {
     }
   }
 
+  static Future<void> saveCharacterCatalogPreference({
+    required bool recognizeCharacters,
+    required bool keepCatalog,
+    String? catalogName,
+  }) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_charactersKey, recognizeCharacters);
+    await prefs.setBool(_keepCatalogKey, recognizeCharacters && keepCatalog);
+    final trimmed = catalogName?.trim() ?? '';
+    if (trimmed.isEmpty) {
+      await prefs.remove(_catalogNameKey);
+    } else {
+      await prefs.setString(_catalogNameKey, trimmed);
+    }
+  }
+
   static Future<String?> loadSonarpadToken() async {
     final prefs = await SharedPreferences.getInstance();
     final value = prefs.getString(_tokenKey)?.trim();
@@ -753,6 +774,7 @@ class AiAudioDescriptionService {
   }
 
   Future<List<Map<String, Object?>>> loadCharacterCatalog(String name) async {
+    await _syncCatalogsFromSonarpadDocuments();
     final directory = await _characterCatalogDirectory();
     final file = File(p.join(directory.path, '${_catalogFileStem(name)}.json'));
     if (!await file.exists()) return <Map<String, Object?>>[];
@@ -1002,10 +1024,12 @@ class AiAudioDescriptionService {
         (pyannote.durationSec / _visualChunkSeconds).ceil(),
       );
       final descriptions = <_GeneratedDescription>[];
+      var effectiveCharacterCatalogName = settings.characterCatalogName?.trim();
       final glossary = settings.recognizeCharacters &&
               settings.keepCharacterCatalog &&
-              settings.characterCatalogName != null
-          ? await loadCharacterCatalog(settings.characterCatalogName!)
+              effectiveCharacterCatalogName != null &&
+              effectiveCharacterCatalogName.isNotEmpty
+          ? await loadCharacterCatalog(effectiveCharacterCatalogName)
           : <Map<String, Object?>>[];
       var activeGeminiModel = AudioDescriptionFallbacks.normalizeGeminiModelId(
         settings.geminiModel,
@@ -1027,6 +1051,20 @@ class AiAudioDescriptionService {
         if (resume) {
           startChunk = checkpoint.completedChunks.clamp(0, chunkCount);
           descriptions.addAll(checkpoint.descriptions);
+          final checkpointCatalogName = checkpoint.characterCatalogName?.trim() ?? '';
+          if (settings.recognizeCharacters &&
+              checkpoint.keepCharacterCatalog &&
+              checkpointCatalogName.isNotEmpty) {
+            effectiveCharacterCatalogName = checkpointCatalogName;
+            glossary
+              ..clear()
+              ..addAll(await loadCharacterCatalog(checkpointCatalogName));
+            await AiAudioDescriptionPreferences.saveCharacterCatalogPreference(
+              recognizeCharacters: true,
+              keepCatalog: true,
+              catalogName: checkpointCatalogName,
+            );
+          }
           _mergeGlossary(glossary, checkpoint.glossary);
           if (checkpoint.model.trim().isNotEmpty && settings.provider == 'gemini') {
             activeGeminiModel = AudioDescriptionFallbacks.normalizeGeminiModelId(
@@ -1045,7 +1083,7 @@ class AiAudioDescriptionService {
       if (glossary.isNotEmpty) {
         await AppLogger.log(
           'Audio description mobile: loaded/merged character catalog '
-          'name="${settings.characterCatalogName}" entries=${glossary.length}',
+          'name="$effectiveCharacterCatalogName" entries=${glossary.length}',
         );
       }
 
@@ -1117,6 +1155,8 @@ class AiAudioDescriptionService {
           chunkCount: chunkCount,
           completedChunks: chunkIndex + 1,
           geminiModel: activeGeminiModel,
+          keepCharacterCatalog: settings.recognizeCharacters && settings.keepCharacterCatalog,
+          characterCatalogName: effectiveCharacterCatalogName,
           descriptions: descriptions,
           glossary: glossary,
         );
@@ -1132,7 +1172,10 @@ class AiAudioDescriptionService {
       }
 
       _emit(onProgress, 'tts', 0.61);
-      var placementSettings = settings;
+      var placementSettings = settings.copyWith(
+        keepCharacterCatalog: settings.recognizeCharacters && settings.keepCharacterCatalog,
+        characterCatalogName: effectiveCharacterCatalogName,
+      );
       var placements = await _synthesizeAndPlace(
         settings: placementSettings,
         descriptions: normalized,
@@ -1297,15 +1340,15 @@ class AiAudioDescriptionService {
       String? characterCatalogWarning;
       if (settings.recognizeCharacters &&
           settings.keepCharacterCatalog &&
-          settings.characterCatalogName != null &&
-          settings.characterCatalogName!.trim().isNotEmpty) {
+          effectiveCharacterCatalogName != null &&
+          effectiveCharacterCatalogName.isNotEmpty) {
         try {
-          await saveCharacterCatalog(settings.characterCatalogName!, glossary);
+          await saveCharacterCatalog(effectiveCharacterCatalogName, glossary);
         } catch (error, stackTrace) {
           characterCatalogWarning = error.toString();
           await AppLogger.log(
             'Audio description mobile: character catalog save warning '
-            'name="${settings.characterCatalogName}" error=$error\n$stackTrace',
+            'name="$effectiveCharacterCatalogName" error=$error\n$stackTrace',
           );
         }
       }
@@ -1554,6 +1597,25 @@ class AiAudioDescriptionService {
     return result;
   }
 
+  Future<String?> resumeCharacterCatalogName(String sourcePath) async {
+    try {
+      final file = await _checkpointFile(sourcePath);
+      if (!await file.exists()) return null;
+      final data = jsonDecode(await file.readAsString());
+      if (data is! Map ||
+          data['schema'] != 'sonarpad-mobile-ad-checkpoint-v1' ||
+          data['keep_character_catalog'] != true) {
+        return null;
+      }
+      final name = data['character_catalog_name']?.toString().trim() ?? '';
+      if (name.isEmpty) return null;
+      await _syncCatalogsFromSonarpadDocuments();
+      return name;
+    } catch (_) {
+      return null;
+    }
+  }
+
   Future<bool> hasResumeCheckpoint(String sourcePath) async {
     try {
       final file = await _checkpointFile(sourcePath);
@@ -1634,6 +1696,8 @@ class AiAudioDescriptionService {
         path: file.path,
         completedChunks: (decoded['completed_chunks'] as num?)?.toInt() ?? 0,
         model: decoded['gemini_model']?.toString() ?? '',
+        keepCharacterCatalog: decoded['keep_character_catalog'] == true,
+        characterCatalogName: decoded['character_catalog_name']?.toString(),
         descriptions: descriptions,
         glossary: glossary,
       );
@@ -1651,6 +1715,8 @@ class AiAudioDescriptionService {
     required int chunkCount,
     required int completedChunks,
     required String geminiModel,
+    required bool keepCharacterCatalog,
+    required String? characterCatalogName,
     required List<_GeneratedDescription> descriptions,
     required List<Map<String, Object?>> glossary,
   }) async {
@@ -1665,6 +1731,8 @@ class AiAudioDescriptionService {
         'chunk_count': chunkCount,
         'completed_chunks': completedChunks,
         'gemini_model': geminiModel,
+        'keep_character_catalog': keepCharacterCatalog,
+        'character_catalog_name': characterCatalogName,
         'descriptions': descriptions.map((e) => e.toCheckpoint()).toList(),
         'glossary': glossary,
       }),
@@ -6272,12 +6340,16 @@ class _AdCheckpoint {
     required this.path,
     required this.completedChunks,
     required this.model,
+    required this.keepCharacterCatalog,
+    required this.characterCatalogName,
     required this.descriptions,
     required this.glossary,
   });
   final String path;
   final int completedChunks;
   final String model;
+  final bool keepCharacterCatalog;
+  final String? characterCatalogName;
   final List<_GeneratedDescription> descriptions;
   final List<Map<String, Object?>> glossary;
 }
