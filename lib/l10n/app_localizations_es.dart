@@ -1723,6 +1723,28 @@ class AppLocalizationsEs extends AppLocalizations {
   String get copySystemLog => 'Copiar registro';
 
   @override
+  String get sendLogToDeveloper => 'Enviar informe';
+
+  @override
+  String get developerLogNameOptional => 'Nombre (opcional)';
+
+  @override
+  String get developerReportText => 'Texto del informe';
+
+  @override
+  String get developerLogSend => 'Enviar';
+
+  @override
+  String get developerLogSending => 'Enviando relato...';
+
+  @override
+  String get developerLogSent => 'Informe enviado al desarrollador.';
+
+  @override
+  String get developerLogSendFailed => 'No se pudo enviar el informe. Inténtalo de nuevo más tarde.';
+
+
+  @override
   String get donateWithPaypal => 'Donar con PayPal';
 
   @override
@@ -4241,4 +4263,13 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get audioDescriptionNoCheckpoint =>
       'No se encontró una audiodescripción interrumpida para este vídeo. Selecciona el vídeo original utilizado anteriormente.';
+
+  @override
+  String get sonarTubeSaveFormatPrompt => 'Elige el formato de guardado';
+
+  @override
+  String get sonarTubeSaveAsMp4 => 'Guardar como MP4';
+
+  @override
+  String get sonarTubeSaveAsMp3 => 'Guardar como MP3';
 }

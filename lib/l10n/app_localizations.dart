@@ -3151,6 +3151,48 @@ abstract class AppLocalizations {
   /// **'Copia log'**
   String get copySystemLog;
 
+  /// Localized text for sendLogToDeveloper.
+  ///
+  /// In it, this message translates to:
+  /// **'Invia segnalazione'**
+  String get sendLogToDeveloper;
+
+  /// Localized text for developerLogNameOptional.
+  ///
+  /// In it, this message translates to:
+  /// **'Nome (facoltativo)'**
+  String get developerLogNameOptional;
+
+  /// Localized text for developerReportText.
+  ///
+  /// In it, this message translates to:
+  /// **'Testo della segnalazione'**
+  String get developerReportText;
+
+  /// Localized text for developerLogSend.
+  ///
+  /// In it, this message translates to:
+  /// **'Invia'**
+  String get developerLogSend;
+
+  /// Localized text for developerLogSending.
+  ///
+  /// In it, this message translates to:
+  /// **'Invio della segnalazione...'**
+  String get developerLogSending;
+
+  /// Localized text for developerLogSent.
+  ///
+  /// In it, this message translates to:
+  /// **'Segnalazione inviata allo sviluppatore.'**
+  String get developerLogSent;
+
+  /// Localized text for developerLogSendFailed.
+  ///
+  /// In it, this message translates to:
+  /// **'Impossibile inviare la segnalazione. Riprova più tardi.'**
+  String get developerLogSendFailed;
+
   /// Localized text for donateWithPaypal.
   ///
   /// In it, this message translates to:
@@ -7525,6 +7567,15 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Nessuna audiodescrizione interrotta trovata per questo video. Seleziona il video originale usato in precedenza.'**
   String get audioDescriptionNoCheckpoint;
+
+  /// Prompt shown before saving SonarTube media to choose MP4 or MP3.
+  String get sonarTubeSaveFormatPrompt;
+
+  /// SonarTube save-media format choice for MP4 video.
+  String get sonarTubeSaveAsMp4;
+
+  /// SonarTube save-media format choice for MP3 audio.
+  String get sonarTubeSaveAsMp3;
 }
 
 class _AppLocalizationsDelegate

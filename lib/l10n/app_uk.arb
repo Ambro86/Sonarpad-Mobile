@@ -2294,6 +2294,12 @@
     "description": "Localized text for clearSystemLog."
   },
   "copySystemLog": "Копіювати журнал",
+  "sendLogToDeveloper": "Надіслати повідомлення про проблему",
+  "developerLogNameOptional": "Ім’я (необов’язково)",
+  "developerLogSend": "Надіслати",
+  "developerLogSending": "Надсилання повідомлення...",
+  "developerLogSent": "Повідомлення надіслано розробнику.",
+  "developerLogSendFailed": "Не вдалося надіслати повідомлення. Спробуйте пізніше.",
   "@copySystemLog": {
     "description": "Localized text for copySystemLog."
   },
@@ -5010,5 +5016,21 @@
   "audioDescriptionNoCheckpoint": "Для цього відео не знайдено перерваної аудіодескрипції. Виберіть оригінальне відео, використане раніше.",
   "@audioDescriptionNoCheckpoint": {
     "description": "Audio description resume: audioDescriptionNoCheckpoint"
+  },
+  "sonarTubeSaveFormatPrompt": "Виберіть формат збереження",
+  "@sonarTubeSaveFormatPrompt": {
+    "description": "Prompt shown before saving SonarTube media to choose MP4 or MP3."
+  },
+  "sonarTubeSaveAsMp4": "Зберегти як MP4",
+  "@sonarTubeSaveAsMp4": {
+    "description": "SonarTube save-media format choice for MP4 video."
+  },
+  "sonarTubeSaveAsMp3": "Зберегти як MP3",
+  "@sonarTubeSaveAsMp3": {
+    "description": "SonarTube save-media format choice for MP3 audio."
+  },
+  "developerReportText": "Опис проблеми",
+  "@developerReportText": {
+    "description": "Localized text for developerReportText."
   }
 }

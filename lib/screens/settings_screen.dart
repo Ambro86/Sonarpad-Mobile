@@ -9,6 +9,7 @@ import '../l10n/app_localizations.dart';
 import '../l10n/localized_dynamic_labels.dart';
 import '../services/app_settings_service.dart';
 import '../services/audiodescription_service.dart';
+import '../services/developer_log_service.dart';
 import '../services/audio_player_service.dart';
 import '../services/podcast_cache_service.dart';
 import '../tts/edge_tts_bridge.dart';
@@ -40,6 +41,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       FocusNode(debugLabel: 'edge-multilingual-voices');
   final _edgeLanguageFocusNode = FocusNode(debugLabel: 'edge-language');
   final _edgeVoiceFocusNode = FocusNode(debugLabel: 'edge-voice');
+  final _sendReportFocusNode = FocusNode();
   final _viewLogFocusNode = FocusNode();
   String _appLanguage = 'it';
   SonarpadThemeMode _themeMode = SonarpadThemeMode.system;
@@ -240,6 +242,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     _edgeMultilingualVoiceFocusNode.dispose();
     _edgeLanguageFocusNode.dispose();
     _edgeVoiceFocusNode.dispose();
+    _sendReportFocusNode.dispose();
     _viewLogFocusNode.dispose();
     _tvSecretCodeController.dispose();
     unawaited(_audio.stop().whenComplete(_audio.dispose));
@@ -1448,6 +1451,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
       AccessibleListSection(
         rows: [
           AccessibleListRow(
+            id: 'send_report',
+            title: l10n.sendLogToDeveloper,
+            kind: 'button',
+          ),
+          AccessibleListRow(
             id: 'view_log',
             title: l10n.settingsViewSysLog,
             kind: 'button',
@@ -1546,6 +1554,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
               break;
             case 'paste_secret_code': await _pasteSecretCode(); setState(() {}); break;
             case 'request_secret_code': await _requestSecretCode(); break;
+            case 'send_report':
+              await _sendDeveloperReport();
+              break;
             case 'view_log':
               if (!mounted) return;
               await Navigator.of(context).push(MaterialPageRoute<void>(settings: const RouteSettings(name: '/settings/app-log'), builder: (_) => const AppLogScreen()));
@@ -1553,6 +1564,81 @@ class _SettingsScreenState extends State<SettingsScreen> {
           }
         }
       },
+    );
+  }
+
+  Future<void> _sendDeveloperReport() async {
+    final l10n = AppLocalizations.of(context);
+    final nameController = TextEditingController();
+    final reportController = TextEditingController();
+
+    final result = await showDialog<({String name, String report})>(
+      context: context,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (dialogContext, setDialogState) => AlertDialog(
+          title: Text(l10n.sendLogToDeveloper),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: nameController,
+                autofocus: true,
+                textInputAction: TextInputAction.next,
+                decoration: InputDecoration(
+                  labelText: l10n.developerLogNameOptional,
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: reportController,
+                minLines: 3,
+                maxLines: 6,
+                textInputAction: TextInputAction.newline,
+                decoration: InputDecoration(
+                  labelText: l10n.developerReportText,
+                ),
+                onChanged: (_) => setDialogState(() {}),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: Text(
+                MaterialLocalizations.of(dialogContext).cancelButtonLabel,
+              ),
+            ),
+            FilledButton(
+              onPressed: reportController.text.trim().isEmpty
+                  ? null
+                  : () => Navigator.of(dialogContext).pop((
+                        name: nameController.text.trim(),
+                        report: reportController.text.trim(),
+                      )),
+              child: Text(l10n.developerLogSend),
+            ),
+          ],
+        ),
+      ),
+    );
+    nameController.dispose();
+    reportController.dispose();
+
+    if (result == null || !mounted) return;
+
+    showStatusMessage(context, l10n.developerLogSending);
+    final logs = await AppLogger.readLogs();
+    final sent = await DeveloperLogService.sendReport(
+      log: logs,
+      report: result.report,
+      name: result.name,
+    );
+    if (!mounted) return;
+
+    showStatusMessage(
+      context,
+      sent ? l10n.developerLogSent : l10n.developerLogSendFailed,
+      duration: const Duration(seconds: 4),
     );
   }
 
@@ -2233,6 +2319,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ],
                     const SizedBox(height: 24),
                     const Divider(),
+                    const SizedBox(height: 12),
+                    FilledButton.icon(
+                      focusNode: _sendReportFocusNode,
+                      onPressed: _sendDeveloperReport,
+                      icon: const Icon(Icons.send),
+                      label: Text(l10n.sendLogToDeveloper),
+                    ),
                     const SizedBox(height: 12),
                     FilledButton.icon(
                       focusNode: _viewLogFocusNode,

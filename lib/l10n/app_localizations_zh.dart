@@ -1662,6 +1662,28 @@ class AppLocalizationsZh extends AppLocalizations {
   String get copySystemLog => '复制日志';
 
   @override
+  String get sendLogToDeveloper => '发送问题报告';
+
+  @override
+  String get developerLogNameOptional => '姓名（可选）';
+
+  @override
+  String get developerReportText => '问题描述';
+
+  @override
+  String get developerLogSend => '发送';
+
+  @override
+  String get developerLogSending => '正在发送报告...';
+
+  @override
+  String get developerLogSent => '报告已发送给开发者。';
+
+  @override
+  String get developerLogSendFailed => '无法发送报告，请稍后重试。';
+
+
+  @override
   String get donateWithPaypal => '通过 PayPal 捐赠';
 
   @override
@@ -4036,6 +4058,15 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get audioDescriptionNoCheckpoint => '未找到此视频未完成的音频描述。请选择之前使用的原始视频。';
+
+  @override
+  String get sonarTubeSaveFormatPrompt => '选择保存格式';
+
+  @override
+  String get sonarTubeSaveAsMp4 => '保存为 MP4';
+
+  @override
+  String get sonarTubeSaveAsMp3 => '保存为 MP3';
 }
 
 /// The translations for Chinese, as used in China (`zh_CN`).
@@ -5696,6 +5727,28 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
   String get copySystemLog => '复制日志';
 
   @override
+  String get sendLogToDeveloper => '发送问题报告';
+
+  @override
+  String get developerLogNameOptional => '姓名（可选）';
+
+  @override
+  String get developerReportText => '问题描述';
+
+  @override
+  String get developerLogSend => '发送';
+
+  @override
+  String get developerLogSending => '正在发送报告...';
+
+  @override
+  String get developerLogSent => '报告已发送给开发者。';
+
+  @override
+  String get developerLogSendFailed => '无法发送报告，请稍后重试。';
+
+
+  @override
   String get donateWithPaypal => '通过 PayPal 捐赠';
 
   @override
@@ -8070,4 +8123,13 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get audioDescriptionNoCheckpoint => '未找到此视频未完成的音频描述。请选择之前使用的原始视频。';
+
+  @override
+  String get sonarTubeSaveFormatPrompt => '选择保存格式';
+
+  @override
+  String get sonarTubeSaveAsMp4 => '保存为 MP4';
+
+  @override
+  String get sonarTubeSaveAsMp3 => '保存为 MP3';
 }

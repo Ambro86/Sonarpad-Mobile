@@ -1724,6 +1724,28 @@ class AppLocalizationsFr extends AppLocalizations {
   String get copySystemLog => 'Copier le journal';
 
   @override
+  String get sendLogToDeveloper => 'Envoyer un signalement';
+
+  @override
+  String get developerLogNameOptional => 'Nom (facultatif)';
+
+  @override
+  String get developerReportText => 'Description du signalement';
+
+  @override
+  String get developerLogSend => 'Envoyer';
+
+  @override
+  String get developerLogSending => 'Envoi du signalement...';
+
+  @override
+  String get developerLogSent => 'Signalement envoyé au développeur.';
+
+  @override
+  String get developerLogSendFailed => 'Impossible d\'envoyer le journal. Réessayez plus tard.';
+
+
+  @override
   String get donateWithPaypal => 'Faire un don avec PayPal';
 
   @override
@@ -4249,4 +4271,13 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get audioDescriptionNoCheckpoint =>
       'Aucune audiodescription interrompue trouvée pour cette vidéo. Sélectionnez la vidéo originale utilisée précédemment.';
+
+  @override
+  String get sonarTubeSaveFormatPrompt => 'Choisissez le format d’enregistrement';
+
+  @override
+  String get sonarTubeSaveAsMp4 => 'Enregistrer en MP4';
+
+  @override
+  String get sonarTubeSaveAsMp3 => 'Enregistrer en MP3';
 }

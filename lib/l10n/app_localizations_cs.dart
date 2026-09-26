@@ -1709,6 +1709,28 @@ class AppLocalizationsCs extends AppLocalizations {
   String get copySystemLog => 'Kopírovat protokol';
 
   @override
+  String get sendLogToDeveloper => 'Odeslat hlášení';
+
+  @override
+  String get developerLogNameOptional => 'Jméno (volitelné)';
+
+  @override
+  String get developerReportText => 'Text hlášení';
+
+  @override
+  String get developerLogSend => 'Odeslat';
+
+  @override
+  String get developerLogSending => 'Odesílání hlášení...';
+
+  @override
+  String get developerLogSent => 'Hlášení bylo odesláno vývojáři.';
+
+  @override
+  String get developerLogSendFailed => 'Hlášení se nepodařilo odeslat. Zkuste to později.';
+
+
+  @override
   String get donateWithPaypal => 'Darovat přes PayPal';
 
   @override
@@ -4206,4 +4228,13 @@ class AppLocalizationsCs extends AppLocalizations {
   @override
   String get audioDescriptionNoCheckpoint =>
       'Pro toto video nebyl nalezen přerušený audiopopis. Vyberte dříve použité původní video.';
+
+  @override
+  String get sonarTubeSaveFormatPrompt => 'Vyberte formát uložení';
+
+  @override
+  String get sonarTubeSaveAsMp4 => 'Uložit jako MP4';
+
+  @override
+  String get sonarTubeSaveAsMp3 => 'Uložit jako MP3';
 }

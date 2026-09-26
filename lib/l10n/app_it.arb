@@ -2294,6 +2294,12 @@
     "description": "Localized text for clearSystemLog."
   },
   "copySystemLog": "Copia log",
+  "sendLogToDeveloper": "Invia segnalazione",
+  "developerLogNameOptional": "Nome (facoltativo)",
+  "developerLogSend": "Invia",
+  "developerLogSending": "Invio della segnalazione...",
+  "developerLogSent": "Segnalazione inviata allo sviluppatore.",
+  "developerLogSendFailed": "Impossibile inviare la segnalazione. Riprova più tardi.",
   "@copySystemLog": {
     "description": "Localized text for copySystemLog."
   },
@@ -5010,5 +5016,21 @@
   "audioDescriptionNoCheckpoint": "Nessuna audiodescrizione interrotta trovata per questo video. Seleziona il video originale usato in precedenza.",
   "@audioDescriptionNoCheckpoint": {
     "description": "Audio description resume: audioDescriptionNoCheckpoint"
+  },
+  "sonarTubeSaveFormatPrompt": "Scegli il formato di salvataggio",
+  "@sonarTubeSaveFormatPrompt": {
+    "description": "Prompt shown before saving SonarTube media to choose MP4 or MP3."
+  },
+  "sonarTubeSaveAsMp4": "Salva in MP4",
+  "@sonarTubeSaveAsMp4": {
+    "description": "SonarTube save-media format choice for MP4 video."
+  },
+  "sonarTubeSaveAsMp3": "Salva in MP3",
+  "@sonarTubeSaveAsMp3": {
+    "description": "SonarTube save-media format choice for MP3 audio."
+  },
+  "developerReportText": "Testo della segnalazione",
+  "@developerReportText": {
+    "description": "Localized text for developerReportText."
   }
 }

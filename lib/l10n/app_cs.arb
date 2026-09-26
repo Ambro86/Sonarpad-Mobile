@@ -670,6 +670,12 @@
   "systemLog": "Systémový protokol",
   "clearSystemLog": "Vymazat protokol",
   "copySystemLog": "Kopírovat protokol",
+  "sendLogToDeveloper": "Odeslat hlášení",
+  "developerLogNameOptional": "Jméno (volitelné)",
+  "developerLogSend": "Odeslat",
+  "developerLogSending": "Odesílání hlášení...",
+  "developerLogSent": "Hlášení bylo odesláno vývojáři.",
+  "developerLogSendFailed": "Hlášení se nepodařilo odeslat. Zkuste to později.",
   "donateWithPaypal": "Darovat přes PayPal",
   "bankTransferTitle": "Bankovní převod",
   "enableVideo": "Povolit video",
@@ -3435,5 +3441,21 @@
   "audioDescriptionNoCheckpoint": "Pro toto video nebyl nalezen přerušený audiopopis. Vyberte dříve použité původní video.",
   "@audioDescriptionNoCheckpoint": {
     "description": "Audio description resume: audioDescriptionNoCheckpoint"
+  },
+  "sonarTubeSaveFormatPrompt": "Vyberte formát uložení",
+  "@sonarTubeSaveFormatPrompt": {
+    "description": "Prompt shown before saving SonarTube media to choose MP4 or MP3."
+  },
+  "sonarTubeSaveAsMp4": "Uložit jako MP4",
+  "@sonarTubeSaveAsMp4": {
+    "description": "SonarTube save-media format choice for MP4 video."
+  },
+  "sonarTubeSaveAsMp3": "Uložit jako MP3",
+  "@sonarTubeSaveAsMp3": {
+    "description": "SonarTube save-media format choice for MP3 audio."
+  },
+  "developerReportText": "Text hlášení",
+  "@developerReportText": {
+    "description": "Localized text for developerReportText."
   }
 }

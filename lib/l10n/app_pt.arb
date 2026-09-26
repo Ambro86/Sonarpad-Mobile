@@ -670,6 +670,12 @@
   "systemLog": "Registo do sistema",
   "clearSystemLog": "Limpar registo",
   "copySystemLog": "Copiar registo",
+  "sendLogToDeveloper": "Enviar relato",
+  "developerLogNameOptional": "Nome (opcional)",
+  "developerLogSend": "Enviar",
+  "developerLogSending": "A enviar o relato...",
+  "developerLogSent": "Relato enviado ao programador.",
+  "developerLogSendFailed": "Não foi possível enviar o relato. Tente novamente mais tarde.",
   "donateWithPaypal": "Doar com PayPal",
   "bankTransferTitle": "Transferência bancária",
   "enableVideo": "Ativar vídeo",
@@ -3438,5 +3444,21 @@
   "audioDescriptionNoCheckpoint": "Não foi encontrada uma audiodescrição interrompida para este vídeo. Selecione o vídeo original utilizado anteriormente.",
   "@audioDescriptionNoCheckpoint": {
     "description": "Audio description resume: audioDescriptionNoCheckpoint"
+  },
+  "sonarTubeSaveFormatPrompt": "Escolha o formato de gravação",
+  "@sonarTubeSaveFormatPrompt": {
+    "description": "Prompt shown before saving SonarTube media to choose MP4 or MP3."
+  },
+  "sonarTubeSaveAsMp4": "Guardar como MP4",
+  "@sonarTubeSaveAsMp4": {
+    "description": "SonarTube save-media format choice for MP4 video."
+  },
+  "sonarTubeSaveAsMp3": "Guardar como MP3",
+  "@sonarTubeSaveAsMp3": {
+    "description": "SonarTube save-media format choice for MP3 audio."
+  },
+  "developerReportText": "Descrição do relato",
+  "@developerReportText": {
+    "description": "Localized text for developerReportText."
   }
 }

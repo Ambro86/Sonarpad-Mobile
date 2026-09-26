@@ -1705,6 +1705,28 @@ class AppLocalizationsUk extends AppLocalizations {
   String get copySystemLog => 'Копіювати журнал';
 
   @override
+  String get sendLogToDeveloper => 'Надіслати повідомлення про проблему';
+
+  @override
+  String get developerLogNameOptional => 'Ім’я (необов’язково)';
+
+  @override
+  String get developerReportText => 'Опис проблеми';
+
+  @override
+  String get developerLogSend => 'Надіслати';
+
+  @override
+  String get developerLogSending => 'Надсилання повідомлення...';
+
+  @override
+  String get developerLogSent => 'Повідомлення надіслано розробнику.';
+
+  @override
+  String get developerLogSendFailed => 'Не вдалося надіслати повідомлення. Спробуйте пізніше.';
+
+
+  @override
   String get donateWithPaypal => 'Пожертвувати через PayPal';
 
   @override
@@ -4201,4 +4223,13 @@ class AppLocalizationsUk extends AppLocalizations {
   @override
   String get audioDescriptionNoCheckpoint =>
       'Для цього відео не знайдено перерваної аудіодескрипції. Виберіть оригінальне відео, використане раніше.';
+
+  @override
+  String get sonarTubeSaveFormatPrompt => 'Виберіть формат збереження';
+
+  @override
+  String get sonarTubeSaveAsMp4 => 'Зберегти як MP4';
+
+  @override
+  String get sonarTubeSaveAsMp3 => 'Зберегти як MP3';
 }

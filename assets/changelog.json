@@ -10,7 +10,8 @@
       "In SonarTube è ora possibile aprire le playlist pubbliche di un canale direttamente dalla pagina del canale, con supporto al caricamento di altri risultati.",
       "In SonarTube è ora possibile aprire gli Shorts pubblicati da un canale direttamente dalla pagina del canale, con supporto al caricamento di altri risultati.",
       "Aggiunta in SonarTube la funzione “Visualizza descrizione” per leggere la descrizione completa dei video. La voce Descrizione può anche essere aggiunta tra i pulsanti del player dalle impostazioni Pulsanti e comportamento di SonarTube.",
-      "Nei Documenti è ora possibile proteggere un documento con password dalle azioni secondarie. La password corretta viene richiesta sia prima di aprire sia prima di condividere un documento protetto."
+      "Nei Documenti è ora possibile proteggere un documento con password dalle azioni secondarie. La password corretta viene richiesta sia prima di aprire sia prima di condividere un documento protetto.",
+      "Aggiunta nelle Impostazioni la funzione “Invia segnalazione”: permette di descrivere un problema, indicare facoltativamente il proprio nome e inviare la segnalazione allo sviluppatore. Il log tecnico di Sonarpad viene allegato automaticamente."
     ],
     "en": [
       "Added the new “Create AI audio description” feature: it lets you choose a video, automatically detect dialogue and pauses, generate descriptions with Gemini or the Sonarpad service, synthesize them with Edge or system voices, and create the final audio-described video. Character and on-screen text recognition, character catalogs, detail levels, resume support, and project saving are also available.",
@@ -20,7 +21,8 @@
       "SonarTube can now open a channel’s public playlists directly from the channel page, with support for loading more results.",
       "SonarTube can now open the Shorts published by a channel directly from the channel page, with support for loading more results.",
       "Added a “View description” action in SonarTube to read the full video description. Description can also be added to the player buttons from the SonarTube Buttons and behavior settings.",
-      "Documents can now be protected with a password from the secondary actions. The correct password is required before either opening or sharing a protected document."
+      "Documents can now be protected with a password from the secondary actions. The correct password is required before either opening or sharing a protected document.",
+      "Added “Send report” in Settings: you can describe a problem, optionally enter your name, and send the report to the developer. Sonarpad’s technical log is attached automatically."
     ],
     "fr": [
       "Ajout de la nouvelle fonction « Créer une audiodescription avec l’IA » : elle permet de choisir une vidéo, de détecter automatiquement les dialogues et les pauses, de générer les descriptions avec Gemini ou le service Sonarpad, de les synthétiser avec les voix Edge ou du système et de créer la vidéo audiodescrite finale. La reconnaissance des personnages et du texte à l’écran, les catalogues de personnages, les niveaux de détail, la reprise du traitement et l’enregistrement du projet sont également disponibles.",
@@ -30,7 +32,8 @@
       "SonarTube permet désormais d’ouvrir les playlists publiques d’une chaîne directement depuis sa page, avec prise en charge du chargement de résultats supplémentaires.",
       "SonarTube permet désormais d’ouvrir les Shorts publiés par une chaîne directement depuis sa page, avec prise en charge du chargement de résultats supplémentaires.",
       "Ajout de l’action « Voir la description » dans SonarTube pour lire la description complète des vidéos. Le bouton Description peut aussi être ajouté au lecteur depuis les réglages Boutons et comportement de SonarTube.",
-      "Dans Documents, il est désormais possible de protéger un document par mot de passe depuis les actions secondaires. Le mot de passe correct est demandé avant d’ouvrir comme avant de partager un document protégé."
+      "Dans Documents, il est désormais possible de protéger un document par mot de passe depuis les actions secondaires. Le mot de passe correct est demandé avant d’ouvrir comme avant de partager un document protégé.",
+      "Ajout de la fonction « Envoyer un signalement » dans les Réglages : elle permet de décrire un problème, d’indiquer éventuellement son nom et d’envoyer le signalement au développeur. Le journal technique de Sonarpad est joint automatiquement."
     ],
     "es": [
       "Se ha añadido la nueva función «Crear audiodescripción con IA»: permite elegir un vídeo, detectar automáticamente diálogos y pausas, generar las descripciones con Gemini o con el servicio Sonarpad, sintetizarlas con voces Edge o del sistema y crear el vídeo audiodescrito final. También están disponibles el reconocimiento de personajes y del texto en pantalla, los catálogos de personajes, los niveles de detalle, la reanudación del procesamiento y el guardado del proyecto.",
@@ -40,7 +43,8 @@
       "SonarTube permite ahora abrir las listas de reproducción públicas de un canal directamente desde la página del canal, con compatibilidad para cargar más resultados.",
       "SonarTube permite ahora abrir los Shorts publicados por un canal directamente desde la página del canal, con compatibilidad para cargar más resultados.",
       "Se ha añadido la acción «Ver descripción» en SonarTube para leer la descripción completa de los vídeos. Descripción también puede añadirse a los botones del reproductor desde los ajustes Botones y comportamiento de SonarTube.",
-      "En Documentos ahora es posible proteger un documento con contraseña desde las acciones secundarias. La contraseña correcta se solicita tanto antes de abrir como antes de compartir un documento protegido."
+      "En Documentos ahora es posible proteger un documento con contraseña desde las acciones secundarias. La contraseña correcta se solicita tanto antes de abrir como antes de compartir un documento protegido.",
+      "Se ha añadido “Enviar informe” en Ajustes: permite describir un problema, indicar opcionalmente el nombre y enviar el informe al desarrollador. El registro técnico de Sonarpad se adjunta automáticamente."
     ],
     "pt": [
       "Foi adicionada a nova função «Criar audiodescrição com IA»: permite escolher um vídeo, detetar automaticamente diálogos e pausas, gerar as descrições com o Gemini ou com o serviço Sonarpad, sintetizá-las com vozes Edge ou do sistema e criar o vídeo final com audiodescrição. Também estão disponíveis reconhecimento de personagens e de texto no ecrã, catálogos de personagens, níveis de detalhe, retoma do processamento e gravação do projeto.",
@@ -50,7 +54,8 @@
       "O SonarTube permite agora abrir as listas de reprodução públicas de um canal diretamente a partir da página do canal, com suporte para carregar mais resultados.",
       "O SonarTube permite agora abrir os Shorts publicados por um canal diretamente a partir da página do canal, com suporte para carregar mais resultados.",
       "Foi adicionada a ação «Ver descrição» no SonarTube para ler a descrição completa dos vídeos. A Descrição também pode ser adicionada aos botões do leitor nas definições Botões e comportamento do SonarTube.",
-      "Nos Documentos, agora é possível proteger um documento com palavra-passe através das ações secundárias. A palavra-passe correta é pedida antes de abrir e também antes de partilhar um documento protegido."
+      "Nos Documentos, agora é possível proteger um documento com palavra-passe através das ações secundárias. A palavra-passe correta é pedida antes de abrir e também antes de partilhar um documento protegido.",
+      "Foi adicionada a função «Enviar relato» nas Definições: permite descrever um problema, indicar opcionalmente o nome e enviar o relato ao programador. O registo técnico do Sonarpad é anexado automaticamente."
     ],
     "pt_BR": [
       "Foi adicionada a nova função “Criar audiodescrição com IA”: ela permite escolher um vídeo, detectar automaticamente diálogos e pausas, gerar as descrições com o Gemini ou com o serviço Sonarpad, sintetizá-las com vozes Edge ou do sistema e criar o vídeo final com audiodescrição. Também estão disponíveis reconhecimento de personagens e de texto na tela, catálogos de personagens, níveis de detalhe, retomada do processamento e salvamento do projeto.",
@@ -60,7 +65,8 @@
       "O SonarTube agora permite abrir as playlists públicas de um canal diretamente pela página do canal, com suporte para carregar mais resultados.",
       "O SonarTube agora permite abrir os Shorts publicados por um canal diretamente pela página do canal, com suporte para carregar mais resultados.",
       "Foi adicionada a ação “Ver descrição” no SonarTube para ler a descrição completa dos vídeos. Descrição também pode ser adicionada aos botões do player nas configurações Botões e comportamento do SonarTube.",
-      "Em Documentos, agora é possível proteger um documento com senha pelas ações secundárias. A senha correta é solicitada antes de abrir e também antes de compartilhar um documento protegido."
+      "Em Documentos, agora é possível proteger um documento com senha pelas ações secundárias. A senha correta é solicitada antes de abrir e também antes de compartilhar um documento protegido.",
+      "Foi adicionada a função “Enviar relato” nas Configurações: permite descrever um problema, informar opcionalmente o nome e enviar o relato ao desenvolvedor. O log técnico do Sonarpad é anexado automaticamente."
     ],
     "pl": [
       "Dodano nową funkcję „Utwórz audiodeskrypcję z AI”: pozwala wybrać film, automatycznie wykrywać dialogi i przerwy, generować opisy za pomocą Gemini lub usługi Sonarpad, syntezować je głosami Edge lub systemowymi oraz tworzyć końcowy film z audiodeskrypcją. Dostępne są także rozpoznawanie postaci i tekstu na ekranie, katalogi postaci, poziomy szczegółowości, wznawianie przetwarzania i zapisywanie projektu.",
@@ -70,7 +76,8 @@
       "SonarTube pozwala teraz otwierać publiczne playlisty kanału bezpośrednio ze strony kanału, z obsługą wczytywania kolejnych wyników.",
       "SonarTube pozwala teraz otwierać Shorts opublikowane przez kanał bezpośrednio ze strony kanału, z obsługą wczytywania kolejnych wyników.",
       "Dodano w SonarTube akcję „Wyświetl opis”, która umożliwia odczytanie pełnego opisu filmu. Przycisk Opis można również dodać do przycisków odtwarzacza w ustawieniach Przyciski i zachowanie SonarTube.",
-      "W Dokumentach można teraz chronić dokument hasłem za pomocą akcji dodatkowych. Prawidłowe hasło jest wymagane zarówno przed otwarciem, jak i przed udostępnieniem chronionego dokumentu."
+      "W Dokumentach można teraz chronić dokument hasłem za pomocą akcji dodatkowych. Prawidłowe hasło jest wymagane zarówno przed otwarciem, jak i przed udostępnieniem chronionego dokumentu.",
+      "W Ustawieniach dodano funkcję „Wyślij zgłoszenie”: można opisać problem, opcjonalnie podać imię i wysłać zgłoszenie do dewelopera. Dziennik techniczny Sonarpad jest dołączany automatycznie."
     ],
     "cs": [
       "Přidána nová funkce „Vytvořit audiopopis pomocí AI“: umožňuje vybrat video, automaticky rozpoznat dialogy a pauzy, vygenerovat popisy pomocí Gemini nebo služby Sonarpad, převést je na řeč hlasy Edge nebo systémovými hlasy a vytvořit výsledné video s audiopopisem. K dispozici je také rozpoznávání postav a textu na obrazovce, katalogy postav, úrovně podrobnosti, obnovení zpracování a ukládání projektu.",
@@ -80,7 +87,8 @@
       "SonarTube nyní umožňuje otevírat veřejné playlisty kanálu přímo ze stránky kanálu, včetně načítání dalších výsledků.",
       "SonarTube nyní umožňuje otevírat Shorts publikované kanálem přímo ze stránky kanálu, včetně načítání dalších výsledků.",
       "V SonarTube byla přidána akce „Zobrazit popis“ pro přečtení úplného popisu videa. Tlačítko Popis lze také přidat mezi tlačítka přehrávače v nastavení Tlačítka a chování SonarTube.",
-      "V Dokumentech lze nyní dokument chránit heslem pomocí sekundárních akcí. Správné heslo je vyžadováno jak před otevřením, tak před sdílením chráněného dokumentu."
+      "V Dokumentech lze nyní dokument chránit heslem pomocí sekundárních akcí. Správné heslo je vyžadováno jak před otevřením, tak před sdílením chráněného dokumentu.",
+      "Do Nastavení byla přidána funkce „Odeslat hlášení“: umožňuje popsat problém, volitelně uvést jméno a odeslat hlášení vývojáři. Technický protokol Sonarpad se připojí automaticky."
     ],
     "de": [
       "Die neue Funktion „Audiodeskription mit KI erstellen“ wurde hinzugefügt: Damit kann ein Video ausgewählt werden, Dialoge und Pausen werden automatisch erkannt, Beschreibungen mit Gemini oder dem Sonarpad-Dienst erzeugt, mit Edge- oder Systemstimmen gesprochen und anschließend das fertige Video mit Audiodeskription erstellt. Zusätzlich stehen Figuren- und Bildschirmtexterkennung, Figurenkataloge, Detailstufen, Fortsetzen der Verarbeitung und Projektspeicherung zur Verfügung.",
@@ -90,7 +98,8 @@
       "SonarTube kann jetzt die öffentlichen Playlists eines Kanals direkt von der Kanalseite öffnen und weitere Ergebnisse nachladen.",
       "SonarTube kann jetzt die von einem Kanal veröffentlichten Shorts direkt von der Kanalseite öffnen und weitere Ergebnisse nachladen.",
       "In SonarTube wurde die Aktion „Beschreibung anzeigen“ hinzugefügt, um die vollständige Videobeschreibung zu lesen. Beschreibung kann in den Einstellungen Schaltflächen und Verhalten von SonarTube auch zu den Player-Schaltflächen hinzugefügt werden.",
-      "In Dokumente kann ein Dokument jetzt über die sekundären Aktionen mit einem Passwort geschützt werden. Das richtige Passwort wird sowohl vor dem Öffnen als auch vor dem Teilen eines geschützten Dokuments verlangt."
+      "In Dokumente kann ein Dokument jetzt über die sekundären Aktionen mit einem Passwort geschützt werden. Das richtige Passwort wird sowohl vor dem Öffnen als auch vor dem Teilen eines geschützten Dokuments verlangt.",
+      "In den Einstellungen wurde „Meldung senden“ hinzugefügt: Damit kann ein Problem beschrieben, optional ein Name angegeben und die Meldung an den Entwickler gesendet werden. Das technische Sonarpad-Protokoll wird automatisch angehängt."
     ],
     "zh_CN": [
       "新增“使用 AI 创建音频描述”功能：可以选择视频，自动检测对白和停顿，使用 Gemini 或 Sonarpad 服务生成描述，通过 Edge 或系统语音进行合成，并创建最终的带音频描述视频。同时支持角色识别、屏幕文字识别、角色目录、详细程度设置、继续处理以及保存项目。",
@@ -100,7 +109,8 @@
       "SonarTube 现在可以直接从频道页面打开该频道的公开播放列表，并支持继续加载更多结果。",
       "SonarTube 现在可以直接从频道页面打开该频道发布的 Shorts，并支持继续加载更多结果。",
       "SonarTube 新增“查看说明”操作，可读取视频的完整说明。“说明”也可以在 SonarTube“按钮和行为”设置中添加到播放器按钮。",
-      "“文档”现在可通过辅助操作为文档启用密码保护。打开或共享受保护的文档前，都需要输入正确的密码。"
+      "“文档”现在可通过辅助操作为文档启用密码保护。打开或共享受保护的文档前，都需要输入正确的密码。",
+      "“设置”中新增“发送报告”功能：可以描述问题、选择性填写姓名并将报告发送给开发者。Sonarpad 的技术日志会自动附加。"
     ],
     "uk": [
       "Додано нову функцію «Створити аудіоопис за допомогою ШІ»: можна вибрати відео, автоматично визначити діалоги й паузи, створити описи за допомогою Gemini або сервісу Sonarpad, озвучити їх голосами Edge чи системними голосами та отримати готове відео з аудіоописом. Також доступні розпізнавання персонажів і тексту на екрані, каталоги персонажів, рівні деталізації, продовження обробки та збереження проєкту.",
@@ -110,10 +120,11 @@
       "SonarTube тепер дозволяє відкривати публічні плейлисти каналу безпосередньо зі сторінки каналу з підтримкою завантаження наступних результатів.",
       "SonarTube тепер дозволяє відкривати Shorts, опубліковані каналом, безпосередньо зі сторінки каналу з підтримкою завантаження наступних результатів.",
       "У SonarTube додано дію «Переглянути опис» для читання повного опису відео. Кнопку «Опис» також можна додати до кнопок програвача в налаштуваннях «Кнопки та поведінка SonarTube».",
-      "У Документах тепер можна захистити документ паролем через додаткові дії. Правильний пароль потрібно вводити як перед відкриттям, так і перед поширенням захищеного документа."
+      "У Документах тепер можна захистити документ паролем через додаткові дії. Правильний пароль потрібно вводити як перед відкриттям, так і перед поширенням захищеного документа.",
+      "У Налаштуваннях додано функцію «Надіслати повідомлення»: можна описати проблему, за бажанням указати ім’я та надіслати повідомлення розробнику. Технічний журнал Sonarpad додається автоматично."
     ],
     "it_extra": [
-      "In SonarTube è stata aggiunta l’azione “Salva media” per gli utenti con codice Sonarpad: accanto a ogni video è disponibile un pulsante visivo escluso dalla lettura di VoiceOver e la stessa funzione è presente tra le azioni secondarie. Al termine dell’elaborazione è possibile scegliere se salvare il file nei Documenti di Sonarpad oppure condividerlo.",
+      "In SonarTube è stata aggiunta l’azione “Salva media” per gli utenti con codice Sonarpad: accanto a ogni video è disponibile un pulsante visivo escluso dalla lettura di VoiceOver e la stessa funzione è presente tra le azioni secondarie. È possibile scegliere se salvare il contenuto come video MP4 oppure come audio MP3; per l’MP3 Sonarpad usa FFmpeg per la conversione. Al termine dell’elaborazione resta disponibile la scelta tra salvataggio nei Documenti di Sonarpad e condivisione.",
       "Aggiunta l’azione “Crea audiodescrizione con IA” in SonarTube, RaiPlay e LA7 Play per gli utenti con codice Sonarpad e interfaccia in italiano. Il video selezionato viene preparato e salvato automaticamente nei Documenti di Sonarpad, quindi si apre la funzione di creazione dell’audiodescrizione con il file già selezionato; la generazione parte solo quando l’utente attiva “Crea audiodescrizione”.",
       "Aggiunta la nuova funzione “Audiodescrizioni Sonarpad”, dove vengono raccolte le audiodescrizioni realizzate con questo programma. Si ringrazia Nicolò La Ferla per la disponibilità dello spazio che contiene i film audiodescritti."
     ]

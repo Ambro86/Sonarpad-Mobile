@@ -13,6 +13,8 @@ const String sonarTubeSaveMediaLabel = 'Salva media';
 
 enum _SonarTubeDoneAction { saveDocuments, share }
 
+enum _SonarTubeSaveFormat { mp4, mp3 }
+
 /// Saves one SonarTube video to a temporary local export and then presents the
 /// same destination choice used by Media Cutter and AI audio descriptions.
 Future<void> saveSonarTubeMediaWithDestination(
@@ -23,6 +25,34 @@ Future<void> saveSonarTubeMediaWithDestination(
   if (item.kind != SonarTubeItemKind.video || item.isLive) return;
 
   final l10n = AppLocalizations.of(context);
+  final format = await showDialog<_SonarTubeSaveFormat>(
+    context: context,
+    barrierDismissible: false,
+    builder: (dialogContext) => PopScope(
+      canPop: false,
+      child: AlertDialog(
+        content: Text(l10n.sonarTubeSaveFormatPrompt),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(
+              dialogContext,
+              _SonarTubeSaveFormat.mp3,
+            ),
+            child: Text(l10n.sonarTubeSaveAsMp3),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(
+              dialogContext,
+              _SonarTubeSaveFormat.mp4,
+            ),
+            child: Text(l10n.sonarTubeSaveAsMp4),
+          ),
+        ],
+      ),
+    ),
+  );
+  if (!context.mounted || format == null) return;
+
   final exporter = SonarTubeMediaExportService();
   BuildContext? progressContext;
 
@@ -61,7 +91,12 @@ Future<void> saveSonarTubeMediaWithDestination(
 
   String? filePath;
   try {
-    filePath = await exporter.export(service: service, item: item);
+    filePath = switch (format) {
+      _SonarTubeSaveFormat.mp4 =>
+        await exporter.exportMp4(service: service, item: item),
+      _SonarTubeSaveFormat.mp3 =>
+        await exporter.exportMp3(service: service, item: item),
+    };
   } catch (error, stack) {
     await AppLogger.log('SonarTube save media: export failed error=$error');
     await AppLogger.log('SonarTube save media: export stack $stack');

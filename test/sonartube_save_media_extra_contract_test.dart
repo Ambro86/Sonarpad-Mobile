@@ -22,6 +22,24 @@ void main() {
     expect(dialog, contains('l10n.saveInSonarpadDocuments'));
     expect(dialog, contains('l10n.share'));
     expect(dialog, contains('MediaExportDestinationService'));
+    expect(dialog, contains('l10n.sonarTubeSaveFormatPrompt'));
+    expect(dialog, contains('l10n.sonarTubeSaveAsMp4'));
+    expect(dialog, contains('l10n.sonarTubeSaveAsMp3'));
+    expect(dialog, contains('exportMp4(service: service, item: item)'));
+    expect(dialog, contains('exportMp3(service: service, item: item)'));
+  });
+
+  test('SonarTube MP3 export uses FFmpeg and MP4 export guarantees MP4', () {
+    final exporter = File(
+      'lib/services/sonartube_media_export_service.dart',
+    ).readAsStringSync();
+
+    expect(exporter, contains('Future<String> exportMp3'));
+    expect(exporter, contains("'libmp3lame'"));
+    expect(exporter, contains("'192k'"));
+    expect(exporter, contains('Future<String> exportMp4'));
+    expect(exporter, contains("container: 'mp4-transcode'"));
+    expect(exporter, contains("'-movflags'"));
   });
 
   test('0.5.0 changelog exposes save media only in Italian extras', () {

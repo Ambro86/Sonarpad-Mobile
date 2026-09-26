@@ -1715,6 +1715,28 @@ class AppLocalizationsPt extends AppLocalizations {
   String get copySystemLog => 'Copiar registo';
 
   @override
+  String get sendLogToDeveloper => 'Enviar relato';
+
+  @override
+  String get developerLogNameOptional => 'Nome (opcional)';
+
+  @override
+  String get developerReportText => 'Descrição do relato';
+
+  @override
+  String get developerLogSend => 'Enviar';
+
+  @override
+  String get developerLogSending => 'A enviar o relato...';
+
+  @override
+  String get developerLogSent => 'Relato enviado ao programador.';
+
+  @override
+  String get developerLogSendFailed => 'Não foi possível enviar o relato. Tente novamente mais tarde.';
+
+
+  @override
   String get donateWithPaypal => 'Doar com PayPal';
 
   @override
@@ -4229,6 +4251,15 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get audioDescriptionNoCheckpoint =>
       'Não foi encontrada uma audiodescrição interrompida para este vídeo. Selecione o vídeo original utilizado anteriormente.';
+
+  @override
+  String get sonarTubeSaveFormatPrompt => 'Escolha o formato de gravação';
+
+  @override
+  String get sonarTubeSaveAsMp4 => 'Guardar como MP4';
+
+  @override
+  String get sonarTubeSaveAsMp3 => 'Guardar como MP3';
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
@@ -5936,6 +5967,28 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get copySystemLog => 'Copiar registro';
+
+  @override
+  String get sendLogToDeveloper => 'Enviar relato';
+
+  @override
+  String get developerLogNameOptional => 'Nome (opcional)';
+
+  @override
+  String get developerReportText => 'Descrição do relato';
+
+  @override
+  String get developerLogSend => 'Enviar';
+
+  @override
+  String get developerLogSending => 'Enviando relato...';
+
+  @override
+  String get developerLogSent => 'Relato enviado ao desenvolvedor.';
+
+  @override
+  String get developerLogSendFailed => 'Não foi possível enviar o relato. Tente novamente mais tarde.';
+
 
   @override
   String get donateWithPaypal => 'Doar com PayPal';
@@ -8448,4 +8501,13 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   @override
   String get audioDescriptionNoCheckpoint =>
       'Nenhuma audiodescrição interrompida foi encontrada para este vídeo. Selecione o vídeo original usado anteriormente.';
+
+  @override
+  String get sonarTubeSaveFormatPrompt => 'Escolha o formato de salvamento';
+
+  @override
+  String get sonarTubeSaveAsMp4 => 'Salvar como MP4';
+
+  @override
+  String get sonarTubeSaveAsMp3 => 'Salvar como MP3';
 }
