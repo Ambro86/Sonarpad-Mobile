@@ -88,6 +88,8 @@ class DocumentsScreen extends StatefulWidget {
 
 class _DocumentsScreenState extends State<DocumentsScreen> {
   final _service = DocumentLibraryService();
+  final _accessibleListController =
+      AccessibleListController(debugName: 'documents');
   bool _loading = true;
   String? _errorMessage;
 
@@ -298,6 +300,22 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     if (mounted) {
       setState(() {});
       _showSnack(isFolder ? l10n.folderRemoved : l10n.documentRemoved);
+      // The native accessibility list receives the rebuilt model during this
+      // frame. Wait until it is committed before asking VoiceOver to return to
+      // the first remaining row; otherwise UIKit can still target a stale cell
+      // and fall back to the last visible document.
+      await WidgetsBinding.instance.endOfFrame;
+      if (!mounted) return;
+      final remaining = _displayedDocs;
+      if (remaining.isEmpty) return;
+      final targetId = remaining.first.id;
+      await AppLogger.log(
+        'DocumentsScreen: focus after remove target=$targetId firstRemaining=true',
+      );
+      await _accessibleListController.focusToReturnAfterStructureChange(
+        targetId,
+        animated: false,
+      );
     }
   }
 
@@ -1351,6 +1369,8 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
 
     return UniversalAccessibleList(
       key: ValueKey('shared-documents-${widget.folderId ?? 'root'}-${docs.length}'),
+      controller: _accessibleListController,
+      debugTag: 'documents',
       sections: [AccessibleListSection(rows: rows)],
       onEvent: (event) async {
         final id = event.id;

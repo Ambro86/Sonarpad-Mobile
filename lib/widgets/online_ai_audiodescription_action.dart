@@ -18,6 +18,7 @@ Future<void> createAiAudiodescriptionFromSonarTube(
   if (item.kind != SonarTubeItemKind.video || item.isLive) return;
   await _prepareAndOpenAiAudiodescription(
     context,
+    includeSourceVideoWithProjectOutput: true,
     prepare: () => OnlineAiAudiodescriptionSourceService().importSonarTubeVideo(
       service: service,
       item: item,
@@ -44,6 +45,7 @@ Future<void> createAiAudiodescriptionFromRemoteVideo(
 Future<void> _prepareAndOpenAiAudiodescription(
   BuildContext context, {
   required Future<String> Function() prepare,
+  bool includeSourceVideoWithProjectOutput = false,
 }) async {
   final l10n = AppLocalizations.of(context);
   BuildContext? progressContext;
@@ -109,6 +111,8 @@ Future<void> _prepareAndOpenAiAudiodescription(
       settings: const RouteSettings(name: '/audio-description/create-ai'),
       builder: (_) => CreateAiAudiodescriptionScreen(
         initialSourcePath: sourcePath,
+        includeSourceVideoWithProjectOutput:
+            includeSourceVideoWithProjectOutput,
       ),
     ),
   );

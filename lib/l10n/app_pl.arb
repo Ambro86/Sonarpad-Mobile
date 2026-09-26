@@ -4859,7 +4859,7 @@
   "@audioDescriptionGetGeminiKey": {
     "description": "Localized text for audioDescriptionGetGeminiKey."
   },
-  "audioDescriptionKeepCharacterCatalog": "Zachowaj katalog postaci: przydatne dla serialu",
+  "audioDescriptionKeepCharacterCatalog": "Zapisuj i aktualizuj katalog postaci: przydatne dla serialu",
   "@audioDescriptionKeepCharacterCatalog": {
     "description": "Localized text for audioDescriptionKeepCharacterCatalog."
   },
@@ -5035,5 +5035,25 @@
   "developerReportText": "Treść zgłoszenia",
   "@developerReportText": {
     "description": "Localized text for developerReportText."
+  },
+  "audioDescriptionCreateVideoOutput": "Zapisz audiodeskrypcję w wideo",
+  "@audioDescriptionCreateVideoOutput": {
+    "description": "Localized text for audioDescriptionCreateVideoOutput."
+  },
+  "audioDescriptionLoadCharacterCatalog": "Wczytaj katalog postaci",
+  "@audioDescriptionLoadCharacterCatalog": {
+    "description": "Localized text for audioDescriptionLoadCharacterCatalog."
+  },
+  "audioDescriptionImportCharacterCatalog": "Importuj katalog z pliku",
+  "@audioDescriptionImportCharacterCatalog": {
+    "description": "Localized text for audioDescriptionImportCharacterCatalog."
+  },
+  "audioDescriptionCharacterCatalogLoaded": "Katalog postaci wczytany.",
+  "@audioDescriptionCharacterCatalogLoaded": {
+    "description": "Localized text for audioDescriptionCharacterCatalogLoaded."
+  },
+  "audioDescriptionCreateWithAi": "Utwórz audiodeskrypcję za pomocą AI",
+  "@audioDescriptionCreateWithAi": {
+    "description": "Localized text for audioDescriptionCreateWithAi."
   }
 }

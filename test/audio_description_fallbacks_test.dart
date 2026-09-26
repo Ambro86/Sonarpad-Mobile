@@ -709,13 +709,14 @@ void main() {
       );
       expect(result.length, 1);
     });
-    test('two stable name tokens can identify one catalog entry', () {
+    test('reordered name tokens do not override an authoritative identity', () {
       final result = AudioDescriptionFallbacks.mergeCharacterCatalog(
         <Map<String, Object?>>[c('r', 'Roberto Canali', 'Adulto.')],
         <Map<String, Object?>>[c('x', 'Canali Roberto', 'Camicia bianca.')],
       );
-      expect(result.length, 1);
-      expect(result.single['id'], 'r');
+      expect(result.length, 2);
+      expect(result.first['id'], 'r');
+      expect(result.first['name'], 'Roberto Canali');
     });
     test('duplicate description sentence is not repeated', () {
       final result = AudioDescriptionFallbacks.mergeCharacterCatalog(

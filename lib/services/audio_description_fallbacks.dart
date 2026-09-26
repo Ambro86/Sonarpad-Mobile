@@ -848,83 +848,125 @@ class AudioDescriptionFallbacks {
     List<Map<String, Object?>> incoming, {
     int maxCharacters = 96,
   }) {
-    final result = established
-        .map((item) => Map<String, Object?>.from(item))
-        .where(_validCharacter)
-        .toList();
-    for (final raw in incoming) {
-      if (!_validCharacter(raw)) continue;
-      final item = Map<String, Object?>.from(raw);
-      final index = _findCharacterMatch(result, item);
-      if (index < 0) {
-        if (result.length < maxCharacters) result.add(item);
-        continue;
-      }
-      final current = result[index];
-      final oldDescription = _cleanDescription('${current['description'] ?? ''}');
-      final newDescription = _cleanDescription('${item['description'] ?? ''}');
-      final merged = _mergeDescriptionSentences(oldDescription, newDescription);
-      result[index] = <String, Object?>{
-        'id': '${current['id'] ?? ''}'.trim().isNotEmpty ? current['id'] : item['id'],
-        'name': '${current['name'] ?? ''}'.trim().isNotEmpty ? current['name'] : item['name'],
-        'description': merged,
+    final merged = <Map<String, Object?>>[];
+
+    Map<String, Object?>? normalize(Map<String, Object?> raw) {
+      final id = '${raw['id'] ?? ''}'.trim();
+      final name = '${raw['name'] ?? ''}'
+          .replaceAll(RegExp(r'\s+'), ' ')
+          .trim();
+      final description = '${raw['description'] ?? ''}'
+          .replaceAll(RegExp(r'\s+'), ' ')
+          .trim();
+      if (name.isEmpty || description.isEmpty) return null;
+      return <String, Object?>{
+        'id': id,
+        'name': name,
+        'description': description,
       };
     }
-    return result.take(maxCharacters).toList();
-  }
 
-  static bool _validCharacter(Map<String, Object?> item) {
-    final name = '${item['name'] ?? ''}'.trim();
-    final description = _cleanDescription('${item['description'] ?? ''}');
-    return name.isNotEmpty && description.isNotEmpty;
+    for (final raw in established) {
+      final candidate = normalize(raw);
+      if (candidate == null) continue;
+      final index = _findCharacterMatch(merged, candidate);
+      if (index >= 0) {
+        final current = merged[index];
+        merged[index] = <String, Object?>{
+          'id': '${current['id'] ?? ''}'.trim().isEmpty &&
+                  '${candidate['id'] ?? ''}'.trim().isNotEmpty
+              ? '${candidate['id'] ?? ''}'.trim()
+              : '${current['id'] ?? ''}'.trim(),
+          'name': '${current['name'] ?? ''}'.trim(),
+          'description': _mergeDescriptionSentences(
+            '${current['description'] ?? ''}',
+            '${candidate['description'] ?? ''}',
+          ),
+        };
+      } else if (merged.length < maxCharacters) {
+        merged.add(candidate);
+      }
+    }
+
+    final authoritativeCount = merged.length;
+    for (final raw in incoming) {
+      final candidate = normalize(raw);
+      if (candidate == null) continue;
+      final index = _findCharacterMatch(merged, candidate);
+      if (index >= 0) {
+        final current = merged[index];
+        final mayFillId = index >= authoritativeCount &&
+            '${current['id'] ?? ''}'.trim().isEmpty &&
+            '${candidate['id'] ?? ''}'.trim().isNotEmpty;
+        merged[index] = <String, Object?>{
+          'id': mayFillId
+              ? '${candidate['id'] ?? ''}'.trim()
+              : '${current['id'] ?? ''}'.trim(),
+          'name': '${current['name'] ?? ''}'.trim(),
+          'description': _mergeDescriptionSentences(
+            '${current['description'] ?? ''}',
+            '${candidate['description'] ?? ''}',
+          ),
+        };
+      } else if (merged.length < maxCharacters) {
+        merged.add(candidate);
+      }
+    }
+    return merged.take(maxCharacters).toList(growable: false);
   }
 
   static int _findCharacterMatch(
     List<Map<String, Object?>> established,
     Map<String, Object?> incoming,
   ) {
-    final incomingId = '${incoming['id'] ?? ''}'.trim().toLowerCase();
-    final incomingName = '${incoming['name'] ?? ''}'.trim().toLowerCase();
+    final incomingId = '${incoming['id'] ?? ''}'.trim();
+    final incomingName = '${incoming['name'] ?? ''}'.trim();
     if (incomingId.isNotEmpty) {
-      final exact = established.indexWhere((item) =>
-          '${item['id'] ?? ''}'.trim().toLowerCase() == incomingId);
-      if (exact >= 0) return exact;
+      final matches = <int>[];
+      for (var i = 0; i < established.length; i++) {
+        if ('${established[i]['id'] ?? ''}'.trim().toLowerCase() ==
+            incomingId.toLowerCase()) {
+          matches.add(i);
+        }
+      }
+      if (matches.length == 1) return matches.single;
     }
+
     if (incomingName.isNotEmpty) {
-      final exactName = established.indexWhere((item) =>
-          '${item['name'] ?? ''}'.trim().toLowerCase() == incomingName);
-      if (exactName >= 0) return exactName;
+      final matches = <int>[];
+      for (var i = 0; i < established.length; i++) {
+        if ('${established[i]['name'] ?? ''}'.trim().toLowerCase() ==
+            incomingName.toLowerCase()) {
+          matches.add(i);
+        }
+      }
+      if (matches.length == 1) return matches.single;
     }
-    final incomingTokens = _nameTokens(incomingName);
-    if (incomingTokens.length < 2) return -1;
-    final matches = <int>[];
+
+    final candidateId = incomingId.toLowerCase();
+    final tokens = _catalogNameTokens(incomingName);
+    if (candidateId.isEmpty || tokens.length != 1 || tokens.single.length < 3) {
+      return -1;
+    }
+    final token = tokens.single;
+    final prefix = '${candidateId}_';
+    final aliasMatches = <int>[];
     for (var i = 0; i < established.length; i++) {
-      final tokens = _nameTokens('${established[i]['name'] ?? ''}'.toLowerCase());
-      if (tokens.length >= 2 && incomingTokens.intersection(tokens).length >= 2) {
-        matches.add(i);
+      final id = '${established[i]['id'] ?? ''}'.trim().toLowerCase();
+      final nameTokens = _catalogNameTokens('${established[i]['name'] ?? ''}');
+      if (id.startsWith(prefix) && nameTokens.contains(token)) {
+        aliasMatches.add(i);
       }
     }
-    return matches.length == 1 ? matches.single : -1;
-  }
-
-  static Set<String> _nameTokens(String value) {
-    final normalized = StringBuffer();
-    for (final rune in value.runes) {
-      final char = String.fromCharCode(rune);
-      normalized.write(_isLikelyLetterOrDigit(char) ? char : ' ');
-    }
-    return normalized
-        .toString()
-        .split(RegExp(r'\s+'))
-        .map((e) => e.trim())
-        .where((e) => e.length >= 2)
-        .toSet();
+    return aliasMatches.length == 1 ? aliasMatches.single : -1;
   }
 
   static bool _isLikelyLetter(String char) {
     if (char.isEmpty) return false;
     final code = char.runes.first;
-    if ((code >= 65 && code <= 90) || (code >= 97 && code <= 122)) return true;
+    if ((code >= 65 && code <= 90) || (code >= 97 && code <= 122)) {
+      return true;
+    }
     // Latin extended, Greek, Cyrillic, Hebrew, Arabic, Devanagari, CJK, Hangul.
     return (code >= 0x00C0 && code <= 0x02AF) ||
         (code >= 0x0370 && code <= 0x052F) ||
@@ -942,63 +984,84 @@ class AudioDescriptionFallbacks {
     return code >= 48 && code <= 57;
   }
 
+  static List<String> _catalogNameTokens(String value) {
+    return value
+        .split(RegExp(r'\s+'))
+        .map((token) {
+          final out = StringBuffer();
+          for (final rune in token.runes) {
+            final char = String.fromCharCode(rune);
+            if (_isLikelyLetterOrDigit(char)) out.write(char.toLowerCase());
+          }
+          return out.toString();
+        })
+        .where((token) => token.isNotEmpty)
+        .toList(growable: false);
+  }
+
+  static List<String> _descriptionTokens(String value) {
+    final seen = <String>{};
+    final result = <String>[];
+    final current = StringBuffer();
+
+    void flush() {
+      final token = current.toString().toLowerCase();
+      current.clear();
+      if (token.isEmpty || !seen.add(token)) return;
+      result.add(token);
+    }
+
+    for (final rune in value.runes) {
+      final char = String.fromCharCode(rune);
+      if (_isLikelyLetterOrDigit(char)) {
+        current.write(char);
+      } else {
+        flush();
+      }
+    }
+    flush();
+    return result;
+  }
+
+  static double _descriptionCoverage(String candidate, String established) {
+    final candidateTokens = _descriptionTokens(candidate);
+    if (candidateTokens.isEmpty) return 1.0;
+    final establishedTokens = _descriptionTokens(established).toSet();
+    if (establishedTokens.isEmpty) return 0.0;
+    final shared =
+        candidateTokens.where(establishedTokens.contains).length;
+    return shared / candidateTokens.length;
+  }
+
+  static String _mergeDescriptionSentences(String oldValue, String newValue) {
+    var merged = _cleanDescription(oldValue);
+    final observed = _cleanDescription(newValue);
+    if (merged.isEmpty) return observed;
+    if (observed.isEmpty) return merged;
+
+    for (final sentence in _sentences(observed)) {
+      if (_descriptionTokens(sentence).length <= 2) continue;
+      // Windows parity: the established catalog is authoritative. If most of
+      // an observed sentence is already represented, treat it as a
+      // paraphrase/corruption rather than new character information.
+      if (_descriptionCoverage(sentence, merged) >= 0.65) continue;
+      final separator = RegExp(r'[.!?]$').hasMatch(merged) ? ' ' : '. ';
+      final candidate = '$merged$separator${sentence.trim()}';
+      if (candidate.runes.length > 2000) break;
+      merged = candidate;
+    }
+    return merged;
+  }
+
   static String _cleanDescription(String value) =>
       value.replaceAll(RegExp(r'\s+'), ' ').trim();
 
-  static String _mergeDescriptionSentences(String oldValue, String newValue) {
-    // The established catalog is authoritative historical state: never rewrite,
-    // shorten, or deduplicate information that has already been saved. Only
-    // filter the incoming text before appending genuinely new visual details.
-    final established = _cleanDescription(oldValue);
-    final normalized = <String>{};
-
-    String sentenceKey(String sentence) {
-      final lower = sentence.toLowerCase();
-      final normalizedBuffer = StringBuffer();
-      for (final rune in lower.runes) {
-        final char = String.fromCharCode(rune);
-        normalizedBuffer.write(_isLikelyLetterOrDigit(char) ? char : ' ');
-      }
-      return normalizedBuffer
-          .toString()
-          .replaceAll(RegExp(r'\s+'), ' ')
-          .trim();
-    }
-
-    for (final sentence in _sentences(established)) {
-      final key = sentenceKey(sentence);
-      if (key.isNotEmpty) normalized.add(key);
-    }
-
-    final additions = <String>[];
-    for (final sentence in _sentences(newValue)) {
-      final key = sentenceKey(sentence);
-      if (key.isEmpty || normalized.contains(key)) continue;
-
-      // Reject obvious corrupted biography loops in newly generated text,
-      // without ever modifying the already-established biography.
-      final words = key.split(' ');
-      if (words.length >= 12) {
-        final half = words.length ~/ 2;
-        if (half >= 4 &&
-            words.take(half).join(' ') ==
-                words.skip(half).take(half).join(' ')) {
-          continue;
-        }
-      }
-
-      normalized.add(key);
-      additions.add(sentence.trim());
-    }
-
-    if (established.isEmpty) return additions.join(' ').trim();
-    if (additions.isEmpty) return established;
-    return '$established ${additions.join(' ')}'.trim();
-  }
-
   static List<String> _sentences(String value) {
     final matches = RegExp(r'[^.!?]+[.!?]?', unicode: true).allMatches(value);
-    return matches.map((m) => m.group(0)!.trim()).where((s) => s.isNotEmpty).toList();
+    return matches
+        .map((m) => m.group(0)!.trim())
+        .where((sentence) => sentence.isNotEmpty)
+        .toList(growable: false);
   }
 
   static bool ttsLogHasAudibleSignal(String logs) {

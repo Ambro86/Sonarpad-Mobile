@@ -4131,7 +4131,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get audioDescriptionKeepCharacterCatalog =>
-      'Mantener el catálogo de personajes: útil para una serie';
+      'Guardar y actualizar el catálogo de personajes: útil para una serie';
 
   @override
   String get audioDescriptionCharacterCatalogChoose =>
@@ -4272,4 +4272,20 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get sonarTubeSaveAsMp3 => 'Guardar como MP3';
+
+  @override
+  String get audioDescriptionCreateVideoOutput => 'Guardar la audiodescripción en el vídeo';
+
+  @override
+  String get audioDescriptionLoadCharacterCatalog => 'Cargar catálogo de personajes';
+
+  @override
+  String get audioDescriptionImportCharacterCatalog => 'Importar catálogo desde un archivo';
+
+  @override
+  String get audioDescriptionCharacterCatalogLoaded => 'Catálogo de personajes cargado.';
+
+  @override
+  String get audioDescriptionCreateWithAi => 'Crear audiodescripción con IA';
+
 }

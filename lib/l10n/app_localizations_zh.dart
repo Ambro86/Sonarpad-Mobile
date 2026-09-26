@@ -3939,7 +3939,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get audioDescriptionGetGeminiKey => '获取 Gemini API 密钥';
 
   @override
-  String get audioDescriptionKeepCharacterCatalog => '保留角色目录：适合连续剧';
+  String get audioDescriptionKeepCharacterCatalog => '保存并更新角色目录：适合连续剧';
 
   @override
   String get audioDescriptionCharacterCatalogChoose => '选择已保存的角色目录';
@@ -4067,6 +4067,22 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get sonarTubeSaveAsMp3 => '保存为 MP3';
+
+  @override
+  String get audioDescriptionCreateVideoOutput => '将音频描述保存到视频中';
+
+  @override
+  String get audioDescriptionLoadCharacterCatalog => '加载角色目录';
+
+  @override
+  String get audioDescriptionImportCharacterCatalog => '从文件导入目录';
+
+  @override
+  String get audioDescriptionCharacterCatalogLoaded => '角色目录已加载。';
+
+  @override
+  String get audioDescriptionCreateWithAi => '使用 AI 创建音频描述';
+
 }
 
 /// The translations for Chinese, as used in China (`zh_CN`).
@@ -8004,7 +8020,7 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
   String get audioDescriptionGetGeminiKey => '获取 Gemini API 密钥';
 
   @override
-  String get audioDescriptionKeepCharacterCatalog => '保留角色目录：适合连续剧';
+  String get audioDescriptionKeepCharacterCatalog => '保存并更新角色目录：适合连续剧';
 
   @override
   String get audioDescriptionCharacterCatalogChoose => '选择已保存的角色目录';
@@ -8132,4 +8148,20 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get sonarTubeSaveAsMp3 => '保存为 MP3';
+
+  @override
+  String get audioDescriptionCreateVideoOutput => '将音频描述保存到视频中';
+
+  @override
+  String get audioDescriptionLoadCharacterCatalog => '加载角色目录';
+
+  @override
+  String get audioDescriptionImportCharacterCatalog => '从文件导入目录';
+
+  @override
+  String get audioDescriptionCharacterCatalogLoaded => '角色目录已加载。';
+
+  @override
+  String get audioDescriptionCreateWithAi => '使用 AI 创建音频描述';
+
 }

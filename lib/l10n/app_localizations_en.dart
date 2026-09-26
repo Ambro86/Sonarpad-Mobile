@@ -4090,7 +4090,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get audioDescriptionKeepCharacterCatalog =>
-      'Keep the character catalog: useful for a series';
+      'Save and update the character catalog: useful for a series';
 
   @override
   String get audioDescriptionCharacterCatalogChoose =>
@@ -4229,4 +4229,20 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sonarTubeSaveAsMp3 => 'Save as MP3';
+
+  @override
+  String get audioDescriptionCreateVideoOutput => 'Save the audio description in the video';
+
+  @override
+  String get audioDescriptionLoadCharacterCatalog => 'Load character catalog';
+
+  @override
+  String get audioDescriptionImportCharacterCatalog => 'Import catalog from file';
+
+  @override
+  String get audioDescriptionCharacterCatalogLoaded => 'Character catalog loaded.';
+
+  @override
+  String get audioDescriptionCreateWithAi => 'Create audio description with AI';
+
 }

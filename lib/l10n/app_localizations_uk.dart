@@ -4093,7 +4093,7 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get audioDescriptionKeepCharacterCatalog =>
-      'Зберігати каталог персонажів: корисно для серіалу';
+      'Зберігати й оновлювати каталог персонажів: корисно для серіалу';
 
   @override
   String get audioDescriptionCharacterCatalogChoose =>
@@ -4232,4 +4232,20 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get sonarTubeSaveAsMp3 => 'Зберегти як MP3';
+
+  @override
+  String get audioDescriptionCreateVideoOutput => 'Зберегти аудіоопис у відео';
+
+  @override
+  String get audioDescriptionLoadCharacterCatalog => 'Завантажити каталог персонажів';
+
+  @override
+  String get audioDescriptionImportCharacterCatalog => 'Імпортувати каталог із файлу';
+
+  @override
+  String get audioDescriptionCharacterCatalogLoaded => 'Каталог персонажів завантажено.';
+
+  @override
+  String get audioDescriptionCreateWithAi => 'Створити аудіоопис за допомогою ШІ';
+
 }

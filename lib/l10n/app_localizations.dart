@@ -79,6 +79,21 @@ abstract class AppLocalizations {
     return Localizations.of<AppLocalizations>(context, AppLocalizations)!;
   }
 
+  /// Localized text for audioDescriptionCreateVideoOutput.
+  String get audioDescriptionCreateVideoOutput;
+
+  /// Localized text for audioDescriptionLoadCharacterCatalog.
+  String get audioDescriptionLoadCharacterCatalog;
+
+  /// Localized text for audioDescriptionImportCharacterCatalog.
+  String get audioDescriptionImportCharacterCatalog;
+
+  /// Localized text for audioDescriptionCharacterCatalogLoaded.
+  String get audioDescriptionCharacterCatalogLoaded;
+
+  /// Localized text for audioDescriptionCreateWithAi.
+  String get audioDescriptionCreateWithAi;
+
   static const LocalizationsDelegate<AppLocalizations> delegate =
       _AppLocalizationsDelegate();
 

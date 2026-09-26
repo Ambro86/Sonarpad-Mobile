@@ -29,6 +29,11 @@ void main() {
     expect(service, contains('_library.resolveFilePath(document)'));
     expect(action, contains('CreateAiAudiodescriptionScreen('));
     expect(action, contains('initialSourcePath: sourcePath'));
+    expect(action, contains('includeSourceVideoWithProjectOutput: true'));
+    expect(screen, contains('includeSourceVideoWithProjectOutput'));
+    expect(screen, contains('_completedOutputPaths'));
+    expect(screen, contains('result.projectPath != null'));
+    expect(screen, contains('_alreadyInSonarpadDocuments'));
   });
 
   test('SonarTube AI audio description is gated by code and Italian UI', () {

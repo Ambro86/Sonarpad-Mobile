@@ -531,7 +531,7 @@ class _AudioDescriptionProjectEditorScreenState
       );
     } else {
       for (final path in paths) {
-        await destination.saveInSonarpadDocuments(
+        await destination.saveInSonarpadAudiodescriptions(
           path,
           originalName: p.basename(path),
         );

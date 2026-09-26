@@ -3281,7 +3281,7 @@
   "@audioDescriptionGetGeminiKey": {
     "description": "Localized text for audioDescriptionGetGeminiKey."
   },
-  "audioDescriptionKeepCharacterCatalog": "Zachovat katalog postav: užitečné pro seriál",
+  "audioDescriptionKeepCharacterCatalog": "Uložit a aktualizovat katalog postav: užitečné pro seriál",
   "@audioDescriptionKeepCharacterCatalog": {
     "description": "Localized text for audioDescriptionKeepCharacterCatalog."
   },
@@ -3457,5 +3457,25 @@
   "developerReportText": "Text hlášení",
   "@developerReportText": {
     "description": "Localized text for developerReportText."
+  },
+  "audioDescriptionCreateVideoOutput": "Uložit audiopopis do videa",
+  "@audioDescriptionCreateVideoOutput": {
+    "description": "Localized text for audioDescriptionCreateVideoOutput."
+  },
+  "audioDescriptionLoadCharacterCatalog": "Načíst katalog postav",
+  "@audioDescriptionLoadCharacterCatalog": {
+    "description": "Localized text for audioDescriptionLoadCharacterCatalog."
+  },
+  "audioDescriptionImportCharacterCatalog": "Importovat katalog ze souboru",
+  "@audioDescriptionImportCharacterCatalog": {
+    "description": "Localized text for audioDescriptionImportCharacterCatalog."
+  },
+  "audioDescriptionCharacterCatalogLoaded": "Katalog postav byl načten.",
+  "@audioDescriptionCharacterCatalogLoaded": {
+    "description": "Localized text for audioDescriptionCharacterCatalogLoaded."
+  },
+  "audioDescriptionCreateWithAi": "Vytvořit audiopopis pomocí AI",
+  "@audioDescriptionCreateWithAi": {
+    "description": "Localized text for audioDescriptionCreateWithAi."
   }
 }

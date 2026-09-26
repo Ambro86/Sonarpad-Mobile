@@ -3278,7 +3278,7 @@
   "@audioDescriptionGetGeminiKey": {
     "description": "Localized text for audioDescriptionGetGeminiKey."
   },
-  "audioDescriptionKeepCharacterCatalog": "保留角色目录：适合连续剧",
+  "audioDescriptionKeepCharacterCatalog": "保存并更新角色目录：适合连续剧",
   "@audioDescriptionKeepCharacterCatalog": {
     "description": "Localized text for audioDescriptionKeepCharacterCatalog."
   },
@@ -3454,5 +3454,25 @@
   "developerReportText": "问题描述",
   "@developerReportText": {
     "description": "Localized text for developerReportText."
+  },
+  "audioDescriptionCreateVideoOutput": "将音频描述保存到视频中",
+  "@audioDescriptionCreateVideoOutput": {
+    "description": "Localized text for audioDescriptionCreateVideoOutput."
+  },
+  "audioDescriptionLoadCharacterCatalog": "加载角色目录",
+  "@audioDescriptionLoadCharacterCatalog": {
+    "description": "Localized text for audioDescriptionLoadCharacterCatalog."
+  },
+  "audioDescriptionImportCharacterCatalog": "从文件导入目录",
+  "@audioDescriptionImportCharacterCatalog": {
+    "description": "Localized text for audioDescriptionImportCharacterCatalog."
+  },
+  "audioDescriptionCharacterCatalogLoaded": "角色目录已加载。",
+  "@audioDescriptionCharacterCatalogLoaded": {
+    "description": "Localized text for audioDescriptionCharacterCatalogLoaded."
+  },
+  "audioDescriptionCreateWithAi": "使用 AI 创建音频描述",
+  "@audioDescriptionCreateWithAi": {
+    "description": "Localized text for audioDescriptionCreateWithAi."
   }
 }

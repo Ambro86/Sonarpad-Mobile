@@ -15,6 +15,7 @@ import '../utils/status_message.dart';
 import '../widgets/recording_selection_dialog.dart';
 import '../widgets/universal_accessible_view.dart';
 import 'podcast_episode_player_screen.dart';
+import 'create_ai_audiodescription_screen.dart';
 import 'recording_rename_screen.dart';
 
 class TvRecordingsScreen extends StatefulWidget {
@@ -207,6 +208,18 @@ class _TvRecordingsScreenState extends State<TvRecordingsScreen> {
     if (renamed != null && mounted) _reload();
   }
 
+  Future<void> _createAiAudiodescription(File file) async {
+    if (_recordingState(file) != GlobalRecordingOutputState.none) return;
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        settings: const RouteSettings(name: '/create_ai_audiodescription'),
+        builder: (_) => CreateAiAudiodescriptionScreen(
+          initialSourcePath: file.path,
+        ),
+      ),
+    );
+  }
+
   Future<void> _deleteRecording(File file) async {
     await _deleteRecordings([file]);
   }
@@ -278,8 +291,11 @@ class _TvRecordingsScreenState extends State<TvRecordingsScreen> {
                       .asMap()
                       .entries
                       .map((entry) {
-                        final isPending = _recordingState(entry.value) ==
-                            GlobalRecordingOutputState.scheduledPending;
+                        final state = _recordingState(entry.value);
+                        final isPending =
+                            state == GlobalRecordingOutputState.scheduledPending;
+                        final canCreateAi =
+                            state == GlobalRecordingOutputState.none;
                         return AccessibleListRow(
                           id: 'recording_${entry.key}',
                           title: p.basenameWithoutExtension(entry.value.path),
@@ -290,6 +306,11 @@ class _TvRecordingsScreenState extends State<TvRecordingsScreen> {
                               label: l10n.openItem,
                             ),
                             if (!isPending) ...[
+                              if (canCreateAi)
+                                AccessibleCustomAction(
+                                  id: 'ai_audiodescription',
+                                  label: l10n.audioDescriptionCreateWithAi,
+                                ),
                               AccessibleCustomAction(
                                 id: 'share',
                                 label: l10n.share,
@@ -304,6 +325,12 @@ class _TvRecordingsScreenState extends State<TvRecordingsScreen> {
                           visualActions: isPending
                               ? const []
                               : [
+                                  if (canCreateAi)
+                                    AccessibleVisualAction(
+                                      id: 'ai_audiodescription',
+                                      label: l10n.audioDescriptionCreateWithAi,
+                                      icon: 'ai',
+                                    ),
                                   AccessibleVisualAction(
                                     id: 'rename',
                                     label: l10n.rename,
@@ -322,6 +349,9 @@ class _TvRecordingsScreenState extends State<TvRecordingsScreen> {
                 final file = files[index];
                 if (event.type == 'activate' || (event.type == 'customAction' && event.action == 'open')) {
                   _openRecording(file);
+                } else if (event.type == 'customAction' &&
+                    event.action == 'ai_audiodescription') {
+                  await _createAiAudiodescription(file);
                 } else if (event.type == 'customAction' && event.action == 'share') {
                   await _shareRecording(file);
                 } else if (event.type == 'customAction' && event.action == 'rename') {
@@ -339,14 +369,20 @@ class _TvRecordingsScreenState extends State<TvRecordingsScreen> {
               final file = files[index];
               final name = p.basenameWithoutExtension(file.path);
               final status = _recordingStatus(file, l10n);
-              final isPending = _recordingState(file) ==
-                  GlobalRecordingOutputState.scheduledPending;
+              final state = _recordingState(file);
+              final isPending =
+                  state == GlobalRecordingOutputState.scheduledPending;
+              final canCreateAi = state == GlobalRecordingOutputState.none;
               return Semantics(
                 key: ValueKey('tv_recording_semantics_${file.path}'),
                 customSemanticsActions: {
                   CustomSemanticsAction(label: l10n.openItem): () =>
                       _openRecording(file),
                   if (!isPending) ...{
+                    if (canCreateAi)
+                      CustomSemanticsAction(
+                        label: l10n.audioDescriptionCreateWithAi,
+                      ): () => _createAiAudiodescription(file),
                     CustomSemanticsAction(label: l10n.share): () =>
                         _shareRecording(file),
                     CustomSemanticsAction(label: l10n.rename): () =>
@@ -366,6 +402,15 @@ class _TvRecordingsScreenState extends State<TvRecordingsScreen> {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
+                        if (canCreateAi)
+                          IconButton(
+                            key: ValueKey(
+                              'tv_recording_ai_audiodescription_${file.path}',
+                            ),
+                            icon: const Icon(Icons.auto_awesome),
+                            tooltip: l10n.audioDescriptionCreateWithAi,
+                            onPressed: () => _createAiAudiodescription(file),
+                          ),
                         IconButton(
                           key: ValueKey('tv_recording_rename_${file.path}'),
                           icon: const Icon(Icons.edit_outlined),

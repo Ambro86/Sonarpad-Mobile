@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +13,7 @@ import '../l10n/app_localizations.dart';
 import '../services/ai_audiodescription_service.dart';
 import '../services/app_settings_service.dart';
 import '../services/audio_player_service.dart';
+import '../services/document_library_service.dart';
 import '../services/media_export_destination_service.dart';
 import '../tts/edge_tts_bridge.dart';
 import '../utils/app_logger.dart';
@@ -22,9 +24,11 @@ class CreateAiAudiodescriptionScreen extends StatefulWidget {
   const CreateAiAudiodescriptionScreen({
     super.key,
     this.initialSourcePath,
+    this.includeSourceVideoWithProjectOutput = false,
   });
 
   final String? initialSourcePath;
+  final bool includeSourceVideoWithProjectOutput;
 
   @override
   State<CreateAiAudiodescriptionScreen> createState() =>
@@ -58,13 +62,14 @@ class _CreateAiAudiodescriptionScreenState
   List<String> _models = const ['gemini-3.5-flash-lite'];
   String _language = 'it';
   String _verbosity = 'detailed';
-  bool _extendedPauses = true;
+  bool _extendedPauses = false;
   bool _recognizeCharacters = true;
-  bool _recognizeScreenText = false;
+  bool _recognizeScreenText = true;
   bool _keepCharacterCatalog = false;
   String? _characterCatalogName;
   List<String> _characterCatalogs = const [];
   bool _saveProject = false;
+  bool _createVideoOutput = false;
 
   String _ttsEngine = 'edge';
   List<TtsVoiceOption> _edgeVoices = const [];
@@ -176,13 +181,14 @@ class _CreateAiAudiodescriptionScreenState
           'short' || 'standard' || 'detailed' => savedVerbosity,
           _ => 'detailed',
         };
-        _extendedPauses = preferences['extended'] != false;
+        _extendedPauses = preferences['extended'] == true;
         _recognizeCharacters = preferences['characters'] != false;
-        _recognizeScreenText = preferences['screenText'] == true;
+        _recognizeScreenText = preferences['screenText'] != false;
         _keepCharacterCatalog = preferences['keepCatalog'] == true;
         _characterCatalogName = preferences['catalogName']?.toString();
         _characterCatalogs = characterCatalogs;
         _saveProject = preferences['project'] == true;
+        _createVideoOutput = preferences['createVideo'] == true;
         _ttsEngine = preferences['ttsEngine']?.toString().trim().isNotEmpty == true
             ? preferences['ttsEngine']!.toString()
             : settingEngine;
@@ -374,12 +380,13 @@ class _CreateAiAudiodescriptionScreenState
         geminiModel: _model,
         languageCode: _language,
         verbosity: _verbosity,
-        allowExtendedPauses: _extendedPauses,
+        allowExtendedPauses: _extendedPauses && !_createVideoOutput,
         recognizeCharacters: _recognizeCharacters,
         recognizeScreenText: _recognizeScreenText,
         keepCharacterCatalog: _recognizeCharacters && _keepCharacterCatalog,
         characterCatalogName: _characterCatalogName,
         saveProject: _saveProject,
+        createVideoOutput: _createVideoOutput,
         ttsEngine: _ttsEngine,
         edgeLanguage: _edgeLanguage,
         edgeVoice: _edgeVoice,
@@ -429,6 +436,80 @@ class _CreateAiAudiodescriptionScreenState
     );
     controller.dispose();
     return value;
+  }
+
+
+  Future<void> _loadCharacterCatalog() async {
+    final l10n = AppLocalizations.of(context);
+    try {
+      final available = await _service.listCharacterCatalogs();
+      if (!mounted) return;
+      final selection = await showDialog<String>(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+          title: Text(l10n.audioDescriptionLoadCharacterCatalog),
+          content: available.isEmpty
+              ? Text(l10n.audioDescriptionCharacterCatalogNew)
+              : SizedBox(
+                  width: double.maxFinite,
+                  child: ListView(
+                    shrinkWrap: true,
+                    children: [
+                      for (final name in available)
+                        ListTile(
+                          title: Text(name),
+                          onTap: () => Navigator.pop(dialogContext, name),
+                        ),
+                    ],
+                  ),
+                ),
+          actions: [
+            TextButton(
+              onPressed: () =>
+                  Navigator.pop(dialogContext, '__import_catalog__'),
+              child: Text(l10n.audioDescriptionImportCharacterCatalog),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: Text(l10n.cancel),
+            ),
+          ],
+        ),
+      );
+      if (!mounted || selection == null) return;
+      var name = selection;
+      if (selection == '__import_catalog__') {
+        final result = await FilePicker.pickFiles(
+          type: FileType.custom,
+          allowedExtensions: const ['json'],
+        );
+        final path = result?.files.single.path;
+        if (path == null || path.trim().isEmpty) return;
+        name = await _service.importCharacterCatalog(path);
+      }
+      final refreshed = await _service.listCharacterCatalogs();
+      if (!mounted) return;
+      setState(() {
+        _recognizeCharacters = true;
+        _keepCharacterCatalog = true;
+        _characterCatalogName = name;
+        _characterCatalogs = refreshed;
+      });
+      showStatusMessage(
+        context,
+        l10n.audioDescriptionCharacterCatalogLoaded,
+      );
+    } catch (error, stackTrace) {
+      await AppLogger.log(
+        'Audio description UI: character catalog load failed '
+        'error=$error\n$stackTrace',
+      );
+      if (!mounted) return;
+      showStatusMessage(
+        context,
+        l10n.fileOpenError(l10n.technicalErrorGeneric),
+      );
+    }
   }
 
   Future<void> _continueDescription() async {
@@ -785,6 +866,28 @@ class _CreateAiAudiodescriptionScreenState
     return detail == null || detail.isEmpty ? label : '$label $detail';
   }
 
+  Future<List<String>> _completedOutputPaths(
+    AiAudioDescriptionResult result,
+  ) async {
+    final paths = <String>[...result.outputPaths];
+    final sourcePath = _sourcePath?.trim() ?? '';
+    if (widget.includeSourceVideoWithProjectOutput &&
+        result.projectPath != null &&
+        sourcePath.isNotEmpty &&
+        await File(sourcePath).exists() &&
+        !paths.contains(sourcePath)) {
+      paths.add(sourcePath);
+    }
+    return paths;
+  }
+
+  Future<bool> _alreadyInSonarpadDocuments(String filePath) async {
+    final directory = await DocumentLibraryService().documentsFolder();
+    final source = p.normalize(p.absolute(filePath));
+    final documents = p.normalize(p.absolute(directory.path));
+    return source == documents || p.isWithin(documents, source);
+  }
+
   Future<void> _showDoneDialog(AiAudioDescriptionResult result) async {
     final l10n = AppLocalizations.of(context);
     final destinationService = MediaExportDestinationService();
@@ -814,16 +917,25 @@ class _CreateAiAudiodescriptionScreenState
       if (!mounted) return;
       if (action == null) continue;
       try {
+        final outputPaths = await _completedOutputPaths(result);
+        final sourcePath = _sourcePath?.trim() ?? '';
         if (action == _DoneAction.share) {
           await SharePlus.instance.share(
             ShareParams(
-              files: result.outputPaths.map((path) => XFile(path)).toList(),
+              files: outputPaths.map((path) => XFile(path)).toList(),
               text: p.basename(result.mp3Path),
             ),
           );
         } else {
-          for (final path in result.outputPaths) {
-            await destinationService.saveInSonarpadDocuments(
+          for (final path in outputPaths) {
+            if (sourcePath.isNotEmpty &&
+                path == sourcePath &&
+                await _alreadyInSonarpadDocuments(path)) {
+              final moved = await destinationService
+                  .moveExistingDocumentToAudiodescriptions(path);
+              if (moved) continue;
+            }
+            await destinationService.saveInSonarpadAudiodescriptions(
               path,
               originalName: p.basename(path),
             );
@@ -1080,6 +1192,13 @@ class _CreateAiAudiodescriptionScreenState
                       title: l10n.audioDescriptionExtendedPauses,
                       kind: 'toggle',
                       toggleValue: _extendedPauses,
+                      enabled: !_running && !_createVideoOutput,
+                    ),
+                    AccessibleListRow(
+                      id: 'create_video_output',
+                      title: l10n.audioDescriptionCreateVideoOutput,
+                      kind: 'toggle',
+                      toggleValue: _createVideoOutput,
                       enabled: !_running,
                     ),
                     AccessibleListRow(
@@ -1089,6 +1208,12 @@ class _CreateAiAudiodescriptionScreenState
                       toggleValue: _recognizeCharacters,
                       enabled: !_running,
                     ),
+                    if (_recognizeCharacters)
+                      AccessibleListRow(
+                        id: 'load_character_catalog',
+                        title: l10n.audioDescriptionLoadCharacterCatalog,
+                        enabled: !_running,
+                      ),
                     AccessibleListRow(
                       id: 'screen_text',
                       title: l10n.audioDescriptionRecognizeScreenText,
@@ -1326,6 +1451,9 @@ class _CreateAiAudiodescriptionScreenState
                       case 'extended':
                         _extendedPauses = value;
                         break;
+                      case 'create_video_output':
+                        _createVideoOutput = value;
+                        break;
                       case 'characters':
                         _recognizeCharacters = value;
                         if (!value) _keepCharacterCatalog = false;
@@ -1369,6 +1497,9 @@ class _CreateAiAudiodescriptionScreenState
                       break;
                     case 'test_voice':
                       await _testVoice();
+                      break;
+                    case 'load_character_catalog':
+                      await _loadCharacterCatalog();
                       break;
                     case 'create':
                       unawaited(_create());

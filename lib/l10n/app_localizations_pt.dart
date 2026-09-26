@@ -4119,7 +4119,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get audioDescriptionKeepCharacterCatalog =>
-      'Manter o catálogo de personagens: útil para uma série';
+      'Guardar e atualizar o catálogo de personagens: útil para uma série';
 
   @override
   String get audioDescriptionCharacterCatalogChoose =>
@@ -4260,6 +4260,22 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get sonarTubeSaveAsMp3 => 'Guardar como MP3';
+
+  @override
+  String get audioDescriptionCreateVideoOutput => 'Guardar a audiodescrição no vídeo';
+
+  @override
+  String get audioDescriptionLoadCharacterCatalog => 'Carregar catálogo de personagens';
+
+  @override
+  String get audioDescriptionImportCharacterCatalog => 'Importar catálogo de ficheiro';
+
+  @override
+  String get audioDescriptionCharacterCatalogLoaded => 'Catálogo de personagens carregado.';
+
+  @override
+  String get audioDescriptionCreateWithAi => 'Criar audiodescrição com IA';
+
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
@@ -8369,7 +8385,7 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get audioDescriptionKeepCharacterCatalog =>
-      'Manter o catálogo de personagens: útil para uma série';
+      'Salvar e atualizar o catálogo de personagens: útil para uma série';
 
   @override
   String get audioDescriptionCharacterCatalogChoose =>
@@ -8510,4 +8526,20 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get sonarTubeSaveAsMp3 => 'Salvar como MP3';
+
+  @override
+  String get audioDescriptionCreateVideoOutput => 'Salvar a audiodescrição no vídeo';
+
+  @override
+  String get audioDescriptionLoadCharacterCatalog => 'Carregar catálogo de personagens';
+
+  @override
+  String get audioDescriptionImportCharacterCatalog => 'Importar catálogo de arquivo';
+
+  @override
+  String get audioDescriptionCharacterCatalogLoaded => 'Catálogo de personagens carregado.';
+
+  @override
+  String get audioDescriptionCreateWithAi => 'Criar audiodescrição com IA';
+
 }

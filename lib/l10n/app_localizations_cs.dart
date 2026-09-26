@@ -4097,7 +4097,7 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get audioDescriptionKeepCharacterCatalog =>
-      'Zachovat katalog postav: užitečné pro seriál';
+      'Uložit a aktualizovat katalog postav: užitečné pro seriál';
 
   @override
   String get audioDescriptionCharacterCatalogChoose =>
@@ -4237,4 +4237,20 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get sonarTubeSaveAsMp3 => 'Uložit jako MP3';
+
+  @override
+  String get audioDescriptionCreateVideoOutput => 'Uložit audiopopis do videa';
+
+  @override
+  String get audioDescriptionLoadCharacterCatalog => 'Načíst katalog postav';
+
+  @override
+  String get audioDescriptionImportCharacterCatalog => 'Importovat katalog ze souboru';
+
+  @override
+  String get audioDescriptionCharacterCatalogLoaded => 'Katalog postav byl načten.';
+
+  @override
+  String get audioDescriptionCreateWithAi => 'Vytvořit audiopopis pomocí AI';
+
 }

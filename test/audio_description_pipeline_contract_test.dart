@@ -107,9 +107,9 @@ void main() {
     test('mandatory coverage recovery is capped to three passes', () {
       expect(service, contains('for (var pass = 1; pass <= 3; pass++)'));
     });
-    test('large uncovered gaps get a separate best-effort recovery', () {
-      expect(service, contains('findLargeCoverageGaps'));
-      expect(service, contains('COVERAGE RECOVERY'));
+    test('intensive recovery mirrors Windows and only retries missing mandatory slots', () {
+      expect(service, contains('for (var pass = 1; pass <= 3; pass++)'));
+      expect(service, isNot(contains("idempotencyKey: 'ad-gap-")));
     });
     test('language is checked per generated description', () {
       expect(service, contains('Future<bool> wrongLanguage(String text)'));
@@ -118,10 +118,10 @@ void main() {
     });
     test('wrong-language glossary descriptions are also corrected', () {
       expect(service, contains('wrongGlossary'));
-      expect(service, contains('translate ONLY'));
+      expect(service, contains('You correct only the language of physical descriptions in a character glossary.'));
     });
     test('language correction never changes catalog id/name', () {
-      expect(service, contains("updatedGlossary[index]['description'] = description"));
+      expect(service, contains("updatedGlossary[originalIndex]['description'] = corrected[correctionIndex]!"));
     });
     test('catalog merge uses authoritative continuity helper', () {
       expect(service, contains('mergeCharacterCatalog'));
@@ -144,13 +144,13 @@ void main() {
     test('exact TTS duration is measured before placement', () {
       final synth = service.indexOf('_synthesizeTtsWithFallback');
       final duration = service.indexOf('_audioDuration(target.path)', synth);
-      final choose = service.indexOf('chooseNearbySlot', duration);
+      final choose = service.indexOf('_chooseWindowsStylePlacement', duration);
       expect(duration, greaterThan(synth));
       expect(choose, greaterThan(duration));
     });
     test('TTS may shift at most five seconds', () {
       expect(fallbacks, contains('maxPlacementShiftSeconds = 5.0'));
-      expect(service, contains('chooseNearbySlot'));
+      expect(service, contains('_chooseWindowsStylePlacement'));
     });
     test('mandatory descriptions are scheduled before optional', () {
       expect(service, contains('return a.mandatory ? -1 : 1'));
@@ -204,7 +204,7 @@ void main() {
     });
     test('final overlap bypasses safe-slot scheduler after explicit consent', () {
       final overlapBranch = service.indexOf('if (allowDialogueOverlap) {');
-      final safeScheduler = service.indexOf('chooseNearbySlot', overlapBranch);
+      final safeScheduler = service.indexOf('_chooseWindowsStylePlacement', overlapBranch);
       expect(overlapBranch, greaterThanOrEqualTo(0));
       expect(safeScheduler, greaterThan(overlapBranch));
       expect(service.substring(overlapBranch, safeScheduler), contains('continue;'));
@@ -280,9 +280,48 @@ void main() {
       expect(page, isNot(contains('pyannote')));
       expect(page, isNot(contains('benchmark')));
     });
-    test('safe final MP3 still uses ducking and 192 kbps', () {
+    test('safe final MP3 uses Windows-parity smooth ducking and 192 kbps', () {
       expect(service, contains("'-b:a', '192k'"));
       expect(service, contains('_duckVolume'));
+      expect(service, contains('_duckAttackSec = 0.280'));
+      expect(service, contains('_duckPreDuckSec = 0.180'));
+      expect(service, contains('_duckReleaseSec = 0.600'));
+      expect(service, contains('_buildWindowsDuckingExpression'));
+      expect(service, contains('cos(PI*'));
+      expect(service, contains(':eval=frame'));
+    });
+
+    test('Windows-parity creation options keep safe defaults and video mux', () {
+      expect(screen, contains('bool _extendedPauses = false;'));
+      expect(screen, contains('bool _recognizeScreenText = true;'));
+      expect(screen, contains('bool _createVideoOutput = false;'));
+      expect(screen, contains('audioDescriptionCreateVideoOutput'));
+      expect(service, contains('_muxAudioDescriptionIntoVideo'));
+      expect(service, contains("'output_is_video': outputIsVideo"));
+    });
+
+    test('prompt avoids redundant narration of clearly audible events', () {
+      expect(service, contains('DO NOT REDUNDANTLY DESCRIBE AUDIBLE EVENTS'));
+      expect(service, contains('_soundAlreadyObviousRule'));
+    });
+
+    test('Gemini prompt and request path mirror Windows temporal grounding', () {
+      expect(service, contains('visual_evidence_time_seconds'));
+      expect(service, contains('REPORT THE EXACT VISUAL-EVIDENCE INSTANT'));
+      expect(service, contains('Earlier descriptions are context, not evidence for the current image'));
+      expect(service, contains('Never delay an action to a later part of the same slot after that action has ended'));
+      expect(service, contains("item['visual_evidence_time_seconds']"));
+      expect(service, isNot(contains('if (evidenceValue == null) continue;')));
+      expect(service, contains('Evidence is requested to force Gemini to ground its'));
+      expect(service, contains("'systemInstruction': _windowsSystemInstruction"));
+      expect(service, contains("'thinkingBudget': 8192"));
+      expect(service, contains('desiredStart: item.requestedStart'));
+      expect(service, contains('You are a JSON repair assistant for an audio-description app.'));
+      expect(service, contains('You correct the output language of audio descriptions.'));
+      expect(service, contains('same indexes as the input'));
+      expect(service, contains('parseErrorHint'));
+      expect(service, isNot(contains('**Attached clip timeline:**')));
+      expect(service, contains('**Attached fallback clip timeline:**'));
     });
   });
 

@@ -21,6 +21,8 @@ import 'app_cache_service.dart';
 import 'app_settings_service.dart';
 import 'audio_description_fallbacks.dart';
 import 'audio_description_mix.dart';
+import 'document_library_service.dart';
+import 'media_export_destination_service.dart';
 import 'pyannote_mobile_service.dart';
 import 'voice_dictionary_service.dart';
 
@@ -38,6 +40,7 @@ class AiAudioDescriptionSettings {
     required this.keepCharacterCatalog,
     required this.characterCatalogName,
     required this.saveProject,
+    this.createVideoOutput = false,
     required this.ttsEngine,
     required this.edgeLanguage,
     required this.edgeVoice,
@@ -57,6 +60,7 @@ class AiAudioDescriptionSettings {
   final bool keepCharacterCatalog;
   final String? characterCatalogName;
   final bool saveProject;
+  final bool createVideoOutput;
   final String ttsEngine;
   final String edgeLanguage;
   final String edgeVoice;
@@ -77,6 +81,7 @@ class AiAudioDescriptionSettings {
         keepCharacterCatalog: keepCharacterCatalog,
         characterCatalogName: characterCatalogName,
         saveProject: saveProject,
+        createVideoOutput: createVideoOutput,
         ttsEngine: ttsEngine,
         edgeLanguage: edgeLanguage,
         edgeVoice: edgeVoice,
@@ -220,6 +225,7 @@ class AudioDescriptionEditableProject {
     required this.updatedAtUtc,
     required this.sourcePath,
     required this.outputMp3Path,
+    this.outputIsVideo = false,
     required this.sourceDurationSec,
     required this.outputDurationSec,
     required this.languageCode,
@@ -248,6 +254,7 @@ class AudioDescriptionEditableProject {
   final String updatedAtUtc;
   final String sourcePath;
   final String outputMp3Path;
+  final bool outputIsVideo;
   final double sourceDurationSec;
   final double outputDurationSec;
   final String languageCode;
@@ -275,6 +282,7 @@ class AudioDescriptionEditableProject {
     String? updatedAtUtc,
     String? sourcePath,
     String? outputMp3Path,
+    bool? outputIsVideo,
     double? outputDurationSec,
     String? ttsEngine,
     String? ttsVoice,
@@ -284,6 +292,8 @@ class AudioDescriptionEditableProject {
     bool clearSystemVoice = false,
     double? ttsSpeed,
     double? ttsPitch,
+    double? duckingDb,
+    int? fadeMs,
     List<AudioDescriptionProjectItem>? descriptions,
     List<Map<String, Object?>>? excludedDescriptions,
   }) =>
@@ -293,6 +303,7 @@ class AudioDescriptionEditableProject {
         updatedAtUtc: updatedAtUtc ?? this.updatedAtUtc,
         sourcePath: sourcePath ?? this.sourcePath,
         outputMp3Path: outputMp3Path ?? this.outputMp3Path,
+        outputIsVideo: outputIsVideo ?? this.outputIsVideo,
         sourceDurationSec: sourceDurationSec,
         outputDurationSec: outputDurationSec ?? this.outputDurationSec,
         languageCode: languageCode,
@@ -310,8 +321,8 @@ class AudioDescriptionEditableProject {
         ttsSpeed: ttsSpeed ?? this.ttsSpeed,
         ttsPitch: ttsPitch ?? this.ttsPitch,
         bitrateKbps: bitrateKbps,
-        duckingDb: duckingDb,
-        fadeMs: fadeMs,
+        duckingDb: duckingDb ?? this.duckingDb,
+        fadeMs: fadeMs ?? this.fadeMs,
         protectedIntervals: protectedIntervals,
         descriptions: descriptions ?? this.descriptions,
         excludedDescriptions: excludedDescriptions ?? this.excludedDescriptions,
@@ -338,7 +349,7 @@ class AudioDescriptionEditableProject {
       'updated_at_utc': updatedAtUtc,
       'source_path': sourcePath,
       'output_mp3_path': outputMp3Path,
-      'output_is_video': false,
+      'output_is_video': outputIsVideo,
       'audio_stream_index': null,
       'source_duration_sec': sourceDurationSec,
       'output_duration_sec': outputDurationSec,
@@ -426,6 +437,7 @@ class AiAudioDescriptionPreferences {
   static const _keepCatalogKey = 'ad_mobile_keep_character_catalog';
   static const _catalogNameKey = 'ad_mobile_character_catalog_name';
   static const _projectKey = 'ad_mobile_project';
+  static const _createVideoKey = 'ad_mobile_create_video';
   static const _ttsEngineKey = 'ad_mobile_tts_engine';
   static const _edgeLanguageKey = 'ad_mobile_edge_language';
   static const _edgeVoiceKey = 'ad_mobile_edge_voice';
@@ -442,12 +454,13 @@ class AiAudioDescriptionPreferences {
       'model': prefs.getString(_modelKey) ?? 'gemini-3.5-flash-lite',
       'language': prefs.getString(_languageKey) ?? 'it',
       'verbosity': prefs.getString(_verbosityKey) ?? 'detailed',
-      'extended': prefs.getBool(_extendedKey) ?? true,
+      'extended': prefs.getBool(_extendedKey) ?? false,
       'characters': prefs.getBool(_charactersKey) ?? true,
-      'screenText': prefs.getBool(_screenTextKey) ?? false,
+      'screenText': prefs.getBool(_screenTextKey) ?? true,
       'keepCatalog': prefs.getBool(_keepCatalogKey) ?? false,
       'catalogName': prefs.getString(_catalogNameKey),
       'project': prefs.getBool(_projectKey) ?? false,
+      'createVideo': prefs.getBool(_createVideoKey) ?? false,
       'ttsEngine': prefs.getString(_ttsEngineKey),
       'edgeLanguage': prefs.getString(_edgeLanguageKey),
       'edgeVoice': prefs.getString(_edgeVoiceKey),
@@ -479,6 +492,7 @@ class AiAudioDescriptionPreferences {
       await prefs.setString(_catalogNameKey, settings.characterCatalogName!.trim());
     }
     await prefs.setBool(_projectKey, settings.saveProject);
+    await prefs.setBool(_createVideoKey, settings.createVideoOutput);
     await prefs.setString(_ttsEngineKey, settings.ttsEngine);
     await prefs.setString(_edgeLanguageKey, settings.edgeLanguage);
     await prefs.setString(_edgeVoiceKey, settings.edgeVoice);
@@ -553,9 +567,30 @@ class AiAudioDescriptionService {
   static const _geminiUploadBase =
       'https://generativelanguage.googleapis.com/upload/v1beta';
   static const _visualChunkSeconds = 180.0;
-  // -12 dB, same ducking level used by Sonarpad Windows.
+  // Professional ducking envelope kept in parity with Sonarpad Windows:
+  // -12 dB, 280 ms cosine attack, 180 ms pre-duck and 600 ms cosine release.
   static const _duckVolume = 0.251188643150958;
+  static const _duckAttackSec = 0.280;
+  static const _duckPreDuckSec = 0.180;
+  static const _duckReleaseSec = 0.600;
   static const _extendedTailPadding = 0.12;
+  static const _windowsAudioContextOnlyRule =
+      'The soundtrack and dialogue are context only. You may use spoken names, titles, '
+      'relationships, and other dialogue privately to identify or disambiguate visible '
+      'characters and understand the scene. Never put spoken content itself into '
+      '`description_text`: do not transcribe, quote, translate, paraphrase, summarize, '
+      'complete, echo, answer, or restate any spoken line, even partially. A spoken name '
+      'or title may be used only as an identity label when it is confidently linked to the '
+      'visible person. Do not narrate facts learned only from speech as though they were '
+      'visible. Never describe that someone talks, asks, answers, shouts, whispers, or says '
+      'something; describe only new visual information. ';
+  static const _soundAlreadyObviousRule =
+      'Do not describe actions, events, or consequences that are already obvious from '
+      'the soundtrack itself. If a door slam, crash, explosion, gunshot, ringing phone, '
+      'applause, footsteps, engine, animal sound, or other clearly identifiable sound '
+      'already communicates what happened, do not redundantly narrate that same audible '
+      'event. Describe only additional visual information that a listener cannot infer '
+      'from the sound alone.';
 
   http.Client _http;
   bool _httpClosed = false;
@@ -692,6 +727,7 @@ class AiAudioDescriptionService {
   }
 
   Future<List<String>> listCharacterCatalogs() async {
+    await _syncCatalogsFromSonarpadDocuments();
     final directory = await _characterCatalogDirectory();
     final catalogs = <String>[];
     await for (final entity in directory.list(followLinks: false)) {
@@ -764,34 +800,116 @@ class AiAudioDescriptionService {
     );
     if (await file.exists()) await file.delete();
     await temporary.rename(file.path);
+    try {
+      await MediaExportDestinationService()
+          .saveInSonarpadAudiodescriptionCatalogs(
+        file.path,
+        originalName: p.basename(file.path),
+      );
+    } catch (error, stackTrace) {
+      await AppLogger.log(
+        'Audio description mobile: catalog Documents mirror warning '
+        'name="${name.trim()}" error=$error\n$stackTrace',
+      );
+    }
     await AppLogger.log(
       'Audio description mobile: character catalog saved '
       'name="${name.trim()}" entries=${merged.length}',
     );
   }
 
+  Future<void> _syncCatalogsFromSonarpadDocuments() async {
+    try {
+      final library = DocumentLibraryService();
+      await library.load();
+      final audioFolder = library.documents.where(
+        (item) =>
+            item.isFolder &&
+            item.parentId == null &&
+            item.displayName.trim().toLowerCase() == 'audiodescriptions',
+      ).toList(growable: false);
+      if (audioFolder.isEmpty) return;
+      final catalogsFolder = library.documents.where(
+        (item) =>
+            item.isFolder &&
+            item.parentId == audioFolder.first.id &&
+            item.displayName.trim().toLowerCase() == 'catalogs',
+      ).toList(growable: false);
+      if (catalogsFolder.isEmpty) return;
+      final directory = await _characterCatalogDirectory();
+      for (final item in library.documents.where(
+        (item) =>
+            !item.isFolder &&
+            item.parentId == catalogsFolder.first.id &&
+            item.extension.toLowerCase() == 'json',
+      )) {
+        try {
+          final path = await library.resolveFilePath(item);
+          final source = File(path);
+          if (!await source.exists()) continue;
+          final decoded = jsonDecode(await source.readAsString());
+          if (decoded is! Map ||
+              decoded['format']?.toString() != 'sonarpad-character-catalog' ||
+              decoded['characters'] is! List) {
+            continue;
+          }
+          final name = decoded['name']?.toString().trim();
+          final stem = _catalogFileStem(
+            name?.isNotEmpty == true ? name! : p.basenameWithoutExtension(path),
+          );
+          await source.copy(p.join(directory.path, '$stem.json'));
+        } catch (_) {}
+      }
+    } catch (error, stackTrace) {
+      await AppLogger.log(
+        'Audio description mobile: catalog Documents sync warning '
+        'error=$error\n$stackTrace',
+      );
+    }
+  }
+
+  Future<String> importCharacterCatalog(String filePath) async {
+    final source = File(filePath);
+    if (!await source.exists()) {
+      throw FileSystemException('Character catalog not found', filePath);
+    }
+    final decoded = jsonDecode(await source.readAsString());
+    if (decoded is! Map ||
+        decoded['format']?.toString() != 'sonarpad-character-catalog' ||
+        decoded['characters'] is! List) {
+      throw const FormatException('Unsupported Sonarpad character catalog');
+    }
+    final suggestedName = decoded['name']?.toString().trim();
+    final name = suggestedName?.isNotEmpty == true
+        ? suggestedName!
+        : p.basenameWithoutExtension(filePath);
+    final characters = _normalizeCatalogCharacters(decoded['characters'] as List);
+    if (characters.isEmpty) {
+      throw const FormatException('Empty Sonarpad character catalog');
+    }
+    await saveCharacterCatalog(name, characters);
+    return name;
+  }
+
   List<Map<String, Object?>> _normalizeCatalogCharacters(List<dynamic> input) {
-    final byKey = <String, Map<String, Object?>>{};
+    final normalized = <Map<String, Object?>>[];
     for (final raw in input) {
       if (raw is! Map) continue;
-      final id = raw['id']?.toString().trim() ?? '';
-      final name = raw['name']?.toString().trim() ?? '';
-      final description = raw['description']?.toString().trim() ?? '';
+      final name = raw['name']?.toString().replaceAll(RegExp(r'\s+'), ' ').trim() ?? '';
+      final description =
+          raw['description']?.toString().replaceAll(RegExp(r'\s+'), ' ').trim() ?? '';
       if (name.isEmpty || description.isEmpty) continue;
-      final normalized = <String, Object?>{
-        'id': id.isEmpty ? _safeCharacterId(name) : id,
-        'name': name.replaceAll(RegExp(r'\s+'), ' '),
-        'description': description.replaceAll(RegExp(r'\s+'), ' '),
-      };
-      final key = normalized['name'].toString().toLowerCase();
-      final previous = byKey[key];
-      if (previous == null ||
-          normalized['description'].toString().length >
-              previous['description'].toString().length) {
-        byKey[key] = normalized;
-      }
+      normalized.add(<String, Object?>{
+        'id': raw['id']?.toString().trim() ?? '',
+        'name': name,
+        'description': description,
+      });
     }
-    return byKey.values.take(96).toList();
+    return AudioDescriptionFallbacks.mergeCharacterCatalog(
+      const <Map<String, Object?>>[],
+      normalized,
+      maxCharacters: 96,
+    );
   }
 
   List<Map<String, Object?>> _mergeCatalogForPersistence(
@@ -967,6 +1085,7 @@ class AiAudioDescriptionService {
             activeGeminiModel: activeGeminiModel,
             chunkSlots: chunkSlots,
             glossary: glossary,
+            recentDescriptions: descriptions,
             onHighDemand: onHighDemand,
             onQuota: onQuota,
           );
@@ -1004,6 +1123,9 @@ class AiAudioDescriptionService {
 
       _checkCancel();
       var normalized = _dedupeDescriptions(descriptions);
+      if (settings.recognizeCharacters) {
+        normalized = _suppressRepeatedLeadingCharacterNames(normalized, glossary);
+      }
       if (normalized.isEmpty) {
         throw StateError('AUDIO_DESCRIPTION_NO_DESCRIPTIONS');
       }
@@ -1130,15 +1252,42 @@ class AiAudioDescriptionService {
 
       _emit(onProgress, 'mixing', 0.88);
       final cleanBase = _safeBaseName(p.basenameWithoutExtension(sourcePath));
-      final outputPath = p.join(operationDir.path, '${cleanBase}_audiodescritto.mp3');
+      final mixedMp3Path =
+          p.join(operationDir.path, '${cleanBase}_audiodescritto.mp3');
       await _renderFinalMp3(
         sourcePath: sourcePath,
-        outputPath: outputPath,
+        outputPath: mixedMp3Path,
         sourceDurationSec: probe.durationSec,
         hasAudio: probe.hasAudio,
         placements: inserted,
-        onProgress: (value) => _emit(onProgress, 'mixing', 0.88 + value * 0.10),
+        onProgress: (value) => _emit(onProgress, 'mixing', 0.88 + value * 0.08),
       );
+      final mixedMp3 = File(mixedMp3Path);
+      if (!await mixedMp3.exists() || await mixedMp3.length() < 1024) {
+        throw StateError('AUDIO_DESCRIPTION_OUTPUT_INVALID');
+      }
+
+      var outputPath = mixedMp3Path;
+      if (settings.createVideoOutput) {
+        if (settings.allowExtendedPauses) {
+          throw StateError('AUDIO_DESCRIPTION_VIDEO_EXTENDED_PAUSES_UNSUPPORTED');
+        }
+        _emit(onProgress, 'mixing', 0.97);
+        outputPath = await _muxAudioDescriptionIntoVideo(
+          sourcePath: sourcePath,
+          audioPath: mixedMp3Path,
+          outputBasePath: p.join(
+            operationDir.path,
+            '${cleanBase}_audiodescritto',
+          ),
+          durationSec: probe.durationSec,
+        );
+        if (outputPath != mixedMp3Path) {
+          try {
+            if (await mixedMp3.exists()) await mixedMp3.delete();
+          } catch (_) {}
+        }
+      }
       final output = File(outputPath);
       if (!await output.exists() || await output.length() < 1024) {
         throw StateError('AUDIO_DESCRIPTION_OUTPUT_INVALID');
@@ -1170,6 +1319,7 @@ class AiAudioDescriptionService {
           projectPath: projectPath,
           sourcePath: sourcePath,
           outputMp3Path: outputPath,
+          outputIsVideo: settings.createVideoOutput,
           settings: placementSettings,
           effectiveGeminiModel: activeGeminiModel,
           pyannote: pyannote,
@@ -1386,6 +1536,8 @@ class AiAudioDescriptionService {
           end: slot.end,
           mandatory: slot.mandatory,
           maxWords: slot.maxWords,
+          partitionIndex: slot.partitionIndex,
+          partitionCount: slot.partitionCount,
         ));
       }
       baseIndex++;
@@ -1528,62 +1680,486 @@ class AiAudioDescriptionService {
     } catch (_) {}
   }
 
-  String _buildPrompt({
+  _GeminiPromptBundle _buildPrompt({
     required AiAudioDescriptionSettings settings,
     required double chunkStart,
     required double chunkEnd,
     required List<_SafeSlot> slots,
     required List<Map<String, Object?>> glossary,
+    List<_GeneratedDescription> recentDescriptions = const <_GeneratedDescription>[],
+    bool fallbackClipTimeline = false,
   }) {
-    final language = _languageName(settings.languageCode);
-    final verbosity = switch (settings.verbosity) {
-      'short' => 'Brief: keep descriptions extremely brief (1-3 words maximum). Only describe the most critical visual elements essential for understanding the scene.',
-      'standard' => 'Standard: provide balanced descriptions (3-6 words). Focus on important visual information without overwhelming detail.',
-      _ => 'Detailed: provide rich descriptions (6-12 words). Include important visual context, emotions, scene details and atmospheric elements while remaining speakable.',
-    };
-    final slotJson = jsonEncode(slots.map((slot) => slot.toJson()).toList());
-    final glossaryJson = settings.recognizeCharacters ? jsonEncode(glossary) : '[]';
-    return '''
-You generate professional audio descriptions for blind users.
-Analyze ONLY the attached video chunk, which represents the original movie timeline from ${chunkStart.toStringAsFixed(3)}s to ${chunkEnd.toStringAsFixed(3)}s.
+    final language = _windowsPromptLanguageDetails(settings.languageCode);
+    final targetLanguageName = language.name;
+    final enableGlossary = settings.recognizeCharacters;
+    final mandatorySlots = slots.where((slot) => slot.mandatory).toList();
+    final extendedAnchors = slots
+        .where((slot) => !slot.mandatory && slot.end - slot.start >= 1.0)
+        .where((slot) => chunkEnd - slot.end >= 0.5)
+        .toList();
+    final dialogueFreeWindows = _formatWindowsDialogueFreeWindows(
+      slots,
+      originSec: chunkStart,
+    );
+    final intensiveSlotsText = _formatWindowsIntensiveSlots(
+      mandatorySlots,
+      originSec: chunkStart,
+    );
+    final extendedAnchorsText = _formatWindowsExtendedAnchors(
+      extendedAnchors,
+      originSec: chunkStart,
+      localChunkDurationSec: chunkEnd - chunkStart,
+    );
+    final characterContinuityText = enableGlossary && glossary.isNotEmpty
+        ? jsonEncode(glossary)
+        : '';
+    final recentDescriptionsText = _formatWindowsRecentDescriptions(
+      recentDescriptions,
+      chunkStart,
+    );
 
-CRITICAL SAFETY RULES:
-1. Never place narration over dialogue. You may use ONLY the safe slots listed below.
-2. Each description MUST reference exactly one slot_id and remain inside that slot's start/end time.
-3. mandatory=true slots have priority. Cover them when there is meaningful visual information. Optional slots may be left empty.
-4. Do not describe spoken dialogue or repeat audible information.
-5. evidence_time_sec MUST be a real moment inside the attached video where the described visual event can be seen. It must use the ORIGINAL MOVIE absolute timeline.
-6. Do not invent events, names, emotions or objects that are not visually supported.
-7. Keep wording short enough to fit the safe slot. Do not merge unrelated events.
-8. Output language: $language.
-9. Detail level: $verbosity
-10. ${settings.recognizeCharacters ? 'Use the existing character glossary when the visual identity is clear. You may add newly identified characters, but avoid guessing.' : 'Do not identify characters by name. Use generic natural references such as the man, the woman, the child, or pronouns.'}
-11. ${settings.recognizeScreenText ? 'Read narratively important on-screen text when it is visibly legible and the soundtrack does not already provide it. Prioritize time jumps, dates, locations, title cards, letters/messages and meaningful signs. Never read decorative text, persistent watermarks, routine credits or subtitles that merely repeat dialogue. The narration must still fit entirely inside an authorized safe slot.' : 'Do not add narration merely to read on-screen text.'}
-
-Existing character glossary:
-$glossaryJson
-
-Safe slots on the ORIGINAL MOVIE timeline:
-$slotJson
-
-Return ONLY valid JSON, without markdown or commentary, exactly in this form:
-{
-  "character_glossary": [
-    {"id":"character-id","name":"Name or null","description":"stable visual description"}
-  ],
-  "audio_descriptions": [
-    {
-      "slot_id":"S0001",
-      "start_time_sec":12.3,
-      "end_time_sec":15.0,
-      "evidence_time_sec":13.2,
-      "description_text":"...",
-      "mandatory":true
+    final String characterNameDirective;
+    final String subjectRepetitionDirective;
+    final String systemMission;
+    final String glossarySchema;
+    final String exampleGlossaryJson;
+    if (enableGlossary) {
+      characterNameDirective =
+          '3.  **USE NAMES AND ESTABLISHED IDENTITIES ACCURATELY:** A saved series '
+          'catalog is authoritative. Reuse an established catalog name and ID when the '
+          'person is confidently recognized, even if that name is not spoken again in this '
+          'clip. For a genuinely new character, use a proper name only after it is clearly '
+          'revealed in dialogue. Do not invent names or duplicate an established identity.';
+      subjectRepetitionDirective =
+          "7.  **AVOID REPEATING THE SUBJECT'S NAME:** When immediately consecutive "
+          'descriptions clearly keep the same character as their subject, write the full '
+          'name only in the first description. Then use a natural pronoun or omit the subject '
+          'when the target language allows it. Repeat the name after a scene or subject change, '
+          'a long gap, or whenever omission could be unclear.';
+      systemMission =
+          'You are an expert Audio Describer. Analyze the provided video and generate '
+          'a character glossary plus timed audio descriptions in one JSON object.';
+      glossarySchema = '''1.  **"character_glossary":** An array of objects, where each object represents a distinct character. Each character object must contain:
+    *   `"id"`: The permanent identity key. If the character matches an established saved-catalog entry, return EXACTLY that existing ID, character-for-character. Never shorten it, regenerate it from the visible/spoken name, or create an alias ID. Only a genuinely new character may receive a new unique descriptive ID (e.g., "man_in_red_shirt").
+    *   `"description"`: For a genuinely new character, provide a definitive physical description in $targetLanguageName. For an ESTABLISHED catalog character, do NOT rewrite, summarize, correct, or paraphrase the saved biography. Return only genuinely NEW visual appearance information observed in this clip (for example a new outfit, hat, bandage, glasses, injury, or other distinguishing visible detail). If there is no genuinely new visual fact, repeat the established description exactly rather than inventing a variation. Never add or alter relationships, names, ages, roles, backstory, or other non-visual facts for an established character.
+    *   `"name"`: For an established character, keep the established catalog name. For a genuinely new character, use a proper name only if it is spoken clearly in the video; otherwise use a concise visual label.''';
+      exampleGlossaryJson = jsonEncode(<Map<String, Object?>>[
+        <String, Object?>{
+          'id': 'man_in_suit',
+          'description': language.glossaryExample,
+          'name': 'David',
+        },
+      ]);
+    } else {
+      characterNameDirective =
+          '3.  **DO NOT IDENTIFY CHARACTERS BY NAME:** Do not build a character glossary, '
+          'do not infer identity across clips, and use concise generic visual references '
+          'such as the man, the woman, the child, or the driver.';
+      subjectRepetitionDirective =
+          '7.  **AVOID REPETITIVE SUBJECT LABELS:** When consecutive descriptions clearly '
+          'keep the same person as their subject, use a pronoun or omit the subject when this '
+          'remains clear. Do not introduce a name or infer identity across clips.';
+      systemMission =
+          'You are an expert Audio Describer. Analyze the provided video and generate '
+          'timed audio descriptions only. Character recognition and glossary creation are disabled.';
+      glossarySchema =
+          '1.  **"character_glossary":** Always return an empty array. Do not identify, '
+          'catalogue, or name characters.';
+      exampleGlossaryJson = '[]';
     }
-  ]
-}
-If there is nothing useful to describe, return an empty audio_descriptions array.
+
+    final verbosityInstruction = switch (settings.verbosity) {
+      'short' =>
+        'Keep descriptions extremely brief (1-3 words maximum). Only describe the most critical visual elements that are essential for understanding the scene.',
+      'standard' =>
+        'Provide balanced descriptions (3-6 words). Focus on important visual information without overwhelming detail. This is the recommended setting.',
+      _ =>
+        'Provide rich, detailed descriptions (6-12 words). Include important visual context, emotions, scene details, and atmospheric elements that enhance understanding.',
+    };
+
+    final selectionDirective =
+        '2.  **FILL EVERY USABLE SILENCE:** This is intensive mode. Produce at least one '
+        'description for every numbered mandatory slot supplied by the user. Temporal grounding '
+        'has absolute priority over choosing an interesting action. Do not omit a slot, even if '
+        'the view is static. If no action can be confirmed inside that exact slot, describe only '
+        'what is visibly present there: a logo, title card, setting, framing, stationary character '
+        'or object, or the current resulting state. A static or mundane description that is correct '
+        'for the slot is always preferable to an interesting action seen even a few seconds before '
+        'or after it. A mandatory slot is a container, not a license to shift an action in time: '
+        'choose the exact sub-range where the described action, pose, or state is actually visible. '
+        'If an action has already ended earlier in the same slot, do not describe it later in that '
+        'slot; describe what is visible at the chosen timestamp instead. You may add more descriptions '
+        'inside the same slot when distinct, useful visual changes occur and there is enough time. '
+        'Keep entries chronological, non-overlapping, and keep their combined words within the slot\'s '
+        'word budget.';
+
+    final groundingDirective = extendedAnchorsText.isNotEmpty
+        ? '8.  **GROUND EVERY DESCRIPTION IN THE CORRECT VISUAL MOMENT:** For normal and mandatory '
+          'descriptions, re-inspect only the frames inside the chosen start/end interval and describe '
+          'only what is actually visible there. For a mandatory slot, the returned start/end must '
+          'coincide with the moment the described visual fact is visible; never place an already-finished '
+          'action later in the same slot merely because there is more narration room there. For an '
+          'OPTIONAL INTENSIVE SHORT-GAP anchor, the '
+          'timestamp marks the PAUSE point, so use the anchor\'s explicitly listed IMMEDIATE_SCENE '
+          'window instead: describe only the scene that begins directly after that pause. Never use '
+          'an extended pause as storage for an action from farther ahead in the clip. Earlier or later '
+          'scenes are context only, not evidence for the current description.'
+        : '8.  **GROUND EVERY DESCRIPTION IN ITS EXACT TIME RANGE:** Before writing each entry, '
+          're-inspect the frames inside its chosen start/end interval. Every described character, '
+          'object, pose, and action must actually be visible during that same interval. When the entry '
+          'belongs to a mandatory slot, the returned start/end must coincide with the moment the visual '
+          'fact is visible; the slot boundaries do not make earlier and later moments interchangeable. '
+          'Never borrow, move, or repeat an action seen earlier or later in the clip just to fill an available '
+          'silence. Earlier descriptions are context, not evidence for the current image. If nothing '
+          'changes, describe the current visible character, pose, setting, or resulting state instead '
+          'of recalling a previous action.';
+
+    var coreDirectives = '''
+**CORE DIRECTIVES (Apply to `audio_descriptions`):**
+1.  **DO NOT OVERLAP DIALOGUE:** The most critical rule. Never describe over spoken dialogue. Omit the visual information if there is no sufficiently long dialogue-free window.
+$selectionDirective
+$characterNameDirective
+4.  **USE AUDIO ONLY AS PRIVATE CONTEXT — NEVER AS DESCRIPTION CONTENT:** $_windowsAudioContextOnlyRule
+5.  **DO NOT REDUNDANTLY DESCRIBE AUDIBLE EVENTS:** $_soundAlreadyObviousRule
+6.  **NEVER REPEAT AN ACTION:** Before returning the timeline, compare every description with all
+    earlier descriptions in this response. Do not narrate the same continuing action twice by using
+    synonyms, character aliases, or extra details. For example, after describing someone placing a
+    crown, do not later say that the person sets the crown on the ruler's head. Describe only a truly
+    new visual development or the resulting state.
+$subjectRepetitionDirective
+$groundingDirective
+9.  **REPORT THE EXACT VISUAL-EVIDENCE INSTANT:** For every description, set
+    `visual_evidence_time_seconds` to the precise video second at which the described visual fact
+    is directly visible. Re-inspect that exact instant before returning it. This is not a guessed
+    narration time and not the start of the silence: it is the evidence frame for the sentence.
+    It MUST use the same local/absolute timeline requested for the description and MUST fall inside
+    that description's returned start/end interval. If the event is already over at the candidate
+    time, do not reuse it; choose a fact that is actually visible there instead.
 ''';
+
+    var outputKeys = 'two top-level keys: "character_glossary" and "audio_descriptions"';
+    var screenTextSchema = '';
+    var screenTextExample = '';
+    if (settings.recognizeScreenText) {
+      outputKeys = 'three top-level keys: "character_glossary", "audio_descriptions", and "on_screen_text"';
+      screenTextSchema = '''
+3.  **"on_screen_text":** A compact array recording distinct legible text in the current video
+    chunk, including text visible during dialogue. Each object must contain "text" (the actual
+    visible words in their original language), "visual_evidence_time_seconds" (the exact visible
+    instant, using the same local/absolute timeline requested for descriptions), and
+    "narratively_relevant" (a JSON boolean). Exclude decorative text, persistent watermarks,
+    routine credits, and subtitles that only repeat speech. Never guess unreadable words.
+    Return [] if no qualifying text is legible. This array is evidence metadata, not narration.
+    For each relevant entry, include its readable content in audio_descriptions when it is
+    visible inside an authorized dialogue-free window and fits that window's word budget.
+    Otherwise keep it only in on_screen_text. Never move it to a later silence, overlap dialogue,
+    or change any existing timing, visual-grounding, or mandatory-slot rules to accommodate it.
+''';
+      screenTextExample = ',\n  "on_screen_text": []';
+      coreDirectives += '''10.  **READ NARRATIVELY IMPORTANT ON-SCREEN TEXT WHEN IT IS VISUALLY PRESENT:** Treat visible text
+    as visual information when it adds story or scene information that the soundtrack does not
+    already provide. Prioritize time jumps (for example "Three years later"), dates, locations,
+    title cards, letters or messages, signs, labels, and a logo or brand only when it is relevant
+    to understanding the scene. Render the meaning naturally in the target language when useful.
+    When describing important, legible text, include what it says rather than merely saying
+    that a title, sign, or message is visible. Never guess words that you cannot read.
+    Do NOT read decorative text, persistent channel logos/watermarks, routine credits, or subtitles/
+    closed captions that merely repeat audible dialogue. This rule NEVER overrides dialogue
+    protection: the resulting description must still fit completely inside an authorized
+    dialogue-free window, and if no such window is available, omit the text rather than speaking
+    over dialogue. The text must be visible at the reported `visual_evidence_time_seconds`.
+''';
+    }
+
+    final systemInstruction = '''
+$systemMission
+
+**OUTPUT FORMAT (Strict JSON):**
+Your entire output MUST be a single JSON object with $outputKeys.
+
+$glossarySchema
+
+2.  **"audio_descriptions":** An array of objects, where each object represents a timed description. Each description object must contain:
+    *   `"start_time_mmss"`: The start time of the description in "MM:SS" or "MM:SS.ms" format. Use a dot before milliseconds; never write `MM:SS:ms`.
+    *   `"end_time_mmss"`: The end time of the description in "MM:SS" or "MM:SS.ms" format. Use a dot before milliseconds; never write `MM:SS:ms`.
+    *   `"visual_evidence_time_seconds"`: A JSON number giving the exact second, on the same timeline as the timestamps above, where the described visual fact is directly visible. It must fall between this object's start and end times.
+    *   `"description_text"`: The concise description text, written entirely in $targetLanguageName and following all core directives.
+
+$screenTextSchema$coreDirectives
+
+**EXAMPLE OUTPUT:**
+{
+  "character_glossary": $exampleGlossaryJson,
+  "audio_descriptions": [
+    {"start_time_mmss": "00:10.500", "end_time_mmss": "00:12.000", "visual_evidence_time_seconds": 11.2, "description_text": ${jsonEncode(language.descriptionExample)}}
+  ]$screenTextExample
+}
+''';
+
+    final userPromptParts = <String>[
+      'Analyze the provided video and generate a unified JSON object containing '
+          '${enableGlossary ? 'the character glossary and ' : ''}'
+          'the timed audio descriptions. '
+          '${enableGlossary ? 'Follow all instructions.' : 'Set character_glossary to an empty array and do not use character names.'}',
+      '\n**Current Task Specifications:**',
+      '*   **Target language for every natural-language output field (`description_text` and `character_glossary[].description`):** $targetLanguageName. Names and JSON keys must remain unchanged.',
+      '*   **Verbosity Level:** $verbosityInstruction',
+    ];
+    if (dialogueFreeWindows.isNotEmpty) {
+      userPromptParts.addAll(<String>[
+        '*   **Authoritative dialogue-free windows (seconds):** $dialogueFreeWindows',
+        '*   Every audio description MUST fit completely inside one of these windows. These windows were measured from the soundtrack with pyannote; never place a description outside them or across a window boundary.',
+      ]);
+    }
+    if (intensiveSlotsText.isNotEmpty) {
+      userPromptParts.addAll(<String>[
+          '*   **INTENSIVE MODE — mandatory numbered slots:** $intensiveSlotsText',
+          '*   Return at least one `audio_descriptions` entry for every mandatory slot. You may add further entries inside a slot when separate important visual changes occur and the available time can accommodate them. Keep every entry in chronological order, do not overlap entries, place each start/end completely inside one listed slot, and keep the combined word count of all entries in a slot within that slot\'s maximum. Do not invent timestamps outside the listed slots. A mandatory slot does not permit repeating or paraphrasing an action already described in an earlier slot: use a different useful visual fact or the newly reached state instead. For EACH slot, inspect only the frames inside that slot before choosing the text. Every character, object, and action named in the entry must be visible inside that exact slot; never pull an action from a preceding or following scene. The slot boundaries are only the allowed container: choose start/end around the exact frames that show the fact you describe. Also report `visual_evidence_time_seconds` for the exact evidence frame inside that returned interval; do not merely copy the silence start unless that frame really shows the described fact. Never delay an action to a later part of the same slot after that action has ended, and never anticipate an action that has not started yet. If those frames are static, describe their current visible state or setting, including a logo or title card when that is what is actually visible. Temporal correctness is more important than visual interest: a plain but correct description is always preferable to an action seen outside the slot.',
+      ]);
+      if (intensiveSlotsText.contains('LONG_SILENCE_PART')) {
+        userPromptParts.add(
+          '*   **LONG-SILENCE PARTITIONS:** Any slot marked `LONG_SILENCE_PART n/N` is an artificial balanced subdivision of one longer dialogue-free window, NOT a scene boundary or narrative beat. Treat each marked part as an independent visual checkpoint. Re-inspect only frames inside that exact part and describe what is visibly true there now. Never carry an action, pose, reaction, movement, or setting forward from the preceding part merely for narrative continuity; if it ended before this part starts, it is invalid here. Likewise, never borrow an action from a later part. Temporal correctness has absolute priority over preserving a story sequence.',
+        );
+      }
+    } else {
+      userPromptParts.add(
+        '*   **INTENSIVE MODE:** This chunk has no dialogue-free interval long enough. Use only an optional intensive short-gap anchor listed below, if one exists; otherwise return an empty `audio_descriptions` array and do not invent timestamps.',
+      );
+    }
+    if (extendedAnchorsText.isNotEmpty) {
+      final shortGapInstruction = settings.allowExtendedPauses
+          ? 'The player may pause the original media only if the synthesized narration still cannot fit naturally. '
+          : 'The original media will NOT be paused: after synthesis, any narration that cannot fit naturally between dialogue will be discarded. ';
+      userPromptParts.addAll(<String>[
+        '*   **OPTIONAL INTENSIVE SHORT-GAP ANCHORS (1+ second speech-free gaps):** $extendedAnchorsText',
+        '*   Each item has a `PAUSE` range and a bounded `IMMEDIATE_SCENE` range. The description timestamp MUST stay entirely inside that item\'s PAUSE range, but the `description_text` MUST describe ONLY visual information visible in that same item\'s IMMEDIATE_SCENE range — the scene beginning directly after the pause. This mapping is strict: NEVER use E0001 to describe E0002, a later shot, a later scene, or anything outside E0001\'s IMMEDIATE_SCENE window, even if it is more important or visually interesting. Before returning each extended-anchor entry, re-inspect that exact IMMEDIATE_SCENE window and discard the entry if its action, object, character, or setting is not visibly present there.',
+        '*   These anchors are OPTIONAL, not mandatory. Use one only for important, plot-relevant visual information from its immediate following scene that cannot be placed in a normal mandatory slot. Keep it as concise as possible. Use at most one description per anchor. Do not fill minor pauses, breaths, or every available anchor. $shortGapInstruction',
+      ]);
+    } else {
+      userPromptParts.add(
+        '*   **INTENSIVE SHORT GAPS:** No optional short speech-free anchor is available in this clip; do not invent one.',
+      );
+    }
+    if (characterContinuityText.isNotEmpty) {
+      userPromptParts.addAll(<String>[
+        '*   **ESTABLISHED CHARACTER CONTINUITY FROM EARLIER CLIPS OR A SAVED SERIES CATALOG:** $characterContinuityText',
+        '*   This catalog is AUTHORITATIVE for character identity. These names and IDs were established earlier in the same video or in a prior episode and may be reused without being spoken again. Match a person by stable physical appearance and identity, not merely by clothing. When a match is confident, copy EXACTLY the established `id` into `character_glossary`; do not derive a shorter ID from the name used in narration. Keep the established catalog name in the glossary. A first name, surname, title, nickname, abbreviation, or different outfit does NOT create a new character. Never transfer an identity to a different person; when uncertain, use a generic label in narration rather than inventing a duplicate catalog entry. For an established character\'s glossary description, never restate or rewrite stable biography/relationships. Supply only a genuinely new visible appearance fact from this clip; otherwise copy the established description exactly. Do not \'correct\' the catalog from visual guesswork.',
+      ]);
+    }
+    if (recentDescriptionsText.isNotEmpty) {
+      userPromptParts.addAll(<String>[
+        '*   **RECENT DESCRIPTIONS IMMEDIATELY BEFORE THIS CLIP:** $recentDescriptionsText',
+        '*   These entries are context only and must not be returned again. If this clip directly continues the same scene with the same clear subject, follow the rule against repeating that subject\'s name. After a scene or subject change, restore an explicit name whenever needed for clarity.',
+      ]);
+    }
+    if (fallbackClipTimeline) {
+      userPromptParts.add(
+        '*   **Attached fallback clip timeline:** 0.000-${(chunkEnd - chunkStart).toStringAsFixed(3)} seconds. All windows and slots above are relative to this one-minute clip. Return local timestamps only.',
+      );
+    }
+
+    return _GeminiPromptBundle(
+      systemInstruction: systemInstruction,
+      userPrompt: userPromptParts.join('\n'),
+    );
+  }
+
+  _WindowsPromptLanguage _windowsPromptLanguageDetails(String rawCode) {
+    final canonical = rawCode.trim().toLowerCase().replaceAll('_', '-');
+    final code = canonical == 'pt-br' || canonical == 'zh-cn'
+        ? (canonical == 'zh-cn' ? 'zh' : canonical)
+        : canonical.split('-').first;
+    return switch (code) {
+      'ar' => const _WindowsPromptLanguage('Arabic', 'A car speeds down the street.', 'A tall man in a dark suit.'),
+      'cs' => const _WindowsPromptLanguage('Czech', 'Po ulici se řítí auto.', 'Vysoký muž v tmavém obleku.'),
+      'de' => const _WindowsPromptLanguage('German', 'Ein Auto rast die Straße entlang.', 'Ein großer Mann in einem dunklen Anzug.'),
+      'es' => const _WindowsPromptLanguage('Spanish', 'Un coche avanza a toda velocidad por la calle.', 'Un hombre alto con traje oscuro.'),
+      'fr' => const _WindowsPromptLanguage('French', 'Une voiture file dans la rue.', 'Un homme grand en costume sombre.'),
+      'hi' => const _WindowsPromptLanguage('Hindi', 'एक कार सड़क पर तेज़ी से दौड़ती है।', 'गहरे सूट में एक लंबा आदमी।'),
+      'it' => const _WindowsPromptLanguage('Italian', "Un'auto sfreccia lungo la strada.", 'Un uomo alto con un abito scuro.'),
+      'lt' => const _WindowsPromptLanguage('Lithuanian', 'Automobilis lekia gatve.', 'Aukštas vyras su tamsiu kostiumu.'),
+      'pl' => const _WindowsPromptLanguage('Polish', 'Samochód pędzi ulicą.', 'Wysoki mężczyzna w ciemnym garniturze.'),
+      'pt-br' => const _WindowsPromptLanguage('Brazilian Portuguese', 'Um carro corre pela rua.', 'Um homem alto de terno escuro.'),
+      'pt' => const _WindowsPromptLanguage('Portuguese', 'Um carro avança em alta velocidade pela rua.', 'Um homem alto de fato escuro.'),
+      'ru' => const _WindowsPromptLanguage('Russian', 'Машина мчится по улице.', 'Высокий мужчина в тёмном костюме.'),
+      'sr' => const _WindowsPromptLanguage('Serbian', 'Аутомобил јури улицом.', 'Висок мушкарац у тамном оделу.'),
+      'sv' => const _WindowsPromptLanguage('Swedish', 'En bil rusar längs gatan.', 'En lång man i mörk kostym.'),
+      'tr' => const _WindowsPromptLanguage('Turkish', 'A car speeds down the street.', 'A tall man in a dark suit.'),
+      'uk' => const _WindowsPromptLanguage('Ukrainian', 'Автомобіль мчить вулицею.', 'Високий чоловік у темному костюмі.'),
+      'vi' => const _WindowsPromptLanguage('Vietnamese', 'Một chiếc ô tô lao nhanh trên phố.', 'Một người đàn ông cao mặc bộ vest tối màu.'),
+      'zh' => const _WindowsPromptLanguage('Chinese', '一辆汽车沿街疾驰。', '一名身穿深色西装的高个男子。'),
+      _ => const _WindowsPromptLanguage('English', 'A car speeds down the street.', 'A tall man in a dark suit.'),
+    };
+  }
+
+  String _formatWindowsDialogueFreeWindows(
+    List<_SafeSlot> slots, {
+    required double originSec,
+  }) {
+    if (slots.isEmpty) return '';
+    final ordered = List<_SafeSlot>.of(slots)
+      ..sort((a, b) => a.start.compareTo(b.start));
+    final merged = <(double, double)>[];
+    for (final slot in ordered) {
+      final start = slot.start - originSec;
+      final end = slot.end - originSec;
+      if (end - start < 0.5) continue;
+      if (merged.isNotEmpty && start <= merged.last.$2 + 0.001) {
+        final previous = merged.removeLast();
+        merged.add((previous.$1, math.max(previous.$2, end)));
+      } else {
+        merged.add((start, end));
+      }
+    }
+    var result = merged
+        .map((item) => '${item.$1.toStringAsFixed(3)}-${item.$2.toStringAsFixed(3)}')
+        .join(', ');
+    if (result.length > 12000) {
+      final cut = result.substring(0, 12000);
+      final comma = cut.lastIndexOf(',');
+      result = '${comma > 0 ? cut.substring(0, comma) : cut}, ...';
+    }
+    return result;
+  }
+
+  String _formatWindowsIntensiveSlots(
+    List<_SafeSlot> slots, {
+    required double originSec,
+  }) {
+    return slots.map((slot) {
+      final partitionNote = slot.partitionCount > 1
+          ? '; LONG_SILENCE_PART ${slot.partitionIndex}/${slot.partitionCount}; inspect this part independently'
+          : '';
+      return '${slot.id}=${(slot.start - originSec).toStringAsFixed(3)}-${(slot.end - originSec).toStringAsFixed(3)} '
+          '(max ${slot.maxWords} words$partitionNote)';
+    }).join(', ');
+  }
+
+  String _formatWindowsExtendedAnchors(
+    List<_SafeSlot> slots, {
+    required double originSec,
+    required double localChunkDurationSec,
+  }) {
+    return slots.map((slot) {
+      final start = slot.start - originSec;
+      final end = slot.end - originSec;
+      final sceneStart = end;
+      final sceneEnd = math.min(localChunkDurationSec, sceneStart + 4.0);
+      return '${slot.id}=PAUSE ${start.toStringAsFixed(3)}-${end.toStringAsFixed(3)} '
+          '-> IMMEDIATE_SCENE ${sceneStart.toStringAsFixed(3)}-${sceneEnd.toStringAsFixed(3)}';
+    }).join(', ');
+  }
+
+  String _formatWindowsRecentDescriptions(
+    List<_GeneratedDescription> descriptions,
+    double nextChunkStart,
+  ) {
+    if (descriptions.isEmpty) return '';
+    final tail = descriptions.length <= 6
+        ? descriptions
+        : descriptions.sublist(descriptions.length - 6);
+    final context = <Map<String, Object?>>[];
+    for (final item in tail) {
+      final text = item.text.replaceAll(RegExp(r'\s+'), ' ').trim();
+      if (text.isEmpty) continue;
+      context.add(<String, Object?>{
+        'seconds_before_clip': double.parse(
+          math.max(0.0, nextChunkStart - item.requestedEnd).toStringAsFixed(3),
+        ),
+        'description_text': text.length <= 240 ? text : text.substring(0, 240),
+      });
+    }
+    return context.isEmpty ? '' : jsonEncode(context);
+  }
+
+  _GeminiPromptBundle _buildWindowsRecoveryPrompt({
+    required AiAudioDescriptionSettings settings,
+    required double chunkStart,
+    required double chunkEnd,
+    required List<_SafeSlot> allChunkSlots,
+    required List<_SafeSlot> recoverySlots,
+    required List<_GeneratedDescription> existingDescriptions,
+    required List<Map<String, Object?>> glossary,
+  }) {
+    final enableGlossary = settings.recognizeCharacters;
+    final recoverySubjectRule = enableGlossary
+        ? 'When consecutive descriptions keep the same character as their clear subject, use '
+            'the character\'s full name only in the first one; then use a natural pronoun or omit '
+            'the subject when the target language allows it. Repeat the name after a scene or '
+            'subject change, a long interval, or whenever omission could be ambiguous. '
+        : 'Do not identify or name characters and do not infer identity across clips. Use concise '
+            'generic visual references, with pronouns or omitted subjects only when they remain clear. ';
+    var systemInstruction =
+        'You recover missing coverage in long-form audio description. Inspect only the explicitly '
+        'listed missing ranges in the attached video. Describe the important visible actions and '
+        'scene changes that the prior pass omitted. Before writing each entry, re-inspect the frames '
+        'inside that exact missing range. Every subject, object, and action in the description must '
+        'be visibly present during the returned start/end interval. Never move or reuse an action '
+        'seen earlier or later in the clip merely because it is more interesting. If the range is '
+        'static, describe the current visible character, pose, setting, or resulting state. '
+        'Never describe the same ongoing action more than '
+        'once, even with synonyms, a character alias, or different visual details. Compare every new '
+        'entry both with the existing descriptions and with every other entry you are about to return. '
+        'For example, after describing someone placing a crown, do not describe that person placing '
+        'or setting the crown again. Use only a genuinely new visible development or the resulting '
+        'state. $recoverySubjectRule$_windowsAudioContextOnlyRule $_soundAlreadyObviousRule'
+        'Return only valid JSON with keys character_glossary (an empty array) '
+        'and audio_descriptions. Each audio description must contain start_time_mmss, end_time_mmss, '
+        'visual_evidence_time_seconds and description_text, using the attached video\'s timeline. '
+        'The visual evidence value is a JSON number for the exact second where the fact is directly visible '
+        'and must fall inside that entry\'s start/end interval. Use a dot before milliseconds (MM:SS.ms), never a third colon.';
+    systemInstruction +=
+        ' INTENSIVE MODE: return exactly one concise visual description for EACH listed '
+        'missing range, even when the image is static. Use at most two words per available '
+        'second and fit fully within that range. Do not omit a range. When an action was already '
+        'described in an earlier range, describe a different useful visual fact or its new result; '
+        'never merely rephrase the same action to fill the next range.';
+
+    final gapText = recoverySlots
+        .map((slot) =>
+            '${(slot.start - chunkStart).toStringAsFixed(3)}-${(slot.end - chunkStart).toStringAsFixed(3)}')
+        .join(', ');
+    final existing = existingDescriptions
+        .map((item) => <String, Object?>{
+              'start_time_seconds': double.parse(
+                (item.requestedStart - chunkStart).toStringAsFixed(3),
+              ),
+              'end_time_seconds': double.parse(
+                (item.requestedEnd - chunkStart).toStringAsFixed(3),
+              ),
+              'description_text': item.text,
+            })
+        .toList();
+    final promptParts = <String>[
+      'Attached video timeline: 0.000-${(chunkEnd - chunkStart).toStringAsFixed(3)} seconds.',
+      'Missing ranges requiring another visual pass: $gapText.',
+      'Existing descriptions (do not repeat): ${jsonEncode(existing)}',
+    ];
+    final dialogueFreeWindows = _formatWindowsDialogueFreeWindows(
+      allChunkSlots,
+      originSec: chunkStart,
+    );
+    if (dialogueFreeWindows.isNotEmpty) {
+      promptParts.add('Authoritative dialogue-free windows: $dialogueFreeWindows');
+      promptParts.add(
+        'Every returned description must fit fully inside one of those dialogue-free windows.',
+      );
+    }
+    if (enableGlossary && glossary.isNotEmpty) {
+      promptParts.add(
+        'Established named characters from earlier clips: ${jsonEncode(glossary)}',
+      );
+      promptParts.add(
+        'Reuse an established name only when the visible person\'s identity and stable physical appearance match; otherwise use a generic label.',
+      );
+    }
+    promptParts.add(
+      'Return {"character_glossary":[],"audio_descriptions":[...]} and nothing else.',
+    );
+    return _GeminiPromptBundle(
+      systemInstruction: systemInstruction,
+      userPrompt: promptParts.join('\n'),
+    );
   }
 
   Future<_BriefVisualRetryResult> _runBriefVisualRetry({
@@ -1670,6 +2246,7 @@ If there is nothing useful to describe, return an empty audio_descriptions array
     required String activeGeminiModel,
     required List<_SafeSlot> chunkSlots,
     required List<Map<String, Object?>> glossary,
+    List<_GeneratedDescription> recentDescriptions = const <_GeneratedDescription>[],
     AiAudioDescriptionHighDemandCallback? onHighDemand,
     AiAudioDescriptionQuotaCallback? onQuota,
   }) async {
@@ -1697,6 +2274,7 @@ If there is nothing useful to describe, return an empty audio_descriptions array
           chunkEnd: chunkEnd,
           slots: chunkSlots,
           glossary: glossary,
+          recentDescriptions: recentDescriptions,
         );
         final generated = await _generatePreparedChunk(
           chunkPath: chunkPath,
@@ -1710,12 +2288,21 @@ If there is nothing useful to describe, return an empty audio_descriptions array
         );
         var parsed = await _parseWithOptionalJsonRepair(
           generated: generated,
+          chunkPath: chunkPath,
           settings: settings,
           sonarpadToken: sonarpadToken,
           activeGeminiModel: generated.model,
           chunkStart: chunkStart,
           chunkEnd: chunkEnd,
           slots: chunkSlots,
+          onHighDemand: onHighDemand,
+          onQuota: onQuota,
+        );
+        parsed = await _correctGeneratedLanguageBestEffort(
+          parsed,
+          settings: settings,
+          sonarpadToken: sonarpadToken,
+          activeGeminiModel: generated.model,
           onHighDemand: onHighDemand,
           onQuota: onQuota,
         );
@@ -1730,14 +2317,6 @@ If there is nothing useful to describe, return an empty audio_descriptions array
           chunkSlots: chunkSlots,
           glossary: <Map<String, Object?>>[...glossary, ...parsed.glossary],
           chunkIndex: chunkIndex,
-          onHighDemand: onHighDemand,
-          onQuota: onQuota,
-        );
-        parsed = await _correctGeneratedLanguageBestEffort(
-          parsed,
-          settings: settings,
-          sonarpadToken: sonarpadToken,
-          activeGeminiModel: generated.model,
           onHighDemand: onHighDemand,
           onQuota: onQuota,
         );
@@ -1760,6 +2339,7 @@ If there is nothing useful to describe, return an empty audio_descriptions array
             activeGeminiModel: activeGeminiModel,
             chunkSlots: chunkSlots,
             glossary: glossary,
+            priorDescriptions: recentDescriptions,
             onHighDemand: onHighDemand,
             onQuota: onQuota,
           );
@@ -1801,8 +2381,9 @@ If there is nothing useful to describe, return an empty audio_descriptions array
     required AiAudioDescriptionSettings settings,
     required String? sonarpadToken,
     required String activeGeminiModel,
-    required String prompt,
+    required _GeminiPromptBundle prompt,
     required String idempotencyKey,
+    bool enableThinking = true,
     AiAudioDescriptionHighDemandCallback? onHighDemand,
     AiAudioDescriptionQuotaCallback? onQuota,
     int prohibitedAttempts = AudioDescriptionFallbacks.prohibitedContentMaxAttempts,
@@ -1813,8 +2394,10 @@ If there is nothing useful to describe, return an empty audio_descriptions array
         chunkPath: chunkPath,
         token: sonarpadToken,
         sonarpadCode: settings.sonarpadCode,
+        modelHint: activeGeminiModel,
         prompt: prompt,
         idempotencyKey: idempotencyKey,
+        enableThinking: enableThinking,
         onHighDemand: onHighDemand,
         prohibitedAttempts: prohibitedAttempts,
       );
@@ -1824,6 +2407,7 @@ If there is nothing useful to describe, return an empty audio_descriptions array
       apiKey: settings.geminiApiKey,
       model: activeGeminiModel,
       prompt: prompt,
+      enableThinking: enableThinking,
       onHighDemand: onHighDemand,
       onQuota: onQuota,
       prohibitedAttempts: prohibitedAttempts,
@@ -1832,6 +2416,7 @@ If there is nothing useful to describe, return an empty audio_descriptions array
 
   Future<_ParsedGemini> _parseWithOptionalJsonRepair({
     required _AiGenerationResult generated,
+    required String chunkPath,
     required AiAudioDescriptionSettings settings,
     required String? sonarpadToken,
     required String activeGeminiModel,
@@ -1868,7 +2453,10 @@ If there is nothing useful to describe, return an empty audio_descriptions array
     );
     try {
       final repairedText = await _repairJsonText(
+        chunkPath: chunkPath,
         broken: AudioDescriptionFallbacks.brokenJsonForRepair(generated.text),
+        parseErrorHint:
+            'finish_reason=${_finishReason(generated.rawResponse).isEmpty ? 'n/a' : _finishReason(generated.rawResponse)}; parse_ok=${initial?.parseOk ?? false}',
         settings: settings,
         sonarpadToken: sonarpadToken,
         model: activeGeminiModel,
@@ -1917,27 +2505,61 @@ If there is nothing useful to describe, return an empty audio_descriptions array
   }
 
   Future<String> _repairJsonText({
+    required String chunkPath,
     required String broken,
+    required String parseErrorHint,
     required AiAudioDescriptionSettings settings,
     required String? sonarpadToken,
     required String model,
     AiAudioDescriptionHighDemandCallback? onHighDemand,
     AiAudioDescriptionQuotaCallback? onQuota,
-  }) {
-    final prompt = 'Repair the following broken/truncated JSON response. '
-        'Return ONLY one valid JSON object with the same semantic data and exactly '
-        'the top-level keys "character_glossary" and "audio_descriptions". '
-        'Do not invent new descriptions, timestamps, characters or visual facts. '
-        'Preserve every recoverable field.\n\nBROKEN JSON:\n$broken';
-    return _generateTextOnly(
+  }) async {
+    var fragment = broken;
+    if (fragment.length > 40000) {
+      fragment = '${fragment.substring(0, 40000)}\n…[truncated for repair prompt]…';
+    }
+    final glossaryRepairRule = settings.recognizeCharacters
+        ? '1. "character_glossary": array of objects { "id", "description", "name" } (name may be null).\n'
+        : '1. "character_glossary": an empty array. Do not identify or name characters.\n';
+    final screenTextRepairRule = settings.recognizeScreenText
+        ? '3. "on_screen_text": array of objects { "text", "visual_evidence_time_seconds", "narratively_relevant" }. Preserve complete entries from the fragment, or use [] if unavailable. This is metadata only; do not turn it into extra narration.\n'
+        : '';
+    final systemInstruction =
+        'You are a JSON repair assistant for an audio-description app.\n'
+        'Output ONLY one valid JSON object (no markdown fences, no commentary) with exactly these keys:\n'
+        '$glossaryRepairRule'
+        '2. "audio_descriptions": array of objects { "start_time_mmss", "end_time_mmss", "visual_evidence_time_seconds", "description_text" } using MM:SS or MM:SS.ms times. Preserve the exact numeric visual_evidence_time_seconds value for every recovered description.\n'
+        '$screenTextRepairRule'
+        'Rules:\n'
+        '- The JSON MUST parse with a standard JSON parser (closed braces/brackets, escaped quotes).\n'
+        '- If the previous output was truncated, keep every complete description you can recover and close the document cleanly.\n'
+        '- You may use the attached video to fill gaps or continue from the last good timestamp.\n'
+        '- Prefer fewer valid entries over inventing broken structure.\n'
+        '- $_windowsAudioContextOnlyRule\n- $_soundAlreadyObviousRule\n'
+        '- Do not wrap the answer in ``` fences.';
+    final userPrompt =
+        'The previous model output was invalid or truncated and could not be parsed.\n'
+        'Parser note: ${parseErrorHint.trim().isEmpty ? 'malformed or incomplete JSON' : parseErrorHint}\n\n'
+        'Broken output to repair:\n'
+        '----- BEGIN BROKEN OUTPUT -----\n'
+        '$fragment\n'
+        '----- END BROKEN OUTPUT -----\n\n'
+        'Re-emit ONE complete, valid JSON object following the schema. Use the video if you need to complete missing later timestamps.';
+    final result = await _generatePreparedChunk(
+      chunkPath: chunkPath,
       settings: settings,
       sonarpadToken: sonarpadToken,
-      model: model,
-      prompt: prompt,
+      activeGeminiModel: model,
+      prompt: _GeminiPromptBundle(
+        systemInstruction: systemInstruction,
+        userPrompt: userPrompt,
+      ),
       idempotencyKey: 'ad-repair-${const Uuid().v4()}',
+      enableThinking: false,
       onHighDemand: onHighDemand,
       onQuota: onQuota,
     );
+    return result.text;
   }
 
   Future<String> _generateTextOnly({
@@ -1945,7 +2567,10 @@ If there is nothing useful to describe, return an empty audio_descriptions array
     required String? sonarpadToken,
     required String model,
     required String prompt,
+    String? systemInstruction,
     required String idempotencyKey,
+    bool enableThinking = false,
+    double temperature = 0.3,
     AiAudioDescriptionHighDemandCallback? onHighDemand,
     AiAudioDescriptionQuotaCallback? onQuota,
     bool allowSessionReactivation = true,
@@ -1965,16 +2590,20 @@ If there is nothing useful to describe, return an empty audio_descriptions array
           'User-Agent': 'Sonarpad-Mobile-AI/1',
         },
         body: <String, Object?>{
+          if (systemInstruction != null && systemInstruction.trim().isNotEmpty)
+            'systemInstruction': _windowsSystemInstruction(systemInstruction),
           'contents': <Object?>[
             <String, Object?>{
               'role': 'user',
               'parts': <Object?>[<String, Object?>{'text': prompt}],
             },
           ],
-          'generationConfig': <String, Object?>{
-            'temperature': 0.0,
-            'responseMimeType': 'application/json',
-          },
+          'generationConfig': _windowsGenerationConfig(
+            model,
+            enableThinking: enableThinking,
+            temperature: temperature,
+          ),
+          'safetySettings': _windowsSafetySettings(),
         },
         timeout: const Duration(minutes: 12),
         label: 'Sonarpad AI JSON/language repair',
@@ -1995,7 +2624,10 @@ If there is nothing useful to describe, return an empty audio_descriptions array
           sonarpadToken: token,
           model: model,
           prompt: prompt,
+          systemInstruction: systemInstruction,
           idempotencyKey: idempotencyKey,
+          enableThinking: enableThinking,
+          temperature: temperature,
           onHighDemand: onHighDemand,
           onQuota: onQuota,
           allowSessionReactivation: false,
@@ -2027,16 +2659,20 @@ If there is nothing useful to describe, return an empty audio_descriptions array
         ).replace(queryParameters: <String, String>{'key': settings.geminiApiKey.trim()}),
         headers: const {'Content-Type': 'application/json'},
         body: <String, Object?>{
+          if (systemInstruction != null && systemInstruction.trim().isNotEmpty)
+            'systemInstruction': _windowsSystemInstruction(systemInstruction),
           'contents': <Object?>[
             <String, Object?>{
               'role': 'user',
               'parts': <Object?>[<String, Object?>{'text': prompt}],
             },
           ],
-          'generationConfig': <String, Object?>{
-            'temperature': 0.0,
-            'responseMimeType': 'application/json',
-          },
+          'generationConfig': _windowsGenerationConfig(
+            activeModel,
+            enableThinking: enableThinking,
+            temperature: temperature,
+          ),
+          'safetySettings': _windowsSafetySettings(),
         },
         timeout: const Duration(minutes: 10),
         label: 'Gemini JSON/language repair',
@@ -2107,14 +2743,15 @@ If there is nothing useful to describe, return an empty audio_descriptions array
       }).toList();
       if (mandatory.isEmpty) break;
       try {
-        final recoveryPrompt = '${_buildPrompt(
-              settings: settings,
-              chunkStart: chunkStart,
-              chunkEnd: chunkEnd,
-              slots: mandatory,
-              glossary: glossary,
-            )}\nRECOVERY PASS $pass/3: return descriptions ONLY for missing mandatory '
-            'slot IDs ${mandatory.map((e) => e.id).join(', ')}. Do not repeat covered slots.';
+        final recoveryPrompt = _buildWindowsRecoveryPrompt(
+          settings: settings,
+          chunkStart: chunkStart,
+          chunkEnd: chunkEnd,
+          allChunkSlots: chunkSlots,
+          recoverySlots: mandatory,
+          existingDescriptions: current.descriptions,
+          glossary: glossary,
+        );
         final generated = await _generatePreparedChunk(
           chunkPath: chunkPath,
           settings: settings,
@@ -2125,14 +2762,23 @@ If there is nothing useful to describe, return an empty audio_descriptions array
           onHighDemand: onHighDemand,
           onQuota: onQuota,
         );
-        final recovered = await _parseWithOptionalJsonRepair(
+        var recovered = await _parseWithOptionalJsonRepair(
           generated: generated,
+          chunkPath: chunkPath,
           settings: settings,
           sonarpadToken: sonarpadToken,
           activeGeminiModel: generated.model,
           chunkStart: chunkStart,
           chunkEnd: chunkEnd,
           slots: mandatory,
+          onHighDemand: onHighDemand,
+          onQuota: onQuota,
+        );
+        recovered = await _correctGeneratedLanguageBestEffort(
+          recovered,
+          settings: settings,
+          sonarpadToken: sonarpadToken,
+          activeGeminiModel: generated.model,
           onHighDemand: onHighDemand,
           onQuota: onQuota,
         );
@@ -2153,57 +2799,6 @@ If there is nothing useful to describe, return an empty audio_descriptions array
       }
     }
 
-    final largeGaps = AudioDescriptionFallbacks.findLargeCoverageGaps(
-      chunkStart: chunkStart,
-      chunkEnd: chunkEnd,
-      descriptions: current.descriptions
-          .map((e) => AdTimeRange(e.requestedStart, e.requestedEnd)),
-    );
-    final recoverySlots = chunkSlots.where((slot) {
-      final midpoint = (slot.start + slot.end) / 2.0;
-      return largeGaps.any((gap) => midpoint >= gap.start && midpoint <= gap.end);
-    }).toList();
-    if (largeGaps.isNotEmpty && recoverySlots.isNotEmpty) {
-      try {
-        final generated = await _generatePreparedChunk(
-          chunkPath: chunkPath,
-          settings: settings,
-          sonarpadToken: sonarpadToken,
-          activeGeminiModel: activeGeminiModel,
-          prompt: '${_buildPrompt(
-                settings: settings,
-                chunkStart: chunkStart,
-                chunkEnd: chunkEnd,
-                slots: recoverySlots,
-                glossary: glossary,
-              )}\nCOVERAGE RECOVERY: inspect only the listed long uncovered ranges. '
-              'Add narration only for meaningful visual information; never invent filler.',
-          idempotencyKey: 'ad-gap-${const Uuid().v4()}-$chunkIndex',
-          onHighDemand: onHighDemand,
-          onQuota: onQuota,
-        );
-        final recovered = await _parseWithOptionalJsonRepair(
-          generated: generated,
-          settings: settings,
-          sonarpadToken: sonarpadToken,
-          activeGeminiModel: generated.model,
-          chunkStart: chunkStart,
-          chunkEnd: chunkEnd,
-          slots: recoverySlots,
-          onHighDemand: onHighDemand,
-          onQuota: onQuota,
-        );
-        current = _ParsedGemini(
-          descriptions: <_GeneratedDescription>[...current.descriptions, ...recovered.descriptions],
-          glossary: <Map<String, Object?>>[...current.glossary, ...recovered.glossary],
-        );
-      } catch (error, stackTrace) {
-        await AppLogger.log(
-          'Audio description mobile: long-gap recovery failed; keeping existing descriptions '
-          'error=$error\n$stackTrace',
-        );
-      }
-    }
     return current;
   }
 
@@ -2219,6 +2814,7 @@ If there is nothing useful to describe, return an empty audio_descriptions array
     required String activeGeminiModel,
     required List<_SafeSlot> chunkSlots,
     required List<Map<String, Object?>> glossary,
+    List<_GeneratedDescription> priorDescriptions = const <_GeneratedDescription>[],
     AiAudioDescriptionHighDemandCallback? onHighDemand,
     AiAudioDescriptionQuotaCallback? onQuota,
   }) async {
@@ -2257,6 +2853,11 @@ If there is nothing useful to describe, return an empty audio_descriptions array
             chunkEnd: minute.end,
             slots: minuteSlots,
             glossary: <Map<String, Object?>>[...glossary, ...allGlossary],
+            recentDescriptions: <_GeneratedDescription>[
+              ...priorDescriptions,
+              ...allDescriptions,
+            ],
+            fallbackClipTimeline: true,
           ),
           idempotencyKey: 'ad-minute-${const Uuid().v4()}-$parentChunkIndex-$minuteIndex',
           onHighDemand: onHighDemand,
@@ -2264,8 +2865,9 @@ If there is nothing useful to describe, return an empty audio_descriptions array
           prohibitedAttempts: 1,
         );
         model = generated.model;
-        final parsed = await _parseWithOptionalJsonRepair(
+        var parsed = await _parseWithOptionalJsonRepair(
           generated: generated,
+          chunkPath: path,
           settings: settings,
           sonarpadToken: sonarpadToken,
           activeGeminiModel: model,
@@ -2276,8 +2878,18 @@ If there is nothing useful to describe, return an empty audio_descriptions array
           onHighDemand: onHighDemand,
           onQuota: onQuota,
         );
+        parsed = await _correctGeneratedLanguageBestEffort(
+          parsed,
+          settings: settings,
+          sonarpadToken: sonarpadToken,
+          activeGeminiModel: model,
+          onHighDemand: onHighDemand,
+          onQuota: onQuota,
+        );
         allDescriptions.addAll(parsed.descriptions);
-        allGlossary.addAll(parsed.glossary);
+        if (settings.recognizeCharacters) {
+          _mergeGlossary(allGlossary, parsed.glossary);
+        }
       } on _AdProviderException catch (error) {
         if (error.kind == AdFailureKind.prohibitedContent) {
           await AppLogger.log(
@@ -2323,8 +2935,7 @@ If there is nothing useful to describe, return an empty audio_descriptions array
             (confidence == null || confidence >= 0.75);
       } catch (error) {
         await AppLogger.log(
-          'Audio description mobile: language detection unavailable; '
-          'keeping original text error=$error',
+          'Audio description mobile: language detection unavailable; keeping original text error=$error',
         );
         return false;
       }
@@ -2345,96 +2956,172 @@ If there is nothing useful to describe, return an empty audio_descriptions array
     }
     if (wrongDescriptions.isEmpty && wrongGlossary.isEmpty) return parsed;
 
-    try {
-      final descriptionPayload = wrongDescriptions.entries
-          .map((entry) => <String, Object?>{
-                'index': entry.key,
-                'text': entry.value.text,
-              })
-          .toList();
-      final glossaryPayload = wrongGlossary.entries
-          .map((entry) => <String, Object?>{
-                'index': entry.key,
-                'id': entry.value['id'],
-                'name': entry.value['name'],
-                'description': entry.value['description'],
-              })
-          .toList();
-      final correction = await _generateTextOnly(
-        settings: settings,
-        sonarpadToken: sonarpadToken,
-        model: activeGeminiModel,
-        prompt: 'Translate ONLY the supplied audio-description text fields into '
-            '${_languageName(settings.languageCode)}. Preserve every index exactly. '
-            'For glossary items preserve id and name byte-for-byte and translate ONLY '
-            'description. Do not change meaning, timing or add facts. Return JSON only '
-            'with keys "descriptions" and "glossary". INPUT: '
-            '${jsonEncode(<String, Object?>{
-              'descriptions': descriptionPayload,
-              'glossary': glossaryPayload,
-            })}',
-        idempotencyKey: 'ad-language-${const Uuid().v4()}',
-        onHighDemand: onHighDemand,
-        onQuota: onQuota,
-      );
-      Object? root;
+    final targetName = _windowsPromptLanguageDetails(settings.languageCode).name;
+    final updatedDescriptions = List<_GeneratedDescription>.of(parsed.descriptions);
+    final updatedGlossary = parsed.glossary
+        .map((item) => Map<String, Object?>.from(item))
+        .toList();
+
+    if (wrongDescriptions.isNotEmpty) {
+      final mappings = wrongDescriptions.entries.toList();
+      final indexed = <Map<String, Object?>>[
+        for (var correctionIndex = 0; correctionIndex < mappings.length; correctionIndex++)
+          <String, Object?>{
+            'index': correctionIndex,
+            'text': mappings[correctionIndex].value.text,
+          },
+      ];
+      final systemInstruction =
+          'You correct the output language of audio descriptions. Return ONLY valid JSON with '
+          'one top-level key, "descriptions". Its value must be an array containing exactly the '
+          'same indexes as the input. Each item must be {"index": integer, "text": string}. '
+          'Rewrite every text entirely in $targetName. Preserve meaning, names, brevity and '
+          'audio-description style. Do not add, remove, merge, reorder or renumber entries.';
+      final userPrompt =
+          'The following individual descriptions were detected in the wrong language. '
+          'The required output language is $targetName. Correct every supplied description:\n'
+          '${jsonEncode(<String, Object?>{'descriptions': indexed})}';
       try {
-        root = jsonDecode(AudioDescriptionFallbacks.stripJsonFences(correction));
-      } catch (_) {
-        final object = AudioDescriptionFallbacks.extractJsonObject(correction);
-        if (object != null) {
-          try {
-            root = jsonDecode(object);
-          } catch (_) {}
+        final correction = await _generateTextOnly(
+          settings: settings,
+          sonarpadToken: sonarpadToken,
+          model: activeGeminiModel,
+          systemInstruction: systemInstruction,
+          prompt: userPrompt,
+          enableThinking: false,
+          temperature: 0.3,
+          idempotencyKey: 'ad-language-description-${const Uuid().v4()}',
+          onHighDemand: onHighDemand,
+          onQuota: onQuota,
+        );
+        final root = _decodeJsonObjectBestEffort(correction);
+        final rawDescriptions = root?['descriptions'];
+        if (rawDescriptions is! List || rawDescriptions.length != mappings.length) {
+          throw const FormatException('AD_LANGUAGE_CORRECTION_INVALID_JSON');
         }
-      }
-      if (root is! Map) return parsed;
-
-      final updatedDescriptions = List<_GeneratedDescription>.of(parsed.descriptions);
-      final rawDescriptions = root['descriptions'];
-      if (rawDescriptions is List) {
+        final corrected = <int, String>{};
         for (final raw in rawDescriptions) {
-          if (raw is! Map || raw['index'] is! num) continue;
-          final index = (raw['index'] as num).toInt();
+          if (raw is! Map || raw['index'] is! num) {
+            throw const FormatException('AD_LANGUAGE_CORRECTION_INVALID_JSON');
+          }
+          final correctionIndex = (raw['index'] as num).toInt();
           final text = raw['text']?.toString().trim() ?? '';
-          if (text.isEmpty || !wrongDescriptions.containsKey(index) ||
-              index < 0 || index >= updatedDescriptions.length) {
-            continue;
+          if (correctionIndex < 0 ||
+              correctionIndex >= mappings.length ||
+              text.isEmpty ||
+              corrected.containsKey(correctionIndex)) {
+            throw const FormatException('AD_LANGUAGE_CORRECTION_INVALID_JSON');
           }
-          updatedDescriptions[index] =
-              updatedDescriptions[index].copyWith(text: text);
+          corrected[correctionIndex] = text;
         }
-      }
-
-      final updatedGlossary = parsed.glossary
-          .map((item) => Map<String, Object?>.from(item))
-          .toList();
-      final rawGlossary = root['glossary'];
-      if (rawGlossary is List) {
-        for (final raw in rawGlossary) {
-          if (raw is! Map || raw['index'] is! num) continue;
-          final index = (raw['index'] as num).toInt();
-          final description = raw['description']?.toString().trim() ?? '';
-          if (description.isEmpty || !wrongGlossary.containsKey(index) ||
-              index < 0 || index >= updatedGlossary.length) {
-            continue;
-          }
-          // Never let a language-correction request rename or re-identify a
-          // character established by the catalog.
-          updatedGlossary[index]['description'] = description;
+        if (corrected.length != mappings.length ||
+            !List<int>.generate(mappings.length, (index) => index)
+                .every(corrected.containsKey)) {
+          throw const FormatException('AD_LANGUAGE_CORRECTION_INVALID_JSON');
         }
+        for (var correctionIndex = 0; correctionIndex < mappings.length; correctionIndex++) {
+          final originalIndex = mappings[correctionIndex].key;
+          updatedDescriptions[originalIndex] = updatedDescriptions[originalIndex]
+              .copyWith(text: corrected[correctionIndex]!);
+        }
+      } catch (error, stackTrace) {
+        await AppLogger.log(
+          'Audio description mobile: description language correction failed; keeping original descriptions error=$error\n$stackTrace',
+        );
       }
-      return _ParsedGemini(
-        descriptions: updatedDescriptions,
-        glossary: updatedGlossary,
-      );
-    } catch (error, stackTrace) {
-      await AppLogger.log(
-        'Audio description mobile: language correction failed; '
-        'keeping original descriptions/glossary error=$error\n$stackTrace',
-      );
-      return parsed;
     }
+
+    if (wrongGlossary.isNotEmpty) {
+      final mappings = wrongGlossary.entries.toList();
+      final indexed = <Map<String, Object?>>[
+        for (var correctionIndex = 0; correctionIndex < mappings.length; correctionIndex++)
+          <String, Object?>{
+            'index': correctionIndex,
+            'description': mappings[correctionIndex].value['description'],
+          },
+      ];
+      final systemInstruction =
+          'You correct only the language of physical descriptions in a character glossary. '
+          'Return ONLY valid JSON with one top-level key, "entries". Its value must '
+          'contain exactly the same indexes as the input. Each item must be '
+          '{"index": integer, "description": string}. '
+          'Rewrite every description entirely in $targetName. Preserve physical meaning, '
+          'brevity, IDs and character names. Do not add, remove, merge, reorder or rename entries.';
+      final userPrompt =
+          'The required output language is $targetName. Correct every supplied physical '
+          'description while leaving character IDs and names untouched:\n'
+          '${jsonEncode(<String, Object?>{'entries': indexed})}';
+      try {
+        final correction = await _generateTextOnly(
+          settings: settings,
+          sonarpadToken: sonarpadToken,
+          model: activeGeminiModel,
+          systemInstruction: systemInstruction,
+          prompt: userPrompt,
+          enableThinking: false,
+          temperature: 0.3,
+          idempotencyKey: 'ad-language-glossary-${const Uuid().v4()}',
+          onHighDemand: onHighDemand,
+          onQuota: onQuota,
+        );
+        final root = _decodeJsonObjectBestEffort(correction);
+        final rawEntries = root?['entries'];
+        if (rawEntries is! List || rawEntries.length != mappings.length) {
+          throw const FormatException('AD_GLOSSARY_LANGUAGE_CORRECTION_INVALID_JSON');
+        }
+        final corrected = <int, String>{};
+        for (final raw in rawEntries) {
+          if (raw is! Map || raw['index'] is! num) {
+            throw const FormatException('AD_GLOSSARY_LANGUAGE_CORRECTION_INVALID_JSON');
+          }
+          final correctionIndex = (raw['index'] as num).toInt();
+          final description = raw['description']?.toString().trim() ?? '';
+          if (correctionIndex < 0 ||
+              correctionIndex >= mappings.length ||
+              description.isEmpty ||
+              corrected.containsKey(correctionIndex)) {
+            throw const FormatException('AD_GLOSSARY_LANGUAGE_CORRECTION_INVALID_JSON');
+          }
+          corrected[correctionIndex] = description;
+        }
+        if (corrected.length != mappings.length ||
+            !List<int>.generate(mappings.length, (index) => index)
+                .every(corrected.containsKey)) {
+          throw const FormatException('AD_GLOSSARY_LANGUAGE_CORRECTION_INVALID_JSON');
+        }
+        for (var correctionIndex = 0; correctionIndex < mappings.length; correctionIndex++) {
+          final originalIndex = mappings[correctionIndex].key;
+          // Windows corrects only the physical description. Identity fields
+          // stay exactly as established by the catalog.
+          updatedGlossary[originalIndex]['description'] = corrected[correctionIndex]!;
+        }
+      } catch (error, stackTrace) {
+        await AppLogger.log(
+          'Audio description mobile: glossary language correction failed; keeping original glossary descriptions error=$error\n$stackTrace',
+        );
+      }
+    }
+
+    return _ParsedGemini(
+      descriptions: updatedDescriptions,
+      glossary: updatedGlossary,
+    );
+  }
+
+  Map<String, Object?>? _decodeJsonObjectBestEffort(String raw) {
+    Object? root;
+    try {
+      root = jsonDecode(AudioDescriptionFallbacks.stripJsonFences(raw));
+    } catch (_) {
+      final object = AudioDescriptionFallbacks.extractJsonObject(raw);
+      if (object != null) {
+        try {
+          root = jsonDecode(object);
+        } catch (_) {}
+      }
+    }
+    if (root is! Map) return null;
+    return root.map((key, value) => MapEntry('$key', value));
   }
 
   Future<AdLanguageDetection?> _detectLanguage(String text, String targetLanguage) async {
@@ -2468,6 +3155,157 @@ If there is nothing useful to describe, return an empty audio_descriptions array
     return AudioDescriptionFallbacks.parseGoogleLanguageDetection(jsonDecode(response.body));
   }
 
+  ({_SafeSlot slot, AdNormalizedTimes times})? _matchDescriptionToSlot({
+    required Object? startValue,
+    required Object? endValue,
+    Object? evidenceValue,
+    required double chunkStart,
+    required double chunkEnd,
+    required List<_SafeSlot> slots,
+    double? blockedParentChunkStart,
+    String? preferredSlotId,
+  }) {
+    if (slots.isEmpty) return null;
+
+    if (preferredSlotId != null && preferredSlotId.trim().isNotEmpty) {
+      _SafeSlot? preferred;
+      for (final candidate in slots) {
+        if (candidate.id == preferredSlotId) {
+          preferred = candidate;
+          break;
+        }
+      }
+      if (preferred != null) {
+        final fallbackSlot = AdFallbackSlot(
+          id: preferred.id,
+          start: preferred.start,
+          end: preferred.end,
+          mandatory: preferred.mandatory,
+          partitionIndex: preferred.partitionIndex,
+          partitionCount: preferred.partitionCount,
+        );
+        final preferredTimes = blockedParentChunkStart == null
+            ? AudioDescriptionFallbacks.normalizeTimes(
+                startValue: startValue,
+                endValue: endValue,
+                evidenceValue: null,
+                chunkStart: chunkStart,
+                chunkEnd: chunkEnd,
+                slot: fallbackSlot,
+              )
+            : AudioDescriptionFallbacks.normalizeBlockedMinuteTimes(
+                startValue: startValue,
+                endValue: endValue,
+                evidenceValue: null,
+                minuteStart: chunkStart,
+                minuteEnd: chunkEnd,
+                parentChunkStart: blockedParentChunkStart,
+                slot: fallbackSlot,
+              );
+        if (preferredTimes != null) {
+          return (slot: preferred, times: preferredTimes);
+        }
+      }
+    }
+
+    if (blockedParentChunkStart != null) {
+      ({_SafeSlot slot, AdNormalizedTimes times})? best;
+      var bestScore = double.negativeInfinity;
+      for (final slot in slots) {
+        final fallbackSlot = AdFallbackSlot(
+          id: slot.id,
+          start: slot.start,
+          end: slot.end,
+          mandatory: slot.mandatory,
+          partitionIndex: slot.partitionIndex,
+          partitionCount: slot.partitionCount,
+        );
+        final times = AudioDescriptionFallbacks.normalizeBlockedMinuteTimes(
+          startValue: startValue,
+          endValue: endValue,
+          evidenceValue: null,
+          minuteStart: chunkStart,
+          minuteEnd: chunkEnd,
+          parentChunkStart: blockedParentChunkStart,
+          slot: fallbackSlot,
+        );
+        if (times == null) continue;
+        final score = (times.end - times.start) * 100.0;
+        if (score > bestScore) {
+          bestScore = score;
+          best = (slot: slot, times: times);
+        }
+      }
+      return best;
+    }
+
+    // The normal Windows path uploads a physical clip and explicitly asks
+    // Gemini for a 0-based LOCAL clip timeline. Force that interpretation
+    // here too, instead of guessing between absolute and local timestamps.
+    final duration = chunkEnd - chunkStart;
+    final localStart = AudioDescriptionFallbacks.parseTimeSecondsInWindow(
+      startValue,
+      windowStart: 0.0,
+      windowEnd: duration,
+    );
+    final localEnd = AudioDescriptionFallbacks.parseTimeSecondsInWindow(
+      endValue,
+      windowStart: 0.0,
+      windowEnd: duration,
+    );
+    // Windows parity: Evidence is requested to force Gemini to ground its
+    // reasoning on an exact frame. Preserve it only as diagnostic/project
+    // metadata; never use it to choose or position a slot. Missing evidence
+    // remains valid, exactly like Windows.
+    final localEvidence = AudioDescriptionFallbacks.parseTimeSecondsInWindow(
+      evidenceValue,
+      windowStart: 0.0,
+      windowEnd: duration,
+    );
+    if (localStart == null || localEnd == null || localEnd <= localStart) {
+      return null;
+    }
+    var absoluteStart = localStart + chunkStart;
+    var absoluteEnd = localEnd + chunkStart;
+    var absoluteEvidence = localEvidence == null ? null : localEvidence + chunkStart;
+    if (absoluteStart < chunkStart - 2.0 ||
+        absoluteEnd > chunkEnd + 2.0 ||
+        absoluteEnd <= absoluteStart) {
+      return null;
+    }
+    absoluteStart = absoluteStart.clamp(chunkStart, chunkEnd).toDouble();
+    absoluteEnd = absoluteEnd.clamp(chunkStart, chunkEnd).toDouble();
+    absoluteEvidence = absoluteEvidence?.clamp(absoluteStart, absoluteEnd).toDouble();
+
+    _SafeSlot? bestSlot;
+    var bestScore = double.negativeInfinity;
+    final midpoint = (absoluteStart + absoluteEnd) / 2.0;
+    for (final slot in slots) {
+      final overlapStart = math.max(absoluteStart, slot.start);
+      final overlapEnd = math.min(absoluteEnd, slot.end);
+      final overlap = math.max(0.0, overlapEnd - overlapStart);
+      if (overlap <= 0.0) continue;
+      var score = overlap * 100.0;
+      // Windows parity: Evidence is retained for diagnostics only. Slot
+      // selection is driven by Gemini's returned start/end interval.
+      if (midpoint >= slot.start && midpoint <= slot.end) score += 100.0;
+      if (slot.mandatory) score += 1.0;
+      if (score > bestScore) {
+        bestScore = score;
+        bestSlot = slot;
+      }
+    }
+    if (bestSlot == null) return null;
+    final start = math.max(absoluteStart, bestSlot.start);
+    final end = math.min(absoluteEnd, bestSlot.end);
+    if (end <= start) return null;
+    final evidence = absoluteEvidence?.clamp(start, end).toDouble() ?? ((start + end) / 2.0);
+    return (
+      slot: bestSlot,
+      times: AdNormalizedTimes(start: start, end: end, evidence: evidence),
+    );
+  }
+
   _ParsedGemini _parseGeminiJson(
     String raw, {
     required double chunkStart,
@@ -2481,63 +3319,71 @@ If there is nothing useful to describe, return an empty audio_descriptions array
       throw const FormatException('Gemini JSON could not be parsed or salvaged');
     }
 
-    final slotById = <String, _SafeSlot>{for (final slot in slots) slot.id: slot};
+    final rawScreenText = decoded['on_screen_text'];
+    if (rawScreenText is List) {
+      unawaited(AppLogger.log(
+        'Audio description mobile: Gemini on-screen text audit (response timeline): ${jsonEncode(rawScreenText)}',
+      ));
+    }
     final descriptions = <_GeneratedDescription>[];
     final rawDescriptions = decoded['audio_descriptions'];
     if (rawDescriptions is List) {
       for (final item in rawDescriptions) {
         if (item is! Map) continue;
-        final slotId = item['slot_id']?.toString().trim() ?? '';
-        final slot = slotById[slotId];
-        if (slot == null) continue;
         final description = (item['description_text'] ?? item['description'])
                 ?.toString()
                 .trim() ??
             '';
         if (description.isEmpty) continue;
-        final fallbackSlot = AdFallbackSlot(
-          id: slot.id,
-          start: slot.start,
-          end: slot.end,
-          mandatory: slot.mandatory,
-          partitionIndex: 1,
-          partitionCount: 1,
-        );
         final startValue =
-            item['start_time_sec'] ?? item['start_time_mmss'] ?? item['start'];
+            item['start_time_mmss'] ?? item['start_time_sec'] ?? item['start'];
         final endValue =
-            item['end_time_sec'] ?? item['end_time_mmss'] ?? item['end'];
-        final evidenceValue = item['evidence_time_sec'] ??
-            item['visual_evidence_time_seconds'] ??
+            item['end_time_mmss'] ?? item['end_time_sec'] ?? item['end'];
+        final evidenceValue = item['visual_evidence_time_seconds'] ??
+            item['evidence_time_sec'] ??
             item['visual_evidence_time_sec'];
-        final times = blockedParentChunkStart == null
-            ? AudioDescriptionFallbacks.normalizeTimes(
-                startValue: startValue,
-                endValue: endValue,
-                evidenceValue: evidenceValue,
-                chunkStart: chunkStart,
-                chunkEnd: chunkEnd,
-                slot: fallbackSlot,
-              )
-            : AudioDescriptionFallbacks.normalizeBlockedMinuteTimes(
-                startValue: startValue,
-                endValue: endValue,
-                evidenceValue: evidenceValue,
-                minuteStart: chunkStart,
-                minuteEnd: chunkEnd,
-                parentChunkStart: blockedParentChunkStart,
-                slot: fallbackSlot,
-              );
-        if (times == null) continue;
+        // Windows parity: visual evidence is diagnostic/cognitive grounding
+        // for Gemini. A missing evidence value must not discard an otherwise
+        // valid timed description or influence scheduling.
+        final matched = _matchDescriptionToSlot(
+          startValue: startValue,
+          endValue: endValue,
+          evidenceValue: evidenceValue,
+          chunkStart: chunkStart,
+          chunkEnd: chunkEnd,
+          slots: slots,
+          blockedParentChunkStart: blockedParentChunkStart,
+          preferredSlotId: item['slot_id']?.toString(),
+        );
+        if (matched == null) continue;
+        final slot = matched.slot;
+        final times = matched.times;
+        double? diagnosticEvidence;
+        final evidenceLocal = AudioDescriptionFallbacks.parseTimeSecondsInWindow(
+          evidenceValue,
+          windowStart: 0.0,
+          windowEnd: chunkEnd - chunkStart,
+        );
+        if (evidenceLocal != null) {
+          diagnosticEvidence = evidenceLocal + chunkStart;
+        } else {
+          diagnosticEvidence = AudioDescriptionFallbacks.parseTimeSecondsInWindow(
+            evidenceValue,
+            windowStart: chunkStart,
+            windowEnd: chunkEnd,
+          );
+        }
         descriptions.add(_GeneratedDescription(
           slotId: slot.id,
           slotStart: slot.start,
           slotEnd: slot.end,
           requestedStart: times.start,
           requestedEnd: times.end,
-          evidenceTime: times.evidence,
+          // Windows parity: evidence is diagnostic grounding only. If Gemini
+          // omits it, keep the timed description and leave evidence absent.
+          evidenceTime: diagnosticEvidence,
           text: description,
-          mandatory: slot.mandatory || item['mandatory'] == true,
+          mandatory: slot.mandatory,
         ));
       }
     }
@@ -2574,7 +3420,7 @@ If there is nothing useful to describe, return an empty audio_descriptions array
     final merged = AudioDescriptionFallbacks.mergeCharacterCatalog(
       current,
       incoming,
-      maxCharacters: 96,
+      maxCharacters: 32,
     );
     current
       ..clear()
@@ -2582,18 +3428,183 @@ If there is nothing useful to describe, return an empty audio_descriptions array
   }
 
   List<_GeneratedDescription> _dedupeDescriptions(List<_GeneratedDescription> input) {
-    final bySlot = <String, _GeneratedDescription>{};
-    for (final item in input) {
-      final previous = bySlot[item.slotId];
-      if (previous == null ||
-          (item.mandatory && !previous.mandatory) ||
-          item.text.length > previous.text.length) {
-        bySlot[item.slotId] = item;
+    if (input.isEmpty) return const <_GeneratedDescription>[];
+    final ordered = List<_GeneratedDescription>.of(input)
+      ..sort((a, b) => a.requestedStart.compareTo(b.requestedStart));
+    final result = <_GeneratedDescription>[ordered.first];
+    for (var i = 1; i < ordered.length; i++) {
+      if (ordered[i].text.trim() != result.last.text.trim()) {
+        result.add(ordered[i]);
       }
     }
-    final result = bySlot.values.toList()
-      ..sort((a, b) => a.slotStart.compareTo(b.slotStart));
     return result;
+  }
+
+  List<String> _characterNamesFromGlossary(List<Map<String, Object?>> glossary) {
+    final names = <String, String>{};
+    for (final item in glossary) {
+      final name = (item['name']?.toString() ?? '')
+          .replaceAll(RegExp(r'\s+'), ' ')
+          .trim()
+          .replaceAll(RegExp(r'^[ ,.;:]+|[ ,.;:]+$'), '');
+      if (name.length < 2 || !RegExp(r'[A-Za-zÀ-ÖØ-öø-ÿĀ-žА-Яа-яІіЇїЄє一-龯]').hasMatch(name)) {
+        continue;
+      }
+      names.putIfAbsent(name.toLowerCase(), () => name);
+    }
+    final result = names.values.toList()
+      ..sort((a, b) => b.length.compareTo(a.length));
+    return result;
+  }
+
+  List<_GeneratedDescription> _suppressRepeatedLeadingCharacterNames(
+    List<_GeneratedDescription> descriptions,
+    List<Map<String, Object?>> glossary, {
+    double maxGapSec = 20.0,
+  }) {
+    final names = _characterNamesFromGlossary(glossary);
+    if (descriptions.isEmpty || names.isEmpty) {
+      return List<_GeneratedDescription>.of(descriptions);
+    }
+    final patterns = <(String, RegExp)>[
+      for (final name in names)
+        (
+          name,
+          RegExp('^(${RegExp.escape(name)})(?=\\s|,)', caseSensitive: false),
+        ),
+    ];
+    final cleaned = <_GeneratedDescription>[];
+    String? activeName;
+    double? previousEnd;
+    for (final item in descriptions) {
+      final text = item.text.trim();
+      String? leadingName;
+      RegExpMatch? match;
+      for (final entry in patterns) {
+        final candidate = entry.$2.firstMatch(text);
+        if (candidate != null) {
+          leadingName = entry.$1;
+          match = candidate;
+          break;
+        }
+      }
+      final closeToPrevious = previousEnd != null &&
+          item.requestedStart - previousEnd <= maxGapSec;
+      var replacement = text;
+      if (leadingName != null && match != null) {
+        final remainder = text.substring(match.end).trimLeft();
+        final remainderWithoutComma = remainder.replaceFirst(RegExp(r'^[, ]+'), '');
+        final lowered = remainderWithoutComma.toLowerCase();
+        final coordinatedSubject = lowered.startsWith('e ') ||
+            lowered.startsWith('ed ') ||
+            lowered.startsWith('and ') ||
+            lowered.startsWith('& ') ||
+            lowered.startsWith('con ') ||
+            lowered.startsWith('with ');
+        if (activeName == leadingName.toLowerCase() &&
+            closeToPrevious &&
+            remainderWithoutComma.isNotEmpty &&
+            !coordinatedSubject) {
+          replacement = remainderWithoutComma[0].toUpperCase() +
+              remainderWithoutComma.substring(1);
+        }
+        activeName = coordinatedSubject ? null : leadingName.toLowerCase();
+      } else {
+        activeName = null;
+      }
+      cleaned.add(item.copyWith(text: replacement));
+      previousEnd = item.requestedEnd;
+    }
+    return cleaned;
+  }
+
+  List<(double, double)> _subtractReservedRanges(
+    List<(double, double)> ranges,
+    List<(double, double)> reserved,
+  ) {
+    var available = List<(double, double)>.of(ranges);
+    for (final block in reserved) {
+      final next = <(double, double)>[];
+      for (final range in available) {
+        if (block.$2 <= range.$1 || block.$1 >= range.$2) {
+          next.add(range);
+          continue;
+        }
+        if (block.$1 > range.$1) next.add((range.$1, math.min(block.$1, range.$2)));
+        if (block.$2 < range.$2) next.add((math.max(block.$2, range.$1), range.$2));
+      }
+      available = next.where((range) => range.$2 > range.$1 + 0.001).toList();
+    }
+    return available;
+  }
+
+  List<(double, double)> _mergedSafeRanges(List<AdFallbackSlot> slots) {
+    final ordered = slots
+        .map((slot) => (slot.start, slot.end))
+        .where((range) => range.$2 > range.$1)
+        .toList()
+      ..sort((a, b) => a.$1.compareTo(b.$1));
+    final merged = <(double, double)>[];
+    for (final range in ordered) {
+      if (merged.isNotEmpty && range.$1 <= merged.last.$2 + 0.001) {
+        final previous = merged.removeLast();
+        merged.add((previous.$1, math.max(previous.$2, range.$2)));
+      } else {
+        merged.add(range);
+      }
+    }
+    return merged;
+  }
+
+  double? _chooseWindowsStyleStart({
+    required List<(double, double)> ranges,
+    required double desiredStart,
+    required double requiredDuration,
+  }) {
+    double? best;
+    var bestDistance = double.infinity;
+    for (final range in ranges) {
+      if (range.$2 - range.$1 + 1e-6 < requiredDuration) continue;
+      final latest = range.$2 - requiredDuration;
+      final candidate = desiredStart.clamp(range.$1, latest).toDouble();
+      final distance = (candidate - desiredStart).abs();
+      if (distance > AudioDescriptionFallbacks.maxPlacementShiftSeconds + 1e-6) {
+        continue;
+      }
+      if (distance < bestDistance) {
+        bestDistance = distance;
+        best = candidate;
+      }
+    }
+    return best;
+  }
+
+  double? _chooseWindowsStylePlacement({
+    required List<AdFallbackSlot> slots,
+    required List<(double, double)> reserved,
+    required String preferredSlotId,
+    required double desiredStart,
+    required double requiredDuration,
+  }) {
+    final preferred = slots.where((slot) => slot.id == preferredSlotId).toList();
+    if (preferred.isNotEmpty) {
+      final preferredRanges = _subtractReservedRanges(
+        <(double, double)>[(preferred.first.start, preferred.first.end)],
+        reserved,
+      );
+      final preferredStart = _chooseWindowsStyleStart(
+        ranges: preferredRanges,
+        desiredStart: desiredStart,
+        requiredDuration: requiredDuration,
+      );
+      if (preferredStart != null) return preferredStart;
+    }
+    final allRanges = _subtractReservedRanges(_mergedSafeRanges(slots), reserved);
+    return _chooseWindowsStyleStart(
+      ranges: allRanges,
+      desiredStart: desiredStart,
+      requiredDuration: requiredDuration,
+    );
   }
 
   Future<List<_Placement>> _synthesizeAndPlace({
@@ -2621,11 +3632,12 @@ If there is nothing useful to describe, return an empty audio_descriptions array
               start: slot.start,
               end: slot.end,
               mandatory: slot.mandatory,
-              partitionIndex: 1,
-              partitionCount: 1,
+              partitionIndex: slot.partitionIndex,
+              partitionCount: slot.partitionCount,
             ))
         .toList();
-    final occupiedSlots = <String>{};
+    final reservedRanges = <(double, double)>[];
+    final usedExtendedAnchorIds = <String>{};
     var overlapCursor = 0.0;
     final flutterTts = FlutterTts();
     final appSettings = AppSettingsService();
@@ -2705,30 +3717,28 @@ If there is nothing useful to describe, return an empty audio_descriptions array
           continue;
         }
 
-        final selected = AudioDescriptionFallbacks.chooseNearbySlot(
+        final selectedStart = _chooseWindowsStylePlacement(
           slots: fallbackSlots,
-          occupied: occupiedSlots,
+          reserved: reservedRanges,
           preferredSlotId: item.slotId,
-          visualTime: item.evidenceTime,
+          desiredStart: item.requestedStart,
           requiredDuration: duration,
         );
-        if (selected != null) {
-          final latest = selected.end - duration;
-          final start = item.evidenceTime.clamp(selected.start, latest).toDouble();
+        if (selectedStart != null) {
           result.add(_Placement.included(
             description: item,
             ttsPath: target.path,
             ttsDuration: duration,
-            originalStart: start,
+            originalStart: selectedStart,
             extraPause: 0.0,
           ));
-          occupiedSlots.add(selected.id);
+          reservedRanges.add((selectedStart, selectedStart + duration + 0.001));
           continue;
         }
 
         if (settings.allowExtendedPauses) {
           final anchors = fallbackSlots
-              .where((slot) => !occupiedSlots.contains(slot.id))
+              .where((slot) => !usedExtendedAnchorIds.contains(slot.id))
               .where((slot) => slot.duration >= 1.0 && slot.duration < 3.0)
               .where((slot) => AudioDescriptionFallbacks.extendedAnchorHasFollowingScene(
                     anchorEndSec: slot.end,
@@ -2736,14 +3746,14 @@ If there is nothing useful to describe, return an empty audio_descriptions array
                   ))
               .toList()
             ..sort((a, b) {
-              final da = (((a.start + a.end) / 2) - item.evidenceTime).abs();
-              final db = (((b.start + b.end) / 2) - item.evidenceTime).abs();
+              final da = (((a.start + a.end) / 2) - item.requestedStart).abs();
+              final db = (((b.start + b.end) / 2) - item.requestedStart).abs();
               return da.compareTo(db);
             });
           AdFallbackSlot? anchor;
           for (final candidate in anchors) {
             final center = (candidate.start + candidate.end) / 2.0;
-            if ((center - item.evidenceTime).abs() <=
+            if ((center - item.requestedStart).abs() <=
                 AudioDescriptionFallbacks.maxPlacementShiftSeconds) {
               anchor = candidate;
               break;
@@ -2758,7 +3768,7 @@ If there is nothing useful to describe, return an empty audio_descriptions array
               originalStart: anchor.start,
               extraPause: math.max(0.0, extra),
             ));
-            occupiedSlots.add(anchor.id);
+            usedExtendedAnchorIds.add(anchor.id);
             continue;
           }
         }
@@ -3031,7 +4041,6 @@ If there is nothing useful to describe, return an empty audio_descriptions array
       filter.write('${labels.join()}concat=n=${labels.length}:v=0:a=1[base0];');
     }
 
-    var duckIndex = 0;
     final ttsLabels = <String>[];
     for (var i = 0; i < included.length; i++) {
       final placement = included[i];
@@ -3040,20 +4049,31 @@ If there is nothing useful to describe, return an empty audio_descriptions array
           .fold<double>(0.0, (value, ext) => value + ext.extraPause);
       placement.finalStart = placement.originalStart + priorExtras;
       placement.finalEnd = placement.finalStart + placement.ttsDuration;
-      final previousLabel = duckIndex == 0 ? 'base0' : 'duck${duckIndex - 1}';
-      final currentLabel = 'duck$duckIndex';
-      filter.write('[$previousLabel]volume=enable=\'between(t,${placement.finalStart.toStringAsFixed(6)},${placement.finalEnd.toStringAsFixed(6)})\':volume=$_duckVolume[$currentLabel];');
-      duckIndex++;
 
       final delay = math.max(0, (placement.finalStart * 1000).round());
       final ttsLabel = 'tts$i';
       filter.write('[${i + 1}:a]aresample=48000,aformat=channel_layouts=stereo,adelay=$delay|$delay[$ttsLabel];');
       ttsLabels.add('[$ttsLabel]');
     }
-    final duckedBase = duckIndex == 0 ? '[base0]' : '[duck${duckIndex - 1}]';
+
+    final duckIntervals = _mergeDuckingIntervals(
+      included
+          .where((placement) => placement.extraPause <= 0.0001)
+          .map((placement) => (placement.finalStart, placement.finalEnd))
+          .toList(),
+    );
+    final duckExpression = _buildWindowsDuckingExpression(duckIntervals);
+    var duckedBase = '[base0]';
+    if (duckExpression != '1') {
+      filter.write(
+        "[base0]volume='$duckExpression':eval=frame[duckedbase];",
+      );
+      duckedBase = '[duckedbase]';
+    }
     filter.write('$duckedBase${ttsLabels.join()}${audioDescriptionMixFilter(ttsLabels.length + 1)}[outa]');
     await AppLogger.log('Audio description mobile: final mix '
-        'voices=${ttsLabels.length} normalize=false duckingDb=-12 limiter=0.97');
+        'voices=${ttsLabels.length} normalize=false duckingDb=-12 '
+        'attackMs=280 preDuckMs=180 releaseMs=600 curve=cosine limiter=0.97');
 
     args.addAll(<String>[
       '-filter_complex', filter.toString(),
@@ -3070,10 +4090,172 @@ If there is nothing useful to describe, return an empty audio_descriptions array
     );
   }
 
+
+  Future<String> _muxAudioDescriptionIntoVideo({
+    required String sourcePath,
+    required String audioPath,
+    required String outputBasePath,
+    required double durationSec,
+  }) async {
+    final mp4Path = '$outputBasePath.mp4';
+    try {
+      await _runFfmpeg(
+        <String>[
+          '-y',
+          '-hide_banner',
+          '-loglevel',
+          'error',
+          '-i',
+          sourcePath,
+          '-i',
+          audioPath,
+          '-map',
+          '0:v:0',
+          '-map',
+          '1:a:0',
+          '-c:v',
+          'copy',
+          '-c:a',
+          'aac',
+          '-b:a',
+          '192k',
+          '-map_metadata',
+          '0',
+          '-movflags',
+          '+faststart',
+          '-shortest',
+          mp4Path,
+        ],
+        'audio-described video mp4',
+        durationSec: durationSec,
+      );
+      final output = File(mp4Path);
+      if (await output.exists() && await output.length() > 1024) {
+        return mp4Path;
+      }
+    } catch (error) {
+      // Windows parity: retry as MKV only for MP4 container/packet
+      // compatibility failures. Cancellation, permissions, disk-full and
+      // unrelated processing errors must be surfaced instead of hidden by a
+      // second export attempt.
+      if (!_mp4MuxErrorAllowsMkvFallback(error)) rethrow;
+      await AppLogger.log(
+        'Audio description mobile: MP4 mux failed with a container/packet '
+        'compatibility error; trying MKV without re-encoding the video. '
+        'error=$error',
+      );
+      try {
+        final file = File(mp4Path);
+        if (await file.exists()) await file.delete();
+      } catch (_) {}
+    }
+
+    final mkvPath = '$outputBasePath.mkv';
+    await _runFfmpeg(
+      <String>[
+        '-y',
+        '-hide_banner',
+        '-loglevel',
+        'error',
+        '-i',
+        sourcePath,
+        '-i',
+        audioPath,
+        '-map',
+        '0:v:0',
+        '-map',
+        '1:a:0',
+        '-c:v',
+        'copy',
+        '-c:a',
+        'copy',
+        '-map_metadata',
+        '0',
+        '-shortest',
+        mkvPath,
+      ],
+      'audio-described video mkv fallback',
+      durationSec: durationSec,
+    );
+    final output = File(mkvPath);
+    if (!await output.exists() || await output.length() <= 1024) {
+      throw StateError('AUDIO_DESCRIPTION_VIDEO_OUTPUT_INVALID');
+    }
+    return mkvPath;
+  }
+
+  bool _mp4MuxErrorAllowsMkvFallback(Object error) {
+    final lower = error.toString().toLowerCase();
+    if (lower.contains('saving canceled') ||
+        lower.contains('cancelled') ||
+        lower.contains('canceled') ||
+        lower.contains('no space left') ||
+        lower.contains('permission denied') ||
+        lower.contains('access is denied')) {
+      return false;
+    }
+    return lower.contains('failed to write header') ||
+        lower.contains('av_interleaved_write_frame');
+  }
+
+  List<(double, double)> _mergeDuckingIntervals(
+    List<(double, double)> intervals,
+  ) {
+    if (intervals.isEmpty) return const <(double, double)>[];
+    final sorted = intervals
+        .where((item) => item.$2 > item.$1)
+        .toList()
+      ..sort((a, b) => a.$1.compareTo(b.$1));
+    if (sorted.isEmpty) return const <(double, double)>[];
+
+    final mergeGap = _duckAttackSec + _duckPreDuckSec + _duckReleaseSec;
+    final merged = <(double, double)>[];
+    var currentStart = sorted.first.$1;
+    var currentEnd = sorted.first.$2;
+    for (final item in sorted.skip(1)) {
+      if (item.$1 <= currentEnd + mergeGap) {
+        currentEnd = math.max(currentEnd, item.$2);
+      } else {
+        merged.add((currentStart, currentEnd));
+        currentStart = item.$1;
+        currentEnd = item.$2;
+      }
+    }
+    merged.add((currentStart, currentEnd));
+    return merged;
+  }
+
+  String _buildWindowsDuckingExpression(List<(double, double)> intervals) {
+    if (intervals.isEmpty) return '1';
+    var expression = '1';
+    for (final interval in intervals.reversed) {
+      final start = interval.$1;
+      final end = interval.$2;
+      final fullDuckStart = math.max(0.0, start - _duckPreDuckSec);
+      final attackStart = math.max(0.0, fullDuckStart - _duckAttackSec);
+      final releaseEnd = end + _duckReleaseSec;
+      final attackPosition =
+          '(t-${attackStart.toStringAsFixed(6)})/${_duckAttackSec.toStringAsFixed(3)}';
+      final releasePosition =
+          '(t-${end.toStringAsFixed(6)})/${_duckReleaseSec.toStringAsFixed(3)}';
+      final attackGain =
+          '1+($_duckVolume-1)*(0.5-0.5*cos(PI*$attackPosition))';
+      final releaseGain =
+          '$_duckVolume+(1-$_duckVolume)*(0.5-0.5*cos(PI*$releasePosition))';
+      expression =
+          'if(lt(t,${attackStart.toStringAsFixed(6)}),$expression,'
+          'if(lt(t,${fullDuckStart.toStringAsFixed(6)}),$attackGain,'
+          'if(lte(t,${end.toStringAsFixed(6)}),$_duckVolume,'
+          'if(lte(t,${releaseEnd.toStringAsFixed(6)}),$releaseGain,$expression))))';
+    }
+    return expression;
+  }
+
   Future<void> _writeProject({
     required String projectPath,
     required String sourcePath,
     required String outputMp3Path,
+    required bool outputIsVideo,
     required AiAudioDescriptionSettings settings,
     required String effectiveGeminiModel,
     required PyannoteMobileResult pyannote,
@@ -3106,9 +4288,13 @@ If there is nothing useful to describe, return an empty audio_descriptions array
         extendedPauseDurationSec: placement.extraPause,
         duckStartSec: placement.extraPause > 0.0001
             ? null
-            : math.max(0.0, placement.finalStart - 0.15),
-        duckEndSec:
-            placement.extraPause > 0.0001 ? null : placement.finalEnd + 0.15,
+            : math.max(
+                0.0,
+                placement.finalStart - _duckAttackSec - _duckPreDuckSec,
+              ),
+        duckEndSec: placement.extraPause > 0.0001
+            ? null
+            : placement.finalEnd + _duckReleaseSec,
       ));
     }
     final excluded = <Map<String, Object?>>[];
@@ -3142,6 +4328,7 @@ If there is nothing useful to describe, return an empty audio_descriptions array
       updatedAtUtc: now,
       sourcePath: sourcePath,
       outputMp3Path: outputMp3Path,
+      outputIsVideo: outputIsVideo,
       sourceDurationSec: pyannote.durationSec,
       outputDurationSec: pyannote.durationSec + inserted.fold<double>(
         0.0,
@@ -3163,7 +4350,7 @@ If there is nothing useful to describe, return an empty audio_descriptions array
       ttsPitch: pitch,
       bitrateKbps: 192,
       duckingDb: -12.0,
-      fadeMs: 150,
+      fadeMs: 280,
       protectedIntervals: intervals,
       descriptions: descriptions,
       excludedDescriptions: excluded,
@@ -3360,6 +4547,7 @@ If there is nothing useful to describe, return an empty audio_descriptions array
       ),
       sourcePath: sourcePath,
       outputMp3Path: outputPath,
+      outputIsVideo: boolean(map['output_is_video'], false),
       sourceDurationSec: sourceDuration,
       outputDurationSec: outputDuration,
       languageCode: language,
@@ -3466,6 +4654,7 @@ If there is nothing useful to describe, return an empty audio_descriptions array
         keepCharacterCatalog: false,
         characterCatalogName: null,
         saveProject: true,
+        createVideoOutput: false,
         ttsEngine: project.ttsEngine,
         edgeLanguage: project.edgeLanguage,
         edgeVoice: project.ttsVoice,
@@ -3712,7 +4901,7 @@ If there is nothing useful to describe, return an empty audio_descriptions array
           slotEnd: item.sourceStartSec,
           requestedStart: item.geminiStartSec,
           requestedEnd: item.geminiStartSec,
-          evidenceTime: item.visualEvidenceTimeSec ?? item.geminiStartSec,
+          evidenceTime: item.visualEvidenceTimeSec,
           text: item.text,
           mandatory: false,
         );
@@ -3745,6 +4934,23 @@ If there is nothing useful to describe, return an empty audio_descriptions array
         throw StateError('AUDIO_DESCRIPTION_PROJECT_EXPORT_INVALID');
       }
 
+      var exportedOutputPath = mp3Path;
+      if (project.outputIsVideo) {
+        exportedOutputPath = await _muxAudioDescriptionIntoVideo(
+          sourcePath: sourcePath,
+          audioPath: mp3Path,
+          outputBasePath: p.join(
+            dir.path,
+            '${base.isEmpty ? 'audiodescritto' : base}_modificato',
+          ),
+          durationSec: probe.durationSec,
+        );
+        try {
+          final tempMp3 = File(mp3Path);
+          if (await tempMp3.exists()) await tempMp3.delete();
+        } catch (_) {}
+      }
+
       var offset = 0.0;
       final finalItems = <AudioDescriptionProjectItem>[];
       for (var i = 0; i < updatedItems.length; i++) {
@@ -3757,8 +4963,14 @@ If there is nothing useful to describe, return an empty audio_descriptions array
           outputEndSec: outputEnd,
           ttsDurationSec: duration,
           extendedPauseDurationSec: item.extendedPause ? duration : 0.0,
-          duckStartSec: item.extendedPause ? null : math.max(0.0, outputStart - 0.15),
-          duckEndSec: item.extendedPause ? null : outputEnd + 0.15,
+          duckStartSec: item.extendedPause
+              ? null
+              : math.max(
+                  0.0,
+                  outputStart - _duckAttackSec - _duckPreDuckSec,
+                ),
+          duckEndSec:
+              item.extendedPause ? null : outputEnd + _duckReleaseSec,
           clearDuck: item.extendedPause,
         ));
         if (item.extendedPause) offset += duration;
@@ -3768,15 +4980,18 @@ If there is nothing useful to describe, return an empty audio_descriptions array
       final updatedProject = project.copyWith(
         projectPath: projectPath,
         sourcePath: sourcePath,
-        outputMp3Path: mp3Path,
+        outputMp3Path: exportedOutputPath,
+        outputIsVideo: project.outputIsVideo,
         outputDurationSec: outputDuration,
         updatedAtUtc: DateTime.now().toUtc().toIso8601String(),
+        duckingDb: -12.0,
+        fadeMs: 280,
         descriptions: finalItems,
       );
       await saveEditableProject(updatedProject);
       onProgress?.call(const AiAudioDescriptionProgress('completed', 1.0));
       return AudioDescriptionProjectExportResult(
-        mp3Path: mp3Path,
+        mp3Path: exportedOutputPath,
         projectPath: projectPath,
         project: updatedProject,
       );
@@ -3832,11 +5047,62 @@ If there is nothing useful to describe, return an empty audio_descriptions array
     return activateSonarpadAi(code);
   }
 
+  Map<String, Object?> _windowsGenerationConfig(
+    String model, {
+    required bool enableThinking,
+    double temperature = 0.3,
+  }) {
+    final config = <String, Object?>{
+      'temperature': temperature,
+      'responseMimeType': 'application/json',
+    };
+    final lower = model.toLowerCase();
+    if (enableThinking &&
+        (lower.contains('1.5') ||
+            lower.contains('2.5') ||
+            lower.contains('2.0'))) {
+      config['thinkingConfig'] = <String, Object?>{
+        'includeThoughts': true,
+        'thinkingBudget': 8192,
+      };
+    }
+    return config;
+  }
+
+  List<Object?> _windowsSafetySettings() => const <Object?>[
+        <String, Object?>{
+          'category': 'HARM_CATEGORY_HARASSMENT',
+          'threshold': 'OFF',
+        },
+        <String, Object?>{
+          'category': 'HARM_CATEGORY_HATE_SPEECH',
+          'threshold': 'OFF',
+        },
+        <String, Object?>{
+          'category': 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
+          'threshold': 'OFF',
+        },
+        <String, Object?>{
+          'category': 'HARM_CATEGORY_DANGEROUS_CONTENT',
+          'threshold': 'OFF',
+        },
+        <String, Object?>{
+          'category': 'HARM_CATEGORY_CIVIC_INTEGRITY',
+          'threshold': 'OFF',
+        },
+      ];
+
+  Map<String, Object?> _windowsSystemInstruction(String text) =>
+      <String, Object?>{
+        'parts': <Object?>[<String, Object?>{'text': text}],
+      };
+
   Future<_AiGenerationResult> _generateViaGemini({
     required String chunkPath,
     required String apiKey,
     required String model,
-    required String prompt,
+    required _GeminiPromptBundle prompt,
+    bool enableThinking = true,
     AiAudioDescriptionHighDemandCallback? onHighDemand,
     AiAudioDescriptionQuotaCallback? onQuota,
     int prohibitedAttempts = AudioDescriptionFallbacks.prohibitedContentMaxAttempts,
@@ -3865,13 +5131,17 @@ If there is nothing useful to describe, return an empty audio_descriptions array
           uri,
           headers: const {'Content-Type': 'application/json'},
           body: <String, Object?>{
+            'systemInstruction': _windowsSystemInstruction(
+              prompt.systemInstruction,
+            ),
             'contents': <Object?>[
               <String, Object?>{'role': 'user', 'parts': parts},
             ],
-            'generationConfig': <String, Object?>{
-              'temperature': 0.2,
-              'responseMimeType': 'application/json',
-            },
+            'generationConfig': _windowsGenerationConfig(
+              activeModel,
+              enableThinking: enableThinking,
+            ),
+            'safetySettings': _windowsSafetySettings(),
           },
           timeout: const Duration(minutes: 10),
           label: 'Gemini generate',
@@ -3967,7 +5237,7 @@ If there is nothing useful to describe, return an empty audio_descriptions array
     Future<List<Object?>> inlineParts() async {
       final data = base64Encode(await file.readAsBytes());
       return <Object?>[
-        <String, Object?>{'text': prompt},
+        <String, Object?>{'text': prompt.userPrompt},
         <String, Object?>{
           'inlineData': <String, Object?>{
             'mimeType': AudioDescriptionFallbacks.mimeTypeForPath(chunkPath),
@@ -4010,7 +5280,7 @@ If there is nothing useful to describe, return an empty audio_descriptions array
       }
       try {
         return await runWithParts(<Object?>[
-          <String, Object?>{'text': prompt},
+          <String, Object?>{'text': prompt.userPrompt},
           <String, Object?>{
             'fileData': <String, Object?>{
               'mimeType': AudioDescriptionFallbacks.mimeTypeForPath(chunkPath),
@@ -4183,8 +5453,10 @@ If there is nothing useful to describe, return an empty audio_descriptions array
     required String chunkPath,
     required String token,
     required String sonarpadCode,
-    required String prompt,
+    required String modelHint,
+    required _GeminiPromptBundle prompt,
     required String idempotencyKey,
+    bool enableThinking = true,
     AiAudioDescriptionHighDemandCallback? onHighDemand,
     int prohibitedAttempts = AudioDescriptionFallbacks.prohibitedContentMaxAttempts,
     bool allowSessionReactivation = true,
@@ -4306,11 +5578,14 @@ If there is nothing useful to describe, return an empty audio_descriptions array
               'X-Idempotency-Key': idempotencyKey,
             },
             body: <String, Object?>{
+              'systemInstruction': _windowsSystemInstruction(
+                prompt.systemInstruction,
+              ),
               'contents': <Object?>[
                 <String, Object?>{
                   'role': 'user',
                   'parts': <Object?>[
-                    <String, Object?>{'text': prompt},
+                    <String, Object?>{'text': prompt.userPrompt},
                     <String, Object?>{
                       'fileData': <String, Object?>{
                         'mimeType': mime,
@@ -4320,10 +5595,11 @@ If there is nothing useful to describe, return an empty audio_descriptions array
                   ],
                 },
               ],
-              'generationConfig': <String, Object?>{
-                'temperature': 0.2,
-                'responseMimeType': 'application/json',
-              },
+              'generationConfig': _windowsGenerationConfig(
+                modelHint,
+                enableThinking: enableThinking,
+              ),
+              'safetySettings': _windowsSafetySettings(),
             },
             timeout: const Duration(minutes: 12),
             label: 'Sonarpad AI generate',
@@ -4399,8 +5675,10 @@ If there is nothing useful to describe, return an empty audio_descriptions array
           chunkPath: chunkPath,
           token: activeToken,
           sonarpadCode: sonarpadCode,
+          modelHint: modelHint,
           prompt: prompt,
           idempotencyKey: idempotencyKey,
+          enableThinking: enableThinking,
           onHighDemand: onHighDemand,
           prohibitedAttempts: prohibitedAttempts,
           allowSessionReactivation: false,
@@ -4734,21 +6012,6 @@ If there is nothing useful to describe, return an empty audio_descriptions array
     return double.tryParse(value?.toString() ?? '');
   }
 
-  String _languageName(String code) => switch (code) {
-        'it' => 'Italian',
-        'en' => 'English',
-        'es' => 'Spanish',
-        'fr' => 'French',
-        'pt' => 'Portuguese (Portugal)',
-        'pt_BR' => 'Portuguese (Brazil)',
-        'pl' => 'Polish',
-        'cs' => 'Czech',
-        'de' => 'German',
-        'zh_CN' || 'zh' => 'Simplified Chinese',
-        'uk' => 'Ukrainian',
-        _ => code,
-      };
-
   String _safeBaseName(String value) {
     final cleaned = value.replaceAll(RegExp(r'[\\/:*?"<>|]+'), '_').trim();
     return cleaned.isEmpty ? 'video' : cleaned;
@@ -4773,12 +6036,16 @@ class _SafeSlot {
     required this.end,
     required this.mandatory,
     required this.maxWords,
+    required this.partitionIndex,
+    required this.partitionCount,
   });
   final String id;
   final double start;
   final double end;
   final bool mandatory;
   final int maxWords;
+  final int partitionIndex;
+  final int partitionCount;
 
   Map<String, Object?> toJson() => <String, Object?>{
         'slot_id': id,
@@ -4807,7 +6074,7 @@ class _GeneratedDescription {
   final double slotEnd;
   final double requestedStart;
   final double requestedEnd;
-  final double evidenceTime;
+  final double? evidenceTime;
   final String text;
   final bool mandatory;
 
@@ -4817,7 +6084,7 @@ class _GeneratedDescription {
         'slot_end': slotEnd,
         'requested_start': requestedStart,
         'requested_end': requestedEnd,
-        'evidence_time': evidenceTime,
+        if (evidenceTime != null) 'evidence_time': evidenceTime,
         'text': text,
         'mandatory': mandatory,
       };
@@ -4834,7 +6101,7 @@ class _GeneratedDescription {
     final requestedEnd = number(item['requested_end']);
     final evidence = number(item['evidence_time']);
     if (slotId.isEmpty || text.isEmpty || slotStart == null || slotEnd == null ||
-        requestedStart == null || requestedEnd == null || evidence == null) {
+        requestedStart == null || requestedEnd == null) {
       return null;
     }
     return _GeneratedDescription(
@@ -4896,7 +6163,8 @@ class _Placement {
         'slot_id': description.slotId,
         'slot_start_sec': description.slotStart,
         'slot_end_sec': description.slotEnd,
-        'evidence_time_sec': description.evidenceTime,
+        if (description.evidenceTime != null)
+          'evidence_time_sec': description.evidenceTime,
         'description_text': description.text,
         'mandatory': description.mandatory,
         'included': included,
@@ -5007,4 +6275,26 @@ class AudioDescriptionResumeUnavailableException implements Exception {
   const AudioDescriptionResumeUnavailableException();
   @override
   String toString() => 'AUDIO_DESCRIPTION_RESUME_UNAVAILABLE';
+}
+
+class _GeminiPromptBundle {
+  const _GeminiPromptBundle({
+    required this.systemInstruction,
+    required this.userPrompt,
+  });
+
+  final String systemInstruction;
+  final String userPrompt;
+}
+
+class _WindowsPromptLanguage {
+  const _WindowsPromptLanguage(
+    this.name,
+    this.descriptionExample,
+    this.glossaryExample,
+  );
+
+  final String name;
+  final String descriptionExample;
+  final String glossaryExample;
 }
