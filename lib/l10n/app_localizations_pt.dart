@@ -1993,6 +1993,16 @@ class AppLocalizationsPt extends AppLocalizations {
       'Gravação programada em curso';
 
   @override
+  String scheduledRecordingPendingStatus(String dateTime) {
+    return 'Programada para $dateTime';
+  }
+
+  @override
+  String recordingCannotOpenBeforeScheduledStart(String dateTime) {
+    return 'Esta gravação ainda não começou. Começará em $dateTime.';
+  }
+
+  @override
   String get recordingCannotOpenWhileInProgress =>
       'Não é possível abrir esta gravação porque ainda está em curso.';
 
@@ -6201,6 +6211,16 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   @override
   String get scheduledRecordingInProgressStatus =>
       'Gravação programada em andamento';
+
+  @override
+  String scheduledRecordingPendingStatus(String dateTime) {
+    return 'Programada para $dateTime';
+  }
+
+  @override
+  String recordingCannotOpenBeforeScheduledStart(String dateTime) {
+    return 'Esta gravação ainda não começou. Ela começará em $dateTime.';
+  }
 
   @override
   String get recordingCannotOpenWhileInProgress =>

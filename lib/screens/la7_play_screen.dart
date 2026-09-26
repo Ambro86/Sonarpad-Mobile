@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 
 import '../models/podcast.dart';
 import '../services/app_settings_service.dart';
 import '../services/la7_play_service.dart';
+import '../services/recording_feature_access.dart';
 import '../services/recent_searches_service.dart';
 import '../utils/app_logger.dart';
 import '../utils/media_open_guard.dart';
+import '../widgets/online_ai_audiodescription_action.dart';
 import '../widgets/universal_accessible_view.dart';
 import 'podcast_episode_player_screen.dart';
 import 'recent_searches_screen.dart';
@@ -35,6 +38,7 @@ class _La7PlayScreenState extends State<La7PlayScreen> {
   La7PlayPage? _page;
   bool _loading = true;
   String? _error;
+  bool _aiAudiodescriptionUnlocked = false;
 
   bool get _isRoot => widget.source == null && widget.searchQuery == null;
 
@@ -60,6 +64,8 @@ class _La7PlayScreenState extends State<La7PlayScreen> {
       if (!_service.isSecretCodeValid(code)) {
         throw Exception('Codice non valido o mancante.');
       }
+      final aiAudiodescriptionUnlocked =
+          language == 'it' && RecordingFeatureAccess.isCodeValid(code);
 
       final page = widget.searchQuery != null
           ? await _service.search(widget.searchQuery!)
@@ -70,6 +76,7 @@ class _La7PlayScreenState extends State<La7PlayScreen> {
       setState(() {
         _page = page;
         _error = null;
+        _aiAudiodescriptionUnlocked = aiAudiodescriptionUnlocked;
         _loading = false;
       });
     } catch (error) {
@@ -115,6 +122,36 @@ class _La7PlayScreenState extends State<La7PlayScreen> {
     await _search();
   }
 
+  bool _canCreateAiAudiodescription(La7PlayItem item) =>
+      _aiAudiodescriptionUnlocked && item.kind == La7PlayItemKind.media;
+
+  Future<void> _createAiAudiodescription(La7PlayItem item) async {
+    if (!mounted || !_canCreateAiAudiodescription(item)) return;
+    try {
+      final mediaUrl = await _service.resolveVod(item.target);
+      if (!mounted) return;
+      await createAiAudiodescriptionFromRemoteVideo(
+        context,
+        url: mediaUrl,
+        title: item.title,
+        headers: const <String, String>{
+          'Referer': 'https://www.la7.it/',
+          'User-Agent':
+              'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) Sonarpad',
+        },
+      );
+    } catch (error, stack) {
+      await AppLogger.log(
+        'LA7 Play AI audio description: preparation failed error=$error\n$stack',
+      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Impossibile preparare il video.')),
+        );
+      }
+    }
+  }
+
   void _openItem(La7PlayItem item) {
     if (item.kind == La7PlayItemKind.page) {
       Navigator.of(context).push(
@@ -157,10 +194,30 @@ class _La7PlayScreenState extends State<La7PlayScreen> {
       await Navigator.of(context).push(
         MaterialPageRoute<void>(
           settings: const RouteSettings(name: '/la7play/player'),
-          builder: (_) => PodcastEpisodePlayerScreen(
+          builder: (playerContext) => PodcastEpisodePlayerScreen(
             episode: episode,
             isVideoSupported: true,
             startWithVideo: true,
+            extraActions: _canCreateAiAudiodescription(item)
+                ? <PodcastPlayerExtraAction>[
+                    PodcastPlayerExtraAction(
+                      id: 'create_ai_audiodescription',
+                      label: () => onlineCreateAiAudiodescriptionLabel,
+                      icon: Icons.auto_awesome,
+                      pauseBeforeOpen: true,
+                      onPressed: () => createAiAudiodescriptionFromRemoteVideo(
+                        playerContext,
+                        url: mediaUrl,
+                        title: item.title,
+                        headers: const <String, String>{
+                          'Referer': 'https://www.la7.it/',
+                          'User-Agent':
+                              'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) Sonarpad',
+                        },
+                      ),
+                    ),
+                  ]
+                : const <PodcastPlayerExtraAction>[],
           ),
         ),
       );
@@ -207,6 +264,23 @@ class _La7PlayScreenState extends State<La7PlayScreen> {
           id: 'item_$i',
           title: items[i].title,
           subtitle: items[i].description,
+          actions: _canCreateAiAudiodescription(items[i])
+              ? const <AccessibleCustomAction>[
+                  AccessibleCustomAction(
+                    id: 'create_ai_audiodescription',
+                    label: onlineCreateAiAudiodescriptionLabel,
+                  ),
+                ]
+              : const <AccessibleCustomAction>[],
+          visualActions: _canCreateAiAudiodescription(items[i])
+              ? const <AccessibleVisualAction>[
+                  AccessibleVisualAction(
+                    id: 'create_ai_audiodescription',
+                    label: onlineCreateAiAudiodescriptionLabel,
+                    icon: 'ai',
+                  ),
+                ]
+              : const <AccessibleVisualAction>[],
         ),
       if (_error == null && !_loading && items.isEmpty && !_isRoot)
         const AccessibleListRow(
@@ -230,6 +304,13 @@ class _La7PlayScreenState extends State<La7PlayScreen> {
           await _search();
         } else if (event.id == 'recent' && event.type == 'activate') {
           await _openRecentSearches();
+        } else if (event.type == 'customAction' &&
+            event.action == 'create_ai_audiodescription' &&
+            event.id?.startsWith('item_') == true) {
+          final index = int.tryParse(event.id!.substring(5));
+          if (index != null && index >= 0 && index < items.length) {
+            await _createAiAudiodescription(items[index]);
+          }
         } else if (event.type == 'activate' &&
             event.id?.startsWith('item_') == true) {
           final index = int.tryParse(event.id!.substring(5));
@@ -290,9 +371,17 @@ class _La7PlayScreenState extends State<La7PlayScreen> {
             padding: const EdgeInsets.all(16),
             children: [
               for (final item in items)
-                Card(
-                  child: ListTile(
-                    leading: Icon(
+                Semantics(
+                  customSemanticsActions: _canCreateAiAudiodescription(item)
+                      ? <CustomSemanticsAction, VoidCallback>{
+                          const CustomSemanticsAction(
+                            label: onlineCreateAiAudiodescriptionLabel,
+                          ): () => _createAiAudiodescription(item),
+                        }
+                      : null,
+                  child: Card(
+                    child: ListTile(
+                      leading: Icon(
                       item.kind == La7PlayItemKind.media
                           ? Icons.play_circle_fill
                           : Icons.folder,
@@ -301,7 +390,17 @@ class _La7PlayScreenState extends State<La7PlayScreen> {
                     subtitle: item.description == null
                         ? null
                         : Text(item.description!),
-                    onTap: () => _openItem(item),
+                    trailing: _canCreateAiAudiodescription(item)
+                        ? ExcludeSemantics(
+                            child: IconButton(
+                              tooltip: onlineCreateAiAudiodescriptionLabel,
+                              icon: const Icon(Icons.auto_awesome),
+                              onPressed: () => _createAiAudiodescription(item),
+                            ),
+                          )
+                        : null,
+                      onTap: () => _openItem(item),
+                    ),
                   ),
                 ),
               if (_error == null && !_loading && items.isEmpty && !_isRoot)

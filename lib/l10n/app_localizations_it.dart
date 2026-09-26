@@ -1992,6 +1992,16 @@ class AppLocalizationsIt extends AppLocalizations {
       'Registrazione programmata in corso';
 
   @override
+  String scheduledRecordingPendingStatus(String dateTime) {
+    return 'Programmata per $dateTime';
+  }
+
+  @override
+  String recordingCannotOpenBeforeScheduledStart(String dateTime) {
+    return 'La registrazione non è ancora iniziata. Inizierà il $dateTime.';
+  }
+
+  @override
   String get recordingCannotOpenWhileInProgress =>
       'Non è possibile aprire questa registrazione perché la registrazione è ancora in corso.';
 

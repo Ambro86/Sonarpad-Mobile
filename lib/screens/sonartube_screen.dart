@@ -8,9 +8,12 @@ import '../services/document_library_service.dart';
 import '../services/app_settings_service.dart';
 import '../services/sonartube_favorites_service.dart';
 import '../services/sonartube_history_service.dart';
+import '../services/recording_feature_access.dart';
 import '../services/sonartube_service.dart';
 import '../utils/app_logger.dart';
 import '../utils/status_message.dart';
+import '../widgets/sonartube_save_media_dialog.dart';
+import '../widgets/online_ai_audiodescription_action.dart';
 import '../widgets/universal_accessible_view.dart';
 import 'document_reader_screen.dart';
 import 'podcast_episode_player_screen.dart';
@@ -65,6 +68,7 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
   SonarTubeChannelSort _channelSort = SonarTubeChannelSort.newest;
   bool _loading = false;
   bool _loadingMore = false;
+  bool _saveMediaUnlocked = false;
   String? _resolvingId;
   String? _openingItemKey;
   Object? _error;
@@ -96,6 +100,7 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
           widget.collection?.kind == SonarTubeItemKind.channel,
     );
     _loadFavoriteKeys();
+    _loadSaveMediaAccess();
     if (_isCollection) {
       WidgetsBinding.instance.addPostFrameCallback((_) => _loadCollection());
     } else if (_isSearchResults) {
@@ -109,6 +114,41 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
     setState(() {
       _favoriteKeys = favorites.map(_favoritesService.itemKey).toSet();
     });
+  }
+
+  Future<void> _loadSaveMediaAccess() async {
+    final unlocked = await RecordingFeatureAccess.isUnlocked();
+    if (!mounted) return;
+    setState(() => _saveMediaUnlocked = unlocked);
+  }
+
+  bool _canSaveMedia(AppLocalizations l10n, SonarTubeItem item) =>
+      _saveMediaUnlocked &&
+      l10n.localeName == 'it' &&
+      item.kind == SonarTubeItemKind.video &&
+      !item.isLive;
+
+  bool _canCreateAiAudiodescription(
+    AppLocalizations l10n,
+    SonarTubeItem item,
+  ) => _canSaveMedia(l10n, item);
+
+  Future<void> _saveMedia(SonarTubeItem item) async {
+    if (!mounted || item.kind != SonarTubeItemKind.video || item.isLive) return;
+    await saveSonarTubeMediaWithDestination(
+      context,
+      service: _service,
+      item: item,
+    );
+  }
+
+  Future<void> _createAiAudiodescription(SonarTubeItem item) async {
+    if (!mounted || item.kind != SonarTubeItemKind.video || item.isLive) return;
+    await createAiAudiodescriptionFromSonarTube(
+      context,
+      service: _service,
+      item: item,
+    );
   }
 
   String _favoriteLabelForItem(
@@ -742,6 +782,14 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
             pauseBeforeOpen: true,
             onPressed: () => _shareItem(currentVideoItem()),
           ),
+        if (_canCreateAiAudiodescription(l10n, item))
+          PodcastPlayerExtraAction(
+            id: 'create_ai_audiodescription',
+            label: () => l10n.audioDescriptionCreateAiTitle,
+            icon: Icons.auto_awesome,
+            pauseBeforeOpen: true,
+            onPressed: () => _createAiAudiodescription(currentVideoItem()),
+          ),
         if (playerActions.contains(
           AppSettingsService.sonarTubePlayerActionFavorite,
         ))
@@ -917,6 +965,18 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
         label: _shareActionLabel(l10n, item),
         icon: 'share',
       ),
+      if (_canSaveMedia(l10n, item))
+        const AccessibleVisualAction(
+          id: 'save_media',
+          label: sonarTubeSaveMediaLabel,
+          icon: 'save',
+        ),
+      if (_canCreateAiAudiodescription(l10n, item))
+        AccessibleVisualAction(
+          id: 'create_ai_audiodescription',
+          label: l10n.audioDescriptionCreateAiTitle,
+          icon: 'ai',
+        ),
       if (item.kind == SonarTubeItemKind.video)
         AccessibleVisualAction(
           id: 'go_channel',
@@ -970,6 +1030,20 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
             onPressed: enabled ? () => _shareItem(item) : null,
             icon: const Icon(Icons.share),
           ),
+          if (_canSaveMedia(l10n, item))
+            IconButton(
+              key: ValueKey('sonartube_save_media_${item.id}'),
+              tooltip: sonarTubeSaveMediaLabel,
+              onPressed: enabled ? () => _saveMedia(item) : null,
+              icon: const Icon(Icons.save_alt),
+            ),
+          if (_canCreateAiAudiodescription(l10n, item))
+            IconButton(
+              key: ValueKey('sonartube_create_ai_audiodescription_${item.id}'),
+              tooltip: l10n.audioDescriptionCreateAiTitle,
+              onPressed: enabled ? () => _createAiAudiodescription(item) : null,
+              icon: const Icon(Icons.auto_awesome),
+            ),
           if (item.kind == SonarTubeItemKind.video)
             IconButton(
               key: ValueKey('sonartube_channel_${item.id}'),
@@ -1084,6 +1158,13 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
                   () => _toggleFavorite(item),
               CustomSemanticsAction(label: _shareActionLabel(l10n, item)):
                   () => _shareItem(item),
+              if (_canSaveMedia(l10n, item))
+                const CustomSemanticsAction(label: sonarTubeSaveMediaLabel):
+                    () => _saveMedia(item),
+              if (_canCreateAiAudiodescription(l10n, item))
+                CustomSemanticsAction(
+                  label: l10n.audioDescriptionCreateAiTitle,
+                ): () => _createAiAudiodescription(item),
               if (item.kind == SonarTubeItemKind.video)
                 CustomSemanticsAction(label: l10n.sonarTubeGoToChannel):
                     () => _openChannelForVideo(item),
@@ -1362,6 +1443,16 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
             id: _shareActionId(item),
             label: _shareActionLabel(l10n, item),
           ),
+          if (_canSaveMedia(l10n, item))
+            const AccessibleCustomAction(
+              id: 'save_media',
+              label: sonarTubeSaveMediaLabel,
+            ),
+          if (_canCreateAiAudiodescription(l10n, item))
+            AccessibleCustomAction(
+              id: 'create_ai_audiodescription',
+              label: l10n.audioDescriptionCreateAiTitle,
+            ),
           if (item.kind == SonarTubeItemKind.video)
             AccessibleCustomAction(
               id: 'go_channel',
@@ -1438,6 +1529,24 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
             if (event.action == _shareActionId(item)) {
               await _shareItem(item);
             }
+          }
+          return;
+        }
+        if (event.type == 'customAction' &&
+            event.action == 'save_media' &&
+            event.id?.startsWith('item_') == true) {
+          final index = int.tryParse(event.id!.substring(5));
+          if (index != null && index >= 0 && index < _items.length) {
+            await _saveMedia(_items[index]);
+          }
+          return;
+        }
+        if (event.type == 'customAction' &&
+            event.action == 'create_ai_audiodescription' &&
+            event.id?.startsWith('item_') == true) {
+          final index = int.tryParse(event.id!.substring(5));
+          if (index != null && index >= 0 && index < _items.length) {
+            await _createAiAudiodescription(_items[index]);
           }
           return;
         }
@@ -1608,6 +1717,16 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
                 id: _shareActionId(item),
                 label: _shareActionLabel(l10n, item),
               ),
+              if (_canSaveMedia(l10n, item))
+                const AccessibleCustomAction(
+                  id: 'save_media',
+                  label: sonarTubeSaveMediaLabel,
+                ),
+              if (_canCreateAiAudiodescription(l10n, item))
+                AccessibleCustomAction(
+                  id: 'create_ai_audiodescription',
+                  label: l10n.audioDescriptionCreateAiTitle,
+                ),
               if (item.kind == SonarTubeItemKind.video)
                 AccessibleCustomAction(
                   id: 'go_channel',
@@ -1684,6 +1803,10 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
             await _toggleFavorite(item, accessibleRowId: event.id);
           } else if (event.action == _shareActionId(item)) {
             await _shareItem(item);
+          } else if (event.action == 'save_media') {
+            await _saveMedia(item);
+          } else if (event.action == 'create_ai_audiodescription') {
+            await _createAiAudiodescription(item);
           } else if (event.action == 'go_channel') {
             await _openChannelForVideo(item);
           } else if (event.action == 'view_comments') {
@@ -2715,11 +2838,13 @@ class _SonarTubeRecentVideosScreenState
   List<SonarTubeItem> _recent = const [];
   bool _loading = true;
   bool _openingRecentVideo = false;
+  bool _saveMediaUnlocked = false;
 
   @override
   void initState() {
     super.initState();
     _load();
+    _loadSaveMediaAccess();
   }
 
   Future<void> _load() async {
@@ -2729,6 +2854,41 @@ class _SonarTubeRecentVideosScreenState
       _recent = recent;
       _loading = false;
     });
+  }
+
+  Future<void> _loadSaveMediaAccess() async {
+    final unlocked = await RecordingFeatureAccess.isUnlocked();
+    if (!mounted) return;
+    setState(() => _saveMediaUnlocked = unlocked);
+  }
+
+  bool _canSaveMedia(AppLocalizations l10n, SonarTubeItem item) =>
+      _saveMediaUnlocked &&
+      l10n.localeName == 'it' &&
+      item.kind == SonarTubeItemKind.video &&
+      !item.isLive;
+
+  bool _canCreateAiAudiodescription(
+    AppLocalizations l10n,
+    SonarTubeItem item,
+  ) => _canSaveMedia(l10n, item);
+
+  Future<void> _saveMedia(SonarTubeItem item) async {
+    if (!mounted || item.isLive) return;
+    await saveSonarTubeMediaWithDestination(
+      context,
+      service: widget.service,
+      item: item,
+    );
+  }
+
+  Future<void> _createAiAudiodescription(SonarTubeItem item) async {
+    if (!mounted || item.kind != SonarTubeItemKind.video || item.isLive) return;
+    await createAiAudiodescriptionFromSonarTube(
+      context,
+      service: widget.service,
+      item: item,
+    );
   }
 
   int _recentIndexFor(SonarTubeItem item) {
@@ -2870,6 +3030,16 @@ class _SonarTubeRecentVideosScreenState
                 id: 'delete_video',
                 label: l10n.sonarTubeDeleteRecentVideo,
               ),
+              if (_canSaveMedia(l10n, item))
+                const AccessibleCustomAction(
+                  id: 'save_media',
+                  label: sonarTubeSaveMediaLabel,
+                ),
+              if (_canCreateAiAudiodescription(l10n, item))
+                AccessibleCustomAction(
+                  id: 'create_ai_audiodescription',
+                  label: l10n.audioDescriptionCreateAiTitle,
+                ),
               AccessibleCustomAction(
                 id: 'view_description',
                 label: l10n.sonarTubeViewDescription,
@@ -2881,6 +3051,18 @@ class _SonarTubeRecentVideosScreenState
                 label: l10n.sonarTubeDeleteRecentVideo,
                 icon: 'remove',
               ),
+              if (_canSaveMedia(l10n, item))
+                const AccessibleVisualAction(
+                  id: 'save_media',
+                  label: sonarTubeSaveMediaLabel,
+                  icon: 'save',
+                ),
+              if (_canCreateAiAudiodescription(l10n, item))
+                AccessibleVisualAction(
+                  id: 'create_ai_audiodescription',
+                  label: l10n.audioDescriptionCreateAiTitle,
+                  icon: 'ai',
+                ),
               AccessibleVisualAction(
                 id: 'view_description',
                 label: l10n.sonarTubeViewDescription,
@@ -2908,6 +3090,15 @@ class _SonarTubeRecentVideosScreenState
         if (event.type == 'customAction' &&
             event.action == 'delete_video') {
           await _deleteRecentVideo(item);
+          return;
+        }
+        if (event.type == 'customAction' && event.action == 'save_media') {
+          await _saveMedia(item);
+          return;
+        }
+        if (event.type == 'customAction' &&
+            event.action == 'create_ai_audiodescription') {
+          await _createAiAudiodescription(item);
           return;
         }
         if (event.type == 'customAction' &&
@@ -2971,6 +3162,14 @@ class _SonarTubeRecentVideosScreenState
                               CustomSemanticsAction(
                                 label: l10n.sonarTubeDeleteRecentVideo,
                               ): () => _deleteRecentVideo(item),
+                              if (_canSaveMedia(l10n, item))
+                                const CustomSemanticsAction(
+                                  label: sonarTubeSaveMediaLabel,
+                                ): () => _saveMedia(item),
+                              if (_canCreateAiAudiodescription(l10n, item))
+                                CustomSemanticsAction(
+                                  label: l10n.audioDescriptionCreateAiTitle,
+                                ): () => _createAiAudiodescription(item),
                               CustomSemanticsAction(
                                 label: l10n.sonarTubeViewDescription,
                               ): () => _openDescription(item),
@@ -3001,6 +3200,25 @@ class _SonarTubeRecentVideosScreenState
                                 child: Wrap(
                                   spacing: 2,
                                   children: [
+                                    if (_canSaveMedia(l10n, item))
+                                      IconButton(
+                                        key: ValueKey(
+                                          'sonartube_save_media_recent_${item.id}',
+                                        ),
+                                        tooltip: sonarTubeSaveMediaLabel,
+                                        icon: const Icon(Icons.save_alt),
+                                        onPressed: () => _saveMedia(item),
+                                      ),
+                                    if (_canCreateAiAudiodescription(l10n, item))
+                                      IconButton(
+                                        key: ValueKey(
+                                          'sonartube_create_ai_recent_${item.id}',
+                                        ),
+                                        tooltip: l10n.audioDescriptionCreateAiTitle,
+                                        icon: const Icon(Icons.auto_awesome),
+                                        onPressed: () =>
+                                            _createAiAudiodescription(item),
+                                      ),
                                     IconButton(
                                       key: ValueKey(
                                         'sonartube_description_recent_${item.id}',
@@ -3055,11 +3273,13 @@ class _SonarTubeFavoritesScreenState extends State<_SonarTubeFavoritesScreen> {
   List<SonarTubeItem> _favorites = const [];
   bool _loading = true;
   bool _openingFavoriteItem = false;
+  bool _saveMediaUnlocked = false;
 
   @override
   void initState() {
     super.initState();
     _load();
+    _loadSaveMediaAccess();
   }
 
   Future<void> _load() async {
@@ -3069,6 +3289,41 @@ class _SonarTubeFavoritesScreenState extends State<_SonarTubeFavoritesScreen> {
       _favorites = favorites;
       _loading = false;
     });
+  }
+
+  Future<void> _loadSaveMediaAccess() async {
+    final unlocked = await RecordingFeatureAccess.isUnlocked();
+    if (!mounted) return;
+    setState(() => _saveMediaUnlocked = unlocked);
+  }
+
+  bool _canSaveMedia(AppLocalizations l10n, SonarTubeItem item) =>
+      _saveMediaUnlocked &&
+      l10n.localeName == 'it' &&
+      item.kind == SonarTubeItemKind.video &&
+      !item.isLive;
+
+  bool _canCreateAiAudiodescription(
+    AppLocalizations l10n,
+    SonarTubeItem item,
+  ) => _canSaveMedia(l10n, item);
+
+  Future<void> _saveMedia(SonarTubeItem item) async {
+    if (!mounted || item.kind != SonarTubeItemKind.video || item.isLive) return;
+    await saveSonarTubeMediaWithDestination(
+      context,
+      service: widget.service,
+      item: item,
+    );
+  }
+
+  Future<void> _createAiAudiodescription(SonarTubeItem item) async {
+    if (!mounted || item.kind != SonarTubeItemKind.video || item.isLive) return;
+    await createAiAudiodescriptionFromSonarTube(
+      context,
+      service: widget.service,
+      item: item,
+    );
   }
 
   Future<void> _remove(SonarTubeItem item) async {
@@ -3286,6 +3541,16 @@ class _SonarTubeFavoritesScreenState extends State<_SonarTubeFavoritesScreen> {
             enabled: !_openingFavoriteItem,
             actions: [
               AccessibleCustomAction(id: 'remove', label: removeLabel),
+              if (_canSaveMedia(l10n, item))
+                const AccessibleCustomAction(
+                  id: 'save_media',
+                  label: sonarTubeSaveMediaLabel,
+                ),
+              if (_canCreateAiAudiodescription(l10n, item))
+                AccessibleCustomAction(
+                  id: 'create_ai_audiodescription',
+                  label: l10n.audioDescriptionCreateAiTitle,
+                ),
               if (item.kind == SonarTubeItemKind.video)
                 AccessibleCustomAction(
                   id: 'go_channel',
@@ -3313,6 +3578,18 @@ class _SonarTubeFavoritesScreenState extends State<_SonarTubeFavoritesScreen> {
                 label: removeLabel,
                 icon: 'remove',
               ),
+              if (_canSaveMedia(l10n, item))
+                const AccessibleVisualAction(
+                  id: 'save_media',
+                  label: sonarTubeSaveMediaLabel,
+                  icon: 'save',
+                ),
+              if (_canCreateAiAudiodescription(l10n, item))
+                AccessibleVisualAction(
+                  id: 'create_ai_audiodescription',
+                  label: l10n.audioDescriptionCreateAiTitle,
+                  icon: 'ai',
+                ),
               if (item.kind == SonarTubeItemKind.video)
                 AccessibleVisualAction(
                   id: 'go_channel',
@@ -3353,6 +3630,12 @@ class _SonarTubeFavoritesScreenState extends State<_SonarTubeFavoritesScreen> {
         final item = _favorites[index];
         if (event.type == 'customAction' && event.action == 'remove') {
           await _remove(item);
+        } else if (event.type == 'customAction' &&
+            event.action == 'save_media') {
+          await _saveMedia(item);
+        } else if (event.type == 'customAction' &&
+            event.action == 'create_ai_audiodescription') {
+          await _createAiAudiodescription(item);
         } else if (event.type == 'customAction' &&
             event.action == 'go_channel') {
           await _openChannel(item);
@@ -3428,6 +3711,14 @@ class _SonarTubeFavoritesScreenState extends State<_SonarTubeFavoritesScreen> {
                             customSemanticsActions: {
                               CustomSemanticsAction(label: removeLabel):
                                   () => _remove(item),
+                              if (_canSaveMedia(l10n, item))
+                                const CustomSemanticsAction(
+                                  label: sonarTubeSaveMediaLabel,
+                                ): () => _saveMedia(item),
+                              if (_canCreateAiAudiodescription(l10n, item))
+                                CustomSemanticsAction(
+                                  label: l10n.audioDescriptionCreateAiTitle,
+                                ): () => _createAiAudiodescription(item),
                               if (item.kind == SonarTubeItemKind.video)
                                 CustomSemanticsAction(
                                   label: l10n.sonarTubeGoToChannel,
@@ -3504,6 +3795,20 @@ class _SonarTubeFavoritesScreenState extends State<_SonarTubeFavoritesScreen> {
                                         child: Wrap(
                                           spacing: 2,
                                           children: [
+                                            if (_canSaveMedia(l10n, item))
+                                              IconButton(
+                                                tooltip: sonarTubeSaveMediaLabel,
+                                                onPressed: () =>
+                                                    _saveMedia(item),
+                                                icon: const Icon(Icons.save_alt),
+                                              ),
+                                            if (_canCreateAiAudiodescription(l10n, item))
+                                              IconButton(
+                                                tooltip: l10n.audioDescriptionCreateAiTitle,
+                                                onPressed: () =>
+                                                    _createAiAudiodescription(item),
+                                                icon: const Icon(Icons.auto_awesome),
+                                              ),
                                             IconButton(
                                               tooltip:
                                                   l10n.sonarTubeGoToChannel,

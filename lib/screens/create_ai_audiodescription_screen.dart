@@ -19,7 +19,12 @@ import '../utils/status_message.dart';
 import '../widgets/universal_accessible_view.dart';
 
 class CreateAiAudiodescriptionScreen extends StatefulWidget {
-  const CreateAiAudiodescriptionScreen({super.key});
+  const CreateAiAudiodescriptionScreen({
+    super.key,
+    this.initialSourcePath,
+  });
+
+  final String? initialSourcePath;
 
   @override
   State<CreateAiAudiodescriptionScreen> createState() =>
@@ -74,6 +79,10 @@ class _CreateAiAudiodescriptionScreenState
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    final initialSourcePath = widget.initialSourcePath?.trim() ?? '';
+    if (initialSourcePath.isNotEmpty) {
+      _sourcePath = initialSourcePath;
+    }
     unawaited(_load());
   }
 

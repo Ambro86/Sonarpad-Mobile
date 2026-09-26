@@ -3655,6 +3655,19 @@ abstract class AppLocalizations {
   /// **'Registrazione programmata in corso'**
   String get scheduledRecordingInProgressStatus;
 
+
+  /// Status for a scheduled recording that has not started yet.
+  ///
+  /// In it, this message translates to:
+  /// **'Programmata per {dateTime}'**
+  String scheduledRecordingPendingStatus(String dateTime);
+
+  /// Message shown when a scheduled recording is opened before its start.
+  ///
+  /// In it, this message translates to:
+  /// **'La registrazione non è ancora iniziata. Inizierà il {dateTime}.'**
+  String recordingCannotOpenBeforeScheduledStart(String dateTime);
+
   /// No description provided for @recordingCannotOpenWhileInProgress.
   ///
   /// In it, this message translates to:

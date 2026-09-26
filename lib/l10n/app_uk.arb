@@ -2651,6 +2651,20 @@
   "recordings": "Записи",
   "recordingInProgressStatus": "Триває запис",
   "scheduledRecordingInProgressStatus": "Триває запланований запис",
+  "scheduledRecordingPendingStatus": "Заплановано на {dateTime}",
+  "@scheduledRecordingPendingStatus": {
+    "description": "Status shown for a scheduled recording that has not started yet.",
+    "placeholders": {
+      "dateTime": {}
+    }
+  },
+  "recordingCannotOpenBeforeScheduledStart": "Цей запис ще не розпочався. Він почнеться {dateTime}.",
+  "@recordingCannotOpenBeforeScheduledStart": {
+    "description": "Message shown when opening a scheduled recording before it starts.",
+    "placeholders": {
+      "dateTime": {}
+    }
+  },
   "recordingCannotOpenWhileInProgress": "Цей запис неможливо відкрити, оскільки запис ще триває.",
   "blindLibrarySearchCatalog": "Пошук у каталозі",
   "selectRecordings": "Вибрати записи",

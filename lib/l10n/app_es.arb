@@ -796,6 +796,20 @@
   "recordings": "Grabaciones",
   "recordingInProgressStatus": "Grabación en curso",
   "scheduledRecordingInProgressStatus": "Grabación programada en curso",
+  "scheduledRecordingPendingStatus": "Programada para el {dateTime}",
+  "@scheduledRecordingPendingStatus": {
+    "description": "Status shown for a scheduled recording that has not started yet.",
+    "placeholders": {
+      "dateTime": {}
+    }
+  },
+  "recordingCannotOpenBeforeScheduledStart": "Esta grabación aún no ha comenzado. Comenzará el {dateTime}.",
+  "@recordingCannotOpenBeforeScheduledStart": {
+    "description": "Message shown when opening a scheduled recording before it starts.",
+    "placeholders": {
+      "dateTime": {}
+    }
+  },
   "recordingCannotOpenWhileInProgress": "No se puede abrir esta grabación porque todavía está en curso.",
   "blindLibrarySearchCatalog": "Buscar en el catálogo",
   "selectRecordings": "Seleccionar grabaciones",

@@ -2651,6 +2651,20 @@
   "recordings": "Registrazioni",
   "recordingInProgressStatus": "Registrazione in corso",
   "scheduledRecordingInProgressStatus": "Registrazione programmata in corso",
+  "scheduledRecordingPendingStatus": "Programmata per {dateTime}",
+  "@scheduledRecordingPendingStatus": {
+    "description": "Status shown for a scheduled recording that has not started yet.",
+    "placeholders": {
+      "dateTime": {}
+    }
+  },
+  "recordingCannotOpenBeforeScheduledStart": "La registrazione non è ancora iniziata. Inizierà il {dateTime}.",
+  "@recordingCannotOpenBeforeScheduledStart": {
+    "description": "Message shown when opening a scheduled recording before it starts.",
+    "placeholders": {
+      "dateTime": {}
+    }
+  },
   "recordingCannotOpenWhileInProgress": "Non è possibile aprire questa registrazione perché la registrazione è ancora in corso.",
   "blindLibrarySearchCatalog": "Cerca nel catalogo",
   "selectRecordings": "Seleziona registrazioni",

@@ -1981,6 +1981,16 @@ class AppLocalizationsUk extends AppLocalizations {
   String get scheduledRecordingInProgressStatus => 'Триває запланований запис';
 
   @override
+  String scheduledRecordingPendingStatus(String dateTime) {
+    return 'Заплановано на $dateTime';
+  }
+
+  @override
+  String recordingCannotOpenBeforeScheduledStart(String dateTime) {
+    return 'Цей запис ще не розпочався. Він почнеться $dateTime.';
+  }
+
+  @override
   String get recordingCannotOpenWhileInProgress =>
       'Цей запис неможливо відкрити, оскільки запис ще триває.';
 

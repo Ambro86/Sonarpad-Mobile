@@ -28,6 +28,7 @@ class GlobalRecordingTarget {
 
 enum GlobalRecordingOutputState {
   none,
+  scheduledPending,
   recording,
   scheduledRecording,
 }
@@ -70,6 +71,11 @@ class GlobalRecordingService extends ChangeNotifier {
       (_scheduledStartTimer?.isActive ?? false);
 
   GlobalRecordingOutputState outputStateFor(File file) {
+    final pendingOutputPath = _pendingScheduledOutputPath;
+    if (pendingOutputPath != null && file.path == pendingOutputPath) {
+      return GlobalRecordingOutputState.scheduledPending;
+    }
+
     final activeOutput = _activeOutput;
     final activeTarget = _activeTarget;
     if (activeOutput == null ||
@@ -82,6 +88,39 @@ class GlobalRecordingService extends ChangeNotifier {
       return GlobalRecordingOutputState.scheduledRecording;
     }
     return GlobalRecordingOutputState.recording;
+  }
+
+  File? pendingScheduledOutput({required bool includeVideo}) {
+    final target = _scheduledTarget;
+    final path = _pendingScheduledOutputPath;
+    if (target == null ||
+        target.includeVideo != includeVideo ||
+        path == null) {
+      return null;
+    }
+    return File(path);
+  }
+
+  DateTime? scheduledStartForOutput(File file) {
+    final path = _pendingScheduledOutputPath;
+    if (path == null || file.path != path) return null;
+    return _scheduledStart;
+  }
+
+  String? get _pendingScheduledOutputPath {
+    final target = _scheduledTarget;
+    final start = _scheduledStart;
+    if (target == null || start == null || _activeOutput != null) return null;
+
+    final rawName = (_scheduledTitle ?? target.stationName).trim();
+    final safeName = rawName
+        .replaceAll(RegExp(r'[\\/:*?"<>|]'), '_')
+        .replaceAll(RegExp(r'\s+'), ' ')
+        .trim();
+    final extension = target.includeVideo ? '.mp4' : '.mp3';
+    final displayName = safeName.isEmpty ? target.id.hashCode.toString() : safeName;
+    final kind = target.includeVideo ? 'tv' : 'radio';
+    return '/__sonarpad_scheduled__/$kind/${start.millisecondsSinceEpoch}/$displayName$extension';
   }
 
   DateTime? scheduledStartFor(String targetId) =>

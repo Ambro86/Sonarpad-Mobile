@@ -796,6 +796,20 @@
   "recordings": "Nahrávky",
   "recordingInProgressStatus": "Probíhá nahrávání",
   "scheduledRecordingInProgressStatus": "Probíhá naplánované nahrávání",
+  "scheduledRecordingPendingStatus": "Naplánováno na {dateTime}",
+  "@scheduledRecordingPendingStatus": {
+    "description": "Status shown for a scheduled recording that has not started yet.",
+    "placeholders": {
+      "dateTime": {}
+    }
+  },
+  "recordingCannotOpenBeforeScheduledStart": "Toto nahrávání ještě nezačalo. Začne {dateTime}.",
+  "@recordingCannotOpenBeforeScheduledStart": {
+    "description": "Message shown when opening a scheduled recording before it starts.",
+    "placeholders": {
+      "dateTime": {}
+    }
+  },
   "recordingCannotOpenWhileInProgress": "Tuto nahrávku nelze otevřít, protože nahrávání stále probíhá.",
   "blindLibrarySearchCatalog": "Prohledat katalog",
   "selectRecordings": "Vybrat nahrávky",

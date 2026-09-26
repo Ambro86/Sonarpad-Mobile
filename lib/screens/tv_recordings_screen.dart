@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
+import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
 import 'package:share_plus/share_plus.dart';
 
@@ -36,7 +37,7 @@ class _TvRecordingsScreenState extends State<TvRecordingsScreen> {
   @override
   void initState() {
     super.initState();
-    _future = _service.listRecordings();
+    _future = _loadRecordings();
     _globalRecordingService.addListener(_onGlobalRecordingChanged);
     _checkAccess();
   }
@@ -54,9 +55,20 @@ class _TvRecordingsScreenState extends State<TvRecordingsScreen> {
 
   void _reload() {
     setState(() {
-      _future = _service.listRecordings();
+      _future = _loadRecordings();
     });
     _checkAccess();
+  }
+
+  Future<List<File>> _loadRecordings() async {
+    final recordings = await _service.listRecordings();
+    final scheduled =
+        _globalRecordingService.pendingScheduledOutput(includeVideo: true);
+    if (scheduled == null) return recordings;
+    return <File>[
+      scheduled,
+      ...recordings.where((file) => file.path != scheduled.path),
+    ];
   }
 
   Future<void> _checkAccess() async {
@@ -73,6 +85,10 @@ class _TvRecordingsScreenState extends State<TvRecordingsScreen> {
 
   String? _recordingStatus(File file, AppLocalizations l10n) {
     return switch (_recordingState(file)) {
+      GlobalRecordingOutputState.scheduledPending =>
+        l10n.scheduledRecordingPendingStatus(
+          _formatScheduledStart(file, l10n),
+        ),
       GlobalRecordingOutputState.recording => l10n.recordingInProgressStatus,
       GlobalRecordingOutputState.scheduledRecording =>
         l10n.scheduledRecordingInProgressStatus,
@@ -80,11 +96,28 @@ class _TvRecordingsScreenState extends State<TvRecordingsScreen> {
     };
   }
 
+  String _formatScheduledStart(File file, AppLocalizations l10n) {
+    final start = _globalRecordingService.scheduledStartForOutput(file);
+    if (start == null) return '';
+    return DateFormat.yMMMMEEEEd(l10n.localeName).add_Hm().format(start);
+  }
+
   void _openRecording(File file) {
-    if (_recordingState(file) != GlobalRecordingOutputState.none) {
+    final state = _recordingState(file);
+    final l10n = AppLocalizations.of(context);
+    if (state == GlobalRecordingOutputState.scheduledPending) {
       showStatusMessage(
         context,
-        AppLocalizations.of(context).recordingCannotOpenWhileInProgress,
+        l10n.recordingCannotOpenBeforeScheduledStart(
+          _formatScheduledStart(file, l10n),
+        ),
+      );
+      return;
+    }
+    if (state != GlobalRecordingOutputState.none) {
+      showStatusMessage(
+        context,
+        l10n.recordingCannotOpenWhileInProgress,
       );
       return;
     }
@@ -129,7 +162,13 @@ class _TvRecordingsScreenState extends State<TvRecordingsScreen> {
 
   Future<void> _selectAndShareRecordings() async {
     try {
-      final recordings = await _future;
+      final recordings = (await _future)
+          .where(
+            (file) =>
+                _recordingState(file) !=
+                GlobalRecordingOutputState.scheduledPending,
+          )
+          .toList(growable: false);
       if (!mounted) return;
       final result = await showRecordingSelectionDialog(context, recordings);
       if (!mounted || result == null || result.recordings.isEmpty) return;
@@ -238,24 +277,41 @@ class _TvRecordingsScreenState extends State<TvRecordingsScreen> {
                   rows: files
                       .asMap()
                       .entries
-                      .map((entry) => AccessibleListRow(
-                            id: 'recording_${entry.key}',
-                            title: p.basenameWithoutExtension(entry.value.path),
-                            value: _recordingStatus(entry.value, l10n),
-                            actions: [
-                              AccessibleCustomAction(id: 'open', label: l10n.openItem),
-                              AccessibleCustomAction(id: 'share', label: l10n.share),
+                      .map((entry) {
+                        final isPending = _recordingState(entry.value) ==
+                            GlobalRecordingOutputState.scheduledPending;
+                        return AccessibleListRow(
+                          id: 'recording_${entry.key}',
+                          title: p.basenameWithoutExtension(entry.value.path),
+                          value: _recordingStatus(entry.value, l10n),
+                          actions: [
+                            AccessibleCustomAction(
+                              id: 'open',
+                              label: l10n.openItem,
+                            ),
+                            if (!isPending) ...[
+                              AccessibleCustomAction(
+                                id: 'share',
+                                label: l10n.share,
+                              ),
                               AccessibleCustomAction(id: 'rename', label: l10n.rename),
-                              AccessibleCustomAction(id: 'delete', label: l10n.deleteItem),
-                            ],
-                            visualActions: [
-                              AccessibleVisualAction(
-                                id: 'rename',
-                                label: l10n.rename,
-                                icon: 'edit',
+                              AccessibleCustomAction(
+                                id: 'delete',
+                                label: l10n.deleteItem,
                               ),
                             ],
-                          ))
+                          ],
+                          visualActions: isPending
+                              ? const []
+                              : [
+                                  AccessibleVisualAction(
+                                    id: 'rename',
+                                    label: l10n.rename,
+                                    icon: 'edit',
+                                  ),
+                                ],
+                        );
+                      })
                       .toList(growable: false),
                 ),
               ],
@@ -283,24 +339,30 @@ class _TvRecordingsScreenState extends State<TvRecordingsScreen> {
               final file = files[index];
               final name = p.basenameWithoutExtension(file.path);
               final status = _recordingStatus(file, l10n);
+              final isPending = _recordingState(file) ==
+                  GlobalRecordingOutputState.scheduledPending;
               return Semantics(
                 key: ValueKey('tv_recording_semantics_${file.path}'),
                 customSemanticsActions: {
                   CustomSemanticsAction(label: l10n.openItem): () =>
                       _openRecording(file),
-                  CustomSemanticsAction(label: l10n.share): () =>
-                      _shareRecording(file),
-                  CustomSemanticsAction(label: l10n.rename): () =>
-                      _renameRecording(file),
-                  CustomSemanticsAction(label: l10n.deleteItem): () =>
-                      _deleteRecording(file),
+                  if (!isPending) ...{
+                    CustomSemanticsAction(label: l10n.share): () =>
+                        _shareRecording(file),
+                    CustomSemanticsAction(label: l10n.rename): () =>
+                        _renameRecording(file),
+                    CustomSemanticsAction(label: l10n.deleteItem): () =>
+                        _deleteRecording(file),
+                  },
                 },
                 child: ListTile(
                   key: ValueKey('tv_recording_${file.path}'),
                   leading: const Icon(Icons.videocam),
                   title: Text(name),
                   subtitle: status == null ? null : Text(status),
-                  trailing: ExcludeSemantics(
+                  trailing: isPending
+                      ? null
+                      : ExcludeSemantics(
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [

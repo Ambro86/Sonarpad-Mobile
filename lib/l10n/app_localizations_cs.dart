@@ -1985,6 +1985,16 @@ class AppLocalizationsCs extends AppLocalizations {
       'Probíhá naplánované nahrávání';
 
   @override
+  String scheduledRecordingPendingStatus(String dateTime) {
+    return 'Naplánováno na $dateTime';
+  }
+
+  @override
+  String recordingCannotOpenBeforeScheduledStart(String dateTime) {
+    return 'Toto nahrávání ještě nezačalo. Začne $dateTime.';
+  }
+
+  @override
   String get recordingCannotOpenWhileInProgress =>
       'Tuto nahrávku nelze otevřít, protože nahrávání stále probíhá.';
 

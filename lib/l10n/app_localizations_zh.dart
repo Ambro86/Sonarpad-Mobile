@@ -1934,6 +1934,16 @@ class AppLocalizationsZh extends AppLocalizations {
   String get scheduledRecordingInProgressStatus => '定时录制进行中';
 
   @override
+  String scheduledRecordingPendingStatus(String dateTime) {
+    return '计划于 $dateTime';
+  }
+
+  @override
+  String recordingCannotOpenBeforeScheduledStart(String dateTime) {
+    return '此录制尚未开始，将于 $dateTime 开始。';
+  }
+
+  @override
   String get recordingCannotOpenWhileInProgress => '无法打开此录制，因为录制仍在进行中。';
 
   @override
@@ -5953,6 +5963,16 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get scheduledRecordingInProgressStatus => '定时录制进行中';
+
+  @override
+  String scheduledRecordingPendingStatus(String dateTime) {
+    return '计划于 $dateTime';
+  }
+
+  @override
+  String recordingCannotOpenBeforeScheduledStart(String dateTime) {
+    return '此录制尚未开始，将于 $dateTime 开始。';
+  }
 
   @override
   String get recordingCannotOpenWhileInProgress => '无法打开此录制，因为录制仍在进行中。';

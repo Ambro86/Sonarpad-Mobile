@@ -1554,6 +1554,7 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
   IconData _visualActionIcon(String? name) => switch (name) {
         'download' => Icons.download,
         'save' => Icons.save_alt,
+        'ai' => Icons.auto_awesome,
         'favorite' => Icons.favorite_border,
         'favorite_filled' => Icons.favorite,
         'share' => Icons.share,

@@ -796,6 +796,20 @@
   "recordings": "Gravações",
   "recordingInProgressStatus": "Gravação em andamento",
   "scheduledRecordingInProgressStatus": "Gravação programada em andamento",
+  "scheduledRecordingPendingStatus": "Programada para {dateTime}",
+  "@scheduledRecordingPendingStatus": {
+    "description": "Status shown for a scheduled recording that has not started yet.",
+    "placeholders": {
+      "dateTime": {}
+    }
+  },
+  "recordingCannotOpenBeforeScheduledStart": "Esta gravação ainda não começou. Ela começará em {dateTime}.",
+  "@recordingCannotOpenBeforeScheduledStart": {
+    "description": "Message shown when opening a scheduled recording before it starts.",
+    "placeholders": {
+      "dateTime": {}
+    }
+  },
   "recordingCannotOpenWhileInProgress": "Não é possível abrir esta gravação porque ela ainda está em andamento.",
   "blindLibrarySearchCatalog": "Pesquisar no catálogo",
   "selectRecordings": "Selecionar gravações",

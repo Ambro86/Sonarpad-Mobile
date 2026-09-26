@@ -793,6 +793,20 @@
   "recordings": "录音",
   "recordingInProgressStatus": "录制进行中",
   "scheduledRecordingInProgressStatus": "定时录制进行中",
+  "scheduledRecordingPendingStatus": "计划于 {dateTime}",
+  "@scheduledRecordingPendingStatus": {
+    "description": "Status shown for a scheduled recording that has not started yet.",
+    "placeholders": {
+      "dateTime": {}
+    }
+  },
+  "recordingCannotOpenBeforeScheduledStart": "此录制尚未开始，将于 {dateTime} 开始。",
+  "@recordingCannotOpenBeforeScheduledStart": {
+    "description": "Message shown when opening a scheduled recording before it starts.",
+    "placeholders": {
+      "dateTime": {}
+    }
+  },
   "recordingCannotOpenWhileInProgress": "无法打开此录制，因为录制仍在进行中。",
   "blindLibrarySearchCatalog": "搜索目录",
   "selectRecordings": "选择录音",

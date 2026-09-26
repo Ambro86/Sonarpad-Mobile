@@ -2651,6 +2651,20 @@
   "recordings": "Aufnahmen",
   "recordingInProgressStatus": "Aufnahme läuft",
   "scheduledRecordingInProgressStatus": "Geplante Aufnahme läuft",
+  "scheduledRecordingPendingStatus": "Geplant für {dateTime}",
+  "@scheduledRecordingPendingStatus": {
+    "description": "Status shown for a scheduled recording that has not started yet.",
+    "placeholders": {
+      "dateTime": {}
+    }
+  },
+  "recordingCannotOpenBeforeScheduledStart": "Diese Aufnahme hat noch nicht begonnen. Sie beginnt am {dateTime}.",
+  "@recordingCannotOpenBeforeScheduledStart": {
+    "description": "Message shown when opening a scheduled recording before it starts.",
+    "placeholders": {
+      "dateTime": {}
+    }
+  },
   "recordingCannotOpenWhileInProgress": "Diese Aufnahme kann nicht geöffnet werden, da sie noch läuft.",
   "blindLibrarySearchCatalog": "Katalog durchsuchen",
   "selectRecordings": "Aufnahmen auswählen",

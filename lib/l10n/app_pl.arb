@@ -2635,6 +2635,20 @@
   "recordings": "Nagrania",
   "recordingInProgressStatus": "Nagrywanie w toku",
   "scheduledRecordingInProgressStatus": "Trwa zaplanowane nagrywanie",
+  "scheduledRecordingPendingStatus": "Zaplanowano na {dateTime}",
+  "@scheduledRecordingPendingStatus": {
+    "description": "Status shown for a scheduled recording that has not started yet.",
+    "placeholders": {
+      "dateTime": {}
+    }
+  },
+  "recordingCannotOpenBeforeScheduledStart": "To nagranie jeszcze się nie rozpoczęło. Rozpocznie się {dateTime}.",
+  "@recordingCannotOpenBeforeScheduledStart": {
+    "description": "Message shown when opening a scheduled recording before it starts.",
+    "placeholders": {
+      "dateTime": {}
+    }
+  },
   "recordingCannotOpenWhileInProgress": "Nie można otworzyć tego nagrania, ponieważ nagrywanie nadal trwa.",
   "blindLibrarySearchCatalog": "Przeszukaj katalog",
   "selectRecordings": "Wybierz nagrania",

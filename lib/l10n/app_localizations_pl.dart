@@ -1987,6 +1987,16 @@ class AppLocalizationsPl extends AppLocalizations {
       'Trwa zaplanowane nagrywanie';
 
   @override
+  String scheduledRecordingPendingStatus(String dateTime) {
+    return 'Zaplanowano na $dateTime';
+  }
+
+  @override
+  String recordingCannotOpenBeforeScheduledStart(String dateTime) {
+    return 'To nagranie jeszcze się nie rozpoczęło. Rozpocznie się $dateTime.';
+  }
+
+  @override
   String get recordingCannotOpenWhileInProgress =>
       'Nie można otworzyć tego nagrania, ponieważ nagrywanie nadal trwa.';
 

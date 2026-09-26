@@ -9,6 +9,9 @@ void main() {
         File('lib/services/global_recording_service.dart').readAsStringSync();
     expect(source, contains('enum GlobalRecordingOutputState'));
     expect(source, contains('GlobalRecordingOutputState outputStateFor(File file)'));
+    expect(source, contains('GlobalRecordingOutputState.scheduledPending'));
+    expect(source, contains('pendingScheduledOutput({required bool includeVideo})'));
+    expect(source, contains('scheduledStartForOutput(File file)'));
     expect(source, contains('activeOutput.path != file.path'));
     expect(source, contains('GlobalRecordingOutputState.scheduledRecording'));
   });
@@ -21,8 +24,11 @@ void main() {
       final source = File(path).readAsStringSync();
       expect(source, contains('_globalRecordingService.addListener('), reason: path);
       expect(source, contains('_globalRecordingService.removeListener('), reason: path);
+      expect(source, contains('scheduledRecordingPendingStatus'), reason: path);
+      expect(source, contains('recordingCannotOpenBeforeScheduledStart'), reason: path);
       expect(source, contains('scheduledRecordingInProgressStatus'), reason: path);
       expect(source, contains('recordingCannotOpenWhileInProgress'), reason: path);
+      expect(source, contains('pendingScheduledOutput(includeVideo:'), reason: path);
       expect(source, contains('value: _recordingStatus('), reason: path);
       expect(source, contains('subtitle: status == null ? null : Text(status)'), reason: path);
       expect(
@@ -42,7 +48,9 @@ void main() {
       final arb = jsonDecode(file.readAsStringSync()) as Map<String, dynamic>;
       for (final key in [
         'recordingInProgressStatus',
+        'scheduledRecordingPendingStatus',
         'scheduledRecordingInProgressStatus',
+        'recordingCannotOpenBeforeScheduledStart',
         'recordingCannotOpenWhileInProgress',
       ]) {
         expect((arb[key] as String?)?.trim(), isNotEmpty,
