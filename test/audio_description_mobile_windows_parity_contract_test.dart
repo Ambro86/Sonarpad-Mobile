@@ -40,14 +40,14 @@ void main() {
   });
 
   test('audiodescriptions and projects save under Audiodescriptions', () {
-    expect(destination, contains("displayName: 'Audiodescriptions'"));
+    expect(destination, contains("_ensureFolder('Audiodescriptions')"));
     expect(destination, contains('saveInSonarpadAudiodescriptions'));
     expect(screen, contains('saveInSonarpadAudiodescriptions'));
     expect(projectEditor, contains('saveInSonarpadAudiodescriptions'));
   });
 
   test('character catalogs are saved and loaded from Audiodescriptions/Catalogs', () {
-    expect(destination, contains("displayName: 'Catalogs'"));
+    expect(destination, contains("_ensureFolder('Catalogs', parentId: parentId)"));
     expect(destination, contains('ensureAudiodescriptionCatalogsFolder'));
     expect(service, contains("p.join(documents.path, 'Audiodescriptions', 'Catalogs')"));
     expect(service, contains('_syncCatalogsFromSonarpadDocuments'));
@@ -65,7 +65,8 @@ void main() {
 
   test('document removal returns accessibility focus to first remaining row', () {
     expect(documents, contains('final targetId = remaining.first.id;'));
-    expect(documents, contains('focusToReturnAfterStructureChange(targetId)'));
+    expect(documents, contains('focusToReturnAfterStructureChange('));
+    expect(documents, contains('targetId,'));
   });
 
   test('TV recordings expose AI creation as secondary action and hidden visual action', () {

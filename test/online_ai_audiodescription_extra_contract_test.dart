@@ -4,11 +4,11 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('AI audio description screen accepts a preselected source path', () {
-    final screen = File(
-      'lib/screens/create_ai_audiodescription_screen.dart',
-    ).readAsStringSync();
+  final screen = File(
+    'lib/screens/create_ai_audiodescription_screen.dart',
+  ).readAsStringSync();
 
+  test('AI audio description screen accepts a preselected source path', () {
     expect(screen, contains('this.initialSourcePath'));
     expect(screen, contains('final String? initialSourcePath;'));
     expect(screen, contains('widget.initialSourcePath?.trim()'));

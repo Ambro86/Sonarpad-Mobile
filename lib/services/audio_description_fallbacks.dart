@@ -1039,7 +1039,8 @@ class AudioDescriptionFallbacks {
     if (merged.isEmpty) return observed;
     if (observed.isEmpty) return merged;
 
-    for (final sentence in _sentences(observed)) {
+    for (final rawSentence in _sentences(observed)) {
+      final sentence = _collapseRepeatedWordSequence(rawSentence);
       if (_descriptionTokens(sentence).length <= 2) continue;
       // Windows parity: the established catalog is authoritative. If most of
       // an observed sentence is already represented, treat it as a
@@ -1051,6 +1052,44 @@ class AudioDescriptionFallbacks {
       merged = candidate;
     }
     return merged;
+  }
+
+  static String _collapseRepeatedWordSequence(String value) {
+    final cleaned = _cleanDescription(value);
+    if (cleaned.isEmpty) return cleaned;
+    final words = cleaned.split(' ');
+    if (words.length < 8) return cleaned;
+
+    String normalizeWord(String word) {
+      final out = StringBuffer();
+      for (final rune in word.runes) {
+        final char = String.fromCharCode(rune);
+        if (_isLikelyLetterOrDigit(char)) out.write(char.toLowerCase());
+      }
+      return out.toString();
+    }
+
+    final normalized = words.map(normalizeWord).toList(growable: false);
+    // Gemini occasionally repeats the same visual fact twice back-to-back
+    // without punctuation. Collapse exact repeated halves before the
+    // authoritative catalog merge so a corrupted duplicate cannot become
+    // persistent biography text.
+    for (var block = words.length ~/ 2; block >= 4; block--) {
+      if (words.length % block != 0) continue;
+      final repeats = words.length ~/ block;
+      if (repeats < 2) continue;
+      var same = true;
+      for (var repeat = 1; repeat < repeats && same; repeat++) {
+        for (var i = 0; i < block; i++) {
+          if (normalized[i] != normalized[(repeat * block) + i]) {
+            same = false;
+            break;
+          }
+        }
+      }
+      if (same) return words.take(block).join(' ').trim();
+    }
+    return cleaned;
   }
 
   static String _cleanDescription(String value) =>
