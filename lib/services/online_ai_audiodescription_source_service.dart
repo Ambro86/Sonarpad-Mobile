@@ -24,6 +24,8 @@ class OnlineAiAudiodescriptionSourceService {
   Future<String> importSonarTubeVideo({
     required SonarTubeService service,
     required SonarTubeItem item,
+    SonarTubeMediaExportController? controller,
+    void Function(double fraction)? onProgress,
   }) async {
     if (item.kind != SonarTubeItemKind.video || item.isLive) {
       throw StateError(item.id);
@@ -32,11 +34,23 @@ class OnlineAiAudiodescriptionSourceService {
     final exporter = SonarTubeMediaExportService();
     String? stagedPath;
     try {
-      stagedPath = await exporter.export(service: service, item: item);
-      return await _copyIntoDocuments(
+      stagedPath = await exporter.export(
+        service: service,
+        item: item,
+        controller: controller,
+        onProgress: (fraction) {
+          onProgress?.call((fraction * 0.96).clamp(0.0, 0.96).toDouble());
+        },
+      );
+      controller?.ensureNotCancelled();
+      final savedPath = await _copyIntoDocuments(
         stagedPath,
         originalName: p.basename(stagedPath),
+        controller: controller,
       );
+      controller?.ensureNotCancelled();
+      onProgress?.call(1.0);
+      return savedPath;
     } finally {
       if (stagedPath != null) {
         await exporter.cleanup(stagedPath);
@@ -159,19 +173,34 @@ class OnlineAiAudiodescriptionSourceService {
   Future<String> _copyIntoDocuments(
     String sourcePath, {
     required String originalName,
+    SonarTubeMediaExportController? controller,
   }) async {
     final source = File(sourcePath);
     if (!await source.exists() || await source.length() <= 0) {
       throw FileSystemException('Prepared video is missing or empty', sourcePath);
     }
 
+    controller?.ensureNotCancelled();
     await _library.load();
+    controller?.ensureNotCancelled();
     final document = await _library.importFile(
       source,
       originalName: originalName,
     );
+    if (controller?.isCancelled == true) {
+      try {
+        final copiedPath = await _library.resolveFilePath(document);
+        final copied = File(copiedPath);
+        if (await copied.exists()) await copied.delete();
+      } catch (_) {}
+      throw const SonarTubeMediaExportCancelledException();
+    }
     try {
       await _library.add(document);
+      if (controller?.isCancelled == true) {
+        await _library.remove(document.id);
+        throw const SonarTubeMediaExportCancelledException();
+      }
     } catch (error) {
       try {
         final copiedPath = await _library.resolveFilePath(document);

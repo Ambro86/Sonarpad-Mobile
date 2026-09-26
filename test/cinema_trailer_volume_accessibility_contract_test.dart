@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('shared media player exposes volume exactly once as an adjustable row', () {
+  test('shared media player exposes volume as an accessible adjustable row', () {
     final player = File(
       'lib/screens/podcast_episode_player_screen.dart',
     ).readAsStringSync();
@@ -11,7 +11,7 @@ void main() {
     expect(player, contains("id: 'accessible_volume'"));
     expect(player, contains("title: l10n.adjustVolume"));
     expect(player, contains("kind: 'slider'"));
-    expect(player, isNot(contains('nativeSliderAccessibilityElement: true')));
+    expect(player, contains('nativeSliderAccessibilityElement: true'));
     expect(
       player,
       contains("event.id == 'accessible_volume' && event.type == 'slider'"),

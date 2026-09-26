@@ -1205,6 +1205,7 @@ class _PodcastEpisodePlayerScreenState
                 '${((_accessibleVolume + 0.1).clamp(0.0, 1.0) * 100).round()}%',
             sliderDecreasedValueLabel:
                 '${((_accessibleVolume - 0.1).clamp(0.0, 1.0) * 100).round()}%',
+            nativeSliderAccessibilityElement: true,
             enabled: !_loading,
           ),
         for (final action in widget.extraActions)

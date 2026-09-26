@@ -350,12 +350,10 @@ void main() {
       expect(screen, contains('WidgetsBindingObserver'));
       expect(screen, contains('_ensureGenerationWakelock'));
     });
-    test('generation exposes one accessible progress percentage only', () {
+    test('generation exposes a determinate accessible progress bar', () {
       expect(screen, contains('LinearProgressIndicator('));
-      expect(screen, contains('ExcludeSemantics('));
-      expect(screen, isNot(contains('semanticsValue:')));
+      expect(screen, contains('semanticsValue:'));
       expect(screen, contains("id: 'progress'"));
-      expect(screen, contains(r"value: '${(_progress * 100).round()}%'"));
       expect(screen, contains('if (progress.value > _progress)'));
     });
     test('Pyannote heavy PCM preparation stays off the UI isolate', () {

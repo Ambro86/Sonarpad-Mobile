@@ -1,12 +1,47 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:ffmpeg_kit_flutter_new/ffmpeg_kit.dart';
+import 'package:ffmpeg_kit_flutter_new/ffmpeg_session.dart';
 import 'package:ffmpeg_kit_flutter_new/return_code.dart';
 import 'package:path/path.dart' as p;
 
 import '../utils/app_logger.dart';
 import 'app_cache_service.dart';
 import 'sonartube_service.dart';
+
+class SonarTubeMediaExportCancelledException implements Exception {
+  const SonarTubeMediaExportCancelledException();
+}
+
+class SonarTubeMediaExportController {
+  FFmpegSession? _session;
+  bool _cancelled = false;
+
+  bool get isCancelled => _cancelled;
+
+  Future<void> cancel() async {
+    _cancelled = true;
+    final session = _session;
+    if (session != null) {
+      await session.cancel();
+    }
+  }
+
+  void ensureNotCancelled() {
+    if (_cancelled) {
+      throw const SonarTubeMediaExportCancelledException();
+    }
+  }
+
+  void _attach(FFmpegSession session) {
+    _session = session;
+  }
+
+  void _detach(FFmpegSession session) {
+    if (identical(_session, session)) _session = null;
+  }
+}
 
 /// Stages SonarTube media as a local file before the user chooses the final
 /// destination. The normal [export] method preserves the historical behaviour
@@ -17,10 +52,17 @@ class SonarTubeMediaExportService {
   Future<String> export({
     required SonarTubeService service,
     required SonarTubeItem item,
+    SonarTubeMediaExportController? controller,
+    void Function(double fraction)? onProgress,
   }) async {
     _validate(item);
+    controller?.ensureNotCancelled();
+    onProgress?.call(0.0);
 
     final media = await service.resolve(item);
+    controller?.ensureNotCancelled();
+    onProgress?.call(0.03);
+    final durationSec = _parseDurationSeconds(item.duration);
     final operationDir = await _createOperationDirectory();
     final baseName = _safeFileName(media.title.isEmpty ? item.title : media.title);
     final mp4Path = p.join(operationDir.path, '$baseName.mp4');
@@ -32,7 +74,17 @@ class SonarTubeMediaExportService {
         outputPath: mp4Path,
         mp4: true,
       );
-      if (await _run(mp4Args, outputPath: mp4Path, container: 'mp4')) {
+      if (await _run(
+        mp4Args,
+        outputPath: mp4Path,
+        container: 'mp4',
+        controller: controller,
+        onProgress: onProgress,
+        durationSec: durationSec,
+        progressStart: 0.03,
+        progressEnd: 0.52,
+      )) {
+        onProgress?.call(1.0);
         return mp4Path;
       }
 
@@ -44,7 +96,17 @@ class SonarTubeMediaExportService {
         outputPath: mkvPath,
         mp4: false,
       );
-      if (await _run(mkvArgs, outputPath: mkvPath, container: 'mkv')) {
+      if (await _run(
+        mkvArgs,
+        outputPath: mkvPath,
+        container: 'mkv',
+        controller: controller,
+        onProgress: onProgress,
+        durationSec: durationSec,
+        progressStart: 0.52,
+        progressEnd: 0.99,
+      )) {
+        onProgress?.call(1.0);
         return mkvPath;
       }
 
@@ -61,10 +123,17 @@ class SonarTubeMediaExportService {
   Future<String> exportMp4({
     required SonarTubeService service,
     required SonarTubeItem item,
+    SonarTubeMediaExportController? controller,
+    void Function(double fraction)? onProgress,
   }) async {
     _validate(item);
+    controller?.ensureNotCancelled();
+    onProgress?.call(0.0);
 
     final media = await service.resolve(item);
+    controller?.ensureNotCancelled();
+    onProgress?.call(0.03);
+    final durationSec = _parseDurationSeconds(item.duration);
     final operationDir = await _createOperationDirectory();
     final baseName = _safeFileName(media.title.isEmpty ? item.title : media.title);
     final outputPath = p.join(operationDir.path, '$baseName.mp4');
@@ -75,7 +144,17 @@ class SonarTubeMediaExportService {
         outputPath: outputPath,
         mp4: true,
       );
-      if (await _run(remuxArgs, outputPath: outputPath, container: 'mp4-copy')) {
+      if (await _run(
+        remuxArgs,
+        outputPath: outputPath,
+        container: 'mp4-copy',
+        controller: controller,
+        onProgress: onProgress,
+        durationSec: durationSec,
+        progressStart: 0.03,
+        progressEnd: 0.50,
+      )) {
+        onProgress?.call(1.0);
         return outputPath;
       }
 
@@ -87,7 +166,13 @@ class SonarTubeMediaExportService {
         transcodeArgs,
         outputPath: outputPath,
         container: 'mp4-transcode',
+        controller: controller,
+        onProgress: onProgress,
+        durationSec: durationSec,
+        progressStart: 0.50,
+        progressEnd: 0.99,
       )) {
+        onProgress?.call(1.0);
         return outputPath;
       }
 
@@ -103,10 +188,17 @@ class SonarTubeMediaExportService {
   Future<String> exportMp3({
     required SonarTubeService service,
     required SonarTubeItem item,
+    SonarTubeMediaExportController? controller,
+    void Function(double fraction)? onProgress,
   }) async {
     _validate(item);
+    controller?.ensureNotCancelled();
+    onProgress?.call(0.0);
 
     final media = await service.resolve(item);
+    controller?.ensureNotCancelled();
+    onProgress?.call(0.03);
+    final durationSec = _parseDurationSeconds(item.duration);
     final operationDir = await _createOperationDirectory();
     final baseName = _safeFileName(media.title.isEmpty ? item.title : media.title);
     final outputPath = p.join(operationDir.path, '$baseName.mp3');
@@ -125,7 +217,17 @@ class SonarTubeMediaExportService {
         '192k',
         outputPath,
       ];
-      if (await _run(args, outputPath: outputPath, container: 'mp3')) {
+      if (await _run(
+        args,
+        outputPath: outputPath,
+        container: 'mp3',
+        controller: controller,
+        onProgress: onProgress,
+        durationSec: durationSec,
+        progressStart: 0.03,
+        progressEnd: 0.99,
+      )) {
+        onProgress?.call(1.0);
         return outputPath;
       }
       throw const FileSystemException('Unable to create SonarTube MP3 file');
@@ -257,14 +359,57 @@ class SonarTubeMediaExportService {
     List<String> args, {
     required String outputPath,
     required String container,
+    SonarTubeMediaExportController? controller,
+    void Function(double fraction)? onProgress,
+    double durationSec = 0.0,
+    double progressStart = 0.0,
+    double progressEnd = 1.0,
   }) async {
+    controller?.ensureNotCancelled();
     await AppLogger.log(
       'SonarTube save media: ffmpeg $container start output="$outputPath"',
     );
-    final session = await FFmpegKit.executeWithArguments(args);
-    final returnCode = await session.getReturnCode();
+
+    final completed = Completer<FFmpegSession>();
+    var lastPercent = -1;
+    final session = await FFmpegKit.executeWithArgumentsAsync(
+      args,
+      (result) {
+        if (!completed.isCompleted) completed.complete(result);
+      },
+      null,
+      (statistics) {
+        if (controller?.isCancelled == true || durationSec <= 0) return;
+        final local = (statistics.getTime() / (durationSec * 1000))
+            .clamp(0.0, 0.99)
+            .toDouble();
+        final fraction = progressStart + ((progressEnd - progressStart) * local);
+        final percent = (fraction * 100).floor();
+        if (percent > lastPercent) {
+          lastPercent = percent;
+          onProgress?.call(fraction.clamp(0.0, 0.99).toDouble());
+        }
+      },
+    );
+    controller?._attach(session);
+    if (controller?.isCancelled == true) {
+      await session.cancel();
+    }
+    final finished = await completed.future;
+    controller?._detach(session);
+
+    final returnCode = await finished.getReturnCode();
+    if (controller?.isCancelled == true || ReturnCode.isCancel(returnCode)) {
+      final failed = File(outputPath);
+      if (await failed.exists()) {
+        try {
+          await failed.delete();
+        } catch (_) {}
+      }
+      throw const SonarTubeMediaExportCancelledException();
+    }
     if (!ReturnCode.isSuccess(returnCode)) {
-      final logs = await session.getAllLogsAsString() ?? '';
+      final logs = await finished.getAllLogsAsString() ?? '';
       await AppLogger.log(
         'SonarTube save media: ffmpeg $container failed '
         'returnCode=${returnCode?.getValue()} logs="${_compact(logs)}"',
@@ -290,6 +435,20 @@ class SonarTubeMediaExportService {
       'bytes=${await output.length()}',
     );
     return true;
+  }
+
+  double _parseDurationSeconds(String? value) {
+    final text = value?.trim() ?? '';
+    if (text.isEmpty) return 0.0;
+    final parts = text.split(':');
+    if (parts.isEmpty || parts.length > 3) return 0.0;
+    var total = 0.0;
+    for (final part in parts) {
+      final number = double.tryParse(part.trim());
+      if (number == null || number < 0) return 0.0;
+      total = (total * 60) + number;
+    }
+    return total;
   }
 
   Future<void> cleanup(String filePath) async {

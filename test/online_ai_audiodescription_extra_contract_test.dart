@@ -36,6 +36,24 @@ void main() {
     expect(screen, contains('_alreadyInSonarpadDocuments'));
   });
 
+  test('SonarTube AI preparation exposes download progress and cancellation', () {
+    final action = File(
+      'lib/widgets/online_ai_audiodescription_action.dart',
+    ).readAsStringSync();
+    final source = File(
+      'lib/services/online_ai_audiodescription_source_service.dart',
+    ).readAsStringSync();
+
+    expect(action, contains('cancellablePreparation: true'));
+    expect(action, contains('LinearProgressIndicator('));
+    expect(action, contains("child: Text(l10n.cancel)"));
+    expect(action, contains('cancelController.cancel()'));
+    expect(action, contains('ExcludeSemantics('));
+    expect(source, contains('controller: controller'));
+    expect(source, contains('onProgress: (fraction)'));
+    expect(source, contains('controller?.ensureNotCancelled()'));
+  });
+
   test('SonarTube AI audio description is gated by code and Italian UI', () {
     final screen = File('lib/screens/sonartube_screen.dart').readAsStringSync();
 

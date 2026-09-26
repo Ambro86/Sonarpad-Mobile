@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
 import 'package:share_plus/share_plus.dart';
@@ -54,6 +56,10 @@ Future<void> saveSonarTubeMediaWithDestination(
   if (!context.mounted || format == null) return;
 
   final exporter = SonarTubeMediaExportService();
+  final exportController = SonarTubeMediaExportController();
+  final progress = ValueNotifier<double>(0.0);
+  final cancelling = ValueNotifier<bool>(false);
+  var cancelled = false;
   BuildContext? progressContext;
 
   final progressFuture = showDialog<void>(
@@ -64,24 +70,46 @@ Future<void> saveSonarTubeMediaWithDestination(
       return PopScope(
         canPop: false,
         child: AlertDialog(
-          content: Semantics(
-            liveRegion: true,
-            container: true,
-            label: l10n.mediaCutterSaving,
-            child: ExcludeSemantics(
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const SizedBox.square(
-                    dimension: 24,
-                    child: CircularProgressIndicator(strokeWidth: 2),
+          content: ValueListenableBuilder<double>(
+            valueListenable: progress,
+            builder: (context, fraction, _) {
+              final percent = (fraction.clamp(0.0, 1.0) * 100).round();
+              final progressLabel = '${l10n.mediaCutterSaving}: $percent%';
+              return Semantics(
+                liveRegion: true,
+                container: true,
+                label: progressLabel,
+                child: ExcludeSemantics(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      LinearProgressIndicator(
+                        value: fraction.clamp(0.0, 1.0).toDouble(),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(progressLabel, textAlign: TextAlign.center),
+                    ],
                   ),
-                  const SizedBox(width: 16),
-                  Flexible(child: Text(l10n.mediaCutterSaving)),
-                ],
+                ),
+              );
+            },
+          ),
+          actions: [
+            ValueListenableBuilder<bool>(
+              valueListenable: cancelling,
+              builder: (context, isCancelling, _) => TextButton(
+                onPressed: isCancelling
+                    ? null
+                    : () {
+                        cancelled = true;
+                        cancelling.value = true;
+                        unawaited(exportController.cancel());
+                      },
+                child: Text(l10n.cancel),
               ),
             ),
-          ),
+          ],
         ),
       );
     },
@@ -92,11 +120,26 @@ Future<void> saveSonarTubeMediaWithDestination(
   String? filePath;
   try {
     filePath = switch (format) {
-      _SonarTubeSaveFormat.mp4 =>
-        await exporter.exportMp4(service: service, item: item),
-      _SonarTubeSaveFormat.mp3 =>
-        await exporter.exportMp3(service: service, item: item),
+      _SonarTubeSaveFormat.mp4 => await exporter.exportMp4(
+          service: service,
+          item: item,
+          controller: exportController,
+          onProgress: (fraction) {
+            if (!cancelled) progress.value = fraction;
+          },
+        ),
+      _SonarTubeSaveFormat.mp3 => await exporter.exportMp3(
+          service: service,
+          item: item,
+          controller: exportController,
+          onProgress: (fraction) {
+            if (!cancelled) progress.value = fraction;
+          },
+        ),
     };
+  } on SonarTubeMediaExportCancelledException {
+    cancelled = true;
+    await AppLogger.log('SonarTube save media: export cancelled by user');
   } catch (error, stack) {
     await AppLogger.log('SonarTube save media: export failed error=$error');
     await AppLogger.log('SonarTube save media: export stack $stack');
@@ -110,6 +153,13 @@ Future<void> saveSonarTubeMediaWithDestination(
     try {
       await progressFuture;
     } catch (_) {}
+    progress.dispose();
+    cancelling.dispose();
+  }
+
+  if (cancelled) {
+    if (filePath != null) await exporter.cleanup(filePath);
+    return;
   }
 
   if (!context.mounted) {

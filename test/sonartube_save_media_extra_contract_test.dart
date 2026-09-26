@@ -25,8 +25,29 @@ void main() {
     expect(dialog, contains('l10n.sonarTubeSaveFormatPrompt'));
     expect(dialog, contains('l10n.sonarTubeSaveAsMp4'));
     expect(dialog, contains('l10n.sonarTubeSaveAsMp3'));
-    expect(dialog, contains('exportMp4(service: service, item: item)'));
-    expect(dialog, contains('exportMp3(service: service, item: item)'));
+    expect(dialog, contains('exportMp4('));
+    expect(dialog, contains('exportMp3('));
+    expect(dialog, contains('controller: exportController'));
+    expect(dialog, contains('onProgress: (fraction)'));
+  });
+
+  test('SonarTube save media shows real progress and a real cancel action', () {
+    final dialog = File(
+      'lib/widgets/sonartube_save_media_dialog.dart',
+    ).readAsStringSync();
+    final exporter = File(
+      'lib/services/sonartube_media_export_service.dart',
+    ).readAsStringSync();
+
+    expect(dialog, contains('LinearProgressIndicator('));
+    expect(dialog, contains("child: Text(l10n.cancel)"));
+    expect(dialog, contains('exportController.cancel()'));
+    expect(dialog, contains('ExcludeSemantics('));
+    expect(exporter, contains('SonarTubeMediaExportController'));
+    expect(exporter, contains('executeWithArgumentsAsync('));
+    expect(exporter, contains('statistics.getTime()'));
+    expect(exporter, contains('await session.cancel()'));
+    expect(exporter, contains('SonarTubeMediaExportCancelledException'));
   });
 
   test('SonarTube MP3 export uses FFmpeg and MP4 export guarantees MP4', () {

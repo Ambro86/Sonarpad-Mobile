@@ -1072,10 +1072,10 @@ class _CreateAiAudiodescriptionScreenState
       children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-          child: ExcludeSemantics(
-            child: LinearProgressIndicator(
-              value: _progress.clamp(0.0, 1.0).toDouble(),
-            ),
+          child: LinearProgressIndicator(
+            value: _progress.clamp(0.0, 1.0).toDouble(),
+            semanticsLabel: _stage,
+            semanticsValue: '${(_progress * 100).round()}%',
           ),
         ),
         Expanded(
