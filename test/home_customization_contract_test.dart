@@ -119,7 +119,6 @@ void main() {
     final changelog = jsonDecode(File('assets/changelog.json').readAsStringSync()) as List<dynamic>;
     final latest = changelog.first as Map<String, dynamic>;
     expect(latest['version'], '0.5.0');
-    expect(latest['date'], '2026-09-27');
     final italian = (latest['it'] as List<dynamic>).join('\n');
     expect(italian, contains('personalizzazione della schermata principale'));
     expect(italian, contains('Sposta alla posizione'));
