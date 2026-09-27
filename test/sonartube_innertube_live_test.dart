@@ -79,6 +79,22 @@ void main() {
   );
 
   test(
+    'live direct InnerTube resolves a playable video without PHP',
+    () async {
+      final video = firstPage!.items
+          .where((item) => item.kind == SonarTubeItemKind.video)
+          .first;
+      final media = await service.resolve(video);
+      expect(media.audioUrl, isNotEmpty);
+      expect(media.title.trim(), isNotEmpty);
+    },
+    skip: runLiveTests
+        ? false
+        : 'Live test: run with '
+            '--dart-define=RUN_LIVE_SONARTUBE_TESTS=true.',
+  );
+
+  test(
     'live direct InnerTube opens a channel through its uploads playlist',
     () async {
       final channel = firstPage!.items

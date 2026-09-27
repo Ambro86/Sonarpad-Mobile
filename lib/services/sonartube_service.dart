@@ -145,6 +145,24 @@ class SonarTubeTranscript {
   final List<String> paragraphs;
 }
 
+class _SonarTubeDirectFormat {
+  const _SonarTubeDirectFormat({
+    required this.url,
+    required this.hasVideo,
+    required this.hasAudio,
+    required this.progressive,
+    required this.height,
+    required this.bitrate,
+  });
+
+  final String url;
+  final bool hasVideo;
+  final bool hasAudio;
+  final bool progressive;
+  final int height;
+  final int bitrate;
+}
+
 class SonarTubeService {
   static const String _channelNewestVideosParams = 'EgZ2aWRlb3PyBgQKAjoA';
 
@@ -401,8 +419,44 @@ class SonarTubeService {
     if (trimmedUrl.isEmpty) {
       throw ArgumentError.value(url, 'url');
     }
+
+    if (_directNavigationEnabled) {
+      final videoId = _youtubeVideoIdFromInput(trimmedUrl);
+      if (videoId != null) {
+        try {
+          final media = await _resolveDirectPlayer(
+            videoId,
+            fallbackTitle: fallbackTitle,
+            fallbackChannel: fallbackChannel,
+          );
+          await AppLogger.log(
+            'SonarTube resolve direct InnerTube ok id=$videoId '
+            'separate=${media.videoUrl != null}',
+          );
+          return media;
+        } catch (error) {
+          await AppLogger.log(
+            'SonarTube resolve direct InnerTube failed id=$videoId '
+            'error=$error; fallback=server',
+          );
+        }
+      }
+    }
+
+    return _resolveUrlServer(
+      trimmedUrl,
+      fallbackTitle: fallbackTitle,
+      fallbackChannel: fallbackChannel,
+    );
+  }
+
+  Future<SonarTubeResolvedMedia> _resolveUrlServer(
+    String url, {
+    required String fallbackTitle,
+    String? fallbackChannel,
+  }) async {
     final data = await _request({
-      'url': trimmedUrl,
+      'url': url,
       'quality': 'best',
       'prefer': 'auto',
       'format': 'json',
@@ -423,6 +477,179 @@ class SonarTubeService {
       audioUrl: hasSeparateStreams ? streamAudio : stream,
       videoUrl: hasSeparateStreams ? streamVideo : null,
     );
+  }
+
+  Future<SonarTubeResolvedMedia> _resolveDirectPlayer(
+    String videoId, {
+    required String fallbackTitle,
+    String? fallbackChannel,
+  }) async {
+    final data = await _playerDataDirect(videoId);
+    final playability = _asMap(data['playabilityStatus']);
+    final status = _string(playability?['status']);
+    if (status != 'OK') {
+      final reason = _string(playability?['reason']) ??
+          _youtubeText(playability?['messages']);
+      throw FormatException(
+        reason.isEmpty ? 'youtube_not_playable' : reason,
+      );
+    }
+
+    final streaming = _asMap(data['streamingData']);
+    if (streaming == null) {
+      throw const FormatException('youtube_no_streaming_data');
+    }
+
+    final formats = _directPlayableFormats(streaming);
+    final progressive = formats
+        .where((format) => format.progressive)
+        .toList(growable: false)
+      ..sort(_compareDirectVideoFormats);
+    final videoOnly = formats
+        .where((format) => format.hasVideo && !format.hasAudio)
+        .toList(growable: false)
+      ..sort(_compareDirectVideoFormats);
+    final audioOnly = formats
+        .where((format) => format.hasAudio && !format.hasVideo)
+        .toList(growable: false)
+      ..sort(_compareDirectAudioFormats);
+
+    final details = _asMap(data['videoDetails']);
+    final microformat = _asMap(data['microformat']);
+    final playerMicroformat = _asMap(microformat?['playerMicroformatRenderer']);
+    final liveDetails = _asMap(playerMicroformat?['liveBroadcastDetails']);
+    final isLive = details?['isLive'] == true ||
+        details?['isLiveContent'] == true ||
+        liveDetails?['isLiveNow'] == true;
+    final hls = _string(streaming['hlsManifestUrl']);
+
+    String? audioUrl;
+    String? videoUrl;
+    if (isLive && hls != null) {
+      audioUrl = hls;
+    } else if (progressive.isNotEmpty) {
+      audioUrl = progressive.first.url;
+    } else if (videoOnly.isNotEmpty && audioOnly.isNotEmpty) {
+      videoUrl = videoOnly.first.url;
+      audioUrl = audioOnly.first.url;
+    } else if (videoOnly.isNotEmpty) {
+      // Mantiene lo stesso comportamento del resolver PHP quando e'
+      // disponibile soltanto un URL video riproducibile.
+      audioUrl = videoOnly.first.url;
+    } else if (audioOnly.isNotEmpty) {
+      audioUrl = audioOnly.first.url;
+    } else if (hls != null) {
+      audioUrl = hls;
+    }
+
+    if (audioUrl == null) {
+      throw const FormatException('youtube_no_direct_stream');
+    }
+
+    return SonarTubeResolvedMedia(
+      title: _string(details?['title']) ?? fallbackTitle,
+      channel: _string(details?['author']) ?? fallbackChannel,
+      audioUrl: audioUrl,
+      videoUrl: videoUrl,
+    );
+  }
+
+  List<_SonarTubeDirectFormat> _directPlayableFormats(
+    Map<String, dynamic> streaming,
+  ) {
+    final formats = <_SonarTubeDirectFormat>[];
+    for (final key in const ['formats', 'adaptiveFormats']) {
+      for (final raw in _asList(streaming[key])) {
+        final format = _asMap(raw);
+        if (format == null) continue;
+        final url = _string(format['url']);
+        if (url == null) {
+          // Come il PHP stabile: niente decipher JS nel client. Se YouTube
+          // restituisce soltanto cipher, l'intero resolve torna al server.
+          continue;
+        }
+        final mimeType = _string(format['mimeType']) ?? '';
+        final width = _int(format['width']);
+        final height = _int(format['height']) ?? 0;
+        final bitrate = _int(format['bitrate']) ??
+            _int(format['averageBitrate']) ??
+            0;
+        final hasVideo = mimeType.startsWith('video/') ||
+            width != null ||
+            format['qualityLabel'] != null;
+        final hasAudio = mimeType.startsWith('audio/') ||
+            format['audioQuality'] != null ||
+            format['audioSampleRate'] != null;
+        final itag = _int(format['itag']);
+        final progressive =
+            (hasVideo &&
+                hasAudio &&
+                format['audioQuality'] != null &&
+                width != null) ||
+            const {18, 22, 37, 38}.contains(itag);
+        formats.add(
+          _SonarTubeDirectFormat(
+            url: url,
+            hasVideo: hasVideo,
+            hasAudio: hasAudio,
+            progressive: progressive,
+            height: height,
+            bitrate: bitrate,
+          ),
+        );
+      }
+    }
+    return formats;
+  }
+
+  int _compareDirectVideoFormats(
+    _SonarTubeDirectFormat a,
+    _SonarTubeDirectFormat b,
+  ) {
+    final byHeight = b.height.compareTo(a.height);
+    return byHeight != 0 ? byHeight : b.bitrate.compareTo(a.bitrate);
+  }
+
+  int _compareDirectAudioFormats(
+    _SonarTubeDirectFormat a,
+    _SonarTubeDirectFormat b,
+  ) => b.bitrate.compareTo(a.bitrate);
+
+  String? _youtubeVideoIdFromInput(String input) {
+    final value = input.trim();
+    final idPattern = RegExp(r'^[A-Za-z0-9_-]{11}$');
+    if (idPattern.hasMatch(value)) return value;
+
+    var normalized = value;
+    if (!RegExp(r'^https?://', caseSensitive: false).hasMatch(normalized)) {
+      normalized = 'https://${normalized.replaceFirst(RegExp(r'^/+'), '')}';
+    }
+    final uri = Uri.tryParse(normalized);
+    if (uri == null || uri.host.isEmpty) return null;
+    final host = uri.host.toLowerCase().replaceFirst(RegExp(r'^www\.'), '');
+    final allowed = host == 'youtube.com' ||
+        host == 'm.youtube.com' ||
+        host == 'music.youtube.com' ||
+        host == 'youtube-nocookie.com' ||
+        host == 'youtu.be' ||
+        host.endsWith('.youtube.com') ||
+        host.endsWith('.youtube-nocookie.com');
+    if (!allowed) return null;
+
+    if (host == 'youtu.be') {
+      final id = uri.pathSegments.isEmpty ? '' : uri.pathSegments.first;
+      return idPattern.hasMatch(id) ? id : null;
+    }
+
+    final queryId = uri.queryParameters['v'];
+    if (queryId != null && idPattern.hasMatch(queryId)) return queryId;
+    final segments = uri.pathSegments;
+    if (segments.length >= 2 &&
+        const {'shorts', 'embed', 'live', 'v'}.contains(segments[0]) &&
+        idPattern.hasMatch(segments[1])) {
+      return segments[1];
+    }
+    return null;
   }
 
 
@@ -1372,11 +1599,11 @@ class SonarTubeService {
         'append:$appendActions';
   }
 
-  Future<Map<String, dynamic>> _playerMetadataDirect(String videoId) async {
+  Future<Map<String, dynamic>> _playerDataDirect(String videoId) async {
     if (!RegExp(r'^[A-Za-z0-9_-]{11}$').hasMatch(videoId)) {
       throw const FormatException('invalid_video_id');
     }
-    final data = await _postInnerTube(
+    return _postInnerTube(
       _youtubePlayerEndpoint,
       {
         'context': {
@@ -1402,6 +1629,10 @@ class SonarTubeService {
       },
       webClient: false,
     );
+  }
+
+  Future<Map<String, dynamic>> _playerMetadataDirect(String videoId) async {
+    final data = await _playerDataDirect(videoId);
     final details = data['videoDetails'];
     if (details is! Map) {
       throw const FormatException('channel_unavailable');

@@ -960,20 +960,54 @@ void main() {
   });
 
   test(
-    'resolve keeps separate video and audio streams for the player',
+    'resolve uses direct InnerTube player before the PHP resolver',
     () async {
+      var serverRequests = 0;
       final service = SonarTubeService(
         endpoint: Uri.parse('https://example.test/youtube_resolve.php'),
         client: MockClient((request) async {
-          expect(request.url.queryParameters['format'], 'json');
+          if (request.url.host == 'www.youtube.com') {
+            expect(request.method, 'POST');
+            expect(request.url.path, '/youtubei/v1/player');
+            final body = Map<String, dynamic>.from(
+              jsonDecode(request.body) as Map,
+            );
+            expect(body['videoId'], 'abcdefghijk');
+            return http.Response(
+              jsonEncode({
+                'playabilityStatus': {'status': 'OK'},
+                'videoDetails': {
+                  'title': 'Video diretto',
+                  'author': 'Canale diretto',
+                },
+                'streamingData': {
+                  'adaptiveFormats': [
+                    {
+                      'itag': 137,
+                      'url': 'https://media.test/video.mp4',
+                      'mimeType': 'video/mp4; codecs="avc1.640028"',
+                      'width': 1920,
+                      'height': 1080,
+                      'bitrate': 5000000,
+                    },
+                    {
+                      'itag': 140,
+                      'url': 'https://media.test/audio.m4a',
+                      'mimeType': 'audio/mp4; codecs="mp4a.40.2"',
+                      'audioQuality': 'AUDIO_QUALITY_MEDIUM',
+                      'bitrate': 128000,
+                    },
+                  ],
+                },
+              }),
+              200,
+            );
+          }
+          serverRequests++;
           return http.Response(
             jsonEncode({
               'ok': true,
-              'title': 'Video risolto',
-              'channel': 'Canale',
-              'stream': 'https://media.test/video.mp4',
-              'stream_video': 'https://media.test/video.mp4',
-              'stream_audio': 'https://media.test/audio.m4a',
+              'stream': 'https://server.test/fallback.mp4',
             }),
             200,
           );
@@ -988,9 +1022,55 @@ void main() {
 
       final media = await service.resolve(video);
 
+      expect(serverRequests, 0);
       expect(media.videoUrl, 'https://media.test/video.mp4');
       expect(media.audioUrl, 'https://media.test/audio.m4a');
-      expect(media.title, 'Video risolto');
+      expect(media.title, 'Video diretto');
+      expect(media.channel, 'Canale diretto');
+    },
+  );
+
+  test(
+    'resolve falls back to youtube_resolve.php when direct player fails',
+    () async {
+      var directRequests = 0;
+      var serverRequests = 0;
+      final service = SonarTubeService(
+        endpoint: Uri.parse('https://example.test/youtube_resolve.php'),
+        client: MockClient((request) async {
+          if (request.url.host == 'www.youtube.com') {
+            directRequests++;
+            return http.Response('temporary player failure', 503);
+          }
+          serverRequests++;
+          expect(request.url.queryParameters['format'], 'json');
+          return http.Response(
+            jsonEncode({
+              'ok': true,
+              'title': 'Video dal server',
+              'channel': 'Canale server',
+              'stream': 'https://media.test/server-video.mp4',
+              'stream_video': 'https://media.test/server-video.mp4',
+              'stream_audio': 'https://media.test/server-audio.m4a',
+            }),
+            200,
+          );
+        }),
+      );
+      const video = SonarTubeItem(
+        kind: SonarTubeItemKind.video,
+        id: 'abcdefghijk',
+        title: 'Video',
+        url: 'https://www.youtube.com/watch?v=abcdefghijk',
+      );
+
+      final media = await service.resolve(video);
+
+      expect(directRequests, 1);
+      expect(serverRequests, 1);
+      expect(media.videoUrl, 'https://media.test/server-video.mp4');
+      expect(media.audioUrl, 'https://media.test/server-audio.m4a');
+      expect(media.title, 'Video dal server');
     },
   );
   test('browse sends the seed video directly for a generated YouTube Mix', () async {
