@@ -4290,6 +4290,18 @@ class AppLocalizationsIt extends AppLocalizations {
   String get homeReorderItems => 'Riordina elementi';
 
   @override
+  String get homeResetDefaults => 'Ripristina valori predefiniti';
+
+  @override
+  String get homeResetDefaultsConfirmTitle => 'Ripristinare la schermata principale?';
+
+  @override
+  String get homeResetDefaultsConfirmMessage => 'Tutte le funzioni disponibili torneranno visibili, le categorie verranno attivate e gli ordini personalizzati saranno cancellati.';
+
+  @override
+  String get homeResetDefaultsDone => 'Schermata principale ripristinata ai valori predefiniti.';
+
+  @override
   String get homeReorderTitle => 'Riordina schermata principale';
 
   @override

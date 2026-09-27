@@ -4272,6 +4272,18 @@ class AppLocalizationsCs extends AppLocalizations {
   String get homeReorderItems => 'Změnit pořadí položek';
 
   @override
+  String get homeResetDefaults => 'Obnovit výchozí nastavení';
+
+  @override
+  String get homeResetDefaultsConfirmTitle => 'Obnovit domovskou obrazovku?';
+
+  @override
+  String get homeResetDefaultsConfirmMessage => 'Všechny dostupné funkce se znovu zobrazí, kategorie se zapnou a vlastní pořadí se odstraní.';
+
+  @override
+  String get homeResetDefaultsDone => 'Domovská obrazovka byla obnovena na výchozí nastavení.';
+
+  @override
   String get homeReorderTitle => 'Změnit pořadí domovské obrazovky';
 
   @override

@@ -4307,6 +4307,18 @@ class AppLocalizationsEs extends AppLocalizations {
   String get homeReorderItems => 'Reordenar elementos';
 
   @override
+  String get homeResetDefaults => 'Restablecer valores predeterminados';
+
+  @override
+  String get homeResetDefaultsConfirmTitle => '¿Restablecer la pantalla de inicio?';
+
+  @override
+  String get homeResetDefaultsConfirmMessage => 'Todas las funciones disponibles volverán a mostrarse, se activarán las categorías y se eliminarán los órdenes personalizados.';
+
+  @override
+  String get homeResetDefaultsDone => 'La pantalla de inicio se ha restablecido a los valores predeterminados.';
+
+  @override
   String get homeReorderTitle => 'Reordenar pantalla de inicio';
 
   @override

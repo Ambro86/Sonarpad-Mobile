@@ -65,6 +65,21 @@ void main() {
     expect(screen, contains("id: 'reorder'"));
   });
 
+  test('home customization can restore all defaults', () {
+    final service = File('lib/services/home_customization_service.dart').readAsStringSync();
+    final screen = File('lib/screens/home_customization_screen.dart').readAsStringSync();
+
+    expect(service, contains('Future<void> resetToDefaults()'));
+    expect(service, contains('await prefs.remove(_hiddenItemsKey);'));
+    expect(service, contains('await prefs.remove(_itemOrderKey);'));
+    expect(service, contains('key.startsWith(_categoryOrderKeyPrefix)'));
+    expect(screen, contains("id: 'reset_defaults'"));
+    expect(screen, contains('await _customization.resetToDefaults();'));
+    expect(screen, contains('await _settings.setHomeGroupingEnabled(true);'));
+    expect(screen, contains('homeResetDefaultsConfirmTitle'));
+    expect(screen, contains('homeResetDefaultsConfirmMessage'));
+  });
+
   test('all ARB locales contain home customization strings', () {
     final arbFiles = Directory('lib/l10n')
         .listSync()
@@ -78,6 +93,10 @@ void main() {
       'homeCategoriesHint',
       'homeVisibleItems',
       'homeReorderItems',
+      'homeResetDefaults',
+      'homeResetDefaultsConfirmTitle',
+      'homeResetDefaultsConfirmMessage',
+      'homeResetDefaultsDone',
       'homeReorderTitle',
       'homeMoveItem',
       'homeDigitalLibrary',
@@ -105,5 +124,6 @@ void main() {
     expect(italian, contains('personalizzazione della schermata principale'));
     expect(italian, contains('Sposta alla posizione'));
     expect(italian, contains('all’interno di Lettura, Media e Utilità'));
+    expect(italian, contains('Ripristina valori predefiniti'));
   });
 }

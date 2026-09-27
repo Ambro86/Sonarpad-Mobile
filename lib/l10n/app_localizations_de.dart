@@ -4295,6 +4295,18 @@ class AppLocalizationsDe extends AppLocalizations {
   String get homeReorderItems => 'Elemente neu anordnen';
 
   @override
+  String get homeResetDefaults => 'Standardeinstellungen wiederherstellen';
+
+  @override
+  String get homeResetDefaultsConfirmTitle => 'Startbildschirm zurücksetzen?';
+
+  @override
+  String get homeResetDefaultsConfirmMessage => 'Alle verfügbaren Funktionen werden wieder angezeigt, Kategorien werden aktiviert und benutzerdefinierte Reihenfolgen werden gelöscht.';
+
+  @override
+  String get homeResetDefaultsDone => 'Der Startbildschirm wurde auf die Standardeinstellungen zurückgesetzt.';
+
+  @override
   String get homeReorderTitle => 'Startbildschirm neu anordnen';
 
   @override

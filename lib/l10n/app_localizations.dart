@@ -106,6 +106,14 @@ abstract class AppLocalizations {
 
   String get homeReorderItems;
 
+  String get homeResetDefaults;
+
+  String get homeResetDefaultsConfirmTitle;
+
+  String get homeResetDefaultsConfirmMessage;
+
+  String get homeResetDefaultsDone;
+
   String get homeReorderTitle;
 
   String get homeMoveItem;

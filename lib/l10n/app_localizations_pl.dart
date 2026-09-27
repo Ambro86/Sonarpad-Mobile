@@ -4278,6 +4278,18 @@ class AppLocalizationsPl extends AppLocalizations {
   String get homeReorderItems => 'Zmień kolejność elementów';
 
   @override
+  String get homeResetDefaults => 'Przywróć ustawienia domyślne';
+
+  @override
+  String get homeResetDefaultsConfirmTitle => 'Przywrócić ekran główny?';
+
+  @override
+  String get homeResetDefaultsConfirmMessage => 'Wszystkie dostępne funkcje będą ponownie widoczne, kategorie zostaną włączone, a niestandardowa kolejność zostanie usunięta.';
+
+  @override
+  String get homeResetDefaultsDone => 'Przywrócono domyślne ustawienia ekranu głównego.';
+
+  @override
   String get homeReorderTitle => 'Zmień kolejność ekranu głównego';
 
   @override

@@ -78,6 +78,40 @@ class _HomeCustomizationScreenState extends State<HomeCustomizationScreen> {
     });
   }
 
+  Future<void> _resetDefaults() async {
+    final l10n = AppLocalizations.of(context);
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.homeResetDefaultsConfirmTitle),
+        content: Text(l10n.homeResetDefaultsConfirmMessage),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: Text(l10n.no),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: Text(l10n.yes),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+
+    await _customization.resetToDefaults();
+    await _settings.setHomeGroupingEnabled(true);
+    if (!mounted) return;
+    setState(() {
+      _groupingEnabled = true;
+      _hiddenIds = <String>{};
+      _order = List<String>.from(HomeItemIds.defaultFlatOrder);
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(l10n.homeResetDefaultsDone)),
+    );
+  }
+
   Future<void> _openReorder() async {
     await Navigator.of(context).push(
       MaterialPageRoute<void>(
@@ -125,6 +159,11 @@ class _HomeCustomizationScreenState extends State<HomeCustomizationScreen> {
         title: l10n.homeReorderItems,
         kind: 'button',
       ),
+      AccessibleListRow(
+        id: 'reset_defaults',
+        title: l10n.homeResetDefaults,
+        kind: 'button',
+      ),
     ];
     final visibleRows = <AccessibleListRow>[
       for (final id in customizable)
@@ -161,6 +200,10 @@ class _HomeCustomizationScreenState extends State<HomeCustomizationScreen> {
           }
           if (id == 'reorder' && event.type == 'activate') {
             await _openReorder();
+            return;
+          }
+          if (id == 'reset_defaults' && event.type == 'activate') {
+            await _resetDefaults();
             return;
           }
           if (id != null && id.startsWith('visible_') && event.type == 'toggle') {

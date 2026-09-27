@@ -4102,6 +4102,18 @@ class AppLocalizationsZh extends AppLocalizations {
   String get homeReorderItems => '重新排序项目';
 
   @override
+  String get homeResetDefaults => '恢复默认设置';
+
+  @override
+  String get homeResetDefaultsConfirmTitle => '恢复主屏幕？';
+
+  @override
+  String get homeResetDefaultsConfirmMessage => '所有可用功能将重新显示，分类将启用，自定义排序将被清除。';
+
+  @override
+  String get homeResetDefaultsDone => '主屏幕已恢复为默认设置。';
+
+  @override
   String get homeReorderTitle => '重新排序主屏幕';
 
   @override
@@ -8225,6 +8237,18 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get homeReorderItems => '重新排序项目';
+
+  @override
+  String get homeResetDefaults => '恢复默认设置';
+
+  @override
+  String get homeResetDefaultsConfirmTitle => '恢复主屏幕？';
+
+  @override
+  String get homeResetDefaultsConfirmMessage => '所有可用功能将重新显示，分类将启用，自定义排序将被清除。';
+
+  @override
+  String get homeResetDefaultsDone => '主屏幕已恢复为默认设置。';
 
   @override
   String get homeReorderTitle => '重新排序主屏幕';

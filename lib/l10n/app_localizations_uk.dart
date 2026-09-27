@@ -4267,6 +4267,18 @@ class AppLocalizationsUk extends AppLocalizations {
   String get homeReorderItems => 'Змінити порядок елементів';
 
   @override
+  String get homeResetDefaults => 'Відновити типові налаштування';
+
+  @override
+  String get homeResetDefaultsConfirmTitle => 'Відновити головний екран?';
+
+  @override
+  String get homeResetDefaultsConfirmMessage => 'Усі доступні функції знову відображатимуться, категорії буде ввімкнено, а власний порядок буде скинуто.';
+
+  @override
+  String get homeResetDefaultsDone => 'Головний екран відновлено до типових налаштувань.';
+
+  @override
   String get homeReorderTitle => 'Змінити порядок головного екрана';
 
   @override

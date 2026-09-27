@@ -104,6 +104,19 @@ class HomeCustomizationService {
       ..removeAll(HomeItemIds.alwaysVisible);
   }
 
+  Future<void> resetToDefaults() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_hiddenItemsKey);
+    await prefs.remove(_itemOrderKey);
+    final categoryKeys = prefs
+        .getKeys()
+        .where((key) => key.startsWith(_categoryOrderKeyPrefix))
+        .toList(growable: false);
+    for (final key in categoryKeys) {
+      await prefs.remove(key);
+    }
+  }
+
   Future<void> setItemVisible(String id, bool visible) async {
     if (HomeItemIds.alwaysVisible.contains(id)) return;
     final prefs = await SharedPreferences.getInstance();

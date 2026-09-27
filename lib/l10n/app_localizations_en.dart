@@ -4264,6 +4264,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeReorderItems => 'Reorder items';
 
   @override
+  String get homeResetDefaults => 'Restore defaults';
+
+  @override
+  String get homeResetDefaultsConfirmTitle => 'Restore the home screen?';
+
+  @override
+  String get homeResetDefaultsConfirmMessage => 'All available features will be shown again, categories will be enabled, and custom orders will be cleared.';
+
+  @override
+  String get homeResetDefaultsDone => 'Home screen restored to defaults.';
+
+  @override
   String get homeReorderTitle => 'Reorder home screen';
 
   @override

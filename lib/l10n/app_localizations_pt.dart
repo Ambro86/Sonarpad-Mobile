@@ -4295,6 +4295,18 @@ class AppLocalizationsPt extends AppLocalizations {
   String get homeReorderItems => 'Reordenar elementos';
 
   @override
+  String get homeResetDefaults => 'Repor predefinições';
+
+  @override
+  String get homeResetDefaultsConfirmTitle => 'Repor o ecrã principal?';
+
+  @override
+  String get homeResetDefaultsConfirmMessage => 'Todas as funções disponíveis voltarão a ser apresentadas, as categorias serão ativadas e as ordens personalizadas serão apagadas.';
+
+  @override
+  String get homeResetDefaultsDone => 'O ecrã principal foi reposto para as predefinições.';
+
+  @override
   String get homeReorderTitle => 'Reordenar ecrã principal';
 
   @override
@@ -8603,6 +8615,18 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get homeReorderItems => 'Reordenar itens';
+
+  @override
+  String get homeResetDefaults => 'Restaurar padrões';
+
+  @override
+  String get homeResetDefaultsConfirmTitle => 'Restaurar a tela inicial?';
+
+  @override
+  String get homeResetDefaultsConfirmMessage => 'Todos os recursos disponíveis voltarão a ser exibidos, as categorias serão ativadas e as ordens personalizadas serão apagadas.';
+
+  @override
+  String get homeResetDefaultsDone => 'A tela inicial foi restaurada para os padrões.';
 
   @override
   String get homeReorderTitle => 'Reordenar tela inicial';
