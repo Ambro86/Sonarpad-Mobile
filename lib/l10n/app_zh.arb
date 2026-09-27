@@ -3230,6 +3230,14 @@
   "@audioDescriptionSonarpadDeviceLimitReached": {
     "description": "Shown when a Sonarpad AI access code has reached its allowed device limit."
   },
+  "audioDescriptionSonarpadBalance": "Sonarpad AI 余额",
+  "@audioDescriptionSonarpadBalance": {
+    "description": "Label for the remaining Sonarpad AI account credit."
+  },
+  "audioDescriptionSonarpadBalanceUnavailable": "余额不可用。",
+  "@audioDescriptionSonarpadBalanceUnavailable": {
+    "description": "Shown when the Sonarpad AI credit cannot be read."
+  },
   "audioDescriptionEdgeVoiceReady": "所选 Edge 语音可用。",
   "@audioDescriptionEdgeVoiceReady": {
     "description": "Localized text for audioDescriptionEdgeVoiceReady."

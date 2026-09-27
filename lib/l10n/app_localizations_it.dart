@@ -4073,6 +4073,12 @@ class AppLocalizationsIt extends AppLocalizations {
       'È stato raggiunto il numero massimo di dispositivi associati a questo codice Sonarpad AI. Rimuovi un dispositivo già associato oppure contatta l’assistenza.';
 
   @override
+  String get audioDescriptionSonarpadBalance => 'Credito Sonarpad AI';
+
+  @override
+  String get audioDescriptionSonarpadBalanceUnavailable => 'Credito non disponibile.';
+
+  @override
   String get audioDescriptionEdgeVoiceReady =>
       'La voce Edge selezionata è disponibile.';
 

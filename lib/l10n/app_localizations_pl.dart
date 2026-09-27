@@ -4060,6 +4060,12 @@ class AppLocalizationsPl extends AppLocalizations {
       'Osiągnięto maksymalną liczbę urządzeń powiązanych z tym kodem Sonarpad AI. Usuń jedno z już powiązanych urządzeń lub skontaktuj się z pomocą techniczną.';
 
   @override
+  String get audioDescriptionSonarpadBalance => 'Środki Sonarpad AI';
+
+  @override
+  String get audioDescriptionSonarpadBalanceUnavailable => 'Środki niedostępne.';
+
+  @override
   String get audioDescriptionEdgeVoiceReady =>
       'Wybrany głos Edge jest dostępny.';
 

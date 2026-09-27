@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -50,6 +51,7 @@ class _CreateAiAudiodescriptionScreenState
   bool _testingVoice = false;
   bool _refreshingModels = false;
   bool _activatingSonarpad = false;
+  bool _loadingSonarpadBalance = false;
   double _progress = 0;
   String _stage = '';
   String? _sourcePath;
@@ -58,6 +60,7 @@ class _CreateAiAudiodescriptionScreenState
   String _provider = 'gemini';
   String _apiKey = '';
   String _sonarpadCode = '';
+  double? _sonarpadBalanceEur;
   String _model = 'gemini-3.5-flash-lite';
   List<String> _models = const ['gemini-3.5-flash-lite'];
   String _language = 'it';
@@ -170,6 +173,7 @@ class _CreateAiAudiodescriptionScreenState
       setState(() {
         _provider = preferences['provider']?.toString() ?? 'gemini';
         _apiKey = preferences['apiKey']?.toString() ?? '';
+        _sonarpadCode = preferences['sonarpadCode']?.toString() ?? '';
         _model = preferences['model']?.toString() ?? 'gemini-3.5-flash-lite';
         _models = <String>{_model, 'gemini-3.5-flash-lite'}.toList();
         _language = preferences['language']?.toString() ?? 'it';
@@ -203,6 +207,9 @@ class _CreateAiAudiodescriptionScreenState
             : null;
         _loading = false;
       });
+      if (_provider == 'sonarpad') {
+        unawaited(_refreshSonarpadBalance());
+      }
     } catch (error, stackTrace) {
       await AppLogger.log(
         'Audio description UI: initialization failed error=$error\n$stackTrace',
@@ -311,6 +318,38 @@ class _CreateAiAudiodescriptionScreenState
     }
   }
 
+  Future<void> _refreshSonarpadBalance({String? token}) async {
+    if (_loadingSonarpadBalance) return;
+    if (mounted) {
+      setState(() => _loadingSonarpadBalance = true);
+    }
+    try {
+      final balance = await _service.fetchSonarpadBalance(
+        token: token,
+        code: _sonarpadCode,
+      );
+      if (!mounted) return;
+      setState(() => _sonarpadBalanceEur = balance);
+    } catch (error) {
+      await AppLogger.log('Sonarpad AI balance unavailable: $error');
+      if (!mounted) return;
+      setState(() => _sonarpadBalanceEur = null);
+    } finally {
+      if (mounted) setState(() => _loadingSonarpadBalance = false);
+    }
+  }
+
+  String _sonarpadBalanceLabel(AppLocalizations l10n) {
+    if (_loadingSonarpadBalance) return l10n.loading;
+    final balance = _sonarpadBalanceEur;
+    if (balance == null) return l10n.audioDescriptionSonarpadBalanceUnavailable;
+    return NumberFormat.currency(
+      locale: l10n.localeName,
+      symbol: '€',
+      decimalDigits: 2,
+    ).format(balance);
+  }
+
   Future<void> _activateSonarpadAi() async {
     if (_activatingSonarpad || _running) return;
     final l10n = AppLocalizations.of(context);
@@ -320,9 +359,12 @@ class _CreateAiAudiodescriptionScreenState
     }
     setState(() => _activatingSonarpad = true);
     try {
-      await _service.activateSonarpadAi(_sonarpadCode);
+      final token = await _service.activateSonarpadAi(_sonarpadCode);
+      await AiAudioDescriptionPreferences.saveProvider('sonarpad');
       if (!mounted) return;
+      setState(() => _provider = 'sonarpad');
       showStatusMessage(context, l10n.audioDescriptionSonarpadActivated);
+      unawaited(_refreshSonarpadBalance(token: token));
     } on SonarpadAiDeviceLimitReachedException {
       if (!mounted) return;
       setState(() => _technicalError = null);
@@ -654,6 +696,9 @@ class _CreateAiAudiodescriptionScreenState
           _cancelling = false;
           _progress = 0;
         });
+        if (_provider == 'sonarpad') {
+          unawaited(_refreshSonarpadBalance());
+        }
       }
     }
   }
@@ -1222,6 +1267,13 @@ class _CreateAiAudiodescriptionScreenState
                         enabled: !_running && !_activatingSonarpad,
                       ),
                       AccessibleListRow(
+                        id: 'sonarpad_balance',
+                        title: l10n.audioDescriptionSonarpadBalance,
+                        value: _sonarpadBalanceLabel(l10n),
+                        kind: 'text',
+                        accessibilityButtonTrait: false,
+                      ),
+                      AccessibleListRow(
                         id: 'sonarpad_model_info',
                         title: l10n.audioDescriptionGeminiModel,
                         value: l10n.audioDescriptionServerManagedModel,
@@ -1521,7 +1573,12 @@ class _CreateAiAudiodescriptionScreenState
                         break;
                     }
                   });
-                  if (id == 'character_catalog') {
+                  if (id == 'provider') {
+                    await AiAudioDescriptionPreferences.saveProvider(value);
+                    if (value == 'sonarpad') {
+                      unawaited(_refreshSonarpadBalance());
+                    }
+                  } else if (id == 'character_catalog') {
                     await _persistCharacterCatalogPreference();
                   }
                 } else if (event.type == 'toggle') {
@@ -1561,9 +1618,13 @@ class _CreateAiAudiodescriptionScreenState
                         break;
                       case 'sonarpad_code':
                         _sonarpadCode = value;
+                        _sonarpadBalanceEur = null;
                         break;
                     }
                   });
+                  if (id == 'api_key' && value.trim().isNotEmpty) {
+                    unawaited(AiAudioDescriptionPreferences.saveGeminiApiKey(value));
+                  }
                 } else if (event.type == 'activate') {
                   switch (id) {
                     case 'choose_video':

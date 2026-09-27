@@ -4808,6 +4808,14 @@
   "@audioDescriptionSonarpadDeviceLimitReached": {
     "description": "Shown when a Sonarpad AI access code has reached its allowed device limit."
   },
+  "audioDescriptionSonarpadBalance": "Credito Sonarpad AI",
+  "@audioDescriptionSonarpadBalance": {
+    "description": "Label for the remaining Sonarpad AI account credit."
+  },
+  "audioDescriptionSonarpadBalanceUnavailable": "Credito non disponibile.",
+  "@audioDescriptionSonarpadBalanceUnavailable": {
+    "description": "Shown when the Sonarpad AI credit cannot be read."
+  },
   "audioDescriptionEdgeVoiceReady": "La voce Edge selezionata è disponibile.",
   "@audioDescriptionEdgeVoiceReady": {
     "description": "Localized text for audioDescriptionEdgeVoiceReady."

@@ -4076,6 +4076,12 @@ class AppLocalizationsDe extends AppLocalizations {
       'Die maximale Anzahl der mit diesem Sonarpad-AI-Code verknüpften Geräte wurde erreicht. Entferne ein bereits verknüpftes Gerät oder kontaktiere den Support.';
 
   @override
+  String get audioDescriptionSonarpadBalance => 'Sonarpad-AI-Guthaben';
+
+  @override
+  String get audioDescriptionSonarpadBalanceUnavailable => 'Guthaben nicht verfügbar.';
+
+  @override
   String get audioDescriptionEdgeVoiceReady =>
       'Die ausgewählte Edge-Stimme ist verfügbar.';
 

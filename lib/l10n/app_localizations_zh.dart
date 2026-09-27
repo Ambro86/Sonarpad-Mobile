@@ -3904,6 +3904,12 @@ class AppLocalizationsZh extends AppLocalizations {
       '已达到此 Sonarpad AI 代码可关联的最大设备数量。请移除一个已关联的设备，或联系支持人员。';
 
   @override
+  String get audioDescriptionSonarpadBalance => 'Sonarpad AI 余额';
+
+  @override
+  String get audioDescriptionSonarpadBalanceUnavailable => '余额不可用。';
+
+  @override
   String get audioDescriptionEdgeVoiceReady => '所选 Edge 语音可用。';
 
   @override

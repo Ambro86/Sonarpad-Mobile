@@ -7326,6 +7326,12 @@ abstract class AppLocalizations {
   /// Shown when a Sonarpad AI access code has reached its allowed device limit.
   String get audioDescriptionSonarpadDeviceLimitReached;
 
+  /// Label for the remaining Sonarpad AI account credit.
+  String get audioDescriptionSonarpadBalance;
+
+  /// Shown when the Sonarpad AI credit cannot be read.
+  String get audioDescriptionSonarpadBalanceUnavailable;
+
   /// Localized text for audioDescriptionEdgeVoiceReady.
   ///
   /// In it, this message translates to:

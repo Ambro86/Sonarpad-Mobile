@@ -4054,6 +4054,12 @@ class AppLocalizationsUk extends AppLocalizations {
       'Досягнуто максимальної кількості пристроїв, пов’язаних із цим кодом Sonarpad AI. Видаліть один із уже пов’язаних пристроїв або зверніться до служби підтримки.';
 
   @override
+  String get audioDescriptionSonarpadBalance => 'Кредит Sonarpad AI';
+
+  @override
+  String get audioDescriptionSonarpadBalanceUnavailable => 'Кредит недоступний.';
+
+  @override
   String get audioDescriptionEdgeVoiceReady => 'Вибраний голос Edge доступний.';
 
   @override

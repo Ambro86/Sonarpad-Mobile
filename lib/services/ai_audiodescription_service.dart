@@ -440,6 +440,7 @@ class AiAudioDescriptionPreferences {
 
   static const _providerKey = 'ad_mobile_provider';
   static const _apiKeyKey = 'ad_mobile_gemini_api_key';
+  static const _sonarpadCodeKey = 'ad_mobile_sonarpad_access_code';
   static const _modelKey = 'ad_mobile_gemini_model';
   static const _languageKey = 'ad_mobile_language';
   static const _verbosityKey = 'ad_mobile_verbosity';
@@ -463,6 +464,7 @@ class AiAudioDescriptionPreferences {
     return <String, Object?>{
       'provider': prefs.getString(_providerKey) ?? 'gemini',
       'apiKey': prefs.getString(_apiKeyKey) ?? '',
+      'sonarpadCode': prefs.getString(_sonarpadCodeKey) ?? '',
       'model': prefs.getString(_modelKey) ?? 'gemini-3.5-flash-lite',
       'language': prefs.getString(_languageKey) ?? 'it',
       'verbosity': prefs.getString(_verbosityKey) ?? 'detailed',
@@ -486,6 +488,9 @@ class AiAudioDescriptionPreferences {
     await prefs.setString(_providerKey, settings.provider);
     if (settings.geminiApiKey.trim().isNotEmpty) {
       await prefs.setString(_apiKeyKey, settings.geminiApiKey.trim());
+    }
+    if (settings.sonarpadCode.trim().isNotEmpty) {
+      await prefs.setString(_sonarpadCodeKey, settings.sonarpadCode.trim());
     }
     await prefs.setString(_modelKey, settings.geminiModel.trim());
     await prefs.setString(_languageKey, settings.languageCode);
@@ -530,6 +535,35 @@ class AiAudioDescriptionPreferences {
     } else {
       await prefs.setString(_catalogNameKey, trimmed);
     }
+  }
+
+  static Future<void> saveProvider(String value) async {
+    final provider = value == 'sonarpad' ? 'sonarpad' : 'gemini';
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_providerKey, provider);
+  }
+
+  static Future<void> saveGeminiApiKey(String value) async {
+    final trimmed = value.trim();
+    final prefs = await SharedPreferences.getInstance();
+    if (trimmed.isEmpty) {
+      await prefs.remove(_apiKeyKey);
+    } else {
+      await prefs.setString(_apiKeyKey, trimmed);
+    }
+  }
+
+  static Future<String?> loadSonarpadCode() async {
+    final prefs = await SharedPreferences.getInstance();
+    final value = prefs.getString(_sonarpadCodeKey)?.trim();
+    return value == null || value.isEmpty ? null : value;
+  }
+
+  static Future<void> saveSonarpadCode(String value) async {
+    final trimmed = value.trim();
+    if (trimmed.isEmpty) return;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_sonarpadCodeKey, trimmed);
   }
 
   static Future<String?> loadSonarpadToken() async {
@@ -744,12 +778,66 @@ class AiAudioDescriptionService {
         throw StateError('SONARPAD_AI_TOKEN_MISSING');
       }
       await AiAudioDescriptionPreferences.saveSonarpadToken(token);
+      await AiAudioDescriptionPreferences.saveSonarpadCode(trimmed);
       await AppLogger.log('Sonarpad AI activation succeeded');
       return token;
     } catch (error) {
       await AppLogger.log('Sonarpad AI activation exception: $error');
       rethrow;
     }
+  }
+
+  Future<double> fetchSonarpadBalance({String? token, String? code}) async {
+    _ensureHttpClient();
+    var activeToken = token?.trim() ?? '';
+    final savedCode = await AiAudioDescriptionPreferences.loadSonarpadCode();
+    final requestedCode = code?.trim() ?? '';
+    final accessCode = requestedCode.isNotEmpty ? requestedCode : savedCode ?? '';
+    if (activeToken.isEmpty) {
+      activeToken = await AiAudioDescriptionPreferences.loadSonarpadToken() ?? '';
+    }
+    if (activeToken.isEmpty) {
+      if (accessCode.isEmpty) throw StateError('SONARPAD_AI_CODE_REQUIRED');
+      activeToken = await activateSonarpadAi(accessCode);
+    }
+
+    Future<http.Response> requestAccount(String bearer) => _http
+        .get(
+          Uri.parse('$_sonarpadAiBase/account'),
+          headers: <String, String>{
+            'Accept': 'application/json',
+            'User-Agent': _sonarpadAiUserAgent,
+            'Authorization': 'Bearer $bearer',
+          },
+        )
+        .timeout(const Duration(seconds: 60));
+
+    var response = await requestAccount(activeToken);
+    if (response.statusCode == 401 && accessCode.isNotEmpty) {
+      await AiAudioDescriptionPreferences.clearSonarpadToken();
+      activeToken = await activateSonarpadAi(accessCode);
+      response = await requestAccount(activeToken);
+    }
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      await AppLogger.log(
+        'Sonarpad AI account failed HTTP ${response.statusCode}: ${_short(response.body)}',
+      );
+      throw HttpException(
+        'Sonarpad AI account HTTP ${response.statusCode}: ${_short(response.body)}',
+      );
+    }
+    final decoded = jsonDecode(response.body);
+    if (decoded is! Map) {
+      throw const FormatException('Invalid Sonarpad AI account response');
+    }
+    final rawBalance = decoded['balance_eur'];
+    final balance = rawBalance is num
+        ? rawBalance.toDouble()
+        : double.tryParse(rawBalance?.toString() ?? '');
+    if (balance == null) {
+      throw const FormatException('Missing Sonarpad AI balance');
+    }
+    return balance;
   }
 
   Future<Directory> _characterCatalogDirectory() async {
@@ -5182,9 +5270,16 @@ $screenTextSchema$coreDirectives
   }
 
   Future<String> _ensureSonarpadToken(String code) async {
+    final trimmed = code.trim();
     final existing = await AiAudioDescriptionPreferences.loadSonarpadToken();
-    if (existing != null) return existing;
-    return activateSonarpadAi(code);
+    final savedCode = await AiAudioDescriptionPreferences.loadSonarpadCode();
+    if (existing != null && (trimmed.isEmpty || trimmed == savedCode)) {
+      return existing;
+    }
+    if (trimmed.isEmpty) {
+      throw StateError('SONARPAD_AI_CODE_REQUIRED');
+    }
+    return activateSonarpadAi(trimmed);
   }
 
   Map<String, Object?> _windowsGenerationConfig(

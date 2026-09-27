@@ -4057,6 +4057,12 @@ class AppLocalizationsCs extends AppLocalizations {
       'Byl dosažen maximální počet zařízení přiřazených k tomuto kódu Sonarpad AI. Odeberte některé již přiřazené zařízení nebo kontaktujte podporu.';
 
   @override
+  String get audioDescriptionSonarpadBalance => 'Kredit Sonarpad AI';
+
+  @override
+  String get audioDescriptionSonarpadBalanceUnavailable => 'Kredit není k dispozici.';
+
+  @override
   String get audioDescriptionEdgeVoiceReady => 'Vybraný hlas Edge je dostupný.';
 
   @override
