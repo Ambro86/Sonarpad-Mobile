@@ -1,7 +1,7 @@
 [
   {
     "version": "0.5.0",
-    "date": "2026-09-27",
+    "date": "2026-09-28",
     "it": [
       "Aggiunta la nuova funzione “Crea audiodescrizione con IA”: permette di scegliere un video, individuare automaticamente dialoghi e pause, generare le descrizioni con Gemini o con il servizio Sonarpad, sintetizzarle con voci Edge o di sistema e creare il video audiodescritto finale. Sono disponibili anche riconoscimento dei personaggi e del testo a schermo, cataloghi dei personaggi, livelli di dettaglio, ripresa delle elaborazioni e salvataggio del progetto.",
       "Corretti alcuni problemi nelle Notizie che potevano mostrare parti della pagina o contenuti non pertinenti al posto del testo dell’articolo.",
