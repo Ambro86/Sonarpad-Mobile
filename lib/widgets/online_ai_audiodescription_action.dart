@@ -41,7 +41,7 @@ Future<void> createAiAudiodescriptionFromRemoteVideo(
 }) async {
   await _prepareAndOpenAiAudiodescription(
     context,
-    prepare: (_, __) => OnlineAiAudiodescriptionSourceService().importRemoteVideo(
+    prepare: (_, _) => OnlineAiAudiodescriptionSourceService().importRemoteVideo(
       url: url,
       title: title,
       headers: headers,

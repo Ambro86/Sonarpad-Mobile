@@ -5052,5 +5052,20 @@
   "audioDescriptionCreateWithAi": "Створити аудіоопис за допомогою ШІ",
   "@audioDescriptionCreateWithAi": {
     "description": "Localized text for audioDescriptionCreateWithAi."
-  }
+  },
+  "settingsHomeCustomization": "Налаштувати головний екран",
+  "settingsHomeCustomizationHint": "Виберіть видимі елементи, а без категорій також їх порядок.",
+  "homeCategories": "Категорії",
+  "homeCategoriesHint": "Групувати елементи головного екрана за категоріями.",
+  "homeVisibleItems": "Видимі елементи",
+  "homeReorderItems": "Змінити порядок елементів",
+  "homeReorderTitle": "Змінити порядок головного екрана",
+  "homeMoveItem": "Перемістити елемент",
+  "homeDigitalLibrary": "Цифрова бібліотека",
+  "homeTv": "TV",
+  "homeRaiPlay": "RaiPlay",
+  "homeLa7Play": "LA7 Play",
+  "homeRaiPlaySound": "RaiPlay Sound",
+  "homeOpeningHours": "Години роботи",
+  "homeDirectory": "Білі та жовті сторінки"
 }

@@ -94,6 +94,36 @@ abstract class AppLocalizations {
   /// Localized text for audioDescriptionCreateWithAi.
   String get audioDescriptionCreateWithAi;
 
+  String get settingsHomeCustomization;
+
+  String get settingsHomeCustomizationHint;
+
+  String get homeCategories;
+
+  String get homeCategoriesHint;
+
+  String get homeVisibleItems;
+
+  String get homeReorderItems;
+
+  String get homeReorderTitle;
+
+  String get homeMoveItem;
+
+  String get homeDigitalLibrary;
+
+  String get homeTv;
+
+  String get homeRaiPlay;
+
+  String get homeLa7Play;
+
+  String get homeRaiPlaySound;
+
+  String get homeOpeningHours;
+
+  String get homeDirectory;
+
   static const LocalizationsDelegate<AppLocalizations> delegate =
       _AppLocalizationsDelegate();
 

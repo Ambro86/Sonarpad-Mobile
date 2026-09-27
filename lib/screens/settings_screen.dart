@@ -16,6 +16,7 @@ import '../tts/edge_tts_bridge.dart';
 import '../utils/app_logger.dart';
 import '../utils/country_name_helper.dart';
 import 'app_log_screen.dart';
+import 'home_customization_screen.dart';
 import 'sonartube_player_actions_settings_screen.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import '../utils/status_message.dart';
@@ -1104,6 +1105,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
+  Future<void> _openHomeCustomization() async {
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        settings: const RouteSettings(name: '/settings/home-customization'),
+        builder: (_) => const HomeCustomizationScreen(),
+      ),
+    );
+    final grouping = await _settings.isHomeGroupingEnabled();
+    if (!mounted) return;
+    setState(() {
+      _homeGroupingEnabled = grouping;
+      _savedHomeGroupingEnabled = grouping;
+    });
+  }
+
 
   Widget _buildSharedAccessibleSettings(
     AppLocalizations l10n,
@@ -1385,6 +1401,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
             title: l10n.settingsSonarTubePlayerActions,
             kind: 'button',
           ),
+          AccessibleListRow(
+            id: 'home_customization',
+            title: l10n.settingsHomeCustomization,
+            subtitle: l10n.settingsHomeCustomizationHint,
+            kind: 'button',
+          ),
         ],
       ),
       AccessibleListSection(
@@ -1401,14 +1423,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
       if (showItalianOnlySettings)
         AccessibleListSection(
           rows: [
-            AccessibleListRow(
-              id: 'home_grouping',
-              title: l10n.settingsHomeGrouping,
-              subtitle: l10n.settingsHomeGroupingHint,
-              kind: 'toggle',
-              toggleValue: _homeGroupingEnabled,
-              valueLabel: toggleLabel(_homeGroupingEnabled),
-            ),
             AccessibleListRow(
               id: 'seek_step',
               title: l10n.settingsSeekStep,
@@ -1518,7 +1532,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
               case 'epub_footnotes': _includeEpubFootnotesInText = value; break;
               case 'multiple_bookmarks': _multipleDocumentBookmarks = value; break;
               case 'video_portrait': _displayVideoInPortrait = value; break;
-              case 'home_grouping': _homeGroupingEnabled = value; break;
             }
           });
         } else if (event.type == 'slider') {
@@ -1551,6 +1564,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
             case 'clear_podcast_cache': await _clearPodcastCache(); break;
             case 'sonartube_player_actions':
               await _openSonarTubePlayerActionsSettings();
+              break;
+            case 'home_customization':
+              await _openHomeCustomization();
               break;
             case 'paste_secret_code': await _pasteSecretCode(); setState(() {}); break;
             case 'request_secret_code': await _requestSecretCode(); break;
@@ -2170,6 +2186,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       onTap: _openSonarTubePlayerActionsSettings,
                     ),
                     const SizedBox(height: 12),
+                    ListTile(
+                      key: const ValueKey('settings-home-customization'),
+                      contentPadding: EdgeInsets.zero,
+                      leading: const Icon(Icons.dashboard_customize_outlined),
+                      title: Text(l10n.settingsHomeCustomization),
+                      subtitle: Text(l10n.settingsHomeCustomizationHint),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: _openHomeCustomization,
+                    ),
+                    const SizedBox(height: 12),
                     Semantics(
                       container: true,
                       button: true,
@@ -2238,15 +2264,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     if (showItalianOnlySettings) ...[
                       const Divider(),
                       const SizedBox(height: 8),
-                      SwitchListTile(
-                        title: Text(l10n.settingsHomeGrouping),
-                        subtitle: Text(l10n.settingsHomeGroupingHint),
-                        value: _homeGroupingEnabled,
-                        onChanged: (val) =>
-                            setState(() => _homeGroupingEnabled = val),
-                        contentPadding: EdgeInsets.zero,
-                      ),
-                      const Divider(),
                       const SizedBox(height: 16),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,

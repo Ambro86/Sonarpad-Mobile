@@ -4259,4 +4259,48 @@ class AppLocalizationsPl extends AppLocalizations {
   @override
   String get audioDescriptionCreateWithAi => 'Utwórz audiodeskrypcję za pomocą AI';
 
+  @override
+  String get settingsHomeCustomization => 'Dostosuj ekran główny';
+
+  @override
+  String get settingsHomeCustomizationHint => 'Wybierz widoczne elementy, a bez kategorii także ich kolejność.';
+
+  @override
+  String get homeCategories => 'Kategorie';
+
+  @override
+  String get homeCategoriesHint => 'Grupuj elementy ekranu głównego w kategorie.';
+
+  @override
+  String get homeVisibleItems => 'Widoczne elementy';
+
+  @override
+  String get homeReorderItems => 'Zmień kolejność elementów';
+
+  @override
+  String get homeReorderTitle => 'Zmień kolejność ekranu głównego';
+
+  @override
+  String get homeMoveItem => 'Przenieś element';
+
+  @override
+  String get homeDigitalLibrary => 'Biblioteka cyfrowa';
+
+  @override
+  String get homeTv => 'TV';
+
+  @override
+  String get homeRaiPlay => 'RaiPlay';
+
+  @override
+  String get homeLa7Play => 'LA7 Play';
+
+  @override
+  String get homeRaiPlaySound => 'RaiPlay Sound';
+
+  @override
+  String get homeOpeningHours => 'Godziny otwarcia';
+
+  @override
+  String get homeDirectory => 'Białe i Żółte Strony';
 }

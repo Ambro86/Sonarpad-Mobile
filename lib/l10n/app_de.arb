@@ -5052,5 +5052,20 @@
   "audioDescriptionCreateWithAi": "Audiodeskription mit KI erstellen",
   "@audioDescriptionCreateWithAi": {
     "description": "Localized text for audioDescriptionCreateWithAi."
-  }
+  },
+  "settingsHomeCustomization": "Startbildschirm anpassen",
+  "settingsHomeCustomizationHint": "Wähle sichtbare Elemente und ohne Kategorien auch ihre Reihenfolge.",
+  "homeCategories": "Kategorien",
+  "homeCategoriesHint": "Elemente des Startbildschirms in Kategorien gruppieren.",
+  "homeVisibleItems": "Sichtbare Elemente",
+  "homeReorderItems": "Elemente neu anordnen",
+  "homeReorderTitle": "Startbildschirm neu anordnen",
+  "homeMoveItem": "Element verschieben",
+  "homeDigitalLibrary": "Digitale Bibliothek",
+  "homeTv": "TV",
+  "homeRaiPlay": "RaiPlay",
+  "homeLa7Play": "LA7 Play",
+  "homeRaiPlaySound": "RaiPlay Sound",
+  "homeOpeningHours": "Öffnungszeiten",
+  "homeDirectory": "Weiße und Gelbe Seiten"
 }

@@ -4276,6 +4276,50 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get audioDescriptionCreateWithAi => 'Criar audiodescrição com IA';
 
+  @override
+  String get settingsHomeCustomization => 'Personalizar ecrã principal';
+
+  @override
+  String get settingsHomeCustomizationHint => 'Escolha os elementos a mostrar e, sem categorias, a respetiva ordem.';
+
+  @override
+  String get homeCategories => 'Categorias';
+
+  @override
+  String get homeCategoriesHint => 'Agrupar os elementos do ecrã principal em categorias.';
+
+  @override
+  String get homeVisibleItems => 'Elementos visíveis';
+
+  @override
+  String get homeReorderItems => 'Reordenar elementos';
+
+  @override
+  String get homeReorderTitle => 'Reordenar ecrã principal';
+
+  @override
+  String get homeMoveItem => 'Mover elemento';
+
+  @override
+  String get homeDigitalLibrary => 'Biblioteca digital';
+
+  @override
+  String get homeTv => 'TV';
+
+  @override
+  String get homeRaiPlay => 'RaiPlay';
+
+  @override
+  String get homeLa7Play => 'LA7 Play';
+
+  @override
+  String get homeRaiPlaySound => 'RaiPlay Sound';
+
+  @override
+  String get homeOpeningHours => 'Horários de abertura';
+
+  @override
+  String get homeDirectory => 'Páginas Brancas e Amarelas';
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
@@ -8542,4 +8586,48 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   @override
   String get audioDescriptionCreateWithAi => 'Criar audiodescrição com IA';
 
+  @override
+  String get settingsHomeCustomization => 'Personalizar tela inicial';
+
+  @override
+  String get settingsHomeCustomizationHint => 'Escolha quais itens mostrar e, sem categorias, a ordem deles.';
+
+  @override
+  String get homeCategories => 'Categorias';
+
+  @override
+  String get homeCategoriesHint => 'Agrupar os itens da tela inicial em categorias.';
+
+  @override
+  String get homeVisibleItems => 'Itens visíveis';
+
+  @override
+  String get homeReorderItems => 'Reordenar itens';
+
+  @override
+  String get homeReorderTitle => 'Reordenar tela inicial';
+
+  @override
+  String get homeMoveItem => 'Mover item';
+
+  @override
+  String get homeDigitalLibrary => 'Biblioteca digital';
+
+  @override
+  String get homeTv => 'TV';
+
+  @override
+  String get homeRaiPlay => 'RaiPlay';
+
+  @override
+  String get homeLa7Play => 'LA7 Play';
+
+  @override
+  String get homeRaiPlaySound => 'RaiPlay Sound';
+
+  @override
+  String get homeOpeningHours => 'Horários de funcionamento';
+
+  @override
+  String get homeDirectory => 'Páginas Brancas e Amarelas';
 }

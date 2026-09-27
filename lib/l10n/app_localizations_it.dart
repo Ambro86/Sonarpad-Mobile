@@ -4271,4 +4271,48 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get audioDescriptionCreateWithAi => 'Crea audiodescrizione con IA';
 
+  @override
+  String get settingsHomeCustomization => 'Personalizzazione schermata principale';
+
+  @override
+  String get settingsHomeCustomizationHint => 'Scegli quali elementi mostrare e, senza categorie, il loro ordine.';
+
+  @override
+  String get homeCategories => 'Categorie';
+
+  @override
+  String get homeCategoriesHint => 'Raggruppa gli elementi della schermata principale in categorie.';
+
+  @override
+  String get homeVisibleItems => 'Elementi visibili';
+
+  @override
+  String get homeReorderItems => 'Riordina elementi';
+
+  @override
+  String get homeReorderTitle => 'Riordina schermata principale';
+
+  @override
+  String get homeMoveItem => 'Sposta elemento';
+
+  @override
+  String get homeDigitalLibrary => 'Biblioteca digitale';
+
+  @override
+  String get homeTv => 'TV';
+
+  @override
+  String get homeRaiPlay => 'RaiPlay';
+
+  @override
+  String get homeLa7Play => 'LA7 Play';
+
+  @override
+  String get homeRaiPlaySound => 'RaiPlay Sound';
+
+  @override
+  String get homeOpeningHours => 'Orari di apertura';
+
+  @override
+  String get homeDirectory => 'Pagine Bianche e Gialle';
 }

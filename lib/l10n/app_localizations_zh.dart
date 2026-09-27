@@ -4083,6 +4083,50 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get audioDescriptionCreateWithAi => '使用 AI 创建音频描述';
 
+  @override
+  String get settingsHomeCustomization => '自定义主屏幕';
+
+  @override
+  String get settingsHomeCustomizationHint => '选择要显示的项目；关闭分类后还可调整顺序。';
+
+  @override
+  String get homeCategories => '分类';
+
+  @override
+  String get homeCategoriesHint => '将主屏幕项目按分类分组。';
+
+  @override
+  String get homeVisibleItems => '可见项目';
+
+  @override
+  String get homeReorderItems => '重新排序项目';
+
+  @override
+  String get homeReorderTitle => '重新排序主屏幕';
+
+  @override
+  String get homeMoveItem => '移动项目';
+
+  @override
+  String get homeDigitalLibrary => '数字图书馆';
+
+  @override
+  String get homeTv => '电视';
+
+  @override
+  String get homeRaiPlay => 'RaiPlay';
+
+  @override
+  String get homeLa7Play => 'LA7 Play';
+
+  @override
+  String get homeRaiPlaySound => 'RaiPlay Sound';
+
+  @override
+  String get homeOpeningHours => '营业时间';
+
+  @override
+  String get homeDirectory => '白页和黄页';
 }
 
 /// The translations for Chinese, as used in China (`zh_CN`).
@@ -8164,4 +8208,48 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
   @override
   String get audioDescriptionCreateWithAi => '使用 AI 创建音频描述';
 
+  @override
+  String get settingsHomeCustomization => '自定义主屏幕';
+
+  @override
+  String get settingsHomeCustomizationHint => '选择要显示的项目；关闭分类后还可调整顺序。';
+
+  @override
+  String get homeCategories => '分类';
+
+  @override
+  String get homeCategoriesHint => '将主屏幕项目按分类分组。';
+
+  @override
+  String get homeVisibleItems => '可见项目';
+
+  @override
+  String get homeReorderItems => '重新排序项目';
+
+  @override
+  String get homeReorderTitle => '重新排序主屏幕';
+
+  @override
+  String get homeMoveItem => '移动项目';
+
+  @override
+  String get homeDigitalLibrary => '数字图书馆';
+
+  @override
+  String get homeTv => '电视';
+
+  @override
+  String get homeRaiPlay => 'RaiPlay';
+
+  @override
+  String get homeLa7Play => 'LA7 Play';
+
+  @override
+  String get homeRaiPlaySound => 'RaiPlay Sound';
+
+  @override
+  String get homeOpeningHours => '营业时间';
+
+  @override
+  String get homeDirectory => '白页和黄页';
 }

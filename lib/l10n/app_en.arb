@@ -3474,5 +3474,20 @@
   "audioDescriptionCreateWithAi": "Create audio description with AI",
   "@audioDescriptionCreateWithAi": {
     "description": "Localized text for audioDescriptionCreateWithAi."
-  }
+  },
+  "settingsHomeCustomization": "Customize home screen",
+  "settingsHomeCustomizationHint": "Choose which items to show and, when categories are off, their order.",
+  "homeCategories": "Categories",
+  "homeCategoriesHint": "Group home screen items into categories.",
+  "homeVisibleItems": "Visible items",
+  "homeReorderItems": "Reorder items",
+  "homeReorderTitle": "Reorder home screen",
+  "homeMoveItem": "Move item",
+  "homeDigitalLibrary": "Digital library",
+  "homeTv": "TV",
+  "homeRaiPlay": "RaiPlay",
+  "homeLa7Play": "LA7 Play",
+  "homeRaiPlaySound": "RaiPlay Sound",
+  "homeOpeningHours": "Opening hours",
+  "homeDirectory": "White and Yellow Pages"
 }

@@ -4248,4 +4248,48 @@ class AppLocalizationsUk extends AppLocalizations {
   @override
   String get audioDescriptionCreateWithAi => 'Створити аудіоопис за допомогою ШІ';
 
+  @override
+  String get settingsHomeCustomization => 'Налаштувати головний екран';
+
+  @override
+  String get settingsHomeCustomizationHint => 'Виберіть видимі елементи, а без категорій також їх порядок.';
+
+  @override
+  String get homeCategories => 'Категорії';
+
+  @override
+  String get homeCategoriesHint => 'Групувати елементи головного екрана за категоріями.';
+
+  @override
+  String get homeVisibleItems => 'Видимі елементи';
+
+  @override
+  String get homeReorderItems => 'Змінити порядок елементів';
+
+  @override
+  String get homeReorderTitle => 'Змінити порядок головного екрана';
+
+  @override
+  String get homeMoveItem => 'Перемістити елемент';
+
+  @override
+  String get homeDigitalLibrary => 'Цифрова бібліотека';
+
+  @override
+  String get homeTv => 'TV';
+
+  @override
+  String get homeRaiPlay => 'RaiPlay';
+
+  @override
+  String get homeLa7Play => 'LA7 Play';
+
+  @override
+  String get homeRaiPlaySound => 'RaiPlay Sound';
+
+  @override
+  String get homeOpeningHours => 'Години роботи';
+
+  @override
+  String get homeDirectory => 'Білі та жовті сторінки';
 }

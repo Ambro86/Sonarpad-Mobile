@@ -3480,5 +3480,20 @@
   "audioDescriptionCreateWithAi": "Criar audiodescrição com IA",
   "@audioDescriptionCreateWithAi": {
     "description": "Localized text for audioDescriptionCreateWithAi."
-  }
+  },
+  "settingsHomeCustomization": "Personalizar tela inicial",
+  "settingsHomeCustomizationHint": "Escolha quais itens mostrar e, sem categorias, a ordem deles.",
+  "homeCategories": "Categorias",
+  "homeCategoriesHint": "Agrupar os itens da tela inicial em categorias.",
+  "homeVisibleItems": "Itens visíveis",
+  "homeReorderItems": "Reordenar itens",
+  "homeReorderTitle": "Reordenar tela inicial",
+  "homeMoveItem": "Mover item",
+  "homeDigitalLibrary": "Biblioteca digital",
+  "homeTv": "TV",
+  "homeRaiPlay": "RaiPlay",
+  "homeLa7Play": "LA7 Play",
+  "homeRaiPlaySound": "RaiPlay Sound",
+  "homeOpeningHours": "Horários de funcionamento",
+  "homeDirectory": "Páginas Brancas e Amarelas"
 }

@@ -4253,4 +4253,48 @@ class AppLocalizationsCs extends AppLocalizations {
   @override
   String get audioDescriptionCreateWithAi => 'Vytvořit audiopopis pomocí AI';
 
+  @override
+  String get settingsHomeCustomization => 'Přizpůsobit domovskou obrazovku';
+
+  @override
+  String get settingsHomeCustomizationHint => 'Vyberte zobrazené položky a bez kategorií také jejich pořadí.';
+
+  @override
+  String get homeCategories => 'Kategorie';
+
+  @override
+  String get homeCategoriesHint => 'Seskupit položky domovské obrazovky do kategorií.';
+
+  @override
+  String get homeVisibleItems => 'Viditelné položky';
+
+  @override
+  String get homeReorderItems => 'Změnit pořadí položek';
+
+  @override
+  String get homeReorderTitle => 'Změnit pořadí domovské obrazovky';
+
+  @override
+  String get homeMoveItem => 'Přesunout položku';
+
+  @override
+  String get homeDigitalLibrary => 'Digitální knihovna';
+
+  @override
+  String get homeTv => 'TV';
+
+  @override
+  String get homeRaiPlay => 'RaiPlay';
+
+  @override
+  String get homeLa7Play => 'LA7 Play';
+
+  @override
+  String get homeRaiPlaySound => 'RaiPlay Sound';
+
+  @override
+  String get homeOpeningHours => 'Otevírací doba';
+
+  @override
+  String get homeDirectory => 'Bílé a žluté stránky';
 }

@@ -3474,5 +3474,20 @@
   "audioDescriptionCreateWithAi": "使用 AI 创建音频描述",
   "@audioDescriptionCreateWithAi": {
     "description": "Localized text for audioDescriptionCreateWithAi."
-  }
+  },
+  "settingsHomeCustomization": "自定义主屏幕",
+  "settingsHomeCustomizationHint": "选择要显示的项目；关闭分类后还可调整顺序。",
+  "homeCategories": "分类",
+  "homeCategoriesHint": "将主屏幕项目按分类分组。",
+  "homeVisibleItems": "可见项目",
+  "homeReorderItems": "重新排序项目",
+  "homeReorderTitle": "重新排序主屏幕",
+  "homeMoveItem": "移动项目",
+  "homeDigitalLibrary": "数字图书馆",
+  "homeTv": "电视",
+  "homeRaiPlay": "RaiPlay",
+  "homeLa7Play": "LA7 Play",
+  "homeRaiPlaySound": "RaiPlay Sound",
+  "homeOpeningHours": "营业时间",
+  "homeDirectory": "白页和黄页"
 }

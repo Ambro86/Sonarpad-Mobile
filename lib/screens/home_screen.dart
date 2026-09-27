@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
 import '../main.dart';
 import '../services/accessibility_feedback_service.dart';
-import '../widgets/universal_accessible_view.dart';
 import '../services/app_settings_service.dart';
+import '../services/home_customization_service.dart';
 import '../services/raiplay_service.dart';
 import '../services/raiplay_sound_service.dart';
 import '../services/tv_service.dart';
+import '../utils/home_item_catalog.dart';
+import '../widgets/universal_accessible_view.dart';
 import 'category_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -19,6 +21,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final _settings = AppSettingsService();
+  final _customization = HomeCustomizationService();
   final _raiPlaySoundService = RaiPlaySoundService();
   final _raiPlayService = RaiPlayService();
   final _settingsFocusNode = FocusNode(debugLabel: 'home-settings');
@@ -26,6 +29,11 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _isTvCodeValid = false;
   bool _isRaiPlayValid = false;
   bool _isGroupingEnabled = false;
+  Set<String> _hiddenHomeItemIds = <String>{};
+  List<String> _homeItemOrder = List<String>.from(HomeItemIds.defaultFlatOrder);
+  List<String> _readingOrder = List<String>.from(HomeItemIds.readingOrder);
+  List<String> _mediaOrder = List<String>.from(HomeItemIds.mediaOrder);
+  List<String> _utilityOrder = List<String>.from(HomeItemIds.utilityOrder);
 
   @override
   void initState() {
@@ -56,383 +64,176 @@ class _HomeScreenState extends State<HomeScreen> {
     final isValidRaiSound = _raiPlaySoundService.isSecretCodeValid(code);
     final isValidRaiPlay = _raiPlayService.isSecretCodeValid(code);
     final isGroupingEnabled = await _settings.isHomeGroupingEnabled();
+    final hiddenIds = await _customization.loadHiddenItemIds();
+    final itemOrder = await _customization.loadItemOrder();
+    final readingOrder = await _customization.loadCategoryOrder(
+      categoryId: 'reading',
+      defaultOrder: HomeItemIds.readingOrder,
+    );
+    final mediaOrder = await _customization.loadCategoryOrder(
+      categoryId: 'media',
+      defaultOrder: HomeItemIds.mediaOrder,
+    );
+    final utilityOrder = await _customization.loadCategoryOrder(
+      categoryId: 'utilities',
+      defaultOrder: HomeItemIds.utilityOrder,
+    );
     if (!mounted) return;
     setState(() {
       _isTvCodeValid = isValidTv;
       _isSecretCodeValid = isValidRaiSound;
       _isRaiPlayValid = isValidRaiPlay;
       _isGroupingEnabled = isGroupingEnabled;
+      _hiddenHomeItemIds = hiddenIds;
+      _homeItemOrder = itemOrder;
+      _readingOrder = readingOrder;
+      _mediaOrder = mediaOrder;
+      _utilityOrder = utilityOrder;
     });
+  }
+
+  bool _isVisible(String id) =>
+      HomeItemIds.alwaysVisible.contains(id) || !_hiddenHomeItemIds.contains(id);
+
+  Future<void> _openSettings(BuildContext context) async {
+    final appLanguage = await AccessibilityFeedbackService.goNamed<String>(
+      context,
+      routeName: '/settings',
+    );
+    if (!context.mounted) return;
+    await _load();
+    if (!context.mounted) return;
+    if (appLanguage != null) {
+      final targetLocale = SonarpadApp.localeForLanguageCode(appLanguage);
+      if (targetLocale != Localizations.localeOf(context)) {
+        await Future<void>.delayed(Duration.zero);
+        if (!context.mounted) return;
+        SonarpadApp.setLocale(context, targetLocale);
+      }
+    }
+    _restoreSettingsFocus();
+  }
+
+  _HomeButton _buttonForId(
+    BuildContext context,
+    AppLocalizations l10n,
+    String id,
+  ) {
+    if (id == HomeItemIds.settings) {
+      return _HomeButton(
+        id: id,
+        label: homeItemLabel(l10n, id),
+        focusNode: _settingsFocusNode,
+        onPressed: () => _openSettings(context),
+      );
+    }
+    if (id == HomeItemIds.info) {
+      return _HomeButton(
+        id: id,
+        label: homeItemLabel(l10n, id),
+        onPressed: () => AccessibilityFeedbackService.goNamed(
+          context,
+          routeName: '/info',
+        ),
+      );
+    }
+
+    final routeName = switch (id) {
+      HomeItemIds.documents => '/documents',
+      HomeItemIds.calendar => '/calendar',
+      HomeItemIds.news => '/news',
+      HomeItemIds.weather => '/meteo',
+      HomeItemIds.podcasts => '/podcasts',
+      HomeItemIds.sonarTube => '/sonartube',
+      HomeItemIds.createAiAudioDescription => '/create_ai_audiodescription',
+      HomeItemIds.convertMedia => '/convert_media',
+      HomeItemIds.mediaCutter => '/media_cutter',
+      HomeItemIds.cinema => '/cinema',
+      HomeItemIds.radio => '/radio',
+      HomeItemIds.tv => '/tv',
+      HomeItemIds.raiPlaySound => '/raiplaysound',
+      HomeItemIds.raiPlay => '/raiplay',
+      HomeItemIds.la7Play => '/la7play',
+      HomeItemIds.audioDescriptions => '/audiodescriptions',
+      HomeItemIds.sonarpadAudioDescriptions => '/sonarpad_audiodescriptions',
+      HomeItemIds.wikipedia => '/wikipedia',
+      HomeItemIds.voiceDictionary => '/voice_dictionary',
+      HomeItemIds.digitalLibrary => '/bdciechi',
+      HomeItemIds.route => '/route',
+      HomeItemIds.openingHours => '/orari_apertura',
+      HomeItemIds.directory => '/italiaonline',
+      HomeItemIds.pharmacy => '/aifa',
+      _ => '/',
+    };
+
+    return _HomeButton(
+      id: id,
+      label: homeItemLabel(l10n, id),
+      onPressed: () => AccessibilityFeedbackService.goNamed(
+        context,
+        routeName: routeName,
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final isItalian = l10n.localeName == 'it';
-    // La sezione AIFA/farmaci usa dati italiani: deve rimanere visibile solo
-    // quando l'app è in italiano, come Biblioteca Digitale, RaiPlay e TV.
-    final showItalianPharmacyFeature = isItalian;
+    final availableIds = availableHomeItemIds(
+      isItalian: l10n.localeName == 'it',
+      isTvCodeValid: _isTvCodeValid,
+      isRaiPlayValid: _isRaiPlayValid,
+      isRaiPlaySoundCodeValid: _isSecretCodeValid,
+    );
 
-    final readingItems = [
-      _HomeButton(
-        label: l10n.documents,
-        onPressed: () => AccessibilityFeedbackService.goNamed(context,
-            routeName: '/documents'),
-      ),
-      _HomeButton(
-        label: l10n.importFromWikipedia,
-        onPressed: () => AccessibilityFeedbackService.goNamed(context,
-            routeName: '/wikipedia'),
-      ),
-      _HomeButton(
-        label: l10n.news,
-        onPressed: () =>
-            AccessibilityFeedbackService.goNamed(context, routeName: '/news'),
-      ),
-      if (isItalian)
-        _HomeButton(
-          label: 'Biblioteca digitale',
-          onPressed: () => AccessibilityFeedbackService.goNamed(context,
-              routeName: '/bdciechi'),
-        ),
-    ];
+    List<_HomeButton> buttonsFor(List<String> ids) => ids
+        .where((id) => availableIds.contains(id) && _isVisible(id))
+        .map((id) => _buttonForId(context, l10n, id))
+        .toList(growable: false);
 
-    final mediaItems = [
-      _HomeButton(
-        label: l10n.radio,
-        onPressed: () =>
-            AccessibilityFeedbackService.goNamed(context, routeName: '/radio'),
-      ),
-      _HomeButton(
-        label: l10n.podcasts,
-        onPressed: () => AccessibilityFeedbackService.goNamed(context,
-            routeName: '/podcasts'),
-      ),
-      _HomeButton(
-        label: l10n.sonarTubeTitle,
-        onPressed: () => AccessibilityFeedbackService.goNamed(
-          context,
-          routeName: '/sonartube',
-        ),
-      ),
-      _HomeButton(
-        label: l10n.audioDescriptionCreateAiTitle,
-        onPressed: () => AccessibilityFeedbackService.goNamed(context,
-            routeName: '/create_ai_audiodescription'),
-      ),
-      _HomeButton(
-        label: l10n.convertMediaTitle,
-        onPressed: () => AccessibilityFeedbackService.goNamed(context,
-            routeName: '/convert_media'),
-      ),
-      _HomeButton(
-        label: l10n.mediaCutterTitle,
-        onPressed: () => AccessibilityFeedbackService.goNamed(context,
-            routeName: '/media_cutter'),
-      ),
-      _HomeButton(
-        label: l10n.cinemaTitle,
-        onPressed: () => AccessibilityFeedbackService.goNamed(context,
-            routeName: '/cinema'),
-      ),
-      if (_isTvCodeValid && isItalian)
-        _HomeButton(
-          label: 'TV',
-          onPressed: () =>
-              AccessibilityFeedbackService.goNamed(context, routeName: '/tv'),
-        ),
-      if (_isRaiPlayValid && isItalian)
-        _HomeButton(
-          label: 'RaiPlay',
-          onPressed: () => AccessibilityFeedbackService.goNamed(context,
-              routeName: '/raiplay'),
-        ),
-      if (_isRaiPlayValid && isItalian)
-        _HomeButton(
-          label: 'LA7 Play',
-          onPressed: () => AccessibilityFeedbackService.goNamed(context,
-              routeName: '/la7play'),
-        ),
-      if (_isSecretCodeValid && isItalian)
-        _HomeButton(
-          label: 'RaiPlay Sound',
-          onPressed: () => AccessibilityFeedbackService.goNamed(context,
-              routeName: '/raiplaysound'),
-        ),
-      if (_isSecretCodeValid && isItalian)
-        _HomeButton(
-          label: l10n.audiodescriptionTitle,
-          onPressed: () => AccessibilityFeedbackService.goNamed(context,
-              routeName: '/audiodescriptions'),
-        ),
-      if ((_isSecretCodeValid || _isTvCodeValid || _isRaiPlayValid) &&
-          isItalian)
-        _HomeButton(
-          label: l10n.sonarpadAudiodescriptionsTitle,
-          onPressed: () => AccessibilityFeedbackService.goNamed(
-            context,
-            routeName: '/sonarpad_audiodescriptions',
-          ),
-        ),
-    ];
-
-    final utilityItems = [
-      _HomeButton(
-        label: l10n.calendar,
-        onPressed: () => AccessibilityFeedbackService.goNamed(context,
-            routeName: '/calendar'),
-      ),
-      _HomeButton(
-        label: l10n.voiceDictionaryTitle,
-        onPressed: () => AccessibilityFeedbackService.goNamed(context,
-            routeName: '/voice_dictionary'),
-      ),
-      _HomeButton(
-        label: l10n.meteoTitle,
-        onPressed: () =>
-            AccessibilityFeedbackService.goNamed(context, routeName: '/meteo'),
-      ),
-      _HomeButton(
-        label: l10n.routeTitle,
-        onPressed: () =>
-            AccessibilityFeedbackService.goNamed(context, routeName: '/route'),
-      ),
-      if (isItalian)
-        _HomeButton(
-          label: 'Orari di apertura',
-          onPressed: () => AccessibilityFeedbackService.goNamed(context,
-              routeName: '/orari_apertura'),
-        ),
-      if (_isSecretCodeValid && isItalian)
-        _HomeButton(
-          label: 'Pagine Bianche e Gialle',
-          onPressed: () => AccessibilityFeedbackService.goNamed(context,
-              routeName: '/italiaonline'),
-        ),
-      if (showItalianPharmacyFeature)
-        _HomeButton(
-          label: l10n.pharmacyFeatureTitle,
-          onPressed: () =>
-              AccessibilityFeedbackService.goNamed(context, routeName: '/aifa'),
-        ),
-    ];
-
-    List<Widget> children = [];
+    List<Widget> children;
     if (_isGroupingEnabled) {
+      final readingItems = buttonsFor(_readingOrder);
+      final mediaItems = buttonsFor(_mediaOrder);
+      final utilityItems = buttonsFor(_utilityOrder);
       children = [
-        _HomeButton(
-          label: l10n.categoryReading,
-          onPressed: () {
-            Navigator.of(context).push(MaterialPageRoute(
-              builder: (_) => CategoryScreen(
-                title: l10n.categoryReading,
-                accessibleItems: readingItems
-                    .whereType<_HomeButton>()
-                    .map(
-                      (item) => CategoryAccessibleItem(
-                        label: item.label,
-                        onPressed: item.onPressed,
-                        flutterChild: item,
-                      ),
-                    )
-                    .toList(growable: false),
-                children: readingItems,
-              ),
-            ));
-          },
-        ),
-        _HomeButton(
-          label: l10n.categoryMedia,
-          onPressed: () {
-            Navigator.of(context).push(MaterialPageRoute(
-              builder: (_) => CategoryScreen(
-                title: l10n.categoryMedia,
-                accessibleItems: mediaItems
-                    .whereType<_HomeButton>()
-                    .map(
-                      (item) => CategoryAccessibleItem(
-                        label: item.label,
-                        onPressed: item.onPressed,
-                        flutterChild: item,
-                      ),
-                    )
-                    .toList(growable: false),
-                children: mediaItems,
-              ),
-            ));
-          },
-        ),
-        _HomeButton(
-          label: l10n.categoryUtilities,
-          onPressed: () {
-            Navigator.of(context).push(MaterialPageRoute(
-              builder: (_) => CategoryScreen(
-                title: l10n.categoryUtilities,
-                accessibleItems: utilityItems
-                    .whereType<_HomeButton>()
-                    .map(
-                      (item) => CategoryAccessibleItem(
-                        label: item.label,
-                        onPressed: item.onPressed,
-                        flutterChild: item,
-                      ),
-                    )
-                    .toList(growable: false),
-                children: utilityItems,
-              ),
-            ));
-          },
-        ),
+        if (readingItems.isNotEmpty)
+          _categoryButton(
+            context,
+            id: 'category_reading',
+            title: l10n.categoryReading,
+            items: readingItems,
+          ),
+        if (mediaItems.isNotEmpty)
+          _categoryButton(
+            context,
+            id: 'category_media',
+            title: l10n.categoryMedia,
+            items: mediaItems,
+          ),
+        if (utilityItems.isNotEmpty)
+          _categoryButton(
+            context,
+            id: 'category_utilities',
+            title: l10n.categoryUtilities,
+            items: utilityItems,
+          ),
+        _buttonForId(context, l10n, HomeItemIds.settings),
+        _buttonForId(context, l10n, HomeItemIds.info),
       ];
     } else {
-      children = [
-        _HomeButton(
-            label: l10n.documents,
-            onPressed: () => AccessibilityFeedbackService.goNamed(context,
-                routeName: '/documents')),
-        _HomeButton(
-            label: l10n.calendar,
-            onPressed: () => AccessibilityFeedbackService.goNamed(context,
-                routeName: '/calendar')),
-        _HomeButton(
-            label: l10n.news,
-            onPressed: () => AccessibilityFeedbackService.goNamed(context,
-                routeName: '/news')),
-        _HomeButton(
-            label: l10n.meteoTitle,
-            onPressed: () => AccessibilityFeedbackService.goNamed(context,
-                routeName: '/meteo')),
-        _HomeButton(
-            label: l10n.podcasts,
-            onPressed: () => AccessibilityFeedbackService.goNamed(context,
-                routeName: '/podcasts')),
-        _HomeButton(
-            label: l10n.sonarTubeTitle,
-            onPressed: () => AccessibilityFeedbackService.goNamed(context,
-                routeName: '/sonartube')),
-        _HomeButton(
-            label: l10n.audioDescriptionCreateAiTitle,
-            onPressed: () => AccessibilityFeedbackService.goNamed(context,
-                routeName: '/create_ai_audiodescription')),
-        _HomeButton(
-            label: l10n.convertMediaTitle,
-            onPressed: () => AccessibilityFeedbackService.goNamed(context,
-                routeName: '/convert_media')),
-        _HomeButton(
-            label: l10n.mediaCutterTitle,
-            onPressed: () => AccessibilityFeedbackService.goNamed(context,
-                routeName: '/media_cutter')),
-        _HomeButton(
-            label: l10n.cinemaTitle,
-            onPressed: () => AccessibilityFeedbackService.goNamed(context,
-                routeName: '/cinema')),
-        _HomeButton(
-            label: l10n.radio,
-            onPressed: () => AccessibilityFeedbackService.goNamed(context,
-                routeName: '/radio')),
-        if (_isTvCodeValid && isItalian)
-          _HomeButton(
-              label: 'TV',
-              onPressed: () => AccessibilityFeedbackService.goNamed(context,
-                  routeName: '/tv')),
-        if (_isSecretCodeValid && isItalian)
-          _HomeButton(
-              label: 'RaiPlay Sound',
-              onPressed: () => AccessibilityFeedbackService.goNamed(context,
-                  routeName: '/raiplaysound')),
-        if (_isRaiPlayValid && isItalian)
-          _HomeButton(
-              label: 'RaiPlay',
-              onPressed: () => AccessibilityFeedbackService.goNamed(context,
-                  routeName: '/raiplay')),
-        if (_isRaiPlayValid && isItalian)
-          _HomeButton(
-              label: 'LA7 Play',
-              onPressed: () => AccessibilityFeedbackService.goNamed(context,
-                  routeName: '/la7play')),
-        if (_isSecretCodeValid && isItalian)
-          _HomeButton(
-              label: l10n.audiodescriptionTitle,
-              onPressed: () => AccessibilityFeedbackService.goNamed(context,
-                  routeName: '/audiodescriptions')),
-        if ((_isSecretCodeValid || _isTvCodeValid || _isRaiPlayValid) &&
-            isItalian)
-          _HomeButton(
-              label: l10n.sonarpadAudiodescriptionsTitle,
-              onPressed: () => AccessibilityFeedbackService.goNamed(
-                  context,
-                  routeName: '/sonarpad_audiodescriptions')),
-        _HomeButton(
-            label: l10n.importFromWikipedia,
-            onPressed: () => AccessibilityFeedbackService.goNamed(context,
-                routeName: '/wikipedia')),
-        _HomeButton(
-            label: l10n.voiceDictionaryTitle,
-            onPressed: () => AccessibilityFeedbackService.goNamed(context,
-                routeName: '/voice_dictionary')),
-        if (_isSecretCodeValid && isItalian)
-          _HomeButton(
-              label: 'Biblioteca digitale',
-              onPressed: () => AccessibilityFeedbackService.goNamed(context,
-                  routeName: '/bdciechi')),
-        _HomeButton(
-            label: l10n.routeTitle,
-            onPressed: () => AccessibilityFeedbackService.goNamed(context,
-                routeName: '/route')),
-        if (isItalian)
-          _HomeButton(
-              label: 'Orari di apertura',
-              onPressed: () => AccessibilityFeedbackService.goNamed(context,
-                  routeName: '/orari_apertura')),
-        if (_isSecretCodeValid && isItalian)
-          _HomeButton(
-              label: 'Pagine Bianche e Gialle',
-              onPressed: () => AccessibilityFeedbackService.goNamed(context,
-                  routeName: '/italiaonline')),
-        if (showItalianPharmacyFeature)
-          _HomeButton(
-              label: l10n.pharmacyFeatureTitle,
-              onPressed: () => AccessibilityFeedbackService.goNamed(context,
-                  routeName: '/aifa')),
-      ];
+      final visibleOrder = _customization.visibleOrderedIds(
+        fullOrder: _homeItemOrder,
+        availableIds: availableIds,
+        hiddenIds: _hiddenHomeItemIds,
+      );
+      children = visibleOrder
+          .map((id) => _buttonForId(context, l10n, id))
+          .toList(growable: false);
     }
 
-    children.addAll([
-      _HomeButton(
-        label: l10n.settings,
-        focusNode: _settingsFocusNode,
-        onPressed: () async {
-          final appLanguage = await AccessibilityFeedbackService.goNamed<String>(
-            context,
-            routeName: '/settings',
-          );
-          if (!context.mounted) return;
-          await _load();
-          if (!context.mounted) return;
-          if (appLanguage != null) {
-            final targetLocale = SonarpadApp.localeForLanguageCode(appLanguage);
-            if (targetLocale != Localizations.localeOf(context)) {
-              await Future<void>.delayed(Duration.zero);
-              if (!context.mounted) return;
-              SonarpadApp.setLocale(context, targetLocale);
-            }
-          }
-          _restoreSettingsFocus();
-        },
-      ),
-      _HomeButton(
-        label: l10n.info,
-        onPressed: () => AccessibilityFeedbackService.goNamed(
-          context,
-          routeName: '/info',
-        ),
-      ),
-    ]);
-
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.appTitle),
-      ),
+      appBar: AppBar(title: Text(l10n.appTitle)),
       body: SafeArea(
         child: useSharedAccessibleViewModel
             ? UniversalAccessibleList(
@@ -462,15 +263,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     rows: children
                         .whereType<_HomeButton>()
-                        .toList(growable: false)
-                        .asMap()
-                        .entries
                         .map(
-                          (entry) => AccessibleListRow(
-                            id: 'home_${entry.key}',
-                            title: entry.value.label,
-                            onActivate: entry.value.onPressed,
-                            flutterChild: entry.value,
+                          (button) => AccessibleListRow(
+                            id: 'home_${button.id}',
+                            title: button.label,
+                            onActivate: button.onPressed,
+                            flutterChild: button,
                           ),
                         )
                         .toList(growable: false),
@@ -504,14 +302,47 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
+  _HomeButton _categoryButton(
+    BuildContext context, {
+    required String id,
+    required String title,
+    required List<_HomeButton> items,
+  }) {
+    return _HomeButton(
+      id: id,
+      label: title,
+      onPressed: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => CategoryScreen(
+              title: title,
+              accessibleItems: items
+                  .map(
+                    (item) => CategoryAccessibleItem(
+                      label: item.label,
+                      onPressed: item.onPressed,
+                      flutterChild: item,
+                    ),
+                  )
+                  .toList(growable: false),
+              children: items,
+            ),
+          ),
+        );
+      },
+    );
+  }
 }
 
 class _HomeButton extends StatelessWidget {
+  final String id;
   final String label;
   final VoidCallback onPressed;
   final FocusNode? focusNode;
 
   const _HomeButton({
+    required this.id,
     required this.label,
     required this.onPressed,
     this.focusNode,

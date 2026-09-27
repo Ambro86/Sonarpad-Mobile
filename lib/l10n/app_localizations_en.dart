@@ -4245,4 +4245,48 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get audioDescriptionCreateWithAi => 'Create audio description with AI';
 
+  @override
+  String get settingsHomeCustomization => 'Customize home screen';
+
+  @override
+  String get settingsHomeCustomizationHint => 'Choose which items to show and, when categories are off, their order.';
+
+  @override
+  String get homeCategories => 'Categories';
+
+  @override
+  String get homeCategoriesHint => 'Group home screen items into categories.';
+
+  @override
+  String get homeVisibleItems => 'Visible items';
+
+  @override
+  String get homeReorderItems => 'Reorder items';
+
+  @override
+  String get homeReorderTitle => 'Reorder home screen';
+
+  @override
+  String get homeMoveItem => 'Move item';
+
+  @override
+  String get homeDigitalLibrary => 'Digital library';
+
+  @override
+  String get homeTv => 'TV';
+
+  @override
+  String get homeRaiPlay => 'RaiPlay';
+
+  @override
+  String get homeLa7Play => 'LA7 Play';
+
+  @override
+  String get homeRaiPlaySound => 'RaiPlay Sound';
+
+  @override
+  String get homeOpeningHours => 'Opening hours';
+
+  @override
+  String get homeDirectory => 'White and Yellow Pages';
 }

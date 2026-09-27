@@ -3477,5 +3477,20 @@
   "audioDescriptionCreateWithAi": "Vytvořit audiopopis pomocí AI",
   "@audioDescriptionCreateWithAi": {
     "description": "Localized text for audioDescriptionCreateWithAi."
-  }
+  },
+  "settingsHomeCustomization": "Přizpůsobit domovskou obrazovku",
+  "settingsHomeCustomizationHint": "Vyberte zobrazené položky a bez kategorií také jejich pořadí.",
+  "homeCategories": "Kategorie",
+  "homeCategoriesHint": "Seskupit položky domovské obrazovky do kategorií.",
+  "homeVisibleItems": "Viditelné položky",
+  "homeReorderItems": "Změnit pořadí položek",
+  "homeReorderTitle": "Změnit pořadí domovské obrazovky",
+  "homeMoveItem": "Přesunout položku",
+  "homeDigitalLibrary": "Digitální knihovna",
+  "homeTv": "TV",
+  "homeRaiPlay": "RaiPlay",
+  "homeLa7Play": "LA7 Play",
+  "homeRaiPlaySound": "RaiPlay Sound",
+  "homeOpeningHours": "Otevírací doba",
+  "homeDirectory": "Bílé a žluté stránky"
 }
