@@ -193,23 +193,9 @@ private func sonarpadSectionsHaveSameStructure(_ lhs: [SonarpadNativeSection], _
   return true
 }
 
-private func sonarpadRowsMatchForDocumentStructureAlignment(
-  _ lhs: SonarpadNativeRow,
-  _ rhs: SonarpadNativeRow
-) -> Bool {
-  // Paragraph ids are index-based (paragraph_271, paragraph_272, ...), so an
-  // inserted newline shifts every following id even though the underlying
-  // paragraph content is unchanged. For structural alignment we therefore
-  // compare the semantic payload and cell class, deliberately ignoring id and
-  // dynamic decoration such as bookmark state/actions. This helper is used
-  // only by the Document single-paragraph split/merge fast path below.
-  return lhs.kind == rhs.kind &&
-    lhs.title == rhs.title &&
-    lhs.accessibilityLabel == rhs.accessibilityLabel
-}
-
 private struct SonarpadDocumentParagraphMutation {
   let section: Int
+  // Row to use for the immediate VoiceOver handoff in the NEW model.
   let anchorRow: Int
   let insertedRows: [IndexPath]
   let deletedRows: [IndexPath]
@@ -231,9 +217,6 @@ private func sonarpadDocumentParagraphMutation(
     }
 
     if oldSection.rows.count != newSection.rows.count {
-      // Document Reader currently uses one paragraph section. Keep this
-      // generic enough for another fixed section, but never guess across two
-      // simultaneous count-changing sections.
       if changedSection != nil { return nil }
       changedSection = sectionIndex
     }
@@ -245,66 +228,46 @@ private func sonarpadDocumentParagraphMutation(
   let delta = newRows.count - oldRows.count
   guard delta != 0, !oldRows.isEmpty, !newRows.isEmpty else { return nil }
 
-  // IMPORTANT: do not require an unchanged suffix here.
-  //
-  // Document Reader chunks text with splitTextForStreaming(). Inserting a
-  // single Return can therefore change the boundaries/text of several chunks
-  // after the edited paragraph even though the user edited only one logical
-  // point. The old suffix-based detector consequently missed perfectly normal
-  // newline edits and fell through to reloadData(), which destroys every live
-  // UITableViewCell accessibility object and lets VoiceOver escape to Back.
-  //
-  // Rows before the edit remain semantically identical. The first semantic
-  // mismatch is therefore the stable anchor cell we must KEEP alive. Any row
-  // count delta is inserted/deleted immediately after that anchor; all visible
-  // rows are then reconfigured in place from the new model. This remains safe
-  // even when later chunk boundaries have shifted, because their index-path
-  // cells survive and receive the new content without a table-wide reload.
-  let commonCount = min(oldRows.count, newRows.count)
-  var firstChangedRow = 0
-  while firstChangedRow < commonCount,
-        sonarpadRowsMatchForDocumentStructureAlignment(
-          oldRows[firstChangedRow],
-          newRows[firstChangedRow]
-        ) {
-    firstChangedRow += 1
+  // Document paragraph ids are stable for the lifetime of the reader screen.
+  // Therefore a deleted paragraph is the old id that truly disappeared, and
+  // an inserted split chunk is the new id that did not exist before. Never
+  // recycle the deleted cell merely because another paragraph moved into the
+  // same numeric index: VoiceOver must keep following paragraph identity.
+  let oldIds = oldRows.map { $0.id }
+  let newIds = newRows.map { $0.id }
+  let oldIdSet = Set(oldIds)
+  let newIdSet = Set(newIds)
+  guard oldIdSet.count == oldIds.count,
+        newIdSet.count == newIds.count else {
+    return nil
+  }
+
+  let deletedRows = oldRows.enumerated().compactMap { index, row -> IndexPath? in
+    newIdSet.contains(row.id) ? nil : IndexPath(row: index, section: sectionIndex)
+  }
+  let insertedRows = newRows.enumerated().compactMap { index, row -> IndexPath? in
+    oldIdSet.contains(row.id) ? nil : IndexPath(row: index, section: sectionIndex)
+  }
+
+  // A normal paragraph structure edit is insertion-only or deletion-only.
+  // If identities indicate a more complex replacement, prefer the generic
+  // reload path instead of guessing UITableView batch-update semantics.
+  if delta > 0 {
+    guard deletedRows.isEmpty, insertedRows.count == delta else { return nil }
+  } else {
+    guard insertedRows.isEmpty, deletedRows.count == -delta else { return nil }
   }
 
   let anchorRow: Int
-  if firstChangedRow < commonCount {
-    anchorRow = firstChangedRow
+  if let firstDeleted = deletedRows.first {
+    // After deleting row N, the old next paragraph moves into N. If N was the
+    // last row, use the previous surviving paragraph instead.
+    anchorRow = min(firstDeleted.row, newRows.count - 1)
+  } else if let firstInserted = insertedRows.first {
+    // New split chunks are inserted after the edited paragraph. Keep the
+    // original edited paragraph as the immediate in-table handoff target.
+    anchorRow = max(0, min(firstInserted.row - 1, newRows.count - 1))
   } else {
-    // Pure append/truncation at the end. Keep the last common row alive and
-    // apply the count change after it.
-    anchorRow = max(0, commonCount - 1)
-  }
-  guard anchorRow >= 0,
-        anchorRow < oldRows.count,
-        anchorRow < newRows.count else { return nil }
-
-  let insertedRows: [IndexPath]
-  let deletedRows: [IndexPath]
-  if delta > 0 {
-    insertedRows = (1...delta).map {
-      IndexPath(row: anchorRow + $0, section: sectionIndex)
-    }
-    deletedRows = []
-  } else {
-    insertedRows = []
-    deletedRows = (1...(-delta)).map {
-      IndexPath(row: anchorRow + $0, section: sectionIndex)
-    }
-  }
-
-  // Validate only index-path bounds required by UITableView's batch update.
-  // We intentionally do NOT validate the semantic suffix: re-chunking is the
-  // exact reason this path exists.
-  if let lastInserted = insertedRows.last,
-     lastInserted.row >= newRows.count {
-    return nil
-  }
-  if let lastDeleted = deletedRows.last,
-     lastDeleted.row >= oldRows.count {
     return nil
   }
 
@@ -1193,11 +1156,10 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
       emitDebug("apply updateVisibleRowsFromModel visible=\(tableView.indexPathsForVisibleRows?.count ?? 0)")
       updateVisibleRowsFromModel()
     } else if let mutation = documentParagraphMutation {
-      // A paragraph split/merge must not use reloadData(). reloadData destroys
-      // every live UITableViewCell accessibility object at once; while the
-      // Flutter editor is disappearing VoiceOver then has no valid native row
-      // to inherit and can escape to the route Back button. Insert/delete only
-      // the extra paragraph rows so the edited anchor cell remains alive.
+      // A paragraph split/deletion must not use reloadData(). Stable paragraph
+      // ids let us insert/delete the exact rows whose identities changed,
+      // preserving every surviving UITableViewCell accessibility object while
+      // the Flutter editor disappears.
       let inserted = mutation.insertedRows.map { "\($0.section):\($0.row)" }.joined(separator: ",")
       let deleted = mutation.deletedRows.map { "\($0.section):\($0.row)" }.joined(separator: ",")
       emitDebug(

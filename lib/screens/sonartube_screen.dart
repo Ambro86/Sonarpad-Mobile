@@ -945,7 +945,7 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
       if (item.published?.isNotEmpty ?? false) item.published!,
       if (item.views?.isNotEmpty ?? false) item.views!,
     ].where((value) => value.isNotEmpty).toList();
-    return values.isEmpty ? null : values.join(' · ');
+    return values.isEmpty ? null : values.join('. ');
   }
 
   List<AccessibleVisualAction> _sightedVisualActions(
@@ -2985,7 +2985,7 @@ class _SonarTubeRecentVideosScreenState
       if (item.published?.isNotEmpty ?? false) item.published!,
       if (item.views?.isNotEmpty ?? false) item.views!,
     ];
-    return values.isEmpty ? null : values.join(' · ');
+    return values.isEmpty ? null : values.join('. ');
   }
 
   Widget _buildSharedAccessibleRecentVideos(AppLocalizations l10n) {

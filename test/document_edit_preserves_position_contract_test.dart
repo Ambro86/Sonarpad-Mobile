@@ -69,8 +69,18 @@ void main() {
     );
     expect(
       editMethod,
-      contains("final refreshedParagraphId = 'paragraph_\$restoredFocusIndex';"),
-      reason: 'The refresh must target the edited paragraph after any chunk-count change.',
+      contains('final refreshedParagraphId = restoredFocusId!;'),
+      reason: 'The refresh must target the stable paragraph identity selected after any chunk-count change.',
+    );
+    expect(
+      source,
+      contains('List<String> _chunkAccessibilityIds = <String>[];'),
+      reason: 'Paragraph accessibility identity must be independent from its mutable numeric index.',
+    );
+    expect(
+      editMethod,
+      contains('final preferredFocusId = paragraphDeleted'),
+      reason: 'Deleting the edited paragraph must choose a surviving neighbour by stable identity.',
     );
     expect(
       editMethod,
@@ -178,13 +188,18 @@ void main() {
     expect(nativeSource, contains('tableView.deleteRows(at: mutation.deletedRows, with: .none)'));
     expect(
       nativeSource,
-      contains('do not require an unchanged suffix here'),
-      reason: 'Streaming re-chunking after Return must not make the document fall back to reloadData.',
+      contains('Document paragraph ids are stable for the lifetime of the reader screen.'),
+      reason: 'UIKit must distinguish paragraph identity from the row index after insertions and deletions.',
     );
     expect(
       nativeSource,
-      contains('let commonCount = min(oldRows.count, newRows.count)'),
-      reason: 'The first changed row, not an identical suffix, anchors the in-place table mutation.',
+      contains('newIdSet.contains(row.id) ? nil : IndexPath'),
+      reason: 'A deleted paragraph must delete the exact UIKit row whose stable id disappeared.',
+    );
+    expect(
+      nativeSource,
+      contains('oldIdSet.contains(row.id) ? nil : IndexPath'),
+      reason: 'A newly split paragraph chunk must insert only the row with a new stable id.',
     );
     expect(
       nativeSource,
@@ -196,6 +211,26 @@ void main() {
       lessThan(nativeSource.indexOf('apply reloadData begin')),
       reason: 'The document no-reload count-diff path must run before the generic reloadData fallback used by other screens.',
     );
+  });
+
+  test('deleting a paragraph follows the next surviving stable paragraph id', () {
+    final source =
+        File('lib/screens/document_reader_screen.dart').readAsStringSync();
+    final start = source.indexOf('Future<void> _editParagraph(int index) async');
+    final end = source.indexOf('Future<void> _togglePlayPause()', start);
+    expect(start, greaterThanOrEqualTo(0));
+    expect(end, greaterThan(start));
+    final editMethod = source.substring(start, end);
+
+    expect(editMethod, contains('final nextParagraphId ='));
+    expect(editMethod, contains('? (nextParagraphId ?? previousParagraphId)'));
+    expect(editMethod, contains('_chunkAccessibilityIdsAfterSingleEdit('));
+    expect(editMethod, contains('.focusToReturnAfterStructureChange('));
+
+    final nativeSource =
+        File('ios/Runner/SonarpadNativeAccessibleView.swift').readAsStringSync();
+    expect(nativeSource, contains('let deletedRows = oldRows.enumerated().compactMap'));
+    expect(nativeSource, contains('anchorRow = min(firstDeleted.row, newRows.count - 1)'));
   });
 
   test('document logs spontaneous VoiceOver exits from the native table without changing focus', () {

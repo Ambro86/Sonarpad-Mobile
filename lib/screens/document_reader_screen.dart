@@ -55,6 +55,11 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   String _documentText = '';
   String? _loadError;
   List<String> _chunks = [];
+  // Identita' accessibili stabili per la durata della schermata. Gli indici
+  // possono cambiare dopo split/eliminazioni; VoiceOver invece deve poter
+  // seguire lo stesso paragrafo anche quando si sposta nella lista.
+  List<String> _chunkAccessibilityIds = <String>[];
+  int _nextChunkAccessibilityId = 0;
   List<DocumentTableOfContentsEntry> _documentIndex = [];
   String? _epubIndexSourcePath;
   bool _usingEditedText = false;
@@ -265,6 +270,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
           includeEpubFootnotesInText: includeEpubFootnotes,
           footnoteLabel: l10n.documentFootnoteLabel,
         );
+        _resetChunkAccessibilityIdsForCurrentChunks();
         _multipleDocumentBookmarksEnabled = multipleDocumentBookmarks;
         _documentSliderStepPercent = documentSliderStepPercent;
         _documentReadingSleepTimerMinutes = documentReadingSleepTimerMinutes;
@@ -307,7 +313,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         setState(() => _loadingText = false);
         _docLog('DOC_BOOKMARK loading=false build requested initialFocusIndex=$_initialBookmarkFocusIndex');
         if (_initialBookmarkFocusIndex >= 0) {
-          _docLog('DOC_FOCUS initial focus delegated to UniversalAccessibleList id=paragraph_$_initialBookmarkFocusIndex');
+          _docLog('DOC_FOCUS initial focus delegated to UniversalAccessibleList id=${_chunkAccessibilityIdAt(_initialBookmarkFocusIndex)}');
         }
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
@@ -327,11 +333,12 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       _docLog('DOC_SCROLL reject index=$index chunks=${_chunks.length}');
       return;
     }
-    _docLog('DOC_SCROLL request index=$index id=paragraph_$index shared=$useSharedAccessibleViewModel nativeAttached=${_accessibleDocumentListController.hasAttachedNativeRenderer} anyAttached=${_accessibleDocumentListController.hasAttachedRenderer}');
+    final paragraphId = _chunkAccessibilityIdAt(index);
+    _docLog('DOC_SCROLL request index=$index id=$paragraphId shared=$useSharedAccessibleViewModel nativeAttached=${_accessibleDocumentListController.hasAttachedNativeRenderer} anyAttached=${_accessibleDocumentListController.hasAttachedRenderer}');
     if (useSharedAccessibleViewModel) {
       unawaited(
         _accessibleDocumentListController.scrollTo(
-          'paragraph_$index',
+          paragraphId,
           animated: false,
         ),
       );
@@ -349,7 +356,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       _docLog('DOC_FOCUS reject index=$index chunks=${_chunks.length}');
       return;
     }
-    _docLog('DOC_FOCUS request index=$index id=paragraph_$index shared=$useSharedAccessibleViewModel nativeAttached=${_accessibleDocumentListController.hasAttachedNativeRenderer} anyAttached=${_accessibleDocumentListController.hasAttachedRenderer}');
+    final paragraphId = _chunkAccessibilityIdAt(index);
+    _docLog('DOC_FOCUS request index=$index id=$paragraphId shared=$useSharedAccessibleViewModel nativeAttached=${_accessibleDocumentListController.hasAttachedNativeRenderer} anyAttached=${_accessibleDocumentListController.hasAttachedRenderer}');
     if (!useSharedAccessibleViewModel) {
       _scrollToChunk(index);
       return;
@@ -360,10 +368,98 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     // either UIKit or Flutter becomes available. Screens never need to know
     // which renderer is active.
     await _accessibleDocumentListController.focusTo(
-      'paragraph_$index',
+      paragraphId,
       animated: false,
     );
     _docLog('DOC_FOCUS controller call returned index=$index nativeAttached=${_accessibleDocumentListController.hasAttachedNativeRenderer} anyAttached=${_accessibleDocumentListController.hasAttachedRenderer}');
+  }
+
+  String _newChunkAccessibilityId() =>
+      'paragraph_${_nextChunkAccessibilityId++}';
+
+  void _resetChunkAccessibilityIdsForCurrentChunks() {
+    _nextChunkAccessibilityId = 0;
+    _chunkAccessibilityIds = List<String>.generate(
+      _chunks.length,
+      (_) => _newChunkAccessibilityId(),
+      growable: true,
+    );
+  }
+
+  void _ensureChunkAccessibilityIds() {
+    if (_chunkAccessibilityIds.length > _chunks.length) {
+      _chunkAccessibilityIds = _chunkAccessibilityIds
+          .take(_chunks.length)
+          .toList(growable: true);
+    }
+    while (_chunkAccessibilityIds.length < _chunks.length) {
+      _chunkAccessibilityIds.add(_newChunkAccessibilityId());
+    }
+  }
+
+  String _chunkAccessibilityIdAt(int index) {
+    _ensureChunkAccessibilityIds();
+    return _chunkAccessibilityIds[index];
+  }
+
+  int _chunkIndexForAccessibilityId(String id) {
+    _ensureChunkAccessibilityIds();
+    return _chunkAccessibilityIds.indexOf(id);
+  }
+
+  List<String> _chunkAccessibilityIdsAfterSingleEdit({
+    required List<String> oldIds,
+    required int editedIndex,
+    required int newLength,
+    required bool paragraphDeleted,
+  }) {
+    if (newLength <= 0) return <String>[];
+    if (oldIds.isEmpty) {
+      return List<String>.generate(
+        newLength,
+        (_) => _newChunkAccessibilityId(),
+        growable: true,
+      );
+    }
+
+    final result = List<String?>.filled(newLength, null);
+
+    // Tutto cio' che precede il paragrafo modificato conserva l'identita'.
+    final prefixCount = editedIndex.clamp(0, newLength).toInt();
+    for (var i = 0; i < prefixCount && i < oldIds.length; i++) {
+      result[i] = oldIds[i];
+    }
+
+    if (!paragraphDeleted &&
+        editedIndex >= 0 &&
+        editedIndex < oldIds.length &&
+        editedIndex < newLength) {
+      // Se il paragrafo viene solo modificato/spezzato, il primo chunk
+      // risultante resta lo stesso elemento accessibile.
+      result[editedIndex] = oldIds[editedIndex];
+    }
+
+    // Conserva le identita' dei paragrafi successivi partendo dal fondo.
+    // Questo evita che una cancellazione faccia ereditare al successivo l'ID
+    // del paragrafo appena rimosso. Gli eventuali nuovi chunk restano nel
+    // mezzo e ricevono ID nuovi.
+    var oldIndex = oldIds.length - 1;
+    var newIndex = newLength - 1;
+    final oldStop = editedIndex + 1;
+    while (oldIndex >= oldStop &&
+        newIndex >= 0 &&
+        (paragraphDeleted || newIndex > editedIndex)) {
+      if (result[newIndex] == null) {
+        result[newIndex] = oldIds[oldIndex];
+      }
+      oldIndex--;
+      newIndex--;
+    }
+
+    for (var i = 0; i < result.length; i++) {
+      result[i] ??= _newChunkAccessibilityId();
+    }
+    return result.map((id) => id!).toList(growable: true);
   }
 
   List<String> _splitTextForDocumentDisplay(String text) {
@@ -1831,9 +1927,38 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
 
     final deletedIndexes = _selectedParagraphIndexes.toList()..sort();
     final deletedSet = deletedIndexes.toSet();
+    _ensureChunkAccessibilityIds();
+    final oldAccessibilityIds =
+        List<String>.from(_chunkAccessibilityIds, growable: false);
+    final firstDeletedIndex = deletedIndexes.first;
+
+    // Prefer the paragraph that was immediately after the deleted block. If
+    // there is none, fall back to the nearest surviving paragraph before it.
+    // The target is an ID, not an index, so removing rows cannot silently
+    // redirect VoiceOver to a different paragraph.
+    String? nextFocusId;
+    for (var i = firstDeletedIndex + 1; i < oldAccessibilityIds.length; i++) {
+      if (!deletedSet.contains(i)) {
+        nextFocusId = oldAccessibilityIds[i];
+        break;
+      }
+    }
+    if (nextFocusId == null) {
+      for (var i = firstDeletedIndex - 1; i >= 0; i--) {
+        if (!deletedSet.contains(i)) {
+          nextFocusId = oldAccessibilityIds[i];
+          break;
+        }
+      }
+    }
+
     final updatedChunks = <String>[
       for (var i = 0; i < _chunks.length; i++)
         if (!deletedSet.contains(i)) _chunks[i],
+    ];
+    final updatedAccessibilityIds = <String>[
+      for (var i = 0; i < oldAccessibilityIds.length; i++)
+        if (!deletedSet.contains(i)) oldAccessibilityIds[i],
     ];
     final newText = updatedChunks.join('\n\n');
     final newBookmarkIndexes = _remapBookmarksAfterParagraphDeletion(
@@ -1847,14 +1972,9 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       deletedIndexes,
       updatedChunks.length,
     );
-    final firstDeletedIndex = deletedIndexes.first;
-    final nextFocusIndex = updatedChunks.isEmpty
+    final nextFocusIndex = nextFocusId == null
         ? -1
-        : _remapIndexAfterParagraphDeletion(
-            firstDeletedIndex,
-            deletedIndexes,
-            updatedChunks.length,
-          );
+        : updatedAccessibilityIds.indexOf(nextFocusId);
 
     try {
       final library = DocumentLibraryService();
@@ -1884,6 +2004,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         _usingEditedText = true;
         _documentText = newText;
         _chunks = updatedChunks;
+        _chunkAccessibilityIds = updatedAccessibilityIds;
         // Gli indici EPUB caricati contengono posizioni nei chunk: dopo una
         // modifica del testo vanno rimappati al prossimo tap su Indice.
         _documentIndex = const <DocumentTableOfContentsEntry>[];
@@ -1897,11 +2018,24 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         _rebuildRemainingReadingEstimateCache();
       });
 
-      if (nextFocusIndex >= 0) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted) _scrollToChunk(nextFocusIndex);
-        });
+      if (nextFocusIndex >= 0 && nextFocusId != null) {
+        await WidgetsBinding.instance.endOfFrame;
+        if (!mounted) return;
+        if (useSharedAccessibleViewModel) {
+          await _accessibleDocumentListController
+              .focusToReturnAfterStructureChange(
+            nextFocusId,
+            animated: false,
+          );
+          _docLog(
+            'DOC_DELETE accessibility focus restored id=$nextFocusId '
+            'index=$nextFocusIndex deleted=${deletedIndexes.length}',
+          );
+        } else {
+          _scrollToChunk(nextFocusIndex);
+        }
       }
+      if (!mounted) return;
       showStatusMessage(
         context,
         l10n.documentSelectedParagraphsDeleted(count),
@@ -1932,6 +2066,15 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     _initialBookmarkFocusIndex = -1;
     _focusedChunkIndex = index;
 
+    _ensureChunkAccessibilityIds();
+    final originalAccessibilityIds =
+        List<String>.from(_chunkAccessibilityIds, growable: false);
+    final editedParagraphId = originalAccessibilityIds[index];
+    final previousParagraphId =
+        index > 0 ? originalAccessibilityIds[index - 1] : null;
+    final nextParagraphId = index + 1 < originalAccessibilityIds.length
+        ? originalAccessibilityIds[index + 1]
+        : null;
     final originalParagraphLength = _chunks[index].length;
     final originalChunkCount = _chunks.length;
     final controller = TextEditingController(text: _chunks[index]);
@@ -1980,8 +2123,19 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     final finalEdited = normalized.replaceAll(RegExp(r'\n+'), '\n\n');
     final updatedChunks = List<String>.from(_chunks)..[index] = finalEdited;
 
-    // Ricostruisce il testo separando i vecchi chunk correttamente
+    // Ricostruisce il testo separando i vecchi chunk correttamente.
     final newText = updatedChunks.join('\n\n');
+    final rebuiltChunks = _splitTextForDocumentDisplay(newText);
+    final paragraphDeleted = finalEdited.trim().isEmpty;
+    final rebuiltAccessibilityIds = _chunkAccessibilityIdsAfterSingleEdit(
+      oldIds: originalAccessibilityIds,
+      editedIndex: index,
+      newLength: rebuiltChunks.length,
+      paragraphDeleted: paragraphDeleted,
+    );
+    final preferredFocusId = paragraphDeleted
+        ? (nextParagraphId ?? previousParagraphId)
+        : editedParagraphId;
 
     // Salva su file
     try {
@@ -2021,19 +2175,28 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       // VoiceOver deve restare dov'è, ma UIKit deve ricevere il nuovo testo.
       var restoredFocusIndex = index;
       var paragraphStructureChanged = false;
+      String? restoredFocusId;
       setState(() {
         _documentText = newText;
-        _chunks = _splitTextForDocumentDisplay(_documentText);
+        _chunks = rebuiltChunks;
+        _chunkAccessibilityIds = rebuiltAccessibilityIds;
         // Una voce dell'indice già caricata può puntare a un vecchio indice
         // numerico dopo split/merge dei chunk. Forziamo la rimappatura dalla
         // struttura dell'EPUB originale alla prossima apertura dell'Indice.
         _documentIndex = const <DocumentTableOfContentsEntry>[];
         paragraphStructureChanged = _chunks.length != originalChunkCount;
         if (_chunks.isNotEmpty) {
-          restoredFocusIndex = index.clamp(0, _chunks.length - 1).toInt();
+          final preferredIndex = preferredFocusId == null
+              ? -1
+              : _chunkAccessibilityIds.indexOf(preferredFocusId);
+          restoredFocusIndex = preferredIndex >= 0
+              ? preferredIndex
+              : index.clamp(0, _chunks.length - 1).toInt();
+          restoredFocusId = _chunkAccessibilityIds[restoredFocusIndex];
           _focusedChunkIndex = restoredFocusIndex;
         } else {
           restoredFocusIndex = -1;
+          restoredFocusId = null;
           _focusedChunkIndex = -1;
         }
         // Never let a saved bookmark become an initial-focus candidate again
@@ -2050,11 +2213,12 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       // e nessun flick avanti/indietro necessario per leggere il testo nuovo.
       await WidgetsBinding.instance.endOfFrame;
       if (!mounted) return;
-      if (restoredFocusIndex >= 0) {
-        final refreshedParagraphId = 'paragraph_$restoredFocusIndex';
+      if (restoredFocusIndex >= 0 && restoredFocusId != null) {
+        final refreshedParagraphId = restoredFocusId!;
         _docLog(
           'DOC_EDIT refresh accessibility row id=$refreshedParagraphId '
           'oldChars=$originalParagraphLength newChars=${finalEdited.length} '
+          'deleted=$paragraphDeleted '
           'nativeAttached=${_accessibleDocumentListController.hasAttachedNativeRenderer}',
         );
         await _accessibleDocumentListController.refreshAccessibilityRow(
@@ -2705,8 +2869,9 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
           ));
         }
       }
+      final paragraphId = _chunkAccessibilityIdAt(i);
       rows.add(AccessibleListRow(
-        id: 'paragraph_$i',
+        id: paragraphId,
         title: _chunks[i],
         subtitle: isBookmarked ? '🔖' : null,
         accessibilityLabel: _chunks[i],
@@ -2721,8 +2886,9 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
             _syncDocumentPositionFromAccessibilityFocus(i),
       ));
     }
-    final initialFocusId = _initialBookmarkFocusIndex >= 0
-        ? 'paragraph_$_initialBookmarkFocusIndex'
+    final initialFocusId = _initialBookmarkFocusIndex >= 0 &&
+            _initialBookmarkFocusIndex < _chunks.length
+        ? _chunkAccessibilityIdAt(_initialBookmarkFocusIndex)
         : null;
     if (_lastLoggedInitialFocusId != initialFocusId) {
       _lastLoggedInitialFocusId = initialFocusId;
@@ -2738,8 +2904,8 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       onEvent: (event) async {
         final id = event.id;
         if (id == null || !id.startsWith('paragraph_')) return;
-        final index = int.tryParse(id.substring('paragraph_'.length));
-        if (index == null || index < 0 || index >= _chunks.length) return;
+        final index = _chunkIndexForAccessibilityId(id);
+        if (index < 0 || index >= _chunks.length) return;
         if (event.type == 'activate') {
           _syncDocumentPositionFromAccessibilityFocus(index);
           if (_speaking) return;
@@ -2833,11 +2999,11 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       }
       widgets.add(
         AutoScrollTag(
-          key: ValueKey(i),
+          key: ValueKey(_chunkAccessibilityIdAt(i)),
           controller: _scrollController,
           index: i,
           child: Semantics(
-            key: ValueKey('document_chunk_semantics_$i'),
+            key: ValueKey('document_chunk_semantics_${_chunkAccessibilityIdAt(i)}'),
             container: true,
             onDidGainAccessibilityFocus: () =>
                 _syncDocumentPositionFromAccessibilityFocus(i),
