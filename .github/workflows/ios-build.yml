@@ -134,6 +134,9 @@ jobs:
             pod install --repo-update
           fi
 
+      - name: Patch ONNX Runtime MinimumOSVersion
+        run: python3 scripts/patch_onnxruntime_ios_minimum_os.py --minimum 15.5
+
       - name: Build unsigned iOS app
         run: flutter build ios --release --no-codesign --dart-define=SONARPAD_ROUTE_CLIENT_TOKEN=${{ secrets.SONARPAD_ROUTE_CLIENT_TOKEN }}
 

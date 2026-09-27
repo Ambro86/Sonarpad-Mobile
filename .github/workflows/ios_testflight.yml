@@ -207,6 +207,9 @@ jobs:
             pod install --repo-update
           fi
 
+      - name: Patch ONNX Runtime MinimumOSVersion
+        run: python3 scripts/patch_onnxruntime_ios_minimum_os.py --minimum 15.5
+
       - name: Create ExportOptions.plist
         env:
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
@@ -252,6 +255,31 @@ jobs:
             --build-number=${{ github.run_number }} \
             --dart-define=SONARPAD_ROUTE_CLIENT_TOKEN=${{ secrets.SONARPAD_ROUTE_CLIENT_TOKEN }} \
             --export-options-plist=ios/ExportOptions.plist
+
+      - name: Verify ONNX Runtime MinimumOSVersion in IPA
+        run: |
+          IPA_PATH=$(find build/ios/ipa -name "*.ipa" | head -1)
+          if [ -z "$IPA_PATH" ]; then
+            echo "Nessun IPA trovato per la verifica ONNX Runtime"
+            exit 1
+          fi
+
+          TMP_DIR=$(mktemp -d)
+          trap 'rm -rf "$TMP_DIR"' EXIT
+          unzip -q "$IPA_PATH" -d "$TMP_DIR"
+
+          ONNX_PLIST=$(find "$TMP_DIR/Payload" -path "*/Frameworks/onnxruntime.framework/Info.plist" | head -1)
+          if [ -z "$ONNX_PLIST" ]; then
+            echo "onnxruntime.framework/Info.plist non trovato nell'IPA"
+            exit 1
+          fi
+
+          MIN_OS=$(/usr/libexec/PlistBuddy -c "Print :MinimumOSVersion" "$ONNX_PLIST" 2>/dev/null || true)
+          echo "onnxruntime.framework MinimumOSVersion nell'IPA: $MIN_OS"
+          if [ "$MIN_OS" != "15.5" ]; then
+            echo "MinimumOSVersion ONNX Runtime non valido: atteso 15.5, trovato '$MIN_OS'"
+            exit 1
+          fi
 
       - name: Show generated IPA
         run: |
