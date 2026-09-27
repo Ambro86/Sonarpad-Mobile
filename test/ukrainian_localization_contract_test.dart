@@ -127,10 +127,12 @@ void main() {
   });
 
   test('Italy-only home features remain gated by Italian locale', () {
+    final catalog = File('lib/utils/home_item_catalog.dart').readAsStringSync();
     final home = File('lib/screens/home_screen.dart').readAsStringSync();
-    expect(home, contains("final isItalian = l10n.localeName == 'it';"));
-    expect(home, contains('if (_isRaiPlayValid && isItalian)'));
-    expect(home, contains('if (_isSecretCodeValid && isItalian)'));
-    expect(home, contains('if (showItalianPharmacyFeature)'));
+    expect(catalog, contains('if (isItalian)'));
+    expect(catalog, contains('if (isRaiPlayValid)'));
+    expect(catalog, contains('if (isRaiPlaySoundCodeValid)'));
+    expect(catalog, contains('HomeItemIds.pharmacy,'));
+    expect(home, contains("isItalian: l10n.localeName == 'it'"));
   });
 }

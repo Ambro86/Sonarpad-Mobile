@@ -15,10 +15,14 @@ void main() {
   });
 
   test('LA7 Play uses the same Italian and code gate as RaiPlay', () {
+    final catalog = File('lib/utils/home_item_catalog.dart').readAsStringSync();
     final home = File('lib/screens/home_screen.dart').readAsStringSync();
     final screen = File('lib/screens/la7_play_screen.dart').readAsStringSync();
-    expect(home, contains("if (_isRaiPlayValid && isItalian)"));
-    expect(home, contains("label: 'LA7 Play'"));
+    expect(catalog, contains('if (isItalian)'));
+    expect(catalog, contains('if (isRaiPlayValid)'));
+    expect(catalog, contains('ids.add(HomeItemIds.raiPlay);'));
+    expect(catalog, contains('ids.add(HomeItemIds.la7Play);'));
+    expect(home, contains("HomeItemIds.la7Play => '/la7play'"));
     expect(screen, contains("language != 'it'"));
     expect(screen, contains('_service.isSecretCodeValid(code)'));
   });

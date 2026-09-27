@@ -5,11 +5,13 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('TV remains Italian-only and code-gated from the home screen', () {
+    final catalog = File('lib/utils/home_item_catalog.dart').readAsStringSync();
     final home = File('lib/screens/home_screen.dart').readAsStringSync();
     final main = File('lib/main.dart').readAsStringSync();
 
-    expect(home, contains('if (_isTvCodeValid && isItalian)'));
-    expect(home, contains("routeName: '/tv'"));
+    expect(catalog, contains('if (isItalian)'));
+    expect(catalog, contains('if (isTvCodeValid) ids.add(HomeItemIds.tv);'));
+    expect(home, contains("HomeItemIds.tv => '/tv'"));
     expect(main, contains("'/tv': (context) => italianOnlyRoute(context, const TvScreen())"));
   });
 
