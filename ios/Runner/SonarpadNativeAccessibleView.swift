@@ -1257,6 +1257,7 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
       cell.field.accessibilityLabel = row.effectiveAccessibilityLabel
       cell.field.accessibilityHint = row.hint
       cell.field.isSecureTextEntry = row.secure
+      cell.field.textContentType = row.id == "tv_secret_code" ? .oneTimeCode : nil
       cell.field.isEnabled = row.enabled
       cell.configureClearButton(label: row.clearAsSearch ? clearSearchLabel : clearTextLabel)
       cell.submitOnReturn = row.submitOnReturn
@@ -1920,6 +1921,7 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
         cell.field.accessibilityLabel = row.effectiveAccessibilityLabel
         cell.field.accessibilityHint = row.hint
         cell.field.isSecureTextEntry = row.secure
+        cell.field.textContentType = row.id == "tv_secret_code" ? .oneTimeCode : nil
         cell.field.isEnabled = row.enabled
         cell.configureClearButton(label: row.clearAsSearch ? clearSearchLabel : clearTextLabel)
         cell.submitOnReturn = row.submitOnReturn

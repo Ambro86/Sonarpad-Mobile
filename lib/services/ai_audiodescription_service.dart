@@ -584,6 +584,8 @@ class AiAudioDescriptionService {
       : _http = httpClient ?? http.Client();
 
   static const _sonarpadAiBase = 'https://sonarpad.com/sonarpad-ai/v1';
+  static const _sonarpadAiUserAgent = 'Sonarpad-AI/0.9.5';
+  static const _sonarpadAiJsonContentType = 'application/json; charset=utf-8';
   static const _geminiBase = 'https://generativelanguage.googleapis.com/v1beta';
   static const _geminiUploadBase =
       'https://generativelanguage.googleapis.com/upload/v1beta';
@@ -700,33 +702,43 @@ class AiAudioDescriptionService {
     _ensureHttpClient();
     final trimmed = code.trim();
     if (trimmed.isEmpty) throw StateError('SONARPAD_AI_CODE_REQUIRED');
-    final response = await _http
-        .post(
-          Uri.parse('$_sonarpadAiBase/activate'),
-          headers: const {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'User-Agent': 'Sonarpad-Mobile-AI/1',
-          },
-          body: jsonEncode(<String, Object?>{
-            'code': trimmed,
-            'device_id': await AiAudioDescriptionPreferences.deviceId(),
-            'device_name': '${Platform.operatingSystem} Sonarpad Mobile',
-          }),
-        )
-        .timeout(const Duration(seconds: 45));
-    if (response.statusCode < 200 || response.statusCode >= 300) {
-      throw HttpException(
-        'Sonarpad AI HTTP ${response.statusCode}: ${_short(response.body)}',
-      );
+    try {
+      final response = await _http
+          .post(
+            Uri.parse('$_sonarpadAiBase/activate'),
+            headers: const {
+              'Content-Type': _sonarpadAiJsonContentType,
+              'Accept': 'application/json',
+              'User-Agent': _sonarpadAiUserAgent,
+            },
+            body: jsonEncode(<String, Object?>{
+              'code': trimmed,
+              'device_id': await AiAudioDescriptionPreferences.deviceId(),
+              'device_name': '${Platform.operatingSystem} Sonarpad Mobile',
+            }),
+          )
+          .timeout(const Duration(seconds: 60));
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        await AppLogger.log(
+          'Sonarpad AI activation failed HTTP ${response.statusCode}: ${_short(response.body)}',
+        );
+        throw HttpException(
+          'Sonarpad AI HTTP ${response.statusCode}: ${_short(response.body)}',
+        );
+      }
+      final decoded = jsonDecode(response.body);
+      final token = _findString(decoded, const ['session_token', 'token']);
+      if (token == null || !token.startsWith('sst_')) {
+        await AppLogger.log('Sonarpad AI activation returned an invalid session token');
+        throw StateError('SONARPAD_AI_TOKEN_MISSING');
+      }
+      await AiAudioDescriptionPreferences.saveSonarpadToken(token);
+      await AppLogger.log('Sonarpad AI activation succeeded');
+      return token;
+    } catch (error) {
+      await AppLogger.log('Sonarpad AI activation exception: $error');
+      rethrow;
     }
-    final decoded = jsonDecode(response.body);
-    final token = _findString(decoded, const ['session_token', 'token']);
-    if (token == null || token.isEmpty) {
-      throw StateError('SONARPAD_AI_TOKEN_MISSING');
-    }
-    await AiAudioDescriptionPreferences.saveSonarpadToken(token);
-    return token;
   }
 
   Future<Directory> _characterCatalogDirectory() async {
@@ -2653,10 +2665,10 @@ $screenTextSchema$coreDirectives
         Uri.parse('$_sonarpadAiBase/generate'),
         headers: <String, String>{
           'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
+          'Content-Type': _sonarpadAiJsonContentType,
           'Accept': 'application/json',
           'X-Idempotency-Key': idempotencyKey,
-          'User-Agent': 'Sonarpad-Mobile-AI/1',
+          'User-Agent': _sonarpadAiUserAgent,
         },
         body: <String, Object?>{
           if (systemInstruction != null && systemInstruction.trim().isNotEmpty)
@@ -5587,9 +5599,9 @@ $screenTextSchema$coreDirectives
     Future<_AiGenerationResult> attempt() async {
       Map<String, String> headers() => <String, String>{
         'Authorization': 'Bearer $activeToken',
-        'Content-Type': 'application/json',
+        'Content-Type': _sonarpadAiJsonContentType,
         'Accept': 'application/json',
-        'User-Agent': 'Sonarpad-Mobile-AI/1',
+        'User-Agent': _sonarpadAiUserAgent,
       };
       final start = await _postJsonWithRetry(
         Uri.parse('$_sonarpadAiBase/upload/start'),
@@ -5986,7 +5998,7 @@ $screenTextSchema$coreDirectives
     request.headers['Content-Length'] = '${await file.length()}';
     request.headers['X-Goog-Upload-Offset'] = '0';
     request.headers['X-Goog-Upload-Command'] = 'upload, finalize';
-    request.headers['User-Agent'] = 'Sonarpad-Mobile-AI/1';
+    request.headers['User-Agent'] = _sonarpadAiUserAgent;
     await request.sink.addStream(file.openRead());
     await request.sink.close();
     final streamed = await _http.send(request).timeout(const Duration(minutes: 8));

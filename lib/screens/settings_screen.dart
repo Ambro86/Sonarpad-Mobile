@@ -1599,6 +1599,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               TextField(
                 controller: nameController,
                 autofocus: true,
+                autofillHints: const <String>[],
                 textInputAction: TextInputAction.next,
                 decoration: InputDecoration(
                   labelText: l10n.developerLogNameOptional,
@@ -1607,6 +1608,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               const SizedBox(height: 12),
               TextField(
                 controller: reportController,
+                autofillHints: const <String>[],
                 minLines: 3,
                 maxLines: 6,
                 textInputAction: TextInputAction.newline,
@@ -2310,6 +2312,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       const SizedBox(height: 16),
                       TextField(
                         controller: _tvSecretCodeController,
+                        autofillHints: const <String>[AutofillHints.oneTimeCode],
                         decoration: InputDecoration(
                           labelText: l10n.settingsSecretCode,
                           border: const OutlineInputBorder(),
