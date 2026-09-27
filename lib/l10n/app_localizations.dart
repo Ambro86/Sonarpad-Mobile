@@ -7323,6 +7323,9 @@ abstract class AppLocalizations {
   /// **'Impossibile attivare o verificare Sonarpad AI.'**
   String get audioDescriptionSonarpadActivationError;
 
+  /// Shown when a Sonarpad AI access code has reached its allowed device limit.
+  String get audioDescriptionSonarpadDeviceLimitReached;
+
   /// Localized text for audioDescriptionEdgeVoiceReady.
   ///
   /// In it, this message translates to:

@@ -102,6 +102,13 @@ class AiAudioDescriptionProgress {
   final String? detail;
 }
 
+class SonarpadAiDeviceLimitReachedException implements Exception {
+  const SonarpadAiDeviceLimitReachedException();
+
+  @override
+  String toString() => 'SONARPAD_AI_DEVICE_LIMIT_REACHED';
+}
+
 class AiAudioDescriptionResult {
   const AiAudioDescriptionResult({
     required this.mp3Path,
@@ -722,6 +729,10 @@ class AiAudioDescriptionService {
         await AppLogger.log(
           'Sonarpad AI activation failed HTTP ${response.statusCode}: ${_short(response.body)}',
         );
+        if (response.statusCode == 403 &&
+            _sonarpadErrorCode(response.body) == 'device_limit_reached') {
+          throw const SonarpadAiDeviceLimitReachedException();
+        }
         throw HttpException(
           'Sonarpad AI HTTP ${response.statusCode}: ${_short(response.body)}',
         );
@@ -6032,6 +6043,21 @@ $screenTextSchema$coreDirectives
       if (text != null && text.isNotEmpty) return text;
     }
     throw StateError('GEMINI_RESPONSE_TEXT_MISSING');
+  }
+
+  String? _sonarpadErrorCode(String body) {
+    try {
+      final decoded = jsonDecode(body);
+      if (decoded is Map) {
+        final error = decoded['error'];
+        if (error is String && error.trim().isNotEmpty) return error.trim();
+        if (error is Map) {
+          final code = error['code'] ?? error['status'];
+          if (code is String && code.trim().isNotEmpty) return code.trim();
+        }
+      }
+    } catch (_) {}
+    return null;
   }
 
   String? _findString(Object? value, List<String> keys) {

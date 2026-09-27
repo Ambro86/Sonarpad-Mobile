@@ -4804,6 +4804,10 @@
   "@audioDescriptionSonarpadActivationError": {
     "description": "Localized text for audioDescriptionSonarpadActivationError."
   },
+  "audioDescriptionSonarpadDeviceLimitReached": "Досягнуто максимальної кількості пристроїв, пов’язаних із цим кодом Sonarpad AI. Видаліть один із уже пов’язаних пристроїв або зверніться до служби підтримки.",
+  "@audioDescriptionSonarpadDeviceLimitReached": {
+    "description": "Shown when a Sonarpad AI access code has reached its allowed device limit."
+  },
   "audioDescriptionEdgeVoiceReady": "Вибраний голос Edge доступний.",
   "@audioDescriptionEdgeVoiceReady": {
     "description": "Localized text for audioDescriptionEdgeVoiceReady."

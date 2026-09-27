@@ -3232,6 +3232,10 @@
   "@audioDescriptionSonarpadActivationError": {
     "description": "Localized text for audioDescriptionSonarpadActivationError."
   },
+  "audioDescriptionSonarpadDeviceLimitReached": "Se ha alcanzado el número máximo de dispositivos asociados a este código de Sonarpad AI. Elimina un dispositivo ya asociado o contacta con el soporte.",
+  "@audioDescriptionSonarpadDeviceLimitReached": {
+    "description": "Shown when a Sonarpad AI access code has reached its allowed device limit."
+  },
   "audioDescriptionEdgeVoiceReady": "La voz Edge seleccionada está disponible.",
   "@audioDescriptionEdgeVoiceReady": {
     "description": "Localized text for audioDescriptionEdgeVoiceReady."

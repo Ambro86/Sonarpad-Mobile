@@ -1588,14 +1588,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final nameController = TextEditingController();
     final reportController = TextEditingController();
 
+    // The report form is not a login. Explicitly close any autofill context
+    // inherited from other settings fields so iOS does not offer to save a
+    // password when the report is submitted.
+    TextInput.finishAutofillContext(shouldSave: false);
+
     final result = await showDialog<({String name, String report})>(
       context: context,
       builder: (dialogContext) => StatefulBuilder(
         builder: (dialogContext, setDialogState) => AlertDialog(
           title: Text(l10n.sendLogToDeveloper),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
+          content: AutofillGroup(
+            onDisposeAction: AutofillContextAction.cancel,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
               TextField(
                 controller: nameController,
                 autofocus: true,
@@ -1617,11 +1624,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
                 onChanged: (_) => setDialogState(() {}),
               ),
-            ],
+              ],
+            ),
           ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(),
+              onPressed: () {
+                FocusScope.of(dialogContext).unfocus();
+                TextInput.finishAutofillContext(shouldSave: false);
+                Navigator.of(dialogContext).pop();
+              },
               child: Text(
                 MaterialLocalizations.of(dialogContext).cancelButtonLabel,
               ),
@@ -1629,10 +1641,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
             FilledButton(
               onPressed: reportController.text.trim().isEmpty
                   ? null
-                  : () => Navigator.of(dialogContext).pop((
+                  : () {
+                      FocusScope.of(dialogContext).unfocus();
+                      TextInput.finishAutofillContext(shouldSave: false);
+                      Navigator.of(dialogContext).pop((
                         name: nameController.text.trim(),
                         report: reportController.text.trim(),
-                      )),
+                      ));
+                    },
               child: Text(l10n.developerLogSend),
             ),
           ],
@@ -2312,7 +2328,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       const SizedBox(height: 16),
                       TextField(
                         controller: _tvSecretCodeController,
-                        autofillHints: const <String>[AutofillHints.oneTimeCode],
                         decoration: InputDecoration(
                           labelText: l10n.settingsSecretCode,
                           border: const OutlineInputBorder(),

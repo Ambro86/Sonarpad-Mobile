@@ -4091,6 +4091,10 @@ class AppLocalizationsFr extends AppLocalizations {
       'Impossible d’activer ou de vérifier Sonarpad AI.';
 
   @override
+  String get audioDescriptionSonarpadDeviceLimitReached =>
+      'Le nombre maximal d’appareils associés à ce code Sonarpad AI a été atteint. Supprimez un appareil déjà associé ou contactez l’assistance.';
+
+  @override
   String get audioDescriptionEdgeVoiceReady =>
       'La voix Edge sélectionnée est disponible.';
 

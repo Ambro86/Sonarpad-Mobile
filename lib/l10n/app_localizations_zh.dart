@@ -3900,6 +3900,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get audioDescriptionSonarpadActivationError => '无法激活或验证 Sonarpad AI。';
 
   @override
+  String get audioDescriptionSonarpadDeviceLimitReached =>
+      '已达到此 Sonarpad AI 代码可关联的最大设备数量。请移除一个已关联的设备，或联系支持人员。';
+
+  @override
   String get audioDescriptionEdgeVoiceReady => '所选 Edge 语音可用。';
 
   @override
@@ -8035,6 +8039,10 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get audioDescriptionSonarpadActivationError => '无法激活或验证 Sonarpad AI。';
+
+  @override
+  String get audioDescriptionSonarpadDeviceLimitReached =>
+      '已达到此 Sonarpad AI 代码可关联的最大设备数量。请移除一个已关联的设备，或联系支持人员。';
 
   @override
   String get audioDescriptionEdgeVoiceReady => '所选 Edge 语音可用。';

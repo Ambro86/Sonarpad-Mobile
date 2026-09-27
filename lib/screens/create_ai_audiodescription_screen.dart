@@ -323,6 +323,10 @@ class _CreateAiAudiodescriptionScreenState
       await _service.activateSonarpadAi(_sonarpadCode);
       if (!mounted) return;
       showStatusMessage(context, l10n.audioDescriptionSonarpadActivated);
+    } on SonarpadAiDeviceLimitReachedException {
+      if (!mounted) return;
+      setState(() => _technicalError = null);
+      showStatusMessage(context, l10n.audioDescriptionSonarpadDeviceLimitReached);
     } catch (error) {
       if (!mounted) return;
       setState(() => _technicalError = error.toString());
@@ -621,17 +625,26 @@ class _CreateAiAudiodescriptionScreenState
       if (!mounted) return;
       final cancelled = error.toString().contains('AUDIO_DESCRIPTION_CANCELLED');
       final noCheckpoint = error is AudioDescriptionResumeUnavailableException;
+      final deviceLimit = error is SonarpadAiDeviceLimitReachedException;
       setState(() {
-        _technicalError = cancelled || noCheckpoint ? null : error.toString();
+        _technicalError = cancelled || noCheckpoint || deviceLimit ? null : error.toString();
         _stage = cancelled
             ? l10n.audioDescriptionCancelled
-            : noCheckpoint ? l10n.audioDescriptionNoCheckpoint : l10n.audioDescriptionGenerationFailed;
+            : noCheckpoint
+                ? l10n.audioDescriptionNoCheckpoint
+                : deviceLimit
+                    ? l10n.audioDescriptionSonarpadDeviceLimitReached
+                    : l10n.audioDescriptionGenerationFailed;
       });
       showStatusMessage(
         context,
         cancelled
             ? l10n.audioDescriptionCancelled
-            : noCheckpoint ? l10n.audioDescriptionNoCheckpoint : l10n.audioDescriptionGenerationFailed,
+            : noCheckpoint
+                ? l10n.audioDescriptionNoCheckpoint
+                : deviceLimit
+                    ? l10n.audioDescriptionSonarpadDeviceLimitReached
+                    : l10n.audioDescriptionGenerationFailed,
       );
     } finally {
       _generationActive = false;

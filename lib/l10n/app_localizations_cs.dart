@@ -4053,6 +4053,10 @@ class AppLocalizationsCs extends AppLocalizations {
       'Sonarpad AI se nepodařilo aktivovat nebo ověřit.';
 
   @override
+  String get audioDescriptionSonarpadDeviceLimitReached =>
+      'Byl dosažen maximální počet zařízení přiřazených k tomuto kódu Sonarpad AI. Odeberte některé již přiřazené zařízení nebo kontaktujte podporu.';
+
+  @override
   String get audioDescriptionEdgeVoiceReady => 'Vybraný hlas Edge je dostupný.';
 
   @override
