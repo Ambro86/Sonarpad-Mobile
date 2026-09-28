@@ -26,4 +26,26 @@ void main() {
     expect(cinema, contains('PodcastEpisodePlayerScreen('));
     expect(cinema, contains('isVideoSupported: true'));
   });
+
+  test('UIKit exposes native media volume as one VoiceOver element', () {
+    final native = File(
+      'ios/Runner/SonarpadNativeAccessibleView.swift',
+    ).readAsStringSync();
+
+    expect(native, contains('configureNativeSliderAccessibility('));
+    expect(
+      native,
+      contains('cell.contentView.accessibilityElementsHidden = exposeNativeSlider'),
+    );
+    expect(
+      native,
+      contains('cell.accessibilityElements = exposeNativeSlider ? [slider] : nil'),
+    );
+    expect(
+      RegExp(r'configureNativeSliderAccessibility\(cell: cell, slider: slider, row: row\)')
+          .allMatches(native)
+          .length,
+      greaterThanOrEqualTo(3),
+    );
+  });
 }
