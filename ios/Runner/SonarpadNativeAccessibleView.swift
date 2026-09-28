@@ -1329,7 +1329,7 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
   }
 
   private func configureNativeSliderAccessibility(
-    cell: SonarpadAccessibleTableCell,
+    cell: UITableViewCell,
     slider: SonarpadAccessibleSlider,
     row: SonarpadNativeRow
   ) {
