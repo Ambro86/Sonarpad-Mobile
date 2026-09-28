@@ -1002,6 +1002,51 @@ void main() {
       );
     });
 
+    test('short MP4 can bypass expensive visual transcode', () {
+      expect(
+        AudioDescriptionFallbacks.canReuseOriginalShortMp4(
+          sourcePath: 'clip.mp4',
+          startSec: 0,
+          durationSec: 78.948,
+          sourceBytes: 4878480,
+        ),
+        isTrue,
+      );
+    });
+
+    test('visual fast path never reuses only the first chunk of a long video', () {
+      expect(
+        AudioDescriptionFallbacks.canReuseOriginalShortMp4(
+          sourcePath: 'movie.mp4',
+          startSec: 0,
+          durationSec: 180,
+          sourceBytes: 10 * 1024 * 1024,
+        ),
+        isFalse,
+      );
+    });
+
+    test('visual fast path rejects non-MP4 and oversized input', () {
+      expect(
+        AudioDescriptionFallbacks.canReuseOriginalShortMp4(
+          sourcePath: 'clip.mov',
+          startSec: 0,
+          durationSec: 60,
+          sourceBytes: 2 * 1024 * 1024,
+        ),
+        isFalse,
+      );
+      expect(
+        AudioDescriptionFallbacks.canReuseOriginalShortMp4(
+          sourcePath: 'clip.mp4',
+          startSec: 0,
+          durationSec: 60,
+          sourceBytes: AudioDescriptionFallbacks.preferredPreparedChunkBytes + 1,
+        ),
+        isFalse,
+      );
+    });
+
     test('MP4 duration is never shifted by container start time', () {
       expect(
         AudioDescriptionFallbacks.normalizeSourceDuration(

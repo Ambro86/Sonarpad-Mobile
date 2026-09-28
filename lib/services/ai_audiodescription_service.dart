@@ -1592,6 +1592,35 @@ class AiAudioDescriptionService {
     required bool hasAudio,
     AdMediaFallbackStage stage = AdMediaFallbackStage.normal,
   }) async {
+    _checkCancel();
+
+    // Fast path for the common SonarTube/mobile case: a short MP4 is already
+    // a provider-compatible visual chunk. Re-encoding it with the software
+    // MPEG-4 encoder can be much slower than the video itself on iOS. Keep
+    // the compatibility ladder intact: if the provider rejects this original
+    // MP4, _processChunkWithFallbacks will move to compact/compatibility and
+    // perform the normal transcode.
+    if (stage == AdMediaFallbackStage.normal) {
+      final source = File(sourcePath);
+      final sourceBytes = await source.length();
+      if (AudioDescriptionFallbacks.canReuseOriginalShortMp4(
+        sourcePath: sourcePath,
+        startSec: startSec,
+        durationSec: durationSec,
+        sourceBytes: sourceBytes,
+        chunkSeconds: _visualChunkSeconds,
+      )) {
+        await AppLogger.log(
+          'Audio description mobile: visual chunk normal fast-copy '
+          'duration=${durationSec.toStringAsFixed(3)} bytes=$sourceBytes',
+        );
+        _checkCancel();
+        await source.copy(outputPath);
+        _checkCancel();
+        return;
+      }
+    }
+
     final isCompact = stage == AdMediaFallbackStage.compact;
     final isCompatibility = stage == AdMediaFallbackStage.compatibility;
     final includeAudio = hasAudio && !isCompatibility;
@@ -6007,6 +6036,7 @@ $screenTextSchema$coreDirectives
         if (!AudioDescriptionFallbacks.isRetryableExceptionText(error.toString())) rethrow;
         await _cancelableDelay(AudioDescriptionFallbacks.transientRetryDelaySeconds);
       } on http.ClientException catch (error) {
+        if (_cancelRequested) throw const _AudioDescriptionCancelled();
         if (!AudioDescriptionFallbacks.isRetryableExceptionText(error.toString())) rethrow;
         await _cancelableDelay(AudioDescriptionFallbacks.transientRetryDelaySeconds);
       }
@@ -6082,6 +6112,7 @@ $screenTextSchema$coreDirectives
         await AppLogger.log('Audio description mobile: $label network retry $error');
         await _cancelableDelay(AudioDescriptionFallbacks.transientRetryDelaySeconds);
       } on http.ClientException catch (error) {
+        if (_cancelRequested) throw const _AudioDescriptionCancelled();
         if (!AudioDescriptionFallbacks.isRetryableExceptionText(error.toString())) rethrow;
         await AppLogger.log('Audio description mobile: $label client retry $error');
         await _cancelableDelay(AudioDescriptionFallbacks.transientRetryDelaySeconds);
@@ -6101,6 +6132,7 @@ $screenTextSchema$coreDirectives
     File file, {
     String mimeType = 'video/mp4',
   }) async {
+    _checkCancel();
     final request = http.StreamedRequest('POST', Uri.parse(uploadUrl));
     request.headers['Content-Type'] = mimeType;
     request.headers['Content-Length'] = '${await file.length()}';
@@ -6108,8 +6140,11 @@ $screenTextSchema$coreDirectives
     request.headers['X-Goog-Upload-Command'] = 'upload, finalize';
     request.headers['User-Agent'] = _sonarpadAiUserAgent;
     await request.sink.addStream(file.openRead());
+    _checkCancel();
     await request.sink.close();
+    _checkCancel();
     final streamed = await _http.send(request).timeout(const Duration(minutes: 8));
+    _checkCancel();
     return http.Response.fromStream(streamed);
   }
 
@@ -6185,32 +6220,61 @@ $screenTextSchema$coreDirectives
     _checkCancel();
     await AppLogger.log('Audio description mobile FFmpeg: $label start');
     _checkCancel();
-    final FFmpegSession session;
-    if (onProgress != null && durationSec != null && durationSec > 0) {
-      final completed = Completer<FFmpegSession>();
-      var lastPercent = -1;
-      final started = await FFmpegKit.executeWithArgumentsAsync(
-        args,
-        (result) {
-          if (!completed.isCompleted) completed.complete(result);
-        },
-        null,
-        (statistics) {
-          if (_cancelRequested || completed.isCompleted) return;
+
+    // Always use the asynchronous FFmpegKit API. The old synchronous branch
+    // could leave create() waiting inside FFmpeg after the user had already
+    // requested cancellation, which in turn left the UI on "cancelling".
+    final completed = Completer<FFmpegSession>();
+    var lastPercent = -1;
+    final started = await FFmpegKit.executeWithArgumentsAsync(
+      args,
+      (result) {
+        if (!completed.isCompleted) completed.complete(result);
+      },
+      null,
+      (statistics) {
+        if (_cancelRequested || completed.isCompleted) return;
+        if (onProgress != null && durationSec != null && durationSec > 0) {
           final value = (statistics.getTime() / (durationSec * 1000))
-              .clamp(0.0, 0.99).toDouble();
+              .clamp(0.0, 0.99)
+              .toDouble();
           final percent = (value * 100).floor();
           if (percent > lastPercent) {
             lastPercent = percent;
             onProgress(value);
           }
-        },
-      );
-      if (_cancelRequested) await FFmpegKit.cancel(started.getSessionId());
-      session = await completed.future;
-    } else {
-      session = await FFmpegKit.executeWithArguments(args);
+        }
+      },
+    );
+    final sessionId = started.getSessionId();
+
+    if (_cancelRequested) {
+      try {
+        await FFmpegKit.cancel(sessionId).timeout(const Duration(seconds: 3));
+      } catch (_) {}
+      throw const _AudioDescriptionCancelled();
     }
+
+    // Race completion against the shared cancellation signal, but keep the
+    // cancellation future side-effect free after normal completion. This
+    // avoids a later cancellation (during upload/TTS) trying to cancel an
+    // already-finished FFmpeg session from an earlier stage.
+    final outcome = await Future.any<Object?>(<Future<Object?>>[
+      completed.future.then<Object?>((value) => value),
+      _cancelSignal.future.then<Object?>((_) => null),
+    ]);
+    if (outcome == null) {
+      try {
+        await FFmpegKit.cancel(sessionId).timeout(const Duration(seconds: 3));
+      } catch (error) {
+        await AppLogger.log(
+          'Audio description mobile: FFmpeg targeted cancel warning '
+          'label=$label session=$sessionId error=$error',
+        );
+      }
+      throw const _AudioDescriptionCancelled();
+    }
+    final session = outcome as FFmpegSession;
     final code = await session.getReturnCode();
     _checkCancel();
     if (!ReturnCode.isSuccess(code)) {
@@ -6221,6 +6285,7 @@ $screenTextSchema$coreDirectives
       );
     }
     onProgress?.call(1.0);
+    await AppLogger.log('Audio description mobile FFmpeg: $label complete');
   }
 
   Future<Directory> _createOperationDirectory() async {

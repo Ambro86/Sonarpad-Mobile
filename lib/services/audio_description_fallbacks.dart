@@ -67,6 +67,27 @@ class AudioDescriptionFallbacks {
     return true;
   }
 
+  /// Short, already-compatible MP4 files do not need to be transcoded just
+  /// to create the first/only visual chunk. This is especially important on
+  /// mobile, where a software MPEG-4 transcode can take longer than the clip
+  /// itself and makes cancellation appear stuck. If the provider rejects the
+  /// original container, the normal media fallback ladder will re-encode it.
+  static bool canReuseOriginalShortMp4({
+    required String sourcePath,
+    required double startSec,
+    required double durationSec,
+    required int sourceBytes,
+    double chunkSeconds = 180.0,
+  }) {
+    final lower = sourcePath.toLowerCase();
+    return lower.endsWith('.mp4') &&
+        startSec.abs() <= 0.001 &&
+        durationSec > 0 &&
+        durationSec < chunkSeconds - 0.001 &&
+        sourceBytes > 0 &&
+        sourceBytes <= preferredPreparedChunkBytes;
+  }
+
   /// Matroska/WebM sometimes report duration as an absolute end timestamp.
   /// For a large non-zero container start clock, use the local media span.
   static double normalizeSourceDuration({
