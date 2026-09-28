@@ -139,6 +139,7 @@ void main() {
             line.contains('hesl') ||
             line.toLowerCase().contains('passwort') ||
             line.contains('парол') ||
+            line.contains('parol') ||
             line.contains('密码')),
         isTrue,
         reason: 'Missing password protection changelog entry for ${entry.key}',
