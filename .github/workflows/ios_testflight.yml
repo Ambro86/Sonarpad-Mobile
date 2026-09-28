@@ -198,6 +198,39 @@ jobs:
           puts "Firma iOS configurata per #{bundle_id} con profilo #{profile_name}"
           RUBY
 
+      - name: Install ONNX Runtime MinimumOSVersion Xcode build phase
+        run: |
+          ruby <<'RUBY'
+          require 'xcodeproj'
+
+          project_path = 'ios/Runner.xcodeproj'
+          project = Xcodeproj::Project.open(project_path)
+          target = project.targets.find { |item| item.name == 'Runner' }
+          abort('Runner target not found') unless target
+
+          phase_name = 'Fix ONNX Runtime MinimumOSVersion'
+          phase = target.shell_script_build_phases.find { |item| item.name == phase_name }
+          phase ||= target.new_shell_script_build_phase(phase_name)
+          phase.shell_script = <<~'SCRIPT'
+            set -e
+            FRAMEWORKS_PATH="${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}"
+            for framework in onnxruntime onnxruntime_extensions; do
+              PLIST="${FRAMEWORKS_PATH}/${framework}.framework/Info.plist"
+              if [ -f "$PLIST" ]; then
+                /usr/libexec/PlistBuddy -c "Delete :MinimumOSVersion" "$PLIST" 2>/dev/null || true
+                /usr/libexec/PlistBuddy -c "Add :MinimumOSVersion string ${IPHONEOS_DEPLOYMENT_TARGET}" "$PLIST"
+                echo "Patched ${framework}.framework MinimumOSVersion=${IPHONEOS_DEPLOYMENT_TARGET}"
+              fi
+            done
+          SCRIPT
+
+          # Keep this phase last, after framework embedding/copy phases.
+          target.build_phases.delete(phase)
+          target.build_phases << phase
+          project.save
+          puts "Installed Xcode build phase: #{phase_name}"
+          RUBY
+
       - name: Install CocoaPods dependencies
         run: |
           flutter build ios --config-only || true
@@ -206,9 +239,6 @@ jobs:
             cd ios
             pod install --repo-update
           fi
-
-      - name: Patch ONNX Runtime MinimumOSVersion
-        run: python3 scripts/patch_onnxruntime_ios_minimum_os.py --minimum 15.5
 
       - name: Create ExportOptions.plist
         env:
