@@ -99,27 +99,30 @@ void main() {
         expect(client['hl'], 'ro');
         expect(client['gl'], 'RO');
         requests++;
-        return http.Response(
-          jsonEncode({
-            'contents': {
-              'itemSectionRenderer': {
-                'contents': [
-                  {
-                    'videoRenderer': {
-                      'videoId': 'abcdefghijk',
-                      'title': {
-                        'runs': [
-                          {'text': 'Rezultat românesc'},
-                        ],
+        return http.Response.bytes(
+          utf8.encode(
+            jsonEncode({
+              'contents': {
+                'itemSectionRenderer': {
+                  'contents': [
+                    {
+                      'videoRenderer': {
+                        'videoId': 'abcdefghijk',
+                        'title': {
+                          'runs': [
+                            {'text': 'Rezultat românesc'},
+                          ],
+                        },
+                        'viewCountText': {'simpleText': '100 de vizionări'},
                       },
-                      'viewCountText': {'simpleText': '100 de vizionări'},
                     },
-                  },
-                ],
+                  ],
+                },
               },
-            },
-          }),
+            }),
+          ),
           200,
+          headers: {'content-type': 'application/json; charset=utf-8'},
         );
       }),
     )..setLocaleName('ro');
@@ -153,9 +156,12 @@ void main() {
         expect(request.url.queryParameters['hl'], 'ro');
         expect(request.url.queryParameters['gl'], 'RO');
         expect(request.url.queryParameters['metadata'], '1');
-        return http.Response(
-          jsonEncode({'ok': true, 'description': 'Descriere în română'}),
+        return http.Response.bytes(
+          utf8.encode(
+            jsonEncode({'ok': true, 'description': 'Descriere în română'}),
+          ),
           200,
+          headers: {'content-type': 'application/json; charset=utf-8'},
         );
       }),
     )..setLocaleName('ro');

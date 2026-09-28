@@ -11,6 +11,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../l10n/app_localizations.dart';
+import '../l10n/localized_dynamic_labels.dart';
 import '../services/ai_audiodescription_service.dart';
 import '../services/app_settings_service.dart';
 import '../services/audio_player_service.dart';
@@ -1088,7 +1089,7 @@ class _CreateAiAudiodescriptionScreenState
           label: l10n.simplifiedChineseLanguageName,
         ),
         AccessibleOption(value: 'uk', label: l10n.radioLanguageUk),
-        AccessibleOption(value: 'ro', label: 'Română'),
+        AccessibleOption(value: 'ro', label: l10n.languageLabel('ro')),
       ];
 
   String _languageLabel(AppLocalizations l10n, String code) {

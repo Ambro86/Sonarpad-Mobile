@@ -24,7 +24,7 @@ void main() {
 
     expect(localizations, contains("Locale('ro')"));
     expect(localizations, contains("case 'ro':"));
-    expect(settings, contains("value: 'ro', label: 'Română'"));
+    expect(settings, contains("label: l10n.languageLabel('ro')"));
     expect(preferences, contains("'ro'"));
   });
 

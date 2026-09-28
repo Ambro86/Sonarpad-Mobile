@@ -44,5 +44,5 @@ text='\n\n'.join([
     emit_lists('kCalendarQuotesByLocale','quotes'),
     emit_map('kCalendarHolidaysByLocale','holidays'),
 ])+'\n'
-OUT.write_text(text,encoding='utf-8')
+OUT.write_bytes(text.encode('utf-8'))
 print(f'Generated {OUT} with {len(entries)} locales')

@@ -23,7 +23,7 @@ void main() {
     final service = File('lib/services/ai_audiodescription_service.dart').readAsStringSync();
     final projectStrings = File('lib/services/audio_description_project_strings.dart').readAsStringSync();
 
-    expect(screen, contains("AccessibleOption(value: 'ro', label: 'Română')"));
+    expect(screen, contains("AccessibleOption(value: 'ro', label: l10n.languageLabel('ro'))"));
     expect(service, contains("_WindowsPromptLanguage('Romanian'"));
     expect(service, contains("if (code.startsWith('ro')) return 'ro-RO';"));
     expect(service, contains('O mașină gonește pe stradă.'));
