@@ -500,6 +500,7 @@ class _WeatherForecastView extends StatelessWidget {
       'pt' || 'pt_BR' => _weatherCodeLabelsPt,
       'pl' => _weatherCodeLabelsPl,
       'de' => _weatherCodeLabelsDe,
+      'ro' => _weatherCodeLabelsRo,
       'uk' => _weatherCodeLabelsUk,
       'zh' => _weatherCodeLabelsZh,
       _ => _weatherCodeLabelsIt,
@@ -883,6 +884,38 @@ const Map<int, String> _weatherCodeLabelsPt = {
 };
 
 
+
+
+const Map<int, String> _weatherCodeLabelsRo = {
+  0: 'Cer senin',
+  1: 'Predominant senin',
+  2: 'Parțial noros',
+  3: 'Acoperit',
+  45: 'Ceață',
+  48: 'Ceață cu depunere de chiciură',
+  51: 'Burniță slabă',
+  53: 'Burniță moderată',
+  55: 'Burniță densă',
+  56: 'Burniță înghețată slabă',
+  57: 'Burniță înghețată densă',
+  61: 'Ploaie slabă',
+  63: 'Ploaie moderată',
+  65: 'Ploaie puternică',
+  66: 'Ploaie înghețată slabă',
+  67: 'Ploaie înghețată puternică',
+  71: 'Ninsoare slabă',
+  73: 'Ninsoare moderată',
+  75: 'Ninsoare puternică',
+  77: 'Granule de zăpadă',
+  80: 'Averse slabe de ploaie',
+  81: 'Averse moderate de ploaie',
+  82: 'Averse puternice de ploaie',
+  85: 'Averse slabe de zăpadă',
+  86: 'Averse puternice de zăpadă',
+  95: 'Furtună',
+  96: 'Furtună cu grindină slabă',
+  99: 'Furtună cu grindină puternică',
+};
 
 const Map<int, String> _weatherCodeLabelsUk = {
   0: 'Ясно',

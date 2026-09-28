@@ -29,6 +29,7 @@ class TmdbService {
       'de' => 'de-DE',
       'zh' => 'zh-CN',
       'uk' => 'uk-UA',
+      'ro' => 'ro-RO',
       _ => 'en-US',
     };
   }

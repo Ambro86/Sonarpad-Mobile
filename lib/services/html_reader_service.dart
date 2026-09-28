@@ -550,6 +550,7 @@ class HtmlReaderService {
       'cs' => 'Neznámý název',
       'de' => 'Unbekannter Titel',
       'uk' => 'Невідома назва',
+      'ro' => 'Titlu necunoscut',
       'zh' || 'zh_CN' => '未知标题',
       _ => 'Titolo sconosciuto',
     };
@@ -611,6 +612,8 @@ class HtmlReaderService {
         return "Von";
       case 'uk':
         return "Автор";
+      case 'ro':
+        return "De";
       case 'en':
         return "By";
       case 'zh':
@@ -646,6 +649,7 @@ class HtmlReaderService {
       'cs' => 'Název nenalezen',
       'de' => 'Titel nicht gefunden',
       'uk' => 'Назву не знайдено',
+      'ro' => 'Titlul nu a fost găsit',
       'zh' || 'zh_CN' => '未找到标题',
       _ => 'Titolo non trovato',
     };

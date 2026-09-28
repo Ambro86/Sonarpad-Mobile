@@ -71,6 +71,13 @@ String? _relativeDayLabel(int dayDiff, String localeName) {
         1: 'jutro',
         2: 'pojutrze',
       },
+    'ro' => const {
+        0: 'astăzi',
+        -1: 'ieri',
+        -2: 'alaltăieri',
+        1: 'mâine',
+        2: 'poimâine',
+      },
     'cs' => const {
         0: 'dnes',
         -1: 'včera',

@@ -49,9 +49,11 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
   Future<String> _voice() async {
     final configured = await _settings.loadTtsVoice();
     if (configured.trim().isNotEmpty) return configured;
-    return widget.language == NewsLanguage.italian
-        ? 'it-IT-IsabellaNeural'
-        : 'en-US-JennyNeural';
+    return switch (widget.language) {
+      NewsLanguage.italian => 'it-IT-IsabellaNeural',
+      NewsLanguage.romanian => 'ro-RO-AlinaNeural',
+      _ => 'en-US-JennyNeural',
+    };
   }
 
   Future<void> _stopReading() async {

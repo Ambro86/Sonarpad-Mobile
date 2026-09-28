@@ -1,0 +1,6 @@
+"NSCameraUsageDescription" = "Sonarpad poate folosi camera numai pentru funcțiile de scanare sau captură de imagini pornite de utilizator.";
+"NSCalendarsUsageDescription" = "Sonarpad are nevoie de acces la calendar pentru a adăuga mementourile și evenimentele tale.";
+"NSCalendarsFullAccessUsageDescription" = "Sonarpad are nevoie de acces complet la calendar pentru a crea și salva mementourile și evenimentele tale direct în calendarul sistemului.";
+"NSContactsUsageDescription" = "Sonarpad are nevoie de acces la contacte pentru a asocia invitații cu evenimentele din calendar.";
+"NSLocationWhenInUseUsageDescription" = "Sonarpad folosește locația numai când alegi funcțiile de rute sau navigare, pentru a calcula indicații și a găsi locuri din apropiere.";
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "Sonarpad nu solicită în mod normal acces permanent la locație. Această descriere este prezentă deoarece unele componente iOS incluse în aplicație pot face referire la API-urile de localizare. Locația este folosită numai când alegi funcțiile de rute sau navigare.";

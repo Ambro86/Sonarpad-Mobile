@@ -1088,6 +1088,7 @@ class _CreateAiAudiodescriptionScreenState
           label: l10n.simplifiedChineseLanguageName,
         ),
         AccessibleOption(value: 'uk', label: l10n.radioLanguageUk),
+        AccessibleOption(value: 'ro', label: 'Română'),
       ];
 
   String _languageLabel(AppLocalizations l10n, String code) {

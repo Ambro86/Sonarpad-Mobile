@@ -93,6 +93,7 @@ String _countryNameLocale(String localeName) {
   if (normalized.startsWith('cs')) return 'cs';
   if (normalized.startsWith('de')) return 'de';
   if (normalized.startsWith('uk')) return 'uk';
+  if (normalized.startsWith('ro')) return 'ro';
   if (normalized.startsWith('zh')) return 'zh';
   return 'it';
 }

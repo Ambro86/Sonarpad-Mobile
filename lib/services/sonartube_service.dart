@@ -216,6 +216,10 @@ class SonarTubeService {
   String _youtubeLanguage = 'it';
   String _youtubeRegion = 'IT';
 
+  String _localizedMessage(String italian, String romanian) {
+    return _youtubeLanguage == 'ro' ? romanian : italian;
+  }
+
   void setLocaleName(String localeName) {
     final normalized = localeName.replaceAll('-', '_').toLowerCase();
     if (normalized == 'cs') {
@@ -245,6 +249,9 @@ class SonarTubeService {
     } else if (normalized == 'uk') {
       _youtubeLanguage = 'uk';
       _youtubeRegion = 'UA';
+    } else if (normalized == 'ro' || normalized.startsWith('ro_')) {
+      _youtubeLanguage = 'ro';
+      _youtubeRegion = 'RO';
     } else if (normalized == 'zh' || normalized == 'zh_cn') {
       _youtubeLanguage = 'zh-CN';
       _youtubeRegion = 'CN';
@@ -290,7 +297,10 @@ class SonarTubeService {
     SonarTubeChannelSort channelSort = SonarTubeChannelSort.newest,
   }) async {
     if (collection.kind == SonarTubeItemKind.video) {
-      throw ArgumentError('Un video non è una raccolta SonarTube.');
+      throw ArgumentError(_localizedMessage(
+        'Un video non è una raccolta SonarTube.',
+        'Un videoclip nu este o colecție SonarTube.',
+      ));
     }
     final seedVideoId = _mixSeedVideoId(collection);
     final fallbackQuery = <String, String>{
@@ -401,7 +411,10 @@ class SonarTubeService {
 
   Future<SonarTubeResolvedMedia> resolve(SonarTubeItem item) {
     if (item.kind != SonarTubeItemKind.video) {
-      throw ArgumentError('È possibile risolvere soltanto un video.');
+      throw ArgumentError(_localizedMessage(
+        'È possibile risolvere soltanto un video.',
+        'Poate fi rezolvat doar un videoclip.',
+      ));
     }
     return resolveUrl(
       item.url.isEmpty ? item.id : item.url,
@@ -466,7 +479,10 @@ class SonarTubeService {
     final streamVideo = _string(data['stream_video']);
     final streamAudio = _string(data['stream_audio']);
     if (stream == null) {
-      throw const FormatException('Nessun flusso riproducibile disponibile.');
+      throw FormatException(_localizedMessage(
+        'Nessun flusso riproducibile disponibile.',
+        'Nu este disponibil niciun flux redabil.',
+      ));
     }
 
     final hasSeparateStreams =
@@ -1688,11 +1704,17 @@ class SonarTubeService {
     }
     final decoded = jsonDecode(utf8.decode(response.bodyBytes));
     if (decoded is! Map) {
-      throw const FormatException('Risposta InnerTube non valida.');
+      throw FormatException(_localizedMessage(
+        'Risposta InnerTube non valida.',
+        'Răspuns InnerTube nevalid.',
+      ));
     }
     final data = Map<String, dynamic>.from(decoded);
     if (data['error'] != null) {
-      throw const FormatException('InnerTube API error.');
+      throw FormatException(_localizedMessage(
+        'Errore API InnerTube.',
+        'Eroare API InnerTube.',
+      ));
     }
     return data;
   }
@@ -2270,7 +2292,12 @@ class SonarTubeService {
     bool allowApiError = false,
   }) async {
     final uri = endpoint.replace(
-      queryParameters: {...endpoint.queryParameters, ...query},
+      queryParameters: {
+        ...endpoint.queryParameters,
+        ...query,
+        'hl': _youtubeLanguage,
+        'gl': _youtubeRegion,
+      },
     );
     final response = await _client.get(
       uri,
@@ -2284,12 +2311,16 @@ class SonarTubeService {
     }
     final decoded = jsonDecode(utf8.decode(response.bodyBytes));
     if (decoded is! Map) {
-      throw const FormatException('Risposta SonarTube non valida.');
+      throw FormatException(_localizedMessage(
+        'Risposta SonarTube non valida.',
+        'Răspuns SonarTube nevalid.',
+      ));
     }
     final data = Map<String, dynamic>.from(decoded);
     if (data['ok'] != true && !allowApiError) {
       final detail = _string(data['detail']);
-      final error = _string(data['error']) ?? 'Errore SonarTube';
+      final error = _string(data['error']) ??
+          _localizedMessage('Errore SonarTube', 'Eroare SonarTube');
       throw Exception(detail == null ? error : '$error: $detail');
     }
     return data;

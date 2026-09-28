@@ -13,7 +13,8 @@
       "Nei Documenti è ora possibile proteggere un documento con password dalle azioni secondarie. La password corretta viene richiesta sia prima di aprire sia prima di condividere un documento protetto.",
       "Aggiunta nelle Impostazioni la funzione “Invia segnalazione”: permette di descrivere un problema, indicare facoltativamente il proprio nome e inviare la segnalazione allo sviluppatore. Il log tecnico di Sonarpad viene allegato automaticamente.",
       "Aggiunta la personalizzazione della schermata principale: dalle Impostazioni è possibile scegliere se usare le categorie, mostrare o nascondere le singole funzioni disponibili e, con le categorie disattivate, riordinare gli elementi con Sposta in alto, Sposta in basso e Sposta alla posizione. Impostazioni e Informazioni restano sempre visibili ma possono essere spostate. Con le categorie attive, Riordina elementi permette inoltre di cambiare l’ordine dei pulsanti all’interno di Lettura, Media e Utilità, senza spostarli da una categoria all’altra.",
-      "Nella personalizzazione della schermata principale è stato aggiunto il pulsante “Ripristina valori predefiniti”, che riattiva le categorie, rende visibili tutte le funzioni disponibili e ripristina gli ordini iniziali."
+      "Nella personalizzazione della schermata principale è stato aggiunto il pulsante “Ripristina valori predefiniti”, che riattiva le categorie, rende visibili tutte le funzioni disponibili e ripristina gli ordini iniziali.",
+      "Aggiunta la localizzazione completa in rumeno: interfaccia, changelog, calendario e citazioni, SonarTube, Notizie, podcast, radio, percorsi, meteo, Wikipedia, Gutenberg, audiodescrizione con IA e gli altri servizi multilingua ora supportano il rumeno."
     ],
     "en": [
       "Added the new “Create AI audio description” feature: it lets you choose a video, automatically detect dialogue and pauses, generate descriptions with Gemini or the Sonarpad service, synthesize them with Edge or system voices, and create the final audio-described video. Character and on-screen text recognition, character catalogs, detail levels, resume support, and project saving are also available.",
@@ -26,7 +27,8 @@
       "Documents can now be protected with a password from the secondary actions. The correct password is required before either opening or sharing a protected document.",
       "Added “Send report” in Settings: you can describe a problem, optionally enter your name, and send the report to the developer. Sonarpad’s technical log is attached automatically.",
       "Added home screen customization: from Settings you can choose whether to use categories, show or hide each available feature and, when categories are off, reorder items with Move up, Move down and Move to position. Settings and Info always remain visible but can be moved. When categories are enabled, Reorder items also lets you change the order of buttons within Reading, Media and Utilities, without moving them from one category to another.",
-      "A “Restore defaults” button has been added to home screen customization. It re-enables categories, shows all available features, and restores the original item orders."
+      "A “Restore defaults” button has been added to home screen customization. It re-enables categories, shows all available features, and restores the original item orders.",
+      "Added complete Romanian localization: the interface, changelog, calendar and quotes, SonarTube, News, podcasts, radio, routes, weather, Wikipedia, Gutenberg, AI audio description, and the other multilingual services now support Romanian."
     ],
     "fr": [
       "Ajout de la nouvelle fonction « Créer une audiodescription avec l’IA » : elle permet de choisir une vidéo, de détecter automatiquement les dialogues et les pauses, de générer les descriptions avec Gemini ou le service Sonarpad, de les synthétiser avec les voix Edge ou du système et de créer la vidéo audiodescrite finale. La reconnaissance des personnages et du texte à l’écran, les catalogues de personnages, les niveaux de détail, la reprise du traitement et l’enregistrement du projet sont également disponibles.",
@@ -39,7 +41,8 @@
       "Dans Documents, il est désormais possible de protéger un document par mot de passe depuis les actions secondaires. Le mot de passe correct est demandé avant d’ouvrir comme avant de partager un document protégé.",
       "Ajout de la fonction « Envoyer un signalement » dans les Réglages : elle permet de décrire un problème, d’indiquer éventuellement son nom et d’envoyer le signalement au développeur. Le journal technique de Sonarpad est joint automatiquement.",
       "Ajout de la personnalisation de l’écran d’accueil : dans les Réglages, il est possible d’utiliser ou non les catégories, d’afficher ou masquer chaque fonction disponible et, lorsque les catégories sont désactivées, de réorganiser les éléments avec Monter, Descendre et Déplacer à la position. Réglages et Informations restent toujours visibles mais peuvent être déplacés. Lorsque les catégories sont activées, Réorganiser les éléments permet aussi de modifier l’ordre des boutons dans Lecture, Médias et Utilitaires, sans les déplacer d’une catégorie à l’autre.",
-      "Un bouton « Rétablir les valeurs par défaut » a été ajouté à la personnalisation de l’écran d’accueil. Il réactive les catégories, affiche toutes les fonctions disponibles et rétablit l’ordre initial des éléments."
+      "Un bouton « Rétablir les valeurs par défaut » a été ajouté à la personnalisation de l’écran d’accueil. Il réactive les catégories, affiche toutes les fonctions disponibles et rétablit l’ordre initial des éléments.",
+      "Ajout de la localisation complète en roumain : l’interface, le journal des modifications, le calendrier et les citations, SonarTube, les actualités, les podcasts, la radio, les itinéraires, la météo, Wikipédia, Gutenberg, l’audiodescription par IA et les autres services multilingues prennent désormais en charge le roumain."
     ],
     "es": [
       "Se ha añadido la nueva función «Crear audiodescripción con IA»: permite elegir un vídeo, detectar automáticamente diálogos y pausas, generar las descripciones con Gemini o con el servicio Sonarpad, sintetizarlas con voces Edge o del sistema y crear el vídeo audiodescrito final. También están disponibles el reconocimiento de personajes y del texto en pantalla, los catálogos de personajes, los niveles de detalle, la reanudación del procesamiento y el guardado del proyecto.",
@@ -52,7 +55,8 @@
       "En Documentos ahora es posible proteger un documento con contraseña desde las acciones secundarias. La contraseña correcta se solicita tanto antes de abrir como antes de compartir un documento protegido.",
       "Se ha añadido “Enviar informe” en Ajustes: permite describir un problema, indicar opcionalmente el nombre y enviar el informe al desarrollador. El registro técnico de Sonarpad se adjunta automáticamente.",
       "Se ha añadido la personalización de la pantalla de inicio: desde Ajustes se puede elegir si usar categorías, mostrar u ocultar cada función disponible y, con las categorías desactivadas, reordenar los elementos con Subir, Bajar y Mover a la posición. Ajustes e Información permanecen siempre visibles, pero se pueden mover. Cuando las categorías están activadas, Reordenar elementos también permite cambiar el orden de los botones dentro de Lectura, Multimedia y Utilidades, sin moverlos de una categoría a otra.",
-      "Se ha añadido el botón «Restablecer valores predeterminados» a la personalización de la pantalla de inicio. Vuelve a activar las categorías, muestra todas las funciones disponibles y restaura el orden inicial de los elementos."
+      "Se ha añadido el botón «Restablecer valores predeterminados» a la personalización de la pantalla de inicio. Vuelve a activar las categorías, muestra todas las funciones disponibles y restaura el orden inicial de los elementos.",
+      "Se ha añadido la localización completa al rumano: la interfaz, el registro de cambios, el calendario y las citas, SonarTube, Noticias, podcasts, radio, rutas, tiempo, Wikipedia, Gutenberg, la audiodescripción con IA y los demás servicios multilingües ahora son compatibles con el rumano."
     ],
     "pt": [
       "Foi adicionada a nova função «Criar audiodescrição com IA»: permite escolher um vídeo, detetar automaticamente diálogos e pausas, gerar as descrições com o Gemini ou com o serviço Sonarpad, sintetizá-las com vozes Edge ou do sistema e criar o vídeo final com audiodescrição. Também estão disponíveis reconhecimento de personagens e de texto no ecrã, catálogos de personagens, níveis de detalhe, retoma do processamento e gravação do projeto.",
@@ -65,7 +69,8 @@
       "Nos Documentos, agora é possível proteger um documento com palavra-passe através das ações secundárias. A palavra-passe correta é pedida antes de abrir e também antes de partilhar um documento protegido.",
       "Foi adicionada a função «Enviar relato» nas Definições: permite descrever um problema, indicar opcionalmente o nome e enviar o relato ao programador. O registo técnico do Sonarpad é anexado automaticamente.",
       "Foi adicionada a personalização do ecrã principal: nas Definições é possível escolher se pretende usar categorias, mostrar ou ocultar cada função disponível e, com as categorias desativadas, reordenar os elementos com Mover para cima, Mover para baixo e Mover para a posição. Definições e Informações permanecem sempre visíveis, mas podem ser movidas. Com as categorias ativas, Reordenar elementos também permite alterar a ordem dos botões dentro de Leitura, Multimédia e Utilitários, sem os mover de uma categoria para outra.",
-      "Foi adicionado o botão «Repor predefinições» à personalização do ecrã principal. Este volta a ativar as categorias, mostra todas as funções disponíveis e repõe a ordem inicial dos elementos."
+      "Foi adicionado o botão «Repor predefinições» à personalização do ecrã principal. Este volta a ativar as categorias, mostra todas as funções disponíveis e repõe a ordem inicial dos elementos.",
+      "Adicionada a localização completa em romeno: a interface, o registo de alterações, o calendário e as citações, SonarTube, Notícias, podcasts, rádio, percursos, meteorologia, Wikipédia, Gutenberg, audiodescrição com IA e os restantes serviços multilingues passam a suportar romeno."
     ],
     "pt_BR": [
       "Foi adicionada a nova função “Criar audiodescrição com IA”: ela permite escolher um vídeo, detectar automaticamente diálogos e pausas, gerar as descrições com o Gemini ou com o serviço Sonarpad, sintetizá-las com vozes Edge ou do sistema e criar o vídeo final com audiodescrição. Também estão disponíveis reconhecimento de personagens e de texto na tela, catálogos de personagens, níveis de detalhe, retomada do processamento e salvamento do projeto.",
@@ -78,7 +83,8 @@
       "Em Documentos, agora é possível proteger um documento com senha pelas ações secundárias. A senha correta é solicitada antes de abrir e também antes de compartilhar um documento protegido.",
       "Foi adicionada a função “Enviar relato” nas Configurações: permite descrever um problema, informar opcionalmente o nome e enviar o relato ao desenvolvedor. O log técnico do Sonarpad é anexado automaticamente.",
       "Foi adicionada a personalização da tela inicial: nas Configurações é possível escolher se deseja usar categorias, mostrar ou ocultar cada função disponível e, com as categorias desativadas, reordenar os itens com Mover para cima, Mover para baixo e Mover para a posição. Configurações e Informações permanecem sempre visíveis, mas podem ser movidas. Com as categorias ativadas, Reordenar itens também permite alterar a ordem dos botões dentro de Leitura, Mídia e Utilitários, sem movê-los de uma categoria para outra.",
-      "Foi adicionado o botão “Restaurar padrões” à personalização da tela inicial. Ele reativa as categorias, mostra todos os recursos disponíveis e restaura a ordem inicial dos itens."
+      "Foi adicionado o botão “Restaurar padrões” à personalização da tela inicial. Ele reativa as categorias, mostra todos os recursos disponíveis e restaura a ordem inicial dos itens.",
+      "Adicionada a localização completa em romeno: a interface, o changelog, o calendário e as citações, SonarTube, Notícias, podcasts, rádio, rotas, clima, Wikipédia, Gutenberg, audiodescrição com IA e os demais serviços multilíngues agora oferecem suporte ao romeno."
     ],
     "pl": [
       "Dodano nową funkcję „Utwórz audiodeskrypcję z AI”: pozwala wybrać film, automatycznie wykrywać dialogi i przerwy, generować opisy za pomocą Gemini lub usługi Sonarpad, syntezować je głosami Edge lub systemowymi oraz tworzyć końcowy film z audiodeskrypcją. Dostępne są także rozpoznawanie postaci i tekstu na ekranie, katalogi postaci, poziomy szczegółowości, wznawianie przetwarzania i zapisywanie projektu.",
@@ -91,7 +97,8 @@
       "W Dokumentach można teraz chronić dokument hasłem za pomocą akcji dodatkowych. Prawidłowe hasło jest wymagane zarówno przed otwarciem, jak i przed udostępnieniem chronionego dokumentu.",
       "W Ustawieniach dodano funkcję „Wyślij zgłoszenie”: można opisać problem, opcjonalnie podać imię i wysłać zgłoszenie do dewelopera. Dziennik techniczny Sonarpad jest dołączany automatycznie.",
       "Dodano personalizację ekranu głównego: w Ustawieniach można wybrać używanie kategorii, pokazywać lub ukrywać dostępne funkcje oraz, gdy kategorie są wyłączone, zmieniać kolejność elementów za pomocą opcji Przenieś w górę, Przenieś w dół i Przenieś na pozycję. Ustawienia i Informacje są zawsze widoczne, ale można je przenosić. Przy włączonych kategoriach opcja Zmień kolejność elementów pozwala również zmieniać kolejność przycisków wewnątrz kategorii Czytanie, Multimedia i Narzędzia, bez przenoszenia ich między kategoriami.",
-      "Do personalizacji ekranu głównego dodano przycisk „Przywróć ustawienia domyślne”. Ponownie włącza on kategorie, pokazuje wszystkie dostępne funkcje i przywraca początkową kolejność elementów."
+      "Do personalizacji ekranu głównego dodano przycisk „Przywróć ustawienia domyślne”. Ponownie włącza on kategorie, pokazuje wszystkie dostępne funkcje i przywraca początkową kolejność elementów.",
+      "Dodano pełną lokalizację rumuńską: interfejs, dziennik zmian, kalendarz i cytaty, SonarTube, Wiadomości, podcasty, radio, trasy, pogoda, Wikipedia, Gutenberg, audiodeskrypcja AI oraz pozostałe usługi wielojęzyczne obsługują teraz język rumuński."
     ],
     "cs": [
       "Přidána nová funkce „Vytvořit audiopopis pomocí AI“: umožňuje vybrat video, automaticky rozpoznat dialogy a pauzy, vygenerovat popisy pomocí Gemini nebo služby Sonarpad, převést je na řeč hlasy Edge nebo systémovými hlasy a vytvořit výsledné video s audiopopisem. K dispozici je také rozpoznávání postav a textu na obrazovce, katalogy postav, úrovně podrobnosti, obnovení zpracování a ukládání projektu.",
@@ -104,7 +111,8 @@
       "V Dokumentech lze nyní dokument chránit heslem pomocí sekundárních akcí. Správné heslo je vyžadováno jak před otevřením, tak před sdílením chráněného dokumentu.",
       "Do Nastavení byla přidána funkce „Odeslat hlášení“: umožňuje popsat problém, volitelně uvést jméno a odeslat hlášení vývojáři. Technický protokol Sonarpad se připojí automaticky.",
       "Přidáno přizpůsobení domovské obrazovky: v Nastavení lze zvolit používání kategorií, zobrazit nebo skrýt jednotlivé dostupné funkce a při vypnutých kategoriích měnit pořadí položek pomocí Přesunout nahoru, Přesunout dolů a Přesunout na pozici. Nastavení a Informace zůstávají vždy viditelné, ale lze je přesouvat. Při zapnutých kategoriích umožňuje Změnit pořadí položek také měnit pořadí tlačítek uvnitř kategorií Čtení, Média a Nástroje, aniž by se přesouvala mezi kategoriemi.",
-      "Do přizpůsobení domovské obrazovky bylo přidáno tlačítko „Obnovit výchozí nastavení“. Znovu zapne kategorie, zobrazí všechny dostupné funkce a obnoví původní pořadí položek."
+      "Do přizpůsobení domovské obrazovky bylo přidáno tlačítko „Obnovit výchozí nastavení“. Znovu zapne kategorie, zobrazí všechny dostupné funkce a obnoví původní pořadí položek.",
+      "Přidána kompletní rumunská lokalizace: rozhraní, přehled změn, kalendář a citáty, SonarTube, Zprávy, podcasty, rádio, trasy, počasí, Wikipedie, Gutenberg, audiodeskripce s AI a další vícejazyčné služby nyní podporují rumunštinu."
     ],
     "de": [
       "Die neue Funktion „Audiodeskription mit KI erstellen“ wurde hinzugefügt: Damit kann ein Video ausgewählt werden, Dialoge und Pausen werden automatisch erkannt, Beschreibungen mit Gemini oder dem Sonarpad-Dienst erzeugt, mit Edge- oder Systemstimmen gesprochen und anschließend das fertige Video mit Audiodeskription erstellt. Zusätzlich stehen Figuren- und Bildschirmtexterkennung, Figurenkataloge, Detailstufen, Fortsetzen der Verarbeitung und Projektspeicherung zur Verfügung.",
@@ -117,7 +125,8 @@
       "In Dokumente kann ein Dokument jetzt über die sekundären Aktionen mit einem Passwort geschützt werden. Das richtige Passwort wird sowohl vor dem Öffnen als auch vor dem Teilen eines geschützten Dokuments verlangt.",
       "In den Einstellungen wurde „Meldung senden“ hinzugefügt: Damit kann ein Problem beschrieben, optional ein Name angegeben und die Meldung an den Entwickler gesendet werden. Das technische Sonarpad-Protokoll wird automatisch angehängt.",
       "Die Anpassung des Startbildschirms wurde hinzugefügt: In den Einstellungen kann festgelegt werden, ob Kategorien verwendet werden, welche verfügbaren Funktionen ein- oder ausgeblendet werden und bei deaktivierten Kategorien die Reihenfolge mit Nach oben, Nach unten und An Position verschieben geändert werden. Einstellungen und Informationen bleiben immer sichtbar, können aber verschoben werden. Bei aktivierten Kategorien können mit Elemente neu anordnen außerdem die Schaltflächen innerhalb von Lesen, Medien und Dienstprogramme sortiert werden, ohne sie zwischen Kategorien zu verschieben.",
-      "Zur Anpassung des Startbildschirms wurde die Schaltfläche „Standardeinstellungen wiederherstellen“ hinzugefügt. Sie aktiviert die Kategorien wieder, zeigt alle verfügbaren Funktionen an und stellt die ursprüngliche Reihenfolge wieder her."
+      "Zur Anpassung des Startbildschirms wurde die Schaltfläche „Standardeinstellungen wiederherstellen“ hinzugefügt. Sie aktiviert die Kategorien wieder, zeigt alle verfügbaren Funktionen an und stellt die ursprüngliche Reihenfolge wieder her.",
+      "Die vollständige rumänische Lokalisierung wurde hinzugefügt: Benutzeroberfläche, Änderungsprotokoll, Kalender und Zitate, SonarTube, Nachrichten, Podcasts, Radio, Routen, Wetter, Wikipedia, Gutenberg, KI-Audiodeskription und die übrigen mehrsprachigen Dienste unterstützen jetzt Rumänisch."
     ],
     "zh_CN": [
       "新增“使用 AI 创建音频描述”功能：可以选择视频，自动检测对白和停顿，使用 Gemini 或 Sonarpad 服务生成描述，通过 Edge 或系统语音进行合成，并创建最终的带音频描述视频。同时支持角色识别、屏幕文字识别、角色目录、详细程度设置、继续处理以及保存项目。",
@@ -130,7 +139,8 @@
       "“文档”现在可通过辅助操作为文档启用密码保护。打开或共享受保护的文档前，都需要输入正确的密码。",
       "“设置”中新增“发送报告”功能：可以描述问题、选择性填写姓名并将报告发送给开发者。Sonarpad 的技术日志会自动附加。",
       "新增主屏幕自定义功能：可在“设置”中选择是否使用分类、显示或隐藏各个可用功能；关闭分类后，还可使用“上移”“下移”和“移动到位置”调整顺序。“设置”和“信息”始终可见，但可以移动位置。 启用分类时，“重新排序项目”还可以调整“阅读”“媒体”和“实用工具”各分类内部按钮的顺序，但不能将项目移动到其他分类。",
-      "主屏幕自定义中新增了“恢复默认设置”按钮，可重新启用分类、显示所有可用功能，并恢复项目的初始顺序。"
+      "主屏幕自定义中新增了“恢复默认设置”按钮，可重新启用分类、显示所有可用功能，并恢复项目的初始顺序。",
+      "新增完整的罗马尼亚语本地化：界面、更新日志、日历与名言、SonarTube、新闻、播客、广播、路线、天气、维基百科、Gutenberg、AI 音频描述以及其他多语言服务现已支持罗马尼亚语。"
     ],
     "uk": [
       "Додано нову функцію «Створити аудіоопис за допомогою ШІ»: можна вибрати відео, автоматично визначити діалоги й паузи, створити описи за допомогою Gemini або сервісу Sonarpad, озвучити їх голосами Edge чи системними голосами та отримати готове відео з аудіоописом. Також доступні розпізнавання персонажів і тексту на екрані, каталоги персонажів, рівні деталізації, продовження обробки та збереження проєкту.",
@@ -143,12 +153,27 @@
       "У Документах тепер можна захистити документ паролем через додаткові дії. Правильний пароль потрібно вводити як перед відкриттям, так і перед поширенням захищеного документа.",
       "У Налаштуваннях додано функцію «Надіслати повідомлення»: можна описати проблему, за бажанням указати ім’я та надіслати повідомлення розробнику. Технічний журнал Sonarpad додається автоматично.",
       "Додано налаштування головного екрана: у Налаштуваннях можна вибрати використання категорій, показувати або приховувати доступні функції, а коли категорії вимкнено — змінювати порядок елементів командами Перемістити вгору, Перемістити вниз і Перемістити на позицію. Налаштування та Інформація завжди залишаються видимими, але їх можна переміщувати. Коли категорії увімкнено, «Змінити порядок елементів» також дозволяє змінювати порядок кнопок усередині категорій Читання, Медіа та Утиліти, не переміщуючи їх між категоріями.",
-      "До налаштування головного екрана додано кнопку «Відновити типові налаштування». Вона знову вмикає категорії, показує всі доступні функції та відновлює початковий порядок елементів."
+      "До налаштування головного екрана додано кнопку «Відновити типові налаштування». Вона знову вмикає категорії, показує всі доступні функції та відновлює початковий порядок елементів.",
+      "Додано повну румунську локалізацію: інтерфейс, журнал змін, календар і цитати, SonarTube, Новини, подкасти, радіо, маршрути, погода, Вікіпедія, Gutenberg, аудіоопис за допомогою ШІ та інші багатомовні сервіси тепер підтримують румунську мову."
     ],
     "it_extra": [
       "In SonarTube è stata aggiunta l’azione “Salva media” per gli utenti con codice Sonarpad: accanto a ogni video è disponibile un pulsante visivo escluso dalla lettura di VoiceOver e la stessa funzione è presente tra le azioni secondarie. È possibile scegliere se salvare il contenuto come video MP4 oppure come audio MP3; per l’MP3 Sonarpad usa FFmpeg per la conversione. Al termine dell’elaborazione resta disponibile la scelta tra salvataggio nei Documenti di Sonarpad e condivisione.",
       "Aggiunta l’azione “Crea audiodescrizione con IA” in SonarTube, RaiPlay e LA7 Play per gli utenti con codice Sonarpad e interfaccia in italiano. Il video selezionato viene preparato e salvato automaticamente nei Documenti di Sonarpad, quindi si apre la funzione di creazione dell’audiodescrizione con il file già selezionato; la generazione parte solo quando l’utente attiva “Crea audiodescrizione”.",
       "Aggiunta la nuova funzione “Audiodescrizioni Sonarpad”, dove vengono raccolte le audiodescrizioni realizzate con questo programma. Si ringrazia Nicolò La Ferla per la disponibilità dello spazio che contiene i film audiodescritti."
+    ],
+    "ro": [
+      "A fost adăugată noua funcție „Creează audiodescriere cu IA”: permite alegerea unui videoclip, detectarea automată a dialogurilor și pauzelor, generarea descrierilor cu Gemini sau cu serviciul Sonarpad, sintetizarea lor cu voci Edge sau de sistem și crearea videoclipului final cu audiodescriere. Sunt disponibile și recunoașterea personajelor și a textului de pe ecran, cataloage de personaje, niveluri de detaliu, reluarea procesării și salvarea proiectului.",
+      "Au fost corectate unele probleme din Știri care puteau afișa elemente ale paginii sau conținut nerelevant în locul textului articolului.",
+      "A fost îmbunătățită deschiderea articolelor în Știri: atunci când extragerea textului eșuează, pagina articolului este acum afișată corect în loc să se oprească doar la titlu sau la o previzualizare scurtă.",
+      "A fost adăugată opțiunea Redare automată în setările playerului SonarTube: când este activată, SonarTube trece automat la următorul videoclip sau la următoarea piesă la terminarea redării, dacă există una disponibilă.",
+      "SonarTube poate acum deschide direct listele de redare publice ale unui canal din pagina canalului, cu suport pentru încărcarea mai multor rezultate.",
+      "SonarTube poate acum deschide direct Shorts publicate de un canal din pagina canalului, cu suport pentru încărcarea mai multor rezultate.",
+      "A fost adăugată acțiunea „Vezi descrierea” în SonarTube pentru a citi descrierea completă a videoclipului. Descrierea poate fi adăugată și între butoanele playerului din setările Butoane și comportament SonarTube.",
+      "Documentele pot fi acum protejate cu parolă din acțiunile secundare. Parola corectă este necesară atât pentru deschiderea, cât și pentru distribuirea unui document protejat.",
+      "A fost adăugată opțiunea „Trimite raport” în Setări: poți descrie o problemă, introduce opțional numele și trimite raportul dezvoltatorului. Jurnalul tehnic Sonarpad este atașat automat.",
+      "A fost adăugată personalizarea ecranului principal: din Setări poți alege dacă să folosești categorii, să afișezi sau să ascunzi fiecare funcție disponibilă și, când categoriile sunt dezactivate, să reordonezi elementele cu Mută în sus, Mută în jos și Mută la poziție. Setările și Informațiile rămân întotdeauna vizibile, dar pot fi mutate. Când categoriile sunt activate, Reordonează elementele permite și schimbarea ordinii butoanelor din Lectură, Media și Utilitare, fără mutarea lor dintr-o categorie în alta.",
+      "A fost adăugat un buton „Restabilește valorile implicite” la personalizarea ecranului principal. Acesta reactivează categoriile, afișează toate funcțiile disponibile și restabilește ordinea inițială a elementelor.",
+      "A fost adăugată localizarea completă în limba română: interfața, jurnalul de modificări, calendarul și citatele, SonarTube, Știri, podcasturile, radioul, traseele, vremea, Wikipedia, Gutenberg, audiodescrierea cu IA și celelalte servicii multilingve acceptă acum limba română."
     ]
   },
   {
@@ -631,7 +656,42 @@
       "uk": [
         "На Android із TalkBack додаткові дії елемента тепер можна відкрити подвійним дотиком з утриманням."
       ]
-    }
+    },
+    "ro": [
+      "A fost adăugat SonarTube, noul sistem integrat pentru căutarea și redarea videoclipurilor YouTube direct în Sonarpad. Poți explora videoclipuri, canale și liste de redare, încărca mai multe rezultate, adăuga canale și videoclipuri individuale la favorite și reda conținutul cu playerul integrat Sonarpad. SonarTube permite și citirea transcrierilor videoclipurilor, când sunt disponibile, precum și a comentariilor fiecărui videoclip.",
+      "În SonarTube, videoclipurile unui canal pot fi acum sortate după Cele mai noi, Cele mai vechi sau Populare, iar ordinea aleasă este păstrată și la încărcarea altor videoclipuri.",
+      "A fost îmbunătățită afișarea timpului în playerele Sonarpad: pentru conținutul cu durata de cel puțin o oră sunt afișate acum orele, minutele și secundele, iar VoiceOver și TalkBack anunță durata mai natural.",
+      "A fost adăugat Media Cutter, care permite deschiderea fișierelor audio și video și tăierea lor în punctul dorit. Sunt disponibile două moduri, Tăiere ghidată și Tăiere avansată, cu editarea precisă a punctelor de tăiere, previzualizarea secțiunilor, restaurarea secțiunilor eliminate, reglarea pasului de derulare, rotirea videoclipului și export audio/video mai fiabil.",
+      "Au fost adăugate numeroase efecte audio în Media Cutter, inclusiv cor, robot, super robot, radio vechi, vocoder, schimbări de voce și mai multe efecte ambientale. Multe efecte folosesc acum un motor DSP nativ comun pentru iPhone și Android, pentru o calitate mai consecventă între previzualizare și fișierul final.",
+      "Media Cutter poate acum adăuga o pistă audio nouă fișierului deschis, de exemplu muzică de fundal. Poți regla separat volumele pistei originale și ale pistei adăugate, repeta noua pistă, previzualiza rezultatul și o include în fișierul final.",
+      "A fost îmbunătățită considerabil fiabilitatea exportului din Media Cutter: Sonarpad detectează pistele reale din fișiere, gestionează corect videoclipurile fără sunet și fișierele audio cu copertă, validează durata și decodarea și publică rezultatul numai după verificarea validității fișierului generat.",
+      "Documentele au fost îmbunătățite cu selecție multiplă și ștergerea paragrafelor, mai multe semne de carte în același document, pas personalizabil pentru cursorul de poziție, realiniere imediată TTS după deplasare, temporizator de oprire și estimarea timpului de lectură rămas.",
+      "A fost adăugată posibilitatea de a redenumi documentele: deplasează-te la document și fă flick în jos.",
+      "A fost îmbunătățită deschiderea documentelor TXT, RTF și EPUB. Au fost corectate mai multe probleme de codare a caracterelor și diacritice, interpretarea RTF a fost îmbunătățită, iar cuprinsurile EPUB, deschiderea capitolelor și suportul pentru note de subsol au fost extinse.",
+      "A fost adăugată afișarea cuprinsului EPUB în Documente.",
+      "A fost adăugată o setare pentru tipurile de fișiere compatibile, pentru afișarea notelor de subsol lângă paragraful la care se referă.",
+      "A fost adăugat modul Selectare paragrafe în Documente. După deschiderea unui document, fă flick în jos și activează acțiunea corespunzătoare. Poți apoi naviga prin paragrafe și atinge de două ori un paragraf pentru a-l selecta; cu un alt flick în jos poți șterge toate paragrafele selectate.",
+      "Fișierele audio importate pot fi acum distribuite direct din Documente folosind foaia standard de partajare iOS sau Android.",
+      "Știrile au fost îmbunătățite cu o extragere mai fiabilă a articolelor, folosind serviciul extern Tinyfish pentru a ajuta la deschiderea fără dificultate a majorității articolelor. Poți sugera și noi surse de știri comunității Sonarpad și adăuga în colecția ta surse distribuite de alți utilizatori.",
+      "Poți acum distribui un articol de Știri direct din acțiunile secundare, fără să îl deschizi mai întâi.",
+      "Articolele de Știri pot fi acum distribuite direct ca fișiere TXT complete folosind foaia standard de partajare a sistemului.",
+      "Știrile acceptă acum și surse RSS personalizate adăugate în colecție atunci când articolele lor conțin legături către documente, fișiere audio sau video. Sonarpad creează automat butoane accesibile pentru a deschide aceste conținuturi direct în aplicație și apoi pentru a reveni ușor la articol și a continua lectura.",
+      "Podcasturile au fost îmbunătățite cu selectarea datei episodului, suport pentru capitole când sunt disponibile, sortarea alfabetică a podcasturilor urmărite, gestionarea mai clară a fișierelor audio locale și opțiuni noi pentru vizualizarea și golirea cache-ului.",
+      "Au fost îmbunătățite mai multe liste lungi cu comanda Selectează litera, care permite ajungerea rapidă la o inițială. Restaurarea focalizării, navigarea VoiceOver și comportamentul listelor au fost îmbunătățite atât în rendererul Flutter, cât și în rendererul nativ UIKit.",
+      "A fost îmbunătățită accesibilitatea câmpurilor text cu VoiceOver și UIKit prin eliminarea mai multor repetări inutile între numele câmpurilor și sugestii, de exemplu în câmpurile Locație din Pagini Albe și Pagini Aurii. Au fost îmbunătățite și mai multe etichete din Biblioteca digitală pentru o citire mai naturală.",
+      "A fost îmbunătățită secțiunea Filme la cinema: comanda „Deschide trailerul” redă acum trailerul YouTube direct cu playerul Sonarpad, folosind același sistem de rezolvare video ca SonarTube.",
+      "A fost îmbunătățită localizarea numelor limbilor în Wikipedia, Project Gutenberg și alte zone ale aplicației: numele sunt afișate acum în limba interfeței, de exemplu „Italiano, Inglese, Francese” când Sonarpad este în italiană și „Italian, English, French” când Sonarpad este în engleză.",
+      "Rutele au fost extinse cu suport pentru alte țări, inclusiv Australia, Canada, Germania, Regatul Unit și Statele Unite.",
+      "Au fost adăugate localizări complete în germană, chineză simplificată, portugheză braziliană și ucraineană, inclusiv secțiunile principale ale aplicației, Calendar, Meteo, Știri, Podcasturi, Radio și descrierile permisiunilor iOS.",
+      "Calendarul a fost și el îmbunătățit, extinzând considerabil citatele zilnice la 128 de citate unice, traduse în fiecare limbă acceptată.",
+      "A fost corectată afișarea videoclipurilor SonarTube și a altor conținuturi video, care sunt acum afișate corect pe tot ecranul când opțiunea „Videoclip pe tot ecranul în modul peisaj” este activată.",
+      "A fost îmbunătățită afișarea vocilor Edge, cu etichete mai ușor de înțeles și mai puțin tehnice.",
+      "A fost îmbunătățită citirea cu vocile Edge atunci când conexiunea este instabilă: dacă trimiterea unui paragraf eșuează, Sonarpad reîncearcă automat de până la cinci ori. Citirea se oprește numai dacă toate încercările eșuează.",
+      "A fost adăugat un buton în toate câmpurile text editabile pentru golirea rapidă a conținutului. În câmpurile de căutare este anunțat ca „Șterge căutarea”, iar în celelalte câmpuri ca „Șterge textul”, cu etichete de accesibilitate localizate.",
+      "A fost adăugat un buton „Deschide ruta” în Rute, care permite deschiderea imediată a rutei calculate în aplicația de navigare a dispozitivului. Pe iPhone poți alege între Hărți și Google Maps, dacă este instalat, iar pe Android ruta se deschide în Google Maps, păstrând originea, destinația și modul de deplasare.",
+      "Meteo afișează acum calitatea actuală a aerului folosind indicele european AQI, cu o descriere ușor de înțeles a nivelului, atât în interfața Flutter, cât și în cea UIKit.",
+      "Numeroase îmbunătățiri generale pentru stabilitate, accesibilitate, focalizarea cititorului de ecran, localizare, redarea media și gestionarea fișierelor pe iOS și Android."
+    ]
   },
   {
     "version": "0.3.1",
@@ -779,6 +839,19 @@
       "Додано кнопку для скидання фільтрів радіо та початку нового пошуку без попередніх обмежень.",
       "У результатах пошуку подкастів додано додаткову дію для швидкої підписки; якщо подкаст уже додано, ця дія відкриває його.",
       "У Налаштуваннях додано вибір одиниці температури для погоди: Цельсій або Фаренгейт."
+    ],
+    "ro": [
+      "Prima versiune publică a Sonarpad Mobile pe App Store. Include principalele funcții deja disponibile: citirea și organizarea documentelor, importuri din Project Gutenberg, LibriVox, PoetryDB, Internet Archive și iTunes / Apple Devices, export în DOCX, EPUB, MP3 și M4B, Știri cu RSS, OPML și foldere, podcasturi, radio, rute, meteo, calendar și alegerea temei luminoase, întunecate sau automate.",
+      "Când căutarea radio nu poate returna rezultate din cauza problemelor de conexiune, Sonarpad afișează acum utilizatorului un mesaj mai clar în locul unei erori tehnice.",
+      "A fost corectată salvarea în convertorul de fișiere: când Sonarpad nu poate salva direct în destinația selectată, folosește foaia de partajare a sistemului pentru ca utilizatorul să poată salva fișierul unde dorește.",
+      "Mai multe corecții pentru toate localizările.",
+      "A fost corectată o problemă în căutarea radio prin care, după tastarea primului caracter, utilizatorul trebuia să revină la câmpul text pentru a continua să scrie.",
+      "A fost îmbunătățit importul din iTunes / Apple Devices: Sonarpad păstrează acum și structura folderelor și subfolderelor importate.",
+      "A fost îmbunătățită căutarea radio: țările sunt afișate acum cu numele complet și codul, de exemplu „Turcia (TR)”, în loc de doar cod.",
+      "A fost adăugat un rezumat al filtrelor active în căutarea radio, pentru a înțelege mai ușor ce criterii sunt folosite în acel moment.",
+      "A fost adăugat un buton pentru resetarea filtrelor radio și pornirea unei căutări noi, curate.",
+      "Rezultatele căutării de podcasturi includ acum o acțiune secundară pentru urmărire directă; dacă podcastul este deja prezent, acțiunea deschide podcastul.",
+      "A fost adăugată o setare pentru alegerea unității de temperatură meteo: Celsius sau Fahrenheit."
     ]
   },
   {
@@ -1037,6 +1110,29 @@
       "У Налаштуваннях додано вибір теми застосунку: автоматично за системою, світла або темна.",
       "Додано експорт документів у DOCX, EPUB та у формат аудіокниги MP3 або M4B із використанням уже вибраних користувачем параметрів рушія, голосу, швидкості й висоти тону.",
       "Покращено автоматичне збереження закладки під час читання документів: позиція тепер зберігається також під час паузи, тож Sonarpad може продовжити з правильного абзацу навіть після випадкового закриття застосунку."
+    ],
+    "ro": [
+      "Au fost adăugate localizările în poloneză, portugheză și cehă.",
+      "A fost îmbunătățită căutarea radio: acum poți căuta după limbă, țară, oraș și gen, iar cele mai recente alegeri sunt salvate.",
+      "În Documente au fost adăugate importurile din Project Gutenberg, LibriVox, PoetryDB și Internet Archive, precum și importul documentelor adăugate prin iTunes pe dispozitivele Apple.",
+      "Convertorul media a fost îmbunătățit cu mai multe opțiuni de conversie și posibilitatea de a alege folderul în care este salvat fișierul convertit.",
+      "A fost adăugată căutarea în documente: rezultatele afișează începutul paragrafului corespunzător, iar atingerea de două ori a unui rezultat te duce direct la paragraful care conține textul căutat.",
+      "În secțiunea Orașul meu poți acum schimba manual orașul pentru a corecta locația aproximativă detectată de Sonarpad.",
+      "Meteo a fost îmbunătățit: alegerea orașului este mai simplă și au fost adăugate orașele recente pentru a trece rapid de la un oraș la altul.",
+      "A fost corectată o problemă prin care poziția de redare a unui fișier media local nu era salvată la închiderea lui.",
+      "În Rute au fost adăugate butoane pentru salvarea indicațiilor în Documente și pentru ascultarea indicațiilor cu sinteză vocală.",
+      "În Știri, după citirea unui articol dintr-o sursă, este disponibil acum butonul Articole citite. Articolele citite sunt eliminate din lista principală și rămân disponibile într-un istoric separat pentru fiecare sursă, care poate fi golit.",
+      "A fost îmbunătățită codarea documentelor: Sonarpad gestionează mai bine UTF-8, ANSI, codările europene și alte codări, astfel încât mai multe documente se deschid corect.",
+      "A fost corectată o problemă prin care controlul volumului dispărea atunci când videoclipul era activat în redarea media.",
+      "A fost corectată o problemă în Știri prin care oprirea citirii nu oprea de fapt redarea.",
+      "A fost corectată o problemă prin care ultimul paragraf al unui articol de Știri era citit de două ori.",
+      "În Calendar, când distribui o zi care conține un memento, Sonarpad întreabă dacă vrei să incluzi și mementoul, pentru a evita distribuirea din greșeală a informațiilor private.",
+      "În Știri au fost adăugate butoane pentru importul și exportul surselor în format OPML. Importul acceptă și fișiere complexe, cum ar fi fișierele Lire, cu surse organizate în foldere.",
+      "A fost adăugată gestionarea folderelor pentru sursele de Știri, cu posibilitatea de a muta sursele în și din foldere și de a șterge foldere.",
+      "A fost adăugată opțiunea Creează folder nou în acțiunile secundare din Știri.",
+      "A fost adăugată alegerea temei în Setări: Sonarpad poate urma tema sistemului sau poate folosi întotdeauna modul luminos ori întunecat.",
+      "A fost adăugat exportul documentelor în DOCX, EPUB și format audiobook MP3 sau M4B, folosind motorul vocal, vocea, viteza și înălțimea alese deja de utilizator.",
+      "Au fost îmbunătățite semnele de carte automate în timpul citirii documentelor: poziția este salvată acum și la pauză, astfel încât Sonarpad să poată relua de la paragraful corect chiar dacă aplicația este închisă din greșeală."
     ]
   },
   {
@@ -1068,6 +1164,9 @@
     ],
     "uk": [
       "Виправлено визначення мови під час першого запуску: якщо користувач ще не вибрав мову застосунку, Sonarpad тепер використовує першу підтримувану мову зі списку бажаних мов пристрою."
+    ],
+    "ro": [
+      "A fost corectată detectarea limbii la prima pornire: Sonarpad folosește acum prima limbă preferată a dispozitivului care este acceptată, dacă utilizatorul nu a ales încă limba aplicației."
     ]
   },
   {
@@ -1333,6 +1432,34 @@
       "Покращено переклади англійською, французькою та іспанською мовами.",
       "Покращено зрозумілість різних екранів і повідомлень застосунку.",
       "Додано розділ Кіно, де можна дізнатися про фільми, що зараз ідуть у кінотеатрах, прочитати опис і переглянути трейлер, якщо він доступний. Також є кнопка «Незабаром у прокаті» для перегляду майбутніх прем’єр."
+    ],
+    "ro": [
+      "A fost adăugată posibilitatea de a crea un document nou direct din Sonarpad.",
+      "A fost adăugat importul din Dropbox: după autentificare, poți răsfoi fișierele Dropbox direct din Sonarpad și le poți importa în biblioteca de documente.",
+      "Poți acum distribui un document din aplicația Fișiere a telefonului și îl poți deschide direct cu Sonarpad, pentru a fi importat în bibliotecă.",
+      "A fost adăugat suport pentru fișiere ZIP: la importul unei arhive, Sonarpad creează automat un folder cu conținutul fișierului.",
+      "A fost adăugată posibilitatea de a crea foldere noi și de a muta documente în foldere, pentru a organiza mai ușor cărțile și documentele.",
+      "A fost adăugat suport OCR pentru recunoașterea și citirea documentelor care conțin doar imagini.",
+      "A fost adăugat un cursor pentru deplasarea rapidă înainte sau înapoi în timpul citirii unui document.",
+      "A fost îmbunătățită gestionarea semnelor de carte în documente: opțiunea se schimbă acum automat în funcție de existența unui semn de carte.",
+      "A fost adăugată posibilitatea de a seta automat un semn de carte nou când citirea este oprită, dacă opțiunea este activată în setări.",
+      "A fost adăugată noua secțiune Meteo, cu căutare după oraș, alegerea zilei, condiții actuale, precipitații, temperatură minimă și maximă și alte informații utile.",
+      "A fost adăugat un calendar accesibil cu sfântul zilei și un citat diferit pentru fiecare zi.",
+      "A fost adăugată reluarea automată: documentele, podcasturile și fișierele media pot reporni de unde au fost lăsate. Opțiunea poate fi dezactivată din setări.",
+      "Au fost adăugate cursoare pentru reglarea volumului și a poziției în fișierele media.",
+      "În setări poți alege cu cât să te deplasezi înainte sau înapoi în fișierele media. Valoarea implicită este un minut.",
+      "A fost adăugată posibilitatea de a distribui fișiere media din alte aplicații și de a le deschide direct cu Sonarpad.",
+      "Pentru conținutul video a fost adăugată o casetă de selectare pentru activarea sau dezactivarea afișării videoclipului.",
+      "A fost adăugat importul și exportul podcasturilor, pentru a transfera podcasturile urmărite în Sonarpad Mobile, inclusiv din Sonarpad pentru Windows sau Mac.",
+      "Căutarea radio este acum mai tolerantă: este suficient să tastezi primele litere ale numelui unui post pentru a obține rezultate.",
+      "A fost îmbunătățită citirea știrilor, cu o experiență mai curată decât în versiunea anterioară.",
+      "Sonarpad încearcă să sară peste blocurile și elementele inutile introduse în paginile web, făcând articolele mai ușor de citit.",
+      "A fost adăugat un convertor media pentru fișiere audio și video: de exemplu, poți converti un fișier MP3 în WAV sau transforma un fișier audio într-un videoclip MP4 adăugând o imagine.",
+      "A fost adăugată posibilitatea de a grupa ecranele pe categorii, pentru a organiza mai ușor pictogramele de pe ecranul principal.",
+      "În setări poți alege dacă ecranele sunt afișate grupate pe categorii sau dacă păstrezi vizualizarea clasică.",
+      "Au fost îmbunătățite traducerile în engleză, franceză și spaniolă.",
+      "A fost îmbunătățită claritatea mai multor ecrane și mesaje ale aplicației.",
+      "A fost adăugată funcția Cinema pentru a descoperi filmele aflate acum în cinematografe, cu posibilitatea de a citi descrierea și de a vedea trailerul, dacă este disponibil. Există și un buton „Lansări viitoare” pentru consultarea filmelor care urmează să apară."
     ]
   }
 ]

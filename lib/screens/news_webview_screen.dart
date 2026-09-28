@@ -1482,6 +1482,8 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
         return 'Tento článek je určen pouze předplatitelům.';
       case 'uk':
         return 'Ця стаття доступна лише передплатникам.';
+      case 'ro':
+        return 'Acest articol este disponibil doar abonaților.';
       case 'zh':
         return '此文章仅供订阅用户阅读。';
       default:

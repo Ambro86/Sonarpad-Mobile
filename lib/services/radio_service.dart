@@ -44,6 +44,7 @@ class RadioService {
     RadioLanguageOption('fr'),
     RadioLanguageOption('sr'),
     RadioLanguageOption('uk'),
+    RadioLanguageOption('ro'),
     RadioLanguageOption('hi'),
     RadioLanguageOption('lt'),
     RadioLanguageOption('ru'),
@@ -70,6 +71,7 @@ class RadioService {
     RadioCountryOption('ie'),
     RadioCountryOption('se'),
     RadioCountryOption('pl'),
+    RadioCountryOption('ro'),
     RadioCountryOption('jp'),
   ];
   static const genres = [
@@ -112,6 +114,7 @@ class RadioService {
     'polish',
     'serbian',
     'ukrainian',
+    'romanian',
     'lithuanian',
     'russian',
     'chinese',
@@ -274,6 +277,7 @@ class RadioService {
     required String streamUrl,
     required String language,
     required String genre,
+    String uiLanguage = 'it',
   }) async {
     final response = await _client.post(
       Uri.parse(_addCommunityUrl),
@@ -286,7 +290,7 @@ class RadioService {
         'url': streamUrl,
         'language': language,
         'genre': genre,
-        'ui_language': 'it',
+        'ui_language': uiLanguage,
       },
     ).timeout(const Duration(seconds: 12));
     final decoded = _decodeJsonMap(response.body);
@@ -467,7 +471,7 @@ class RadioService {
   }
 
   int _preferredLanguagePriority(String code) {
-    const preferred = ['it', 'en', 'tr', 'de', 'es', 'fr', 'pt', 'pl', 'zh'];
+    const preferred = ['it', 'en', 'tr', 'de', 'es', 'fr', 'pt', 'pl', 'ro', 'zh'];
     final index = preferred.indexOf(code.toLowerCase());
     return index < 0 ? 1000 : index;
   }
@@ -704,6 +708,7 @@ class RadioService {
       'lt' => 'lithuanian',
       'pl' => 'polish',
       'pt' => 'portuguese',
+      'ro' => 'romanian',
       'ru' => 'russian',
       'sr' => 'serbian',
       'sv' => 'swedish',
@@ -726,6 +731,7 @@ class RadioService {
       'lithuanian' => 'lt',
       'polish' => 'pl',
       'portuguese' => 'pt',
+      'romanian' || 'romana' => 'ro',
       'russian' => 'ru',
       'serbian' => 'sr',
       'swedish' => 'sv',
@@ -771,6 +777,7 @@ class RadioService {
         'pl' || 'country:pl' => 'polish',
         'sr' => 'serbian',
         'uk' => 'ukrainian',
+        'ro' || 'country:ro' => 'romanian',
         'lt' => 'lithuanian',
         'ru' => 'russian',
         'zh' || 'country:cn' => 'chinese',

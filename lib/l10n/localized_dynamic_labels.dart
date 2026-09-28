@@ -18,6 +18,7 @@ extension LocalizedDynamicLabels on AppLocalizations {
       'fr' => radioLanguageFr,
       'sr' => radioLanguageSr,
       'uk' => radioLanguageUk,
+      'ro' => 'Română',
       'hi' => radioLanguageHi,
       'lt' => radioLanguageLt,
       'ru' => radioLanguageRu,
@@ -51,6 +52,7 @@ extension LocalizedDynamicLabels on AppLocalizations {
         'pl' => radioCountryOptionPl,
         'jp' => radioCountryOptionJp,
         'cn' => chinaCountryName,
+        'ro' => 'România',
         _ => code.toUpperCase(),
       };
 
@@ -96,6 +98,7 @@ extension LocalizedDynamicLabels on AppLocalizations {
         'polish' => radioCommunityLanguagePolish,
         'serbian' => radioCommunityLanguageSerbian,
         'ukrainian' => radioCommunityLanguageUkrainian,
+        'romanian' => 'Română',
         'lithuanian' => radioCommunityLanguageLithuanian,
         'russian' => radioCommunityLanguageRussian,
         'chinese' => radioCommunityLanguageChinese,

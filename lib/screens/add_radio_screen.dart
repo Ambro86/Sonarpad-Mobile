@@ -23,6 +23,18 @@ class _AddRadioScreenState extends State<AddRadioScreen> {
   RadioGenreOption _addGenre = RadioService.genres[1];
   bool _addingCommunity = false;
 
+  bool _languageInitializedFromLocale = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_languageInitializedFromLocale) return;
+    _languageInitializedFromLocale = true;
+    if (AppLocalizations.of(context).localeName == 'ro') {
+      _addLanguage = 'romanian';
+    }
+  }
+
   Future<void> _addCommunityRadio() async {
     final l10n = AppLocalizations.of(context);
     final name = _addNameController.text.trim();
@@ -38,6 +50,7 @@ class _AddRadioScreenState extends State<AddRadioScreen> {
         streamUrl: url,
         language: _addLanguage,
         genre: _addGenre.tag ?? _addGenre.value,
+        uiLanguage: l10n.localeName,
       );
       if (!mounted) return;
       _addNameController.clear();

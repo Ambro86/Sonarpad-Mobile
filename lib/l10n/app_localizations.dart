@@ -13,6 +13,7 @@ import 'app_localizations_fr.dart';
 import 'app_localizations_it.dart';
 import 'app_localizations_pl.dart';
 import 'app_localizations_pt.dart';
+import 'app_localizations_ro.dart';
 import 'app_localizations_uk.dart';
 import 'app_localizations_zh.dart';
 
@@ -164,6 +165,7 @@ abstract class AppLocalizations {
     Locale('pl'),
     Locale('pt'),
     Locale('pt', 'BR'),
+    Locale('ro'),
     Locale('uk'),
     Locale('zh'),
     Locale('zh', 'CN'),
@@ -7659,6 +7661,7 @@ class _AppLocalizationsDelegate
     'it',
     'pl',
     'pt',
+    'ro',
     'uk',
     'zh',
   ].contains(locale.languageCode);
@@ -7706,6 +7709,8 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
       return AppLocalizationsPl();
     case 'pt':
       return AppLocalizationsPt();
+    case 'ro':
+      return AppLocalizationsRo();
     case 'uk':
       return AppLocalizationsUk();
     case 'zh':

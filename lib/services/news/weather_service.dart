@@ -172,6 +172,7 @@ class OpenMeteoWeatherService {
       'it' => 'it',
       'pl' => 'pl',
       'pt' => 'pt',
+      'ro' => 'ro',
       'zh' => 'zh',
       'uk' => 'uk',
       _ => 'en',

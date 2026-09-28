@@ -46,7 +46,7 @@ enum WeatherTemperatureUnit {
 }
 
 class AppSettingsService {
-  static const _supportedAppLanguages = {'it', 'en', 'es', 'fr', 'pt', 'pt_BR', 'pl', 'cs', 'de', 'zh_CN', 'uk'};
+  static const _supportedAppLanguages = {'it', 'en', 'es', 'fr', 'pt', 'pt_BR', 'pl', 'cs', 'de', 'zh_CN', 'uk', 'ro'};
   static const _ttsLanguageKey = 'sonarpad_tts_language';
   static const _ttsVoiceKey = 'sonarpad_tts_voice';
   static const _tvSecretCodeKey = 'tvSecretCode';
@@ -131,6 +131,7 @@ class AppSettingsService {
     TtsVoiceLanguage('pl', 'Polski'),
     TtsVoiceLanguage('cs', 'Čeština'),
     TtsVoiceLanguage('de', 'Deutsch'),
+    TtsVoiceLanguage('ro', 'Română'),
     TtsVoiceLanguage('zh-CN', '简体中文'),
   ];
 
@@ -224,6 +225,16 @@ class AppSettingsService {
       languageCode: 'de',
       voice: 'de-DE-ConradNeural',
       label: 'Conrad',
+    ),
+    TtsVoiceOption(
+      languageCode: 'ro',
+      voice: 'ro-RO-AlinaNeural',
+      label: 'Alina',
+    ),
+    TtsVoiceOption(
+      languageCode: 'ro',
+      voice: 'ro-RO-EmilNeural',
+      label: 'Emil',
     ),
     TtsVoiceOption(
       languageCode: 'zh-CN',
@@ -697,6 +708,7 @@ class AppSettingsService {
       'de' || 'de-DE' => 'de-DE-KatjaNeural',
       'zh' || 'zh-CN' || 'zh_CN' => 'zh-CN-XiaoxiaoNeural',
       'uk' || 'uk-UA' => 'uk-UA-PolinaNeural',
+      'ro' || 'ro-RO' => 'ro-RO-AlinaNeural',
       _ => '',
     };
   }

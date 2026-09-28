@@ -369,6 +369,7 @@ class WikipediaService {
         'fr' => 'Erreur Wikipedia : $statusCode',
         'es' => 'Error de Wikipedia: $statusCode',
         'pt' || 'pt_BR' || 'pt-BR' => 'Erro da Wikipédia: $statusCode',
+        'ro' => 'Eroare Wikipedia: $statusCode',
         'zh' || 'zh_CN' || 'zh-CN' => '维基百科错误：$statusCode',
         _ => 'Errore Wikipedia: $statusCode',
       };
@@ -379,6 +380,7 @@ class WikipediaService {
         'es' => 'Error de importación de Wikipedia: $statusCode',
         'pt' || 'pt_BR' || 'pt-BR' =>
           'Erro ao importar da Wikipédia: $statusCode',
+        'ro' => 'Eroare la importul din Wikipedia: $statusCode',
         'zh' || 'zh_CN' || 'zh-CN' => '维基百科导入错误：$statusCode',
         _ => 'Errore importazione Wikipedia: $statusCode',
       };

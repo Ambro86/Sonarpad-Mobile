@@ -1,0 +1,3509 @@
+{
+  "@@locale": "ro",
+  "appTitle": "Sonarpad",
+  "appLanguage": "Limba aplicației",
+  "settingsTheme": "Tema aplicației",
+  "settingsThemeSystem": "Sistem",
+  "settingsThemeLight": "Luminoasă",
+  "settingsThemeDark": "Întunecată",
+  "homeSemanticsLabel": "Sonarpad, ecran principal",
+  "settings": "Setări",
+  "settingsHint": "Deschide setările",
+  "info": "Despre",
+  "infoHint": "Deschide informațiile despre aplicație",
+  "categoryReading": "Lectură și documente",
+  "categoryMedia": "Media și divertisment",
+  "sonarTubeTitle": "SonarTube",
+  "sonarTubeSearchLabel": "Caută videoclipuri, canale sau liste de redare",
+  "sonarTubeSearchPrompt": "Introdu o căutare pentru a găsi videoclipuri, canale și liste de redare.",
+  "sonarTubeNoResults": "Nu s-au găsit videoclipuri.",
+  "sonarTubeLoadMore": "Încarcă mai multe rezultate",
+  "sonarTubeVideo": "Videoclip",
+  "sonarTubeChannel": "Canal",
+  "sonarTubePlaylist": "Listă de redare",
+  "sonarTubeLive": "În direct",
+  "sonarTubeResolving": "Se pregătește videoclipul…",
+  "sonarTubeFavorites": "Favorite",
+  "sonarTubeSortVideos": "Sortează videoclipurile",
+  "sonarTubeSortNewest": "Cele mai noi",
+  "sonarTubeSortOldest": "Cele mai vechi",
+  "sonarTubeSortPopular": "Populare",
+  "sonarTubeVideoFavorites": "Videoclipuri favorite",
+  "sonarTubeChannelFavorites": "Canale favorite",
+  "sonarTubeNoVideoFavorites": "Nu există videoclipuri sau liste de redare favorite.",
+  "sonarTubeNoChannelFavorites": "Nu există canale favorite.",
+  "sonarTubeAddChannelFavorite": "Adaugă canalul la favorite",
+  "sonarTubeRemoveChannelFavorite": "Elimină canalul din favorite",
+  "sonarTubeRecentVideos": "Videoclipuri recente",
+  "sonarTubeDeleteRecentVideo": "Șterge videoclipul",
+  "sonarTubeNoRecentVideos": "Nu există videoclipuri recente.",
+  "sonarTubeConfirmClearHistory": "Sigur vrei să ștergi istoricul videoclipurilor recente?",
+  "sonarTubeNoFavorites": "Nu există videoclipuri, canale sau liste de redare favorite.",
+  "sonarTubeAddFavorite": "Adaugă la favorite",
+  "sonarTubeShareVideo": "Distribuie videoclipul",
+  "sonarTubePreviousTrack": "Mergi la videoclipul anterior",
+  "sonarTubeNextTrack": "Mergi la videoclipul următor",
+  "sonarTubeShareChannel": "Distribuie canalul",
+  "sonarTubeSharePlaylist": "Distribuie lista de redare",
+  "sonarTubeRemoveFavorite": "Elimină din favorite",
+  "sonarTubeFavoriteAdded": "{name} a fost adăugat la favorite.",
+  "sonarTubeFavoriteRemoved": "{name} a fost eliminat din favorite.",
+  "categoryUtilities": "Căutări și utilitare",
+  "voiceDictionaryTitle": "Dicționar de pronunție",
+  "voiceDictionaryAdd": "Adaugă intrări în dicționar",
+  "voiceDictionaryOriginalWord": "Cuvânt original",
+  "voiceDictionaryReplacementWord": "Cuvânt de înlocuire",
+  "voiceDictionaryMatchCase": "Respectă majusculele și minusculele",
+  "voiceDictionaryIgnoreCase": "Ignoră majusculele și minusculele",
+  "voiceDictionaryEntries": "Intrări din dicționar",
+  "voiceDictionaryEmpty": "Nu există intrări în dicționar.",
+  "voiceDictionaryRemove": "Elimină intrarea selectată",
+  "voiceDictionaryOriginalRequired": "Introdu cuvântul original.",
+  "convertMediaTitle": "Convertește media",
+  "convertMediaInput": "Fișier de convertit",
+  "convertMediaOutput": "Folder de salvare",
+  "convertMediaImage": "Imagine",
+  "convertMediaBrowse": "Răsfoiește...",
+  "convertMediaFormat": "Format",
+  "convertMediaBitrate": "Rată de biți (kbps)",
+  "convertMediaOggQuality": "Calitate (q)",
+  "convertMediaFlacCompression": "Nivel de compresie",
+  "convertMediaWavBitDepth": "Adâncime de biți WAV",
+  "convertMediaReady": "Gata.",
+  "convertMediaRunning": "Se convertește...",
+  "convertMediaDone": "Conversie finalizată.",
+  "convertMediaButton": "Convertește media",
+  "convertMediaNoInput": "Selectează un fișier de convertit.",
+  "convertMediaNoOutput": "Selectează un folder de salvare.",
+  "convertMediaOutputNotWritable": "Folderul selectat nu este accesibil direct. Fișierul va fi salvat în folderul intern Sonarpad; după terminarea conversiei îl poți distribui sau salva în aplicația Fișiere.",
+  "@convertMediaOutputNotWritable": {
+    "description": "Localized text for convertMediaOutputNotWritable."
+  },
+  "convertMediaNoImage": "Selectează o imagine pentru videoclip.",
+  "convertMediaSamePath": "Fișierul convertit trebuie să fie diferit de fișierul sursă.",
+  "convertMediaInvalidBitrate": "Rată de biți nevalidă. Introdu o valoare între 64 și 320 kbps.",
+  "convertMediaFailed": "Conversia a eșuat: {error}",
+  "donations": "Donații",
+  "donationsHint": "Sprijină dezvoltarea Sonarpad",
+  "loading": "Se încarcă",
+  "ttsVoiceLanguage": "Limba vocii TTS",
+  "ttsVoice": "Voce TTS",
+  "saveSettings": "Salvează setările",
+  "settingsSaved": "Setări salvate.",
+  "settingsSavedTitle": "Setări salvate",
+  "sonarpadCodeValidTitle": "Cod valid",
+  "sonarpadCodeValidMessage": "Codul Sonarpad este corect. Setările au fost salvate.",
+  "sonarpadCodeInvalidTitle": "Cod nevalid",
+  "sonarpadCodeInvalidMessage": "Codul Sonarpad nu este valid. Verifică dacă l-ai copiat fără spații suplimentare.",
+  "infoDescription": "Sonarpad este o aplicație simplă, cu multe funcții. Concepută pentru a fi accesibilă cu VoiceOver persoanelor nevăzătoare și cu deficiențe de vedere, îți permite să asculți știri, să cauți și să urmărești podcasturi, să imporți articole Wikipedia, să adaugi documente în bibliotecă, să le salvezi și să le editezi. Sonarpad este actualizat constant, iar fiecare funcție este gândită pentru a face viața de zi cu zi mai ușoară.",
+  "infoAuthor": "Autor: Ambrogio Riili",
+  "donationsIntro": "Sonarpad a fost creat inițial pentru a răspunde unor nevoi personale, dar în timp a devenit o aplicație mult mai amplă. Dezvoltarea sa necesită muncă permanentă: îmbunătățirea funcțiilor, corectarea erorilor, explorarea unor idei noi și testarea atentă a fiecărei funcții.\n\nDacă Sonarpad îți este util și dorești să îi sprijini dezvoltarea, poți face o donație.",
+  "donationsPaypalDesc": "Poți dona prin PayPal folosind acest link:\nhttps://www.paypal.me/ambrogio86\nDacă este posibil, adaugă „Sonarpad” ca notă a plății.",
+  "donationsBankDesc": "Poți dona și prin transfer bancar în contul pe numele Ambrogio Riili.\nIBAN: IT77W0306901020100000064149\nDacă este posibil, folosește o explicație clară a plății, de exemplu „Sonarpad”.",
+  "donationsThanks": "Oricine sprijină proiectul va fi menționat în aplicație și în depozitul GitHub, cu excepția cazului în care preferă să rămână anonim sau să folosească o poreclă.\n\nMulțumiri lui Jiri Holzinger și Paola Vagata pentru contribuția lor.\nPentru traducerea în cehă, mulțumiri lui Radek Žalud și Jiri Holzinger.\nPentru traducerea în spaniolă, mulțumiri lui Arturo Fernandez Rivas.\n\nMulțumiri enorme lui Leonardo Graziano, Paolo Marcelli, Tiziano Ferraro și întregului grup Tecnologia accessibile pentru tot sprijinul oferit în îmbunătățirea zilnică a acestui minunat proiect.",
+  "news": "Știri",
+  "newsHint": "Deschide știrile din Google News RSS",
+  "podcasts": "Podcasturi",
+  "podcastsHint": "Urmărește podcasturi, redă sau descarcă episoade",
+  "importFromWikipedia": "Wikipedia",
+  "wikipediaHint": "Caută un articol Wikipedia și importă textul",
+  "newsCategoryTop": "Principalele știri",
+  "settingsHomeGrouping": "Activează gruparea pictogramelor de pe ecranul principal în categorii",
+  "settingsHomeGroupingHint": "Dacă este dezactivată, pictogramele principale vor fi afișate într-o singură listă, fără subfoldere",
+  "newsCategoryMyCity": "Orașul meu",
+  "newsLocalCityLabel": "Introdu orașul",
+  "newsLocalCityHint": "Corectează orașul folosit pentru știrile locale",
+  "update": "Actualizare",
+  "moveUp": "Mută în sus",
+  "moveDown": "Mută în jos",
+  "hide": "Șterge",
+  "moveToPosition": "Mută la poziție",
+  "positionLabel": "Poziția {position}: înainte de {targetName}",
+  "positionLabelLast": "Ultima poziție",
+  "restoreHiddenSources": "Restaurează sursele șterse",
+  "addCustomNewsSource": "Adaugă o sursă RSS personalizată",
+  "newsSourceName": "Numele sursei sau al site-ului",
+  "newsSourceUrlOrSearch": "URL site, flux RSS sau termen de căutare",
+  "deleteNewsSource": "Elimină",
+  "importRssSourcesFromOpml": "Importă surse RSS din OPML",
+  "@importRssSourcesFromOpml": {
+    "description": "Localized text for importRssSourcesFromOpml."
+  },
+  "exportRssSourcesToOpml": "Exportă sursele RSS în OPML",
+  "@exportRssSourcesToOpml": {
+    "description": "Localized text for exportRssSourcesToOpml."
+  },
+  "rssImportComplete": "Surse RSS importate: {count}",
+  "@rssImportComplete": {
+    "description": "Localized text for rssImportComplete.",
+    "placeholders": {
+      "count": {
+        "example": "3",
+        "type": "int"
+      }
+    }
+  },
+  "rssImportError": "Eroare la importul RSS: {error}",
+  "@rssImportError": {
+    "description": "Localized text for rssImportError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "rssExportComplete": "Sursele RSS au fost exportate",
+  "@rssExportComplete": {
+    "description": "Localized text for rssExportComplete."
+  },
+  "rssExportError": "Eroare la exportul RSS: {error}",
+  "@rssExportError": {
+    "description": "Localized text for rssExportError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "articleTextSemantics": "Textul articolului",
+  "newsLanguage": "Limba știrilor",
+  "loadingNews": "Se încarcă știrile",
+  "error": "Eroare: {error}",
+  "noNewsFound": "Nu s-au găsit știri",
+  "loadingArticle": "Se încarcă articolul",
+  "noFullArticleFound": "Articolul complet nu este disponibil. Se afișează rezumatul fluxului.",
+  "italian": "Italiană",
+  "english": "Engleză",
+  "french": "Franceză",
+  "spanish": "Spaniolă",
+  "german": "Germană",
+  "@german": {
+    "description": "Localized text for german."
+  },
+  "newsSource": "Sursa știrii",
+  "article": "Articol",
+  "articlePreview": "Previzualizare articol",
+  "readFullArticle": "Citește articolul complet",
+  "extractingReaderArticleText": "Se extrage textul în modul de citire...",
+  "extractingVisibleArticleText": "Se extrage textul vizibil din pagină...",
+  "source": "Sursă: {source}",
+  "readyStatus": "Gata.",
+  "preparingEdgeTts": "Se pregătește lectura Edge TTS în blocuri...",
+  "noTextToRead": "Nu există text de citit.",
+  "chunkCreated": "Blocul {index} din {total} a fost creat. Lectură în curs...",
+  "playingChunk": "Se redă blocul {index} din {total} ({size} octeți)...",
+  "readingFinished": "Lectura s-a încheiat. Blocuri create: {readyChunks}/{totalChunks}. Bibliotecă: {libraryPath}",
+  "libraryNotSpecified": "nespecificată",
+  "readingStopped": "Lectura a fost oprită.",
+  "edgeTtsError": "Eroare Edge TTS: {error}",
+  "audioChunksReady": "Blocuri audio gata: {readyChunks} / {totalChunks}",
+  "readingInProgress": "Lectură în curs...",
+  "readWithEdgeTts": "Începe lectura",
+  "stopReading": "Oprește citirea",
+  "startReading": "Începe lectura",
+  "resumeReading": "Reia lectura",
+  "pauseReading": "Pune citirea pe pauză",
+  "openOriginalArticle": "Deschide articolul original",
+  "searchPodcasts": "Caută podcasturi",
+  "podcastName": "Numele podcastului",
+  "podcastSearchHint": "Exemplu: tehnologie, istorie, numele podcastului...",
+  "searchCountry": "Caută țara",
+  "podcastCategory": "Categoria podcastului",
+  "browsePodcastCategories": "Răsfoiește categoriile",
+  "selectedPodcastCategory": "Categoria selectată",
+  "selectedRecently": "alegere recentă",
+  "@selectedRecently": {
+    "description": "Label appended to the most recently selected podcast country or category."
+  },
+  "podcastCategories": "Categorii de podcasturi",
+  "countryItaly": "Italia",
+  "countryUnitedStatesEnglish": "Statele Unite / Engleză",
+  "countryUnitedKingdom": "Regatul Unit",
+  "countrySpain": "Spania",
+  "countryFrance": "Franța",
+  "searchInProgress": "Căutare în curs...",
+  "podcastResultsFound": "S-au găsit {count} podcasturi",
+  "podcastSearchError": "Eroare la căutarea podcasturilor: {error}",
+  "subscribedTo": "Abonat la {title}",
+  "subscriptionError": "Eroare la abonare: {error}",
+  "podcastSubscriptionError": "Eroare la urmărirea podcastului: {error}",
+  "searchResults": "Rezultatele căutării",
+  "podcastInfo": "Informații despre podcast",
+  "subscribe": "Abonează-te",
+  "openPodcast": "Deschide podcastul",
+  "viewEpisodes": "Vezi episoadele",
+  "podcastAuthor": "Autor",
+  "noPodcastDescription": "Nu există descriere.",
+  "noPodcastResults": "Nu s-au găsit podcasturi.",
+  "loadingPodcastInfo": "Se încarcă informațiile podcastului",
+  "podcastArtwork": "Coperta podcastului",
+  "addFeedUrlManually": "Adaugă manual adresa fluxului RSS",
+  "podcastFeedUrl": "URL flux RSS podcast",
+  "subscribeFromUrl": "Abonează-te din URL",
+  "subscribedPodcasts": "Podcasturi urmărite",
+  "noSubscribedPodcasts": "Nu există podcasturi urmărite. Caută un podcast și atinge un rezultat pentru a-l urmări.",
+  "localAudioFiles": "Fișiere audio locale",
+  "noLocalAudioFiles": "Nu s-au găsit fișiere audio locale.",
+  "importAudioFromITunes": "Importă fișiere audio locale",
+  "localAudioFilesFound": "Fișiere audio locale găsite: {count}",
+  "importPodcastsFromFile": "Importă podcasturi din fișier",
+  "exportPodcastsToFile": "Exportă podcasturile într-un fișier OPML",
+  "podcastImportComplete": "Podcasturi importate: {count}",
+  "podcastImportError": "Eroare la importul podcasturilor: {error}",
+  "podcastExportComplete": "Podcasturile au fost exportate",
+  "podcastExportError": "Eroare la exportul podcasturilor: {error}",
+  "loadingEpisodes": "Se încarcă episoadele",
+  "noAudioEpisodesFound": "Nu s-au găsit episoade audio în flux.",
+  "episodes": "Episoade",
+  "episodeActions": "Acțiuni episod",
+  "downloaded": "Descărcat: {path}",
+  "episodeError": "Eroare episod: {error}",
+  "play": "Redă",
+  "pause": "Pauză",
+  "rewind15s": "Înapoi 15 s",
+  "forward15s": "Înainte 15 s",
+  "stop": "Oprește",
+  "back": "Înapoi",
+  "episodePlayer": "Player episod",
+  "nowPlayingTitle": "În redare: {title}",
+  "loadingEpisodeAudio": "Se încarcă sunetul episodului",
+  "playbackPosition": "Poziție",
+  "playbackPositionValue": "{position} din {duration}",
+  "adjustVolume": "Reglează volumul",
+  "volumeValue": "Volum: {percentage}%",
+  "download": "Descarcă",
+  "searchWikipedia": "Caută pe Wikipedia",
+  "wikipediaLanguage": "Limba Wikipedia",
+  "search": "Caută",
+  "wikipediaSearch": "Căutare Wikipedia",
+  "wikipediaImporting": "Import Wikipedia",
+  "noWikipediaResults": "Nu s-au găsit rezultate pe Wikipedia",
+  "wikipediaImportMode": "Mod de import",
+  "wikipediaImportWholeArticle": "Articol complet",
+  "documents": "Documente",
+  "documentsHint": "Deschide biblioteca de documente",
+  "documentLibrary": "Biblioteca de documente",
+  "addToLibrary": "Adaugă în bibliotecă",
+  "documentImportSelectionMode": "Dorești să selectezi un singur document sau mai multe documente?",
+  "documentImportSingle": "Un document",
+  "documentImportMultiple": "Mai multe documente",
+  "noDocuments": "Nu există documente. Adaugă un fișier.",
+  "noDocumentsInLibrary": "Nu există documente în bibliotecă.",
+  "documentAdded": "Document adăugat",
+  "documentsAdded": "Documente adăugate",
+  "importDocumentsFromITunes": "Importă documente din iTunes / Apple Devices",
+  "sharedDocumentsImportComplete": "Documente importate din iTunes / Apple Devices: {count}",
+  "libraryLoadError": "Eroare la încărcarea bibliotecii: {error}",
+  "fileOpenError": "Eroare la deschiderea fișierului: {error}",
+  "filePathUnavailable": "Calea fișierului nu este disponibilă.",
+  "fileInaccessible": "Fișier inaccesibil: {name}",
+  "documentAddError": "Eroare la adăugarea documentului: {error}",
+  "documentRemoveError": "Eroare la eliminare: {error}",
+  "noExportableTextFound": "Nu s-a găsit text care poate fi exportat.",
+  "modifiedDocumentNoExportableText": "Documentul modificat nu conține text care poate fi exportat.",
+  "documentRemoved": "Document eliminat",
+  "folderRemoved": "Folder eliminat",
+  "removeFolder": "Elimină folderul",
+  "removeDocument": "Elimină documentul",
+  "writeNewDocument": "Scrie un document nou",
+  "addDocumentToLibraryHint": "Adaugă documentul în bibliotecă. Răsfoiește fișierele dispozitivului și adaugă-l.",
+  "documentTypeLabel": "Document",
+  "documentPosition": "Poziția în document",
+  "documentRemainingLessThanOneMinute": "mai puțin de 1 minut rămas",
+  "@documentRemainingLessThanOneMinute": {
+    "description": "Localized text for documentRemainingLessThanOneMinute."
+  },
+  "documentRemainingMinutes": "aproximativ {minutes} minute rămase",
+  "@documentRemainingMinutes": {
+    "description": "Localized text for documentRemainingMinutes.",
+    "placeholders": {
+      "minutes": {
+        "example": "12",
+        "type": "int"
+      }
+    }
+  },
+  "documentRemainingHours": "aproximativ {hours} ore rămase",
+  "@documentRemainingHours": {
+    "description": "Localized text for documentRemainingHours.",
+    "placeholders": {
+      "hours": {
+        "example": "10",
+        "type": "int"
+      }
+    }
+  },
+  "documentRemainingHoursMinutes": "aproximativ {hours} ore și {minutes} minute rămase",
+  "@documentRemainingHoursMinutes": {
+    "description": "Localized text for documentRemainingHoursMinutes.",
+    "placeholders": {
+      "hours": {
+        "example": "10",
+        "type": "int"
+      },
+      "minutes": {
+        "example": "15",
+        "type": "int"
+      }
+    }
+  },
+  "folderTypeLabel": "Dosar",
+  "documentAddedOn": "adăugat la {date}",
+  "documentTypeDescription": "tip {extension}",
+  "openFolderHint": "Atinge de două ori pentru a deschide folderul",
+  "openDocumentHint": "Atinge de două ori pentru a deschide și citi documentul",
+  "removeItem": "Elimină {name}",
+  "removePodcast": "Elimină podcastul",
+  "podcastRemoved": "Podcast eliminat",
+  "documentPickerError": "Eroare la deschiderea fișierului",
+  "readDocument": "Citește documentul",
+  "documentReaderTitle": "Cititor de documente",
+  "documentReaderEditHint": "Atinge un paragraf pentru a-l edita. Glisează în sus sau în jos pentru a adăuga un semn de carte.",
+  "documentParagraphSelectionStartAction": "Începe selectarea paragrafelor",
+  "@documentParagraphSelectionStartAction": {
+    "description": "Localized text for documentParagraphSelectionStartAction."
+  },
+  "documentParagraphSelectionTapHint": "Modul de selectare este activ. Atinge de două ori pentru a selecta sau deselecta acest paragraf.",
+  "@documentParagraphSelectionTapHint": {
+    "description": "Localized text for documentParagraphSelectionTapHint."
+  },
+  "documentParagraphSelectionStarted": "Modul de selectare este activ. Paragraf selectat. Atinge de două ori alte paragrafe pentru a le selecta.",
+  "@documentParagraphSelectionStarted": {
+    "description": "Localized text for documentParagraphSelectionStarted."
+  },
+  "documentParagraphSelectedAnnouncement": "Paragraf selectat. Total selectate: {count}.",
+  "@documentParagraphSelectedAnnouncement": {
+    "description": "Localized text for documentParagraphSelectedAnnouncement.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "documentParagraphDeselectedAnnouncement": "Paragraf deselectat. Total selectate: {count}.",
+  "@documentParagraphDeselectedAnnouncement": {
+    "description": "Localized text for documentParagraphDeselectedAnnouncement.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "documentParagraphSelectionCount": "Selectate: {count}",
+  "@documentParagraphSelectionCount": {
+    "description": "Localized text for documentParagraphSelectionCount.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "documentDeleteSelectedParagraphs": "Șterge paragrafele selectate",
+  "@documentDeleteSelectedParagraphs": {
+    "description": "Localized text for documentDeleteSelectedParagraphs."
+  },
+  "documentDeleteSelectedParagraphsConfirmation": "Ștergi paragrafele selectate? Total: {count}.",
+  "@documentDeleteSelectedParagraphsConfirmation": {
+    "description": "Localized text for documentDeleteSelectedParagraphsConfirmation.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "documentSelectedParagraphsDeleted": "Paragrafe șterse: {count}.",
+  "@documentSelectedParagraphsDeleted": {
+    "description": "Localized text for documentSelectedParagraphsDeleted.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "documentExitParagraphSelection": "Ieși din selectarea paragrafelor",
+  "@documentExitParagraphSelection": {
+    "description": "Localized text for documentExitParagraphSelection."
+  },
+  "documentParagraphSelectionExited": "Modul de selectare a fost dezactivat.",
+  "@documentParagraphSelectionExited": {
+    "description": "Localized text for documentParagraphSelectionExited."
+  },
+  "documentBookmarkHintSet": "Glisează în sus sau în jos pentru a seta un semn de carte.",
+  "documentEditParagraphActionHint": "Atinge de două ori pentru a edita acest paragraf. ",
+  "documentBookmarkHintReplace": "Glisează în sus sau în jos pentru a elimina semnul de carte existent sau pentru a-l înlocui cu acest paragraf.",
+  "documentSetBookmarkAction": "Adaugă un semn de carte nou",
+  "documentRemoveBookmarkAction": "Elimină semnul de carte",
+  "documentReplaceBookmarkAction": "Elimină și adaugă un semn de carte nou",
+  "searchInDocument": "Caută în document",
+  "documentIndex": "Cuprins",
+  "@documentIndex": {
+    "description": "Localized text for documentIndex."
+  },
+  "documentSearchFieldLabel": "Caută text",
+  "documentSearchFieldHint": "Cuvânt sau expresie de găsit",
+  "documentSearchEmptyQuery": "Introdu textul de căutat.",
+  "documentSearchResultsTitle": "Rezultatele căutării în document",
+  "noDocumentSearchResults": "Nu s-au găsit rezultate pentru {query}.",
+  "documentSearchResultParagraph": "Paragraful {number}",
+  "edit": "Editează",
+  "save": "Salvează",
+  "cancel": "Anulează",
+  "settingsReadingEngine": "Motor de citire",
+  "settingsEdgeTtsQuality": "Edge TTS (online, calitate înaltă)",
+  "settingsSystemVoices": "Voci de sistem (VoiceOver / Google)",
+  "settingsNoSystemVoices": "Nu există voci de sistem disponibile.",
+  "settingsDefaultVoiceHint": "Voce implicită",
+  "settingsDefaultVoice": "Implicită",
+  "settingsVoiceSpeed": "Viteză: ",
+  "settingsVoicePitch": "Ton: ",
+  "settingsVoiceSpeedLabel": "Viteza de citire",
+  "settingsVoicePitchLabel": "Înălțimea vocii",
+  "settingsTestVoice": "Testează vocea",
+  "settingsTestingVoice": "Se redă...",
+  "settingsVoiceTestText": "Acesta este un test al vocii selectate.",
+  "settingsVoiceTestError": "Eroare la testarea vocii: {error}",
+  "settingsVoiceSaveError": "Eroare la salvarea vocii TTS: {error}",
+  "settingsUnsavedTitle": "Modificări nesalvate",
+  "settingsUnsavedMessage": "Vrei să salvezi modificările înainte de a părăsi setările?",
+  "settingsExitWithoutSaving": "Ieși fără să salvezi",
+  "settingsSystemLanguage": "Limba sistemului",
+  "settingsSystemVoice": "Vocea sistemului",
+  "settingsAutoBookmark": "Reluare automată",
+  "settingsAutoBookmarkHint": "Reia documentele, podcasturile și conținutul media de unde ai rămas.",
+  "settingsDocumentSliderStep": "Pasul glisorului documentului",
+  "@settingsDocumentSliderStep": {
+    "description": "Localized text for settingsDocumentSliderStep."
+  },
+  "settingsDocumentSliderStepHint": "Controlează cât de mult se deplasează glisorul poziției în document când glisezi în sus sau în jos.",
+  "settingsReadingSleepTimer": "Temporizator de oprire a citirii",
+  "@settingsReadingSleepTimer": {
+    "description": "Localized text for settingsReadingSleepTimer."
+  },
+  "settingsReadingSleepTimerOff": "Dezactivat",
+  "@settingsReadingSleepTimerOff": {
+    "description": "Localized text for settingsReadingSleepTimerOff."
+  },
+  "settingsReadingSleepTimerMinutes": "{minutes} minute",
+  "@settingsReadingSleepTimerMinutes": {
+    "description": "Localized text for settingsReadingSleepTimerMinutes.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsReadingSleepTimerHint": "Oprește automat lectura documentului curent după timpul selectat și salvează poziția. Numărătoarea inversă repornește de fiecare dată când începi lectura unui document.",
+  "@settingsReadingSleepTimerHint": {
+    "description": "Localized text for settingsReadingSleepTimerHint."
+  },
+  "documentReadingSleepTimerStopped": "Temporizator de somn: lectura a fost oprită și poziția a fost salvată.",
+  "@documentReadingSleepTimerStopped": {
+    "description": "Localized text for documentReadingSleepTimerStopped."
+  },
+  "@settingsDocumentSliderStepHint": {
+    "description": "Localized text for settingsDocumentSliderStepHint."
+  },
+  "settingsSeekStep": "Pas pentru derulare înapoi / înainte la media",
+  "aiChatIntro": "Sunt Sonarpad AI. Cum te pot ajuta?",
+  "cinemaOverviewLabel": "Prezentare generală:",
+  "cinemaUpcomingReleases": "Lansări viitoare",
+  "cinemaWillRelease": "Va fi lansat la: {date}",
+  "meteoTitle": "Vreme",
+  "weatherCity": "Oraș",
+  "weatherCityHint": "Exemplu: București",
+  "weatherCityNotFound": "Orașul nu a fost găsit",
+  "weatherSearchError": "Eroare în timpul căutării",
+  "weatherToday": "Astăzi",
+  "weatherCurrentSituation": "Situația actuală",
+  "weatherTomorrow": "Mâine",
+  "weatherChooseDay": "Alege ziua",
+  "tvRecordingChooseDay": "Alege ziua",
+  "weatherCurrentTemperature": "Temperatura actuală",
+  "weatherMaxTemperature": "Temperatura maximă",
+  "weatherMinTemperature": "Temperatura minimă",
+  "weatherPrecipitation": "Precipitații",
+  "weatherPrecipitationProbability": "Probabilitatea precipitațiilor",
+  "weatherWind": "Vânt",
+  "weatherRelativeHumidity": "Umiditate relativă",
+  "settingsSecretCode": "Cod Sonarpad pentru funcții suplimentare",
+  "settingsRequestCode": "Solicită codul de la autor",
+  "settingsPasteCode": "Lipește codul",
+  "settingsCancel": "Anulează",
+  "settingsSend": "Trimite",
+  "settingsFillFieldsCode": "Completează toate câmpurile pentru a solicita codul.",
+  "settingsName": "Prenume",
+  "settingsSurname": "Nume",
+  "settingsEmail": "E-mail",
+  "settingsOperatingSystem": "Sistem de operare",
+  "settingsCodeRequestBody": "Nume: {name}; Prenume: {surname}; E-mail: {email}; Sistem de operare: {os}",
+  "settingsNameOptional": "Nume (opțional)",
+  "settingsMessageOptional": "Mesaj (opțional)",
+  "settingsVerifyCodeAndSave": "Se verifică codul și se salvează...",
+  "settingsViewSysLog": "Vezi jurnalul sistemului",
+  "settingsMailOpenError": "Eroare la deschiderea e-mailului: {error}",
+  "ok": "OK",
+  "yes": "Da",
+  "no": "Nu",
+  "invia": "Trimite",
+  "saveArticle": "Salvează articolul",
+  "shareArticle": "Distribuie articolul",
+  "shareArticleAsTxt": "Distribuie articolul ca TXT",
+  "@shareArticleAsTxt": {
+    "description": "Localized text for shareArticleAsTxt."
+  },
+  "articleSavedSuccess": "Articol salvat în Documente",
+  "annulla": "Anulează",
+  "compilaTuttiICampiPerRichiedereIlCodice": "Completează toate câmpurile pentru a solicita codul.",
+  "selectFolder": "Selectează folderul",
+  "exportDocument": "Exportă documentul",
+  "exportFormatPrompt": "În ce format dorești să exporți documentul?",
+  "textFormat": "Text (.txt)",
+  "pdfFormat": "PDF (.pdf)",
+  "docxFormat": "DOCX (.docx)",
+  "epubFormat": "EPUB (.epub)",
+  "exportError": "Eroare la export",
+  "newFolder": "Folder nou",
+  "folderNameHint": "Numele folderului",
+  "create": "Creează",
+  "createNewFolder": "Creează folder nou",
+  "importExternalSources": "Importă din surse externe",
+  "importExternalSourcesTitle": "Surse externe",
+  "importFromDropbox": "Importă documente din Dropbox",
+  "importFromProjectGutenberg": "Importă din Project Gutenberg",
+  "projectGutenbergImportUnavailable": "Importul din Project Gutenberg nu este încă disponibil.",
+  "importFromInternetArchive": "Importă din Internet Archive",
+  "internetArchiveTitle": "Internet Archive",
+  "internetArchiveSearchLabel": "Caută audio",
+  "internetArchiveSourceLabel": "Sursă",
+  "internetArchiveOldTimeRadio": "Emisiuni radio de epocă",
+  "internetArchiveSpeeches": "Discursuri istorice",
+  "internetArchiveLiveMusic": "Arhivă de muzică live",
+  "internetArchiveNoItemsFound": "Nu s-au găsit elemente audio.",
+  "saveAudioInDocuments": "Salvează audio în Documente",
+  "audioSavedInDocuments": "Audio salvat în Documente.",
+  "noAudioTracksAvailable": "Nu sunt disponibile piste audio.",
+  "importFromLibriVox": "Importă din LibriVox",
+  "gutenbergSearchLabel": "Caută carte sau autor",
+  "sourceLanguageLabel": "Limbă",
+  "noGutenbergBooksFound": "Nu s-au găsit cărți.",
+  "loadMore": "Încarcă mai multe",
+  "sourceLanguageValue": "Limbă: {language}",
+  "gutenbergImportAndRead": "Importă și citește",
+  "gutenbergImporting": "Se importă...",
+  "librivoxSearchLabel": "Caută carte audio",
+  "noLibrivoxAudiobooksFound": "Nu s-au găsit cărți audio.",
+  "librivoxAudiobookSaved": "Cartea audio a fost salvată în Documente.",
+  "librivoxSaveAudiobook": "Salvează cartea audio în Documente",
+  "librivoxSaving": "Se salvează...",
+  "librivoxNoAudioTracks": "Nu sunt disponibile piste audio.",
+  "librivoxNotTextExportable": "Cărțile audio LibriVox nu pot fi exportate ca text.",
+  "sourceDurationValue": "Durată: {duration}",
+  "importFromPoetryDb": "Importă din PoetryDB",
+  "poetryDbSearchLabel": "Caută poezie",
+  "poetryDbSearchBy": "Caută după",
+  "poetryDbSearchByTitle": "Titlu",
+  "poetryDbSearchByAuthor": "Autor",
+  "poetryDbNoPoemsFound": "Nu s-au găsit poezii.",
+  "poetryDbLineCount": "{count} versuri",
+  "moveDocument": "Mută documentul",
+  "documentMoved": "Mutat cu succes",
+  "outOfFolder": "În afara folderului",
+  "moveToAnotherFolder": "Mută în alt folder...",
+  "ttsError": "Eroare TTS",
+  "editParagraph": "Editează paragraful",
+  "editParagraphTextField": "Câmp text pentru editarea paragrafului",
+  "editParagraphHint": "Editează textul paragrafului",
+  "applyAndSave": "Aplică și salvează",
+  "textEditedAndSaved": "Text editat și salvat în documentul curent.",
+  "saveError": "Eroare la salvare",
+  "docSavedInLibrary": "Document salvat în bibliotecă",
+  "saveInLibrary": "Salvează în bibliotecă",
+  "documentTextLabel": "Textul documentului",
+  "modifiedInSonarpad": "Modificat în Sonarpad",
+  "noTextAvailableForDocument": "Nu există text disponibil pentru acest document.",
+  "bookmarkSet": "Semn de carte setat la paragraful {index}.",
+  "bookmarkRemoved": "Semn de carte eliminat.",
+  "docEmpty": "Documentul este gol",
+  "docSavedSuccessfully": "Document salvat cu succes!",
+  "writeDocument": "Scrie document",
+  "documentTitleOptional": "Titlu (opțional)",
+  "documentTitleHint": "Exemplu: Notițe pentru cumpărături",
+  "documentTextField": "Textul documentului",
+  "documentTextHint": "Începe să scrii aici...",
+  "newDocumentDefaultName": "Document_nou",
+  "saving": "Se salvează...",
+  "saveDocument": "Salvează documentul",
+  "addRssSource": "Adaugă sursă RSS",
+  "add": "Adaugă",
+  "errorPrefix": "Eroare",
+  "versionBuild": "Versiunea {version} (Build {buildNumber})",
+  "whatIsNew": "Noutăți",
+  "whatIsNewInVersion": "Noutăți în versiunea {version}",
+  "changelogLoadError": "Eroare la încărcarea noutăților: {error}",
+  "visitSonarpadSite": "Vizitează site-ul Sonarpad",
+  "visitSonarpadSiteWithUrl": "Vizitează site-ul Sonarpad: {url}",
+  "nowPlaying": "În redare",
+  "fileImported": "Fișier importat",
+  "importZipError": "Eroare la importul ZIP: {error}",
+  "dropboxLoginPrompt": "Autentifică-te în Dropbox pentru a importa documentele.",
+  "loginToDropbox": "Autentifică-te în Dropbox",
+  "logoutFromDropbox": "Deconectează-te",
+  "dropboxLoginFailed": "Autentificare eșuată sau anulată",
+  "dropboxLoadFolderError": "Eroare la încărcarea folderului: {error}",
+  "dropboxImportError": "Eroare la import: {error}",
+  "retry": "Reîncearcă",
+  "goBack": "Înapoi",
+  "noSupportedFilesInFolder": "Nu există fișiere compatibile în acest folder.",
+  "articleNotFound": "Articolul nu a fost găsit.",
+  "errorOpening": "Eroare la deschidere",
+  "recentArticles": "Articole recente",
+  "clearHistory": "Șterge istoricul",
+  "confirmClearHistory": "Sigur vrei să ștergi toate căutările recente?",
+  "clear": "Șterge",
+  "noRecentSearches": "Nu există căutări recente.",
+  "logCopiedToClipboard": "Jurnal copiat în clipboard",
+  "logCleared": "Jurnal șters",
+  "parafarmacoDetailReadyAnnouncement": "Fișa produsului a fost încărcată. Glisează spre dreapta pentru a alege secțiunile.",
+  "systemLog": "Jurnal de sistem",
+  "clearSystemLog": "Șterge jurnalul",
+  "copySystemLog": "Copiază jurnalul",
+  "sendLogToDeveloper": "Trimite raportul",
+  "developerLogNameOptional": "Nume (opțional)",
+  "developerLogSend": "Trimite",
+  "developerLogSending": "Se trimite raportul...",
+  "developerLogSent": "Raport trimis dezvoltatorului.",
+  "developerLogSendFailed": "Raportul nu a putut fi trimis. Încearcă din nou mai târziu.",
+  "donateWithPaypal": "Donează prin PayPal",
+  "bankTransferTitle": "Transfer bancar",
+  "enableVideo": "Activează videoclipul",
+  "calendar": "Calendar",
+  "calendarHint": "Vezi calendarul, sărbătorile, sfântul zilei și mementourile tale",
+  "saintOfTheDay": "Sfântul zilei",
+  "quoteOfTheDay": "Citatul zilei",
+  "reminders": "Mementouri",
+  "addReminder": "Adaugă memento",
+  "removeReminder": "Elimină mementoul",
+  "noReminders": "Nu există mementouri",
+  "writeReminder": "Scrie mementoul aici...",
+  "saveReminder": "Salvează",
+  "cancelReminder": "Anulează",
+  "backToToday": "Înapoi la astăzi",
+  "calendarToday": "Astăzi",
+  "calendarTomorrow": "Mâine",
+  "calendarYesterday": "Ieri",
+  "share": "Distribuie",
+  "shareCalendarDayOptions": "Opțiuni de distribuire",
+  "shareCalendarDayOnly": "Distribuie doar ziua",
+  "shareCalendarDayWithReminder": "Distribuie ziua și mementoul",
+  "listenToAll": "Ascultă tot",
+  "reminderSaved": "{count} mementouri",
+  "audiodescriptionTitle": "Audiodescrieri",
+  "audiodescriptionRecent": "Recente",
+  "audiodescriptionAll": "Toate audiodescrierile",
+  "audiodescriptionFilm": "Filme",
+  "audiodescriptionSearch": "Caută...",
+  "audiodescriptionLoading": "Se încarcă...",
+  "audiodescriptionError": "Eroare la încărcarea catalogului",
+  "audiodescriptionEmpty": "Nu s-au găsit elemente",
+  "radio": "Radio",
+  "radioHint": "Caută posturi de radio, ascultă transmisiuni și gestionează favoritele",
+  "radioTitle": "Posturi de radio din întreaga lume",
+  "radioFavoritesButton": "Posturi de radio favorite",
+  "radioNoFavorites": "Nu există posturi de radio favorite.",
+  "radioSearchText": "Caută posturi de radio",
+  "radioSearchHint": "Numele postului sau orașul...",
+  "radioLanguage": "Limbă",
+  "radioBrowseBy": "Răsfoiește după",
+  "radioBrowseByLanguage": "Răsfoiește după limbă",
+  "radioBrowseByCountry": "Răsfoiește după țară",
+  "radioCountry": "Țară",
+  "radioGenre": "Gen",
+  "radioActiveFilters": "Filtre active",
+  "radioResetFilters": "Resetează filtrele",
+  "radioFiltersReset": "Filtre resetate.",
+  "radioCity": "Oraș",
+  "radioSearch": "Caută",
+  "radioSearching": "Se încarcă posturile...",
+  "radioSearchResults": "Rezultate radio",
+  "radioNoResults": "Nu s-au găsit posturi de radio.",
+  "radioResultsFound": "Au fost găsite {count} posturi de radio",
+  "radioSearchError": "Eroare la căutarea posturilor: {error}",
+  "radioNowPlaying": "Se redă {name}",
+  "radioPlayError": "Eroare la redarea fluxului radio: {error}",
+  "radioAddFavorite": "Adaugă la favorite",
+  "radioRemoveFavorite": "Elimină din favorite",
+  "radioFavoriteAdded": "{name} a fost adăugat la favorite.",
+  "radioFavoriteRemoved": "{name} a fost eliminat din favorite.",
+  "tvSearchFieldLabel": "Caută canale TV",
+  "@tvSearchFieldLabel": {
+    "description": "Localized text for tvSearchFieldLabel."
+  },
+  "tvSearchFieldHint": "Numele canalului...",
+  "@tvSearchFieldHint": {
+    "description": "Localized text for tvSearchFieldHint."
+  },
+  "tvSearchButton": "Caută",
+  "@tvSearchButton": {
+    "description": "Localized text for tvSearchButton."
+  },
+  "tvSearchResults": "Rezultate canale TV",
+  "@tvSearchResults": {
+    "description": "Localized text for tvSearchResults."
+  },
+  "tvSearchEmptyQuery": "Introdu numele unui canal TV de căutat.",
+  "@tvSearchEmptyQuery": {
+    "description": "Localized text for tvSearchEmptyQuery."
+  },
+  "tvSearchNoResults": "Nu s-au găsit canale TV pentru {query}.",
+  "@tvSearchNoResults": {
+    "description": "Localized text for tvSearchNoResults.",
+    "placeholders": {
+      "query": {
+        "example": "Rai",
+        "type": "String"
+      }
+    }
+  },
+  "tvOpenChannelHint": "Atinge pentru a reda canalul TV",
+  "@tvOpenChannelHint": {
+    "description": "Localized text for tvOpenChannelHint."
+  },
+  "tvNowOnAir": "Acum în direct: {title}",
+  "@tvNowOnAir": {
+    "description": "Localized text for tvNowOnAir.",
+    "placeholders": {
+      "title": {
+        "example": "Telegiornale",
+        "type": "String"
+      }
+    }
+  },
+  "radioAddCommunity": "Adaugă postul în comunitatea Sonarpad",
+  "radioAddName": "Numele postului",
+  "radioAddUrl": "Adresa fluxului",
+  "radioAddSubmit": "Verifică și adaugă",
+  "radioAddMissingFields": "Introdu numele postului și adresa fluxului.",
+  "radioCommunityAdded": "Postul a fost adăugat cu succes în comunitatea Sonarpad.",
+  "radioCommunityAddError": "Eroare la adăugarea postului: {error}",
+  "radioPlay": "Redă",
+  "tvPlayLive": "Redă transmisia în direct",
+  "@tvPlayLive": {
+    "description": "Secondary action that plays a TV channel live without opening its guide."
+  },
+  "playAndRecord": "Redă și înregistrează",
+  "@playAndRecord": {
+    "description": "Secondary action that opens a radio or TV channel and immediately starts recording."
+  },
+  "startRecording": "Începe înregistrarea",
+  "stopRecording": "Oprește înregistrarea",
+  "recordings": "Înregistrări",
+  "recordingInProgressStatus": "Înregistrare în curs",
+  "scheduledRecordingInProgressStatus": "Înregistrare programată în curs",
+  "scheduledRecordingPendingStatus": "Programată pentru {dateTime}",
+  "@scheduledRecordingPendingStatus": {
+    "description": "Status shown for a scheduled recording that has not started yet.",
+    "placeholders": {
+      "dateTime": {}
+    }
+  },
+  "recordingCannotOpenBeforeScheduledStart": "Această înregistrare nu a început încă. Va începe la {dateTime}.",
+  "@recordingCannotOpenBeforeScheduledStart": {
+    "description": "Message shown when opening a scheduled recording before it starts.",
+    "placeholders": {
+      "dateTime": {}
+    }
+  },
+  "recordingCannotOpenWhileInProgress": "Această înregistrare nu poate fi deschisă deoarece este încă în curs.",
+  "blindLibrarySearchCatalog": "Caută în catalog",
+  "selectRecordings": "Selectează înregistrările",
+  "selectAll": "Selectează tot",
+  "deselectAll": "Deselectează tot",
+  "selectionActionCount": "{action} ({count})",
+  "@selectionActionCount": {
+    "description": "Localized action label followed by the number of selected items.",
+    "placeholders": {
+      "action": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "deleteRecordingsConfirmation": "{count, plural, =1{Ștergi definitiv o înregistrare?} other{Ștergi definitiv {count} înregistrări?}}",
+  "recordingDeleted": "Înregistrare ștearsă.",
+  "recordingsDeleted": "Înregistrări șterse.",
+  "noRecordings": "Nu există înregistrări.",
+  "recordingStarted": "Înregistrarea a început.",
+  "recordingSaved": "Înregistrare salvată: {path}",
+  "@recordingSaved": {
+    "placeholders": {
+      "path": {
+        "type": "Object"
+      }
+    }
+  },
+  "recordingError": "Eroare la înregistrare: {error}",
+  "@recordingError": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "routeTitle": "Rute",
+  "routeFrom": "De la",
+  "routeTo": "Până la",
+  "routeCountry": "Țară",
+  "routeCountryItaly": "Italia",
+  "routeCountryFrance": "Franța",
+  "routeCountrySpain": "Spania",
+  "routeCountryCzechRepublic": "Cehia",
+  "routeVehicle": "Mijloc de transport",
+  "routeType": "Tip",
+  "routeIncludeMunicipalities": "Include localitățile traversate",
+  "routeWalking": "Pe jos",
+  "routeCycling": "Bicicletă",
+  "routeDriving": "Mașină",
+  "routeWheelchair": "Scaun rulant",
+  "routeFastest": "Cea mai rapidă",
+  "routeShortest": "Cea mai scurtă",
+  "routeCalculate": "Calculează ruta",
+  "routeCalculating": "Se calculează...",
+  "routeChooseFrom": "Alege punctul de plecare",
+  "routeChooseTo": "Alege destinația",
+  "routeCancel": "Anulează",
+  "routeErrorMissingFields": "Introdu punctul de plecare și destinația",
+  "routeErrorFromNotFound": "Nu s-a găsit niciun rezultat pentru adresa de plecare",
+  "routeErrorToNotFound": "Nu s-a găsit niciun rezultat pentru adresa de destinație",
+  "routeResultsTitle": "Rute disponibile",
+  "routeDistance": "Distanță",
+  "routeDuration": "Durată",
+  "routeNavigation": "Detalii de navigare",
+  "routeStartMunicipality": "Localitatea de plecare",
+  "routeEnterMunicipality": "Intri în localitatea",
+  "routeError": "Eroare: {error}",
+  "radioLanguageIt": "Italiană",
+  "radioLanguageEn": "Engleză",
+  "radioLanguageDe": "Germană",
+  "radioLanguageCountryCh": "Elveția",
+  "radioLanguageEs": "Spaniolă",
+  "radioLanguagePt": "Portugheză",
+  "radioLanguageSv": "Suedeză",
+  "radioLanguageVi": "Vietnameză",
+  "radioLanguageCs": "Cehă",
+  "radioLanguagePl": "Poloneză",
+  "radioLanguageFr": "Franceză",
+  "radioLanguageSr": "Sârbă",
+  "radioLanguageUk": "Ucraineană",
+  "radioLanguageHi": "Hindi",
+  "radioLanguageLt": "Lituaniană",
+  "radioLanguageRu": "Rusă",
+  "radioLanguageZh": "Chineză",
+  "radioCountryOptionIt": "Italia",
+  "radioCountryOptionUs": "Statele Unite",
+  "radioCountryOptionGb": "Regatul Unit",
+  "radioCountryOptionFr": "Franța",
+  "radioCountryOptionEs": "Spania",
+  "radioCountryOptionDe": "Germania",
+  "radioCountryOptionCh": "Elveția",
+  "radioCountryOptionAt": "Austria",
+  "radioCountryOptionBe": "Belgia",
+  "radioCountryOptionNl": "Țările de Jos",
+  "radioCountryOptionPt": "Portugalia",
+  "radioCountryOptionBr": "Brazilia",
+  "radioCountryOptionAr": "Argentina",
+  "radioCountryOptionMx": "Mexic",
+  "radioCountryOptionCa": "Canada",
+  "radioCountryOptionAu": "Australia",
+  "radioCountryOptionIe": "Irlanda",
+  "radioCountryOptionSe": "Suedia",
+  "radioCountryOptionPl": "Polonia",
+  "radioCountryOptionJp": "Japonia",
+  "radioGenreOptionAll": "Toate genurile",
+  "radioGenreOptionNews": "Știri",
+  "radioGenreOptionMusic": "Muzică",
+  "radioGenreOptionSport": "Sport",
+  "radioGenreOptionTalk": "Discuții și analiză",
+  "radioGenreOptionPop": "Pop",
+  "radioGenreOptionRock": "Rock",
+  "radioGenreOptionClassical": "Clasică",
+  "radioGenreOptionJazz": "Jazz",
+  "radioGenreOptionDance": "Dans",
+  "radioGenreOptionBlues": "Blues",
+  "radioGenreOptionCountry": "Country",
+  "radioGenreOptionHiphop": "Hip-hop",
+  "radioGenreOptionElectronic": "Electronică",
+  "radioGenreOptionLatin": "Latină",
+  "radioGenreOptionReggae": "Reggae",
+  "radioGenreOptionMetal": "Metal",
+  "radioGenreOptionFolk": "Folk",
+  "radioGenreOptionReligion": "Religie",
+  "radioGenreOptionLocal": "Local",
+  "radioGenreOptionCulture": "Cultură",
+  "radioGenreOptionOldies": "Anii ’70 / ’80 / ’90",
+  "radioGenreOptionKids": "Copii",
+  "radioGenreOptionAmbient": "Ambient",
+  "radioCommunityLanguageItalian": "Italiană",
+  "radioCommunityLanguageEnglish": "Engleză",
+  "radioCommunityLanguageSpanish": "Spaniolă",
+  "radioCommunityLanguageFrench": "Franceză",
+  "radioCommunityLanguageGerman": "Germană",
+  "radioCommunityLanguagePortuguese": "Portugheză",
+  "radioCommunityLanguageSwedish": "Suedeză",
+  "radioCommunityLanguageVietnamese": "Vietnameză",
+  "radioCommunityLanguageCzech": "Cehă",
+  "radioCommunityLanguagePolish": "Poloneză",
+  "radioCommunityLanguageSerbian": "Sârbă",
+  "radioCommunityLanguageUkrainian": "Ucraineană",
+  "radioCommunityLanguageLithuanian": "Lituaniană",
+  "radioCommunityLanguageRussian": "Rusă",
+  "radioCommunityLanguageChinese": "Chineză",
+  "radioCommunityLanguageHindi": "Hindi",
+  "routeDistanceMeters": "{meters} m",
+  "routeDistanceKilometers": "{kilometers} km",
+  "routeDurationMinutes": "{minutes} min",
+  "routeDurationHoursMinutes": "{hours} h {minutes} min",
+  "cinemaTitle": "Filme la cinema",
+  "cinemaNoMovies": "Momentan nu s-au găsit filme.",
+  "cinemaError": "Eroare la încărcarea filmelor.",
+  "cinemaReleased": "Lansat la: {date}",
+  "cinemaOpenTrailer": "Deschide trailerul",
+  "concertsTitle": "Concerte și evenimente",
+  "concertsSearchHint": "Introdu un oraș (de ex. București, Londra)",
+  "concertsSearchLabel": "Caută concerte după oraș",
+  "concertsSearchTooltip": "Caută",
+  "concertsInitialText": "Introdu mai sus numele orașului pentru a vedea concertele muzicale viitoare.",
+  "concertsEmpty": "Nu s-au găsit concerte în acest oraș.",
+  "concertsVenue": "Locul concertului:",
+  "concertsBuyTickets": "Cumpără bilete sau vezi detalii pe Ticketmaster",
+  "newsReadArticles": "Articole citite",
+  "weatherRecentCities": "Orașe recente",
+  "podcastPlayedEpisodes": "Episoade redate",
+  "podcastSelectDate": "Selectează data",
+  "@podcastSelectDate": {
+    "description": "Button that opens the podcast date selector."
+  },
+  "podcastNoDatesAvailable": "Nu există date disponibile pentru aceste episoade.",
+  "podcastChapters": "Capitole",
+  "@podcastChapters": {
+    "description": "Button and screen title for the podcast chapter list."
+  },
+  "podcastChaptersUnavailable": "Nu există capitole disponibile pentru acest episod.",
+  "@podcastChaptersUnavailable": {
+    "description": "Shown when no podcast chapters are available for an episode."
+  },
+  "@podcastNoDatesAvailable": {
+    "description": "Shown when a podcast feed has no publication dates to choose from."
+  },
+  "podcastUnplayed": "Episoade neredate",
+  "routeReadAction": "Citește ruta",
+  "routeSaveAction": "Salvează în documente",
+  "routeOpenAction": "Deschide ruta",
+  "routeAppleMapsAction": "Hărți",
+  "routeGoogleMapsAction": "Google Maps",
+  "routeOpenError": "Nu se poate deschide aplicația de navigare.",
+  "routeSaveSuccess": "Ruta a fost salvată în documente",
+  "deleteItem": "Șterge",
+  "@deleteItem": {
+    "description": "Localized text for deleteItem."
+  },
+  "browsePodcastCountries": "Răsfoiește după țară",
+  "podcastCountries": "Țări pentru podcasturi",
+  "audiobookMp3Format": "Carte audio MP3 (.mp3)",
+  "@audiobookMp3Format": {
+    "description": "Export format label for audiobook MP3."
+  },
+  "audiobookM4bFormat": "Carte audio M4B (.m4b)",
+  "@audiobookM4bFormat": {
+    "description": "Export format label for audiobook M4B."
+  },
+  "exportCompleteTitle": "Export finalizat",
+  "@exportCompleteTitle": {
+    "description": "Localized text for exportCompleteTitle."
+  },
+  "exportCompleteMessage": "Fișierul a fost creat cu succes. Dorești să îl salvezi în Sonarpad sau să îl distribui?",
+  "@exportCompleteMessage": {
+    "description": "Localized text for exportCompleteMessage."
+  },
+  "saveInSonarpad": "Salvează în Sonarpad",
+  "@saveInSonarpad": {
+    "description": "Localized text for saveInSonarpad."
+  },
+  "exportSavedInSonarpad": "Fișier salvat în Documentele Sonarpad.",
+  "@exportSavedInSonarpad": {
+    "description": "Localized text for exportSavedInSonarpad."
+  },
+  "audiobookExportProgressTitle": "Se creează cartea audio",
+  "@audiobookExportProgressTitle": {
+    "description": "Title shown while exporting an audiobook."
+  },
+  "audiobookExportPreparing": "Se pregătește cartea audio...",
+  "@audiobookExportPreparing": {
+    "description": "Progress text shown while preparing audiobook export."
+  },
+  "audiobookExportGeneratingAudio": "Se generează sunetul",
+  "@audiobookExportGeneratingAudio": {
+    "description": "Progress text shown while generating audiobook chunks."
+  },
+  "audiobookExportConvertingAudio": "Conversie audio finală...",
+  "@audiobookExportConvertingAudio": {
+    "description": "Progress text shown while converting/merging audiobook audio."
+  },
+  "audiobookExportFinalizing": "Se finalizează...",
+  "@audiobookExportFinalizing": {
+    "description": "Progress text shown while finalizing audiobook export."
+  },
+  "routeRecentRoutes": "Rute recente",
+  "routeRecentRoutesEmpty": "Nu există rute recente",
+  "routeNavigationFromTo": "Detalii de navigare de la {from} la {to} - {date}",
+  "@routeNavigationFromTo": {
+    "placeholders": {
+      "from": {},
+      "to": {},
+      "date": {}
+    }
+  },
+  "settingsWeatherTemperatureUnit": "Unitatea de temperatură pentru vreme",
+  "@settingsWeatherTemperatureUnit": {
+    "description": "Localized text for settingsWeatherTemperatureUnit."
+  },
+  "weatherTemperatureCelsius": "Celsius (°C)",
+  "@weatherTemperatureCelsius": {
+    "description": "Localized text for weatherTemperatureCelsius."
+  },
+  "weatherTemperatureFahrenheit": "Fahrenheit (°F)",
+  "@weatherTemperatureFahrenheit": {
+    "description": "Localized text for weatherTemperatureFahrenheit."
+  },
+  "podcastInvalidOpmlFile": "Fișier OPML nevalid",
+  "@podcastInvalidOpmlFile": {
+    "description": "Shown when the selected podcast import file is not an OPML or XML file."
+  },
+  "sortPodcastsAlphabetically": "Sortează podcasturile alfabetic",
+  "@sortPodcastsAlphabetically": {
+    "description": "Button that sorts the subscribed podcasts alphabetically."
+  },
+  "sortRadioFavoritesAlphabetically": "Sortează favoritele alfabetic",
+  "@sortRadioFavoritesAlphabetically": {
+    "description": "Button that sorts radio favorites alphabetically."
+  },
+  "podcastsSortedAlphabetically": "Podcasturile au fost sortate alfabetic.",
+  "@podcastsSortedAlphabetically": {
+    "description": "Status message shown after podcasts have been sorted alphabetically."
+  },
+  "radioFavoritesSortedAlphabetically": "Favoritele radio au fost sortate alfabetic.",
+  "@radioFavoritesSortedAlphabetically": {
+    "description": "Status message shown after radio favorites have been sorted alphabetically."
+  },
+  "settingsIncludeFootnotesInText": "Include notele de subsol în text",
+  "@settingsIncludeFootnotesInText": {
+    "description": "Localized text for settingsIncludeFootnotesInText."
+  },
+  "settingsIncludeFootnotesInTextHint": "Pentru cărțile EPUB compatibile, afișează fiecare notă imediat după paragraful care face trimitere la ea.",
+  "@settingsIncludeFootnotesInTextHint": {
+    "description": "Localized text for settingsIncludeFootnotesInTextHint."
+  },
+  "documentFootnoteLabel": "Notă de subsol",
+  "@documentFootnoteLabel": {
+    "description": "Localized text for documentFootnoteLabel."
+  },
+  "settingsMultipleDocumentBookmarks": "Permite mai multe semne de carte în documente",
+  "@settingsMultipleDocumentBookmarks": {
+    "description": "Title for the setting that enables multiple bookmarks in documents."
+  },
+  "settingsMultipleDocumentBookmarksHint": "Când opțiunea este dezactivată, fiecare document păstrează un singur semn de carte. Când este activată, poți salva mai multe semne de carte în același document.",
+  "@settingsMultipleDocumentBookmarksHint": {
+    "description": "Description for the setting that enables multiple bookmarks in documents."
+  },
+  "documentGoToBookmarkAction": "Mergi la semnul de carte",
+  "@documentGoToBookmarkAction": {
+    "description": "Accessibility action and menu entry to open document bookmarks."
+  },
+  "documentChooseBookmarkTitle": "Alege semnul de carte",
+  "@documentChooseBookmarkTitle": {
+    "description": "Dialog title for choosing a document bookmark."
+  },
+  "documentDeleteBookmarkAction": "Șterge semnul de carte",
+  "@documentDeleteBookmarkAction": {
+    "description": "Action label to delete a document bookmark."
+  },
+  "documentKeepBookmarkTitle": "Ce semn de carte dorești să păstrezi?",
+  "@documentKeepBookmarkTitle": {
+    "description": "Dialog title asking which bookmark to keep when multiple bookmarks are disabled."
+  },
+  "documentKeepBookmarkMessage": "Semnele de carte multiple sunt dezactivate. Alege un semn de carte de păstrat; celelalte vor fi șterse.",
+  "@documentKeepBookmarkMessage": {
+    "description": "Dialog message asking which bookmark to keep when multiple bookmarks are disabled."
+  },
+  "documentBookmarkChoiceLabel": "Semnul de carte {order}, paragraful {paragraph}",
+  "@documentBookmarkChoiceLabel": {
+    "description": "Label for a bookmark in the bookmark chooser.",
+    "placeholders": {
+      "order": {
+        "type": "int"
+      },
+      "paragraph": {
+        "type": "int"
+      }
+    }
+  },
+  "documentBookmarkChoiceLabelWithPreview": "Semnul de carte {order}, paragraful {paragraph}. {preview}",
+  "@documentBookmarkChoiceLabelWithPreview": {
+    "description": "Label for a bookmark in the bookmark chooser, including a short text preview.",
+    "placeholders": {
+      "order": {
+        "type": "int"
+      },
+      "paragraph": {
+        "type": "int"
+      },
+      "preview": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsSonarTubePlayerActions": "Butoane și comportament SonarTube",
+  "@settingsSonarTubePlayerActions": {
+    "description": "Button that opens the SonarTube player button selector."
+  },
+  "settingsSonarTubeAutoplay": "Redare automată",
+  "@settingsSonarTubeAutoplay": {
+    "description": "Toggle for automatically playing the next SonarTube item."
+  },
+  "settingsSonarTubeAutoplayHint": "Când se termină un videoclip sau o piesă, SonarTube îl redă automat pe următorul, dacă este disponibil.",
+  "@settingsSonarTubeAutoplayHint": {
+    "description": "Description of SonarTube autoplay behavior."
+  },
+  "settingsVideoLandscapeFullscreen": "Videoclip pe tot ecranul în modul peisaj",
+  "@settingsVideoLandscapeFullscreen": {
+    "description": "Title for the setting that shows video full-screen in landscape orientation."
+  },
+  "settingsVideoLandscapeFullscreenHint": "Când activezi videoclipul, acesta este afișat pe tot ecranul în orientare peisaj. Posturile radio doar audio nu sunt afectate.",
+  "@settingsVideoLandscapeFullscreenHint": {
+    "description": "Description for the setting that shows video full-screen in landscape orientation."
+  },
+  "settingsPodcastCacheTitle": "Cache podcasturi",
+  "@settingsPodcastCacheTitle": {
+    "description": "Localized text for settingsPodcastCacheTitle."
+  },
+  "settingsPodcastCacheHint": "Șterge doar fișierele temporare ale podcasturilor. Abonamentele, istoricul și fișierele audio importate rămân intacte.",
+  "@settingsPodcastCacheHint": {
+    "description": "Localized text for settingsPodcastCacheHint."
+  },
+  "settingsPodcastCacheSize": "Spațiu utilizat: {size}",
+  "@settingsPodcastCacheSize": {
+    "description": "Localized text for settingsPodcastCacheSize.",
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "clearPodcastCache": "Șterge memoria cache a podcasturilor",
+  "@clearPodcastCache": {
+    "description": "Localized text for clearPodcastCache."
+  },
+  "confirmClearPodcastCacheTitle": "Ștergi memoria cache a podcasturilor?",
+  "@confirmClearPodcastCacheTitle": {
+    "description": "Localized text for confirmClearPodcastCacheTitle."
+  },
+  "confirmClearPodcastCacheMessage": "Fișierele temporare ale podcasturilor vor fi șterse. Abonamentele și istoricul episoadelor nu vor fi eliminate.",
+  "@confirmClearPodcastCacheMessage": {
+    "description": "Localized text for confirmClearPodcastCacheMessage."
+  },
+  "podcastCacheCleared": "Cache-ul podcasturilor a fost golit: s-au eliberat {size}.",
+  "@podcastCacheCleared": {
+    "description": "Localized text for podcastCacheCleared.",
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "podcastCacheEmpty": "Cache-ul podcasturilor este deja gol.",
+  "@podcastCacheEmpty": {
+    "description": "Localized text for podcastCacheEmpty."
+  },
+  "pharmacyFeatureTitle": "Medicamente, parafarmaceutice și suplimente",
+  "@pharmacyFeatureTitle": {
+    "description": "Title for the medicines, parapharmaceuticals and supplements feature."
+  },
+  "pharmacyProductsSectionTitle": "Parafarmaceutice și suplimente",
+  "@pharmacyProductsSectionTitle": {
+    "description": "Title for the parapharmaceuticals and supplements results section."
+  },
+  "pharmacyProductsLoadingTitle": "Se caută parafarmaceutice și suplimente...",
+  "@pharmacyProductsLoadingTitle": {
+    "description": "Loading title for parapharmaceuticals and supplements search."
+  },
+  "pharmacyProductsErrorTitle": "Eroare la căutarea parafarmaceuticelor și suplimentelor",
+  "@pharmacyProductsErrorTitle": {
+    "description": "Error title for parapharmaceuticals and supplements search."
+  },
+  "pharmacyProductsNoResultsTitle": "Nu s-a găsit niciun parafarmaceutic sau supliment",
+  "@pharmacyProductsNoResultsTitle": {
+    "description": "Empty state title for parapharmaceuticals and supplements search."
+  },
+  "mediaCutterTitle": "Taie fișier media",
+  "mediaCutterInstruction1": "Deschide un fișier audio sau video, redă-l și deplasează-te la punctul unde dorești să tai.",
+  "mediaCutterInstruction2": "Pune pe pauză, apasă Împarte, apoi șterge părțile pe care nu le dorești din secțiunea Părți de salvat și apasă Salvează.",
+  "mediaCutterOpenFile": "Deschide fișier media",
+  "mediaCutterSelectedFile": "Fișier selectat: {fileName}",
+  "@mediaCutterSelectedFile": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterPosition": "Poziția tăierii",
+  "mediaCutterPositionHint": "Deplasează-te înainte sau înapoi câte o secundă.",
+  "mediaCutterHideVideoPreview": "Ascunde videoclipul",
+  "mediaCutterVideoRotation": "Rotirea videoclipului",
+  "mediaCutterVideoRotationNone": "Fără rotire",
+  "mediaCutterVideoRotationRight": "Rotește la dreapta",
+  "mediaCutterVideoRotationLeft": "Rotește la stânga",
+  "mediaCutterVideoRotationUpsideDown": "Rotește cu 180 de grade",
+  "@mediaCutterHideVideoPreview": {
+    "description": "Media cutter video preview label."
+  },
+  "mediaCutterVideoPreview": "Previzualizare video",
+  "@mediaCutterVideoPreview": {
+    "description": "Media cutter video preview label."
+  },
+  "mediaCutterSplit": "Împarte",
+  "mediaCutterPartsTitle": "Părți de salvat",
+  "mediaCutterPartsHint": "Atinge o parte pentru a o asculta. Părțile șterse dispar din listă, sunt omise la redare și nu vor fi salvate. Efectele se aplică întregii părți doar când fișierul media este salvat.",
+  "mediaCutterPartLabel": "Partea {index}",
+  "@mediaCutterPartLabel": {
+    "placeholders": {
+      "index": {
+        "type": "int"
+      }
+    }
+  },
+  "mediaCutterPartRange": "De la {start} la {end}",
+  "@mediaCutterPartRange": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterSave": "Salvează",
+  "mediaCutterReady": "Gata.",
+  "mediaCutterUnsavedExitTitle": "Fișier nesalvat",
+  "mediaCutterUnsavedExitMessage": "Fișierul nu a fost salvat. Sigur dorești să ieși?",
+  "mediaCutterNoFile": "Deschide mai întâi un fișier media.",
+  "mediaCutterInvalidSplitPoint": "Alege un punct din interiorul fișierului, nu începutul sau sfârșitul.",
+  "mediaCutterSplitAlreadyExists": "Există deja o împărțire în acest punct.",
+  "mediaCutterSplitAdded": "Împărțire adăugată la {position}.",
+  "@mediaCutterSplitAdded": {
+    "placeholders": {
+      "position": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterSaving": "Se procesează...",
+  "mediaCutterSaved": "Fișier salvat: {fileName}",
+  "@mediaCutterSaved": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterLoadFailed": "Fișierul nu a putut fi deschis: {error}",
+  "@mediaCutterLoadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "mediaCutterSaveFailed": "Salvarea a eșuat: {error}",
+  "@mediaCutterSaveFailed": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "mediaCutterNoPartsToSave": "Păstrează cel puțin o parte înainte de salvare.",
+  "mediaCutterRestoreDeletedPart": "Restaurează partea ștersă",
+  "mediaCutterNoDeletedParts": "Nu există părți șterse de restaurat.",
+  "mediaCutterPartDeleteAction": "Șterge",
+  "mediaCutterPartTapHint": "Atinge de două ori pentru a previzualiza această parte. Folosește acțiunile Editează partea, Șterge sau Reglează efectele.",
+  "mediaCutterPartDeleted": "Parte ștearsă de la {start} la {end}.",
+  "@mediaCutterPartDeleted": {
+    "description": "Status shown after a media part is deleted",
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterPartRestored": "Parte restaurată de la {start} la {end}.",
+  "@mediaCutterPartRestored": {
+    "description": "Status shown after a deleted media part is restored",
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterPartEffectsAction": "Reglează efectele",
+  "mediaCutterPartEditAction": "Editează partea",
+  "mediaCutterPartEditDescription": "Mută începutul sau sfârșitul părții cu 1 secundă, apoi ascultă partea editată.",
+  "mediaCutterPartAdjusted": "Parte editată de la {start} la {end}.",
+  "@mediaCutterPartAdjusted": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterPartEffectsTitle": "Efecte pentru parte",
+  "mediaCutterPartEffectsDescription": "Reglează volumul și efectul doar pentru această parte.",
+  "mediaCutterPartVolumeLabel": "Volumul părții",
+  "mediaCutterPartVolumeValue": "Volumul părții: {percent}%",
+  "@mediaCutterPartVolumeValue": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "mediaCutterPartEffect": "Efect audio",
+  "mediaCutterPartEffectNone": "Fără efect",
+  "mediaCutterPartEffectEcho": "Ecou ușor",
+  "mediaCutterPartEffectEchoRoom": "Ecou de cameră",
+  "mediaCutterPartEffectEchoChamber": "Ecou de sală",
+  "mediaCutterPartEffectEchoCathedral": "Ecou de catedrală",
+  "mediaCutterPartEffectLargeRoom": "Cameră mare",
+  "mediaCutterPartEffectSmallRoom": "Cameră mică",
+  "mediaCutterPartEffectBathroom": "Baie",
+  "mediaCutterPartEffectTunnel": "Tunel",
+  "mediaCutterPartEffectRepeatEcho": "Ecou repetat",
+  "mediaCutterPartEffectCorridor": "Coridor",
+  "mediaCutterPartEffectDelay": "Întârziere",
+  "mediaCutterPartEffectReverb": "Reverberație ușoară",
+  "mediaCutterPartEffectChorus": "Cor",
+  "mediaCutterPartEffectPitchLow": "Ton jos",
+  "mediaCutterPartEffectPitchVeryLow": "Ton foarte jos",
+  "mediaCutterPartEffectPitchHigh": "Ton înalt",
+  "mediaCutterPartEffectPitchVeryHigh": "Ton foarte înalt",
+  "mediaCutterPartEffectRobot": "Voce de robot",
+  "mediaCutterPartEffectSuperRobot": "Super robot",
+  "mediaCutterPartEffectHelicopter": "Elicopter",
+  "mediaCutterPartEffectAlien": "Vibrato extraterestru",
+  "mediaCutterPartEffectBrightVoice": "Voce clară",
+  "mediaCutterPartEffectDarkVoice": "Voce întunecată",
+  "mediaCutterPartEffectGhost": "Fantomă",
+  "mediaCutterPartEffectTelephone": "Telefon",
+  "mediaCutterPartEffectOldRadio": "Radio vechi",
+  "mediaCutterPartEffectMegaphone": "Megafon",
+  "mediaCutterPartEffectUnderwater": "Sub apă",
+  "mediaCutterPartEffectMonster": "Monstru",
+  "mediaCutterPartEffectChipmunk": "Veveriță",
+  "mediaCutterPartEffectDream": "Vis",
+  "mediaCutterPartEffectDistortion": "Distorsiune",
+  "mediaCutterPartEffectLoFi": "Lo-fi",
+  "mediaCutterPartEffectReverseEcho": "Ecou invers",
+  "mediaCutterPartEffectFadeIn": "Creștere treptată",
+  "mediaCutterPartEffectFadeOut": "Scădere treptată",
+  "mediaCutterPartEffectAmountLabel": "Intensitatea efectului",
+  "mediaCutterPartEffectAmountValue": "Intensitatea efectului: {percent}%",
+  "@mediaCutterPartEffectAmountValue": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "mediaCutterPartPreviewAction": "Previzualizare",
+  "mediaCutterPartEffectsSavedOnly": "Previzualizarea folosește volumul selectat. Efectele audio sunt aplicate la salvare.",
+  "mediaCutterPartEffectsApplied": "Efectele au fost actualizate pentru partea de la {start} la {end}.",
+  "@mediaCutterPartEffectsApplied": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterPartEffectsSummary": "Volum {percent}%, efect {effect}",
+  "@mediaCutterPartEffectsSummary": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      },
+      "effect": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterGuidedModeTitle": "Tăiere ghidată",
+  "mediaCutterGuidedModeDescription": "Potrivită pentru începători. Selectează un punct de început și unul de sfârșit, ascultă tăierea, apoi aplic-o.",
+  "mediaCutterAdvancedModeTitle": "Tăiere avansată",
+  "mediaCutterAdvancedModeDescription": "Inspirată de programele populare de editare media. Îți permite să împarți un fișier media în mai multe părți și să elimini părțile pe care nu le dorești.",
+  "mediaCutterChangeCutMode": "Schimbă tipul de tăiere",
+  "mediaCutterGuidedSetStart": "Începutul tăierii",
+  "mediaCutterGuidedSetEnd": "Sfârșitul tăierii",
+  "mediaCutterGuidedApplyCut": "Aplică tăierea",
+  "mediaCutterGuidedListenCut": "Ascultă tăierea",
+  "mediaCutterGuidedModifyCut": "Editează tăierea",
+  "mediaCutterGuidedMoveStartBackOneSecond": "Mută începutul tăierii înapoi cu 1 secundă",
+  "mediaCutterGuidedMoveStartForwardOneSecond": "Mută începutul tăierii înainte cu 1 secundă",
+  "mediaCutterGuidedMoveEndBackOneSecond": "Mută sfârșitul tăierii înapoi cu 1 secundă",
+  "mediaCutterGuidedMoveEndForwardOneSecond": "Mută sfârșitul tăierii înainte cu 1 secundă",
+  "mediaCutterCutEditPrecisionLabel": "Precizia editării tăierii",
+  "mediaCutterCutEditPrecisionValue": "Precizia editării tăierii: {value}",
+  "@mediaCutterCutEditPrecisionValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterCutEditStepOneSecond": "1 secundă",
+  "mediaCutterCutEditStepHalfSecond": "0,5 secunde",
+  "mediaCutterCutEditStepQuarterSecond": "0,25 secunde",
+  "mediaCutterCutEditStepTenthSecond": "0,10 secunde",
+  "mediaCutterMoveStartBackBy": "Mută începutul tăierii înapoi cu {value}",
+  "@mediaCutterMoveStartBackBy": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterMoveStartForwardBy": "Mută începutul tăierii înainte cu {value}",
+  "@mediaCutterMoveStartForwardBy": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterMoveEndBackBy": "Mută sfârșitul tăierii înapoi cu {value}",
+  "@mediaCutterMoveEndBackBy": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterMoveEndForwardBy": "Mută sfârșitul tăierii înainte cu {value}",
+  "@mediaCutterMoveEndForwardBy": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterGuidedCutAdjusted": "Tăiere schimbată de la {start} la {end}.",
+  "@mediaCutterGuidedCutAdjusted": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterGuidedNoCut": "Fără tăiere",
+  "mediaCutterGuidedEffectsAction": "Reglează efectele fișierului",
+  "mediaCutterGuidedEffectsDescription": "Reglează volumul și efectele pentru întregul fișier rezultat.",
+  "mediaCutterGuidedFileTapHint": "Atinge de două ori pentru a reda fișierul rezultat. Folosește Reglează efectele fișierului pentru a aplica efecte întregului fișier.",
+  "mediaCutterGuidedStartSet": "Începutul tăierii a fost setat la {start}.",
+  "@mediaCutterGuidedStartSet": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterGuidedEndSet": "Sfârșitul tăierii a fost setat la {end}. Tăiere de la {start} la {end}.",
+  "@mediaCutterGuidedEndSet": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterGuidedCutApplied": "Tăiere aplicată de la {start} la {end}.",
+  "@mediaCutterGuidedCutApplied": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterGuidedNeedStartEnd": "Setează mai întâi începutul și sfârșitul tăierii.",
+  "mediaCutterGuidedCutSummary": "Tăiere de la {start} la {end}",
+  "@mediaCutterGuidedCutSummary": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterGuidedMultipleCutSummary": "{count} tăieri: {cuts}",
+  "@mediaCutterGuidedMultipleCutSummary": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "cuts": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterGuidedPendingCutExitMessage": "Ai o tăiere ghidată care nu a fost aplicată. Dorești să ieși fără să o păstrezi?",
+  "mediaCutterSplitAddedAnnouncement": "Împărțire adăugată. Partea {partNumber} a fost adăugată.",
+  "@mediaCutterSplitAddedAnnouncement": {
+    "placeholders": {
+      "partNumber": {
+        "type": "int"
+      }
+    }
+  },
+  "newsAddCommunitySource": "Adaugă o sursă de știri în comunitatea Sonarpad",
+  "@newsAddCommunitySource": {
+    "description": "Localized text for newsAddCommunitySource."
+  },
+  "newsBrowseCommunitySources": "Surse de știri ale comunității",
+  "@newsBrowseCommunitySources": {
+    "description": "Localized text for newsBrowseCommunitySources."
+  },
+  "newsAddCommunityInstructions": "Introdu titlul sursei și un URL RSS sau al unui site. Sonarpad va folosi limba de știri selectată și, dacă introduci un site, va încerca să găsească automat fluxul.",
+  "@newsAddCommunityInstructions": {
+    "description": "Localized text for newsAddCommunityInstructions."
+  },
+  "newsCommunitySourceName": "Titlul sursei",
+  "@newsCommunitySourceName": {
+    "description": "Localized text for newsCommunitySourceName."
+  },
+  "newsCommunitySourceUrl": "URL RSS sau al site-ului",
+  "@newsCommunitySourceUrl": {
+    "description": "Localized text for newsCommunitySourceUrl."
+  },
+  "newsCommunitySubmit": "Verifică și adaugă",
+  "@newsCommunitySubmit": {
+    "description": "Localized text for newsCommunitySubmit."
+  },
+  "newsCommunityChecking": "Se verifică fluxul sau site-ul...",
+  "@newsCommunityChecking": {
+    "description": "Localized text for newsCommunityChecking."
+  },
+  "newsCommunityMissingFields": "Introdu titlul și URL-ul fluxului sau al site-ului.",
+  "@newsCommunityMissingFields": {
+    "description": "Localized text for newsCommunityMissingFields."
+  },
+  "newsCommunityAdded": "Sursa de știri a fost adăugată cu succes în comunitatea Sonarpad.",
+  "@newsCommunityAdded": {
+    "description": "Localized text for newsCommunityAdded."
+  },
+  "newsCommunityAddError": "Eroare la adăugarea sursei de știri: {error}",
+  "@newsCommunityAddError": {
+    "description": "Localized text for newsCommunityAddError.",
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "newsCommunitySelectedLanguage": "Limba selectată: {language}",
+  "@newsCommunitySelectedLanguage": {
+    "description": "Localized text for newsCommunitySelectedLanguage.",
+    "placeholders": {
+      "language": {}
+    }
+  },
+  "newsCommunitySourcesTitle": "Surse de știri ale comunității",
+  "@newsCommunitySourcesTitle": {
+    "description": "Localized text for newsCommunitySourcesTitle."
+  },
+  "newsCommunitySourcesEmpty": "Nu există surse de știri ale comunității pentru această limbă.",
+  "@newsCommunitySourcesEmpty": {
+    "description": "Localized text for newsCommunitySourcesEmpty."
+  },
+  "newsCommunitySourcesError": "Eroare la încărcarea surselor comunității: {error}",
+  "@newsCommunitySourcesError": {
+    "description": "Localized text for newsCommunitySourcesError.",
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "newsCommunitySourceAddedToLibrary": "{name} a fost adăugată în biblioteca ta de știri.",
+  "@newsCommunitySourceAddedToLibrary": {
+    "description": "Localized text for newsCommunitySourceAddedToLibrary.",
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "newsCommunityAddToLibraryError": "Eroare la adăugarea în bibliotecă: {error}",
+  "@newsCommunityAddToLibraryError": {
+    "description": "Localized text for newsCommunityAddToLibraryError.",
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "newsCommunitySourceTapHint": "Atinge pentru a o adăuga în biblioteca ta de știri.",
+  "@newsCommunitySourceTapHint": {
+    "description": "Localized text for newsCommunitySourceTapHint."
+  },
+  "developerModeEnabled": "Mod dezvoltator activat.",
+  "@developerModeEnabled": {
+    "description": "Localized text for developerModeEnabled."
+  },
+  "developerModeDisabled": "Mod dezvoltator dezactivat.",
+  "@developerModeDisabled": {
+    "description": "Localized text for developerModeDisabled."
+  },
+  "developerSectionTitle": "Dezvoltator",
+  "@developerSectionTitle": {
+    "description": "Localized text for developerSectionTitle."
+  },
+  "developerUseExperimentalFlutterRenderer": "Folosește rendererul Flutter experimental",
+  "@developerUseExperimentalFlutterRenderer": {
+    "description": "Localized text for developerUseExperimentalFlutterRenderer."
+  },
+  "developerUseExperimentalFlutterRendererHint": "Dezactivează temporar UIKit pentru a compara VoiceOver cu Flutter pur.",
+  "@developerUseExperimentalFlutterRendererHint": {
+    "description": "Localized text for developerUseExperimentalFlutterRendererHint."
+  },
+  "letterJumpSelectLetter": "Selectează litera",
+  "@letterJumpSelectLetter": {
+    "description": "Localized text for letterJumpSelectLetter."
+  },
+  "letterJumpSelected": "selectată",
+  "@letterJumpSelected": {
+    "description": "Localized text for letterJumpSelected."
+  },
+  "settingsToggleOn": "Activat",
+  "@settingsToggleOn": {
+    "description": "Localized text for settingsToggleOn."
+  },
+  "settingsToggleOff": "Dezactivat",
+  "@settingsToggleOff": {
+    "description": "Localized text for settingsToggleOff."
+  },
+  "radioDirectoryLoading": "Se actualizează țările și limbile pentru radio...",
+  "@radioDirectoryLoading": {
+    "description": "Localized text for radioDirectoryLoading."
+  },
+  "recentRadios": "Posturi radio recente",
+  "@recentRadios": {
+    "description": "Localized text for recentRadios."
+  },
+  "radioNextPage": "Următoarea",
+  "@radioNextPage": {
+    "description": "Localized text for radioNextPage."
+  },
+  "radioPageOf": "Pagina {current} din {total}",
+  "@radioPageOf": {
+    "description": "Localized text for radioPageOf.",
+    "placeholders": {
+      "current": {},
+      "total": {}
+    }
+  },
+  "radioNoResultsWithQuery": "Nu s-au găsit posturi. Încearcă doar numele postului, fără gen, sau schimbă limba/țara.",
+  "@radioNoResultsWithQuery": {
+    "description": "Localized text for radioNoResultsWithQuery."
+  },
+  "radioNoResultsGeneric": "Nu s-au găsit posturi. Încearcă altă limbă, țară sau alt gen.",
+  "@radioNoResultsGeneric": {
+    "description": "Localized text for radioNoResultsGeneric."
+  },
+  "radioSearchRawError": "Eroare la căutarea posturilor: {error}",
+  "@radioSearchRawError": {
+    "description": "Localized text for radioSearchRawError.",
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "radioBrowserConnectionError": "Eroare de conexiune la Radio Browser. Încearcă din nou mai târziu.",
+  "@radioBrowserConnectionError": {
+    "description": "Localized text for radioBrowserConnectionError."
+  },
+  "documentIndexLoadingMessage": "Se încarcă cuprinsul... Te rugăm să aștepți.",
+  "@documentIndexLoadingMessage": {
+    "description": "Localized text for documentIndexLoadingMessage."
+  },
+  "documentIndexUnavailableMessage": "Cuprinsul nu este disponibil pentru acest EPUB.",
+  "@documentIndexUnavailableMessage": {
+    "description": "Localized text for documentIndexUnavailableMessage."
+  },
+  "mediaCutterVolumeSummary": "volum {percent}%",
+  "@mediaCutterVolumeSummary": {
+    "description": "Localized text for mediaCutterVolumeSummary.",
+    "placeholders": {
+      "percent": {}
+    }
+  },
+  "mediaCutterDurationSummary": "durată {duration}",
+  "@mediaCutterDurationSummary": {
+    "description": "Localized text for mediaCutterDurationSummary.",
+    "placeholders": {
+      "duration": {}
+    }
+  },
+  "mediaCutterDurationHourOne": "oră",
+  "@mediaCutterDurationHourOne": {
+    "description": "Localized text for mediaCutterDurationHourOne."
+  },
+  "mediaCutterDurationHourFew": "ore",
+  "@mediaCutterDurationHourFew": {
+    "description": "Localized text for mediaCutterDurationHourFew."
+  },
+  "mediaCutterDurationHourMany": "ore",
+  "@mediaCutterDurationHourMany": {
+    "description": "Localized text for mediaCutterDurationHourMany."
+  },
+  "mediaCutterDurationMinuteOne": "minut",
+  "@mediaCutterDurationMinuteOne": {
+    "description": "Localized text for mediaCutterDurationMinuteOne."
+  },
+  "mediaCutterDurationMinuteFew": "minute",
+  "@mediaCutterDurationMinuteFew": {
+    "description": "Localized text for mediaCutterDurationMinuteFew."
+  },
+  "mediaCutterDurationMinuteMany": "minute",
+  "@mediaCutterDurationMinuteMany": {
+    "description": "Localized text for mediaCutterDurationMinuteMany."
+  },
+  "mediaCutterDurationSecondOne": "secundă",
+  "@mediaCutterDurationSecondOne": {
+    "description": "Localized text for mediaCutterDurationSecondOne."
+  },
+  "mediaCutterDurationSecondFew": "secunde",
+  "@mediaCutterDurationSecondFew": {
+    "description": "Localized text for mediaCutterDurationSecondFew."
+  },
+  "mediaCutterDurationSecondMany": "secunde",
+  "@mediaCutterDurationSecondMany": {
+    "description": "Localized text for mediaCutterDurationSecondMany."
+  },
+  "mediaCutterDurationAnd": "și",
+  "@mediaCutterDurationAnd": {
+    "description": "Localized text for mediaCutterDurationAnd."
+  },
+  "mediaCutterSeekStepButton": "Reglează deplasarea în fișierul media: {step}",
+  "@mediaCutterSeekStepButton": {
+    "description": "Localized text for mediaCutterSeekStepButton.",
+    "placeholders": {
+      "step": {}
+    }
+  },
+  "mediaCutterSeekStepTitle": "Deplasarea în fișierul media",
+  "@mediaCutterSeekStepTitle": {
+    "description": "Localized text for mediaCutterSeekStepTitle."
+  },
+  "mediaCutterSeekStepSelected": "Deplasarea în fișierul media a fost setată la {step}.",
+  "@mediaCutterSeekStepSelected": {
+    "description": "Localized text for mediaCutterSeekStepSelected.",
+    "placeholders": {
+      "step": {}
+    }
+  },
+  "mediaCutterPartEffectBackwards": "Redare inversă",
+  "@mediaCutterPartEffectBackwards": {
+    "description": "Localized text for mediaCutterPartEffectBackwards."
+  },
+  "mediaCutterPartEffectTalkingGuitar": "Chitară vorbitoare",
+  "@mediaCutterPartEffectTalkingGuitar": {
+    "description": "Localized text for mediaCutterPartEffectTalkingGuitar."
+  },
+  "mediaCutterPartEffectMosquito": "Țânțar",
+  "@mediaCutterPartEffectMosquito": {
+    "description": "Localized text for mediaCutterPartEffectMosquito."
+  },
+  "mediaCutterPartEffectOneOfMany": "O voce, mulți cântăreți",
+  "@mediaCutterPartEffectOneOfMany": {
+    "description": "Localized text for mediaCutterPartEffectOneOfMany."
+  },
+  "mediaCutterPartEffectOrganVocoder": "Orgă vorbitoare",
+  "@mediaCutterPartEffectOrganVocoder": {
+    "description": "Localized text for mediaCutterPartEffectOrganVocoder."
+  },
+  "mediaCutterPartEffectWarped": "Deformat",
+  "@mediaCutterPartEffectWarped": {
+    "description": "Localized text for mediaCutterPartEffectWarped."
+  },
+  "mediaCutterPartEffectSwirling": "Vârtej stereo",
+  "@mediaCutterPartEffectSwirling": {
+    "description": "Localized text for mediaCutterPartEffectSwirling."
+  },
+  "mediaCutterPartEffectVader": "Voce întunecată cinematografică",
+  "@mediaCutterPartEffectVader": {
+    "description": "Localized text for mediaCutterPartEffectVader."
+  },
+  "mediaCutterPartEffectMetallic": "Metalic",
+  "@mediaCutterPartEffectMetallic": {
+    "description": "Localized text for mediaCutterPartEffectMetallic."
+  },
+  "mediaCutterPartEffectSongbird": "Pasăre cântătoare",
+  "@mediaCutterPartEffectSongbird": {
+    "description": "Localized text for mediaCutterPartEffectSongbird."
+  },
+  "mediaCutterPartEffectExterminator": "Exterminator",
+  "@mediaCutterPartEffectExterminator": {
+    "description": "Localized text for mediaCutterPartEffectExterminator."
+  },
+  "mediaCutterPartEffectRainAndThunder": "Ploaie și tunete",
+  "@mediaCutterPartEffectRainAndThunder": {
+    "description": "Localized text for mediaCutterPartEffectRainAndThunder."
+  },
+  "mediaCutterPartEffectJungle": "Junglă",
+  "@mediaCutterPartEffectJungle": {
+    "description": "Localized text for mediaCutterPartEffectJungle."
+  },
+  "mediaCutterPartEffectCrowd": "Mulțime",
+  "@mediaCutterPartEffectCrowd": {
+    "description": "Localized text for mediaCutterPartEffectCrowd."
+  },
+  "mediaCutterPartEffectSlotMachines": "Aparate de joc",
+  "@mediaCutterPartEffectSlotMachines": {
+    "description": "Localized text for mediaCutterPartEffectSlotMachines."
+  },
+  "mediaCutterPartEffectTraffic": "Trafic",
+  "@mediaCutterPartEffectTraffic": {
+    "description": "Localized text for mediaCutterPartEffectTraffic."
+  },
+  "mediaCutterPartEffectSpaceship": "Navă spațială",
+  "@mediaCutterPartEffectSpaceship": {
+    "description": "Localized text for mediaCutterPartEffectSpaceship."
+  },
+  "mediaCutterPartEffectCricket": "Greieri",
+  "@mediaCutterPartEffectCricket": {
+    "description": "Localized text for mediaCutterPartEffectCricket."
+  },
+  "mediaCutterPartEffectSiren": "Sirenă",
+  "@mediaCutterPartEffectSiren": {
+    "description": "Localized text for mediaCutterPartEffectSiren."
+  },
+  "mediaCutterPartEffectSleighBells": "Clopoței de sanie",
+  "@mediaCutterPartEffectSleighBells": {
+    "description": "Localized text for mediaCutterPartEffectSleighBells."
+  },
+  "mediaCutterPartEffectDj": "Scratch de DJ",
+  "@mediaCutterPartEffectDj": {
+    "description": "Localized text for mediaCutterPartEffectDj."
+  },
+  "mediaCutterPartEffectApplause": "Aplauze",
+  "@mediaCutterPartEffectApplause": {
+    "description": "Localized text for mediaCutterPartEffectApplause."
+  },
+  "mediaCutterPartEffectBadMelody": "Melodie falsă",
+  "@mediaCutterPartEffectBadMelody": {
+    "description": "Localized text for mediaCutterPartEffectBadMelody."
+  },
+  "mediaCutterPartEffectBadHarmony": "Armonie disonantă",
+  "@mediaCutterPartEffectBadHarmony": {
+    "description": "Localized text for mediaCutterPartEffectBadHarmony."
+  },
+  "mediaCutterPartEffectWarmVoice": "Voce caldă",
+  "@mediaCutterPartEffectWarmVoice": {
+    "description": "Localized text for mediaCutterPartEffectWarmVoice."
+  },
+  "mediaCutterPartEffectTurtle": "Broască țestoasă",
+  "@mediaCutterPartEffectTurtle": {
+    "description": "Localized text for mediaCutterPartEffectTurtle."
+  },
+  "mediaCutterPartEffectHaunting": "Bântuitor",
+  "@mediaCutterPartEffectHaunting": {
+    "description": "Localized text for mediaCutterPartEffectHaunting."
+  },
+  "radioPreviousPage": "Anterioara",
+  "@radioPreviousPage": {
+    "description": "Localized text for radioPreviousPage."
+  },
+  "noRecentRadios": "Nu există posturi radio recente.",
+  "@noRecentRadios": {
+    "description": "Localized text for noRecentRadios."
+  },
+  "radioBrowseByCity": "Răsfoiește după oraș",
+  "@radioBrowseByCity": {
+    "description": "Localized text for radioBrowseByCity."
+  },
+  "radioCityInputHint": "Introdu numele orașului...",
+  "@radioCityInputHint": {
+    "description": "Localized text for radioCityInputHint."
+  },
+  "openItem": "Deschide",
+  "@openItem": {
+    "description": "Localized text for openItem."
+  },
+  "clearSearch": "Șterge căutarea",
+  "@clearSearch": {
+    "description": "Localized text for clearSearch."
+  },
+  "clearText": "Șterge textul",
+  "@clearText": {
+    "description": "Localized text for clearText."
+  },
+  "clearedTextAnnouncement": "{value} șters.",
+  "@clearedTextAnnouncement": {
+    "description": "Accessibility announcement after clearing a non-secure text or search field.",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "textDeletedAnnouncement": "Text șters.",
+  "@textDeletedAnnouncement": {
+    "description": "Accessibility announcement after clearing a secure text field without speaking its contents."
+  },
+  "fileTypeLabel": "Fișier",
+  "@fileTypeLabel": {
+    "description": "Localized text for fileTypeLabel."
+  },
+  "cinemaTrailerLoading": "Se încarcă trailerul",
+  "@cinemaTrailerLoading": {
+    "description": "Localized text for cinemaTrailerLoading."
+  },
+  "cinemaNoTrailer": "Nu este disponibil niciun trailer pentru acest film",
+  "@cinemaNoTrailer": {
+    "description": "Localized text for cinemaNoTrailer."
+  },
+  "radioScheduleHours": "Ore",
+  "@radioScheduleHours": {
+    "description": "Localized text for radioScheduleHours."
+  },
+  "radioScheduleSelectHours": "Selectează orele",
+  "@radioScheduleSelectHours": {
+    "description": "Localized text for radioScheduleSelectHours."
+  },
+  "radioScheduleMinutes": "Minute",
+  "@radioScheduleMinutes": {
+    "description": "Localized text for radioScheduleMinutes."
+  },
+  "radioScheduleSelectMinutes": "Selectează minutele",
+  "@radioScheduleSelectMinutes": {
+    "description": "Localized text for radioScheduleSelectMinutes."
+  },
+  "radioScheduleLabeledValue": "{label}: {value}",
+  "@radioScheduleLabeledValue": {
+    "description": "Combines a localized schedule field label with its current value.",
+    "placeholders": {
+      "label": {},
+      "value": {}
+    }
+  },
+  "radioScheduleStopCurrentFirst": "Oprește înregistrarea curentă înainte de a programa una nouă.",
+  "@radioScheduleStopCurrentFirst": {
+    "description": "Localized text for radioScheduleStopCurrentFirst."
+  },
+  "radioScheduleStartTime": "Ora de început",
+  "@radioScheduleStartTime": {
+    "description": "Localized text for radioScheduleStartTime."
+  },
+  "radioScheduleEndTime": "Ora de sfârșit",
+  "@radioScheduleEndTime": {
+    "description": "Localized text for radioScheduleEndTime."
+  },
+  "radioScheduleDialogTitle": "Programează înregistrarea",
+  "@radioScheduleDialogTitle": {
+    "description": "Localized text for radioScheduleDialogTitle."
+  },
+  "radioScheduleOpenRequirement": "Înregistrarea programată continuă să funcționeze în timp ce navighezi prin alte ecrane Sonarpad. Sonarpad trebuie să rămână deschis; dacă aplicația este închisă sau suspendată de sistem, pornirea înregistrării nu este garantată.",
+  "@radioScheduleOpenRequirement": {
+    "description": "Localized text for radioScheduleOpenRequirement."
+  },
+  "radioScheduleStartTimeValue": "Ora de început: {time}",
+  "@radioScheduleStartTimeValue": {
+    "description": "Localized text for radioScheduleStartTimeValue.",
+    "placeholders": {
+      "time": {}
+    }
+  },
+  "radioScheduleEndTimeValue": "Ora de sfârșit: {time}",
+  "@radioScheduleEndTimeValue": {
+    "description": "Localized text for radioScheduleEndTimeValue.",
+    "placeholders": {
+      "time": {}
+    }
+  },
+  "radioScheduleOptionalTitle": "Titlu opțional",
+  "@radioScheduleOptionalTitle": {
+    "description": "Localized text for radioScheduleOptionalTitle."
+  },
+  "radioScheduleTitleHint": "Lasă gol pentru a folosi numele postului radio sau al canalului TV",
+  "@radioScheduleTitleHint": {
+    "description": "Localized text for radioScheduleTitleHint."
+  },
+  "radioScheduleAction": "Programează",
+  "@radioScheduleAction": {
+    "description": "Localized text for radioScheduleAction."
+  },
+  "radioScheduledRecordingRange": "Înregistrare programată: {start} - {end}.",
+  "@radioScheduledRecordingRange": {
+    "description": "Localized text for radioScheduledRecordingRange.",
+    "placeholders": {
+      "start": {},
+      "end": {}
+    }
+  },
+  "radioScheduledRecordingAlreadyActive": "Înregistrarea programată nu a pornit: o altă înregistrare este deja în curs.",
+  "@radioScheduledRecordingAlreadyActive": {
+    "description": "Localized text for radioScheduledRecordingAlreadyActive."
+  },
+  "radioScheduledRecordingStarted": "Înregistrarea programată a început.",
+  "@radioScheduledRecordingStarted": {
+    "description": "Localized text for radioScheduledRecordingStarted."
+  },
+  "radioScheduledRecordingError": "Eroare la înregistrarea programată: {error}",
+  "@radioScheduledRecordingError": {
+    "description": "Localized text for radioScheduledRecordingError.",
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "radioScheduledRecordingSaved": "Înregistrarea programată a fost salvată.",
+  "@radioScheduledRecordingSaved": {
+    "description": "Localized text for radioScheduledRecordingSaved."
+  },
+  "radioScheduledRecordingSaveError": "Eroare la salvarea înregistrării programate: {error}",
+  "@radioScheduledRecordingSaveError": {
+    "description": "Localized text for radioScheduledRecordingSaveError.",
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "radioScheduledRecordingCancelled": "Înregistrarea programată a fost anulată.",
+  "@radioScheduledRecordingCancelled": {
+    "description": "Localized text for radioScheduledRecordingCancelled."
+  },
+  "radioScheduledRecordingRangeWithTitle": "Înregistrare programată: {start} - {end}. Titlu: {title}.",
+  "@radioScheduledRecordingRangeWithTitle": {
+    "description": "Localized text for radioScheduledRecordingRangeWithTitle.",
+    "placeholders": {
+      "start": {},
+      "end": {},
+      "title": {}
+    }
+  },
+  "radioScheduleCancelAction": "Anulează înregistrarea programată",
+  "@radioScheduleCancelAction": {
+    "description": "Localized text for radioScheduleCancelAction."
+  },
+  "radioLanguageTr": "Turcă",
+  "@radioLanguageTr": {
+    "description": "Localized text for radioLanguageTr."
+  },
+  "radioCountryOptionTr": "Turcia",
+  "@radioCountryOptionTr": {
+    "description": "Localized text for radioCountryOptionTr."
+  },
+  "radioCommunityLanguageTurkish": "Turcă",
+  "@radioCommunityLanguageTurkish": {
+    "description": "Localized text for radioCommunityLanguageTurkish."
+  },
+  "simplifiedChineseLanguageName": "Chineză simplificată",
+  "@simplifiedChineseLanguageName": {
+    "description": "Localized name for Simplified Chinese in the language selector."
+  },
+  "chinaCountryName": "China",
+  "@chinaCountryName": {
+    "description": "Localized country name for China."
+  },
+  "technicalErrorGeneric": "Eroare tehnică. Încearcă din nou.",
+  "@technicalErrorGeneric": {
+    "description": "Generic localized message used when a service returns a legacy non-localized technical error."
+  },
+  "onlineVideoPreparationFailed": "Videoclipul nu a putut fi pregătit.",
+  "@onlineVideoPreparationFailed": {
+    "description": "Localized error shown when an online video cannot be prepared for AI audio description."
+  },
+  "cinemaTrailerTitle": "Trailer: {title}",
+  "@cinemaTrailerTitle": {
+    "description": "Localized title for the trailer player screen.",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "@sonarTubeFavoriteAdded": {
+    "description": "Localized text for sonarTubeFavoriteAdded.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@sonarTubeFavoriteRemoved": {
+    "description": "Localized text for sonarTubeFavoriteRemoved.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "@convertMediaFailed": {
+    "description": "Localized text for convertMediaFailed.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@positionLabel": {
+    "description": "Localized text for positionLabel.",
+    "placeholders": {
+      "position": {
+        "example": "3",
+        "type": "int"
+      },
+      "targetName": {
+        "example": "Example name",
+        "type": "String"
+      }
+    }
+  },
+  "@error": {
+    "description": "Localized text for error.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@source": {
+    "description": "Localized text for source.",
+    "placeholders": {
+      "source": {
+        "example": "Example",
+        "type": "String"
+      }
+    }
+  },
+  "@chunkCreated": {
+    "description": "Localized text for chunkCreated.",
+    "placeholders": {
+      "index": {
+        "example": "3",
+        "type": "int"
+      },
+      "total": {
+        "example": "3",
+        "type": "int"
+      }
+    }
+  },
+  "@playingChunk": {
+    "description": "Localized text for playingChunk.",
+    "placeholders": {
+      "index": {
+        "example": "3",
+        "type": "int"
+      },
+      "total": {
+        "example": "3",
+        "type": "int"
+      },
+      "size": {
+        "example": "3",
+        "type": "int"
+      }
+    }
+  },
+  "@readingFinished": {
+    "description": "Localized text for readingFinished.",
+    "placeholders": {
+      "readyChunks": {
+        "example": "3",
+        "type": "int"
+      },
+      "totalChunks": {
+        "example": "3",
+        "type": "int"
+      },
+      "libraryPath": {
+        "example": "/example/file.txt",
+        "type": "String"
+      }
+    }
+  },
+  "@edgeTtsError": {
+    "description": "Localized text for edgeTtsError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@audioChunksReady": {
+    "description": "Localized text for audioChunksReady.",
+    "placeholders": {
+      "readyChunks": {
+        "example": "3",
+        "type": "int"
+      },
+      "totalChunks": {
+        "example": "3",
+        "type": "int"
+      }
+    }
+  },
+  "@podcastResultsFound": {
+    "description": "Localized text for podcastResultsFound.",
+    "placeholders": {
+      "count": {
+        "example": "3",
+        "type": "int"
+      }
+    }
+  },
+  "@podcastSearchError": {
+    "description": "Localized text for podcastSearchError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@subscribedTo": {
+    "description": "Localized text for subscribedTo.",
+    "placeholders": {
+      "title": {
+        "example": "Example title",
+        "type": "String"
+      }
+    }
+  },
+  "@subscriptionError": {
+    "description": "Localized text for subscriptionError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@podcastSubscriptionError": {
+    "description": "Localized text for podcastSubscriptionError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@localAudioFilesFound": {
+    "description": "Localized text for localAudioFilesFound.",
+    "placeholders": {
+      "count": {
+        "example": "3",
+        "type": "int"
+      }
+    }
+  },
+  "@podcastImportComplete": {
+    "description": "Localized text for podcastImportComplete.",
+    "placeholders": {
+      "count": {
+        "example": "3",
+        "type": "int"
+      }
+    }
+  },
+  "@podcastImportError": {
+    "description": "Localized text for podcastImportError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@podcastExportError": {
+    "description": "Localized text for podcastExportError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@downloaded": {
+    "description": "Localized text for downloaded.",
+    "placeholders": {
+      "path": {
+        "example": "/example/file.txt",
+        "type": "String"
+      }
+    }
+  },
+  "@episodeError": {
+    "description": "Localized text for episodeError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@nowPlayingTitle": {
+    "description": "Localized text for nowPlayingTitle.",
+    "placeholders": {
+      "title": {
+        "example": "Example title",
+        "type": "String"
+      }
+    }
+  },
+  "@playbackPositionValue": {
+    "description": "Localized text for playbackPositionValue.",
+    "placeholders": {
+      "position": {
+        "example": "01:23",
+        "type": "String"
+      },
+      "duration": {
+        "example": "01:23",
+        "type": "String"
+      }
+    }
+  },
+  "@volumeValue": {
+    "description": "Localized text for volumeValue.",
+    "placeholders": {
+      "percentage": {
+        "example": "80",
+        "type": "int"
+      }
+    }
+  },
+  "@sharedDocumentsImportComplete": {
+    "description": "Localized text for sharedDocumentsImportComplete.",
+    "placeholders": {
+      "count": {
+        "example": "3",
+        "type": "int"
+      }
+    }
+  },
+  "@libraryLoadError": {
+    "description": "Localized text for libraryLoadError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@fileOpenError": {
+    "description": "Localized text for fileOpenError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@fileInaccessible": {
+    "description": "Localized text for fileInaccessible.",
+    "placeholders": {
+      "name": {
+        "example": "Example name",
+        "type": "String"
+      }
+    }
+  },
+  "@documentAddError": {
+    "description": "Localized text for documentAddError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@documentRemoveError": {
+    "description": "Localized text for documentRemoveError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@documentAddedOn": {
+    "description": "Localized text for documentAddedOn.",
+    "placeholders": {
+      "date": {
+        "example": "1 gennaio 2026",
+        "type": "String"
+      }
+    }
+  },
+  "@documentTypeDescription": {
+    "description": "Localized text for documentTypeDescription.",
+    "placeholders": {
+      "extension": {
+        "example": "Example",
+        "type": "String"
+      }
+    }
+  },
+  "@removeItem": {
+    "description": "Localized text for removeItem.",
+    "placeholders": {
+      "name": {
+        "example": "Example name",
+        "type": "String"
+      }
+    }
+  },
+  "@noDocumentSearchResults": {
+    "description": "Localized text for noDocumentSearchResults.",
+    "placeholders": {
+      "query": {
+        "example": "testo",
+        "type": "String"
+      }
+    }
+  },
+  "@documentSearchResultParagraph": {
+    "description": "Localized text for documentSearchResultParagraph.",
+    "placeholders": {
+      "number": {
+        "example": "4",
+        "type": "int"
+      }
+    }
+  },
+  "@settingsVoiceTestError": {
+    "description": "Localized text for settingsVoiceTestError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@settingsVoiceSaveError": {
+    "description": "Localized text for settingsVoiceSaveError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@settingsCodeRequestBody": {
+    "description": "Localized text for settingsCodeRequestBody.",
+    "placeholders": {
+      "name": {
+        "example": "Example name",
+        "type": "String"
+      },
+      "surname": {
+        "example": "Example name",
+        "type": "String"
+      },
+      "email": {
+        "example": "Example",
+        "type": "String"
+      },
+      "os": {
+        "example": "Example",
+        "type": "String"
+      }
+    }
+  },
+  "@settingsMailOpenError": {
+    "description": "Localized text for settingsMailOpenError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@sourceLanguageValue": {
+    "description": "Localized text for sourceLanguageValue.",
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "@sourceDurationValue": {
+    "description": "Localized text for sourceDurationValue.",
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "@poetryDbLineCount": {
+    "description": "Localized text for poetryDbLineCount.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@bookmarkSet": {
+    "description": "Localized text for bookmarkSet.",
+    "placeholders": {
+      "index": {
+        "example": "3",
+        "type": "int"
+      }
+    }
+  },
+  "@versionBuild": {
+    "description": "Localized text for versionBuild.",
+    "placeholders": {
+      "version": {
+        "example": "Example",
+        "type": "String"
+      },
+      "buildNumber": {
+        "example": "Example",
+        "type": "String"
+      }
+    }
+  },
+  "@whatIsNewInVersion": {
+    "description": "Localized text for whatIsNewInVersion.",
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "@changelogLoadError": {
+    "description": "Localized text for changelogLoadError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@visitSonarpadSiteWithUrl": {
+    "description": "Localized text for visitSonarpadSiteWithUrl.",
+    "placeholders": {
+      "url": {
+        "example": "https://example.com",
+        "type": "String"
+      }
+    }
+  },
+  "@importZipError": {
+    "description": "Localized text for importZipError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@dropboxLoadFolderError": {
+    "description": "Localized text for dropboxLoadFolderError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@dropboxImportError": {
+    "description": "Localized text for dropboxImportError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@reminderSaved": {
+    "description": "Localized text for reminderSaved.",
+    "placeholders": {
+      "count": {
+        "example": "3",
+        "type": "int"
+      }
+    }
+  },
+  "@radioResultsFound": {
+    "description": "Localized text for radioResultsFound.",
+    "placeholders": {
+      "count": {
+        "example": "3",
+        "type": "int"
+      }
+    }
+  },
+  "@radioSearchError": {
+    "description": "Localized text for radioSearchError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@radioNowPlaying": {
+    "description": "Localized text for radioNowPlaying.",
+    "placeholders": {
+      "name": {
+        "example": "Example name",
+        "type": "String"
+      }
+    }
+  },
+  "@radioPlayError": {
+    "description": "Localized text for radioPlayError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@radioFavoriteAdded": {
+    "description": "Localized text for radioFavoriteAdded.",
+    "placeholders": {
+      "name": {
+        "example": "Example name",
+        "type": "String"
+      }
+    }
+  },
+  "@radioFavoriteRemoved": {
+    "description": "Localized text for radioFavoriteRemoved.",
+    "placeholders": {
+      "name": {
+        "example": "Example name",
+        "type": "String"
+      }
+    }
+  },
+  "@radioCommunityAddError": {
+    "description": "Localized text for radioCommunityAddError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@deleteRecordingsConfirmation": {
+    "description": "Localized text for deleteRecordingsConfirmation.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@routeError": {
+    "description": "Localized text for routeError.",
+    "placeholders": {
+      "error": {
+        "example": "Network error"
+      }
+    }
+  },
+  "@routeDistanceMeters": {
+    "description": "Localized text for routeDistanceMeters.",
+    "placeholders": {
+      "meters": {
+        "type": "int",
+        "example": "250"
+      }
+    }
+  },
+  "@routeDistanceKilometers": {
+    "description": "Localized text for routeDistanceKilometers.",
+    "placeholders": {
+      "kilometers": {
+        "type": "String",
+        "example": "1.5"
+      }
+    }
+  },
+  "@routeDurationMinutes": {
+    "description": "Localized text for routeDurationMinutes.",
+    "placeholders": {
+      "minutes": {
+        "type": "int",
+        "example": "12"
+      }
+    }
+  },
+  "@routeDurationHoursMinutes": {
+    "description": "Localized text for routeDurationHoursMinutes.",
+    "placeholders": {
+      "hours": {
+        "type": "int",
+        "example": "1"
+      },
+      "minutes": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "@cinemaReleased": {
+    "description": "Localized text for cinemaReleased.",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "2024-05-15"
+      }
+    }
+  },
+  "@cinemaWillRelease": {
+    "description": "Localized text for cinemaWillRelease.",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "2024-05-15"
+      }
+    }
+  },
+  "mediaCutterExportPartProgress": "Partea {index} din {total}",
+  "@mediaCutterExportPartProgress": {
+    "description": "Progress label while exporting Media Cutter parts.",
+    "placeholders": {
+      "index": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "mediaCutterExportFinalVerification": "Verificare finală",
+  "@mediaCutterExportFinalVerification": {
+    "description": "Localized text for mediaCutterExportFinalVerification."
+  },
+  "mediaCutterExportMergeParts": "Se îmbină părțile",
+  "@mediaCutterExportMergeParts": {
+    "description": "Localized text for mediaCutterExportMergeParts."
+  },
+  "mediaCutterExportFileCheck": "Verificarea fișierului",
+  "@mediaCutterExportFileCheck": {
+    "description": "Localized text for mediaCutterExportFileCheck."
+  },
+  "mediaCutterExportPublishing": "Publicare",
+  "@mediaCutterExportPublishing": {
+    "description": "Localized text for mediaCutterExportPublishing."
+  },
+  "mediaCutterExportCompletion": "Finalizare",
+  "@mediaCutterExportCompletion": {
+    "description": "Localized text for mediaCutterExportCompletion."
+  },
+  "mediaCutterAddTrack": "Adaugă o pistă nouă",
+  "@mediaCutterAddTrack": {
+    "description": "Localized text for mediaCutterAddTrack."
+  },
+  "mediaCutterChooseAudioTrack": "Alege fișierul audio",
+  "@mediaCutterChooseAudioTrack": {
+    "description": "Localized text for mediaCutterChooseAudioTrack."
+  },
+  "mediaCutterAddedTrackSelected": "Fișier audio selectat: {name}",
+  "@mediaCutterAddedTrackSelected": {
+    "description": "Localized text for mediaCutterAddedTrackSelected.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterOriginalTrackVolume": "Volumul pistei originale",
+  "@mediaCutterOriginalTrackVolume": {
+    "description": "Localized text for mediaCutterOriginalTrackVolume."
+  },
+  "mediaCutterNewTrackVolume": "Volumul pistei noi",
+  "@mediaCutterNewTrackVolume": {
+    "description": "Localized text for mediaCutterNewTrackVolume."
+  },
+  "mediaCutterLoopNewTrack": "Repetă pista nouă",
+  "@mediaCutterLoopNewTrack": {
+    "description": "Localized text for mediaCutterLoopNewTrack."
+  },
+  "mediaCutterPreviewNewTrack": "Ascultă previzualizarea",
+  "@mediaCutterPreviewNewTrack": {
+    "description": "Localized text for mediaCutterPreviewNewTrack."
+  },
+  "mediaCutterFinalizeTrack": "Finalizează",
+  "@mediaCutterFinalizeTrack": {
+    "description": "Localized text for mediaCutterFinalizeTrack."
+  },
+  "mediaCutterAddedTrackApplied": "Pistă nouă adăugată: {name}",
+  "@mediaCutterAddedTrackApplied": {
+    "description": "Localized text for mediaCutterAddedTrackApplied.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "mediaCutterAddedTrackInvalidAudio": "Fișierul selectat nu conține o pistă audio validă.",
+  "@mediaCutterAddedTrackInvalidAudio": {
+    "description": "Localized text for mediaCutterAddedTrackInvalidAudio."
+  },
+  "mediaCutterAddedTrackPreviewPreparing": "Se pregătește previzualizarea…",
+  "@mediaCutterAddedTrackPreviewPreparing": {
+    "description": "Localized text for mediaCutterAddedTrackPreviewPreparing."
+  },
+  "mediaCutterAddedTrackPreviewFailed": "Previzualizarea nu a putut fi creată.",
+  "@mediaCutterAddedTrackPreviewFailed": {
+    "description": "Localized text for mediaCutterAddedTrackPreviewFailed."
+  },
+  "mediaCutterMixingAddedTrack": "Se mixează pista nouă",
+  "@mediaCutterMixingAddedTrack": {
+    "description": "Localized text for mediaCutterMixingAddedTrack."
+  },
+  "preserveMedia": "Păstrează conținutul",
+  "@preserveMedia": {
+    "description": "Secondary action that downloads and preserves a playable MP3."
+  },
+  "preserveMediaSaving": "Se salvează conținutul…",
+  "@preserveMediaSaving": {
+    "description": "Status shown while a media file is being downloaded and preserved."
+  },
+  "preserveMediaSaved": "Conținut salvat în Documentele Sonarpad.",
+  "@preserveMediaSaved": {
+    "description": "Confirmation shown when a preserved media file is saved in Sonarpad Documents."
+  },
+  "preserveMediaError": "Conținutul nu a putut fi păstrat.",
+  "@preserveMediaError": {
+    "description": "Error shown when a playable media file cannot be preserved."
+  },
+  "mediaProcessingCompleted": "Procesare finalizată.",
+  "@mediaProcessingCompleted": {
+    "description": "Shown when media processing has completed and the user must choose a destination."
+  },
+  "saveInSonarpadDocuments": "Salvează în Documentele Sonarpad",
+  "@saveInSonarpadDocuments": {
+    "description": "Button that saves a generated media file in Sonarpad Documents."
+  },
+  "mediaCutterProcess": "Procesează",
+  "@mediaCutterProcess": {
+    "description": "Button that processes the current Media Cutter edits before choosing a destination."
+  },
+  "sonarTubeGoToChannel": "Mergi la canal",
+  "sonarTubeViewComments": "Vezi comentariile",
+  "sonarTubeComments": "Comentarii",
+  "sonarTubeNoComments": "Nu există comentarii disponibile.",
+  "sonarTubeLoadMoreComments": "Încarcă mai multe comentarii",
+  "sonarTubeTranscribeVideo": "Transcrie videoclipul",
+  "@sonarTubeTranscribeVideo": {
+    "description": "Secondary action that opens the transcript for a SonarTube video."
+  },
+  "sonarTubeTranscript": "Transcriere",
+  "@sonarTubeTranscript": {
+    "description": "Title for the SonarTube transcript screen."
+  },
+  "sonarTubeNoTranscript": "Nu există transcriere disponibilă pentru acest videoclip.",
+  "@sonarTubeNoTranscript": {
+    "description": "Message shown when no transcript is available for a SonarTube video."
+  },
+  "sonarTubeCopyTranscript": "Copiază transcrierea",
+  "@sonarTubeCopyTranscript": {
+    "description": "Button that copies the complete SonarTube transcript."
+  },
+  "sonarTubeTranscriptCopied": "Transcriere copiată în clipboard",
+  "@sonarTubeTranscriptCopied": {
+    "description": "Confirmation shown after copying a SonarTube transcript."
+  },
+  "sonarTubeTranscriptSavedInDocuments": "Transcrierea a fost salvată în Documente.",
+  "@sonarTubeTranscriptSavedInDocuments": {
+    "description": "Confirmation shown after saving a SonarTube transcript in Documents."
+  },
+  "copyToClipboard": "Copiază în clipboard",
+  "@copyToClipboard": {
+    "description": "Copy the complete temporary document text to the system clipboard."
+  },
+  "textCopiedToClipboard": "Text copiat în clipboard",
+  "@textCopiedToClipboard": {
+    "description": "Confirmation shown after copying the complete temporary document text."
+  },
+  "protectDocumentWithPassword": "Protejează cu parolă",
+  "removeDocumentPasswordProtection": "Elimină protecția cu parolă",
+  "documentPassword": "Parolă",
+  "confirmDocumentPassword": "Confirmă parola",
+  "chooseDocumentPassword": "Introdu o parolă și confirm-o. Parola va fi necesară înainte de deschiderea sau distribuirea acestui document.",
+  "enterCurrentDocumentPassword": "Introdu parola curentă pentru a elimina protecția.",
+  "documentPasswordRequired": "Introdu o parolă.",
+  "documentPasswordsDoNotMatch": "Parolele nu coincid.",
+  "incorrectDocumentPassword": "Parolă incorectă.",
+  "documentPasswordProtectionEnabled": "Protecția cu parolă a fost activată.",
+  "documentPasswordProtectionRemoved": "Protecția cu parolă a fost eliminată.",
+  "documentPasswordRequiredTitle": "Parolă necesară",
+  "enterDocumentPasswordToShare": "Acest document este protejat. Introdu parola pentru a continua distribuirea.",
+  "enterDocumentPasswordToOpen": "Acest document este protejat. Introdu parola pentru a-l deschide.",
+  "documentPasswordProtectedStatus": "Protejat cu parolă",
+  "rename": "Redenumește",
+  "renameRecording": "Redenumește înregistrarea",
+  "newRecordingName": "Noul nume al înregistrării",
+  "recordingCannotRenameWhileInProgress": "O înregistrare în curs nu poate fi redenumită.",
+  "recordingNameAlreadyExists": "Există deja o înregistrare cu acest nume.",
+  "renameDocument": "Redenumește documentul",
+  "newDocumentName": "Noul nume al documentului",
+  "documentNameAlreadyExists": "Există deja un document cu acest nume.",
+  "recordingExitPrompt": "Înregistrarea este în curs. Vrei să o oprești sau să continui înregistrarea?",
+  "continueRecording": "Continuă înregistrarea",
+  "settingsShowOnlyMultilingualEdgeVoices": "Afișează doar vocile multilingve",
+  "@settingsShowOnlyMultilingualEdgeVoices": {
+    "description": "Show only multilingual Edge voices in the voice picker."
+  },
+  "weatherAirQuality": "Calitatea aerului",
+  "@weatherAirQuality": {
+    "description": "Localized text for weatherAirQuality."
+  },
+  "weatherAirQualityGood": "Bună",
+  "@weatherAirQualityGood": {
+    "description": "Localized text for weatherAirQualityGood."
+  },
+  "weatherAirQualityFair": "Acceptabilă",
+  "@weatherAirQualityFair": {
+    "description": "Localized text for weatherAirQualityFair."
+  },
+  "weatherAirQualityModerate": "Moderată",
+  "@weatherAirQualityModerate": {
+    "description": "Localized text for weatherAirQualityModerate."
+  },
+  "weatherAirQualityPoor": "Slabă",
+  "@weatherAirQualityPoor": {
+    "description": "Localized text for weatherAirQualityPoor."
+  },
+  "weatherAirQualityVeryPoor": "Foarte slabă",
+  "@weatherAirQualityVeryPoor": {
+    "description": "Localized text for weatherAirQualityVeryPoor."
+  },
+  "weatherAirQualityExtremelyPoor": "Extrem de slabă",
+  "@weatherAirQualityExtremelyPoor": {
+    "description": "Localized text for weatherAirQualityExtremelyPoor."
+  },
+  "sonarpadAudiodescriptionsTitle": "Audiodescrieri Sonarpad",
+  "@sonarpadAudiodescriptionsTitle": {
+    "description": "Title of the Sonarpad audio descriptions section."
+  },
+  "sonarpadAudiodescriptionsAll": "Toate audiodescrierile Sonarpad",
+  "@sonarpadAudiodescriptionsAll": {
+    "description": "Entry that opens the complete Sonarpad audio descriptions catalog."
+  },
+  "sonarpadAudiodescriptionsSearchHint": "Caută un film, serial sau episod",
+  "@sonarpadAudiodescriptionsSearchHint": {
+    "description": "Search hint for the Sonarpad audio descriptions catalog."
+  },
+  "sortBy": "Sortează după",
+  "@sortBy": {
+    "description": "Generic label for a sort selector."
+  },
+  "sortAlphabetical": "Alfabetic",
+  "@sortAlphabetical": {
+    "description": "Alphabetical sort option."
+  },
+  "sortChronological": "Cronologic",
+  "@sortChronological": {
+    "description": "Chronological sort option."
+  },
+  "contentUnavailable": "Conținut indisponibil.",
+  "@contentUnavailable": {
+    "description": "Shown when a media item cannot be opened."
+  },
+  "downloadUnavailable": "Descărcare indisponibilă.",
+  "@downloadUnavailable": {
+    "description": "Shown when a media item cannot be downloaded."
+  },
+  "sonarTubeChannelPlaylists": "Liste de redare",
+  "@sonarTubeChannelPlaylists": {
+    "description": "Button and screen title for a channel's public playlists."
+  },
+  "sonarTubeChannelShorts": "Videoclipuri scurte",
+  "@sonarTubeChannelShorts": {
+    "description": "Button and screen title for a channel's public Shorts."
+  },
+  "sonarTubeVideoCount": "{count, plural, =1{1 videoclip} other{{count} videoclipuri}}",
+  "@sonarTubeVideoCount": {
+    "description": "Number of videos contained in a SonarTube playlist.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sonarTubeViewDescription": "Vezi descrierea",
+  "@sonarTubeViewDescription": {
+    "description": "Secondary action that opens the complete SonarTube video description."
+  },
+  "sonarTubeDescription": "Descriere",
+  "@sonarTubeDescription": {
+    "description": "Title for the SonarTube video description screen."
+  },
+  "sonarTubeNoDescription": "Nu există o descriere disponibilă pentru acest videoclip.",
+  "@sonarTubeNoDescription": {
+    "description": "Message shown when a SonarTube video has no description."
+  },
+  "pyannoteTestTitle": "Test pyannote pe mobil",
+  "pyannoteTestInstructions": "Acest test folosește același model ONNX pyannote ca pe Windows. Pentru prima comparație, folosește testul rapid pe primele 2 minute.",
+  "pyannoteQuickTest": "Test rapid pyannote: primele 2 minute",
+  "pyannoteFullTest": "Test complet pyannote: întregul fișier",
+  "pyannoteShareArtifacts": "Partajează WAV-ul canonic și rezultatul JSON de pe mobil",
+  "pyannoteInitialStatus": "Alege un fișier audio sau video. Pentru prima comparație, folosește testul rapid.",
+  "pyannotePreparingQuick": "Se pregătește testul rapid pe primele 2 minute...",
+  "pyannotePreparingFull": "Se pregătește testul complet...",
+  "pyannoteCompletedStatus": "Testul pe mobil s-a încheiat. Partajează WAV-ul și JSON-ul și folosește același WAV și în testul Windows.",
+  "pyannoteFilesUnavailable": "Fișierele ultimului test nu mai sunt disponibile.",
+  "pyannoteFailure": "Testul pyannote a eșuat.",
+  "pyannoteShareText": "Sonarpad: test de paritate pyannote pe mobil. Folosește WAV-ul canonic atașat și în testul Windows.",
+  "pyannoteShareSubject": "Test pyannote Sonarpad",
+  "pyannoteBenchmark10Min": "Test de performanță pyannote: primele 10 minute",
+  "@pyannoteBenchmark10Min": {
+    "description": "Localized text for pyannoteBenchmark10Min."
+  },
+  "pyannoteBenchmarkPreparing": "Se rulează testul de performanță pyannote pe primele 10 minute...",
+  "@pyannoteBenchmarkPreparing": {
+    "description": "Localized text for pyannoteBenchmarkPreparing."
+  },
+  "pyannoteBenchmarkCompleted": "Testul de performanță s-a încheiat. Rezultatele detaliate au fost înregistrate în jurnalul Sonarpad.",
+  "@pyannoteBenchmarkCompleted": {
+    "description": "Localized text for pyannoteBenchmarkCompleted."
+  },
+  "pyannoteCandidateValidation5x10m": "Validează pasul 2 + margine 0,35 pe cinci segmente de câte 10 minute",
+  "@pyannoteCandidateValidation5x10m": {
+    "description": "Localized text for pyannoteCandidateValidation5x10m."
+  },
+  "pyannoteCandidateValidationPreparing": "Se rulează validarea pyannote pe cinci segmente din film...",
+  "@pyannoteCandidateValidationPreparing": {
+    "description": "Localized text for pyannoteCandidateValidationPreparing."
+  },
+  "pyannoteCandidateValidationPassed": "Validare finalizată: pasul 2 + margine 0,35 a îndeplinit criteriile de siguranță. Verifică jurnalul pentru detalii.",
+  "@pyannoteCandidateValidationPassed": {
+    "description": "Localized text for pyannoteCandidateValidationPassed."
+  },
+  "pyannoteCandidateValidationFailed": "Validare finalizată: pasul 2 + margine 0,35 nu a îndeplinit toate criteriile de siguranță. Verifică jurnalul pentru detalii.",
+  "@pyannoteCandidateValidationFailed": {
+    "description": "Localized text for pyannoteCandidateValidationFailed."
+  },
+  "pyannoteXnnpackBenchmark10Min": "Test de performanță CPU vs XNNPACK: primele 10 minute",
+  "@pyannoteXnnpackBenchmark10Min": {
+    "description": "Localized text for pyannoteXnnpackBenchmark10Min."
+  },
+  "pyannoteXnnpackBenchmarkPreparing": "Se compară performanța CPU și XNNPACK pe primele 10 minute...",
+  "@pyannoteXnnpackBenchmarkPreparing": {
+    "description": "Localized text for pyannoteXnnpackBenchmarkPreparing."
+  },
+  "pyannoteXnnpackBenchmarkCompleted": "Testul de performanță CPU vs XNNPACK s-a încheiat. Verifică jurnalul pentru paritate și viteză.",
+  "@pyannoteXnnpackBenchmarkCompleted": {
+    "description": "Localized text for pyannoteXnnpackBenchmarkCompleted."
+  },
+  "audioDescriptionCreateAiTitle": "Creează audiodescriere cu IA",
+  "@audioDescriptionCreateAiTitle": {
+    "description": "Localized text for audioDescriptionCreateAiTitle."
+  },
+  "audioDescriptionChooseVideo": "Alege videoclipul",
+  "@audioDescriptionChooseVideo": {
+    "description": "Localized text for audioDescriptionChooseVideo."
+  },
+  "audioDescriptionAiService": "Serviciu IA",
+  "@audioDescriptionAiService": {
+    "description": "Localized text for audioDescriptionAiService."
+  },
+  "audioDescriptionUseGeminiKey": "Folosește cheia API Gemini",
+  "@audioDescriptionUseGeminiKey": {
+    "description": "Localized text for audioDescriptionUseGeminiKey."
+  },
+  "audioDescriptionUseSonarpadAi": "Folosește serviciul IA Sonarpad",
+  "@audioDescriptionUseSonarpadAi": {
+    "description": "Localized text for audioDescriptionUseSonarpadAi."
+  },
+  "audioDescriptionGeminiApiKey": "Cheie API Gemini",
+  "@audioDescriptionGeminiApiKey": {
+    "description": "Localized text for audioDescriptionGeminiApiKey."
+  },
+  "audioDescriptionGeminiModel": "Model Gemini",
+  "@audioDescriptionGeminiModel": {
+    "description": "Localized text for audioDescriptionGeminiModel."
+  },
+  "audioDescriptionRefreshModels": "Actualizează lista de modele",
+  "@audioDescriptionRefreshModels": {
+    "description": "Localized text for audioDescriptionRefreshModels."
+  },
+  "audioDescriptionRefreshingModels": "Se actualizează modelele...",
+  "@audioDescriptionRefreshingModels": {
+    "description": "Localized text for audioDescriptionRefreshingModels."
+  },
+  "audioDescriptionSonarpadCode": "Cod personal IA Sonarpad",
+  "@audioDescriptionSonarpadCode": {
+    "description": "Localized text for audioDescriptionSonarpadCode."
+  },
+  "audioDescriptionActivateSonarpad": "Activează / verifică IA Sonarpad",
+  "@audioDescriptionActivateSonarpad": {
+    "description": "Localized text for audioDescriptionActivateSonarpad."
+  },
+  "audioDescriptionActivatingSonarpad": "Se activează IA Sonarpad...",
+  "@audioDescriptionActivatingSonarpad": {
+    "description": "Localized text for audioDescriptionActivatingSonarpad."
+  },
+  "audioDescriptionServerManagedModel": "Gestionat de serviciul IA Sonarpad",
+  "@audioDescriptionServerManagedModel": {
+    "description": "Localized text for audioDescriptionServerManagedModel."
+  },
+  "audioDescriptionLanguage": "Limba audiodescrierii",
+  "@audioDescriptionLanguage": {
+    "description": "Localized text for audioDescriptionLanguage."
+  },
+  "audioDescriptionDetailLevel": "Nivel de detaliu",
+  "@audioDescriptionDetailLevel": {
+    "description": "Localized text for audioDescriptionDetailLevel."
+  },
+  "audioDescriptionDetailConcise": "Concis",
+  "@audioDescriptionDetailConcise": {
+    "description": "Localized text for audioDescriptionDetailConcise."
+  },
+  "audioDescriptionDetailNormal": "Normal",
+  "@audioDescriptionDetailNormal": {
+    "description": "Localized text for audioDescriptionDetailNormal."
+  },
+  "audioDescriptionDetailDetailed": "Detaliat",
+  "@audioDescriptionDetailDetailed": {
+    "description": "Localized text for audioDescriptionDetailDetailed."
+  },
+  "audioDescriptionDetailIntensive": "Intensiv",
+  "@audioDescriptionDetailIntensive": {
+    "description": "Localized text for audioDescriptionDetailIntensive."
+  },
+  "audioDescriptionExtendedPauses": "Activează pauze extinse când o descriere nu încape într-un interval de liniște",
+  "@audioDescriptionExtendedPauses": {
+    "description": "Localized text for audioDescriptionExtendedPauses."
+  },
+  "audioDescriptionRecognizeCharacters": "Încearcă să recunoască personajele și să le folosească numele",
+  "@audioDescriptionRecognizeCharacters": {
+    "description": "Localized text for audioDescriptionRecognizeCharacters."
+  },
+  "audioDescriptionSaveProject": "Salvează și proiectul pentru editare ulterioară",
+  "@audioDescriptionSaveProject": {
+    "description": "Localized text for audioDescriptionSaveProject."
+  },
+  "audioDescriptionCreate": "Creează audiodescrierea",
+  "@audioDescriptionCreate": {
+    "description": "Localized text for audioDescriptionCreate."
+  },
+  "audioDescriptionVoiceTesting": "Se testează vocea...",
+  "@audioDescriptionVoiceTesting": {
+    "description": "Localized text for audioDescriptionVoiceTesting."
+  },
+  "audioDescriptionApiKeyRequired": "Introdu o cheie API Gemini.",
+  "@audioDescriptionApiKeyRequired": {
+    "description": "Localized text for audioDescriptionApiKeyRequired."
+  },
+  "audioDescriptionModelsUpdated": "Lista modelelor Gemini a fost actualizată.",
+  "@audioDescriptionModelsUpdated": {
+    "description": "Localized text for audioDescriptionModelsUpdated."
+  },
+  "audioDescriptionModelsError": "Lista modelelor Gemini nu a putut fi actualizată.",
+  "@audioDescriptionModelsError": {
+    "description": "Localized text for audioDescriptionModelsError."
+  },
+  "audioDescriptionSonarpadCodeRequired": "Introdu codul personal IA Sonarpad.",
+  "@audioDescriptionSonarpadCodeRequired": {
+    "description": "Localized text for audioDescriptionSonarpadCodeRequired."
+  },
+  "audioDescriptionSonarpadActivated": "IA Sonarpad este activă pe acest dispozitiv.",
+  "@audioDescriptionSonarpadActivated": {
+    "description": "Localized text for audioDescriptionSonarpadActivated."
+  },
+  "audioDescriptionSonarpadActivationError": "IA Sonarpad nu a putut fi activată sau verificată.",
+  "@audioDescriptionSonarpadActivationError": {
+    "description": "Localized text for audioDescriptionSonarpadActivationError."
+  },
+  "audioDescriptionSonarpadDeviceLimitReached": "A fost atins numărul maxim de dispozitive asociate acestui cod IA Sonarpad. Elimină un dispozitiv deja asociat sau contactează asistența.",
+  "@audioDescriptionSonarpadDeviceLimitReached": {
+    "description": "Shown when a Sonarpad AI access code has reached its allowed device limit."
+  },
+  "audioDescriptionSonarpadBalance": "Credit IA Sonarpad",
+  "@audioDescriptionSonarpadBalance": {
+    "description": "Label for the remaining Sonarpad AI account credit."
+  },
+  "audioDescriptionSonarpadBalanceUnavailable": "Credit indisponibil.",
+  "@audioDescriptionSonarpadBalanceUnavailable": {
+    "description": "Shown when the Sonarpad AI credit cannot be read."
+  },
+  "audioDescriptionEdgeVoiceReady": "Vocea Edge selectată este disponibilă.",
+  "@audioDescriptionEdgeVoiceReady": {
+    "description": "Localized text for audioDescriptionEdgeVoiceReady."
+  },
+  "audioDescriptionChooseVideoFirst": "Alege mai întâi un fișier video.",
+  "@audioDescriptionChooseVideoFirst": {
+    "description": "Localized text for audioDescriptionChooseVideoFirst."
+  },
+  "audioDescriptionStagePreparing": "Se pregătește videoclipul...",
+  "@audioDescriptionStagePreparing": {
+    "description": "Localized text for audioDescriptionStagePreparing."
+  },
+  "audioDescriptionStageDialogue": "Se detectează dialogurile cu pyannote...",
+  "@audioDescriptionStageDialogue": {
+    "description": "Localized text for audioDescriptionStageDialogue."
+  },
+  "audioDescriptionStageVideo": "Se pregătesc segmentele video...",
+  "@audioDescriptionStageVideo": {
+    "description": "Localized text for audioDescriptionStageVideo."
+  },
+  "audioDescriptionStageGemini": "Se generează audiodescrierile cu IA...",
+  "@audioDescriptionStageGemini": {
+    "description": "Localized text for audioDescriptionStageGemini."
+  },
+  "audioDescriptionStageTts": "Se creează vocile...",
+  "@audioDescriptionStageTts": {
+    "description": "Localized text for audioDescriptionStageTts."
+  },
+  "audioDescriptionStageMixing": "Se creează MP3-ul audiodescris...",
+  "@audioDescriptionStageMixing": {
+    "description": "Localized text for audioDescriptionStageMixing."
+  },
+  "audioDescriptionCompleted": "Audiodescriere finalizată.",
+  "@audioDescriptionCompleted": {
+    "description": "Localized text for audioDescriptionCompleted."
+  },
+  "audioDescriptionCancelled": "Crearea audiodescrierii a fost anulată.",
+  "@audioDescriptionCancelled": {
+    "description": "Localized text for audioDescriptionCancelled."
+  },
+  "audioDescriptionCancelling": "Se anulează...",
+  "@audioDescriptionCancelling": {
+    "description": "Localized text for audioDescriptionCancelling."
+  },
+  "audioDescriptionGenerationFailed": "Crearea audiodescrierii a eșuat.",
+  "@audioDescriptionGenerationFailed": {
+    "description": "Localized text for audioDescriptionGenerationFailed."
+  },
+  "audioDescriptionGetGeminiKey": "Obține o cheie API Gemini",
+  "@audioDescriptionGetGeminiKey": {
+    "description": "Localized text for audioDescriptionGetGeminiKey."
+  },
+  "audioDescriptionKeepCharacterCatalog": "Salvează și actualizează catalogul de personaje: util pentru un serial",
+  "@audioDescriptionKeepCharacterCatalog": {
+    "description": "Localized text for audioDescriptionKeepCharacterCatalog."
+  },
+  "audioDescriptionCharacterCatalogChoose": "Alege un catalog de personaje salvat",
+  "@audioDescriptionCharacterCatalogChoose": {
+    "description": "Localized text for audioDescriptionCharacterCatalogChoose."
+  },
+  "audioDescriptionCharacterCatalogNew": "Catalog nou",
+  "@audioDescriptionCharacterCatalogNew": {
+    "description": "Localized text for audioDescriptionCharacterCatalogNew."
+  },
+  "audioDescriptionCharacterCatalogNameTitle": "Catalog de personaje",
+  "@audioDescriptionCharacterCatalogNameTitle": {
+    "description": "Localized text for audioDescriptionCharacterCatalogNameTitle."
+  },
+  "audioDescriptionCharacterCatalogNamePrompt": "Cum vrei să numești catalogul de personaje?",
+  "@audioDescriptionCharacterCatalogNamePrompt": {
+    "description": "Localized text for audioDescriptionCharacterCatalogNamePrompt."
+  },
+  "audioDescriptionCharacterCatalogNameError": "Introdu un nume pentru catalogul de personaje.",
+  "@audioDescriptionCharacterCatalogNameError": {
+    "description": "Localized text for audioDescriptionCharacterCatalogNameError."
+  },
+  "audioDescriptionCharacterCatalogSaved": "Catalogul de personaje a fost actualizat.",
+  "@audioDescriptionCharacterCatalogSaved": {
+    "description": "Localized text for audioDescriptionCharacterCatalogSaved."
+  },
+  "audioDescriptionCharacterCatalogSaveWarning": "Audiodescrierea a fost creată, dar catalogul de personaje nu a putut fi salvat:",
+  "@audioDescriptionCharacterCatalogSaveWarning": {
+    "description": "Localized text for audioDescriptionCharacterCatalogSaveWarning."
+  },
+  "audioDescriptionRecognizeScreenText": "Recunoaște textul de pe ecran important pentru narațiune",
+  "@audioDescriptionRecognizeScreenText": {
+    "description": "Localized text for audioDescriptionRecognizeScreenText."
+  },
+  "audioDescriptionHighDemandTitle": "Serviciul IA este ocupat",
+  "@audioDescriptionHighDemandTitle": {
+    "description": "Audio-description fallback UI: audioDescriptionHighDemandTitle."
+  },
+  "audioDescriptionHighDemandMessage": "Serviciul IA este încă indisponibil după mai multe încercări. Vrei să continui să aștepți și să reîncerci?",
+  "@audioDescriptionHighDemandMessage": {
+    "description": "Audio-description fallback UI: audioDescriptionHighDemandMessage."
+  },
+  "audioDescriptionContinueWaiting": "Continuă să aștepți",
+  "@audioDescriptionContinueWaiting": {
+    "description": "Audio-description fallback UI: audioDescriptionContinueWaiting."
+  },
+  "audioDescriptionStopGeneration": "Oprește",
+  "@audioDescriptionStopGeneration": {
+    "description": "Audio-description fallback UI: audioDescriptionStopGeneration."
+  },
+  "audioDescriptionQuotaTitle": "Cota Gemini a fost epuizată",
+  "@audioDescriptionQuotaTitle": {
+    "description": "Audio-description fallback UI: audioDescriptionQuotaTitle."
+  },
+  "audioDescriptionQuotaMessage": "Modelul Gemini curent și-a epuizat cota. Poți alege alt model, poți continua să aștepți sau poți opri.",
+  "@audioDescriptionQuotaMessage": {
+    "description": "Audio-description fallback UI: audioDescriptionQuotaMessage."
+  },
+  "audioDescriptionSwitchModel": "Alege alt model",
+  "@audioDescriptionSwitchModel": {
+    "description": "Audio-description fallback UI: audioDescriptionSwitchModel."
+  },
+  "audioDescriptionOverlapTitle": "Soluție de rezervă finală",
+  "@audioDescriptionOverlapTitle": {
+    "description": "Audio-description fallback UI: audioDescriptionOverlapTitle."
+  },
+  "audioDescriptionOverlapMessage": "Nicio descriere generată nu încape în siguranță în spațiile fără dialog. Vrei să folosești soluția finală de rezervă, care poate suprapune narațiunea peste dialog? Aceasta nu este activată niciodată automat.",
+  "@audioDescriptionOverlapMessage": {
+    "description": "Audio-description fallback UI: audioDescriptionOverlapMessage."
+  },
+  "audioDescriptionAllowOverlap": "Folosește soluția finală de rezervă",
+  "@audioDescriptionAllowOverlap": {
+    "description": "Audio-description fallback UI: audioDescriptionAllowOverlap."
+  },
+  "audioDescriptionResumeTitle": "A fost găsită o audiodescriere începută anterior",
+  "@audioDescriptionResumeTitle": {
+    "description": "Audio-description fallback UI: audioDescriptionResumeTitle."
+  },
+  "audioDescriptionResumeMessage": "Sonarpad a găsit un punct de reluare compatibil. Continui de la ultimul segment finalizat sau reîncepi de la început?",
+  "@audioDescriptionResumeMessage": {
+    "description": "Audio-description fallback UI: audioDescriptionResumeMessage."
+  },
+  "audioDescriptionResume": "Continuă",
+  "@audioDescriptionResume": {
+    "description": "Audio-description fallback UI: audioDescriptionResume."
+  },
+  "audioDescriptionRestart": "Reîncepe",
+  "@audioDescriptionRestart": {
+    "description": "Audio-description fallback UI: audioDescriptionRestart."
+  },
+  "audioDescriptionStageBriefRetry": "Se reia analiza cu descrieri scurte...",
+  "@audioDescriptionStageBriefRetry": {
+    "description": "Audio-description fallback UI: audioDescriptionStageBriefRetry."
+  },
+  "audioDescriptionBriefRetryTitle": "Reîncearcă folosind descrieri scurte",
+  "@audioDescriptionBriefRetryTitle": {
+    "description": "Audio-description fallback UI: audioDescriptionBriefRetryTitle."
+  },
+  "audioDescriptionBriefRetryMessage": "Nicio descriere generată nu încape în siguranță în spațiile fără dialog. Înainte de a permite narațiunea peste dialog, vrei să reîncerci o dată analiza cu descrieri foarte scurte?",
+  "@audioDescriptionBriefRetryMessage": {
+    "description": "Audio-description fallback UI: audioDescriptionBriefRetryMessage."
+  },
+  "audioDescriptionRetryBrief": "Reîncearcă în modul Scurt",
+  "@audioDescriptionRetryBrief": {
+    "description": "Audio-description fallback UI: audioDescriptionRetryBrief."
+  },
+  "audioDescriptionProjectEditorDescriptionOption": "{index}. {time} s. {text}",
+  "@audioDescriptionProjectEditorDescriptionOption": {
+    "placeholders": {
+      "index": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      },
+      "text": {
+        "type": "String"
+      }
+    }
+  },
+  "audioDescriptionLanguageCountry": "{language} ({country})",
+  "@audioDescriptionLanguageCountry": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      },
+      "country": {
+        "type": "String"
+      }
+    }
+  },
+  "audioDescriptionCancelConfirmation": "Sigur vrei să anulezi crearea audiodescrierii?",
+  "@audioDescriptionCancelConfirmation": {
+    "description": "Confirmation before cancelling an active audio description generation."
+  },
+  "audioDescriptionEditProject": "Editează proiectul existent",
+  "@audioDescriptionEditProject": {
+    "description": "Audio description project selection: audioDescriptionEditProject"
+  },
+  "audioDescriptionFindProject": "Caută în Documentele Sonarpad",
+  "@audioDescriptionFindProject": {
+    "description": "Audio description project selection: audioDescriptionFindProject"
+  },
+  "audioDescriptionBrowseProject": "Răsfoiește…",
+  "@audioDescriptionBrowseProject": {
+    "description": "Audio description project selection: audioDescriptionBrowseProject"
+  },
+  "audioDescriptionNoSavedProjects": "Nu s-au găsit proiecte în Documentele Sonarpad.",
+  "@audioDescriptionNoSavedProjects": {
+    "description": "Audio description project selection: audioDescriptionNoSavedProjects"
+  },
+  "audioDescriptionContinueAi": "Continuă audiodescrierea cu IA",
+  "@audioDescriptionContinueAi": {
+    "description": "Audio description resume: audioDescriptionContinueAi"
+  },
+  "audioDescriptionNoCheckpoint": "Nu a fost găsită nicio audiodescriere întreruptă pentru acest videoclip. Selectează videoclipul original folosit anterior.",
+  "@audioDescriptionNoCheckpoint": {
+    "description": "Audio description resume: audioDescriptionNoCheckpoint"
+  },
+  "sonarTubeSaveFormatPrompt": "Alege formatul de salvare",
+  "@sonarTubeSaveFormatPrompt": {
+    "description": "Prompt shown before saving SonarTube media to choose MP4 or MP3."
+  },
+  "sonarTubeSaveAsMp4": "Salvează ca MP4",
+  "@sonarTubeSaveAsMp4": {
+    "description": "SonarTube save-media format choice for MP4 video."
+  },
+  "sonarTubeSaveAsMp3": "Salvează ca MP3",
+  "@sonarTubeSaveAsMp3": {
+    "description": "SonarTube save-media format choice for MP3 audio."
+  },
+  "developerReportText": "Detaliile raportului",
+  "@developerReportText": {
+    "description": "Localized text for developerReportText."
+  },
+  "audioDescriptionCreateVideoOutput": "Salvează audiodescrierea în videoclip",
+  "@audioDescriptionCreateVideoOutput": {
+    "description": "Localized text for audioDescriptionCreateVideoOutput."
+  },
+  "audioDescriptionLoadCharacterCatalog": "Încarcă catalogul de personaje",
+  "@audioDescriptionLoadCharacterCatalog": {
+    "description": "Localized text for audioDescriptionLoadCharacterCatalog."
+  },
+  "audioDescriptionImportCharacterCatalog": "Importă catalogul din fișier",
+  "@audioDescriptionImportCharacterCatalog": {
+    "description": "Localized text for audioDescriptionImportCharacterCatalog."
+  },
+  "audioDescriptionCharacterCatalogLoaded": "Catalogul de personaje a fost încărcat.",
+  "@audioDescriptionCharacterCatalogLoaded": {
+    "description": "Localized text for audioDescriptionCharacterCatalogLoaded."
+  },
+  "audioDescriptionCreateWithAi": "Creează audiodescriere cu IA",
+  "@audioDescriptionCreateWithAi": {
+    "description": "Localized text for audioDescriptionCreateWithAi."
+  },
+  "settingsHomeCustomization": "Personalizează ecranul principal",
+  "settingsHomeCustomizationHint": "Alege elementele care se afișează și, când categoriile sunt dezactivate, ordinea lor.",
+  "homeCategories": "Categorii",
+  "homeCategoriesHint": "Grupează elementele ecranului principal în categorii.",
+  "homeVisibleItems": "Elemente vizibile",
+  "homeReorderItems": "Reordonează elementele",
+  "homeResetDefaults": "Restabilește valorile implicite",
+  "homeResetDefaultsConfirmTitle": "Restabilești ecranul principal?",
+  "homeResetDefaultsConfirmMessage": "Toate funcțiile disponibile vor fi afișate din nou, categoriile vor fi activate și ordinea personalizată va fi ștearsă.",
+  "homeResetDefaultsDone": "Ecranul principal a fost restabilit la valorile implicite.",
+  "homeReorderTitle": "Reordonează ecranul principal",
+  "homeMoveItem": "Mută elementul",
+  "homeDigitalLibrary": "Bibliotecă digitală",
+  "homeTv": "TV",
+  "homeRaiPlay": "RaiPlay",
+  "homeLa7Play": "LA7 Play",
+  "homeRaiPlaySound": "RaiPlay Sound",
+  "homeOpeningHours": "Program de funcționare",
+  "homeDirectory": "Pagini Albe și Pagini Aurii"
+}

@@ -40,6 +40,7 @@ class _RouteScreenState extends State<RouteScreen> {
         'de' => 'de',
         'zh_CN' => 'cn',
         'uk' => 'ua',
+        'ro' => 'ro',
         _ => 'it',
       };
     }
@@ -232,6 +233,7 @@ class _RouteScreenState extends State<RouteScreen> {
       AccessibleOption(value: 'gb', label: l10n.radioCountryOptionGb),
       AccessibleOption(value: 'us', label: l10n.radioCountryOptionUs),
       AccessibleOption(value: 'ua', label: localizedCountryDisplayName('UA', localeName: l10n.localeName)),
+      AccessibleOption(value: 'ro', label: localizedCountryDisplayName('RO', localeName: l10n.localeName, fallbackLabel: 'România')),
       AccessibleOption(value: 'cn', label: l10n.chinaCountryName),
     ];
     String? countryValueLabel;

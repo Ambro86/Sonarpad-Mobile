@@ -1161,6 +1161,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               'de' => l10n.german,
               'zh_CN' => l10n.simplifiedChineseLanguageName,
               'uk' => l10n.radioLanguageUk,
+              'ro' => 'Română',
               _ => l10n.italian,
             },
             options: [
@@ -1175,6 +1176,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               AccessibleOption(value: 'de', label: l10n.german),
               AccessibleOption(value: 'zh_CN', label: l10n.simplifiedChineseLanguageName),
               AccessibleOption(value: 'uk', label: l10n.radioLanguageUk),
+              const AccessibleOption(value: 'ro', label: 'Română'),
             ],
           ),
           AccessibleListRow(

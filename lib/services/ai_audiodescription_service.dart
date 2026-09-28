@@ -2162,6 +2162,7 @@ $screenTextSchema$coreDirectives
       'pt-br' => const _WindowsPromptLanguage('Brazilian Portuguese', 'Um carro corre pela rua.', 'Um homem alto de terno escuro.'),
       'pt' => const _WindowsPromptLanguage('Portuguese', 'Um carro avança em alta velocidade pela rua.', 'Um homem alto de fato escuro.'),
       'ru' => const _WindowsPromptLanguage('Russian', 'Машина мчится по улице.', 'Высокий мужчина в тёмном костюме.'),
+      'ro' => const _WindowsPromptLanguage('Romanian', 'O mașină gonește pe stradă.', 'Un bărbat înalt, îmbrăcat într-un costum închis la culoare.'),
       'sr' => const _WindowsPromptLanguage('Serbian', 'Аутомобил јури улицом.', 'Висок мушкарац у тамном оделу.'),
       'sv' => const _WindowsPromptLanguage('Swedish', 'En bil rusar längs gatan.', 'En lång man i mörk kostym.'),
       'tr' => const _WindowsPromptLanguage('Turkish', 'A car speeds down the street.', 'A tall man in a dark suit.'),
@@ -4811,6 +4812,7 @@ $screenTextSchema$coreDirectives
     if (code.startsWith('pl')) return 'pl-PL';
     if (code.startsWith('cs')) return 'cs-CZ';
     if (code.startsWith('uk')) return 'uk-UA';
+    if (code.startsWith('ro')) return 'ro-RO';
     if (code.startsWith('zh')) return 'zh-CN';
     return 'it-IT';
   }

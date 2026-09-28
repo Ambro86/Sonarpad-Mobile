@@ -57,6 +57,7 @@ class _NewsScreenState extends State<NewsScreen> {
         'de' => NewsLanguage.german,
         'zh_CN' => NewsLanguage.chineseSimplified,
         'uk' => NewsLanguage.ukrainian,
+        'ro' => NewsLanguage.romanian,
         _ => NewsLanguage.italian,
       };
       _service.prefetchTinyfishFallbackOnlyPolicy();
@@ -778,6 +779,7 @@ class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
       NewsLanguage.portugueseBrazil => 'pt-BR',
       NewsLanguage.chineseSimplified => 'zh-CN',
       NewsLanguage.ukrainian => 'uk',
+      NewsLanguage.romanian => 'ro-RO',
       _ => widget.language.code,
     };
     final ceidLanguage = switch (widget.language) {
@@ -785,6 +787,7 @@ class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
       NewsLanguage.portugueseBrazil => 'pt-419',
       NewsLanguage.chineseSimplified => 'zh-Hans',
       NewsLanguage.ukrainian => 'uk',
+      NewsLanguage.romanian => 'ro',
       _ => widget.language.code,
     };
     final savedCity = await _settings.getNewsLocalCity();
@@ -832,6 +835,7 @@ class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
         NewsLanguage.german => 'DE',
         NewsLanguage.chineseSimplified => 'CN',
         NewsLanguage.ukrainian => 'UA',
+        NewsLanguage.romanian => 'RO',
         NewsLanguage.italian => 'IT',
       };
 

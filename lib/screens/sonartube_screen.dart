@@ -93,6 +93,12 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
   bool get _isSearchResults => widget.searchQuery != null;
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _service.setLocaleName(AppLocalizations.of(context).localeName);
+  }
+
+  @override
   void initState() {
     super.initState();
     assert(
