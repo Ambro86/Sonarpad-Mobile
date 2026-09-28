@@ -108,6 +108,11 @@ class _PodcastEpisodePlayerScreenState
   int _seekStep = 60;
   double _accessibleVolume = 1.0;
   bool _accessibleVolumeLoaded = false;
+  Duration _accessibleAudioPosition = Duration.zero;
+  Duration _accessibleAudioDuration = Duration.zero;
+  StreamSubscription<Duration>? _accessiblePositionSubscription;
+  StreamSubscription<Duration?>? _accessibleDurationSubscription;
+  Timer? _accessiblePositionRefreshTimer;
   int _lastVideoBookmarkSecond = -1;
   Timer? _diagnosticHeartbeat;
   AppLifecycleState? _lastLifecycleState;
@@ -760,6 +765,19 @@ class _PodcastEpisodePlayerScreenState
     _audioCompletionSubscription = _audio.completionStream.listen((_) {
       unawaited(_handlePlaybackCompleted());
     });
+    _accessiblePositionSubscription = _audio.positionStream.listen((position) {
+      _accessibleAudioPosition = position;
+    });
+    _accessibleDurationSubscription = _audio.durationStream.listen((duration) {
+      _accessibleAudioDuration = duration ?? Duration.zero;
+    });
+    _accessiblePositionRefreshTimer = Timer.periodic(
+      const Duration(seconds: 1),
+      (_) {
+        if (!mounted || !useSharedAccessibleViewModel) return;
+        setState(() {});
+      },
+    );
     if (Platform.isIOS) {
       _mediaEventsSubscription =
           _mediaEvents.receiveBroadcastStream().listen((event) {
@@ -846,6 +864,35 @@ class _PodcastEpisodePlayerScreenState
     unawaited(_settings.saveMediaVolume(clamped));
   }
 
+  Future<void> _setAccessiblePosition(Duration target) async {
+    final controller = _videoController;
+    try {
+      if (controller != null && controller.value.isInitialized) {
+        final duration = controller.value.duration;
+        final clamped = target < Duration.zero
+            ? Duration.zero
+            : (duration > Duration.zero && target > duration ? duration : target);
+        await controller.seekTo(clamped);
+        if (_videoUsesExternalAudio) {
+          await _audio.seek(clamped);
+        }
+      } else {
+        final duration = _accessibleAudioDuration;
+        final clamped = target < Duration.zero
+            ? Duration.zero
+            : (duration > Duration.zero && target > duration ? duration : target);
+        _accessibleAudioPosition = clamped;
+        await _audio.seek(clamped);
+      }
+      if (mounted) setState(() {});
+    } catch (error) {
+      AppLogger.log(
+        'PodcastPlayer: accessible position seek failed '
+        'target=${target.inMilliseconds}ms error=$error, $_logSubject',
+      );
+    }
+  }
+
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.paused ||
@@ -907,6 +954,9 @@ class _PodcastEpisodePlayerScreenState
     );
     WidgetsBinding.instance.removeObserver(this);
     _diagnosticHeartbeat?.cancel();
+    _accessiblePositionRefreshTimer?.cancel();
+    unawaited(_accessiblePositionSubscription?.cancel() ?? Future<void>.value());
+    unawaited(_accessibleDurationSubscription?.cancel() ?? Future<void>.value());
     if (Platform.isIOS && _videoController != null) {
       unawaited(_mediaCommands.invokeMethod('clearMagicTap'));
     }
@@ -1146,9 +1196,44 @@ class _PodcastEpisodePlayerScreenState
   }
 
   Widget _buildSharedAccessiblePlayerBody(AppLocalizations l10n, bool canSeek) {
-    Widget buildControls(bool isPlaying) {
-      final videoReady = _videoController != null && _videoController!.value.isInitialized;
+    Widget buildControls(
+      bool isPlaying,
+      Duration position,
+      Duration duration,
+    ) {
+      final videoReady =
+          _videoController != null && _videoController!.value.isInitialized;
       final videoPlaying = videoReady && _videoController!.value.isPlaying;
+      final hasPositionSlider = canSeek && duration > Duration.zero;
+
+      var positionStep = _seekStep;
+      if (hasPositionSlider && duration.inSeconds < positionStep) {
+        positionStep = (duration.inSeconds * 0.2).round();
+        if (positionStep < 1) positionStep = 1;
+      }
+
+      final clampedPosition = position < Duration.zero
+          ? Duration.zero
+          : (duration > Duration.zero && position > duration
+              ? duration
+              : position);
+      final increasedPosition = hasPositionSlider
+          ? clampedPosition + Duration(seconds: positionStep) > duration
+              ? duration
+              : clampedPosition + Duration(seconds: positionStep)
+          : clampedPosition;
+      final decreasedPosition = hasPositionSlider
+          ? clampedPosition - Duration(seconds: positionStep) < Duration.zero
+              ? Duration.zero
+              : clampedPosition - Duration(seconds: positionStep)
+          : clampedPosition;
+      final spokenPosition = hasPositionSlider
+          ? l10n.playbackPositionValue(
+              l10n.formatPlaybackSpokenDuration(clampedPosition),
+              l10n.formatPlaybackSpokenDuration(duration),
+            )
+          : null;
+
       final rows = <AccessibleListRow>[
         AccessibleListRow(
           id: 'now_playing_title',
@@ -1156,9 +1241,20 @@ class _PodcastEpisodePlayerScreenState
           title: l10n.nowPlayingTitle(_episode.title),
           accessibilityButtonTrait: false,
         ),
-        if (_loading) AccessibleListRow(id: 'loading', kind: 'text', title: l10n.loadingEpisodeAudio),
-        if (_error != null) AccessibleListRow(id: 'error', kind: 'text', title: _error!),
-        if (_podcastService.hasChapterSource(_episode) || (_detectedChapters?.isNotEmpty ?? false))
+        if (_loading)
+          AccessibleListRow(
+            id: 'loading',
+            kind: 'text',
+            title: l10n.loadingEpisodeAudio,
+          ),
+        if (_error != null)
+          AccessibleListRow(
+            id: 'error',
+            kind: 'text',
+            title: _error!,
+          ),
+        if (_podcastService.hasChapterSource(_episode) ||
+            (_detectedChapters?.isNotEmpty ?? false))
           AccessibleListRow(id: 'chapters', title: l10n.podcastChapters),
         if (widget.isVideoSupported)
           AccessibleListRow(
@@ -1168,27 +1264,27 @@ class _PodcastEpisodePlayerScreenState
             toggleValue: _isVideoEnabled,
             enabled: !_loading && !_switchingVideoMode,
           ),
-        if (_canNavigatePrevious)
+        if (canSeek)
           AccessibleListRow(
-            id: 'previous_episode',
-            title: widget.previousEpisodeLabel!,
+            id: 'rewind',
+            title: l10n.rewind15s,
             kind: 'button',
-            enabled: !_loading,
+            enabled: !_loading && _loaded,
           ),
-        if (canSeek) AccessibleListRow(id: 'rewind', title: l10n.rewind15s, kind: 'button', enabled: !_loading && _loaded),
         AccessibleListRow(
           id: 'play_pause',
-          title: _videoController != null ? (videoPlaying ? l10n.pause : l10n.play) : (isPlaying ? l10n.pause : l10n.play),
+          title: _videoController != null
+              ? (videoPlaying ? l10n.pause : l10n.play)
+              : (isPlaying ? l10n.pause : l10n.play),
           kind: 'button',
           enabled: !_loading,
         ),
-        if (canSeek) AccessibleListRow(id: 'forward', title: l10n.forward15s, kind: 'button', enabled: !_loading && _loaded),
-        if (_canNavigateNext)
+        if (canSeek)
           AccessibleListRow(
-            id: 'next_episode',
-            title: widget.nextEpisodeLabel!,
+            id: 'forward',
+            title: l10n.forward15s,
             kind: 'button',
-            enabled: !_loading,
+            enabled: !_loading && _loaded,
           ),
         if (_accessibleVolumeLoaded)
           AccessibleListRow(
@@ -1208,6 +1304,38 @@ class _PodcastEpisodePlayerScreenState
             nativeSliderAccessibilityElement: true,
             enabled: !_loading,
           ),
+        if (hasPositionSlider)
+          AccessibleListRow(
+            id: 'accessible_position',
+            title: l10n.playbackPosition,
+            kind: 'slider',
+            value: spokenPosition,
+            valueLabel: spokenPosition,
+            sliderValue: clampedPosition.inMilliseconds / 1000.0,
+            sliderMin: 0.0,
+            sliderMax: duration.inMilliseconds / 1000.0,
+            sliderStep: positionStep.toDouble(),
+            sliderIncreasedValueLabel:
+                l10n.formatPlaybackSpokenDuration(increasedPosition),
+            sliderDecreasedValueLabel:
+                l10n.formatPlaybackSpokenDuration(decreasedPosition),
+            nativeSliderAccessibilityElement: true,
+            enabled: !_loading && _loaded,
+          ),
+        if (_canNavigatePrevious)
+          AccessibleListRow(
+            id: 'previous_episode',
+            title: widget.previousEpisodeLabel!,
+            kind: 'button',
+            enabled: !_loading,
+          ),
+        if (_canNavigateNext)
+          AccessibleListRow(
+            id: 'next_episode',
+            title: widget.nextEpisodeLabel!,
+            kind: 'button',
+            enabled: !_loading,
+          ),
         for (final action in widget.extraActions)
           AccessibleListRow(
             id: 'extra_${action.id}',
@@ -1222,17 +1350,27 @@ class _PodcastEpisodePlayerScreenState
           if (event.id == 'accessible_volume' && event.type == 'slider') {
             final value = (event.value as num?)?.toDouble();
             if (value != null) _setAccessibleVolume(value);
+          } else if (event.id == 'accessible_position' &&
+              event.type == 'slider') {
+            final value = (event.value as num?)?.toDouble();
+            if (value != null) {
+              await _setAccessiblePosition(
+                Duration(milliseconds: (value * 1000).round()),
+              );
+            }
           } else if (event.id == 'chapters' && event.type == 'activate') {
             await _openChapters();
           } else if (event.id == 'video' && event.type == 'toggle') {
             _toggleVideo(event.value == true);
-          } else if (event.id == 'previous_episode' && event.type == 'activate') {
+          } else if (event.id == 'previous_episode' &&
+              event.type == 'activate') {
             await _navigateAdjacentEpisode(-1);
           } else if (event.id == 'rewind' && event.type == 'activate') {
             await _seekBackward();
           } else if (event.id == 'forward' && event.type == 'activate') {
             await _seekForward();
-          } else if (event.id == 'next_episode' && event.type == 'activate') {
+          } else if (event.id == 'next_episode' &&
+              event.type == 'activate') {
             await _navigateAdjacentEpisode(1);
           } else if (event.type == 'activate' &&
               event.id?.startsWith('extra_') == true) {
@@ -1256,38 +1394,35 @@ class _PodcastEpisodePlayerScreenState
       );
     }
 
-    final nativeList = _videoController == null
+    final controller = _videoController;
+    final position = controller != null && controller.value.isInitialized
+        ? controller.value.position
+        : _accessibleAudioPosition;
+    final duration = controller != null && controller.value.isInitialized
+        ? controller.value.duration
+        : _accessibleAudioDuration;
+
+    final nativeList = controller == null
         ? StreamBuilder<bool>(
             stream: _audio.playingStream,
-            builder: (context, snapshot) => buildControls(snapshot.data ?? false),
+            builder: (context, snapshot) => buildControls(
+              snapshot.data ?? false,
+              position,
+              duration,
+            ),
           )
-        : buildControls(false);
+        : buildControls(false, position, duration);
 
     return Column(
       children: [
-        if (_videoController != null && _videoController!.value.isInitialized)
+        if (controller != null && controller.value.isInitialized)
           Padding(
             padding: const EdgeInsets.all(12),
             child: ExcludeSemantics(
-              child: _buildVideoPlayerSurface(_videoController!),
+              child: _buildVideoPlayerSurface(controller),
             ),
           ),
         Expanded(child: nativeList),
-        if (_videoController != null && canSeek)
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: _VideoPositionControl(
-              controller: _videoController!,
-              audio: _videoUsesExternalAudio ? _audio : null,
-              seekStep: _seekStep,
-              logSubject: _logSubject,
-            ),
-          )
-        else if (_videoController == null)
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: _PodcastPositionControl(audio: _audio, seekStep: _seekStep, logSubject: _logSubject),
-          ),
       ],
     );
   }
