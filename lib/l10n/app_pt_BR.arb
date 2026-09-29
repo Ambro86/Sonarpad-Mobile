@@ -3515,5 +3515,21 @@
   "homeLa7Play": "LA7 Play",
   "homeRaiPlaySound": "RaiPlay Sound",
   "homeOpeningHours": "Horários de funcionamento",
-  "homeDirectory": "Páginas Brancas e Amarelas"
+  "homeDirectory": "Páginas Brancas e Amarelas",
+  "treccaniTitle": "Enciclopédia Treccani",
+  "@treccaniTitle": {
+    "description": "Localized text for treccaniTitle."
+  },
+  "treccaniSearchLabel": "Pesquisar na Enciclopédia Treccani",
+  "@treccaniSearchLabel": {
+    "description": "Localized text for treccaniSearchLabel."
+  },
+  "treccaniNoResults": "Nenhuma entrada Treccani encontrada",
+  "@treccaniNoResults": {
+    "description": "Localized text for treccaniNoResults."
+  },
+  "treccaniWholeEntry": "Entrada completa",
+  "@treccaniWholeEntry": {
+    "description": "Localized text for treccaniWholeEntry."
+  }
 }

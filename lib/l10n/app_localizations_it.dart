@@ -827,6 +827,18 @@ class AppLocalizationsIt extends AppLocalizations {
   String get wikipediaImportWholeArticle => 'Tutto l\'articolo';
 
   @override
+  String get treccaniTitle => 'Enciclopedia Treccani';
+
+  @override
+  String get treccaniSearchLabel => 'Cerca nell’Enciclopedia Treccani';
+
+  @override
+  String get treccaniNoResults => 'Nessuna voce Treccani trovata';
+
+  @override
+  String get treccaniWholeEntry => 'Intera voce';
+
+  @override
   String get documents => 'Documenti';
 
   @override

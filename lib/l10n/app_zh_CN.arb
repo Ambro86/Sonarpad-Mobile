@@ -3509,5 +3509,21 @@
   "homeLa7Play": "LA7 Play",
   "homeRaiPlaySound": "RaiPlay Sound",
   "homeOpeningHours": "营业时间",
-  "homeDirectory": "白页和黄页"
+  "homeDirectory": "白页和黄页",
+  "treccaniTitle": "特雷卡尼百科全书",
+  "@treccaniTitle": {
+    "description": "Localized text for treccaniTitle."
+  },
+  "treccaniSearchLabel": "搜索特雷卡尼百科全书",
+  "@treccaniSearchLabel": {
+    "description": "Localized text for treccaniSearchLabel."
+  },
+  "treccaniNoResults": "未找到特雷卡尼词条",
+  "@treccaniNoResults": {
+    "description": "Localized text for treccaniNoResults."
+  },
+  "treccaniWholeEntry": "完整词条",
+  "@treccaniWholeEntry": {
+    "description": "Localized text for treccaniWholeEntry."
+  }
 }

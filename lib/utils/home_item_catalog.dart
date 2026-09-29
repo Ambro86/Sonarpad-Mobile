@@ -28,6 +28,7 @@ Set<String> availableHomeItemIds({
 
   if (isItalian) {
     ids.addAll({
+      HomeItemIds.treccani,
       HomeItemIds.digitalLibrary,
       HomeItemIds.openingHours,
       HomeItemIds.pharmacy,
@@ -88,6 +89,8 @@ String homeItemLabel(AppLocalizations l10n, String id) {
       return l10n.sonarpadAudiodescriptionsTitle;
     case HomeItemIds.wikipedia:
       return l10n.importFromWikipedia;
+    case HomeItemIds.treccani:
+      return l10n.treccaniTitle;
     case HomeItemIds.voiceDictionary:
       return l10n.voiceDictionaryTitle;
     case HomeItemIds.digitalLibrary:

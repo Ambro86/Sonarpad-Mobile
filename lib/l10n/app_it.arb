@@ -5087,5 +5087,21 @@
   "homeLa7Play": "LA7 Play",
   "homeRaiPlaySound": "RaiPlay Sound",
   "homeOpeningHours": "Orari di apertura",
-  "homeDirectory": "Pagine Bianche e Gialle"
+  "homeDirectory": "Pagine Bianche e Gialle",
+  "treccaniTitle": "Enciclopedia Treccani",
+  "@treccaniTitle": {
+    "description": "Localized text for treccaniTitle."
+  },
+  "treccaniSearchLabel": "Cerca nell’Enciclopedia Treccani",
+  "@treccaniSearchLabel": {
+    "description": "Localized text for treccaniSearchLabel."
+  },
+  "treccaniNoResults": "Nessuna voce Treccani trovata",
+  "@treccaniNoResults": {
+    "description": "Localized text for treccaniNoResults."
+  },
+  "treccaniWholeEntry": "Intera voce",
+  "@treccaniWholeEntry": {
+    "description": "Localized text for treccaniWholeEntry."
+  }
 }

@@ -3512,5 +3512,21 @@
   "homeLa7Play": "LA7 Play",
   "homeRaiPlaySound": "RaiPlay Sound",
   "homeOpeningHours": "Otevírací doba",
-  "homeDirectory": "Bílé a žluté stránky"
+  "homeDirectory": "Bílé a žluté stránky",
+  "treccaniTitle": "Encyklopedie Treccani",
+  "@treccaniTitle": {
+    "description": "Localized text for treccaniTitle."
+  },
+  "treccaniSearchLabel": "Hledat v Encyklopedii Treccani",
+  "@treccaniSearchLabel": {
+    "description": "Localized text for treccaniSearchLabel."
+  },
+  "treccaniNoResults": "Nebylo nalezeno žádné heslo Treccani",
+  "@treccaniNoResults": {
+    "description": "Localized text for treccaniNoResults."
+  },
+  "treccaniWholeEntry": "Celé heslo",
+  "@treccaniWholeEntry": {
+    "description": "Localized text for treccaniWholeEntry."
+  }
 }

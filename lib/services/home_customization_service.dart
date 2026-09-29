@@ -19,6 +19,7 @@ class HomeItemIds {
   static const audioDescriptions = 'audiodescriptions';
   static const sonarpadAudioDescriptions = 'sonarpad_audiodescriptions';
   static const wikipedia = 'wikipedia';
+  static const treccani = 'treccani';
   static const voiceDictionary = 'voice_dictionary';
   static const digitalLibrary = 'bdciechi';
   static const route = 'route';
@@ -47,6 +48,7 @@ class HomeItemIds {
     audioDescriptions,
     sonarpadAudioDescriptions,
     wikipedia,
+    treccani,
     voiceDictionary,
     digitalLibrary,
     route,
@@ -62,6 +64,7 @@ class HomeItemIds {
   static const List<String> readingOrder = [
     documents,
     wikipedia,
+    treccani,
     news,
     digitalLibrary,
   ];
@@ -140,6 +143,7 @@ class HomeCustomizationService {
         result.add(id);
       }
     }
+    _insertTreccaniAfterWikipediaIfMissing(result);
     for (final id in HomeItemIds.defaultFlatOrder) {
       if (!result.contains(id)) result.add(id);
     }
@@ -176,6 +180,14 @@ class HomeCustomizationService {
   }
 
 
+  void _insertTreccaniAfterWikipediaIfMissing(List<String> order) {
+    if (order.contains(HomeItemIds.treccani)) return;
+    final wikipediaIndex = order.indexOf(HomeItemIds.wikipedia);
+    if (wikipediaIndex >= 0) {
+      order.insert(wikipediaIndex + 1, HomeItemIds.treccani);
+    }
+  }
+
   Future<List<String>> loadCategoryOrder({
     required String categoryId,
     required List<String> defaultOrder,
@@ -189,6 +201,9 @@ class HomeCustomizationService {
       if (defaultOrder.contains(id) && !result.contains(id)) {
         result.add(id);
       }
+    }
+    if (defaultOrder.contains(HomeItemIds.treccani)) {
+      _insertTreccaniAfterWikipediaIfMissing(result);
     }
     for (final id in defaultOrder) {
       if (!result.contains(id)) result.add(id);

@@ -829,6 +829,18 @@ class AppLocalizationsPt extends AppLocalizations {
   String get wikipediaImportWholeArticle => 'Artigo completo';
 
   @override
+  String get treccaniTitle => 'Enciclopédia Treccani';
+
+  @override
+  String get treccaniSearchLabel => 'Pesquisar na Enciclopédia Treccani';
+
+  @override
+  String get treccaniNoResults => 'Nenhuma entrada Treccani encontrada';
+
+  @override
+  String get treccaniWholeEntry => 'Entrada completa';
+
+  @override
   String get documents => 'Documentos';
 
   @override
@@ -5168,6 +5180,18 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get wikipediaImportWholeArticle => 'Artigo completo';
+
+  @override
+  String get treccaniTitle => 'Enciclopédia Treccani';
+
+  @override
+  String get treccaniSearchLabel => 'Pesquisar na Enciclopédia Treccani';
+
+  @override
+  String get treccaniNoResults => 'Nenhuma entrada Treccani encontrada';
+
+  @override
+  String get treccaniWholeEntry => 'Entrada completa';
 
   @override
   String get documents => 'Documentos';

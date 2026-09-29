@@ -5087,5 +5087,21 @@
   "homeLa7Play": "LA7 Play",
   "homeRaiPlaySound": "RaiPlay Sound",
   "homeOpeningHours": "Години роботи",
-  "homeDirectory": "Білі та жовті сторінки"
+  "homeDirectory": "Білі та жовті сторінки",
+  "treccaniTitle": "Енциклопедія Treccani",
+  "@treccaniTitle": {
+    "description": "Localized text for treccaniTitle."
+  },
+  "treccaniSearchLabel": "Пошук в енциклопедії Treccani",
+  "@treccaniSearchLabel": {
+    "description": "Localized text for treccaniSearchLabel."
+  },
+  "treccaniNoResults": "Статей Treccani не знайдено",
+  "@treccaniNoResults": {
+    "description": "Localized text for treccaniNoResults."
+  },
+  "treccaniWholeEntry": "Уся стаття",
+  "@treccaniWholeEntry": {
+    "description": "Localized text for treccaniWholeEntry."
+  }
 }

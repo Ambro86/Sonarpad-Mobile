@@ -828,6 +828,18 @@ class AppLocalizationsCs extends AppLocalizations {
   String get wikipediaImportWholeArticle => 'Celý článek';
 
   @override
+  String get treccaniTitle => 'Encyklopedie Treccani';
+
+  @override
+  String get treccaniSearchLabel => 'Hledat v Encyklopedii Treccani';
+
+  @override
+  String get treccaniNoResults => 'Nebylo nalezeno žádné heslo Treccani';
+
+  @override
+  String get treccaniWholeEntry => 'Celé heslo';
+
+  @override
   String get documents => 'Dokumenty';
 
   @override

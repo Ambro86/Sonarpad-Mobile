@@ -157,6 +157,7 @@ class _HomeScreenState extends State<HomeScreen> {
       HomeItemIds.audioDescriptions => '/audiodescriptions',
       HomeItemIds.sonarpadAudioDescriptions => '/sonarpad_audiodescriptions',
       HomeItemIds.wikipedia => '/wikipedia',
+      HomeItemIds.treccani => '/treccani',
       HomeItemIds.voiceDictionary => '/voice_dictionary',
       HomeItemIds.digitalLibrary => '/bdciechi',
       HomeItemIds.route => '/route',

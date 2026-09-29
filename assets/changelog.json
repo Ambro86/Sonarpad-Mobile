@@ -1,7 +1,7 @@
 [
   {
     "version": "0.5.0",
-    "date": "2026-09-29",
+    "date": "2026-09-30",
     "it": [
       "Aggiunta la nuova funzione “Crea audiodescrizione con IA”: permette di scegliere un video, individuare automaticamente dialoghi e pause, generare le descrizioni con Gemini o con il servizio Sonarpad, sintetizzarle con voci Edge o di sistema e creare il video audiodescritto finale. Sono disponibili anche riconoscimento dei personaggi e del testo a schermo, cataloghi dei personaggi, livelli di dettaglio, ripresa delle elaborazioni e salvataggio del progetto.",
       "Corretti alcuni problemi nelle Notizie che potevano mostrare parti della pagina o contenuti non pertinenti al posto del testo dell’articolo.",
@@ -15,7 +15,8 @@
       "Aggiunta la personalizzazione della schermata principale: dalle Impostazioni è possibile scegliere se usare le categorie, mostrare o nascondere le singole funzioni disponibili e, con le categorie disattivate, riordinare gli elementi con Sposta in alto, Sposta in basso e Sposta alla posizione. Impostazioni e Informazioni restano sempre visibili ma possono essere spostate. Con le categorie attive, Riordina elementi permette inoltre di cambiare l’ordine dei pulsanti all’interno di Lettura, Media e Utilità, senza spostarli da una categoria all’altra.",
       "Nella personalizzazione della schermata principale è stato aggiunto il pulsante “Ripristina valori predefiniti”, che riattiva le categorie, rende visibili tutte le funzioni disponibili e ripristina gli ordini iniziali.",
       "Aggiunta la localizzazione completa in rumeno: interfaccia, changelog, calendario e citazioni, SonarTube, Notizie, podcast, radio, percorsi, meteo, Wikipedia, Gutenberg, audiodescrizione con IA e gli altri servizi multilingua ora supportano il rumeno.",
-      "Migliorata la navigazione nelle schermate interne: il pulsante Indietro offre ora con VoiceOver l’azione secondaria “Vai alla Home” per tornare direttamente alla schermata principale; per gli utenti vedenti è disponibile anche un pulsante Home visibile accanto a Indietro."
+      "Migliorata la navigazione nelle schermate interne: il pulsante Indietro offre ora con VoiceOver l’azione secondaria “Vai alla Home” per tornare direttamente alla schermata principale; per gli utenti vedenti è disponibile anche un pulsante Home visibile accanto a Indietro.",
+      "Aggiunta “Enciclopedia Treccani” per chi usa Sonarpad in italiano: la nuova schermata riprende il funzionamento di Wikipedia, senza selezione della lingua, permette di cercare le voci dell’enciclopedia, apre i risultati in una schermata pulita e consente di leggere l’intera voce o una singola sezione come documento temporaneo in Sonarpad."
     ],
     "en": [
       "Added the new “Create AI audio description” feature: it lets you choose a video, automatically detect dialogue and pauses, generate descriptions with Gemini or the Sonarpad service, synthesize them with Edge or system voices, and create the final audio-described video. Character and on-screen text recognition, character catalogs, detail levels, resume support, and project saving are also available.",

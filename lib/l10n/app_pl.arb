@@ -5090,5 +5090,21 @@
   "homeLa7Play": "LA7 Play",
   "homeRaiPlaySound": "RaiPlay Sound",
   "homeOpeningHours": "Godziny otwarcia",
-  "homeDirectory": "Białe i Żółte Strony"
+  "homeDirectory": "Białe i Żółte Strony",
+  "treccaniTitle": "Encyklopedia Treccani",
+  "@treccaniTitle": {
+    "description": "Localized text for treccaniTitle."
+  },
+  "treccaniSearchLabel": "Szukaj w Encyklopedii Treccani",
+  "@treccaniSearchLabel": {
+    "description": "Localized text for treccaniSearchLabel."
+  },
+  "treccaniNoResults": "Nie znaleziono haseł Treccani",
+  "@treccaniNoResults": {
+    "description": "Localized text for treccaniNoResults."
+  },
+  "treccaniWholeEntry": "Całe hasło",
+  "@treccaniWholeEntry": {
+    "description": "Localized text for treccaniWholeEntry."
+  }
 }

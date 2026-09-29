@@ -1647,6 +1647,30 @@ abstract class AppLocalizations {
   /// **'Tutto l\'articolo'**
   String get wikipediaImportWholeArticle;
 
+  /// Localized text for treccaniTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Enciclopedia Treccani'**
+  String get treccaniTitle;
+
+  /// Localized text for treccaniSearchLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Cerca nell’Enciclopedia Treccani'**
+  String get treccaniSearchLabel;
+
+  /// Localized text for treccaniNoResults.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessuna voce Treccani trovata'**
+  String get treccaniNoResults;
+
+  /// Localized text for treccaniWholeEntry.
+  ///
+  /// In it, this message translates to:
+  /// **'Intera voce'**
+  String get treccaniWholeEntry;
+
   /// Localized text for documents.
   ///
   /// In it, this message translates to:

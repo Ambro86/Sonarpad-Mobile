@@ -809,6 +809,18 @@ class AppLocalizationsZh extends AppLocalizations {
   String get wikipediaImportWholeArticle => '整篇文章';
 
   @override
+  String get treccaniTitle => '特雷卡尼百科全书';
+
+  @override
+  String get treccaniSearchLabel => '搜索特雷卡尼百科全书';
+
+  @override
+  String get treccaniNoResults => '未找到特雷卡尼词条';
+
+  @override
+  String get treccaniWholeEntry => '完整词条';
+
+  @override
   String get documents => '文档';
 
   @override
@@ -4957,6 +4969,18 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get wikipediaImportWholeArticle => '整篇文章';
+
+  @override
+  String get treccaniTitle => '特雷卡尼百科全书';
+
+  @override
+  String get treccaniSearchLabel => '搜索特雷卡尼百科全书';
+
+  @override
+  String get treccaniNoResults => '未找到特雷卡尼词条';
+
+  @override
+  String get treccaniWholeEntry => '完整词条';
 
   @override
   String get documents => '文档';
