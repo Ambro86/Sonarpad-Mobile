@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
@@ -290,6 +291,24 @@ class _CreateAiAudiodescriptionScreenState
   Future<void> _openGeminiApiKeyPage() async {
     final uri = Uri.parse('https://aistudio.google.com/app/apikey');
     await launchUrl(uri, mode: LaunchMode.externalApplication);
+  }
+
+  Future<void> _pasteAiCredential() async {
+    if (_running) return;
+    final data = await Clipboard.getData(Clipboard.kTextPlain);
+    final text = data?.text?.trim();
+    if (text == null || text.isEmpty || !mounted) return;
+
+    if (_provider == 'sonarpad') {
+      setState(() {
+        _sonarpadCode = text;
+        _sonarpadBalanceEur = null;
+      });
+      return;
+    }
+
+    setState(() => _apiKey = text);
+    await AiAudioDescriptionPreferences.saveGeminiApiKey(text);
   }
 
   Future<void> _refreshModels() async {
@@ -1230,6 +1249,11 @@ class _CreateAiAudiodescriptionScreenState
                         enabled: !_running,
                       ),
                       AccessibleListRow(
+                        id: 'paste_ai_credential',
+                        title: l10n.settingsPasteCode,
+                        enabled: !_running,
+                      ),
+                      AccessibleListRow(
                         id: 'get_api_key',
                         title: l10n.audioDescriptionGetGeminiKey,
                         enabled: !_running,
@@ -1259,6 +1283,11 @@ class _CreateAiAudiodescriptionScreenState
                         kind: 'textField',
                         value: _sonarpadCode,
                         secure: true,
+                        enabled: !_running,
+                      ),
+                      AccessibleListRow(
+                        id: 'paste_ai_credential',
+                        title: l10n.settingsPasteCode,
                         enabled: !_running,
                       ),
                       AccessibleListRow(
@@ -1631,6 +1660,9 @@ class _CreateAiAudiodescriptionScreenState
                   switch (id) {
                     case 'choose_video':
                       await _chooseVideo();
+                      break;
+                    case 'paste_ai_credential':
+                      await _pasteAiCredential();
                       break;
                     case 'get_api_key':
                       await _openGeminiApiKeyPage();
