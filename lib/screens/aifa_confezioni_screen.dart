@@ -31,10 +31,14 @@ class _AifaConfezioniScreenState extends State<AifaConfezioniScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              ListTile(
-                leading: const Icon(Icons.arrow_back),
-                title: const Text('Indietro'),
-                onTap: () => Navigator.pop(context),
+              SonarpadBackSemantics(
+                onBack: () => Navigator.pop(context),
+                child: ListTile(
+                  leading: const Icon(Icons.arrow_back),
+                  title: const Text('Indietro'),
+                  trailing: const SonarpadVisualHomeButton(compact: true),
+                  onTap: () => Navigator.pop(context),
+                ),
               ),
               const Divider(),
               ListTile(
@@ -175,7 +179,7 @@ class _AifaConfezioniScreenState extends State<AifaConfezioniScreen> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: SonarpadAppBar(
         title: Text(widget.drugGroup.denominazione),
       ),
       body: SafeArea(

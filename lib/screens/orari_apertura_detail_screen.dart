@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../services/orari_apertura_service.dart';
 import '../widgets/universal_accessible_view.dart';
 
@@ -46,7 +47,7 @@ class _OrariAperturaDetailScreenState extends State<OrariAperturaDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: SonarpadAppBar(
         title: Text(widget.title),
       ),
       body: _isLoading

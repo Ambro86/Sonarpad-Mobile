@@ -93,9 +93,9 @@ class _LetterJumpOptionPickerScreenState<T>
     final showLetterPicker = _showLetterPicker;
     final canPop = Navigator.of(context).canPop();
     return Scaffold(
-      appBar: AppBar(
+      appBar: SonarpadAppBar(
         automaticallyImplyLeading: !canPop,
-        leading: canPop ? const BackButton() : null,
+        leading: canPop ? const SonarpadBackButton() : null,
         title: Text(widget.title),
       ),
       body: useSharedAccessibleViewModel
@@ -210,7 +210,7 @@ class _LetterPickerScreen<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(title)),
+      appBar: SonarpadAppBar(title: Text(title)),
       body: SafeArea(
         child: useSharedAccessibleViewModel
             ? UniversalAccessibleList(
@@ -269,14 +269,20 @@ class _LetterFilteredOptionsScreen<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final backLabel = MaterialLocalizations.of(context).backButtonTooltip;
+    final homeLabel = sonarpadGoHomeLabel(context);
     final flutterRows = <Widget>[
-      SizedBox(
-        width: double.infinity,
-        child: ElevatedButton.icon(
-          onPressed: () => Navigator.pop(context),
-          icon: const Icon(Icons.arrow_back),
-          label: Text(backLabel),
-        ),
+      Row(
+        children: [
+          Expanded(
+            child: ElevatedButton.icon(
+              onPressed: () => Navigator.pop(context),
+              icon: const Icon(Icons.arrow_back),
+              label: Text(backLabel),
+            ),
+          ),
+          const SizedBox(width: 8),
+          const SonarpadVisualHomeButton(compact: true),
+        ],
       ),
       Semantics(
         header: true,
@@ -294,6 +300,25 @@ class _LetterFilteredOptionsScreen<T> extends StatelessWidget {
         id: 'back',
         title: backLabel,
         kind: 'button',
+        actions: [
+          AccessibleCustomAction(
+            id: sonarpadGoHomeActionId,
+            label: homeLabel,
+          ),
+        ],
+        mergeFlutterCustomActions: true,
+        visualActions: [
+          AccessibleVisualAction(
+            id: sonarpadGoHomeActionId,
+            label: homeLabel,
+            icon: 'home',
+          ),
+        ],
+        onCustomAction: (actionId) {
+          if (actionId == sonarpadGoHomeActionId) {
+            goToSonarpadHome(context);
+          }
+        },
         flutterChild: flutterRows[0],
       ),
       AccessibleListRow(
@@ -350,7 +375,12 @@ class _LetterFilteredOptionsScreen<T> extends StatelessWidget {
                 padding: const EdgeInsets.all(16),
                 itemCount: flutterRows.length,
                 separatorBuilder: (_, _) => const SizedBox(height: 8),
-                itemBuilder: (_, index) => flutterRows[index],
+                itemBuilder: (_, index) => index == 0
+                    ? SonarpadBackSemantics(
+                        onBack: () => Navigator.pop(context),
+                        child: flutterRows[index],
+                      )
+                    : flutterRows[index],
               ),
       ),
     );

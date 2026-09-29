@@ -49,7 +49,7 @@ class _AifaSearchScreenState extends State<AifaSearchScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: SonarpadAppBar(
         title: Text(AppLocalizations.of(context).pharmacyFeatureTitle),
       ),
       body: SafeArea(

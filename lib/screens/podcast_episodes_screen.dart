@@ -177,7 +177,7 @@ class _PodcastEpisodesScreenState extends State<PodcastEpisodesScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text(widget.subscription.title)),
+      appBar: SonarpadAppBar(title: Text(widget.subscription.title)),
       body: SafeArea(
         child: FutureBuilder<List<PodcastEpisode>>(
           future: _episodes,
@@ -365,7 +365,7 @@ class _PodcastDateSelectorScreen extends StatelessWidget {
     }
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.podcastSelectDate)),
+      appBar: SonarpadAppBar(title: Text(l10n.podcastSelectDate)),
       body: SafeArea(
         child: dateEpisodes.isEmpty
             ? Center(child: Text(l10n.podcastNoDatesAvailable))
@@ -473,7 +473,7 @@ class _PlayedEpisodesScreenState extends State<_PlayedEpisodesScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(
+      appBar: SonarpadAppBar(
         title: Text(l10n.podcastPlayedEpisodes),
         actions: [
           if (_episodes.isNotEmpty)

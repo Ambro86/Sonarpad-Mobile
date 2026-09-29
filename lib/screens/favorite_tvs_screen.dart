@@ -82,7 +82,7 @@ class _FavoriteTvsScreenState extends State<FavoriteTvsScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('TV preferite')),
+      appBar: SonarpadAppBar(title: const Text('TV preferite')),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _favorites.isEmpty

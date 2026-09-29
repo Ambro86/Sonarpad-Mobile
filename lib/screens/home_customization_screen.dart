@@ -132,7 +132,7 @@ class _HomeCustomizationScreenState extends State<HomeCustomizationScreen> {
     final l10n = AppLocalizations.of(context);
     if (_loading) {
       return Scaffold(
-        appBar: AppBar(title: Text(l10n.settingsHomeCustomization)),
+        appBar: SonarpadAppBar(title: Text(l10n.settingsHomeCustomization)),
         body: const Center(child: CircularProgressIndicator()),
       );
     }
@@ -179,7 +179,7 @@ class _HomeCustomizationScreenState extends State<HomeCustomizationScreen> {
     ];
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.settingsHomeCustomization)),
+      appBar: SonarpadAppBar(title: Text(l10n.settingsHomeCustomization)),
       body: UniversalAccessibleList(
         key: ValueKey(
           'home-customization-${_groupingEnabled ? 'categories' : 'flat'}-${_hiddenIds.length}-${_order.join(',')}',
@@ -386,7 +386,7 @@ class _HomeReorderScreenState extends State<HomeReorderScreen> {
     final l10n = AppLocalizations.of(context);
     if (_loading) {
       return Scaffold(
-        appBar: AppBar(title: Text(l10n.homeReorderTitle)),
+        appBar: SonarpadAppBar(title: Text(l10n.homeReorderTitle)),
         body: const Center(child: CircularProgressIndicator()),
       );
     }
@@ -429,7 +429,7 @@ class _HomeReorderScreenState extends State<HomeReorderScreen> {
         : flatVisible;
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.homeReorderTitle)),
+      appBar: SonarpadAppBar(title: Text(l10n.homeReorderTitle)),
       body: UniversalAccessibleList(
         key: ValueKey(
           'home-reorder-${widget.groupingEnabled ? 'categories' : 'flat'}-${keyOrder.join(',')}',

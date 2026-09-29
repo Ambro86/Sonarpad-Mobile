@@ -79,7 +79,7 @@ class _AddRadioScreenState extends State<AddRadioScreen> {
     final l10n = AppLocalizations.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.radioAddCommunity)),
+      appBar: SonarpadAppBar(title: Text(l10n.radioAddCommunity)),
       body: useSharedAccessibleViewModel
           ? UniversalAccessibleList(
               sections: [AccessibleListSection(rows: [

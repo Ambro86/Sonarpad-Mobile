@@ -1711,7 +1711,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         Navigator.of(context).pop(_appLanguage);
       },
       child: Scaffold(
-        appBar: AppBar(
+        appBar: SonarpadAppBar(
           title: Text(l10n.settings),
           actions: [
             Semantics(

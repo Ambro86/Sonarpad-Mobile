@@ -68,7 +68,7 @@ class _AppLogScreenState extends State<AppLogScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(
+      appBar: SonarpadAppBar(
         title: Text(l10n.systemLog),
         actions: [
           IconButton(

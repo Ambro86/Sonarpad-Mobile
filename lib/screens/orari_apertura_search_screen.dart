@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+
+import '../widgets/universal_accessible_view.dart';
+
 import 'orari_apertura_results_screen.dart';
 
 class OrariAperturaSearchScreen extends StatefulWidget {
@@ -42,7 +45,7 @@ class _OrariAperturaSearchScreenState extends State<OrariAperturaSearchScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: SonarpadAppBar(
         title: Text(
           'Orari di Apertura',
           semanticsLabel: 'Ricerca orari di apertura',

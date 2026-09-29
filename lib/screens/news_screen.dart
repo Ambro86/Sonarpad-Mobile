@@ -297,7 +297,7 @@ class _NewsScreenState extends State<NewsScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(
+      appBar: SonarpadAppBar(
         title: Text(widget.title ?? l10n.news),
         actions: [
           IconButton(
@@ -440,7 +440,7 @@ class _AddCommunityNewsSourceScreenState
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.newsAddCommunitySource)),
+      appBar: SonarpadAppBar(title: Text(l10n.newsAddCommunitySource)),
       body: useSharedAccessibleViewModel
           ? UniversalAccessibleList(
               sections: [AccessibleListSection(rows: [
@@ -591,7 +591,7 @@ class _CommunityNewsSourcesScreenState
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(
+      appBar: SonarpadAppBar(
         title: Text(l10n.newsCommunitySourcesTitle),
         actions: [
           IconButton(
@@ -849,8 +849,9 @@ class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
 
     final canPop = Navigator.of(context).canPop();
     return Scaffold(
-      appBar: AppBar(
+      appBar: SonarpadAppBar(
         automaticallyImplyLeading: !canPop,
+        leadingIsBackNavigation: canPop,
         leading: canPop
             ? ValueListenableBuilder<bool>(
                 valueListenable: _suppressBackSemantics,
@@ -858,7 +859,7 @@ class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
                   excluding: suppress,
                   child: child,
                 ),
-                child: const BackButton(),
+                child: const SonarpadBackButton(),
               )
             : null,
         title: Text(widget.title ?? widget.source.name),
@@ -2008,7 +2009,7 @@ class _ReadArticlesScreenState extends State<_ReadArticlesScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(
+      appBar: SonarpadAppBar(
         title: Text(l10n.newsReadArticles),
         actions: [
           if (_articles.isNotEmpty)

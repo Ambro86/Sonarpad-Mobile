@@ -752,6 +752,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get back => '返回';
 
   @override
+  String get goToHome => '前往主页';
+
+  @override
   String get episodePlayer => '单集播放器';
 
   @override
@@ -4897,6 +4900,9 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get back => '返回';
+
+  @override
+  String get goToHome => '前往主页';
 
   @override
   String get episodePlayer => '单集播放器';

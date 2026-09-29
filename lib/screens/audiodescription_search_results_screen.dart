@@ -117,7 +117,7 @@ class _AudiodescriptionSearchResultsScreenState
     final l10n = AppLocalizations.of(context);
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: SonarpadAppBar(
         title: Text(l10n.searchResults),
       ),
       body: _loading

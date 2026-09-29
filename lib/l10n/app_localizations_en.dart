@@ -767,6 +767,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get back => 'Back';
 
   @override
+  String get goToHome => 'Go to Home';
+
+  @override
   String get episodePlayer => 'Episode player';
 
   @override

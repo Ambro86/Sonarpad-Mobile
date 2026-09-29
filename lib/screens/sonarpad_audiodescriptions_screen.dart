@@ -104,7 +104,7 @@ class _SonarpadAudiodescriptionsScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(AppLocalizations.of(context).sonarpadAudiodescriptionsTitle)),
+      appBar: SonarpadAppBar(title: Text(AppLocalizations.of(context).sonarpadAudiodescriptionsTitle)),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _error.isNotEmpty
@@ -287,7 +287,7 @@ class _SonarpadAudiodescriptionsAllScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(AppLocalizations.of(context).sonarpadAudiodescriptionsAll)),
+      appBar: SonarpadAppBar(title: Text(AppLocalizations.of(context).sonarpadAudiodescriptionsAll)),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _error.isNotEmpty
@@ -448,7 +448,7 @@ class _SonarpadAudiodescriptionsFolderScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.title)),
+      appBar: SonarpadAppBar(title: Text(widget.title)),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _error.isNotEmpty
@@ -578,7 +578,7 @@ class _SonarpadAudiodescriptionsSearchScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(AppLocalizations.of(context).searchResults)),
+      appBar: SonarpadAppBar(title: Text(AppLocalizations.of(context).searchResults)),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _error.isNotEmpty

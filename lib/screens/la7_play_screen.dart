@@ -424,7 +424,7 @@ class _La7PlayScreenState extends State<La7PlayScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.pageTitle ?? _page?.title ?? 'LA7 Play')),
+      appBar: SonarpadAppBar(title: Text(widget.pageTitle ?? _page?.title ?? 'LA7 Play')),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : useSharedAccessibleViewModel

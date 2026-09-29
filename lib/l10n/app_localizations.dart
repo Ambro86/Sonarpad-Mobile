@@ -1545,6 +1545,12 @@ abstract class AppLocalizations {
   /// **'Indietro'**
   String get back;
 
+  /// Go directly to the Sonarpad Home screen from a Back control.
+  ///
+  /// In en, this message translates to:
+  /// **'Go to Home'**
+  String get goToHome;
+
   /// Localized text for episodePlayer.
   ///
   /// In it, this message translates to:

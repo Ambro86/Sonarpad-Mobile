@@ -46,8 +46,8 @@ void main() {
     expect(accessible, isNot(contains('sonartube_search_field')));
     expect(accessible, isNot(contains('sonartube_search_button')));
 
-    expect(material, contains('appBar: AppBar('));
-    expect(material, contains('leading: BackButton('));
+    expect(material, contains('appBar: SonarpadAppBar('));
+    expect(material, contains('leading: SonarpadBackButton('));
     expect(material, contains("ValueKey('sonartube_search_results_back')"));
     expect(material, contains('l10n.searchResults'));
   });

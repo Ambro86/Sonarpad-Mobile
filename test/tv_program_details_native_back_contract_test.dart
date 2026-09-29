@@ -13,9 +13,9 @@ void main() {
     final method = source.substring(start, end);
 
     expect(method, contains('Dialog.fullscreen('));
-    expect(method, contains('appBar: AppBar('));
+    expect(method, contains('appBar: SonarpadAppBar('));
     expect(method, contains('automaticallyImplyLeading: false'));
-    expect(method, contains('leading: BackButton('));
+    expect(method, contains('leading: SonarpadBackButton('));
     expect(
       method,
       contains("key: const ValueKey('tv_program_details_back_semantics')"),

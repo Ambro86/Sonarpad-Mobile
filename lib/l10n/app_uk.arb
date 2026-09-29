@@ -974,6 +974,10 @@
   "@back": {
     "description": "Localized text for back."
   },
+  "goToHome": "Перейти на головний екран",
+  "@goToHome": {
+    "description": "Go directly to the Sonarpad Home screen from a Back control."
+  },
   "episodePlayer": "Програвач епізоду",
   "@episodePlayer": {
     "description": "Localized text for episodePlayer."

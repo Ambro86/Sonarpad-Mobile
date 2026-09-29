@@ -90,7 +90,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
     final baseToday = DateTime(today.year, today.month, today.day);
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: SonarpadAppBar(
         title: Text(l10n.calendar),
         actions: [
           IconButton(

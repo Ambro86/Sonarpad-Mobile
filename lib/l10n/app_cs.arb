@@ -261,6 +261,10 @@
   "forward15s": "Vpřed o 15 s",
   "stop": "Zastavit",
   "back": "Zpět",
+  "goToHome": "Přejít na domovskou obrazovku",
+  "@goToHome": {
+    "description": "Go directly to the Sonarpad Home screen from a Back control."
+  },
   "episodePlayer": "Přehrávač epizody",
   "nowPlayingTitle": "Nyní se přehrává: {title}",
   "loadingEpisodeAudio": "Načítání zvuku epizody",

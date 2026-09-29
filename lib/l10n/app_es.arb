@@ -264,6 +264,10 @@
   "forward15s": "Avanzar 15s",
   "stop": "Detener",
   "back": "Atrás",
+  "goToHome": "Ir a Inicio",
+  "@goToHome": {
+    "description": "Go directly to the Sonarpad Home screen from a Back control."
+  },
   "episodePlayer": "Reproductor de episodios",
   "nowPlayingTitle": "Reproduciendo: {title}",
   "loadingEpisodeAudio": "Cargando audio del episodio",

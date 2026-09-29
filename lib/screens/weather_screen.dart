@@ -220,7 +220,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
     final l10n = AppLocalizations.of(context);
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: SonarpadAppBar(
         title: Text(l10n.meteoTitle),
       ),
       body: Column(
@@ -1055,7 +1055,7 @@ class _WeatherRecentCitiesScreenState
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(
+      appBar: SonarpadAppBar(
         title: Text(l10n.weatherRecentCities),
         actions: [
           if (_cities.isNotEmpty)

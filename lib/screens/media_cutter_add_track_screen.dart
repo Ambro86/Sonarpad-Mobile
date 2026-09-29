@@ -270,7 +270,7 @@ class _MediaCutterAddTrackScreenState
     final l10n = AppLocalizations.of(context);
     final trackPath = _trackPath;
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.mediaCutterAddTrack)),
+      appBar: SonarpadAppBar(title: Text(l10n.mediaCutterAddTrack)),
       body: SafeArea(
         child: useSharedAccessibleViewModel
             ? UniversalAccessibleList(

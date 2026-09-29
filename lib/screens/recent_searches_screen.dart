@@ -71,7 +71,7 @@ class _RecentSearchesScreenState extends State<RecentSearchesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: SonarpadAppBar(
         title: Text(widget.title),
         actions: [
           if (_searches.isNotEmpty)

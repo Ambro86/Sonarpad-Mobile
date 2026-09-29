@@ -2553,7 +2553,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         _exitParagraphSelection();
       },
       child: Scaffold(
-        appBar: AppBar(
+        appBar: SonarpadAppBar(
           leading: _paragraphSelectionMode
               ? IconButton(
                   icon: const Icon(Icons.close),
@@ -3337,7 +3337,7 @@ class _DocumentIndexScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.documentIndex)),
+      appBar: SonarpadAppBar(title: Text(l10n.documentIndex)),
       body: useSharedAccessibleViewModel
           ? UniversalAccessibleList(
               sections: [
@@ -3517,7 +3517,7 @@ class _DocumentSearchScreenState extends State<_DocumentSearchScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.searchInDocument)),
+      appBar: SonarpadAppBar(title: Text(l10n.searchInDocument)),
       body: useSharedAccessibleViewModel
           ? UniversalAccessibleList(
               sections: [
@@ -3593,7 +3593,7 @@ class _DocumentSearchResultsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.documentSearchResultsTitle)),
+      appBar: SonarpadAppBar(title: Text(l10n.documentSearchResultsTitle)),
       body: results.isEmpty
           ? Center(child: Text(l10n.noDocumentSearchResults(query)))
           : useSharedAccessibleViewModel

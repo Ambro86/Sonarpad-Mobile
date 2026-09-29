@@ -1930,9 +1930,9 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
     }
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: SonarpadAppBar(
         automaticallyImplyLeading: false,
-        leading: BackButton(
+        leading: SonarpadBackButton(
           key: const ValueKey('sonartube_search_results_back'),
           onPressed: () => Navigator.pop(context),
         ),
@@ -1955,9 +1955,9 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
     if (_isSearchResults) {
       return useSharedAccessibleViewModel
           ? Scaffold(
-              appBar: AppBar(
+              appBar: SonarpadAppBar(
                 automaticallyImplyLeading: false,
-                leading: BackButton(
+                leading: SonarpadBackButton(
                   key: const ValueKey('sonartube_search_results_back'),
                   onPressed: () => Navigator.pop(context),
                 ),
@@ -1969,11 +1969,11 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
           : _buildSearchResultsMaterial(l10n);
     }
     return Scaffold(
-      appBar: AppBar(
+      appBar: SonarpadAppBar(
         automaticallyImplyLeading: !_isCollection,
         excludeHeaderSemantics: _isCollection && useSharedAccessibleViewModel,
         leading: _isCollection
-            ? BackButton(
+            ? SonarpadBackButton(
                 key: const ValueKey('sonartube_collection_back'),
                 onPressed: () => Navigator.pop(context),
               )
@@ -2364,9 +2364,9 @@ class _SonarTubeTranscriptScreenState
     }
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: SonarpadAppBar(
         automaticallyImplyLeading: false,
-        leading: BackButton(
+        leading: SonarpadBackButton(
           key: const ValueKey('sonartube_transcript_back'),
           onPressed: () => Navigator.pop(context),
         ),
@@ -2556,9 +2556,9 @@ class _SonarTubeDescriptionScreenState
     }
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: SonarpadAppBar(
         automaticallyImplyLeading: false,
-        leading: BackButton(
+        leading: SonarpadBackButton(
           key: const ValueKey('sonartube_description_back'),
           onPressed: () => Navigator.pop(context),
         ),
@@ -2792,9 +2792,9 @@ class _SonarTubeCommentsScreenState extends State<_SonarTubeCommentsScreen> {
     }
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: SonarpadAppBar(
         automaticallyImplyLeading: false,
-        leading: BackButton(
+        leading: SonarpadBackButton(
           key: const ValueKey('sonartube_comments_back'),
           onPressed: () => Navigator.pop(context),
         ),
@@ -3123,9 +3123,9 @@ class _SonarTubeRecentVideosScreenState
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(
+      appBar: SonarpadAppBar(
         automaticallyImplyLeading: false,
-        leading: BackButton(
+        leading: SonarpadBackButton(
           key: const ValueKey('sonartube_recent_videos_back'),
           onPressed: () => Navigator.pop(context),
         ),
@@ -3666,9 +3666,9 @@ class _SonarTubeFavoritesScreenState extends State<_SonarTubeFavoritesScreen> {
     final l10n = AppLocalizations.of(context);
     widget.service.setLocaleName(l10n.localeName);
     return Scaffold(
-      appBar: AppBar(
+      appBar: SonarpadAppBar(
         automaticallyImplyLeading: false,
-        leading: BackButton(
+        leading: SonarpadBackButton(
           key: const ValueKey('sonartube_favorites_back'),
           onPressed: () => Navigator.pop(context),
         ),

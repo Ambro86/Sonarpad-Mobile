@@ -613,7 +613,7 @@ class _AudioDescriptionProjectEditorScreenState
     final project = _project;
     final source = _sourceOverride ?? project?.sourcePath;
     return Scaffold(
-      appBar: AppBar(title: Text(strings['title'])),
+      appBar: SonarpadAppBar(title: Text(strings['title'])),
       body: Column(
         children: [
           if (_running)

@@ -325,7 +325,7 @@ class _RouteScreenState extends State<RouteScreen> {
     final l10n = AppLocalizations.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.routeTitle)),
+      appBar: SonarpadAppBar(title: Text(l10n.routeTitle)),
       body: useSharedAccessibleViewModel ? _buildSharedAccessibleRouteForm(l10n) : ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -525,7 +525,7 @@ class _RecentRoutesScreenState extends State<_RecentRoutesScreen> {
     final l10n = AppLocalizations.of(context);
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: SonarpadAppBar(
         title: Text(l10n.routeRecentRoutes),
         actions: [
           IconButton(

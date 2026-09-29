@@ -321,7 +321,7 @@ class _PharmacyAlphabeticalScreenState
   Widget build(BuildContext context) {
     final results = _allResults;
     return Scaffold(
-      appBar: AppBar(title: Text(_title)),
+      appBar: SonarpadAppBar(title: Text(_title)),
       body: SafeArea(
         child: useSharedAccessibleViewModel
             ? _buildSharedAccessibleList(results)
@@ -547,7 +547,7 @@ class _PharmacyAlphabeticalLetterScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('${widget.title} - ${widget.letter}')),
+      appBar: SonarpadAppBar(title: Text('${widget.title} - ${widget.letter}')),
       body: SafeArea(
         child: useSharedAccessibleViewModel
             ? _buildSharedAccessibleList()

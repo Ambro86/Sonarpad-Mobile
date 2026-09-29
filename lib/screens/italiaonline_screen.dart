@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../services/italiaonline_service.dart';
 import 'italiaonline_detail_screen.dart';
 import '../utils/status_message.dart';
@@ -44,7 +45,7 @@ class _ItaliaOnlineScreenState extends State<ItaliaOnlineScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: SonarpadAppBar(
         title: const Text('Pagine Bianche e Gialle'),
       ),
       body: useSharedAccessibleViewModel
@@ -268,7 +269,7 @@ class _ItaliaOnlineResultsScreenState extends State<ItaliaOnlineResultsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: SonarpadAppBar(
         title: Text('${_actualKind.label} - Risultati'),
       ),
       body: _buildBody(),

@@ -151,7 +151,7 @@ class _ParafarmacoDetailScreenState extends State<ParafarmacoDetailScreen> {
     final detail = _detail;
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: SonarpadAppBar(
         title: Text(product.name),
       ),
       body: SafeArea(

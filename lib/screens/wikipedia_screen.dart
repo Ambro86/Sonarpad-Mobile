@@ -128,7 +128,7 @@ class _WikipediaScreenState extends State<WikipediaScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.importFromWikipedia)),
+      appBar: SonarpadAppBar(title: Text(l10n.importFromWikipedia)),
       body: useSharedAccessibleViewModel
           ? UniversalAccessibleList(
               key: ValueKey('shared-wikipedia-main-${_language ?? 'it'}'),
@@ -281,7 +281,7 @@ class _WikipediaResultsScreenState extends State<_WikipediaResultsScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.searchResults)),
+      appBar: SonarpadAppBar(title: Text(l10n.searchResults)),
       body: FutureBuilder<List<WikipediaSearchResult>>(
         future: _results,
         builder: (context, snapshot) {
@@ -389,7 +389,7 @@ class _WikipediaArticleScreenState extends State<_WikipediaArticleScreen> {
     final l10n = AppLocalizations.of(context);
     final article = _article;
     return Scaffold(
-      appBar: AppBar(title: Text(widget.result.title)),
+      appBar: SonarpadAppBar(title: Text(widget.result.title)),
       body: useSharedAccessibleViewModel && !_importing && _importError == null && article != null
           ? UniversalAccessibleList(
               key: ValueKey('shared-wikipedia-article-${article.sections.length}'),

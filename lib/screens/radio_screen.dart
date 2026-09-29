@@ -235,7 +235,7 @@ class _RadioScreenState extends State<RadioScreen> {
       });
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.radioTitle)),
+      appBar: SonarpadAppBar(title: Text(l10n.radioTitle)),
       body: useSharedAccessibleViewModel
           ? UniversalAccessibleList(
               key: ValueKey('shared-radio-main-$_languageCode-$_countryCode-${_genre.value}-${_browseMode.name}'),

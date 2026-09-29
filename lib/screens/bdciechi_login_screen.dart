@@ -100,7 +100,7 @@ class _BdCiechiLoginScreenState extends State<BdCiechiLoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: SonarpadAppBar(
         title: const Text('Accesso alla Biblioteca Digitale'),
       ),
       body: SafeArea(

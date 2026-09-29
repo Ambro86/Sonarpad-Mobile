@@ -772,6 +772,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get back => 'Voltar';
 
   @override
+  String get goToHome => 'Ir para o ecrã inicial';
+
+  @override
   String get episodePlayer => 'Leitor de episódios';
 
   @override
@@ -5108,6 +5111,9 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get back => 'Voltar';
+
+  @override
+  String get goToHome => 'Ir para a tela inicial';
 
   @override
   String get episodePlayer => 'Leitor de episódios';

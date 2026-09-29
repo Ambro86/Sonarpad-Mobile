@@ -2231,7 +2231,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(
+      appBar: SonarpadAppBar(
         title: Text(l10n.article),
         actions: [
           IconButton(

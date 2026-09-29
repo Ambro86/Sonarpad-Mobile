@@ -238,7 +238,7 @@ class _TvScreenState extends State<TvScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('TV in diretta')),
+      appBar: SonarpadAppBar(title: const Text('TV in diretta')),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _error != null
@@ -553,7 +553,7 @@ class _TvRegionalScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final regionNames = regions.keys.toList();
     return Scaffold(
-      appBar: AppBar(title: const Text('Regionali')),
+      appBar: SonarpadAppBar(title: const Text('Regionali')),
       body: useSharedAccessibleViewModel
           ? UniversalAccessibleList(
               sections: [
@@ -670,7 +670,7 @@ class _TvCategoryScreenState extends State<_TvCategoryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.category)),
+      appBar: SonarpadAppBar(title: Text(widget.category)),
       body: useSharedAccessibleViewModel
           ? UniversalAccessibleList(
               key: ValueKey('shared-tv-category-${widget.category}-${widget.channels.length}'),

@@ -46,7 +46,7 @@ class _PoetryDbScreenState extends State<PoetryDbScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('PoetryDB')),
+      appBar: SonarpadAppBar(title: const Text('PoetryDB')),
       body: useSharedAccessibleViewModel
           ? UniversalAccessibleList(
               sections: [AccessibleListSection(rows: [
@@ -166,7 +166,7 @@ class _PoetryDbResultsScreenState extends State<_PoetryDbResultsScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.searchResults)),
+      appBar: SonarpadAppBar(title: Text(l10n.searchResults)),
       body: FutureBuilder<List<PoetryDbPoem>>(
         future: _poems,
         builder: (context, snapshot) {

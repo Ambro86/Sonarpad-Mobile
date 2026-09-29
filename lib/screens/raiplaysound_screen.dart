@@ -378,7 +378,7 @@ class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
     final items = _page?.items ?? const <RaiPlaySoundItem>[];
     final hasDateButton = _hasDatedAudioItems(items);
     return Scaffold(
-      appBar: AppBar(title: Text(_page?.title ?? 'RaiPlay Sound')),
+      appBar: SonarpadAppBar(title: Text(_page?.title ?? 'RaiPlay Sound')),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _error != null && _page == null
@@ -618,7 +618,7 @@ class _RaiPlaySoundDateSelectorScreen extends StatelessWidget {
     }
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.podcastSelectDate)),
+      appBar: SonarpadAppBar(title: Text(l10n.podcastSelectDate)),
       body: SafeArea(
         child: dates.isEmpty
             ? Center(child: Text(l10n.podcastNoDatesAvailable))
@@ -764,21 +764,46 @@ class _RaiPlaySoundDateItemsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final homeLabel = sonarpadGoHomeLabel(context);
     final accessibleRows = <AccessibleListRow>[
       AccessibleListRow(
         id: 'back',
         title: l10n.back,
         kind: 'button',
+        actions: [
+          AccessibleCustomAction(
+            id: sonarpadGoHomeActionId,
+            label: homeLabel,
+          ),
+        ],
+        mergeFlutterCustomActions: true,
+        visualActions: [
+          AccessibleVisualAction(
+            id: sonarpadGoHomeActionId,
+            label: homeLabel,
+            icon: 'home',
+          ),
+        ],
+        onCustomAction: (actionId) {
+          if (actionId == sonarpadGoHomeActionId) {
+            goToSonarpadHome(context);
+          }
+        },
       ),
     ];
     final legacyRows = <Widget>[
-      SizedBox(
-        width: double.infinity,
-        child: ElevatedButton.icon(
-          onPressed: () => Navigator.pop(context),
-          icon: const Icon(Icons.arrow_back),
-          label: Text(l10n.back),
-        ),
+      Row(
+        children: [
+          Expanded(
+            child: ElevatedButton.icon(
+              onPressed: () => Navigator.pop(context),
+              icon: const Icon(Icons.arrow_back),
+              label: Text(l10n.back),
+            ),
+          ),
+          const SizedBox(width: 8),
+          const SonarpadVisualHomeButton(compact: true),
+        ],
       ),
     ];
 
@@ -835,7 +860,12 @@ class _RaiPlaySoundDateItemsScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(16),
                 itemCount: legacyRows.length,
                 separatorBuilder: (_, _) => const SizedBox(height: 8),
-                itemBuilder: (_, index) => legacyRows[index],
+                itemBuilder: (_, index) => index == 0
+                    ? SonarpadBackSemantics(
+                        onBack: () => Navigator.pop(context),
+                        child: legacyRows[index],
+                      )
+                    : legacyRows[index],
               ),
       ),
     );

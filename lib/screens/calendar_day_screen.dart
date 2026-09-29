@@ -255,7 +255,7 @@ class _CalendarDayScreenState extends State<CalendarDayScreen> {
     final quote = _service.getQuote(widget.date, lang);
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: SonarpadAppBar(
         title: Text(capTitle),
         actions: [
           IconButton(

@@ -319,7 +319,7 @@ class _PyannoteParityTestScreenState extends State<PyannoteParityTestScreen>
         : status;
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.pyannoteTestTitle)),
+      appBar: SonarpadAppBar(title: Text(l10n.pyannoteTestTitle)),
       body: UniversalAccessibleList(
         initialFocusId: 'quick_test',
         sections: <AccessibleListSection>[

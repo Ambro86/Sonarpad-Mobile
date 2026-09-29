@@ -74,7 +74,7 @@ class _AudiodescriptionSeriesScreenState
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(
+      appBar: SonarpadAppBar(
         title: Text(widget.group.title),
       ),
       body: useSharedAccessibleViewModel

@@ -251,8 +251,8 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: BackButton(
+      appBar: SonarpadAppBar(
+        leading: SonarpadBackButton(
           onPressed: () {
             _goBack();
           },

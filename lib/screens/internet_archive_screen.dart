@@ -62,7 +62,7 @@ class _InternetArchiveScreenState extends State<InternetArchiveScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.internetArchiveTitle)),
+      appBar: SonarpadAppBar(title: Text(l10n.internetArchiveTitle)),
       body: useSharedAccessibleViewModel
           ? UniversalAccessibleList(
               sections: [AccessibleListSection(rows: [
@@ -222,7 +222,7 @@ class _InternetArchiveResultsScreenState
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.searchResults)),
+      appBar: SonarpadAppBar(title: Text(l10n.searchResults)),
       body: Builder(
         builder: (context) {
           if (_loading) {
@@ -380,7 +380,7 @@ class _InternetArchiveItemScreenState
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text(widget.item.title)),
+      appBar: SonarpadAppBar(title: Text(widget.item.title)),
       body: FutureBuilder<InternetArchiveItem>(
         future: _item,
         builder: (context, snapshot) {

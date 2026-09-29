@@ -196,7 +196,7 @@ class _RadioSearchResultsScreenState extends State<RadioSearchResultsScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.radioSearchResults)),
+      appBar: SonarpadAppBar(title: Text(l10n.radioSearchResults)),
       body: FutureBuilder<List<RadioStation>>(
         future: widget.resultsFuture,
         builder: (context, snapshot) {

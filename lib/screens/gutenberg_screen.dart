@@ -82,7 +82,7 @@ class _GutenbergScreenState extends State<GutenbergScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('Project Gutenberg')),
+      appBar: SonarpadAppBar(title: const Text('Project Gutenberg')),
       body: useSharedAccessibleViewModel
           ? UniversalAccessibleList(
               sections: [AccessibleListSection(rows: [
@@ -236,7 +236,7 @@ class _GutenbergResultsScreenState extends State<_GutenbergResultsScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.searchResults)),
+      appBar: SonarpadAppBar(title: Text(l10n.searchResults)),
       body: Builder(
         builder: (context) {
           if (_loading) {
@@ -399,7 +399,7 @@ class _GutenbergBookScreenState extends State<_GutenbergBookScreen> {
     final book = widget.book;
     final summary = book.summaries.isEmpty ? null : book.summaries.first;
     return Scaffold(
-      appBar: AppBar(title: Text(book.title)),
+      appBar: SonarpadAppBar(title: Text(book.title)),
       body: useSharedAccessibleViewModel
           ? UniversalAccessibleList(
               sections: [AccessibleListSection(rows: [

@@ -122,7 +122,7 @@ class _ItaliaOnlineDetailScreenState extends State<ItaliaOnlineDetailScreen> {
   Widget build(BuildContext context) {
     final detail = widget.detail;
     return Scaffold(
-      appBar: AppBar(
+      appBar: SonarpadAppBar(
         title: Text(detail.title),
         actions: [
           if (!_isPlaying)

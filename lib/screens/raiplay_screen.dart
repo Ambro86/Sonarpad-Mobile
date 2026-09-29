@@ -313,7 +313,7 @@ class _RaiPlayScreenState extends State<RaiPlayScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.pageTitle ?? 'RaiPlay')),
+      appBar: SonarpadAppBar(title: Text(widget.pageTitle ?? 'RaiPlay')),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _error != null && _page == null

@@ -758,6 +758,9 @@ class AppLocalizationsRo extends AppLocalizations {
   String get back => 'Înapoi';
 
   @override
+  String get goToHome => 'Mergi la pagina principală';
+
+  @override
   String get episodePlayer => 'Player episod';
 
   @override

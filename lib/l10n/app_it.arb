@@ -974,6 +974,10 @@
   "@back": {
     "description": "Localized text for back."
   },
+  "goToHome": "Vai alla Home",
+  "@goToHome": {
+    "description": "Go directly to the Sonarpad Home screen from a Back control."
+  },
   "episodePlayer": "Lettore episodio",
   "@episodePlayer": {
     "description": "Localized text for episodePlayer."

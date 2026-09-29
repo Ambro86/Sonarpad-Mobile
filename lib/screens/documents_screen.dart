@@ -1408,7 +1408,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
         : l10n.documents;
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: SonarpadAppBar(
         title: Text(currentFolderName),
         actions: [
           IconButton(

@@ -1175,7 +1175,7 @@ class _CreateAiAudiodescriptionScreenState
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(
+      appBar: SonarpadAppBar(
         automaticallyImplyLeading: !_running,
         title: Text(l10n.audioDescriptionCreateAiTitle),
       ),

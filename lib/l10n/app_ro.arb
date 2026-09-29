@@ -264,6 +264,10 @@
   "forward15s": "Înainte 15 s",
   "stop": "Oprește",
   "back": "Înapoi",
+  "goToHome": "Mergi la pagina principală",
+  "@goToHome": {
+    "description": "Go directly to the Sonarpad Home screen from a Back control."
+  },
   "episodePlayer": "Player episod",
   "nowPlayingTitle": "În redare: {title}",
   "loadingEpisodeAudio": "Se încarcă sunetul episodului",

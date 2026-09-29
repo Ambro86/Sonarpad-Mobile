@@ -234,9 +234,9 @@ Future<RecordingSelectionResult?> showRecordingSelectionDialog(
 
         return Dialog.fullscreen(
           child: Scaffold(
-            appBar: AppBar(
+            appBar: SonarpadAppBar(
               automaticallyImplyLeading: false,
-              leading: BackButton(
+              leading: SonarpadBackButton(
                 key: const ValueKey('recording_selection_back_semantics'),
                 onPressed: () => Navigator.pop(dialogContext),
               ),

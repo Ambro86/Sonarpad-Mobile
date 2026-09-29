@@ -275,7 +275,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
     final l10n = AppLocalizations.of(context);
     final summary = _dropLeadingDuplicateTitle(article.title, article.summary);
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.article)),
+      appBar: SonarpadAppBar(title: Text(l10n.article)),
       body: useSharedAccessibleViewModel
           ? UniversalAccessibleList(
               sections: [

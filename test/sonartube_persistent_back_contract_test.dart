@@ -28,7 +28,7 @@ void main() {
       rootAndCollections,
       contains("key: const ValueKey('sonartube_collection_back')"),
     );
-    expect(rootAndCollections, contains('leading: BackButton('));
+    expect(rootAndCollections, contains('leading: SonarpadBackButton('));
 
     final transcript = _between(
       source,
@@ -52,7 +52,7 @@ void main() {
     );
 
     for (final screen in [transcript, comments, recent, favorites]) {
-      expect(screen, contains('leading: BackButton('));
+      expect(screen, contains('leading: SonarpadBackButton('));
       expect(screen, isNot(contains('persistentTopAction:')));
       expect(screen, isNot(contains("id: 'persistent_back'")));
     }
@@ -71,7 +71,7 @@ void main() {
     ).readAsStringSync();
 
     expect(player, contains("ValueKey('podcast_player_back')"));
-    expect(player, contains('leading: BackButton('));
+    expect(player, contains('leading: SonarpadBackButton('));
     expect(player, contains('excludeHeaderSemantics: true'));
     expect(
       player,
@@ -84,11 +84,11 @@ void main() {
       player,
       contains('title: l10n.nowPlayingTitle(_episode.title)'),
     );
-    final appBarStart = player.indexOf('appBar: AppBar(');
+    final appBarStart = player.indexOf('appBar: SonarpadAppBar(');
     final bodyStart = player.indexOf('body:', appBarStart);
     final appBar = player.substring(appBarStart, bodyStart);
     expect(
-      appBar.indexOf('leading: BackButton('),
+      appBar.indexOf('leading: SonarpadBackButton('),
       lessThan(appBar.indexOf('title: ExcludeSemantics(')),
     );
     expect(player, isNot(contains('UniversalPersistentNavigationButton(')));

@@ -1737,16 +1737,33 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
               alignment: Alignment.topLeft,
               child: Padding(
                 padding: const EdgeInsets.all(8),
-                child: Material(
-                  color: Colors.black54,
-                  shape: const CircleBorder(),
-                  child: IconButton(
-                    color: Colors.white,
-                    tooltip:
-                        MaterialLocalizations.of(context).backButtonTooltip,
-                    icon: const Icon(Icons.arrow_back),
-                    onPressed: _requestPlayerExit,
-                  ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Material(
+                      color: Colors.black54,
+                      shape: const CircleBorder(),
+                      child: SonarpadBackSemantics(
+                        onBack: _requestPlayerExit,
+                        child: IconButton(
+                          color: Colors.white,
+                          tooltip:
+                              MaterialLocalizations.of(context).backButtonTooltip,
+                          icon: const Icon(Icons.arrow_back),
+                          onPressed: _requestPlayerExit,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    const Material(
+                      color: Colors.black54,
+                      shape: CircleBorder(),
+                      child: SonarpadVisualHomeButton(
+                        color: Colors.white,
+                        compact: true,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -1872,9 +1889,9 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       );
     }
     return _withRecordingExitGuard(Scaffold(
-      appBar: AppBar(
+      appBar: SonarpadAppBar(
         title: Text('${l10n.nowPlaying}: ${widget.station.name}'),
-        leading: BackButton(
+        leading: SonarpadBackButton(
           onPressed: _requestPlayerExit,
         ),
       ),

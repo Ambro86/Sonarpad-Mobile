@@ -776,6 +776,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get back => 'Atrás';
 
   @override
+  String get goToHome => 'Ir a Inicio';
+
+  @override
   String get episodePlayer => 'Reproductor de episodios';
 
   @override

@@ -682,7 +682,7 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
     final l10n = AppLocalizations.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.convertMediaTitle)),
+      appBar: SonarpadAppBar(title: Text(l10n.convertMediaTitle)),
       body: SafeArea(
         child: useSharedAccessibleViewModel
             ? _buildSharedAccessibleConvertForm(l10n)

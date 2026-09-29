@@ -134,7 +134,7 @@ class _CinemaDetailScreenState extends State<CinemaDetailScreen> {
     final releaseDateText = isFuture ? l10n.cinemaWillRelease(formattedDate) : l10n.cinemaReleased(formattedDate);
 
     return Scaffold(
-      appBar: AppBar(title: Text(movie.title)),
+      appBar: SonarpadAppBar(title: Text(movie.title)),
       body: useSharedAccessibleViewModel
           ? UniversalAccessibleList(
               sections: [

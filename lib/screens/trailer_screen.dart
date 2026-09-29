@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+
+import '../widgets/universal_accessible_view.dart';
+
 import 'package:webview_flutter/webview_flutter.dart';
 import '../l10n/app_localizations.dart';
 
@@ -53,7 +56,7 @@ class _TrailerScreenState extends State<TrailerScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: SonarpadAppBar(
         title: Text(AppLocalizations.of(context).cinemaTrailerTitle(widget.title)),
       ),
       backgroundColor: Colors.black,

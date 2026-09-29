@@ -85,7 +85,7 @@ class _AudioDescriptionProjectPickerScreenState
       (doc) => doc.name.toLowerCase().contains(_query.toLowerCase()),
     );
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.audioDescriptionFindProject)),
+      appBar: SonarpadAppBar(title: Text(l10n.audioDescriptionFindProject)),
       body: _loading
           ? Center(
               child: CircularProgressIndicator(semanticsLabel: l10n.loading),

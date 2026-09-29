@@ -597,7 +597,7 @@ class _PodcastScreenState extends State<PodcastScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.podcasts)),
+      appBar: SonarpadAppBar(title: Text(l10n.podcasts)),
       body: useSharedAccessibleViewModel
           ? _buildSharedAccessiblePodcastHome(l10n)
           : ListView(
@@ -950,7 +950,7 @@ class _PodcastSearchResultsScreenState
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text(widget.title ?? l10n.searchResults)),
+      appBar: SonarpadAppBar(title: Text(widget.title ?? l10n.searchResults)),
       body: FutureBuilder<List<PodcastSearchResult>>(
         future: _results,
         builder: (context, snapshot) {
@@ -1104,7 +1104,7 @@ class _PodcastSearchDetailScreenState
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.podcastInfo)),
+      appBar: SonarpadAppBar(title: Text(l10n.podcastInfo)),
       body: _PodcastSearchDetail(
         result: widget.result,
         details: _details,

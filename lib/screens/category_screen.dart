@@ -28,7 +28,7 @@ class CategoryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(title)),
+      appBar: SonarpadAppBar(title: Text(title)),
       body: SafeArea(
         child: useSharedAccessibleViewModel && accessibleItems.isNotEmpty
             ? UniversalAccessibleList(

@@ -127,7 +127,7 @@ class _FavoriteRadiosScreenState extends State<FavoriteRadiosScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(
+      appBar: SonarpadAppBar(
         title: Text(l10n.radioFavoritesButton),
       ),
       body: _loading

@@ -75,7 +75,7 @@ class _AudiodescriptionScheduledScreenState
     final l10n = AppLocalizations.of(context);
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: SonarpadAppBar(
         title: const Text(_scheduledAudiodescriptionsTitle),
         actions: [
           IconButton(

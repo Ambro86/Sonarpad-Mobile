@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../services/orari_apertura_service.dart';
 import 'orari_apertura_detail_screen.dart';
 import '../widgets/universal_accessible_view.dart';
@@ -55,7 +56,7 @@ class _OrariAperturaResultsScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: SonarpadAppBar(
         title: Text('Risultati Ricerca'),
       ),
       body: _isLoading

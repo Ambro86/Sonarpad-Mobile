@@ -6849,7 +6849,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
 
     return Scaffold(
       appBar:
-          AppBar(title: Text(AppLocalizations.of(context).mediaCutterTitle)),
+          SonarpadAppBar(title: Text(AppLocalizations.of(context).mediaCutterTitle)),
       body: SafeArea(
         child: useSharedAccessibleViewModel
             ? UniversalAccessibleList(
@@ -7102,7 +7102,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         Navigator.of(context).pop();
       },
       child: Scaffold(
-        appBar: AppBar(title: Text(l10n.mediaCutterTitle)),
+        appBar: SonarpadAppBar(title: Text(l10n.mediaCutterTitle)),
         body: SafeArea(
           child: useSharedAccessibleViewModel
               ? Column(

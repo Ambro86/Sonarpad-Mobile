@@ -770,6 +770,9 @@ class AppLocalizationsCs extends AppLocalizations {
   String get back => 'Zpět';
 
   @override
+  String get goToHome => 'Přejít na domovskou obrazovku';
+
+  @override
   String get episodePlayer => 'Přehrávač epizody';
 
   @override

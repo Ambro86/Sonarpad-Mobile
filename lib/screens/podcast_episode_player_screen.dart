@@ -1166,20 +1166,42 @@ class _PodcastEpisodePlayerScreenState
               alignment: Alignment.topLeft,
               child: Padding(
                 padding: const EdgeInsets.all(8),
-                child: Material(
-                  color: Colors.black54,
-                  shape: const CircleBorder(),
-                  child: IconButton(
-                    color: Colors.white,
-                    tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-                    icon: const Icon(Icons.arrow_back),
-                    onPressed: () {
-                      AppLogger.log(
-                        'PodcastPlayer: fullscreen back pressed, $_logSubject',
-                      );
-                      Navigator.pop(context);
-                    },
-                  ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Material(
+                      color: Colors.black54,
+                      shape: const CircleBorder(),
+                      child: SonarpadBackSemantics(
+                        onBack: () {
+                          AppLogger.log(
+                            'PodcastPlayer: fullscreen back pressed, $_logSubject',
+                          );
+                          Navigator.pop(context);
+                        },
+                        child: IconButton(
+                          color: Colors.white,
+                          tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+                          icon: const Icon(Icons.arrow_back),
+                          onPressed: () {
+                            AppLogger.log(
+                              'PodcastPlayer: fullscreen back pressed, $_logSubject',
+                            );
+                            Navigator.pop(context);
+                          },
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    const Material(
+                      color: Colors.black54,
+                      shape: CircleBorder(),
+                      child: SonarpadVisualHomeButton(
+                        color: Colors.white,
+                        compact: true,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -1444,10 +1466,10 @@ class _PodcastEpisodePlayerScreenState
       return _buildLandscapeFullscreenScaffold(l10n, canSeek);
     }
     return Scaffold(
-      appBar: AppBar(
+      appBar: SonarpadAppBar(
         automaticallyImplyLeading: false,
         excludeHeaderSemantics: true,
-        leading: BackButton(
+        leading: SonarpadBackButton(
           key: const ValueKey('podcast_player_back'),
           onPressed: () {
             AppLogger.log('PodcastPlayer: appbar back pressed, $_logSubject');

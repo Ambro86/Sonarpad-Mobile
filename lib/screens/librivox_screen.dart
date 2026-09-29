@@ -56,7 +56,7 @@ class _LibrivoxScreenState extends State<LibrivoxScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('LibriVox')),
+      appBar: SonarpadAppBar(title: const Text('LibriVox')),
       body: useSharedAccessibleViewModel
           ? UniversalAccessibleList(
               sections: [AccessibleListSection(rows: [
@@ -171,7 +171,7 @@ class _LibrivoxResultsScreenState extends State<_LibrivoxResultsScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.searchResults)),
+      appBar: SonarpadAppBar(title: Text(l10n.searchResults)),
       body: Builder(
         builder: (context) {
           if (_loading) {
@@ -313,7 +313,7 @@ class _LibrivoxBookScreenState extends State<_LibrivoxBookScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text(widget.book.title)),
+      appBar: SonarpadAppBar(title: Text(widget.book.title)),
       body: FutureBuilder<LibrivoxBook>(
         future: _book,
         builder: (context, snapshot) {

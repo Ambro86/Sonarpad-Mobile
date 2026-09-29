@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../widgets/universal_accessible_view.dart';
+
 import '../l10n/app_localizations.dart';
 import '../services/document_library_service.dart';
 import '../utils/status_message.dart';
@@ -71,7 +73,7 @@ class _DocumentEditorScreenState extends State<DocumentEditorScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: SonarpadAppBar(
         title: Text(AppLocalizations.of(context).writeDocument),
       ),
       body: SafeArea(

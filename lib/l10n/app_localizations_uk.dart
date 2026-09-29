@@ -772,6 +772,9 @@ class AppLocalizationsUk extends AppLocalizations {
   String get back => 'Назад';
 
   @override
+  String get goToHome => 'Перейти на головний екран';
+
+  @override
   String get episodePlayer => 'Програвач епізоду';
 
   @override

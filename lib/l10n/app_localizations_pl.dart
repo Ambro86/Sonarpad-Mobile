@@ -771,6 +771,9 @@ class AppLocalizationsPl extends AppLocalizations {
   String get back => 'Wstecz';
 
   @override
+  String get goToHome => 'Przejdź do strony głównej';
+
+  @override
   String get episodePlayer => 'Odtwarzacz odcinka';
 
   @override

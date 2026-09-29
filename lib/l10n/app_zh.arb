@@ -264,6 +264,10 @@
   "forward15s": "前进 15 秒",
   "stop": "停止",
   "back": "返回",
+  "goToHome": "前往主页",
+  "@goToHome": {
+    "description": "Go directly to the Sonarpad Home screen from a Back control."
+  },
   "episodePlayer": "单集播放器",
   "nowPlayingTitle": "正在播放：{title}",
   "loadingEpisodeAudio": "正在加载单集音频",

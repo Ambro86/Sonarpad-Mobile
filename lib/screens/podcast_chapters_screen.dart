@@ -33,7 +33,7 @@ class PodcastChaptersScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.podcastChapters)),
+      appBar: SonarpadAppBar(title: Text(l10n.podcastChapters)),
       body: SafeArea(
         child: FutureBuilder<List<PodcastChapter>>(
           future: _chaptersFuture,

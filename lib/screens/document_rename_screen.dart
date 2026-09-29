@@ -42,7 +42,7 @@ class _DocumentRenameScreenState extends State<DocumentRenameScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.renameDocument)),
+      appBar: SonarpadAppBar(title: Text(l10n.renameDocument)),
       body: useSharedAccessibleViewModel
           ? UniversalAccessibleList(
               sections: [

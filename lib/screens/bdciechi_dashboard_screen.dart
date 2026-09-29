@@ -325,7 +325,7 @@ class _BdCiechiDashboardScreenState extends State<BdCiechiDashboardScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(
+      appBar: SonarpadAppBar(
         title: const Text('Accesso alla Biblioteca Digitale completato.'),
       ),
       body: SafeArea(
@@ -538,7 +538,7 @@ class _BdCiechiListScreenState extends State<BdCiechiListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: SonarpadAppBar(
         title: Text(widget.title),
       ),
       body: _isLoading

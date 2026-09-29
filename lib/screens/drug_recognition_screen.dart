@@ -1,6 +1,9 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
+
+import '../widgets/universal_accessible_view.dart';
+
 import 'package:flutter/services.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -802,7 +805,7 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: SonarpadAppBar(
         title: const Text('Riconosci il Farmaco'),
         actions: [
           IconButton(

@@ -958,6 +958,10 @@
   "@back": {
     "description": "Localized text for back."
   },
+  "goToHome": "Przejdź do strony głównej",
+  "@goToHome": {
+    "description": "Go directly to the Sonarpad Home screen from a Back control."
+  },
   "episodePlayer": "Odtwarzacz odcinka",
   "@episodePlayer": {
     "description": "Localized text for episodePlayer."

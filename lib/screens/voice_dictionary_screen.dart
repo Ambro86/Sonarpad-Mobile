@@ -52,7 +52,7 @@ class _VoiceDictionaryScreenState extends State<VoiceDictionaryScreen> {
     final l10n = AppLocalizations.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.voiceDictionaryTitle)),
+      appBar: SonarpadAppBar(title: Text(l10n.voiceDictionaryTitle)),
       body: SafeArea(
         child: useSharedAccessibleViewModel
             ? UniversalAccessibleList(

@@ -778,6 +778,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get back => 'Retour';
 
   @override
+  String get goToHome => 'Aller à l’accueil';
+
+  @override
   String get episodePlayer => 'Lecteur d\'épisode';
 
   @override

@@ -92,10 +92,10 @@ class _SonarTubePlayerActionsSettingsScreenState
     final l10n = AppLocalizations.of(context);
     final actions = _actions(l10n);
     return Scaffold(
-      appBar: AppBar(
+      appBar: SonarpadAppBar(
         automaticallyImplyLeading: false,
         excludeHeaderSemantics: true,
-        leading: BackButton(
+        leading: SonarpadBackButton(
           key: const ValueKey('settings_sonartube_player_actions_back'),
           onPressed: () => Navigator.pop(context),
         ),

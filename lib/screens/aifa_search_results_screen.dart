@@ -306,7 +306,7 @@ class _AifaSearchResultsScreenState extends State<AifaSearchResultsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: SonarpadAppBar(
         title: Text('Risultati: ${widget.query}'),
       ),
       body: SafeArea(

@@ -28,7 +28,7 @@ class RouteResultScreen extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.routeResultsTitle)),
+      appBar: SonarpadAppBar(title: Text(l10n.routeResultsTitle)),
       body: useSharedAccessibleViewModel
           ? UniversalAccessibleList(
               sections: [
@@ -559,7 +559,7 @@ class _RouteStepsScreenState extends State<RouteStepsScreen> {
     final l10n = AppLocalizations.of(context);
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: SonarpadAppBar(
         title: Text(l10n.routeNavigation),
         actions: [
           IconButton(

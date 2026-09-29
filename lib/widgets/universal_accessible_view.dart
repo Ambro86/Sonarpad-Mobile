@@ -100,6 +100,180 @@ bool get isUsingFlutterAccessibleRendererAtRuntime =>
 bool get suppressBackSemanticsDuringRouteReturn =>
     useNativeIosAccessibleViews;
 
+const String sonarpadGoHomeActionId = 'go_to_home';
+
+String sonarpadGoHomeLabel(BuildContext context) =>
+    AppLocalizations.of(context).goToHome;
+
+/// Returns directly to Sonarpad's first/root route without pushing another
+/// Home screen on top of the current navigation stack.
+void goToSonarpadHome(BuildContext context) {
+  final navigator = Navigator.of(context, rootNavigator: true);
+  if (!navigator.canPop()) return;
+  navigator.popUntil((route) => route.isFirst);
+}
+
+/// Adds Sonarpad's secondary "Go to Home" accessibility action to an existing
+/// visual Back control while keeping the control in its original position.
+class SonarpadBackSemantics extends StatelessWidget {
+  const SonarpadBackSemantics({
+    super.key,
+    required this.onBack,
+    required this.child,
+    this.label,
+  });
+
+  final VoidCallback onBack;
+  final Widget child;
+  final String? label;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final action = CustomSemanticsAction(label: l10n.goToHome);
+    return Semantics(
+      container: true,
+      button: true,
+      label: label ?? MaterialLocalizations.of(context).backButtonTooltip,
+      onTap: onBack,
+      customSemanticsActions: <CustomSemanticsAction, VoidCallback>{
+        action: () => goToSonarpadHome(context),
+      },
+      excludeSemantics: true,
+      child: child,
+    );
+  }
+}
+
+/// Standard route Back button used everywhere in Sonarpad.
+///
+/// Visually it is the normal Material BackButton. For screen readers it is one
+/// Back element with the extra custom action "Go to Home".
+class SonarpadBackButton extends StatelessWidget {
+  const SonarpadBackButton({
+    super.key,
+    this.onPressed,
+    this.color,
+  });
+
+  final VoidCallback? onPressed;
+  final Color? color;
+
+  void _handleBack(BuildContext context) {
+    final callback = onPressed;
+    if (callback != null) {
+      callback();
+      return;
+    }
+    Navigator.maybePop(context);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    void onBack() => _handleBack(context);
+    return SonarpadBackSemantics(
+      onBack: onBack,
+      child: BackButton(
+        color: color,
+        onPressed: onBack,
+      ),
+    );
+  }
+}
+
+/// Sighted-only Home button paired with a Back control.
+///
+/// It deliberately never enters the semantics tree: VoiceOver/TalkBack users
+/// reach Home through the custom action attached to Back instead.
+class SonarpadVisualHomeButton extends StatelessWidget {
+  const SonarpadVisualHomeButton({
+    super.key,
+    this.color,
+    this.compact = false,
+  });
+
+  final Color? color;
+  final bool compact;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return ExcludeSemantics(
+      child: IconButton(
+        tooltip: l10n.goToHome,
+        color: color,
+        visualDensity: compact ? VisualDensity.compact : null,
+        icon: const Icon(Icons.home_outlined),
+        onPressed: () => goToSonarpadHome(context),
+      ),
+    );
+  }
+}
+
+/// AppBar used throughout Sonarpad.
+///
+/// It preserves the normal Back position, replaces only the implicit Back with
+/// [SonarpadBackButton], and appends a sighted-only Home icon to the AppBar
+/// actions. Existing custom leading widgets remain untouched.
+class SonarpadAppBar extends StatelessWidget implements PreferredSizeWidget {
+  const SonarpadAppBar({
+    super.key,
+    this.title,
+    this.actions,
+    this.leading,
+    this.automaticallyImplyLeading = true,
+    this.excludeHeaderSemantics = false,
+    this.bottom,
+    this.leadingIsBackNavigation = false,
+  });
+
+  final Widget? title;
+  final List<Widget>? actions;
+  final Widget? leading;
+  final bool automaticallyImplyLeading;
+  final bool excludeHeaderSemantics;
+  final PreferredSizeWidget? bottom;
+
+  /// Set only when [leading] is a wrapper around a Sonarpad Back button and
+  /// therefore cannot be recognized by runtime type (for example a
+  /// ValueListenableBuilder that temporarily hides Back semantics).
+  final bool leadingIsBackNavigation;
+
+  @override
+  Size get preferredSize => Size.fromHeight(
+        kToolbarHeight + (bottom?.preferredSize.height ?? 0),
+      );
+
+  @override
+  Widget build(BuildContext context) {
+    final navigator = Navigator.maybeOf(context);
+    final canPop = navigator?.canPop() ?? false;
+
+    Widget? effectiveLeading = leading;
+    var hasBackNavigation = leadingIsBackNavigation ||
+        effectiveLeading is SonarpadBackButton;
+
+    if (effectiveLeading == null && automaticallyImplyLeading && canPop) {
+      effectiveLeading = const SonarpadBackButton();
+      hasBackNavigation = true;
+    }
+
+    final effectiveActions = <Widget>[
+      ...?actions,
+      if (hasBackNavigation) const SonarpadVisualHomeButton(),
+    ];
+
+    return AppBar(
+      automaticallyImplyLeading: false,
+      excludeHeaderSemantics: excludeHeaderSemantics,
+      leading: effectiveLeading,
+      title: title,
+      actions: effectiveActions.isEmpty ? null : effectiveActions,
+      bottom: bottom,
+    );
+  }
+}
+
 /// Visual navigation control paired with [UniversalAccessibleList.persistentTopAction].
 ///
 /// UIKit receives the persistent accessibility action from the native list, so
@@ -1562,6 +1736,7 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
         'comments' => Icons.comment_outlined,
         'transcript' => Icons.subject,
         'description' => Icons.description_outlined,
+        'home' => Icons.home_outlined,
         'podcast_add' => Icons.podcasts,
         'remove' => Icons.delete_outline,
         'edit' => Icons.edit_outlined,

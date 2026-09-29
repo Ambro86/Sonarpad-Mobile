@@ -95,7 +95,7 @@ class _RecordingRenameScreenState extends State<RecordingRenameScreen> {
     final l10n = AppLocalizations.of(context);
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: SonarpadAppBar(
         title: Text(l10n.renameRecording),
       ),
       body: useSharedAccessibleViewModel

@@ -6,7 +6,7 @@ void main() {
   test('Settings exposes Save in the top AppBar on iOS and Android', () {
     final source = File('lib/screens/settings_screen.dart').readAsStringSync();
 
-    expect(source, contains('appBar: AppBar('));
+    expect(source, contains('appBar: SonarpadAppBar('));
     expect(source, contains('actions: ['));
     expect(source, contains('label: l10n.saveSettings'));
     expect(source, contains('onPressed: _loading || _isSaving ? null : _saveAndClose'));

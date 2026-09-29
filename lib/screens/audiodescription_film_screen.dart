@@ -75,7 +75,7 @@ class _AudiodescriptionFilmScreenState
     final l10n = AppLocalizations.of(context);
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: SonarpadAppBar(
         title: Text(l10n.audiodescriptionFilm),
       ),
       body: useSharedAccessibleViewModel

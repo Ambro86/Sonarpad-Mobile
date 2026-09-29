@@ -65,7 +65,7 @@ class _CinemaUpcomingScreenState extends State<CinemaUpcomingScreen> {
     final localeName = Localizations.localeOf(context).toString();
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.cinemaUpcomingReleases)),
+      appBar: SonarpadAppBar(title: Text(l10n.cinemaUpcomingReleases)),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _error != null

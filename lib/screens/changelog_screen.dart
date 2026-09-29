@@ -19,7 +19,7 @@ class ChangelogScreen extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.whatIsNew)),
+      appBar: SonarpadAppBar(title: Text(l10n.whatIsNew)),
       body: SafeArea(
         child: FutureBuilder<List<String>>(
           future: ChangelogService().visibleChangesFor(entry, languageCode),

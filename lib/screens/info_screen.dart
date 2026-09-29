@@ -78,7 +78,7 @@ class _InfoScreenState extends State<InfoScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.info)),
+      appBar: SonarpadAppBar(title: Text(l10n.info)),
       body: FutureBuilder<PackageInfo>(
           future: PackageInfo.fromPlatform(),
           builder: (context, snapshot) {

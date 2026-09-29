@@ -90,9 +90,9 @@ Future<void> showTvProgramDetailsDialog(
 
       return Dialog.fullscreen(
         child: Scaffold(
-          appBar: AppBar(
+          appBar: SonarpadAppBar(
             automaticallyImplyLeading: false,
-            leading: BackButton(
+            leading: SonarpadBackButton(
               key: const ValueKey('tv_program_details_back_semantics'),
               onPressed: () => Navigator.pop(dialogContext),
             ),
@@ -352,7 +352,7 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.channel.name)),
+      appBar: SonarpadAppBar(title: Text(widget.channel.name)),
       body: Column(
         children: [
           Padding(
