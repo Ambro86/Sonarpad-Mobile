@@ -182,8 +182,34 @@ jobs:
 
           cp -R "$APP_PATH" "build/ipa/Payload/${APP_NAME}.app"
           cd build/ipa
-          zip -qry "${APP_NAME}.ipa" Payload
+          # Sideloadly 0.70 requires uncompressed Info.plist ZIP entries.
+          # Keep all .plist files uncompressed; other files remain compressed.
+          zip -qry -n .plist "${APP_NAME}.ipa" Payload
           ls -la "${APP_NAME}.ipa"
+
+      - name: Verify IPA compatibility with Sideloadly
+        run: |
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+          import zipfile
+
+          ipa_path = Path("build/ipa") / f"{os.environ['APP_NAME']}.ipa"
+          with zipfile.ZipFile(ipa_path) as ipa:
+              plists = [entry for entry in ipa.infolist()
+                        if entry.filename.endswith("/Info.plist")]
+              if not plists:
+                  raise SystemExit("ERROR: no Info.plist files found in IPA")
+              compressed = [entry.filename for entry in plists
+                            if entry.compress_type != zipfile.ZIP_STORED]
+              if compressed:
+                  raise SystemExit("ERROR: compressed Info.plist files: "
+                                   + ", ".join(compressed))
+              bad_entry = ipa.testzip()
+              if bad_entry is not None:
+                  raise SystemExit(f"ERROR: corrupt ZIP entry: {bad_entry}")
+              print(f"Verified {len(plists)} uncompressed Info.plist files in {ipa_path}")
+          PY
 
       - name: Upload unsigned IPA
         uses: actions/upload-artifact@v4

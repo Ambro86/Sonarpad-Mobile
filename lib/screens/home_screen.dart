@@ -233,7 +233,10 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     return Scaffold(
-      appBar: SonarpadAppBar(title: Text(l10n.appTitle)),
+      appBar: SonarpadAppBar(
+        title: Text(l10n.appTitle),
+        automaticallyImplyLeading: false,
+      ),
       body: SafeArea(
         child: useSharedAccessibleViewModel
             ? UniversalAccessibleList(
