@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 
 import '../l10n/app_localizations.dart';
 import '../services/document_library_service.dart';
@@ -19,11 +20,71 @@ class TreccaniScreen extends StatefulWidget {
 
 class _TreccaniScreenState extends State<TreccaniScreen> {
   final _controller = TextEditingController();
+  final _searchFocusNode = FocusNode();
+  final _searchSemanticsFocusKey = GlobalKey();
 
   @override
   void dispose() {
     _controller.dispose();
+    _searchFocusNode.dispose();
     super.dispose();
+  }
+
+  void _clearSearchText() {
+    final previousValue = _controller.text;
+    if (previousValue.isEmpty) return;
+    _controller.clear();
+    announceClearedEditableText(context, previousValue);
+    _searchFocusNode.requestFocus();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _searchSemanticsFocusKey.currentContext
+          ?.findRenderObject()
+          ?.sendSemanticsEvent(const FocusSemanticEvent());
+    });
+  }
+
+  Widget _buildSearchField(AppLocalizations l10n) {
+    return Semantics(
+      container: true,
+      explicitChildNodes: true,
+      child: ValueListenableBuilder<TextEditingValue>(
+        valueListenable: _controller,
+        builder: (context, value, _) => Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Semantics(
+                sortKey: const OrdinalSortKey(1),
+                child: KeyedSubtree(
+                  key: _searchSemanticsFocusKey,
+                  child: TextField(
+                    controller: _controller,
+                    focusNode: _searchFocusNode,
+                    decoration: InputDecoration(
+                      labelText: l10n.treccaniSearchLabel,
+                    ),
+                    textInputAction: TextInputAction.search,
+                    onSubmitted: (_) => _search(),
+                  ),
+                ),
+              ),
+            ),
+            if (value.text.isNotEmpty) ...[
+              const SizedBox(width: 8),
+              Semantics(
+                sortKey: const OrdinalSortKey(2),
+                child: IconButton(
+                  tooltip: l10n.clearSearch,
+                  icon: const Icon(Icons.clear),
+                  onPressed: _clearSearchText,
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
   }
 
   void _search() {
@@ -108,6 +169,7 @@ class _TreccaniScreenState extends State<TreccaniScreen> {
                       title: l10n.treccaniSearchLabel,
                       kind: 'textField',
                       value: _controller.text,
+                      clearAsSearch: true,
                       textInputAction: 'search',
                       onSubmitted: (_) => _search(),
                     ),
@@ -144,14 +206,7 @@ class _TreccaniScreenState extends State<TreccaniScreen> {
           : ListView(
               padding: const EdgeInsets.all(16),
               children: [
-                TextField(
-                  controller: _controller,
-                  decoration: InputDecoration(
-                    labelText: l10n.treccaniSearchLabel,
-                  ),
-                  textInputAction: TextInputAction.search,
-                  onSubmitted: (_) => _search(),
-                ),
+                _buildSearchField(l10n),
                 const SizedBox(height: 8),
                 FilledButton.tonal(
                   onPressed: _openRecent,
