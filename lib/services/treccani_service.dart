@@ -54,6 +54,11 @@ class TreccaniServiceException implements Exception {
   final int? statusCode;
 
   const TreccaniServiceException(this.type, {this.statusCode});
+
+  @override
+  String toString() =>
+      'TreccaniServiceException(${type.name}'
+      '${statusCode == null ? '' : ', HTTP $statusCode'})';
 }
 
 class TreccaniService {
@@ -72,10 +77,15 @@ class TreccaniService {
     final uri = _baseUri.resolve(
       '/enciclopedia/ricerca/${Uri.encodeComponent(trimmed)}/',
     );
-    final response = await _client.get(uri, headers: const {
-      'User-Agent': 'Sonarpad mobile Treccani reader',
-      'Accept-Language': 'it-IT,it;q=0.9',
-    });
+    final response = await _client
+        .get(
+          uri,
+          headers: const {
+            'User-Agent': 'Sonarpad mobile Treccani reader',
+            'Accept-Language': 'it-IT,it;q=0.9',
+          },
+        )
+        .timeout(const Duration(seconds: 20));
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw TreccaniServiceException(
         TreccaniErrorType.http,
@@ -90,10 +100,15 @@ class TreccaniService {
     if (normalizedUrl == null) {
       throw const TreccaniServiceException(TreccaniErrorType.invalidUrl);
     }
-    final response = await _client.get(Uri.parse(normalizedUrl), headers: const {
-      'User-Agent': 'Sonarpad mobile Treccani reader',
-      'Accept-Language': 'it-IT,it;q=0.9',
-    });
+    final response = await _client
+        .get(
+          Uri.parse(normalizedUrl),
+          headers: const {
+            'User-Agent': 'Sonarpad mobile Treccani reader',
+            'Accept-Language': 'it-IT,it;q=0.9',
+          },
+        )
+        .timeout(const Duration(seconds: 20));
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw TreccaniServiceException(
         TreccaniErrorType.http,

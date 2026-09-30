@@ -4,6 +4,7 @@ import '../l10n/app_localizations.dart';
 import '../services/document_library_service.dart';
 import '../services/recent_searches_service.dart';
 import '../services/treccani_service.dart';
+import '../utils/app_logger.dart';
 import '../utils/status_message.dart';
 import '../widgets/universal_accessible_view.dart';
 import 'document_reader_screen.dart';
@@ -64,7 +65,10 @@ class _TreccaniScreenState extends State<TreccaniScreen> {
           builder: (_) => _TreccaniArticleScreen(result: match),
         ),
       );
-    } catch (_) {
+    } catch (error, stack) {
+      await AppLogger.log(
+        'Treccani: recent article search failed: $error\n$stack',
+      );
       if (mounted) Navigator.of(context).pop();
       if (mounted) {
         showStatusMessage(
@@ -154,10 +158,7 @@ class _TreccaniScreenState extends State<TreccaniScreen> {
                   child: Text(l10n.recentArticles),
                 ),
                 const SizedBox(height: 8),
-                FilledButton(
-                  onPressed: _search,
-                  child: Text(l10n.search),
-                ),
+                FilledButton(onPressed: _search, child: Text(l10n.search)),
               ],
             ),
     );
@@ -286,11 +287,19 @@ class _TreccaniArticleScreenState extends State<_TreccaniArticleScreen> {
 
   Future<void> _load() async {
     try {
+      await AppLogger.log('Treccani: loading article url=${widget.result.url}');
       final article = await _service.loadArticle(widget.result);
+      await AppLogger.log(
+        'Treccani: article loaded url=${article.url} '
+        'characters=${article.text.length} sections=${article.sections.length}',
+      );
       await RecentSearchesService().addSearch('treccani', article.title);
       if (!mounted) return;
       setState(() => _article = article);
-    } catch (error) {
+    } catch (error, stack) {
+      await AppLogger.log(
+        'Treccani: article load failed url=${widget.result.url}: $error\n$stack',
+      );
       if (!mounted) return;
       setState(() => _loadError = error);
     } finally {
