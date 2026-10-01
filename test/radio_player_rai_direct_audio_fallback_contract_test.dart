@@ -42,6 +42,24 @@ void main() {
     );
     expect(
       playerSource,
+      contains('bool _raiNormalAudioFallbackInProgress = false;'),
+    );
+    expect(
+      RegExp(
+        r'_scheduleRaiNormalAudioFallback[\s\S]*?_raiNormalAudioFallbackInProgress[\s\S]*?_activateRaiNormalAudioFallback',
+      ).hasMatch(playerSource),
+      isTrue,
+      reason: 'The AD->ITA watchdog must not be blocked by the master->AD fallback flag.',
+    );
+    expect(
+      RegExp(
+        r'_activateRaiNormalAudioFallback[\s\S]*?_raiNormalAudioFallbackInProgress = true;[\s\S]*?_raiNormalAudioFallbackInProgress = false;',
+      ).hasMatch(playerSource),
+      isTrue,
+      reason: 'Direct ITA fallback needs its own re-entry guard while AD open is still pending.',
+    );
+    expect(
+      playerSource,
       contains('streamUrl: normalAudioUrl,'),
     );
     expect(playerSource, contains('enableRaiDirectAudioFallback: false,'));

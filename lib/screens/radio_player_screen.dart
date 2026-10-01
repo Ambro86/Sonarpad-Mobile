@@ -81,6 +81,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   DateTime? _mediaKitLastAutoRecoveryAt;
   bool _mediaKitAutoRecoveryInProgress = false;
   bool _raiDirectAudioFallbackInProgress = false;
+  bool _raiNormalAudioFallbackInProgress = false;
   double _mediaKitVolume = 1.0;
   double _videoPlayerVolume = 1.0;
   bool _isRecordingFeatureUnlocked = false;
@@ -583,7 +584,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       _raiDirectAudioFallbackTimer = null;
       if (!mounted ||
           _mediaKitPlayer != player ||
-          _raiDirectAudioFallbackInProgress ||
+          _raiNormalAudioFallbackInProgress ||
           _isVideoEnabled) {
         return;
       }
@@ -607,7 +608,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   ) async {
     if (!mounted ||
         _mediaKitPlayer != stalledPlayer ||
-        _raiDirectAudioFallbackInProgress ||
+        _raiNormalAudioFallbackInProgress ||
         _isVideoEnabled) {
       return;
     }
@@ -621,7 +622,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       return;
     }
 
-    _raiDirectAudioFallbackInProgress = true;
+    _raiNormalAudioFallbackInProgress = true;
     try {
       await AppLogger.log(
         'RadioPlayer: RAI direct AD stalled for 6s; falling back to direct ITA station="${widget.station.name}" url=$normalAudioUrl',
@@ -648,7 +649,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         );
       }
     } finally {
-      _raiDirectAudioFallbackInProgress = false;
+      _raiNormalAudioFallbackInProgress = false;
     }
   }
 
