@@ -75,6 +75,16 @@ void main() {
     expect(fallbacks, contains('0.65'));
   });
 
+  test('character catalog continuity stays mutable and uses the Windows 96-entry limit', () {
+    expect(service, contains('final loadedGlossary ='));
+    expect(service, contains('List<Map<String, Object?>>.of('));
+    expect(service, contains('growable: true'));
+    expect(service, contains('maxCharacters: 96'));
+    final fallbacks = File('lib/services/audio_description_fallbacks.dart')
+        .readAsStringSync();
+    expect(fallbacks, contains('toList(growable: true)'));
+  });
+
   test('document removal returns accessibility focus to first remaining row', () {
     expect(documents, contains('final targetId = remaining.first.id;'));
     expect(documents, contains('focusToReturnAfterStructureChange('));

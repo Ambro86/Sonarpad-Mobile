@@ -744,6 +744,28 @@ void main() {
         96,
       );
     });
+    test('catalog merge result stays growable for Windows-style chunk continuity', () {
+      final established = List<Map<String, Object?>>.generate(
+        28,
+        (i) => c('saved_$i', 'Personaggio salvato $i', 'Descrizione salvata $i.'),
+      );
+      final result = AudioDescriptionFallbacks.mergeCharacterCatalog(
+        const <Map<String, Object?>>[],
+        established,
+        maxCharacters: 96,
+      );
+
+      expect(result.length, 28);
+      expect(
+        () => result
+          ..clear()
+          ..addAll(<Map<String, Object?>>[
+            c('flo', 'Flo', 'Indossa un vestito rosa.'),
+          ]),
+        returnsNormally,
+      );
+      expect(result.single['id'], 'flo');
+    });
   });
 
   group('TTS fallback rules', () {

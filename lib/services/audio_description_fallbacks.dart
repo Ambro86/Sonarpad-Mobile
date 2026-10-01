@@ -933,7 +933,10 @@ class AudioDescriptionFallbacks {
         merged.add(candidate);
       }
     }
-    return merged.take(maxCharacters).toList(growable: false);
+    // Keep the returned catalog growable. Windows stores continuity in a
+    // mutable dictionary and updates it after every chunk; callers on mobile
+    // likewise need to clear/add entries when merging the next Gemini result.
+    return merged.take(maxCharacters).toList(growable: true);
   }
 
   static int _findCharacterMatch(

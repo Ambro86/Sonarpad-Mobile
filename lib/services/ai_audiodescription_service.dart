@@ -1502,12 +1502,20 @@ class AiAudioDescriptionService {
       );
       final descriptions = <_GeneratedDescription>[];
       var effectiveCharacterCatalogName = settings.characterCatalogName?.trim();
-      final glossary = settings.recognizeCharacters &&
+      final loadedGlossary = settings.recognizeCharacters &&
               settings.keepCharacterCatalog &&
               effectiveCharacterCatalogName != null &&
               effectiveCharacterCatalogName.isNotEmpty
           ? await loadCharacterCatalog(effectiveCharacterCatalogName)
           : <Map<String, Object?>>[];
+      // Windows parity: the established character continuity collection stays
+      // mutable for the whole generation. A catalog loaded from JSON must not
+      // become a fixed-length Dart list, because every accepted chunk can add
+      // or merge newly observed character information.
+      final glossary = List<Map<String, Object?>>.of(
+        loadedGlossary,
+        growable: true,
+      );
       var activeGeminiModel = AudioDescriptionFallbacks.normalizeGeminiModelId(
         settings.geminiModel,
       );
@@ -4029,7 +4037,9 @@ $screenTextSchema$coreDirectives
     final merged = AudioDescriptionFallbacks.mergeCharacterCatalog(
       current,
       incoming,
-      maxCharacters: 32,
+      // Windows generate_descriptions_chunked keeps up to 96 established and
+      // newly observed characters throughout the episode/series continuity.
+      maxCharacters: 96,
     );
     current
       ..clear()
