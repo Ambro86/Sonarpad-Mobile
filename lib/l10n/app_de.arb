@@ -4820,6 +4820,10 @@
   "@audioDescriptionSonarpadBalanceUnavailable": {
     "description": "Shown when the Sonarpad AI credit cannot be read."
   },
+  "audioDescriptionSonarpadInsufficientCredit": "Das Guthaben reicht nicht aus. Lade das Guthaben deines API-Schlüssels auf, um deine Inhalte weiter audiobeschreiben zu können.",
+  "@audioDescriptionSonarpadInsufficientCredit": {
+    "description": "Shown when Sonarpad AI cannot continue because the account credit is insufficient."
+  },
   "audioDescriptionEdgeVoiceReady": "Die ausgewählte Edge-Stimme ist verfügbar.",
   "@audioDescriptionEdgeVoiceReady": {
     "description": "Localized text for audioDescriptionEdgeVoiceReady."
@@ -5103,5 +5107,67 @@
   "treccaniWholeEntry": "Gesamter Eintrag",
   "@treccaniWholeEntry": {
     "description": "Localized text for treccaniWholeEntry."
+  },
+  "joinMediaTitle": "Mediendateien zusammenfügen",
+  "joinMediaDescription": "Füge zwei oder mehr Audio- oder Videodateien hinzu, wähle Reihenfolge und Ausgabeformat und verbinde sie zu einer Datei.",
+  "joinMediaAddFiles": "Mediendateien hinzufügen",
+  "joinMediaLoadingFiles": "Ausgewählte Dateien werden geprüft…",
+  "joinMediaFilesTitle": "Zusammenzufügende Dateien",
+  "joinMediaNoFiles": "Noch keine Dateien hinzugefügt.",
+  "joinMediaVideoLabel": "Video",
+  "joinMediaAudioLabel": "Audio",
+  "joinMediaActionsHint": "Verfügbare Aktionen: Nach oben, Nach unten, Entfernen.",
+  "joinMediaRemove": "Entfernen",
+  "joinMediaOutputMp4": "Ausgabeformat: MP4. Reine Audiodateien erhalten ein schwarzes Bild; Videos ohne Ton erhalten eine stumme Audiospur.",
+  "joinMediaOutputMp3": "Ausgabeformat: MP3.",
+  "joinMediaJoin": "Zusammenfügen",
+  "joinMediaFileSkipped": "Eine Datei wurde übersprungen, weil sie nicht zugänglich ist oder kein nutzbares Audio oder Video enthält.",
+  "joinMediaFilesAdded": "Mediendateien hinzugefügt.",
+  "joinMediaRemoved": "Element entfernt.",
+  "joinMediaNeedTwoFiles": "Füge mindestens zwei Dateien hinzu.",
+  "joinMediaProcessing": "Mediendateien werden zusammengefügt",
+  "joinMediaCancelled": "Zusammenfügen abgebrochen.",
+  "joinMediaFailed": "Die Mediendateien konnten nicht zusammengefügt werden.",
+  "joinMediaPreparing": "Vorbereitung",
+  "joinMediaNormalizing": "Datei vorbereiten",
+  "joinMediaMerging": "Dateien zusammenfügen",
+  "joinMediaVerifying": "Abschließende Prüfung",
+  "joinMediaCompleting": "Abschluss",
+  "joinMediaCompleted": "Zusammenfügen abgeschlossen. Wähle, wo die Datei gespeichert werden soll.",
+  "joinMediaFormat": "Zusammenführungsformat",
+  "@joinMediaFormat": {
+    "description": "Media join: joinMediaFormat"
+  },
+  "joinMediaChooseFormat": "Zusammenführungsformat wählen",
+  "@joinMediaChooseFormat": {
+    "description": "Media join: joinMediaChooseFormat"
+  },
+  "joinMediaAudioFormatHint": "Bei reinen Audiodateien kannst du MP3, M4A, WAV, FLAC, OGG, OPUS, AAC, WMA oder AIFF wählen. Standard: MP3.",
+  "@joinMediaAudioFormatHint": {
+    "description": "Media join: joinMediaAudioFormatHint"
+  },
+  "joinMediaVideoFormatHint": "Bei Video- oder gemischten Dateien kannst du MP4, MKV, MOV, AVI, WMV, MPEG/MPG, FLV, 3GP oder TS wählen. Standard: MP4.",
+  "@joinMediaVideoFormatHint": {
+    "description": "Media join: joinMediaVideoFormatHint"
+  },
+  "joinMediaCancelConfirmTitle": "Zusammenführung abbrechen?",
+  "@joinMediaCancelConfirmTitle": {
+    "description": "Media join: joinMediaCancelConfirmTitle"
+  },
+  "joinMediaCancelConfirmMessage": "Möchtest du wirklich abbrechen? Der laufende FFmpeg-Prozess wird beendet.",
+  "@joinMediaCancelConfirmMessage": {
+    "description": "Media join: joinMediaCancelConfirmMessage"
+  },
+  "joinMediaKeepWorking": "Fortfahren",
+  "@joinMediaKeepWorking": {
+    "description": "Media join: joinMediaKeepWorking"
+  },
+  "joinMediaConfirmCancel": "Zusammenführung abbrechen",
+  "@joinMediaConfirmCancel": {
+    "description": "Media join: joinMediaConfirmCancel"
+  },
+  "joinMediaCancelling": "Wird abgebrochen…",
+  "@joinMediaCancelling": {
+    "description": "Media join: joinMediaCancelling"
   }
 }

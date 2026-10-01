@@ -4820,6 +4820,10 @@
   "@audioDescriptionSonarpadBalanceUnavailable": {
     "description": "Shown when the Sonarpad AI credit cannot be read."
   },
+  "audioDescriptionSonarpadInsufficientCredit": "Недостатньо кредиту. Поповніть свій API-ключ, щоб продовжити створювати аудіоописи для свого контенту.",
+  "@audioDescriptionSonarpadInsufficientCredit": {
+    "description": "Shown when Sonarpad AI cannot continue because the account credit is insufficient."
+  },
   "audioDescriptionEdgeVoiceReady": "Вибраний голос Edge доступний.",
   "@audioDescriptionEdgeVoiceReady": {
     "description": "Localized text for audioDescriptionEdgeVoiceReady."
@@ -5103,5 +5107,67 @@
   "treccaniWholeEntry": "Уся стаття",
   "@treccaniWholeEntry": {
     "description": "Localized text for treccaniWholeEntry."
+  },
+  "joinMediaTitle": "Об’єднати медіафайли",
+  "joinMediaDescription": "Додайте два або більше аудіо- чи відеофайлів, виберіть порядок і формат виводу та об’єднайте їх в один файл.",
+  "joinMediaAddFiles": "Додати медіафайли",
+  "joinMediaLoadingFiles": "Перевірка вибраних файлів…",
+  "joinMediaFilesTitle": "Файли для об’єднання",
+  "joinMediaNoFiles": "Файли ще не додано.",
+  "joinMediaVideoLabel": "Відео",
+  "joinMediaAudioLabel": "Аудіо",
+  "joinMediaActionsHint": "Доступні дії: Перемістити вгору, Перемістити вниз, Видалити.",
+  "joinMediaRemove": "Видалити",
+  "joinMediaOutputMp4": "Формат виходу: MP4. Для аудіофайлів буде використано чорний екран; до відео без звуку буде додано тишу.",
+  "joinMediaOutputMp3": "Формат виходу: MP3.",
+  "joinMediaJoin": "Об’єднати",
+  "joinMediaFileSkipped": "Файл пропущено, бо він недоступний або не містить придатного аудіо чи відео.",
+  "joinMediaFilesAdded": "Медіафайли додано.",
+  "joinMediaRemoved": "Елемент видалено.",
+  "joinMediaNeedTwoFiles": "Додайте щонайменше два файли для об’єднання.",
+  "joinMediaProcessing": "Об’єднання медіафайлів",
+  "joinMediaCancelled": "Об’єднання скасовано.",
+  "joinMediaFailed": "Не вдалося об’єднати медіафайли.",
+  "joinMediaPreparing": "Підготовка",
+  "joinMediaNormalizing": "Підготовка файлу",
+  "joinMediaMerging": "Об’єднання файлів",
+  "joinMediaVerifying": "Фінальна перевірка",
+  "joinMediaCompleting": "Завершення",
+  "joinMediaCompleted": "Об’єднання завершено. Виберіть, де зберегти файл.",
+  "joinMediaFormat": "Формат об’єднання",
+  "@joinMediaFormat": {
+    "description": "Media join: joinMediaFormat"
+  },
+  "joinMediaChooseFormat": "Вибрати формат об’єднання",
+  "@joinMediaChooseFormat": {
+    "description": "Media join: joinMediaChooseFormat"
+  },
+  "joinMediaAudioFormatHint": "Для лише аудіофайлів можна вибрати MP3, M4A, WAV, FLAC, OGG, OPUS, AAC, WMA або AIFF. Типово: MP3.",
+  "@joinMediaAudioFormatHint": {
+    "description": "Media join: joinMediaAudioFormatHint"
+  },
+  "joinMediaVideoFormatHint": "Для відео або змішаних файлів можна вибрати MP4, MKV, MOV, AVI, WMV, MPEG/MPG, FLV, 3GP або TS. Типово: MP4.",
+  "@joinMediaVideoFormatHint": {
+    "description": "Media join: joinMediaVideoFormatHint"
+  },
+  "joinMediaCancelConfirmTitle": "Скасувати об’єднання?",
+  "@joinMediaCancelConfirmTitle": {
+    "description": "Media join: joinMediaCancelConfirmTitle"
+  },
+  "joinMediaCancelConfirmMessage": "Справді скасувати? Поточний процес FFmpeg буде зупинено.",
+  "@joinMediaCancelConfirmMessage": {
+    "description": "Media join: joinMediaCancelConfirmMessage"
+  },
+  "joinMediaKeepWorking": "Продовжити",
+  "@joinMediaKeepWorking": {
+    "description": "Media join: joinMediaKeepWorking"
+  },
+  "joinMediaConfirmCancel": "Скасувати об’єднання",
+  "@joinMediaConfirmCancel": {
+    "description": "Media join: joinMediaConfirmCancel"
+  },
+  "joinMediaCancelling": "Скасування…",
+  "@joinMediaCancelling": {
+    "description": "Media join: joinMediaCancelling"
   }
 }

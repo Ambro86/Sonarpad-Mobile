@@ -4078,6 +4078,9 @@ class AppLocalizationsCs extends AppLocalizations {
   String get audioDescriptionSonarpadBalanceUnavailable => 'Kredit není k dispozici.';
 
   @override
+  String get audioDescriptionSonarpadInsufficientCredit => "Kredit nestačí. Dobijte svou API klíč, abyste mohli pokračovat v audiopopisu svého obsahu.";
+
+  @override
   String get audioDescriptionEdgeVoiceReady => 'Vybraný hlas Edge je dostupný.';
 
   @override
@@ -4334,4 +4337,110 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get homeDirectory => 'Bílé a žluté stránky';
+
+  @override
+  String get joinMediaTitle => "Sloučit multimediální soubory";
+
+  @override
+  String get joinMediaDescription => "Přidejte dva nebo více zvukových či video souborů, zvolte pořadí a výstupní formát a spojte je do jednoho souboru.";
+
+  @override
+  String get joinMediaAddFiles => "Přidat multimediální soubory";
+
+  @override
+  String get joinMediaLoadingFiles => "Kontrola vybraných souborů…";
+
+  @override
+  String get joinMediaFilesTitle => "Soubory ke sloučení";
+
+  @override
+  String get joinMediaNoFiles => "Zatím nebyly přidány žádné soubory.";
+
+  @override
+  String get joinMediaVideoLabel => "Video";
+
+  @override
+  String get joinMediaAudioLabel => "Zvuk";
+
+  @override
+  String get joinMediaActionsHint => "Dostupné akce: Posunout nahoru, Posunout dolů, Odebrat.";
+
+  @override
+  String get joinMediaRemove => "Odebrat";
+
+  @override
+  String get joinMediaOutputMp4 => "Výstupní formát: MP4. Zvukové soubory použijí černý obraz; k videím bez zvuku bude přidáno ticho.";
+
+  @override
+  String get joinMediaOutputMp3 => "Výstupní formát: MP3.";
+
+  @override
+  String get joinMediaJoin => "Sloučit";
+
+  @override
+  String get joinMediaFileSkipped => "Soubor byl přeskočen, protože není dostupný nebo neobsahuje použitelný zvuk či video.";
+
+  @override
+  String get joinMediaFilesAdded => "Multimediální soubory přidány.";
+
+  @override
+  String get joinMediaRemoved => "Položka odebrána.";
+
+  @override
+  String get joinMediaNeedTwoFiles => "Přidejte alespoň dva soubory ke sloučení.";
+
+  @override
+  String get joinMediaProcessing => "Slučování médií";
+
+  @override
+  String get joinMediaCancelled => "Slučování zrušeno.";
+
+  @override
+  String get joinMediaFailed => "Multimediální soubory se nepodařilo sloučit.";
+
+  @override
+  String get joinMediaPreparing => "Příprava";
+
+  @override
+  String get joinMediaNormalizing => "Příprava souboru";
+
+  @override
+  String get joinMediaMerging => "Slučování souborů";
+
+  @override
+  String get joinMediaVerifying => "Závěrečná kontrola";
+
+  @override
+  String get joinMediaCompleting => "Dokončování";
+
+  @override
+  String get joinMediaCompleted => "Sloučení dokončeno. Zvolte, kam soubor uložit.";
+
+  @override
+  String get joinMediaFormat => "Formát spojení";
+
+  @override
+  String get joinMediaChooseFormat => "Zvolit formát spojení";
+
+  @override
+  String get joinMediaAudioFormatHint => "Pouze u zvukových souborů můžete zvolit MP3, M4A, WAV, FLAC, OGG, OPUS, AAC, WMA nebo AIFF. Výchozí: MP3.";
+
+  @override
+  String get joinMediaVideoFormatHint => "U videa nebo smíšených souborů můžete zvolit MP4, MKV, MOV, AVI, WMV, MPEG/MPG, FLV, 3GP nebo TS. Výchozí: MP4.";
+
+  @override
+  String get joinMediaCancelConfirmTitle => "Zrušit spojování?";
+
+  @override
+  String get joinMediaCancelConfirmMessage => "Opravdu chcete zrušit operaci? Probíhající proces FFmpeg bude ukončen.";
+
+  @override
+  String get joinMediaKeepWorking => "Pokračovat";
+
+  @override
+  String get joinMediaConfirmCancel => "Zrušit spojování";
+
+  @override
+  String get joinMediaCancelling => "Rušení…";
+
 }

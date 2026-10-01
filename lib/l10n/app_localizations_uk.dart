@@ -4075,6 +4075,9 @@ class AppLocalizationsUk extends AppLocalizations {
   String get audioDescriptionSonarpadBalanceUnavailable => 'Кредит недоступний.';
 
   @override
+  String get audioDescriptionSonarpadInsufficientCredit => "Недостатньо кредиту. Поповніть свій API-ключ, щоб продовжити створювати аудіоописи для свого контенту.";
+
+  @override
   String get audioDescriptionEdgeVoiceReady => 'Вибраний голос Edge доступний.';
 
   @override
@@ -4329,4 +4332,110 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get homeDirectory => 'Білі та жовті сторінки';
+
+  @override
+  String get joinMediaTitle => "Об’єднати медіафайли";
+
+  @override
+  String get joinMediaDescription => "Додайте два або більше аудіо- чи відеофайлів, виберіть порядок і формат виводу та об’єднайте їх в один файл.";
+
+  @override
+  String get joinMediaAddFiles => "Додати медіафайли";
+
+  @override
+  String get joinMediaLoadingFiles => "Перевірка вибраних файлів…";
+
+  @override
+  String get joinMediaFilesTitle => "Файли для об’єднання";
+
+  @override
+  String get joinMediaNoFiles => "Файли ще не додано.";
+
+  @override
+  String get joinMediaVideoLabel => "Відео";
+
+  @override
+  String get joinMediaAudioLabel => "Аудіо";
+
+  @override
+  String get joinMediaActionsHint => "Доступні дії: Перемістити вгору, Перемістити вниз, Видалити.";
+
+  @override
+  String get joinMediaRemove => "Видалити";
+
+  @override
+  String get joinMediaOutputMp4 => "Формат виходу: MP4. Для аудіофайлів буде використано чорний екран; до відео без звуку буде додано тишу.";
+
+  @override
+  String get joinMediaOutputMp3 => "Формат виходу: MP3.";
+
+  @override
+  String get joinMediaJoin => "Об’єднати";
+
+  @override
+  String get joinMediaFileSkipped => "Файл пропущено, бо він недоступний або не містить придатного аудіо чи відео.";
+
+  @override
+  String get joinMediaFilesAdded => "Медіафайли додано.";
+
+  @override
+  String get joinMediaRemoved => "Елемент видалено.";
+
+  @override
+  String get joinMediaNeedTwoFiles => "Додайте щонайменше два файли для об’єднання.";
+
+  @override
+  String get joinMediaProcessing => "Об’єднання медіафайлів";
+
+  @override
+  String get joinMediaCancelled => "Об’єднання скасовано.";
+
+  @override
+  String get joinMediaFailed => "Не вдалося об’єднати медіафайли.";
+
+  @override
+  String get joinMediaPreparing => "Підготовка";
+
+  @override
+  String get joinMediaNormalizing => "Підготовка файлу";
+
+  @override
+  String get joinMediaMerging => "Об’єднання файлів";
+
+  @override
+  String get joinMediaVerifying => "Фінальна перевірка";
+
+  @override
+  String get joinMediaCompleting => "Завершення";
+
+  @override
+  String get joinMediaCompleted => "Об’єднання завершено. Виберіть, де зберегти файл.";
+
+  @override
+  String get joinMediaFormat => "Формат об’єднання";
+
+  @override
+  String get joinMediaChooseFormat => "Вибрати формат об’єднання";
+
+  @override
+  String get joinMediaAudioFormatHint => "Для лише аудіофайлів можна вибрати MP3, M4A, WAV, FLAC, OGG, OPUS, AAC, WMA або AIFF. Типово: MP3.";
+
+  @override
+  String get joinMediaVideoFormatHint => "Для відео або змішаних файлів можна вибрати MP4, MKV, MOV, AVI, WMV, MPEG/MPG, FLV, 3GP або TS. Типово: MP4.";
+
+  @override
+  String get joinMediaCancelConfirmTitle => "Скасувати об’єднання?";
+
+  @override
+  String get joinMediaCancelConfirmMessage => "Справді скасувати? Поточний процес FFmpeg буде зупинено.";
+
+  @override
+  String get joinMediaKeepWorking => "Продовжити";
+
+  @override
+  String get joinMediaConfirmCancel => "Скасувати об’єднання";
+
+  @override
+  String get joinMediaCancelling => "Скасування…";
+
 }

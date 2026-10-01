@@ -7364,6 +7364,9 @@ abstract class AppLocalizations {
   /// Shown when the Sonarpad AI credit cannot be read.
   String get audioDescriptionSonarpadBalanceUnavailable;
 
+  /// Shown when Sonarpad AI cannot continue because the account credit is insufficient.
+  String get audioDescriptionSonarpadInsufficientCredit;
+
   /// Localized text for audioDescriptionEdgeVoiceReady.
   ///
   /// In it, this message translates to:
@@ -7670,6 +7673,110 @@ abstract class AppLocalizations {
 
   /// SonarTube save-media format choice for MP3 audio.
   String get sonarTubeSaveAsMp3;
+  /// Media join: joinMediaTitle
+  String get joinMediaTitle;
+
+  /// Media join: joinMediaDescription
+  String get joinMediaDescription;
+
+  /// Media join: joinMediaAddFiles
+  String get joinMediaAddFiles;
+
+  /// Media join: joinMediaLoadingFiles
+  String get joinMediaLoadingFiles;
+
+  /// Media join: joinMediaFilesTitle
+  String get joinMediaFilesTitle;
+
+  /// Media join: joinMediaNoFiles
+  String get joinMediaNoFiles;
+
+  /// Media join: joinMediaVideoLabel
+  String get joinMediaVideoLabel;
+
+  /// Media join: joinMediaAudioLabel
+  String get joinMediaAudioLabel;
+
+  /// Media join: joinMediaActionsHint
+  String get joinMediaActionsHint;
+
+  /// Media join: joinMediaRemove
+  String get joinMediaRemove;
+
+  /// Media join: joinMediaOutputMp4
+  String get joinMediaOutputMp4;
+
+  /// Media join: joinMediaOutputMp3
+  String get joinMediaOutputMp3;
+
+  /// Media join: joinMediaJoin
+  String get joinMediaJoin;
+
+  /// Media join: joinMediaFileSkipped
+  String get joinMediaFileSkipped;
+
+  /// Media join: joinMediaFilesAdded
+  String get joinMediaFilesAdded;
+
+  /// Media join: joinMediaRemoved
+  String get joinMediaRemoved;
+
+  /// Media join: joinMediaNeedTwoFiles
+  String get joinMediaNeedTwoFiles;
+
+  /// Media join: joinMediaProcessing
+  String get joinMediaProcessing;
+
+  /// Media join: joinMediaCancelled
+  String get joinMediaCancelled;
+
+  /// Media join: joinMediaFailed
+  String get joinMediaFailed;
+
+  /// Media join: joinMediaPreparing
+  String get joinMediaPreparing;
+
+  /// Media join: joinMediaNormalizing
+  String get joinMediaNormalizing;
+
+  /// Media join: joinMediaMerging
+  String get joinMediaMerging;
+
+  /// Media join: joinMediaVerifying
+  String get joinMediaVerifying;
+
+  /// Media join: joinMediaCompleting
+  String get joinMediaCompleting;
+
+  /// Media join: joinMediaCompleted
+  String get joinMediaCompleted;
+
+  /// Media join: joinMediaFormat
+  String get joinMediaFormat;
+
+  /// Media join: joinMediaChooseFormat
+  String get joinMediaChooseFormat;
+
+  /// Media join: joinMediaAudioFormatHint
+  String get joinMediaAudioFormatHint;
+
+  /// Media join: joinMediaVideoFormatHint
+  String get joinMediaVideoFormatHint;
+
+  /// Media join: joinMediaCancelConfirmTitle
+  String get joinMediaCancelConfirmTitle;
+
+  /// Media join: joinMediaCancelConfirmMessage
+  String get joinMediaCancelConfirmMessage;
+
+  /// Media join: joinMediaKeepWorking
+  String get joinMediaKeepWorking;
+
+  /// Media join: joinMediaConfirmCancel
+  String get joinMediaConfirmCancel;
+
+  /// Media join: joinMediaCancelling
+  String get joinMediaCancelling;
 }
 
 class _AppLocalizationsDelegate

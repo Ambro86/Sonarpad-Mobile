@@ -3242,6 +3242,10 @@
   "@audioDescriptionSonarpadBalanceUnavailable": {
     "description": "Shown when the Sonarpad AI credit cannot be read."
   },
+  "audioDescriptionSonarpadInsufficientCredit": "Creditul este insuficient. Reîncarcă cheia API pentru a continua să creezi audiodescrieri pentru conținutul tău.",
+  "@audioDescriptionSonarpadInsufficientCredit": {
+    "description": "Shown when Sonarpad AI cannot continue because the account credit is insufficient."
+  },
   "audioDescriptionEdgeVoiceReady": "Vocea Edge selectată este disponibilă.",
   "@audioDescriptionEdgeVoiceReady": {
     "description": "Localized text for audioDescriptionEdgeVoiceReady."
@@ -3525,5 +3529,67 @@
   "treccaniWholeEntry": "Articol complet",
   "@treccaniWholeEntry": {
     "description": "Localized text for treccaniWholeEntry."
+  },
+  "joinMediaTitle": "Unește fișiere media",
+  "joinMediaDescription": "Adaugă două sau mai multe fișiere audio ori video, alege ordinea și formatul de ieșire, apoi unește-le într-un singur fișier.",
+  "joinMediaAddFiles": "Adaugă fișiere media",
+  "joinMediaLoadingFiles": "Se verifică fișierele selectate…",
+  "joinMediaFilesTitle": "Fișiere de unit",
+  "joinMediaNoFiles": "Nu a fost adăugat niciun fișier.",
+  "joinMediaVideoLabel": "Video",
+  "joinMediaAudioLabel": "Audio",
+  "joinMediaActionsHint": "Acțiuni disponibile: Mută în sus, Mută în jos, Elimină.",
+  "joinMediaRemove": "Elimină",
+  "joinMediaOutputMp4": "Format de ieșire: MP4. Fișierele doar audio folosesc ecran negru; videoclipurile fără sunet primesc o pistă de tăcere.",
+  "joinMediaOutputMp3": "Format de ieșire: MP3.",
+  "joinMediaJoin": "Unește",
+  "joinMediaFileSkipped": "Un fișier a fost omis deoarece nu este accesibil sau nu conține audio ori video utilizabil.",
+  "joinMediaFilesAdded": "Fișiere media adăugate.",
+  "joinMediaRemoved": "Element eliminat.",
+  "joinMediaNeedTwoFiles": "Adaugă cel puțin două fișiere pentru unire.",
+  "joinMediaProcessing": "Se unesc fișierele media",
+  "joinMediaCancelled": "Unire anulată.",
+  "joinMediaFailed": "Fișierele media nu au putut fi unite.",
+  "joinMediaPreparing": "Pregătire",
+  "joinMediaNormalizing": "Pregătire fișier",
+  "joinMediaMerging": "Unire fișiere",
+  "joinMediaVerifying": "Verificare finală",
+  "joinMediaCompleting": "Finalizare",
+  "joinMediaCompleted": "Unirea s-a încheiat. Alege unde să salvezi fișierul.",
+  "joinMediaFormat": "Format de unire",
+  "@joinMediaFormat": {
+    "description": "Media join: joinMediaFormat"
+  },
+  "joinMediaChooseFormat": "Alege formatul de unire",
+  "@joinMediaChooseFormat": {
+    "description": "Media join: joinMediaChooseFormat"
+  },
+  "joinMediaAudioFormatHint": "Pentru fișiere doar audio poți alege MP3, M4A, WAV, FLAC, OGG, OPUS, AAC, WMA sau AIFF. Implicit: MP3.",
+  "@joinMediaAudioFormatHint": {
+    "description": "Media join: joinMediaAudioFormatHint"
+  },
+  "joinMediaVideoFormatHint": "Pentru fișiere video sau mixte poți alege MP4, MKV, MOV, AVI, WMV, MPEG/MPG, FLV, 3GP sau TS. Implicit: MP4.",
+  "@joinMediaVideoFormatHint": {
+    "description": "Media join: joinMediaVideoFormatHint"
+  },
+  "joinMediaCancelConfirmTitle": "Anulezi unirea?",
+  "@joinMediaCancelConfirmTitle": {
+    "description": "Media join: joinMediaCancelConfirmTitle"
+  },
+  "joinMediaCancelConfirmMessage": "Sigur vrei să anulezi? Procesul FFmpeg în curs va fi oprit.",
+  "@joinMediaCancelConfirmMessage": {
+    "description": "Media join: joinMediaCancelConfirmMessage"
+  },
+  "joinMediaKeepWorking": "Continuă",
+  "@joinMediaKeepWorking": {
+    "description": "Media join: joinMediaKeepWorking"
+  },
+  "joinMediaConfirmCancel": "Anulează unirea",
+  "@joinMediaConfirmCancel": {
+    "description": "Media join: joinMediaConfirmCancel"
+  },
+  "joinMediaCancelling": "Se anulează…",
+  "@joinMediaCancelling": {
+    "description": "Media join: joinMediaCancelling"
   }
 }

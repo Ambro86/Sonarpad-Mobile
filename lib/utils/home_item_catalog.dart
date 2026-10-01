@@ -17,6 +17,7 @@ Set<String> availableHomeItemIds({
     HomeItemIds.createAiAudioDescription,
     HomeItemIds.convertMedia,
     HomeItemIds.mediaCutter,
+    HomeItemIds.mediaJoin,
     HomeItemIds.cinema,
     HomeItemIds.radio,
     HomeItemIds.wikipedia,
@@ -71,6 +72,8 @@ String homeItemLabel(AppLocalizations l10n, String id) {
       return l10n.convertMediaTitle;
     case HomeItemIds.mediaCutter:
       return l10n.mediaCutterTitle;
+    case HomeItemIds.mediaJoin:
+      return l10n.joinMediaTitle;
     case HomeItemIds.cinema:
       return l10n.cinemaTitle;
     case HomeItemIds.radio:

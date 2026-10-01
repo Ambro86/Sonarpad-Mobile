@@ -10,6 +10,7 @@ class HomeItemIds {
   static const createAiAudioDescription = 'create_ai_audiodescription';
   static const convertMedia = 'convert_media';
   static const mediaCutter = 'media_cutter';
+  static const mediaJoin = 'media_join';
   static const cinema = 'cinema';
   static const radio = 'radio';
   static const tv = 'tv';
@@ -39,6 +40,7 @@ class HomeItemIds {
     createAiAudioDescription,
     convertMedia,
     mediaCutter,
+    mediaJoin,
     cinema,
     radio,
     tv,
@@ -76,6 +78,7 @@ class HomeItemIds {
     createAiAudioDescription,
     convertMedia,
     mediaCutter,
+    mediaJoin,
     cinema,
     tv,
     raiPlay,

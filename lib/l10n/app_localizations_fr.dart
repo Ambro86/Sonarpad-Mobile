@@ -4116,6 +4116,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get audioDescriptionSonarpadBalanceUnavailable => 'Crédit indisponible.';
 
   @override
+  String get audioDescriptionSonarpadInsufficientCredit => "Le crédit est insuffisant. Rechargez votre clé API pour continuer à audiodescrire vos contenus.";
+
+  @override
   String get audioDescriptionEdgeVoiceReady =>
       'La voix Edge sélectionnée est disponible.';
 
@@ -4377,4 +4380,110 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get homeDirectory => 'Pages blanches et jaunes';
+
+  @override
+  String get joinMediaTitle => "Fusionner des fichiers multimédias";
+
+  @override
+  String get joinMediaDescription => "Ajoutez au moins deux fichiers audio ou vidéo, choisissez leur ordre et le format de sortie, puis réunissez-les en un seul fichier.";
+
+  @override
+  String get joinMediaAddFiles => "Ajouter des fichiers multimédias";
+
+  @override
+  String get joinMediaLoadingFiles => "Vérification des fichiers sélectionnés…";
+
+  @override
+  String get joinMediaFilesTitle => "Fichiers à fusionner";
+
+  @override
+  String get joinMediaNoFiles => "Aucun fichier ajouté.";
+
+  @override
+  String get joinMediaVideoLabel => "Vidéo";
+
+  @override
+  String get joinMediaAudioLabel => "Audio";
+
+  @override
+  String get joinMediaActionsHint => "Actions disponibles : Monter, Descendre, Supprimer.";
+
+  @override
+  String get joinMediaRemove => "Supprimer";
+
+  @override
+  String get joinMediaOutputMp4 => "Format de sortie : MP4. Les éléments uniquement audio utilisent un écran noir ; un silence est ajouté aux vidéos sans audio.";
+
+  @override
+  String get joinMediaOutputMp3 => "Format de sortie : MP3.";
+
+  @override
+  String get joinMediaJoin => "Fusionner";
+
+  @override
+  String get joinMediaFileSkipped => "Un fichier a été ignoré car il est inaccessible ou ne contient aucun audio ou vidéo utilisable.";
+
+  @override
+  String get joinMediaFilesAdded => "Fichiers multimédias ajoutés.";
+
+  @override
+  String get joinMediaRemoved => "Élément supprimé.";
+
+  @override
+  String get joinMediaNeedTwoFiles => "Ajoutez au moins deux fichiers à fusionner.";
+
+  @override
+  String get joinMediaProcessing => "Fusion des fichiers multimédias";
+
+  @override
+  String get joinMediaCancelled => "Fusion annulée.";
+
+  @override
+  String get joinMediaFailed => "Impossible de fusionner les fichiers multimédias.";
+
+  @override
+  String get joinMediaPreparing => "Préparation";
+
+  @override
+  String get joinMediaNormalizing => "Préparation du fichier";
+
+  @override
+  String get joinMediaMerging => "Fusion des fichiers";
+
+  @override
+  String get joinMediaVerifying => "Vérification finale";
+
+  @override
+  String get joinMediaCompleting => "Finalisation";
+
+  @override
+  String get joinMediaCompleted => "Fusion terminée. Choisissez où enregistrer le fichier.";
+
+  @override
+  String get joinMediaFormat => "Format de fusion";
+
+  @override
+  String get joinMediaChooseFormat => "Choisir le format de fusion";
+
+  @override
+  String get joinMediaAudioFormatHint => "Avec uniquement des fichiers audio, vous pouvez choisir MP3, M4A, WAV, FLAC, OGG, OPUS, AAC, WMA ou AIFF. Par défaut : MP3.";
+
+  @override
+  String get joinMediaVideoFormatHint => "Avec des fichiers vidéo ou mixtes, vous pouvez choisir MP4, MKV, MOV, AVI, WMV, MPEG/MPG, FLV, 3GP ou TS. Par défaut : MP4.";
+
+  @override
+  String get joinMediaCancelConfirmTitle => "Annuler la fusion ?";
+
+  @override
+  String get joinMediaCancelConfirmMessage => "Voulez-vous vraiment annuler ? Le processus FFmpeg en cours sera arrêté.";
+
+  @override
+  String get joinMediaKeepWorking => "Continuer";
+
+  @override
+  String get joinMediaConfirmCancel => "Annuler la fusion";
+
+  @override
+  String get joinMediaCancelling => "Annulation…";
+
 }

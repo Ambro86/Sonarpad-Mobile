@@ -745,15 +745,20 @@ class _CreateAiAudiodescriptionScreenState
       final cancelled = error.toString().contains('AUDIO_DESCRIPTION_CANCELLED');
       final noCheckpoint = error is AudioDescriptionResumeUnavailableException;
       final deviceLimit = error is SonarpadAiDeviceLimitReachedException;
+      final insufficientCredit = error is SonarpadAiInsufficientCreditException;
       setState(() {
-        _technicalError = cancelled || noCheckpoint || deviceLimit ? null : error.toString();
+        _technicalError = cancelled || noCheckpoint || deviceLimit || insufficientCredit
+            ? null
+            : error.toString();
         _stage = cancelled
             ? l10n.audioDescriptionCancelled
             : noCheckpoint
                 ? l10n.audioDescriptionNoCheckpoint
                 : deviceLimit
                     ? l10n.audioDescriptionSonarpadDeviceLimitReached
-                    : l10n.audioDescriptionGenerationFailed;
+                    : insufficientCredit
+                        ? l10n.audioDescriptionSonarpadInsufficientCredit
+                        : l10n.audioDescriptionGenerationFailed;
       });
       showStatusMessage(
         context,
@@ -763,7 +768,9 @@ class _CreateAiAudiodescriptionScreenState
                 ? l10n.audioDescriptionNoCheckpoint
                 : deviceLimit
                     ? l10n.audioDescriptionSonarpadDeviceLimitReached
-                    : l10n.audioDescriptionGenerationFailed,
+                    : insufficientCredit
+                        ? l10n.audioDescriptionSonarpadInsufficientCredit
+                        : l10n.audioDescriptionGenerationFailed,
       );
     } finally {
       _generationActive = false;

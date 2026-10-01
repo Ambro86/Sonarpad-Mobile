@@ -4094,6 +4094,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get audioDescriptionSonarpadBalanceUnavailable => 'Credito non disponibile.';
 
   @override
+  String get audioDescriptionSonarpadInsufficientCredit => "Il credito è insufficiente. Ricarica la tua chiave API per continuare ad audiodescrivere i tuoi contenuti.";
+
+  @override
   String get audioDescriptionEdgeVoiceReady =>
       'La voce Edge selezionata è disponibile.';
 
@@ -4352,4 +4355,110 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get homeDirectory => 'Pagine Bianche e Gialle';
+
+  @override
+  String get joinMediaTitle => "Unisci file media";
+
+  @override
+  String get joinMediaDescription => "Aggiungi due o più file audio o video, scegli l’ordine, il formato di uscita e uniscili in un unico file.";
+
+  @override
+  String get joinMediaAddFiles => "Aggiungi file media";
+
+  @override
+  String get joinMediaLoadingFiles => "Controllo dei file selezionati…";
+
+  @override
+  String get joinMediaFilesTitle => "File da unire";
+
+  @override
+  String get joinMediaNoFiles => "Nessun file aggiunto.";
+
+  @override
+  String get joinMediaVideoLabel => "Video";
+
+  @override
+  String get joinMediaAudioLabel => "Audio";
+
+  @override
+  String get joinMediaActionsHint => "Azioni disponibili: Sposta su, Sposta giù, Rimuovi.";
+
+  @override
+  String get joinMediaRemove => "Rimuovi";
+
+  @override
+  String get joinMediaOutputMp4 => "Formato di uscita: MP4. I file solo audio useranno uno schermo nero; ai video senza audio verrà aggiunto silenzio.";
+
+  @override
+  String get joinMediaOutputMp3 => "Formato di uscita: MP3.";
+
+  @override
+  String get joinMediaJoin => "Unisci";
+
+  @override
+  String get joinMediaFileSkipped => "Un file è stato ignorato perché non è accessibile o non contiene audio o video utilizzabile.";
+
+  @override
+  String get joinMediaFilesAdded => "File media aggiunti.";
+
+  @override
+  String get joinMediaRemoved => "Elemento rimosso.";
+
+  @override
+  String get joinMediaNeedTwoFiles => "Aggiungi almeno due file da unire.";
+
+  @override
+  String get joinMediaProcessing => "Unione file media";
+
+  @override
+  String get joinMediaCancelled => "Unione annullata.";
+
+  @override
+  String get joinMediaFailed => "Impossibile unire i file media.";
+
+  @override
+  String get joinMediaPreparing => "Preparazione";
+
+  @override
+  String get joinMediaNormalizing => "Preparazione file";
+
+  @override
+  String get joinMediaMerging => "Unione file";
+
+  @override
+  String get joinMediaVerifying => "Verifica finale";
+
+  @override
+  String get joinMediaCompleting => "Completamento";
+
+  @override
+  String get joinMediaCompleted => "Unione completata. Scegli dove salvare il file.";
+
+  @override
+  String get joinMediaFormat => "Formato di unione";
+
+  @override
+  String get joinMediaChooseFormat => "Scegli formato di unione";
+
+  @override
+  String get joinMediaAudioFormatHint => "Con soli file audio puoi scegliere MP3, M4A, WAV, FLAC, OGG, OPUS, AAC, WMA o AIFF. Predefinito: MP3.";
+
+  @override
+  String get joinMediaVideoFormatHint => "Con file video o misti puoi scegliere MP4, MKV, MOV, AVI, WMV, MPEG/MPG, FLV, 3GP o TS. Predefinito: MP4.";
+
+  @override
+  String get joinMediaCancelConfirmTitle => "Annullare l’unione?";
+
+  @override
+  String get joinMediaCancelConfirmMessage => "Sei sicuro di voler annullare? Il processo FFmpeg in corso verrà interrotto.";
+
+  @override
+  String get joinMediaKeepWorking => "Continua";
+
+  @override
+  String get joinMediaConfirmCancel => "Annulla unione";
+
+  @override
+  String get joinMediaCancelling => "Annullamento…";
+
 }

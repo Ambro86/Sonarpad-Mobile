@@ -21,6 +21,7 @@ import 'screens/convert_media_screen.dart';
 import 'screens/create_ai_audiodescription_screen.dart';
 import 'screens/audio_description_project_editor_screen.dart';
 import 'screens/media_cutter_screen.dart';
+import 'screens/media_join_screen.dart';
 import 'screens/documents_screen.dart';
 import 'screens/document_reader_screen.dart';
 import 'screens/gutenberg_screen.dart';
@@ -433,6 +434,7 @@ class _SonarpadAppState extends State<SonarpadApp> {
         '/create_ai_audiodescription': (_) => const CreateAiAudiodescriptionScreen(),
         '/edit_audio_description_project': (_) => const AudioDescriptionProjectEditorScreen(),
         '/media_cutter': (_) => const MediaCutterScreen(),
+        '/media_join': (_) => const MediaJoinScreen(),
         '/radio': (_) => const RadioScreen(),
         '/radio/recordings': (_) => const RadioRecordingsScreen(),
         '/tv': (context) => italianOnlyRoute(context, const TvScreen()),

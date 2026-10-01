@@ -148,6 +148,7 @@ class _HomeScreenState extends State<HomeScreen> {
       HomeItemIds.createAiAudioDescription => '/create_ai_audiodescription',
       HomeItemIds.convertMedia => '/convert_media',
       HomeItemIds.mediaCutter => '/media_cutter',
+      HomeItemIds.mediaJoin => '/media_join',
       HomeItemIds.cinema => '/cinema',
       HomeItemIds.radio => '/radio',
       HomeItemIds.tv => '/tv',

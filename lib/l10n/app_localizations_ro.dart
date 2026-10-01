@@ -3958,6 +3958,9 @@ class AppLocalizationsRo extends AppLocalizations {
   String get audioDescriptionSonarpadBalanceUnavailable => 'Credit indisponibil.';
 
   @override
+  String get audioDescriptionSonarpadInsufficientCredit => "Creditul este insuficient. Reîncarcă cheia API pentru a continua să creezi audiodescrieri pentru conținutul tău.";
+
+  @override
   String get audioDescriptionEdgeVoiceReady => 'Vocea Edge selectată este disponibilă.';
 
   @override
@@ -4192,4 +4195,110 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String get homeDirectory => 'Pagini Albe și Pagini Aurii';
+
+  @override
+  String get joinMediaTitle => "Unește fișiere media";
+
+  @override
+  String get joinMediaDescription => "Adaugă două sau mai multe fișiere audio ori video, alege ordinea și formatul de ieșire, apoi unește-le într-un singur fișier.";
+
+  @override
+  String get joinMediaAddFiles => "Adaugă fișiere media";
+
+  @override
+  String get joinMediaLoadingFiles => "Se verifică fișierele selectate…";
+
+  @override
+  String get joinMediaFilesTitle => "Fișiere de unit";
+
+  @override
+  String get joinMediaNoFiles => "Nu a fost adăugat niciun fișier.";
+
+  @override
+  String get joinMediaVideoLabel => "Video";
+
+  @override
+  String get joinMediaAudioLabel => "Audio";
+
+  @override
+  String get joinMediaActionsHint => "Acțiuni disponibile: Mută în sus, Mută în jos, Elimină.";
+
+  @override
+  String get joinMediaRemove => "Elimină";
+
+  @override
+  String get joinMediaOutputMp4 => "Format de ieșire: MP4. Fișierele doar audio folosesc ecran negru; videoclipurile fără sunet primesc o pistă de tăcere.";
+
+  @override
+  String get joinMediaOutputMp3 => "Format de ieșire: MP3.";
+
+  @override
+  String get joinMediaJoin => "Unește";
+
+  @override
+  String get joinMediaFileSkipped => "Un fișier a fost omis deoarece nu este accesibil sau nu conține audio ori video utilizabil.";
+
+  @override
+  String get joinMediaFilesAdded => "Fișiere media adăugate.";
+
+  @override
+  String get joinMediaRemoved => "Element eliminat.";
+
+  @override
+  String get joinMediaNeedTwoFiles => "Adaugă cel puțin două fișiere pentru unire.";
+
+  @override
+  String get joinMediaProcessing => "Se unesc fișierele media";
+
+  @override
+  String get joinMediaCancelled => "Unire anulată.";
+
+  @override
+  String get joinMediaFailed => "Fișierele media nu au putut fi unite.";
+
+  @override
+  String get joinMediaPreparing => "Pregătire";
+
+  @override
+  String get joinMediaNormalizing => "Pregătire fișier";
+
+  @override
+  String get joinMediaMerging => "Unire fișiere";
+
+  @override
+  String get joinMediaVerifying => "Verificare finală";
+
+  @override
+  String get joinMediaCompleting => "Finalizare";
+
+  @override
+  String get joinMediaCompleted => "Unirea s-a încheiat. Alege unde să salvezi fișierul.";
+
+  @override
+  String get joinMediaFormat => "Format de unire";
+
+  @override
+  String get joinMediaChooseFormat => "Alege formatul de unire";
+
+  @override
+  String get joinMediaAudioFormatHint => "Pentru fișiere doar audio poți alege MP3, M4A, WAV, FLAC, OGG, OPUS, AAC, WMA sau AIFF. Implicit: MP3.";
+
+  @override
+  String get joinMediaVideoFormatHint => "Pentru fișiere video sau mixte poți alege MP4, MKV, MOV, AVI, WMV, MPEG/MPG, FLV, 3GP sau TS. Implicit: MP4.";
+
+  @override
+  String get joinMediaCancelConfirmTitle => "Anulezi unirea?";
+
+  @override
+  String get joinMediaCancelConfirmMessage => "Sigur vrei să anulezi? Procesul FFmpeg în curs va fi oprit.";
+
+  @override
+  String get joinMediaKeepWorking => "Continuă";
+
+  @override
+  String get joinMediaConfirmCancel => "Anulează unirea";
+
+  @override
+  String get joinMediaCancelling => "Se anulează…";
+
 }

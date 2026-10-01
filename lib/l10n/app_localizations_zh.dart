@@ -3925,6 +3925,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get audioDescriptionSonarpadBalanceUnavailable => '余额不可用。';
 
   @override
+  String get audioDescriptionSonarpadInsufficientCredit => "余额不足。请为你的 API 密钥充值，以继续为内容生成音频描述。";
+
+  @override
   String get audioDescriptionEdgeVoiceReady => '所选 Edge 语音可用。';
 
   @override
@@ -4164,6 +4167,112 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get homeDirectory => '白页和黄页';
+
+  @override
+  String get joinMediaTitle => "合并媒体文件";
+
+  @override
+  String get joinMediaDescription => "添加两个或更多音频或视频文件，选择顺序和输出格式，然后合并为一个文件。";
+
+  @override
+  String get joinMediaAddFiles => "添加媒体文件";
+
+  @override
+  String get joinMediaLoadingFiles => "正在检查所选文件…";
+
+  @override
+  String get joinMediaFilesTitle => "要合并的文件";
+
+  @override
+  String get joinMediaNoFiles => "尚未添加文件。";
+
+  @override
+  String get joinMediaVideoLabel => "视频";
+
+  @override
+  String get joinMediaAudioLabel => "音频";
+
+  @override
+  String get joinMediaActionsHint => "可用操作：上移、下移、移除。";
+
+  @override
+  String get joinMediaRemove => "移除";
+
+  @override
+  String get joinMediaOutputMp4 => "输出格式：MP4。纯音频项目使用黑色视频画面；无音频的视频会加入静音轨道。";
+
+  @override
+  String get joinMediaOutputMp3 => "输出格式：MP3。";
+
+  @override
+  String get joinMediaJoin => "合并";
+
+  @override
+  String get joinMediaFileSkipped => "某个文件因无法访问或不含可用音频/视频而被跳过。";
+
+  @override
+  String get joinMediaFilesAdded => "已添加媒体文件。";
+
+  @override
+  String get joinMediaRemoved => "已移除项目。";
+
+  @override
+  String get joinMediaNeedTwoFiles => "至少添加两个文件才能合并。";
+
+  @override
+  String get joinMediaProcessing => "正在合并媒体";
+
+  @override
+  String get joinMediaCancelled => "已取消合并。";
+
+  @override
+  String get joinMediaFailed => "无法合并媒体文件。";
+
+  @override
+  String get joinMediaPreparing => "准备中";
+
+  @override
+  String get joinMediaNormalizing => "正在准备文件";
+
+  @override
+  String get joinMediaMerging => "正在合并文件";
+
+  @override
+  String get joinMediaVerifying => "最终验证";
+
+  @override
+  String get joinMediaCompleting => "正在完成";
+
+  @override
+  String get joinMediaCompleted => "合并完成。请选择文件保存位置。";
+
+  @override
+  String get joinMediaFormat => "合并格式";
+
+  @override
+  String get joinMediaChooseFormat => "选择合并格式";
+
+  @override
+  String get joinMediaAudioFormatHint => "仅包含音频文件时可选择 MP3、M4A、WAV、FLAC、OGG、OPUS、AAC、WMA 或 AIFF。默认：MP3。";
+
+  @override
+  String get joinMediaVideoFormatHint => "包含视频或音视频混合文件时可选择 MP4、MKV、MOV、AVI、WMV、MPEG/MPG、FLV、3GP 或 TS。默认：MP4。";
+
+  @override
+  String get joinMediaCancelConfirmTitle => "取消合并？";
+
+  @override
+  String get joinMediaCancelConfirmMessage => "确定要取消吗？正在运行的 FFmpeg 进程将被停止。";
+
+  @override
+  String get joinMediaKeepWorking => "继续";
+
+  @override
+  String get joinMediaConfirmCancel => "取消合并";
+
+  @override
+  String get joinMediaCancelling => "正在取消…";
+
 }
 
 /// The translations for Chinese, as used in China (`zh_CN`).
@@ -8087,6 +8196,9 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
   String get audioDescriptionSonarpadBalanceUnavailable => '余额不可用。';
 
   @override
+  String get audioDescriptionSonarpadInsufficientCredit => "余额不足。请为你的 API 密钥充值，以继续为内容生成音频描述。";
+
+  @override
   String get audioDescriptionEdgeVoiceReady => '所选 Edge 语音可用。';
 
   @override
@@ -8326,4 +8438,110 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get homeDirectory => '白页和黄页';
+
+  @override
+  String get joinMediaTitle => "合并媒体文件";
+
+  @override
+  String get joinMediaDescription => "添加两个或更多音频或视频文件，选择顺序和输出格式，然后合并为一个文件。";
+
+  @override
+  String get joinMediaAddFiles => "添加媒体文件";
+
+  @override
+  String get joinMediaLoadingFiles => "正在检查所选文件…";
+
+  @override
+  String get joinMediaFilesTitle => "要合并的文件";
+
+  @override
+  String get joinMediaNoFiles => "尚未添加文件。";
+
+  @override
+  String get joinMediaVideoLabel => "视频";
+
+  @override
+  String get joinMediaAudioLabel => "音频";
+
+  @override
+  String get joinMediaActionsHint => "可用操作：上移、下移、移除。";
+
+  @override
+  String get joinMediaRemove => "移除";
+
+  @override
+  String get joinMediaOutputMp4 => "输出格式：MP4。纯音频项目使用黑色视频画面；无音频的视频会加入静音轨道。";
+
+  @override
+  String get joinMediaOutputMp3 => "输出格式：MP3。";
+
+  @override
+  String get joinMediaJoin => "合并";
+
+  @override
+  String get joinMediaFileSkipped => "某个文件因无法访问或不含可用音频/视频而被跳过。";
+
+  @override
+  String get joinMediaFilesAdded => "已添加媒体文件。";
+
+  @override
+  String get joinMediaRemoved => "已移除项目。";
+
+  @override
+  String get joinMediaNeedTwoFiles => "至少添加两个文件才能合并。";
+
+  @override
+  String get joinMediaProcessing => "正在合并媒体";
+
+  @override
+  String get joinMediaCancelled => "已取消合并。";
+
+  @override
+  String get joinMediaFailed => "无法合并媒体文件。";
+
+  @override
+  String get joinMediaPreparing => "准备中";
+
+  @override
+  String get joinMediaNormalizing => "正在准备文件";
+
+  @override
+  String get joinMediaMerging => "正在合并文件";
+
+  @override
+  String get joinMediaVerifying => "最终验证";
+
+  @override
+  String get joinMediaCompleting => "正在完成";
+
+  @override
+  String get joinMediaCompleted => "合并完成。请选择文件保存位置。";
+
+  @override
+  String get joinMediaFormat => "合并格式";
+
+  @override
+  String get joinMediaChooseFormat => "选择合并格式";
+
+  @override
+  String get joinMediaAudioFormatHint => "仅包含音频文件时可选择 MP3、M4A、WAV、FLAC、OGG、OPUS、AAC、WMA 或 AIFF。默认：MP3。";
+
+  @override
+  String get joinMediaVideoFormatHint => "包含视频或音视频混合文件时可选择 MP4、MKV、MOV、AVI、WMV、MPEG/MPG、FLV、3GP 或 TS。默认：MP4。";
+
+  @override
+  String get joinMediaCancelConfirmTitle => "取消合并？";
+
+  @override
+  String get joinMediaCancelConfirmMessage => "确定要取消吗？正在运行的 FFmpeg 进程将被停止。";
+
+  @override
+  String get joinMediaKeepWorking => "继续";
+
+  @override
+  String get joinMediaConfirmCancel => "取消合并";
+
+  @override
+  String get joinMediaCancelling => "正在取消…";
+
 }

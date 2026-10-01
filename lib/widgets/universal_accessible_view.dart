@@ -1739,6 +1739,8 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
         'home' => Icons.home_outlined,
         'podcast_add' => Icons.podcasts,
         'remove' => Icons.delete_outline,
+        'move_up' => Icons.arrow_upward,
+        'move_down' => Icons.arrow_downward,
         'edit' => Icons.edit_outlined,
         'lock' => Icons.lock_outline,
         'lock_open' => Icons.lock_open_outlined,

@@ -4097,6 +4097,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get audioDescriptionSonarpadBalanceUnavailable => 'Guthaben nicht verfügbar.';
 
   @override
+  String get audioDescriptionSonarpadInsufficientCredit => "Das Guthaben reicht nicht aus. Lade das Guthaben deines API-Schlüssels auf, um deine Inhalte weiter audiobeschreiben zu können.";
+
+  @override
   String get audioDescriptionEdgeVoiceReady =>
       'Die ausgewählte Edge-Stimme ist verfügbar.';
 
@@ -4357,4 +4360,110 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get homeDirectory => 'Weiße und Gelbe Seiten';
+
+  @override
+  String get joinMediaTitle => "Mediendateien zusammenfügen";
+
+  @override
+  String get joinMediaDescription => "Füge zwei oder mehr Audio- oder Videodateien hinzu, wähle Reihenfolge und Ausgabeformat und verbinde sie zu einer Datei.";
+
+  @override
+  String get joinMediaAddFiles => "Mediendateien hinzufügen";
+
+  @override
+  String get joinMediaLoadingFiles => "Ausgewählte Dateien werden geprüft…";
+
+  @override
+  String get joinMediaFilesTitle => "Zusammenzufügende Dateien";
+
+  @override
+  String get joinMediaNoFiles => "Noch keine Dateien hinzugefügt.";
+
+  @override
+  String get joinMediaVideoLabel => "Video";
+
+  @override
+  String get joinMediaAudioLabel => "Audio";
+
+  @override
+  String get joinMediaActionsHint => "Verfügbare Aktionen: Nach oben, Nach unten, Entfernen.";
+
+  @override
+  String get joinMediaRemove => "Entfernen";
+
+  @override
+  String get joinMediaOutputMp4 => "Ausgabeformat: MP4. Reine Audiodateien erhalten ein schwarzes Bild; Videos ohne Ton erhalten eine stumme Audiospur.";
+
+  @override
+  String get joinMediaOutputMp3 => "Ausgabeformat: MP3.";
+
+  @override
+  String get joinMediaJoin => "Zusammenfügen";
+
+  @override
+  String get joinMediaFileSkipped => "Eine Datei wurde übersprungen, weil sie nicht zugänglich ist oder kein nutzbares Audio oder Video enthält.";
+
+  @override
+  String get joinMediaFilesAdded => "Mediendateien hinzugefügt.";
+
+  @override
+  String get joinMediaRemoved => "Element entfernt.";
+
+  @override
+  String get joinMediaNeedTwoFiles => "Füge mindestens zwei Dateien hinzu.";
+
+  @override
+  String get joinMediaProcessing => "Mediendateien werden zusammengefügt";
+
+  @override
+  String get joinMediaCancelled => "Zusammenfügen abgebrochen.";
+
+  @override
+  String get joinMediaFailed => "Die Mediendateien konnten nicht zusammengefügt werden.";
+
+  @override
+  String get joinMediaPreparing => "Vorbereitung";
+
+  @override
+  String get joinMediaNormalizing => "Datei vorbereiten";
+
+  @override
+  String get joinMediaMerging => "Dateien zusammenfügen";
+
+  @override
+  String get joinMediaVerifying => "Abschließende Prüfung";
+
+  @override
+  String get joinMediaCompleting => "Abschluss";
+
+  @override
+  String get joinMediaCompleted => "Zusammenfügen abgeschlossen. Wähle, wo die Datei gespeichert werden soll.";
+
+  @override
+  String get joinMediaFormat => "Zusammenführungsformat";
+
+  @override
+  String get joinMediaChooseFormat => "Zusammenführungsformat wählen";
+
+  @override
+  String get joinMediaAudioFormatHint => "Bei reinen Audiodateien kannst du MP3, M4A, WAV, FLAC, OGG, OPUS, AAC, WMA oder AIFF wählen. Standard: MP3.";
+
+  @override
+  String get joinMediaVideoFormatHint => "Bei Video- oder gemischten Dateien kannst du MP4, MKV, MOV, AVI, WMV, MPEG/MPG, FLV, 3GP oder TS wählen. Standard: MP4.";
+
+  @override
+  String get joinMediaCancelConfirmTitle => "Zusammenführung abbrechen?";
+
+  @override
+  String get joinMediaCancelConfirmMessage => "Möchtest du wirklich abbrechen? Der laufende FFmpeg-Prozess wird beendet.";
+
+  @override
+  String get joinMediaKeepWorking => "Fortfahren";
+
+  @override
+  String get joinMediaConfirmCancel => "Zusammenführung abbrechen";
+
+  @override
+  String get joinMediaCancelling => "Wird abgebrochen…";
+
 }

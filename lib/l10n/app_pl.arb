@@ -4823,6 +4823,10 @@
   "@audioDescriptionSonarpadBalanceUnavailable": {
     "description": "Shown when the Sonarpad AI credit cannot be read."
   },
+  "audioDescriptionSonarpadInsufficientCredit": "Kredyt jest niewystarczający. Doładuj swój klucz API, aby kontynuować audiodeskrypcję swoich treści.",
+  "@audioDescriptionSonarpadInsufficientCredit": {
+    "description": "Shown when Sonarpad AI cannot continue because the account credit is insufficient."
+  },
   "audioDescriptionEdgeVoiceReady": "Wybrany głos Edge jest dostępny.",
   "@audioDescriptionEdgeVoiceReady": {
     "description": "Localized text for audioDescriptionEdgeVoiceReady."
@@ -5106,5 +5110,67 @@
   "treccaniWholeEntry": "Całe hasło",
   "@treccaniWholeEntry": {
     "description": "Localized text for treccaniWholeEntry."
+  },
+  "joinMediaTitle": "Połącz pliki multimedialne",
+  "joinMediaDescription": "Dodaj co najmniej dwa pliki audio lub wideo, wybierz ich kolejność i format wyjściowy, a następnie połącz je w jeden plik.",
+  "joinMediaAddFiles": "Dodaj pliki multimedialne",
+  "joinMediaLoadingFiles": "Sprawdzanie wybranych plików…",
+  "joinMediaFilesTitle": "Pliki do połączenia",
+  "joinMediaNoFiles": "Nie dodano jeszcze żadnych plików.",
+  "joinMediaVideoLabel": "Wideo",
+  "joinMediaAudioLabel": "Audio",
+  "joinMediaActionsHint": "Dostępne działania: Przenieś w górę, Przenieś w dół, Usuń.",
+  "joinMediaRemove": "Usuń",
+  "joinMediaOutputMp4": "Format wyjściowy: MP4. Pliki tylko audio otrzymają czarny obraz; do filmów bez dźwięku zostanie dodana cisza.",
+  "joinMediaOutputMp3": "Format wyjściowy: MP3.",
+  "joinMediaJoin": "Połącz",
+  "joinMediaFileSkipped": "Pominięto plik, ponieważ jest niedostępny albo nie zawiera użytecznego audio lub wideo.",
+  "joinMediaFilesAdded": "Dodano pliki multimedialne.",
+  "joinMediaRemoved": "Element usunięty.",
+  "joinMediaNeedTwoFiles": "Dodaj co najmniej dwa pliki do połączenia.",
+  "joinMediaProcessing": "Łączenie plików multimedialnych",
+  "joinMediaCancelled": "Łączenie anulowane.",
+  "joinMediaFailed": "Nie udało się połączyć plików multimedialnych.",
+  "joinMediaPreparing": "Przygotowanie",
+  "joinMediaNormalizing": "Przygotowanie pliku",
+  "joinMediaMerging": "Łączenie plików",
+  "joinMediaVerifying": "Końcowa weryfikacja",
+  "joinMediaCompleting": "Finalizowanie",
+  "joinMediaCompleted": "Łączenie zakończone. Wybierz miejsce zapisania pliku.",
+  "joinMediaFormat": "Format łączenia",
+  "@joinMediaFormat": {
+    "description": "Media join: joinMediaFormat"
+  },
+  "joinMediaChooseFormat": "Wybierz format łączenia",
+  "@joinMediaChooseFormat": {
+    "description": "Media join: joinMediaChooseFormat"
+  },
+  "joinMediaAudioFormatHint": "Dla samych plików audio możesz wybrać MP3, M4A, WAV, FLAC, OGG, OPUS, AAC, WMA lub AIFF. Domyślnie: MP3.",
+  "@joinMediaAudioFormatHint": {
+    "description": "Media join: joinMediaAudioFormatHint"
+  },
+  "joinMediaVideoFormatHint": "Dla plików wideo lub mieszanych możesz wybrać MP4, MKV, MOV, AVI, WMV, MPEG/MPG, FLV, 3GP lub TS. Domyślnie: MP4.",
+  "@joinMediaVideoFormatHint": {
+    "description": "Media join: joinMediaVideoFormatHint"
+  },
+  "joinMediaCancelConfirmTitle": "Anulować łączenie?",
+  "@joinMediaCancelConfirmTitle": {
+    "description": "Media join: joinMediaCancelConfirmTitle"
+  },
+  "joinMediaCancelConfirmMessage": "Czy na pewno chcesz anulować? Uruchomiony proces FFmpeg zostanie zatrzymany.",
+  "@joinMediaCancelConfirmMessage": {
+    "description": "Media join: joinMediaCancelConfirmMessage"
+  },
+  "joinMediaKeepWorking": "Kontynuuj",
+  "@joinMediaKeepWorking": {
+    "description": "Media join: joinMediaKeepWorking"
+  },
+  "joinMediaConfirmCancel": "Anuluj łączenie",
+  "@joinMediaConfirmCancel": {
+    "description": "Media join: joinMediaConfirmCancel"
+  },
+  "joinMediaCancelling": "Anulowanie…",
+  "@joinMediaCancelling": {
+    "description": "Media join: joinMediaCancelling"
   }
 }

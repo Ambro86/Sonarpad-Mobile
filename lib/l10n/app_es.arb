@@ -3248,6 +3248,10 @@
   "@audioDescriptionSonarpadBalanceUnavailable": {
     "description": "Shown when the Sonarpad AI credit cannot be read."
   },
+  "audioDescriptionSonarpadInsufficientCredit": "El crédito es insuficiente. Recarga tu clave API para seguir audiodescribiendo tus contenidos.",
+  "@audioDescriptionSonarpadInsufficientCredit": {
+    "description": "Shown when Sonarpad AI cannot continue because the account credit is insufficient."
+  },
   "audioDescriptionEdgeVoiceReady": "La voz Edge seleccionada está disponible.",
   "@audioDescriptionEdgeVoiceReady": {
     "description": "Localized text for audioDescriptionEdgeVoiceReady."
@@ -3531,5 +3535,67 @@
   "treccaniWholeEntry": "Entrada completa",
   "@treccaniWholeEntry": {
     "description": "Localized text for treccaniWholeEntry."
+  },
+  "joinMediaTitle": "Unir archivos multimedia",
+  "joinMediaDescription": "Añade dos o más archivos de audio o vídeo, elige el orden y el formato de salida y únelos en un solo archivo.",
+  "joinMediaAddFiles": "Añadir archivos multimedia",
+  "joinMediaLoadingFiles": "Comprobando los archivos seleccionados…",
+  "joinMediaFilesTitle": "Archivos para unir",
+  "joinMediaNoFiles": "Aún no se ha añadido ningún archivo.",
+  "joinMediaVideoLabel": "Vídeo",
+  "joinMediaAudioLabel": "Audio",
+  "joinMediaActionsHint": "Acciones disponibles: Subir, Bajar, Eliminar.",
+  "joinMediaRemove": "Eliminar",
+  "joinMediaOutputMp4": "Formato de salida: MP4. Los archivos solo de audio usarán una pantalla negra; a los vídeos sin audio se les añadirá silencio.",
+  "joinMediaOutputMp3": "Formato de salida: MP3.",
+  "joinMediaJoin": "Unir",
+  "joinMediaFileSkipped": "Se omitió un archivo porque no es accesible o no contiene audio o vídeo utilizable.",
+  "joinMediaFilesAdded": "Archivos multimedia añadidos.",
+  "joinMediaRemoved": "Elemento eliminado.",
+  "joinMediaNeedTwoFiles": "Añade al menos dos archivos para unir.",
+  "joinMediaProcessing": "Uniendo archivos multimedia",
+  "joinMediaCancelled": "Unión cancelada.",
+  "joinMediaFailed": "No se pudieron unir los archivos multimedia.",
+  "joinMediaPreparing": "Preparando",
+  "joinMediaNormalizing": "Preparando archivo",
+  "joinMediaMerging": "Uniendo archivos",
+  "joinMediaVerifying": "Verificación final",
+  "joinMediaCompleting": "Finalizando",
+  "joinMediaCompleted": "Unión completada. Elige dónde guardar el archivo.",
+  "joinMediaFormat": "Formato de unión",
+  "@joinMediaFormat": {
+    "description": "Media join: joinMediaFormat"
+  },
+  "joinMediaChooseFormat": "Elegir formato de unión",
+  "@joinMediaChooseFormat": {
+    "description": "Media join: joinMediaChooseFormat"
+  },
+  "joinMediaAudioFormatHint": "Con archivos solo de audio puedes elegir MP3, M4A, WAV, FLAC, OGG, OPUS, AAC, WMA o AIFF. Predeterminado: MP3.",
+  "@joinMediaAudioFormatHint": {
+    "description": "Media join: joinMediaAudioFormatHint"
+  },
+  "joinMediaVideoFormatHint": "Con archivos de vídeo o mixtos puedes elegir MP4, MKV, MOV, AVI, WMV, MPEG/MPG, FLV, 3GP o TS. Predeterminado: MP4.",
+  "@joinMediaVideoFormatHint": {
+    "description": "Media join: joinMediaVideoFormatHint"
+  },
+  "joinMediaCancelConfirmTitle": "¿Cancelar la unión?",
+  "@joinMediaCancelConfirmTitle": {
+    "description": "Media join: joinMediaCancelConfirmTitle"
+  },
+  "joinMediaCancelConfirmMessage": "¿Seguro que quieres cancelar? Se detendrá el proceso FFmpeg en curso.",
+  "@joinMediaCancelConfirmMessage": {
+    "description": "Media join: joinMediaCancelConfirmMessage"
+  },
+  "joinMediaKeepWorking": "Continuar",
+  "@joinMediaKeepWorking": {
+    "description": "Media join: joinMediaKeepWorking"
+  },
+  "joinMediaConfirmCancel": "Cancelar unión",
+  "@joinMediaConfirmCancel": {
+    "description": "Media join: joinMediaConfirmCancel"
+  },
+  "joinMediaCancelling": "Cancelando…",
+  "@joinMediaCancelling": {
+    "description": "Media join: joinMediaCancelling"
   }
 }

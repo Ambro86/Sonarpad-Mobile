@@ -3245,6 +3245,10 @@
   "@audioDescriptionSonarpadBalanceUnavailable": {
     "description": "Shown when the Sonarpad AI credit cannot be read."
   },
+  "audioDescriptionSonarpadInsufficientCredit": "Kredit nestačí. Dobijte svou API klíč, abyste mohli pokračovat v audiopopisu svého obsahu.",
+  "@audioDescriptionSonarpadInsufficientCredit": {
+    "description": "Shown when Sonarpad AI cannot continue because the account credit is insufficient."
+  },
   "audioDescriptionEdgeVoiceReady": "Vybraný hlas Edge je dostupný.",
   "@audioDescriptionEdgeVoiceReady": {
     "description": "Localized text for audioDescriptionEdgeVoiceReady."
@@ -3528,5 +3532,67 @@
   "treccaniWholeEntry": "Celé heslo",
   "@treccaniWholeEntry": {
     "description": "Localized text for treccaniWholeEntry."
+  },
+  "joinMediaTitle": "Sloučit multimediální soubory",
+  "joinMediaDescription": "Přidejte dva nebo více zvukových či video souborů, zvolte pořadí a výstupní formát a spojte je do jednoho souboru.",
+  "joinMediaAddFiles": "Přidat multimediální soubory",
+  "joinMediaLoadingFiles": "Kontrola vybraných souborů…",
+  "joinMediaFilesTitle": "Soubory ke sloučení",
+  "joinMediaNoFiles": "Zatím nebyly přidány žádné soubory.",
+  "joinMediaVideoLabel": "Video",
+  "joinMediaAudioLabel": "Zvuk",
+  "joinMediaActionsHint": "Dostupné akce: Posunout nahoru, Posunout dolů, Odebrat.",
+  "joinMediaRemove": "Odebrat",
+  "joinMediaOutputMp4": "Výstupní formát: MP4. Zvukové soubory použijí černý obraz; k videím bez zvuku bude přidáno ticho.",
+  "joinMediaOutputMp3": "Výstupní formát: MP3.",
+  "joinMediaJoin": "Sloučit",
+  "joinMediaFileSkipped": "Soubor byl přeskočen, protože není dostupný nebo neobsahuje použitelný zvuk či video.",
+  "joinMediaFilesAdded": "Multimediální soubory přidány.",
+  "joinMediaRemoved": "Položka odebrána.",
+  "joinMediaNeedTwoFiles": "Přidejte alespoň dva soubory ke sloučení.",
+  "joinMediaProcessing": "Slučování médií",
+  "joinMediaCancelled": "Slučování zrušeno.",
+  "joinMediaFailed": "Multimediální soubory se nepodařilo sloučit.",
+  "joinMediaPreparing": "Příprava",
+  "joinMediaNormalizing": "Příprava souboru",
+  "joinMediaMerging": "Slučování souborů",
+  "joinMediaVerifying": "Závěrečná kontrola",
+  "joinMediaCompleting": "Dokončování",
+  "joinMediaCompleted": "Sloučení dokončeno. Zvolte, kam soubor uložit.",
+  "joinMediaFormat": "Formát spojení",
+  "@joinMediaFormat": {
+    "description": "Media join: joinMediaFormat"
+  },
+  "joinMediaChooseFormat": "Zvolit formát spojení",
+  "@joinMediaChooseFormat": {
+    "description": "Media join: joinMediaChooseFormat"
+  },
+  "joinMediaAudioFormatHint": "Pouze u zvukových souborů můžete zvolit MP3, M4A, WAV, FLAC, OGG, OPUS, AAC, WMA nebo AIFF. Výchozí: MP3.",
+  "@joinMediaAudioFormatHint": {
+    "description": "Media join: joinMediaAudioFormatHint"
+  },
+  "joinMediaVideoFormatHint": "U videa nebo smíšených souborů můžete zvolit MP4, MKV, MOV, AVI, WMV, MPEG/MPG, FLV, 3GP nebo TS. Výchozí: MP4.",
+  "@joinMediaVideoFormatHint": {
+    "description": "Media join: joinMediaVideoFormatHint"
+  },
+  "joinMediaCancelConfirmTitle": "Zrušit spojování?",
+  "@joinMediaCancelConfirmTitle": {
+    "description": "Media join: joinMediaCancelConfirmTitle"
+  },
+  "joinMediaCancelConfirmMessage": "Opravdu chcete zrušit operaci? Probíhající proces FFmpeg bude ukončen.",
+  "@joinMediaCancelConfirmMessage": {
+    "description": "Media join: joinMediaCancelConfirmMessage"
+  },
+  "joinMediaKeepWorking": "Pokračovat",
+  "@joinMediaKeepWorking": {
+    "description": "Media join: joinMediaKeepWorking"
+  },
+  "joinMediaConfirmCancel": "Zrušit spojování",
+  "@joinMediaConfirmCancel": {
+    "description": "Media join: joinMediaConfirmCancel"
+  },
+  "joinMediaCancelling": "Rušení…",
+  "@joinMediaCancelling": {
+    "description": "Media join: joinMediaCancelling"
   }
 }

@@ -3242,6 +3242,10 @@
   "@audioDescriptionSonarpadBalanceUnavailable": {
     "description": "Shown when the Sonarpad AI credit cannot be read."
   },
+  "audioDescriptionSonarpadInsufficientCredit": "余额不足。请为你的 API 密钥充值，以继续为内容生成音频描述。",
+  "@audioDescriptionSonarpadInsufficientCredit": {
+    "description": "Shown when Sonarpad AI cannot continue because the account credit is insufficient."
+  },
   "audioDescriptionEdgeVoiceReady": "所选 Edge 语音可用。",
   "@audioDescriptionEdgeVoiceReady": {
     "description": "Localized text for audioDescriptionEdgeVoiceReady."
@@ -3525,5 +3529,67 @@
   "treccaniWholeEntry": "完整词条",
   "@treccaniWholeEntry": {
     "description": "Localized text for treccaniWholeEntry."
+  },
+  "joinMediaTitle": "合并媒体文件",
+  "joinMediaDescription": "添加两个或更多音频或视频文件，选择顺序和输出格式，然后合并为一个文件。",
+  "joinMediaAddFiles": "添加媒体文件",
+  "joinMediaLoadingFiles": "正在检查所选文件…",
+  "joinMediaFilesTitle": "要合并的文件",
+  "joinMediaNoFiles": "尚未添加文件。",
+  "joinMediaVideoLabel": "视频",
+  "joinMediaAudioLabel": "音频",
+  "joinMediaActionsHint": "可用操作：上移、下移、移除。",
+  "joinMediaRemove": "移除",
+  "joinMediaOutputMp4": "输出格式：MP4。纯音频项目使用黑色视频画面；无音频的视频会加入静音轨道。",
+  "joinMediaOutputMp3": "输出格式：MP3。",
+  "joinMediaJoin": "合并",
+  "joinMediaFileSkipped": "某个文件因无法访问或不含可用音频/视频而被跳过。",
+  "joinMediaFilesAdded": "已添加媒体文件。",
+  "joinMediaRemoved": "已移除项目。",
+  "joinMediaNeedTwoFiles": "至少添加两个文件才能合并。",
+  "joinMediaProcessing": "正在合并媒体",
+  "joinMediaCancelled": "已取消合并。",
+  "joinMediaFailed": "无法合并媒体文件。",
+  "joinMediaPreparing": "准备中",
+  "joinMediaNormalizing": "正在准备文件",
+  "joinMediaMerging": "正在合并文件",
+  "joinMediaVerifying": "最终验证",
+  "joinMediaCompleting": "正在完成",
+  "joinMediaCompleted": "合并完成。请选择文件保存位置。",
+  "joinMediaFormat": "合并格式",
+  "@joinMediaFormat": {
+    "description": "Media join: joinMediaFormat"
+  },
+  "joinMediaChooseFormat": "选择合并格式",
+  "@joinMediaChooseFormat": {
+    "description": "Media join: joinMediaChooseFormat"
+  },
+  "joinMediaAudioFormatHint": "仅包含音频文件时可选择 MP3、M4A、WAV、FLAC、OGG、OPUS、AAC、WMA 或 AIFF。默认：MP3。",
+  "@joinMediaAudioFormatHint": {
+    "description": "Media join: joinMediaAudioFormatHint"
+  },
+  "joinMediaVideoFormatHint": "包含视频或音视频混合文件时可选择 MP4、MKV、MOV、AVI、WMV、MPEG/MPG、FLV、3GP 或 TS。默认：MP4。",
+  "@joinMediaVideoFormatHint": {
+    "description": "Media join: joinMediaVideoFormatHint"
+  },
+  "joinMediaCancelConfirmTitle": "取消合并？",
+  "@joinMediaCancelConfirmTitle": {
+    "description": "Media join: joinMediaCancelConfirmTitle"
+  },
+  "joinMediaCancelConfirmMessage": "确定要取消吗？正在运行的 FFmpeg 进程将被停止。",
+  "@joinMediaCancelConfirmMessage": {
+    "description": "Media join: joinMediaCancelConfirmMessage"
+  },
+  "joinMediaKeepWorking": "继续",
+  "@joinMediaKeepWorking": {
+    "description": "Media join: joinMediaKeepWorking"
+  },
+  "joinMediaConfirmCancel": "取消合并",
+  "@joinMediaConfirmCancel": {
+    "description": "Media join: joinMediaConfirmCancel"
+  },
+  "joinMediaCancelling": "正在取消…",
+  "@joinMediaCancelling": {
+    "description": "Media join: joinMediaCancelling"
   }
 }

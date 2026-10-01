@@ -110,6 +110,13 @@ class SonarpadAiDeviceLimitReachedException implements Exception {
   String toString() => 'SONARPAD_AI_DEVICE_LIMIT_REACHED';
 }
 
+class SonarpadAiInsufficientCreditException implements Exception {
+  const SonarpadAiInsufficientCreditException();
+
+  @override
+  String toString() => 'SONARPAD_AI_INSUFFICIENT_CREDIT';
+}
+
 class AiAudioDescriptionResult {
   const AiAudioDescriptionResult({
     required this.mp3Path,
@@ -3222,6 +3229,9 @@ $screenTextSchema$coreDirectives
         );
       }
       if (response.statusCode < 200 || response.statusCode >= 300) {
+        if (_sonarpadErrorCode(response.body) == 'insufficient_credit') {
+          throw const SonarpadAiInsufficientCreditException();
+        }
         final kind = AudioDescriptionFallbacks.classifyHttp(
           statusCode: response.statusCode,
           body: response.body,
@@ -6330,6 +6340,9 @@ $screenTextSchema$coreDirectives
             );
           }
           if (generate.statusCode < 200 || generate.statusCode >= 300) {
+            if (_sonarpadErrorCode(generate.body) == 'insufficient_credit') {
+              throw const SonarpadAiInsufficientCreditException();
+            }
             throw _AdProviderException(
               AudioDescriptionFallbacks.classifyHttp(
                 statusCode: generate.statusCode,
