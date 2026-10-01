@@ -3591,5 +3591,14 @@
   "joinMediaCancelling": "Se anulează…",
   "@joinMediaCancelling": {
     "description": "Media join: joinMediaCancelling"
+  },
+  "selectDocuments": "Selectează documente",
+  "deleteSelectedDocumentsConfirmation": "Ștergi definitiv documentele selectate?",
+  "documentsRemovedCount": "Documente șterse: {count}.",
+  "@documentsRemovedCount": {
+    "description": "Number of documents removed from the Sonarpad library.",
+    "placeholders": {
+      "count": {"type": "int"}
+    }
   }
 }

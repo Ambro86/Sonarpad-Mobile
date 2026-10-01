@@ -25,6 +25,7 @@ import '../services/librivox_service.dart';
 import '../utils/app_logger.dart';
 import 'package:sonarpad_mobile_starter/utils/accessibility_list_behavior.dart';
 import '../utils/document_unicode_normalizer.dart';
+import '../widgets/document_selection_dialog.dart';
 import '../widgets/universal_accessible_view.dart';
 import 'document_editor_screen.dart';
 import 'audio_description_project_editor_screen.dart';
@@ -274,6 +275,113 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
         ],
       ),
     );
+  }
+
+  List<DocumentItem> get _selectableDocuments => _displayedDocs
+      .where((document) => !document.isFolder)
+      .toList(growable: false);
+
+  bool _canShareSelectedDocument(DocumentItem document) =>
+      !document.isFolder && !_isRemoteAudioDocument(document);
+
+  Future<void> _selectDocuments({String? initialDocumentId}) async {
+    final documents = _selectableDocuments;
+    if (documents.isEmpty || !mounted) return;
+    final result = await showDocumentSelectionDialog(
+      context,
+      documents,
+      initialSelectedIds: initialDocumentId == null
+          ? const <String>{}
+          : <String>{initialDocumentId},
+      shareableDocumentIds: documents
+          .where(_canShareSelectedDocument)
+          .map((document) => document.id)
+          .toSet(),
+    );
+    if (!mounted || result == null || result.documents.isEmpty) return;
+    switch (result.action) {
+      case DocumentSelectionAction.share:
+        await _shareDocuments(result.documents);
+        break;
+      case DocumentSelectionAction.delete:
+        await _removeDocuments(result.documents);
+        break;
+    }
+  }
+
+  Future<void> _shareDocuments(List<DocumentItem> documents) async {
+    if (documents.isEmpty) return;
+    final l10n = AppLocalizations.of(context);
+    final files = <XFile>[];
+    for (final document in documents) {
+      if (!_canShareSelectedDocument(document)) return;
+      if (!await _authorizeDocumentShare(document)) return;
+      if (!mounted) return;
+      try {
+        final resolvedPath = await _service.resolveFilePath(document);
+        final file = File(resolvedPath);
+        if (!await file.exists()) {
+          _showSnack(l10n.error(l10n.technicalErrorGeneric));
+          return;
+        }
+        files.add(XFile(file.path));
+      } catch (error) {
+        dev.log('DocumentsScreen: errore condivisione multipla: $error');
+        if (mounted) {
+          _showSnack(l10n.error(l10n.technicalErrorGeneric));
+        }
+        return;
+      }
+    }
+    if (files.isEmpty || !mounted) return;
+    await SharePlus.instance.share(
+      ShareParams(
+        files: files,
+        subject: documents.length == 1
+            ? documents.single.displayName
+            : l10n.documents,
+      ),
+    );
+  }
+
+  Future<void> _removeDocuments(List<DocumentItem> documents) async {
+    if (documents.isEmpty) return;
+    final l10n = AppLocalizations.of(context);
+    var removedCount = 0;
+    for (final document in documents) {
+      if (document.isFolder) continue;
+      try {
+        if (!_isRemoteAudioDocument(document)) {
+          final resolvedPath = await _service.resolveFilePath(document);
+          final file = File(resolvedPath);
+          if (await file.exists()) {
+            await file.delete();
+          }
+        }
+        await _service.remove(document.id);
+        removedCount++;
+      } catch (error) {
+        dev.log(
+          'DocumentsScreen: errore rimozione multipla id=${document.id}: $error',
+        );
+      }
+    }
+    if (!mounted) return;
+    setState(() {});
+    if (removedCount > 0) {
+      _showSnack(l10n.documentsRemovedCount(removedCount));
+      await WidgetsBinding.instance.endOfFrame;
+      if (!mounted) return;
+      final remaining = _displayedDocs;
+      if (remaining.isNotEmpty) {
+        await _accessibleListController.focusToReturnAfterStructureChange(
+          remaining.first.id,
+          animated: false,
+        );
+      }
+      return;
+    }
+    _showSnack(l10n.documentRemoveError(l10n.technicalErrorGeneric));
   }
 
   Future<void> _remove(String id) async {
@@ -1351,6 +1459,12 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
         visualActions: [
           if (!doc.isFolder)
             AccessibleVisualAction(
+              id: 'select',
+              label: l10n.selectDocuments,
+              icon: 'select',
+            ),
+          if (!doc.isFolder)
+            AccessibleVisualAction(
               id: 'rename',
               label: l10n.rename,
               icon: 'edit',
@@ -1382,6 +1496,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
           await _openDocument(doc);
         } else if (event.type == 'customAction') {
           switch (event.action) {
+            case 'select': await _selectDocuments(initialDocumentId: doc.id); break;
             case 'remove': await _remove(doc.id); break;
             case 'rename': await _renameDocument(doc); break;
             case 'password_protection': await _toggleDocumentPasswordProtection(doc); break;
@@ -1411,6 +1526,12 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
       appBar: SonarpadAppBar(
         title: Text(currentFolderName),
         actions: [
+          IconButton(
+            key: const ValueKey('documents_select_action'),
+            icon: const Icon(Icons.playlist_add_check),
+            tooltip: l10n.selectDocuments,
+            onPressed: _selectableDocuments.isEmpty ? null : () => _selectDocuments(),
+          ),
           IconButton(
             icon: const Icon(Icons.note_add),
             tooltip: l10n.writeNewDocument,
@@ -1501,6 +1622,11 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                             isFirst: isFirst,
                             isLast: isLast,
                             onOpen: () => _openDocument(doc),
+                            onSelect: doc.isFolder
+                                ? null
+                                : () => _selectDocuments(
+                                      initialDocumentId: doc.id,
+                                    ),
                             onRemove: () => _remove(doc.id),
                             onRename: () => _renameDocument(doc),
                             canPasswordProtect:
@@ -1537,6 +1663,7 @@ class _DocumentTile extends StatelessWidget {
   final bool isFirst;
   final bool isLast;
   final VoidCallback onOpen;
+  final VoidCallback? onSelect;
   final VoidCallback onRemove;
   final VoidCallback onRename;
   final bool canPasswordProtect;
@@ -1552,6 +1679,7 @@ class _DocumentTile extends StatelessWidget {
     required this.isFirst,
     required this.isLast,
     required this.onOpen,
+    required this.onSelect,
     required this.onRemove,
     required this.onRename,
     required this.canPasswordProtect,
@@ -1728,6 +1856,15 @@ class _DocumentTile extends StatelessWidget {
                       ),
                     ),
                   ),
+                  if (!doc.isFolder && onSelect != null)
+                    ExcludeSemantics(
+                      child: IconButton(
+                        key: ValueKey('document_select_${doc.id}'),
+                        icon: const Icon(Icons.playlist_add_check),
+                        tooltip: l10n.selectDocuments,
+                        onPressed: onSelect,
+                      ),
+                    ),
                   if (!doc.isFolder)
                     IconButton(
                       key: ValueKey('document_rename_${doc.id}'),

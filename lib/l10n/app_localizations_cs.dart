@@ -2042,6 +2042,17 @@ class AppLocalizationsCs extends AppLocalizations {
   String get selectRecordings => 'Vybrat nahrávky';
 
   @override
+  String get selectDocuments => 'Vybrat dokumenty';
+
+  @override
+  String get deleteSelectedDocumentsConfirmation => 'Trvale odstranit vybrané dokumenty?';
+
+  @override
+  String documentsRemovedCount(int count) {
+    return 'Odstraněné dokumenty: $count.';
+  }
+
+  @override
   String get selectAll => 'Vybrat vše';
 
   @override

@@ -1998,6 +1998,17 @@ class AppLocalizationsRo extends AppLocalizations {
   String get selectRecordings => 'Selectează înregistrările';
 
   @override
+  String get selectDocuments => 'Selectează documente';
+
+  @override
+  String get deleteSelectedDocumentsConfirmation => 'Ștergi definitiv documentele selectate?';
+
+  @override
+  String documentsRemovedCount(int count) {
+    return 'Documente șterse: $count.';
+  }
+
+  @override
   String get selectAll => 'Selectează tot';
 
   @override

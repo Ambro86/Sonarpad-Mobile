@@ -1990,6 +1990,17 @@ class AppLocalizationsZh extends AppLocalizations {
   String get selectRecordings => '选择录音';
 
   @override
+  String get selectDocuments => '选择文档';
+
+  @override
+  String get deleteSelectedDocumentsConfirmation => '永久删除所选文档吗？';
+
+  @override
+  String documentsRemovedCount(int count) {
+    return '已删除文档：$count';
+  }
+
+  @override
   String get selectAll => '选择全部';
 
   @override
@@ -6259,6 +6270,17 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get selectRecordings => '选择录音';
+
+  @override
+  String get selectDocuments => '选择文档';
+
+  @override
+  String get deleteSelectedDocumentsConfirmation => '永久删除所选文档吗？';
+
+  @override
+  String documentsRemovedCount(int count) {
+    return '已删除文档：$count';
+  }
 
   @override
   String get selectAll => '选择全部';

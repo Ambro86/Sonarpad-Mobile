@@ -2050,6 +2050,17 @@ class AppLocalizationsPt extends AppLocalizations {
   String get selectRecordings => 'Selecionar gravações';
 
   @override
+  String get selectDocuments => 'Selecionar documentos';
+
+  @override
+  String get deleteSelectedDocumentsConfirmation => 'Eliminar permanentemente os documentos selecionados?';
+
+  @override
+  String documentsRemovedCount(int count) {
+    return 'Documentos eliminados: $count.';
+  }
+
+  @override
   String get selectAll => 'Selecionar tudo';
 
   @override
@@ -6511,6 +6522,17 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get selectRecordings => 'Selecionar gravações';
+
+  @override
+  String get selectDocuments => 'Selecionar documentos';
+
+  @override
+  String get deleteSelectedDocumentsConfirmation => 'Excluir permanentemente os documentos selecionados?';
+
+  @override
+  String documentsRemovedCount(int count) {
+    return 'Documentos excluídos: $count.';
+  }
 
   @override
   String get selectAll => 'Selecionar tudo';

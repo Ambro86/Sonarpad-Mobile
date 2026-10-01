@@ -3813,6 +3813,24 @@ abstract class AppLocalizations {
   /// **'Seleziona registrazioni'**
   String get selectRecordings;
 
+  /// No description provided for @selectDocuments.
+  ///
+  /// In it, this message translates to:
+  /// **'Seleziona documenti'**
+  String get selectDocuments;
+
+  /// No description provided for @deleteSelectedDocumentsConfirmation.
+  ///
+  /// In it, this message translates to:
+  /// **'Vuoi eliminare definitivamente i documenti selezionati?'**
+  String get deleteSelectedDocumentsConfirmation;
+
+  /// Number of documents removed from the Sonarpad library.
+  ///
+  /// In it, this message translates to:
+  /// **'Documenti eliminati: {count}.'**
+  String documentsRemovedCount(int count);
+
   /// No description provided for @selectAll.
   ///
   /// In it, this message translates to:

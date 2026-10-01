@@ -3597,5 +3597,14 @@
   "joinMediaCancelling": "Annulation…",
   "@joinMediaCancelling": {
     "description": "Media join: joinMediaCancelling"
+  },
+  "selectDocuments": "Sélectionner des documents",
+  "deleteSelectedDocumentsConfirmation": "Supprimer définitivement les documents sélectionnés ?",
+  "documentsRemovedCount": "Documents supprimés : {count}.",
+  "@documentsRemovedCount": {
+    "description": "Number of documents removed from the Sonarpad library.",
+    "placeholders": {
+      "count": {"type": "int"}
+    }
   }
 }

@@ -1549,6 +1549,7 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
     case "lock_open": return "lock.open"
     case "play": return "play.fill"
     case "record": return "record.circle"
+    case "select": return "checkmark.square"
     default: return "ellipsis.circle"
     }
   }

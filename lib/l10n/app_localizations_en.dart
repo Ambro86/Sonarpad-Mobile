@@ -2035,6 +2035,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get selectRecordings => 'Select recordings';
 
   @override
+  String get selectDocuments => 'Select documents';
+
+  @override
+  String get deleteSelectedDocumentsConfirmation => 'Permanently delete the selected documents?';
+
+  @override
+  String documentsRemovedCount(int count) {
+    return 'Documents deleted: $count.';
+  }
+
+  @override
   String get selectAll => 'Select all';
 
   @override

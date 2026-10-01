@@ -5169,5 +5169,14 @@
   "joinMediaCancelling": "Скасування…",
   "@joinMediaCancelling": {
     "description": "Media join: joinMediaCancelling"
+  },
+  "selectDocuments": "Вибрати документи",
+  "deleteSelectedDocumentsConfirmation": "Назавжди видалити вибрані документи?",
+  "documentsRemovedCount": "Видалено документів: {count}.",
+  "@documentsRemovedCount": {
+    "description": "Number of documents removed from the Sonarpad library.",
+    "placeholders": {
+      "count": {"type": "int"}
+    }
   }
 }

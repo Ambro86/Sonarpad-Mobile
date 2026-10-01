@@ -3591,5 +3591,14 @@
   "joinMediaCancelling": "正在取消…",
   "@joinMediaCancelling": {
     "description": "Media join: joinMediaCancelling"
+  },
+  "selectDocuments": "选择文档",
+  "deleteSelectedDocumentsConfirmation": "永久删除所选文档吗？",
+  "documentsRemovedCount": "已删除文档：{count}",
+  "@documentsRemovedCount": {
+    "description": "Number of documents removed from the Sonarpad library.",
+    "placeholders": {
+      "count": {"type": "int"}
+    }
   }
 }

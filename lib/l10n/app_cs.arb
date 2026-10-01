@@ -3594,5 +3594,14 @@
   "joinMediaCancelling": "Rušení…",
   "@joinMediaCancelling": {
     "description": "Media join: joinMediaCancelling"
+  },
+  "selectDocuments": "Vybrat dokumenty",
+  "deleteSelectedDocumentsConfirmation": "Trvale odstranit vybrané dokumenty?",
+  "documentsRemovedCount": "Odstraněné dokumenty: {count}.",
+  "@documentsRemovedCount": {
+    "description": "Number of documents removed from the Sonarpad library.",
+    "placeholders": {
+      "count": {"type": "int"}
+    }
   }
 }

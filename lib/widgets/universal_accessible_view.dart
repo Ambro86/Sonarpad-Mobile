@@ -1746,6 +1746,7 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
         'lock_open' => Icons.lock_open_outlined,
         'play' => Icons.play_arrow,
         'record' => Icons.fiber_manual_record,
+        'select' => Icons.check_box_outlined,
         _ => Icons.more_horiz,
       };
 

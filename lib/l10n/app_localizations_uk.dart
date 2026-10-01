@@ -2038,6 +2038,17 @@ class AppLocalizationsUk extends AppLocalizations {
   String get selectRecordings => 'Вибрати записи';
 
   @override
+  String get selectDocuments => 'Вибрати документи';
+
+  @override
+  String get deleteSelectedDocumentsConfirmation => 'Назавжди видалити вибрані документи?';
+
+  @override
+  String documentsRemovedCount(int count) {
+    return 'Видалено документів: $count.';
+  }
+
+  @override
   String get selectAll => 'Вибрати все';
 
   @override
