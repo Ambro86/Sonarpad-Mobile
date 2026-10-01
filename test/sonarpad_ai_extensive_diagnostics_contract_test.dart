@@ -21,7 +21,7 @@ void main() {
     expect(service, contains('UPLOAD_COMPLETE_PARSED'));
     expect(service, contains('GENERATE_PARSED'));
     expect(service, contains('CLEANUP_RESPONSE'));
-    expect(service, contains('classification=${failure.name}'));
+    expect(service, contains('classification=\${failure.name}'));
   });
 
   test('diagnostics redact paid AI secrets', () {
