@@ -6742,7 +6742,7 @@ $screenTextSchema$coreDirectives
     final uri = Uri.parse(uploadUrl);
     final request = http.StreamedRequest('POST', uri);
     request.headers['Content-Type'] = mimeType;
-    request.headers['Content-Length'] = '$length';
+    request.contentLength = length;
     request.headers['X-Goog-Upload-Offset'] = '0';
     request.headers['X-Goog-Upload-Command'] = 'upload, finalize';
     request.headers['User-Agent'] = _sonarpadAiUserAgent;
@@ -6756,16 +6756,73 @@ $screenTextSchema$coreDirectives
     }
     final stopwatch = Stopwatch()..start();
     try {
-      await request.sink.addStream(file.openRead());
+      // Start the HTTP request before feeding StreamedRequest.sink.  A
+      // StreamedRequest is back-pressure driven: if addStream() is awaited
+      // before Client.send(), there is no listener consuming the request body
+      // yet and large uploads can remain blocked forever.  This was visible
+      // only in the paid Sonarpad AI path because it stalled on the first
+      // direct Google upload before BODY_STREAMED was ever logged.
+      final sendFuture = _http
+          .send(request)
+          .timeout(const Duration(minutes: 8));
+      // Attach an error listener immediately so cancellation via _http.close()
+      // cannot surface as an unhandled asynchronous error while the file body
+      // is still being streamed. The same Future is awaited below afterwards.
+      unawaited(sendFuture.then<void>(
+        (_) {},
+        onError: (Object _, StackTrace _) {},
+      ));
+      if (trace != null) {
+        await _logSonarpadAi(
+          '$trace SEND_STARTED contentLength=$length elapsedMs=${stopwatch.elapsedMilliseconds}',
+        );
+      }
+
+      var streamedBytes = 0;
+      var nextProgressLog = 1024 * 1024;
+      final bodyStream = file.openRead().asyncMap((chunk) async {
+        _checkCancel();
+        streamedBytes += chunk.length;
+        if (trace != null &&
+            (streamedBytes >= nextProgressLog || streamedBytes >= length)) {
+          final pct = length <= 0 ? 100.0 : (streamedBytes * 100.0 / length);
+          await _logSonarpadAi(
+            '$trace BODY_PROGRESS bytes=$streamedBytes/$length '
+            'percent=${pct.toStringAsFixed(1)} elapsedMs=${stopwatch.elapsedMilliseconds}',
+          );
+          while (nextProgressLog <= streamedBytes) {
+            nextProgressLog += 1024 * 1024;
+          }
+        }
+        return chunk;
+      });
+
+      await request.sink.addStream(bodyStream);
       _checkCancel();
-      await request.sink.close();
+      // package:http documents that StreamedRequest.sink.close() may not
+      // complete until the request is being sent; do not await it here. The
+      // active sendFuture below is the synchronization point for completion.
+      unawaited(request.sink.close());
       _checkCancel();
       if (trace != null) {
-        await _logSonarpadAi('$trace BODY_STREAMED bytes=$length elapsedMs=${stopwatch.elapsedMilliseconds}');
+        await _logSonarpadAi(
+          '$trace BODY_STREAMED bytes=$streamedBytes elapsedMs=${stopwatch.elapsedMilliseconds}',
+        );
       }
-      final streamed = await _http.send(request).timeout(const Duration(minutes: 8));
+
+      final streamed = await Future.any<http.StreamedResponse>(<Future<http.StreamedResponse>>[
+        sendFuture,
+        _cancelSignal.future.then<http.StreamedResponse>(
+          (_) => throw const _AudioDescriptionCancelled(),
+        ),
+      ]);
       _checkCancel();
-      final response = await http.Response.fromStream(streamed);
+      final response = await Future.any<http.Response>(<Future<http.Response>>[
+        http.Response.fromStream(streamed),
+        _cancelSignal.future.then<http.Response>(
+          (_) => throw const _AudioDescriptionCancelled(),
+        ),
+      ]);
       stopwatch.stop();
       if (trace != null) {
         await _logSonarpadAi(
@@ -6776,8 +6833,26 @@ $screenTextSchema$coreDirectives
         );
       }
       return response;
+    } on _AudioDescriptionCancelled catch (error, stackTrace) {
+      if (stopwatch.isRunning) stopwatch.stop();
+      if (trace != null) {
+        await _logSonarpadAi(
+          '$trace CANCELLED elapsedMs=${stopwatch.elapsedMilliseconds} '
+          'streamCancelled=true error=$error\n$stackTrace',
+        );
+      }
+      rethrow;
     } catch (error, stackTrace) {
       if (stopwatch.isRunning) stopwatch.stop();
+      if (_cancelRequested) {
+        if (trace != null) {
+          await _logSonarpadAi(
+            '$trace CANCELLED_BY_CLIENT_CLOSE elapsedMs=${stopwatch.elapsedMilliseconds} '
+            'type=${error.runtimeType} error=$error\n$stackTrace',
+          );
+        }
+        throw const _AudioDescriptionCancelled();
+      }
       if (trace != null) {
         await _logSonarpadAi(
           '$trace EXCEPTION elapsedMs=${stopwatch.elapsedMilliseconds} '
