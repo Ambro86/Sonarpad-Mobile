@@ -284,6 +284,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     String? streamUrl,
     bool preferRaiAudioDescription = false,
     bool enableRaiDirectAudioFallback = false,
+    String? raiNormalAudioFallbackUrl,
   }) async {
     final playbackUrl = streamUrl ?? widget.station.streamUrl;
     final isMpd = TvService.isDashStreamUrl(playbackUrl);
@@ -438,6 +439,13 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     }
     if (enableRaiDirectAudioFallback) {
       _scheduleRaiDirectAudioFallback(player);
+    } else if (raiNormalAudioFallbackUrl != null &&
+        raiNormalAudioFallbackUrl.isNotEmpty &&
+        raiNormalAudioFallbackUrl != playbackUrl) {
+      _scheduleRaiNormalAudioFallback(
+        player,
+        raiNormalAudioFallbackUrl,
+      );
     }
     try {
       await player.open(
@@ -529,13 +537,28 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         return;
       }
 
+      final normalAudioFallbackUrl = streams.hasAudioDescription &&
+              streams.normalAudioUrl != streams.videoUrl &&
+              streams.normalAudioUrl != streams.audioUrl
+          ? streams.normalAudioUrl
+          : null;
+
+      await _stopStalledRaiMediaKitPlayer(
+        stalledPlayer,
+        stage: 'master',
+      );
+      if (!mounted || _mediaKitPlayer != stalledPlayer || _isVideoEnabled) {
+        return;
+      }
+
       await AppLogger.log(
-        'RadioPlayer: RAI direct-audio fallback starting with fresh relinker URL hasAD=${streams.hasAudioDescription} url=${streams.audioUrl}',
+        'RadioPlayer: RAI direct-audio fallback starting with fresh relinker URL hasAD=${streams.hasAudioDescription} url=${streams.audioUrl} normalFallback=${normalAudioFallbackUrl ?? 'none'}',
       );
       await _playMediaKitVideo(
         streamUrl: streams.audioUrl,
         preferRaiAudioDescription: false,
         enableRaiDirectAudioFallback: false,
+        raiNormalAudioFallbackUrl: normalAudioFallbackUrl,
       );
     } catch (error) {
       await AppLogger.log(
@@ -548,6 +571,108 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       }
     } finally {
       _raiDirectAudioFallbackInProgress = false;
+    }
+  }
+
+  void _scheduleRaiNormalAudioFallback(
+    mk.Player player,
+    String normalAudioUrl,
+  ) {
+    _raiDirectAudioFallbackTimer?.cancel();
+    _raiDirectAudioFallbackTimer = Timer(const Duration(seconds: 6), () {
+      _raiDirectAudioFallbackTimer = null;
+      if (!mounted ||
+          _mediaKitPlayer != player ||
+          _raiDirectAudioFallbackInProgress ||
+          _isVideoEnabled) {
+        return;
+      }
+
+      final position = _mediaKitLastPosition ?? Duration.zero;
+      final duration = _mediaKitLastDuration ?? Duration.zero;
+      if (position > Duration.zero || duration > Duration.zero) {
+        unawaited(AppLogger.log(
+          'RadioPlayer: RAI direct AD fallback not needed after 6s; direct AD has progress position=$position duration=$duration',
+        ));
+        return;
+      }
+
+      unawaited(_activateRaiNormalAudioFallback(player, normalAudioUrl));
+    });
+  }
+
+  Future<void> _activateRaiNormalAudioFallback(
+    mk.Player stalledPlayer,
+    String normalAudioUrl,
+  ) async {
+    if (!mounted ||
+        _mediaKitPlayer != stalledPlayer ||
+        _raiDirectAudioFallbackInProgress ||
+        _isVideoEnabled) {
+      return;
+    }
+
+    final position = _mediaKitLastPosition ?? Duration.zero;
+    final duration = _mediaKitLastDuration ?? Duration.zero;
+    if (position > Duration.zero || duration > Duration.zero) {
+      await AppLogger.log(
+        'RadioPlayer: RAI direct AD recovered before ITA fallback; keeping current stream position=$position duration=$duration',
+      );
+      return;
+    }
+
+    _raiDirectAudioFallbackInProgress = true;
+    try {
+      await AppLogger.log(
+        'RadioPlayer: RAI direct AD stalled for 6s; falling back to direct ITA station="${widget.station.name}" url=$normalAudioUrl',
+      );
+      await _stopStalledRaiMediaKitPlayer(
+        stalledPlayer,
+        stage: 'direct AD',
+      );
+      if (!mounted || _mediaKitPlayer != stalledPlayer || _isVideoEnabled) {
+        return;
+      }
+      await _playMediaKitVideo(
+        streamUrl: normalAudioUrl,
+        preferRaiAudioDescription: false,
+        enableRaiDirectAudioFallback: false,
+      );
+    } catch (error) {
+      await AppLogger.log(
+        'RadioPlayer: RAI direct ITA fallback failed: $error',
+      );
+      if (mounted && _mediaKitPlayer == null) {
+        setState(
+          () => _error = AppLocalizations.of(context).technicalErrorGeneric,
+        );
+      }
+    } finally {
+      _raiDirectAudioFallbackInProgress = false;
+    }
+  }
+
+  Future<void> _stopStalledRaiMediaKitPlayer(
+    mk.Player player, {
+    required String stage,
+  }) async {
+    if (_mediaKitPlayer != player) return;
+    try {
+      await AppLogger.log(
+        'RadioPlayer: RAI stalled playback stop before dispose stage=$stage',
+      );
+      await player.stop().timeout(const Duration(seconds: 2));
+      await AppLogger.log(
+        'RadioPlayer: RAI stalled playback stop completed stage=$stage',
+      );
+    } on TimeoutException {
+      await AppLogger.log(
+        'RadioPlayer: RAI stalled playback stop timed out after 2s stage=$stage; continuing with normal dispose',
+      );
+    } catch (error) {
+      await AppLogger.log(
+        'RadioPlayer: RAI stalled playback stop failed stage=$stage error=$error; continuing with normal dispose',
+      );
     }
   }
 

@@ -69,11 +69,13 @@ class TvChannel {
 class RaiAudioDescriptionStreams {
   final String videoUrl;
   final String audioUrl;
+  final String normalAudioUrl;
   final bool hasAudioDescription;
 
   const RaiAudioDescriptionStreams({
     required this.videoUrl,
     required this.audioUrl,
+    required this.normalAudioUrl,
     required this.hasAudioDescription,
   });
 }
@@ -908,6 +910,7 @@ class TvService {
         return RaiAudioDescriptionStreams(
           videoUrl: masterUrl,
           audioUrl: masterUrl,
+          normalAudioUrl: masterUrl,
           hasAudioDescription: false,
         );
       }
@@ -917,6 +920,7 @@ class TvService {
         return RaiAudioDescriptionStreams(
           videoUrl: masterUrl,
           audioUrl: masterUrl,
+          normalAudioUrl: masterUrl,
           hasAudioDescription: false,
         );
       }
@@ -952,8 +956,10 @@ class TvService {
         if (isAudioDescription) {
           await AppLogger.log(
               'Trovata traccia DESC:\nURI=$uri\nLang=$language\nName=$name');
-          adUrl = _resolveHlsChildUrl(finalMasterUrl, uri);
-          break; // AD trovata: precedenza assoluta, non cercare oltre
+          adUrl ??= _resolveHlsChildUrl(finalMasterUrl, uri);
+          // Continuiamo a scorrere il master: la traccia ITA diretta serve
+          // esclusivamente come secondo fallback se anche l'AD diretta non
+          // avanza. La precedenza AD resta invariata in audioUrl.
         }
 
         if (language == 'ita' && itaUrl == null) {
@@ -963,12 +969,14 @@ class TvService {
       }
 
       final audioUrl = adUrl ?? itaUrl ?? finalMasterUrl;
+      final normalAudioUrl = itaUrl ?? finalMasterUrl;
       await AppLogger.log(
-        'RAI AD streams resolved: videoUrl=$finalMasterUrl audioUrl=$audioUrl hasAD=${adUrl != null}',
+        'RAI AD streams resolved: videoUrl=$finalMasterUrl audioUrl=$audioUrl normalAudioUrl=$normalAudioUrl hasAD=${adUrl != null}',
       );
       return RaiAudioDescriptionStreams(
         videoUrl: finalMasterUrl,
         audioUrl: audioUrl,
+        normalAudioUrl: normalAudioUrl,
         hasAudioDescription: adUrl != null,
       );
     } catch (e) {
@@ -977,6 +985,7 @@ class TvService {
       return RaiAudioDescriptionStreams(
         videoUrl: masterUrl,
         audioUrl: masterUrl,
+        normalAudioUrl: masterUrl,
         hasAudioDescription: false,
       );
     }
