@@ -211,10 +211,10 @@ class MediaJoinService {
   Future<MediaJoinItemInfo> probe(String path) async {
     final file = File(path);
     if (!await file.exists()) {
-      throw FileSystemException('Media file is inaccessible', path);
+      throw FileSystemException('media_join_file_inaccessible', path);
     }
     if (await file.length() <= 0) {
-      throw StateError('Media file is empty.');
+      throw StateError('media_join_file_empty');
     }
 
     await AppLogger.log('Media join ffprobe start path="$path"');
@@ -227,7 +227,7 @@ class MediaJoinService {
         'Media join ffprobe failed returnCode=${returnCode?.getValue()} '
         'output="${_compactLog(output)}" path="$path"',
       );
-      throw StateError('The media file could not be analyzed.');
+      throw StateError('media_join_probe_failed');
     }
 
     final streams = information.getStreams();
@@ -241,14 +241,14 @@ class MediaJoinService {
       streams.where((stream) => stream.getType() == 'audio'),
     );
     if (video == null && audio == null) {
-      throw StateError('The file contains no usable audio or video stream.');
+      throw StateError('media_join_no_usable_streams');
     }
 
     final duration = _parseDuration(information.getDuration()) ??
         _parseDuration(video?.getStringProperty('duration')) ??
         _parseDuration(audio?.getStringProperty('duration'));
     if (duration == null || duration <= Duration.zero) {
-      throw StateError('The media file has an invalid duration.');
+      throw StateError('media_join_invalid_duration');
     }
 
     final result = MediaJoinItemInfo(
@@ -278,7 +278,7 @@ class MediaJoinService {
     void Function(MediaJoinProgress progress)? onProgress,
   }) async {
     if (items.length < 2) {
-      throw ArgumentError('At least two media files are required.');
+      throw ArgumentError('media_join_minimum_two_files');
     }
     cancellationToken.throwIfCancelled();
 
@@ -286,7 +286,7 @@ class MediaJoinService {
     for (final item in items) {
       final file = File(item.path);
       if (!await file.exists()) {
-        throw FileSystemException('Media file is inaccessible', item.path);
+        throw FileSystemException('media_join_file_inaccessible', item.path);
       }
       snapshots[item.path] = await file.stat();
     }
@@ -295,8 +295,8 @@ class MediaJoinService {
     if (hasVideo != outputFormat.isVideo) {
       throw ArgumentError(
         hasVideo
-            ? 'A video or mixed join requires a video output format.'
-            : 'An audio-only join requires an audio output format.',
+            ? 'media_join_video_output_format_required'
+            : 'media_join_audio_output_format_required',
       );
     }
     final expectedDuration = items.fold<Duration>(
@@ -304,7 +304,7 @@ class MediaJoinService {
       (value, item) => value + item.duration,
     );
     if (expectedDuration <= Duration.zero) {
-      throw StateError('The total media duration is invalid.');
+      throw StateError('media_join_total_duration_invalid');
     }
 
     final exportsRoot = await AppCacheService.directory(
@@ -428,7 +428,7 @@ class MediaJoinService {
         if (current.type != FileSystemEntityType.file ||
             current.size != before.size ||
             current.modified != before.modified) {
-          throw StateError('A source media file changed during processing.');
+          throw StateError('media_join_source_changed');
         }
       }
 
@@ -527,7 +527,7 @@ class MediaJoinService {
       await File(pendingPath).rename(finalPath);
       final finalFile = File(finalPath);
       if (!await finalFile.exists() || await finalFile.length() <= 0) {
-        throw StateError('The joined media file was not published correctly.');
+        throw StateError('media_join_publish_failed');
       }
       success = true;
       _progress(
@@ -700,7 +700,7 @@ class MediaJoinService {
     required int itemCount,
   }) async {
     if (format.isVideo) {
-      throw ArgumentError('Audio-only join cannot use a video output format.');
+      throw ArgumentError('media_join_audio_output_format_required');
     }
     final codecArgs = switch (format) {
       MediaJoinOutputFormat.mp3 => <String>[
@@ -730,7 +730,11 @@ class MediaJoinService {
       MediaJoinOutputFormat.aiff => <String>[
           '-c:a', 'pcm_s16be',
         ],
-      _ => throw ArgumentError('Unsupported audio output format: $format'),
+      _ => throw ArgumentError.value(
+        format,
+        'format',
+        'media_join_unsupported_audio_format',
+      ),
     };
     await _runFfmpeg(
       <String>[
@@ -785,7 +789,7 @@ class MediaJoinService {
     required void Function(MediaJoinProgress progress)? onProgress,
   }) async {
     if (!format.isVideo || format == MediaJoinOutputFormat.mp4) {
-      throw ArgumentError('A non-MP4 video output format is required.');
+      throw ArgumentError('media_join_non_mp4_video_format_required');
     }
     final codecArgs = switch (format) {
       MediaJoinOutputFormat.mkv => <String>[
@@ -821,7 +825,11 @@ class MediaJoinService {
           '-c:v', 'mpeg2video', '-q:v', '4', '-pix_fmt', 'yuv420p',
           '-c:a', 'aac', '-b:a', '192k',
         ],
-      _ => throw ArgumentError('Unsupported video output format: $format'),
+      _ => throw ArgumentError.value(
+        format,
+        'format',
+        'media_join_unsupported_video_format',
+      ),
     };
     await _runFfmpeg(
       <String>[
@@ -1007,17 +1015,17 @@ class MediaJoinService {
     cancellationToken.throwIfCancelled();
     final file = File(path);
     if (!await file.exists() || await file.length() <= 0) {
-      throw StateError('The $label file is missing or empty.');
+      throw StateError('media_join_validation_missing_output');
     }
     final info = await probe(path);
     if (expectedVideo && !info.hasVideo) {
-      throw StateError('The $label file is missing its video stream.');
+      throw StateError('media_join_validation_missing_video');
     }
     if (expectedAudio && !info.hasAudio) {
-      throw StateError('The $label file is missing its audio stream.');
+      throw StateError('media_join_validation_missing_audio');
     }
     if (!expectedVideo && info.hasVideo) {
-      throw StateError('The $label audio output unexpectedly contains video.');
+      throw StateError('media_join_validation_unexpected_video');
     }
 
     final expectedMs = expectedDuration.inMilliseconds;
@@ -1026,10 +1034,12 @@ class MediaJoinService {
     if (expectedMs > 0 &&
         (actualMs < math.max(1, expectedMs - tolerance) ||
             actualMs > expectedMs + tolerance)) {
-      throw StateError(
-        'Invalid duration for $label: expected ${_ffmpegTime(expectedDuration)}, '
-        'got ${_ffmpegTime(info.duration)}.',
+      await AppLogger.log(
+        'Media join validation duration mismatch label=$label '
+        'expected=${_ffmpegTime(expectedDuration)} '
+        'actual=${_ffmpegTime(info.duration)}',
       );
+      throw StateError('media_join_validation_duration_mismatch');
     }
 
     if (!deepDecode) return;
@@ -1206,11 +1216,7 @@ class MediaJoinService {
         'Media join ffmpeg $step failed returnCode=${returnCode?.getValue()} '
         'logs="${_compactLog(logs)}"',
       );
-      throw StateError(
-        logs.trim().isEmpty
-            ? 'FFmpeg failed with code ${returnCode?.getValue()}.'
-            : logs,
-      );
+      throw StateError('media_join_ffmpeg_failed');
     }
     await AppLogger.log(
       'Media join ffmpeg $step completed returnCode=${returnCode?.getValue()}',

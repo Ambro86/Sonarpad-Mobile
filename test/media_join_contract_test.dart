@@ -86,7 +86,7 @@ void main() {
     expect(service, contains("'video concat re-encode fallback'"));
     expect(service, contains('validationPoints: junctions'));
     expect(service, contains("'-xerror'"));
-    expect(service, contains('source media file changed during processing'));
+    expect(service, contains('media_join_source_changed'));
     expect(service, contains('WakelockPlus.enable()'));
     expect(service, contains('session.cancel()'));
     expect(service, contains('FFmpegKit.cancel()'));
@@ -207,8 +207,8 @@ void main() {
       contains("'Media join UI: cancellation confirmed by user'"),
     );
     expect(screen, contains('await cancellation.cancel();'));
-    expect(service, contains('await session.cancel();'));
-    expect(service, contains('await FFmpegKit.cancel();'));
+    expect(service, contains('await session.cancel().timeout'));
+    expect(service, contains('await FFmpegKit.cancel().timeout'));
     expect(service, contains('cancellationDispatched'));
     expect(service, contains('cancel callback timeout; treating as cancelled'));
     expect(service, contains('throw const MediaJoinCancelled();'));

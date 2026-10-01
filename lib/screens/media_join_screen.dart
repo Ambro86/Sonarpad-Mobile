@@ -91,10 +91,14 @@ class _MediaJoinScreenState extends State<MediaJoinScreen> {
               : l10n.joinMediaAudioLabel;
           return AccessibleListRow(
             id: _accessibleRowId(index),
-            title: '${index + 1}. $fileName',
-            subtitle: '$typeLabel · ${_formatDuration(item.duration)}',
-            accessibilityLabel:
-                '${index + 1}. $fileName. $typeLabel. ${_formatDuration(item.duration)}',
+            title: _itemTitle(index, fileName),
+            subtitle: _itemSubtitle(typeLabel, _formatDuration(item.duration)),
+            accessibilityLabel: _itemAccessibilityLabel(
+              index,
+              fileName,
+              typeLabel,
+              _formatDuration(item.duration),
+            ),
             hint: l10n.joinMediaActionsHint,
             kind: 'action',
             accessibilityButtonTrait: false,
@@ -282,6 +286,20 @@ class _MediaJoinScreenState extends State<MediaJoinScreen> {
     );
   }
 
+  String _itemTitle(int index, String fileName) =>
+      <String>[(index + 1).toString(), fileName].join('. ');
+
+  String _itemSubtitle(String typeLabel, String duration) =>
+      <String>[typeLabel, duration].join(' · ');
+
+  String _itemAccessibilityLabel(
+    int index,
+    String fileName,
+    String typeLabel,
+    String duration,
+  ) =>
+      <String>[(index + 1).toString(), fileName, typeLabel, duration].join('. ');
+
   String _accessibleRowId(int index) => 'join_item_$index';
 
   Widget _buildMediaItem(AppLocalizations l10n, int index) {
@@ -306,8 +324,12 @@ class _MediaJoinScreenState extends State<MediaJoinScreen> {
       child: Semantics(
         container: true,
         button: false,
-        label:
-            '${index + 1}. $fileName. $typeLabel. ${_formatDuration(item.duration)}',
+        label: _itemAccessibilityLabel(
+          index,
+          fileName,
+          typeLabel,
+          _formatDuration(item.duration),
+        ),
         hint: l10n.joinMediaActionsHint,
         customSemanticsActions: _processing
             ? const <CustomSemanticsAction, VoidCallback>{}
@@ -323,12 +345,12 @@ class _MediaJoinScreenState extends State<MediaJoinScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '${index + 1}. $fileName',
+                          _itemTitle(index, fileName),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
                         const SizedBox(height: 4),
-                        Text('$typeLabel · ${_formatDuration(item.duration)}'),
+                        Text(_itemSubtitle(typeLabel, _formatDuration(item.duration))),
                       ],
                     ),
                   ),

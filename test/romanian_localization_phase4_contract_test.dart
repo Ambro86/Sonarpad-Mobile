@@ -72,6 +72,8 @@ void main() {
       'homeRaiPlay',
       'homeLa7Play',
       'homeRaiPlaySound',
+      'joinMediaVideoLabel',
+      'joinMediaAudioLabel',
     };
 
     final identical = <String>{
