@@ -300,6 +300,11 @@ class _CreateAiAudiodescriptionScreenState
     if (text == null || text.isEmpty || !mounted) return;
 
     if (_provider == 'sonarpad') {
+      await AppLogger.log(
+        'SONARPAD_AI_DIAG UI paste code clipboardChars=${text.runes.length} '
+        'trimmedChars=${text.trim().runes.length} trimChanged=${text != text.trim()} '
+        'codeUnits=${text.codeUnits.length}',
+      );
       setState(() {
         _sonarpadCode = text;
         _sonarpadBalanceEur = null;
@@ -339,7 +344,15 @@ class _CreateAiAudiodescriptionScreenState
   }
 
   Future<void> _refreshSonarpadBalance({String? token}) async {
-    if (_loadingSonarpadBalance) return;
+    if (_loadingSonarpadBalance) {
+      await AppLogger.log('SONARPAD_AI_DIAG UI balance refresh skipped alreadyLoading=true');
+      return;
+    }
+    await AppLogger.log(
+      'SONARPAD_AI_DIAG UI balance refresh start explicitToken=${token != null && token.trim().isNotEmpty} '
+      'codeChars=${_sonarpadCode.runes.length} trimmedCodeChars=${_sonarpadCode.trim().runes.length} '
+      'trimChanged=${_sonarpadCode != _sonarpadCode.trim()}',
+    );
     if (mounted) {
       setState(() => _loadingSonarpadBalance = true);
     }
@@ -348,10 +361,14 @@ class _CreateAiAudiodescriptionScreenState
         token: token,
         code: _sonarpadCode,
       );
+      await AppLogger.log('SONARPAD_AI_DIAG UI balance refresh success parsed=true');
       if (!mounted) return;
       setState(() => _sonarpadBalanceEur = balance);
-    } catch (error) {
+    } catch (error, stackTrace) {
       await AppLogger.log('Sonarpad AI balance unavailable: $error');
+      await AppLogger.log(
+        'SONARPAD_AI_DIAG UI balance refresh exception type=${error.runtimeType} error=$error\n$stackTrace',
+      );
       if (!mounted) return;
       setState(() => _sonarpadBalanceEur = null);
     } finally {
@@ -371,25 +388,45 @@ class _CreateAiAudiodescriptionScreenState
   }
 
   Future<void> _activateSonarpadAi() async {
-    if (_activatingSonarpad || _running) return;
+    if (_activatingSonarpad || _running) {
+      await AppLogger.log(
+        'SONARPAD_AI_DIAG UI activate skipped activating=$_activatingSonarpad running=$_running',
+      );
+      return;
+    }
     final l10n = AppLocalizations.of(context);
+    await AppLogger.log(
+      'SONARPAD_AI_DIAG UI activate pressed codeChars=${_sonarpadCode.runes.length} '
+      'trimmedCodeChars=${_sonarpadCode.trim().runes.length} trimChanged=${_sonarpadCode != _sonarpadCode.trim()}',
+    );
     if (_sonarpadCode.trim().isEmpty) {
+      await AppLogger.log('SONARPAD_AI_DIAG UI activate aborted codeEmpty=true');
+      if (!mounted) return;
       showStatusMessage(context, l10n.audioDescriptionSonarpadCodeRequired);
       return;
     }
     setState(() => _activatingSonarpad = true);
     try {
       final token = await _service.activateSonarpadAi(_sonarpadCode);
+      await AppLogger.log(
+        'SONARPAD_AI_DIAG UI activate service success tokenChars=${token.length} startsSst=${token.startsWith('sst_')}',
+      );
       await AiAudioDescriptionPreferences.saveProvider('sonarpad');
       if (!mounted) return;
       setState(() => _provider = 'sonarpad');
       showStatusMessage(context, l10n.audioDescriptionSonarpadActivated);
       unawaited(_refreshSonarpadBalance(token: token));
-    } on SonarpadAiDeviceLimitReachedException {
+    } on SonarpadAiDeviceLimitReachedException catch (error, stackTrace) {
+      await AppLogger.log(
+        'SONARPAD_AI_DIAG UI activate device-limit error=$error\n$stackTrace',
+      );
       if (!mounted) return;
       setState(() => _technicalError = null);
       showStatusMessage(context, l10n.audioDescriptionSonarpadDeviceLimitReached);
-    } catch (error) {
+    } catch (error, stackTrace) {
+      await AppLogger.log(
+        'SONARPAD_AI_DIAG UI activate exception type=${error.runtimeType} error=$error\n$stackTrace',
+      );
       if (!mounted) return;
       setState(() => _technicalError = error.toString());
       showStatusMessage(context, l10n.audioDescriptionSonarpadActivationError);
@@ -625,6 +662,18 @@ class _CreateAiAudiodescriptionScreenState
       return;
     }
     if (!mounted) return;
+    if (_provider == 'sonarpad') {
+      final savedToken = await AiAudioDescriptionPreferences.loadSonarpadToken();
+      final savedCode = await AiAudioDescriptionPreferences.loadSonarpadCode();
+      await AppLogger.log(
+        'SONARPAD_AI_DIAG UI create preflight resumeOnly=$resumeOnly source=${p.basename(sourcePath)} '
+        'codeChars=${_sonarpadCode.runes.length} trimmedCodeChars=${_sonarpadCode.trim().runes.length} '
+        'trimChanged=${_sonarpadCode != _sonarpadCode.trim()} savedCodePresent=${savedCode != null} '
+        'savedCodeChars=${savedCode?.runes.length ?? 0} savedTokenPresent=${savedToken != null} '
+        'savedTokenChars=${savedToken?.length ?? 0}',
+      );
+    }
+    if (!mounted) return;
     if (_provider == 'gemini' && _apiKey.trim().isEmpty) {
       showStatusMessage(context, l10n.audioDescriptionApiKeyRequired);
       return;
@@ -659,6 +708,14 @@ class _CreateAiAudiodescriptionScreenState
       _technicalError = null;
     });
     try {
+      if (_provider == 'sonarpad') {
+        await AppLogger.log(
+          'SONARPAD_AI_DIAG UI create dispatch provider=sonarpad language=$_language verbosity=$_verbosity '
+          'extended=$_extendedPauses characters=$_recognizeCharacters screenText=$_recognizeScreenText '
+          'keepCatalog=$_keepCharacterCatalog saveProject=$_saveProject createVideo=$_createVideoOutput '
+          'ttsEngine=$_ttsEngine',
+        );
+      }
       final result = await _service.create(
         sourcePath: sourcePath,
         settings: _currentSettings(),
@@ -1605,6 +1662,9 @@ class _CreateAiAudiodescriptionScreenState
                     }
                   });
                   if (id == 'provider') {
+                    await AppLogger.log(
+                      'SONARPAD_AI_DIAG UI provider changed value=$value codeChars=${_sonarpadCode.runes.length}',
+                    );
                     await AiAudioDescriptionPreferences.saveProvider(value);
                     if (value == 'sonarpad') {
                       unawaited(_refreshSonarpadBalance());

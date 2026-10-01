@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math' as math;
 
+import 'package:crypto/crypto.dart';
 import 'package:ffmpeg_kit_flutter_new/ffmpeg_kit.dart';
 import 'package:ffmpeg_kit_flutter_new/ffmpeg_session.dart';
 import 'package:ffmpeg_kit_flutter_new/ffprobe_kit.dart';
@@ -664,6 +665,213 @@ class AiAudioDescriptionService {
   final Set<String> _validatedGeminiModels = <String>{};
   bool _cancelRequested = false;
   Completer<void> _cancelSignal = Completer<void>();
+  int _sonarpadAiTraceSequence = 0;
+
+  String _nextSonarpadAiTrace(String action) {
+    _sonarpadAiTraceSequence++;
+    return 'SAI-${_sonarpadAiTraceSequence.toString().padLeft(4, '0')}-$action';
+  }
+
+  String _secretFingerprint(String value) {
+    if (value.isEmpty) return 'empty';
+    return sha256.convert(utf8.encode(value)).toString().substring(0, 16);
+  }
+
+  String _sonarpadCodeDiagnostics(String raw) {
+    final trimmed = raw.trim();
+    var whitespace = 0;
+    var nonAscii = 0;
+    var digits = 0;
+    var letters = 0;
+    var upper = 0;
+    var lower = 0;
+    var hyphens = 0;
+    var underscores = 0;
+    var other = 0;
+    final suspicious = <String>{};
+    for (final rune in raw.runes) {
+      final char = String.fromCharCode(rune);
+      if (RegExp(r'\s', unicode: true).hasMatch(char)) whitespace++;
+      if (rune > 0x7f) nonAscii++;
+      if (rune >= 0x30 && rune <= 0x39) {
+        digits++;
+      } else if ((rune >= 0x41 && rune <= 0x5a) ||
+          (rune >= 0x61 && rune <= 0x7a)) {
+        letters++;
+        if (rune >= 0x41 && rune <= 0x5a) upper++;
+        if (rune >= 0x61 && rune <= 0x7a) lower++;
+      } else if (rune == 0x2d) {
+        hyphens++;
+      } else if (rune == 0x5f) {
+        underscores++;
+      } else {
+        other++;
+      }
+      if (rune == 0x200b ||
+          rune == 0x200c ||
+          rune == 0x200d ||
+          rune == 0x2060 ||
+          rune == 0xfeff ||
+          (rune < 0x20 && rune != 0x09 && rune != 0x0a && rune != 0x0d)) {
+        suspicious.add('U+${rune.toRadixString(16).toUpperCase().padLeft(4, '0')}');
+      }
+    }
+    return 'rawChars=${raw.runes.length} trimmedChars=${trimmed.runes.length} '
+        'rawUtf8=${utf8.encode(raw).length} trimmedUtf8=${utf8.encode(trimmed).length} '
+        'trimChanged=${raw != trimmed} whitespace=$whitespace nonAscii=$nonAscii '
+        'letters=$letters upper=$upper lower=$lower digits=$digits hyphens=$hyphens '
+        'underscores=$underscores other=$other suspicious=${suspicious.isEmpty ? 'none' : suspicious.join(',')} '
+        'fingerprint=${_secretFingerprint(trimmed)}';
+  }
+
+  String _tokenDiagnostics(String token) =>
+      'chars=${token.length} utf8=${utf8.encode(token).length} startsSst=${token.startsWith('sst_')} '
+      'fingerprint=${_secretFingerprint(token)}';
+
+  String _safeUriForLog(Uri uri) {
+    final port = uri.hasPort ? ':${uri.port}' : '';
+    final queryKeys = uri.queryParametersAll.keys.toList()..sort();
+    return '${uri.scheme}://${uri.host}$port${uri.path}'
+        '${queryKeys.isEmpty ? '' : ' queryKeys=${queryKeys.join(',')}'}';
+  }
+
+  String _safeHeadersForLog(Map<String, String> headers) {
+    final parts = <String>[];
+    final keys = headers.keys.toList()..sort();
+    for (final key in keys) {
+      final value = headers[key] ?? '';
+      final lowerKey = key.toLowerCase();
+      if (lowerKey == 'authorization') {
+        final bearer = value.toLowerCase().startsWith('bearer ')
+            ? value.substring(7).trim()
+            : value.trim();
+        parts.add('$key=<redacted ${_tokenDiagnostics(bearer)}>');
+      } else if (lowerKey.contains('api-key') || lowerKey == 'x-goog-api-key') {
+        parts.add('$key=<redacted fingerprint=${_secretFingerprint(value)}>');
+      } else {
+        parts.add('$key=${value.length > 180 ? '${value.substring(0, 180)}…' : value}');
+      }
+    }
+    return parts.join('; ');
+  }
+
+  Object? _redactSonarpadAiLogValue(Object? value, {String? key}) {
+    final lower = key?.toLowerCase() ?? '';
+    if (lower == 'code' ||
+        lower.contains('token') ||
+        lower == 'authorization' ||
+        lower == 'upload_url' ||
+        lower == 'uploadurl' ||
+        lower == 'file_uri' ||
+        lower == 'fileuri') {
+      final text = value?.toString() ?? '';
+      return '<redacted chars=${text.length} fingerprint=${_secretFingerprint(text)}>';
+    }
+    if (value is Map) {
+      return <String, Object?>{
+        for (final entry in value.entries)
+          entry.key.toString(): _redactSonarpadAiLogValue(
+            entry.value,
+            key: entry.key.toString(),
+          ),
+      };
+    }
+    if (value is List) {
+      return value
+          .map((item) => _redactSonarpadAiLogValue(item))
+          .toList(growable: false);
+    }
+    return value;
+  }
+
+  String _safeResponsePreview(String body, {int maxChars = 1200}) {
+    if (body.isEmpty) return '<empty>';
+    String safe;
+    try {
+      safe = jsonEncode(_redactSonarpadAiLogValue(jsonDecode(body)));
+    } catch (_) {
+      safe = body;
+    }
+    return safe.length <= maxChars ? safe : '${safe.substring(0, maxChars)}…';
+  }
+
+  String _sonarpadBodySummary(Map<String, Object?> body) {
+    final keys = body.keys.toList()..sort();
+    final parts = <String>['keys=${keys.join(',')}'];
+    if (body.containsKey('mime_type')) parts.add('mime_type=${body['mime_type']}');
+    if (body.containsKey('bytes')) parts.add('bytes=${body['bytes']}');
+    if (body.containsKey('display_name')) {
+      final name = body['display_name']?.toString() ?? '';
+      parts.add('display_nameChars=${name.length} display_name=${p.basename(name)}');
+    }
+    if (body.containsKey('upload_id')) {
+      final uploadId = body['upload_id']?.toString() ?? '';
+      parts.add('uploadIdFingerprint=${_secretFingerprint(uploadId)}');
+    }
+    if (body.containsKey('file_name')) {
+      final fileName = body['file_name']?.toString() ?? '';
+      parts.add('fileNameChars=${fileName.length} fileNameFingerprint=${_secretFingerprint(fileName)}');
+    }
+    final systemInstruction = body['systemInstruction'];
+    if (systemInstruction != null) {
+      final text = systemInstruction.toString();
+      parts.add('systemInstructionChars=${text.length} systemInstructionFingerprint=${_secretFingerprint(text)}');
+    }
+    final contents = body['contents'];
+    if (contents is List) {
+      var textChars = 0;
+      var fileDataCount = 0;
+      final fileHosts = <String>{};
+      for (final item in contents) {
+        if (item is! Map) continue;
+        final rawParts = item['parts'];
+        if (rawParts is! List) continue;
+        for (final part in rawParts) {
+          if (part is! Map) continue;
+          if (part['text'] != null) textChars += part['text'].toString().length;
+          final fileData = part['fileData'];
+          if (fileData is Map) {
+            fileDataCount++;
+            final rawUri = fileData['fileUri']?.toString() ?? '';
+            final parsed = Uri.tryParse(rawUri);
+            if (parsed != null && parsed.host.isNotEmpty) fileHosts.add(parsed.host);
+          }
+        }
+      }
+      parts.add('contents=${contents.length} textChars=$textChars fileData=$fileDataCount fileHosts=${fileHosts.isEmpty ? 'none' : fileHosts.join(',')}');
+    }
+    final generationConfig = body['generationConfig'];
+    if (generationConfig is Map) {
+      parts.add('generationConfig=${jsonEncode(generationConfig)}');
+    }
+    final safety = body['safetySettings'];
+    if (safety is List) parts.add('safetySettings=${safety.length}');
+    return parts.join(' ');
+  }
+
+  String _responseHeaderDiagnostics(Map<String, String> headers) {
+    const interesting = <String>{
+      'content-type',
+      'content-length',
+      'date',
+      'server',
+      'x-request-id',
+      'x-correlation-id',
+      'x-trace-id',
+      'cf-ray',
+      'retry-after',
+    };
+    final parts = <String>[];
+    for (final entry in headers.entries) {
+      if (interesting.contains(entry.key.toLowerCase())) {
+        parts.add('${entry.key}=${entry.value}');
+      }
+    }
+    return parts.isEmpty ? '<none>' : parts.join('; ');
+  }
+
+  Future<void> _logSonarpadAi(String message) =>
+      AppLogger.log('SONARPAD_AI_DIAG $message');
 
   void cancel() {
     if (_cancelRequested) return;
@@ -741,30 +949,70 @@ class AiAudioDescriptionService {
 
   Future<String> activateSonarpadAi(String code) async {
     _ensureHttpClient();
+    final trace = _nextSonarpadAiTrace('activate');
     final trimmed = code.trim();
-    if (trimmed.isEmpty) throw StateError('SONARPAD_AI_CODE_REQUIRED');
+    final savedCode = await AiAudioDescriptionPreferences.loadSonarpadCode();
+    final deviceId = await AiAudioDescriptionPreferences.deviceId();
+    final deviceName = '${Platform.operatingSystem} Sonarpad Mobile';
+    await _logSonarpadAi(
+      '$trace START endpoint=$_sonarpadAiBase/activate platform=${Platform.operatingSystem} '
+      'osVersion=${Platform.operatingSystemVersion.replaceAll(RegExp(r'\s+'), ' ')} '
+      'deviceName="$deviceName" code={${_sonarpadCodeDiagnostics(code)}} '
+      'savedCodePresent=${savedCode != null && savedCode.isNotEmpty} '
+      'savedCodeFingerprint=${savedCode == null ? 'none' : _secretFingerprint(savedCode)} '
+      'inputMatchesSaved=${savedCode != null && trimmed == savedCode} '
+      'deviceIdChars=${deviceId.length} deviceIdFingerprint=${_secretFingerprint(deviceId)}',
+    );
+    if (trimmed.isEmpty) {
+      await _logSonarpadAi('$trace ABORT code empty after trim');
+      throw StateError('SONARPAD_AI_CODE_REQUIRED');
+    }
+    final uri = Uri.parse('$_sonarpadAiBase/activate');
+    final headers = const {
+      'Content-Type': _sonarpadAiJsonContentType,
+      'Accept': 'application/json',
+      'User-Agent': _sonarpadAiUserAgent,
+    };
+    final body = <String, Object?>{
+      'code': trimmed,
+      'device_id': deviceId,
+      'device_name': deviceName,
+    };
+    await _logSonarpadAi(
+      '$trace REQUEST method=POST uri=${_safeUriForLog(uri)} timeout=60s '
+      'headers={${_safeHeadersForLog(headers)}} '
+      'jsonBytes=${utf8.encode(jsonEncode(body)).length} '
+      'bodyKeys=${body.keys.join(',')} codeFingerprint=${_secretFingerprint(trimmed)} '
+      'deviceIdFingerprint=${_secretFingerprint(deviceId)}',
+    );
+    final stopwatch = Stopwatch()..start();
     try {
       final response = await _http
           .post(
-            Uri.parse('$_sonarpadAiBase/activate'),
-            headers: const {
-              'Content-Type': _sonarpadAiJsonContentType,
-              'Accept': 'application/json',
-              'User-Agent': _sonarpadAiUserAgent,
-            },
-            body: jsonEncode(<String, Object?>{
-              'code': trimmed,
-              'device_id': await AiAudioDescriptionPreferences.deviceId(),
-              'device_name': '${Platform.operatingSystem} Sonarpad Mobile',
-            }),
+            uri,
+            headers: headers,
+            body: jsonEncode(body),
           )
           .timeout(const Duration(seconds: 60));
+      stopwatch.stop();
+      final errorCode = _sonarpadErrorCode(response.body);
+      await _logSonarpadAi(
+        '$trace RESPONSE status=${response.statusCode} elapsedMs=${stopwatch.elapsedMilliseconds} '
+        'bodyBytes=${utf8.encode(response.body).length} errorCode=${errorCode ?? 'none'} '
+        'headers={${_responseHeaderDiagnostics(response.headers)}} '
+        'body=${_safeResponsePreview(response.body)}',
+      );
       if (response.statusCode < 200 || response.statusCode >= 300) {
         await AppLogger.log(
           'Sonarpad AI activation failed HTTP ${response.statusCode}: ${_short(response.body)}',
         );
+        await _logSonarpadAi(
+          '$trace FAILURE classifiedHttp=${AudioDescriptionFallbacks.classifyHttp(statusCode: response.statusCode, body: response.body).name} '
+          'errorCode=${errorCode ?? 'none'} codeFingerprint=${_secretFingerprint(trimmed)} '
+          'deviceIdFingerprint=${_secretFingerprint(deviceId)}',
+        );
         if (response.statusCode == 403 &&
-            _sonarpadErrorCode(response.body) == 'device_limit_reached') {
+            errorCode == 'device_limit_reached') {
           throw const SonarpadAiDeviceLimitReachedException();
         }
         throw HttpException(
@@ -773,54 +1021,126 @@ class AiAudioDescriptionService {
       }
       final decoded = jsonDecode(response.body);
       final token = _findString(decoded, const ['session_token', 'token']);
+      await _logSonarpadAi(
+        '$trace PARSE decodedType=${decoded.runtimeType} '
+        'topKeys=${decoded is Map ? decoded.keys.map((e) => e.toString()).join(',') : 'n/a'} '
+        'tokenPresent=${token != null} tokenDiag=${token == null ? 'none' : _tokenDiagnostics(token)}',
+      );
       if (token == null || !token.startsWith('sst_')) {
         await AppLogger.log('Sonarpad AI activation returned an invalid session token');
+        await _logSonarpadAi('$trace FAILURE invalid session token');
         throw StateError('SONARPAD_AI_TOKEN_MISSING');
       }
       await AiAudioDescriptionPreferences.saveSonarpadToken(token);
       await AiAudioDescriptionPreferences.saveSonarpadCode(trimmed);
+      final verifyToken = await AiAudioDescriptionPreferences.loadSonarpadToken();
+      final verifyCode = await AiAudioDescriptionPreferences.loadSonarpadCode();
+      await _logSonarpadAi(
+        '$trace PERSIST tokenSaved=${verifyToken == token} '
+        'tokenFingerprint=${_secretFingerprint(token)} codeSaved=${verifyCode == trimmed} '
+        'codeFingerprint=${_secretFingerprint(trimmed)}',
+      );
       await AppLogger.log('Sonarpad AI activation succeeded');
+      await _logSonarpadAi('$trace SUCCESS');
       return token;
-    } catch (error) {
+    } catch (error, stackTrace) {
+      if (stopwatch.isRunning) stopwatch.stop();
       await AppLogger.log('Sonarpad AI activation exception: $error');
+      await _logSonarpadAi(
+        '$trace EXCEPTION elapsedMs=${stopwatch.elapsedMilliseconds} '
+        'type=${error.runtimeType} error=$error\n$stackTrace',
+      );
       rethrow;
     }
   }
 
   Future<double> fetchSonarpadBalance({String? token, String? code}) async {
     _ensureHttpClient();
+    final trace = _nextSonarpadAiTrace('account');
     var activeToken = token?.trim() ?? '';
     final savedCode = await AiAudioDescriptionPreferences.loadSonarpadCode();
     final requestedCode = code?.trim() ?? '';
     final accessCode = requestedCode.isNotEmpty ? requestedCode : savedCode ?? '';
+    final savedToken = await AiAudioDescriptionPreferences.loadSonarpadToken() ?? '';
+    await _logSonarpadAi(
+      '$trace START explicitToken=${activeToken.isNotEmpty} '
+      'explicitTokenDiag=${activeToken.isEmpty ? 'none' : _tokenDiagnostics(activeToken)} '
+      'savedTokenPresent=${savedToken.isNotEmpty} '
+      'savedTokenDiag=${savedToken.isEmpty ? 'none' : _tokenDiagnostics(savedToken)} '
+      'requestedCodePresent=${requestedCode.isNotEmpty} '
+      'requestedCodeFingerprint=${requestedCode.isEmpty ? 'none' : _secretFingerprint(requestedCode)} '
+      'savedCodePresent=${savedCode != null && savedCode.isNotEmpty} '
+      'savedCodeFingerprint=${savedCode == null ? 'none' : _secretFingerprint(savedCode)} '
+      'selectedCodeSource=${requestedCode.isNotEmpty ? 'argument' : (savedCode != null ? 'saved' : 'none')}',
+    );
     if (activeToken.isEmpty) {
-      activeToken = await AiAudioDescriptionPreferences.loadSonarpadToken() ?? '';
+      activeToken = savedToken;
+      await _logSonarpadAi(
+        '$trace TOKEN source=${activeToken.isEmpty ? 'none' : 'saved'} '
+        'diag=${activeToken.isEmpty ? 'none' : _tokenDiagnostics(activeToken)}',
+      );
     }
     if (activeToken.isEmpty) {
-      if (accessCode.isEmpty) throw StateError('SONARPAD_AI_CODE_REQUIRED');
+      if (accessCode.isEmpty) {
+        await _logSonarpadAi('$trace ABORT no token and no access code');
+        throw StateError('SONARPAD_AI_CODE_REQUIRED');
+      }
+      await _logSonarpadAi('$trace TOKEN activating because no token is available');
       activeToken = await activateSonarpadAi(accessCode);
     }
 
-    Future<http.Response> requestAccount(String bearer) => _http
-        .get(
-          Uri.parse('$_sonarpadAiBase/account'),
-          headers: <String, String>{
-            'Accept': 'application/json',
-            'User-Agent': _sonarpadAiUserAgent,
-            'Authorization': 'Bearer $bearer',
-          },
-        )
-        .timeout(const Duration(seconds: 60));
+    Future<http.Response> requestAccount(String bearer, int attempt) async {
+      final uri = Uri.parse('$_sonarpadAiBase/account');
+      final headers = <String, String>{
+        'Accept': 'application/json',
+        'User-Agent': _sonarpadAiUserAgent,
+        'Authorization': 'Bearer $bearer',
+      };
+      await _logSonarpadAi(
+        '$trace REQUEST attempt=$attempt method=GET uri=${_safeUriForLog(uri)} '
+        'headers={${_safeHeadersForLog(headers)}}',
+      );
+      final stopwatch = Stopwatch()..start();
+      try {
+        final response = await _http
+            .get(uri, headers: headers)
+            .timeout(const Duration(seconds: 60));
+        stopwatch.stop();
+        await _logSonarpadAi(
+          '$trace RESPONSE attempt=$attempt status=${response.statusCode} '
+          'elapsedMs=${stopwatch.elapsedMilliseconds} bodyBytes=${utf8.encode(response.body).length} '
+          'headers={${_responseHeaderDiagnostics(response.headers)}} '
+          'body=${_safeResponsePreview(response.body)}',
+        );
+        return response;
+      } catch (error, stackTrace) {
+        stopwatch.stop();
+        await _logSonarpadAi(
+          '$trace REQUEST_EXCEPTION attempt=$attempt elapsedMs=${stopwatch.elapsedMilliseconds} '
+          'type=${error.runtimeType} error=$error\n$stackTrace',
+        );
+        rethrow;
+      }
+    }
 
-    var response = await requestAccount(activeToken);
+    var response = await requestAccount(activeToken, 1);
     if (response.statusCode == 401 && accessCode.isNotEmpty) {
+      await _logSonarpadAi(
+        '$trace REAUTH account returned 401; clearing token and activating again '
+        'codeFingerprint=${_secretFingerprint(accessCode)}',
+      );
       await AiAudioDescriptionPreferences.clearSonarpadToken();
       activeToken = await activateSonarpadAi(accessCode);
-      response = await requestAccount(activeToken);
+      response = await requestAccount(activeToken, 2);
     }
     if (response.statusCode < 200 || response.statusCode >= 300) {
       await AppLogger.log(
         'Sonarpad AI account failed HTTP ${response.statusCode}: ${_short(response.body)}',
+      );
+      await _logSonarpadAi(
+        '$trace FAILURE status=${response.statusCode} '
+        'classification=${AudioDescriptionFallbacks.classifyHttp(statusCode: response.statusCode, body: response.body).name} '
+        'errorCode=${_sonarpadErrorCode(response.body) ?? 'none'}',
       );
       throw HttpException(
         'Sonarpad AI account HTTP ${response.statusCode}: ${_short(response.body)}',
@@ -828,15 +1148,22 @@ class AiAudioDescriptionService {
     }
     final decoded = jsonDecode(response.body);
     if (decoded is! Map) {
+      await _logSonarpadAi('$trace PARSE_FAILURE decodedType=${decoded.runtimeType}');
       throw const FormatException('Invalid Sonarpad AI account response');
     }
     final rawBalance = decoded['balance_eur'];
     final balance = rawBalance is num
         ? rawBalance.toDouble()
         : double.tryParse(rawBalance?.toString() ?? '');
+    await _logSonarpadAi(
+      '$trace PARSE topKeys=${decoded.keys.map((e) => e.toString()).join(',')} '
+      'balancePresent=${rawBalance != null} balanceType=${rawBalance.runtimeType} '
+      'balanceParsed=${balance != null}',
+    );
     if (balance == null) {
       throw const FormatException('Missing Sonarpad AI balance');
     }
+    await _logSonarpadAi('$trace SUCCESS account parsed');
     return balance;
   }
 
@@ -1076,7 +1403,33 @@ class AiAudioDescriptionService {
     _resetCancellation();
     final source = File(sourcePath);
     if (!await source.exists()) throw StateError('AUDIO_DESCRIPTION_SOURCE_MISSING');
+    if (settings.provider == 'sonarpad') {
+      final sourceLength = await source.length();
+      final savedCode = await AiAudioDescriptionPreferences.loadSonarpadCode();
+      final savedToken = await AiAudioDescriptionPreferences.loadSonarpadToken();
+      await _logSonarpadAi(
+        'CREATE START source=${p.basename(sourcePath)} bytes=$sourceLength '
+        'language=${settings.languageCode} verbosity=${settings.verbosity} '
+        'extended=${settings.allowExtendedPauses} characters=${settings.recognizeCharacters} '
+        'screenText=${settings.recognizeScreenText} keepCatalog=${settings.keepCharacterCatalog} '
+        'saveProject=${settings.saveProject} createVideo=${settings.createVideoOutput} '
+        'ttsEngine=${settings.ttsEngine} modelHint=${settings.geminiModel} '
+        'inputCode={${_sonarpadCodeDiagnostics(settings.sonarpadCode)}} '
+        'savedCodePresent=${savedCode != null} '
+        'savedCodeFingerprint=${savedCode == null ? 'none' : _secretFingerprint(savedCode)} '
+        'savedTokenPresent=${savedToken != null} '
+        'savedTokenDiag=${savedToken == null ? 'none' : _tokenDiagnostics(savedToken)}',
+      );
+    }
     await AiAudioDescriptionPreferences.save(settings);
+    if (settings.provider == 'sonarpad') {
+      final persistedCode = await AiAudioDescriptionPreferences.loadSonarpadCode();
+      await _logSonarpadAi(
+        'CREATE preferences saved provider=sonarpad codePresent=${persistedCode != null} '
+        'codeFingerprint=${persistedCode == null ? 'none' : _secretFingerprint(persistedCode)} '
+        'matchesInput=${persistedCode == settings.sonarpadCode.trim()}',
+      );
+    }
 
     final operationDir = await _createOperationDirectory();
     final canonicalWav = p.join(operationDir.path, 'analysis.wav');
@@ -1130,6 +1483,12 @@ class AiAudioDescriptionService {
       final token = settings.provider == 'sonarpad'
           ? await _ensureSonarpadToken(settings.sonarpadCode)
           : null;
+      if (settings.provider == 'sonarpad') {
+        await _logSonarpadAi(
+          'CREATE token ready ${token == null ? 'none' : _tokenDiagnostics(token)} '
+          'duration=${pyannote.durationSec.toStringAsFixed(3)} slots=${slots.length}',
+        );
+      }
       final chunkCount = math.max(
         1,
         (pyannote.durationSec / _visualChunkSeconds).ceil(),
@@ -2786,8 +3145,21 @@ $screenTextSchema$coreDirectives
     bool allowSessionReactivation = true,
   }) async {
     if (settings.provider == 'sonarpad') {
-      var token = await AiAudioDescriptionPreferences.loadSonarpadToken() ?? sonarpadToken;
+      final trace = _nextSonarpadAiTrace('text-only');
+      final savedToken = await AiAudioDescriptionPreferences.loadSonarpadToken();
+      var token = savedToken ?? sonarpadToken;
+      await _logSonarpadAi(
+        '$trace START model=$model enableThinking=$enableThinking temperature=$temperature '
+        'idempotencyKey=$idempotencyKey allowSessionReactivation=$allowSessionReactivation '
+        'promptChars=${prompt.length} promptFingerprint=${_secretFingerprint(prompt)} '
+        'systemInstructionChars=${systemInstruction?.length ?? 0} '
+        'systemInstructionFingerprint=${systemInstruction == null ? 'none' : _secretFingerprint(systemInstruction)} '
+        'savedTokenPresent=${savedToken != null} argumentTokenPresent=${sonarpadToken != null && sonarpadToken.isNotEmpty} '
+        'selectedTokenDiag=${token == null || token.isEmpty ? 'none' : _tokenDiagnostics(token)} '
+        'code={${_sonarpadCodeDiagnostics(settings.sonarpadCode)}}',
+      );
       if (token == null || token.isEmpty) {
+        await _logSonarpadAi('$trace TOKEN missing; invoking ensure-token');
         token = await _ensureSonarpadToken(settings.sonarpadCode);
       }
       final response = await _postJsonWithRetry(
@@ -2820,6 +3192,10 @@ $screenTextSchema$coreDirectives
         onHighDemand: onHighDemand,
       );
       if (response.statusCode == 401 || response.statusCode == 403) {
+        await _logSonarpadAi(
+          '$trace SESSION_DENIED status=${response.statusCode} allowReactivation=$allowSessionReactivation '
+          'codePresent=${settings.sonarpadCode.trim().isNotEmpty}',
+        );
         if (!allowSessionReactivation || settings.sonarpadCode.trim().isEmpty) {
           throw _AdProviderException(
             AdFailureKind.permissionDenied,
@@ -2827,8 +3203,10 @@ $screenTextSchema$coreDirectives
             statusCode: response.statusCode,
           );
         }
+        await _logSonarpadAi('$trace REACTIVATE clearing saved token');
         await AiAudioDescriptionPreferences.clearSonarpadToken();
         token = await activateSonarpadAi(settings.sonarpadCode);
+        await _logSonarpadAi('$trace REACTIVATE success token=${_tokenDiagnostics(token)}');
         return _generateTextOnly(
           settings: settings,
           sonarpadToken: token,
@@ -2844,16 +3222,27 @@ $screenTextSchema$coreDirectives
         );
       }
       if (response.statusCode < 200 || response.statusCode >= 300) {
+        final kind = AudioDescriptionFallbacks.classifyHttp(
+          statusCode: response.statusCode,
+          body: response.body,
+        );
+        await _logSonarpadAi(
+          '$trace FAILURE status=${response.statusCode} kind=${kind.name} '
+          'errorCode=${_sonarpadErrorCode(response.body) ?? 'none'}',
+        );
         throw _AdProviderException(
-          AudioDescriptionFallbacks.classifyHttp(
-            statusCode: response.statusCode,
-            body: response.body,
-          ),
+          kind,
           'Sonarpad AI text generation HTTP ${response.statusCode}',
           statusCode: response.statusCode,
         );
       }
-      return _extractCandidateText(jsonDecode(response.body));
+      final decoded = jsonDecode(response.body);
+      final text = _extractCandidateText(decoded);
+      await _logSonarpadAi(
+        '$trace SUCCESS decodedType=${decoded.runtimeType} textChars=${text.length} '
+        'textFingerprint=${_secretFingerprint(text)}',
+      );
+      return text;
     }
 
     var activeModel = await _validateGeminiModel(
@@ -5301,16 +5690,32 @@ $screenTextSchema$coreDirectives
   }
 
   Future<String> _ensureSonarpadToken(String code) async {
+    final trace = _nextSonarpadAiTrace('ensure-token');
     final trimmed = code.trim();
     final existing = await AiAudioDescriptionPreferences.loadSonarpadToken();
     final savedCode = await AiAudioDescriptionPreferences.loadSonarpadCode();
+    await _logSonarpadAi(
+      '$trace START inputCode={${_sonarpadCodeDiagnostics(code)}} '
+      'existingTokenPresent=${existing != null} '
+      'existingTokenDiag=${existing == null ? 'none' : _tokenDiagnostics(existing)} '
+      'savedCodePresent=${savedCode != null} '
+      'savedCodeFingerprint=${savedCode == null ? 'none' : _secretFingerprint(savedCode)} '
+      'trimmedMatchesSaved=${savedCode != null && trimmed == savedCode}',
+    );
     if (existing != null && (trimmed.isEmpty || trimmed == savedCode)) {
+      await _logSonarpadAi('$trace RETURN existing saved token');
       return existing;
     }
     if (trimmed.isEmpty) {
+      await _logSonarpadAi('$trace ABORT code empty and reusable token unavailable');
       throw StateError('SONARPAD_AI_CODE_REQUIRED');
     }
-    return activateSonarpadAi(trimmed);
+    await _logSonarpadAi(
+      '$trace ACTIVATE reason=${existing == null ? 'no_saved_token' : 'input_code_differs_from_saved_code'}',
+    );
+    final token = await activateSonarpadAi(trimmed);
+    await _logSonarpadAi('$trace RETURN newly activated token ${_tokenDiagnostics(token)}');
+    return token;
   }
 
   Map<String, Object?> _windowsGenerationConfig(
@@ -5727,13 +6132,27 @@ $screenTextSchema$coreDirectives
     int prohibitedAttempts = AudioDescriptionFallbacks.prohibitedContentMaxAttempts,
     bool allowSessionReactivation = true,
   }) async {
+    final trace = _nextSonarpadAiTrace('chunk');
     final file = File(chunkPath);
     final length = await file.length();
-    var activeToken =
-        await AiAudioDescriptionPreferences.loadSonarpadToken() ?? token;
+    final savedToken = await AiAudioDescriptionPreferences.loadSonarpadToken();
+    var activeToken = savedToken ?? token;
     final mime = AudioDescriptionFallbacks.mimeTypeForPath(chunkPath);
+    await _logSonarpadAi(
+      '$trace START chunk=${p.basename(chunkPath)} bytes=$length mime=$mime '
+      'modelHint=$modelHint enableThinking=$enableThinking idempotencyKey=$idempotencyKey '
+      'allowSessionReactivation=$allowSessionReactivation prohibitedAttempts=$prohibitedAttempts '
+      'inputTokenDiag=${_tokenDiagnostics(token)} savedTokenPresent=${savedToken != null} '
+      'activeTokenSource=${savedToken != null ? 'saved' : 'argument'} '
+      'activeTokenDiag=${_tokenDiagnostics(activeToken)} '
+      'code={${_sonarpadCodeDiagnostics(sonarpadCode)}} '
+      'systemInstructionChars=${prompt.systemInstruction.length} '
+      'systemInstructionFingerprint=${_secretFingerprint(prompt.systemInstruction)} '
+      'userPromptChars=${prompt.userPrompt.length} userPromptFingerprint=${_secretFingerprint(prompt.userPrompt)}',
+    );
 
     Future<_AiGenerationResult> attempt() async {
+      await _logSonarpadAi('$trace ATTEMPT begin activeToken=${_tokenDiagnostics(activeToken)}');
       Map<String, String> headers() => <String, String>{
         'Authorization': 'Bearer $activeToken',
         'Content-Type': _sonarpadAiJsonContentType,
@@ -5773,11 +6192,25 @@ $screenTextSchema$coreDirectives
       final startJson = jsonDecode(start.body);
       final uploadUrl = _findString(startJson, const ['upload_url', 'uploadUrl']);
       final uploadId = _findString(startJson, const ['upload_id', 'uploadId']);
+      await _logSonarpadAi(
+        '$trace UPLOAD_START_PARSED decodedType=${startJson.runtimeType} '
+        'topKeys=${startJson is Map ? startJson.keys.map((e) => e.toString()).join(',') : 'n/a'} '
+        'uploadUrlPresent=${uploadUrl != null} '
+        'uploadUrl=${uploadUrl == null ? 'none' : _safeUriForLog(Uri.parse(uploadUrl))} '
+        'uploadIdPresent=${uploadId != null} '
+        'uploadIdFingerprint=${uploadId == null ? 'none' : _secretFingerprint(uploadId)}',
+      );
       if (uploadUrl == null || uploadId == null) {
+        await _logSonarpadAi('$trace FAILURE invalid upload/start response');
         throw StateError('SONARPAD_AI_UPLOAD_START_INVALID');
       }
 
-      final uploaded = await _streamFileUpload(uploadUrl, file, mimeType: mime);
+      final uploaded = await _streamFileUpload(
+        uploadUrl,
+        file,
+        mimeType: mime,
+        diagnosticLabel: 'Sonarpad AI direct upload',
+      );
       if (uploaded.statusCode < 200 || uploaded.statusCode >= 300) {
         throw _AdProviderException(
           AudioDescriptionFallbacks.classifyHttp(
@@ -5791,7 +6224,17 @@ $screenTextSchema$coreDirectives
       final uploadedJson = jsonDecode(uploaded.body);
       final fileName = _findString(uploadedJson, const ['name']);
       final uploadedUri = _findString(uploadedJson, const ['uri', 'fileUri', 'file_uri']);
-      if (fileName == null) throw StateError('SONARPAD_AI_GOOGLE_FILE_NAME_MISSING');
+      await _logSonarpadAi(
+        '$trace DIRECT_UPLOAD_PARSED decodedType=${uploadedJson.runtimeType} '
+        'topKeys=${uploadedJson is Map ? uploadedJson.keys.map((e) => e.toString()).join(',') : 'n/a'} '
+        'fileNamePresent=${fileName != null} fileNameFingerprint=${fileName == null ? 'none' : _secretFingerprint(fileName)} '
+        'uploadedUriPresent=${uploadedUri != null} '
+        'uploadedUri=${uploadedUri == null ? 'none' : _safeUriForLog(Uri.parse(uploadedUri))}',
+      );
+      if (fileName == null) {
+        await _logSonarpadAi('$trace FAILURE Google upload response missing file name');
+        throw StateError('SONARPAD_AI_GOOGLE_FILE_NAME_MISSING');
+      }
 
       final complete = await _postJsonWithRetry(
         Uri.parse('$_sonarpadAiBase/upload/complete'),
@@ -5829,7 +6272,15 @@ $screenTextSchema$coreDirectives
             const ['file_uri', 'fileUri', 'uri'],
           ) ??
           uploadedUri;
+      await _logSonarpadAi(
+        '$trace UPLOAD_COMPLETE_PARSED decodedType=${completeJson.runtimeType} '
+        'topKeys=${completeJson is Map ? completeJson.keys.map((e) => e.toString()).join(',') : 'n/a'} '
+        'fileUriPresent=${fileUri != null && fileUri.isNotEmpty} '
+        'fileUri=${fileUri == null || fileUri.isEmpty ? 'none' : _safeUriForLog(Uri.parse(fileUri))} '
+        'usedFallbackUploadedUri=${_findString(completeJson, const ['file_uri', 'fileUri', 'uri']) == null}',
+      );
       if (fileUri == null || fileUri.isEmpty) {
+        await _logSonarpadAi('$trace FAILURE upload/complete missing file URI');
         throw StateError('SONARPAD_AI_FILE_URI_MISSING');
       }
 
@@ -5889,8 +6340,18 @@ $screenTextSchema$coreDirectives
             );
           }
           final decoded = jsonDecode(generate.body);
+          await _logSonarpadAi(
+            '$trace GENERATE_PARSED decodedType=${decoded.runtimeType} '
+            'topKeys=${decoded is Map ? decoded.keys.map((e) => e.toString()).join(',') : 'n/a'} '
+            'prohibited=${AudioDescriptionFallbacks.isProhibitedContent(decoded)} '
+            'malformed=${AudioDescriptionFallbacks.isMalformedResponse(decoded)} '
+            'prohibitedCount=$prohibitedCount malformedCount=$malformedCount',
+          );
           if (AudioDescriptionFallbacks.isProhibitedContent(decoded)) {
             prohibitedCount++;
+            await _logSonarpadAi(
+              '$trace GENERATE_RETRY prohibitedContent count=$prohibitedCount max=$prohibitedAttempts',
+            );
             if (prohibitedCount >= prohibitedAttempts) {
               throw _AdProviderException(
                 AdFailureKind.prohibitedContent,
@@ -5902,6 +6363,10 @@ $screenTextSchema$coreDirectives
           }
           if (AudioDescriptionFallbacks.isMalformedResponse(decoded)) {
             malformedCount++;
+            await _logSonarpadAi(
+              '$trace GENERATE_RETRY malformedResponse count=$malformedCount '
+              'max=${AudioDescriptionFallbacks.malformedResponseMaxAttempts}',
+            );
             if (malformedCount >= AudioDescriptionFallbacks.malformedResponseMaxAttempts) {
               throw _AdProviderException(
                 AdFailureKind.malformedResponse,
@@ -5911,32 +6376,65 @@ $screenTextSchema$coreDirectives
             await _cancelableDelay(AudioDescriptionFallbacks.transientRetryDelaySeconds);
             continue;
           }
+          final extractedText = _extractCandidateText(decoded);
+          await _logSonarpadAi(
+            '$trace GENERATE_SUCCESS textChars=${extractedText.length} '
+            'textFingerprint=${_secretFingerprint(extractedText)}',
+          );
           return _AiGenerationResult(
-            text: _extractCandidateText(decoded),
+            text: extractedText,
             model: 'server-managed',
             rawResponse: decoded,
           );
         }
       } finally {
+        final deleteUri = Uri.parse('$_sonarpadAiBase/upload/delete');
+        final deleteBody = jsonEncode(<String, Object?>{'upload_id': uploadId});
+        final deleteWatch = Stopwatch()..start();
         try {
-          await _http.post(
-            Uri.parse('$_sonarpadAiBase/upload/delete'),
+          await _logSonarpadAi(
+            '$trace CLEANUP_REQUEST uri=${_safeUriForLog(deleteUri)} '
+            'uploadIdFingerprint=${_secretFingerprint(uploadId)} headers={${_safeHeadersForLog(headers())}}',
+          );
+          final deleteResponse = await _http.post(
+            deleteUri,
             headers: headers(),
-            body: jsonEncode(<String, Object?>{'upload_id': uploadId}),
+            body: deleteBody,
           ).timeout(const Duration(seconds: 45));
-        } catch (_) {}
+          deleteWatch.stop();
+          await _logSonarpadAi(
+            '$trace CLEANUP_RESPONSE status=${deleteResponse.statusCode} '
+            'elapsedMs=${deleteWatch.elapsedMilliseconds} body=${_safeResponsePreview(deleteResponse.body)}',
+          );
+        } catch (error, stackTrace) {
+          if (deleteWatch.isRunning) deleteWatch.stop();
+          await _logSonarpadAi(
+            '$trace CLEANUP_EXCEPTION elapsedMs=${deleteWatch.elapsedMilliseconds} '
+            'type=${error.runtimeType} error=$error\n$stackTrace',
+          );
+        }
       }
     }
 
     try {
-      return await attempt();
-    } on _AdProviderException catch (error) {
+      final result = await attempt();
+      await _logSonarpadAi('$trace COMPLETE success model=${result.model}');
+      return result;
+    } on _AdProviderException catch (error, stackTrace) {
+      await _logSonarpadAi(
+        '$trace PROVIDER_EXCEPTION kind=${error.kind.name} status=${error.statusCode} '
+        'message=${error.message} allowReactivation=$allowSessionReactivation\n$stackTrace',
+      );
       if (allowSessionReactivation &&
           error.kind == AdFailureKind.permissionDenied &&
           error.message.contains('SONARPAD_AI_SESSION_EXPIRED') &&
           sonarpadCode.trim().isNotEmpty) {
+        await _logSonarpadAi(
+          '$trace REACTIVATE clearing token and activating codeFingerprint=${_secretFingerprint(sonarpadCode.trim())}',
+        );
         await AiAudioDescriptionPreferences.clearSonarpadToken();
         activeToken = await activateSonarpadAi(sonarpadCode);
+        await _logSonarpadAi('$trace REACTIVATE success token=${_tokenDiagnostics(activeToken)}; retrying chunk');
         return _generateViaSonarpadAi(
           chunkPath: chunkPath,
           token: activeToken,
@@ -6055,21 +6553,56 @@ $screenTextSchema$coreDirectives
     var highDemandFailures = 0;
     var highDemandDecisionTaken = false;
     var verificationFailures = 0;
+    var attempt = 0;
+    final isSonarpadAi = label.startsWith('Sonarpad AI');
+    final trace = isSonarpadAi ? _nextSonarpadAiTrace('http') : '';
     while (true) {
       _checkCancel();
+      attempt++;
+      final encodedBody = jsonEncode(body);
+      if (isSonarpadAi) {
+        await _logSonarpadAi(
+          '$trace REQUEST label="$label" attempt=$attempt method=POST '
+          'uri=${_safeUriForLog(uri)} timeoutMs=${timeout.inMilliseconds} '
+          'headers={${_safeHeadersForLog(headers)}} '
+          'bodyBytes=${utf8.encode(encodedBody).length} bodySummary={${_sonarpadBodySummary(body)}} '
+          'highDemandFailures=$highDemandFailures verificationFailures=$verificationFailures',
+        );
+      }
+      final stopwatch = Stopwatch()..start();
       try {
         final response = await _http
-            .post(uri, headers: headers, body: jsonEncode(body))
+            .post(uri, headers: headers, body: encodedBody)
             .timeout(timeout);
+        stopwatch.stop();
         final failure = AudioDescriptionFallbacks.classifyHttp(
           statusCode: response.statusCode,
           body: response.body,
         );
+        if (isSonarpadAi) {
+          await _logSonarpadAi(
+            '$trace RESPONSE label="$label" attempt=$attempt status=${response.statusCode} '
+            'elapsedMs=${stopwatch.elapsedMilliseconds} classification=${failure.name} '
+            'errorCode=${_sonarpadErrorCode(response.body) ?? 'none'} '
+            'bodyBytes=${utf8.encode(response.body).length} '
+            'headers={${_responseHeaderDiagnostics(response.headers)}} '
+            'body=${_safeResponsePreview(response.body)}',
+          );
+        }
         if (failure == AdFailureKind.fileVerificationFailed &&
             boundFileVerificationFailures) {
           verificationFailures++;
+          if (isSonarpadAi) {
+            await _logSonarpadAi(
+              '$trace RETRY fileVerificationFailed count=$verificationFailures '
+              'max=${AudioDescriptionFallbacks.sonarpadVerificationMaxAttempts}',
+            );
+          }
           if (verificationFailures >=
               AudioDescriptionFallbacks.sonarpadVerificationMaxAttempts) {
+            if (isSonarpadAi) {
+              await _logSonarpadAi('$trace RETURN verification retry limit reached');
+            }
             return response;
           }
           await _cancelableDelay(AudioDescriptionFallbacks.transientRetryDelaySeconds);
@@ -6077,6 +6610,12 @@ $screenTextSchema$coreDirectives
         }
         if (failure == AdFailureKind.highDemand) {
           highDemandFailures++;
+          if (isSonarpadAi) {
+            await _logSonarpadAi(
+              '$trace RETRY highDemand count=$highDemandFailures '
+              'promptTaken=$highDemandDecisionTaken delay=${AudioDescriptionFallbacks.transientRetryDelaySeconds}s',
+            );
+          }
           if (!highDemandDecisionTaken &&
               AudioDescriptionFallbacks.shouldPromptAfterHighDemand(
                 highDemandFailures,
@@ -6084,6 +6623,9 @@ $screenTextSchema$coreDirectives
             highDemandDecisionTaken = true;
             if (onHighDemand != null) {
               final decision = await onHighDemand();
+              if (isSonarpadAi) {
+                await _logSonarpadAi('$trace HIGH_DEMAND userDecision=${decision.name}');
+              }
               if (decision == AiAudioDescriptionWaitDecision.stop) {
                 throw const _AudioDescriptionCancelled();
               }
@@ -6098,24 +6640,86 @@ $screenTextSchema$coreDirectives
             '${response.statusCode}; retrying in '
             '${AudioDescriptionFallbacks.transientRetryDelaySeconds}s',
           );
+          if (isSonarpadAi) {
+            await _logSonarpadAi(
+              '$trace RETRY transient status=${response.statusCode} '
+              'delay=${AudioDescriptionFallbacks.transientRetryDelaySeconds}s',
+            );
+          }
           await _cancelableDelay(AudioDescriptionFallbacks.transientRetryDelaySeconds);
           continue;
         }
+        if (isSonarpadAi) {
+          await _logSonarpadAi('$trace RETURN status=${response.statusCode} afterAttempts=$attempt');
+        }
         return response;
       } on _AudioDescriptionCancelled {
+        if (stopwatch.isRunning) stopwatch.stop();
+        if (isSonarpadAi) {
+          await _logSonarpadAi(
+            '$trace CANCELLED label="$label" attempt=$attempt elapsedMs=${stopwatch.elapsedMilliseconds}',
+          );
+        }
         rethrow;
-      } on TimeoutException catch (error) {
+      } on TimeoutException catch (error, stackTrace) {
+        if (stopwatch.isRunning) stopwatch.stop();
         await AppLogger.log('Audio description mobile: $label timeout $error');
+        if (isSonarpadAi) {
+          await _logSonarpadAi(
+            '$trace EXCEPTION timeout label="$label" attempt=$attempt '
+            'elapsedMs=${stopwatch.elapsedMilliseconds} error=$error\n$stackTrace',
+          );
+        }
         await _cancelableDelay(AudioDescriptionFallbacks.transientRetryDelaySeconds);
-      } on SocketException catch (error) {
-        if (!AudioDescriptionFallbacks.isRetryableExceptionText(error.toString())) rethrow;
+      } on SocketException catch (error, stackTrace) {
+        if (stopwatch.isRunning) stopwatch.stop();
+        if (!AudioDescriptionFallbacks.isRetryableExceptionText(error.toString())) {
+          if (isSonarpadAi) {
+            await _logSonarpadAi(
+              '$trace EXCEPTION socket nonRetryable label="$label" attempt=$attempt '
+              'elapsedMs=${stopwatch.elapsedMilliseconds} error=$error\n$stackTrace',
+            );
+          }
+          rethrow;
+        }
         await AppLogger.log('Audio description mobile: $label network retry $error');
+        if (isSonarpadAi) {
+          await _logSonarpadAi(
+            '$trace EXCEPTION socket retry label="$label" attempt=$attempt '
+            'elapsedMs=${stopwatch.elapsedMilliseconds} error=$error\n$stackTrace',
+          );
+        }
         await _cancelableDelay(AudioDescriptionFallbacks.transientRetryDelaySeconds);
-      } on http.ClientException catch (error) {
+      } on http.ClientException catch (error, stackTrace) {
+        if (stopwatch.isRunning) stopwatch.stop();
         if (_cancelRequested) throw const _AudioDescriptionCancelled();
-        if (!AudioDescriptionFallbacks.isRetryableExceptionText(error.toString())) rethrow;
+        if (!AudioDescriptionFallbacks.isRetryableExceptionText(error.toString())) {
+          if (isSonarpadAi) {
+            await _logSonarpadAi(
+              '$trace EXCEPTION client nonRetryable label="$label" attempt=$attempt '
+              'elapsedMs=${stopwatch.elapsedMilliseconds} error=$error\n$stackTrace',
+            );
+          }
+          rethrow;
+        }
         await AppLogger.log('Audio description mobile: $label client retry $error');
+        if (isSonarpadAi) {
+          await _logSonarpadAi(
+            '$trace EXCEPTION client retry label="$label" attempt=$attempt '
+            'elapsedMs=${stopwatch.elapsedMilliseconds} error=$error\n$stackTrace',
+          );
+        }
         await _cancelableDelay(AudioDescriptionFallbacks.transientRetryDelaySeconds);
+      } catch (error, stackTrace) {
+        if (stopwatch.isRunning) stopwatch.stop();
+        if (isSonarpadAi) {
+          await _logSonarpadAi(
+            '$trace EXCEPTION unexpected label="$label" attempt=$attempt '
+            'elapsedMs=${stopwatch.elapsedMilliseconds} type=${error.runtimeType} '
+            'error=$error\n$stackTrace',
+          );
+        }
+        rethrow;
       }
     }
   }
@@ -6131,21 +6735,57 @@ $screenTextSchema$coreDirectives
     String uploadUrl,
     File file, {
     String mimeType = 'video/mp4',
+    String? diagnosticLabel,
   }) async {
     _checkCancel();
-    final request = http.StreamedRequest('POST', Uri.parse(uploadUrl));
+    final length = await file.length();
+    final uri = Uri.parse(uploadUrl);
+    final request = http.StreamedRequest('POST', uri);
     request.headers['Content-Type'] = mimeType;
-    request.headers['Content-Length'] = '${await file.length()}';
+    request.headers['Content-Length'] = '$length';
     request.headers['X-Goog-Upload-Offset'] = '0';
     request.headers['X-Goog-Upload-Command'] = 'upload, finalize';
     request.headers['User-Agent'] = _sonarpadAiUserAgent;
-    await request.sink.addStream(file.openRead());
-    _checkCancel();
-    await request.sink.close();
-    _checkCancel();
-    final streamed = await _http.send(request).timeout(const Duration(minutes: 8));
-    _checkCancel();
-    return http.Response.fromStream(streamed);
+    final trace = diagnosticLabel == null ? null : _nextSonarpadAiTrace('direct-upload');
+    if (trace != null) {
+      await _logSonarpadAi(
+        '$trace REQUEST label="$diagnosticLabel" method=POST uri=${_safeUriForLog(uri)} '
+        'file=${p.basename(file.path)} fileBytes=$length mime=$mimeType '
+        'headers={${_safeHeadersForLog(request.headers)}}',
+      );
+    }
+    final stopwatch = Stopwatch()..start();
+    try {
+      await request.sink.addStream(file.openRead());
+      _checkCancel();
+      await request.sink.close();
+      _checkCancel();
+      if (trace != null) {
+        await _logSonarpadAi('$trace BODY_STREAMED bytes=$length elapsedMs=${stopwatch.elapsedMilliseconds}');
+      }
+      final streamed = await _http.send(request).timeout(const Duration(minutes: 8));
+      _checkCancel();
+      final response = await http.Response.fromStream(streamed);
+      stopwatch.stop();
+      if (trace != null) {
+        await _logSonarpadAi(
+          '$trace RESPONSE status=${response.statusCode} elapsedMs=${stopwatch.elapsedMilliseconds} '
+          'bodyBytes=${utf8.encode(response.body).length} '
+          'headers={${_responseHeaderDiagnostics(response.headers)}} '
+          'body=${_safeResponsePreview(response.body)}',
+        );
+      }
+      return response;
+    } catch (error, stackTrace) {
+      if (stopwatch.isRunning) stopwatch.stop();
+      if (trace != null) {
+        await _logSonarpadAi(
+          '$trace EXCEPTION elapsedMs=${stopwatch.elapsedMilliseconds} '
+          'type=${error.runtimeType} error=$error\n$stackTrace',
+        );
+      }
+      rethrow;
+    }
   }
 
   String _extractCandidateText(Object? decoded) {

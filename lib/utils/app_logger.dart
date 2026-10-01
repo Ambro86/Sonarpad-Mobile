@@ -5,6 +5,7 @@ import 'package:path/path.dart' as p;
 
 class AppLogger {
   static const String _logFileName = 'app_debug_log.txt';
+  static const int _maxLogBytes = 8 * 1024 * 1024;
   static Future<void> _writeQueue = Future.value();
 
   static Future<File> get _logFile async {
@@ -58,7 +59,7 @@ class AppLogger {
       final file = await _logFile;
       if (await file.exists()) {
         final size = await file.length();
-        if (size > 1024 * 1024) {
+        if (size > _maxLogBytes) {
           await file.writeAsString('', mode: FileMode.write);
         }
       }

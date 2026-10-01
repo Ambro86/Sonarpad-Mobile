@@ -56,6 +56,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   StreamSubscription<dynamic>? _mediaKitBufferingSubscription;
   StreamSubscription<dynamic>? _mediaKitCompletedSubscription;
   Timer? _mediaKitDiagnosticsTimer;
+  Timer? _raiDirectAudioFallbackTimer;
 
   VideoPlayerController? _videoController;
   mk.Player? _mediaKitPlayer;
@@ -79,6 +80,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   DateTime? _mediaKitLastPositionLogAt;
   DateTime? _mediaKitLastAutoRecoveryAt;
   bool _mediaKitAutoRecoveryInProgress = false;
+  bool _raiDirectAudioFallbackInProgress = false;
   double _mediaKitVolume = 1.0;
   double _videoPlayerVolume = 1.0;
   bool _isRecordingFeatureUnlocked = false;
@@ -195,6 +197,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         await _playMediaKitVideo(
           streamUrl: streams.videoUrl,
           preferRaiAudioDescription: streams.hasAudioDescription,
+          enableRaiDirectAudioFallback: !_isVideoEnabled,
         );
         return;
       }
@@ -280,6 +283,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   Future<void> _playMediaKitVideo({
     String? streamUrl,
     bool preferRaiAudioDescription = false,
+    bool enableRaiDirectAudioFallback = false,
   }) async {
     final playbackUrl = streamUrl ?? widget.station.streamUrl;
     final isMpd = TvService.isDashStreamUrl(playbackUrl);
@@ -432,19 +436,119 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         widget.station.name,
       );
     }
-    await player.open(
-      mk.Media(
-        playbackUrl,
-        httpHeaders: mediaKitHeaders,
-      ),
-    );
-    if (mounted && _mediaKitPlayer == player && !_mediaKitVideoSettingApplied) {
+    if (enableRaiDirectAudioFallback) {
+      _scheduleRaiDirectAudioFallback(player);
+    }
+    try {
+      await player.open(
+        mk.Media(
+          playbackUrl,
+          httpHeaders: mediaKitHeaders,
+        ),
+      );
+    } catch (error) {
+      if (_mediaKitPlayer != player) {
+        await AppLogger.log(
+          'RadioPlayer: MediaKit open superseded by a newer playback request; ignoring stale error: $error',
+        );
+        return;
+      }
+      rethrow;
+    }
+    if (_mediaKitPlayer != player) {
+      await AppLogger.log(
+        'RadioPlayer: MediaKit open completed after playback was superseded; ignoring stale completion',
+      );
+      return;
+    }
+    if (mounted && !_mediaKitVideoSettingApplied) {
       _mediaKitVideoSettingApplied = true;
       await _applyMediaKitVideoEnabled(player, _isVideoEnabled);
     }
     AppLogger.log(
       'RadioPlayer: MediaKit open completed station="${widget.station.name}" playing=$_mediaKitPlaying buffering=$_mediaKitBuffering position=$_mediaKitLastPosition duration=$_mediaKitLastDuration preferRaiAD=$preferRaiAudioDescription',
     );
+  }
+
+  void _scheduleRaiDirectAudioFallback(mk.Player player) {
+    _raiDirectAudioFallbackTimer?.cancel();
+    _raiDirectAudioFallbackTimer = Timer(const Duration(seconds: 6), () {
+      _raiDirectAudioFallbackTimer = null;
+      if (!mounted ||
+          _mediaKitPlayer != player ||
+          _raiDirectAudioFallbackInProgress ||
+          _isVideoEnabled) {
+        return;
+      }
+
+      final position = _mediaKitLastPosition ?? Duration.zero;
+      final duration = _mediaKitLastDuration ?? Duration.zero;
+      if (position > Duration.zero || duration > Duration.zero) {
+        unawaited(AppLogger.log(
+          'RadioPlayer: RAI direct-audio fallback not needed after 6s; primary playback has progress position=$position duration=$duration',
+        ));
+        return;
+      }
+
+      unawaited(_activateRaiDirectAudioFallback(player));
+    });
+  }
+
+  Future<void> _activateRaiDirectAudioFallback(mk.Player stalledPlayer) async {
+    if (!mounted ||
+        _mediaKitPlayer != stalledPlayer ||
+        _raiDirectAudioFallbackInProgress ||
+        _isVideoEnabled) {
+      return;
+    }
+
+    _raiDirectAudioFallbackInProgress = true;
+    try {
+      await AppLogger.log(
+        'RadioPlayer: RAI primary MediaKit playback stalled for 6s; resolving a fresh direct-audio fallback station="${widget.station.name}" position=$_mediaKitLastPosition duration=$_mediaKitLastDuration buffering=$_mediaKitBuffering playing=$_mediaKitPlaying',
+      );
+
+      final channel = widget.tvChannel;
+      if (channel == null) return;
+      final streams = await TvService().resolveAudioDescriptionStreams(channel);
+
+      if (!mounted ||
+          _mediaKitPlayer != stalledPlayer ||
+          _isVideoEnabled) {
+        return;
+      }
+
+      // Il relinker può impiegare qualche istante. Se nel frattempo il master
+      // originale ha iniziato davvero a riprodurre, non lo interrompiamo.
+      final position = _mediaKitLastPosition ?? Duration.zero;
+      final duration = _mediaKitLastDuration ?? Duration.zero;
+      if (position > Duration.zero || duration > Duration.zero) {
+        await AppLogger.log(
+          'RadioPlayer: RAI primary playback recovered while resolving fallback; keeping current stream position=$position duration=$duration',
+        );
+        return;
+      }
+
+      await AppLogger.log(
+        'RadioPlayer: RAI direct-audio fallback starting with fresh relinker URL hasAD=${streams.hasAudioDescription} url=${streams.audioUrl}',
+      );
+      await _playMediaKitVideo(
+        streamUrl: streams.audioUrl,
+        preferRaiAudioDescription: false,
+        enableRaiDirectAudioFallback: false,
+      );
+    } catch (error) {
+      await AppLogger.log(
+        'RadioPlayer: RAI direct-audio fallback failed: $error',
+      );
+      if (mounted && _mediaKitPlayer == null) {
+        setState(
+          () => _error = AppLocalizations.of(context).technicalErrorGeneric,
+        );
+      }
+    } finally {
+      _raiDirectAudioFallbackInProgress = false;
+    }
   }
 
   Map<String, String> _mediaKitHttpHeaders() {
@@ -1464,6 +1568,8 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
 
   @override
   void dispose() {
+    _raiDirectAudioFallbackTimer?.cancel();
+    _raiDirectAudioFallbackTimer = null;
     _recordingService.removeListener(_onGlobalRecordingChanged);
     FocusManager.instance.primaryFocus?.unfocus();
     if (Platform.isIOS &&
@@ -1480,6 +1586,8 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   }
 
   Future<void> _disposeMediaKitPlayer() async {
+    _raiDirectAudioFallbackTimer?.cancel();
+    _raiDirectAudioFallbackTimer = null;
     _mediaKitDiagnosticsTimer?.cancel();
     _mediaKitDiagnosticsTimer = null;
     await _mediaKitPlayingSubscription?.cancel();
