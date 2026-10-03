@@ -96,6 +96,15 @@ class TvProgram {
   });
 }
 
+class PlutoGuideException implements Exception {
+  final int? statusCode;
+
+  const PlutoGuideException({this.statusCode});
+
+  @override
+  String toString() => 'PlutoGuideException(statusCode: $statusCode)';
+}
+
 class TvChannelLoadResult {
   final List<TvChannel> channels;
   final bool fromCache;
@@ -393,7 +402,7 @@ class TvService {
         )
         .timeout(const Duration(seconds: 10));
     if (response.statusCode != 200) {
-      throw Exception('Guida Pluto: HTTP ${response.statusCode}');
+      throw PlutoGuideException(statusCode: response.statusCode);
     }
     return jsonDecode(response.body) as Map<String, dynamic>;
   }
@@ -455,7 +464,7 @@ class TvService {
         '${date.day.toString().padLeft(2, '0')}';
     final root = await _loadPlutoGuide({'id': id, 'date': dateString});
     final items = root['programs'];
-    if (items is! List) throw const FormatException('Guida Pluto non valida');
+    if (items is! List) throw const PlutoGuideException();
     final programs =
         items.map(_parsePlutoProgram).whereType<TvProgram>().toList()
           ..sort((a, b) => a.startTime.compareTo(b.startTime));
