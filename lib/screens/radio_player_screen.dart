@@ -191,14 +191,54 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         final tvChannel = widget.tvChannel!;
         final streams =
             await TvService().resolveAudioDescriptionStreams(tvChannel);
+
+        if (!_isVideoEnabled) {
+          final hasDedicatedAudio = streams.audioUrl != streams.videoUrl;
+          final normalAudioFallbackUrl = streams.hasAudioDescription &&
+                  streams.normalAudioUrl != streams.videoUrl &&
+                  streams.normalAudioUrl != streams.audioUrl
+              ? streams.normalAudioUrl
+              : null;
+
+          if (hasDedicatedAudio) {
+            await AppLogger.log(
+              'RadioPlayer: RAI direct audio selected because video is disabled '
+              'hasAD=${streams.hasAudioDescription} url=${streams.audioUrl} '
+              'normalFallback=${normalAudioFallbackUrl ?? 'none'}',
+            );
+            await _playMediaKitVideo(
+              streamUrl: streams.audioUrl,
+              preferRaiAudioDescription: false,
+              enableRaiDirectAudioFallback: false,
+              raiNormalAudioFallbackUrl: normalAudioFallbackUrl,
+            );
+            return;
+          }
+
+          // Se il resolver non riesce a estrarre una child audio dedicata,
+          // conserviamo il master come compatibilità. In questo raro caso
+          // resta attivo anche il recupero master -> audio diretto, così un
+          // successivo relinker può ancora restituire AD/ITA utilizzabili.
+          await AppLogger.log(
+            'RadioPlayer: RAI direct audio unavailable; using master compatibility '
+            'videoEnabled=false hasAD=${streams.hasAudioDescription}',
+          );
+          await _playMediaKitVideo(
+            streamUrl: streams.videoUrl,
+            preferRaiAudioDescription: streams.hasAudioDescription,
+            enableRaiDirectAudioFallback: true,
+          );
+          return;
+        }
+
         await AppLogger.log(
-          'RadioPlayer: RAI MediaKit playback selected '
-          'videoEnabled=$_isVideoEnabled hasAD=${streams.hasAudioDescription}',
+          'RadioPlayer: RAI MediaKit master playback selected '
+          'videoEnabled=true hasAD=${streams.hasAudioDescription}',
         );
         await _playMediaKitVideo(
           streamUrl: streams.videoUrl,
           preferRaiAudioDescription: streams.hasAudioDescription,
-          enableRaiDirectAudioFallback: !_isVideoEnabled,
+          enableRaiDirectAudioFallback: false,
         );
         return;
       }

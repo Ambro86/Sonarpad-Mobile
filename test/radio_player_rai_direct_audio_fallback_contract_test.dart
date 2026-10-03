@@ -3,26 +3,63 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('RAI direct-audio fallback waits six seconds and preserves working playback', () {
+  test('RAI audio-only playback uses resolved child audio before the master', () {
     final source =
         File('lib/screens/radio_player_screen.dart').readAsStringSync();
 
-    expect(source, contains('Timer(const Duration(seconds: 6)'));
+    expect(source, contains('if (!_isVideoEnabled) {'));
     expect(
       source,
-      contains('position > Duration.zero || duration > Duration.zero'),
+      contains('final hasDedicatedAudio = streams.audioUrl != streams.videoUrl;'),
     );
     expect(
       source,
-      contains('RAI direct-audio fallback not needed after 6s'),
+      contains('RAI direct audio selected because video is disabled'),
     );
+    expect(source, contains('streamUrl: streams.audioUrl,'));
+    expect(source, contains('preferRaiAudioDescription: false,'));
     expect(
       source,
-      contains('RAI primary playback recovered while resolving fallback'),
+      contains('raiNormalAudioFallbackUrl: normalAudioFallbackUrl,'),
+    );
+
+    expect(
+      RegExp(
+        r"if \(!_isVideoEnabled\) \{[\s\S]*?if \(hasDedicatedAudio\) \{[\s\S]*?streamUrl: streams\.audioUrl,[\s\S]*?raiNormalAudioFallbackUrl: normalAudioFallbackUrl,[\s\S]*?return;",
+      ).hasMatch(source),
+      isTrue,
+      reason: 'With video off, resolved AD/ITA child audio must be opened directly.',
     );
   });
 
-  test('RAI fallback keeps master first, then direct AD, then direct ITA only if needed', () {
+  test('RAI keeps master for video and as compatibility when child audio is unavailable', () {
+    final source =
+        File('lib/screens/radio_player_screen.dart').readAsStringSync();
+
+    expect(
+      source,
+      contains('RAI direct audio unavailable; using master compatibility'),
+    );
+    expect(
+      RegExp(
+        r"RAI direct audio unavailable; using master compatibility[\s\S]*?streamUrl: streams\.videoUrl,[\s\S]*?enableRaiDirectAudioFallback: true,",
+      ).hasMatch(source),
+      isTrue,
+    );
+    expect(
+      source,
+      contains('RAI MediaKit master playback selected'),
+    );
+    expect(
+      RegExp(
+        r"RAI MediaKit master playback selected[\s\S]*?streamUrl: streams\.videoUrl,[\s\S]*?enableRaiDirectAudioFallback: false,",
+      ).hasMatch(source),
+      isTrue,
+      reason: 'Normal video playback must continue using the master stream.',
+    );
+  });
+
+  test('RAI direct AD falls back to direct ITA only if needed', () {
     final playerSource =
         File('lib/screens/radio_player_screen.dart').readAsStringSync();
     final tvSource = File('lib/services/tv_service.dart').readAsStringSync();
@@ -49,22 +86,16 @@ void main() {
         r'_scheduleRaiNormalAudioFallback[\s\S]*?_raiNormalAudioFallbackInProgress[\s\S]*?_activateRaiNormalAudioFallback',
       ).hasMatch(playerSource),
       isTrue,
-      reason: 'The AD->ITA watchdog must not be blocked by the master->AD fallback flag.',
+      reason: 'The AD->ITA watchdog must have its own re-entry guard.',
     );
     expect(
       RegExp(
         r'_activateRaiNormalAudioFallback[\s\S]*?_raiNormalAudioFallbackInProgress = true;[\s\S]*?_raiNormalAudioFallbackInProgress = false;',
       ).hasMatch(playerSource),
       isTrue,
-      reason: 'Direct ITA fallback needs its own re-entry guard while AD open is still pending.',
+      reason: 'Direct ITA fallback needs its own guard while AD open is pending.',
     );
-    expect(
-      playerSource,
-      contains('streamUrl: normalAudioUrl,'),
-    );
-    expect(playerSource, contains('enableRaiDirectAudioFallback: false,'));
-    expect(playerSource, contains('enableRaiDirectAudioFallback: !_isVideoEnabled,'));
-    expect(playerSource, contains('_isVideoEnabled) {'));
+    expect(playerSource, contains('streamUrl: normalAudioUrl,'));
 
     expect(tvSource, contains('final String normalAudioUrl;'));
     expect(tvSource, contains('final normalAudioUrl = itaUrl ?? finalMasterUrl;'));
@@ -72,6 +103,25 @@ void main() {
     expect(
       tvSource,
       isNot(contains('break; // AD trovata: precedenza assoluta, non cercare oltre')),
+    );
+  });
+
+  test('RAI compatibility recovery waits six seconds and preserves working playback', () {
+    final source =
+        File('lib/screens/radio_player_screen.dart').readAsStringSync();
+
+    expect(source, contains('Timer(const Duration(seconds: 6)'));
+    expect(
+      source,
+      contains('position > Duration.zero || duration > Duration.zero'),
+    );
+    expect(
+      source,
+      contains('RAI direct-audio fallback not needed after 6s'),
+    );
+    expect(
+      source,
+      contains('RAI primary playback recovered while resolving fallback'),
     );
   });
 
