@@ -193,8 +193,8 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
     try {
       final code = await _settings.getTvSecretCode();
       final recordingFeatureUnlocked = RecordingFeatureAccess.isCodeValid(code);
-      final guide = await _service.loadChannelGuide(
-        _service.guideChannelName(widget.channel),
+      final guide = await _service.loadChannelGuideForChannel(
+        widget.channel,
         code,
         targetDate: _selectedDate,
       );

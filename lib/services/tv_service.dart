@@ -347,6 +347,125 @@ class TvService {
     String secretKey, {
     List<TvChannel> channels = const [],
   }) async {
+    // Isolate provider failures and identities (e.g. Gambero Rosso exists
+    // both on Pluto and in the terrestrial guide).
+    final results = await Future.wait([
+      _loadOggiCurrentPrograms(
+        secretKey,
+        channels: channels.where((c) => !isPlutoChannel(c)).toList(),
+      ).catchError((Object error) {
+        dev.log('TV: guida Oggi in TV non disponibile', name: 'TvService');
+        return <String, TvProgram>{};
+      }),
+      _loadPlutoCurrentPrograms(channels).catchError((Object error) {
+        dev.log('TV: guida Pluto non disponibile', name: 'TvService');
+        return <String, TvProgram>{};
+      }),
+    ]);
+    return {...results[0], ...results[1]};
+  }
+
+  bool isPlutoChannel(TvChannel channel) =>
+      Uri.tryParse(channel.url)?.path.toLowerCase() == '/api/pluto.php' ||
+      channel.category.trim().toLowerCase() == 'pluto tv' ||
+      channel.tvgId.toLowerCase().startsWith('pluto-');
+
+  String? plutoId(TvChannel channel) {
+    if (!isPlutoChannel(channel)) return null;
+    final id = Uri.tryParse(channel.url)?.queryParameters['id']?.trim();
+    return id != null && RegExp(r'^[a-fA-F0-9]{20,}$').hasMatch(id)
+        ? id.toLowerCase()
+        : null;
+  }
+
+  Future<Map<String, dynamic>> _loadPlutoGuide(
+    Map<String, String> parameters,
+  ) async {
+    final uri = Uri.https('sonarpad.com', '/api/pluto_guide.php', parameters);
+    final response = await http
+        .get(
+          uri,
+          headers: {
+            'X-Sonarpad-TV-Token': _routeClientToken,
+            'X-Sonarpad-Route-Token': _routeClientToken,
+            'User-Agent': 'Sonarpad TV/1.0',
+          },
+        )
+        .timeout(const Duration(seconds: 10));
+    if (response.statusCode != 200) {
+      throw Exception('Guida Pluto: HTTP ${response.statusCode}');
+    }
+    return jsonDecode(response.body) as Map<String, dynamic>;
+  }
+
+  TvProgram? _parsePlutoProgram(dynamic item) {
+    if (item is! Map<String, dynamic>) return null;
+    final title = item['title']?.toString().trim() ?? '';
+    final start = _readInt(item, 'startTime', 'start_time');
+    final end = _readInt(item, 'endTime', 'end_time');
+    if (title.isEmpty || start <= 0 || end <= start) return null;
+    return TvProgram(
+      title: title,
+      hour: item['hour']?.toString().trim() ?? '',
+      startTime: start,
+      endTime: end,
+      description: item['description']?.toString().trim() ?? '',
+    );
+  }
+
+  Future<Map<String, TvProgram>> _loadPlutoCurrentPrograms(
+    List<TvChannel> channels,
+  ) async {
+    final ids = channels.map(plutoId).whereType<String>().toSet();
+    if (ids.isEmpty) return {};
+    final root = await _loadPlutoGuide({'mode': 'now'});
+    final items = root['programs'];
+    if (items is! Map) return {};
+    final result = <String, TvProgram>{};
+    final now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+    for (final id in ids) {
+      final program = _parsePlutoProgram(items[id]);
+      if (program == null || program.startTime > now) continue;
+      if (program.endTime <= now && now - program.startTime > 6 * 3600) {
+        continue;
+      }
+      result['pluto:$id'] = program;
+    }
+    return result;
+  }
+
+  Future<List<TvProgram>> loadChannelGuideForChannel(
+    TvChannel channel,
+    String secretKey, {
+    DateTime? targetDate,
+  }) async {
+    if (!isPlutoChannel(channel)) {
+      return loadChannelGuide(
+        guideChannelName(channel),
+        secretKey,
+        targetDate: targetDate,
+      );
+    }
+    final id = plutoId(channel);
+    if (id == null) return [];
+    final date = targetDate ?? DateTime.now();
+    final dateString =
+        '${date.year}-'
+        '${date.month.toString().padLeft(2, '0')}-'
+        '${date.day.toString().padLeft(2, '0')}';
+    final root = await _loadPlutoGuide({'id': id, 'date': dateString});
+    final items = root['programs'];
+    if (items is! List) throw const FormatException('Guida Pluto non valida');
+    final programs =
+        items.map(_parsePlutoProgram).whereType<TvProgram>().toList()
+          ..sort((a, b) => a.startTime.compareTo(b.startTime));
+    return programs;
+  }
+
+  Future<Map<String, TvProgram>> _loadOggiCurrentPrograms(
+    String secretKey, {
+    List<TvChannel> channels = const [],
+  }) async {
     final template =
         _decodePayload(_oggiInTvTimelineUrlPayloadJson, secretKey.trim());
     final nowTime = DateTime.now();
@@ -711,6 +830,10 @@ class TvService {
   }
 
   List<String> guideLookupKeys(TvChannel channel) {
+    if (isPlutoChannel(channel)) {
+      final id = plutoId(channel);
+      return id == null ? [] : ['pluto:$id'];
+    }
     final keys = <String>[];
     void add(String value) {
       final normalized = normalizeChannelName(value);
