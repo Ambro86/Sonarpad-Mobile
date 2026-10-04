@@ -4312,4 +4312,10 @@ class AppLocalizationsRo extends AppLocalizations {
   @override
   String get joinMediaCancelling => "Se anulează…";
 
+  @override
+  String get streamReconnecting => "Se încearcă reconectarea…";
+
+  @override
+  String get streamPlaybackRetryMessage => "Canalul nu a pornit. Apasă Reîncearcă pentru a actualiza legătura.";
+
 }

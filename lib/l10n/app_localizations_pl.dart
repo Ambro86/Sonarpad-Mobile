@@ -4460,4 +4460,10 @@ class AppLocalizationsPl extends AppLocalizations {
   @override
   String get joinMediaCancelling => "Anulowanie…";
 
+  @override
+  String get streamReconnecting => "Ponowne łączenie…";
+
+  @override
+  String get streamPlaybackRetryMessage => "Kanał nie został uruchomiony. Wybierz Spróbuj ponownie, aby odświeżyć adres strumienia.";
+
 }

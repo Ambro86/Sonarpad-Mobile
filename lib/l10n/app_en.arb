@@ -3600,5 +3600,13 @@
     "placeholders": {
       "count": {"type": "int"}
     }
+  },
+  "streamReconnecting": "Reconnecting…",
+  "@streamReconnecting": {
+    "description": "Live stream player status: streamReconnecting"
+  },
+  "streamPlaybackRetryMessage": "The channel did not start. Select Retry to refresh the stream address.",
+  "@streamPlaybackRetryMessage": {
+    "description": "Live stream player status: streamPlaybackRetryMessage"
   }
 }

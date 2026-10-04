@@ -4497,4 +4497,10 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get joinMediaCancelling => "Annulation…";
 
+  @override
+  String get streamReconnecting => "Tentative de reconnexion…";
+
+  @override
+  String get streamPlaybackRetryMessage => "La chaîne n’a pas démarré. Appuyez sur Réessayer pour actualiser le lien.";
+
 }

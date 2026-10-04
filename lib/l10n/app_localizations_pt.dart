@@ -4477,6 +4477,12 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get joinMediaCancelling => "A cancelar…";
 
+  @override
+  String get streamReconnecting => "A tentar restabelecer a ligação…";
+
+  @override
+  String get streamPlaybackRetryMessage => "O canal não iniciou. Selecione Tentar novamente para atualizar a ligação.";
+
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
@@ -8937,5 +8943,11 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get joinMediaCancelling => "Cancelando…";
+
+  @override
+  String get streamReconnecting => "Tentando reconectar…";
+
+  @override
+  String get streamPlaybackRetryMessage => "O canal não iniciou. Selecione Tentar novamente para atualizar o link.";
 
 }

@@ -4449,4 +4449,10 @@ class AppLocalizationsUk extends AppLocalizations {
   @override
   String get joinMediaCancelling => "Скасування…";
 
+  @override
+  String get streamReconnecting => "Спроба повторного підключення…";
+
+  @override
+  String get streamPlaybackRetryMessage => "Канал не запустився. Натисніть «Спробувати знову», щоб оновити посилання на потік.";
+
 }

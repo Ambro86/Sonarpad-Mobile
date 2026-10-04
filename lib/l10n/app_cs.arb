@@ -3603,5 +3603,13 @@
     "placeholders": {
       "count": {"type": "int"}
     }
+  },
+  "streamReconnecting": "Obnovování připojení…",
+  "@streamReconnecting": {
+    "description": "Live stream player status: streamReconnecting"
+  },
+  "streamPlaybackRetryMessage": "Kanál se nespustil. Vyberte Zkusit znovu pro obnovení odkazu na stream.",
+  "@streamPlaybackRetryMessage": {
+    "description": "Live stream player status: streamPlaybackRetryMessage"
   }
 }

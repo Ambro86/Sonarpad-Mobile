@@ -3600,5 +3600,13 @@
     "placeholders": {
       "count": {"type": "int"}
     }
+  },
+  "streamReconnecting": "Se încearcă reconectarea…",
+  "@streamReconnecting": {
+    "description": "Live stream player status: streamReconnecting"
+  },
+  "streamPlaybackRetryMessage": "Canalul nu a pornit. Apasă Reîncearcă pentru a actualiza legătura.",
+  "@streamPlaybackRetryMessage": {
+    "description": "Live stream player status: streamPlaybackRetryMessage"
   }
 }

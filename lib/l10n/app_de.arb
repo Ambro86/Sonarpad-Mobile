@@ -5178,5 +5178,13 @@
     "placeholders": {
       "count": {"type": "int"}
     }
+  },
+  "streamReconnecting": "Verbindung wird erneut hergestellt…",
+  "@streamReconnecting": {
+    "description": "Live stream player status: streamReconnecting"
+  },
+  "streamPlaybackRetryMessage": "Der Sender wurde nicht gestartet. Wähle „Erneut versuchen“, um die Stream-Adresse zu aktualisieren.",
+  "@streamPlaybackRetryMessage": {
+    "description": "Live stream player status: streamPlaybackRetryMessage"
   }
 }

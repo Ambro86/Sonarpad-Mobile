@@ -4446,4 +4446,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get joinMediaCancelling => "Cancelling…";
 
+  @override
+  String get streamReconnecting => "Reconnecting…";
+
+  @override
+  String get streamPlaybackRetryMessage => "The channel did not start. Select Retry to refresh the stream address.";
+
 }

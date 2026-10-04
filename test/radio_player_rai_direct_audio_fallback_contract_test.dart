@@ -66,7 +66,7 @@ void main() {
 
     expect(
       playerSource,
-      contains('final streams = await TvService().resolveAudioDescriptionStreams(channel);'),
+      contains('final streams = await TvService().resolveAudioDescriptionStreams('),
     );
     expect(playerSource, contains('streamUrl: streams.audioUrl,'));
     expect(

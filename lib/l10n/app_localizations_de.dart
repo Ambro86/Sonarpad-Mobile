@@ -4477,4 +4477,10 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get joinMediaCancelling => "Wird abgebrochen…";
 
+  @override
+  String get streamReconnecting => "Verbindung wird erneut hergestellt…";
+
+  @override
+  String get streamPlaybackRetryMessage => "Der Sender wurde nicht gestartet. Wähle „Erneut versuchen“, um die Stream-Adresse zu aktualisieren.";
+
 }

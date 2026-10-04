@@ -4284,6 +4284,12 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get joinMediaCancelling => "正在取消…";
 
+  @override
+  String get streamReconnecting => "正在尝试重新连接…";
+
+  @override
+  String get streamPlaybackRetryMessage => "频道未能启动。请选择“重试”以刷新流媒体链接。";
+
 }
 
 /// The translations for Chinese, as used in China (`zh_CN`).
@@ -8565,5 +8571,11 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get joinMediaCancelling => "正在取消…";
+
+  @override
+  String get streamReconnecting => "正在尝试重新连接…";
+
+  @override
+  String get streamPlaybackRetryMessage => "频道未能启动。请选择“重试”以刷新流媒体链接。";
 
 }

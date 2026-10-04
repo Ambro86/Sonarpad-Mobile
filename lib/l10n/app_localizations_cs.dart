@@ -4454,4 +4454,10 @@ class AppLocalizationsCs extends AppLocalizations {
   @override
   String get joinMediaCancelling => "Rušení…";
 
+  @override
+  String get streamReconnecting => "Obnovování připojení…";
+
+  @override
+  String get streamPlaybackRetryMessage => "Kanál se nespustil. Vyberte Zkusit znovu pro obnovení odkazu na stream.";
+
 }

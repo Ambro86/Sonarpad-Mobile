@@ -19,7 +19,9 @@ function pluto_resolver_config(string $path): array
         if (!is_array($url) || strtolower($url['path'] ?? '') !== '/api/pluto.php') continue;
         parse_str($url['query'] ?? '', $query);
         $id = strtolower((string)($query['id'] ?? ''));
-        if (preg_match('/^[a-f0-9]{20,}$/D', $id)) $ids[$id] = true;
+        if (preg_match('/^[a-f0-9]{20,}$/D', $id)) {
+            $ids[$id] = preg_replace('/^\[\d+\]\s*/', '', (string)($channel['name'] ?? ''));
+        }
     }
     if (!$ids) throw new RuntimeException('Pluto channel list unavailable', 503);
     return [$token[2], $ids];
@@ -60,6 +62,106 @@ function pluto_first_text(array $values): string
     return '';
 }
 
+function pluto_title_key(string $title): string
+{
+    $title = strtr($title, ['À' => 'à', 'È' => 'è', 'É' => 'é', 'Ì' => 'ì', 'Ò' => 'ò', 'Ù' => 'ù']);
+    $title = function_exists('mb_strtolower') ? mb_strtolower($title, 'UTF-8') : strtolower($title);
+    return (string)preg_replace('/[^\p{L}\p{N}]+/u', '', $title);
+}
+
+function pluto_channel_is_series(string $channel, string $series): bool
+{
+    $channel = pluto_title_key($channel);
+    $series = pluto_title_key($series);
+    if ($channel === '' || $series === '') return false;
+    if ($channel === $series) return true;
+    // Alternate titles verified in the Italian Pluto feed. Do not use fuzzy
+    // matching: a themed channel must retain the programme's series name.
+    $aliases = [
+        'cincin' => ['cheers'],
+        'maidiresì' => ['remingtonsteele'],
+        'sulletraccedelcrimine' => ['sectionderecherches'],
+        'affarefatto' => ['auctionhunters'],
+        'loveboat' => ['theloveboat'],
+        'catfish' => ['catfishfalseidentità'],
+        'wickedtuna' => ['wickedtunalupidimare'],
+        'extrememakeoverhomeedition' => ['extrememakeoverhomeeditionusa'],
+        'zdfsquadraspecialelipsia' => ['squadraspecialelipsia'],
+        'zdfguardiacostiera' => ['guardiacostiera'],
+        '16annieincinta' => ['16annieincintaitalia'],
+    ];
+    return in_array($series, $aliases[$channel] ?? [], true);
+}
+
+function pluto_without_prefix(string $title, string $prefix): string
+{
+    if ($prefix !== '' && preg_match('/^' . preg_quote($prefix, '/') . '\s*(?::|[-–—]+|\|)\s*(.+)$/iu', $title, $match)) {
+        return trim($match[1]);
+    }
+    return $title;
+}
+
+function pluto_program_title(array $timeline, string $channel): string
+{
+    $title = pluto_program_title_raw($timeline, $channel);
+    // Correct the Italian word received without its accent (e.g. Sanctuary).
+    return (string)preg_replace_callback('/\bcitta\b/iu', static function (array $match): string {
+        return $match[0] === 'CITTA' ? 'CITTÀ' : ($match[0][0] === 'C' ? 'Città' : 'città');
+    }, $title);
+}
+
+function pluto_program_title_raw(array $timeline, string $channel): string
+{
+    $episode = $timeline['episode'] ?? [];
+    $series = pluto_first_text([$episode['series']['name'] ?? '']);
+    $name = pluto_first_text([$episode['name'] ?? '']);
+    $title = pluto_first_text([$timeline['title'] ?? '', $name, $series, $channel]);
+    // Films also carry season=1/episode=1. These are not episode details.
+    if (($episode['series']['type'] ?? '') === 'film') return $title;
+    // Off-air cards are also labelled as TV episodes by the provider.
+    if (preg_match('/^(?:torna|torniamo)\s+alle\s+\d/iu', $title)) return $title;
+    $detail = pluto_without_prefix($name, $series);
+    if (preg_match('/^S(\d+)\s*E(\d+)$/i', $detail, $match)) {
+        $detail = 'Stagione ' . (int)$match[1] . ', episodio ' . (int)$match[2];
+    }
+    $specific = $detail !== '' && pluto_title_key($detail) !== pluto_title_key($series)
+        && pluto_title_key($detail) !== pluto_title_key($channel)
+        && pluto_title_key($detail) !== 'noinfoavailable';
+    if ($specific) {
+        if (pluto_channel_is_series($channel, $series) || pluto_channel_is_series($channel, $title)) {
+            return pluto_without_prefix($detail, $channel);
+        }
+        $base = pluto_first_text([$series, $title]);
+        // Keep already descriptive schedule titles, e.g. football fixtures.
+        if (pluto_title_key($title) !== pluto_title_key($base) &&
+            pluto_title_key($title) !== pluto_title_key($channel) && $title !== $name) return $title;
+        if (str_starts_with(pluto_title_key($detail), pluto_title_key($base)) ||
+            str_starts_with(pluto_title_key($base), pluto_title_key($detail))) {
+            return strlen($detail) > strlen($base) ? $detail : $base;
+        }
+        return $base === '' ? $detail : $base . ': ' . $detail;
+    }
+    // A real episode title can exist only in the timeline field.
+    if (pluto_title_key($title) !== pluto_title_key($series)) {
+        $short = pluto_without_prefix($title, $channel);
+        if ($short !== $title) return $short;
+    }
+    // Only use numeric details for a TV series distinct from the channel.
+    // Channel placeholders often claim season 1, episode 1 (or even 2).
+    if (($episode['series']['type'] ?? '') === 'tv' &&
+        !pluto_channel_is_series($channel, $series) &&
+        pluto_title_key($title) === pluto_title_key($series) &&
+        filter_var($episode['number'] ?? null, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]) !== false) {
+        $number = (int)$episode['number'];
+        $season = filter_var($episode['season'] ?? null, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 100]]);
+        return $title . ($season !== false ? ': Stagione ' . $season . ', episodio ' : ': Episodio ') . $number;
+    }
+    if (pluto_channel_is_series($channel, $title) || pluto_title_key($title) === 'noinfoavailable') {
+        return 'Programma non specificato';
+    }
+    return $title;
+}
+
 function pluto_normalize(array $channels, array $ids): array
 {
     $zone = new DateTimeZone('Europe/Rome');
@@ -67,6 +169,7 @@ function pluto_normalize(array $channels, array $ids): array
     foreach ($channels as $channel) {
         $id = strtolower((string)($channel['id'] ?? ''));
         if (!isset($ids[$id])) continue;
+        $channelName = is_string($ids[$id]) && $ids[$id] !== '' ? $ids[$id] : (string)($channel['name'] ?? '');
         $programs = [];
         foreach ($channel['timelines'] ?? [] as $timeline) {
             $start = strtotime((string)($timeline['start'] ?? ''));
@@ -74,8 +177,7 @@ function pluto_normalize(array $channels, array $ids): array
             if (!$start || !$stop || $stop <= $start) continue;
             $episode = $timeline['episode'] ?? [];
             $series = $episode['series'] ?? [];
-            $title = pluto_first_text([$timeline['title'] ?? '', $episode['name'] ?? '',
-                $series['name'] ?? '', $channel['name'] ?? '']);
+            $title = pluto_program_title($timeline, $channelName);
             if ($title === '') continue;
             $programs[$start . ':' . $stop] = ['title' => $title,
                 'hour' => (new DateTimeImmutable('@' . $start))->setTimezone($zone)->format('H:i'),
@@ -90,6 +192,12 @@ function pluto_normalize(array $channels, array $ids): array
     return $result;
 }
 
+function pluto_is_placeholder(array $program): bool
+{
+    return in_array(pluto_title_key((string)($program['title'] ?? '')),
+        ['', 'noinfoavailable', 'programmanonspecificato'], true);
+}
+
 function pluto_current(array $programs, int $now): ?array
 {
     $active = null;
@@ -98,12 +206,15 @@ function pluto_current(array $programs, int $now): ?array
         if ($program['startTime'] > $now) continue;
         if ($latest === null || $program['startTime'] > $latest['startTime']) $latest = $program;
         if ($program['endTime'] <= $now) continue;
-        $filler = strcasecmp(trim($program['title']), 'no info available') === 0;
-        $activeFiller = $active !== null && strcasecmp(trim($active['title']), 'no info available') === 0;
+        $filler = pluto_is_placeholder($program);
+        $activeFiller = $active !== null && pluto_is_placeholder($active);
         if ($active === null || ($activeFiller && !$filler) ||
             ($activeFiller === $filler && $program['startTime'] > $active['startTime'])) $active = $program;
     }
-    return $active ?? ($latest !== null && $now - $latest['startTime'] <= 21600 ? $latest : null);
+    $selected = $active ?? ($latest !== null && $now - $latest['startTime'] <= 21600 ? $latest : null);
+    // Retain placeholders internally as time boundaries: an unknown current
+    // slot must not make a previous real programme appear to be still on air.
+    return $selected !== null && !pluto_is_placeholder($selected) ? $selected : null;
 }
 
 function pluto_cached(array $ids, int $now, string $directory): array
@@ -111,7 +222,8 @@ function pluto_cached(array $ids, int $now, string $directory): array
     if (!is_dir($directory) && !@mkdir($directory, 0700, true) && !is_dir($directory)) {
         throw new RuntimeException('Cache unavailable', 503);
     }
-    $file = $directory . '/guide.json';
+    // Invalidate old titles immediately after deploying this normalization.
+    $file = $directory . '/guide-v3.json';
     $read = static function () use ($file): ?array {
         $data = json_decode((string)@file_get_contents($file), true);
         return is_array($data) && isset($data['updated'], $data['programs']) && is_array($data['programs']) ? $data : null;
@@ -181,7 +293,7 @@ function pluto_guide_main(): void
             if ($id !== '') {
                 $payload += ['id' => $id, 'date' => $date, 'programs' => array_values(array_filter(
                     $cache['programs'][$id] ?? [],
-                    static fn(array $p): bool => $p['startTime'] < $stop && $p['endTime'] > $start))];
+                    static fn(array $p): bool => !pluto_is_placeholder($p) && $p['startTime'] < $stop && $p['endTime'] > $start))];
             } else {
                 $programs = [];
                 foreach ($ids as $channelId => $_) {

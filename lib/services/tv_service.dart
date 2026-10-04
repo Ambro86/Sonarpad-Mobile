@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../utils/app_logger.dart';
+import 'stream_diagnostics_service.dart';
 import 'app_cache_service.dart';
 
 class TvChannel {
@@ -866,10 +867,12 @@ class TvService {
     return channel.name;
   }
 
-  Future<String> resolveStreamUrl(TvChannel channel) async {
+  Future<String> resolveStreamUrl(TvChannel channel, {
+    StreamDiagnosticsSession? diagnostics,
+  }) async {
     var resolvedUrl = channel.url;
     await AppLogger.log(
-        'Inizio risoluzione stream per: ${channel.name} (URL base: $resolvedUrl)');
+        'Inizio risoluzione stream per: ${channel.name} (URL base: ${StreamDiagnosticsSession.safeUrl(resolvedUrl)})');
     // --- AUTORESOLVER DISCOVERY ---
     var effResolver = channel.streamResolver;
     var effChannelId = channel.resolverChannelId;
@@ -973,18 +976,20 @@ class TvService {
       final reqUrl = uri.replace(queryParameters: queryParams).toString();
 
       await AppLogger.log(
-        'Interrogo il relinker RAI con output=54: $reqUrl '
+        'Interrogo il relinker RAI con output=54: ${StreamDiagnosticsSession.safeUrl(reqUrl)} '
         'userAgent=${channel.playbackUserAgent}',
       );
 
-      final response = await http.get(
+      final response = await _getRaiWithDiagnostics(
         Uri.parse(reqUrl),
         headers: {
           'User-Agent': channel.playbackUserAgent,
           'Origin': 'https://www.raiplay.it',
           'Referer': 'https://www.raiplay.it/',
         },
-      ).timeout(const Duration(seconds: 10));
+        stage: 'relinker',
+        diagnostics: diagnostics,
+      );
 
       if (response.statusCode != 200) {
         await AppLogger.log('Errore HTTP ${response.statusCode} dal relinker');
@@ -994,7 +999,7 @@ class TvService {
       final body = response.body.trim();
       if (body.startsWith('http')) {
         resolvedUrl = body;
-        await AppLogger.log('Relinker risolto in (output=54): $resolvedUrl');
+        await AppLogger.log('Relinker risolto in (output=54): ${StreamDiagnosticsSession.safeUrl(resolvedUrl)}');
       } else if (body.startsWith('#EXTM3U')) {
         await AppLogger.log(
             'Il relinker ha risposto direttamente con un HLS (EXTM3U).');
@@ -1005,15 +1010,52 @@ class TvService {
             RegExp(r'<url[^>]*>([^<]+)</url>').firstMatch(body);
         if (match != null) {
           resolvedUrl = match.group(1)!.trim();
-          await AppLogger.log('Relinker risolto da XML: $resolvedUrl');
+          await AppLogger.log('Relinker risolto da XML: ${StreamDiagnosticsSession.safeUrl(resolvedUrl)}');
         } else {
-          await AppLogger.log('URL non trovato nel relinker: $body');
+          await AppLogger.log('URL non trovato nel relinker: ${StreamDiagnosticsSession.redact(body)}');
           throw Exception('Stream TV non trovato nel relinker.');
         }
       }
     }
 
     return resolvedUrl;
+  }
+
+  // Same requests, headers and timeout as before. Only passive measurements.
+  Future<http.Response> _getRaiWithDiagnostics(
+    Uri uri, {
+    required Map<String, String> headers,
+    required String stage,
+    StreamDiagnosticsSession? diagnostics,
+  }) async {
+    final clock = Stopwatch()..start();
+    diagnostics?.record('resolver_http_start', {
+      'stage': stage,
+      'url': StreamDiagnosticsSession.safeUrl(uri.toString()),
+      'userAgent': headers['User-Agent'],
+    });
+    try {
+      final response = await http.get(uri, headers: headers)
+          .timeout(const Duration(seconds: 10));
+      diagnostics?.record('resolver_http_end', {
+        'stage': stage,
+        'status': response.statusCode,
+        'elapsedMs': clock.elapsedMilliseconds,
+        'bytes': response.bodyBytes.length,
+        'headers': StreamDiagnosticsSession.safeHttpHeaders(response.headers),
+        'hls': response.body.trimLeft().startsWith('#EXTM3U'),
+        'redirectInfo': 'not_exposed_by_package_http',
+      });
+      return response;
+    } catch (error) {
+      diagnostics?.record('resolver_http_error', {
+        'stage': stage,
+        'elapsedMs': clock.elapsedMilliseconds,
+        'category': StreamDiagnosticsSession.classifyError(error),
+        'error': error.toString(),
+      });
+      rethrow;
+    }
   }
 
   static bool isDashStreamUrl(String url) {
@@ -1025,16 +1067,19 @@ class TvService {
   /// Per i canali RAI con audiodescrizione, scarica il master playlist HLS
   /// e restituisce sia il video normale sia la traccia audio AD, se presente.
   Future<RaiAudioDescriptionStreams> resolveAudioDescriptionStreams(
-    TvChannel channel,
-  ) async {
-    final masterUrl = await resolveStreamUrl(channel);
-    await AppLogger.log('Cerco traccia AD nel master URL: $masterUrl');
+    TvChannel channel, {
+    StreamDiagnosticsSession? diagnostics,
+  }) async {
+    final masterUrl = await resolveStreamUrl(channel, diagnostics: diagnostics);
+    await AppLogger.log('Cerco traccia AD nel master URL: ${StreamDiagnosticsSession.safeUrl(masterUrl)}');
 
     try {
-      final response = await http.get(
+      final response = await _getRaiWithDiagnostics(
         Uri.parse(masterUrl),
         headers: {'User-Agent': channel.playbackUserAgent},
-      ).timeout(const Duration(seconds: 10));
+        stage: 'master_playlist',
+        diagnostics: diagnostics,
+      );
 
       if (response.statusCode != 200) {
         await AppLogger.log(
@@ -1060,7 +1105,7 @@ class TvService {
       final finalMasterUrl = response.request?.url.toString() ?? masterUrl;
       if (finalMasterUrl != masterUrl) {
         await AppLogger.log(
-            'Redirect rilevato!\nOriginale: $masterUrl\nFinale: $finalMasterUrl');
+            'Redirect rilevato!\nOriginale: ${StreamDiagnosticsSession.safeUrl(masterUrl)}\nFinale: ${StreamDiagnosticsSession.safeUrl(finalMasterUrl)}');
       }
 
       String? adUrl;
@@ -1087,7 +1132,7 @@ class TvService {
 
         if (isAudioDescription) {
           await AppLogger.log(
-              'Trovata traccia DESC:\nURI=$uri\nLang=$language\nName=$name');
+              'Trovata traccia DESC:\nURI=${StreamDiagnosticsSession.safeUrl(uri)}\nLang=$language\nName=$name');
           adUrl ??= _resolveHlsChildUrl(finalMasterUrl, uri);
           // Continuiamo a scorrere il master: la traccia ITA diretta serve
           // esclusivamente come secondo fallback se anche l'AD diretta non
@@ -1095,15 +1140,22 @@ class TvService {
         }
 
         if (language == 'ita' && itaUrl == null) {
-          await AppLogger.log('Trovata traccia ITA (fallback):\nURI=$uri');
+          await AppLogger.log('Trovata traccia ITA (fallback):\nURI=${StreamDiagnosticsSession.safeUrl(uri)}');
           itaUrl = _resolveHlsChildUrl(finalMasterUrl, uri);
         }
       }
 
       final audioUrl = adUrl ?? itaUrl ?? finalMasterUrl;
       final normalAudioUrl = itaUrl ?? finalMasterUrl;
+      diagnostics?.record('resolver_selection', {
+        'master': StreamDiagnosticsSession.safeUrl(finalMasterUrl),
+        'audio': StreamDiagnosticsSession.safeUrl(audioUrl),
+        'normalAudio': StreamDiagnosticsSession.safeUrl(normalAudioUrl),
+        'hasAD': adUrl != null,
+        'dedicatedAudio': audioUrl != finalMasterUrl,
+      });
       await AppLogger.log(
-        'RAI AD streams resolved: videoUrl=$finalMasterUrl audioUrl=$audioUrl normalAudioUrl=$normalAudioUrl hasAD=${adUrl != null}',
+        'RAI AD streams resolved: videoUrl=${StreamDiagnosticsSession.safeUrl(finalMasterUrl)} audioUrl=${StreamDiagnosticsSession.safeUrl(audioUrl)} normalAudioUrl=${StreamDiagnosticsSession.safeUrl(normalAudioUrl)} hasAD=${adUrl != null}',
       );
       return RaiAudioDescriptionStreams(
         videoUrl: finalMasterUrl,
@@ -1113,7 +1165,7 @@ class TvService {
       );
     } catch (e) {
       dev.log('TvService: errore ricerca traccia AD: $e');
-      await AppLogger.log('Errore durante la ricerca della traccia AD: $e');
+      await AppLogger.log('Errore durante la ricerca della traccia AD: ${StreamDiagnosticsSession.redact(e.toString())}');
       return RaiAudioDescriptionStreams(
         videoUrl: masterUrl,
         audioUrl: masterUrl,
@@ -1145,7 +1197,7 @@ class TvService {
     }
 
     final finalUrl = resolvedUri.toString();
-    AppLogger.log('Risolto child URI:\nDa: $childUri\nA: $finalUrl');
+    AppLogger.log('Risolto child URI:\nDa: ${StreamDiagnosticsSession.safeUrl(childUri)}\nA: ${StreamDiagnosticsSession.safeUrl(finalUrl)}');
     return finalUrl;
   }
 

@@ -7795,6 +7795,12 @@ abstract class AppLocalizations {
 
   /// Media join: joinMediaCancelling
   String get joinMediaCancelling;
+  /// Live stream player status.
+  String get streamReconnecting;
+
+  /// Live stream player status.
+  String get streamPlaybackRetryMessage;
+
 }
 
 class _AppLocalizationsDelegate
