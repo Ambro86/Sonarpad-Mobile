@@ -5189,6 +5189,8 @@
   },
   "settingsMediaSpeedControl": "Geschwindigkeitssteuerung für Medien aktivieren",
   "settingsMediaSpeedControlHint": "Zeigt die Geschwindigkeitssteuerung für Sonartube, Podcasts und andere aufgezeichnete Inhalte an. Livestreams sind ausgeschlossen.",
+  "settingsPreferRaiAudioDescription": "Audiodeskription bevorzugen, wenn verfügbar",
+  "settingsPreferRaiAudioDescriptionHint": "Bei Rai-Sendern wird automatisch die Audiodeskriptionsspur verwendet, wenn sie verfügbar ist. Deaktiviere diese Option, um den normalen italienischen Ton zu bevorzugen.",
   "mediaPlaybackSpeed": "Wiedergabegeschwindigkeit",
   "mediaPlaybackSpeedNormal": "Normal",
   "mediaPlaybackSpeedUnavailable": "Diese Geschwindigkeit wird für diesen Inhalt nicht unterstützt. Die vorherige Geschwindigkeit wurde wiederhergestellt.",

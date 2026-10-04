@@ -3611,6 +3611,8 @@
   },
   "settingsMediaSpeedControl": "Enable media playback speed control",
   "settingsMediaSpeedControlHint": "Show the speed control for Sonartube, podcasts and other recorded content. Live streams are excluded.",
+  "settingsPreferRaiAudioDescription": "Prefer audio description when available",
+  "settingsPreferRaiAudioDescriptionHint": "On Rai channels, automatically use the audio-described track when available. Turn this off to prefer the normal Italian audio.",
   "mediaPlaybackSpeed": "Playback speed",
   "mediaPlaybackSpeedNormal": "Normal",
   "mediaPlaybackSpeedUnavailable": "This speed is not supported for this content. The previous speed has been restored.",

@@ -3611,6 +3611,8 @@
   },
   "settingsMediaSpeedControl": "启用媒体文件播放速度控制",
   "settingsMediaSpeedControlHint": "显示 Sonartube、播客和其他录制内容的速度控制。不适用于直播。",
+  "settingsPreferRaiAudioDescription": "有音频描述时优先使用",
+  "settingsPreferRaiAudioDescriptionHint": "在 Rai 频道中，如果有音频描述音轨则自动使用。关闭此选项可优先使用普通意大利语音轨。",
   "mediaPlaybackSpeed": "播放速度",
   "mediaPlaybackSpeedNormal": "正常",
   "mediaPlaybackSpeedUnavailable": "此内容不支持该速度。已恢复之前的播放速度。",

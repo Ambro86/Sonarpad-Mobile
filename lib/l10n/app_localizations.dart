@@ -7806,6 +7806,10 @@ abstract class AppLocalizations {
 
   String get settingsMediaSpeedControlHint;
 
+  String get settingsPreferRaiAudioDescription;
+
+  String get settingsPreferRaiAudioDescriptionHint;
+
   String get mediaPlaybackSpeed;
 
   String get mediaPlaybackSpeedNormal;

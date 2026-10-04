@@ -4490,6 +4490,12 @@ class AppLocalizationsPt extends AppLocalizations {
   String get settingsMediaSpeedControlHint => "Mostra o controlo de velocidade para Sonartube, podcasts e outros conteúdos gravados. As transmissões em direto estão excluídas.";
 
   @override
+  String get settingsPreferRaiAudioDescription => "Preferir audiodescrição quando disponível";
+
+  @override
+  String get settingsPreferRaiAudioDescriptionHint => "Nos canais Rai, utiliza automaticamente a faixa com audiodescrição quando disponível. Desative esta opção para preferir o áudio italiano normal.";
+
+  @override
   String get mediaPlaybackSpeed => "Velocidade de reprodução";
 
   @override
@@ -8976,6 +8982,12 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get settingsMediaSpeedControlHint => "Mostra o controle de velocidade para Sonartube, podcasts e outros conteúdos gravados. As transmissões ao vivo ficam excluídas.";
+
+  @override
+  String get settingsPreferRaiAudioDescription => "Preferir audiodescrição quando disponível";
+
+  @override
+  String get settingsPreferRaiAudioDescriptionHint => "Nos canais Rai, usa automaticamente a faixa com audiodescrição quando disponível. Desative esta opção para preferir o áudio italiano normal.";
 
   @override
   String get mediaPlaybackSpeed => "Velocidade de reprodução";

@@ -4297,6 +4297,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settingsMediaSpeedControlHint => "显示 Sonartube、播客和其他录制内容的速度控制。不适用于直播。";
 
   @override
+  String get settingsPreferRaiAudioDescription => "有音频描述时优先使用";
+
+  @override
+  String get settingsPreferRaiAudioDescriptionHint => "在 Rai 频道中，如果有音频描述音轨则自动使用。关闭此选项可优先使用普通意大利语音轨。";
+
+  @override
   String get mediaPlaybackSpeed => "播放速度";
 
   @override
@@ -8604,6 +8610,12 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get settingsMediaSpeedControlHint => "显示 Sonartube、播客和其他录制内容的速度控制。不适用于直播。";
+
+  @override
+  String get settingsPreferRaiAudioDescription => "有音频描述时优先使用";
+
+  @override
+  String get settingsPreferRaiAudioDescriptionHint => "在 Rai 频道中，如果有音频描述音轨则自动使用。关闭此选项可优先使用普通意大利语音轨。";
 
   @override
   String get mediaPlaybackSpeed => "播放速度";

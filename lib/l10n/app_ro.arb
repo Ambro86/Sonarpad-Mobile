@@ -3611,6 +3611,8 @@
   },
   "settingsMediaSpeedControl": "Activează controlul vitezei fișierelor media",
   "settingsMediaSpeedControlHint": "Afișează controlul vitezei pentru Sonartube, podcasturi și alte conținuturi înregistrate. Transmisiunile în direct sunt excluse.",
+  "settingsPreferRaiAudioDescription": "Preferă audiodescrierea când este disponibilă",
+  "settingsPreferRaiAudioDescriptionHint": "Pe canalele Rai folosește automat pista cu audiodescriere când este disponibilă. Dezactivează această opțiune pentru a prefera sunetul italian normal.",
   "mediaPlaybackSpeed": "Viteza de redare",
   "mediaPlaybackSpeedNormal": "Viteză normală",
   "mediaPlaybackSpeedUnavailable": "Această viteză nu este acceptată pentru acest conținut. Viteza anterioară a fost restabilită.",

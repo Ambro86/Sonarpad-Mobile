@@ -75,6 +75,8 @@ class AppSettingsService {
   static const _sonarTubePlayerActionsKey =
       'sonarpad_sonartube_player_actions';
   static const _sonarTubeAutoplayKey = 'sonarpad_sonartube_autoplay';
+  static const _preferRaiAudioDescriptionKey =
+      'sonarpad_prefer_rai_audio_description';
 
   static const sonarTubePlayerActionPrevious = 'previous';
   static const sonarTubePlayerActionNext = 'next';
@@ -896,6 +898,16 @@ class AppSettingsService {
   Future<void> setMediaSpeedControlEnabled(bool enabled) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_mediaSpeedControlKey, enabled);
+  }
+
+  Future<bool> preferRaiAudioDescription() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_preferRaiAudioDescriptionKey) ?? true;
+  }
+
+  Future<void> setPreferRaiAudioDescription(bool enabled) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_preferRaiAudioDescriptionKey, enabled);
   }
 
   Future<double> loadMediaPlaybackSpeed(MediaPlaybackSpeedCategory category) async {

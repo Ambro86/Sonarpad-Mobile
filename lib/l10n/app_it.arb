@@ -5189,6 +5189,8 @@
   },
   "settingsMediaSpeedControl": "Attiva il controllo della velocità dei file media",
   "settingsMediaSpeedControlHint": "Mostra il controllo della velocità per Sonartube, podcast e altri contenuti registrati. Le dirette sono escluse.",
+  "settingsPreferRaiAudioDescription": "Preferisci l'audiodescrizione quando disponibile",
+  "settingsPreferRaiAudioDescriptionHint": "Nei canali Rai usa automaticamente la traccia audiodescritta quando disponibile. Disattiva questa opzione per preferire l'audio italiano normale.",
   "mediaPlaybackSpeed": "Velocità di riproduzione",
   "mediaPlaybackSpeedNormal": "Normale",
   "mediaPlaybackSpeedUnavailable": "Questa velocità non è supportata per il contenuto. È stata ripristinata la velocità precedente.",

@@ -10,13 +10,13 @@ void main() {
     expect(source, contains('if (!_isVideoEnabled) {'));
     expect(
       source,
-      contains('final hasDedicatedAudio = streams.audioUrl != streams.videoUrl;'),
+      contains('final hasDedicatedAudio = selectedAudioUrl != streams.videoUrl;'),
     );
     expect(
       source,
       contains('RAI direct audio selected because video is disabled'),
     );
-    expect(source, contains('streamUrl: streams.audioUrl,'));
+    expect(source, contains('streamUrl: selectedAudioUrl,'));
     expect(source, contains('preferRaiAudioDescription: false,'));
     expect(
       source,
@@ -25,7 +25,7 @@ void main() {
 
     expect(
       RegExp(
-        r"if \(!_isVideoEnabled\) \{[\s\S]*?if \(hasDedicatedAudio\) \{[\s\S]*?streamUrl: streams\.audioUrl,[\s\S]*?raiNormalAudioFallbackUrl: normalAudioFallbackUrl,[\s\S]*?return;",
+        r"if \(!_isVideoEnabled\) \{[\s\S]*?if \(hasDedicatedAudio\) \{[\s\S]*?streamUrl: selectedAudioUrl,[\s\S]*?raiNormalAudioFallbackUrl: normalAudioFallbackUrl,[\s\S]*?return;",
       ).hasMatch(source),
       isTrue,
       reason: 'With video off, resolved AD/ITA child audio must be opened directly.',
@@ -68,7 +68,7 @@ void main() {
       playerSource,
       contains('final streams = await TvService().resolveAudioDescriptionStreams('),
     );
-    expect(playerSource, contains('streamUrl: streams.audioUrl,'));
+    expect(playerSource, contains('streamUrl: selectedAudioUrl,'));
     expect(
       playerSource,
       contains('raiNormalAudioFallbackUrl: normalAudioFallbackUrl,'),
@@ -146,4 +146,80 @@ void main() {
       contains("stage: 'direct AD'"),
     );
   });
+  test('RAI audiodescription preference is opt-out, code-gated in settings, and defaults on', () {
+    final playerSource =
+        File('lib/screens/radio_player_screen.dart').readAsStringSync();
+    final settingsSource =
+        File('lib/screens/settings_screen.dart').readAsStringSync();
+    final serviceSource =
+        File('lib/services/app_settings_service.dart').readAsStringSync();
+
+    expect(serviceSource, contains("'sonarpad_prefer_rai_audio_description'"));
+    expect(
+      serviceSource,
+      contains('prefs.getBool(_preferRaiAudioDescriptionKey) ?? true'),
+    );
+    expect(
+      settingsSource,
+      contains('RecordingFeatureAccess.isCodeValid(tvSecretCode)'),
+    );
+    expect(
+      settingsSource,
+      contains("if (_extraFeaturesUnlocked)"),
+    );
+    expect(
+      settingsSource,
+      contains("id: 'prefer_rai_audio_description'"),
+    );
+    expect(
+      playerSource,
+      contains('await _settings.preferRaiAudioDescription();'),
+    );
+    expect(
+      playerSource,
+      contains('!_preferRaiAudioDescription &&'),
+    );
+    expect(
+      playerSource,
+      contains('? streams.normalAudioUrl'),
+    );
+    expect(
+      playerSource,
+      contains('_preferRaiAudioDescription && streams.hasAudioDescription'),
+    );
+    expect(playerSource, contains('selectRaiPreferredAudioTrack: true'));
+    expect(
+      playerSource,
+      contains('final selectedTrack = preferAudioDescription'),
+    );
+    expect(
+      playerSource,
+      contains('? (describedTrack ?? italianTrack)'),
+    );
+    expect(
+      playerSource,
+      contains(': italianTrack;'),
+    );
+  });
+
+  test('RAI audiodescription preference labels are localized in every ARB', () {
+    final arbFiles = Directory('lib/l10n')
+        .listSync()
+        .whereType<File>()
+        .where((file) => file.path.endsWith('.arb'));
+    for (final file in arbFiles) {
+      final source = file.readAsStringSync();
+      expect(
+        source,
+        contains('\"settingsPreferRaiAudioDescription\"'),
+        reason: file.path,
+      );
+      expect(
+        source,
+        contains('\"settingsPreferRaiAudioDescriptionHint\"'),
+        reason: file.path,
+      );
+    }
+  });
+
 }

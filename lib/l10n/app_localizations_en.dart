@@ -4459,6 +4459,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsMediaSpeedControlHint => "Show the speed control for Sonartube, podcasts and other recorded content. Live streams are excluded.";
 
   @override
+  String get settingsPreferRaiAudioDescription => "Prefer audio description when available";
+
+  @override
+  String get settingsPreferRaiAudioDescriptionHint => "On Rai channels, automatically use the audio-described track when available. Turn this off to prefer the normal Italian audio.";
+
+  @override
   String get mediaPlaybackSpeed => "Playback speed";
 
   @override

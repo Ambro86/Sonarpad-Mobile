@@ -3614,6 +3614,8 @@
   },
   "settingsMediaSpeedControl": "Zapnout ovládání rychlosti přehrávání médií",
   "settingsMediaSpeedControlHint": "Zobrazí ovládání rychlosti pro Sonartube, podcasty a další nahraný obsah. Živé vysílání je vyloučeno.",
+  "settingsPreferRaiAudioDescription": "Upřednostnit audiopopis, pokud je k dispozici",
+  "settingsPreferRaiAudioDescriptionHint": "U kanálů Rai se automaticky použije stopa s audiopopisem, pokud je k dispozici. Vypnutím této možnosti se upřednostní běžný italský zvuk.",
   "mediaPlaybackSpeed": "Rychlost přehrávání",
   "mediaPlaybackSpeedNormal": "Normální",
   "mediaPlaybackSpeedUnavailable": "Tato rychlost není pro tento obsah podporována. Byla obnovena předchozí rychlost.",

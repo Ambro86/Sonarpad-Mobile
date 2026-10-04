@@ -3617,6 +3617,8 @@
   },
   "settingsMediaSpeedControl": "Activer le contrôle de la vitesse des fichiers multimédias",
   "settingsMediaSpeedControlHint": "Affiche le contrôle de la vitesse pour Sonartube, les podcasts et les autres contenus enregistrés. Les directs sont exclus.",
+  "settingsPreferRaiAudioDescription": "Préférer l’audiodescription lorsqu’elle est disponible",
+  "settingsPreferRaiAudioDescriptionHint": "Sur les chaînes Rai, utilise automatiquement la piste avec audiodescription lorsqu’elle est disponible. Désactive cette option pour préférer l’audio italien normal.",
   "mediaPlaybackSpeed": "Vitesse de lecture",
   "mediaPlaybackSpeedNormal": "Normale",
   "mediaPlaybackSpeedUnavailable": "Cette vitesse n’est pas prise en charge pour ce contenu. La vitesse précédente a été rétablie.",

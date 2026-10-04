@@ -12,6 +12,7 @@ import '../services/audiodescription_service.dart';
 import '../services/developer_log_service.dart';
 import '../services/audio_player_service.dart';
 import '../services/podcast_cache_service.dart';
+import '../services/recording_feature_access.dart';
 import '../tts/edge_tts_bridge.dart';
 import '../utils/app_logger.dart';
 import '../utils/country_name_helper.dart';
@@ -69,6 +70,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _multipleDocumentBookmarks = false;
   bool _displayVideoInPortrait = false;
   bool _mediaSpeedControl = false;
+  bool _preferRaiAudioDescription = true;
+  bool _extraFeaturesUnlocked = false;
   bool _homeGroupingEnabled = false;
   bool _developerModeEnabled = false;
   bool _useFlutterAccessibleRendererOnIos = false;
@@ -94,6 +97,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _savedMultipleDocumentBookmarks = false;
   bool _savedDisplayVideoInPortrait = false;
   bool _savedMediaSpeedControl = false;
+  bool _savedPreferRaiAudioDescription = true;
   bool _savedHomeGroupingEnabled = false;
   int _savedSeekSliderStep = 60;
   int _savedDocumentSliderStepPercent =
@@ -267,6 +271,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final sysVoice = await _settings.loadSystemTtsVoice();
     final autoBookmark = await _settings.isAutoBookmarkEnabled();
     final mediaSpeedControl = await _settings.isMediaSpeedControlEnabled();
+    final preferRaiAudioDescription =
+        await _settings.preferRaiAudioDescription();
+    final extraFeaturesUnlocked =
+        RecordingFeatureAccess.isCodeValid(tvSecretCode);
     final includeEpubFootnotesInText =
         await _settings.includeEpubFootnotesInText();
     final multipleDocumentBookmarks =
@@ -327,6 +335,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _savedAutoBookmark = autoBookmark;
       _mediaSpeedControl = mediaSpeedControl;
       _savedMediaSpeedControl = mediaSpeedControl;
+      _preferRaiAudioDescription = preferRaiAudioDescription;
+      _savedPreferRaiAudioDescription = preferRaiAudioDescription;
+      _extraFeaturesUnlocked = extraFeaturesUnlocked;
       _includeEpubFootnotesInText = includeEpubFootnotesInText;
       _savedIncludeEpubFootnotesInText = includeEpubFootnotesInText;
       _multipleDocumentBookmarks = multipleDocumentBookmarks;
@@ -382,6 +393,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
         _weatherTemperatureUnit != _savedWeatherTemperatureUnit;
     final autoBookmarkChanged = _autoBookmark != _savedAutoBookmark;
     final mediaSpeedControlChanged = _mediaSpeedControl != _savedMediaSpeedControl;
+    final preferRaiAudioDescriptionChanged = _preferRaiAudioDescription !=
+        _savedPreferRaiAudioDescription;
     final includeEpubFootnotesChanged = _includeEpubFootnotesInText !=
         _savedIncludeEpubFootnotesInText;
     final multipleDocumentBookmarksChanged =
@@ -408,6 +421,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         weatherTemperatureUnitChanged ||
         autoBookmarkChanged ||
         mediaSpeedControlChanged ||
+        preferRaiAudioDescriptionChanged ||
         includeEpubFootnotesChanged ||
         multipleDocumentBookmarksChanged ||
         displayVideoInPortraitChanged ||
@@ -425,6 +439,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       'appLanguageChanged=$appLanguageChanged themeChanged=$themeChanged '
       'weatherTemperatureUnitChanged=$weatherTemperatureUnitChanged '
       'codeChanged=$codeChanged autoBookmarkChanged=$autoBookmarkChanged '
+      'preferRaiAudioDescriptionChanged=$preferRaiAudioDescriptionChanged '
       'includeEpubFootnotesChanged=$includeEpubFootnotesChanged '
       'multipleDocumentBookmarksChanged=$multipleDocumentBookmarksChanged '
       'displayVideoInPortraitChanged=$displayVideoInPortraitChanged '
@@ -467,6 +482,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     await _settings.setTvSecretCode(rawCode);
     await _settings.setAutoBookmarkEnabled(_autoBookmark);
     await _settings.setMediaSpeedControlEnabled(_mediaSpeedControl);
+    await _settings.setPreferRaiAudioDescription(_preferRaiAudioDescription);
     await _settings.setIncludeEpubFootnotesInText(_includeEpubFootnotesInText);
     await _settings.setMultipleDocumentBookmarksEnabled(_multipleDocumentBookmarks);
     await _settings.setDisplayVideoInPortrait(_displayVideoInPortrait);
@@ -574,6 +590,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     _savedTvSecretCode = rawCode;
     _savedAutoBookmark = _autoBookmark;
     _savedMediaSpeedControl = _mediaSpeedControl;
+    _savedPreferRaiAudioDescription = _preferRaiAudioDescription;
+    _extraFeaturesUnlocked = RecordingFeatureAccess.isCodeValid(rawCode);
     _savedIncludeEpubFootnotesInText = _includeEpubFootnotesInText;
     _savedMultipleDocumentBookmarks = _multipleDocumentBookmarks;
     _savedDisplayVideoInPortrait = _displayVideoInPortrait;
@@ -598,6 +616,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         _tvSecretCodeController.text.trim() != _savedTvSecretCode ||
         _autoBookmark != _savedAutoBookmark ||
         _mediaSpeedControl != _savedMediaSpeedControl ||
+        _preferRaiAudioDescription != _savedPreferRaiAudioDescription ||
         _includeEpubFootnotesInText != _savedIncludeEpubFootnotesInText ||
         _multipleDocumentBookmarks != _savedMultipleDocumentBookmarks ||
         _displayVideoInPortrait != _savedDisplayVideoInPortrait ||
@@ -1416,6 +1435,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
             toggleValue: _mediaSpeedControl,
             valueLabel: toggleLabel(_mediaSpeedControl),
           ),
+          if (_extraFeaturesUnlocked)
+            AccessibleListRow(
+              id: 'prefer_rai_audio_description',
+              title: l10n.settingsPreferRaiAudioDescription,
+              subtitle: l10n.settingsPreferRaiAudioDescriptionHint,
+              kind: 'toggle',
+              toggleValue: _preferRaiAudioDescription,
+              valueLabel: toggleLabel(_preferRaiAudioDescription),
+            ),
           AccessibleListRow(
             id: 'sonartube_player_actions',
             title: l10n.settingsSonarTubePlayerActions,
@@ -1549,6 +1577,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           setState(() {
             switch (id) {
               case 'media_speed_control': _mediaSpeedControl = value; break;
+              case 'prefer_rai_audio_description': _preferRaiAudioDescription = value; break;
               case 'auto_bookmark': _autoBookmark = value; break;
               case 'epub_footnotes': _includeEpubFootnotesInText = value; break;
               case 'multiple_bookmarks': _multipleDocumentBookmarks = value; break;
@@ -2223,6 +2252,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       contentPadding: EdgeInsets.zero,
                     ),
                     const SizedBox(height: 12),
+                    if (_extraFeaturesUnlocked) ...[
+                      SwitchListTile(
+                        key: const ValueKey('settings-prefer-rai-audio-description'),
+                        title: Text(l10n.settingsPreferRaiAudioDescription),
+                        subtitle: Text(l10n.settingsPreferRaiAudioDescriptionHint),
+                        value: _preferRaiAudioDescription,
+                        onChanged: (value) => setState(
+                          () => _preferRaiAudioDescription = value,
+                        ),
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                      const SizedBox(height: 12),
+                    ],
                     ListTile(
                       key: const ValueKey(
                         'settings-sonartube-player-actions',

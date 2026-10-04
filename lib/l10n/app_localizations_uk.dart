@@ -4462,6 +4462,12 @@ class AppLocalizationsUk extends AppLocalizations {
   String get settingsMediaSpeedControlHint => "Показує керування швидкістю для Sonartube, подкастів та іншого записаного вмісту. Прямі трансляції виключено.";
 
   @override
+  String get settingsPreferRaiAudioDescription => "Віддавати перевагу аудіодискрипції, коли вона доступна";
+
+  @override
+  String get settingsPreferRaiAudioDescriptionHint => "На каналах Rai автоматично використовує доріжку з аудіодискрипцією, коли вона доступна. Вимкніть цю опцію, щоб віддавати перевагу звичайному італійському аудіо.";
+
+  @override
   String get mediaPlaybackSpeed => "Швидкість відтворення";
 
   @override

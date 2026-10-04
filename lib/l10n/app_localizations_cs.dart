@@ -4467,6 +4467,12 @@ class AppLocalizationsCs extends AppLocalizations {
   String get settingsMediaSpeedControlHint => "Zobrazí ovládání rychlosti pro Sonartube, podcasty a další nahraný obsah. Živé vysílání je vyloučeno.";
 
   @override
+  String get settingsPreferRaiAudioDescription => "Upřednostnit audiopopis, pokud je k dispozici";
+
+  @override
+  String get settingsPreferRaiAudioDescriptionHint => "U kanálů Rai se automaticky použije stopa s audiopopisem, pokud je k dispozici. Vypnutím této možnosti se upřednostní běžný italský zvuk.";
+
+  @override
   String get mediaPlaybackSpeed => "Rychlost přehrávání";
 
   @override

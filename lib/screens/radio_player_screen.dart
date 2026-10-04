@@ -104,6 +104,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   double _mediaKitVolume = 1.0;
   double _videoPlayerVolume = 1.0;
   bool _isRecordingFeatureUnlocked = false;
+  bool _preferRaiAudioDescription = true;
   bool _allowExitWithActiveRecording = false;
   bool _recordingExitPromptOpen = false;
 
@@ -140,6 +141,8 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       _displayVideoInPortrait = await _settings.displayVideoInPortrait();
       _isFavorite = await _loadIsFavorite();
       _isRecordingFeatureUnlocked = await _loadRecordingFeatureAccess();
+      _preferRaiAudioDescription =
+          await _settings.preferRaiAudioDescription();
       if (widget.tvChannel == null) {
         unawaited(RadioService().addRecentRadio(widget.station));
         unawaited(RadioService().recordRadioBrowserClick(widget.station));
@@ -234,26 +237,34 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         if (!mounted || requestId != _playRequestId) return;
 
         if (!_isVideoEnabled) {
-          final hasDedicatedAudio = streams.audioUrl != streams.videoUrl;
-          final normalAudioFallbackUrl = streams.hasAudioDescription &&
+          final selectedAudioUrl = !_preferRaiAudioDescription &&
+                  streams.hasAudioDescription
+              ? streams.normalAudioUrl
+              : streams.audioUrl;
+          final selectedAudioIsDescription = _preferRaiAudioDescription &&
+              streams.hasAudioDescription &&
+              selectedAudioUrl == streams.audioUrl;
+          final hasDedicatedAudio = selectedAudioUrl != streams.videoUrl;
+          final normalAudioFallbackUrl = selectedAudioIsDescription &&
                   streams.normalAudioUrl != streams.videoUrl &&
-                  streams.normalAudioUrl != streams.audioUrl
+                  streams.normalAudioUrl != selectedAudioUrl
               ? streams.normalAudioUrl
               : null;
 
           if (hasDedicatedAudio) {
             await AppLogger.log(
               'RadioPlayer: RAI direct audio selected because video is disabled '
-              'hasAD=${streams.hasAudioDescription} url=${StreamDiagnosticsSession.safeUrl(streams.audioUrl)} '
+              'preferAD=$_preferRaiAudioDescription selectedAD=$selectedAudioIsDescription '
+              'url=${StreamDiagnosticsSession.safeUrl(selectedAudioUrl)} '
               'normalFallback=${normalAudioFallbackUrl == null ? 'none' : StreamDiagnosticsSession.safeUrl(normalAudioFallbackUrl)}',
             );
             await _playMediaKitVideo(
-              streamUrl: streams.audioUrl,
+              streamUrl: selectedAudioUrl,
               preferRaiAudioDescription: false,
               enableRaiDirectAudioFallback: false,
               raiNormalAudioFallbackUrl: normalAudioFallbackUrl,
               playRequestId: requestId,
-              diagnosticStage: streams.hasAudioDescription ? 'direct_ad' : 'direct_ita',
+              diagnosticStage: selectedAudioIsDescription ? 'direct_ad' : 'direct_ita',
             );
             return;
           }
@@ -268,7 +279,9 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
           );
           await _playMediaKitVideo(
             streamUrl: streams.videoUrl,
-            preferRaiAudioDescription: streams.hasAudioDescription,
+            selectRaiPreferredAudioTrack: true,
+            preferRaiAudioDescription:
+                _preferRaiAudioDescription && streams.hasAudioDescription,
             enableRaiDirectAudioFallback: true,
             playRequestId: requestId,
             diagnosticStage: 'master_compatibility',
@@ -282,7 +295,9 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         );
         await _playMediaKitVideo(
           streamUrl: streams.videoUrl,
-          preferRaiAudioDescription: streams.hasAudioDescription,
+          selectRaiPreferredAudioTrack: true,
+          preferRaiAudioDescription:
+              _preferRaiAudioDescription && streams.hasAudioDescription,
           enableRaiDirectAudioFallback: false,
           playRequestId: requestId,
           diagnosticStage: 'master_video',
@@ -388,6 +403,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
 
   Future<void> _playMediaKitVideo({
     String? streamUrl,
+    bool selectRaiPreferredAudioTrack = false,
     bool preferRaiAudioDescription = false,
     bool enableRaiDirectAudioFallback = false,
     String? raiNormalAudioFallbackUrl,
@@ -616,11 +632,18 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     });
     _startMediaKitDiagnostics(player);
 
-    if (preferRaiAudioDescription) {
+    if (selectRaiPreferredAudioTrack) {
       _mediaKitTracksSubscription = player.stream.tracks.listen((tracks) {
-        unawaited(_selectMediaKitRaiAudioDescriptionTrack(player, tracks));
+        unawaited(_selectMediaKitRaiPreferredAudioTrack(
+          player,
+          tracks,
+          preferAudioDescription: preferRaiAudioDescription,
+        ));
       });
-      unawaited(_retrySelectMediaKitRaiAudioDescriptionTrack(player));
+      unawaited(_retrySelectMediaKitRaiPreferredAudioTrack(
+        player,
+        preferAudioDescription: preferRaiAudioDescription,
+      ));
     }
 
     if (Platform.isIOS) {
@@ -837,9 +860,16 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         return;
       }
 
-      final normalAudioFallbackUrl = streams.hasAudioDescription &&
+      final selectedAudioUrl = !_preferRaiAudioDescription &&
+              streams.hasAudioDescription
+          ? streams.normalAudioUrl
+          : streams.audioUrl;
+      final selectedAudioIsDescription = _preferRaiAudioDescription &&
+          streams.hasAudioDescription &&
+          selectedAudioUrl == streams.audioUrl;
+      final normalAudioFallbackUrl = selectedAudioIsDescription &&
               streams.normalAudioUrl != streams.videoUrl &&
-              streams.normalAudioUrl != streams.audioUrl
+              streams.normalAudioUrl != selectedAudioUrl
           ? streams.normalAudioUrl
           : null;
 
@@ -853,10 +883,13 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       }
 
       await AppLogger.log(
-        'RadioPlayer: RAI direct-audio fallback starting with fresh relinker URL hasAD=${streams.hasAudioDescription} url=${StreamDiagnosticsSession.safeUrl(streams.audioUrl)} normalFallback=${normalAudioFallbackUrl == null ? 'none' : StreamDiagnosticsSession.safeUrl(normalAudioFallbackUrl)}',
+        'RadioPlayer: RAI direct-audio fallback starting with fresh relinker URL '
+        'preferAD=$_preferRaiAudioDescription selectedAD=$selectedAudioIsDescription '
+        'url=${StreamDiagnosticsSession.safeUrl(selectedAudioUrl)} '
+        'normalFallback=${normalAudioFallbackUrl == null ? 'none' : StreamDiagnosticsSession.safeUrl(normalAudioFallbackUrl)}',
       );
       await _playMediaKitVideo(
-        streamUrl: streams.audioUrl,
+        streamUrl: selectedAudioUrl,
         preferRaiAudioDescription: false,
         enableRaiDirectAudioFallback: false,
         raiNormalAudioFallbackUrl: normalAudioFallbackUrl,
@@ -1007,9 +1040,10 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     };
   }
 
-  Future<void> _retrySelectMediaKitRaiAudioDescriptionTrack(
-    mk.Player player,
-  ) async {
+  Future<void> _retrySelectMediaKitRaiPreferredAudioTrack(
+    mk.Player player, {
+    required bool preferAudioDescription,
+  }) async {
     for (final delay in const [
       Duration(milliseconds: 500),
       Duration(seconds: 1),
@@ -1024,19 +1058,24 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       }
       try {
         final tracks = (player.state as dynamic).tracks;
-        await _selectMediaKitRaiAudioDescriptionTrack(player, tracks);
+        await _selectMediaKitRaiPreferredAudioTrack(
+          player,
+          tracks,
+          preferAudioDescription: preferAudioDescription,
+        );
       } catch (error) {
         AppLogger.log(
-          'RadioPlayer: RAI AD track retry not ready yet: $error',
+          'RadioPlayer: RAI preferred audio track retry not ready yet: $error',
         );
       }
     }
   }
 
-  Future<void> _selectMediaKitRaiAudioDescriptionTrack(
+  Future<void> _selectMediaKitRaiPreferredAudioTrack(
     mk.Player player,
-    dynamic tracks,
-  ) async {
+    dynamic tracks, {
+    required bool preferAudioDescription,
+  }) async {
     if (!mounted ||
         _mediaKitPlayer != player ||
         _mediaKitRaiAudioTrackApplied) {
@@ -1058,28 +1097,36 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
           'RadioPlayer: MediaKit audio track candidate id=$id language=$language title=$title',
         );
 
-        if (language == 'des' ||
-            title.contains('audiodescri') ||
-            title.contains('audio descri')) {
+        if (describedTrack == null &&
+            (language == 'des' ||
+                title.contains('audiodescri') ||
+                title.contains('audio descri'))) {
           describedTrack = track;
-          break;
         }
-        if (italianTrack == null && language == 'ita') {
+        if (italianTrack == null &&
+            (language == 'ita' ||
+                language == 'it' ||
+                title.contains('italiano'))) {
           italianTrack = track;
         }
       }
 
-      final selectedTrack = describedTrack ?? italianTrack;
+      final selectedTrack = preferAudioDescription
+          ? (describedTrack ?? italianTrack)
+          : italianTrack;
       if (selectedTrack == null) return;
 
       await player.setAudioTrack(selectedTrack);
       _mediaKitRaiAudioTrackApplied = true;
       await AppLogger.log(
-        'RadioPlayer: MediaKit selected RAI preferred audio track id=${_mediaKitTrackField(selectedTrack, 'id')} language=${_mediaKitTrackField(selectedTrack, 'language')} title=${_mediaKitTrackField(selectedTrack, 'title')}',
+        'RadioPlayer: MediaKit selected RAI preferred audio track preferAD=$preferAudioDescription '
+        'id=${_mediaKitTrackField(selectedTrack, 'id')} '
+        'language=${_mediaKitTrackField(selectedTrack, 'language')} '
+        'title=${_mediaKitTrackField(selectedTrack, 'title')}',
       );
     } catch (error) {
       AppLogger.log(
-        'RadioPlayer: failed to select RAI audiodescription audio track: $error',
+        'RadioPlayer: failed to select RAI preferred audio track: $error',
       );
     }
   }
