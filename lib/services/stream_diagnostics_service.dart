@@ -249,6 +249,15 @@ class StreamDiagnosticsSession {
     int? status;
     var readBytes = 0;
     try {
+      // Automatic redirects create a new request with the client's default
+      // User-Agent before copying the original headers. Setting it only on
+      // request.headers lets Dart's default replace the player's value.
+      // Set the private client's default too, without changing the player.
+      for (final entry in headers.entries) {
+        if (entry.key.toLowerCase() == HttpHeaders.userAgentHeader) {
+          client.userAgent = entry.value;
+        }
+      }
       record('http_probe_start', {
         'run': run,
         'stage': stage,

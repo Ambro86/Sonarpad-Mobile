@@ -164,7 +164,12 @@ combined.mp4
           });
       expect(requests, ['/start', '/live/master.m3u8', '/live/low.m3u8', '/live/init.mp4', '/live/segment.ts']);
       expect(requests.any((path) => path.contains('.key')), isFalse);
-      expect(userAgents.every((value) => value == 'TestPlayer/1.0'), isTrue);
+      expect(
+        userAgents,
+        List<String>.filled(requests.length, 'TestPlayer/1.0'),
+        reason: 'Every request must retain the player User-Agent, including '
+            'redirects. Request paths: $requests',
+      );
       expect(authorization.every((value) => value == null), isTrue);
       expect(ranges.last, 'bytes=0-16383');
       final events = _events(lines);
@@ -183,6 +188,96 @@ combined.mp4
       await server.close(force: true);
     }
   });
+
+  for (final headerName in ['User-Agent', 'user-agent', 'UsEr-AgEnT']) {
+    test('HTTP probe retains $headerName across playlist and sample redirects',
+        () async {
+      final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+      final lines = <String>[];
+      final requests = <String>[];
+      final userAgents = <String?>[];
+      final ranges = <String?>[];
+      final authorization = <String?>[];
+      final cookies = <String?>[];
+      final subscription = server.listen((request) {
+        requests.add(request.uri.path);
+        userAgents.add(request.headers.value(HttpHeaders.userAgentHeader));
+        ranges.add(request.headers.value(HttpHeaders.rangeHeader));
+        authorization.add(request.headers.value(HttpHeaders.authorizationHeader));
+        cookies.add(request.headers.value(HttpHeaders.cookieHeader));
+        final response = request.response;
+        switch (request.uri.path) {
+          case '/start':
+            response.statusCode = HttpStatus.found;
+            response.headers.set(HttpHeaders.locationHeader, '/step');
+            break;
+          case '/step':
+            response.statusCode = HttpStatus.temporaryRedirect;
+            response.headers.set(HttpHeaders.locationHeader, '/live.m3u8');
+            break;
+          case '/live.m3u8':
+            response.write('#EXTM3U\n#EXTINF:10,\n/sample\n');
+            break;
+          case '/sample':
+            response.statusCode = HttpStatus.found;
+            response.headers.set(HttpHeaders.locationHeader, '/segment.ts');
+            break;
+          case '/segment.ts':
+            response.statusCode = HttpStatus.partialContent;
+            response.headers.set(HttpHeaders.contentRangeHeader, 'bytes 0-3/4');
+            response.add([0x47, 0, 0, 0]);
+            break;
+          default:
+            response.statusCode = HttpStatus.notFound;
+        }
+        _closeResponse(response);
+      });
+      final session = StreamDiagnosticsSession(
+        channel: 'test',
+        videoEnabled: false,
+        writeLog: lines.add,
+      );
+      try {
+        await session.probeFailure(
+          url: 'http://127.0.0.1:${server.port}/start',
+          stage: 'ad',
+          reason: 'test',
+          headers: {
+            headerName: 'TestPlayer/2.0',
+            'Authorization': 'Bearer privateCredential',
+            'Cookie': 'session=privateCookie',
+          },
+        );
+        expect(requests, [
+          '/start', '/step', '/live.m3u8', '/sample', '/segment.ts',
+        ]);
+        expect(
+          userAgents,
+          List<String>.filled(requests.length, 'TestPlayer/2.0'),
+          reason: 'User-Agent must be unchanged on every redirect hop. '
+              'Request paths: $requests',
+        );
+        expect(authorization, everyElement(isNull));
+        expect(cookies, everyElement(isNull));
+        expect(ranges, [null, null, null, 'bytes=0-16383', 'bytes=0-16383']);
+        final events = _events(lines);
+        final responses = events
+            .where((event) => event['event'] == 'http_probe_headers')
+            .toList();
+        expect(responses, hasLength(2));
+        expect(responses.first['redirects'], hasLength(2));
+        expect(responses.last['redirects'], hasLength(1));
+        expect(events.last['outcome'],
+            'segment_bytes_received_not_decode_confirmation');
+        expect(lines.join('\n'), isNot(contains('privateCredential')));
+        expect(lines.join('\n'), isNot(contains('privateCookie')));
+      } finally {
+        session.close();
+        await subscription.cancel();
+        await server.close(force: true);
+      }
+    });
+  }
 
   test('HTTP status is recorded and probes stop after two runs per attempt', () async {
     final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
