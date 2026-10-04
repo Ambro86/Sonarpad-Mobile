@@ -4455,4 +4455,25 @@ class AppLocalizationsUk extends AppLocalizations {
   @override
   String get streamPlaybackRetryMessage => "Канал не запустився. Натисніть «Спробувати знову», щоб оновити посилання на потік.";
 
+  @override
+  String get settingsMediaSpeedControl => "Увімкнути керування швидкістю відтворення медіафайлів";
+
+  @override
+  String get settingsMediaSpeedControlHint => "Показує керування швидкістю для Sonartube, подкастів та іншого записаного вмісту. Прямі трансляції виключено.";
+
+  @override
+  String get mediaPlaybackSpeed => "Швидкість відтворення";
+
+  @override
+  String get mediaPlaybackSpeedNormal => "Звичайна";
+
+  @override
+  String get mediaPlaybackSpeedUnavailable => "Ця швидкість не підтримується для цього вмісту. Попередню швидкість відновлено.";
+
+  @override
+  String get mediaPlaybackSpeedRecoveryFailed => "Не вдалося відновити швидкість. Відкрийте вміст повторно, щоб спробувати ще раз.";
+
+  @override
+  String mediaPlaybackSpeedChanged(String speed) => "Швидкість відтворення: $speed";
+
 }

@@ -145,6 +145,11 @@ class AudioPlayerService {
 
   Duration get position => _player.position;
 
+  /// Explicitly controlled by the recorded-media screen, never by TTS settings.
+  double get playbackSpeed => _player.speed;
+
+  Future<void> setPlaybackSpeed(double speed) => _player.setSpeed(speed);
+
   Future<void> _prepareAudioSession(AudioSessionType type) async {
     if (_pendingDispose != null) {
       AppLogger.log(

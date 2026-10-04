@@ -1,3 +1,4 @@
+import '../models/media_playback_speed.dart';
 import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
@@ -279,7 +280,8 @@ class _LibrivoxBookScreenState extends State<_LibrivoxBookScreen> {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         settings: const RouteSettings(name: '/librivox/player'),
-        builder: (_) => PodcastEpisodePlayerScreen(episode: episode),
+        builder: (_) => PodcastEpisodePlayerScreen(
+              speedCategory: MediaPlaybackSpeedCategory.audiobooks,episode: episode),
       ),
     );
   }

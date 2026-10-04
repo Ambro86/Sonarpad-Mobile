@@ -3608,5 +3608,19 @@
   "streamPlaybackRetryMessage": "Canalul nu a pornit. Apasă Reîncearcă pentru a actualiza legătura.",
   "@streamPlaybackRetryMessage": {
     "description": "Live stream player status: streamPlaybackRetryMessage"
+  },
+  "settingsMediaSpeedControl": "Activează controlul vitezei fișierelor media",
+  "settingsMediaSpeedControlHint": "Afișează controlul vitezei pentru Sonartube, podcasturi și alte conținuturi înregistrate. Transmisiunile în direct sunt excluse.",
+  "mediaPlaybackSpeed": "Viteza de redare",
+  "mediaPlaybackSpeedNormal": "Viteză normală",
+  "mediaPlaybackSpeedUnavailable": "Această viteză nu este acceptată pentru acest conținut. Viteza anterioară a fost restabilită.",
+  "mediaPlaybackSpeedRecoveryFailed": "Viteza nu a putut fi restabilită. Redeschide conținutul pentru a încerca din nou.",
+  "mediaPlaybackSpeedChanged": "Viteza de redare: {speed}",
+  "@mediaPlaybackSpeedChanged": {
+    "placeholders": {
+      "speed": {
+        "type": "String"
+      }
+    }
   }
 }

@@ -7801,6 +7801,21 @@ abstract class AppLocalizations {
   /// Live stream player status.
   String get streamPlaybackRetryMessage;
 
+
+  String get settingsMediaSpeedControl;
+
+  String get settingsMediaSpeedControlHint;
+
+  String get mediaPlaybackSpeed;
+
+  String get mediaPlaybackSpeedNormal;
+
+  String get mediaPlaybackSpeedUnavailable;
+
+  String get mediaPlaybackSpeedRecoveryFailed;
+
+  String mediaPlaybackSpeedChanged(String speed);
+
 }
 
 class _AppLocalizationsDelegate

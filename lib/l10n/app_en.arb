@@ -3608,5 +3608,19 @@
   "streamPlaybackRetryMessage": "The channel did not start. Select Retry to refresh the stream address.",
   "@streamPlaybackRetryMessage": {
     "description": "Live stream player status: streamPlaybackRetryMessage"
+  },
+  "settingsMediaSpeedControl": "Enable media playback speed control",
+  "settingsMediaSpeedControlHint": "Show the speed control for Sonartube, podcasts and other recorded content. Live streams are excluded.",
+  "mediaPlaybackSpeed": "Playback speed",
+  "mediaPlaybackSpeedNormal": "Normal",
+  "mediaPlaybackSpeedUnavailable": "This speed is not supported for this content. The previous speed has been restored.",
+  "mediaPlaybackSpeedRecoveryFailed": "The playback speed could not be restored. Reopen the content to try again.",
+  "mediaPlaybackSpeedChanged": "Playback speed: {speed}",
+  "@mediaPlaybackSpeedChanged": {
+    "placeholders": {
+      "speed": {
+        "type": "String"
+      }
+    }
   }
 }

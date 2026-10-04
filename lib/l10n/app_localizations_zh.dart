@@ -4290,6 +4290,27 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get streamPlaybackRetryMessage => "频道未能启动。请选择“重试”以刷新流媒体链接。";
 
+  @override
+  String get settingsMediaSpeedControl => "启用媒体文件播放速度控制";
+
+  @override
+  String get settingsMediaSpeedControlHint => "显示 Sonartube、播客和其他录制内容的速度控制。不适用于直播。";
+
+  @override
+  String get mediaPlaybackSpeed => "播放速度";
+
+  @override
+  String get mediaPlaybackSpeedNormal => "正常";
+
+  @override
+  String get mediaPlaybackSpeedUnavailable => "此内容不支持该速度。已恢复之前的播放速度。";
+
+  @override
+  String get mediaPlaybackSpeedRecoveryFailed => "无法恢复播放速度。请重新打开内容后重试。";
+
+  @override
+  String mediaPlaybackSpeedChanged(String speed) => "播放速度：$speed";
+
 }
 
 /// The translations for Chinese, as used in China (`zh_CN`).
@@ -8577,5 +8598,26 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get streamPlaybackRetryMessage => "频道未能启动。请选择“重试”以刷新流媒体链接。";
+
+  @override
+  String get settingsMediaSpeedControl => "启用媒体文件播放速度控制";
+
+  @override
+  String get settingsMediaSpeedControlHint => "显示 Sonartube、播客和其他录制内容的速度控制。不适用于直播。";
+
+  @override
+  String get mediaPlaybackSpeed => "播放速度";
+
+  @override
+  String get mediaPlaybackSpeedNormal => "正常";
+
+  @override
+  String get mediaPlaybackSpeedUnavailable => "此内容不支持该速度。已恢复之前的播放速度。";
+
+  @override
+  String get mediaPlaybackSpeedRecoveryFailed => "无法恢复播放速度。请重新打开内容后重试。";
+
+  @override
+  String mediaPlaybackSpeedChanged(String speed) => "播放速度：$speed";
 
 }

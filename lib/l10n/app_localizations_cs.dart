@@ -4460,4 +4460,25 @@ class AppLocalizationsCs extends AppLocalizations {
   @override
   String get streamPlaybackRetryMessage => "Kanál se nespustil. Vyberte Zkusit znovu pro obnovení odkazu na stream.";
 
+  @override
+  String get settingsMediaSpeedControl => "Zapnout ovládání rychlosti přehrávání médií";
+
+  @override
+  String get settingsMediaSpeedControlHint => "Zobrazí ovládání rychlosti pro Sonartube, podcasty a další nahraný obsah. Živé vysílání je vyloučeno.";
+
+  @override
+  String get mediaPlaybackSpeed => "Rychlost přehrávání";
+
+  @override
+  String get mediaPlaybackSpeedNormal => "Normální";
+
+  @override
+  String get mediaPlaybackSpeedUnavailable => "Tato rychlost není pro tento obsah podporována. Byla obnovena předchozí rychlost.";
+
+  @override
+  String get mediaPlaybackSpeedRecoveryFailed => "Rychlost se nepodařilo obnovit. Otevřete obsah znovu a opakujte pokus.";
+
+  @override
+  String mediaPlaybackSpeedChanged(String speed) => "Rychlost přehrávání: $speed";
+
 }

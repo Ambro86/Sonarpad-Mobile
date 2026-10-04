@@ -8,6 +8,11 @@ import 'package:flutter/services.dart';
 import '../l10n/app_localizations.dart';
 import '../l10n/localized_dynamic_labels.dart';
 import '../models/podcast.dart';
+import '../models/media_playback_speed.dart';
+import '../services/media_playback_rate_transaction.dart';
+import '../widgets/letter_jump_option_picker_screen.dart';
+import '../utils/status_message.dart';
+import 'package:intl/intl.dart';
 import '../services/app_settings_service.dart';
 import '../services/audio_player_service.dart';
 import '../services/podcast_service.dart';
@@ -37,6 +42,7 @@ class PodcastEpisodePlayerScreen extends StatefulWidget {
   const PodcastEpisodePlayerScreen({
     super.key,
     required this.episode,
+    this.speedCategory = MediaPlaybackSpeedCategory.media,
     this.isVideoSupported = false,
     this.startWithVideo = false,
     this.startWithVideoThenRestorePreference = false,
@@ -53,6 +59,7 @@ class PodcastEpisodePlayerScreen extends StatefulWidget {
   });
 
   final PodcastEpisode episode;
+  final MediaPlaybackSpeedCategory speedCategory;
   final bool isVideoSupported;
   final bool startWithVideo;
 
@@ -100,6 +107,19 @@ class _PodcastEpisodePlayerScreenState
   bool _isVideoEnabled = false;
   bool _displayVideoInPortrait = false;
   bool _landscapeFullscreenApplied = false;
+
+  final _sharedPlayerController = AccessibleListController();
+  final _playbackSpeedFocusNode = FocusNode();
+  bool _mediaSpeedControlEnabled = false;
+  bool _changingPlaybackSpeed = false;
+  bool _speedPickerOpen = false;
+  double _preferredPlaybackSpeed = 1.0;
+  double _playbackSpeed = 1.0;
+  double _lastConfirmedVideoSpeed = 1.0;
+
+  bool get _showPlaybackSpeed => _mediaSpeedControlEnabled && !_episode.isLive;
+  bool get _canChangePlaybackSpeed => _showPlaybackSpeed && _loaded &&
+      !_loading && !_switchingVideoMode && !_changingPlaybackSpeed;
 
   bool _loaded = false;
   bool _loading = false;
@@ -167,6 +187,9 @@ class _PodcastEpisodePlayerScreenState
     Duration? resumePosition,
     bool shouldPlay = true,
   }) async {
+    if (_changingPlaybackSpeed || !mounted) {
+      return;
+    }
     AppLogger.log(
       'PodcastPlayer: _play start mounted=$mounted loaded=$_loaded '
       'loading=$_loading videoEnabled=$_isVideoEnabled '
@@ -179,6 +202,8 @@ class _PodcastEpisodePlayerScreenState
     });
     AppLogger.log('PodcastPlayer: _play set loading=true');
     try {
+      await _loadPlaybackSpeedPreference();
+      if (!mounted) return;
       if (widget.isVideoSupported && _isVideoEnabled) {
         AppLogger.log(
           'PodcastPlayer: video branch start loaded=$_loaded, $_logSubject',
@@ -217,6 +242,7 @@ class _PodcastEpisodePlayerScreenState
         AppLogger.log('PodcastPlayer: video initialize start, $_logSubject');
         await _videoController!.initialize();
         AppLogger.log('PodcastPlayer: video initialize completed, $_logSubject');
+        _lastConfirmedVideoSpeed = 1.0;
         if (useExternalAudio) {
           await _videoController!.setVolume(0);
           await _audio.setUrl(
@@ -284,9 +310,11 @@ class _PodcastEpisodePlayerScreenState
         AppLogger.log(
           'PodcastPlayer: video ready shouldPlay=$shouldPlay, $_logSubject',
         );
-        if (shouldPlay) {
-          await _videoController!.play();
-        }
+        await _applyPreferredPlaybackSpeed(
+          video: _videoController,
+          startVideo: shouldPlay,
+        );
+        if (!mounted) return;
         _loaded = true;
         if (useExternalAudio && shouldPlay) {
           unawaited(_audio.play().catchError((Object e, StackTrace stackTrace) {
@@ -351,6 +379,8 @@ class _PodcastEpisodePlayerScreenState
             );
           }
         }
+        await _applyPreferredPlaybackSpeed();
+        if (!mounted) return;
         AppLogger.log(
           'PodcastPlayer: audio play scheduled, '
           'title="In riproduzione: ${_episode.title}", $_logSubject',
@@ -443,7 +473,9 @@ class _PodcastEpisodePlayerScreenState
       _hasNavigableNext;
 
   Future<void> _handlePlaybackCompleted() async {
-    if (!widget.autoNavigateNext || !mounted) return;
+    if (!widget.autoNavigateNext || !mounted || _changingPlaybackSpeed) {
+      return;
+    }
     final mediaId = _getStableId();
     if (_autoAdvanceHandledMediaId == mediaId) return;
     _autoAdvanceHandledMediaId = mediaId;
@@ -460,7 +492,9 @@ class _PodcastEpisodePlayerScreenState
   }
 
   Future<void> _runExtraAction(PodcastPlayerExtraAction action) async {
-    if (_loading) return;
+    if (_loading || _changingPlaybackSpeed) {
+      return;
+    }
     if (action.pauseBeforeOpen) {
       await _pause();
       if (Platform.isIOS && _videoController != null) {
@@ -484,7 +518,10 @@ class _PodcastEpisodePlayerScreenState
     required bool silentFailure,
   }) async {
     final navigate = widget.navigateEpisode;
-    if (navigate == null || _loading || _refreshingEpisode) return;
+    if (navigate == null || _loading || _refreshingEpisode ||
+        _changingPlaybackSpeed) {
+      return;
+    }
     if (direction < 0 && !_hasNavigablePrevious) return;
     if (direction > 0 && !_hasNavigableNext) return;
 
@@ -547,6 +584,9 @@ class _PodcastEpisodePlayerScreenState
   }
 
   Future<void> _pause() async {
+    if (_changingPlaybackSpeed) {
+      return;
+    }
     AppLogger.log(
       'PodcastPlayer: _pause start video=${_videoController != null} '
       'loaded=$_loaded loading=$_loading, $_logSubject',
@@ -565,6 +605,9 @@ class _PodcastEpisodePlayerScreenState
   }
 
   Future<void> _toggleVideoPlayback() async {
+    if (_changingPlaybackSpeed) {
+      return;
+    }
     final controller = _videoController;
     if (controller == null || !controller.value.isInitialized) return;
     if (controller.value.isPlaying) {
@@ -577,7 +620,10 @@ class _PodcastEpisodePlayerScreenState
         await _mediaCommands.invokeMethod('setMagicTapPlaying', false);
       }
     } else {
-      await controller.play();
+      final resumed = await _resumeVideoAtSelectedSpeed(controller);
+      if (!resumed || !mounted) {
+        return;
+      }
       if (_videoUsesExternalAudio) {
         await _audio.play();
       }
@@ -589,6 +635,9 @@ class _PodcastEpisodePlayerScreenState
   }
 
   Future<void> _seekBackward() async {
+    if (_changingPlaybackSpeed) {
+      return;
+    }
     if (_videoController != null) {
       final position = _videoController!.value.position;
       final newPosition = position - Duration(seconds: _seekStep);
@@ -604,6 +653,9 @@ class _PodcastEpisodePlayerScreenState
   }
 
   Future<void> _seekForward() async {
+    if (_changingPlaybackSpeed) {
+      return;
+    }
     if (_videoController != null) {
       final position = _videoController!.value.position;
       final duration = _videoController!.value.duration;
@@ -623,6 +675,9 @@ class _PodcastEpisodePlayerScreenState
 
 
   Future<void> _openChapters() async {
+    if (_changingPlaybackSpeed) {
+      return;
+    }
     AppLogger.log('PodcastPlayer: open chapters, $_logSubject');
     final position = await Navigator.push<Duration>(
       context,
@@ -657,7 +712,7 @@ class _PodcastEpisodePlayerScreenState
   }
 
   void _toggleVideo(bool enable) {
-    if (_loading || _switchingVideoMode) {
+    if (_loading || _switchingVideoMode || _changingPlaybackSpeed) {
       AppLogger.log(
         'PodcastPlayer: _toggleVideo ignored during transition enable=$enable, '
         '$_logSubject',
@@ -823,6 +878,348 @@ class _PodcastEpisodePlayerScreenState
     });
   }
 
+  Future<void> _loadPlaybackSpeedPreference() async {
+    // Resolve before starting either engine; unknown duration is not a live flag.
+    final enabled = await _settings.isMediaSpeedControlEnabled();
+    final speed = enabled && !_episode.isLive
+        ? await _settings.loadMediaPlaybackSpeed(widget.speedCategory)
+        : 1.0;
+    if (!mounted) {
+      return;
+    }
+    _mediaSpeedControlEnabled = enabled;
+    _preferredPlaybackSpeed = speed;
+  }
+
+  List<MediaPlaybackRateTarget> _playbackRateTargets(
+    VideoPlayerController? video,
+  ) => [
+        if (video != null)
+          MediaPlaybackRateTarget(
+            previousRate: video.value.playbackSpeed,
+            setRate: video.setPlaybackSpeed,
+          ),
+        if (video == null || _videoUsesExternalAudio)
+          MediaPlaybackRateTarget(
+            previousRate: _audio.playbackSpeed,
+            setRate: _audio.setPlaybackSpeed,
+          ),
+      ];
+
+  Future<void> _applyPreferredPlaybackSpeed({
+    VideoPlayerController? video,
+    bool startVideo = false,
+  }) async {
+    var targets = _playbackRateTargets(video);
+    // A recreated video engine starts at 1x while just_audio can retain the
+    // previous source's rate. Establish a common rollback point first.
+    if (targets.any((target) => target.previousRate != targets.first.previousRate)) {
+      await applyMediaPlaybackRate(rate: 1.0, targets: targets);
+      targets = _playbackRateTargets(video);
+    }
+    final rate = _preferredPlaybackSpeed;
+    try {
+      if (targets.any((target) => target.previousRate != rate)) {
+        await applyMediaPlaybackRate(
+          rate: rate,
+          targets: targets,
+          afterApply: () async {
+            if (mounted && startVideo && video == _videoController) {
+              await video?.play();
+            }
+          },
+          beforeRollback: () async {
+            await video?.pause();
+          },
+        );
+      } else if (mounted && startVideo && video == _videoController) {
+        // Default/disabled setting keeps the existing playback path unchanged.
+        await video?.play();
+      }
+      if (mounted) {
+        _playbackSpeed = rate;
+        if (startVideo) {
+          _lastConfirmedVideoSpeed = rate;
+        }
+      }
+    } on MediaPlaybackRateException catch (error) {
+      AppLogger.log('media_speed_restore_failed rollback=${error.rollbackFailed} '
+          'error=${error.cause}');
+      if (!mounted) {
+        return;
+      }
+      final previous = targets.first.previousRate;
+      if (error.rollbackFailed || (_episode.isLive && previous != 1.0)) {
+        await video?.pause();
+        await _audio.pause();
+        rethrow;
+      }
+      _playbackSpeed = previous;
+      if (startVideo && video == _videoController) {
+        await video?.play();
+        _lastConfirmedVideoSpeed = previous;
+      }
+      if (mounted) {
+        showStatusMessage(context,
+            AppLocalizations.of(context).mediaPlaybackSpeedUnavailable);
+      }
+    }
+  }
+
+  Future<bool> _resumeVideoAtSelectedSpeed(VideoPlayerController controller) async {
+    try {
+      await controller.play();
+      _lastConfirmedVideoSpeed = _playbackSpeed;
+      return true;
+    } catch (error) {
+      // video_player can defer platform rate validation until play(). This also
+      // covers a rate chosen while paused; never leave external audio running
+      // at a rate which the video engine rejected.
+      AppLogger.log('media_speed_video_resume_failed error=$error');
+      if (!mounted) {
+        return false;
+      }
+      final l10n = AppLocalizations.of(context);
+      try {
+        await controller.pause();
+        if (_videoUsesExternalAudio) {
+          await _audio.pause();
+        }
+        if (_playbackSpeed == _lastConfirmedVideoSpeed) {
+          if (!mounted) {
+            return false;
+          }
+          showStatusMessage(context, l10n.technicalErrorGeneric);
+          return false;
+        }
+        await applyMediaPlaybackRate(
+          rate: _lastConfirmedVideoSpeed,
+          targets: _playbackRateTargets(controller),
+          afterApply: () async {
+            if (!mounted) {
+              return;
+            }
+            if (_videoUsesExternalAudio) {
+              await _audio.seek(controller.value.position);
+            }
+            if (mounted) {
+              await controller.play();
+            }
+          },
+          beforeRollback: controller.pause,
+        );
+        if (!mounted) {
+          return false;
+        }
+        setState(() {
+          _playbackSpeed = _lastConfirmedVideoSpeed;
+          _preferredPlaybackSpeed = _lastConfirmedVideoSpeed;
+        });
+        try {
+          await _settings.saveMediaPlaybackSpeed(widget.speedCategory, _playbackSpeed);
+        } catch (saveError) {
+          AppLogger.log('media_speed_preference_save_failed error=$saveError');
+        }
+        if (mounted) {
+          showStatusMessage(context, l10n.mediaPlaybackSpeedUnavailable);
+        }
+        return mounted;
+      } catch (recoveryError) {
+        AppLogger.log('media_speed_video_recovery_failed error=$recoveryError');
+        try {
+          try {
+            await controller.pause();
+          } finally {
+            if (_videoUsesExternalAudio) {
+              await _audio.pause();
+            }
+          }
+        } catch (pauseError) {
+          AppLogger.log('media_speed_pause_failed error=$pauseError');
+        }
+        if (mounted) {
+          showStatusMessage(context, l10n.mediaPlaybackSpeedRecoveryFailed);
+        }
+        return false;
+      }
+    }
+  }
+
+  String _playbackSpeedLabel(AppLocalizations l10n, double speed) {
+    final number = NumberFormat('0.##', l10n.localeName).format(speed);
+    return speed == 1.0 ? '$number× (${l10n.mediaPlaybackSpeedNormal})' : '$number×';
+  }
+
+  Future<void> _choosePlaybackSpeed() async {
+    if (!_canChangePlaybackSpeed || _speedPickerOpen) {
+      return;
+    }
+    _speedPickerOpen = true;
+    final episodeId = _getStableId();
+    final l10n = AppLocalizations.of(context);
+    try {
+      final chosen = await Navigator.of(context).push<double>(
+        MaterialPageRoute<double>(
+          settings: const RouteSettings(name: '/media/playback-speed'),
+          builder: (_) => LetterJumpOptionPickerScreen<double>(
+            title: l10n.mediaPlaybackSpeed,
+            options: mediaPlaybackSpeeds,
+            labelBuilder: (rate) => _playbackSpeedLabel(l10n, rate),
+            selectedBuilder: (rate) => rate == _playbackSpeed,
+            selectedLabel: l10n.letterJumpSelected,
+            selectLetterLabel: l10n.mediaPlaybackSpeed,
+            selectLetterTitle: l10n.mediaPlaybackSpeed,
+            enableLetterPicker: false,
+          ),
+        ),
+      );
+      if (!mounted || episodeId != _getStableId()) {
+        return;
+      }
+      if (chosen != null && _canChangePlaybackSpeed && chosen != _playbackSpeed) {
+        await _changePlaybackSpeed(chosen);
+      }
+    } finally {
+      _speedPickerOpen = false;
+      if (mounted && _showPlaybackSpeed) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted || !(ModalRoute.of(context)?.isCurrent ?? false)) {
+            return;
+          }
+          if (useSharedAccessibleViewModel && !_useLandscapeFullscreenVideo) {
+            unawaited(_sharedPlayerController.focusToReturn('playback_speed'));
+          } else {
+            _playbackSpeedFocusNode.requestFocus();
+          }
+        });
+      }
+    }
+  }
+
+  Future<void> _changePlaybackSpeed(double rate) async {
+    if (!_canChangePlaybackSpeed || !mediaPlaybackSpeeds.contains(rate)) {
+      return;
+    }
+    final video = _videoController;
+    final externalAudio = video != null && _videoUsesExternalAudio;
+    final wasPlaying = video?.value.isPlaying ?? _audio.isPlaying;
+    final previousRate = _playbackSpeed;
+    final l10n = AppLocalizations.of(context);
+    setState(() => _changingPlaybackSpeed = true);
+
+    Future<void> pauseEngines() async {
+      // Attempt both pauses even if one backend rejects its operation.
+      try {
+        await video?.pause();
+      } finally {
+        if (video == null || externalAudio) {
+          await _audio.pause();
+        }
+      }
+    }
+
+    Future<void> resumeEngines() async {
+      if (!mounted || video != _videoController) {
+        return;
+      }
+      if (wasPlaying) {
+        await video?.play();
+        if (video == null || externalAudio) {
+          // just_audio.play completes at pause/end, not when playback starts.
+          unawaited(_audio.play().catchError((Object error) {
+            AppLogger.log('media_speed_resume_failed error=$error');
+            if (mounted) {
+              showStatusMessage(context, l10n.technicalErrorGeneric);
+            }
+          }));
+        }
+      }
+    }
+
+    try {
+      await pauseEngines();
+      if (!mounted) {
+        return;
+      }
+      final position = video?.value.position ?? _audio.position;
+      await applyMediaPlaybackRate(
+        rate: rate,
+        targets: _playbackRateTargets(video),
+        afterApply: () async {
+          if (!mounted) {
+            return;
+          }
+          if (video != null && externalAudio) {
+            await video.seekTo(position);
+            await _audio.seek(position);
+          }
+          await resumeEngines();
+        },
+        beforeRollback: pauseEngines,
+      );
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _playbackSpeed = rate;
+        _preferredPlaybackSpeed = rate;
+        if (video != null && wasPlaying) {
+          _lastConfirmedVideoSpeed = rate;
+        }
+      });
+      AppLogger.log('media_speed_applied category=${widget.speedCategory.name} '
+          'rate=$rate externalAudio=$externalAudio');
+      try {
+        await _settings.saveMediaPlaybackSpeed(widget.speedCategory, rate);
+      } catch (error) {
+        AppLogger.log('media_speed_preference_save_failed error=$error');
+      }
+      if (mounted) {
+        announceStatusMessage(context,
+            l10n.mediaPlaybackSpeedChanged(_playbackSpeedLabel(l10n, rate)));
+      }
+    } catch (error) {
+      AppLogger.log('media_speed_change_failed error=$error');
+      if (!mounted) {
+        return;
+      }
+      var recovered = error is MediaPlaybackRateException && !error.rollbackFailed;
+      if (recovered) {
+        try {
+          await resumeEngines();
+        } catch (_) {
+          recovered = false;
+        }
+      }
+      if (!recovered) {
+        try {
+          await pauseEngines();
+        } catch (_) {
+          // Never start another engine as an error recovery side effect.
+        }
+      }
+      if (mounted) {
+        setState(() => _playbackSpeed = previousRate);
+        showStatusMessage(context, recovered
+            ? l10n.mediaPlaybackSpeedUnavailable
+            : l10n.mediaPlaybackSpeedRecoveryFailed);
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _changingPlaybackSpeed = false);
+      }
+    }
+  }
+
+  Widget _buildPlaybackSpeedButton(AppLocalizations l10n) => OutlinedButton.icon(
+        key: const ValueKey('media_playback_speed'),
+        focusNode: _playbackSpeedFocusNode,
+        onPressed: _canChangePlaybackSpeed ? _choosePlaybackSpeed : null,
+        icon: const Icon(Icons.speed),
+        label: Text('${l10n.mediaPlaybackSpeed}: '
+            '${_playbackSpeedLabel(l10n, _playbackSpeed)}'),
+      );
+
   Future<void> _loadSettings() async {
     AppLogger.log('PodcastPlayer: load seek step start, $_logSubject');
     final results = await Future.wait<Object>([
@@ -865,6 +1262,9 @@ class _PodcastEpisodePlayerScreenState
   }
 
   Future<void> _setAccessiblePosition(Duration target) async {
+    if (_changingPlaybackSpeed) {
+      return;
+    }
     final controller = _videoController;
     try {
       if (controller != null && controller.value.isInitialized) {
@@ -953,6 +1353,7 @@ class _PodcastEpisodePlayerScreenState
       'video=${_videoController != null}, $_logSubject',
     );
     WidgetsBinding.instance.removeObserver(this);
+    _playbackSpeedFocusNode.dispose();
     _diagnosticHeartbeat?.cancel();
     _accessiblePositionRefreshTimer?.cancel();
     unawaited(_accessiblePositionSubscription?.cancel() ?? Future<void>.value());
@@ -1059,10 +1460,11 @@ class _PodcastEpisodePlayerScreenState
                 style: const TextStyle(color: Colors.white),
               ),
               value: _isVideoEnabled,
-              onChanged: _loading || _switchingVideoMode ? null : _toggleVideo,
+              onChanged: _changingPlaybackSpeed || _loading || _switchingVideoMode ? null : _toggleVideo,
               contentPadding: EdgeInsets.zero,
               dense: true,
             ),
+            if (_showPlaybackSpeed) _buildPlaybackSpeedButton(l10n),
             Wrap(
               spacing: 12,
               runSpacing: 12,
@@ -1071,7 +1473,7 @@ class _PodcastEpisodePlayerScreenState
                 if (_canNavigatePrevious)
                   FilledButton.icon(
                     key: const ValueKey('podcast_fullscreen_previous_episode'),
-                    onPressed: _loading
+                    onPressed: _changingPlaybackSpeed || _loading
                         ? null
                         : () => _navigateAdjacentEpisode(-1),
                     icon: const Icon(Icons.skip_previous),
@@ -1079,13 +1481,13 @@ class _PodcastEpisodePlayerScreenState
                   ),
                 if (canSeek)
                   FilledButton.icon(
-                    onPressed: _loading || !_loaded ? null : _seekBackward,
+                    onPressed: _changingPlaybackSpeed || _loading || !_loaded ? null : _seekBackward,
                     icon: const Icon(Icons.fast_rewind),
                     label: Text(l10n.rewind15s),
                   ),
                 FilledButton.icon(
                   key: const ValueKey('podcast_video_fullscreen_play_pause'),
-                  onPressed: _loading ? null : _toggleVideoPlayback,
+                  onPressed: _changingPlaybackSpeed || _loading ? null : _toggleVideoPlayback,
                   icon: Icon(
                     _videoController!.value.isPlaying
                         ? Icons.pause
@@ -1097,14 +1499,14 @@ class _PodcastEpisodePlayerScreenState
                 ),
                 if (canSeek)
                   FilledButton.icon(
-                    onPressed: _loading || !_loaded ? null : _seekForward,
+                    onPressed: _changingPlaybackSpeed || _loading || !_loaded ? null : _seekForward,
                     icon: const Icon(Icons.fast_forward),
                     label: Text(l10n.forward15s),
                   ),
                 if (_canNavigateNext)
                   FilledButton.icon(
                     key: const ValueKey('podcast_fullscreen_next_episode'),
-                    onPressed: _loading
+                    onPressed: _changingPlaybackSpeed || _loading
                         ? null
                         : () => _navigateAdjacentEpisode(1),
                     icon: const Icon(Icons.skip_next),
@@ -1113,7 +1515,7 @@ class _PodcastEpisodePlayerScreenState
                 for (final action in widget.extraActions)
                   FilledButton.tonalIcon(
                     key: ValueKey('podcast_fullscreen_extra_${action.id}'),
-                    onPressed: _loading ? null : () => _runExtraAction(action),
+                    onPressed: _changingPlaybackSpeed || _loading ? null : () => _runExtraAction(action),
                     icon: Icon(action.icon),
                     label: Text(action.label()),
                   ),
@@ -1284,14 +1686,14 @@ class _PodcastEpisodePlayerScreenState
             title: l10n.enableVideo,
             kind: 'toggle',
             toggleValue: _isVideoEnabled,
-            enabled: !_loading && !_switchingVideoMode,
+            enabled: !_changingPlaybackSpeed && !_loading && !_switchingVideoMode,
           ),
         if (canSeek)
           AccessibleListRow(
             id: 'rewind',
             title: l10n.rewind15s,
             kind: 'button',
-            enabled: !_loading && _loaded,
+            enabled: !_changingPlaybackSpeed && !_loading && _loaded,
           ),
         AccessibleListRow(
           id: 'play_pause',
@@ -1299,14 +1701,23 @@ class _PodcastEpisodePlayerScreenState
               ? (videoPlaying ? l10n.pause : l10n.play)
               : (isPlaying ? l10n.pause : l10n.play),
           kind: 'button',
-          enabled: !_loading,
+          enabled: !_changingPlaybackSpeed && !_loading,
         ),
         if (canSeek)
           AccessibleListRow(
             id: 'forward',
             title: l10n.forward15s,
             kind: 'button',
-            enabled: !_loading && _loaded,
+            enabled: !_changingPlaybackSpeed && !_loading && _loaded,
+          ),
+        if (_showPlaybackSpeed)
+          AccessibleListRow(
+            id: 'playback_speed',
+            title: l10n.mediaPlaybackSpeed,
+            value: _playbackSpeedLabel(l10n, _playbackSpeed),
+            valueLabel: _playbackSpeedLabel(l10n, _playbackSpeed),
+            kind: 'button',
+            enabled: _canChangePlaybackSpeed,
           ),
         if (_accessibleVolumeLoaded)
           AccessibleListRow(
@@ -1324,7 +1735,7 @@ class _PodcastEpisodePlayerScreenState
             sliderDecreasedValueLabel:
                 '${((_accessibleVolume - 0.1).clamp(0.0, 1.0) * 100).round()}%',
             nativeSliderAccessibilityElement: true,
-            enabled: !_loading,
+            enabled: !_changingPlaybackSpeed && !_loading,
           ),
         if (hasPositionSlider)
           AccessibleListRow(
@@ -1342,34 +1753,40 @@ class _PodcastEpisodePlayerScreenState
             sliderDecreasedValueLabel:
                 l10n.formatPlaybackSpokenDuration(decreasedPosition),
             nativeSliderAccessibilityElement: true,
-            enabled: !_loading && _loaded,
+            enabled: !_changingPlaybackSpeed && !_loading && _loaded,
           ),
         if (_canNavigatePrevious)
           AccessibleListRow(
             id: 'previous_episode',
             title: widget.previousEpisodeLabel!,
             kind: 'button',
-            enabled: !_loading,
+            enabled: !_changingPlaybackSpeed && !_loading,
           ),
         if (_canNavigateNext)
           AccessibleListRow(
             id: 'next_episode',
             title: widget.nextEpisodeLabel!,
             kind: 'button',
-            enabled: !_loading,
+            enabled: !_changingPlaybackSpeed && !_loading,
           ),
         for (final action in widget.extraActions)
           AccessibleListRow(
             id: 'extra_${action.id}',
             title: action.label(),
             kind: 'button',
-            enabled: !_loading,
+            enabled: !_changingPlaybackSpeed && !_loading,
           ),
       ];
       return UniversalAccessibleList(
+        controller: _sharedPlayerController,
         sections: [AccessibleListSection(rows: rows)],
         onEvent: (event) async {
-          if (event.id == 'accessible_volume' && event.type == 'slider') {
+          if (_changingPlaybackSpeed) {
+      return;
+    }
+          if (event.id == 'playback_speed' && event.type == 'activate') {
+            await _choosePlaybackSpeed();
+          } else if (event.id == 'accessible_volume' && event.type == 'slider') {
             final value = (event.value as num?)?.toDouble();
             if (value != null) _setAccessibleVolume(value);
           } else if (event.id == 'accessible_position' &&
@@ -1523,11 +1940,15 @@ class _PodcastEpisodePlayerScreenState
                   key: const ValueKey('podcast_video_toggle'),
                   title: Text(l10n.enableVideo),
                   value: _isVideoEnabled,
-                  onChanged: _loading || _switchingVideoMode
+                  onChanged: _changingPlaybackSpeed || _loading || _switchingVideoMode
                       ? null
                       : _toggleVideo,
                   contentPadding: EdgeInsets.zero,
                 ),
+              ],
+              if (_showPlaybackSpeed) ...[
+                const SizedBox(height: 16),
+                _buildPlaybackSpeedButton(l10n),
               ],
               if (_videoController != null && _videoController!.value.isInitialized) ...[
                 const SizedBox(height: 24),
@@ -1555,7 +1976,7 @@ class _PodcastEpisodePlayerScreenState
                   if (_canNavigatePrevious)
                     FilledButton.icon(
                       key: const ValueKey('podcast_previous_episode'),
-                      onPressed: _loading
+                      onPressed: _changingPlaybackSpeed || _loading
                           ? null
                           : () => _navigateAdjacentEpisode(-1),
                       icon: const Icon(Icons.skip_previous),
@@ -1571,7 +1992,7 @@ class _PodcastEpisodePlayerScreenState
                   if (_videoController != null)
                     FilledButton.icon(
                       key: const ValueKey('podcast_video_play_pause'),
-                      onPressed: _loading ? null : _toggleVideoPlayback,
+                      onPressed: _changingPlaybackSpeed || _loading ? null : _toggleVideoPlayback,
                       icon: Icon(_videoController!.value.isPlaying ? Icons.pause : Icons.play_arrow),
                       label: Text(_videoController!.value.isPlaying ? l10n.pause : l10n.play),
                     )
@@ -1598,7 +2019,7 @@ class _PodcastEpisodePlayerScreenState
                   if (_canNavigateNext)
                     FilledButton.icon(
                       key: const ValueKey('podcast_next_episode'),
-                      onPressed: _loading
+                      onPressed: _changingPlaybackSpeed || _loading
                           ? null
                           : () => _navigateAdjacentEpisode(1),
                       icon: const Icon(Icons.skip_next),
@@ -1607,7 +2028,7 @@ class _PodcastEpisodePlayerScreenState
                   for (final action in widget.extraActions)
                     FilledButton.tonalIcon(
                       key: ValueKey('podcast_player_extra_${action.id}'),
-                      onPressed: _loading ? null : () => _runExtraAction(action),
+                      onPressed: _changingPlaybackSpeed || _loading ? null : () => _runExtraAction(action),
                       icon: Icon(action.icon),
                       label: Text(action.label()),
                     ),

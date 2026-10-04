@@ -4318,4 +4318,25 @@ class AppLocalizationsRo extends AppLocalizations {
   @override
   String get streamPlaybackRetryMessage => "Canalul nu a pornit. Apasă Reîncearcă pentru a actualiza legătura.";
 
+  @override
+  String get settingsMediaSpeedControl => "Activează controlul vitezei fișierelor media";
+
+  @override
+  String get settingsMediaSpeedControlHint => "Afișează controlul vitezei pentru Sonartube, podcasturi și alte conținuturi înregistrate. Transmisiunile în direct sunt excluse.";
+
+  @override
+  String get mediaPlaybackSpeed => "Viteza de redare";
+
+  @override
+  String get mediaPlaybackSpeedNormal => "Viteză normală";
+
+  @override
+  String get mediaPlaybackSpeedUnavailable => "Această viteză nu este acceptată pentru acest conținut. Viteza anterioară a fost restabilită.";
+
+  @override
+  String get mediaPlaybackSpeedRecoveryFailed => "Viteza nu a putut fi restabilită. Redeschide conținutul pentru a încerca din nou.";
+
+  @override
+  String mediaPlaybackSpeedChanged(String speed) => "Viteza de redare: $speed";
+
 }

@@ -4466,4 +4466,25 @@ class AppLocalizationsPl extends AppLocalizations {
   @override
   String get streamPlaybackRetryMessage => "Kanał nie został uruchomiony. Wybierz Spróbuj ponownie, aby odświeżyć adres strumienia.";
 
+  @override
+  String get settingsMediaSpeedControl => "Włącz regulację prędkości odtwarzania multimediów";
+
+  @override
+  String get settingsMediaSpeedControlHint => "Pokazuje regulację prędkości dla Sonartube, podcastów i innych nagranych treści. Transmisje na żywo są wykluczone.";
+
+  @override
+  String get mediaPlaybackSpeed => "Prędkość odtwarzania";
+
+  @override
+  String get mediaPlaybackSpeedNormal => "Normalna";
+
+  @override
+  String get mediaPlaybackSpeedUnavailable => "Ta prędkość nie jest obsługiwana dla tej treści. Przywrócono poprzednią prędkość.";
+
+  @override
+  String get mediaPlaybackSpeedRecoveryFailed => "Nie udało się przywrócić prędkości. Otwórz treść ponownie, aby spróbować jeszcze raz.";
+
+  @override
+  String mediaPlaybackSpeedChanged(String speed) => "Prędkość odtwarzania: $speed";
+
 }

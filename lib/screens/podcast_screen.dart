@@ -1,3 +1,4 @@
+import '../models/media_playback_speed.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
@@ -279,7 +280,8 @@ class _PodcastScreenState extends State<PodcastScreen> {
       context,
       MaterialPageRoute(
         settings: const RouteSettings(name: '/podcasts/local-audio-player'),
-        builder: (_) => PodcastEpisodePlayerScreen(episode: episode),
+        builder: (_) => PodcastEpisodePlayerScreen(
+              speedCategory: MediaPlaybackSpeedCategory.podcasts,episode: episode),
       ),
     );
   }

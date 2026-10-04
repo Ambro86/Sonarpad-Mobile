@@ -5189,5 +5189,19 @@
   "streamPlaybackRetryMessage": "Kanał nie został uruchomiony. Wybierz Spróbuj ponownie, aby odświeżyć adres strumienia.",
   "@streamPlaybackRetryMessage": {
     "description": "Live stream player status: streamPlaybackRetryMessage"
+  },
+  "settingsMediaSpeedControl": "Włącz regulację prędkości odtwarzania multimediów",
+  "settingsMediaSpeedControlHint": "Pokazuje regulację prędkości dla Sonartube, podcastów i innych nagranych treści. Transmisje na żywo są wykluczone.",
+  "mediaPlaybackSpeed": "Prędkość odtwarzania",
+  "mediaPlaybackSpeedNormal": "Normalna",
+  "mediaPlaybackSpeedUnavailable": "Ta prędkość nie jest obsługiwana dla tej treści. Przywrócono poprzednią prędkość.",
+  "mediaPlaybackSpeedRecoveryFailed": "Nie udało się przywrócić prędkości. Otwórz treść ponownie, aby spróbować jeszcze raz.",
+  "mediaPlaybackSpeedChanged": "Prędkość odtwarzania: {speed}",
+  "@mediaPlaybackSpeedChanged": {
+    "placeholders": {
+      "speed": {
+        "type": "String"
+      }
+    }
   }
 }

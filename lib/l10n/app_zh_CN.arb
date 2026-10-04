@@ -3608,5 +3608,19 @@
   "streamPlaybackRetryMessage": "频道未能启动。请选择“重试”以刷新流媒体链接。",
   "@streamPlaybackRetryMessage": {
     "description": "Live stream player status: streamPlaybackRetryMessage"
+  },
+  "settingsMediaSpeedControl": "启用媒体文件播放速度控制",
+  "settingsMediaSpeedControlHint": "显示 Sonartube、播客和其他录制内容的速度控制。不适用于直播。",
+  "mediaPlaybackSpeed": "播放速度",
+  "mediaPlaybackSpeedNormal": "正常",
+  "mediaPlaybackSpeedUnavailable": "此内容不支持该速度。已恢复之前的播放速度。",
+  "mediaPlaybackSpeedRecoveryFailed": "无法恢复播放速度。请重新打开内容后重试。",
+  "mediaPlaybackSpeedChanged": "播放速度：{speed}",
+  "@mediaPlaybackSpeedChanged": {
+    "placeholders": {
+      "speed": {
+        "type": "String"
+      }
+    }
   }
 }

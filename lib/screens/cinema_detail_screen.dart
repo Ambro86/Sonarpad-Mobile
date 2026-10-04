@@ -1,3 +1,4 @@
+import '../models/media_playback_speed.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
@@ -67,6 +68,7 @@ class _CinemaDetailScreenState extends State<CinemaDetailScreen> {
       description: media.channel ?? '',
       audioUrl: media.audioUrl,
       videoUrl: media.videoUrl,
+      isLive: media.isLive,
     );
   }
 
@@ -90,6 +92,7 @@ class _CinemaDetailScreenState extends State<CinemaDetailScreen> {
         MaterialPageRoute(
           settings: const RouteSettings(name: '/cinema/trailer'),
           builder: (_) => PodcastEpisodePlayerScreen(
+              speedCategory: MediaPlaybackSpeedCategory.sonartube,
             episode: episode,
             isVideoSupported: true,
             startWithVideoThenRestorePreference: true,

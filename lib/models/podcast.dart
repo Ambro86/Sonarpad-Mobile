@@ -128,6 +128,7 @@ class PodcastEpisode {
   final String? id;
   final String? chaptersUrl;
   final String? chaptersType;
+  final bool isLive;
 
   const PodcastEpisode({
     required this.title,
@@ -138,5 +139,6 @@ class PodcastEpisode {
     this.id,
     this.chaptersUrl,
     this.chaptersType,
+    this.isLive = false,
   });
 }

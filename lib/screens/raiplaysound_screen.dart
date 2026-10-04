@@ -1,3 +1,4 @@
+import '../models/media_playback_speed.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -200,6 +201,7 @@ class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
         final route = MaterialPageRoute(
           settings: const RouteSettings(name: '/raiplaysound/player'),
           builder: (_) => PodcastEpisodePlayerScreen(
+              speedCategory: MediaPlaybackSpeedCategory.podcasts,
             episode: episode,
           ),
         );

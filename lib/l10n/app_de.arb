@@ -5186,5 +5186,19 @@
   "streamPlaybackRetryMessage": "Der Sender wurde nicht gestartet. Wähle „Erneut versuchen“, um die Stream-Adresse zu aktualisieren.",
   "@streamPlaybackRetryMessage": {
     "description": "Live stream player status: streamPlaybackRetryMessage"
+  },
+  "settingsMediaSpeedControl": "Geschwindigkeitssteuerung für Medien aktivieren",
+  "settingsMediaSpeedControlHint": "Zeigt die Geschwindigkeitssteuerung für Sonartube, Podcasts und andere aufgezeichnete Inhalte an. Livestreams sind ausgeschlossen.",
+  "mediaPlaybackSpeed": "Wiedergabegeschwindigkeit",
+  "mediaPlaybackSpeedNormal": "Normal",
+  "mediaPlaybackSpeedUnavailable": "Diese Geschwindigkeit wird für diesen Inhalt nicht unterstützt. Die vorherige Geschwindigkeit wurde wiederhergestellt.",
+  "mediaPlaybackSpeedRecoveryFailed": "Die Geschwindigkeit konnte nicht wiederhergestellt werden. Öffne den Inhalt erneut, um es noch einmal zu versuchen.",
+  "mediaPlaybackSpeedChanged": "Wiedergabegeschwindigkeit: {speed}",
+  "@mediaPlaybackSpeedChanged": {
+    "placeholders": {
+      "speed": {
+        "type": "String"
+      }
+    }
   }
 }

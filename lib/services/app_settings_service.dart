@@ -4,6 +4,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../models/media_playback_speed.dart';
+
 class TtsVoiceLanguage {
   final String code;
   final String label;
@@ -878,6 +880,38 @@ class AppSettingsService {
     await prefs.setInt(
       _documentReadingSleepTimerMinutesKey,
       _normalizeDocumentReadingSleepTimerMinutes(value),
+    );
+  }
+
+  // --- Recorded-media playback speed (enabled by default) ---
+
+  static const _mediaSpeedControlKey = 'sonarpad_media_speed_control';
+  static const _mediaPlaybackSpeedPrefix = 'sonarpad_media_playback_speed_';
+
+  Future<bool> isMediaSpeedControlEnabled() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_mediaSpeedControlKey) ?? true;
+  }
+
+  Future<void> setMediaSpeedControlEnabled(bool enabled) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_mediaSpeedControlKey, enabled);
+  }
+
+  Future<double> loadMediaPlaybackSpeed(MediaPlaybackSpeedCategory category) async {
+    final prefs = await SharedPreferences.getInstance();
+    final stored = prefs.get('$_mediaPlaybackSpeedPrefix${category.name}');
+    return normalizeMediaPlaybackSpeed(stored is num ? stored.toDouble() : null);
+  }
+
+  Future<void> saveMediaPlaybackSpeed(
+    MediaPlaybackSpeedCategory category,
+    double speed,
+  ) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setDouble(
+      '$_mediaPlaybackSpeedPrefix${category.name}',
+      normalizeMediaPlaybackSpeed(speed),
     );
   }
 

@@ -13,6 +13,7 @@ import '../l10n/app_localizations.dart';
 import '../models/news_article.dart';
 import '../models/document_item.dart';
 import '../models/podcast.dart';
+import '../models/media_playback_speed.dart';
 import '../services/app_settings_service.dart';
 import '../services/audio_player_service.dart';
 import '../services/news_service.dart';
@@ -700,6 +701,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
         description: media.channel ?? widget.article.source,
         audioUrl: media.audioUrl,
         videoUrl: media.videoUrl,
+        isLive: media.isLive,
       );
     }
 
@@ -709,6 +711,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
       MaterialPageRoute(
         settings: const RouteSettings(name: '/news/media/sonartube'),
         builder: (_) => PodcastEpisodePlayerScreen(
+          speedCategory: MediaPlaybackSpeedCategory.sonartube,
           episode: episode,
           isVideoSupported: true,
           startWithVideoThenRestorePreference: true,

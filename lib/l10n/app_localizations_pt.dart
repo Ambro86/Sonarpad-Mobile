@@ -4483,6 +4483,27 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get streamPlaybackRetryMessage => "O canal não iniciou. Selecione Tentar novamente para atualizar a ligação.";
 
+  @override
+  String get settingsMediaSpeedControl => "Ativar o controlo de velocidade dos ficheiros multimédia";
+
+  @override
+  String get settingsMediaSpeedControlHint => "Mostra o controlo de velocidade para Sonartube, podcasts e outros conteúdos gravados. As transmissões em direto estão excluídas.";
+
+  @override
+  String get mediaPlaybackSpeed => "Velocidade de reprodução";
+
+  @override
+  String get mediaPlaybackSpeedNormal => "Normal";
+
+  @override
+  String get mediaPlaybackSpeedUnavailable => "Esta velocidade não é suportada para este conteúdo. A velocidade anterior foi reposta.";
+
+  @override
+  String get mediaPlaybackSpeedRecoveryFailed => "Não foi possível repor a velocidade. Volta a abrir o conteúdo para tentar novamente.";
+
+  @override
+  String mediaPlaybackSpeedChanged(String speed) => "Velocidade de reprodução: $speed";
+
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
@@ -8949,5 +8970,26 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get streamPlaybackRetryMessage => "O canal não iniciou. Selecione Tentar novamente para atualizar o link.";
+
+  @override
+  String get settingsMediaSpeedControl => "Ativar o controle de velocidade dos arquivos de mídia";
+
+  @override
+  String get settingsMediaSpeedControlHint => "Mostra o controle de velocidade para Sonartube, podcasts e outros conteúdos gravados. As transmissões ao vivo ficam excluídas.";
+
+  @override
+  String get mediaPlaybackSpeed => "Velocidade de reprodução";
+
+  @override
+  String get mediaPlaybackSpeedNormal => "Normal";
+
+  @override
+  String get mediaPlaybackSpeedUnavailable => "Esta velocidade não é compatível com o conteúdo. A velocidade anterior foi restaurada.";
+
+  @override
+  String get mediaPlaybackSpeedRecoveryFailed => "Não foi possível restaurar a velocidade. Abra o conteúdo novamente para tentar outra vez.";
+
+  @override
+  String mediaPlaybackSpeedChanged(String speed) => "Velocidade de reprodução: $speed";
 
 }

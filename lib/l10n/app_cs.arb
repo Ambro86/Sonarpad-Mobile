@@ -3611,5 +3611,19 @@
   "streamPlaybackRetryMessage": "Kanál se nespustil. Vyberte Zkusit znovu pro obnovení odkazu na stream.",
   "@streamPlaybackRetryMessage": {
     "description": "Live stream player status: streamPlaybackRetryMessage"
+  },
+  "settingsMediaSpeedControl": "Zapnout ovládání rychlosti přehrávání médií",
+  "settingsMediaSpeedControlHint": "Zobrazí ovládání rychlosti pro Sonartube, podcasty a další nahraný obsah. Živé vysílání je vyloučeno.",
+  "mediaPlaybackSpeed": "Rychlost přehrávání",
+  "mediaPlaybackSpeedNormal": "Normální",
+  "mediaPlaybackSpeedUnavailable": "Tato rychlost není pro tento obsah podporována. Byla obnovena předchozí rychlost.",
+  "mediaPlaybackSpeedRecoveryFailed": "Rychlost se nepodařilo obnovit. Otevřete obsah znovu a opakujte pokus.",
+  "mediaPlaybackSpeedChanged": "Rychlost přehrávání: {speed}",
+  "@mediaPlaybackSpeedChanged": {
+    "placeholders": {
+      "speed": {
+        "type": "String"
+      }
+    }
   }
 }

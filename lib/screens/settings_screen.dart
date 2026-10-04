@@ -68,6 +68,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _includeEpubFootnotesInText = false;
   bool _multipleDocumentBookmarks = false;
   bool _displayVideoInPortrait = false;
+  bool _mediaSpeedControl = false;
   bool _homeGroupingEnabled = false;
   bool _developerModeEnabled = false;
   bool _useFlutterAccessibleRendererOnIos = false;
@@ -92,6 +93,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _savedIncludeEpubFootnotesInText = false;
   bool _savedMultipleDocumentBookmarks = false;
   bool _savedDisplayVideoInPortrait = false;
+  bool _savedMediaSpeedControl = false;
   bool _savedHomeGroupingEnabled = false;
   int _savedSeekSliderStep = 60;
   int _savedDocumentSliderStepPercent =
@@ -264,6 +266,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final sysLang = await _settings.loadSystemTtsLanguage();
     final sysVoice = await _settings.loadSystemTtsVoice();
     final autoBookmark = await _settings.isAutoBookmarkEnabled();
+    final mediaSpeedControl = await _settings.isMediaSpeedControlEnabled();
     final includeEpubFootnotesInText =
         await _settings.includeEpubFootnotesInText();
     final multipleDocumentBookmarks =
@@ -322,6 +325,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _savedSystemTtsVoice = sysVoice;
       _autoBookmark = autoBookmark;
       _savedAutoBookmark = autoBookmark;
+      _mediaSpeedControl = mediaSpeedControl;
+      _savedMediaSpeedControl = mediaSpeedControl;
       _includeEpubFootnotesInText = includeEpubFootnotesInText;
       _savedIncludeEpubFootnotesInText = includeEpubFootnotesInText;
       _multipleDocumentBookmarks = multipleDocumentBookmarks;
@@ -376,6 +381,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final weatherTemperatureUnitChanged =
         _weatherTemperatureUnit != _savedWeatherTemperatureUnit;
     final autoBookmarkChanged = _autoBookmark != _savedAutoBookmark;
+    final mediaSpeedControlChanged = _mediaSpeedControl != _savedMediaSpeedControl;
     final includeEpubFootnotesChanged = _includeEpubFootnotesInText !=
         _savedIncludeEpubFootnotesInText;
     final multipleDocumentBookmarksChanged =
@@ -401,6 +407,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         themeChanged ||
         weatherTemperatureUnitChanged ||
         autoBookmarkChanged ||
+        mediaSpeedControlChanged ||
         includeEpubFootnotesChanged ||
         multipleDocumentBookmarksChanged ||
         displayVideoInPortraitChanged ||
@@ -459,6 +466,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     await _settings.saveTtsPitch(_ttsPitch);
     await _settings.setTvSecretCode(rawCode);
     await _settings.setAutoBookmarkEnabled(_autoBookmark);
+    await _settings.setMediaSpeedControlEnabled(_mediaSpeedControl);
     await _settings.setIncludeEpubFootnotesInText(_includeEpubFootnotesInText);
     await _settings.setMultipleDocumentBookmarksEnabled(_multipleDocumentBookmarks);
     await _settings.setDisplayVideoInPortrait(_displayVideoInPortrait);
@@ -565,6 +573,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     _savedTtsPitch = _ttsPitch;
     _savedTvSecretCode = rawCode;
     _savedAutoBookmark = _autoBookmark;
+    _savedMediaSpeedControl = _mediaSpeedControl;
     _savedIncludeEpubFootnotesInText = _includeEpubFootnotesInText;
     _savedMultipleDocumentBookmarks = _multipleDocumentBookmarks;
     _savedDisplayVideoInPortrait = _displayVideoInPortrait;
@@ -588,6 +597,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         _ttsPitch != _savedTtsPitch ||
         _tvSecretCodeController.text.trim() != _savedTvSecretCode ||
         _autoBookmark != _savedAutoBookmark ||
+        _mediaSpeedControl != _savedMediaSpeedControl ||
         _includeEpubFootnotesInText != _savedIncludeEpubFootnotesInText ||
         _multipleDocumentBookmarks != _savedMultipleDocumentBookmarks ||
         _displayVideoInPortrait != _savedDisplayVideoInPortrait ||
@@ -1399,6 +1409,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
             valueLabel: toggleLabel(_displayVideoInPortrait),
           ),
           AccessibleListRow(
+            id: 'media_speed_control',
+            title: l10n.settingsMediaSpeedControl,
+            subtitle: l10n.settingsMediaSpeedControlHint,
+            kind: 'toggle',
+            toggleValue: _mediaSpeedControl,
+            valueLabel: toggleLabel(_mediaSpeedControl),
+          ),
+          AccessibleListRow(
             id: 'sonartube_player_actions',
             title: l10n.settingsSonarTubePlayerActions,
             kind: 'button',
@@ -1530,6 +1548,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           }
           setState(() {
             switch (id) {
+              case 'media_speed_control': _mediaSpeedControl = value; break;
               case 'auto_bookmark': _autoBookmark = value; break;
               case 'epub_footnotes': _includeEpubFootnotesInText = value; break;
               case 'multiple_bookmarks': _multipleDocumentBookmarks = value; break;
@@ -2192,6 +2211,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       onChanged: (val) => setState(
                         () => _displayVideoInPortrait = val,
                       ),
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                    const SizedBox(height: 12),
+                    SwitchListTile(
+                      key: const ValueKey('settings-media-speed-control'),
+                      title: Text(l10n.settingsMediaSpeedControl),
+                      subtitle: Text(l10n.settingsMediaSpeedControlHint),
+                      value: _mediaSpeedControl,
+                      onChanged: (value) => setState(() => _mediaSpeedControl = value),
                       contentPadding: EdgeInsets.zero,
                     ),
                     const SizedBox(height: 12),

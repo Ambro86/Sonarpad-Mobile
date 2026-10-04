@@ -1,3 +1,4 @@
+import '../models/media_playback_speed.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:share_plus/share_plus.dart';
@@ -866,6 +867,7 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
         MaterialPageRoute(
           settings: const RouteSettings(name: '/sonartube/player'),
           builder: (_) => PodcastEpisodePlayerScreen(
+              speedCategory: MediaPlaybackSpeedCategory.sonartube,
             episode: episode,
             isVideoSupported: true,
             startWithVideoThenRestorePreference: true,
@@ -921,6 +923,7 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
       description: media.channel ?? '',
       audioUrl: media.audioUrl,
       videoUrl: media.videoUrl,
+      isLive: item.isLive || media.isLive,
     );
   }
 

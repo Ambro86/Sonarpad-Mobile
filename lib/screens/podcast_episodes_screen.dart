@@ -1,3 +1,4 @@
+import '../models/media_playback_speed.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
@@ -86,7 +87,8 @@ class _PodcastEpisodesScreenState extends State<PodcastEpisodesScreen> {
         context,
         MaterialPageRoute(
           settings: const RouteSettings(name: '/podcasts/player'),
-          builder: (_) => PodcastEpisodePlayerScreen(episode: episode),
+          builder: (_) => PodcastEpisodePlayerScreen(
+              speedCategory: MediaPlaybackSpeedCategory.podcasts,episode: episode),
         ),
       );
       _loadPlayedEpisodes();
@@ -516,7 +518,8 @@ class _PlayedEpisodesScreenState extends State<_PlayedEpisodesScreen> {
                           context,
                           MaterialPageRoute(
                             settings: const RouteSettings(name: '/podcasts/player'),
-                            builder: (_) => PodcastEpisodePlayerScreen(episode: _episodes[index]),
+                            builder: (_) => PodcastEpisodePlayerScreen(
+              speedCategory: MediaPlaybackSpeedCategory.podcasts,episode: _episodes[index]),
                           ),
                         );
                       },
@@ -546,7 +549,8 @@ class _PlayedEpisodesScreenState extends State<_PlayedEpisodesScreen> {
                           context,
                           MaterialPageRoute(
                             settings: const RouteSettings(name: '/podcasts/player'),
-                            builder: (_) => PodcastEpisodePlayerScreen(episode: episode),
+                            builder: (_) => PodcastEpisodePlayerScreen(
+              speedCategory: MediaPlaybackSpeedCategory.podcasts,episode: episode),
                           ),
                         ),
                       ),

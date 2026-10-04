@@ -77,12 +77,14 @@ class SonarTubeResolvedMedia {
     required this.audioUrl,
     this.videoUrl,
     this.channel,
+    this.isLive = false,
   });
 
   final String title;
   final String audioUrl;
   final String? videoUrl;
   final String? channel;
+  final bool isLive;
 }
 
 
@@ -492,6 +494,14 @@ class SonarTubeService {
       channel: _string(data['channel']) ?? fallbackChannel,
       audioUrl: hasSeparateStreams ? streamAudio : stream,
       videoUrl: hasSeparateStreams ? streamVideo : null,
+      // Older server responses have no live metadata. Treat unclassified
+      // YouTube HLS conservatively; normal progressive/on-demand files remain
+      // eligible. This only controls UI/rate eligibility, not URL selection.
+      isLive: data['is_live'] == true || data['isLive'] == true ||
+          data['live'] == true || data['live_status'] == 'is_live' ||
+          (data['is_live'] == null && data['isLive'] == null &&
+              data['live'] == null && data['live_status'] == null &&
+              (Uri.tryParse(stream)?.path.toLowerCase().endsWith('.m3u8') ?? false)),
     );
   }
 
@@ -537,6 +547,13 @@ class SonarTubeService {
     final isLive = details?['isLive'] == true ||
         details?['isLiveContent'] == true ||
         liveDetails?['isLiveNow'] == true;
+    final liveNow = liveDetails?['isLiveNow'];
+    final detailsLive = details?['isLive'];
+    final playbackIsLive = liveNow is bool
+        ? liveNow
+        : detailsLive is bool
+            ? detailsLive
+            : isLive && liveDetails?['endTimestamp'] == null;
     final hls = _string(streaming['hlsManifestUrl']);
 
     String? audioUrl;
@@ -567,6 +584,9 @@ class SonarTubeService {
       channel: _string(details?['author']) ?? fallbackChannel,
       audioUrl: audioUrl,
       videoUrl: videoUrl,
+      // isLiveContent also describes archived broadcasts; an explicit
+      // isLiveNow/isLive=false or endTimestamp keeps recordings eligible.
+      isLive: playbackIsLive,
     );
   }
 

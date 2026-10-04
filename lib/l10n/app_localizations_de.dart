@@ -4483,4 +4483,25 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get streamPlaybackRetryMessage => "Der Sender wurde nicht gestartet. Wähle „Erneut versuchen“, um die Stream-Adresse zu aktualisieren.";
 
+  @override
+  String get settingsMediaSpeedControl => "Geschwindigkeitssteuerung für Medien aktivieren";
+
+  @override
+  String get settingsMediaSpeedControlHint => "Zeigt die Geschwindigkeitssteuerung für Sonartube, Podcasts und andere aufgezeichnete Inhalte an. Livestreams sind ausgeschlossen.";
+
+  @override
+  String get mediaPlaybackSpeed => "Wiedergabegeschwindigkeit";
+
+  @override
+  String get mediaPlaybackSpeedNormal => "Normal";
+
+  @override
+  String get mediaPlaybackSpeedUnavailable => "Diese Geschwindigkeit wird für diesen Inhalt nicht unterstützt. Die vorherige Geschwindigkeit wurde wiederhergestellt.";
+
+  @override
+  String get mediaPlaybackSpeedRecoveryFailed => "Die Geschwindigkeit konnte nicht wiederhergestellt werden. Öffne den Inhalt erneut, um es noch einmal zu versuchen.";
+
+  @override
+  String mediaPlaybackSpeedChanged(String speed) => "Wiedergabegeschwindigkeit: $speed";
+
 }
