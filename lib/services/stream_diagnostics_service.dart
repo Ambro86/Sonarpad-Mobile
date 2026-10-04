@@ -19,7 +19,8 @@ class StreamDiagnosticsSession {
       'videoEnabled': videoEnabled,
       'os': Platform.operatingSystem,
       'osVersion': Platform.operatingSystemVersion,
-      'revision': 'stream-diag-v1',
+      'revision': 'stream-diag-v2-token-compare',
+      'tokenComparison': 'rai5_movie_same_origin_hdnea_after_403',
       'probeTransport': 'dart_http_not_native_player',
       'probeCookies': 'separate_client_no_player_cookie_jar',
     });
@@ -120,7 +121,9 @@ class StreamDiagnosticsSession {
     });
     try {
       Future<_StreamProbeResponse?> fetch(Uri target, String resource,
-          {bool sample = false, int offset = 0}) async {
+          {bool sample = false,
+          int offset = 0,
+          bool followRedirects = true}) async {
         if (_closed || expired || requests >= maxRequestsPerProbe) return null;
         requests++;
         return _fetch(
@@ -132,6 +135,7 @@ class StreamDiagnosticsSession {
           limit: sample ? maxSampleBytes : maxPlaylistBytes,
           sample: sample,
           offset: offset,
+          followRedirects: followRedirects,
         );
       }
 
@@ -187,8 +191,9 @@ class StreamDiagnosticsSession {
         await fetch(response.uri.resolve(initUri), 'initialization_sample',
             sample: true, offset: segment.initOffset ?? 0);
       }
+      final segmentUri = response.uri.resolve(segment.uri);
       final sample = await fetch(
-        response.uri.resolve(segment.uri),
+        segmentUri,
         'segment_sample',
         sample: true,
         offset: segment.offset ?? 0,
@@ -196,6 +201,67 @@ class StreamDiagnosticsSession {
       outcome = sample != null && sample.ok && sample.body.isNotEmpty
           ? 'segment_bytes_received_not_decode_confirmation'
           : 'segment_sample_unavailable';
+      // Diagnostic A/B comparison only: do not replace the player's URL,
+      // propagate tokens generally, or infer that sample bytes imply playback.
+      if (sample != null &&
+          sample.status == HttpStatus.forbidden &&
+          !_closed &&
+          !expired) {
+        final comparison = StreamDiagnosticTokenComparison.evaluate(
+          channel: channel,
+          videoEnabled: videoEnabled,
+          selectedPlaylist: uri,
+          resolvedPlaylist: response.uri,
+          segment: segmentUri,
+          sampledSegment: sample.uri,
+        );
+        final target = comparison.target;
+        if (target == null || requests >= maxRequestsPerProbe) {
+          record('token_comparison_skipped', {
+            'run': run,
+            'stage': stage,
+            'reason': target == null
+                ? comparison.reason
+                : 'resource_budget_exhausted',
+          });
+        } else {
+          record('token_comparison_start', {
+            'run': run,
+            'stage': stage,
+            'baselineStatus': sample.status,
+            'baselineUrl': safeUrl(segmentUri.toString()),
+            'comparisonUrl': safeUrl(target.toString()),
+            'tokenSource': 'existing_selected_playlist_hdnea',
+            'expiresInSeconds': comparison.expiresInSeconds,
+            'expiryClock': 'device_time_estimate',
+            'sameSegment': true,
+            'redirectPolicy': 'never_follow',
+            'playbackChanged': false,
+          });
+          final withToken = await fetch(
+            target,
+            'segment_sample_with_playlist_token',
+            sample: true,
+            offset: segment.offset ?? 0,
+            // Even a same-host redirect is not followed: an opaque Location
+            // could change the segment or disclose a signed query elsewhere.
+            followRedirects: false,
+          );
+          record('token_comparison_result', {
+            'run': run,
+            'stage': stage,
+            'baselineStatus': sample.status,
+            'tokenStatus': withToken?.status,
+            'tokenBytes': withToken?.body.length ?? 0,
+            'tokenContentType': withToken?.contentType,
+            'outcome': expired
+                ? 'probe_time_budget_reached'
+                : _tokenComparisonOutcome(withToken, target),
+            'playbackChanged': false,
+            'note': 'separate_http_client_not_native_playback_confirmation',
+          });
+        }
+      }
     } catch (error) {
       outcome = 'probe_exception';
       record('probe_error', {
@@ -239,6 +305,7 @@ class StreamDiagnosticsSession {
     required int limit,
     required bool sample,
     required int offset,
+    bool followRedirects = true,
   }) async {
     if (_closed || !_isHttp(uri)) return null;
     final clock = Stopwatch()..start();
@@ -265,6 +332,7 @@ class StreamDiagnosticsSession {
         'url': safeUrl(uri.toString()),
         'range': sample ? 'bytes=$offset-${offset + limit - 1}' : 'none',
         'requestHeaderNames': headers.keys.toList(),
+        'followRedirects': followRedirects,
       });
       request = await client.getUrl(uri).timeout(requestTimeout);
       // Also consume a late abort error if the screen closes before close().
@@ -272,7 +340,7 @@ class StreamDiagnosticsSession {
         request.done.then<void>((_) {}, onError: (Object _, StackTrace _) {}),
       );
       if (_closed) return null;
-      request.followRedirects = true;
+      request.followRedirects = followRedirects;
       request.maxRedirects = 4;
       request.persistentConnection = false;
       // Do not send account credentials/cookies to a diagnostic endpoint.
@@ -310,8 +378,19 @@ class StreamDiagnosticsSession {
         'setCookieCount': response.headers['set-cookie']?.length ?? 0,
         'remoteFamily': response.connectionInfo?.remoteAddress.type.toString(),
       });
+      final contentType =
+          response.headers[HttpHeaders.contentTypeHeader]?.join(', ');
+      if (!followRedirects && response.isRedirect) {
+        record('http_probe_redirect_not_followed', {
+          'run': run,
+          'resource': resource,
+          'status': status,
+          'policy': 'no_redirects_for_token_comparison',
+        });
+      }
       if (status != HttpStatus.ok && status != HttpStatus.partialContent) {
-        return _StreamProbeResponse(effectiveUri, status, Uint8List(0));
+        return _StreamProbeResponse(effectiveUri, status, Uint8List(0),
+            contentType: contentType);
       }
       phase = 'body';
       final bytes = BytesBuilder(copy: false);
@@ -348,7 +427,8 @@ class StreamDiagnosticsSession {
         'rangeHonored': sample ? status == HttpStatus.partialContent : null,
         'contentKind': sample ? 'binary_sample_not_decoded' : _contentKind(body),
       });
-      return _StreamProbeResponse(effectiveUri, status, body);
+      return _StreamProbeResponse(effectiveUri, status, body,
+          contentType: contentType);
     } catch (error) {
       record('http_probe_error', {
         'run': run,
@@ -374,6 +454,45 @@ class StreamDiagnosticsSession {
       client.close(force: true);
       _clients.remove(client);
     }
+  }
+
+  static String _tokenComparisonOutcome(
+      _StreamProbeResponse? response, Uri target) {
+    final remaining = tokenExpiresInSeconds(target.toString());
+    if (remaining != null && remaining <= 0) {
+      return 'token_expired_during_comparison';
+    }
+    if (response == null) {
+      return 'comparison_request_failed';
+    }
+    if (response.status >= 300 && response.status < 400) {
+      return 'comparison_redirect_not_followed';
+    }
+    if (response.status == HttpStatus.forbidden) {
+      return 'both_requests_forbidden';
+    }
+    if (!response.ok) {
+      return 'comparison_http_error';
+    }
+    if (response.body.isEmpty) {
+      return 'comparison_empty_body';
+    }
+    final type = (response.contentType ?? '').toLowerCase().split(';').first;
+    // Encrypted TS bytes may begin with any byte. Do not mistake a lone
+    // '<', '{' or '[' for an HTML/JSON response. Only use explicit signatures.
+    final prefix = utf8.decode(response.body.take(128).toList(),
+        allowMalformed: true).trimLeft().toLowerCase();
+    if (type.startsWith('text/') ||
+        type.contains('json') ||
+        type.contains('xml') ||
+        type.contains('mpegurl') ||
+        prefix.startsWith('<!doctype html') ||
+        prefix.startsWith('<html') ||
+        prefix.startsWith('<?xml') ||
+        prefix.startsWith('#extm3u')) {
+      return 'comparison_non_media_response';
+    }
+    return 'token_sample_bytes_received_not_playback_confirmation';
   }
 
   void close([String reason = 'screen_closed']) {
@@ -514,11 +633,103 @@ class StreamDiagnosticsSession {
 }
 
 class _StreamProbeResponse {
-  const _StreamProbeResponse(this.uri, this.status, this.body);
+  const _StreamProbeResponse(this.uri, this.status, this.body, {this.contentType});
   final Uri uri;
   final int status;
   final Uint8List body;
+  final String? contentType;
   bool get ok => status == 200 || status == 206;
+}
+
+/// Fail-closed scope for the diagnostic comparison. Never used for playback.
+/// Only the two observed Rai CDN hosts, their audio renditions and unsigned TS
+/// segments are eligible. No token is invented, re-encoded or persisted.
+class StreamDiagnosticTokenComparison {
+  const StreamDiagnosticTokenComparison._(this.target, this.reason,
+      [this.expiresInSeconds]);
+
+  final Uri? target;
+  final String reason;
+  final int? expiresInSeconds;
+
+  static StreamDiagnosticTokenComparison evaluate({
+    required String channel,
+    required bool videoEnabled,
+    required Uri selectedPlaylist,
+    required Uri resolvedPlaylist,
+    required Uri segment,
+    required Uri sampledSegment,
+    DateTime? now,
+  }) {
+    if (videoEnabled) {
+      return const StreamDiagnosticTokenComparison._(null, 'video_mode');
+    }
+    final scope = switch (channel.toLowerCase().replaceAll(RegExp(r'\s+'), '')) {
+      'rai5' => ('raicinque1-push.cdn.netrw.it', 'rai5'),
+      'raimovie' => ('raimovie1-push.cdn.netrw.it', 'raimovie'),
+      _ => null,
+    };
+    if (scope == null) {
+      return const StreamDiagnosticTokenComparison._(null, 'channel_not_in_scope');
+    }
+    final (host, name) = scope;
+    for (final uri in [selectedPlaylist, resolvedPlaylist, segment, sampledSegment]) {
+      if (uri.scheme != 'https' ||
+          uri.host != host ||
+          uri.port != 443 ||
+          uri.userInfo.isNotEmpty ||
+          uri.hasFragment) {
+        return const StreamDiagnosticTokenComparison._(null, 'origin_not_in_scope');
+      }
+    }
+    if (selectedPlaylist != resolvedPlaylist || segment != sampledSegment) {
+      return const StreamDiagnosticTokenComparison._(null, 'resource_redirected');
+    }
+    if (segment.hasQuery) {
+      return const StreamDiagnosticTokenComparison._(null, 'segment_has_query');
+    }
+    String? renditionRoot;
+    for (final kind in const ['des', 'ita']) {
+      final root = '/rai/hls/live/$name/$kind${name}_160/';
+      if (resolvedPlaylist.path == '${root}chunklist_ao.m3u8') {
+        renditionRoot = root;
+        break;
+      }
+    }
+    if (renditionRoot == null || !segment.path.startsWith(renditionRoot)) {
+      return const StreamDiagnosticTokenComparison._(null, 'rendition_not_in_scope');
+    }
+    final relativePath = segment.path.substring(renditionRoot.length);
+    if (!RegExp(r'^[A-Za-z0-9_-]+/media_ao_[0-9]+\.ts$').hasMatch(relativePath)) {
+      return const StreamDiagnosticTokenComparison._(null, 'segment_not_in_scope');
+    }
+    // Preserve the raw query byte-for-byte; do not merge arbitrary credentials
+    // or replace a query/signature already attached to the segment itself.
+    final query = resolvedPlaylist.query;
+    if (!query.startsWith('hdnea=') || query.contains('&')) {
+      return const StreamDiagnosticTokenComparison._(null, 'token_query_not_in_scope');
+    }
+    try {
+      final token = Uri.decodeQueryComponent(query.substring('hdnea='.length));
+      final expiryMatches = RegExp(r'(?:^|~)exp=(\d{9,12})(?=~|$)')
+          .allMatches(token).toList();
+      if (RegExp(r'[\x00-\x20<>\x7f]').hasMatch(token) ||
+          expiryMatches.length != 1 ||
+          !RegExp(r'(?:^|~)hmac=[0-9a-fA-F]{32,}(?=~|$)').hasMatch(token)) {
+        return const StreamDiagnosticTokenComparison._(null, 'invalid_token_shape');
+      }
+      final expiry = int.parse(expiryMatches.single.group(1)!);
+      final remaining = expiry -
+          (now ?? DateTime.now()).millisecondsSinceEpoch ~/ 1000;
+      if (remaining <= 0) {
+        return const StreamDiagnosticTokenComparison._(null, 'token_expired');
+      }
+      return StreamDiagnosticTokenComparison._(
+          segment.replace(query: query), 'eligible', remaining);
+    } catch (_) {
+      return const StreamDiagnosticTokenComparison._(null, 'invalid_token_shape');
+    }
+  }
 }
 
 /// Minimal HLS inspection for diagnostics only. Not used to resolve playback.
