@@ -1216,8 +1216,11 @@ class _PodcastEpisodePlayerScreenState
         focusNode: _playbackSpeedFocusNode,
         onPressed: _canChangePlaybackSpeed ? _choosePlaybackSpeed : null,
         icon: const Icon(Icons.speed),
-        label: Text('${l10n.mediaPlaybackSpeed}: '
-            '${_playbackSpeedLabel(l10n, _playbackSpeed)}'),
+        label: Text(
+          l10n.mediaPlaybackSpeedChanged(
+            _playbackSpeedLabel(l10n, _playbackSpeed),
+          ),
+        ),
       );
 
   Future<void> _loadSettings() async {
