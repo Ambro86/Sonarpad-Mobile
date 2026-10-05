@@ -13,6 +13,7 @@ import '../services/global_recording_service.dart';
 import '../services/radio_service.dart';
 import '../services/raiplay_service.dart';
 import '../services/raiplay_sound_service.dart';
+import '../services/rai_native_player_service.dart';
 import '../services/tv_service.dart';
 import '../services/stream_diagnostics_service.dart';
 import '../widgets/volume_slider.dart';
@@ -47,8 +48,10 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   final _audio = AudioPlayerService();
   final _settings = AppSettingsService();
   final _recordingService = GlobalRecordingService.instance;
+  final _raiNativePlayer = RaiNativePlayerService();
   late final GlobalRecordingTarget _recordingTarget;
   StreamSubscription<dynamic>? _mediaEventsSubscription;
+  StreamSubscription<dynamic>? _raiNativeEventsSubscription;
   StreamSubscription<bool>? _mediaKitPlayingSubscription;
   StreamSubscription<String>? _mediaKitErrorSubscription;
   StreamSubscription<dynamic>? _mediaKitPositionSubscription;
@@ -79,6 +82,13 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   VideoPlayerController? _videoController;
   mk.Player? _mediaKitPlayer;
   mkv.VideoController? _mediaKitController;
+  bool _raiNativeActive = false;
+  bool _raiNativePlaying = false;
+  bool _raiNativeBuffering = false;
+  bool _raiNativeFallbackInProgress = false;
+  int _raiNativeGeneration = 0;
+  int _raiNativeRestartCount = 0;
+  Timer? _raiNativeStallTimer;
   bool _isVideoEnabled = false;
   bool _displayVideoInPortrait = false;
   bool _isFavorite = false;
@@ -131,10 +141,12 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
           _mediaEvents.receiveBroadcastStream().listen((event) {
         if (event == 'toggle' &&
             mounted &&
-            (_videoController != null || _mediaKitPlayer != null)) {
+            (_videoController != null || _mediaKitPlayer != null || _raiNativeActive)) {
           unawaited(_toggleVideoPlayback());
         }
       });
+      _raiNativeEventsSubscription =
+          _raiNativePlayer.events.listen(_handleRaiNativePlayerEvent);
     }
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       _isVideoEnabled = await _settings.isVideoEnabled();
@@ -208,6 +220,8 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     final l10n = AppLocalizations.of(context);
     _raiDirectAudioFallbackTimer?.cancel();
     _raiDirectAudioFallbackTimer = null;
+    _raiNativeStallTimer?.cancel();
+    _raiNativeStallTimer = null;
     _raiDirectAudioFallbackInProgress = false;
     _raiNormalAudioFallbackInProgress = false;
     _raiRecoverySourcePlayer = null;
@@ -228,87 +242,25 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       _error = null;
     });
     try {
-      if (_requiresRaiAudioDescriptionMediaKitPlayback) {
-        final tvChannel = widget.tvChannel!;
-        final streams =
-            await TvService().resolveAudioDescriptionStreams(
-              tvChannel, diagnostics: diagnostics,
-            );
-        if (!mounted || requestId != _playRequestId) return;
-
-        if (!_isVideoEnabled) {
-          final selectedAudioUrl = !_preferRaiAudioDescription &&
-                  streams.hasAudioDescription
-              ? streams.normalAudioUrl
-              : streams.audioUrl;
-          final selectedAudioIsDescription = _preferRaiAudioDescription &&
-              streams.hasAudioDescription &&
-              selectedAudioUrl == streams.audioUrl;
-          final hasDedicatedAudio = selectedAudioUrl != streams.videoUrl;
-          final normalAudioFallbackUrl = selectedAudioIsDescription &&
-                  streams.normalAudioUrl != streams.videoUrl &&
-                  streams.normalAudioUrl != selectedAudioUrl
-              ? streams.normalAudioUrl
-              : null;
-
-          if (hasDedicatedAudio) {
-            await AppLogger.log(
-              'RadioPlayer: RAI direct audio selected because video is disabled '
-              'preferAD=$_preferRaiAudioDescription selectedAD=$selectedAudioIsDescription '
-              'url=${StreamDiagnosticsSession.safeUrl(selectedAudioUrl)} '
-              'normalFallback=${normalAudioFallbackUrl == null ? 'none' : StreamDiagnosticsSession.safeUrl(normalAudioFallbackUrl)}',
-            );
-            await _playMediaKitVideo(
-              streamUrl: selectedAudioUrl,
-              preferRaiAudioDescription: false,
-              enableRaiDirectAudioFallback: false,
-              raiNormalAudioFallbackUrl: normalAudioFallbackUrl,
-              playRequestId: requestId,
-              diagnosticStage: selectedAudioIsDescription ? 'direct_ad' : 'direct_ita',
-            );
-            return;
-          }
-
-          // Se il resolver non riesce a estrarre una child audio dedicata,
-          // conserviamo il master come compatibilità. In questo raro caso
-          // resta attivo anche il recupero master -> audio diretto, così un
-          // successivo relinker può ancora restituire AD/ITA utilizzabili.
-          await AppLogger.log(
-            'RadioPlayer: RAI direct audio unavailable; using master compatibility '
-            'videoEnabled=false hasAD=${streams.hasAudioDescription}',
-          );
-          await _playMediaKitVideo(
-            streamUrl: streams.videoUrl,
-            selectRaiPreferredAudioTrack: true,
-            preferRaiAudioDescription:
-                _preferRaiAudioDescription && streams.hasAudioDescription,
-            enableRaiDirectAudioFallback: true,
-            playRequestId: requestId,
-            diagnosticStage: 'master_compatibility',
-          );
-          return;
-        }
-
-        await AppLogger.log(
-          'RadioPlayer: RAI MediaKit master playback selected '
-          'videoEnabled=true hasAD=${streams.hasAudioDescription}',
-        );
-        await _playMediaKitVideo(
-          streamUrl: streams.videoUrl,
-          selectRaiPreferredAudioTrack: true,
-          preferRaiAudioDescription:
-              _preferRaiAudioDescription && streams.hasAudioDescription,
-          enableRaiDirectAudioFallback: false,
-          playRequestId: requestId,
-          diagnosticStage: 'master_video',
+      if (_useNativeRaiPlayback) {
+        await _playRaiNative(
+          requestId: requestId,
+          diagnostics: diagnostics,
         );
         return;
       }
 
-      // Tutti i canali TV usano sempre MediaKit su Android e iOS, anche
-      // quando il video è disattivato. In questo modo entrambe le piattaforme
-      // seguono lo stesso percorso di riproduzione; quando il video è spento
-      // viene disabilitata soltanto la traccia video.
+      if (_requiresRaiAudioDescriptionMediaKitPlayback) {
+        await _playRaiMediaKitFallback(
+          requestId: requestId,
+          diagnostics: diagnostics,
+        );
+        return;
+      }
+
+      // Tutti gli altri canali TV continuano a usare MediaKit su Android e
+      // iOS. Solo i canali Rai con relinker Mediapolis prendono il percorso
+      // AVPlayer nativo sopra, esclusivamente su iOS.
       if (_requiresTvMediaKitPlayback) {
         await AppLogger.log(
           'RadioPlayer: TV MediaKit playback selected '
@@ -317,7 +269,9 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         final refreshedUrl = reconnecting && widget.tvChannel != null
             ? await TvService().resolveStreamUrl(widget.tvChannel!, diagnostics: diagnostics)
             : null;
-        if (!mounted || requestId != _playRequestId) return;
+        if (!mounted || requestId != _playRequestId) {
+        return;
+      }
         await _playMediaKitVideo(streamUrl: refreshedUrl, playRequestId: requestId);
         return;
       }
@@ -372,11 +326,15 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         }));
       }
     } catch (e) {
-      if (!mounted || requestId != _playRequestId) return;
+      if (!mounted || requestId != _playRequestId) {
+        return;
+      }
       if (_mediaKitIsMpd) {
         await _disableMpdWakelock();
       }
-      if (!mounted || requestId != _playRequestId) return;
+      if (!mounted || requestId != _playRequestId) {
+        return;
+      }
       AppLogger.log('RadioPlayer: Error during _play: ${StreamDiagnosticsSession.redact(e.toString())}');
       diagnostics?.record('play_request_error', {
         'category': StreamDiagnosticsSession.classifyError(e),
@@ -396,9 +354,431 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       if (mounted && requestId == _playRequestId) {
         setState(() => _loading = false);
         AppLogger.log(
-            'RadioPlayer: _play complete. loading=false, isVideo=${_videoController != null || _mediaKitPlayer != null}');
+            'RadioPlayer: _play complete. loading=false, isVideo=${_videoController != null || _mediaKitPlayer != null || _raiNativeActive}');
       }
     }
+  }
+
+  Future<void> _playRaiNative({
+    required int requestId,
+    required StreamDiagnosticsSession? diagnostics,
+  }) async {
+    final channel = widget.tvChannel!;
+    final generation = ++_raiNativeGeneration;
+    final stageClock = Stopwatch()..start();
+
+    if (_raiNativeActive) {
+      _raiNativeActive = false;
+      _raiNativePlaying = false;
+      _raiNativeBuffering = false;
+      await _raiNativePlayer.dispose();
+    }
+
+    final masterUrl = await TvService().resolveStreamUrl(
+      channel,
+      diagnostics: diagnostics,
+    );
+    if (!mounted || requestId != _playRequestId ||
+        generation != _raiNativeGeneration) {
+      return;
+    }
+
+    await _audio.stop();
+    _videoController?.pause();
+    _videoController?.dispose();
+    _videoController = null;
+    await _disposeMediaKitPlayer();
+    if (!mounted || requestId != _playRequestId ||
+        generation != _raiNativeGeneration) {
+      return;
+    }
+
+    _mediaKitVolume = await _settings.loadMediaVolume();
+    if (!mounted || requestId != _playRequestId ||
+        generation != _raiNativeGeneration) {
+      return;
+    }
+
+    final headers = <String, String>{
+      'User-Agent': channel.playbackUserAgent,
+      ...channel.playbackHeaders,
+    };
+
+    _raiNativeActive = true;
+    _raiNativePlaying = false;
+    _raiNativeBuffering = true;
+    _raiNativeFallbackInProgress = false;
+    _mediaKitPlaying = false;
+    _mediaKitBuffering = true;
+    _mediaKitCompleted = false;
+    _mediaKitLastPosition = Duration.zero;
+    _mediaKitLastDuration = Duration.zero;
+    _mediaKitLastProgressAt = DateTime.now();
+    _mediaKitPlaybackUrl = masterUrl;
+    _mediaKitStage = 'native_avplayer';
+    _mediaKitDiagnosticsSession = diagnostics;
+
+    diagnostics?.record('native_avplayer_open_start', {
+      'stage': _mediaKitStage,
+      'url': StreamDiagnosticsSession.safeUrl(masterUrl),
+      'videoEnabled': _isVideoEnabled,
+      'preferAD': _preferRaiAudioDescription,
+      'userAgent': headers['User-Agent'],
+      'architecture': 'avfoundation_master_hls',
+    });
+    await AppLogger.log(
+      'RadioPlayer: RAI iOS native AVPlayer selected '
+      'master=${StreamDiagnosticsSession.safeUrl(masterUrl)} '
+      'videoEnabled=$_isVideoEnabled preferAD=$_preferRaiAudioDescription',
+    );
+
+    if (Platform.isIOS) {
+      await _mediaCommands.invokeMethod('setupMagicTap', widget.station.name);
+    }
+    if (!mounted || requestId != _playRequestId ||
+        generation != _raiNativeGeneration) {
+      return;
+    }
+
+    try {
+      await _raiNativePlayer.open(
+        url: masterUrl,
+        headers: headers,
+        preferAudioDescription: _preferRaiAudioDescription,
+        videoEnabled: _isVideoEnabled,
+        volume: _mediaKitVolume,
+      );
+    } catch (error) {
+      if (!mounted || requestId != _playRequestId ||
+          generation != _raiNativeGeneration) {
+        return;
+      }
+      diagnostics?.record('native_avplayer_open_error', {
+        'stage': _mediaKitStage,
+        'error': error.toString(),
+      });
+      await AppLogger.log(
+        'RadioPlayer: RAI AVPlayer open failed; using existing MediaKit fallback '
+        'error=${StreamDiagnosticsSession.redact(error.toString())}',
+      );
+      await _activateRaiNativeFallback(reason: 'native_open_failed');
+      return;
+    }
+    if (!mounted || requestId != _playRequestId ||
+        generation != _raiNativeGeneration) {
+      return;
+    }
+
+    diagnostics?.record('native_avplayer_open_returned', {
+      'stage': _mediaKitStage,
+      'stageMs': stageClock.elapsedMilliseconds,
+      'note': 'open_returned_is_not_playback_confirmation',
+    });
+    setState(() {});
+  }
+
+  void _handleRaiNativePlayerEvent(dynamic rawEvent) {
+    if (!mounted || rawEvent is! Map) {
+      return;
+    }
+    final event = Map<String, dynamic>.from(rawEvent);
+    final type = event['type']?.toString() ?? '';
+
+    if (type == 'state') {
+      if (!_raiNativeActive) {
+        return;
+      }
+      final playing = event['playing'] == true;
+      final buffering = event['buffering'] == true;
+      final wasPlaying = _raiNativePlaying;
+      _raiNativePlaying = playing;
+      _raiNativeBuffering = buffering;
+      // Reuse the existing generic stream telemetry fields so connection
+      // notices, retry UI and diagnostics behave exactly like other TV paths.
+      _mediaKitPlaying = playing;
+      _mediaKitBuffering = buffering;
+      final positionMs = (event['positionMs'] as num?)?.toInt() ?? 0;
+      final durationMs = (event['durationMs'] as num?)?.toInt() ?? 0;
+      _mediaKitLastPosition = Duration(milliseconds: positionMs);
+      _mediaKitLastDuration = Duration(milliseconds: durationMs);
+      if (Platform.isIOS && wasPlaying != playing) {
+        unawaited(_mediaCommands.invokeMethod('setMagicTapPlaying', playing));
+      }
+      _streamDiagnostics?.record('native_avplayer_state', {
+        'stage': _mediaKitStage,
+        'playing': playing,
+        'buffering': buffering,
+        'reason': event['reason'],
+        'positionMs': positionMs,
+        'durationMs': durationMs,
+      });
+      if (mounted) {
+        setState(() {});
+      }
+      return;
+    }
+
+    if (type == 'position') {
+      if (!_raiNativeActive) {
+        return;
+      }
+      final positionMs = (event['positionMs'] as num?)?.toInt() ?? 0;
+      final durationMs = (event['durationMs'] as num?)?.toInt() ?? 0;
+      final position = Duration(milliseconds: positionMs);
+      final previous = _mediaKitLastPosition ?? Duration.zero;
+      _mediaKitLastPosition = position;
+      _mediaKitLastDuration = Duration(milliseconds: durationMs);
+      if (position > previous) {
+        _mediaKitLastProgressAt = DateTime.now();
+        _raiNativeStallTimer?.cancel();
+        _raiNativeStallTimer = null;
+      }
+      if (position > Duration.zero && _raiNativePlaying && !_raiNativeBuffering) {
+        if (_streamRecovery.observe(
+          position: position,
+          playing: _raiNativePlaying,
+          buffering: _raiNativeBuffering,
+        )) {
+          _streamConnectionTimer?.cancel();
+          setState(() => _error = null);
+          _streamDiagnostics?.record('first_playback_progress', {
+            'stage': _mediaKitStage,
+            'positionMs': positionMs,
+            'engine': 'AVPlayer',
+          });
+        }
+      }
+      return;
+    }
+
+    if (type == 'audio_tracks') {
+      if (!_raiNativeActive) {
+        return;
+      }
+      unawaited(AppLogger.log(
+        'RadioPlayer: RAI AVPlayer audio tracks '
+        'preferAD=${event['preferAudioDescription']} '
+        'selected=${event['selected']} locale=${event['selectedLocale']} '
+        'selectedAD=${event['selectedIsAudioDescription']} '
+        'tracks=${event['tracks']}',
+      ));
+      _streamDiagnostics?.record('native_avplayer_audio_selection', {
+        'stage': _mediaKitStage,
+        'preferAD': event['preferAudioDescription'],
+        'selected': event['selected'],
+        'selectedLocale': event['selectedLocale'],
+        'selectedAD': event['selectedIsAudioDescription'],
+      });
+      return;
+    }
+
+    if (type == 'stalled') {
+      if (!_raiNativeActive) {
+        return;
+      }
+      final generation = _raiNativeGeneration;
+      final stalledAt = _mediaKitLastPosition ?? Duration.zero;
+      _streamDiagnostics?.record('native_avplayer_stalled', {
+        'stage': _mediaKitStage,
+        'positionMs': stalledAt.inMilliseconds,
+      });
+      unawaited(AppLogger.log(
+        'RadioPlayer: RAI AVPlayer reported playback stalled '
+        'position=$stalledAt buffering=$_raiNativeBuffering',
+      ));
+      _raiNativeStallTimer?.cancel();
+      _raiNativeStallTimer = Timer(const Duration(seconds: 8), () {
+        if (!mounted || !_raiNativeActive ||
+            generation != _raiNativeGeneration ||
+            (_mediaKitLastPosition ?? Duration.zero) > stalledAt) {
+          return;
+        }
+        unawaited(_recoverRaiNative(reason: 'playback_stalled'));
+      });
+      return;
+    }
+
+    if (type == 'error') {
+      if (!_raiNativeActive || _raiNativeFallbackInProgress) {
+        return;
+      }
+      final message = event['message']?.toString() ?? 'AVPlayer error';
+      _streamDiagnostics?.record('native_avplayer_error', {
+        'stage': _mediaKitStage,
+        'domain': event['domain'],
+        'code': event['code'],
+        'error': message,
+      });
+      unawaited(AppLogger.log(
+        'RadioPlayer: RAI AVPlayer native error; trying MediaKit fallback '
+        'error=${StreamDiagnosticsSession.redact(message)}',
+      ));
+      unawaited(_recoverRaiNative(reason: 'native_error'));
+      return;
+    }
+
+    if (type == 'log') {
+      unawaited(AppLogger.log(
+        'RadioPlayer: RAI AVPlayer ${event['category']}: '
+        '${StreamDiagnosticsSession.redact(event['message']?.toString() ?? '')}',
+      ));
+    }
+  }
+
+  Future<void> _recoverRaiNative({required String reason}) async {
+    if (!mounted || !_raiNativeActive || _raiNativeFallbackInProgress) {
+      return;
+    }
+    _raiNativeStallTimer?.cancel();
+    _raiNativeStallTimer = null;
+    if (_raiNativeRestartCount == 0) {
+      _raiNativeRestartCount = 1;
+      final requestId = _playRequestId;
+      _beginStreamReconnection(requestId);
+      _streamDiagnostics?.record('native_avplayer_restart', {
+        'stage': _mediaKitStage,
+        'reason': reason,
+        'positionMs': _mediaKitLastPosition?.inMilliseconds,
+      });
+      await AppLogger.log(
+        'RadioPlayer: RAI AVPlayer restarting once with a fresh Mediapolis URL '
+        'reason=$reason station="${widget.station.name}"',
+      );
+      await _play(reconnecting: true);
+      return;
+    }
+    await _activateRaiNativeFallback(reason: reason);
+  }
+
+  Future<void> _activateRaiNativeFallback({required String reason}) async {
+    if (!mounted || !_raiNativeActive || _raiNativeFallbackInProgress ||
+        !_requiresRaiAudioDescriptionMediaKitPlayback) {
+      return;
+    }
+    final requestId = _playRequestId;
+    _raiNativeStallTimer?.cancel();
+    _raiNativeStallTimer = null;
+    _raiNativeFallbackInProgress = true;
+    ++_raiNativeGeneration;
+    _beginStreamReconnection(requestId);
+    _streamDiagnostics?.record('native_avplayer_fallback', {
+      'stage': _mediaKitStage,
+      'reason': reason,
+      'positionMs': _mediaKitLastPosition?.inMilliseconds,
+    });
+
+    try {
+      await AppLogger.log(
+        'RadioPlayer: RAI AVPlayer fallback to existing MediaKit path '
+        'reason=$reason station="${widget.station.name}"',
+      );
+      await _raiNativePlayer.dispose();
+      _raiNativeActive = false;
+      _raiNativePlaying = false;
+      _raiNativeBuffering = false;
+      if (!mounted || requestId != _playRequestId) {
+        return;
+      }
+      await _playRaiMediaKitFallback(
+        requestId: requestId,
+        diagnostics: _streamDiagnostics,
+      );
+    } catch (error) {
+      await AppLogger.log(
+        'RadioPlayer: RAI MediaKit fallback after AVPlayer failed: '
+        '${StreamDiagnosticsSession.redact(error.toString())}',
+      );
+      _setStreamFailure(requestId);
+    } finally {
+      if (requestId == _playRequestId) {
+        _raiNativeFallbackInProgress = false;
+      }
+      if (mounted) {
+        setState(() {});
+      }
+    }
+  }
+
+  Future<void> _playRaiMediaKitFallback({
+    required int requestId,
+    required StreamDiagnosticsSession? diagnostics,
+  }) async {
+    final tvChannel = widget.tvChannel!;
+    final streams =
+        await TvService().resolveAudioDescriptionStreams(
+          tvChannel, diagnostics: diagnostics,
+        );
+    if (!mounted || requestId != _playRequestId) {
+      return;
+    }
+
+    if (!_isVideoEnabled) {
+      final selectedAudioUrl = !_preferRaiAudioDescription &&
+              streams.hasAudioDescription
+          ? streams.normalAudioUrl
+          : streams.audioUrl;
+      final selectedAudioIsDescription = _preferRaiAudioDescription &&
+          streams.hasAudioDescription &&
+          selectedAudioUrl == streams.audioUrl;
+      final hasDedicatedAudio = selectedAudioUrl != streams.videoUrl;
+      final normalAudioFallbackUrl = selectedAudioIsDescription &&
+              streams.normalAudioUrl != streams.videoUrl &&
+              streams.normalAudioUrl != selectedAudioUrl
+          ? streams.normalAudioUrl
+          : null;
+
+      if (hasDedicatedAudio) {
+        await AppLogger.log(
+          'RadioPlayer: RAI direct audio selected because video is disabled '
+          'preferAD=$_preferRaiAudioDescription selectedAD=$selectedAudioIsDescription '
+          'url=${StreamDiagnosticsSession.safeUrl(selectedAudioUrl)} '
+          'normalFallback=${normalAudioFallbackUrl == null ? 'none' : StreamDiagnosticsSession.safeUrl(normalAudioFallbackUrl)}',
+        );
+        await _playMediaKitVideo(
+          streamUrl: selectedAudioUrl,
+          preferRaiAudioDescription: false,
+          enableRaiDirectAudioFallback: false,
+          raiNormalAudioFallbackUrl: normalAudioFallbackUrl,
+          playRequestId: requestId,
+          diagnosticStage: selectedAudioIsDescription ? 'direct_ad' : 'direct_ita',
+        );
+        return;
+      }
+
+      // Se il resolver non riesce a estrarre una child audio dedicata,
+      // conserviamo il master come compatibilità. In questo raro caso
+      // resta attivo anche il recupero master -> audio diretto, così un
+      // successivo relinker può ancora restituire AD/ITA utilizzabili.
+      await AppLogger.log(
+        'RadioPlayer: RAI direct audio unavailable; using master compatibility '
+        'videoEnabled=false hasAD=${streams.hasAudioDescription}',
+      );
+      await _playMediaKitVideo(
+        streamUrl: streams.videoUrl,
+        selectRaiPreferredAudioTrack: true,
+        preferRaiAudioDescription:
+            _preferRaiAudioDescription && streams.hasAudioDescription,
+        enableRaiDirectAudioFallback: true,
+        playRequestId: requestId,
+        diagnosticStage: 'master_compatibility',
+      );
+      return;
+    }
+
+    await AppLogger.log(
+      'RadioPlayer: RAI MediaKit master playback selected '
+      'videoEnabled=true hasAD=${streams.hasAudioDescription}',
+    );
+    await _playMediaKitVideo(
+      streamUrl: streams.videoUrl,
+      selectRaiPreferredAudioTrack: true,
+      preferRaiAudioDescription:
+          _preferRaiAudioDescription && streams.hasAudioDescription,
+      enableRaiDirectAudioFallback: false,
+      playRequestId: requestId,
+      diagnosticStage: 'master_video',
+    );
+    return;
   }
 
   Future<void> _playMediaKitVideo({
@@ -411,7 +791,9 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     String diagnosticStage = 'tv_stream',
   }) async {
     final requestId = playRequestId ?? _playRequestId;
-    if (!mounted || requestId != _playRequestId) return;
+    if (!mounted || requestId != _playRequestId) {
+      return;
+    }
     final openId = ++_mediaKitOpenId;
     final diagnostics = _streamDiagnostics;
     final stage = '$diagnosticStage#$openId';
@@ -709,6 +1091,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   Future<void> _retryStreamPlayback() async {
     if (!mounted || _streamRetryInProgress || widget.tvChannel == null) return;
     _streamDiagnostics?.record('manual_retry');
+    _raiNativeRestartCount = 0;
     setState(() => _streamRetryInProgress = true);
     announceStatusMessage(context, AppLocalizations.of(context).streamReconnecting);
     try {
@@ -721,7 +1104,9 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   }
 
   void _beginStreamReconnection(int requestId) {
-    if (!mounted || requestId != _playRequestId) return;
+    if (!mounted || requestId != _playRequestId) {
+      return;
+    }
     final announce = !_streamRecovery.isReconnecting;
     setState(() {
       _streamRecovery.reconnect();
@@ -735,7 +1120,9 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   }
 
   void _setStreamFailure(int requestId) {
-    if (!mounted || requestId != _playRequestId) return;
+    if (!mounted || requestId != _playRequestId) {
+      return;
+    }
     final message = AppLocalizations.of(context).streamPlaybackRetryMessage;
     final announce = _error != message;
     _streamConnectionTimer?.cancel();
@@ -767,12 +1154,17 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       }
       _streamDiagnostics?.record('startup_wait_exceeded', {
         'stage': _mediaKitStage,
-        'playerPresent': _mediaKitPlayer != null,
+        'playerPresent': _mediaKitPlayer != null || _raiNativeActive,
+        'nativeEngine': _raiNativeActive ? 'AVPlayer' : 'MediaKit',
         'nativeDisposePending': _mediaKitDisposeInFlight != null,
         'positionMs': _mediaKitLastPosition?.inMilliseconds,
         'buffering': _mediaKitBuffering,
       });
       _probeCurrentStream('startup_wait_exceeded');
+      if (_raiNativeActive && !_raiNativeFallbackInProgress) {
+        unawaited(_recoverRaiNative(reason: 'startup_wait_exceeded'));
+        return;
+      }
       _setStreamFailure(requestId);
     });
   }
@@ -1288,12 +1680,20 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   }
 
   Future<void> _stop() async {
+    if (_raiNativeActive) {
+      _streamUserPaused = true;
+      _streamDiagnostics?.record('user_pause', {'stage': _mediaKitStage});
+      await _raiNativePlayer.pause();
+      return;
+    }
     if (_mediaKitPlayer != null) {
       await _mediaKitPlayer!.pause();
       if (_mediaKitIsMpd) {
         await _disableMpdWakelock();
       }
-      if (mounted) setState(() {});
+      if (mounted) {
+        setState(() {});
+      }
     } else if (_videoController != null) {
       await _videoController!.pause();
       setState(() {});
@@ -1388,6 +1788,11 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     final clamped = value.clamp(0.0, 1.0).toDouble();
     setState(() => _mediaKitVolume = clamped);
     unawaited(_settings.saveMediaVolume(clamped));
+    if (_raiNativeActive) {
+      unawaited(_raiNativePlayer.setVolume(clamped).catchError((error) {
+        AppLogger.log('RadioPlayer: failed to set RAI AVPlayer volume: $error');
+      }));
+    }
     final player = _mediaKitPlayer;
     if (player != null) {
       unawaited(player.setVolume(clamped * 100).catchError((error) {
@@ -1409,6 +1814,28 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   }
 
   Future<void> _toggleVideoPlayback() async {
+    if (_raiNativeActive) {
+      if (_raiNativePlaying) {
+        _streamUserPaused = true;
+        _streamDiagnostics?.record('user_pause', {'stage': _mediaKitStage});
+        await _raiNativePlayer.pause();
+        if (Platform.isIOS) {
+          await _mediaCommands.invokeMethod('setMagicTapPlaying', false);
+        }
+      } else {
+        _streamUserPaused = false;
+        _streamDiagnostics?.record('user_play', {'stage': _mediaKitStage});
+        if (!_streamRecovery.hasProgress) {
+          _scheduleStreamConnectionNotice(_playRequestId);
+        }
+        await _raiNativePlayer.play();
+        if (Platform.isIOS) {
+          await _mediaCommands.invokeMethod('setMagicTapPlaying', true);
+        }
+      }
+      return;
+    }
+
     final mediaKitPlayer = _mediaKitPlayer;
     if (mediaKitPlayer != null) {
       if (_mediaKitPlaying) {
@@ -1466,7 +1893,11 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     setState(() => _isVideoEnabled = enable);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted || _isVideoEnabled != enable) return;
-      if (_requiresVideoPlayback) {
+      if (_raiNativeActive) {
+        unawaited(_settings.setVideoEnabled(enable));
+        unawaited(_raiNativePlayer.setVideoEnabled(enable));
+        setState(() {});
+      } else if (_requiresVideoPlayback) {
         // I live DASH mantengono il riavvio già previsto, perché alcuni MPD
         // applicano in modo affidabile il cambio traccia solo alla riapertura.
         unawaited(_applyMpdVideoSetting(enable));
@@ -1941,6 +2372,9 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   bool get _hasPendingScheduledRecording =>
       _recordingService.hasPendingScheduleFor(_recordingTarget.id);
 
+  bool get _useNativeRaiPlayback =>
+      Platform.isIOS && _requiresRaiAudioDescriptionMediaKitPlayback;
+
   bool get _requiresRaiAudioDescriptionMediaKitPlayback =>
       widget.isVideoSupported &&
       widget.tvChannel != null &&
@@ -1953,9 +2387,11 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       widget.isVideoSupported &&
       TvService.isDashStreamUrl(widget.station.streamUrl);
 
-  bool get _isVideoPlaying => _mediaKitPlayer != null
-      ? _mediaKitPlaying
-      : (_videoController?.value.isPlaying ?? false);
+  bool get _isVideoPlaying => _raiNativeActive
+      ? _raiNativePlaying
+      : (_mediaKitPlayer != null
+          ? _mediaKitPlaying
+          : (_videoController?.value.isPlaying ?? false));
 
   bool get _canRecordStream => _isRecordingFeatureUnlocked;
 
@@ -1963,7 +2399,8 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       _displayVideoInPortrait &&
       _isVideoEnabled &&
       ((_videoController != null && _videoController!.value.isInitialized) ||
-          _mediaKitController != null);
+          _mediaKitController != null ||
+          _raiNativeActive);
 
   void _syncLandscapeFullscreenOrientation() {
     final enable = _useLandscapeFullscreenVideo;
@@ -2082,14 +2519,18 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     _streamDiagnostics?.close();
     _raiDirectAudioFallbackTimer?.cancel();
     _raiDirectAudioFallbackTimer = null;
+    _raiNativeStallTimer?.cancel();
+    _raiNativeStallTimer = null;
     _recordingService.removeListener(_onGlobalRecordingChanged);
     FocusManager.instance.primaryFocus?.unfocus();
     if (Platform.isIOS &&
-        (_videoController != null || _mediaKitPlayer != null)) {
+        (_videoController != null || _mediaKitPlayer != null || _raiNativeActive)) {
       unawaited(_mediaCommands.invokeMethod('clearMagicTap'));
     }
     _restoreSystemOrientation();
     unawaited(_mediaEventsSubscription?.cancel() ?? Future<void>.value());
+    unawaited(_raiNativeEventsSubscription?.cancel() ?? Future<void>.value());
+    unawaited(_raiNativePlayer.dispose());
     unawaited(_disableMpdWakelock());
     unawaited(_disposeMediaKitPlayer());
     _videoController?.dispose();
@@ -2189,6 +2630,13 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     );
   }
 
+  Widget _buildRaiNativeVideoSurface() {
+    return const AspectRatio(
+      aspectRatio: 16 / 9,
+      child: RaiNativeVideoView(),
+    );
+  }
+
   Widget _buildFullscreenVideoSurface({
     required Widget child,
     required double aspectRatio,
@@ -2270,6 +2718,14 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       ),
       aspectRatio: 16 / 9,
       engine: 'media_kit',
+    );
+  }
+
+  Widget _buildRaiNativeVideoFullscreenSurface() {
+    return _buildFullscreenVideoSurface(
+      child: const RaiNativeVideoView(),
+      aspectRatio: 16 / 9,
+      engine: 'avplayer_rai',
     );
   }
 
@@ -2368,7 +2824,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
                   onChanged: _setVideoPlayerVolume,
                 ),
               ],
-              if (_mediaKitPlayer != null) ...[
+              if (_mediaKitPlayer != null || _raiNativeActive) ...[
                 const SizedBox(height: 12),
                 _PlayerVolumeSlider(
                   volume: _mediaKitVolume,
@@ -2383,10 +2839,11 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   }
 
   Widget _buildLandscapeFullscreenScaffold(AppLocalizations l10n) {
-    final videoSurface =
-        _videoController != null && _videoController!.value.isInitialized
+    final videoSurface = _raiNativeActive
+        ? _buildRaiNativeVideoFullscreenSurface()
+        : (_videoController != null && _videoController!.value.isInitialized
             ? _buildVideoPlayerFullscreenSurface(_videoController!)
-            : _buildMediaKitVideoFullscreenSurface();
+            : _buildMediaKitVideoFullscreenSurface());
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -2442,7 +2899,8 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
 
   Widget _buildSharedAccessiblePlayerBody(AppLocalizations l10n, bool showStationDetails) {
     Widget buildControls(bool audioPlaying) {
-      final videoMode = _mediaKitPlayer != null || _videoController != null;
+      final videoMode =
+          _raiNativeActive || _mediaKitPlayer != null || _videoController != null;
       final rows = <AccessibleListRow>[
         AccessibleListRow(id: 'title', kind: 'header', title: widget.station.name),
         if (showStationDetails) AccessibleListRow(id: 'details', kind: 'text', title: widget.station.detailsText),
@@ -2511,7 +2969,9 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       );
     }
 
-    final nativeList = (_mediaKitPlayer == null && _videoController == null)
+    final nativeList = (!_raiNativeActive &&
+            _mediaKitPlayer == null &&
+            _videoController == null)
         ? StreamBuilder<bool>(
             stream: _audio.playingStream,
             builder: (context, snapshot) => buildControls(snapshot.data ?? false),
@@ -2524,17 +2984,19 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
             _videoController != null &&
             _videoController!.value.isInitialized)
           Padding(padding: const EdgeInsets.all(12), child: _buildVideoPlayerSurface(_videoController!)),
+        if (_raiNativeActive && _isVideoEnabled)
+          Padding(padding: const EdgeInsets.all(12), child: _buildRaiNativeVideoSurface()),
         if (_mediaKitController != null && _isVideoEnabled)
           Padding(padding: const EdgeInsets.all(12), child: _buildMediaKitVideoSurface()),
         Expanded(child: nativeList),
-        if (_videoController == null && _mediaKitPlayer == null)
+        if (!_raiNativeActive && _videoController == null && _mediaKitPlayer == null)
           Padding(padding: const EdgeInsets.fromLTRB(16, 0, 16, 12), child: VolumeSlider(audioPlayer: _audio)),
         if (_videoController != null && _videoController!.value.isInitialized)
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
             child: _PlayerVolumeSlider(volume: _videoPlayerVolume, onChanged: _setVideoPlayerVolume),
           ),
-        if (_mediaKitPlayer != null)
+        if (_mediaKitPlayer != null || _raiNativeActive)
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
             child: _PlayerVolumeSlider(volume: _mediaKitVolume, onChanged: _setMediaKitVolume),
@@ -2616,6 +3078,10 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
             const SizedBox(height: 24),
             _buildVideoPlayerSurface(_videoController!),
           ],
+          if (_raiNativeActive && _isVideoEnabled) ...[
+            const SizedBox(height: 24),
+            _buildRaiNativeVideoSurface(),
+          ],
           if (_mediaKitController != null && _isVideoEnabled) ...[
             const SizedBox(height: 24),
             _buildMediaKitVideoSurface(),
@@ -2626,7 +3092,9 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
             runSpacing: 12,
             alignment: WrapAlignment.center,
             children: [
-              if (_mediaKitPlayer != null || _videoController != null)
+              if (_raiNativeActive ||
+                  _mediaKitPlayer != null ||
+                  _videoController != null)
                 FilledButton.icon(
                   onPressed: _loading ? null : _toggleVideoPlayback,
                   icon: Icon(_isVideoPlaying ? Icons.pause : Icons.play_arrow),
@@ -2682,7 +3150,9 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
                 label: Text(l10n.radioScheduleCancelAction),
               ),
           ],
-          if (_videoController == null && _mediaKitPlayer == null) ...[
+          if (!_raiNativeActive &&
+              _videoController == null &&
+              _mediaKitPlayer == null) ...[
             const SizedBox(height: 24),
             VolumeSlider(audioPlayer: _audio),
           ],
@@ -2694,7 +3164,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
               onChanged: _setVideoPlayerVolume,
             ),
           ],
-          if (_mediaKitPlayer != null) ...[
+          if (_mediaKitPlayer != null || _raiNativeActive) ...[
             const SizedBox(height: 24),
             _PlayerVolumeSlider(
               volume: _mediaKitVolume,
