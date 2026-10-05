@@ -36,6 +36,7 @@ void main() {
     expect(swift, contains('normalizedLanguage == "des"'));
     expect(swift, contains('normalizedLanguage == "it"'));
     expect(swift, contains('item.select(selected, in: group)'));
+    expect(swift, contains('if #available(iOS 16.0, *)'));
     expect(swift, contains('AVURLAssetHTTPUserAgentKey'));
     expect(swift, isNot(contains('options[AVURLAssetHTTPHeaderFieldsKey]')));
   });

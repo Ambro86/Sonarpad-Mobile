@@ -150,7 +150,9 @@ final class SonarpadRaiPlayerPlugin: NSObject, FlutterPlugin, FlutterStreamHandl
     var options: [String: Any] = [:]
     // AVURLAssetHTTPHeaderFieldsKey is not a supported public API. Use the
     // documented User-Agent option and let AVFoundation own the HLS session.
-    if let userAgent = headers["User-Agent"], !userAgent.isEmpty {
+    if #available(iOS 16.0, *),
+       let userAgent = headers["User-Agent"],
+       !userAgent.isEmpty {
       options[AVURLAssetHTTPUserAgentKey] = userAgent
     }
     options[AVURLAssetAllowsCellularAccessKey] = true
