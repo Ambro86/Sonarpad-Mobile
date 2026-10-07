@@ -4,6 +4,38 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  test('0.5.0 Rai audio-description preference is Italian extra only', () {
+    final decoded = jsonDecode(File('assets/changelog.json').readAsStringSync());
+    final entries = (decoded as List).cast<Map<String, dynamic>>();
+    final entry = entries.firstWhere((item) => item['version'] == '0.5.0');
+
+    const italianExtra =
+        'Aggiunta per i canali Rai l’impostazione protetta “Preferisci l’audiodescrizione quando disponibile”, attiva di default: chi ha inserito un codice Sonarpad valido può scegliere se usare automaticamente la traccia audiodescritta oppure preferire l’audio italiano normale.';
+
+    final extras = (entry['it_extra'] as List).cast<String>();
+    expect(extras.where((change) => change == italianExtra).length, 1);
+
+    const publicTranslations = <String, String>{
+      'it': italianExtra,
+      'en': 'Added the protected “Prefer audio description when available” setting for Rai channels, enabled by default: users with a valid Sonarpad code can choose whether to use the audio-described track automatically or prefer the normal Italian audio.',
+      'fr': 'Ajout pour les chaînes Rai du réglage protégé « Préférer l’audiodescription lorsqu’elle est disponible », activé par défaut : les utilisateurs disposant d’un code Sonarpad valide peuvent choisir d’utiliser automatiquement la piste avec audiodescription ou de préférer l’audio italien normal.',
+      'es': 'Añadido para los canales Rai el ajuste protegido “Preferir la audiodescripción cuando esté disponible”, activado por defecto: quienes tengan un código Sonarpad válido pueden elegir entre usar automáticamente la pista con audiodescripción o preferir el audio italiano normal.',
+      'pt': 'Adicionada para os canais Rai a definição protegida «Preferir audiodescrição quando disponível», ativa por predefinição: quem tiver um código Sonarpad válido pode escolher entre usar automaticamente a faixa com audiodescrição ou preferir o áudio italiano normal.',
+      'pt_BR': 'Adicionada para os canais Rai a configuração protegida “Preferir audiodescrição quando disponível”, ativada por padrão: quem tiver um código Sonarpad válido pode escolher entre usar automaticamente a faixa com audiodescrição ou preferir o áudio italiano normal.',
+      'pl': 'Dodano dla kanałów Rai chronione ustawienie „Preferuj audiodeskrypcję, gdy jest dostępna”, domyślnie włączone: użytkownicy z prawidłowym kodem Sonarpad mogą wybrać automatyczną audiodeskrypcję albo zwykły włoski dźwięk.',
+      'cs': 'Pro kanály Rai bylo přidáno chráněné nastavení „Upřednostnit audiopopis, pokud je k dispozici“, které je ve výchozím nastavení zapnuté: uživatelé s platným kódem Sonarpad si mohou vybrat automatický audiopopis nebo běžný italský zvuk.',
+      'de': 'Für Rai-Sender wurde die geschützte Einstellung „Audiodeskription bevorzugen, wenn verfügbar“ hinzugefügt und standardmäßig aktiviert: Nutzer mit gültigem Sonarpad-Code können zwischen automatischer Audiodeskription und normalem italienischem Ton wählen.',
+      'zh_CN': 'Rai 频道新增受保护的“有音频描述时优先使用”设置，默认开启：持有有效 Sonarpad 代码的用户可选择自动使用音频描述音轨，或优先使用普通意大利语音轨。',
+      'uk': 'Для каналів Rai додано захищене налаштування «Віддавати перевагу аудіодискрипції, коли вона доступна», увімкнене за замовчуванням: користувачі з дійсним кодом Sonarpad можуть вибрати автоматичну аудіодискрипцію або звичайне італійське аудіо.',
+      'ro': 'Pentru canalele Rai a fost adăugată setarea protejată „Preferă audiodescrierea când este disponibilă”, activată implicit: utilizatorii cu un cod Sonarpad valid pot alege audiodescrierea automată sau sunetul italian normal.',
+    };
+
+    for (final item in publicTranslations.entries) {
+      final changes = (entry[item.key] as List).cast<String>();
+      expect(changes, isNot(contains(item.value)), reason: item.key);
+    }
+  });
+
   test('0.4.0 Italian extra changelog entries stay code-gated', () {
     final decoded = jsonDecode(File('assets/changelog.json').readAsStringSync());
     final entries = (decoded as List).cast<Map<String, dynamic>>();
