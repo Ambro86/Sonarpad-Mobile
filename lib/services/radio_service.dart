@@ -586,16 +586,19 @@ class RadioService {
         .get(uri, headers: _headers)
         .timeout(const Duration(seconds: 8));
     if (response.statusCode < 200 || response.statusCode >= 300) {
-      throw Exception('RadioBOSS HTTP ${response.statusCode}');
+      throw http.ClientException(response.statusCode.toString(), uri);
     }
     final decoded = _decodeJsonMap(response.body);
     if (decoded['ok'] != true) {
-      final message = (decoded['error'] ?? 'risposta non valida').toString();
-      throw Exception('RadioBOSS: $message');
+      final message = decoded['error']?.toString().trim();
+      if (message != null && message.isNotEmpty) {
+        throw StateError(message);
+      }
+      throw const FormatException();
     }
     final rawStations = decoded['stations'];
     if (rawStations is! List) {
-      throw const FormatException('RadioBOSS stations is not a list');
+      throw const FormatException();
     }
     final stations = rawStations
         .map((raw) => _radioBossStation(languageCode, raw))

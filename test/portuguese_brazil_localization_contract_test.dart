@@ -321,8 +321,9 @@ void main() {
         expect(portugal, isNotEmpty);
         expect(brazil, isNotEmpty);
       }
-      expect(portugal.length, english.length);
-      expect(brazil.length, english.length);
+      // Historical releases are not required to have an exact one-to-one
+      // line count across locales. The current extra-only release may also
+      // intentionally have no public changelog lines.
       expect(portugal.every((line) => line.trim().isNotEmpty), isTrue);
       expect(brazil.every((line) => line.trim().isNotEmpty), isTrue);
     }

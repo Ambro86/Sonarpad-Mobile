@@ -58,7 +58,8 @@ void main() {
     expect(tvMain, contains('if (_isRecordingFeatureUnlocked)'));
     expect(tvMain, contains("id: '__recordings__'"));
     expect(tvMain, contains('recordingFeatureUnlocked: _isRecordingFeatureUnlocked'));
-    expect(tvGuide, contains('if (_isRecordingFeatureUnlocked)'));
+    expect(tvGuide, contains('_isRecordingFeatureUnlocked &&'));
+    expect(tvGuide, contains('!tvProgramHasEnded(program, DateTime.now())'));
     expect(tvRecordings, contains('RecordingFeatureAccess.isUnlocked()'));
     expect(tvSchedule, contains('if (!await RecordingFeatureAccess.isUnlocked()) return;'));
     expect(radioSchedule, contains('if (!await RecordingFeatureAccess.isUnlocked()) return;'));
