@@ -3285,6 +3285,11 @@ class AppLocalizationsUk extends AppLocalizations {
   }
 
   @override
+  String radioPageCurrent(Object current) {
+    return 'Сторінка $current';
+  }
+
+  @override
   String get radioNoResultsWithQuery =>
       'Радіостанцій не знайдено. Спробуйте ввести лише назву станції без жанру або змініть мову чи країну.';
 

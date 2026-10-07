@@ -4,6 +4,36 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+
+  test('0.5.1 past TV programme recording fix is Italian extra only', () {
+    final decoded = jsonDecode(File('assets/changelog.json').readAsStringSync());
+    final entries = (decoded as List).cast<Map<String, dynamic>>();
+    final entry = entries.firstWhere((item) => item['version'] == '0.5.1');
+
+    const expected =
+        'Nella guida TV, l’azione “Programma registrazione” non viene più mostrata per i programmi già terminati; resta disponibile per i programmi attualmente in onda e per quelli futuri.';
+
+    final extras = (entry['it_extra'] as List).cast<String>();
+    expect(extras, contains(expected));
+
+    for (final language in const [
+      'it',
+      'en',
+      'fr',
+      'es',
+      'pt',
+      'pt_BR',
+      'pl',
+      'cs',
+      'de',
+      'zh_CN',
+      'uk',
+      'ro',
+    ]) {
+      final changes = (entry[language] as List).cast<String>();
+      expect(changes, isEmpty, reason: language);
+    }
+  });
   test('0.5.0 Rai audio-description preference is Italian extra only', () {
     final decoded = jsonDecode(File('assets/changelog.json').readAsStringSync());
     final entries = (decoded as List).cast<Map<String, dynamic>>();

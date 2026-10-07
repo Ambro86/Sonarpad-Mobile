@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sonarpad_mobile_starter/screens/tv_channel_screen.dart';
 import 'package:sonarpad_mobile_starter/services/tv_service.dart';
 import 'package:sonarpad_mobile_starter/widgets/tv_recording_schedule_action.dart';
 
@@ -125,4 +126,56 @@ void main() {
       expect(action, contains('radioScheduleEndTimeValue(\n                                  scheduleFieldValue(end),'));
     },
   );
+  test('past TV programs cannot expose schedule recording actions', () {
+    final now = DateTime(2026, 10, 7, 2, 30);
+    final past = TvProgram(
+      title: 'Programma già terminato',
+      hour: '01:00',
+      startTime: DateTime(2026, 10, 7, 1).millisecondsSinceEpoch ~/ 1000,
+      endTime: DateTime(2026, 10, 7, 2).millisecondsSinceEpoch ~/ 1000,
+    );
+    final current = TvProgram(
+      title: 'Programma in onda',
+      hour: '02:00',
+      startTime: DateTime(2026, 10, 7, 2).millisecondsSinceEpoch ~/ 1000,
+      endTime: DateTime(2026, 10, 7, 3).millisecondsSinceEpoch ~/ 1000,
+    );
+    final future = TvProgram(
+      title: 'Programma futuro',
+      hour: '03:00',
+      startTime: DateTime(2026, 10, 7, 3).millisecondsSinceEpoch ~/ 1000,
+      endTime: DateTime(2026, 10, 7, 4).millisecondsSinceEpoch ~/ 1000,
+    );
+
+    expect(tvProgramHasEnded(past, now), isTrue);
+    expect(tvProgramHasEnded(current, now), isFalse);
+    expect(tvProgramHasEnded(future, now), isFalse);
+  });
+
+  test('unknown TV program end time is not guessed as already ended', () {
+    final program = TvProgram(
+      title: 'Orario incompleto',
+      hour: '01:00',
+      startTime: DateTime(2026, 10, 7, 1).millisecondsSinceEpoch ~/ 1000,
+      endTime: 0,
+    );
+
+    expect(tvProgramHasEnded(program, DateTime(2026, 10, 7, 5)), isFalse);
+  });
+
+  test('TV guide hides schedule recording from ended program rows', () {
+    final channel = File(
+      'lib/screens/tv_channel_screen.dart',
+    ).readAsStringSync();
+
+    expect(channel, contains('final canScheduleRecording ='));
+    expect(channel, contains('if (canScheduleRecording)'));
+    expect(
+      channel,
+      contains('_canScheduleProgramRecording(_guide[index])'),
+    );
+    expect(channel, contains('_scheduleProgramEndRefresh();'));
+    expect(channel, contains('_programEndRefreshTimer?.cancel();'));
+  });
+
 }

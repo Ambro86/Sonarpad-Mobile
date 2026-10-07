@@ -3201,6 +3201,11 @@ class AppLocalizationsRo extends AppLocalizations {
   }
 
   @override
+  String radioPageCurrent(Object current) {
+    return 'Pagina $current';
+  }
+
+  @override
   String get radioNoResultsWithQuery => 'Nu s-au găsit posturi. Încearcă doar numele postului, fără gen, sau schimbă limba/țara.';
 
   @override

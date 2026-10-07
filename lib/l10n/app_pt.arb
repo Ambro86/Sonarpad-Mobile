@@ -1744,6 +1744,13 @@
       "total": {}
     }
   },
+  "radioPageCurrent": "Página {current}",
+  "@radioPageCurrent": {
+    "description": "Localized text for radioPageCurrent.",
+    "placeholders": {
+      "current": {}
+    }
+  },
   "radioNoResultsWithQuery": "Nenhuma rádio encontrada. Tente apenas o nome da estação, sem género, ou mude o idioma/país.",
   "@radioNoResultsWithQuery": {
     "description": "Localized text for radioNoResultsWithQuery."

@@ -3299,6 +3299,11 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String radioPageCurrent(Object current) {
+    return 'Seite $current';
+  }
+
+  @override
   String get radioNoResultsWithQuery =>
       'Keine Radiosender gefunden. Versuche nur den Sendernamen ohne Genre oder ändere Sprache bzw. Land.';
 

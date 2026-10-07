@@ -316,8 +316,13 @@ void main() {
       final brazil = (entry['pt_BR'] as List<dynamic>)
           .whereType<String>()
           .toList();
-      expect(portugal, isNotEmpty);
-      expect(brazil, isNotEmpty);
+      final english = (entry['en'] as List<dynamic>).whereType<String>().toList();
+      if (english.isNotEmpty) {
+        expect(portugal, isNotEmpty);
+        expect(brazil, isNotEmpty);
+      }
+      expect(portugal.length, english.length);
+      expect(brazil.length, english.length);
       expect(portugal.every((line) => line.trim().isNotEmpty), isTrue);
       expect(brazil.every((line) => line.trim().isNotEmpty), isTrue);
     }

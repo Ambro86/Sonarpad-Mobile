@@ -62,11 +62,14 @@ void main() {
       final release = raw as Map<String, dynamic>;
       final ukrainian = release['uk'] as List<dynamic>?;
       expect(ukrainian, isNotNull, reason: 'Missing uk changelog for ${release['version']}');
-      expect(ukrainian, isNotEmpty, reason: 'Empty uk changelog for ${release['version']}');
       final english = release['en'] as List<dynamic>?;
       if (english != null) {
         expect(ukrainian!.length, english.length,
             reason: 'Ukrainian changelog should contain the same shared entries as English for ${release['version']}');
+        if (english.isNotEmpty) {
+          expect(ukrainian, isNotEmpty,
+              reason: 'Empty uk changelog for ${release['version']}');
+        }
       }
     }
 

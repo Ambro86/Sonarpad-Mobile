@@ -3184,6 +3184,11 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String radioPageCurrent(Object current) {
+    return '第 $current 页';
+  }
+
+  @override
   String get radioNoResultsWithQuery => '未找到电台。请尝试只输入电台名称，不要输入类型，或更改语言/国家地区。';
 
   @override
@@ -7496,6 +7501,11 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
   @override
   String radioPageOf(Object current, Object total) {
     return '第 $current 页，共 $total 页';
+  }
+
+  @override
+  String radioPageCurrent(Object current) {
+    return '第 $current 页';
   }
 
   @override

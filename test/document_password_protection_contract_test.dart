@@ -120,7 +120,9 @@ void main() {
 
   test('current changelog mentions password-protected document opening and sharing in every language', () {
     final changelog = jsonDecode(File('assets/changelog.json').readAsStringSync()) as List<dynamic>;
-    final current = changelog.first as Map<String, dynamic>;
+    final current = changelog.cast<Map<String, dynamic>>().firstWhere(
+      (entry) => entry['version'] == '0.5.0',
+    );
     for (final entry in current.entries) {
       if (entry.key == 'version' ||
           entry.key == 'date' ||

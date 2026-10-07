@@ -1738,6 +1738,13 @@
       "total": {}
     }
   },
+  "radioPageCurrent": "第 {current} 页",
+  "@radioPageCurrent": {
+    "description": "Localized text for radioPageCurrent.",
+    "placeholders": {
+      "current": {}
+    }
+  },
   "radioNoResultsWithQuery": "未找到电台。请尝试只输入电台名称，不要输入类型，或更改语言/国家地区。",
   "@radioNoResultsWithQuery": {
     "description": "Localized text for radioNoResultsWithQuery."

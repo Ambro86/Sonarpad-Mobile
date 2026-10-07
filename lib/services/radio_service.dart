@@ -17,6 +17,7 @@ class RadioService {
   static const _directoryCacheHours = 72;
   static const _communityUrl =
       'https://sonarpad.com/api/get_community_radios.php';
+  static const _radioBossUrl = 'https://sonarpad.com/api/radioboss.php';
   static const _addCommunityUrl =
       'https://sonarpad.com/api/add_community_radio.php';
   static const _headers = {
@@ -217,60 +218,33 @@ class RadioService {
     await prefs.remove(_recentPrefsKey);
   }
 
+  /// Legacy convenience API. Production radio search uses [createSearchSession]
+  /// so remote sources can be paged lazily without downloading whole catalogs.
   Future<List<RadioStation>> searchRadios({
     required String languageCode,
     required RadioGenreOption genre,
     String query = '',
   }) async {
-    final trimmedQuery = query.trim();
-    final hasNameSearch = trimmedQuery.isNotEmpty;
-    final stations = <RadioStation>[];
-    final errors = <Object>[];
-
-    Future<void> collect({required String? genreTag}) async {
-      try {
-        stations.addAll(await _fetchRadioBrowserStations(
-          languageCode: languageCode,
-          query: trimmedQuery,
-          genreTag: genreTag,
-          globalSearch: hasNameSearch,
-        ));
-      } catch (e) {
-        errors.add(e);
-      }
-      try {
-        stations.addAll(await _fetchCommunityStations(
-          languageCode: languageCode,
-          query: trimmedQuery,
-          genreTag: genreTag,
-          globalSearch: hasNameSearch,
-        ));
-      } catch (e) {
-        errors.add(e);
-      }
-    }
-
-    await collect(genreTag: genre.tag);
-
-    var normalized = _normalizeStations(stations)
-      ..sort((a, b) => _radioSearchRank(a, trimmedQuery, languageCode)
-          .compareTo(_radioSearchRank(b, trimmedQuery, languageCode)));
-
-    // Se l'utente cerca una stazione per nome e il filtro genere non produce
-    // risultati, riprova automaticamente senza genere. È il caso tipico di
-    // Kral FM o Metropol FM: meglio trovare la radio che bloccarla per tag.
-    if (normalized.isEmpty && genre.tag != null) {
-      await collect(genreTag: null);
-      normalized = _normalizeStations(stations)
-        ..sort((a, b) => _radioSearchRank(a, trimmedQuery, languageCode)
-            .compareTo(_radioSearchRank(b, trimmedQuery, languageCode)));
-    }
-
-    if (normalized.isEmpty && errors.isNotEmpty) {
-      throw Exception(errors.join(' | '));
-    }
-    return normalized;
+    final session = createSearchSession(
+      languageCode: languageCode,
+      genre: genre,
+      query: query,
+    );
+    final page = await session.loadPage(0, pageSize: 100);
+    return page.items;
   }
+
+  RadioSearchSession createSearchSession({
+    required String languageCode,
+    required RadioGenreOption genre,
+    String query = '',
+  }) =>
+      RadioSearchSession._(
+        service: this,
+        languageCode: languageCode,
+        genre: genre,
+        query: query.trim(),
+      );
 
   Future<String> addCommunityRadio({
     required String name,
@@ -305,6 +279,7 @@ class RadioService {
   }
 
   Future<void> recordRadioBrowserClick(RadioStation station) async {
+    if (station.source.trim().toLowerCase() != 'radiobrowser') return;
     final uuid = station.stationUuid.trim();
     if (uuid.isEmpty) return;
     for (final mirror in _radioBrowserMirrors) {
@@ -488,19 +463,24 @@ class RadioService {
     return label.isEmpty ? option.code.toLowerCase() : label.toLowerCase();
   }
 
-  Future<List<RadioStation>> _fetchRadioBrowserStations({
+  Future<_RadioSourcePage> _fetchRadioBrowserStationsPage({
     required String languageCode,
     required String query,
     required String? genreTag,
     required bool globalSearch,
+    required int page,
+    int pageSize = 100,
   }) async {
     Object? lastError;
+    final safePage = page < 0 ? 0 : page;
+    final safePageSize = pageSize.clamp(1, 100).toInt();
     for (final mirror in _radioBrowserMirrors) {
       final params = {
         'hidebroken': 'true',
         'order': 'votes',
         'reverse': 'true',
-        'limit': '100',
+        'limit': '$safePageSize',
+        'offset': '${safePage * safePageSize}',
         if (query.trim().isNotEmpty) 'name': query.trim(),
         if (genreTag != null && genreTag.trim().isNotEmpty) 'tag': genreTag,
         if (!globalSearch && _isCountryCode(languageCode))
@@ -520,16 +500,23 @@ class RadioService {
         if (response.statusCode < 200 || response.statusCode >= 300) {
           throw Exception('HTTP ${response.statusCode}');
         }
-        final items = jsonDecode(response.body) as List<dynamic>;
-        return items
+        final decoded = jsonDecode(response.body);
+        if (decoded is! List) {
+          throw const FormatException('Radio Browser response is not a list');
+        }
+        final stations = decoded
             .map((raw) => _radioBrowserStation(languageCode, raw))
             .whereType<RadioStation>()
             .where((station) => _matchesKeyword(station, query))
             .toList();
+        return _RadioSourcePage(
+          stations: stations,
+          hasMore: decoded.length >= safePageSize,
+        );
       } catch (e) {
         lastError = e;
         unawaited(AppLogger.log(
-          'Radio Browser search mirror failed mirror=$mirror params=$params error=$e',
+          'Radio Browser search mirror failed mirror=$mirror page=${safePage + 1} error=$e',
         ));
       }
     }
@@ -567,6 +554,110 @@ class RadioService {
         .map((station) => station.toRadioStation())
         .where((station) => _matchesKeyword(station, query))
         .toList();
+  }
+
+  Future<_RadioSourcePage> _fetchRadioBossStationsPage({
+    required String languageCode,
+    required String query,
+    required String? genreTag,
+    required bool globalSearch,
+    required int page,
+  }) async {
+    final params = <String, String>{
+      'page': '${page < 0 ? 0 : page}',
+      if (genreTag != null && genreTag.trim().isNotEmpty) 'genre': genreTag,
+    };
+
+    if (globalSearch) {
+      if (query.trim().isNotEmpty) params['q'] = query.trim();
+    } else if (_isCityCode(languageCode)) {
+      final city = _cityCode(languageCode).trim();
+      if (city.isNotEmpty) params['city'] = city;
+    } else if (_isCountryCode(languageCode)) {
+      final country = _radioBossCountrySearchTerm(_countryCode(languageCode));
+      if (country.isNotEmpty) params['country'] = country;
+    } else {
+      final language = _radioBrowserLanguageName(languageCode).trim();
+      if (language.isNotEmpty) params['language'] = language;
+    }
+
+    final uri = Uri.parse(_radioBossUrl).replace(queryParameters: params);
+    final response = await _client
+        .get(uri, headers: _headers)
+        .timeout(const Duration(seconds: 8));
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw Exception('RadioBOSS HTTP ${response.statusCode}');
+    }
+    final decoded = _decodeJsonMap(response.body);
+    if (decoded['ok'] != true) {
+      final message = (decoded['error'] ?? 'risposta non valida').toString();
+      throw Exception('RadioBOSS: $message');
+    }
+    final rawStations = decoded['stations'];
+    if (rawStations is! List) {
+      throw const FormatException('RadioBOSS stations is not a list');
+    }
+    final stations = rawStations
+        .map((raw) => _radioBossStation(languageCode, raw))
+        .whereType<RadioStation>()
+        .toList(growable: false);
+    final hasMore = decoded['has_more'] == true;
+    unawaited(AppLogger.log(
+      'RadioBOSS: pagina sorgente ${page + 1}, ${stations.length} risultati, altri=${hasMore ? "si" : "no"}',
+    ));
+    return _RadioSourcePage(stations: stations, hasMore: hasMore);
+  }
+
+  RadioStation? _radioBossStation(String fallbackLanguageCode, Object raw) {
+    if (raw is! Map<String, dynamic>) return null;
+    final stream = (raw['stream'] ?? raw['stream_direct'] ?? '').toString().trim();
+    final name = (raw['name'] ?? '').toString().trim();
+    if (stream.isEmpty || name.isEmpty) return null;
+    final id = (raw['id'] ?? raw['path'] ?? '').toString().trim();
+    final genre = (raw['genre'] ?? '').toString().trim();
+    final selectedLanguageCode = !_isCountryCode(fallbackLanguageCode) &&
+            !_isCityCode(fallbackLanguageCode)
+        ? fallbackLanguageCode
+        : 'custom';
+    return RadioStation(
+      name: _cleanRadioName(name),
+      streamUrl: stream,
+      languageCode: selectedLanguageCode,
+      stationUuid: id.isEmpty ? '' : 'radioboss:$id',
+      tags: genre,
+      homepage: (raw['homepage'] ?? '').toString().trim(),
+      favicon: (raw['logo'] ?? '').toString().trim(),
+      source: 'RadioBOSS',
+    );
+  }
+
+  String _radioBossCountrySearchTerm(String countryCode) {
+    return switch (countryCode.toUpperCase()) {
+      'IT' => 'italia',
+      'US' => 'usa',
+      'GB' => 'britain',
+      'TR' => 'turkey',
+      'FR' => 'france',
+      'ES' => 'spain',
+      'DE' => 'germany',
+      'CH' => 'switzerland',
+      'AT' => 'austria',
+      'BE' => 'belgium',
+      'NL' => 'netherlands',
+      'PT' => 'portugal',
+      'BR' => 'brazil',
+      'AR' => 'argentina',
+      'MX' => 'mexico',
+      'CA' => 'canada',
+      'AU' => 'australia',
+      'IE' => 'ireland',
+      'SE' => 'sweden',
+      'PL' => 'poland',
+      'RO' => 'romania',
+      'JP' => 'japan',
+      'CN' => 'china',
+      _ => countryCode,
+    };
   }
 
   RadioStation? _radioBrowserStation(String fallbackLanguageCode, Object raw) {
@@ -971,4 +1062,229 @@ class _CommunityRadioStation {
         tags: tags,
         source: 'Sonarpad Community',
       );
+}
+
+class RadioSearchPage {
+  final List<RadioStation> items;
+  final int pageIndex;
+  final bool hasPrevious;
+  final bool hasNext;
+
+  const RadioSearchPage({
+    required this.items,
+    required this.pageIndex,
+    required this.hasPrevious,
+    required this.hasNext,
+  });
+}
+
+class RadioSearchSession {
+  final RadioService _service;
+  final String languageCode;
+  final RadioGenreOption genre;
+  final String query;
+
+  String? _effectiveGenreTag;
+  bool _usedGenreFallback = false;
+  bool _communityPending = true;
+  bool _radioBrowserHasMore = true;
+  bool _radioBossHasMore = true;
+  int _radioBrowserPage = 0;
+  int _radioBossPage = 0;
+  final List<RadioStation> _ordered = <RadioStation>[];
+  final Set<String> _seenNames = <String>{};
+  final Set<String> _seenUrls = <String>{};
+  final List<Object> _errors = <Object>[];
+
+  RadioSearchSession._({
+    required RadioService service,
+    required this.languageCode,
+    required this.genre,
+    required this.query,
+  })  : _service = service,
+        _effectiveGenreTag = genre.tag;
+
+  bool get _globalSearch => query.trim().isNotEmpty;
+
+  bool get _hasSourceWork =>
+      _communityPending || _radioBrowserHasMore || _radioBossHasMore;
+
+  Future<RadioSearchPage> loadPage(
+    int pageIndex, {
+    int pageSize = 25,
+  }) async {
+    final safePage = pageIndex < 0 ? 0 : pageIndex;
+    final safePageSize = pageSize.clamp(1, 100).toInt();
+    final targetForLookahead = (safePage + 2) * safePageSize;
+
+    await _ensureResults(targetForLookahead);
+
+    if (_ordered.isEmpty &&
+        !_usedGenreFallback &&
+        _effectiveGenreTag != null) {
+      _resetForGenreFallback();
+      await _ensureResults(targetForLookahead);
+    }
+
+    if (_ordered.isEmpty && _errors.isNotEmpty && !_hasSourceWork) {
+      throw Exception(_errors.join(' | '));
+    }
+
+    final start = safePage * safePageSize;
+    if (start >= _ordered.length) {
+      return RadioSearchPage(
+        items: const [],
+        pageIndex: safePage,
+        hasPrevious: safePage > 0,
+        hasNext: false,
+      );
+    }
+    final end = (start + safePageSize).clamp(0, _ordered.length).toInt();
+    final items = List<RadioStation>.unmodifiable(_ordered.sublist(start, end));
+    unawaited(AppLogger.log(
+      'Radio ricerca: pagina Sonarpad ${safePage + 1}, ${items.length} risultati',
+    ));
+    return RadioSearchPage(
+      items: items,
+      pageIndex: safePage,
+      hasPrevious: safePage > 0,
+      hasNext: end < _ordered.length || _hasSourceWork,
+    );
+  }
+
+  Future<void> _ensureResults(int targetCount) async {
+    var safety = 0;
+    while (_ordered.length < targetCount && _hasSourceWork && safety < 101) {
+      safety += 1;
+      final before = _ordered.length;
+      await _loadNextBatch();
+      if (_ordered.isEmpty &&
+          !_usedGenreFallback &&
+          _effectiveGenreTag != null) {
+        break;
+      }
+      if (_ordered.length == before && !_hasSourceWork) break;
+    }
+  }
+
+  void _resetForGenreFallback() {
+    _usedGenreFallback = true;
+    _effectiveGenreTag = null;
+    _communityPending = true;
+    _radioBrowserHasMore = true;
+    _radioBossHasMore = true;
+    _radioBrowserPage = 0;
+    _radioBossPage = 0;
+    _ordered.clear();
+    _seenNames.clear();
+    _seenUrls.clear();
+    _errors.clear();
+    unawaited(AppLogger.log(
+      'Radio search: nessun risultato col genere, nuovo tentativo senza genere',
+    ));
+  }
+
+  Future<void> _loadNextBatch() async {
+    final browserFuture = _loadRadioBrowserBatch();
+    final communityFuture = _loadCommunityBatch();
+    final bossFuture = _loadRadioBossBatch();
+    final batches = await Future.wait<List<RadioStation>>([
+      browserFuture,
+      communityFuture,
+      bossFuture,
+    ]);
+
+    // Source priority is intentional. When two directories expose the same
+    // station, keep Radio Browser's structured metadata first, then Community,
+    // then RadioBOSS. New batches are appended so pages already shown never
+    // reorder when the next remote page is loaded.
+    final batch = <RadioStation>[
+      ...batches[0],
+      ...batches[1],
+      ...batches[2],
+    ];
+    final unique = <RadioStation>[];
+    for (final station in batch) {
+      final name = _service._cleanRadioName(station.name);
+      final url = station.streamUrl.trim();
+      if (name.isEmpty || url.isEmpty) continue;
+      final nameKey = _service._canonicalRadioName(name);
+      final urlKey = _service._normalizeStreamUrl(url);
+      if (_seenNames.contains(nameKey) || _seenUrls.contains(urlKey)) continue;
+      _seenNames.add(nameKey);
+      _seenUrls.add(urlKey);
+      unique.add(station.copyWith(name: name, streamUrl: url));
+    }
+    unique.sort((a, b) => _service
+        ._radioSearchRank(a, query, languageCode)
+        .compareTo(_service._radioSearchRank(b, query, languageCode)));
+    _ordered.addAll(unique);
+  }
+
+  Future<List<RadioStation>> _loadRadioBrowserBatch() async {
+    if (!_radioBrowserHasMore) return const [];
+    final page = _radioBrowserPage;
+    try {
+      final result = await _service._fetchRadioBrowserStationsPage(
+        languageCode: languageCode,
+        query: query,
+        genreTag: _effectiveGenreTag,
+        globalSearch: _globalSearch,
+        page: page,
+        pageSize: 100,
+      );
+      _radioBrowserPage += 1;
+      _radioBrowserHasMore = result.hasMore && _radioBrowserPage <= 100;
+      return result.stations;
+    } catch (e) {
+      _errors.add(e);
+      _radioBrowserHasMore = false;
+      return const [];
+    }
+  }
+
+  Future<List<RadioStation>> _loadCommunityBatch() async {
+    if (!_communityPending) return const [];
+    _communityPending = false;
+    try {
+      return await _service._fetchCommunityStations(
+        languageCode: languageCode,
+        query: query,
+        genreTag: _effectiveGenreTag,
+        globalSearch: _globalSearch,
+      );
+    } catch (e) {
+      _errors.add(e);
+      return const [];
+    }
+  }
+
+  Future<List<RadioStation>> _loadRadioBossBatch() async {
+    if (!_radioBossHasMore) return const [];
+    final page = _radioBossPage;
+    try {
+      final result = await _service._fetchRadioBossStationsPage(
+        languageCode: languageCode,
+        query: query,
+        genreTag: _effectiveGenreTag,
+        globalSearch: _globalSearch,
+        page: page,
+      );
+      _radioBossPage += 1;
+      _radioBossHasMore = result.hasMore && _radioBossPage <= 100;
+      return result.stations;
+    } catch (e) {
+      _errors.add(e);
+      _radioBossHasMore = false;
+      unawaited(AppLogger.log('RadioBOSS: errore ricerca $e'));
+      return const [];
+    }
+  }
+}
+
+class _RadioSourcePage {
+  final List<RadioStation> stations;
+  final bool hasMore;
+
+  const _RadioSourcePage({required this.stations, required this.hasMore});
 }

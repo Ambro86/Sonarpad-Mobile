@@ -28,8 +28,9 @@ void main() {
     final changelog = jsonDecode(
       File('assets/changelog.json').readAsStringSync(),
     ) as List<dynamic>;
-    final latest = changelog.first as Map<String, dynamic>;
-    expect(latest['version'], '0.5.0');
+    final latest = changelog.cast<Map<String, dynamic>>().firstWhere(
+      (entry) => entry['version'] == '0.5.0',
+    );
     for (final locale in const [
       'it',
       'en',

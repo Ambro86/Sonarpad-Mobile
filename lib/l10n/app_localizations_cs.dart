@@ -3285,6 +3285,11 @@ class AppLocalizationsCs extends AppLocalizations {
   }
 
   @override
+  String radioPageCurrent(Object current) {
+    return 'Stránka $current';
+  }
+
+  @override
   String get radioNoResultsWithQuery =>
       'Nebyly nalezeny žádné stanice. Zkuste zadat pouze název stanice bez žánru nebo změňte jazyk či zemi.';
 

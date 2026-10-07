@@ -117,8 +117,9 @@ void main() {
 
   test('0.5.0 changelog mentions home customization and reorder', () {
     final changelog = jsonDecode(File('assets/changelog.json').readAsStringSync()) as List<dynamic>;
-    final latest = changelog.first as Map<String, dynamic>;
-    expect(latest['version'], '0.5.0');
+    final latest = changelog.cast<Map<String, dynamic>>().firstWhere(
+      (entry) => entry['version'] == '0.5.0',
+    );
     final italian = (latest['it'] as List<dynamic>).join('\n');
     expect(italian, contains('personalizzazione della schermata principale'));
     expect(italian, contains('Sposta alla posizione'));

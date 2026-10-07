@@ -1741,6 +1741,13 @@
       "total": {}
     }
   },
+  "radioPageCurrent": "Stránka {current}",
+  "@radioPageCurrent": {
+    "description": "Localized text for radioPageCurrent.",
+    "placeholders": {
+      "current": {}
+    }
+  },
   "radioNoResultsWithQuery": "Nebyly nalezeny žádné stanice. Zkuste zadat pouze název stanice bez žánru nebo změňte jazyk či zemi.",
   "@radioNoResultsWithQuery": {
     "description": "Localized text for radioNoResultsWithQuery."

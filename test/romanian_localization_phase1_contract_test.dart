@@ -35,7 +35,9 @@ void main() {
       final en = release['en'] as List<dynamic>;
       final ro = release['ro'] as List<dynamic>;
       expect(ro.length, en.length, reason: 'Romanian changelog mismatch in ${release['version']}');
-      expect(ro, isNotEmpty);
+      if (en.isNotEmpty) {
+        expect(ro, isNotEmpty);
+      }
     }
   });
 

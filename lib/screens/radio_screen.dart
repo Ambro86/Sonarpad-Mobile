@@ -179,19 +179,18 @@ class _RadioScreenState extends State<RadioScreen> {
   }
 
   void _search() {
-    final resultsFuture = _service.searchRadios(
-      languageCode: _browseMode == _RadioBrowseMode.language
-          ? _languageCode!
-          : (_browseMode == _RadioBrowseMode.country ? _countryCode! : 'city:${_cityCode ?? ""}'),
-      genre: _genre,
-      query: _searchController.text,
-    );
+    final languageCode = _browseMode == _RadioBrowseMode.language
+        ? _languageCode!
+        : (_browseMode == _RadioBrowseMode.country
+            ? _countryCode!
+            : 'city:${_cityCode ?? ""}');
     Navigator.push(
       context,
       MaterialPageRoute(
         settings: const RouteSettings(name: '/radio/search_results'),
         builder: (_) => RadioSearchResultsScreen(
-          resultsFuture: resultsFuture,
+          languageCode: languageCode,
+          genre: _genre,
           query: _searchController.text,
           recordingFeatureUnlocked: _isRecordingFeatureUnlocked,
         ),

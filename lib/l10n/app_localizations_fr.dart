@@ -3313,6 +3313,11 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String radioPageCurrent(Object current) {
+    return 'Page $current';
+  }
+
+  @override
   String get radioNoResultsWithQuery =>
       'Aucune radio trouvée. Essayez seulement le nom de la station, sans genre, ou changez langue/pays.';
 

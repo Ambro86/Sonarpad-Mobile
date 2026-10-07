@@ -3940,6 +3940,13 @@
       "total": {}
     }
   },
+  "radioPageCurrent": "Seite {current}",
+  "@radioPageCurrent": {
+    "description": "Localized text for radioPageCurrent.",
+    "placeholders": {
+      "current": {}
+    }
+  },
   "radioNoResultsWithQuery": "Keine Radiosender gefunden. Versuche nur den Sendernamen ohne Genre oder ändere Sprache bzw. Land.",
   "@radioNoResultsWithQuery": {
     "description": "Localized text for radioNoResultsWithQuery."

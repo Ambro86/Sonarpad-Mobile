@@ -5983,6 +5983,12 @@ abstract class AppLocalizations {
   /// **'Pagina {current} di {total}'**
   String radioPageOf(Object current, Object total);
 
+  /// Localized text for radioPageCurrent.
+  ///
+  /// In it, this message translates to:
+  /// **'Pagina {current}'**
+  String radioPageCurrent(Object current);
+
   /// Localized text for radioNoResultsWithQuery.
   ///
   /// In it, this message translates to:

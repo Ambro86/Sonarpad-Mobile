@@ -1738,6 +1738,13 @@
       "total": {}
     }
   },
+  "radioPageCurrent": "Pagina {current}",
+  "@radioPageCurrent": {
+    "description": "Localized text for radioPageCurrent.",
+    "placeholders": {
+      "current": {}
+    }
+  },
   "radioNoResultsWithQuery": "Nu s-au găsit posturi. Încearcă doar numele postului, fără gen, sau schimbă limba/țara.",
   "@radioNoResultsWithQuery": {
     "description": "Localized text for radioNoResultsWithQuery."

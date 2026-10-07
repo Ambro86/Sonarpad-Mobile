@@ -3940,6 +3940,13 @@
       "total": {}
     }
   },
+  "radioPageCurrent": "Сторінка {current}",
+  "@radioPageCurrent": {
+    "description": "Localized text for radioPageCurrent.",
+    "placeholders": {
+      "current": {}
+    }
+  },
   "radioNoResultsWithQuery": "Радіостанцій не знайдено. Спробуйте ввести лише назву станції без жанру або змініть мову чи країну.",
   "@radioNoResultsWithQuery": {
     "description": "Localized text for radioNoResultsWithQuery."

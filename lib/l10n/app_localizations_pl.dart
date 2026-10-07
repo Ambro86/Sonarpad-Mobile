@@ -3288,6 +3288,11 @@ class AppLocalizationsPl extends AppLocalizations {
   }
 
   @override
+  String radioPageCurrent(Object current) {
+    return 'Strona $current';
+  }
+
+  @override
   String get radioNoResultsWithQuery =>
       'Nie znaleziono stacji. Spróbuj wpisać tylko nazwę stacji, bez gatunku, albo zmień język/kraj.';
 

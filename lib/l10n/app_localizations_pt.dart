@@ -3299,6 +3299,11 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
+  String radioPageCurrent(Object current) {
+    return 'Página $current';
+  }
+
+  @override
   String get radioNoResultsWithQuery =>
       'Nenhuma rádio encontrada. Tente apenas o nome da estação, sem género, ou mude o idioma/país.';
 
@@ -7803,6 +7808,11 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   @override
   String radioPageOf(Object current, Object total) {
     return 'Página $current de $total';
+  }
+
+  @override
+  String radioPageCurrent(Object current) {
+    return 'Página $current';
   }
 
   @override

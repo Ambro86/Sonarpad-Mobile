@@ -1,5 +1,24 @@
 [
   {
+    "version": "0.5.1",
+    "date": "2026-10-07",
+    "it": [],
+    "en": [],
+    "fr": [],
+    "es": [],
+    "pt": [],
+    "pt_BR": [],
+    "pl": [],
+    "cs": [],
+    "de": [],
+    "zh_CN": [],
+    "uk": [],
+    "ro": [],
+    "it_extra": [
+      "Nella guida TV, l’azione “Programma registrazione” non viene più mostrata per i programmi già terminati; resta disponibile per i programmi attualmente in onda e per quelli futuri."
+    ]
+  },
+  {
     "version": "0.5.0",
     "date": "2026-10-07",
     "it": [

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -145,6 +146,15 @@ String _tvProgramListLabel(TvProgram program) => <String>[
   program.title,
 ].where((part) => part.trim().isNotEmpty).join(' ');
 
+/// Returns true only when the guide gives us a valid end timestamp and that
+/// timestamp is not after [now]. A missing/invalid end time is treated as
+/// unknown, so we do not hide scheduling based on a guess.
+bool tvProgramHasEnded(TvProgram program, DateTime now) {
+  if (program.endTime <= 0) return false;
+  final nowSeconds = now.millisecondsSinceEpoch ~/ 1000;
+  return program.endTime <= nowSeconds;
+}
+
 class TvChannelScreen extends StatefulWidget {
   final TvChannel channel;
   final bool autoPlay;
@@ -171,6 +181,7 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
   bool _isRecordingFeatureUnlocked = false;
   String? _error;
   late DateTime _selectedDate;
+  Timer? _programEndRefreshTimer;
 
   @override
   void initState() {
@@ -186,6 +197,7 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
   }
 
   Future<void> _loadGuide() async {
+    _programEndRefreshTimer?.cancel();
     setState(() {
       _loading = true;
       _error = null;
@@ -204,6 +216,7 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
         _isRecordingFeatureUnlocked = recordingFeatureUnlocked;
         _loading = false;
       });
+      _scheduleProgramEndRefresh();
     } catch (e) {
       if (!mounted) return;
       setState(() {
@@ -211,6 +224,39 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
         _loading = false;
       });
     }
+  }
+
+  void _scheduleProgramEndRefresh() {
+    _programEndRefreshTimer?.cancel();
+    if (!mounted || _guide.isEmpty) return;
+
+    final now = DateTime.now();
+    final nowSeconds = now.millisecondsSinceEpoch ~/ 1000;
+    final futureEnds = _guide
+        .map((program) => program.endTime)
+        .where((endTime) => endTime > nowSeconds)
+        .toList();
+    if (futureEnds.isEmpty) return;
+
+    final nextEndSeconds = futureEnds.reduce((a, b) => a < b ? a : b);
+    final nextEnd = DateTime.fromMillisecondsSinceEpoch(nextEndSeconds * 1000);
+    final delay = nextEnd.difference(now) + const Duration(milliseconds: 250);
+
+    _programEndRefreshTimer = Timer(delay, () {
+      if (!mounted) return;
+      setState(() {});
+      _scheduleProgramEndRefresh();
+    });
+  }
+
+  bool _canScheduleProgramRecording(TvProgram program) =>
+      _isRecordingFeatureUnlocked &&
+      !tvProgramHasEnded(program, DateTime.now());
+
+  @override
+  void dispose() {
+    _programEndRefreshTimer?.cancel();
+    super.dispose();
   }
 
   String _getLabelForDate(DateTime d) {
@@ -241,6 +287,9 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
   }
 
   Future<void> _scheduleProgramRecording(TvProgram program) {
+    if (!_canScheduleProgramRecording(program)) {
+      return Future<void>.value();
+    }
     return showTvScheduleRecordingAction(
       context,
       widget.channel,
@@ -413,6 +462,8 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
                               DateTime.now().millisecondsSinceEpoch ~/ 1000;
                           final isCurrent =
                               program.startTime <= now && program.endTime > now;
+                          final canScheduleRecording =
+                              _canScheduleProgramRecording(program);
                           return AccessibleListRow(
                             id: '${program.startTime}',
                             title: _tvProgramListLabel(program),
@@ -420,7 +471,7 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
                             selected: isCurrent,
                             kind: 'action',
                             actions: [
-                              if (_isRecordingFeatureUnlocked)
+                              if (canScheduleRecording)
                                 AccessibleCustomAction(
                                   id: 'schedule_recording',
                                   label: AppLocalizations.of(
@@ -429,7 +480,7 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
                                 ),
                             ],
                             visualActions: [
-                              if (_isRecordingFeatureUnlocked)
+                              if (canScheduleRecording)
                                 AccessibleVisualAction(
                                   id: 'schedule_recording',
                                   label: AppLocalizations.of(
@@ -453,7 +504,7 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
                         _showProgramDetails(_guide[index]);
                       } else if (event.type == 'customAction' &&
                           event.action == 'schedule_recording' &&
-                          _isRecordingFeatureUnlocked) {
+                          _canScheduleProgramRecording(_guide[index])) {
                         _scheduleProgramRecording(_guide[index]);
                       }
                     },
@@ -465,6 +516,8 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
                       final now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
                       final isCurrent =
                           program.startTime <= now && program.endTime > now;
+                      final canScheduleRecording =
+                          _canScheduleProgramRecording(program);
 
                       final scheduleLabel = AppLocalizations.of(
                         context,
@@ -476,7 +529,7 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
                         label: _tvProgramListLabel(program),
                         onTap: () => _showProgramDetails(program),
                         customSemanticsActions: {
-                          if (_isRecordingFeatureUnlocked)
+                          if (canScheduleRecording)
                             CustomSemanticsAction(label: scheduleLabel): () =>
                                 _scheduleProgramRecording(program),
                         },
@@ -507,7 +560,7 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
                               children: [
                                 if (isCurrent)
                                   const Icon(Icons.live_tv, color: Colors.red),
-                                if (_isRecordingFeatureUnlocked)
+                                if (canScheduleRecording)
                                   IconButton(
                                     tooltip: scheduleLabel,
                                     icon: const Icon(Icons.fiber_manual_record),

@@ -131,7 +131,9 @@ void main() {
       final english = entry['en'] as List<dynamic>;
       final chinese = entry['zh_CN'] as List<dynamic>;
       expect(chinese.length, english.length, reason: entry['version'].toString());
-      expect(chinese, isNotEmpty);
+      if (english.isNotEmpty) {
+        expect(chinese, isNotEmpty);
+      }
     }
   });
 

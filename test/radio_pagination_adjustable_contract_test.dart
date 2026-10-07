@@ -4,10 +4,11 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test(
-    'radio pagination uses the proven shared adjustable slider without losing focus',
+    'radio pagination stays adjustable while remote source totals remain unknown',
     () {
       final source =
           File('lib/screens/radio_search_results_screen.dart').readAsStringSync();
+      final service = File('lib/services/radio_service.dart').readAsStringSync();
       final adapter =
           File('lib/widgets/universal_accessible_view.dart').readAsStringSync();
       final native = File('ios/Runner/SonarpadNativeAccessibleView.swift')
@@ -19,20 +20,12 @@ void main() {
 
       expect(selectorBlock, contains("id: 'radio_page_selector'"));
       expect(selectorBlock, contains("kind: 'slider'"));
-      // The visible title and accessibility value both contain the complete
-      // localized page phrase. Suppress only the separate semantic label so
-      // VoiceOver does not say e.g. "Pagina 1 di 8" twice.
       expect(selectorBlock, contains("accessibilityLabel: ''"));
-      // Keep the current spoken page in the rebuilt row model too. UIKit
-      // updates the focused cell synchronously during the gesture, then Dart
-      // sends the row back through setData; an empty value/valueLabel would
-      // clear accessibilityValue before VoiceOver can announce later flicks.
       expect(selectorBlock, contains('value: pageLabel'));
       expect(selectorBlock, contains('valueLabel: pageLabel'));
-      expect(selectorBlock, isNot(contains("valueLabel: ''")));
       expect(selectorBlock, contains('sliderValue: pageNumber.toDouble()'));
       expect(selectorBlock, contains('sliderMin: 1'));
-      expect(selectorBlock, contains('sliderMax: totalPages.toDouble()'));
+      expect(selectorBlock, contains('page.hasNext ? pageNumber + 1 : pageNumber'));
       expect(selectorBlock, contains('sliderStep: 1'));
       expect(selectorBlock, contains('sliderIncreasedValueLabel:'));
       expect(selectorBlock, contains('sliderDecreasedValueLabel:'));
@@ -41,34 +34,23 @@ void main() {
         selectorBlock,
         contains("key: const ValueKey('radio_page_selector_shared')"),
       );
-      expect(selectorBlock, isNot(contains('nativeSliderAccessibilityElement: true')));
+      expect(selectorBlock, contains('radioPageCurrent'));
+      expect(selectorBlock, isNot(contains('radioPageOf(')));
+      expect(selectorBlock, isNot(contains('totalPages')));
 
-      // Slider changes do not create a status overlay: the adjustable element
-      // itself announces the next page and therefore remains the focused node.
-      expect(
-        selectorBlock,
-        contains('_changePage(requestedPage, totalPages, announce: false);'),
-      );
+      // The page control loads only the requested neighboring page. The
+      // service keeps already displayed pages stable and fetches more remote
+      // source pages lazily when required.
+      expect(selectorBlock, contains('unawaited(_loadPage(requestedPage'));
+      expect(service, contains('class RadioSearchSession'));
+      expect(service, contains('targetForLookahead'));
+      expect(service, contains('_loadNextBatch()'));
+      expect(service, contains('New batches are appended so pages already shown never'));
 
-      // Keep the page selector outside the results list. The results may be
-      // rebuilt for another page without replacing the focused slider.
-      final columnStart = source.indexOf('return Column(', buildStart);
-      final resultListStart = source.indexOf(
-        'child: useSharedAccessibleViewModel',
-        columnStart,
-      );
-      final topOfColumn = source.substring(columnStart, resultListStart);
-      expect(
-        topOfColumn,
-        contains('_buildPageSelector(l10n, currentPage, totalPages)'),
-      );
-
-      // Previous/Next remain available as the second navigation method.
       expect(source, contains("ValueKey('radio_previous_page')"));
       expect(source, contains("ValueKey('radio_next_page')"));
-      // Keep the results UiKitView itself stable across page changes. Recreating
-      // this platform view made VoiceOver jump from the page slider directly
-      // to the Flutter Previous/Next buttons instead of entering the radios.
+      expect(source, contains('page.hasPrevious'));
+      expect(source, contains('page.hasNext'));
       expect(
         source,
         contains("key: const ValueKey('shared-radio-results')"),
@@ -85,14 +67,11 @@ void main() {
       expect(source, contains('_resultsAccessibleListController.scrollTo('));
       expect(source, contains('animated: false'));
 
-      // Flutter uses the same single Semantics adjustable node as Settings.
       expect(adapter, contains('slider: true'));
       expect(adapter, contains('onIncrease: enabled'));
       expect(adapter, contains('onDecrease: enabled'));
       expect(adapter, contains('child: ExcludeSemantics('));
 
-      // UIKit keeps the table cell as the adjustable element and changes its
-      // value in place, with the existing focus-recovery protection.
       expect(native, contains('cell.isAccessibilityElement = !exposeNativeSlider'));
       expect(native, contains('cell.accessibilityValue = spokenValue'));
       final adjustStart = native.indexOf(
