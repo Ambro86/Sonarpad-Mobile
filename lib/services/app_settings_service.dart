@@ -75,6 +75,7 @@ class AppSettingsService {
   static const _sonarTubePlayerActionsKey =
       'sonarpad_sonartube_player_actions';
   static const _sonarTubeAutoplayKey = 'sonarpad_sonartube_autoplay';
+  static const _sonarTubeChannelSortKey = 'sonarpad_sonartube_channel_sort';
   static const _preferRaiAudioDescriptionKey =
       'sonarpad_prefer_rai_audio_description';
 
@@ -401,6 +402,16 @@ class AppSettingsService {
   Future<void> setSonarTubeAutoplayEnabled(bool enabled) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_sonarTubeAutoplayKey, enabled);
+  }
+
+  Future<String?> loadSonarTubeChannelSort() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_sonarTubeChannelSortKey);
+  }
+
+  Future<void> saveSonarTubeChannelSort(String sortName) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_sonarTubeChannelSortKey, sortName);
   }
 
   Future<String> loadTtsLanguage() async {

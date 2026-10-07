@@ -108,13 +108,93 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
     );
     _loadFavoriteKeys();
     _loadSaveMediaAccess();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _initializeInitialContent());
+  }
+
+
+  Future<void> _restoreRememberedChoices() async {
+    final savedSort = await AppSettingsService().loadSonarTubeChannelSort();
+    if (!mounted || savedSort == null) return;
+    final matches = SonarTubeChannelSort.values.where((sort) => sort.name == savedSort);
+    if (matches.isNotEmpty) setState(() => _channelSort = matches.first);
+  }
+
+  Future<void> _initializeInitialContent() async {
+    await _restoreRememberedChoices();
+    if (!mounted) return;
     if (_isCollection) {
-      WidgetsBinding.instance.addPostFrameCallback((_) => _loadCollection());
+      await _loadCollection();
     } else if (_isSearchResults) {
-      WidgetsBinding.instance.addPostFrameCallback((_) => _loadSearchResults());
+      await _loadSearchResults();
     }
   }
 
+  String _openUrlLabel(AppLocalizations l10n) => switch (l10n.localeName) {
+    'en' => 'Open URL',
+    'es' => 'Abrir URL',
+    'fr' => 'Ouvrir une URL',
+    'de' => 'URL öffnen',
+    'pt' || 'pt_BR' => 'Abrir URL',
+    'pl' => 'Otwórz URL',
+    'cs' => 'Otevřít URL',
+    'uk' => 'Відкрити URL',
+    'ro' => 'Deschide URL',
+    'zh_CN' => '打开网址',
+    _ => 'Apri URL',
+  };
+
+  String _urlPromptLabel(AppLocalizations l10n) => switch (l10n.localeName) {
+    'en' => 'Paste a YouTube video URL',
+    'es' => 'Pega la URL de un vídeo de YouTube',
+    'fr' => 'Collez l’URL d’une vidéo YouTube',
+    'de' => 'YouTube-Video-URL einfügen',
+    'pt' || 'pt_BR' => 'Cole o URL de um vídeo do YouTube',
+    'pl' => 'Wklej adres URL filmu YouTube',
+    'cs' => 'Vložte URL videa YouTube',
+    'uk' => 'Вставте URL відео YouTube',
+    'ro' => 'Lipește adresa URL a unui videoclip YouTube',
+    'zh_CN' => '粘贴 YouTube 视频网址',
+    _ => 'Incolla l’URL di un video YouTube',
+  };
+
+  Future<void> _openUrl() async {
+    if (_itemOpenInProgress || !mounted) return;
+    final l10n = AppLocalizations.of(context);
+    final controller = TextEditingController();
+    final url = await showDialog<String>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(_openUrlLabel(l10n)),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          keyboardType: TextInputType.url,
+          textInputAction: TextInputAction.done,
+          decoration: InputDecoration(labelText: _urlPromptLabel(l10n)),
+          onSubmitted: (value) => Navigator.pop(dialogContext, value.trim()),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text(l10n.cancel)),
+          FilledButton(onPressed: () => Navigator.pop(dialogContext, controller.text.trim()), child: Text(_openUrlLabel(l10n))),
+        ],
+      ),
+    );
+    controller.dispose();
+    if (!mounted || url == null || url.trim().isEmpty) return;
+    final normalized = url.trim();
+    final videoId = _service.youtubeVideoIdFromInput(normalized);
+    if (videoId == null) {
+      showStatusMessage(context, l10n.error(l10n.technicalErrorGeneric));
+      return;
+    }
+    final item = SonarTubeItem(
+      kind: SonarTubeItemKind.video,
+      id: videoId,
+      title: _openUrlLabel(l10n),
+      url: normalized,
+    );
+    await _openItem(item);
+  }
   Future<void> _loadFavoriteKeys() async {
     final favorites = await _favoritesService.loadFavorites();
     if (!mounted) return;
@@ -209,6 +289,7 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
       _channelSort = selected;
       _loadMoreFocusIndex = null;
     });
+    await AppSettingsService().saveSonarTubeChannelSort(selected.name);
     await _loadCollection();
     if (!mounted || !useSharedAccessibleViewModel) return;
     await WidgetsBinding.instance.endOfFrame;
@@ -1291,6 +1372,18 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
         ),
       ));
       rows.add(AccessibleListRow(
+        id: 'open_url',
+        title: _openUrlLabel(l10n),
+        kind: 'button',
+        enabled: !_itemOpenInProgress,
+        flutterChild: OutlinedButton.icon(
+          key: const ValueKey('sonartube_open_url_button'),
+          onPressed: _itemOpenInProgress ? null : _openUrl,
+          icon: const Icon(Icons.link),
+          label: Text(_openUrlLabel(l10n)),
+        ),
+      ));
+      rows.add(AccessibleListRow(
         id: 'query',
         title: l10n.sonarTubeSearchLabel,
         kind: 'textField',
@@ -1525,6 +1618,10 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
       controller: _accessibleListController,
       sections: [AccessibleListSection(rows: rows)],
       onEvent: (event) async {
+        if (event.id == 'open_url' && event.type == 'activate') {
+          await _openUrl();
+          return;
+        }
         if (event.id == 'query' && event.type == 'textChanged') {
           _searchController.text = event.value?.toString() ?? '';
           return;
@@ -2010,6 +2107,13 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
                       onPressed: _openRecentVideos,
                       icon: const Icon(Icons.history),
                       label: Text(l10n.sonarTubeRecentVideos),
+                    ),
+                    const SizedBox(height: 8),
+                    OutlinedButton.icon(
+                      key: const ValueKey('sonartube_open_url_button'),
+                      onPressed: _itemOpenInProgress ? null : _openUrl,
+                      icon: const Icon(Icons.link),
+                      label: Text(_openUrlLabel(l10n)),
                     ),
                     const SizedBox(height: 12),
                     Row(

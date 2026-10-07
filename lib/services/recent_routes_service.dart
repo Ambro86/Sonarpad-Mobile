@@ -178,6 +178,71 @@ class RecentRouteItem {
   }
 }
 
+
+class RouteFormPreferences {
+  final String countryCode;
+  final RouteProfile profile;
+  final RoutePreference preference;
+  final bool includeMunicipalities;
+
+  const RouteFormPreferences({
+    required this.countryCode,
+    required this.profile,
+    required this.preference,
+    required this.includeMunicipalities,
+  });
+}
+
+class RouteFormPreferencesService {
+  static const _countryKey = 'sonarpad_route_country_v1';
+  static const _profileKey = 'sonarpad_route_profile_v1';
+  static const _preferenceKey = 'sonarpad_route_preference_v1';
+  static const _municipalitiesKey = 'sonarpad_route_municipalities_v1';
+
+  Future<RouteFormPreferences?> load() async {
+    final prefs = await SharedPreferences.getInstance();
+    final country = prefs.getString(_countryKey);
+    final profileName = prefs.getString(_profileKey);
+    final preferenceName = prefs.getString(_preferenceKey);
+    final municipalities = prefs.getBool(_municipalitiesKey);
+    if (country == null &&
+        profileName == null &&
+        preferenceName == null &&
+        municipalities == null) {
+      return null;
+    }
+    final profile = RouteProfile.values.firstWhere(
+      (value) => value.name == profileName,
+      orElse: () => RouteProfile.driving,
+    );
+    final preference = RoutePreference.values.firstWhere(
+      (value) => value.name == preferenceName,
+      orElse: () => RoutePreference.fastest,
+    );
+    return RouteFormPreferences(
+      countryCode: (country ?? '').trim(),
+      profile: profile,
+      preference: preference,
+      includeMunicipalities: municipalities ?? false,
+    );
+  }
+
+  Future<void> save({
+    required String countryCode,
+    required RouteProfile profile,
+    required RoutePreference preference,
+    required bool includeMunicipalities,
+  }) async {
+    final prefs = await SharedPreferences.getInstance();
+    await Future.wait([
+      prefs.setString(_countryKey, countryCode),
+      prefs.setString(_profileKey, profile.name),
+      prefs.setString(_preferenceKey, preference.name),
+      prefs.setBool(_municipalitiesKey, includeMunicipalities),
+    ]);
+  }
+}
+
 class RecentRoutesService {
   static const _key = 'sonarpad_recent_routes_v1';
 

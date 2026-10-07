@@ -19,11 +19,13 @@ class RouteScreen extends StatefulWidget {
 class _RouteScreenState extends State<RouteScreen> {
   final _service = RouteService();
   final _recentRoutes = RecentRoutesService();
+  final _formPreferences = RouteFormPreferencesService();
   final _fromController = TextEditingController();
   final _toController = TextEditingController();
 
   String? _countryCode;
   RouteProfile _profile = RouteProfile.driving;
+  bool _formPreferencesLoaded = false;
 
   @override
   void didChangeDependencies() {
@@ -44,6 +46,32 @@ class _RouteScreenState extends State<RouteScreen> {
         _ => 'it',
       };
     }
+    if (!_formPreferencesLoaded) {
+      _formPreferencesLoaded = true;
+      _restoreFormPreferences();
+    }
+  }
+
+  Future<void> _restoreFormPreferences() async {
+    final saved = await _formPreferences.load();
+    if (!mounted || saved == null) return;
+    setState(() {
+      if (saved.countryCode.isNotEmpty) _countryCode = saved.countryCode;
+      _profile = saved.profile;
+      _preference = saved.preference;
+      _includeMunicipalities = saved.includeMunicipalities;
+    });
+  }
+
+  Future<void> _saveFormPreferences() async {
+    final countryCode = _countryCode;
+    if (countryCode == null || countryCode.isEmpty) return;
+    await _formPreferences.save(
+      countryCode: countryCode,
+      profile: _profile,
+      preference: _preference,
+      includeMunicipalities: _includeMunicipalities,
+    );
   }
 
   RoutePreference _preference = RoutePreference.fastest;
@@ -303,16 +331,24 @@ class _RouteScreenState extends State<RouteScreen> {
           _toController.text = event.value?.toString() ?? '';
         } else if (id == 'country' && event.type == 'picker' && event.value != null) {
           setState(() => _countryCode = event.value.toString());
+          await _saveFormPreferences();
         } else if (id == 'profile' && event.type == 'picker') {
           final value = event.value?.toString();
           final found = RouteProfile.values.where((e) => e.name == value);
-          if (found.isNotEmpty) setState(() => _profile = found.first);
+          if (found.isNotEmpty) {
+            setState(() => _profile = found.first);
+            await _saveFormPreferences();
+          }
         } else if (id == 'preference' && event.type == 'picker') {
           final value = event.value?.toString();
           final found = RoutePreference.values.where((e) => e.name == value);
-          if (found.isNotEmpty) setState(() => _preference = found.first);
+          if (found.isNotEmpty) {
+            setState(() => _preference = found.first);
+            await _saveFormPreferences();
+          }
         } else if (id == 'municipalities' && event.type == 'toggle') {
           setState(() => _includeMunicipalities = event.value == true);
+          await _saveFormPreferences();
         } else if (id == 'calculate' && event.type == 'activate' && !_calculating) {
           await _calculateRoute();
         }
@@ -352,6 +388,7 @@ class _RouteScreenState extends State<RouteScreen> {
           ),
           const SizedBox(height: 16),
           DropdownButtonFormField<String>(
+            key: ValueKey('route_country_$_countryCode'),
             initialValue: _countryCode,
             decoration: InputDecoration(labelText: l10n.routeCountry),
             items: [
@@ -385,11 +422,15 @@ class _RouteScreenState extends State<RouteScreen> {
                   value: 'cn', child: Text(l10n.chinaCountryName)),
             ],
             onChanged: (val) {
-              if (val != null) setState(() => _countryCode = val);
+              if (val != null) {
+                setState(() => _countryCode = val);
+                _saveFormPreferences();
+              }
             },
           ),
           const SizedBox(height: 16),
           DropdownButtonFormField<RouteProfile>(
+            key: ValueKey('route_profile_${_profile.name}'),
             initialValue: _profile,
             decoration: InputDecoration(labelText: l10n.routeVehicle),
             items: [
@@ -404,11 +445,15 @@ class _RouteScreenState extends State<RouteScreen> {
                   child: Text(l10n.routeWheelchair)),
             ],
             onChanged: (val) {
-              if (val != null) setState(() => _profile = val);
+              if (val != null) {
+                setState(() => _profile = val);
+                _saveFormPreferences();
+              }
             },
           ),
           const SizedBox(height: 16),
           DropdownButtonFormField<RoutePreference>(
+            key: ValueKey('route_preference_${_preference.name}'),
             initialValue: _preference,
             decoration: InputDecoration(labelText: l10n.routeType),
             items: [
@@ -420,7 +465,10 @@ class _RouteScreenState extends State<RouteScreen> {
                   child: Text(l10n.routeShortest)),
             ],
             onChanged: (val) {
-              if (val != null) setState(() => _preference = val);
+              if (val != null) {
+                setState(() => _preference = val);
+                _saveFormPreferences();
+              }
             },
           ),
           const SizedBox(height: 16),
@@ -430,6 +478,7 @@ class _RouteScreenState extends State<RouteScreen> {
             contentPadding: EdgeInsets.zero,
             onChanged: (value) {
               setState(() => _includeMunicipalities = value ?? false);
+              _saveFormPreferences();
             },
           ),
           const SizedBox(height: 32),

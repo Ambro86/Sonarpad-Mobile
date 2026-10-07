@@ -17,6 +17,7 @@ import '../services/ai_audiodescription_service.dart';
 import '../services/app_settings_service.dart';
 import '../services/audio_player_service.dart';
 import '../services/document_library_service.dart';
+import '../services/ios_photo_library_import_service.dart';
 import '../services/media_export_destination_service.dart';
 import '../tts/edge_tts_bridge.dart';
 import '../utils/app_logger.dart';
@@ -44,6 +45,7 @@ class _CreateAiAudiodescriptionScreenState
   final _settings = AppSettingsService();
   final _flutterTts = FlutterTts();
   final _audio = AudioPlayerService();
+  final _iosPhotoImport = const IosPhotoLibraryImportService();
 
   bool _loading = true;
   bool _running = false;
@@ -269,8 +271,67 @@ class _CreateAiAudiodescriptionScreenState
     );
   }
 
+  String _chooseFromFilesLabel(AppLocalizations l10n) => switch (l10n.localeName) {
+    'en' => 'Choose video from Files',
+    'es' => 'Elegir vídeo desde Archivos',
+    'fr' => 'Choisir une vidéo dans Fichiers',
+    'de' => 'Video aus Dateien wählen',
+    'pt' || 'pt_BR' => 'Escolher vídeo dos Arquivos',
+    'pl' => 'Wybierz wideo z Plików',
+    'cs' => 'Vybrat video ze Souborů',
+    'uk' => 'Вибрати відео з Файлів',
+    'ro' => 'Alege video din Fișiere',
+    'zh_CN' => '从文件选择视频',
+    _ => 'Scegli video da File',
+  };
+
+  String _importFromPhotosLabel(AppLocalizations l10n) => switch (l10n.localeName) {
+    'en' => 'Import video from Photos',
+    'es' => 'Importar vídeo desde Fotos',
+    'fr' => 'Importer une vidéo depuis Photos',
+    'de' => 'Video aus Fotos importieren',
+    'pt' || 'pt_BR' => 'Importar vídeo de Fotos',
+    'pl' => 'Importuj wideo ze Zdjęć',
+    'cs' => 'Importovat video z Fotek',
+    'uk' => 'Імпортувати відео з Фото',
+    'ro' => 'Importă video din Poze',
+    'zh_CN' => '从照片导入视频',
+    _ => 'Importa video da Foto',
+  };
+
   Future<void> _chooseVideo() async {
     if (_running) return;
+    if (!_iosPhotoImport.isSupported) {
+      await _chooseVideoFromFiles();
+      return;
+    }
+
+    final l10n = AppLocalizations.of(context);
+    final source = await showDialog<String>(
+      context: context,
+      builder: (ctx) => SimpleDialog(
+        title: Text(l10n.audioDescriptionChooseVideo),
+        children: [
+          SimpleDialogOption(
+            onPressed: () => Navigator.pop(ctx, 'files'),
+            child: Text(_chooseFromFilesLabel(l10n)),
+          ),
+          SimpleDialogOption(
+            onPressed: () => Navigator.pop(ctx, 'photos'),
+            child: Text(_importFromPhotosLabel(l10n)),
+          ),
+        ],
+      ),
+    );
+    if (!mounted || source == null) return;
+    if (source == 'photos') {
+      await _chooseVideoFromPhotos();
+    } else {
+      await _chooseVideoFromFiles();
+    }
+  }
+
+  Future<void> _chooseVideoFromFiles() async {
     final result = await FilePicker.pickFiles(
       type: FileType.custom,
       allowMultiple: false,
@@ -280,8 +341,34 @@ class _CreateAiAudiodescriptionScreenState
       ],
     );
     final path = result?.files.single.path;
-    if (path == null || path.trim().isEmpty) return;
-    if (!mounted) return;
+    _setSelectedSourcePath(path);
+  }
+
+  Future<void> _chooseVideoFromPhotos() async {
+    try {
+      final paths = await _iosPhotoImport.pickVideos(allowMultiple: false);
+      if (paths.isEmpty) return;
+      _setSelectedSourcePath(paths.first);
+      await AppLogger.log(
+        'Audio description UI: source imported from iOS Photos file=${p.basename(paths.first)}',
+      );
+    } on PlatformException catch (error, stackTrace) {
+      await AppLogger.log(
+        'Audio description UI: Photos picker failed error=$error\n$stackTrace',
+      );
+      if (!mounted) return;
+      setState(() => _technicalError = error.message ?? error.code);
+    } catch (error, stackTrace) {
+      await AppLogger.log(
+        'Audio description UI: Photos import failed error=$error\n$stackTrace',
+      );
+      if (!mounted) return;
+      setState(() => _technicalError = error.toString());
+    }
+  }
+
+  void _setSelectedSourcePath(String? path) {
+    if (path == null || path.trim().isEmpty || !mounted) return;
     setState(() {
       _sourcePath = path;
       _technicalError = null;

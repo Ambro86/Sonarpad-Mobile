@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
+import 'package:flutter/services.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -21,6 +22,7 @@ import '../services/document_text_extractor.dart';
 import '../services/docx_export_service.dart';
 import '../services/epub_export_service.dart';
 import '../services/internet_archive_service.dart';
+import '../services/ios_photo_library_import_service.dart';
 import '../services/librivox_service.dart';
 import '../utils/app_logger.dart';
 import 'package:sonarpad_mobile_starter/utils/accessibility_list_behavior.dart';
@@ -91,6 +93,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
   final _service = DocumentLibraryService();
   final _accessibleListController =
       AccessibleListController(debugName: 'documents');
+  final _iosPhotoImport = const IosPhotoLibraryImportService();
   bool _loading = true;
   String? _errorMessage;
 
@@ -155,6 +158,103 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
       }
     } finally {
       if (mounted) setState(() => _loading = false);
+    }
+  }
+
+
+  String _importFromPhotosLabel(AppLocalizations l10n) => switch (l10n.localeName) {
+    'en' => 'Import video from Photos',
+    'es' => 'Importar vídeo desde Fotos',
+    'fr' => 'Importer une vidéo depuis Photos',
+    'de' => 'Video aus Fotos importieren',
+    'pt' || 'pt_BR' => 'Importar vídeo de Fotos',
+    'pl' => 'Importuj wideo ze Zdjęć',
+    'cs' => 'Importovat video z Fotek',
+    'uk' => 'Імпортувати відео з Фото',
+    'ro' => 'Importă video din Poze',
+    'zh_CN' => '从照片导入视频',
+    _ => 'Importa video da Foto',
+  };
+
+  String _importFromFilesLabel(AppLocalizations l10n) => switch (l10n.localeName) {
+    'en' => 'Import from Files',
+    'es' => 'Importar desde Archivos',
+    'fr' => 'Importer depuis Fichiers',
+    'de' => 'Aus Dateien importieren',
+    'pt' || 'pt_BR' => 'Importar de Arquivos',
+    'pl' => 'Importuj z Plików',
+    'cs' => 'Importovat ze Souborů',
+    'uk' => 'Імпортувати з Файлів',
+    'ro' => 'Importă din Fișiere',
+    'zh_CN' => '从文件导入',
+    _ => 'Importa da File',
+  };
+
+  Future<void> _addToLibrary() async {
+    if (!_iosPhotoImport.isSupported) {
+      await _pickFile();
+      return;
+    }
+    final l10n = AppLocalizations.of(context);
+    final source = await showDialog<String>(
+      context: context,
+      builder: (ctx) => SimpleDialog(
+        title: Text(l10n.addToLibrary),
+        children: [
+          SimpleDialogOption(
+            onPressed: () => Navigator.pop(ctx, 'files'),
+            child: Text(_importFromFilesLabel(l10n)),
+          ),
+          SimpleDialogOption(
+            onPressed: () => Navigator.pop(ctx, 'photos'),
+            child: Text(_importFromPhotosLabel(l10n)),
+          ),
+        ],
+      ),
+    );
+    if (!mounted || source == null) return;
+    if (source == 'photos') {
+      await _pickVideosFromPhotos();
+    } else {
+      await _pickFile();
+    }
+  }
+
+  Future<void> _pickVideosFromPhotos() async {
+    final l10n = AppLocalizations.of(context);
+    try {
+      final paths = await _iosPhotoImport.pickVideos();
+      if (!mounted || paths.isEmpty) return;
+      var imported = 0;
+      for (final path in paths) {
+        final file = File(path);
+        if (!await file.exists()) continue;
+        try {
+          final doc = await _service.importFile(
+            file,
+            originalName: p.basename(path),
+            parentId: widget.folderId,
+          );
+          await _service.add(doc);
+          imported++;
+          await AppLogger.log('Video importato da Foto iOS: ${doc.displayName}');
+        } catch (error) {
+          await AppLogger.log('Errore importazione video da Foto iOS path=$path error=$error');
+        }
+      }
+      if (!mounted) return;
+      setState(() {});
+      if (imported > 0) {
+        await _showImportCompleteDialog(l10n.documentsAdded);
+      } else {
+        _showSnack(l10n.documentAddError(l10n.technicalErrorGeneric));
+      }
+    } on PlatformException catch (error) {
+      dev.log('DocumentsScreen: errore selettore Foto iOS: $error');
+      if (mounted) _showSnack(l10n.fileOpenError(l10n.technicalErrorGeneric));
+    } catch (error) {
+      dev.log('DocumentsScreen: errore importazione Foto iOS: $error');
+      if (mounted) _showSnack(l10n.documentAddError(l10n.technicalErrorGeneric));
     }
   }
 
@@ -1646,7 +1746,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
         label: l10n.addDocumentToLibraryHint,
         excludeSemantics: true,
         child: FloatingActionButton(
-          onPressed: _pickFile,
+          onPressed: _addToLibrary,
           child: const Icon(Icons.add),
         ),
       ),

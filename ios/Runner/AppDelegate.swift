@@ -2,6 +2,8 @@ import Flutter
 import UIKit
 import MediaPlayer
 import AVFoundation
+import PhotosUI
+import MobileCoreServices
 
 class SonarpadTTSPlugin: NSObject, FlutterPlugin, FlutterStreamHandler {
   private var eventSink: FlutterEventSink?
@@ -183,6 +185,130 @@ class SonarpadSharedMediaPlugin: NSObject, FlutterPlugin, FlutterStreamHandler {
   }
 }
 
+
+@available(iOS 14.0, *)
+class SonarpadPhotoLibraryImportPlugin: NSObject, FlutterPlugin, PHPickerViewControllerDelegate {
+  private var pendingResult: FlutterResult?
+
+  static func register(with registrar: FlutterPluginRegistrar) {
+    let instance = SonarpadPhotoLibraryImportPlugin()
+    let channel = FlutterMethodChannel(
+      name: "sonarpad/photo_library_import",
+      binaryMessenger: registrar.messenger()
+    )
+    registrar.addMethodCallDelegate(instance, channel: channel)
+  }
+
+  func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+    guard call.method == "pickVideos" else {
+      result(FlutterMethodNotImplemented)
+      return
+    }
+    guard pendingResult == nil else {
+      result(FlutterError(code: "picker_busy", message: "Photo picker already open", details: nil))
+      return
+    }
+    guard let presenter = Self.topViewController() else {
+      result(FlutterError(code: "no_presenter", message: "Unable to present Photos picker", details: nil))
+      return
+    }
+
+    pendingResult = result
+    let arguments = call.arguments as? [String: Any]
+    let allowMultiple = arguments?["allowMultiple"] as? Bool ?? true
+    var configuration = PHPickerConfiguration(photoLibrary: .shared())
+    configuration.filter = .videos
+    configuration.selectionLimit = allowMultiple ? 0 : 1
+    configuration.preferredAssetRepresentationMode = .current
+    let picker = PHPickerViewController(configuration: configuration)
+    picker.delegate = self
+    presenter.present(picker, animated: true)
+  }
+
+  func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+    picker.dismiss(animated: true)
+    guard let callback = pendingResult else { return }
+    pendingResult = nil
+    if results.isEmpty {
+      callback([])
+      return
+    }
+
+    let group = DispatchGroup()
+    let lock = NSLock()
+    let importSession = UUID().uuidString
+    var paths: [String] = []
+    var firstError: Error?
+
+    for item in results {
+      let provider = item.itemProvider
+      let typeIdentifier = kUTTypeMovie as String
+      guard provider.hasItemConformingToTypeIdentifier(typeIdentifier) else { continue }
+      group.enter()
+      provider.loadFileRepresentation(forTypeIdentifier: typeIdentifier) { url, error in
+        defer { group.leave() }
+        if let error = error {
+          lock.lock(); if firstError == nil { firstError = error }; lock.unlock()
+          return
+        }
+        guard let url = url else { return }
+        do {
+          let fileManager = FileManager.default
+          let targetDir = fileManager.temporaryDirectory
+            .appendingPathComponent("sonarpad_photo_import", isDirectory: true)
+            .appendingPathComponent(importSession, isDirectory: true)
+          try fileManager.createDirectory(at: targetDir, withIntermediateDirectories: true)
+          let ext = url.pathExtension.isEmpty ? "mov" : url.pathExtension
+          let suggestedName = provider.suggestedName?.trimmingCharacters(in: .whitespacesAndNewlines)
+          let rawBase = (suggestedName?.isEmpty == false ? suggestedName! : "video")
+          let base = URL(fileURLWithPath: rawBase).deletingPathExtension().lastPathComponent
+            .replacingOccurrences(of: "/", with: "_")
+          var target = targetDir.appendingPathComponent("\(base).\(ext)")
+          if fileManager.fileExists(atPath: target.path) {
+            target = targetDir.appendingPathComponent("\(base)_\(UUID().uuidString).\(ext)")
+          }
+          try fileManager.copyItem(at: url, to: target)
+          lock.lock(); paths.append(target.path); lock.unlock()
+        } catch {
+          lock.lock(); if firstError == nil { firstError = error }; lock.unlock()
+        }
+      }
+    }
+
+    group.notify(queue: .main) {
+      if !paths.isEmpty {
+        callback(paths)
+      } else if let error = firstError {
+        callback(FlutterError(code: "photo_import_failed", message: error.localizedDescription, details: nil))
+      } else {
+        callback([])
+      }
+    }
+  }
+
+  private static func topViewController(base: UIViewController? = nil) -> UIViewController? {
+    let root: UIViewController?
+    if let base = base {
+      root = base
+    } else {
+      root = UIApplication.shared.connectedScenes
+        .compactMap { $0 as? UIWindowScene }
+        .flatMap { $0.windows }
+        .first(where: { $0.isKeyWindow })?.rootViewController
+    }
+    if let navigation = root as? UINavigationController {
+      return topViewController(base: navigation.visibleViewController)
+    }
+    if let tab = root as? UITabBarController {
+      return topViewController(base: tab.selectedViewController)
+    }
+    if let presented = root?.presentedViewController {
+      return topViewController(base: presented)
+    }
+    return root
+  }
+}
+
 @main
 @objc class AppDelegate: FlutterAppDelegate, FlutterImplicitEngineDelegate {
   override func application(
@@ -209,6 +335,9 @@ class SonarpadSharedMediaPlugin: NSObject, FlutterPlugin, FlutterStreamHandler {
     SonarpadTTSPlugin.register(with: engineBridge.pluginRegistry.registrar(forPlugin: "SonarpadTTSPlugin")!)
     SonarpadRaiPlayerPlugin.register(with: engineBridge.pluginRegistry.registrar(forPlugin: "SonarpadRaiPlayerPlugin")!)
     SonarpadSharedMediaPlugin.register(with: engineBridge.pluginRegistry.registrar(forPlugin: "SonarpadSharedMediaPlugin")!)
+    if #available(iOS 14.0, *) {
+      SonarpadPhotoLibraryImportPlugin.register(with: engineBridge.pluginRegistry.registrar(forPlugin: "SonarpadPhotoLibraryImportPlugin")!)
+    }
     engineBridge.pluginRegistry.registerSonarpadNativeAccessibleViews()
   }
 }

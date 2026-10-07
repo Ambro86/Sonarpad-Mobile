@@ -651,6 +651,8 @@ class SonarTubeService {
     _SonarTubeDirectFormat b,
   ) => b.bitrate.compareTo(a.bitrate);
 
+  String? youtubeVideoIdFromInput(String input) => _youtubeVideoIdFromInput(input);
+
   String? _youtubeVideoIdFromInput(String input) {
     final value = input.trim();
     final idPattern = RegExp(r'^[A-Za-z0-9_-]{11}$');

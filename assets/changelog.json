@@ -2,18 +2,66 @@
   {
     "version": "0.5.1",
     "date": "2026-10-07",
-    "it": [],
-    "en": [],
-    "fr": [],
-    "es": [],
-    "pt": [],
-    "pt_BR": [],
-    "pl": [],
-    "cs": [],
-    "de": [],
-    "zh_CN": [],
-    "uk": [],
-    "ro": [],
+    "it": [
+      "In SonarTube è stato aggiunto il pulsante “Apri URL”, che permette di incollare e aprire direttamente un link YouTube, inclusi video, Shorts e dirette.",
+      "Sonarpad ora ricorda automaticamente alcune scelte dell’utente quando è utile, ad esempio le preferenze dei Percorsi e l’ordinamento dei video nei canali SonarTube.",
+      "Su iOS, nella funzione “Crea audiodescrizione con IA”, il pulsante “Scegli video” permette ora di selezionare il video direttamente dalla libreria Foto oltre che dall’app File. Nei Documenti è disponibile anche l’importazione di video da Foto."
+    ],
+    "en": [
+      "SonarTube now includes an “Open URL” button that lets you paste and open a YouTube link directly, including videos, Shorts and live streams.",
+      "Sonarpad now automatically remembers selected user choices when useful, such as Route preferences and the video sorting option used in SonarTube channels.",
+      "On iOS, in “Create AI audio description”, the “Choose video” button can now select a video directly from the Photos library as well as from the Files app. Video import from Photos is also available in Documents."
+    ],
+    "fr": [
+      "SonarTube dispose désormais d’un bouton « Ouvrir une URL » permettant de coller et d’ouvrir directement un lien YouTube, y compris les vidéos, les Shorts et les directs.",
+      "Sonarpad mémorise désormais automatiquement certains choix de l’utilisateur lorsque cela est utile, par exemple les préférences des Itinéraires et le tri des vidéos dans les chaînes SonarTube.",
+      "Sur iOS, dans « Créer une audiodescription avec l’IA », le bouton « Choisir une vidéo » permet maintenant de sélectionner une vidéo directement depuis la photothèque en plus de l’app Fichiers. L’importation de vidéos depuis Photos est également disponible dans Documents."
+    ],
+    "es": [
+      "SonarTube incorpora ahora el botón «Abrir URL», que permite pegar y abrir directamente un enlace de YouTube, incluidos vídeos, Shorts y emisiones en directo.",
+      "Sonarpad ahora recuerda automáticamente algunas elecciones del usuario cuando resulta útil, por ejemplo las preferencias de Rutas y el orden de los vídeos en los canales de SonarTube.",
+      "En iOS, dentro de «Crear audiodescripción con IA», el botón «Elegir vídeo» permite ahora seleccionar un vídeo directamente desde la fototeca además de la app Archivos. En Documentos también está disponible la importación de vídeos desde Fotos."
+    ],
+    "pt": [
+      "O SonarTube agora inclui o botão «Abrir URL», que permite colar e abrir diretamente uma ligação do YouTube, incluindo vídeos, Shorts e transmissões em direto.",
+      "O Sonarpad agora memoriza automaticamente algumas escolhas do utilizador quando isso é útil, por exemplo as preferências de Rotas e a ordenação dos vídeos nos canais do SonarTube.",
+      "No iOS, em «Criar audiodescrição com IA», o botão «Escolher vídeo» permite agora selecionar um vídeo diretamente da fototeca, além da app Ficheiros. A importação de vídeos de Fotos também está disponível em Documentos."
+    ],
+    "pt_BR": [
+      "O SonarTube agora inclui o botão “Abrir URL”, que permite colar e abrir diretamente um link do YouTube, incluindo vídeos, Shorts e transmissões ao vivo.",
+      "O Sonarpad agora memoriza automaticamente algumas escolhas do usuário quando isso é útil, por exemplo as preferências de Rotas e a ordenação dos vídeos nos canais do SonarTube.",
+      "No iOS, em “Criar audiodescrição com IA”, o botão “Escolher vídeo” agora permite selecionar um vídeo diretamente da biblioteca de Fotos, além do app Arquivos. A importação de vídeos de Fotos também está disponível em Documentos."
+    ],
+    "pl": [
+      "W SonarTube dodano przycisk „Otwórz URL”, który pozwala wkleić i bezpośrednio otworzyć link YouTube, w tym filmy, Shorts i transmisje na żywo.",
+      "Sonarpad automatycznie zapamiętuje teraz wybrane ustawienia użytkownika, gdy jest to przydatne, na przykład preferencje Tras oraz sposób sortowania filmów na kanałach SonarTube.",
+      "W systemie iOS, w funkcji „Utwórz audiodeskrypcję za pomocą AI”, przycisk „Wybierz wideo” pozwala teraz wybrać film bezpośrednio z biblioteki Zdjęcia, a także z aplikacji Pliki. Import wideo ze Zdjęć jest również dostępny w Dokumentach."
+    ],
+    "cs": [
+      "V SonarTube bylo přidáno tlačítko „Otevřít URL“, které umožňuje vložit a přímo otevřít odkaz YouTube, včetně videí, Shorts a živých přenosů.",
+      "Sonarpad si nyní automaticky pamatuje některé volby uživatele tam, kde je to užitečné, například nastavení Tras a řazení videí v kanálech SonarTube.",
+      "Na iOS nyní ve funkci „Vytvořit audiopopis pomocí AI“ umožňuje tlačítko „Vybrat video“ zvolit video přímo z knihovny Fotky i z aplikace Soubory. Import videí z Fotek je dostupný také v Dokumentech."
+    ],
+    "de": [
+      "In SonarTube wurde die Schaltfläche „URL öffnen“ hinzugefügt. Damit lässt sich ein YouTube-Link direkt einfügen und öffnen, einschließlich Videos, Shorts und Livestreams.",
+      "Sonarpad merkt sich jetzt automatisch ausgewählte Benutzereinstellungen, wenn dies sinnvoll ist, zum Beispiel die Einstellungen für Routen und die Sortierung der Videos in SonarTube-Kanälen.",
+      "Unter iOS kann in „Audiodeskription mit KI erstellen“ über „Video auswählen“ jetzt direkt ein Video aus der Fotomediathek oder aus der Dateien-App gewählt werden. Auch in Dokumente ist der Videoimport aus Fotos verfügbar."
+    ],
+    "zh_CN": [
+      "SonarTube 新增“打开 URL”按钮，可直接粘贴并打开 YouTube 链接，包括普通视频、Shorts 和直播。",
+      "Sonarpad 现在会在适当情况下自动记住部分用户选择，例如“路线”的偏好设置以及 SonarTube 频道中的视频排序方式。",
+      "在 iOS 上，“使用 AI 创建音频描述”中的“选择视频”按钮现在除了“文件”App 外，还可以直接从“照片”图库选择视频。“文稿”中也支持从“照片”导入视频。"
+    ],
+    "uk": [
+      "У SonarTube додано кнопку «Відкрити URL», яка дає змогу вставити й безпосередньо відкрити посилання YouTube, зокрема відео, Shorts і прямі трансляції.",
+      "Sonarpad тепер автоматично запам’ятовує окремі вибрані налаштування користувача там, де це корисно, наприклад параметри Маршрутів і сортування відео в каналах SonarTube.",
+      "На iOS у функції «Створити аудіоопис за допомогою ШІ» кнопка «Вибрати відео» тепер дозволяє вибрати відео безпосередньо з медіатеки Фото, а також із програми Файли. Імпорт відео з Фото також доступний у Документах."
+    ],
+    "ro": [
+      "SonarTube include acum butonul „Deschide URL”, care permite lipirea și deschiderea directă a unui link YouTube, inclusiv videoclipuri, Shorts și transmisiuni live.",
+      "Sonarpad memorează acum automat anumite alegeri ale utilizatorului atunci când este util, de exemplu preferințele pentru Trasee și ordonarea videoclipurilor în canalele SonarTube.",
+      "Pe iOS, în funcția „Creează audiodescriere cu IA”, butonul „Alege videoclip” permite acum selectarea unui videoclip direct din biblioteca Poze, pe lângă aplicația Fișiere. Importul videoclipurilor din Poze este disponibil și în Documente."
+    ],
     "it_extra": [
       "Nella guida TV, l’azione “Programma registrazione” non viene più mostrata per i programmi già terminati; resta disponibile per i programmi attualmente in onda e per quelli futuri."
     ]
