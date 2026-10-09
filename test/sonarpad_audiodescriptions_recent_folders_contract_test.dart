@@ -32,7 +32,7 @@ void main() {
     expect(home, contains('if (item.isFolder) {'));
     expect(home, contains('await _openSonarpadAudiodescriptionFolder(context, item);'));
     expect(home, contains('if (item.isFolder) return;'));
-    expect(home, contains('return _sharedCatalogRow(context, id, item);'));
+    expect(home, contains('return _sharedCatalogRow(context, id, item, isFavorite: _isFavorite(item));'));
     expect(home, contains('_legacyCatalogItem('));
   });
 

@@ -137,6 +137,40 @@ class SonarpadAudiodescriptionsService {
         limit: 1000,
       );
 
+  /// Resolve a saved film to fresh, authenticated playback/download URLs.
+  /// A favorite never relies on an old, possibly expired stream link.
+  Future<SonarpadAudiodescriptionItem?> refreshFavorite(
+    String sonarpadCode,
+    SonarpadAudiodescriptionItem favorite,
+  ) async {
+    if (favorite.isFolder) {
+      return favorite;
+    }
+    final path = favorite.path.trim();
+    if (path.isEmpty) {
+      return null;
+    }
+    final separator = path.lastIndexOf('/');
+    final parent = separator < 0 ? '' : path.substring(0, separator);
+    try {
+      final siblings = await fetchFolder(sonarpadCode, parent);
+      for (final item in siblings) {
+        if (!item.isFolder && item.path == path) {
+          return item;
+        }
+      }
+    } catch (_) {
+      // Some catalogs expose a film only through search.
+    }
+    final matches = await search(sonarpadCode, favorite.title);
+    for (final item in matches) {
+      if (!item.isFolder && item.path == path) {
+        return item;
+      }
+    }
+    return null;
+  }
+
   Future<List<SonarpadAudiodescriptionItem>> _request(
     String sonarpadCode, {
     required String action,
