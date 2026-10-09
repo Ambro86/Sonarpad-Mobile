@@ -178,4 +178,22 @@ void main() {
     expect(channel, contains('_programEndRefreshTimer?.cancel();'));
   });
 
+  test('past TV guide rows retain an iOS VoiceOver activation action', () {
+    final source = File('lib/screens/tv_channel_screen.dart').readAsStringSync();
+
+    // The rotor keeps one action for ended programmes, but never schedules
+    // a recording there. Normal row activation and the Flutter fallback both
+    // continue to open programme details.
+    expect(source, contains("if (Platform.isIOS && !canScheduleRecording)"));
+    expect(source, contains("id: 'open_program_details'"));
+    expect(source, contains("event.action == 'open_program_details'"));
+    expect(source, contains('_showProgramDetails(_guide[index]);'));
+    expect(source, contains('onTap: () => _showProgramDetails(program)'));
+    expect(source, contains('label: _tvGuideActivateLabel(context)'));
+    expect(source, contains('if (canScheduleRecording)'));
+    expect(source, contains("event.action == 'schedule_recording'"));
+    expect(source, contains('Localizations.localeOf(context).languageCode'));
+    expect(source, contains("? 'Attiva'"));
+  });
+
 }

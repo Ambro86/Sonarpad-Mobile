@@ -141,6 +141,14 @@ Future<void> showTvProgramDetailsDialog(
   );
 }
 
+// Keep the iOS VoiceOver Actions rotor available even when a TV programme
+// has ended and its scheduling action has been removed. Other locales can
+// reuse the existing translated "Open" action without adding new l10n keys.
+String _tvGuideActivateLabel(BuildContext context) =>
+    Localizations.localeOf(context).languageCode == 'it'
+        ? 'Attiva'
+        : AppLocalizations.of(context).openItem;
+
 String _tvProgramListLabel(TvProgram program) => <String>[
   program.hour,
   program.title,
@@ -471,6 +479,14 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
                             selected: isCurrent,
                             kind: 'action',
                             actions: [
+                              // Only iOS needs an explicit rotor action when
+                              // the scheduling action is unavailable. Normal
+                              // double-tap activation always stays unchanged.
+                              if (Platform.isIOS && !canScheduleRecording)
+                                AccessibleCustomAction(
+                                  id: 'open_program_details',
+                                  label: _tvGuideActivateLabel(context),
+                                ),
                               if (canScheduleRecording)
                                 AccessibleCustomAction(
                                   id: 'schedule_recording',
@@ -500,7 +516,9 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
                         (e) => e.startTime == start,
                       );
                       if (index < 0) return;
-                      if (event.type == 'activate') {
+                      if (event.type == 'activate' ||
+                          (event.type == 'customAction' &&
+                              event.action == 'open_program_details')) {
                         _showProgramDetails(_guide[index]);
                       } else if (event.type == 'customAction' &&
                           event.action == 'schedule_recording' &&
@@ -529,6 +547,10 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
                         label: _tvProgramListLabel(program),
                         onTap: () => _showProgramDetails(program),
                         customSemanticsActions: {
+                          if (Platform.isIOS && !canScheduleRecording)
+                            CustomSemanticsAction(
+                              label: _tvGuideActivateLabel(context),
+                            ): () => _showProgramDetails(program),
                           if (canScheduleRecording)
                             CustomSemanticsAction(label: scheduleLabel): () =>
                                 _scheduleProgramRecording(program),
