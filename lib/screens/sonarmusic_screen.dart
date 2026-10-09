@@ -390,7 +390,8 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
         () => _save(item),
     };
     return Semantics(
-      container: true, button: true, label: '${item.title}, $subtitle',
+      container: true, button: true,
+      label: [item.title, subtitle].where((value) => value.isNotEmpty).join(', '),
       onTap: !_busy ? () => _openItem(item) : null,
       customSemanticsActions: actions,
       child: ExcludeSemantics(child: Card(child: Column(children: [
@@ -483,7 +484,8 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
         title: l10n.loading, kind: 'text'));
     }
     if (_error != null) {
-      rows.add(AccessibleListRow(id: 'error', title: _error.toString(), kind: 'text'));
+      rows.add(AccessibleListRow(id: 'error',
+        title: l10n.technicalErrorGeneric, kind: 'text'));
       rows.add(AccessibleListRow(id: 'retry', title: l10n.retry,
         kind: 'button', flutterChild: FilledButton(onPressed: _load,
           child: Text(l10n.retry))));
@@ -642,7 +644,8 @@ class _SonarMusicVideoInfoScreenState extends State<SonarMusicVideoInfoScreen> {
     final rows = <AccessibleListRow>[
       if (_loading) AccessibleListRow(id: 'loading', title: l10n.loading,
         kind: 'text', accessibilityButtonTrait: false),
-      if (_error != null) AccessibleListRow(id: 'error', title: _error!,
+      if (_error != null) AccessibleListRow(id: 'error',
+        title: l10n.technicalErrorGeneric,
         kind: 'text', accessibilityButtonTrait: false),
       if (_error != null) AccessibleListRow(id: 'retry', title: l10n.retry,
         flutterChild: FilledButton(onPressed: _load, child: Text(l10n.retry))),

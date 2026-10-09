@@ -5,6 +5,24 @@ import 'package:http/http.dart' as http;
 import '../utils/app_logger.dart';
 import 'sonartube_service.dart';
 
+// Errors retain machine-readable diagnostics; the UI supplies localized text.
+enum SonarMusicRequestFailure { serverHttp, serverResponse, directHttp }
+
+class SonarMusicRequestException implements Exception {
+  const SonarMusicRequestException(this.failure, {this.statusCode, this.serverCode});
+
+  final SonarMusicRequestFailure failure;
+  final int? statusCode;
+  final String? serverCode;
+
+  @override
+  String toString() => [
+    failure.name,
+    if (statusCode != null) statusCode.toString(),
+    ?serverCode,
+  ].join(': ');
+}
+
 /// YouTube Music catalog; public items do not contain expiring stream URLs.
 /// SonarTube's player/exports are reused, without changing SonarTube itself.
 class SonarMusicItem {
@@ -113,12 +131,17 @@ class SonarMusicService {
     final response = await _client.get(uri, headers: _headers)
         .timeout(const Duration(seconds: 35));
     if (response.statusCode != 200) {
-      throw Exception('SonarMusic server HTTP ${response.statusCode}');
+      throw SonarMusicRequestException(
+        SonarMusicRequestFailure.serverHttp, statusCode: response.statusCode);
     }
     final decoded = jsonDecode(utf8.decode(response.bodyBytes));
     if (decoded is! Map) throw const FormatException('SonarMusic JSON non valido');
     final map = Map<String, dynamic>.from(decoded);
-    if (map['ok'] != true) throw Exception('SonarMusic: ${map['error'] ?? 'errore sconosciuto'}');
+    if (map['ok'] != true) {
+      throw SonarMusicRequestException(
+          SonarMusicRequestFailure.serverResponse,
+          serverCode: map['error']?.toString());
+    }
     return map;
   }
 
@@ -139,7 +162,11 @@ class SonarMusicService {
         ...payload,
       }),
     ).timeout(const Duration(seconds: 12));
-    if (response.statusCode != 200) throw Exception('Music direct HTTP ${response.statusCode}');
+    if (response.statusCode != 200) {
+      throw SonarMusicRequestException(
+          SonarMusicRequestFailure.directHttp,
+          statusCode: response.statusCode);
+    }
     final result = jsonDecode(utf8.decode(response.bodyBytes));
     if (result is! Map) throw const FormatException('Music direct JSON');
     return Map<String, dynamic>.from(result);
