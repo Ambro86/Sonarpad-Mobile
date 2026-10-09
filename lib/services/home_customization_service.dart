@@ -7,6 +7,7 @@ class HomeItemIds {
   static const weather = 'weather';
   static const podcasts = 'podcasts';
   static const sonarTube = 'sonartube';
+  static const sonarMusic = 'sonarmusic';
   static const createAiAudioDescription = 'create_ai_audiodescription';
   static const convertMedia = 'convert_media';
   static const mediaCutter = 'media_cutter';
@@ -37,6 +38,7 @@ class HomeItemIds {
     weather,
     podcasts,
     sonarTube,
+    sonarMusic,
     createAiAudioDescription,
     convertMedia,
     mediaCutter,
@@ -75,6 +77,7 @@ class HomeItemIds {
     radio,
     podcasts,
     sonarTube,
+    sonarMusic,
     createAiAudioDescription,
     convertMedia,
     mediaCutter,
@@ -147,6 +150,7 @@ class HomeCustomizationService {
       }
     }
     _insertTreccaniAfterWikipediaIfMissing(result);
+    _insertSonarMusicAfterTubeIfMissing(result);
     for (final id in HomeItemIds.defaultFlatOrder) {
       if (!result.contains(id)) result.add(id);
     }
@@ -183,6 +187,14 @@ class HomeCustomizationService {
   }
 
 
+  void _insertSonarMusicAfterTubeIfMissing(List<String> order) {
+    if (order.contains(HomeItemIds.sonarMusic)) return;
+    final tubeIndex = order.indexOf(HomeItemIds.sonarTube);
+    if (tubeIndex >= 0) {
+      order.insert(tubeIndex + 1, HomeItemIds.sonarMusic);
+    }
+  }
+
   void _insertTreccaniAfterWikipediaIfMissing(List<String> order) {
     if (order.contains(HomeItemIds.treccani)) return;
     final wikipediaIndex = order.indexOf(HomeItemIds.wikipedia);
@@ -207,6 +219,9 @@ class HomeCustomizationService {
     }
     if (defaultOrder.contains(HomeItemIds.treccani)) {
       _insertTreccaniAfterWikipediaIfMissing(result);
+    }
+    if (defaultOrder.contains(HomeItemIds.sonarMusic)) {
+      _insertSonarMusicAfterTubeIfMissing(result);
     }
     for (final id in defaultOrder) {
       if (!result.contains(id)) result.add(id);

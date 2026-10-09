@@ -14,6 +14,7 @@ Set<String> availableHomeItemIds({
     HomeItemIds.weather,
     HomeItemIds.podcasts,
     HomeItemIds.sonarTube,
+    HomeItemIds.sonarMusic,
     HomeItemIds.createAiAudioDescription,
     HomeItemIds.convertMedia,
     HomeItemIds.mediaCutter,
@@ -66,6 +67,8 @@ String homeItemLabel(AppLocalizations l10n, String id) {
       return l10n.podcasts;
     case HomeItemIds.sonarTube:
       return l10n.sonarTubeTitle;
+    case HomeItemIds.sonarMusic:
+      return 'SonarMusic';
     case HomeItemIds.createAiAudioDescription:
       return l10n.audioDescriptionCreateAiTitle;
     case HomeItemIds.convertMedia:

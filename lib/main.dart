@@ -34,6 +34,7 @@ import 'screens/news_screen.dart';
 import 'screens/cinema_screen.dart';
 import 'screens/podcast_screen.dart';
 import 'screens/sonartube_screen.dart';
+import 'screens/sonarmusic_screen.dart';
 import 'screens/radio_screen.dart';
 import 'screens/radio_recordings_screen.dart';
 import 'screens/raiplay_screen.dart';
@@ -430,6 +431,7 @@ class _SonarpadAppState extends State<SonarpadApp> {
         '/meteo': (_) => const WeatherScreen(),
         '/podcasts': (_) => const PodcastScreen(),
         '/sonartube': (_) => const SonarTubeScreen(),
+        '/sonarmusic': (_) => const SonarMusicScreen(),
         '/convert_media': (_) => const ConvertMediaScreen(),
         '/create_ai_audiodescription': (_) => const CreateAiAudiodescriptionScreen(),
         '/edit_audio_description_project': (_) => const AudioDescriptionProjectEditorScreen(),
