@@ -223,7 +223,10 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
       : 'https://music.youtube.com/browse/${item.browseId ?? item.id}');
     await SharePlus.instance.share(ShareParams(text: '${item.title}\n$uri'));
   }
-  bool _canSave(SonarMusicItem item) => _unlocked && item.playable;
+  bool _canSave(SonarMusicItem item) =>
+      _unlocked &&
+      AppLocalizations.of(context).localeName == 'it' &&
+      item.playable;
   Future<void> _save(SonarMusicItem item) async {
     if (!_canSave(item)) return;
     await saveSonarTubeMediaWithDestination(context,

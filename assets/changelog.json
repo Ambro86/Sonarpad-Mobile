@@ -7,84 +7,96 @@
       "Sonarpad ora ricorda automaticamente alcune scelte dell’utente quando è utile, ad esempio le preferenze dei Percorsi e l’ordinamento dei video nei canali SonarTube.",
       "Su iOS, nella funzione “Crea audiodescrizione con IA”, il pulsante “Scegli video” permette ora di selezionare il video direttamente dalla libreria Foto oltre che dall’app File. Nei Documenti è disponibile anche l’importazione di video da Foto.",
       "Migliorata l’affidabilità della lettura con le voci Edge in tutte le schermate che le utilizzano: in caso di errori temporanei di connessione, timeout o audio vuoto, Sonarpad riprova automaticamente solo il blocco non riuscito, senza ripetere quelli già letti e senza cambiare il normale funzionamento della riproduzione.",
-      "Aggiunta SonarMusic, una nuova funzione accessibile dedicata a YouTube Music: ricerca di brani, video musicali, artisti, album e playlist, riproduzione continua, preferiti, cronologia, navigazione tra brani e apertura dell’artista. Riutilizza il lettore di SonarTube; Salva media è disponibile agli utenti autorizzati."
+      "Aggiunta SonarMusic, una nuova funzione accessibile dedicata a YouTube Music: ricerca di brani, video musicali, artisti, album e playlist, riproduzione continua, preferiti, cronologia, navigazione tra brani e apertura dell’artista. Riutilizza il lettore di SonarTube; Salva media è disponibile agli utenti autorizzati.",
+      "In Taglia file media, Sonarpad ora ricorda l’intervallo scelto per avanzare o arretrare nella riproduzione (da 1 secondo a 10 minuti), anche dopo la chiusura dell’app."
     ],
     "en": [
       "SonarTube now includes an “Open URL” button that lets you paste and open a YouTube link directly, including videos, Shorts and live streams.",
       "Sonarpad now automatically remembers selected user choices when useful, such as Route preferences and the video sorting option used in SonarTube channels.",
       "On iOS, in “Create AI audio description”, the “Choose video” button can now select a video directly from the Photos library as well as from the Files app. Video import from Photos is also available in Documents.",
       "Improved the reliability of reading with Edge voices throughout the app: if a temporary connection error, timeout or empty audio response occurs, Sonarpad automatically retries only the failed chunk, without replaying chunks already read or changing normal playback behavior.",
-      "Added SonarMusic, a new accessible YouTube Music feature: search songs, music videos, artists, albums and playlists, continuous playback, favorites, history, track navigation and artist pages. It shares the SonarTube player; Save media is available to authorized users."
+      "Added SonarMusic, a new accessible YouTube Music feature: search songs, music videos, artists, albums and playlists, continuous playback, favorites, history, track navigation and artist pages. It shares the SonarTube player; Save media is available to authorized users.",
+      "In Media Cutter, Sonarpad now remembers the selected playback skip interval (from 1 second to 10 minutes), even after the app is closed."
     ],
     "fr": [
       "SonarTube dispose désormais d’un bouton « Ouvrir une URL » permettant de coller et d’ouvrir directement un lien YouTube, y compris les vidéos, les Shorts et les directs.",
       "Sonarpad mémorise désormais automatiquement certains choix de l’utilisateur lorsque cela est utile, par exemple les préférences des Itinéraires et le tri des vidéos dans les chaînes SonarTube.",
       "Sur iOS, dans « Créer une audiodescription avec l’IA », le bouton « Choisir une vidéo » permet maintenant de sélectionner une vidéo directement depuis la photothèque en plus de l’app Fichiers. L’importation de vidéos depuis Photos est également disponible dans Documents.",
       "La lecture avec les voix Edge est désormais plus fiable dans tous les écrans qui les utilisent : en cas d’erreur de connexion temporaire, de délai d’attente dépassé ou de réponse audio vide, Sonarpad réessaie automatiquement uniquement le segment ayant échoué, sans relire ceux déjà lus ni modifier le fonctionnement habituel de la lecture.",
-      "Ajout de SonarMusic, une nouvelle fonction accessible pour YouTube Music : recherche de titres, clips, artistes, albums et playlists, lecture continue, favoris, historique, navigation entre les pistes et accès aux artistes. Le lecteur SonarTube est réutilisé ; l’enregistrement des médias est réservé aux utilisateurs autorisés."
+      "Ajout de SonarMusic, une nouvelle fonction accessible pour YouTube Music : recherche de titres, clips, artistes, albums et playlists, lecture continue, favoris, historique, navigation entre les pistes et accès aux artistes. Le lecteur SonarTube est réutilisé ; l’enregistrement des médias est réservé aux utilisateurs autorisés.",
+      "Dans Découper un fichier multimédia, Sonarpad mémorise désormais l’intervalle choisi pour avancer ou reculer dans la lecture (de 1 seconde à 10 minutes), même après la fermeture de l’application."
     ],
     "es": [
       "SonarTube incorpora ahora el botón «Abrir URL», que permite pegar y abrir directamente un enlace de YouTube, incluidos vídeos, Shorts y emisiones en directo.",
       "Sonarpad ahora recuerda automáticamente algunas elecciones del usuario cuando resulta útil, por ejemplo las preferencias de Rutas y el orden de los vídeos en los canales de SonarTube.",
       "En iOS, dentro de «Crear audiodescripción con IA», el botón «Elegir vídeo» permite ahora seleccionar un vídeo directamente desde la fototeca además de la app Archivos. En Documentos también está disponible la importación de vídeos desde Fotos.",
       "Se ha mejorado la fiabilidad de la lectura con las voces Edge en todas las pantallas que las utilizan: si se produce un error temporal de conexión, un tiempo de espera agotado o una respuesta de audio vacía, Sonarpad reintenta automáticamente solo el fragmento fallido, sin volver a leer los fragmentos ya reproducidos ni cambiar el funcionamiento habitual de la reproducción.",
-      "Se añade SonarMusic, una nueva función accesible para YouTube Music: búsqueda de canciones, vídeos musicales, artistas, álbumes y listas, reproducción continua, favoritos, historial, navegación entre pistas y páginas de artistas. Utiliza el reproductor de SonarTube; guardar medios está disponible para usuarios autorizados."
+      "Se añade SonarMusic, una nueva función accesible para YouTube Music: búsqueda de canciones, vídeos musicales, artistas, álbumes y listas, reproducción continua, favoritos, historial, navegación entre pistas y páginas de artistas. Utiliza el reproductor de SonarTube; guardar medios está disponible para usuarios autorizados.",
+      "En Cortar archivo multimedia, Sonarpad ahora recuerda el intervalo elegido para avanzar o retroceder en la reproducción (de 1 segundo a 10 minutos), incluso después de cerrar la aplicación."
     ],
     "pt": [
       "O SonarTube agora inclui o botão «Abrir URL», que permite colar e abrir diretamente uma ligação do YouTube, incluindo vídeos, Shorts e transmissões em direto.",
       "O Sonarpad agora memoriza automaticamente algumas escolhas do utilizador quando isso é útil, por exemplo as preferências de Rotas e a ordenação dos vídeos nos canais do SonarTube.",
       "No iOS, em «Criar audiodescrição com IA», o botão «Escolher vídeo» permite agora selecionar um vídeo diretamente da fototeca, além da app Ficheiros. A importação de vídeos de Fotos também está disponível em Documentos.",
       "Foi melhorada a fiabilidade da leitura com as vozes Edge em todos os ecrãs que as utilizam: em caso de erro temporário de ligação, tempo de espera excedido ou resposta de áudio vazia, o Sonarpad volta a tentar automaticamente apenas o segmento que falhou, sem repetir os segmentos já lidos nem alterar o funcionamento normal da reprodução.",
-      "Adicionado o SonarMusic, uma nova função acessível para o YouTube Music: pesquisa de músicas, vídeos musicais, artistas, álbuns e playlists, reprodução contínua, favoritos, histórico, navegação entre faixas e páginas de artistas. Usa o leitor do SonarTube; guardar multimédia está disponível para utilizadores autorizados."
+      "Adicionado o SonarMusic, uma nova função acessível para o YouTube Music: pesquisa de músicas, vídeos musicais, artistas, álbuns e playlists, reprodução contínua, favoritos, histórico, navegação entre faixas e páginas de artistas. Usa o leitor do SonarTube; guardar multimédia está disponível para utilizadores autorizados.",
+      "Em Cortar ficheiro multimédia, o Sonarpad guarda agora o intervalo escolhido para avançar ou recuar na reprodução (de 1 segundo a 10 minutos), mesmo depois de fechar a aplicação."
     ],
     "pt_BR": [
       "O SonarTube agora inclui o botão “Abrir URL”, que permite colar e abrir diretamente um link do YouTube, incluindo vídeos, Shorts e transmissões ao vivo.",
       "O Sonarpad agora memoriza automaticamente algumas escolhas do usuário quando isso é útil, por exemplo as preferências de Rotas e a ordenação dos vídeos nos canais do SonarTube.",
       "No iOS, em “Criar audiodescrição com IA”, o botão “Escolher vídeo” agora permite selecionar um vídeo diretamente da biblioteca de Fotos, além do app Arquivos. A importação de vídeos de Fotos também está disponível em Documentos.",
       "A leitura com as vozes Edge ficou mais confiável em todas as telas que as utilizam: em caso de erro temporário de conexão, tempo limite excedido ou resposta de áudio vazia, o Sonarpad tenta novamente de forma automática apenas o trecho que falhou, sem repetir os trechos já lidos nem alterar o funcionamento normal da reprodução.",
-      "Adicionado o SonarMusic, um novo recurso acessível para o YouTube Music: busca de músicas, videoclipes, artistas, álbuns e playlists, reprodução contínua, favoritos, histórico, navegação entre faixas e páginas de artistas. Usa o player do SonarTube; salvar mídia está disponível para usuários autorizados."
+      "Adicionado o SonarMusic, um novo recurso acessível para o YouTube Music: busca de músicas, videoclipes, artistas, álbuns e playlists, reprodução contínua, favoritos, histórico, navegação entre faixas e páginas de artistas. Usa o player do SonarTube; salvar mídia está disponível para usuários autorizados.",
+      "Em Cortar arquivo de mídia, o Sonarpad agora lembra o intervalo escolhido para avançar ou retroceder na reprodução (de 1 segundo a 10 minutos), mesmo depois de fechar o aplicativo."
     ],
     "pl": [
       "W SonarTube dodano przycisk „Otwórz URL”, który pozwala wkleić i bezpośrednio otworzyć link YouTube, w tym filmy, Shorts i transmisje na żywo.",
       "Sonarpad automatycznie zapamiętuje teraz wybrane ustawienia użytkownika, gdy jest to przydatne, na przykład preferencje Tras oraz sposób sortowania filmów na kanałach SonarTube.",
       "W systemie iOS, w funkcji „Utwórz audiodeskrypcję za pomocą AI”, przycisk „Wybierz wideo” pozwala teraz wybrać film bezpośrednio z biblioteki Zdjęcia, a także z aplikacji Pliki. Import wideo ze Zdjęć jest również dostępny w Dokumentach.",
       "Poprawiono niezawodność odczytu głosami Edge na wszystkich ekranach, które z nich korzystają: w przypadku tymczasowego błędu połączenia, przekroczenia limitu czasu lub pustej odpowiedzi audio Sonarpad automatycznie ponawia syntezę tylko nieudanego fragmentu, bez powtarzania już odczytanych fragmentów i bez zmiany dotychczasowego sposobu odtwarzania.",
-      "Dodano SonarMusic — nową dostępną funkcję YouTube Music: wyszukiwanie utworów, teledysków, wykonawców, albumów i playlist, odtwarzanie ciągłe, ulubione, historia, nawigacja między utworami i strony wykonawców. Używa odtwarzacza SonarTube; zapisywanie multimediów jest dostępne dla uprawnionych użytkowników."
+      "Dodano SonarMusic — nową dostępną funkcję YouTube Music: wyszukiwanie utworów, teledysków, wykonawców, albumów i playlist, odtwarzanie ciągłe, ulubione, historia, nawigacja między utworami i strony wykonawców. Używa odtwarzacza SonarTube; zapisywanie multimediów jest dostępne dla uprawnionych użytkowników.",
+      "W funkcji przycinania plików multimedialnych Sonarpad zapamiętuje teraz wybrany odstęp przewijania do przodu lub do tyłu (od 1 sekundy do 10 minut), także po zamknięciu aplikacji."
     ],
     "cs": [
       "V SonarTube bylo přidáno tlačítko „Otevřít URL“, které umožňuje vložit a přímo otevřít odkaz YouTube, včetně videí, Shorts a živých přenosů.",
       "Sonarpad si nyní automaticky pamatuje některé volby uživatele tam, kde je to užitečné, například nastavení Tras a řazení videí v kanálech SonarTube.",
       "Na iOS nyní ve funkci „Vytvořit audiopopis pomocí AI“ umožňuje tlačítko „Vybrat video“ zvolit video přímo z knihovny Fotky i z aplikace Soubory. Import videí z Fotek je dostupný také v Dokumentech.",
       "Zlepšena spolehlivost předčítání hlasy Edge na všech obrazovkách, které je používají: při dočasné chybě připojení, vypršení časového limitu nebo prázdné zvukové odpovědi Sonarpad automaticky opakuje syntézu pouze neúspěšného úseku, aniž by znovu přehrával již přečtené úseky nebo měnil běžné chování přehrávání.",
-      "Přidána přístupná funkce SonarMusic pro YouTube Music: hledání skladeb, hudebních videí, interpretů, alb a playlistů, souvislé přehrávání, oblíbené položky, historie, přepínání skladeb a profily interpretů. Používá přehrávač SonarTube; ukládání médií je dostupné oprávněným uživatelům."
+      "Přidána přístupná funkce SonarMusic pro YouTube Music: hledání skladeb, hudebních videí, interpretů, alb a playlistů, souvislé přehrávání, oblíbené položky, historie, přepínání skladeb a profily interpretů. Používá přehrávač SonarTube; ukládání médií je dostupné oprávněným uživatelům.",
+      "V nástroji pro střih médií si Sonarpad nyní pamatuje zvolený krok posunu vpřed nebo vzad při přehrávání (od 1 sekundy do 10 minut), a to i po zavření aplikace."
     ],
     "de": [
       "In SonarTube wurde die Schaltfläche „URL öffnen“ hinzugefügt. Damit lässt sich ein YouTube-Link direkt einfügen und öffnen, einschließlich Videos, Shorts und Livestreams.",
       "Sonarpad merkt sich jetzt automatisch ausgewählte Benutzereinstellungen, wenn dies sinnvoll ist, zum Beispiel die Einstellungen für Routen und die Sortierung der Videos in SonarTube-Kanälen.",
       "Unter iOS kann in „Audiodeskription mit KI erstellen“ über „Video auswählen“ jetzt direkt ein Video aus der Fotomediathek oder aus der Dateien-App gewählt werden. Auch in Dokumente ist der Videoimport aus Fotos verfügbar.",
       "Die Zuverlässigkeit beim Vorlesen mit Edge-Stimmen wurde in allen entsprechenden Ansichten verbessert: Bei vorübergehenden Verbindungsfehlern, Zeitüberschreitungen oder leeren Audioantworten versucht Sonarpad automatisch nur den fehlgeschlagenen Textabschnitt erneut zu erzeugen, ohne bereits vorgelesene Abschnitte zu wiederholen oder die normale Wiedergabe zu verändern.",
-      "Neu: SonarMusic, eine barrierefreie YouTube-Music-Funktion mit Suche nach Songs, Musikvideos, Künstlern, Alben und Playlists, fortlaufender Wiedergabe, Favoriten, Verlauf, Titelnavigation und Künstlerseiten. Der SonarTube-Player wird weiterverwendet; Medien speichern ist für berechtigte Nutzer verfügbar."
+      "Neu: SonarMusic, eine barrierefreie YouTube-Music-Funktion mit Suche nach Songs, Musikvideos, Künstlern, Alben und Playlists, fortlaufender Wiedergabe, Favoriten, Verlauf, Titelnavigation und Künstlerseiten. Der SonarTube-Player wird weiterverwendet; Medien speichern ist für berechtigte Nutzer verfügbar.",
+      "Beim Zuschneiden von Mediendateien merkt sich Sonarpad jetzt das gewählte Intervall zum Vor- und Zurückspringen bei der Wiedergabe (von 1 Sekunde bis 10 Minuten), auch nach dem Schließen der App."
     ],
     "zh_CN": [
       "SonarTube 新增“打开 URL”按钮，可直接粘贴并打开 YouTube 链接，包括普通视频、Shorts 和直播。",
       "Sonarpad 现在会在适当情况下自动记住部分用户选择，例如“路线”的偏好设置以及 SonarTube 频道中的视频排序方式。",
       "在 iOS 上，“使用 AI 创建音频描述”中的“选择视频”按钮现在除了“文件”App 外，还可以直接从“照片”图库选择视频。“文稿”中也支持从“照片”导入视频。",
       "改进了应用中所有使用 Edge 语音的页面的朗读可靠性：遇到临时连接错误、请求超时或返回空音频时，Sonarpad 会自动仅重试失败的文本片段，不会重复朗读已播放的片段，也不会改变原有的播放方式。",
-      "新增 SonarMusic 无障碍音乐功能：搜索 YouTube Music 歌曲、音乐视频、艺人、专辑和播放列表，连续播放、收藏、历史记录、曲目切换及艺人页面。沿用 SonarTube 播放器；授权用户可以保存媒体。"
+      "新增 SonarMusic 无障碍音乐功能：搜索 YouTube Music 歌曲、音乐视频、艺人、专辑和播放列表，连续播放、收藏、历史记录、曲目切换及艺人页面。沿用 SonarTube 播放器；授权用户可以保存媒体。",
+      "在“剪切媒体文件”中，Sonarpad 现在会记住所选的播放快进或快退步长（1 秒至 10 分钟），即使关闭应用后也会保留。"
     ],
     "uk": [
       "У SonarTube додано кнопку «Відкрити URL», яка дає змогу вставити й безпосередньо відкрити посилання YouTube, зокрема відео, Shorts і прямі трансляції.",
       "Sonarpad тепер автоматично запам’ятовує окремі вибрані налаштування користувача там, де це корисно, наприклад параметри Маршрутів і сортування відео в каналах SonarTube.",
       "На iOS у функції «Створити аудіоопис за допомогою ШІ» кнопка «Вибрати відео» тепер дозволяє вибрати відео безпосередньо з медіатеки Фото, а також із програми Файли. Імпорт відео з Фото також доступний у Документах.",
       "Підвищено надійність читання голосами Edge на всіх екранах, де вони використовуються: у разі тимчасової помилки з’єднання, перевищення часу очікування або порожньої аудіовідповіді Sonarpad автоматично повторює синтез лише невдалого фрагмента, не відтворюючи повторно вже прочитані фрагменти та не змінюючи звичайну роботу відтворення.",
-      "Додано SonarMusic — нову доступну функцію YouTube Music: пошук пісень, музичних відео, виконавців, альбомів і списків відтворення, безперервне відтворення, обране, історію, перемикання треків і сторінки виконавців. Використовується програвач SonarTube; збереження медіа доступне авторизованим користувачам."
+      "Додано SonarMusic — нову доступну функцію YouTube Music: пошук пісень, музичних відео, виконавців, альбомів і списків відтворення, безперервне відтворення, обране, історію, перемикання треків і сторінки виконавців. Використовується програвач SonarTube; збереження медіа доступне авторизованим користувачам.",
+      "У функції обрізання медіафайлів Sonarpad тепер запам’ятовує вибраний крок перемотування вперед або назад під час відтворення (від 1 секунди до 10 хвилин), навіть після закриття застосунку."
     ],
     "ro": [
       "SonarTube include acum butonul „Deschide URL”, care permite lipirea și deschiderea directă a unui link YouTube, inclusiv videoclipuri, Shorts și transmisiuni live.",
       "Sonarpad memorează acum automat anumite alegeri ale utilizatorului atunci când este util, de exemplu preferințele pentru Trasee și ordonarea videoclipurilor în canalele SonarTube.",
       "Pe iOS, în funcția „Creează audiodescriere cu IA”, butonul „Alege videoclip” permite acum selectarea unui videoclip direct din biblioteca Poze, pe lângă aplicația Fișiere. Importul videoclipurilor din Poze este disponibil și în Documente.",
       "A fost îmbunătățită fiabilitatea citirii cu vocile Edge în toate ecranele care le folosesc: în cazul unei erori temporare de conexiune, al depășirii timpului de așteptare sau al unui răspuns audio gol, Sonarpad reîncearcă automat doar fragmentul care a eșuat, fără a repeta fragmentele deja citite și fără a modifica funcționarea normală a redării.",
-      "A fost adăugat SonarMusic, o funcție accesibilă pentru YouTube Music: căutarea melodiilor, videoclipurilor muzicale, artiștilor, albumelor și listelor de redare, redare continuă, favorite, istoric, navigare între piese și pagini de artiști. Folosește playerul SonarTube; salvarea media este disponibilă utilizatorilor autorizați."
+      "A fost adăugat SonarMusic, o funcție accesibilă pentru YouTube Music: căutarea melodiilor, videoclipurilor muzicale, artiștilor, albumelor și listelor de redare, redare continuă, favorite, istoric, navigare între piese și pagini de artiști. Folosește playerul SonarTube; salvarea media este disponibilă utilizatorilor autorizați.",
+      "În funcția de tăiere a fișierelor media, Sonarpad memorează acum intervalul ales pentru derularea înainte sau înapoi (de la 1 secundă la 10 minute), chiar și după închiderea aplicației."
     ],
     "it_extra": [
       "Nella guida TV, l’azione “Programma registrazione” non viene più mostrata per i programmi già terminati; resta disponibile per i programmi attualmente in onda e per quelli futuri."

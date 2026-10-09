@@ -31,7 +31,8 @@ void main() {
       'ro',
     ]) {
       final changes = (entry[language] as List).cast<String>();
-      expect(changes, hasLength(5), reason: language);
+      expect(changes, hasLength(6), reason: language);
+      expect(changes[5], isNotEmpty, reason: language);
       expect(changes[3], contains('Edge'), reason: language);
       expect(changes[4], contains('SonarMusic'), reason: language);
       expect(changes, isNot(contains(expected)), reason: language);
@@ -42,6 +43,7 @@ void main() {
     expect((entry['it'] as List).cast<String>()[2], contains('Crea audiodescrizione con IA'));
     expect((entry['it'] as List).cast<String>()[3], contains('voci Edge'));
     expect((entry['it'] as List).cast<String>()[4], contains('SonarMusic'));
+    expect((entry['it'] as List).cast<String>()[5], contains('Taglia file media'));
   });
   test('0.5.0 Rai audio-description preference is Italian extra only', () {
     final decoded = jsonDecode(File('assets/changelog.json').readAsStringSync());

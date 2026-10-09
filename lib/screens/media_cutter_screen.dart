@@ -23,6 +23,7 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../l10n/app_localizations.dart';
 import '../services/app_cache_service.dart';
+import '../services/media_cutter_seek_step_preferences.dart';
 import '../services/media_export_destination_service.dart';
 import 'media_cutter_add_track_screen.dart';
 import '../utils/app_logger.dart';
@@ -465,7 +466,8 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
   final Set<String> _nativeDspAssetCachePaths = {};
   Duration _duration = Duration.zero;
   Duration _position = Duration.zero;
-  Duration _mediaSeekStep = const Duration(seconds: 5);
+  Duration _mediaSeekStep = MediaCutterSeekStepPreferences.defaultStep;
+  bool _mediaSeekStepChangedByUser = false;
   _MediaCutterMode? _selectedMode;
   Duration? _guidedCutStart;
   Duration? _guidedCutEnd;
@@ -479,6 +481,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
   @override
   void initState() {
     super.initState();
+    unawaited(_restoreMediaSeekStep());
     if (Platform.isIOS) {
       _mediaEventsSubscription =
           _mediaEvents.receiveBroadcastStream().listen((event) {
@@ -536,6 +539,28 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     _videoController?.dispose();
     _audioPlayer.dispose();
     super.dispose();
+  }
+
+  Future<void> _restoreMediaSeekStep() async {
+    try {
+      final savedStep = await MediaCutterSeekStepPreferences.load();
+      // Never override a choice made while preferences were still loading.
+      if (!mounted || _mediaSeekStepChangedByUser ||
+          savedStep == _mediaSeekStep) {
+        return;
+      }
+      setState(() => _mediaSeekStep = savedStep);
+    } catch (error) {
+      unawaited(_logMediaCutter('seek step restore failed: $error'));
+    }
+  }
+
+  Future<void> _saveMediaSeekStep(Duration step) async {
+    try {
+      await MediaCutterSeekStepPreferences.save(step);
+    } catch (error) {
+      unawaited(_logMediaCutter('seek step save failed: $error'));
+    }
   }
 
   Future<void> _logMediaCutter(String message) async {
@@ -6575,7 +6600,9 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     );
 
     if (selected == null || selected == _mediaSeekStep || !mounted) return;
+    _mediaSeekStepChangedByUser = true;
     setState(() => _mediaSeekStep = selected);
+    unawaited(_saveMediaSeekStep(selected));
     unawaited(_logMediaCutter(
         'media movement step changed to ${_logDuration(selected)}'));
     _showSnack(_mediaSeekStepSelectedMessage(selected));
