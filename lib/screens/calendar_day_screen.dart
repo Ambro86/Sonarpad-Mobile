@@ -9,6 +9,7 @@ import '../services/audio_player_service.dart';
 import '../services/app_settings_service.dart';
 import '../services/voice_dictionary_service.dart';
 import '../tts/edge_tts_bridge.dart';
+import '../tts/edge_tts_retry.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import '../widgets/universal_accessible_view.dart';
 
@@ -30,6 +31,7 @@ class _CalendarDayScreenState extends State<CalendarDayScreen> {
 
   List<CalendarEvent> _events = [];
   bool _speaking = false;
+  int _readingToken = 0;
   String? _saint;
 
   bool _saintLoaded = false;
@@ -110,6 +112,7 @@ class _CalendarDayScreenState extends State<CalendarDayScreen> {
   }
 
   Future<void> _readAll() async {
+    final readingToken = ++_readingToken;
     final l10n = AppLocalizations.of(context);
     final dayFormat = DateFormat('EEEE d MMMM yyyy', l10n.localeName);
     final titleStr = dayFormat.format(widget.date);
@@ -138,7 +141,7 @@ class _CalendarDayScreenState extends State<CalendarDayScreen> {
     final textToRead =
         _voiceDictionary.applyToText(buffer.toString(), dictionaryEntries);
 
-    if (!mounted) return;
+    if (!mounted || readingToken != _readingToken) return;
     setState(() => _speaking = true);
 
     try {
@@ -155,17 +158,29 @@ class _CalendarDayScreenState extends State<CalendarDayScreen> {
         await _flutterTts.speak(textToRead);
       } else {
         final voice = await _settings.loadTtsVoice();
-        final file = await _tts.speakToFile(text: textToRead, voice: voice);
-        await _audio.playFilesSequentially([file]);
+        final file = await EdgeTtsRetry.run(
+          generate: () => _tts.speakToFile(text: textToRead, voice: voice),
+          isActive: () => mounted && _speaking && readingToken == _readingToken,
+          onRetry: (retry, delay, error) => debugPrint(
+            'CalendarDay: Edge TTS retry $retry tra '
+            '${delay.inMilliseconds}ms: $error',
+          ),
+        );
+        if (file != null && mounted && _speaking && readingToken == _readingToken) {
+          await _audio.playFilesSequentially([file]);
+        }
       }
     } catch (e) {
       debugPrint('Error TTS: $e');
     } finally {
-      if (mounted) setState(() => _speaking = false);
+      if (mounted && readingToken == _readingToken) {
+        setState(() => _speaking = false);
+      }
     }
   }
 
   void _stopReading() {
+    _readingToken += 1;
     _flutterTts.stop();
     _audio.stop();
     setState(() => _speaking = false);
@@ -237,6 +252,7 @@ class _CalendarDayScreenState extends State<CalendarDayScreen> {
 
   @override
   void dispose() {
+    _readingToken += 1;
     _flutterTts.stop();
     _audio.stop();
     super.dispose();

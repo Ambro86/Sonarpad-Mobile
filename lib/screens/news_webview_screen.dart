@@ -22,6 +22,7 @@ import '../services/document_library_service.dart';
 import '../services/html_reader_service.dart';
 import '../services/voice_dictionary_service.dart';
 import '../tts/edge_tts_bridge.dart';
+import '../tts/edge_tts_retry.dart';
 import '../utils/app_logger.dart';
 import '../utils/media_open_guard.dart';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -2082,8 +2083,21 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
               'len=${textToSpeak.length} hash=${textToSpeak.hashCode} '
               'tail="${_newsTtsDebugSnippet(textToSpeak, maxChars: 140)}"',
             );
-            final file =
-                await _tts.speakToFile(text: textToSpeak, voice: voice);
+            final file = await EdgeTtsRetry.run(
+              generate: () =>
+                  _tts.speakToFile(text: textToSpeak, voice: voice),
+              isActive: () => mounted &&
+                  _speaking &&
+                  readingToken == _readingToken &&
+                  !controller.isClosed,
+              onRetry: (retry, delay, error) => AppLogger.log(
+                'News Edge TTS debug [$readingToken]: errore temporaneo '
+                'chunk ${i + 1}/${chunks.length}, tentativo $retry/'
+                '${EdgeTtsRetry.delays.length} tra ${delay.inMilliseconds}ms: '
+                '$error',
+              ),
+            );
+            if (file == null) break;
             generatedCount += 1;
             final size = await file.length();
             debugPrint(

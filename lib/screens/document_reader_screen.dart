@@ -18,6 +18,7 @@ import '../services/document_library_service.dart';
 import '../services/document_text_extractor.dart';
 import '../services/voice_dictionary_service.dart';
 import '../tts/edge_tts_bridge.dart';
+import '../tts/edge_tts_retry.dart';
 import '../utils/app_logger.dart';
 import '../utils/document_unicode_normalizer.dart';
 import '../utils/epub_index_remapper.dart';
@@ -1583,31 +1584,24 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
             }
             final textToSpeak =
                 _voiceDictionary.applyToText(_chunks[i], dictionaryEntries);
-            File? file;
-            for (var attempt = 0;; attempt++) {
-              if (!mounted || !_speaking || readingToken != _readingToken) {
-                break;
-              }
-              try {
-                file = await _tts.speakToFile(
-                  text: textToSpeak,
-                  voice: voice,
-                );
-                break;
-              } catch (e) {
-                if (attempt >= edgeRetryDelays.length) rethrow;
-                if (!mounted || !_speaking || readingToken != _readingToken) {
-                  break;
-                }
-                final delay = edgeRetryDelays[attempt];
-                dev.log(
-                  'DocumentReaderScreen: Edge TTS chunk ${i + 1} retry '
-                  '${attempt + 1}/${edgeRetryDelays.length} tra '
-                  '${delay.inSeconds}s: $e',
-                );
-                await Future.delayed(delay);
-              }
-            }
+            // Un retry rigenera esclusivamente _chunks[i]: i file gia'
+            // consegnati al controller non vengono mai reinseriti.
+            final file = await EdgeTtsRetry.run(
+              generate: () => _tts.speakToFile(
+                text: textToSpeak,
+                voice: voice,
+              ),
+              isActive: () => mounted &&
+                  _speaking &&
+                  readingToken == _readingToken &&
+                  !controller.isClosed,
+              retryDelays: edgeRetryDelays,
+              onRetry: (retry, delay, error) => dev.log(
+                'DocumentReaderScreen: Edge TTS chunk ${i + 1} retry '
+                '$retry/${edgeRetryDelays.length} tra '
+                '${delay.inSeconds}s: $error',
+              ),
+            );
             if (file == null) break;
             if (!controller.isClosed &&
                 mounted &&

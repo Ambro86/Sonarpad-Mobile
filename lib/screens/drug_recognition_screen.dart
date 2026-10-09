@@ -23,6 +23,7 @@ import '../services/app_settings_service.dart';
 import '../services/audio_player_service.dart';
 import '../services/aifa_service.dart';
 import '../tts/edge_tts_bridge.dart';
+import '../tts/edge_tts_retry.dart';
 import '../utils/status_message.dart';
 
 class DrugRecognitionScreen extends StatefulWidget {
@@ -78,6 +79,7 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
   DateTime? _lastEdgeWarningTime;
   DateTime? _lastBestEffortCaptureTime;
   final Map<String, DateTime> _lastSpokenAt = {};
+  int _speechToken = 0;
   String? _lastEdgeWarningText;
 
   Timer? _instructionTimer;
@@ -694,28 +696,43 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
       return;
     }
     _lastSpokenAt[text] = now;
+    final token = ++_speechToken;
 
     try {
       if (!_speechSettingsLoaded) {
         await _loadSpeechSettings();
       }
-      await _stopCurrentSpeech();
+      if (!mounted || token != _speechToken) return;
+      await _stopCurrentSpeech(invalidateRequest: false);
+      if (!mounted || token != _speechToken) return;
       if (_ttsEngine == 'system') {
         await _configureSystemTts();
         await _flutterTts.speak(text);
         return;
       }
 
-      final file = await _edgeTts.speakToFile(text: text, voice: _edgeVoice);
-      await _audio.playFile(file);
+      final file = await EdgeTtsRetry.run(
+        generate: () => _edgeTts.speakToFile(text: text, voice: _edgeVoice),
+        isActive: () => mounted && token == _speechToken,
+        onRetry: (retry, delay, error) => AppLogger.log(
+          'DrugRecognition: Edge TTS retry $retry tra '
+          '${delay.inMilliseconds}ms: $error',
+        ),
+      );
+      if (file != null && mounted && token == _speechToken) {
+        await _audio.playFile(file);
+      }
     } catch (e) {
+      if (!mounted || token != _speechToken) return;
       AppLogger.log('DrugRecognition: Errore sintesi vocale -> $e');
       await _flutterTts.setLanguage("it-IT");
+      if (!mounted || token != _speechToken) return;
       await _flutterTts.speak(text);
     }
   }
 
-  Future<void> _stopCurrentSpeech() async {
+  Future<void> _stopCurrentSpeech({bool invalidateRequest = true}) async {
+    if (invalidateRequest) _speechToken += 1;
     try {
       await _flutterTts.stop();
     } catch (e) {
@@ -790,6 +807,7 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
 
   @override
   void dispose() {
+    _speechToken += 1;
     _instructionTimer?.cancel();
     _cameraController?.stopImageStream();
     _cameraController?.dispose();

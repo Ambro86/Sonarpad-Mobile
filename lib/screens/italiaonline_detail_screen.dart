@@ -10,6 +10,7 @@ import '../services/italiaonline_service.dart';
 import '../services/document_library_service.dart';
 import '../services/voice_dictionary_service.dart';
 import '../tts/edge_tts_bridge.dart';
+import '../tts/edge_tts_retry.dart';
 import '../utils/status_message.dart';
 import '../widgets/universal_accessible_view.dart';
 
@@ -29,9 +30,11 @@ class _ItaliaOnlineDetailScreenState extends State<ItaliaOnlineDetailScreen> {
   final AppSettingsService _settings = AppSettingsService();
   final VoiceDictionaryService _voiceDictionary = VoiceDictionaryService();
   bool _isPlaying = false;
+  int _speechToken = 0;
 
   @override
   void dispose() {
+    _speechToken += 1;
     unawaited(_tts.stop());
     unawaited(_audio.stopAndDispose());
     super.dispose();
@@ -44,9 +47,11 @@ class _ItaliaOnlineDetailScreenState extends State<ItaliaOnlineDetailScreen> {
   }
 
   Future<void> _speak() async {
+    final token = ++_speechToken;
     await _audio.stop();
     await _tts.stop();
-    if (mounted) setState(() => _isPlaying = true);
+    if (!mounted || token != _speechToken) return;
+    setState(() => _isPlaying = true);
     try {
       final engine = await _settings.loadTtsEngine();
       final dictionaryEntries = await _voiceDictionary.loadEntries();
@@ -80,26 +85,38 @@ class _ItaliaOnlineDetailScreenState extends State<ItaliaOnlineDetailScreen> {
           if (!mounted || !_isPlaying) break;
           final textToSpeak =
               _voiceDictionary.applyToText(chunk, dictionaryEntries);
-          files.add(await _edgeTts.speakToFile(
-            text: textToSpeak,
-            voice: voice,
-          ));
+          final file = await EdgeTtsRetry.run(
+            generate: () => _edgeTts.speakToFile(
+              text: textToSpeak,
+              voice: voice,
+            ),
+            isActive: () => mounted && _isPlaying && token == _speechToken,
+            onRetry: (retry, delay, error) => debugPrint(
+              'ItaliaOnline: Edge TTS retry $retry tra '
+              '${delay.inMilliseconds}ms: $error',
+            ),
+          );
+          if (file == null) break;
+          files.add(file);
         }
-        if (mounted && _isPlaying && files.isNotEmpty) {
+        if (mounted && _isPlaying && token == _speechToken && files.isNotEmpty) {
           await _audio.playFilesSequentially(files);
         }
       }
     } catch (e) {
       debugPrint('ItaliaOnline TTS error: $e');
-      if (mounted) {
+      if (mounted && token == _speechToken) {
                 showStatusMessage(context, 'Errore durante la lettura: $e');
       }
     } finally {
-      if (mounted) setState(() => _isPlaying = false);
+      if (mounted && token == _speechToken) {
+        setState(() => _isPlaying = false);
+      }
     }
   }
 
   Future<void> _stop() async {
+    _speechToken += 1;
     await _audio.stop();
     await _tts.stop();
     if (mounted) setState(() => _isPlaying = false);

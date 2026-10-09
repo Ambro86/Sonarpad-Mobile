@@ -14,6 +14,7 @@ import '../services/audio_player_service.dart';
 import '../services/news_service.dart';
 import '../services/voice_dictionary_service.dart';
 import '../tts/edge_tts_bridge.dart';
+import '../tts/edge_tts_retry.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'news_webview_screen.dart';
 import '../utils/status_message.dart';
@@ -205,8 +206,21 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
             if (!mounted || !_speaking || readingToken != _readingToken) break;
             final textToSpeak =
                 _voiceDictionary.applyToText(chunks[i], dictionaryEntries);
-            final file =
-                await _tts.speakToFile(text: textToSpeak, voice: voice);
+            final file = await EdgeTtsRetry.run(
+              generate: () =>
+                  _tts.speakToFile(text: textToSpeak, voice: voice),
+              isActive: () => mounted &&
+                  _speaking &&
+                  readingToken == _readingToken &&
+                  !controller.isClosed,
+              onRetry: (retry, delay, error) => debugPrint(
+                'Sonarpad TTS: errore Edge temporaneo chunk '
+                '${i + 1}/${chunks.length}, tentativo $retry/'
+                '${EdgeTtsRetry.delays.length} tra ${delay.inMilliseconds}ms: '
+                '$error',
+              ),
+            );
+            if (file == null) break;
             final size = await file.length();
             debugPrint(
               'Sonarpad TTS: chunk ${i + 1}/${chunks.length} ready '

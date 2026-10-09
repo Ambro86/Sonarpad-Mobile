@@ -15,6 +15,7 @@ import '../services/document_library_service.dart';
 import '../services/route_service.dart';
 import '../services/voice_dictionary_service.dart';
 import '../tts/edge_tts_bridge.dart';
+import '../tts/edge_tts_retry.dart';
 import '../utils/status_message.dart';
 import '../widgets/universal_accessible_view.dart';
 
@@ -299,10 +300,21 @@ class _RouteStepsScreenState extends State<RouteStepsScreen> {
             if (!mounted || !_speaking || readingToken != _readingToken) break;
             final textToSpeak =
                 _voiceDictionary.applyToText(chunks[i], dictionaryEntries);
-            final file = await _edgeTts.speakToFile(
-              text: textToSpeak,
-              voice: voice,
+            final file = await EdgeTtsRetry.run(
+              generate: () => _edgeTts.speakToFile(
+                text: textToSpeak,
+                voice: voice,
+              ),
+              isActive: () => mounted &&
+                  _speaking &&
+                  readingToken == _readingToken &&
+                  !controller.isClosed,
+              onRetry: (retry, delay, error) => debugPrint(
+                'RouteSteps: Edge TTS step ${i + 1}/${chunks.length} '
+                'retry $retry tra ${delay.inMilliseconds}ms: $error',
+              ),
             );
+            if (file == null) break;
             if (!controller.isClosed &&
                 mounted &&
                 _speaking &&

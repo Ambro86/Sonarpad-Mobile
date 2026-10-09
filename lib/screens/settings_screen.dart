@@ -14,6 +14,7 @@ import '../services/audio_player_service.dart';
 import '../services/podcast_cache_service.dart';
 import '../services/recording_feature_access.dart';
 import '../tts/edge_tts_bridge.dart';
+import '../tts/edge_tts_retry.dart';
 import '../utils/app_logger.dart';
 import '../utils/country_name_helper.dart';
 import 'app_log_screen.dart';
@@ -746,13 +747,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
         // For simplicity, we just trigger speak.
       } else {
         final tts = EdgeTtsBridge();
-        final file = await tts.speakToFile(
-          text: l10n.settingsVoiceTestText,
-          voice: _voice,
-          speed: previewSpeed,
-          pitch: previewPitch,
+        final file = await EdgeTtsRetry.run(
+          generate: () => tts.speakToFile(
+            text: l10n.settingsVoiceTestText,
+            voice: _voice,
+            speed: previewSpeed,
+            pitch: previewPitch,
+          ),
+          isActive: () => mounted && _testingVoice,
         );
-        if (!mounted) return;
+        if (file == null || !mounted || !_testingVoice) return;
         await _audio.playFile(file);
       }
     } catch (e) {

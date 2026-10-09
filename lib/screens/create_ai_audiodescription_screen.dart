@@ -20,6 +20,7 @@ import '../services/document_library_service.dart';
 import '../services/ios_photo_library_import_service.dart';
 import '../services/media_export_destination_service.dart';
 import '../tts/edge_tts_bridge.dart';
+import '../tts/edge_tts_retry.dart';
 import '../utils/app_logger.dart';
 import '../utils/status_message.dart';
 import '../widgets/universal_accessible_view.dart';
@@ -542,12 +543,17 @@ class _CreateAiAudiodescriptionScreenState
         }
         await _flutterTts.speak(l10n.settingsVoiceTestText);
       } else {
-        final file = await EdgeTtsBridge().speakToFile(
-          text: l10n.settingsVoiceTestText,
-          voice: _edgeVoice,
-          speed: speed,
-          pitch: pitch,
+        final bridge = EdgeTtsBridge();
+        final file = await EdgeTtsRetry.run(
+          generate: () => bridge.speakToFile(
+            text: l10n.settingsVoiceTestText,
+            voice: _edgeVoice,
+            speed: speed,
+            pitch: pitch,
+          ),
+          isActive: () => mounted && _testingVoice && !_running,
         );
+        if (file == null || !mounted || !_testingVoice || _running) return;
         await _flutterTts.stop();
         await _audio.playFile(file);
         if (mounted) {
