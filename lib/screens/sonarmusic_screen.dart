@@ -10,6 +10,7 @@ import '../services/recording_feature_access.dart';
 import '../services/sonarmusic_library_service.dart';
 import '../services/sonarmusic_service.dart';
 import '../services/sonartube_service.dart';
+import '../utils/sonarmusic_item_subtitle.dart';
 import '../widgets/online_ai_audiodescription_action.dart';
 import '../widgets/sonartube_save_media_dialog.dart';
 import '../widgets/universal_accessible_view.dart';
@@ -107,6 +108,7 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
     if (_loading || _loadingMore) return;
     final page = more ? _page + 1 : 1;
     final token = more ? _nextToken : null;
+    int? firstAppendedIndex;
     setState(() { if (more) { _loadingMore = true; } else { _loading = true; _error = null; } });
     try {
       SonarMusicPage result;
@@ -124,8 +126,14 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
       if (!mounted) return;
       setState(() {
         if (!more) _items = [];
+        final previousCount = _items.length;
         final seen = _items.map((e) => e.key).toSet();
-        for (final item in result.items) { if (seen.add(item.key)) _items.add(item); }
+        for (final item in result.items) {
+          if (seen.add(item.key)) _items.add(item);
+        }
+        if (more && _items.length > previousCount) {
+          firstAppendedIndex = previousCount;
+        }
         _nextToken = result.nextToken;
         _title = result.title ?? widget.collection?.title;
         _description = result.description;
@@ -135,6 +143,14 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
       if (mounted) setState(() => _error = e);
     } finally {
       if (mounted) setState(() { _loading = false; _loadingMore = false; });
+    }
+
+    // Match SonarTube: after “load more”, VoiceOver goes to the first NEW row,
+    // never back to the load button or to an already displayed result.
+    if (mounted && firstAppendedIndex != null) {
+      await WidgetsBinding.instance.endOfFrame;
+      if (!mounted) return;
+      await _accessible.focusTo('item_$firstAppendedIndex', animated: false);
     }
   }
   Future<void> _suggest() async {
@@ -362,13 +378,18 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
     await _play(playable.first, shuffle: shuffle, forceAutoplay: true);
   }
 
+  String _itemSubtitle(SonarMusicItem item) => sonarMusicItemSubtitle(
+    title: item.title,
+    kind: item.kind,
+    kindLabel: _label(item.kind),
+    artist: item.artist,
+    duration: item.duration,
+    subtitle: item.subtitle,
+  );
+
   Widget _itemVisual(SonarMusicItem item, int i) {
     final isFav = _favorites.contains(item.key);
-    final subtitle = [item.kind == 'song' ? _label('song') :
-      item.kind == 'video' ? _label('video') : _label(item.kind),
-      if (item.artist != null) item.artist!,
-      if (item.duration != null) item.duration!,
-      if (item.subtitle != null) item.subtitle!].join(' · ');
+    final subtitle = _itemSubtitle(item);
     final actions = <CustomSemanticsAction, VoidCallback>{
       CustomSemanticsAction(label: isFav ? _label('remove') : _label('add')):
         () => _toggleFavorite(item, focusId: 'item_$i'),
@@ -497,11 +518,7 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
       final item = _items[i];
       final isFav = _favorites.contains(item.key);
       rows.add(AccessibleListRow(id: 'item_$i', title: item.title,
-        subtitle: [item.kind == 'song' ? _label('song') :
-          item.kind == 'video' ? _label('video') : _label(item.kind),
-          if (item.artist != null) item.artist!,
-          if (item.duration != null) item.duration!,
-          if (item.subtitle != null) item.subtitle!].join(' · '),
+        subtitle: _itemSubtitle(item),
         enabled: item.available && !_busy,
         actions: [
           AccessibleCustomAction(id: 'favorite', label: isFav ? _label('remove') : _label('add')),
@@ -574,13 +591,21 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
   }
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: SonarpadAppBar(title: Text(_home ? 'SonarMusic'
-      : widget.libraryType != null ? _label(widget.libraryType!)
-      : _isCollection ? (_title ?? widget.collection!.title) : 'SonarMusic'),
-      actions: [if (!_home) IconButton(icon: const Icon(Icons.search),
-        tooltip: AppLocalizations.of(context).search,
-        onPressed: () => Navigator.push(context, MaterialPageRoute(
-          builder: (_) => SonarMusicScreen(service: _service, library: _library))) )]),
+    appBar: widget.searchQuery != null
+      ? SonarpadAppBar(
+          automaticallyImplyLeading: false,
+          leading: SonarpadBackButton(
+            key: const ValueKey('sonarmusic_search_results_back'),
+            onPressed: () => Navigator.pop(context),
+          ),
+        )
+      : SonarpadAppBar(title: Text(_home ? 'SonarMusic'
+          : widget.libraryType != null ? _label(widget.libraryType!)
+          : _isCollection ? (_title ?? widget.collection!.title) : 'SonarMusic'),
+          actions: [if (!_home) IconButton(icon: const Icon(Icons.search),
+            tooltip: AppLocalizations.of(context).search,
+            onPressed: () => Navigator.push(context, MaterialPageRoute(
+              builder: (_) => SonarMusicScreen(service: _service, library: _library))) )]),
     body: SafeArea(child: _buildList()));
 }
 

@@ -3113,12 +3113,12 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
 
       // A few dynamic-list transitions are known to be acknowledged by
       // VoiceOver without actually moving to the requested row. Recover only
-      // for the two verified cases and only once: SonarTube load-more jumps,
-      // and returning from the Document paragraph editor. The pending request
+      // for these scoped cases and only once: SonarTube/SonarMusic load-more
+      // jumps, and returning from the Document paragraph editor. The pending request
       // is cleared by the global focus observer as soon as the real target is
       // focused, so this stronger post never fires after a successful move.
       let isSonarTubeOneShotRecovery =
-        self.debugTag == "sonartube" &&
+        (self.debugTag == "sonartube" || self.debugTag == "sonarmusic") &&
         mode == "inPlaceJump" &&
         id.hasPrefix("item_")
       let isDocumentOneShotRecovery =
