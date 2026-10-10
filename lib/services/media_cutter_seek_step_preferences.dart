@@ -34,7 +34,7 @@ class MediaCutterSeekStepPreferences {
     final preferences = await SharedPreferences.getInstance();
     final saved = await preferences.setInt(storageKey, step.inMilliseconds);
     if (!saved) {
-      throw StateError('Media cutter step was not saved');
+      throw StateError('MEDIA_CUTTER_STEP_SAVE_FAILED');
     }
   }
 }

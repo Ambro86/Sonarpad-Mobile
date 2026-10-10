@@ -47,4 +47,4 @@ void main() {
     expect(await MediaCutterSeekStepPreferences.load(),
         const Duration(seconds: 1));
   });
-});
+}
