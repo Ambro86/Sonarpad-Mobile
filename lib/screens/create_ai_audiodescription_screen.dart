@@ -555,7 +555,7 @@ class _CreateAiAudiodescriptionScreenState
         );
         if (file == null || !mounted || !_testingVoice || _running) return;
         await _flutterTts.stop();
-        await _audio.playFile(file);
+        await _audio.playVoicePreview(file);
         if (mounted) {
           showStatusMessage(context, l10n.audioDescriptionEdgeVoiceReady);
         }

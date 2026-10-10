@@ -206,7 +206,11 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
             if (!mounted || !_speaking || readingToken != _readingToken) break;
             final textToSpeak =
                 _voiceDictionary.applyToText(chunks[i], dictionaryEntries);
+            if (!EdgeTtsRetry.isTextUsable(textToSpeak)) {
+              continue;
+            }
             final file = await EdgeTtsRetry.run(
+              retryUntilCancelled: true,
               generate: () =>
                   _tts.speakToFile(text: textToSpeak, voice: voice),
               isActive: () => mounted &&
@@ -215,8 +219,8 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
                   !controller.isClosed,
               onRetry: (retry, delay, error) => debugPrint(
                 'Sonarpad TTS: errore Edge temporaneo chunk '
-                '${i + 1}/${chunks.length}, tentativo $retry/'
-                '${EdgeTtsRetry.delays.length} tra ${delay.inMilliseconds}ms: '
+                '${i + 1}/${chunks.length}, tentativo $retry/illimitati '
+                'tra ${delay.inMilliseconds}ms: '
                 '$error',
               ),
             );

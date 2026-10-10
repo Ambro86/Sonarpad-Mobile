@@ -4,23 +4,16 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:sonarpad_mobile_starter/tts/edge_tts_retry.dart';
 
 void main() {
-  test('document Edge TTS retries only the current chunk with fixed delays', () {
+  test('document Edge TTS retries the current chunk until cancellation', () {
     final source =
         File('lib/screens/document_reader_screen.dart').readAsStringSync();
-    final start = source.indexOf('const edgeRetryDelays = <Duration>[');
+    final start = source.indexOf('final queuedChunkIndices = <int>[];');
     final end = source.indexOf('if (mounted && _speaking) {', start);
 
     expect(start, greaterThanOrEqualTo(0));
     expect(end, greaterThan(start));
     final edgeGeneration = source.substring(start, end);
 
-    for (final seconds in <int>[2, 4, 6, 8, 10]) {
-      expect(
-        edgeGeneration,
-        contains('Duration(seconds: $seconds)'),
-        reason: 'The document reader must keep its existing retry schedule.',
-      );
-    }
     expect(
       edgeGeneration,
       contains('final file = await EdgeTtsRetry.run('),
@@ -33,8 +26,8 @@ void main() {
     );
     expect(
       edgeGeneration,
-      contains('retryDelays: edgeRetryDelays,'),
-      reason: 'Keep the document-specific 2, 4, 6, 8 and 10 second delays.',
+      contains('retryUntilCancelled: true,'),
+      reason: 'Reading must recover on both Android and iOS until stopped.',
     );
     expect(
       edgeGeneration,

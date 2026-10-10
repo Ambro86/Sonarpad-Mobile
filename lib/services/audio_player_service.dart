@@ -21,7 +21,9 @@ class AudioPlayerService {
   static const _audioSessionTimeout = Duration(seconds: 4);
   static Future<void>? _pendingDispose;
 
-  final AudioPlayer _player = AudioPlayer();
+  final AudioPlayer _player;
+  final bool _isAndroid;
+  Completer<void>? _voicePreviewCancelled;
   bool _stopRequested = false;
   bool _sessionReady = false;
   AudioSessionType _currentSessionType = AudioSessionType.speech;
@@ -33,7 +35,9 @@ class AudioPlayerService {
   Duration? _currentDuration;
   final AppSettingsService _settings = AppSettingsService();
 
-  AudioPlayerService() {
+  AudioPlayerService({AudioPlayer? player, bool? isAndroid})
+      : _player = player ?? AudioPlayer(),
+        _isAndroid = isAndroid ?? Platform.isAndroid {
     _initBookmarkListener();
   }
 
@@ -380,6 +384,10 @@ class AudioPlayerService {
   }
 
   Future<void> pause() async {
+    if (_voicePreviewCancelled != null) {
+      await stop();
+      return;
+    }
     AppLogger.log('Sonarpad audio: pause');
     await _player.pause();
     await _disableWakelock();
@@ -403,6 +411,74 @@ class AudioPlayerService {
       await _player.seekToNext();
     }
     await play();
+  }
+
+  void _cancelVoicePreview() {
+    final cancelled = _voicePreviewCancelled;
+    _voicePreviewCancelled = null;
+    if (cancelled != null && !cancelled.isCompleted) cancelled.complete();
+  }
+
+  /// Android previews must stop at EOF: just_audio otherwise remains playing,
+  /// and an audio-focus interruption can replay the completed sample.
+  Future<void> playVoicePreview(File file) async {
+    if (!_isAndroid) return playFile(file);
+    _cancelVoicePreview();
+    final cancelled = Completer<void>();
+    _voicePreviewCancelled = cancelled;
+    bool isCurrent() => identical(_voicePreviewCancelled, cancelled);
+    StreamSubscription<PlayerState>? subscription;
+    _stopRequested = false;
+    try {
+      await _player.stop();
+      if (!isCurrent()) return;
+      await _prepareAudioSession(AudioSessionType.speech);
+      if (!isCurrent()) return;
+      await _player.setLoopMode(LoopMode.off);
+      if (!isCurrent()) return;
+      await _player.setAudioSource(
+        AudioSource.uri(
+          Uri.file(file.path),
+          tag: MediaItem(id: file.path, album: 'Sonarpad', title: 'Sonarpad'),
+        ),
+      );
+      if (!isCurrent()) return;
+      await _enableWakelock();
+      if (!isCurrent()) return;
+      final completed = Completer<void>();
+      void fail(Object error, StackTrace stack) {
+        if (!completed.isCompleted) completed.completeError(error, stack);
+      }
+
+      subscription = _player.playerStateStream.listen((state) {
+        if (state.processingState == ProcessingState.completed &&
+            !completed.isCompleted) {
+          completed.complete();
+        }
+      }, onError: fail);
+      // Attach the error handler before playback starts. A temporary focus
+      // pause resolves play(), but must not finish the preview before EOF.
+      final finished = Future.any([completed.future, cancelled.future]);
+      unawaited(_player.play().catchError(fail));
+      await finished;
+    } finally {
+      // Cancel before cleanup so idle/error events from stop cannot complete
+      // an abandoned preview or leave a listener attached after a stop error.
+      await subscription?.cancel();
+      if (isCurrent()) {
+        _stopRequested = true;
+        try {
+          // stop also clears just_audio's automatic interruption-resume flag,
+          // including when an interruption already changed playing to false.
+          await _player.stop();
+        } finally {
+          if (isCurrent()) {
+            await _disableWakelock();
+            if (isCurrent()) _cancelVoicePreview();
+          }
+        }
+      }
+    }
   }
 
   Future<void> playFile(File file) async {
@@ -695,6 +771,7 @@ class AudioPlayerService {
   }
 
   Future<void> stop() async {
+    _cancelVoicePreview();
     _stopRequested = true;
     AppLogger.log('Sonarpad audio: stop requested');
     await saveCurrentBookmark();
@@ -705,6 +782,7 @@ class AudioPlayerService {
   }
 
   Future<void> stopAndDispose() async {
+    _cancelVoicePreview();
     final completer = Completer<void>();
     _pendingDispose = completer.future;
 
@@ -735,6 +813,7 @@ class AudioPlayerService {
   }
 
   Future<void> dispose() async {
+    _cancelVoicePreview();
     final completer = Completer<void>();
     _pendingDispose = completer.future;
 

@@ -8,9 +8,7 @@ import 'dart:io';
 class EdgeTtsRetry {
   EdgeTtsRetry._();
 
-  // Come su Windows: attesa progressiva breve, al massimo due secondi.
-  // Il numero di tentativi e' limitato su mobile per non restare bloccati
-  // indefinitamente quando il servizio remoto non e' disponibile.
+  // Percorso limitato esistente, mantenuto per anteprime e altri chiamanti.
   static const delays = <Duration>[
     Duration(milliseconds: 400),
     Duration(milliseconds: 800),
@@ -18,6 +16,36 @@ class EdgeTtsRetry {
     Duration(milliseconds: 1600),
     Duration(milliseconds: 2000),
   ];
+
+  // Port di is_edge_text_usable di RustNotepad: i separatori da soli
+  // (per esempio "|" nelle notizie) non producono audio sintetizzabile.
+  static final _alphanumeric = RegExp(r'[\p{L}\p{N}]', unicode: true);
+  static bool isTextUsable(String text) => _alphanumeric.hasMatch(text);
+
+  /// Port di edge_retry_delay_ms: 250 ms per 403/reset/timeout,
+  /// 400 ms per gli altri errori, crescita fino a un massimo di 2 secondi.
+  static Duration readingRetryDelay(Object error, int retry) {
+    final message = error.toString().toLowerCase();
+    final fast =
+        message.contains('403') ||
+        message.contains('os error 10054') ||
+        message.contains('connection reset') ||
+        message.contains('forcibly closed by the remote host') ||
+        message.contains('timeout');
+    return Duration(milliseconds: (retry * (fast ? 250 : 400)).clamp(0, 2000));
+  }
+
+  static bool _isReadingTransient(Object error) {
+    final message = error.toString().toLowerCase();
+    if (message.contains('audio_description_cancelled')) return false;
+    return isTransient(error) ||
+        const [
+          'os error 10054',
+          'http status code: 403',
+          'invalid audio',
+          'decode failed',
+        ].any(message.contains);
+  }
 
   static bool isTransient(Object error) {
     if (error is TimeoutException ||
@@ -63,22 +91,33 @@ class EdgeTtsRetry {
 
   /// Ritorna null se Stop, una nuova lettura o la chiusura della pagina
   /// hanno invalidato la sessione. Non ritenta errori permanenti.
+  /// Con [retryUntilCancelled] gli errori temporanei non hanno un limite
+  /// di tentativi e usano il backoff di RustNotepad.
   static Future<File?> run({
     required Future<File> Function() generate,
     required bool Function() isActive,
+    bool retryUntilCancelled = false,
     FutureOr<void> Function(int retry, Duration delay, Object error)? onRetry,
     List<Duration> retryDelays = delays,
   }) async {
-    for (var attempt = 0;; attempt++) {
+    for (var attempt = 0; ; attempt++) {
       if (!isActive()) return null;
       try {
         final file = await generate();
         return isActive() ? file : null;
       } catch (error) {
         if (!isActive()) return null;
-        if (!isTransient(error) || attempt >= retryDelays.length) rethrow;
+        final transient = retryUntilCancelled
+            ? _isReadingTransient(error)
+            : isTransient(error);
+        if (!transient ||
+            (!retryUntilCancelled && attempt >= retryDelays.length)) {
+          rethrow;
+        }
 
-        final delay = retryDelays[attempt];
+        final delay = retryUntilCancelled
+            ? readingRetryDelay(error, attempt + 1)
+            : retryDelays[attempt];
         if (onRetry != null) await onRetry(attempt + 1, delay, error);
 
         // Brevi intervalli consentono a Stop di terminare anche durante

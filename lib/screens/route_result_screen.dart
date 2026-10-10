@@ -300,7 +300,9 @@ class _RouteStepsScreenState extends State<RouteStepsScreen> {
             if (!mounted || !_speaking || readingToken != _readingToken) break;
             final textToSpeak =
                 _voiceDictionary.applyToText(chunks[i], dictionaryEntries);
+            if (!EdgeTtsRetry.isTextUsable(textToSpeak)) continue;
             final file = await EdgeTtsRetry.run(
+              retryUntilCancelled: true,
               generate: () => _edgeTts.speakToFile(
                 text: textToSpeak,
                 voice: voice,

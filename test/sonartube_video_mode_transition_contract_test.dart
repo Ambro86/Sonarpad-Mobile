@@ -15,7 +15,8 @@ void main() {
     expect(player, contains('await previousVideoController.pause();'));
     expect(player, contains('await previousVideoController.dispose();'));
     expect(player, contains('resumePosition: resumePosition,'));
-    expect(player, contains('shouldPlay: wasPlaying,'));
+    expect(player, contains('shouldPlay: wasPlaying && (!Platform.isAndroid ||'));
+    expect(player, contains('pauseGeneration == _androidPauseGeneration'));
     expect(player, contains('video transition restored position='));
     expect(player, contains('audio transition restored position='));
   });

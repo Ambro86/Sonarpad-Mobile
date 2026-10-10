@@ -723,6 +723,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _testVoice() async {
+    if (_testingVoice) return;
     final l10n = AppLocalizations.of(context);
     setState(() => _testingVoice = true);
     try {
@@ -757,7 +758,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           isActive: () => mounted && _testingVoice,
         );
         if (file == null || !mounted || !_testingVoice) return;
-        await _audio.playFile(file);
+        await _audio.playVoicePreview(file);
       }
     } catch (e) {
       if (!mounted) return;

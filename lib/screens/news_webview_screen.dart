@@ -2071,10 +2071,10 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
             }
             final textToSpeak =
                 _voiceDictionary.applyToText(chunks[i], dictionaryEntries).trim();
-            if (textToSpeak.isEmpty) {
+            if (!EdgeTtsRetry.isTextUsable(textToSpeak)) {
               await AppLogger.log(
                 'News Edge TTS debug [$readingToken]: chunk ${i + 1}/${chunks.length} '
-                'saltato perché vuoto dopo dizionario',
+                'saltato perché privo di testo pronunciabile dopo dizionario',
               );
               continue;
             }
@@ -2084,6 +2084,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
               'tail="${_newsTtsDebugSnippet(textToSpeak, maxChars: 140)}"',
             );
             final file = await EdgeTtsRetry.run(
+              retryUntilCancelled: true,
               generate: () =>
                   _tts.speakToFile(text: textToSpeak, voice: voice),
               isActive: () => mounted &&
@@ -2092,8 +2093,8 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
                   !controller.isClosed,
               onRetry: (retry, delay, error) => AppLogger.log(
                 'News Edge TTS debug [$readingToken]: errore temporaneo '
-                'chunk ${i + 1}/${chunks.length}, tentativo $retry/'
-                '${EdgeTtsRetry.delays.length} tra ${delay.inMilliseconds}ms: '
+                'chunk ${i + 1}/${chunks.length}, tentativo $retry/illimitati '
+                'tra ${delay.inMilliseconds}ms: '
                 '$error',
               ),
             );

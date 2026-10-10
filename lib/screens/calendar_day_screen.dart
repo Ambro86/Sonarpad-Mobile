@@ -158,7 +158,9 @@ class _CalendarDayScreenState extends State<CalendarDayScreen> {
         await _flutterTts.speak(textToRead);
       } else {
         final voice = await _settings.loadTtsVoice();
+        if (!EdgeTtsRetry.isTextUsable(textToRead)) return;
         final file = await EdgeTtsRetry.run(
+          retryUntilCancelled: true,
           generate: () => _tts.speakToFile(text: textToRead, voice: voice),
           isActive: () => mounted && _speaking && readingToken == _readingToken,
           onRetry: (retry, delay, error) => debugPrint(

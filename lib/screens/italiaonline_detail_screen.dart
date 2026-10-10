@@ -85,7 +85,9 @@ class _ItaliaOnlineDetailScreenState extends State<ItaliaOnlineDetailScreen> {
           if (!mounted || !_isPlaying) break;
           final textToSpeak =
               _voiceDictionary.applyToText(chunk, dictionaryEntries);
+          if (!EdgeTtsRetry.isTextUsable(textToSpeak)) continue;
           final file = await EdgeTtsRetry.run(
+            retryUntilCancelled: true,
             generate: () => _edgeTts.speakToFile(
               text: textToSpeak,
               voice: voice,

@@ -15,6 +15,7 @@ import '../utils/status_message.dart';
 import 'package:intl/intl.dart';
 import '../services/app_settings_service.dart';
 import '../services/audio_player_service.dart';
+import '../services/android_video_playback_service.dart';
 import '../services/podcast_service.dart';
 import '../widgets/volume_slider.dart';
 import '../widgets/universal_accessible_view.dart';
@@ -97,10 +98,13 @@ class _PodcastEpisodePlayerScreenState
   static const _mediaEvents = EventChannel('sonarpad/tts_events');
 
   final _audio = AudioPlayerService();
+  final _androidVideoBackground = AndroidVideoPlaybackService();
   final _settings = AppSettingsService();
   final _podcastService = PodcastService();
   StreamSubscription<dynamic>? _mediaEventsSubscription;
   StreamSubscription<void>? _audioCompletionSubscription;
+  StreamSubscription<bool>? _externalAudioPlayingSubscription;
+  int _androidPauseGeneration = 0;
 
   VideoPlayerController? _videoController;
   bool _videoUsesExternalAudio = false;
@@ -156,6 +160,55 @@ class _PodcastEpisodePlayerScreenState
     return 'media:${uri.scheme}://${uri.host}${uri.path}';
   }
 
+  Future<void> _prepareVideoBackground(bool shouldPlay) async {
+    if (!mounted) return;
+    await _androidVideoBackground.prepare(
+      title: _episode.title,
+      pauseLabel: AppLocalizations.of(context).pause,
+      externalAudio: _videoUsesExternalAudio,
+      shouldPlay: shouldPlay,
+    );
+  }
+
+  Future<void> _syncVideoBackground() async {
+    final video = _videoController;
+    if (!mounted || video == null) return;
+    final value = video.value;
+    await _androidVideoBackground.update(
+      playing: value.isPlaying,
+      buffering: value.isBuffering,
+      completed: value.isCompleted,
+      failed: value.hasError,
+      transitioning: _loading || _switchingVideoMode || _changingPlaybackSpeed,
+      keepForNext: widget.autoNavigateNext && _hasNavigableNext,
+    );
+  }
+
+  Future<void> _syncExternalVideoToAudio(bool playing) async {
+    final video = _videoController;
+    if (!mounted || video == null || !_videoUsesExternalAudio ||
+        _loading || _switchingVideoMode || _changingPlaybackSpeed) {
+      return;
+    }
+    try {
+      if (!playing) {
+        ++_androidPauseGeneration;
+        await _androidVideoBackground.pause();
+        await video.pause();
+      } else if (!video.value.isPlaying) {
+        // Lock-screen/headset commands belong to just_audio in this mode.
+        await _prepareVideoBackground(true);
+        if (!mounted || video != _videoController || !_audio.isPlaying) return;
+        await video.seekTo(_audio.position);
+        if (!mounted || video != _videoController || !_audio.isPlaying) return;
+        if (!await _resumeVideoAtSelectedSpeed(video)) await _audio.pause();
+      }
+    } catch (error) {
+      AppLogger.log('PodcastPlayer: external audio/video sync failed: $error');
+      await _audio.pause();
+    }
+  }
+
   Future<void> _saveVideoBookmark() async {
     if (_videoController == null) return;
     final pos = _videoController!.value.position;
@@ -196,6 +249,7 @@ class _PodcastEpisodePlayerScreenState
       'videoSupported=${widget.isVideoSupported}, $_logSubject',
     );
     final l10n = AppLocalizations.of(context);
+    final pauseGeneration = _androidPauseGeneration;
     setState(() {
       _loading = true;
       _error = null;
@@ -222,6 +276,9 @@ class _PodcastEpisodePlayerScreenState
         final useExternalAudio = _episode.videoUrl != null &&
             _episode.videoUrl != _episode.audioUrl;
         _videoUsesExternalAudio = useExternalAudio;
+        await _prepareVideoBackground(shouldPlay && (!Platform.isAndroid ||
+            pauseGeneration == _androidPauseGeneration));
+        if (!mounted) return;
         AppLogger.log(
           'PodcastPlayer: video playback url selected url=$playbackUrl, '
           'audioUrl=${_episode.audioUrl}, '
@@ -231,16 +288,25 @@ class _PodcastEpisodePlayerScreenState
         if (uri.scheme == 'file') {
           _videoController = VideoPlayerController.file(
             File(uri.toFilePath()),
-            videoPlayerOptions: VideoPlayerOptions(allowBackgroundPlayback: true),
+            videoPlayerOptions: VideoPlayerOptions(
+              allowBackgroundPlayback: true,
+              // Focus is owned by our service or by the separate audio player.
+              mixWithOthers: Platform.isAndroid,
+            ),
           );
         } else {
           _videoController = VideoPlayerController.networkUrl(
             uri,
-            videoPlayerOptions: VideoPlayerOptions(allowBackgroundPlayback: true),
+            videoPlayerOptions: VideoPlayerOptions(
+              allowBackgroundPlayback: true,
+              mixWithOthers: Platform.isAndroid,
+            ),
           );
         }
         AppLogger.log('PodcastPlayer: video initialize start, $_logSubject');
-        await _videoController!.initialize();
+        final initializedVideo = _videoController!;
+        await initializedVideo.initialize();
+        if (!mounted || _videoController != initializedVideo) return;
         AppLogger.log('PodcastPlayer: video initialize completed, $_logSubject');
         _lastConfirmedVideoSpeed = 1.0;
         if (useExternalAudio) {
@@ -269,8 +335,9 @@ class _PodcastEpisodePlayerScreenState
           );
         }
 
-        _videoController!.addListener(() {
-          if (!mounted || _videoController == null) return;
+        initializedVideo.addListener(() {
+          if (!mounted || _videoController != initializedVideo) return;
+          unawaited(_syncVideoBackground());
           final value = _videoController!.value;
           final currentSecond = value.position.inSeconds;
           if (currentSecond > 0 && currentSecond % 15 == 0) {
@@ -315,8 +382,11 @@ class _PodcastEpisodePlayerScreenState
           startVideo: shouldPlay,
         );
         if (!mounted) return;
+        if (!_androidVideoBackground.playbackRequested) {
+          await _videoController?.pause();
+        }
         _loaded = true;
-        if (useExternalAudio && shouldPlay) {
+        if (useExternalAudio && shouldPlay && _androidVideoBackground.playbackRequested) {
           unawaited(_audio.play().catchError((Object e, StackTrace stackTrace) {
             AppLogger.log(
               'PodcastPlayer: external audio play async error: $e, $_logSubject',
@@ -344,6 +414,7 @@ class _PodcastEpisodePlayerScreenState
           });
         }
       } else {
+        await _androidVideoBackground.pause();
         AppLogger.log(
           'PodcastPlayer: audio branch start loaded=$_loaded, $_logSubject',
         );
@@ -385,7 +456,8 @@ class _PodcastEpisodePlayerScreenState
           'PodcastPlayer: audio play scheduled, '
           'title="In riproduzione: ${_episode.title}", $_logSubject',
         );
-        if (shouldPlay) {
+        if (shouldPlay && (!Platform.isAndroid ||
+            pauseGeneration == _androidPauseGeneration)) {
           unawaited(_audio.play().catchError((Object e, StackTrace stackTrace) {
             AppLogger.log(
               'PodcastPlayer: audio play async error: $e, $_logSubject',
@@ -405,15 +477,19 @@ class _PodcastEpisodePlayerScreenState
         await _play(
           allowMediaRefresh: false,
           resumePosition: resumePosition,
-          shouldPlay: shouldPlay,
+          shouldPlay: shouldPlay && (!Platform.isAndroid ||
+              pauseGeneration == _androidPauseGeneration),
         );
         return;
       }
       AppLogger.log('PodcastPlayer: Error during _play: $e, $_logSubject');
+      await _androidVideoBackground.pause();
+      if (!mounted) return;
       setState(() => _error = l10n.episodeError(l10n.technicalErrorGeneric));
     } finally {
       if (mounted) {
         setState(() => _loading = false);
+        unawaited(_syncVideoBackground());
         AppLogger.log(
           'PodcastPlayer: _play complete. loading=false, loaded=$_loaded, '
           'isVideo=${_videoController != null}, $_logSubject',
@@ -524,6 +600,7 @@ class _PodcastEpisodePlayerScreenState
     }
     if (direction < 0 && !_hasNavigablePrevious) return;
     if (direction > 0 && !_hasNavigableNext) return;
+    final pauseGeneration = _androidPauseGeneration;
 
     AppLogger.log(
       'PodcastPlayer: adjacent navigation start direction=$direction, $_logSubject',
@@ -566,7 +643,8 @@ class _PodcastEpisodePlayerScreenState
         _error = null;
       });
       unawaited(_detectChapters());
-      await _play();
+      await _play(shouldPlay: !Platform.isAndroid ||
+          pauseGeneration == _androidPauseGeneration);
       AppLogger.log(
         'PodcastPlayer: adjacent navigation complete direction=$direction, $_logSubject',
       );
@@ -580,13 +658,18 @@ class _PodcastEpisodePlayerScreenState
       }
     } finally {
       if (mounted && _loading) setState(() => _loading = false);
+      if (Platform.isAndroid && _videoController?.value.isCompleted == true) {
+        await _androidVideoBackground.pause();
+      }
     }
   }
 
-  Future<void> _pause() async {
-    if (_changingPlaybackSpeed) {
+  Future<void> _pause({bool force = false}) async {
+    if (_changingPlaybackSpeed && !force) {
       return;
     }
+    if (Platform.isAndroid) ++_androidPauseGeneration;
+    await _androidVideoBackground.pause();
     AppLogger.log(
       'PodcastPlayer: _pause start video=${_videoController != null} '
       'loaded=$_loaded loading=$_loading, $_logSubject',
@@ -597,7 +680,7 @@ class _PodcastEpisodePlayerScreenState
         await _audio.pause();
       }
       await _saveVideoBookmark();
-      setState(() {});
+      if (mounted) setState(() {});
     } else {
       await _audio.pause();
       await _audio.saveCurrentBookmark();
@@ -611,21 +694,32 @@ class _PodcastEpisodePlayerScreenState
     final controller = _videoController;
     if (controller == null || !controller.value.isInitialized) return;
     if (controller.value.isPlaying) {
-      await controller.pause();
-      if (_videoUsesExternalAudio) {
-        await _audio.pause();
-      }
-      await _saveVideoBookmark();
+      await _pause();
       if (Platform.isIOS) {
         await _mediaCommands.invokeMethod('setMagicTapPlaying', false);
       }
     } else {
+      try {
+        await _prepareVideoBackground(true);
+      } catch (error) {
+        AppLogger.log('PodcastPlayer: background resume failed: $error');
+        if (mounted) {
+          showStatusMessage(context, AppLocalizations.of(context).technicalErrorGeneric);
+        }
+        return;
+      }
+      if (!mounted || !_androidVideoBackground.playbackRequested) return;
       final resumed = await _resumeVideoAtSelectedSpeed(controller);
       if (!resumed || !mounted) {
+        await _androidVideoBackground.pause();
         return;
       }
       if (_videoUsesExternalAudio) {
-        await _audio.play();
+        // play() completes at pause/end; do not keep this UI action pending.
+        unawaited(_audio.play().catchError((Object error) {
+          AppLogger.log('PodcastPlayer: external audio resume failed: $error');
+          if (mounted) unawaited(_pause(force: true));
+        }));
       }
       if (Platform.isIOS) {
         await _mediaCommands.invokeMethod('setMagicTapPlaying', true);
@@ -735,6 +829,7 @@ class _PodcastEpisodePlayerScreenState
   }
 
   Future<void> _applyVideoSetting(bool enable) async {
+    final pauseGeneration = _androidPauseGeneration;
     final previousVideoController = _videoController;
     final wasPlaying = previousVideoController?.value.isPlaying ??
         _audio.isPlaying;
@@ -771,9 +866,11 @@ class _PodcastEpisodePlayerScreenState
       _loaded = false; // Force a reload only after the old engine is stopped.
       await _play(
         resumePosition: resumePosition,
-        shouldPlay: wasPlaying,
+        shouldPlay: wasPlaying && (!Platform.isAndroid ||
+            pauseGeneration == _androidPauseGeneration),
       );
     } catch (error, stackTrace) {
+      await _androidVideoBackground.pause();
       AppLogger.log(
         'PodcastPlayer: mode transition failed error=$error '
         'stack=$stackTrace, $_logSubject',
@@ -787,6 +884,7 @@ class _PodcastEpisodePlayerScreenState
     } finally {
       if (mounted) {
         setState(() => _switchingVideoMode = false);
+        unawaited(_syncVideoBackground());
       }
     }
   }
@@ -817,6 +915,14 @@ class _PodcastEpisodePlayerScreenState
   @override
   void initState() {
     super.initState();
+    _androidVideoBackground.onPause = () async {
+      if (mounted) await _pause(force: true);
+    };
+    if (Platform.isAndroid) {
+      _externalAudioPlayingSubscription = _audio.playingStream.listen((playing) {
+        unawaited(_syncExternalVideoToAudio(playing));
+      });
+    }
     _audioCompletionSubscription = _audio.completionStream.listen((_) {
       unawaited(_handlePlaybackCompleted());
     });
@@ -924,7 +1030,8 @@ class _PodcastEpisodePlayerScreenState
           rate: rate,
           targets: targets,
           afterApply: () async {
-            if (mounted && startVideo && video == _videoController) {
+            if (mounted && startVideo && video == _videoController &&
+                _androidVideoBackground.playbackRequested) {
               await video?.play();
             }
           },
@@ -932,7 +1039,8 @@ class _PodcastEpisodePlayerScreenState
             await video?.pause();
           },
         );
-      } else if (mounted && startVideo && video == _videoController) {
+      } else if (mounted && startVideo && video == _videoController &&
+          _androidVideoBackground.playbackRequested) {
         // Default/disabled setting keeps the existing playback path unchanged.
         await video?.play();
       }
@@ -955,7 +1063,8 @@ class _PodcastEpisodePlayerScreenState
         rethrow;
       }
       _playbackSpeed = previous;
-      if (startVideo && video == _videoController) {
+      if (startVideo && video == _videoController &&
+          _androidVideoBackground.playbackRequested) {
         await video?.play();
         _lastConfirmedVideoSpeed = previous;
       }
@@ -967,8 +1076,13 @@ class _PodcastEpisodePlayerScreenState
   }
 
   Future<bool> _resumeVideoAtSelectedSpeed(VideoPlayerController controller) async {
+    if (!mounted || !_androidVideoBackground.playbackRequested) return false;
     try {
       await controller.play();
+      if (!mounted || !_androidVideoBackground.playbackRequested) {
+        await controller.pause();
+        return false;
+      }
       _lastConfirmedVideoSpeed = _playbackSpeed;
       return true;
     } catch (error) {
@@ -996,19 +1110,20 @@ class _PodcastEpisodePlayerScreenState
           rate: _lastConfirmedVideoSpeed,
           targets: _playbackRateTargets(controller),
           afterApply: () async {
-            if (!mounted) {
+            if (!mounted || !_androidVideoBackground.playbackRequested) {
               return;
             }
             if (_videoUsesExternalAudio) {
               await _audio.seek(controller.value.position);
             }
-            if (mounted) {
+            if (mounted && _androidVideoBackground.playbackRequested) {
               await controller.play();
             }
           },
           beforeRollback: controller.pause,
         );
-        if (!mounted) {
+        if (!mounted || !_androidVideoBackground.playbackRequested) {
+          await controller.pause();
           return false;
         }
         setState(() {
@@ -1119,11 +1234,16 @@ class _PodcastEpisodePlayerScreenState
     }
 
     Future<void> resumeEngines() async {
-      if (!mounted || video != _videoController) {
+      if (!mounted || video != _videoController ||
+          (video != null && !_androidVideoBackground.playbackRequested)) {
         return;
       }
       if (wasPlaying) {
         await video?.play();
+        if (!mounted || (video != null && !_androidVideoBackground.playbackRequested)) {
+          await video?.pause();
+          return;
+        }
         if (video == null || externalAudio) {
           // just_audio.play completes at pause/end, not when playback starts.
           unawaited(_audio.play().catchError((Object error) {
@@ -1207,6 +1327,11 @@ class _PodcastEpisodePlayerScreenState
     } finally {
       if (mounted) {
         setState(() => _changingPlaybackSpeed = false);
+        if (video != null && !video.value.isPlaying && !video.value.isBuffering) {
+          await _androidVideoBackground.pause();
+        } else {
+          unawaited(_syncVideoBackground());
+        }
       }
     }
   }
@@ -1356,6 +1481,8 @@ class _PodcastEpisodePlayerScreenState
       'video=${_videoController != null}, $_logSubject',
     );
     WidgetsBinding.instance.removeObserver(this);
+    unawaited(_androidVideoBackground.dispose());
+    unawaited(_externalAudioPlayingSubscription?.cancel() ?? Future<void>.value());
     _playbackSpeedFocusNode.dispose();
     _diagnosticHeartbeat?.cancel();
     _accessiblePositionRefreshTimer?.cancel();

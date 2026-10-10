@@ -1569,13 +1569,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         _edgeFileController = controller;
         Object? generationError;
         const initialBufferChunks = 2;
-        const edgeRetryDelays = <Duration>[
-          Duration(seconds: 2),
-          Duration(seconds: 4),
-          Duration(seconds: 6),
-          Duration(seconds: 8),
-          Duration(seconds: 10),
-        ];
+        final queuedChunkIndices = <int>[];
 
         final generation = Future<void>(() async {
           for (var i = startIndex; i < _chunks.length; i++) {
@@ -1584,9 +1578,13 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
             }
             final textToSpeak =
                 _voiceDictionary.applyToText(_chunks[i], dictionaryEntries);
+            if (!EdgeTtsRetry.isTextUsable(textToSpeak)) {
+              continue;
+            }
             // Un retry rigenera esclusivamente _chunks[i]: i file gia'
             // consegnati al controller non vengono mai reinseriti.
             final file = await EdgeTtsRetry.run(
+              retryUntilCancelled: true,
               generate: () => _tts.speakToFile(
                 text: textToSpeak,
                 voice: voice,
@@ -1595,11 +1593,9 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                   _speaking &&
                   readingToken == _readingToken &&
                   !controller.isClosed,
-              retryDelays: edgeRetryDelays,
               onRetry: (retry, delay, error) => dev.log(
                 'DocumentReaderScreen: Edge TTS chunk ${i + 1} retry '
-                '$retry/${edgeRetryDelays.length} tra '
-                '${delay.inSeconds}s: $error',
+                '$retry/illimitati tra ${delay.inMilliseconds}ms: $error',
               ),
             );
             if (file == null) break;
@@ -1607,6 +1603,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                 mounted &&
                 _speaking &&
                 readingToken == _readingToken) {
+              queuedChunkIndices.add(i);
               controller.add(file);
             }
           }
@@ -1624,7 +1621,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
             initialBufferCount: initialBufferChunks,
             isPaused: () => _ttsPaused,
             onChunkStarted: (index, file) {
-              final chunkIndex = startIndex + index;
+              final chunkIndex = queuedChunkIndices[index];
               if (mounted && readingToken == _readingToken) {
                 setState(() {
                   _focusedChunkIndex = chunkIndex;

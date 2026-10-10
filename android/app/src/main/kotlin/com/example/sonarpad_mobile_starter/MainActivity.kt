@@ -19,6 +19,10 @@ class MainActivity : AudioServiceActivity() {
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
 
+        if (!flutterEngine.plugins.has(MediaKitBackgroundPlugin::class.java)) {
+            flutterEngine.plugins.add(MediaKitBackgroundPlugin())
+        }
+
         MethodChannel(
             flutterEngine.dartExecutor.binaryMessenger,
             methodChannelName

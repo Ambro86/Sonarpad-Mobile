@@ -9,6 +9,7 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 import '../l10n/app_localizations.dart';
 import '../models/radio_station.dart';
 import '../services/audio_player_service.dart';
+import '../services/android_media_playback_service.dart';
 import '../services/global_recording_service.dart';
 import '../services/radio_service.dart';
 import '../services/raiplay_service.dart';
@@ -46,13 +47,13 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   static const _mediaEvents = EventChannel('sonarpad/tts_events');
 
   final _audio = AudioPlayerService();
+  final _androidBackground = AndroidMediaPlaybackService();
   final _settings = AppSettingsService();
   final _recordingService = GlobalRecordingService.instance;
   final _raiNativePlayer = RaiNativePlayerService();
   late final GlobalRecordingTarget _recordingTarget;
   StreamSubscription<dynamic>? _mediaEventsSubscription;
   StreamSubscription<dynamic>? _raiNativeEventsSubscription;
-  StreamSubscription<Duration>? _androidLa7AudioPositionSubscription;
   StreamSubscription<bool>? _mediaKitPlayingSubscription;
   StreamSubscription<String>? _mediaKitErrorSubscription;
   StreamSubscription<dynamic>? _mediaKitPositionSubscription;
@@ -74,8 +75,6 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   String _mediaKitStage = 'none';
   bool _streamRetryInProgress = false;
   bool _streamUserPaused = false;
-  int _androidLa7AutoRecoveryCount = 0;
-  bool _androidLa7AutoRecoveryInProgress = false;
 
   bool get _streamReconnecting =>
       widget.tvChannel != null && _streamRecovery.isReconnecting;
@@ -127,6 +126,9 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   @override
   void initState() {
     super.initState();
+    _androidBackground.onPause = () async {
+      if (mounted) await _stop();
+    };
     _recordingTarget = widget.tvChannel == null
         ? GlobalRecordingTarget(
             id: 'radio:${widget.station.streamUrl}',
@@ -220,13 +222,6 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   Future<void> _play({bool reconnecting = false}) async {
     if (!mounted) return;
     final requestId = ++_playRequestId;
-    await _androidLa7AudioPositionSubscription?.cancel();
-    if (!mounted) return;
-    _androidLa7AudioPositionSubscription = null;
-    if (!reconnecting) {
-      _androidLa7AutoRecoveryCount = 0;
-      _androidLa7AutoRecoveryInProgress = false;
-    }
     final l10n = AppLocalizations.of(context);
     _raiDirectAudioFallbackTimer?.cancel();
     _raiDirectAudioFallbackTimer = null;
@@ -252,6 +247,18 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       _error = null;
     });
     try {
+      if (Platform.isAndroid &&
+          (_requiresTvMediaKitPlayback || _requiresVideoPlayback)) {
+        // Start while the user is opening the channel, before URL resolution.
+        // Keep the same service through MediaKit replacements and DASH refreshes.
+        await _audio.stop();
+        if (!mounted || requestId != _playRequestId || _streamUserPaused) return;
+        await _androidBackground.start(
+          title: widget.station.name,
+          pauseLabel: l10n.pause,
+        );
+        if (!mounted || requestId != _playRequestId || _streamUserPaused) return;
+      }
       if (_useNativeRaiPlayback) {
         await _playRaiNative(
           requestId: requestId,
@@ -265,85 +272,6 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
           requestId: requestId,
           diagnostics: diagnostics,
         );
-        return;
-      }
-
-      if (_useAndroidLa7BackgroundAudio) {
-        await AppLogger.log(
-          'RadioPlayer: Android La7 audio-only uses just_audio background/ExoPlayer',
-        );
-        diagnostics?.record('android_la7_background_audio', {
-          'engine': 'just_audio_exoplayer',
-          'screenOffResilient': true,
-        });
-        await _disposeMediaKitPlayer();
-        if (!mounted || requestId != _playRequestId) return;
-        _videoController?.pause();
-        _videoController?.dispose();
-        _videoController = null;
-        final refreshedUrl = reconnecting && widget.tvChannel != null
-            ? await TvService().resolveStreamUrl(
-                widget.tvChannel!,
-                diagnostics: diagnostics,
-              )
-            : widget.station.streamUrl;
-        if (!mounted || requestId != _playRequestId) return;
-        await _audio.setUrl(
-          refreshedUrl,
-          title: l10n.nowPlayingTitle(widget.station.name),
-          headers: widget.tvChannel?.playbackHeaders,
-        );
-        if (!mounted || requestId != _playRequestId) return;
-        var firstProgressLogged = false;
-        _androidLa7AudioPositionSubscription =
-            _audio.positionStream.listen((position) {
-          if (!mounted || requestId != _playRequestId) return;
-          if (position <= Duration.zero || !_audio.isPlaying) return;
-          if (!firstProgressLogged) {
-            firstProgressLogged = true;
-            diagnostics?.record('first_playback_progress', {
-              'stage': 'android_la7_background_audio',
-              'positionMs': position.inMilliseconds,
-            });
-          }
-          if (_streamRecovery.observe(
-            position: position,
-            playing: true,
-            buffering: false,
-          )) {
-            _streamConnectionTimer?.cancel();
-            if (_error != null) setState(() => _error = null);
-          }
-          if (_androidLa7AutoRecoveryCount > 0 &&
-              position >= const Duration(seconds: 5)) {
-            _androidLa7AutoRecoveryCount = 0;
-          }
-        });
-        unawaited(_audio.play().then((_) {
-          if (!mounted || requestId != _playRequestId || _streamUserPaused) {
-            return;
-          }
-          diagnostics?.record('android_la7_background_audio_ended');
-          unawaited(_recoverAndroidLa7BackgroundAudio(
-            requestId,
-            reason: 'playback_ended',
-          ));
-        }).catchError((error) {
-          if (!mounted || requestId != _playRequestId || _streamUserPaused) {
-            return;
-          }
-          AppLogger.log(
-            'RadioPlayer: Android La7 background audio error: ${StreamDiagnosticsSession.redact(error.toString())}',
-          );
-          diagnostics?.record('android_la7_background_audio_error', {
-            'category': StreamDiagnosticsSession.classifyError(error),
-            'error': error.toString(),
-          });
-          unawaited(_recoverAndroidLa7BackgroundAudio(
-            requestId,
-            reason: 'playback_error',
-          ));
-        }));
         return;
       }
 
@@ -420,6 +348,9 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       }
       if (_mediaKitIsMpd) {
         await _disableMpdWakelock();
+      }
+      if (!(_raiDirectAudioFallbackTimer?.isActive ?? false)) {
+        await _androidBackground.stop();
       }
       if (!mounted || requestId != _playRequestId) {
         return;
@@ -887,7 +818,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     final diagnostics = _streamDiagnostics;
     final stage = '$diagnosticStage#$openId';
     bool requestIsCurrent() => mounted && requestId == _playRequestId &&
-        openId == _mediaKitOpenId;
+        openId == _mediaKitOpenId && (!Platform.isAndroid || !_streamUserPaused);
     final playbackUrl = streamUrl ?? widget.station.streamUrl;
     final isMpd = TvService.isDashStreamUrl(playbackUrl);
     final mediaKitHeaders = _mediaKitHttpHeaders();
@@ -997,6 +928,9 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       }
       if (!mounted) return;
       setState(() => _mediaKitPlaying = playing);
+      unawaited(_androidBackground.update(
+        playing: playing, buffering: _mediaKitBuffering,
+      ));
       if (Platform.isIOS) {
         unawaited(_mediaCommands.invokeMethod('setMagicTapPlaying', playing));
       }
@@ -1089,6 +1023,9 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         'positionMs': _mediaKitLastPosition?.inMilliseconds,
       });
       _mediaKitBuffering = buffering;
+      unawaited(_androidBackground.update(
+        playing: _mediaKitPlaying, buffering: buffering,
+      ));
       AppLogger.log(
         'RadioPlayer: MediaKit buffering emitted buffering=$buffering playing=$_mediaKitPlaying position=$_mediaKitLastPosition duration=$_mediaKitLastDuration',
       );
@@ -1141,6 +1078,10 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
           httpHeaders: mediaKitHeaders,
         ),
       );
+      // Pause can arrive from the lock screen while native open is pending.
+      if (Platform.isAndroid && _streamUserPaused && _mediaKitPlayer == player) {
+        await player.pause();
+      }
     } catch (error) {
       if (!playerIsCurrent()) {
         await AppLogger.log(
@@ -1175,48 +1116,6 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     AppLogger.log(
       'RadioPlayer: MediaKit open completed station="${widget.station.name}" playing=$_mediaKitPlaying buffering=$_mediaKitBuffering position=$_mediaKitLastPosition duration=$_mediaKitLastDuration preferRaiAD=$preferRaiAudioDescription',
     );
-  }
-
-  Future<void> _recoverAndroidLa7BackgroundAudio(
-    int requestId, {
-    required String reason,
-  }) async {
-    if (!mounted ||
-        requestId != _playRequestId ||
-        !_useAndroidLa7BackgroundAudio ||
-        _streamUserPaused ||
-        _androidLa7AutoRecoveryInProgress) {
-      return;
-    }
-    if (_androidLa7AutoRecoveryCount >= 3) {
-      _streamDiagnostics?.record('android_la7_auto_recovery_exhausted', {
-        'reason': reason,
-        'attempts': _androidLa7AutoRecoveryCount,
-      });
-      _setStreamFailure(requestId);
-      return;
-    }
-
-    _androidLa7AutoRecoveryInProgress = true;
-    final attempt = ++_androidLa7AutoRecoveryCount;
-    final delay = switch (attempt) {
-      1 => const Duration(seconds: 1),
-      2 => const Duration(seconds: 3),
-      _ => const Duration(seconds: 8),
-    };
-    _streamDiagnostics?.record('android_la7_auto_recovery', {
-      'reason': reason,
-      'attempt': attempt,
-      'delayMs': delay.inMilliseconds,
-    });
-    _beginStreamReconnection(requestId);
-    try {
-      await Future.delayed(delay);
-      if (!mounted || requestId != _playRequestId || _streamUserPaused) return;
-      await _play(reconnecting: true);
-    } finally {
-      _androidLa7AutoRecoveryInProgress = false;
-    }
   }
 
   Future<void> _retryStreamPlayback() async {
@@ -1696,6 +1595,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   }
 
   bool _shouldPreemptivelyRefreshMediaKitDashLiveWindow(mk.Player player) {
+    if (Platform.isAndroid && _streamUserPaused) return false;
     if (!_requiresVideoPlayback || _mediaKitPlayer != player) return false;
     if (_mediaKitAutoRecoveryInProgress) return false;
     if (!_mediaKitPlaying || _mediaKitCompleted) return false;
@@ -1725,6 +1625,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   }
 
   bool _shouldRecoverMediaKitDashStall(mk.Player player) {
+    if (Platform.isAndroid && _streamUserPaused) return false;
     if (!_requiresVideoPlayback || _mediaKitPlayer != player) return false;
     if (_mediaKitAutoRecoveryInProgress) return false;
     if (!_mediaKitPlaying || !_mediaKitBuffering || _mediaKitCompleted) {
@@ -1767,7 +1668,10 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     mk.Player player, {
     required String reason,
   }) async {
-    if (_mediaKitAutoRecoveryInProgress || _mediaKitPlayer != player) return;
+    if ((Platform.isAndroid && _streamUserPaused) ||
+        _mediaKitAutoRecoveryInProgress || _mediaKitPlayer != player) {
+      return;
+    }
     _mediaKitAutoRecoveryInProgress = true;
     _mediaKitLastAutoRecoveryAt = DateTime.now();
     final remaining =
@@ -1811,6 +1715,13 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   }
 
   Future<void> _stop() async {
+    if (Platform.isAndroid) {
+      _streamUserPaused = true;
+      _streamConnectionTimer?.cancel();
+      _raiDirectAudioFallbackTimer?.cancel();
+      _raiDirectAudioFallbackTimer = null;
+      await _androidBackground.stop();
+    }
     if (_raiNativeActive) {
       _streamUserPaused = true;
       _streamDiagnostics?.record('user_pause', {'stage': _mediaKitStage});
@@ -1819,6 +1730,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     }
     if (_mediaKitPlayer != null) {
       await _mediaKitPlayer!.pause();
+      if (Platform.isAndroid) _mediaKitPlaying = false;
       if (_mediaKitIsMpd) {
         await _disableMpdWakelock();
       }
@@ -1829,12 +1741,6 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       await _videoController!.pause();
       setState(() {});
     } else {
-      if (_useAndroidLa7BackgroundAudio) {
-        _streamUserPaused = true;
-        _streamDiagnostics?.record('user_pause', {
-          'stage': 'android_la7_background_audio',
-        });
-      }
       await _audio.stop();
     }
   }
@@ -1892,17 +1798,6 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   Future<void> _applyTvMediaKitVideoSetting(bool enable) async {
     await _settings.setVideoEnabled(enable);
     if (!mounted) return;
-
-    if (Platform.isAndroid &&
-        widget.tvChannel != null &&
-        widget.tvChannel!.name.trim().toLowerCase() == 'la7' &&
-        !enable) {
-      // Audio-only La7 on Android is intentionally handed back to
-      // just_audio/ExoPlayer so the foreground media service keeps the live
-      // stream alive when the screen is locked.
-      await _play();
-      return;
-    }
 
     final player = _mediaKitPlayer;
     if (player == null) {
@@ -1989,22 +1884,31 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       if (_mediaKitPlaying) {
         _streamUserPaused = true;
         _streamDiagnostics?.record('user_pause', {'stage': _mediaKitStage});
-        await mediaKitPlayer.pause();
-        if (_mediaKitIsMpd) {
-          await _disableMpdWakelock();
+        if (Platform.isAndroid) {
+          await _stop();
+        } else {
+          await mediaKitPlayer.pause();
+          if (_mediaKitIsMpd) await _disableMpdWakelock();
         }
       } else {
         if (_mediaKitIsMpd) {
           await _enableMpdWakelock();
         }
+        if (!mounted) return;
         try {
           _streamUserPaused = false;
+          await _androidBackground.start(
+            title: widget.station.name,
+            pauseLabel: AppLocalizations.of(context).pause,
+          );
+          if (!mounted || _streamUserPaused || _mediaKitPlayer != mediaKitPlayer) return;
           _streamDiagnostics?.record('user_play', {'stage': _mediaKitStage});
           if (!_streamRecovery.hasProgress) {
             _scheduleStreamConnectionNotice(_playRequestId);
           }
           await mediaKitPlayer.play();
         } catch (_) {
+          await _androidBackground.stop();
           if (_mediaKitIsMpd) {
             await _disableMpdWakelock();
           }
@@ -2531,12 +2435,6 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   bool get _requiresTvMediaKitPlayback =>
       widget.isVideoSupported && widget.tvChannel != null;
 
-  bool get _useAndroidLa7BackgroundAudio =>
-      Platform.isAndroid &&
-      widget.tvChannel != null &&
-      widget.tvChannel!.name.trim().toLowerCase() == 'la7' &&
-      !_isVideoEnabled;
-
   bool get _requiresVideoPlayback =>
       widget.isVideoSupported &&
       TvService.isDashStreamUrl(widget.station.streamUrl);
@@ -2682,11 +2580,9 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       unawaited(_mediaCommands.invokeMethod('clearMagicTap'));
     }
     _restoreSystemOrientation();
+    unawaited(_androidBackground.dispose());
     unawaited(_mediaEventsSubscription?.cancel() ?? Future<void>.value());
     unawaited(_raiNativeEventsSubscription?.cancel() ?? Future<void>.value());
-    unawaited(
-        _androidLa7AudioPositionSubscription?.cancel() ?? Future<void>.value());
-    _androidLa7AudioPositionSubscription = null;
     unawaited(_raiNativePlayer.dispose());
     unawaited(_disableMpdWakelock());
     unawaited(_disposeMediaKitPlayer());
