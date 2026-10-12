@@ -4,6 +4,8 @@ import 'dart:io';
 import 'dart:math' as math;
 import 'dart:typed_data';
 
+import 'package:path/path.dart' as p;
+
 import 'package:ffmpeg_kit_flutter_new/ffmpeg_kit.dart';
 import 'package:ffmpeg_kit_flutter_new/ffmpeg_session.dart';
 // The fixture emulates the native plugin; application code uses its public API.
@@ -393,7 +395,7 @@ void main() {
     'cancelling an incomplete source excerpt discards the partial cache',
     () async {
       final source = await _video(root, 'film', duration: 36);
-      native.blockNext((args) => args.last.endsWith('/source.wav'));
+      native.blockNext((args) => p.basename(args.last) == 'source.wav');
       final pending = service.previewMix(
         sourcePath: source.path,
         settings: _settings,
@@ -605,7 +607,7 @@ class _CommandLineFfmpegKit extends FFmpegKitPlatform {
   final List<Future<void>> _running = [];
 
   Iterable<List<String>> get sourceExtractions =>
-      commands.where((args) => args.last.endsWith('/source.wav'));
+      commands.where((args) => p.basename(args.last) == 'source.wav');
   Iterable<List<String>> get finalMixes =>
       commands.where((args) => args.contains('-filter_complex'));
 

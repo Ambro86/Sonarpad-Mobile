@@ -72,34 +72,38 @@ class _CalendarReminderDialogState extends State<CalendarReminderDialog> {
     );
     return AlertDialog(
       title: Text(l10n.addReminder),
-      content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            TextField(
-              key: const ValueKey('calendar_reminder_text'),
-              controller: _textController,
-              autofocus: true,
-              decoration: InputDecoration(hintText: l10n.writeReminder),
-              textCapitalization: TextCapitalization.sentences,
-            ),
-            SwitchListTile(
-              key: const ValueKey('calendar_reminder_has_time'),
-              contentPadding: EdgeInsets.zero,
-              title: Text(l10n.calendarReminderHasTime),
-              value: _hasTime,
-              onChanged: (value) => setState(() => _hasTime = value),
-            ),
-            if (_hasTime)
-              OutlinedButton.icon(
-                key: const ValueKey('calendar_reminder_pick_time'),
-                onPressed: _pickTime,
-                icon: const Icon(Icons.access_time),
-                label: Text('${material.timePickerDialHelpText}: $timeLabel'),
+      scrollable: true,
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          TextField(
+            key: const ValueKey('calendar_reminder_text'),
+            controller: _textController,
+            autofocus: true,
+            decoration: InputDecoration(hintText: l10n.writeReminder),
+            textCapitalization: TextCapitalization.sentences,
+          ),
+          SwitchListTile(
+            key: const ValueKey('calendar_reminder_has_time'),
+            contentPadding: EdgeInsets.zero,
+            title: Text(l10n.calendarReminderHasTime),
+            value: _hasTime,
+            onChanged: (value) => setState(() => _hasTime = value),
+          ),
+          if (_hasTime)
+            OutlinedButton.icon(
+              key: const ValueKey('calendar_reminder_pick_time'),
+              onPressed: _pickTime,
+              icon: const Icon(Icons.access_time),
+              label: Text(
+                l10n.radioScheduleLabeledValue(
+                  material.timePickerDialHelpText,
+                  timeLabel,
+                ),
               ),
-          ],
-        ),
+            ),
+        ],
       ),
       actions: [
         TextButton(

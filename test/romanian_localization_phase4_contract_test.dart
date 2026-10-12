@@ -66,6 +66,7 @@ void main() {
       'chinaCountryName',
       'cinemaTrailerTitle',
       'audioDescriptionDetailNormal',
+      'audioDescriptionAudioNormal',
       'audioDescriptionProjectEditorDescriptionOption',
       'audioDescriptionLanguageCountry',
       'homeTv',

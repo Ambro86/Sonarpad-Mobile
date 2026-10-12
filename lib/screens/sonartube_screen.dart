@@ -1377,7 +1377,7 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text('${l10n.sonarTubeSearchType}: $label'),
+            Text(l10n.radioScheduleLabeledValue(l10n.sonarTubeSearchType, label)),
             Slider(
               key: const ValueKey('sonartube_search_type_slider'),
               value: index,
