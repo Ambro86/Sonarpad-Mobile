@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C10DF11EC10DF11EC10DF11E /* SonarpadCloudFilePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10DF12EC10DF12EC10DF12E /* SonarpadCloudFilePicker.swift */; };
 		1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */ = {isa = PBXBuildFile; fileRef = 1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */; };
 		331C808B294A63AB00263BE5 /* RunnerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 331C807B294A618700263BE5 /* RunnerTests.swift */; };
 		3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */; };
@@ -44,6 +45,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		C10DF12EC10DF12EC10DF12E /* SonarpadCloudFilePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SonarpadCloudFilePicker.swift; sourceTree = "<group>"; };
 		1498D2321E8E86230040F4C2 /* GeneratedPluginRegistrant.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GeneratedPluginRegistrant.h; sourceTree = "<group>"; };
 		1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GeneratedPluginRegistrant.m; sourceTree = "<group>"; };
 		331C807B294A618700263BE5 /* RunnerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunnerTests.swift; sourceTree = "<group>"; };
@@ -133,6 +135,7 @@
 				7884E8672EC3CC0400C636F2 /* SceneDelegate.swift */,
 				A11Y0002A11Y0002A11Y0002 /* SonarpadNativeAccessibleView.swift */,
 				F1A10002F1A10002F1A10002 /* SonarpadRaiPlayer.swift */,
+				C10DF12EC10DF12EC10DF12E /* SonarpadCloudFilePicker.swift */,
 				74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */,
 			);
 			path = Runner;
@@ -297,6 +300,7 @@
 				7884E8682EC3CC0700C636F2 /* SceneDelegate.swift in Sources */,
 				A11Y0001A11Y0001A11Y0001 /* SonarpadNativeAccessibleView.swift in Sources */,
 				F1A10001F1A10001F1A10001 /* SonarpadRaiPlayer.swift in Sources */,
+				C10DF11EC10DF11EC10DF11E /* SonarpadCloudFilePicker.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

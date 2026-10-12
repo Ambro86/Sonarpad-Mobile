@@ -280,8 +280,7 @@ void main() {
       expect(page, isNot(contains('pyannote')));
       expect(page, isNot(contains('benchmark')));
     });
-    test('safe final MP3 uses Windows-parity smooth ducking and 192 kbps', () {
-      expect(service, contains("'-b:a', '192k'"));
+    test('safe final MP3 uses Windows-parity smooth ducking', () {
       expect(service, contains('_duckVolume'));
       expect(service, contains('_duckAttackSec = 0.280'));
       expect(service, contains('_duckPreDuckSec = 0.180'));

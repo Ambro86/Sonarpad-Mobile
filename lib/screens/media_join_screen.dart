@@ -8,6 +8,7 @@ import 'package:path/path.dart' as p;
 import 'package:share_plus/share_plus.dart';
 
 import '../l10n/app_localizations.dart';
+import '../services/cloud_file_picker_service.dart';
 import '../services/media_export_destination_service.dart';
 import '../services/media_join_service.dart';
 import '../utils/app_logger.dart';
@@ -390,7 +391,7 @@ class _MediaJoinScreenState extends State<MediaJoinScreen> {
 
   Future<void> _pickFiles() async {
     final l10n = AppLocalizations.of(context);
-    final result = await FilePicker.pickFiles(
+    final result = await CloudFilePicker.pickFiles(context: context, 
       type: FileType.custom,
       allowedExtensions: MediaJoinService.supportedExtensions,
       allowMultiple: true,

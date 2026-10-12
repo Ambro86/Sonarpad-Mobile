@@ -24,6 +24,7 @@ class SonarTubeScreen extends StatefulWidget {
     super.key,
     this.collection,
     this.searchQuery,
+    this.searchType = SonarTubeSearchType.all,
     this.service,
     this.favoritesService,
     this.historyService,
@@ -34,6 +35,7 @@ class SonarTubeScreen extends StatefulWidget {
 
   final SonarTubeItem? collection;
   final String? searchQuery;
+  final SonarTubeSearchType searchType;
   final bool showChannelPlaylists;
   final bool showChannelShorts;
   final SonarTubeService? service;
@@ -64,6 +66,7 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
   List<SonarTubeItem> _items = const [];
   Set<String> _favoriteKeys = const {};
   String? _query;
+  late SonarTubeSearchType _searchType = widget.searchType;
   String? _nextToken;
   int _page = 1;
   SonarTubeChannelSort _channelSort = SonarTubeChannelSort.newest;
@@ -460,6 +463,7 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
         settings: const RouteSettings(name: '/sonartube/search-results'),
         builder: (_) => SonarTubeScreen(
           searchQuery: query,
+          searchType: _searchType,
           service: _service,
           favoritesService: _favoritesService,
           historyService: _historyService,
@@ -483,7 +487,7 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
       _page = 1;
     });
     try {
-      final result = await _service.search(query);
+      final result = await _service.search(query, type: _searchType);
       if (!mounted) return;
       setState(() {
         _items = result.items;
@@ -583,6 +587,7 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
                       )
                     : await _service.search(
                         _query!,
+                        type: _searchType,
                         token: token,
                         page: nextPage,
                       );
@@ -1333,6 +1338,89 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
     );
   }
 
+  String _searchTypeLabel(
+    AppLocalizations l10n,
+    SonarTubeSearchType type,
+  ) => switch (type) {
+    SonarTubeSearchType.all => l10n.sonarTubeSearchAll,
+    SonarTubeSearchType.playlists => l10n.sonarTubeSearchPlaylists,
+    SonarTubeSearchType.channels => l10n.sonarTubeSearchChannels,
+  };
+
+  SonarTubeSearchType _searchTypeAt(double value) =>
+      SonarTubeSearchType.values[
+        value.round().clamp(0, SonarTubeSearchType.values.length - 1).toInt()
+      ];
+
+  void _setSearchType(double value) {
+    if (!value.isFinite) return;
+    final selected = _searchTypeAt(value);
+    if (selected == _searchType) return;
+    // Keep the same adjustable row and the entered query while the user
+    // chooses a filter. Searching is still an explicit separate action.
+    setState(() => _searchType = selected);
+  }
+
+  Widget _buildSearchTypeSlider(AppLocalizations l10n) {
+    final index = _searchType.index.toDouble();
+    final label = _searchTypeLabel(l10n, _searchType);
+    return Semantics(
+      key: const ValueKey('sonartube_search_type_slider_semantics'),
+      slider: true,
+      label: l10n.sonarTubeSearchType,
+      value: label,
+      increasedValue: _searchTypeLabel(l10n, _searchTypeAt(index + 1)),
+      decreasedValue: _searchTypeLabel(l10n, _searchTypeAt(index - 1)),
+      onIncrease: () => _setSearchType(index + 1),
+      onDecrease: () => _setSearchType(index - 1),
+      child: ExcludeSemantics(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text('${l10n.sonarTubeSearchType}: $label'),
+            Slider(
+              key: const ValueKey('sonartube_search_type_slider'),
+              value: index,
+              min: 0,
+              max: (SonarTubeSearchType.values.length - 1).toDouble(),
+              divisions: SonarTubeSearchType.values.length - 1,
+              label: label,
+              onChanged: _setSearchType,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  AccessibleListRow _searchTypeRow(AppLocalizations l10n) {
+    final index = _searchType.index.toDouble();
+    return AccessibleListRow(
+      id: 'search_type',
+      title: l10n.sonarTubeSearchType,
+      kind: 'slider',
+      accessibilityButtonTrait: false,
+      value: _searchTypeLabel(l10n, _searchType),
+      valueLabel: _searchTypeLabel(l10n, _searchType),
+      sliderValue: index,
+      sliderMin: 0,
+      sliderMax: (SonarTubeSearchType.values.length - 1).toDouble(),
+      sliderStep: 1,
+      sliderIncreasedValueLabel:
+          _searchTypeLabel(l10n, _searchTypeAt(index + 1)),
+      sliderDecreasedValueLabel:
+          _searchTypeLabel(l10n, _searchTypeAt(index - 1)),
+      options: [
+        for (final type in SonarTubeSearchType.values)
+          AccessibleOption(
+            value: type.index,
+            label: _searchTypeLabel(l10n, type),
+          ),
+      ],
+      flutterChild: _buildSearchTypeSlider(l10n),
+    );
+  }
+
   Widget _buildSharedAccessibleSonarTube(AppLocalizations l10n) {
     final rows = <AccessibleListRow>[];
     if (_isCollection) {
@@ -1393,6 +1481,7 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
         onSubmitted: (_) => _search(),
         flutterChild: _buildSearchField(l10n),
       ));
+      rows.add(_searchTypeRow(l10n));
       rows.add(AccessibleListRow(
         id: 'search',
         title: l10n.search,
@@ -1618,6 +1707,11 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
       controller: _accessibleListController,
       sections: [AccessibleListSection(rows: rows)],
       onEvent: (event) async {
+        if (event.id == 'search_type' && event.type == 'slider') {
+          final value = (event.value as num?)?.toDouble();
+          if (value != null) _setSearchType(value);
+          return;
+        }
         if (event.id == 'open_url' && event.type == 'activate') {
           await _openUrl();
           return;
@@ -2130,6 +2224,8 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
                         ),
                       ],
                     ),
+                    const SizedBox(height: 12),
+                    _buildSearchTypeSlider(l10n),
                   ],
                 ),
               ),

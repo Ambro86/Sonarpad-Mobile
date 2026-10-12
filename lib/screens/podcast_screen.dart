@@ -11,6 +11,7 @@ import 'package:path_provider/path_provider.dart';
 
 import '../l10n/app_localizations.dart';
 import '../models/podcast.dart';
+import '../services/cloud_file_picker_service.dart';
 import '../services/app_settings_service.dart';
 import '../services/podcast_service.dart';
 import 'podcast_episode_player_screen.dart';
@@ -318,7 +319,7 @@ class _PodcastScreenState extends State<PodcastScreen> {
       // On iOS, some providers mark .opml files as disabled when the
       // picker is restricted to custom extensions. Let the user select any
       // file, then validate the extension here.
-      final result = await FilePicker.pickFiles(type: FileType.any);
+      final result = await CloudFilePicker.pickFiles(context: context, type: FileType.any);
       final path = result == null || result.files.isEmpty
           ? null
           : result.files.first.path;

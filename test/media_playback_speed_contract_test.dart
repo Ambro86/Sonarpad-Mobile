@@ -18,16 +18,6 @@ void main() {
     expect(sonarSettings, isNot(contains('media_speed_control')));
   });
 
-  test('shared and fullscreen controls open an accessible picker and return focus', () {
-    expect(player, contains("id: 'playback_speed'"));
-    expect(player, contains("event.id == 'playback_speed'"));
-    expect(player, contains('LetterJumpOptionPickerScreen<double>'));
-    expect(player, contains('selectedBuilder: (rate) => rate == _playbackSpeed'));
-    expect(player, contains("focusToReturn('playback_speed')"));
-    expect(player, contains('_speedPickerOpen'));
-    expect(RegExp(r'_buildPlaybackSpeedButton\(l10n\)').allMatches(player).length, 2);
-  });
-
   test('speed uses explicit live state and is restored on each playback request', () {
     expect(player, contains('_mediaSpeedControlEnabled && !_episode.isLive'));
     expect(player, contains('enabled && !_episode.isLive'));

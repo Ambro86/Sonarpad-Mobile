@@ -15,6 +15,11 @@
   "categoryMedia": "Média a zábava",
   "sonarTubeTitle": "SonarTube",
   "sonarTubeSearchLabel": "Hledat videa, kanály nebo playlisty",
+  "sonarTubeSearchType": "Typ hledání",
+  "sonarTubeSearchAll": "Vše",
+  "sonarTubeSearchPlaylists": "Playlisty",
+  "sonarTubeSearchChannels": "Kanály",
+  "calendarReminderHasTime": "Nastavit čas",
   "sonarTubeSearchPrompt": "Zadejte hledání videí, kanálů a playlistů.",
   "sonarTubeNoResults": "Nebyla nalezena žádná videa.",
   "sonarTubeLoadMore": "Načíst další výsledky",
@@ -3203,6 +3208,42 @@
   "audioDescriptionRecognizeCharacters": "Pokusit se rozpoznat postavy a používat jejich jména",
   "@audioDescriptionRecognizeCharacters": {
     "description": "Localized text for audioDescriptionRecognizeCharacters."
+  },
+  "audioDescriptionMp3Bitrate": "Datový tok MP3",
+  "@audioDescriptionMp3Bitrate": {
+    "description": "Bitrate slider label for MP3 audio-description output."
+  },
+  "audioDescriptionSourceVolume": "Hlasitost filmu",
+  "@audioDescriptionSourceVolume": {
+    "description": "Base movie volume slider label."
+  },
+  "audioDescriptionSourceVolumeHint": "Nastavte základní hlasitost filmu. Během audiopopisu se automaticky ještě více ztlumí.",
+  "@audioDescriptionSourceVolumeHint": {
+    "description": "Explains source volume adjustment and continued automatic ducking during audio description."
+  },
+  "audioDescriptionAudioNormal": "Normální",
+  "@audioDescriptionAudioNormal": {
+    "description": "Normal/default marker for audio-description bitrate and source volume."
+  },
+  "audioDescriptionMixPreview": "Poslechnout ukázku filmu a hlasu",
+  "@audioDescriptionMixPreview": {
+    "description": "Plays a short sample combining movie audio with the selected narration voice."
+  },
+  "audioDescriptionMixPreviewPreparing": "Příprava zvukové ukázky",
+  "@audioDescriptionMixPreviewPreparing": {
+    "description": "Status shown while the movie and voice audio sample is being prepared."
+  },
+  "audioDescriptionMixPreviewStop": "Zastavit zvukovou ukázku",
+  "@audioDescriptionMixPreviewStop": {
+    "description": "Stops the movie and voice audio sample."
+  },
+  "audioDescriptionMixPreviewPhrase": "Zkouška audiopopisu s automatickým ztlumením zvuku.",
+  "@audioDescriptionMixPreviewPhrase": {
+    "description": "Text spoken by the selected narration voice in the movie and voice audio sample."
+  },
+  "audioDescriptionMixPreviewHint": "Po změně hlasitosti se spustí krátká ukázka s úryvkem filmu, vybraným hlasem a automatickým ztlumením zvuku filmu.",
+  "@audioDescriptionMixPreviewHint": {
+    "description": "Explains the automatic movie and voice sample after adjusting source volume."
   },
   "audioDescriptionSaveProject": "Uložit také projekt pro budoucí úpravy",
   "@audioDescriptionSaveProject": {

@@ -4,14 +4,18 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
 import 'package:share_plus/share_plus.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../l10n/app_localizations.dart';
 import 'audio_description_project_picker_screen.dart';
+import '../services/cloud_file_picker_service.dart';
 import '../services/ai_audiodescription_service.dart';
 import '../services/app_settings_service.dart';
+import '../services/audio_description_mix.dart';
+import '../services/audio_description_mix_preview_controller.dart';
 import '../services/audio_description_project_strings.dart';
 import '../services/audio_player_service.dart';
 import '../services/media_export_destination_service.dart';
@@ -20,9 +24,14 @@ import '../utils/status_message.dart';
 import '../widgets/universal_accessible_view.dart';
 
 class AudioDescriptionProjectEditorScreen extends StatefulWidget {
-  const AudioDescriptionProjectEditorScreen({super.key, this.initialProjectPath});
+  const AudioDescriptionProjectEditorScreen({
+    super.key,
+    this.initialProjectPath,
+    this.mixPreviewControllerFactory,
+  });
 
   final String? initialProjectPath;
+  final AudioDescriptionMixPreviewController Function()? mixPreviewControllerFactory;
 
   @override
   State<AudioDescriptionProjectEditorScreen> createState() =>
@@ -34,6 +43,12 @@ class _AudioDescriptionProjectEditorScreenState
   final _service = AiAudioDescriptionService();
   final _flutterTts = FlutterTts();
   final _audio = AudioPlayerService();
+  late final AudioDescriptionMixPreviewController _mixPreview;
+  Future<void> _projectWrites = Future<void>.value();
+  int _audioSaveRevision = 0;
+  int _mixPreviewRevision = 0;
+  int _operationRevision = 0;
+  bool _serviceOperationStarted = false;
 
   AudioDescriptionEditableProject? _project;
   String? _sourceOverride;
@@ -58,6 +73,9 @@ class _AudioDescriptionProjectEditorScreenState
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    _mixPreview = widget.mixPreviewControllerFactory?.call() ??
+        AudioDescriptionMixPreviewController();
+    _mixPreview.addListener(_mixPreviewChanged);
     unawaited(_loadVoiceLists());
     final path = widget.initialProjectPath;
     if (path != null) {
@@ -69,6 +87,9 @@ class _AudioDescriptionProjectEditorScreenState
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.inactive || state == AppLifecycleState.paused) {
+      unawaited(_mixPreview.stop());
+    }
     if (_running && state == AppLifecycleState.resumed) {
       unawaited(WakelockPlus.enable());
     }
@@ -76,11 +97,134 @@ class _AudioDescriptionProjectEditorScreenState
 
   @override
   void dispose() {
+    ++_operationRevision;
     WidgetsBinding.instance.removeObserver(this);
+    _mixPreview.removeListener(_mixPreviewChanged);
+    _mixPreview.dispose();
     _service.dispose();
     _flutterTts.stop();
     unawaited(_audio.dispose());
     super.dispose();
+  }
+
+  void _mixPreviewChanged() {
+    if (mounted) setState(() {});
+  }
+
+  void _checkOperation(int revision) {
+    if (!mounted || revision != _operationRevision) {
+      throw const _EditorOperationCancelled();
+    }
+  }
+
+  Future<void> _stopPlayback() async {
+    await _mixPreview.stop();
+    await _audio.stop();
+  }
+
+  Future<T> _queueProjectOperation<T>(Future<T> Function() operation) {
+    final pending = _projectWrites.then((_) => operation());
+    // Keep the queue usable after a failed write. Every caller handles its
+    // own error; the immutable snapshots can finish saving after navigation.
+    _projectWrites = pending.then<void>(
+      (_) {},
+      onError: (Object error, StackTrace stackTrace) {},
+    );
+    return pending;
+  }
+
+  AudioDescriptionEditableProject? _mixPreviewProject() {
+    final project = _project;
+    if (project == null) return null;
+    return project.copyWith(
+      ttsEngine: _ttsEngine,
+      ttsVoice: _ttsEngine == 'edge' ? _edgeVoice : (_systemVoice ?? ''),
+      edgeLanguage: _edgeLanguage,
+      systemLanguage: _systemLanguage,
+      systemVoice: _systemVoice,
+      clearSystemVoice: _ttsEngine != 'system' || _systemVoice == null,
+    );
+  }
+
+  void _requestMixPreview({required bool immediately}) {
+    final project = _mixPreviewProject();
+    final source = _sourceOverride;
+    if (_running || project == null || source == null || source.isEmpty) return;
+    final revision = ++_mixPreviewRevision;
+    final text = AppLocalizations.of(context).audioDescriptionMixPreviewPhrase;
+    Future<AudioDescriptionMixPreview> render(AiAudioDescriptionService service) async {
+      await _audio.stop();
+      if (!mounted || revision != _mixPreviewRevision || !_mixPreview.isActive) {
+        throw const _EditorOperationCancelled();
+      }
+      return service.previewProjectMix(
+        project: project,
+        text: text,
+        sourcePathOverride: source,
+      );
+    }
+    if (immediately) {
+      _mixPreview.playNow(render);
+    } else {
+      _mixPreview.schedule(render);
+    }
+  }
+
+  Future<void> _playMixPreview() async {
+    if (_running || _project == null) return;
+    final source = _sourceOverride;
+    final sourceExists = source != null && source.isNotEmpty &&
+        await File(source).exists();
+    if (!mounted) return;
+    if (!sourceExists) {
+      await _chooseSource();
+      if (!mounted) return;
+    }
+    _requestMixPreview(immediately: true);
+  }
+
+  Future<void> _setAudioSetting(AccessibleListEvent event) async {
+    final project = _project;
+    if (_running || project == null) return;
+    final rawValue = event.value;
+    final value = rawValue is num
+        ? rawValue.toDouble()
+        : double.tryParse(rawValue?.toString() ?? '');
+    if (value == null || !value.isFinite) return;
+    AudioDescriptionEditableProject updated;
+    if (event.id == 'mp3_bitrate') {
+      final index = value.clamp(0, audioDescriptionMp3Bitrates.length - 1).round();
+      final bitrate = audioDescriptionMp3Bitrates[index];
+      if (bitrate == project.bitrateKbps) return;
+      updated = project.copyWith(bitrateKbps: bitrate);
+    } else if (event.id == 'source_volume') {
+      final volume = value.clamp(0, 40).round() / 20;
+      if (volume == project.sourceVolume) return;
+      updated = project.copyWith(sourceVolume: volume);
+    } else {
+      return;
+    }
+    final snapshot = updated.copyWith(updatedAtUtc: DateTime.now().toUtc().toIso8601String());
+    final revision = ++_audioSaveRevision;
+    setState(() {
+      _project = snapshot;
+      _technicalError = null;
+    });
+    if (event.id == 'source_volume') {
+      _requestMixPreview(immediately: false);
+    } else {
+      unawaited(_mixPreview.stop());
+    }
+    try {
+      await _queueProjectOperation(() => _service.saveEditableProject(snapshot));
+    } catch (error, stackTrace) {
+      await AppLogger.log('Audio description project audio settings save failed $error\n$stackTrace');
+      if (!mounted || revision != _audioSaveRevision ||
+          _project?.projectPath != snapshot.projectPath) {
+        return;
+      }
+      setState(() => _technicalError = error.toString());
+    }
   }
 
   Future<void> _loadVoiceLists() async {
@@ -124,6 +268,8 @@ class _AudioDescriptionProjectEditorScreenState
 
   Future<void> _openProject() async {
     if (_running) return;
+    await _stopPlayback();
+    if (!mounted) return;
     final path = await Navigator.of(context).push<String>(MaterialPageRoute(
       builder: (_) => const AudioDescriptionProjectPickerScreen(),
     ));
@@ -134,7 +280,9 @@ class _AudioDescriptionProjectEditorScreenState
   Future<void> _browseProject() async {
     if (_running) return;
     try {
-      final result = await FilePicker.pickFiles(
+      await _stopPlayback();
+      if (!mounted) return;
+      final result = await CloudFilePicker.pickFiles(context: context, 
         type: FileType.custom,
         allowMultiple: false,
         withData: false,
@@ -150,12 +298,18 @@ class _AudioDescriptionProjectEditorScreenState
   }
 
   Future<void> _loadProject(String path) async {
+    if (_running) return;
     final s = AudioDescriptionProjectStrings.of(context);
+    final operation = ++_operationRevision;
+    setState(() => _running = true);
     try {
+      await _stopPlayback();
+      await _projectWrites;
+      _checkOperation(operation);
       final project = await _service.loadEditableProject(path);
       final sourceExists = project.sourcePath.isNotEmpty &&
           await File(project.sourcePath).exists();
-      if (!mounted) return;
+      _checkOperation(operation);
       setState(() {
         _project = project;
         _sourceOverride = sourceExists ? project.sourcePath : null;
@@ -166,6 +320,8 @@ class _AudioDescriptionProjectEditorScreenState
         _technicalError = null;
         _applyProjectVoiceToUi(project);
       });
+    } on _EditorOperationCancelled {
+      // Navigation or Cancel superseded this pending load.
     } catch (error, stackTrace) {
       await AppLogger.log(
         'Audio description project editor: open failed error=$error\n$stackTrace',
@@ -175,6 +331,8 @@ class _AudioDescriptionProjectEditorScreenState
         _technicalError = error.toString();
         _status = s['invalidProject'];
       });
+    } finally {
+      if (mounted) setState(() => _running = false);
     }
   }
 
@@ -195,7 +353,9 @@ class _AudioDescriptionProjectEditorScreenState
 
   Future<void> _chooseSource() async {
     if (_running) return;
-    final result = await FilePicker.pickFiles(
+    await _stopPlayback();
+    if (!mounted) return;
+    final result = await CloudFilePicker.pickFiles(context: context, 
       type: FileType.custom,
       allowMultiple: false,
       withData: false,
@@ -219,7 +379,11 @@ class _AudioDescriptionProjectEditorScreenState
     return project.descriptions[index];
   }
 
-  Future<T> _withWakelock<T>(Future<T> Function() action) async {
+  Future<T> _withWakelock<T>(
+    int operation,
+    Future<T> Function() action,
+  ) async {
+    _checkOperation(operation);
     bool? previous;
     try {
       previous = await WakelockPlus.enabled;
@@ -228,8 +392,11 @@ class _AudioDescriptionProjectEditorScreenState
       await WakelockPlus.enable();
     } catch (_) {}
     try {
+      _checkOperation(operation);
+      _serviceOperationStarted = true;
       return await action();
     } finally {
+      _serviceOperationStarted = false;
       try {
         if (previous == true) {
           await WakelockPlus.enable();
@@ -251,6 +418,7 @@ class _AudioDescriptionProjectEditorScreenState
   Future<void> _preview() async {
     final project = _project;
     if (project == null || _running) return;
+    final operation = ++_operationRevision;
     final strings = AudioDescriptionProjectStrings.of(context);
     setState(() {
       _running = true;
@@ -259,17 +427,23 @@ class _AudioDescriptionProjectEditorScreenState
       _technicalError = null;
     });
     try {
-      final preview = await _withWakelock(() => _service.previewProjectDescription(
+      await _stopPlayback();
+      _checkOperation(operation);
+      final preview = await _withWakelock(operation, () => _service.previewProjectDescription(
             project: project,
             index: _selectedIndex,
             text: _editText,
           ));
+      _checkOperation(operation);
       await _audio.playFile(File(preview.path));
+      _checkOperation(operation);
       if (!mounted) return;
       setState(() {
         _progress = 1;
         _status = strings['ready'];
       });
+    } on _EditorOperationCancelled {
+      // Cancellation also covers time spent draining the previous preview.
     } on AudioDescriptionProjectTooLongException catch (error) {
       if (!mounted) return;
       setState(() => _status = _tooLongMessage(strings, error));
@@ -288,6 +462,7 @@ class _AudioDescriptionProjectEditorScreenState
   Future<void> _applyEdit() async {
     final project = _project;
     if (project == null || _running) return;
+    final operation = ++_operationRevision;
     final strings = AudioDescriptionProjectStrings.of(context);
     setState(() {
       _running = true;
@@ -296,11 +471,15 @@ class _AudioDescriptionProjectEditorScreenState
       _technicalError = null;
     });
     try {
-      final updated = await _withWakelock(() => _service.applyProjectDescriptionEdit(
+      await _stopPlayback();
+      _checkOperation(operation);
+      final updated = await _queueProjectOperation(
+        () => _withWakelock(operation, () => _service.applyProjectDescriptionEdit(
             project: project,
             index: _selectedIndex,
             text: _editText,
-          ));
+          )),
+      );
       if (!mounted) return;
       setState(() {
         _project = updated;
@@ -309,6 +488,8 @@ class _AudioDescriptionProjectEditorScreenState
         _progress = 1;
         _status = strings['applied'];
       });
+    } on _EditorOperationCancelled {
+      // Cancellation also covers time spent draining the previous preview.
     } on AudioDescriptionProjectTooLongException catch (error) {
       if (!mounted) return;
       setState(() => _status = _tooLongMessage(strings, error));
@@ -349,11 +530,22 @@ class _AudioDescriptionProjectEditorScreenState
           ),
         ) ??
         false;
-    if (!confirmed || !mounted) return;
+    if (!confirmed || !mounted || _running) return;
+    final latest = _project;
+    if (latest == null || latest.projectPath != project.projectPath) return;
+    final operation = ++_operationRevision;
+    setState(() => _running = true);
     try {
-      final updated = await _service.deleteProjectDescription(
-        project: project,
-        index: _selectedIndex,
+      await _stopPlayback();
+      _checkOperation(operation);
+      final updated = await _queueProjectOperation(
+        () {
+          _checkOperation(operation);
+          return _service.deleteProjectDescription(
+            project: latest,
+            index: _selectedIndex,
+          );
+        },
       );
       if (!mounted) return;
       final newIndex = _selectedIndex.clamp(0, updated.descriptions.length - 1).toInt();
@@ -364,14 +556,19 @@ class _AudioDescriptionProjectEditorScreenState
         _dirty = false;
         _status = strings['deleted'];
       });
+    } on _EditorOperationCancelled {
+      // The queued write has not started if cancellation happened in the drain.
     } catch (error) {
       if (mounted) setState(() => _technicalError = error.toString());
+    } finally {
+      if (mounted) setState(() => _running = false);
     }
   }
 
   Future<void> _changeVoice() async {
     final project = _project;
     if (project == null || _running) return;
+    final operation = ++_operationRevision;
     final strings = AudioDescriptionProjectStrings.of(context);
     final speed = project.ttsSpeed;
     final pitch = project.ttsPitch;
@@ -382,7 +579,10 @@ class _AudioDescriptionProjectEditorScreenState
       _technicalError = null;
     });
     try {
-      final updated = await _withWakelock(() => _service.changeProjectVoice(
+      await _stopPlayback();
+      _checkOperation(operation);
+      final updated = await _queueProjectOperation(
+        () => _withWakelock(operation, () => _service.changeProjectVoice(
             project: project,
             ttsEngine: _ttsEngine,
             edgeLanguage: _edgeLanguage,
@@ -395,13 +595,16 @@ class _AudioDescriptionProjectEditorScreenState
               if (!mounted) return;
               setState(() => _progress = value.clamp(0.0, 1.0).toDouble());
             },
-          ));
+          )),
+      );
       if (!mounted) return;
       setState(() {
         _project = updated;
         _progress = 1;
         _status = strings['voiceChanged'];
       });
+    } on _EditorOperationCancelled {
+      // Cancellation also covers time spent draining the previous preview.
     } on AudioDescriptionProjectTooLongException catch (error) {
       if (!mounted) return;
       setState(() => _status = _tooLongMessage(strings, error));
@@ -426,12 +629,23 @@ class _AudioDescriptionProjectEditorScreenState
       return;
     }
     var source = _sourceOverride;
-    if (source == null || source.isEmpty || !await File(source).exists()) {
+    final sourceExists = source != null && source.isNotEmpty &&
+        await File(source).exists();
+    if (!mounted) return;
+    if (!sourceExists) {
       setState(() => _status = strings['sourceMissing']);
       await _chooseSource();
       source = _sourceOverride;
       if (source == null || source.isEmpty) return;
     }
+    if (!mounted || _running) return;
+    final latest = _project;
+    if (latest == null || latest.projectPath != project.projectPath) return;
+    if (_dirty) {
+      setState(() => _status = strings['unsaved']);
+      return;
+    }
+    final operation = ++_operationRevision;
     setState(() {
       _running = true;
       _progress = 0;
@@ -439,8 +653,11 @@ class _AudioDescriptionProjectEditorScreenState
       _technicalError = null;
     });
     try {
-      final result = await _withWakelock(() => _service.reexportEditableProject(
-            project: project,
+      await _stopPlayback();
+      _checkOperation(operation);
+      final result = await _queueProjectOperation(
+        () => _withWakelock(operation, () => _service.reexportEditableProject(
+            project: latest,
             sourcePathOverride: source,
             onProgress: (progress) {
               if (!mounted) return;
@@ -460,7 +677,8 @@ class _AudioDescriptionProjectEditorScreenState
                     : '$label ${progress.detail}';
               });
             },
-          ));
+          )),
+      );
       if (!mounted) return;
       setState(() {
         _project = result.project;
@@ -470,6 +688,8 @@ class _AudioDescriptionProjectEditorScreenState
         _status = strings['completed'];
       });
       await _showOutputDialog(result.outputPaths);
+    } on _EditorOperationCancelled {
+      // Cancellation also covers time spent draining the previous preview.
     } on AudioDescriptionProjectTooLongException catch (error) {
       if (!mounted) return;
       setState(() => _status = _tooLongMessage(strings, error));
@@ -494,6 +714,9 @@ class _AudioDescriptionProjectEditorScreenState
       return;
     }
     try {
+      await _stopPlayback();
+      await _projectWrites;
+      if (!mounted) return;
       final path = await _service.exportEditableProjectSubtitle(
         project: project,
         format: format,
@@ -541,7 +764,10 @@ class _AudioDescriptionProjectEditorScreenState
   }
 
   void _cancel() {
-    _service.cancel();
+    ++_operationRevision;
+    if (_serviceOperationStarted) _service.cancel();
+    unawaited(_mixPreview.stop());
+    unawaited(_audio.stop());
     setState(() => _status = AudioDescriptionProjectStrings.of(context)['cancel']);
   }
 
@@ -612,6 +838,19 @@ class _AudioDescriptionProjectEditorScreenState
     final strings = AudioDescriptionProjectStrings.of(context);
     final project = _project;
     final source = _sourceOverride ?? project?.sourcePath;
+    final bitrateIndex = audioDescriptionMp3Bitrates.indexOf(
+      project?.bitrateKbps ?? audioDescriptionDefaultBitrateKbps,
+    );
+    final bitrateLabels = [
+      for (final bitrate in audioDescriptionMp3Bitrates)
+        '$bitrate kbps${bitrate == 192 ? ' (${l10n.audioDescriptionAudioNormal})' : ''}',
+    ];
+    final volumeIndex = ((project?.sourceVolume ?? audioDescriptionDefaultSourceVolume) * 20).round();
+    final volumeFormat = NumberFormat('0.0#', l10n.localeName);
+    final volumeLabels = [
+      for (var index = 0; index <= 40; index++)
+        '${volumeFormat.format(index / 20)}${index == 20 ? ' (${l10n.audioDescriptionAudioNormal})' : ''}',
+    ];
     return Scaffold(
       appBar: SonarpadAppBar(title: Text(strings['title'])),
       body: Column(
@@ -627,6 +866,7 @@ class _AudioDescriptionProjectEditorScreenState
             ),
           Expanded(
             child: UniversalAccessibleList(
+              key: const ValueKey('audio_description_project_editor'),
               initialFocusId: 'open_project',
               sections: [
                 AccessibleListSection(rows: [
@@ -670,7 +910,7 @@ class _AudioDescriptionProjectEditorScreenState
                     AccessibleListRow(
                       id: 'description_details',
                       title: strings['description'],
-                      value: _detailValue(strings),
+                      subtitle: _detailValue(strings),
                       kind: 'text',
                       accessibilityButtonTrait: false,
                     ),
@@ -760,6 +1000,66 @@ class _AudioDescriptionProjectEditorScreenState
                 if (project != null)
                   AccessibleListSection(rows: [
                     AccessibleListRow(
+                      id: 'mp3_bitrate',
+                      title: l10n.audioDescriptionMp3Bitrate,
+                      kind: 'slider',
+                      value: bitrateLabels[bitrateIndex],
+                      valueLabel: bitrateLabels[bitrateIndex],
+                      sliderMin: 0,
+                      sliderMax: (audioDescriptionMp3Bitrates.length - 1).toDouble(),
+                      sliderStep: 1,
+                      sliderValue: bitrateIndex.toDouble(),
+                      sliderIncreasedValueLabel: bitrateLabels[
+                        (bitrateIndex + 1).clamp(0, bitrateLabels.length - 1)
+                      ],
+                      sliderDecreasedValueLabel: bitrateLabels[
+                        (bitrateIndex - 1).clamp(0, bitrateLabels.length - 1)
+                      ],
+                      options: [
+                        for (var index = 0; index < bitrateLabels.length; index++)
+                          AccessibleOption(value: index, label: bitrateLabels[index]),
+                      ],
+                      enabled: !_running,
+                    ),
+                    AccessibleListRow(
+                      id: 'source_volume',
+                      title: l10n.audioDescriptionSourceVolume,
+                      hint: '${l10n.audioDescriptionSourceVolumeHint} ${l10n.audioDescriptionMixPreviewHint}',
+                      kind: 'slider',
+                      value: volumeLabels[volumeIndex],
+                      valueLabel: volumeLabels[volumeIndex],
+                      sliderMin: 0,
+                      sliderMax: 40,
+                      sliderStep: 1,
+                      sliderValue: volumeIndex.toDouble(),
+                      sliderIncreasedValueLabel: volumeLabels[(volumeIndex + 1).clamp(0, 40)],
+                      sliderDecreasedValueLabel: volumeLabels[(volumeIndex - 1).clamp(0, 40)],
+                      options: [
+                        for (var index = 0; index < volumeLabels.length; index++)
+                          AccessibleOption(value: index, label: volumeLabels[index]),
+                      ],
+                      enabled: !_running,
+                    ),
+                    AccessibleListRow(
+                      id: 'mix_preview',
+                      title: l10n.audioDescriptionMixPreview,
+                      value: _mixPreview.isPreparing
+                          ? l10n.audioDescriptionMixPreviewPreparing
+                          : _mixPreview.error != null
+                              ? l10n.technicalErrorGeneric
+                              : null,
+                      hint: l10n.audioDescriptionMixPreviewHint,
+                      enabled: !_running,
+                    ),
+                    AccessibleListRow(
+                      id: 'mix_preview_stop',
+                      title: l10n.audioDescriptionMixPreviewStop,
+                      enabled: !_running && _mixPreview.isActive,
+                    ),
+                  ]),
+                if (project != null)
+                  AccessibleListSection(rows: [
+                    AccessibleListRow(
                       id: 'reexport',
                       title: strings['reexport'],
                       enabled: !_running,
@@ -791,7 +1091,7 @@ class _AudioDescriptionProjectEditorScreenState
                       AccessibleListRow(
                         id: 'status',
                         title: l10n.info,
-                        value: _status,
+                        subtitle: _status,
                         kind: 'text',
                         accessibilityButtonTrait: false,
                       ),
@@ -799,7 +1099,7 @@ class _AudioDescriptionProjectEditorScreenState
                       AccessibleListRow(
                         id: 'technical_error',
                         title: l10n.technicalErrorGeneric,
-                        value: _technicalError,
+                        subtitle: _technicalError,
                         kind: 'text',
                         accessibilityButtonTrait: false,
                       ),
@@ -807,8 +1107,11 @@ class _AudioDescriptionProjectEditorScreenState
               ],
               onEvent: (event) async {
                 final id = event.id;
-                if (id == null) return;
-                if (event.type == 'picker') {
+                if (id == null || !mounted) return;
+                if (_running && id != 'cancel' && id != 'mix_preview_stop') return;
+                if (event.type == 'slider') {
+                  await _setAudioSetting(event);
+                } else if (event.type == 'picker') {
                   final value = event.value?.toString() ?? '';
                   setState(() {
                     switch (id) {
@@ -839,6 +1142,7 @@ class _AudioDescriptionProjectEditorScreenState
                         break;
                     }
                   });
+                  if (id != 'description') unawaited(_mixPreview.stop());
                 } else if (event.type == 'textChanged' && id == 'description_text') {
                   final value = event.value?.toString() ?? '';
                   setState(() {
@@ -855,6 +1159,12 @@ class _AudioDescriptionProjectEditorScreenState
                       break;
                     case 'choose_source':
                       await _chooseSource();
+                      break;
+                    case 'mix_preview':
+                      await _playMixPreview();
+                      break;
+                    case 'mix_preview_stop':
+                      await _mixPreview.stop();
                       break;
                     case 'preview':
                       await _preview();
@@ -892,3 +1202,7 @@ class _AudioDescriptionProjectEditorScreenState
 }
 
 enum _OutputAction { share, saveDocuments }
+
+class _EditorOperationCancelled implements Exception {
+  const _EditorOperationCancelled();
+}

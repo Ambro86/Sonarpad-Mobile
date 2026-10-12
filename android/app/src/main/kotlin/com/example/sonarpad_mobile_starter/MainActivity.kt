@@ -11,6 +11,7 @@ import io.flutter.plugin.common.MethodChannel
 import java.io.File
 
 class MainActivity : AudioServiceActivity() {
+    private val cloudPicker = SonarpadCloudFilePicker(this)
     private val methodChannelName = "sonarpad/shared_media"
     private val eventChannelName = "sonarpad/shared_media_events"
     private var eventSink: EventChannel.EventSink? = null
@@ -18,6 +19,7 @@ class MainActivity : AudioServiceActivity() {
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+        cloudPicker.attach(flutterEngine)
 
         if (!flutterEngine.plugins.has(MediaKitBackgroundPlugin::class.java)) {
             flutterEngine.plugins.add(MediaKitBackgroundPlugin())
@@ -54,6 +56,11 @@ class MainActivity : AudioServiceActivity() {
         })
 
         handleSharedIntent(intent)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (cloudPicker.handleActivityResult(requestCode, resultCode, data)) return
+        super.onActivityResult(requestCode, resultCode, data)
     }
 
     override fun onNewIntent(intent: Intent) {

@@ -13,8 +13,11 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../l10n/app_localizations.dart';
 import '../l10n/localized_dynamic_labels.dart';
+import '../services/cloud_file_picker_service.dart';
 import '../services/ai_audiodescription_service.dart';
 import '../services/app_settings_service.dart';
+import '../services/audio_description_mix.dart';
+import '../services/audio_description_mix_preview_controller.dart';
 import '../services/audio_player_service.dart';
 import '../services/document_library_service.dart';
 import '../services/ios_photo_library_import_service.dart';
@@ -30,10 +33,12 @@ class CreateAiAudiodescriptionScreen extends StatefulWidget {
     super.key,
     this.initialSourcePath,
     this.includeSourceVideoWithProjectOutput = false,
+    this.mixPreviewControllerFactory,
   });
 
   final String? initialSourcePath;
   final bool includeSourceVideoWithProjectOutput;
+  final AudioDescriptionMixPreviewController Function()? mixPreviewControllerFactory;
 
   @override
   State<CreateAiAudiodescriptionScreen> createState() =>
@@ -47,13 +52,22 @@ class _CreateAiAudiodescriptionScreenState
   final _flutterTts = FlutterTts();
   final _audio = AudioPlayerService();
   final _iosPhotoImport = const IosPhotoLibraryImportService();
+  late final AudioDescriptionMixPreviewController _mixPreview;
+  Future<void> _voiceTestWork = Future<void>.value();
+  EdgeTtsBridge? _voiceTestBridge;
+  int _voiceTestRevision = 0;
+  int _mixPreviewRevision = 0;
+  bool _choosingVideo = false;
 
   bool _loading = true;
   bool _running = false;
   bool _generationActive = false;
+  bool _generationDispatched = false;
   bool _confirmingCancel = false;
   bool _cancelling = false;
   bool _testingVoice = false;
+  bool _systemVoicePreviewActive = false;
+  bool _edgeVoicePreviewActive = false;
   bool _refreshingModels = false;
   bool _activatingSonarpad = false;
   bool _loadingSonarpadBalance = false;
@@ -78,6 +92,8 @@ class _CreateAiAudiodescriptionScreenState
   List<String> _characterCatalogs = const [];
   bool _saveProject = false;
   bool _createVideoOutput = false;
+  int _bitrateKbps = audioDescriptionDefaultBitrateKbps;
+  double _sourceVolume = audioDescriptionDefaultSourceVolume;
 
   String _ttsEngine = 'edge';
   List<TtsVoiceOption> _edgeVoices = const [];
@@ -92,6 +108,9 @@ class _CreateAiAudiodescriptionScreenState
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    _mixPreview = widget.mixPreviewControllerFactory?.call() ??
+        AudioDescriptionMixPreviewController();
+    _mixPreview.addListener(_mixPreviewChanged);
     final initialSourcePath = widget.initialSourcePath?.trim() ?? '';
     if (initialSourcePath.isNotEmpty) {
       _sourcePath = initialSourcePath;
@@ -101,6 +120,10 @@ class _CreateAiAudiodescriptionScreenState
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (!_generationActive &&
+        (state == AppLifecycleState.inactive || state == AppLifecycleState.paused)) {
+      unawaited(_stopPreviews());
+    }
     if (_generationActive && state == AppLifecycleState.resumed) {
       unawaited(_ensureGenerationWakelock());
     }
@@ -122,10 +145,76 @@ class _CreateAiAudiodescriptionScreenState
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    ++_voiceTestRevision;
+    _voiceTestBridge?.cancel();
+    _mixPreview.removeListener(_mixPreviewChanged);
+    _mixPreview.dispose();
     _service.dispose();
     _flutterTts.stop();
     unawaited(_audio.dispose());
     super.dispose();
+  }
+
+  void _mixPreviewChanged() {
+    if (mounted) setState(() {});
+  }
+
+  Future<void> _stopVoicePreview() async {
+    final stopSystemVoice = _systemVoicePreviewActive;
+    final stopEdgeVoice = _edgeVoicePreviewActive;
+    _systemVoicePreviewActive = false;
+    _edgeVoicePreviewActive = false;
+    ++_voiceTestRevision;
+    _voiceTestBridge?.cancel();
+    _voiceTestBridge = null;
+    if (mounted && _testingVoice) setState(() => _testingVoice = false);
+    await Future.wait<void>([
+      if (stopSystemVoice) _flutterTts.stop().then<void>((_) {}),
+      if (stopEdgeVoice) _audio.stop(),
+    ]);
+    await _voiceTestWork;
+  }
+
+  Future<void> _stopPreviews() async {
+    await _mixPreview.stop();
+    await _stopVoicePreview();
+  }
+
+  void _requestMixPreview({required bool immediately}) {
+    final sourcePath = _sourcePath;
+    if (_running || _choosingVideo || sourcePath == null || sourcePath.isEmpty) return;
+    // Keep a snapshot of every audible choice; later adjustments replace this
+    // request instead of changing a render while it is running.
+    final settings = _currentSettings();
+    final text = AppLocalizations.of(context).audioDescriptionMixPreviewPhrase;
+    final revision = ++_mixPreviewRevision;
+    Future<AudioDescriptionMixPreview> render(AiAudioDescriptionService service) async {
+      await _stopVoicePreview();
+      if (!mounted || _running || revision != _mixPreviewRevision ||
+          !_mixPreview.isActive) {
+        throw StateError('AUDIO_DESCRIPTION_CANCELLED');
+      }
+      return service.previewMix(
+        sourcePath: sourcePath,
+        settings: settings,
+        text: text,
+      );
+    }
+    if (immediately) {
+      _mixPreview.playNow(render);
+    } else {
+      _mixPreview.schedule(render);
+    }
+  }
+
+  Future<void> _playMixPreview() async {
+    if (_running || _choosingVideo) return;
+    final source = _sourcePath;
+    if (source == null || source.isEmpty || !await File(source).exists()) {
+      await _chooseVideo();
+      if (!mounted) return;
+    }
+    _requestMixPreview(immediately: true);
   }
 
   Future<void> _load() async {
@@ -198,6 +287,10 @@ class _CreateAiAudiodescriptionScreenState
         _characterCatalogs = characterCatalogs;
         _saveProject = preferences['project'] == true;
         _createVideoOutput = preferences['createVideo'] == true;
+        _bitrateKbps = normalizeAudioDescriptionBitrate(preferences['bitrateKbps']);
+        _sourceVolume =
+            (normalizeAudioDescriptionSourceVolume(preferences['sourceVolume']) * 20)
+                .round() / 20;
         _ttsEngine = preferences['ttsEngine']?.toString().trim().isNotEmpty == true
             ? preferences['ttsEngine']!.toString()
             : settingEngine;
@@ -301,39 +394,46 @@ class _CreateAiAudiodescriptionScreenState
   };
 
   Future<void> _chooseVideo() async {
-    if (_running) return;
-    if (!_iosPhotoImport.isSupported) {
-      await _chooseVideoFromFiles();
-      return;
-    }
+    if (_running || _choosingVideo) return;
+    _choosingVideo = true;
+    try {
+      await _stopPreviews();
+      if (!mounted || _running) return;
+      if (!_iosPhotoImport.isSupported) {
+        await _chooseVideoFromFiles();
+        return;
+      }
 
-    final l10n = AppLocalizations.of(context);
-    final source = await showDialog<String>(
-      context: context,
-      builder: (ctx) => SimpleDialog(
-        title: Text(l10n.audioDescriptionChooseVideo),
-        children: [
-          SimpleDialogOption(
-            onPressed: () => Navigator.pop(ctx, 'files'),
-            child: Text(_chooseFromFilesLabel(l10n)),
-          ),
-          SimpleDialogOption(
-            onPressed: () => Navigator.pop(ctx, 'photos'),
-            child: Text(_importFromPhotosLabel(l10n)),
-          ),
-        ],
-      ),
-    );
-    if (!mounted || source == null) return;
-    if (source == 'photos') {
-      await _chooseVideoFromPhotos();
-    } else {
-      await _chooseVideoFromFiles();
+      final l10n = AppLocalizations.of(context);
+      final source = await showDialog<String>(
+        context: context,
+        builder: (ctx) => SimpleDialog(
+          title: Text(l10n.audioDescriptionChooseVideo),
+          children: [
+            SimpleDialogOption(
+              onPressed: () => Navigator.pop(ctx, 'files'),
+              child: Text(_chooseFromFilesLabel(l10n)),
+            ),
+            SimpleDialogOption(
+              onPressed: () => Navigator.pop(ctx, 'photos'),
+              child: Text(_importFromPhotosLabel(l10n)),
+            ),
+          ],
+        ),
+      );
+      if (!mounted || source == null) return;
+      if (source == 'photos') {
+        await _chooseVideoFromPhotos();
+      } else {
+        await _chooseVideoFromFiles();
+      }
+    } finally {
+      _choosingVideo = false;
     }
   }
 
   Future<void> _chooseVideoFromFiles() async {
-    final result = await FilePicker.pickFiles(
+    final result = await CloudFilePicker.pickFiles(context: context, 
       type: FileType.custom,
       allowMultiple: false,
       withData: false,
@@ -525,47 +625,80 @@ class _CreateAiAudiodescriptionScreenState
 
   Future<void> _testVoice() async {
     if (_testingVoice || _running) return;
+    final revision = ++_voiceTestRevision;
     final l10n = AppLocalizations.of(context);
+    final settings = _currentSettings();
     setState(() => _testingVoice = true);
+    await _mixPreview.stop();
+    if (!_voiceTestIsCurrent(revision)) return;
+    final work = _runVoiceTest(revision, l10n, settings);
+    _voiceTestWork = work;
+    await work;
+  }
+
+  bool _voiceTestIsCurrent(int revision) =>
+      mounted && revision == _voiceTestRevision && _testingVoice && !_running;
+
+  Future<void> _runVoiceTest(
+    int revision,
+    AppLocalizations l10n,
+    AiAudioDescriptionSettings settings,
+  ) async {
     try {
       final speed = await _settings.loadTtsSpeed();
       final pitch = await _settings.loadTtsPitch();
-      if (_ttsEngine == 'system') {
+      if (!_voiceTestIsCurrent(revision)) return;
+      if (settings.ttsEngine == 'system') {
         await _flutterTts.setSpeechRate(speed * 0.5);
+        if (!_voiceTestIsCurrent(revision)) return;
         await _flutterTts.setPitch(pitch);
-        if (_systemVoice != null) {
+        if (!_voiceTestIsCurrent(revision)) return;
+        if (settings.systemVoice != null) {
           await _flutterTts.setVoice(<String, String>{
-            'name': _systemVoice!,
-            'locale': _systemLanguage,
+            'name': settings.systemVoice!,
+            'locale': settings.systemLanguage,
           });
         } else {
-          await _flutterTts.setLanguage(_systemLanguage);
+          await _flutterTts.setLanguage(settings.systemLanguage);
         }
+        if (!_voiceTestIsCurrent(revision)) return;
+        // The file-synthesis pipeline can leave this plugin-wide flag true.
+        // On iOS a cancelled speak does not resolve an awaited completion,
+        // so the live voice test must keep its original start-only behavior.
+        await _flutterTts.awaitSpeakCompletion(false);
+        if (!_voiceTestIsCurrent(revision)) return;
+        _systemVoicePreviewActive = true;
         await _flutterTts.speak(l10n.settingsVoiceTestText);
       } else {
         final bridge = EdgeTtsBridge();
+        _voiceTestBridge = bridge;
         final file = await EdgeTtsRetry.run(
           generate: () => bridge.speakToFile(
             text: l10n.settingsVoiceTestText,
-            voice: _edgeVoice,
+            voice: settings.edgeVoice,
             speed: speed,
             pitch: pitch,
           ),
-          isActive: () => mounted && _testingVoice && !_running,
+          isActive: () => _voiceTestIsCurrent(revision),
         );
-        if (file == null || !mounted || !_testingVoice || _running) return;
+        if (file == null || !_voiceTestIsCurrent(revision)) return;
         await _flutterTts.stop();
+        if (!_voiceTestIsCurrent(revision)) return;
+        _edgeVoicePreviewActive = true;
         await _audio.playVoicePreview(file);
-        if (mounted) {
+        if (mounted && _voiceTestIsCurrent(revision)) {
           showStatusMessage(context, l10n.audioDescriptionEdgeVoiceReady);
         }
       }
     } catch (error) {
-      if (!mounted) return;
+      if (!mounted || !_voiceTestIsCurrent(revision)) return;
       setState(() => _technicalError = error.toString());
       showStatusMessage(context, l10n.settingsVoiceTestError(l10n.technicalErrorGeneric));
     } finally {
-      if (mounted) setState(() => _testingVoice = false);
+      if (revision == _voiceTestRevision) {
+        _voiceTestBridge = null;
+        if (mounted) setState(() => _testingVoice = false);
+      }
     }
   }
 
@@ -583,6 +716,8 @@ class _CreateAiAudiodescriptionScreenState
         characterCatalogName: _characterCatalogName,
         saveProject: _saveProject,
         createVideoOutput: _createVideoOutput,
+        bitrateKbps: _bitrateKbps,
+        sourceVolume: _sourceVolume,
         ttsEngine: _ttsEngine,
         edgeLanguage: _edgeLanguage,
         edgeVoice: _edgeVoice,
@@ -683,7 +818,7 @@ class _CreateAiAudiodescriptionScreenState
       if (!mounted || selection == null) return;
       var name = selection;
       if (selection == '__import_catalog__') {
-        final result = await FilePicker.pickFiles(
+        final result = await CloudFilePicker.pickFiles(context: context, 
           type: FileType.custom,
           allowedExtensions: const ['json'],
         );
@@ -795,12 +930,14 @@ class _CreateAiAudiodescriptionScreenState
     setState(() {
       _running = true;
       _generationActive = true;
+      _generationDispatched = false;
       _cancelling = false;
       _progress = 0;
       _stage = l10n.audioDescriptionStagePreparing;
       _technicalError = null;
     });
     try {
+      await _stopPreviews();
       if (_provider == 'sonarpad') {
         await AppLogger.log(
           'SONARPAD_AI_DIAG UI create dispatch provider=sonarpad language=$_language verbosity=$_verbosity '
@@ -809,6 +946,9 @@ class _CreateAiAudiodescriptionScreenState
           'ttsEngine=$_ttsEngine',
         );
       }
+      if (!mounted) return;
+      if (_cancelling) throw StateError('AUDIO_DESCRIPTION_CANCELLED');
+      _generationDispatched = true;
       final result = await _service.create(
         sourcePath: sourcePath,
         settings: _currentSettings(),
@@ -867,6 +1007,7 @@ class _CreateAiAudiodescriptionScreenState
       );
     } finally {
       _generationActive = false;
+      _generationDispatched = false;
       if (mounted) {
         setState(() {
           _running = false;
@@ -1102,7 +1243,11 @@ class _CreateAiAudiodescriptionScreenState
         _cancelling = true;
         _stage = l10n.audioDescriptionCancelling;
       });
-      _service.cancel();
+      if (_generationDispatched) {
+        _service.cancel();
+      } else {
+        unawaited(_mixPreview.stop());
+      }
       unawaited(AppLogger.log('Audio description UI: cancellation confirmed'));
     } finally {
       _confirmingCancel = false;
@@ -1350,6 +1495,17 @@ class _CreateAiAudiodescriptionScreenState
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final bitrateIndex = audioDescriptionMp3Bitrates.indexOf(_bitrateKbps);
+    final bitrateLabels = [
+      for (final bitrate in audioDescriptionMp3Bitrates)
+        '$bitrate kbps${bitrate == 192 ? ' (${l10n.audioDescriptionAudioNormal})' : ''}',
+    ];
+    final volumeIndex = (_sourceVolume * 20).round();
+    final volumeFormat = NumberFormat('0.0#', l10n.localeName);
+    final volumeLabels = [
+      for (var index = 0; index <= 40; index++)
+        '${volumeFormat.format(index / 20)}${index == 20 ? ' (${l10n.audioDescriptionAudioNormal})' : ''}',
+    ];
     return Scaffold(
       appBar: SonarpadAppBar(
         automaticallyImplyLeading: !_running,
@@ -1517,6 +1673,63 @@ class _CreateAiAudiodescriptionScreenState
                       kind: 'toggle',
                       toggleValue: _createVideoOutput,
                       enabled: !_running,
+                    ),
+                    AccessibleListRow(
+                      id: 'mp3_bitrate',
+                      title: l10n.audioDescriptionMp3Bitrate,
+                      kind: 'slider',
+                      value: bitrateLabels[bitrateIndex],
+                      valueLabel: bitrateLabels[bitrateIndex],
+                      sliderMin: 0,
+                      sliderMax: (audioDescriptionMp3Bitrates.length - 1).toDouble(),
+                      sliderStep: 1,
+                      sliderValue: bitrateIndex.toDouble(),
+                      sliderIncreasedValueLabel: bitrateLabels[
+                        (bitrateIndex + 1).clamp(0, bitrateLabels.length - 1)
+                      ],
+                      sliderDecreasedValueLabel: bitrateLabels[
+                        (bitrateIndex - 1).clamp(0, bitrateLabels.length - 1)
+                      ],
+                      options: [
+                        for (var index = 0; index < bitrateLabels.length; index++)
+                          AccessibleOption(value: index, label: bitrateLabels[index]),
+                      ],
+                      enabled: !_running,
+                    ),
+                    AccessibleListRow(
+                      id: 'source_volume',
+                      title: l10n.audioDescriptionSourceVolume,
+                      hint: l10n.audioDescriptionSourceVolumeHint,
+                      kind: 'slider',
+                      value: volumeLabels[volumeIndex],
+                      valueLabel: volumeLabels[volumeIndex],
+                      sliderMin: 0,
+                      sliderMax: 40,
+                      sliderStep: 1,
+                      sliderValue: volumeIndex.toDouble(),
+                      sliderIncreasedValueLabel: volumeLabels[(volumeIndex + 1).clamp(0, 40)],
+                      sliderDecreasedValueLabel: volumeLabels[(volumeIndex - 1).clamp(0, 40)],
+                      options: [
+                        for (var index = 0; index < volumeLabels.length; index++)
+                          AccessibleOption(value: index, label: volumeLabels[index]),
+                      ],
+                      enabled: !_running,
+                    ),
+                    AccessibleListRow(
+                      id: 'mix_preview',
+                      title: l10n.audioDescriptionMixPreview,
+                      value: _mixPreview.isPreparing
+                          ? l10n.audioDescriptionMixPreviewPreparing
+                          : _mixPreview.error != null
+                              ? l10n.technicalErrorGeneric
+                              : null,
+                      hint: l10n.audioDescriptionMixPreviewHint,
+                      enabled: !_running,
+                    ),
+                    AccessibleListRow(
+                      id: 'mix_preview_stop',
+                      title: l10n.audioDescriptionMixPreviewStop,
+                      enabled: !_running && _mixPreview.isActive,
                     ),
                     AccessibleListRow(
                       id: 'characters',
@@ -1695,7 +1908,7 @@ class _CreateAiAudiodescriptionScreenState
                       AccessibleListRow(
                         id: 'technical_error',
                         title: l10n.technicalErrorGeneric,
-                        value: _technicalError,
+                        subtitle: _technicalError,
                         kind: 'text',
                         accessibilityButtonTrait: false,
                       ),
@@ -1711,6 +1924,8 @@ class _CreateAiAudiodescriptionScreenState
                       enabled: !_running,
                       onActivate: () async {
                         if (_running) return;
+                        await _stopPreviews();
+                        if (!context.mounted || _running) return;
                         await Navigator.of(context).pushNamed('/edit_audio_description_project');
                       },
                     ),
@@ -1720,7 +1935,29 @@ class _CreateAiAudiodescriptionScreenState
               onEvent: (event) async {
                 final id = event.id;
                 if (id == null) return;
-                if (event.type == 'picker') {
+                if (_running && id != 'cancel') return;
+                if (event.type == 'slider') {
+                  if (_running) return;
+                  final rawValue = event.value;
+                  final value = rawValue is num
+                      ? rawValue.toDouble()
+                      : double.tryParse(rawValue?.toString() ?? '');
+                  if (value == null || !value.isFinite) return;
+                  if (id == 'mp3_bitrate') {
+                    final index = value.clamp(0, audioDescriptionMp3Bitrates.length - 1).round();
+                    final bitrate = audioDescriptionMp3Bitrates[index];
+                    if (bitrate != _bitrateKbps) {
+                      setState(() => _bitrateKbps = bitrate);
+                      unawaited(_mixPreview.stop());
+                    }
+                  } else if (id == 'source_volume') {
+                    final volume = value.clamp(0, 40).round() / 20;
+                    if (volume != _sourceVolume) {
+                      setState(() => _sourceVolume = volume);
+                      _requestMixPreview(immediately: false);
+                    }
+                  }
+                } else if (event.type == 'picker') {
                   final value = event.value?.toString() ?? '';
                   setState(() {
                     switch (id) {
@@ -1761,6 +1998,12 @@ class _CreateAiAudiodescriptionScreenState
                         break;
                     }
                   });
+                  if (const {
+                    'tts_engine', 'edge_language', 'edge_voice',
+                    'system_language', 'system_voice',
+                  }.contains(id)) {
+                    unawaited(_stopPreviews());
+                  }
                   if (id == 'provider') {
                     await AppLogger.log(
                       'SONARPAD_AI_DIAG UI provider changed value=$value codeChars=${_sonarpadCode.runes.length}',
@@ -1835,6 +2078,12 @@ class _CreateAiAudiodescriptionScreenState
                       break;
                     case 'test_voice':
                       await _testVoice();
+                      break;
+                    case 'mix_preview':
+                      await _playMixPreview();
+                      break;
+                    case 'mix_preview_stop':
+                      await _mixPreview.stop();
                       break;
                     case 'load_character_catalog':
                       await _loadCharacterCatalog();

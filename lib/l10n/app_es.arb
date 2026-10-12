@@ -15,6 +15,11 @@
   "categoryMedia": "Medios y entretenimiento",
   "sonarTubeTitle": "SonarTube",
   "sonarTubeSearchLabel": "Buscar vídeos, canales o listas",
+  "sonarTubeSearchType": "Tipo de búsqueda",
+  "sonarTubeSearchAll": "Todo",
+  "sonarTubeSearchPlaylists": "Listas de reproducción",
+  "sonarTubeSearchChannels": "Canales",
+  "calendarReminderHasTime": "Establecer una hora",
   "sonarTubeSearchPrompt": "Introduce una búsqueda para encontrar vídeos, canales y listas.",
   "sonarTubeNoResults": "No se encontraron vídeos.",
   "sonarTubeLoadMore": "Cargar más resultados",
@@ -3206,6 +3211,42 @@
   "audioDescriptionRecognizeCharacters": "Intentar reconocer a los personajes y usar sus nombres",
   "@audioDescriptionRecognizeCharacters": {
     "description": "Localized text for audioDescriptionRecognizeCharacters."
+  },
+  "audioDescriptionMp3Bitrate": "Tasa de bits MP3",
+  "@audioDescriptionMp3Bitrate": {
+    "description": "Bitrate slider label for MP3 audio-description output."
+  },
+  "audioDescriptionSourceVolume": "Volumen de la película",
+  "@audioDescriptionSourceVolume": {
+    "description": "Base movie volume slider label."
+  },
+  "audioDescriptionSourceVolumeHint": "Ajusta el volumen base de la película. Se reduce aún más de forma automática durante la audiodescripción.",
+  "@audioDescriptionSourceVolumeHint": {
+    "description": "Explains source volume adjustment and continued automatic ducking during audio description."
+  },
+  "audioDescriptionAudioNormal": "Normal",
+  "@audioDescriptionAudioNormal": {
+    "description": "Normal/default marker for audio-description bitrate and source volume."
+  },
+  "audioDescriptionMixPreview": "Escuchar prueba con película y voz",
+  "@audioDescriptionMixPreview": {
+    "description": "Plays a short sample combining movie audio with the selected narration voice."
+  },
+  "audioDescriptionMixPreviewPreparing": "Preparando la prueba de audio",
+  "@audioDescriptionMixPreviewPreparing": {
+    "description": "Status shown while the movie and voice audio sample is being prepared."
+  },
+  "audioDescriptionMixPreviewStop": "Detener prueba de audio",
+  "@audioDescriptionMixPreviewStop": {
+    "description": "Stops the movie and voice audio sample."
+  },
+  "audioDescriptionMixPreviewPhrase": "Prueba de audiodescripción con reducción automática del sonido.",
+  "@audioDescriptionMixPreviewPhrase": {
+    "description": "Text spoken by the selected narration voice in the movie and voice audio sample."
+  },
+  "audioDescriptionMixPreviewHint": "Después de ajustar el volumen, comienza una breve prueba con un fragmento de la película, la voz elegida y la reducción automática del audio de la película.",
+  "@audioDescriptionMixPreviewHint": {
+    "description": "Explains the automatic movie and voice sample after adjusting source volume."
   },
   "audioDescriptionSaveProject": "Guardar también el proyecto para editarlo más adelante",
   "@audioDescriptionSaveProject": {

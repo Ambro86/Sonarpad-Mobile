@@ -15,6 +15,11 @@
   "categoryMedia": "媒体与娱乐",
   "sonarTubeTitle": "SonarTube",
   "sonarTubeSearchLabel": "搜索视频、频道或播放列表",
+  "sonarTubeSearchType": "搜索类型",
+  "sonarTubeSearchAll": "全部",
+  "sonarTubeSearchPlaylists": "播放列表",
+  "sonarTubeSearchChannels": "频道",
+  "calendarReminderHasTime": "设置时间",
   "sonarTubeSearchPrompt": "输入搜索内容以查找视频、频道和播放列表。",
   "sonarTubeNoResults": "未找到视频。",
   "sonarTubeLoadMore": "加载更多结果",
@@ -3200,6 +3205,42 @@
   "audioDescriptionRecognizeCharacters": "尝试识别角色并使用其姓名",
   "@audioDescriptionRecognizeCharacters": {
     "description": "Localized text for audioDescriptionRecognizeCharacters."
+  },
+  "audioDescriptionMp3Bitrate": "MP3 比特率",
+  "@audioDescriptionMp3Bitrate": {
+    "description": "Bitrate slider label for MP3 audio-description output."
+  },
+  "audioDescriptionSourceVolume": "影片音量",
+  "@audioDescriptionSourceVolume": {
+    "description": "Base movie volume slider label."
+  },
+  "audioDescriptionSourceVolumeHint": "调整影片的基础音量。播放音频描述时，影片音量仍会自动进一步降低。",
+  "@audioDescriptionSourceVolumeHint": {
+    "description": "Explains source volume adjustment and continued automatic ducking during audio description."
+  },
+  "audioDescriptionAudioNormal": "正常",
+  "@audioDescriptionAudioNormal": {
+    "description": "Normal/default marker for audio-description bitrate and source volume."
+  },
+  "audioDescriptionMixPreview": "试听影片与旁白",
+  "@audioDescriptionMixPreview": {
+    "description": "Plays a short sample combining movie audio with the selected narration voice."
+  },
+  "audioDescriptionMixPreviewPreparing": "正在准备音频试听",
+  "@audioDescriptionMixPreviewPreparing": {
+    "description": "Status shown while the movie and voice audio sample is being prepared."
+  },
+  "audioDescriptionMixPreviewStop": "停止音频试听",
+  "@audioDescriptionMixPreviewStop": {
+    "description": "Stops the movie and voice audio sample."
+  },
+  "audioDescriptionMixPreviewPhrase": "这是自动降低原声音量的音频描述试听。",
+  "@audioDescriptionMixPreviewPhrase": {
+    "description": "Text spoken by the selected narration voice in the movie and voice audio sample."
+  },
+  "audioDescriptionMixPreviewHint": "调整音量后，会自动播放一段影片试听，配合所选语音，并在旁白期间自动降低影片音量。",
+  "@audioDescriptionMixPreviewHint": {
+    "description": "Explains the automatic movie and voice sample after adjusting source volume."
   },
   "audioDescriptionSaveProject": "同时保存项目以便以后编辑",
   "@audioDescriptionSaveProject": {

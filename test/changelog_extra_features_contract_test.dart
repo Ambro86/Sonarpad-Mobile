@@ -31,7 +31,8 @@ void main() {
       'ro',
     ]) {
       final changes = (entry[language] as List).cast<String>();
-      expect(changes, hasLength(6), reason: language);
+      expect(changes.length, greaterThanOrEqualTo(6), reason: language);
+      expect(changes.length, (entry['it'] as List).length, reason: language);
       expect(changes[5], isNotEmpty, reason: language);
       expect(changes[3], contains('Edge'), reason: language);
       expect(changes[4], contains('SonarMusic'), reason: language);

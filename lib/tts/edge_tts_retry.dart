@@ -22,10 +22,12 @@ class EdgeTtsRetry {
   static final _alphanumeric = RegExp(r'[\p{L}\p{N}]', unicode: true);
   static bool isTextUsable(String text) => _alphanumeric.hasMatch(text);
 
-  /// Port di edge_retry_delay_ms: 250 ms per 403/reset/timeout,
-  /// 400 ms per gli altri errori, crescita fino a un massimo di 2 secondi.
+  /// Retry brevi per guasti di rete, ma pause più lunghe sui limiti HTTP 429.
   static Duration readingRetryDelay(Object error, int retry) {
     final message = error.toString().toLowerCase();
+    if (message.contains('429') || message.contains('too many requests')) {
+      return Duration(seconds: (retry * 5).clamp(5, 60));
+    }
     final fast =
         message.contains('403') ||
         message.contains('os error 10054') ||
@@ -81,6 +83,8 @@ class EdgeTtsRetry {
       'closed without',
       'too many requests',
       '403 forbidden',
+      'http status code: 403',
+      'http error: 403',
       '429',
       '500 internal server error',
       '502 bad gateway',

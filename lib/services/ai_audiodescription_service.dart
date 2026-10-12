@@ -42,12 +42,15 @@ class AiAudioDescriptionSettings {
     required this.characterCatalogName,
     required this.saveProject,
     this.createVideoOutput = false,
+    int bitrateKbps = audioDescriptionDefaultBitrateKbps,
+    double sourceVolume = audioDescriptionDefaultSourceVolume,
     required this.ttsEngine,
     required this.edgeLanguage,
     required this.edgeVoice,
     required this.systemLanguage,
     required this.systemVoice,
-  });
+  }) : _bitrateKbps = bitrateKbps,
+       _sourceVolume = sourceVolume;
 
   final String provider;
   final String geminiApiKey;
@@ -62,6 +65,10 @@ class AiAudioDescriptionSettings {
   final String? characterCatalogName;
   final bool saveProject;
   final bool createVideoOutput;
+  final int _bitrateKbps;
+  final double _sourceVolume;
+  int get bitrateKbps => normalizeAudioDescriptionBitrate(_bitrateKbps);
+  double get sourceVolume => normalizeAudioDescriptionSourceVolume(_sourceVolume);
   final String ttsEngine;
   final String edgeLanguage;
   final String edgeVoice;
@@ -73,6 +80,8 @@ class AiAudioDescriptionSettings {
     String? geminiModel,
     bool? keepCharacterCatalog,
     String? characterCatalogName,
+    int? bitrateKbps,
+    double? sourceVolume,
   }) =>
       AiAudioDescriptionSettings(
         provider: provider,
@@ -88,6 +97,8 @@ class AiAudioDescriptionSettings {
         characterCatalogName: characterCatalogName ?? this.characterCatalogName,
         saveProject: saveProject,
         createVideoOutput: createVideoOutput,
+        bitrateKbps: bitrateKbps ?? this.bitrateKbps,
+        sourceVolume: sourceVolume ?? this.sourceVolume,
         ttsEngine: ttsEngine,
         edgeLanguage: edgeLanguage,
         edgeVoice: edgeVoice,
@@ -261,13 +272,15 @@ class AudioDescriptionEditableProject {
     required this.systemVoice,
     required this.ttsSpeed,
     required this.ttsPitch,
-    required this.bitrateKbps,
+    int bitrateKbps = audioDescriptionDefaultBitrateKbps,
+    double sourceVolume = audioDescriptionDefaultSourceVolume,
     required this.duckingDb,
     required this.fadeMs,
     required this.protectedIntervals,
     required this.descriptions,
     required this.excludedDescriptions,
-  });
+  }) : _bitrateKbps = bitrateKbps,
+       _sourceVolume = sourceVolume;
 
   final String projectPath;
   final String createdAtUtc;
@@ -290,7 +303,10 @@ class AudioDescriptionEditableProject {
   final String? systemVoice;
   final double ttsSpeed;
   final double ttsPitch;
-  final int bitrateKbps;
+  final int _bitrateKbps;
+  final double _sourceVolume;
+  int get bitrateKbps => normalizeAudioDescriptionBitrate(_bitrateKbps);
+  double get sourceVolume => normalizeAudioDescriptionSourceVolume(_sourceVolume);
   final double duckingDb;
   final int fadeMs;
   final List<AudioDescriptionProjectInterval> protectedIntervals;
@@ -312,6 +328,8 @@ class AudioDescriptionEditableProject {
     bool clearSystemVoice = false,
     double? ttsSpeed,
     double? ttsPitch,
+    int? bitrateKbps,
+    double? sourceVolume,
     double? duckingDb,
     int? fadeMs,
     List<AudioDescriptionProjectItem>? descriptions,
@@ -340,7 +358,8 @@ class AudioDescriptionEditableProject {
             clearSystemVoice ? null : (systemVoice ?? this.systemVoice),
         ttsSpeed: ttsSpeed ?? this.ttsSpeed,
         ttsPitch: ttsPitch ?? this.ttsPitch,
-        bitrateKbps: bitrateKbps,
+        bitrateKbps: bitrateKbps ?? this.bitrateKbps,
+        sourceVolume: sourceVolume ?? this.sourceVolume,
         duckingDb: duckingDb ?? this.duckingDb,
         fadeMs: fadeMs ?? this.fadeMs,
         protectedIntervals: protectedIntervals,
@@ -387,6 +406,7 @@ class AudioDescriptionEditableProject {
       'tts_volume': 100,
       'dictionary': const <Object?>[],
       'bitrate_kbps': bitrateKbps,
+      'source_volume': sourceVolume,
       'ducking_db': duckingDb,
       'fade_ms': fadeMs,
       'protected_intervals': protectedIntervals.map((e) => e.toJson()).toList(),
@@ -414,6 +434,27 @@ class AudioDescriptionProjectPreview {
   final String path;
   final double durationSec;
   final double? availableSec;
+}
+
+/// A temporary sample rendered by the same mixer as the exported film.
+///
+/// [path] belongs to the service and stays valid until its next mix preview or
+/// [AiAudioDescriptionService.cleanupMixPreviewCache]. Stop playback before
+/// either operation; the source excerpt and narration are reusable internally.
+class AudioDescriptionMixPreview {
+  const AudioDescriptionMixPreview({
+    required this.path,
+    required this.durationSec,
+    required this.sourceStartSec,
+    required this.narrationStartSec,
+    required this.narrationDurationSec,
+  });
+
+  final String path;
+  final double durationSec;
+  final double sourceStartSec;
+  final double narrationStartSec;
+  final double narrationDurationSec;
 }
 
 class AudioDescriptionProjectExportResult {
@@ -459,6 +500,8 @@ class AiAudioDescriptionPreferences {
   static const _catalogNameKey = 'ad_mobile_character_catalog_name';
   static const _projectKey = 'ad_mobile_project';
   static const _createVideoKey = 'ad_mobile_create_video';
+  static const _bitrateKey = 'ad_mobile_bitrate_kbps';
+  static const _sourceVolumeKey = 'ad_mobile_source_volume';
   static const _ttsEngineKey = 'ad_mobile_tts_engine';
   static const _edgeLanguageKey = 'ad_mobile_edge_language';
   static const _edgeVoiceKey = 'ad_mobile_edge_voice';
@@ -483,6 +526,8 @@ class AiAudioDescriptionPreferences {
       'catalogName': prefs.getString(_catalogNameKey),
       'project': prefs.getBool(_projectKey) ?? false,
       'createVideo': prefs.getBool(_createVideoKey) ?? false,
+      'bitrateKbps': normalizeAudioDescriptionBitrate(prefs.get(_bitrateKey)),
+      'sourceVolume': normalizeAudioDescriptionSourceVolume(prefs.get(_sourceVolumeKey)),
       'ttsEngine': prefs.getString(_ttsEngineKey),
       'edgeLanguage': prefs.getString(_edgeLanguageKey),
       'edgeVoice': prefs.getString(_edgeVoiceKey),
@@ -518,6 +563,8 @@ class AiAudioDescriptionPreferences {
     }
     await prefs.setBool(_projectKey, settings.saveProject);
     await prefs.setBool(_createVideoKey, settings.createVideoOutput);
+    await prefs.setInt(_bitrateKey, settings.bitrateKbps);
+    await prefs.setDouble(_sourceVolumeKey, settings.sourceVolume);
     await prefs.setString(_ttsEngineKey, settings.ttsEngine);
     await prefs.setString(_edgeLanguageKey, settings.edgeLanguage);
     await prefs.setString(_edgeVoiceKey, settings.edgeVoice);
@@ -672,6 +719,9 @@ class AiAudioDescriptionService {
   final Set<String> _validatedGeminiModels = <String>{};
   bool _cancelRequested = false;
   Completer<void> _cancelSignal = Completer<void>();
+  Completer<void>? _mixPreviewCompletion;
+  Future<void>? _mixPreviewTtsStop;
+  _AudioDescriptionMixPreviewCache? _mixPreviewCache;
   int _sonarpadAiTraceSequence = 0;
 
   String _nextSonarpadAiTrace(String action) {
@@ -881,6 +931,10 @@ class AiAudioDescriptionService {
       AppLogger.log('SONARPAD_AI_DIAG $message');
 
   void cancel() {
+    if (_mixPreviewCompletion != null) {
+      unawaited(cancelPreview());
+      return;
+    }
     if (_cancelRequested) return;
     _cancelRequested = true;
     _cancelSignal.complete();
@@ -897,6 +951,41 @@ class AiAudioDescriptionService {
     unawaited(FFmpegKit.cancel().catchError((Object error) {
       return AppLogger.log('Audio description mobile: FFmpeg cancel failed $error');
     }));
+  }
+
+  /// Cancels only this instance's mix preview and waits for its native work.
+  /// Unlike [cancel], this never requests a global FFmpeg cancellation.
+  Future<void> cancelPreview() async {
+    final completion = _mixPreviewCompletion;
+    if (completion == null) return;
+    if (!_cancelRequested) {
+      _cancelRequested = true;
+      _cancelSignal.complete();
+      _activeEdgeTts?.cancel();
+      final tts = _activeSystemTts;
+      if (tts != null) {
+        _mixPreviewTtsStop = tts
+            .stop()
+            .then<void>((_) {})
+            .catchError(
+              (Object error) => AppLogger.log(
+                'Audio description mobile: preview TTS stop failed $error',
+              ),
+            );
+      }
+    }
+    await completion.future;
+  }
+
+  /// Releases the single cached sample after stopping any active render.
+  /// The caller must stop its player before invoking this method.
+  Future<void> cleanupMixPreviewCache() async {
+    await cancelPreview();
+    final cache = _mixPreviewCache;
+    _mixPreviewCache = null;
+    if (cache != null && await cache.directory.exists()) {
+      await cache.directory.delete(recursive: true);
+    }
   }
 
   void _ensureHttpClient() {
@@ -1534,6 +1623,8 @@ class AiAudioDescriptionService {
             ? true
             : await onResumeCheckpoint(checkpoint.path);
         if (resume) {
+          // Bitrate and source gain are export-only settings. Keep the current
+          // UI choices when resuming; accepted AI chunks are independent of them.
           startChunk = checkpoint.completedChunks.clamp(0, chunkCount);
           descriptions.addAll(checkpoint.descriptions);
           final checkpointCatalogName = checkpoint.characterCatalogName?.trim() ?? '';
@@ -1642,6 +1733,8 @@ class AiAudioDescriptionService {
           geminiModel: activeGeminiModel,
           keepCharacterCatalog: settings.recognizeCharacters && settings.keepCharacterCatalog,
           characterCatalogName: effectiveCharacterCatalogName,
+          bitrateKbps: settings.bitrateKbps,
+          sourceVolume: settings.sourceVolume,
           descriptions: descriptions,
           glossary: glossary,
         );
@@ -1789,6 +1882,8 @@ class AiAudioDescriptionService {
         sourceDurationSec: probe.durationSec,
         hasAudio: probe.hasAudio,
         placements: inserted,
+        bitrateKbps: placementSettings.bitrateKbps,
+        sourceVolume: placementSettings.sourceVolume,
         onProgress: (value) => _emit(onProgress, 'mixing', 0.88 + value * 0.08),
       );
       final mixedMp3 = File(mixedMp3Path);
@@ -2231,6 +2326,8 @@ class AiAudioDescriptionService {
     required String geminiModel,
     required bool keepCharacterCatalog,
     required String? characterCatalogName,
+    required int bitrateKbps,
+    required double sourceVolume,
     required List<_GeneratedDescription> descriptions,
     required List<Map<String, Object?>> glossary,
   }) async {
@@ -2247,6 +2344,8 @@ class AiAudioDescriptionService {
         'gemini_model': geminiModel,
         'keep_character_catalog': keepCharacterCatalog,
         'character_catalog_name': characterCatalogName,
+        'bitrate_kbps': normalizeAudioDescriptionBitrate(bitrateKbps),
+        'source_volume': normalizeAudioDescriptionSourceVolume(sourceVolume),
         'descriptions': descriptions.map((e) => e.toCheckpoint()).toList(),
         'glossary': glossary,
       }),
@@ -4608,6 +4707,8 @@ $screenTextSchema$coreDirectives
     required double sourceDurationSec,
     required bool hasAudio,
     required List<_Placement> placements,
+    required int bitrateKbps,
+    required double sourceVolume,
     void Function(double)? onProgress,
   }) async {
     final included = placements.where((p) => p.included).toList()
@@ -4691,7 +4792,15 @@ $screenTextSchema$coreDirectives
       'intervals=${duckIntervals.length} filters=${duckExpressions.length} '
       'chars=${duckExpressions.fold<int>(0, (sum, item) => sum + item.length)}',
     );
+    // The base soundtrack level is independent of narration and ducking.
+    // Keep the default graph unchanged; apply gain only after source concat.
     var duckedBase = '[base0]';
+    if (normalizeAudioDescriptionSourceVolume(sourceVolume) != 1.0) {
+      filter.write(
+        '[base0]${audioDescriptionSourceVolumeFilter(sourceVolume)}[sourcebase];',
+      );
+      duckedBase = '[sourcebase]';
+    }
     for (var index = 0; index < duckExpressions.length; index++) {
       final expression = duckExpressions[index];
       if (expression == '1') continue;
@@ -4708,7 +4817,8 @@ $screenTextSchema$coreDirectives
 
     args.addAll(<String>[
       '-filter_complex', filter.toString(),
-      '-map', '[outa]', '-vn', '-c:a', 'libmp3lame', '-b:a', '192k',
+      '-map', '[outa]', '-vn',
+      ...audioDescriptionMp3EncodingArguments(bitrateKbps),
       '-id3v2_version', '3', outputPath,
     ]);
     final outputDuration = sourceDurationSec +
@@ -5015,7 +5125,8 @@ $screenTextSchema$coreDirectives
       systemVoice: settings.systemVoice,
       ttsSpeed: speed,
       ttsPitch: pitch,
-      bitrateKbps: 192,
+      bitrateKbps: settings.bitrateKbps,
+      sourceVolume: settings.sourceVolume,
       duckingDb: -12.0,
       fadeMs: 280,
       protectedIntervals: intervals,
@@ -5230,7 +5341,8 @@ $screenTextSchema$coreDirectives
       systemVoice: map['mobile_system_voice']?.toString(),
       ttsSpeed: number(map['mobile_tts_speed'], 1.0),
       ttsPitch: number(map['mobile_tts_pitch'], 1.0),
-      bitrateKbps: (map['bitrate_kbps'] as num?)?.toInt() ?? 192,
+      bitrateKbps: normalizeAudioDescriptionBitrate(map['bitrate_kbps']),
+      sourceVolume: normalizeAudioDescriptionSourceVolume(map['source_volume']),
       duckingDb: number(map['ducking_db'], -12.0),
       fadeMs: (map['fade_ms'] as num?)?.toInt() ?? 150,
       protectedIntervals: protected,
@@ -5306,6 +5418,313 @@ $screenTextSchema$coreDirectives
     return math.max(0.0, end - start);
   }
 
+  /// Renders a short soundtrack sample with the exact export voice and mixer.
+  ///
+  /// Use a dedicated service instance and await [cancelPreview] before
+  /// replacing a sample. Null speed/pitch use the global creation settings.
+  /// [preferredSourceTimeSec] is the desired start of the source excerpt;
+  /// otherwise a point about one third into the film is used. A complete
+  /// excerpt and voice are cached independently of volume and MP3 bitrate.
+  Future<AudioDescriptionMixPreview> previewMix({
+    required String sourcePath,
+    required AiAudioDescriptionSettings settings,
+    required String text,
+    double? ttsSpeed,
+    double? ttsPitch,
+    double? preferredSourceTimeSec,
+  }) async {
+    if (_mixPreviewCompletion != null) {
+      throw StateError('AUDIO_DESCRIPTION_MIX_PREVIEW_BUSY');
+    }
+    final completion = Completer<void>();
+    _mixPreviewCompletion = completion;
+    _mixPreviewTtsStop = null;
+    _resetCancellation();
+    File? rendered;
+    try {
+      final normalized = text.trim();
+      if (normalized.isEmpty) {
+        throw StateError('AUDIO_DESCRIPTION_PROJECT_EMPTY_TEXT');
+      }
+      if (settings.ttsEngine != 'edge' && settings.ttsEngine != 'system') {
+        throw StateError('AUDIO_DESCRIPTION_PROJECT_UNSUPPORTED_TTS_ENGINE');
+      }
+      final source = File(sourcePath.trim());
+      final stat = await source.stat();
+      _checkCancel();
+      if (sourcePath.trim().isEmpty || stat.type != FileSystemEntityType.file) {
+        throw StateError('AUDIO_DESCRIPTION_PROJECT_SOURCE_REQUIRED');
+      }
+      final appSettings = AppSettingsService();
+      final speed = ttsSpeed ?? await appSettings.loadTtsSpeed();
+      final pitch = ttsPitch ?? await appSettings.loadTtsPitch();
+      final dictionary = VoiceDictionaryService();
+      final entries = await dictionary.loadEntries();
+      final spoken = AudioDescriptionFallbacks.normalizePronunciationText(
+        dictionary.applyToText(normalized, entries),
+      );
+      final preferredStart =
+          preferredSourceTimeSec != null && preferredSourceTimeSec.isFinite
+          ? math.max(0.0, preferredSourceTimeSec)
+          : null;
+      final key = jsonEncode(<Object?>[
+        source.absolute.path,
+        stat.size,
+        stat.modified.microsecondsSinceEpoch,
+        spoken,
+        settings.ttsEngine,
+        settings.edgeLanguage,
+        settings.edgeVoice,
+        settings.systemLanguage,
+        settings.systemVoice,
+        speed,
+        pitch,
+        preferredStart,
+      ]);
+      var cache = _mixPreviewCache;
+      if (cache != null &&
+          (cache.key != key ||
+              !await File(cache.sourcePath).exists() ||
+              !await File(cache.narrationPath).exists())) {
+        _mixPreviewCache = null;
+        if (await cache.directory.exists()) {
+          await cache.directory.delete(recursive: true);
+        }
+        cache = null;
+      }
+      _checkCancel();
+      if (cache == null) {
+        cache = await _prepareMixPreviewCache(
+          key: key,
+          sourcePath: source.path,
+          settings: settings,
+          spokenText: spoken,
+          speed: speed,
+          pitch: pitch,
+          preferredSourceTimeSec: preferredStart,
+        );
+        _mixPreviewCache = cache;
+      }
+      _checkCancel();
+      rendered = File(p.join(cache.directory.path, 'mix_preview.mp3'));
+      final description = _GeneratedDescription(
+        slotId: 'MIX_PREVIEW',
+        slotStart: cache.narrationStartSec,
+        slotEnd: cache.narrationStartSec + cache.narrationDurationSec,
+        requestedStart: cache.narrationStartSec,
+        requestedEnd: cache.narrationStartSec + cache.narrationDurationSec,
+        evidenceTime: null,
+        text: normalized,
+        mandatory: false,
+      );
+      await _renderFinalMp3(
+        sourcePath: cache.sourcePath,
+        outputPath: rendered.path,
+        sourceDurationSec: cache.durationSec,
+        hasAudio: cache.hasAudio,
+        placements: <_Placement>[
+          _Placement.included(
+            description: description,
+            ttsPath: cache.narrationPath,
+            ttsDuration: cache.narrationDurationSec,
+            originalStart: cache.narrationStartSec,
+            extraPause: 0.0,
+          ),
+        ],
+        bitrateKbps: settings.bitrateKbps,
+        sourceVolume: settings.sourceVolume,
+      );
+      _checkCancel();
+      if (!await rendered.exists() || await rendered.length() <= 0) {
+        throw StateError('AUDIO_DESCRIPTION_PROJECT_EXPORT_INVALID');
+      }
+      return AudioDescriptionMixPreview(
+        path: rendered.path,
+        durationSec: cache.durationSec,
+        sourceStartSec: cache.sourceStartSec,
+        narrationStartSec: cache.narrationStartSec,
+        narrationDurationSec: cache.narrationDurationSec,
+      );
+    } catch (_) {
+      if (rendered != null && await rendered.exists()) {
+        await rendered.delete();
+      }
+      rethrow;
+    } finally {
+      try {
+        await _mixPreviewTtsStop;
+      } finally {
+        _activeEdgeTts = null;
+        _activeSystemTts = null;
+        _mixPreviewTtsStop = null;
+        _mixPreviewCompletion = null;
+        completion.complete();
+      }
+    }
+  }
+
+  /// Previews the editor's candidate project, including a not-yet-saved voice.
+  Future<AudioDescriptionMixPreview> previewProjectMix({
+    required AudioDescriptionEditableProject project,
+    required String text,
+    String? sourcePathOverride,
+  }) {
+    final cues =
+        project.descriptions
+            .where(
+              (item) =>
+                  item.sourceStartSec.isFinite && item.sourceStartSec > 2.0,
+            )
+            .toList()
+          ..sort(
+            (a, b) => (a.sourceStartSec - project.sourceDurationSec / 3)
+                .abs()
+                .compareTo(
+                  (b.sourceStartSec - project.sourceDurationSec / 3).abs(),
+                ),
+          );
+    return previewMix(
+      sourcePath: (sourcePathOverride?.trim().isNotEmpty ?? false)
+          ? sourcePathOverride!.trim()
+          : project.sourcePath,
+      settings: _projectTtsSettings(project),
+      text: text,
+      ttsSpeed: project.ttsSpeed,
+      ttsPitch: project.ttsPitch,
+      preferredSourceTimeSec: cues.isEmpty
+          ? null
+          : math.max(0.0, cues.first.sourceStartSec - 2.0),
+    );
+  }
+
+  Future<_AudioDescriptionMixPreviewCache> _prepareMixPreviewCache({
+    required String key,
+    required String sourcePath,
+    required AiAudioDescriptionSettings settings,
+    required String spokenText,
+    required double speed,
+    required double pitch,
+    required double? preferredSourceTimeSec,
+  }) async {
+    final probe = await _probe(sourcePath);
+    final root = await AppCacheService.directory(
+      'audio_description_mix_preview',
+    );
+    final dir = Directory(p.join(root.path, const Uuid().v4()));
+    await dir.create(recursive: true);
+    FlutterTts? flutterTts;
+    var prepared = false;
+    try {
+      _checkCancel();
+      flutterTts = FlutterTts();
+      if (settings.ttsEngine == 'system') {
+        await flutterTts.awaitSpeakCompletion(true);
+        await flutterTts.setSpeechRate(speed * 0.5);
+        await flutterTts.setPitch(pitch);
+        await flutterTts.setVolume(1.0);
+        if (settings.systemVoice != null &&
+            settings.systemVoice!.trim().isNotEmpty) {
+          await flutterTts.setVoice(<String, String>{
+            'name': settings.systemVoice!,
+            'locale': settings.systemLanguage,
+          });
+        } else {
+          await flutterTts.setLanguage(settings.systemLanguage);
+        }
+      }
+      final extension = settings.ttsEngine == 'system' && Platform.isIOS
+          ? 'caf'
+          : settings.ttsEngine == 'system'
+          ? 'wav'
+          : 'mp3';
+      final voice = File(p.join(dir.path, 'narration.$extension'));
+      // This is the export's complete synthesis/finalization path, including
+      // pronunciation rules, Edge tail trimming and audible-output validation.
+      await _synthesizeTtsWithFallback(
+        settings: settings,
+        flutterTts: flutterTts,
+        text: spokenText,
+        target: voice,
+        speed: speed,
+        pitch: pitch,
+      );
+      final narrationDuration = await _audioDuration(voice.path);
+      if (narrationDuration <= 0) throw StateError('TTS_DURATION_INVALID');
+      const narrationStart = 2.0;
+      // Preserve the full phrase and both sides of the actual attack/release.
+      // Very short or silent films use trailing silence, never clipped speech.
+      final duration = math.max(10.0, narrationDuration + narrationStart + 2.0);
+      final sourceStart = (preferredSourceTimeSec ?? probe.durationSec / 3)
+          .clamp(0.0, math.max(0.0, probe.durationSec - duration))
+          .toDouble();
+      final excerpt = File(p.join(dir.path, 'source.wav'));
+      final extraction = <String>['-y', '-hide_banner', '-loglevel', 'error'];
+      if (probe.hasAudio) {
+        extraction.addAll(<String>[
+          '-ss',
+          sourceStart.toStringAsFixed(6),
+          '-i',
+          sourcePath,
+          '-map',
+          '0:a:0',
+          '-vn',
+          if (probe.durationSec - sourceStart < duration) ...<String>[
+            '-af',
+            'apad=whole_dur=${duration.toStringAsFixed(6)}',
+          ],
+        ]);
+      } else {
+        extraction.addAll(<String>[
+          '-f',
+          'lavfi',
+          '-i',
+          'anullsrc=r=48000:cl=stereo',
+        ]);
+      }
+      extraction.addAll(<String>[
+        '-t',
+        duration.toStringAsFixed(6),
+        '-map_metadata',
+        '-1',
+        '-c:a',
+        'pcm_f32le',
+        '-f',
+        'wav',
+        excerpt.path,
+      ]);
+      await _runFfmpeg(extraction, 'mix preview source', durationSec: duration);
+      _checkCancel();
+      if (!await excerpt.exists() || await excerpt.length() <= 0) {
+        throw StateError('AUDIO_DESCRIPTION_PROJECT_EXPORT_INVALID');
+      }
+      prepared = true;
+      return _AudioDescriptionMixPreviewCache(
+        key: key,
+        directory: dir,
+        sourcePath: excerpt.path,
+        narrationPath: voice.path,
+        durationSec: duration,
+        sourceStartSec: sourceStart,
+        narrationStartSec: narrationStart,
+        narrationDurationSec: narrationDuration,
+        hasAudio: probe.hasAudio,
+      );
+    } finally {
+      if (settings.ttsEngine == 'system' && flutterTts != null) {
+        try {
+          await flutterTts.stop();
+        } catch (error) {
+          await AppLogger.log(
+            'Audio description mobile: preview TTS cleanup failed $error',
+          );
+        }
+      }
+      _activeSystemTts = null;
+      _activeEdgeTts = null;
+      if (!prepared && await dir.exists()) await dir.delete(recursive: true);
+    }
+  }
+
   AiAudioDescriptionSettings _projectTtsSettings(
     AudioDescriptionEditableProject project,
   ) =>
@@ -5323,6 +5742,8 @@ $screenTextSchema$coreDirectives
         characterCatalogName: null,
         saveProject: true,
         createVideoOutput: false,
+        bitrateKbps: project.bitrateKbps,
+        sourceVolume: project.sourceVolume,
         ttsEngine: project.ttsEngine,
         edgeLanguage: project.edgeLanguage,
         edgeVoice: project.ttsVoice,
@@ -5594,6 +6015,8 @@ $screenTextSchema$coreDirectives
         sourceDurationSec: probe.durationSec,
         hasAudio: probe.hasAudio,
         placements: placements,
+        bitrateKbps: project.bitrateKbps,
+        sourceVolume: project.sourceVolume,
         onProgress: (value) => onProgress?.call(
           AiAudioDescriptionProgress('project_export', 0.70 + value * 0.28),
         ),
@@ -6990,6 +7413,9 @@ $screenTextSchema$coreDirectives
       try {
         await FFmpegKit.cancel(sessionId).timeout(const Duration(seconds: 3));
       } catch (_) {}
+      // A replacement preview must not reuse/delete files while this short
+      // native render is still running. Ordinary export cancellation is unchanged.
+      if (_mixPreviewCompletion != null) await completed.future;
       throw const _AudioDescriptionCancelled();
     }
 
@@ -7010,6 +7436,7 @@ $screenTextSchema$coreDirectives
           'label=$label session=$sessionId error=$error',
         );
       }
+      if (_mixPreviewCompletion != null) await completed.future;
       throw const _AudioDescriptionCancelled();
     }
     final session = outcome as FFmpegSession;
@@ -7076,6 +7503,30 @@ $screenTextSchema$coreDirectives
     final flat = value.replaceAll(RegExp(r'\s+'), ' ').trim();
     return flat.length <= 600 ? flat : '${flat.substring(0, 600)}…';
   }
+}
+
+class _AudioDescriptionMixPreviewCache {
+  const _AudioDescriptionMixPreviewCache({
+    required this.key,
+    required this.directory,
+    required this.sourcePath,
+    required this.narrationPath,
+    required this.durationSec,
+    required this.sourceStartSec,
+    required this.narrationStartSec,
+    required this.narrationDurationSec,
+    required this.hasAudio,
+  });
+
+  final String key;
+  final Directory directory;
+  final String sourcePath;
+  final String narrationPath;
+  final double durationSec;
+  final double sourceStartSec;
+  final double narrationStartSec;
+  final double narrationDurationSec;
+  final bool hasAudio;
 }
 
 class _ProbeInfo {

@@ -421,8 +421,13 @@ class AudioPlayerService {
 
   /// Android previews must stop at EOF: just_audio otherwise remains playing,
   /// and an audio-focus interruption can replay the completed sample.
-  Future<void> playVoicePreview(File file) async {
-    if (!_isAndroid) return playFile(file);
+  Future<void> playVoicePreview(
+    File file, {
+    AudioSessionType sessionType = AudioSessionType.speech,
+  }) async {
+    if (!_isAndroid && sessionType == AudioSessionType.speech) {
+      return playFile(file);
+    }
     _cancelVoicePreview();
     final cancelled = Completer<void>();
     _voicePreviewCancelled = cancelled;
@@ -432,7 +437,7 @@ class AudioPlayerService {
     try {
       await _player.stop();
       if (!isCurrent()) return;
-      await _prepareAudioSession(AudioSessionType.speech);
+      await _prepareAudioSession(sessionType);
       if (!isCurrent()) return;
       await _player.setLoopMode(LoopMode.off);
       if (!isCurrent()) return;

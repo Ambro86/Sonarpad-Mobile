@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sonarpad_mobile_starter/services/audio_player_service.dart';
 
 class PreviewPlayer extends Fake implements AudioPlayer {
@@ -14,6 +15,7 @@ class PreviewPlayer extends Fake implements AudioPlayer {
   int plays = 0;
   int stops = 0;
   LoopMode loop = LoopMode.one;
+  final volumes = <double>[];
   @override
   bool playing = false;
   @override
@@ -29,7 +31,7 @@ class PreviewPlayer extends Fake implements AudioPlayer {
   @override
   Stream<PlayerState> get playerStateStream => states.stream;
   @override
-  Future<void> setVolume(double volume) async {}
+  Future<void> setVolume(double volume) async => volumes.add(volume);
   @override
   Future<void> setLoopMode(LoopMode mode) async {
     loop = mode;
@@ -104,6 +106,7 @@ void main() {
   late AudioPlayerService service;
   final file = File('voice-preview.mp3');
   setUp(() {
+    SharedPreferences.setMockInitialValues({'sonarpad_media_volume': 0.7});
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(
           const MethodChannel('com.ryanheise.audio_session'),
@@ -182,4 +185,29 @@ void main() {
     expect(player.playing, isTrue);
     expect(player.loop, LoopMode.one);
   });
+
+  for (final isAndroid in [true, false]) {
+    test(
+      'mixed preview uses final media volume and EOF stop, Android=$isAndroid',
+      () async {
+        await service.dispose();
+        player = PreviewPlayer();
+        service = AudioPlayerService(player: player, isAndroid: isAndroid);
+        final preview = service.playVoicePreview(
+          file,
+          sessionType: AudioSessionType.playback,
+        );
+        await player.started.future;
+        expect(player.volumes.last, 0.7);
+        expect(player.loop, LoopMode.off);
+        player.complete(focusLost: true);
+        await preview;
+        player.regainFocus();
+        expect(player.playing, isFalse);
+        expect(player.plays, 1);
+        final preferences = await SharedPreferences.getInstance();
+        expect(preferences.getDouble('sonarpad_media_volume'), 0.7);
+      },
+    );
+  }
 }

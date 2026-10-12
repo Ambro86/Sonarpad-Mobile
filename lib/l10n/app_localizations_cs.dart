@@ -9,6 +9,48 @@ class AppLocalizationsCs extends AppLocalizations {
   AppLocalizationsCs([String locale = 'cs']) : super(locale);
 
   @override
+  String get sonarTubeSearchType => 'Typ hledání';
+
+  @override
+  String get sonarTubeSearchAll => 'Vše';
+
+  @override
+  String get sonarTubeSearchPlaylists => 'Playlisty';
+
+  @override
+  String get sonarTubeSearchChannels => 'Kanály';
+
+  @override
+  String get calendarReminderHasTime => "Nastavit čas";
+
+  @override
+  String get audioDescriptionMp3Bitrate => "Datový tok MP3";
+
+  @override
+  String get audioDescriptionSourceVolume => "Hlasitost filmu";
+
+  @override
+  String get audioDescriptionSourceVolumeHint => "Nastavte základní hlasitost filmu. Během audiopopisu se automaticky ještě více ztlumí.";
+
+  @override
+  String get audioDescriptionAudioNormal => "Normální";
+
+  @override
+  String get audioDescriptionMixPreview => "Poslechnout ukázku filmu a hlasu";
+
+  @override
+  String get audioDescriptionMixPreviewPreparing => "Příprava zvukové ukázky";
+
+  @override
+  String get audioDescriptionMixPreviewStop => "Zastavit zvukovou ukázku";
+
+  @override
+  String get audioDescriptionMixPreviewPhrase => "Zkouška audiopopisu s automatickým ztlumením zvuku.";
+
+  @override
+  String get audioDescriptionMixPreviewHint => "Po změně hlasitosti se spustí krátká ukázka s úryvkem filmu, vybraným hlasem a automatickým ztlumením zvuku filmu.";
+
+  @override
   String get appTitle => 'Sonarpad';
 
   @override

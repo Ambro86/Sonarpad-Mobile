@@ -6,6 +6,8 @@ import '../utils/app_logger.dart';
 
 enum SonarTubeItemKind { video, channel, playlist }
 
+enum SonarTubeSearchType { all, playlists, channels }
+
 enum SonarTubeChannelSort { newest, oldest, popular }
 
 class _SonarTubeChannelSortUnavailable implements Exception {
@@ -265,6 +267,7 @@ class SonarTubeService {
 
   Future<SonarTubePage> search(
     String query, {
+    SonarTubeSearchType type = SonarTubeSearchType.all,
     String? token,
     int page = 1,
   }) async {
@@ -273,7 +276,7 @@ class SonarTubeService {
       'hl': _youtubeLanguage,
       'gl': _youtubeRegion,
       'q': trimmedQuery,
-      'type': 'all',
+      'type': _searchRequestType(type),
       'format': 'json',
       if (token != null && token.isNotEmpty) 'token': token,
       'page': '$page',
@@ -284,13 +287,39 @@ class SonarTubeService {
             operation: 'search',
             direct: () => _searchDirect(
               trimmedQuery,
+              type: type,
               token: token,
               page: page,
             ),
             fallbackQuery: fallbackQuery,
           );
-    return _filterUnplayableVideoEntries(result);
+    final playableResult = _filterUnplayableVideoEntries(result);
+    if (type == SonarTubeSearchType.all) return playableResult;
+    // Apply the requested kind to both providers. YouTube may return an
+    // unrelated shelf alongside a filtered search, and the server fallback
+    // must not reintroduce those entries either.
+    return SonarTubePage(
+      items: playableResult.items
+          .where((item) => _matchesSearchType(item, type))
+          .toList(growable: false),
+      page: playableResult.page,
+      nextToken: playableResult.nextToken,
+    );
   }
+
+  String _searchRequestType(SonarTubeSearchType type) => switch (type) {
+    SonarTubeSearchType.all => 'all',
+    SonarTubeSearchType.playlists => 'playlist',
+    SonarTubeSearchType.channels => 'channel',
+  };
+
+  bool _matchesSearchType(SonarTubeItem item, SonarTubeSearchType type) =>
+      switch (type) {
+        SonarTubeSearchType.all => true,
+        SonarTubeSearchType.playlists =>
+          item.kind == SonarTubeItemKind.playlist,
+        SonarTubeSearchType.channels => item.kind == SonarTubeItemKind.channel,
+      };
 
   Future<SonarTubePage> browse(
     SonarTubeItem collection, {
@@ -1044,6 +1073,7 @@ class SonarTubeService {
 
   Future<SonarTubePage> _searchDirect(
     String query, {
+    SonarTubeSearchType type = SonarTubeSearchType.all,
     String? token,
     int page = 1,
   }) async {
@@ -1055,14 +1085,14 @@ class SonarTubeService {
     final data = await _searchInnerTube(
       query,
       continuation: continuation,
-      type: 'all',
+      type: _searchRequestType(type),
     );
     var items = _extractNavigationItems(data);
     final nextToken = _findSearchContinuation(data);
 
     // Replica il resolver PHP: sulla prima pagina generale aggiunge davanti
     // i video della ricerca filtrata e, in coda, alcuni canali e playlist.
-    if (continuation.isEmpty) {
+    if (continuation.isEmpty && type == SonarTubeSearchType.all) {
       final known = <String>{
         for (final item in items) _navigationItemKey(item),
       };
@@ -1109,7 +1139,9 @@ class SonarTubeService {
     items = items
         .where(
           (item) =>
-              item.kind != SonarTubeItemKind.video || _isUsableVideoResult(item),
+              _matchesSearchType(item, type) &&
+              (item.kind != SonarTubeItemKind.video ||
+                  _isUsableVideoResult(item)),
         )
         .toList(growable: false);
 

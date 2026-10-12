@@ -9,6 +9,48 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get sonarTubeSearchType => 'Search type';
+
+  @override
+  String get sonarTubeSearchAll => 'All';
+
+  @override
+  String get sonarTubeSearchPlaylists => 'Playlists';
+
+  @override
+  String get sonarTubeSearchChannels => 'Channels';
+
+  @override
+  String get calendarReminderHasTime => "Set a time";
+
+  @override
+  String get audioDescriptionMp3Bitrate => "MP3 bitrate";
+
+  @override
+  String get audioDescriptionSourceVolume => "Movie volume";
+
+  @override
+  String get audioDescriptionSourceVolumeHint => "Adjust the movie’s base volume. It is automatically lowered further during audio description.";
+
+  @override
+  String get audioDescriptionAudioNormal => "Normal";
+
+  @override
+  String get audioDescriptionMixPreview => "Listen to a movie and voice sample";
+
+  @override
+  String get audioDescriptionMixPreviewPreparing => "Preparing audio sample";
+
+  @override
+  String get audioDescriptionMixPreviewStop => "Stop audio sample";
+
+  @override
+  String get audioDescriptionMixPreviewPhrase => "Audio description test with ducking.";
+
+  @override
+  String get audioDescriptionMixPreviewHint => "After adjusting the volume, a short sample starts with a movie excerpt, the selected voice and automatic lowering of the movie audio.";
+
+  @override
   String get appTitle => 'Sonarpad';
 
   @override

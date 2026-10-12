@@ -115,7 +115,9 @@ void goToSonarpadHome(BuildContext context) {
 
 /// Adds Sonarpad's secondary "Go to Home" accessibility action to an existing
 /// visual Back control while keeping the control in its original position.
-class SonarpadBackSemantics extends StatelessWidget {
+/// A long activation opens the same action in a menu, including the screen
+/// reader double-tap-and-hold gesture.
+class SonarpadBackSemantics extends StatefulWidget {
   const SonarpadBackSemantics({
     super.key,
     required this.onBack,
@@ -128,19 +130,69 @@ class SonarpadBackSemantics extends StatelessWidget {
   final String? label;
 
   @override
+  State<SonarpadBackSemantics> createState() => _SonarpadBackSemanticsState();
+}
+
+class _SonarpadBackSemanticsState extends State<SonarpadBackSemantics> {
+  bool _secondaryActionsOpen = false;
+
+  Future<void> _showSecondaryActions() async {
+    // A screen reader can deliver the gesture through semantics or direct
+    // touch. Do not stack two dialogs if both paths arrive for one gesture.
+    if (_secondaryActionsOpen || !mounted) return;
+    _secondaryActionsOpen = true;
+    String? actionId;
+    try {
+      actionId = await showDialog<String>(
+        context: context,
+        builder: (dialogContext) => SimpleDialog(
+          title: Text(MaterialLocalizations.of(dialogContext).moreButtonTooltip),
+          children: [
+            SimpleDialogOption(
+              onPressed: () =>
+                  Navigator.of(dialogContext).pop(sonarpadGoHomeActionId),
+              child: Text(AppLocalizations.of(dialogContext).goToHome),
+            ),
+          ],
+        ),
+      );
+    } finally {
+      _secondaryActionsOpen = false;
+    }
+    if (mounted && actionId == sonarpadGoHomeActionId) {
+      goToSonarpadHome(context);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final action = CustomSemanticsAction(label: l10n.goToHome);
+    void onLongPress() => unawaited(_showSecondaryActions());
     return Semantics(
       container: true,
       button: true,
-      label: label ?? MaterialLocalizations.of(context).backButtonTooltip,
-      onTap: onBack,
+      label: widget.label ?? MaterialLocalizations.of(context).backButtonTooltip,
+      onTap: widget.onBack,
+      onLongPress: onLongPress,
       customSemanticsActions: <CustomSemanticsAction, VoidCallback>{
         action: () => goToSonarpadHome(context),
       },
       excludeSemantics: true,
-      child: child,
+      child: TooltipTheme(
+        // IconButton/BackButton tooltips normally claim the pointer long press
+        // before this parent. Reserve touch holds for the actions menu; mouse
+        // hover still shows the normal tooltip.
+        data: TooltipTheme.of(context).copyWith(
+          triggerMode: TooltipTriggerMode.manual,
+        ),
+        child: GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          excludeFromSemantics: true,
+          onLongPress: onLongPress,
+          child: widget.child,
+        ),
+      ),
     );
   }
 }
@@ -148,7 +200,8 @@ class SonarpadBackSemantics extends StatelessWidget {
 /// Standard route Back button used everywhere in Sonarpad.
 ///
 /// Visually it is the normal Material BackButton. For screen readers it is one
-/// Back element with the extra custom action "Go to Home".
+/// Back element with the extra custom action "Go to Home", also available in
+/// the menu opened by double-tap-and-hold.
 class SonarpadBackButton extends StatelessWidget {
   const SonarpadBackButton({
     super.key,
@@ -421,6 +474,9 @@ class AccessibleListRow {
   final bool nativeSliderAccessibilityElement;
   final bool secure;
   final String? placeholder;
+  /// Picker choices, or localized stops for a discrete slider. For sliders,
+  /// each numeric value must match its corresponding slider value so native
+  /// adjustments can announce the exact label before the Dart round trip.
   final List<AccessibleOption> options;
   final List<AccessibleCustomAction> actions;
 

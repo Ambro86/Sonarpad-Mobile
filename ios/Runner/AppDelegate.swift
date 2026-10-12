@@ -336,6 +336,9 @@ class SonarpadPhotoLibraryImportPlugin: NSObject, FlutterPlugin, PHPickerViewCon
     SonarpadRaiPlayerPlugin.register(with: engineBridge.pluginRegistry.registrar(forPlugin: "SonarpadRaiPlayerPlugin")!)
     SonarpadSharedMediaPlugin.register(with: engineBridge.pluginRegistry.registrar(forPlugin: "SonarpadSharedMediaPlugin")!)
     if #available(iOS 14.0, *) {
+      SonarpadCloudFilePicker.register(with: engineBridge.pluginRegistry.registrar(forPlugin: "SonarpadCloudFilePicker")!)
+    }
+    if #available(iOS 14.0, *) {
       SonarpadPhotoLibraryImportPlugin.register(with: engineBridge.pluginRegistry.registrar(forPlugin: "SonarpadPhotoLibraryImportPlugin")!)
     }
     engineBridge.pluginRegistry.registerSonarpadNativeAccessibleViews()

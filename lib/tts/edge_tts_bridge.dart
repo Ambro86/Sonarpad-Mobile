@@ -7,6 +7,8 @@ import 'package:path/path.dart' as p;
 import 'package:uuid/uuid.dart';
 import 'package:crypto/crypto.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../utils/app_logger.dart';
+import 'edge_tts_protocol.dart';
 
 class EdgeTtsBridge {
   HttpClient? _activeClient;
@@ -23,9 +25,7 @@ class EdgeTtsBridge {
     if (_cancelled) throw StateError('AUDIO_DESCRIPTION_CANCELLED');
   }
 
-  static const String _trustedClientToken = "6A5AA1D4EAFF4E9FB37E23D68491D6F4";
-  static const String _wssUrlBase =
-      "wss://speech.platform.bing.com/consumer/speech/synthesize/readaloud/edge/v1";
+  static const String _trustedClientToken = EdgeTtsProtocol.clientToken;
 
   bool get isAvailable => true;
   String? get lastLibraryPath => "Puro Dart (Nessuna libreria C)";
@@ -40,7 +40,7 @@ class EdgeTtsBridge {
     final dir = await getTemporaryDirectory();
     final outPath = p.join(
       dir.path,
-      'sonarpad_edge_tts_${DateTime.now().millisecondsSinceEpoch}.mp3',
+      'sonarpad_edge_tts_${DateTime.now().millisecondsSinceEpoch}_${const Uuid().v4()}.mp3',
     );
 
     // Inizia log (simile al comportamento precedente in Rust per la pagina di log)
@@ -85,9 +85,11 @@ class EdgeTtsBridge {
       }
       return file;
     } catch (e) {
-      await logFile.writeAsString('Errore Edge TTS: $e\n',
+      _checkCancelled();
+      final safe = _safeError(e);
+      await logFile.writeAsString('Errore Edge TTS: $safe\n',
           mode: FileMode.append);
-      throw Exception('Edge TTS error: $e');
+      throw Exception('Edge TTS error: $safe');
     }
   }
 
@@ -170,88 +172,152 @@ class EdgeTtsBridge {
     return chunks;
   }
 
+  // Try the current service first, then the previous service if needed.
+  // The caller's existing retry loop controls further attempts and Stop:
+  // the bridge must never spin forever after its reading session has ended.
   Future<List<int>> _downloadAudio(String text, String voice, String rateStr,
       String pitchStr, File logFile) async {
-    final requestId = const Uuid().v4().replaceAll('-', '');
-    final secMsGec = _generateSecMsGec();
-    const secMsGecVersion = "1-132.0.2917.39";
-
-    final urlStr =
-        "$_wssUrlBase?TrustedClientToken=$_trustedClientToken&ConnectionId=$requestId&Sec-MS-GEC=$secMsGec&Sec-MS-GEC-Version=$secMsGecVersion";
-
-    await logFile.writeAsString('preparo URL websocket Edge TTS\n',
-        mode: FileMode.append);
-
-    WebSocket? ws;
-    try {
-      await logFile.writeAsString('connessione websocket...\n',
-          mode: FileMode.append);
-
+    Object? lastError;
+    Object? rateLimitedError;
+    for (final endpoint in EdgeTtsEndpoint.values) {
       _checkCancelled();
-      final client = HttpClient();
-      _activeClient = client;
-      client.userAgent =
-          "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1 Edg/132.0.0.0";
+      try {
+        return await _downloadEndpointAudio(
+            text, voice, rateStr, pitchStr, logFile, endpoint);
+      } catch (error) {
+        _checkCancelled();
+        lastError = error;
+        if (error.toString().contains('429')) rateLimitedError = error;
+        final label = EdgeTtsProtocol.label(endpoint);
+        await _logEdge(logFile,
+            'Edge TTS: endpoint=$label failed: ${_safeError(error)}');
+        if (!_isTemporaryError(error)) rethrow;
+      }
+    }
+    // If either server asks us to slow down, preserve HTTP 429 so the
+    // caller uses a longer retry delay instead of hammering both servers.
+    throw rateLimitedError ??
+        lastError ??
+        StateError('Edge TTS: no endpoint available');
+  }
 
-      ws = await WebSocket.connect(urlStr, customClient: client, headers: {
-        "Pragma": "no-cache",
-        "Cache-Control": "no-cache",
-        "Origin": "chrome-extension://jdiccldimpdaibmpdkjnbmckianbfold",
-        "Accept-Language": "it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7",
-        "Cookie": "muid=${_generateMuid()};"
-      }).timeout(const Duration(seconds: 20));
+  Future<List<int>> _downloadEndpointAudio(
+      String text,
+      String voice,
+      String rateStr,
+      String pitchStr,
+      File logFile,
+      EdgeTtsEndpoint endpoint) async {
+    final requestId = const Uuid().v4().replaceAll('-', '');
+    final url = EdgeTtsProtocol.url(
+      endpoint: endpoint,
+      connectionId: requestId,
+      signature: _generateSecMsGec(),
+    );
+    final label = EdgeTtsProtocol.label(endpoint);
+    WebSocket? ws;
+    HttpClient? client;
+    try {
+      _checkCancelled();
+      client = HttpClient()..userAgent = EdgeTtsProtocol.userAgent(endpoint);
+      _activeClient = client;
+      // Never log the URL or query parameters: they contain authentication.
+      await _logEdge(logFile, 'Edge TTS: connecting endpoint=$label');
+      ws = await WebSocket.connect(
+        url.toString(),
+        customClient: client,
+        headers: {
+          'Pragma': 'no-cache',
+          'Cache-Control': 'no-cache',
+          'Origin': 'chrome-extension://jdiccldimpdaibmpdkjnbmckianbfold',
+          'Accept-Language': 'it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7',
+          'Cookie': 'muid=${_generateMuid()};',
+        },
+      ).timeout(const Duration(seconds: 20));
       _activeSocket = ws;
       _checkCancelled();
-
-      await logFile.writeAsString('websocket connesso\n',
-          mode: FileMode.append);
+      await _logEdge(logFile,
+          'Edge TTS: WebSocket connected (HTTP 101), endpoint=$label');
 
       final dateString = _getDateString();
       final configMsg =
-          "X-Timestamp:$dateString\r\nContent-Type:application/json; charset=utf-8\r\nPath:speech.config\r\n\r\n{\"context\":{\"synthesis\":{\"audio\":{\"metadataoptions\":{\"sentenceBoundaryEnabled\":\"false\",\"wordBoundaryEnabled\":\"false\"},\"outputFormat\":\"audio-24khz-48kbitrate-mono-mp3\"}}}}";
-
+          'X-Timestamp:$dateString\r\nContent-Type:application/json; charset=utf-8\r\nPath:speech.config\r\n\r\n'
+          '{"context":{"synthesis":{"audio":{"metadataoptions":{"sentenceBoundaryEnabled":"false","wordBoundaryEnabled":"false"},"outputFormat":"audio-24khz-48kbitrate-mono-mp3"}}}}';
       ws.add(configMsg);
-      await logFile.writeAsString('speech.config inviato\n',
-          mode: FileMode.append);
-
       final ssml = _mkssml(text, voice, rateStr, pitchStr);
-      final ssmlMsg =
-          "X-RequestId:$requestId\r\nContent-Type:application/ssml+xml\r\nX-Timestamp:${dateString}Z\r\nPath:ssml\r\n\r\n$ssml";
+      ws.add('X-RequestId:$requestId\r\nContent-Type:application/ssml+xml\r\n'
+          'X-Timestamp:${dateString}Z\r\nPath:ssml\r\n\r\n$ssml');
 
-      ws.add(ssmlMsg);
-      await logFile.writeAsString('SSML inviato\n', mode: FileMode.append);
-
-      final audioData = <int>[];
-      final completer = Completer<void>();
-
-      ws.listen((dynamic data) {
+      final turn = EdgeTtsTurn();
+      final completed = Completer<void>();
+      final subscription = ws.listen((dynamic data) {
         if (data is String) {
-          if (data.contains("Path:turn.end")) {
-            if (!completer.isCompleted) completer.complete();
-          }
+          turn.acceptText(data);
+          if (turn.ended && !completed.isCompleted) completed.complete();
         } else if (data is List<int>) {
-          final payload = _parseEdgeBinaryAudioPayload(data);
-          if (payload != null) {
-            audioData.addAll(payload);
-          }
+          turn.acceptBinary(data);
         }
-      }, onError: (e) {
-        if (!completer.isCompleted) completer.completeError(e);
+      }, onError: (Object error, StackTrace stack) {
+        if (!completed.isCompleted) completed.completeError(error, stack);
       }, onDone: () {
-        if (!completer.isCompleted) completer.complete();
-      });
+        if (!completed.isCompleted) {
+          completed.completeError(
+              StateError('Edge connection closed without turn.end'));
+        }
+      }, cancelOnError: true);
 
-      await completer.future.timeout(const Duration(seconds: 60));
-      await logFile.writeAsString('fine ricezione: ${audioData.length} bytes\n',
-          mode: FileMode.append);
-
-      return audioData;
+      try {
+        await completed.future.timeout(const Duration(seconds: 60));
+        _checkCancelled();
+        final audio = turn.completedAudio();
+        await _logEdge(logFile,
+            'Edge TTS: SYNTHESIS SUCCEEDED, endpoint=$label '
+            'audio_bytes=${audio.length} path=mobile');
+        return audio;
+      } finally {
+        await subscription.cancel();
+      }
     } finally {
-      await ws?.close();
-      _activeSocket = null;
-      _activeClient?.close(force: true);
-      _activeClient = null;
+      if (ws != null) {
+        try {
+          await ws.close().timeout(const Duration(seconds: 2));
+        } catch (_) {}
+      }
+      if (identical(_activeSocket, ws)) _activeSocket = null;
+      client?.close(force: true);
+      if (identical(_activeClient, client)) _activeClient = null;
     }
+  }
+
+  Future<void> _logEdge(File logFile, String message) async {
+    // The app diagnostics include the selected endpoint, but never its key.
+    await AppLogger.log(message);
+    await logFile.writeAsString('$message\n', mode: FileMode.append);
+  }
+
+  String _safeError(Object error) {
+    // Do not log an exception's full URL or any query-string credentials.
+    final raw = error.toString();
+    final scrubbed = raw.replaceAll(
+        RegExp(r'(wss?://|https?://)\S+', caseSensitive: false), '[url omitted]');
+    return scrubbed.length > 240 ? scrubbed.substring(0, 240) : scrubbed;
+  }
+
+  bool _isTemporaryError(Object error) {
+    if (error is TimeoutException ||
+        error is SocketException ||
+        error is HttpException ||
+        error is WebSocketException ||
+        error is HandshakeException) {
+      return true;
+    }
+    final e = error.toString().toLowerCase();
+    return const [
+      '403', '429', '500', '502', '503', '504', 'timeout',
+      'connection', 'socket', 'network', 'websocket', 'reset',
+      'broken pipe', 'turn.end', 'empty audio', 'incomplete audio',
+      'eof', 'audio vuoto',
+    ].any(e.contains);
   }
 
   String _generateSecMsGec() {
@@ -328,30 +394,4 @@ class EdgeTtsBridge {
         .replaceAll("'", '&apos;');
   }
 
-  List<int>? _parseEdgeBinaryAudioPayload(List<int> data) {
-    if (data.length < 2) return null;
-
-    final beLen = (data[0] << 8) | data[1];
-    final leLen = (data[1] << 8) | data[0];
-
-    int headerLen = 0;
-    if (beLen > 0 && data.length >= beLen + 2) {
-      headerLen = beLen;
-    } else if (leLen > 0 && data.length >= leLen + 2) {
-      headerLen = leLen;
-    } else {
-      return null;
-    }
-
-    final headerText =
-        utf8.decode(data.sublist(2, 2 + headerLen), allowMalformed: true);
-    final payload = data.sublist(2 + headerLen);
-
-    if (headerText.toLowerCase().contains("path:audio")) {
-      if (payload.isNotEmpty) {
-        return payload;
-      }
-    }
-    return null;
-  }
 }

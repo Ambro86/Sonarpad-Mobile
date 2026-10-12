@@ -9,6 +9,48 @@ class AppLocalizationsZh extends AppLocalizations {
   AppLocalizationsZh([String locale = 'zh']) : super(locale);
 
   @override
+  String get sonarTubeSearchType => '搜索类型';
+
+  @override
+  String get sonarTubeSearchAll => '全部';
+
+  @override
+  String get sonarTubeSearchPlaylists => '播放列表';
+
+  @override
+  String get sonarTubeSearchChannels => '频道';
+
+  @override
+  String get calendarReminderHasTime => "设置时间";
+
+  @override
+  String get audioDescriptionMp3Bitrate => "MP3 比特率";
+
+  @override
+  String get audioDescriptionSourceVolume => "影片音量";
+
+  @override
+  String get audioDescriptionSourceVolumeHint => "调整影片的基础音量。播放音频描述时，影片音量仍会自动进一步降低。";
+
+  @override
+  String get audioDescriptionAudioNormal => "正常";
+
+  @override
+  String get audioDescriptionMixPreview => "试听影片与旁白";
+
+  @override
+  String get audioDescriptionMixPreviewPreparing => "正在准备音频试听";
+
+  @override
+  String get audioDescriptionMixPreviewStop => "停止音频试听";
+
+  @override
+  String get audioDescriptionMixPreviewPhrase => "这是自动降低原声音量的音频描述试听。";
+
+  @override
+  String get audioDescriptionMixPreviewHint => "调整音量后，会自动播放一段影片试听，配合所选语音，并在旁白期间自动降低影片音量。";
+
+  @override
   String get appTitle => 'Sonarpad';
 
   @override
@@ -4327,6 +4369,48 @@ class AppLocalizationsZh extends AppLocalizations {
 /// The translations for Chinese, as used in China (`zh_CN`).
 class AppLocalizationsZhCn extends AppLocalizationsZh {
   AppLocalizationsZhCn() : super('zh_CN');
+
+  @override
+  String get sonarTubeSearchType => '搜索类型';
+
+  @override
+  String get sonarTubeSearchAll => '全部';
+
+  @override
+  String get sonarTubeSearchPlaylists => '播放列表';
+
+  @override
+  String get sonarTubeSearchChannels => '频道';
+
+  @override
+  String get calendarReminderHasTime => "设置时间";
+
+  @override
+  String get audioDescriptionMp3Bitrate => "MP3 比特率";
+
+  @override
+  String get audioDescriptionSourceVolume => "影片音量";
+
+  @override
+  String get audioDescriptionSourceVolumeHint => "调整影片的基础音量。播放音频描述时，影片音量仍会自动进一步降低。";
+
+  @override
+  String get audioDescriptionAudioNormal => "正常";
+
+  @override
+  String get audioDescriptionMixPreview => "试听影片与旁白";
+
+  @override
+  String get audioDescriptionMixPreviewPreparing => "正在准备音频试听";
+
+  @override
+  String get audioDescriptionMixPreviewStop => "停止音频试听";
+
+  @override
+  String get audioDescriptionMixPreviewPhrase => "这是自动降低原声音量的音频描述试听。";
+
+  @override
+  String get audioDescriptionMixPreviewHint => "调整音量后，会自动播放一段影片试听，配合所选语音，并在旁白期间自动降低影片音量。";
 
   @override
   String get appTitle => 'Sonarpad';

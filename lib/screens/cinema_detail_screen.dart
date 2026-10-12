@@ -5,8 +5,10 @@ import 'package:intl/intl.dart';
 
 import '../l10n/app_localizations.dart';
 import '../widgets/universal_accessible_view.dart';
+import '../widgets/online_ai_audiodescription_action.dart';
 import '../models/podcast.dart';
 import '../models/tmdb_movie.dart';
+import '../services/recording_feature_access.dart';
 import '../services/sonartube_service.dart';
 import '../services/tmdb_service.dart';
 import 'podcast_episode_player_screen.dart';
@@ -27,25 +29,34 @@ class _CinemaDetailScreenState extends State<CinemaDetailScreen> {
   bool _loadingTrailer = true;
   bool _openingTrailer = false;
   String? _trailerUrl;
+  String? _trailerLocaleName;
 
   @override
-  void initState() {
-    super.initState();
-    _loadTrailer();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final localeName = Localizations.localeOf(context).toString();
+    if (_trailerLocaleName == localeName) return;
+    _trailerLocaleName = localeName;
+    _trailerUrl = null;
+    _loadingTrailer = true;
+    _sonarTubeService.setLocaleName(localeName);
+    _loadTrailer(localeName);
   }
 
-  Future<void> _loadTrailer() async {
+  Future<void> _loadTrailer(String localeName) async {
     try {
-      final localeName = Localizations.localeOf(context).toString();
-      final url = await _service.getTrailerUrl(widget.movie.id, languageCode: localeName);
-      if (mounted) {
+      final url = await _service.getTrailerUrl(
+        widget.movie.id,
+        languageCode: localeName,
+      );
+      if (mounted && _trailerLocaleName == localeName) {
         setState(() {
           _trailerUrl = url;
           _loadingTrailer = false;
         });
       }
     } catch (e) {
-      if (mounted) {
+      if (mounted && _trailerLocaleName == localeName) {
         setState(() {
           _loadingTrailer = false;
         });
@@ -87,16 +98,44 @@ class _CinemaDetailScreenState extends State<CinemaDetailScreen> {
     try {
       final episode = await _resolveTrailerEpisode();
       if (!mounted) return;
+      final l10n = AppLocalizations.of(context);
+      final canCreateAiAudiodescription = !episode.isLive &&
+          l10n.localeName == 'it' &&
+          await RecordingFeatureAccess.isUnlocked();
+      if (!mounted) return;
+      final trailerItem = SonarTubeItem(
+        kind: SonarTubeItemKind.video,
+        id: Uri.tryParse(trailerUrl)?.queryParameters['v'] ??
+            'cinema_trailer:${widget.movie.id}',
+        title: episode.title,
+        url: trailerUrl,
+        channel: episode.description,
+        isLive: episode.isLive,
+      );
       await Navigator.push<void>(
         context,
         MaterialPageRoute(
           settings: const RouteSettings(name: '/cinema/trailer'),
           builder: (_) => PodcastEpisodePlayerScreen(
-              speedCategory: MediaPlaybackSpeedCategory.sonartube,
+            speedCategory: MediaPlaybackSpeedCategory.sonartube,
             episode: episode,
             isVideoSupported: true,
             startWithVideoThenRestorePreference: true,
             refreshEpisode: _resolveTrailerEpisode,
+            extraActions: [
+              if (canCreateAiAudiodescription)
+                PodcastPlayerExtraAction(
+                  id: 'create_ai_audiodescription',
+                  label: () => l10n.audioDescriptionCreateAiTitle,
+                  icon: Icons.auto_awesome,
+                  pauseBeforeOpen: true,
+                  onPressed: () => createAiAudiodescriptionFromSonarTube(
+                    context,
+                    service: _sonarTubeService,
+                    item: trailerItem,
+                  ),
+                ),
+            ],
           ),
         ),
       );

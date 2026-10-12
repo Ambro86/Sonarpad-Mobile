@@ -11,6 +11,7 @@ import 'package:share_plus/share_plus.dart';
 
 import '../l10n/app_localizations.dart';
 import '../models/news_article.dart';
+import '../services/cloud_file_picker_service.dart';
 import '../services/app_settings_service.dart';
 import '../services/news_service.dart';
 import '../services/news_sources/news_rss_source.dart';
@@ -242,7 +243,7 @@ class _NewsScreenState extends State<NewsScreen> {
       // files when the picker is restricted to custom extensions. This is
       // already handled this way in Podcasts: let the user select any file,
       // then validate OPML/XML here before importing it.
-      final result = await FilePicker.pickFiles(type: FileType.any);
+      final result = await CloudFilePicker.pickFiles(context: context, type: FileType.any);
       final path = result == null || result.files.isEmpty
           ? null
           : result.files.first.path;

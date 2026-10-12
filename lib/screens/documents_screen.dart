@@ -14,6 +14,7 @@ import 'package:syncfusion_flutter_pdf/pdf.dart';
 import '../l10n/app_localizations.dart';
 import '../models/document_item.dart';
 import '../models/podcast.dart';
+import '../services/cloud_file_picker_service.dart';
 import '../services/app_settings_service.dart';
 import '../services/audio_description_project_library.dart';
 import '../services/audiobook_export_service.dart';
@@ -260,11 +261,11 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
 
   Future<void> _pickFile() async {
     final allowMultiple = await _askImportSelectionMode();
-    if (allowMultiple == null) return;
+    if (allowMultiple == null || !mounted) return;
 
     FilePickerResult? result;
     try {
-      result = await FilePicker.pickFiles(
+      result = await CloudFilePicker.pickFiles(context: context, 
         type: FileType.custom,
         allowedExtensions: _allowedExtensions,
         allowMultiple: allowMultiple,

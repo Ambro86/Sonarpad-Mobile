@@ -10,6 +10,48 @@ class AppLocalizationsRo extends AppLocalizations {
   AppLocalizationsRo([String locale = 'ro']) : super(locale);
 
   @override
+  String get sonarTubeSearchType => 'Tip de căutare';
+
+  @override
+  String get sonarTubeSearchAll => 'Toate';
+
+  @override
+  String get sonarTubeSearchPlaylists => 'Liste de redare';
+
+  @override
+  String get sonarTubeSearchChannels => 'Canale';
+
+  @override
+  String get calendarReminderHasTime => "Setează o oră";
+
+  @override
+  String get audioDescriptionMp3Bitrate => "Rată de biți MP3";
+
+  @override
+  String get audioDescriptionSourceVolume => "Volumul filmului";
+
+  @override
+  String get audioDescriptionSourceVolumeHint => "Reglează volumul de bază al filmului. Acesta este redus automat și mai mult în timpul audiodescrierii.";
+
+  @override
+  String get audioDescriptionAudioNormal => "Normal";
+
+  @override
+  String get audioDescriptionMixPreview => "Ascultă proba cu film și voce";
+
+  @override
+  String get audioDescriptionMixPreviewPreparing => "Se pregătește proba audio";
+
+  @override
+  String get audioDescriptionMixPreviewStop => "Oprește proba audio";
+
+  @override
+  String get audioDescriptionMixPreviewPhrase => "Probă de audiodescriere cu reducerea automată a sunetului.";
+
+  @override
+  String get audioDescriptionMixPreviewHint => "După reglarea volumului, pornește o probă scurtă cu un fragment din film, vocea aleasă și reducerea automată a sunetului filmului.";
+
+  @override
   String get appTitle => 'Sonarpad';
 
   @override

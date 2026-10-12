@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:uuid/uuid.dart';
+
 import '../l10n/app_localizations.dart';
 import '../models/calendar_event.dart';
 import '../services/calendar/calendar_service.dart';
@@ -10,8 +10,11 @@ import '../services/app_settings_service.dart';
 import '../services/voice_dictionary_service.dart';
 import '../tts/edge_tts_bridge.dart';
 import '../tts/edge_tts_retry.dart';
+
 import 'package:flutter_tts/flutter_tts.dart';
+
 import '../widgets/universal_accessible_view.dart';
+import '../widgets/calendar_reminder_dialog.dart';
 
 class CalendarDayScreen extends StatefulWidget {
   final DateTime date;
@@ -68,47 +71,22 @@ class _CalendarDayScreenState extends State<CalendarDayScreen> {
 
   Future<void> _addReminder() async {
     final l10n = AppLocalizations.of(context);
-    final ctrl = TextEditingController();
-
-    await showDialog(
+    final event = await showDialog<CalendarEvent>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.addReminder),
-        content: TextField(
-          controller: ctrl,
-          autofocus: true,
-          decoration: InputDecoration(
-            hintText: l10n.writeReminder,
-          ),
-          textCapitalization: TextCapitalization.sentences,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Text(l10n.cancelReminder),
-          ),
-          FilledButton(
-            onPressed: () async {
-              if (ctrl.text.trim().isNotEmpty) {
-                final ev = CalendarEvent(
-                  id: const Uuid().v4(),
-                  date: widget.date,
-                  text: ctrl.text.trim(),
-                );
-                await _service.addEvent(
-                  ev,
-                  deviceCalendarDescription: l10n.reminders,
-                );
-                if (!context.mounted) return;
-                Navigator.of(context).pop();
-                _loadEvents();
-              }
-            },
-            child: Text(l10n.saveReminder),
-          ),
-        ],
-      ),
+      builder: (_) => CalendarReminderDialog(date: widget.date),
     );
+    if (event == null || !mounted) return;
+    await _service.addEvent(event, deviceCalendarDescription: l10n.reminders);
+    if (mounted) await _loadEvents();
+  }
+
+  String _reminderLabel(CalendarEvent event) {
+    if (!event.hasTime) return event.text;
+    final time = MaterialLocalizations.of(context).formatTimeOfDay(
+      TimeOfDay.fromDateTime(event.date),
+      alwaysUse24HourFormat: true,
+    );
+    return '${event.text}, $time';
   }
 
   Future<void> _readAll() async {
@@ -126,7 +104,7 @@ class _CalendarDayScreenState extends State<CalendarDayScreen> {
     if (_events.isNotEmpty) {
       buffer.writeln(l10n.reminders);
       for (var e in _events) {
-        buffer.writeln(e.text);
+        buffer.writeln(_reminderLabel(e));
       }
     }
 
@@ -138,8 +116,10 @@ class _CalendarDayScreenState extends State<CalendarDayScreen> {
     buffer.writeln(quote);
 
     final dictionaryEntries = await _voiceDictionary.loadEntries();
-    final textToRead =
-        _voiceDictionary.applyToText(buffer.toString(), dictionaryEntries);
+    final textToRead = _voiceDictionary.applyToText(
+      buffer.toString(),
+      dictionaryEntries,
+    );
 
     if (!mounted || readingToken != _readingToken) return;
     setState(() => _speaking = true);
@@ -168,7 +148,10 @@ class _CalendarDayScreenState extends State<CalendarDayScreen> {
             '${delay.inMilliseconds}ms: $error',
           ),
         );
-        if (file != null && mounted && _speaking && readingToken == _readingToken) {
+        if (file != null &&
+            mounted &&
+            _speaking &&
+            readingToken == _readingToken) {
           await _audio.playFilesSequentially([file]);
         }
       }
@@ -204,7 +187,7 @@ class _CalendarDayScreenState extends State<CalendarDayScreen> {
     if (includeReminders && _events.isNotEmpty) {
       buffer.writeln('\n${l10n.reminders}');
       for (final event in _events) {
-        buffer.writeln(event.text);
+        buffer.writeln(_reminderLabel(event));
       }
     }
     buffer.writeln('\n"$quote"');
@@ -291,26 +274,64 @@ class _CalendarDayScreenState extends State<CalendarDayScreen> {
       ),
       body: useSharedAccessibleViewModel
           ? UniversalAccessibleList(
-              sections: [AccessibleListSection(rows: [
-                AccessibleListRow(id: 'title', kind: 'header', title: capTitle),
-                if (holiday != null) AccessibleListRow(id: 'holiday', kind: 'text', title: holiday),
-                if (_events.isNotEmpty) AccessibleListRow(id: 'reminders_header', kind: 'header', title: l10n.reminders),
-                for (var i = 0; i < _events.length; i++)
-                  AccessibleListRow(
-                    id: 'event_$i',
-                    kind: 'text',
-                    title: _events[i].text,
-                    actions: [AccessibleCustomAction(id: 'remove', label: l10n.removeReminder)],
-                  ),
-                AccessibleListRow(id: 'add', title: l10n.addReminder, kind: 'button'),
-                if (_saint != null) AccessibleListRow(id: 'saint', kind: 'text', title: '${l10n.saintOfTheDay}: $_saint'),
-                AccessibleListRow(id: 'quote_header', kind: 'header', title: l10n.quoteOfTheDay),
-                AccessibleListRow(id: 'quote', kind: 'text', title: quote),
-              ])],
+              sections: [
+                AccessibleListSection(
+                  rows: [
+                    AccessibleListRow(
+                      id: 'title',
+                      kind: 'header',
+                      title: capTitle,
+                    ),
+                    if (holiday != null)
+                      AccessibleListRow(
+                        id: 'holiday',
+                        kind: 'text',
+                        title: holiday,
+                      ),
+                    if (_events.isNotEmpty)
+                      AccessibleListRow(
+                        id: 'reminders_header',
+                        kind: 'header',
+                        title: l10n.reminders,
+                      ),
+                    for (var i = 0; i < _events.length; i++)
+                      AccessibleListRow(
+                        id: 'event_$i',
+                        kind: 'text',
+                        title: _reminderLabel(_events[i]),
+                        actions: [
+                          AccessibleCustomAction(
+                            id: 'remove',
+                            label: l10n.removeReminder,
+                          ),
+                        ],
+                      ),
+                    AccessibleListRow(
+                      id: 'add',
+                      title: l10n.addReminder,
+                      kind: 'button',
+                    ),
+                    if (_saint != null)
+                      AccessibleListRow(
+                        id: 'saint',
+                        kind: 'text',
+                        title: '${l10n.saintOfTheDay}: $_saint',
+                      ),
+                    AccessibleListRow(
+                      id: 'quote_header',
+                      kind: 'header',
+                      title: l10n.quoteOfTheDay,
+                    ),
+                    AccessibleListRow(id: 'quote', kind: 'text', title: quote),
+                  ],
+                ),
+              ],
               onEvent: (event) async {
                 if (event.id == 'add' && event.type == 'activate') {
                   await _addReminder();
-                } else if (event.type == 'customAction' && event.action == 'remove' && event.id?.startsWith('event_') == true) {
+                } else if (event.type == 'customAction' &&
+                    event.action == 'remove' &&
+                    event.id?.startsWith('event_') == true) {
                   final i = int.tryParse(event.id!.substring(6));
                   if (i != null && i < _events.length) {
                     await _service.removeEvent(_events[i].id);
@@ -320,60 +341,70 @@ class _CalendarDayScreenState extends State<CalendarDayScreen> {
               },
             )
           : ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          Text(capTitle, style: Theme.of(context).textTheme.headlineMedium),
-          if (holiday != null) ...[
-            const SizedBox(height: 8),
-            Text(holiday,
-                style: Theme.of(context)
-                    .textTheme
-                    .titleLarge
-                    ?.copyWith(color: Theme.of(context).colorScheme.primary)),
-          ],
-          const SizedBox(height: 24),
-          if (_events.isNotEmpty) ...[
-            Text(l10n.reminders,
-                style: Theme.of(context).textTheme.titleMedium),
-            const SizedBox(height: 8),
-            for (final ev in _events)
-              Card(
-                margin: const EdgeInsets.only(bottom: 8),
-                child: ListTile(
-                  title: Text(ev.text),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.delete),
-                    tooltip: l10n.removeReminder,
-                    onPressed: () async {
-                      await _service.removeEvent(ev.id);
-                      _loadEvents();
-                    },
-                  ),
+              padding: const EdgeInsets.all(16),
+              children: [
+                Text(
+                  capTitle,
+                  style: Theme.of(context).textTheme.headlineMedium,
                 ),
-              ),
-            const SizedBox(height: 16),
-          ],
-          FilledButton.icon(
-            onPressed: _addReminder,
-            icon: const Icon(Icons.add),
-            label: Text(l10n.addReminder),
-          ),
-          if (_saint != null) ...[
-            const SizedBox(height: 32),
-            Text('${l10n.saintOfTheDay}: $_saint',
-                style: Theme.of(context).textTheme.titleMedium),
-          ],
-          const SizedBox(height: 32),
-          Text(l10n.quoteOfTheDay,
-              style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(height: 8),
-          Text(quote,
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyLarge
-                  ?.copyWith(fontStyle: FontStyle.italic)),
-        ],
-      ),
+                if (holiday != null) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    holiday,
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+                ],
+                const SizedBox(height: 24),
+                if (_events.isNotEmpty) ...[
+                  Text(
+                    l10n.reminders,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 8),
+                  for (final ev in _events)
+                    Card(
+                      margin: const EdgeInsets.only(bottom: 8),
+                      child: ListTile(
+                        title: Text(_reminderLabel(ev)),
+                        trailing: IconButton(
+                          icon: const Icon(Icons.delete),
+                          tooltip: l10n.removeReminder,
+                          onPressed: () async {
+                            await _service.removeEvent(ev.id);
+                            _loadEvents();
+                          },
+                        ),
+                      ),
+                    ),
+                  const SizedBox(height: 16),
+                ],
+                FilledButton.icon(
+                  onPressed: _addReminder,
+                  icon: const Icon(Icons.add),
+                  label: Text(l10n.addReminder),
+                ),
+                if (_saint != null) ...[
+                  const SizedBox(height: 32),
+                  Text(
+                    '${l10n.saintOfTheDay}: $_saint',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                ],
+                const SizedBox(height: 32),
+                Text(
+                  l10n.quoteOfTheDay,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  quote,
+                  style: Theme.of(context).textTheme.bodyLarge
+                      ?.copyWith(fontStyle: FontStyle.italic),
+                ),
+              ],
+            ),
       bottomNavigationBar: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16.0),

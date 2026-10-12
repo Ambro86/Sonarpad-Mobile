@@ -66,6 +66,11 @@
   },
   "sonarTubeTitle": "SonarTube",
   "sonarTubeSearchLabel": "Пошук відео, каналів або списків відтворення",
+  "sonarTubeSearchType": "Тип пошуку",
+  "sonarTubeSearchAll": "Усе",
+  "sonarTubeSearchPlaylists": "Плейлисти",
+  "sonarTubeSearchChannels": "Канали",
+  "calendarReminderHasTime": "Установити час",
   "sonarTubeSearchPrompt": "Введіть запит, щоб знайти відео, канали та списки відтворення.",
   "sonarTubeNoResults": "Відео не знайдено.",
   "sonarTubeLoadMore": "Завантажити більше результатів",
@@ -4778,6 +4783,42 @@
   "audioDescriptionRecognizeCharacters": "Намагатися розпізнавати персонажів і використовувати їхні імена",
   "@audioDescriptionRecognizeCharacters": {
     "description": "Localized text for audioDescriptionRecognizeCharacters."
+  },
+  "audioDescriptionMp3Bitrate": "Бітрейт MP3",
+  "@audioDescriptionMp3Bitrate": {
+    "description": "Bitrate slider label for MP3 audio-description output."
+  },
+  "audioDescriptionSourceVolume": "Гучність фільму",
+  "@audioDescriptionSourceVolume": {
+    "description": "Base movie volume slider label."
+  },
+  "audioDescriptionSourceVolumeHint": "Налаштуйте базову гучність фільму. Під час аудіоопису вона автоматично додатково знижується.",
+  "@audioDescriptionSourceVolumeHint": {
+    "description": "Explains source volume adjustment and continued automatic ducking during audio description."
+  },
+  "audioDescriptionAudioNormal": "Звичайний",
+  "@audioDescriptionAudioNormal": {
+    "description": "Normal/default marker for audio-description bitrate and source volume."
+  },
+  "audioDescriptionMixPreview": "Прослухати пробу з фільмом і голосом",
+  "@audioDescriptionMixPreview": {
+    "description": "Plays a short sample combining movie audio with the selected narration voice."
+  },
+  "audioDescriptionMixPreviewPreparing": "Підготовка звукової проби",
+  "@audioDescriptionMixPreviewPreparing": {
+    "description": "Status shown while the movie and voice audio sample is being prepared."
+  },
+  "audioDescriptionMixPreviewStop": "Зупинити звукову пробу",
+  "@audioDescriptionMixPreviewStop": {
+    "description": "Stops the movie and voice audio sample."
+  },
+  "audioDescriptionMixPreviewPhrase": "Проба аудіоопису з автоматичним приглушенням звуку.",
+  "@audioDescriptionMixPreviewPhrase": {
+    "description": "Text spoken by the selected narration voice in the movie and voice audio sample."
+  },
+  "audioDescriptionMixPreviewHint": "Після зміни гучності запускається коротка проба з уривком фільму, вибраним голосом і автоматичним приглушенням звуку фільму.",
+  "@audioDescriptionMixPreviewHint": {
+    "description": "Explains the automatic movie and voice sample after adjusting source volume."
   },
   "audioDescriptionSaveProject": "Також зберегти проєкт для подальшого редагування",
   "@audioDescriptionSaveProject": {

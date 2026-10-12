@@ -10,7 +10,6 @@ import '../l10n/localized_dynamic_labels.dart';
 import '../models/podcast.dart';
 import '../models/media_playback_speed.dart';
 import '../services/media_playback_rate_transaction.dart';
-import '../widgets/letter_jump_option_picker_screen.dart';
 import '../utils/status_message.dart';
 import 'package:intl/intl.dart';
 import '../services/app_settings_service.dart';
@@ -38,6 +37,8 @@ class PodcastPlayerExtraAction {
   final Future<void> Function() onPressed;
   final bool pauseBeforeOpen;
 }
+
+enum _PlaybackSpeedChangeResult { applied, recovered, failed }
 
 class PodcastEpisodePlayerScreen extends StatefulWidget {
   const PodcastEpisodePlayerScreen({
@@ -116,14 +117,22 @@ class _PodcastEpisodePlayerScreenState
   final _playbackSpeedFocusNode = FocusNode();
   bool _mediaSpeedControlEnabled = false;
   bool _changingPlaybackSpeed = false;
-  bool _speedPickerOpen = false;
+  double? _requestedPlaybackSpeed;
   double _preferredPlaybackSpeed = 1.0;
   double _playbackSpeed = 1.0;
   double _lastConfirmedVideoSpeed = 1.0;
 
   bool get _showPlaybackSpeed => _mediaSpeedControlEnabled && !_episode.isLive;
+  // Keep the focused adjustable enabled while an engine applies a rate. Rapid
+  // flicks/drag events update the requested value and are applied serially.
   bool get _canChangePlaybackSpeed => _showPlaybackSpeed && _loaded &&
-      !_loading && !_switchingVideoMode && !_changingPlaybackSpeed;
+      !_loading && !_switchingVideoMode;
+
+  double get _sliderPlaybackSpeed => _requestedPlaybackSpeed ?? _playbackSpeed;
+  int get _playbackSpeedIndex => mediaPlaybackSpeeds.indexOf(_sliderPlaybackSpeed);
+
+  double _playbackSpeedAtIndex(int index) =>
+      mediaPlaybackSpeeds[index.clamp(0, mediaPlaybackSpeeds.length - 1).toInt()];
 
   bool _loaded = false;
   bool _loading = false;
@@ -1165,62 +1174,65 @@ class _PodcastEpisodePlayerScreenState
     return speed == 1.0 ? '$number× (${l10n.mediaPlaybackSpeedNormal})' : '$number×';
   }
 
-  Future<void> _choosePlaybackSpeed() async {
-    if (!_canChangePlaybackSpeed || _speedPickerOpen) {
+  Future<void> _setPlaybackSpeedFromSlider(double index) async {
+    if (!index.isFinite) return;
+    await _changePlaybackSpeed(_playbackSpeedAtIndex(index.round()));
+  }
+
+  Future<void> _changePlaybackSpeed(double rate) async {
+    if (!mounted || !_canChangePlaybackSpeed ||
+        !mediaPlaybackSpeeds.contains(rate) || rate == _sliderPlaybackSpeed) {
       return;
     }
-    _speedPickerOpen = true;
-    final episodeId = _getStableId();
-    final l10n = AppLocalizations.of(context);
+    // Update the same semantics node immediately. Do not disable/recreate it
+    // or navigate to a picker: that can move VoiceOver away from the slider.
+    setState(() => _requestedPlaybackSpeed = rate);
+    if (_changingPlaybackSpeed) return;
+    final wasPlaying = _videoController?.value.isPlaying ?? _audio.isPlaying;
+    final pauseGeneration = _androidPauseGeneration;
+    setState(() => _changingPlaybackSpeed = true);
     try {
-      final chosen = await Navigator.of(context).push<double>(
-        MaterialPageRoute<double>(
-          settings: const RouteSettings(name: '/media/playback-speed'),
-          builder: (_) => LetterJumpOptionPickerScreen<double>(
-            title: l10n.mediaPlaybackSpeed,
-            options: mediaPlaybackSpeeds,
-            labelBuilder: (rate) => _playbackSpeedLabel(l10n, rate),
-            selectedBuilder: (rate) => rate == _playbackSpeed,
-            selectedLabel: l10n.letterJumpSelected,
-            selectLetterLabel: l10n.mediaPlaybackSpeed,
-            selectLetterTitle: l10n.mediaPlaybackSpeed,
-            enableLetterPicker: false,
-          ),
-        ),
-      );
-      if (!mounted || episodeId != _getStableId()) {
-        return;
-      }
-      if (chosen != null && _canChangePlaybackSpeed && chosen != _playbackSpeed) {
-        await _changePlaybackSpeed(chosen);
+      while (mounted && _requestedPlaybackSpeed != null) {
+        final requested = _requestedPlaybackSpeed!;
+        final result = await _applyPlaybackSpeed(
+          requested,
+          wasPlaying: wasPlaying,
+          pauseGeneration: pauseGeneration,
+        );
+        if (!mounted) return;
+        // Coalesce intermediate choices while retaining the final flick or
+        // drag position. A recovered rejection can still apply a newer choice;
+        // a failed recovery stops the queue with both engines paused.
+        if (result == _PlaybackSpeedChangeResult.failed ||
+            _requestedPlaybackSpeed == requested) {
+          setState(() => _requestedPlaybackSpeed = null);
+        }
       }
     } finally {
-      _speedPickerOpen = false;
-      if (mounted && _showPlaybackSpeed) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (!mounted || !(ModalRoute.of(context)?.isCurrent ?? false)) {
-            return;
-          }
-          if (useSharedAccessibleViewModel && !_useLandscapeFullscreenVideo) {
-            unawaited(_sharedPlayerController.focusToReturn('playback_speed'));
-          } else {
-            _playbackSpeedFocusNode.requestFocus();
-          }
+      if (mounted) {
+        setState(() {
+          _requestedPlaybackSpeed = null;
+          _changingPlaybackSpeed = false;
         });
+        final video = _videoController;
+        if (video != null && !video.value.isPlaying && !video.value.isBuffering) {
+          await _androidVideoBackground.pause();
+        } else {
+          unawaited(_syncVideoBackground());
+        }
       }
     }
   }
 
-  Future<void> _changePlaybackSpeed(double rate) async {
-    if (!_canChangePlaybackSpeed || !mediaPlaybackSpeeds.contains(rate)) {
-      return;
-    }
+  Future<_PlaybackSpeedChangeResult> _applyPlaybackSpeed(
+    double rate, {
+    required bool wasPlaying,
+    required int pauseGeneration,
+  }) async {
     final video = _videoController;
     final externalAudio = video != null && _videoUsesExternalAudio;
-    final wasPlaying = video?.value.isPlaying ?? _audio.isPlaying;
     final previousRate = _playbackSpeed;
     final l10n = AppLocalizations.of(context);
-    setState(() => _changingPlaybackSpeed = true);
 
     Future<void> pauseEngines() async {
       // Attempt both pauses even if one backend rejects its operation.
@@ -1235,6 +1247,7 @@ class _PodcastEpisodePlayerScreenState
 
     Future<void> resumeEngines() async {
       if (!mounted || video != _videoController ||
+          pauseGeneration != _androidPauseGeneration ||
           (video != null && !_androidVideoBackground.playbackRequested)) {
         return;
       }
@@ -1259,7 +1272,7 @@ class _PodcastEpisodePlayerScreenState
     try {
       await pauseEngines();
       if (!mounted) {
-        return;
+        return _PlaybackSpeedChangeResult.failed;
       }
       final position = video?.value.position ?? _audio.position;
       await applyMediaPlaybackRate(
@@ -1278,12 +1291,12 @@ class _PodcastEpisodePlayerScreenState
         beforeRollback: pauseEngines,
       );
       if (!mounted) {
-        return;
+        return _PlaybackSpeedChangeResult.failed;
       }
       setState(() {
         _playbackSpeed = rate;
         _preferredPlaybackSpeed = rate;
-        if (video != null && wasPlaying) {
+        if (video != null && video.value.isPlaying) {
           _lastConfirmedVideoSpeed = rate;
         }
       });
@@ -1294,14 +1307,14 @@ class _PodcastEpisodePlayerScreenState
       } catch (error) {
         AppLogger.log('media_speed_preference_save_failed error=$error');
       }
-      if (mounted) {
-        announceStatusMessage(context,
-            l10n.mediaPlaybackSpeedChanged(_playbackSpeedLabel(l10n, rate)));
-      }
+      // The adjustable control announces its own selected value. A second
+      // announcement here would repeat every flick and can speak a stale
+      // intermediate rate while a newer slider choice is already queued.
+      return _PlaybackSpeedChangeResult.applied;
     } catch (error) {
       AppLogger.log('media_speed_change_failed error=$error');
       if (!mounted) {
-        return;
+        return _PlaybackSpeedChangeResult.failed;
       }
       var recovered = error is MediaPlaybackRateException && !error.rollbackFailed;
       if (recovered) {
@@ -1320,33 +1333,58 @@ class _PodcastEpisodePlayerScreenState
       }
       if (mounted) {
         setState(() => _playbackSpeed = previousRate);
-        showStatusMessage(context, recovered
-            ? l10n.mediaPlaybackSpeedUnavailable
-            : l10n.mediaPlaybackSpeedRecoveryFailed);
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _changingPlaybackSpeed = false);
-        if (video != null && !video.value.isPlaying && !video.value.isBuffering) {
-          await _androidVideoBackground.pause();
-        } else {
-          unawaited(_syncVideoBackground());
+        // A newer slider choice is already being applied next. Do not announce
+        // the intermediate recovered failure over that new selection.
+        if (!recovered || _requestedPlaybackSpeed == rate) {
+          showStatusMessage(context, recovered
+              ? l10n.mediaPlaybackSpeedUnavailable
+              : l10n.mediaPlaybackSpeedRecoveryFailed);
         }
       }
+      return recovered
+          ? _PlaybackSpeedChangeResult.recovered
+          : _PlaybackSpeedChangeResult.failed;
     }
   }
 
-  Widget _buildPlaybackSpeedButton(AppLocalizations l10n) => OutlinedButton.icon(
-        key: const ValueKey('media_playback_speed'),
-        focusNode: _playbackSpeedFocusNode,
-        onPressed: _canChangePlaybackSpeed ? _choosePlaybackSpeed : null,
-        icon: const Icon(Icons.speed),
-        label: Text(
-          l10n.mediaPlaybackSpeedChanged(
-            _playbackSpeedLabel(l10n, _playbackSpeed),
-          ),
+  Widget _buildPlaybackSpeedSlider(AppLocalizations l10n) {
+    final index = _playbackSpeedIndex;
+    final label = _playbackSpeedLabel(l10n, _sliderPlaybackSpeed);
+    return Semantics(
+      key: const ValueKey('media_playback_speed'),
+      slider: true,
+      label: l10n.mediaPlaybackSpeed,
+      value: label,
+      enabled: _canChangePlaybackSpeed,
+      increasedValue: _playbackSpeedLabel(l10n, _playbackSpeedAtIndex(index + 1)),
+      decreasedValue: _playbackSpeedLabel(l10n, _playbackSpeedAtIndex(index - 1)),
+      onIncrease: _canChangePlaybackSpeed
+          ? () => _setPlaybackSpeedFromSlider((_playbackSpeedIndex + 1).toDouble())
+          : null,
+      onDecrease: _canChangePlaybackSpeed
+          ? () => _setPlaybackSpeedFromSlider((_playbackSpeedIndex - 1).toDouble())
+          : null,
+      child: ExcludeSemantics(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(l10n.mediaPlaybackSpeedChanged(label)),
+            Slider(
+              focusNode: _playbackSpeedFocusNode,
+              value: index.toDouble(),
+              min: 0,
+              max: (mediaPlaybackSpeeds.length - 1).toDouble(),
+              divisions: mediaPlaybackSpeeds.length - 1,
+              label: label,
+              onChanged: _canChangePlaybackSpeed
+                  ? _setPlaybackSpeedFromSlider
+                  : null,
+            ),
+          ],
         ),
-      );
+      ),
+    );
+  }
 
   Future<void> _loadSettings() async {
     AppLogger.log('PodcastPlayer: load seek step start, $_logSubject');
@@ -1594,7 +1632,7 @@ class _PodcastEpisodePlayerScreenState
               contentPadding: EdgeInsets.zero,
               dense: true,
             ),
-            if (_showPlaybackSpeed) _buildPlaybackSpeedButton(l10n),
+            if (_showPlaybackSpeed) _buildPlaybackSpeedSlider(l10n),
             Wrap(
               spacing: 12,
               runSpacing: 12,
@@ -1844,9 +1882,27 @@ class _PodcastEpisodePlayerScreenState
           AccessibleListRow(
             id: 'playback_speed',
             title: l10n.mediaPlaybackSpeed,
-            value: _playbackSpeedLabel(l10n, _playbackSpeed),
-            valueLabel: _playbackSpeedLabel(l10n, _playbackSpeed),
-            kind: 'button',
+            value: _playbackSpeedLabel(l10n, _sliderPlaybackSpeed),
+            valueLabel: _playbackSpeedLabel(l10n, _sliderPlaybackSpeed),
+            kind: 'slider',
+            accessibilityButtonTrait: false,
+            sliderValue: _playbackSpeedIndex.toDouble(),
+            sliderMin: 0,
+            sliderMax: (mediaPlaybackSpeeds.length - 1).toDouble(),
+            sliderStep: 1,
+            sliderIncreasedValueLabel: _playbackSpeedLabel(
+              l10n, _playbackSpeedAtIndex(_playbackSpeedIndex + 1),
+            ),
+            sliderDecreasedValueLabel: _playbackSpeedLabel(
+              l10n, _playbackSpeedAtIndex(_playbackSpeedIndex - 1),
+            ),
+            options: [
+              for (var index = 0; index < mediaPlaybackSpeeds.length; index++)
+                AccessibleOption(
+                  value: index,
+                  label: _playbackSpeedLabel(l10n, mediaPlaybackSpeeds[index]),
+                ),
+            ],
             enabled: _canChangePlaybackSpeed,
           ),
         if (_accessibleVolumeLoaded)
@@ -1911,12 +1967,17 @@ class _PodcastEpisodePlayerScreenState
         controller: _sharedPlayerController,
         sections: [AccessibleListSection(rows: rows)],
         onEvent: (event) async {
+          // Speed changes are coalesced while the engines apply the current
+          // rate; other transport operations remain locked until completion.
+          if (event.id == 'playback_speed' && event.type == 'slider') {
+            final value = (event.value as num?)?.toDouble();
+            if (value != null) await _setPlaybackSpeedFromSlider(value);
+            return;
+          }
           if (_changingPlaybackSpeed) {
-      return;
-    }
-          if (event.id == 'playback_speed' && event.type == 'activate') {
-            await _choosePlaybackSpeed();
-          } else if (event.id == 'accessible_volume' && event.type == 'slider') {
+            return;
+          }
+          if (event.id == 'accessible_volume' && event.type == 'slider') {
             final value = (event.value as num?)?.toDouble();
             if (value != null) _setAccessibleVolume(value);
           } else if (event.id == 'accessible_position' &&
@@ -2078,7 +2139,7 @@ class _PodcastEpisodePlayerScreenState
               ],
               if (_showPlaybackSpeed) ...[
                 const SizedBox(height: 16),
-                _buildPlaybackSpeedButton(l10n),
+                _buildPlaybackSpeedSlider(l10n),
               ],
               if (_videoController != null && _videoController!.value.isInitialized) ...[
                 const SizedBox(height: 24),

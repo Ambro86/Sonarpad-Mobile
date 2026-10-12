@@ -9,6 +9,48 @@ class AppLocalizationsUk extends AppLocalizations {
   AppLocalizationsUk([String locale = 'uk']) : super(locale);
 
   @override
+  String get sonarTubeSearchType => 'Тип пошуку';
+
+  @override
+  String get sonarTubeSearchAll => 'Усе';
+
+  @override
+  String get sonarTubeSearchPlaylists => 'Плейлисти';
+
+  @override
+  String get sonarTubeSearchChannels => 'Канали';
+
+  @override
+  String get calendarReminderHasTime => "Установити час";
+
+  @override
+  String get audioDescriptionMp3Bitrate => "Бітрейт MP3";
+
+  @override
+  String get audioDescriptionSourceVolume => "Гучність фільму";
+
+  @override
+  String get audioDescriptionSourceVolumeHint => "Налаштуйте базову гучність фільму. Під час аудіоопису вона автоматично додатково знижується.";
+
+  @override
+  String get audioDescriptionAudioNormal => "Звичайний";
+
+  @override
+  String get audioDescriptionMixPreview => "Прослухати пробу з фільмом і голосом";
+
+  @override
+  String get audioDescriptionMixPreviewPreparing => "Підготовка звукової проби";
+
+  @override
+  String get audioDescriptionMixPreviewStop => "Зупинити звукову пробу";
+
+  @override
+  String get audioDescriptionMixPreviewPhrase => "Проба аудіоопису з автоматичним приглушенням звуку.";
+
+  @override
+  String get audioDescriptionMixPreviewHint => "Після зміни гучності запускається коротка проба з уривком фільму, вибраним голосом і автоматичним приглушенням звуку фільму.";
+
+  @override
   String get appTitle => 'Sonarpad';
 
   @override

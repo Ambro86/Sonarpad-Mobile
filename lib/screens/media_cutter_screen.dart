@@ -22,6 +22,7 @@ import 'package:video_player/video_player.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../l10n/app_localizations.dart';
+import '../services/cloud_file_picker_service.dart';
 import '../services/app_cache_service.dart';
 import '../services/media_cutter_seek_step_preferences.dart';
 import '../services/media_export_destination_service.dart';
@@ -864,7 +865,8 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           'pick file cancelled because unsaved edits were kept'));
       return;
     }
-    final result = await FilePicker.pickFiles(
+    if (!mounted) return;
+    final result = await CloudFilePicker.pickFiles(context: context, 
       type: FileType.custom,
       allowedExtensions: _mediaExtensions,
     );

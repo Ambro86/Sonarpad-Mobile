@@ -30,6 +30,10 @@ class SonarMusicScreen extends StatefulWidget {
 }
 
 class _SonarMusicScreenState extends State<SonarMusicScreen> {
+  static const _searchTypes = <String>[
+    'all', 'song', 'album', 'artist', 'playlist', 'video',
+  ];
+
   late final SonarMusicService _service = widget.service ?? SonarMusicService();
   late final SonarMusicLibraryService _library = widget.library ?? SonarMusicLibraryService();
   late final SonarMusicTubeAdapter _exportAdapter = SonarMusicTubeAdapter(_service);
@@ -83,7 +87,7 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
   @override
   void initState() {
     super.initState();
-    _type = widget.searchType;
+    _type = _searchTypes.contains(widget.searchType) ? widget.searchType : 'all';
     _searchController.text = widget.searchQuery ?? '';
     _init();
   }
@@ -217,6 +221,16 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
   void _showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
+
+  void _setSearchType(Object? value) {
+    final numeric = value is num ? value.toDouble() : double.tryParse('$value');
+    if (numeric == null || !numeric.isFinite) return;
+    final index = numeric.round().clamp(0, _searchTypes.length - 1).toInt();
+    final type = _searchTypes[index];
+    if (_type == type) return;
+    setState(() => _type = type);
+  }
+
   Future<void> _shareItem(SonarMusicItem item) async {
     final uri = item.url ?? (item.playable
       ? 'https://music.youtube.com/watch?v=${item.videoId}'
@@ -473,12 +487,30 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
               tooltip: l10n.clearSearch,
               onPressed: () { _searchController.clear(); setState(() {}); _searchFocus.requestFocus(); })),
           onSubmitted: (_) => _search())));
-      for (final kind in ['all', 'song', 'album', 'artist', 'playlist', 'video']) {
-        rows.add(AccessibleListRow(id: 'filter_$kind', title: _label(kind),
-          kind: 'button', selected: _type == kind,
-          flutterChild: RadioListTile<String>(
-            title: Text(_label(kind)), value: kind, selected: _type == kind)));
-      }
+      final typeIndex = _searchTypes.indexOf(_type);
+      rows.add(AccessibleListRow(
+        id: 'search_type',
+        title: l10n.sonarTubeSearchType,
+        kind: 'slider',
+        accessibilityButtonTrait: false,
+        value: _label(_type),
+        valueLabel: _label(_type),
+        sliderValue: typeIndex.toDouble(),
+        sliderMin: 0,
+        sliderMax: (_searchTypes.length - 1).toDouble(),
+        sliderStep: 1,
+        options: [
+          for (var index = 0; index < _searchTypes.length; index++)
+            AccessibleOption(value: index, label: _label(_searchTypes[index])),
+        ],
+        sliderIncreasedValueLabel: _label(
+          _searchTypes[(typeIndex + 1).clamp(0, _searchTypes.length - 1).toInt()],
+        ),
+        sliderDecreasedValueLabel: _label(
+          _searchTypes[(typeIndex - 1).clamp(0, _searchTypes.length - 1).toInt()],
+        ),
+        onValueChanged: _setSearchType,
+      ));
       rows.add(AccessibleListRow(id: 'suggest', title: _label('suggest'), kind: 'button',
         flutterChild: OutlinedButton(onPressed: _suggest, child: Text(_label('suggest')))));
       rows.add(AccessibleListRow(id: 'search', title: l10n.search, kind: 'button',
@@ -545,14 +577,7 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
         flutterChild: FilledButton(onPressed: _loadingMore ? null : () => _load(more: true),
           child: Text(_loadingMore ? l10n.loading : _label('load')))));
     }
-    return RadioGroup<String>(
-      groupValue: _type,
-      onChanged: (type) {
-        if (type != null) {
-          setState(() => _type = type);
-        }
-      },
-      child: UniversalAccessibleList(debugTag: 'sonarmusic',
+    return UniversalAccessibleList(debugTag: 'sonarmusic',
         controller: _accessible, sections: [AccessibleListSection(rows: rows)],
       onEvent: (event) async {
         final id = event.id ?? '';
@@ -585,12 +610,11 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
         if (id == 'suggest') await _suggest();
         if (id == 'favorites' || id == 'recent') await _openLibrary(id);
         if (id == 'open') await _openUrl();
-        if (id.startsWith('filter_')) setState(() => _type = id.substring(7));
         if (id == 'retry') await _load();
         if (id == 'more') await _load(more: true);
         if (id == 'play_all') await _playAll();
         if (id == 'shuffle') await _playAll(shuffle: true);
-      }));
+      });
   }
   @override
   Widget build(BuildContext context) => Scaffold(

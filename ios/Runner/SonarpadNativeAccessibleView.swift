@@ -1668,6 +1668,16 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
     let steps = ((raw - row.sliderMin) / row.sliderStep).rounded()
     row.sliderValue = min(max(row.sliderMin + steps * row.sliderStep, row.sliderMin), row.sliderMax)
     sender.value = Float(row.sliderValue)
+    if !row.options.isEmpty {
+      let spokenValue = liveSliderSpokenValue(
+        for: row,
+        newValue: row.sliderValue,
+        fallback: row.valueLabel ?? row.value
+      )
+      row.value = spokenValue
+      row.valueLabel = spokenValue
+      sender.accessibilityValue = spokenValue
+    }
     if let cell = tableView.cellForRow(at: indexPath) as? SonarpadAccessibleTableCell {
       cell.accessibilityValue = row.valueLabel ?? row.value ?? formatSliderValue(row.sliderValue)
     }
@@ -1750,6 +1760,13 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
     newValue: Double,
     fallback: String?
   ) -> String {
+    // Discrete sliders carry their complete localized stop labels from Dart.
+    // Resolve the actual new value synchronously, including rapid repeated
+    // VoiceOver adjustments and direct dragging. Neighbor labels may still
+    // refer to the previous Dart model while its update crosses the channel.
+    if let option = row.options.first(where: { sonarpadValuesEqual($0.value, newValue) }) {
+      return option.label
+    }
     let current = row.valueLabel ?? row.value ?? ""
     if current.hasSuffix("%") {
       if abs(newValue.rounded() - newValue) < 0.00001 {

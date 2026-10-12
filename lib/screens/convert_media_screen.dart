@@ -8,6 +8,7 @@ import 'package:path/path.dart' as p;
 import 'package:share_plus/share_plus.dart';
 
 import '../l10n/app_localizations.dart';
+import '../services/cloud_file_picker_service.dart';
 import '../services/app_cache_service.dart';
 import '../services/media_export_destination_service.dart';
 import '../utils/app_logger.dart';
@@ -114,7 +115,7 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
   }
 
   Future<void> _pickInput() async {
-    final result = await FilePicker.pickFiles(
+    final result = await CloudFilePicker.pickFiles(context: context, 
       type: FileType.custom,
       allowedExtensions: _mediaExtensions,
     );
@@ -129,7 +130,7 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
   }
 
   Future<void> _pickImage() async {
-    final result = await FilePicker.pickFiles(
+    final result = await CloudFilePicker.pickFiles(context: context, 
       type: FileType.custom,
       allowedExtensions: _imageExtensions,
     );

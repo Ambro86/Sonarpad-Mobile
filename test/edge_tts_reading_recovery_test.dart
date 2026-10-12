@@ -5,6 +5,15 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:sonarpad_mobile_starter/tts/edge_tts_retry.dart';
 
 void main() {
+  test('HTTP 429 backs off without a retry limit in reading', () {
+    expect(EdgeTtsRetry.readingRetryDelay('HTTP 429', 1),
+        const Duration(seconds: 5));
+    expect(EdgeTtsRetry.readingRetryDelay('HTTP 429', 3),
+        const Duration(seconds: 15));
+    expect(EdgeTtsRetry.readingRetryDelay('HTTP 429', 999),
+        const Duration(seconds: 60));
+  });
+
   test('RustNotepad filter rejects separators and keeps Unicode text', () {
     for (final text in ['', '  ', '|', '...?!', '— | •', '😀']) {
       expect(EdgeTtsRetry.isTextUsable(text), isFalse, reason: text);

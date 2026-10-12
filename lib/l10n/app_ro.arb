@@ -15,6 +15,11 @@
   "categoryMedia": "Media și divertisment",
   "sonarTubeTitle": "SonarTube",
   "sonarTubeSearchLabel": "Caută videoclipuri, canale sau liste de redare",
+  "sonarTubeSearchType": "Tip de căutare",
+  "sonarTubeSearchAll": "Toate",
+  "sonarTubeSearchPlaylists": "Liste de redare",
+  "sonarTubeSearchChannels": "Canale",
+  "calendarReminderHasTime": "Setează o oră",
   "sonarTubeSearchPrompt": "Introdu o căutare pentru a găsi videoclipuri, canale și liste de redare.",
   "sonarTubeNoResults": "Nu s-au găsit videoclipuri.",
   "sonarTubeLoadMore": "Încarcă mai multe rezultate",
@@ -3200,6 +3205,42 @@
   "audioDescriptionRecognizeCharacters": "Încearcă să recunoască personajele și să le folosească numele",
   "@audioDescriptionRecognizeCharacters": {
     "description": "Localized text for audioDescriptionRecognizeCharacters."
+  },
+  "audioDescriptionMp3Bitrate": "Rată de biți MP3",
+  "@audioDescriptionMp3Bitrate": {
+    "description": "Bitrate slider label for MP3 audio-description output."
+  },
+  "audioDescriptionSourceVolume": "Volumul filmului",
+  "@audioDescriptionSourceVolume": {
+    "description": "Base movie volume slider label."
+  },
+  "audioDescriptionSourceVolumeHint": "Reglează volumul de bază al filmului. Acesta este redus automat și mai mult în timpul audiodescrierii.",
+  "@audioDescriptionSourceVolumeHint": {
+    "description": "Explains source volume adjustment and continued automatic ducking during audio description."
+  },
+  "audioDescriptionAudioNormal": "Normal",
+  "@audioDescriptionAudioNormal": {
+    "description": "Normal/default marker for audio-description bitrate and source volume."
+  },
+  "audioDescriptionMixPreview": "Ascultă proba cu film și voce",
+  "@audioDescriptionMixPreview": {
+    "description": "Plays a short sample combining movie audio with the selected narration voice."
+  },
+  "audioDescriptionMixPreviewPreparing": "Se pregătește proba audio",
+  "@audioDescriptionMixPreviewPreparing": {
+    "description": "Status shown while the movie and voice audio sample is being prepared."
+  },
+  "audioDescriptionMixPreviewStop": "Oprește proba audio",
+  "@audioDescriptionMixPreviewStop": {
+    "description": "Stops the movie and voice audio sample."
+  },
+  "audioDescriptionMixPreviewPhrase": "Probă de audiodescriere cu reducerea automată a sunetului.",
+  "@audioDescriptionMixPreviewPhrase": {
+    "description": "Text spoken by the selected narration voice in the movie and voice audio sample."
+  },
+  "audioDescriptionMixPreviewHint": "După reglarea volumului, pornește o probă scurtă cu un fragment din film, vocea aleasă și reducerea automată a sunetului filmului.",
+  "@audioDescriptionMixPreviewHint": {
+    "description": "Explains the automatic movie and voice sample after adjusting source volume."
   },
   "audioDescriptionSaveProject": "Salvează și proiectul pentru editare ulterioară",
   "@audioDescriptionSaveProject": {

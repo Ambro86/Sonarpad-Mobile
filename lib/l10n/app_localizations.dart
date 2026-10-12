@@ -279,6 +279,90 @@ abstract class AppLocalizations {
   /// **'Cerca video, canali o playlist'**
   String get sonarTubeSearchLabel;
 
+  /// No description provided for @sonarTubeSearchType.
+
+  /// In it, this message translates to:
+  /// **'Tipo di ricerca'**
+  String get sonarTubeSearchType;
+
+  /// No description provided for @sonarTubeSearchAll.
+
+  /// In it, this message translates to:
+  /// **'Tutto'**
+  String get sonarTubeSearchAll;
+
+  /// No description provided for @sonarTubeSearchPlaylists.
+
+  /// In it, this message translates to:
+  /// **'Playlist'**
+  String get sonarTubeSearchPlaylists;
+
+  /// No description provided for @sonarTubeSearchChannels.
+
+  /// In it, this message translates to:
+  /// **'Canali'**
+  String get sonarTubeSearchChannels;
+
+  /// Enables a specific time for a calendar reminder.
+  ///
+  /// In it, this message translates to:
+  /// **'Imposta un orario'**
+  String get calendarReminderHasTime;
+
+  /// Bitrate slider label for MP3 audio-description output.
+  ///
+  /// In it, this message translates to:
+  /// **'Bitrate MP3'**
+  String get audioDescriptionMp3Bitrate;
+
+  /// Base movie volume slider label.
+  ///
+  /// In it, this message translates to:
+  /// **'Volume del film'**
+  String get audioDescriptionSourceVolume;
+
+  /// Explains source volume adjustment and continued automatic ducking during audio description.
+  ///
+  /// In it, this message translates to:
+  /// **'Regola il volume di base del film. Durante l’audiodescrizione viene abbassato ulteriormente in automatico.'**
+  String get audioDescriptionSourceVolumeHint;
+
+  /// Normal/default marker for audio-description bitrate and source volume.
+  ///
+  /// In it, this message translates to:
+  /// **'Normale'**
+  String get audioDescriptionAudioNormal;
+
+  /// Plays a short sample combining movie audio with the selected narration voice.
+  ///
+  /// In it, this message translates to:
+  /// **'Ascolta prova con film e voce'**
+  String get audioDescriptionMixPreview;
+
+  /// Status shown while the movie and voice audio sample is being prepared.
+  ///
+  /// In it, this message translates to:
+  /// **'Preparazione della prova audio'**
+  String get audioDescriptionMixPreviewPreparing;
+
+  /// Stops the movie and voice audio sample.
+  ///
+  /// In it, this message translates to:
+  /// **'Interrompi prova audio'**
+  String get audioDescriptionMixPreviewStop;
+
+  /// Text spoken by the selected narration voice in the movie and voice audio sample.
+  ///
+  /// In it, this message translates to:
+  /// **'Prova audiodescrizione con ducking.'**
+  String get audioDescriptionMixPreviewPhrase;
+
+  /// Explains the automatic movie and voice sample after adjusting source volume.
+  ///
+  /// In it, this message translates to:
+  /// **'Dopo la regolazione del volume, parte una breve prova con un tratto del film, la voce scelta e l’abbassamento automatico dell’audio.'**
+  String get audioDescriptionMixPreviewHint;
+
   /// No description provided for @sonarTubeSearchPrompt.
   ///
   /// In it, this message translates to:

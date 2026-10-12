@@ -9,6 +9,48 @@ class AppLocalizationsPt extends AppLocalizations {
   AppLocalizationsPt([String locale = 'pt']) : super(locale);
 
   @override
+  String get sonarTubeSearchType => 'Tipo de pesquisa';
+
+  @override
+  String get sonarTubeSearchAll => 'Tudo';
+
+  @override
+  String get sonarTubeSearchPlaylists => 'Listas de reprodução';
+
+  @override
+  String get sonarTubeSearchChannels => 'Canais';
+
+  @override
+  String get calendarReminderHasTime => "Definir um horário";
+
+  @override
+  String get audioDescriptionMp3Bitrate => "Taxa de bits MP3";
+
+  @override
+  String get audioDescriptionSourceVolume => "Volume do filme";
+
+  @override
+  String get audioDescriptionSourceVolumeHint => "Ajuste o volume de base do filme. Este é reduzido ainda mais automaticamente durante a audiodescrição.";
+
+  @override
+  String get audioDescriptionAudioNormal => "Normal";
+
+  @override
+  String get audioDescriptionMixPreview => "Ouvir teste com filme e voz";
+
+  @override
+  String get audioDescriptionMixPreviewPreparing => "A preparar o teste de áudio";
+
+  @override
+  String get audioDescriptionMixPreviewStop => "Parar teste de áudio";
+
+  @override
+  String get audioDescriptionMixPreviewPhrase => "Teste de audiodescrição com redução automática do som.";
+
+  @override
+  String get audioDescriptionMixPreviewHint => "Depois de ajustar o volume, inicia-se um breve teste com um excerto do filme, a voz escolhida e a redução automática do áudio do filme.";
+
+  @override
   String get appTitle => 'Sonarpad';
 
   @override
@@ -4520,6 +4562,48 @@ class AppLocalizationsPt extends AppLocalizations {
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
 class AppLocalizationsPtBr extends AppLocalizationsPt {
   AppLocalizationsPtBr() : super('pt_BR');
+
+  @override
+  String get sonarTubeSearchType => 'Tipo de pesquisa';
+
+  @override
+  String get sonarTubeSearchAll => 'Tudo';
+
+  @override
+  String get sonarTubeSearchPlaylists => 'Playlists';
+
+  @override
+  String get sonarTubeSearchChannels => 'Canais';
+
+  @override
+  String get calendarReminderHasTime => "Definir um horário";
+
+  @override
+  String get audioDescriptionMp3Bitrate => "Taxa de bits MP3";
+
+  @override
+  String get audioDescriptionSourceVolume => "Volume do filme";
+
+  @override
+  String get audioDescriptionSourceVolumeHint => "Ajuste o volume base do filme. Ele é reduzido ainda mais automaticamente durante a audiodescrição.";
+
+  @override
+  String get audioDescriptionAudioNormal => "Normal";
+
+  @override
+  String get audioDescriptionMixPreview => "Ouvir teste com filme e voz";
+
+  @override
+  String get audioDescriptionMixPreviewPreparing => "Preparando o teste de áudio";
+
+  @override
+  String get audioDescriptionMixPreviewStop => "Parar teste de áudio";
+
+  @override
+  String get audioDescriptionMixPreviewPhrase => "Teste de audiodescrição com redução automática do som.";
+
+  @override
+  String get audioDescriptionMixPreviewHint => "Após ajustar o volume, começa um breve teste com um trecho do filme, a voz escolhida e a redução automática do áudio do filme.";
 
   @override
   String get audioDescriptionSonarpadInsufficientCredit => "O crédito é insuficiente. Recarregue sua chave API para continuar a audiodescrever seus conteúdos.";

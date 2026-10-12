@@ -9,6 +9,48 @@ class AppLocalizationsIt extends AppLocalizations {
   AppLocalizationsIt([String locale = 'it']) : super(locale);
 
   @override
+  String get sonarTubeSearchType => 'Tipo di ricerca';
+
+  @override
+  String get sonarTubeSearchAll => 'Tutto';
+
+  @override
+  String get sonarTubeSearchPlaylists => 'Playlist';
+
+  @override
+  String get sonarTubeSearchChannels => 'Canali';
+
+  @override
+  String get calendarReminderHasTime => "Imposta un orario";
+
+  @override
+  String get audioDescriptionMp3Bitrate => "Bitrate MP3";
+
+  @override
+  String get audioDescriptionSourceVolume => "Volume del film";
+
+  @override
+  String get audioDescriptionSourceVolumeHint => "Regola il volume di base del film. Durante l’audiodescrizione viene abbassato ulteriormente in automatico.";
+
+  @override
+  String get audioDescriptionAudioNormal => "Normale";
+
+  @override
+  String get audioDescriptionMixPreview => "Ascolta prova con film e voce";
+
+  @override
+  String get audioDescriptionMixPreviewPreparing => "Preparazione della prova audio";
+
+  @override
+  String get audioDescriptionMixPreviewStop => "Interrompi prova audio";
+
+  @override
+  String get audioDescriptionMixPreviewPhrase => "Prova audiodescrizione con ducking.";
+
+  @override
+  String get audioDescriptionMixPreviewHint => "Dopo la regolazione del volume, parte una breve prova con un tratto del film, la voce scelta e l’abbassamento automatico dell’audio.";
+
+  @override
   String get appTitle => 'Sonarpad';
 
   @override
