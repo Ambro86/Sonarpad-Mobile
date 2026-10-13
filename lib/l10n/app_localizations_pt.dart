@@ -10633,7 +10633,7 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   String get sonarMusicShuffle => "Aleatório";
 
   @override
-  String get sonarMusicSave => "Guardar multimédia";
+  String get sonarMusicSave => "Salvar mídia";
 
   @override
   String get sonarMusicSuggest => "Sugestões";

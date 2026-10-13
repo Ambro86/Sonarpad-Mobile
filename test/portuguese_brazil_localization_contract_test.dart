@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sonarpad_mobile_starter/l10n/app_localizations_pt.dart';
 
 Map<String, dynamic> _arb(String path) =>
     jsonDecode(File(path).readAsStringSync()) as Map<String, dynamic>;
@@ -233,11 +234,24 @@ void main() {
       ' partilhar',
     ];
     for (final value in europeanInBrazil) {
-      expect(' $brText ', isNot(contains(value)), reason: value);
+      final offendingKeys = _messageKeys(brazil).where((key) {
+        final text = brazil[key];
+        return text is String && ' ${text.toLowerCase()} '.contains(value);
+      }).toList();
+      expect(offendingKeys, isEmpty, reason: 'pt_BR residue: $value');
     }
 
     expect(brText, isNot(contains('parpesquisando')));
     expect(brText, isNot(contains('parreproduzindo')));
+  });
+
+  test('SonarMusic save label keeps the Portuguese regional variants', () {
+    final portugal = _arb('lib/l10n/app_pt.arb');
+    final brazil = _arb('lib/l10n/app_pt_BR.arb');
+    expect(portugal['sonarMusicSave'], 'Guardar multimédia');
+    expect(brazil['sonarMusicSave'], 'Salvar mídia');
+    expect(AppLocalizationsPt().sonarMusicSave, portugal['sonarMusicSave']);
+    expect(AppLocalizationsPtBr().sonarMusicSave, brazil['sonarMusicSave']);
   });
 
   test('Portuguese runtime fallbacks do not leak known Italian UI text', () {

@@ -349,11 +349,44 @@ void main() {
       expect(screen, contains('WidgetsBindingObserver'));
       expect(screen, contains('_ensureGenerationWakelock'));
     });
-    test('generation exposes a determinate accessible progress bar', () {
-      expect(screen, contains('LinearProgressIndicator('));
-      expect(screen, contains('semanticsValue:'));
-      expect(screen, contains("id: 'progress'"));
-      expect(screen, contains('if (progress.value > _progress)'));
+    test('generation exposes determinate progress with one accessible row', () {
+      final normalizedScreen = screen.replaceAll('\r\n', '\n');
+      final start = normalizedScreen.indexOf('Widget _buildRunningBody(');
+      final end = normalizedScreen.indexOf(
+        '@override\n  Widget build(', start,
+      );
+      expect(start, greaterThanOrEqualTo(0));
+      expect(end, greaterThan(start));
+      final running = normalizedScreen.substring(start, end);
+
+      // The visual bar must still track the real progress, while its semantics
+      // are excluded to avoid repeating the accessible stage/percentage row.
+      expect(
+        RegExp(
+          r'child:\s*ExcludeSemantics\(\s*child:\s*LinearProgressIndicator\(',
+        ).hasMatch(running),
+        isTrue,
+        reason: 'Exclude only the visual bar from screen-reader announcements.',
+      );
+      expect(
+        running.contains('value: _progress.clamp(0.0, 1.0).toDouble()'),
+        isTrue,
+        reason: 'The visual progress indicator must remain determinate.',
+      );
+      expect(RegExp(r"id: 'progress'").allMatches(running).length, 1);
+      expect(running.contains('title: _stage'), isTrue);
+      expect(
+        running.contains(r"value: '${(_progress * 100).round()}%'"),
+        isTrue,
+        reason: 'The accessible row must retain the real percentage.',
+      );
+      expect(running.contains('semanticsValue:'), isFalse);
+      expect(running.contains('semanticsLabel: _stage'), isFalse);
+      expect(
+        screen.contains('if (progress.value > _progress)'),
+        isTrue,
+        reason: 'Displayed progress must never move backwards.',
+      );
     });
     test('Pyannote heavy PCM preparation stays off the UI isolate', () {
       final reader = File('lib/services/pyannote_pcm_reader.dart').readAsStringSync();

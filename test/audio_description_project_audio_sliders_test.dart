@@ -126,6 +126,22 @@ const _editorKey = ValueKey('audio_description_project_editor');
 
 Finder _control(String id) => find.byKey(ValueKey('accessible_row_$id'));
 
+SemanticsNode _previewSemantics(WidgetTester tester) {
+  // The keyed row wraps a ListTile. Its outer Semantics can be an annotation
+  // node without tap; InkWell exposes the actual action in a descendant.
+  // Find that node inside this row, never an unrelated button or its parent.
+  final tapTarget = find.descendant(
+    of: _control('mix_preview'),
+    matching: find.byWidgetPredicate(
+      (widget) => widget is Semantics && widget.properties.onTap != null,
+      description: 'preview tap semantics',
+    ),
+  );
+  expect(tapTarget, findsOneWidget,
+      reason: 'The single preview button must expose one tap target.');
+  return tester.getSemantics(tapTarget);
+}
+
 UniversalAccessibleList _editor(WidgetTester tester) =>
     tester.widget<UniversalAccessibleList>(find.byKey(_editorKey));
 
@@ -598,7 +614,7 @@ void main() {
         await _event(tester, 'picker', 'tts_engine', 'system');
         await _event(tester, 'picker', 'system_voice', 'Voce di prova');
         final volumeId = tester.getSemantics(_control('source_volume')).id;
-        final previewNodeId = tester.getSemantics(_control('mix_preview')).id;
+        final previewNodeId = _previewSemantics(tester).id;
         void expectPreviewButton(String title) {
           expect(
             _editor(tester).sections
@@ -612,7 +628,7 @@ void main() {
           expect(_row(tester, 'mix_preview').title, title);
           expect(_row(tester, 'mix_preview').enabled, isTrue);
           expect(_row(tester, 'mix_preview').accessibilityButtonTrait, isTrue);
-          final node = tester.getSemantics(_control('mix_preview'));
+          final node = _previewSemantics(tester);
           expect(node.id, previewNodeId);
           expect(node.getSemanticsData().hasAction(SemanticsAction.tap), isTrue);
           expect(node.getSemanticsData().label, contains(title));

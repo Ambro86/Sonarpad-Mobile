@@ -4723,7 +4723,7 @@
   "@sonarMusicShuffle": {
     "description": "SonarMusic label for shuffle, migrated from the existing language table."
   },
-  "sonarMusicSave": "Guardar multimédia",
+  "sonarMusicSave": "Salvar mídia",
   "@sonarMusicSave": {
     "description": "SonarMusic label for save, migrated from the existing language table."
   },
