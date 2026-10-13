@@ -28,10 +28,15 @@ class AudioDescriptionProjectEditorScreen extends StatefulWidget {
   const AudioDescriptionProjectEditorScreen({
     super.key,
     this.initialProjectPath,
+    this.projectServiceFactory,
     this.mixPreviewControllerFactory,
   });
 
   final String? initialProjectPath;
+
+  /// Optional factory for observing real project I/O in editor tests.
+  /// The editor owns and disposes the service; normal callers use the default.
+  final AiAudioDescriptionService Function()? projectServiceFactory;
   final AudioDescriptionMixPreviewController Function()? mixPreviewControllerFactory;
 
   @override
@@ -41,7 +46,7 @@ class AudioDescriptionProjectEditorScreen extends StatefulWidget {
 
 class _AudioDescriptionProjectEditorScreenState
     extends State<AudioDescriptionProjectEditorScreen> with WidgetsBindingObserver {
-  final _service = AiAudioDescriptionService();
+  late final AiAudioDescriptionService _service;
   final _flutterTts = FlutterTts();
   final _audio = AudioPlayerService();
   late final AudioDescriptionMixPreviewController _mixPreview;
@@ -73,6 +78,7 @@ class _AudioDescriptionProjectEditorScreenState
   @override
   void initState() {
     super.initState();
+    _service = widget.projectServiceFactory?.call() ?? AiAudioDescriptionService();
     WidgetsBinding.instance.addObserver(this);
     _mixPreview = widget.mixPreviewControllerFactory?.call() ??
         AudioDescriptionMixPreviewController();

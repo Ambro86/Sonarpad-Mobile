@@ -41,6 +41,64 @@ class _Paths extends PathProviderPlatform {
   Future<String?> getApplicationCachePath() async => '${root.path}/cache';
 }
 
+// Observe completion without repeatedly opening the destination JSON while
+// saveEditableProject deletes/replaces it. The production disk writer is still
+// used, so these tests continue to check the real persisted project.
+class _ProjectWrite {
+  _ProjectWrite(this.project);
+
+  final AudioDescriptionEditableProject project;
+  final finished = Completer<void>();
+  Object? error;
+  StackTrace? stackTrace;
+}
+
+class _ObservedProjectService extends AiAudioDescriptionService {
+  final writes = <_ProjectWrite>[];
+  Completer<_ProjectWrite>? _nextWrite;
+  Future<void>? nextWriteGate;
+  Object? nextWriteFailure;
+
+  Future<_ProjectWrite> expectNextWrite() {
+    if (_nextWrite != null) {
+      throw StateError('A project write is already being awaited');
+    }
+    final next = Completer<_ProjectWrite>();
+    _nextWrite = next;
+    return next.future;
+  }
+
+  void clearWriteExpectation() => _nextWrite = null;
+
+  @override
+  Future<void> saveEditableProject(
+    AudioDescriptionEditableProject project,
+  ) async {
+    final write = _ProjectWrite(project);
+    final gate = nextWriteGate;
+    final failure = nextWriteFailure;
+    nextWriteGate = null;
+    nextWriteFailure = null;
+    writes.add(write);
+    final next = _nextWrite;
+    _nextWrite = null;
+    next?.complete(write);
+    try {
+      if (gate != null) await gate;
+      if (failure != null) throw failure;
+      await super.saveEditableProject(project);
+    } catch (error, stackTrace) {
+      write.error = error;
+      write.stackTrace = stackTrace;
+      rethrow;
+    } finally {
+      // Complete normally even on error: the editor receives the original
+      // exception, and the test can inspect it without an unhandled Future.
+      write.finished.complete();
+    }
+  }
+}
+
 class _PreviewCall {
   _PreviewCall(this.project, this.text, this.source);
 
@@ -154,7 +212,7 @@ Future<Map<String, dynamic>> _readProject(String path) async =>
     jsonDecode(await File(path).readAsString()) as Map<String, dynamic>;
 
 Future<void> _waitUntil(WidgetTester tester, bool Function() ready) async {
-  await tester.runAsync(() async {
+  final completed = await tester.runAsync(() async {
     final elapsed = Stopwatch()..start();
     while (!ready()) {
       if (elapsed.elapsed > const Duration(seconds: 5)) {
@@ -163,7 +221,9 @@ Future<void> _waitUntil(WidgetTester tester, bool Function() ready) async {
       await Future<void>.delayed(const Duration(milliseconds: 2));
       await tester.pump();
     }
+    return true;
   });
+  expect(completed, isTrue, reason: 'The editor readiness wait failed.');
   await tester.pump();
 }
 
@@ -173,44 +233,80 @@ Future<void> _event(
   String id, [
   Object? value,
 ]) async {
-  await tester.runAsync(() async {
+  final completed = await tester.runAsync(() async {
     await _editor(tester)
         .onEvent!(AccessibleListEvent(type: type, id: id, value: value));
+    return true;
   });
+  expect(completed, isTrue, reason: 'Editor event $type/$id failed.');
   await tester.pump();
 }
 
 Future<void> _adjust(
   WidgetTester tester,
+  _ObservedProjectService service,
   String path,
   String id,
   SemanticsAction action,
   String field,
   Object expected,
 ) async {
-  await tester.runAsync(() async {
+  final completed = await tester.runAsync(() async {
+    final row = _row(tester, id);
     final node = tester.getSemantics(_control(id));
-    node.owner!.performAction(node.id, action);
-    final elapsed = Stopwatch()..start();
-    while (true) {
-      try {
-        if ((await _readProject(path))[field] == expected) break;
-      } on FileSystemException {
-        // saveEditableProject replaces its temporary file atomically.
+    expect(node.getSemanticsData().hasAction(action), isTrue);
+    expect(action, anyOf(SemanticsAction.increase, SemanticsAction.decrease));
+    final direction = action == SemanticsAction.increase ? 1 : -1;
+    final target = (row.sliderValue + direction * row.sliderStep)
+        .clamp(row.sliderMin, row.sliderMax);
+    final changesValue = target != row.sliderValue;
+    final writesBefore = service.writes.length;
+    expect(service.writes.every((write) => write.finished.isCompleted), isTrue);
+    final pending = changesValue ? service.expectNextWrite() : null;
+    try {
+      // Use the actual screen-reader action, not a direct callback or a fake
+      // save. Pump after dispatch to keep UI/semantics microtasks progressing.
+      node.owner!.performAction(node.id, action);
+      await tester.pump();
+      if (pending != null) {
+        final write = await pending.timeout(const Duration(seconds: 5));
+        await write.finished.future.timeout(const Duration(seconds: 5));
+        final error = write.error;
+        if (error != null) {
+          Error.throwWithStackTrace(error, write.stackTrace!);
+        }
+        expect(write.project.projectPath, path);
+        expect(write.project.toJson()[field], expected);
       }
-      if (elapsed.elapsed > const Duration(seconds: 5)) {
-        throw StateError('Timed out saving $field = $expected');
-      }
-      await Future<void>.delayed(const Duration(milliseconds: 2));
+      await tester.pump();
+      expect(service.writes, hasLength(writesBefore + (changesValue ? 1 : 0)));
+      // Read once, after the real write/flush/rename Future has completed.
+      // Polling this path every 2ms can itself prevent replacement on Windows.
+      final saved = await _readProject(path);
+      expect(saved[field], expected, reason: 'Wrong persisted $field in $path');
+      expect(await File('$path.tmp').exists(), isFalse);
+      return true;
+    } finally {
+      service.clearWriteExpectation();
     }
   });
+  // runAsync reports an exception and returns null. Stop here rather than
+  // continuing with the next slider value after a failed write/wait.
+  expect(completed, isTrue, reason: 'Could not verify saved $field = $expected');
   await tester.pump();
+  expect(
+    _editor(tester).sections
+        .expand((section) => section.rows)
+        .where((row) => row.id == 'technical_error'),
+    isEmpty,
+  );
 }
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   late Directory temporary;
   late PathProviderPlatform originalPaths;
+  late _ObservedProjectService projectService;
   late _PreviewService previewService;
   late _PreviewAudio previewAudio;
   late List<AudioDescriptionMixPreviewController> controllers;
@@ -262,6 +358,8 @@ void main() {
 
   Future<void> mount(WidgetTester tester, String path) async {
     await tester.runAsync(() async {
+      // Reopening an editor must create a fresh, editor-owned service.
+      projectService = _ObservedProjectService();
       await tester.pumpWidget(
         MaterialApp(
           locale: const Locale('it'),
@@ -269,6 +367,7 @@ void main() {
           supportedLocales: AppLocalizations.supportedLocales,
           home: AudioDescriptionProjectEditorScreen(
             initialProjectPath: path,
+            projectServiceFactory: () => projectService,
             mixPreviewControllerFactory: () {
               final controller = AudioDescriptionMixPreviewController(
                 serviceFactory: () => previewService,
@@ -331,6 +430,85 @@ void main() {
   }
 
   testWidgets(
+    'semantic volume changes update immediately while the real save is gated',
+    (tester) async {
+      final path = '${temporary.path}/gated_project.sonarpad-ad.json';
+      await exercise(tester, sampleProject(path), () async {
+        late Completer<void> gate;
+        _ProjectWrite? observed;
+        final volumeId = tester.getSemantics(_control('source_volume')).id;
+        final started = await tester.runAsync(() async {
+          gate = Completer<void>();
+          projectService.nextWriteGate = gate.future;
+          final next = projectService.expectNextWrite();
+          final node = tester.getSemantics(_control('source_volume'));
+          node.owner!.performAction(node.id, SemanticsAction.decrease);
+          await tester.pump();
+          observed = await next.timeout(const Duration(seconds: 5));
+          return true;
+        });
+        try {
+          expect(started, isTrue);
+          expect(observed, isNotNull);
+          await tester.pump();
+          expect(_row(tester, 'source_volume').valueLabel, '0,95');
+          expect(tester.getSemantics(_control('source_volume')).id, volumeId);
+          expect(observed!.finished.isCompleted, isFalse);
+        } finally {
+          final drained = await tester.runAsync(() async {
+            if (!gate.isCompleted) gate.complete();
+            final write = observed;
+            if (write != null) {
+              await write.finished.future.timeout(const Duration(seconds: 5));
+            }
+            projectService.clearWriteExpectation();
+            return true;
+          });
+          expect(drained, isTrue);
+        }
+        expect(observed!.error, isNull);
+        final saved = await tester.runAsync(() => _readProject(path));
+        expect(saved, isNotNull);
+        expect(saved!['source_volume'], 0.95);
+        // The same synchronization helper must then await the next real write.
+        await _adjust(tester, projectService, path, 'source_volume',
+            SemanticsAction.decrease, 'source_volume', 0.9);
+      });
+    },
+    variant: TargetPlatformVariant({
+      TargetPlatform.android,
+      TargetPlatform.iOS,
+    }),
+  );
+
+  testWidgets(
+    'a failed audio save exposes its error and the next real save still works',
+    (tester) async {
+      final path = '${temporary.path}/failed_project.sonarpad-ad.json';
+      await exercise(tester, sampleProject(path), () async {
+        final failure = FileSystemException('Injected test write failure', path);
+        projectService.nextWriteFailure = failure;
+        await _event(tester, 'slider', 'source_volume', 19);
+        expect(projectService.writes, hasLength(1));
+        expect(projectService.writes.single.error, same(failure));
+        expect(projectService.writes.single.finished.isCompleted, isTrue);
+        expect(_row(tester, 'technical_error').subtitle,
+            contains('Injected test write failure'));
+        final unchanged = await tester.runAsync(() => _readProject(path));
+        expect(unchanged, isNotNull);
+        expect(unchanged!['source_volume'], 1.0);
+        await _adjust(tester, projectService, path, 'source_volume',
+            SemanticsAction.decrease, 'source_volume', 0.9);
+        expect(projectService.writes.last.error, isNull);
+      });
+    },
+    variant: TargetPlatformVariant({
+      TargetPlatform.android,
+      TargetPlatform.iOS,
+    }),
+  );
+
+  testWidgets(
     'editor sliders keep semantic nodes and pending text and voice while saving audio',
     (tester) async {
       final path = '${temporary.path}/project.sonarpad-ad.json';
@@ -367,6 +545,7 @@ void main() {
         ]) {
           await _adjust(
             tester,
+            projectService,
             path,
             'mp3_bitrate',
             action,
@@ -383,6 +562,7 @@ void main() {
         for (final volume in [0.95, 0.9, 0.85]) {
           await _adjust(
             tester,
+            projectService,
             path,
             'source_volume',
             SemanticsAction.decrease,
@@ -395,6 +575,7 @@ void main() {
         for (final (volume, label) in [(1.05, '1,05'), (1.1, '1,1')]) {
           await _adjust(
             tester,
+            projectService,
             path,
             'source_volume',
             SemanticsAction.increase,
@@ -414,6 +595,7 @@ void main() {
         ]) {
           await _adjust(
             tester,
+            projectService,
             path,
             'source_volume',
             action,
