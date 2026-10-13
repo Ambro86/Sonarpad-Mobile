@@ -194,7 +194,9 @@ Future<void> _waitUntil(WidgetTester tester, bool Function() done) async {
         throw StateError('Timed out waiting for preview');
       }
       await Future<void>.delayed(const Duration(milliseconds: 2));
-      await tester.pump();
+      // Async callbacks can schedule the debounce in the test's FakeAsync
+      // zone. Advance that clock as well as allowing real file I/O to finish.
+      await tester.pump(const Duration(milliseconds: 20));
     }
   });
   await tester.pump();
@@ -231,9 +233,29 @@ Future<void> _mountScreen(
 
 Future<void> _unmountScreen(WidgetTester tester) async {
   await tester.runAsync(() async {
+    int count(String logs, String message) =>
+        message.allMatches(logs).length;
+    const disposed = 'Sonarpad audio: dispose complete';
+    final disposalsBefore = count(await AppLogger.readLogs(), disposed);
     await tester.pumpWidget(const SizedBox());
-    await Future<void>.delayed(Duration.zero);
-    await AppLogger.readLogs();
+    // dispose() and provider changes launch background work. A single log
+    // flush only waits for the current queue, not writes enqueued afterwards.
+    final elapsed = Stopwatch()..start();
+    while (true) {
+      final logs = await AppLogger.readLogs();
+      final balanceStarts = count(logs, 'UI balance refresh start ');
+      final balanceEnds = count(logs, 'UI balance refresh success ') +
+          count(logs, 'UI balance refresh exception ');
+      if (count(logs, disposed) > disposalsBefore &&
+          balanceStarts == balanceEnds) {
+        break;
+      }
+      if (elapsed.elapsed > const Duration(seconds: 5)) {
+        throw StateError('Timed out waiting for audio and balance cleanup');
+      }
+      await Future<void>.delayed(const Duration(milliseconds: 2));
+      await tester.pump(const Duration(milliseconds: 20));
+    }
   });
   await tester.pumpAndSettle();
 }
@@ -335,6 +357,10 @@ void main() {
   tearDown(() async {
     final pending = cancelledSpeak;
     if (pending != null && !pending.isCompleted) pending.complete(0);
+    // Unmounting and the final pump can enqueue more audio disposal logs.
+    // Drain those writes while the test's path provider is still installed;
+    // Windows cannot delete the temporary directory with an open log file.
+    await AppLogger.readLogs();
     configureAccessibleRendererRuntime(useFlutterOnIos: false);
     final messenger =
         TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
