@@ -86,6 +86,8 @@ class _PreviewAudio implements AudioPlayerService {
   Completer<void>? _playback;
   Completer<void>? stopGate;
   int stopCalls = 0;
+  int pauseCalls = 0;
+  int resumeCalls = 0;
 
   @override
   Future<void> playVoicePreview(
@@ -97,6 +99,12 @@ class _PreviewAudio implements AudioPlayerService {
     _playback = Completer<void>();
     return _playback!.future;
   }
+
+  @override
+  Future<void> pauseVoicePreview() async => pauseCalls++;
+
+  @override
+  Future<void> resumeVoicePreview() async => resumeCalls++;
 
   @override
   Future<void> stop() async {
@@ -574,7 +582,7 @@ void main() {
   );
 
   testWidgets(
-    'automatic and manual mix previews use the pending voice without moving focus',
+    'one editor preview button pauses and resumes the pending voice without moving focus',
     (tester) async {
       final path = '${temporary.path}/project.sonarpad-ad.json';
       final source = File('${temporary.path}/movie.mp4')..writeAsBytesSync([0]);
@@ -590,8 +598,29 @@ void main() {
         await _event(tester, 'picker', 'tts_engine', 'system');
         await _event(tester, 'picker', 'system_voice', 'Voce di prova');
         final volumeId = tester.getSemantics(_control('source_volume')).id;
-        final playId = tester.getSemantics(_control('mix_preview')).id;
-        final stopId = tester.getSemantics(_control('mix_preview_stop')).id;
+        final previewNodeId = tester.getSemantics(_control('mix_preview')).id;
+        void expectPreviewButton(String title) {
+          expect(
+            _editor(tester).sections
+                .expand((section) => section.rows)
+                .where((row) => row.id.startsWith('mix_preview'))
+                .map((row) => row.id),
+            ['mix_preview'],
+          );
+          expect(_control('mix_preview'), findsOneWidget);
+          expect(_control('mix_preview_stop'), findsNothing);
+          expect(_row(tester, 'mix_preview').title, title);
+          expect(_row(tester, 'mix_preview').enabled, isTrue);
+          expect(_row(tester, 'mix_preview').accessibilityButtonTrait, isTrue);
+          final node = tester.getSemantics(_control('mix_preview'));
+          expect(node.id, previewNodeId);
+          expect(node.getSemanticsData().hasAction(SemanticsAction.tap), isTrue);
+          expect(node.getSemanticsData().label, contains(title));
+          expect(tester.getSemantics(_control('source_volume')).id, volumeId);
+          expect(textFocus?.hasFocus, isTrue);
+        }
+
+        expectPreviewButton('Riprendi');
         await _event(tester, 'slider', 'mp3_bitrate', 1);
 
         final handler = _editor(tester).onEvent!;
@@ -622,11 +651,7 @@ void main() {
         expect(call.source, source.path);
         expect(call.text, 'Prova audiodescrizione con ducking.');
         expect(controllers.single.isPlaying, isTrue);
-        expect(_row(tester, 'mix_preview_stop').enabled, isTrue);
-        expect(tester.getSemantics(_control('source_volume')).id, volumeId);
-        expect(tester.getSemantics(_control('mix_preview')).id, playId);
-        expect(tester.getSemantics(_control('mix_preview_stop')).id, stopId);
-        expect(textFocus?.hasFocus, isTrue);
+        expectPreviewButton('Pausa');
         expect(_row(tester, 'description_text').value, 'Testo in lavorazione');
         final saved = await tester.runAsync(() => _readProject(path));
         expect(saved!['mobile_tts_engine'], 'edge');
@@ -634,36 +659,85 @@ void main() {
         expect(saved['source_volume'], 1.35);
         expect(saved['bitrate_kbps'], 96);
 
+        // Pausing and resuming keeps the rendered file and the in-flight
+        // playback session, without synthesizing another preview.
+        final firstPlayback = previewAudio._playback!;
+        final stopsBeforePause = previewAudio.stopCalls;
+        await _event(tester, 'activate', 'mix_preview');
+        expect(controllers.single.isPaused, isTrue);
+        expect(controllers.single.isPlaying, isFalse);
+        expect(controllers.single.isActive, isTrue);
+        expect(previewAudio.pauseCalls, 1);
+        expect(firstPlayback.isCompleted, isFalse);
+        expectPreviewButton('Riprendi');
+        await _event(tester, 'activate', 'mix_preview');
+        expect(controllers.single.isPlaying, isTrue);
+        expect(controllers.single.isPaused, isFalse);
+        expect(previewAudio.resumeCalls, 1);
+        expect(previewAudio.stopCalls, stopsBeforePause);
+        expect(previewAudio._playback, same(firstPlayback));
+        expect(firstPlayback.isCompleted, isFalse);
+        expect(previewAudio.files, hasLength(1));
+        expect(previewService.calls, hasLength(1));
+        expectPreviewButton('Pausa');
+
+        await _event(tester, 'slider', 'source_volume', 32);
+        await _waitUntil(tester, () => previewAudio.files.length == 2);
+        expect(firstPlayback.isCompleted, isTrue);
+        expect(previewService.calls.last.project.sourceVolume, 1.6);
+        expectPreviewButton('Pausa');
+
+        final pausedPlayback = previewAudio._playback!;
+        await _event(tester, 'activate', 'mix_preview');
+        expect(controllers.single.isPaused, isTrue);
+        expectPreviewButton('Riprendi');
+        await _event(tester, 'slider', 'source_volume', 34);
+        await _waitUntil(tester, () => previewAudio.files.length == 3);
+        expect(pausedPlayback.isCompleted, isTrue);
+        expect(previewService.calls.last.project.sourceVolume, 1.7);
+        expect(controllers.single.isPlaying, isTrue);
+        expect(previewAudio.resumeCalls, 1);
+        expectPreviewButton('Pausa');
+
+        // A voice change invalidates a paused sample. The same button must
+        // render the updated settings instead of resuming the obsolete file.
+        await _event(tester, 'activate', 'mix_preview');
+        final obsoletePlayback = previewAudio._playback!;
+        expect(controllers.single.isPaused, isTrue);
+        expectPreviewButton('Riprendi');
         await _event(tester, 'picker', 'tts_engine', 'edge');
         await _event(tester, 'picker', 'edge_voice', 'it-IT-DiegoNeural');
-        await _waitUntil(tester, () => !controllers.single.isActive);
-        expect(_row(tester, 'mix_preview_stop').enabled, isFalse);
-        await _event(tester, 'slider', 'source_volume', 32);
-        await _event(tester, 'activate', 'mix_preview_stop');
+        await _waitUntil(
+          tester,
+          () => !controllers.single.isActive && obsoletePlayback.isCompleted,
+        );
+        expect(controllers.single.isPaused, isFalse);
+        expect(obsoletePlayback.isCompleted, isTrue);
+        expectPreviewButton('Riprendi');
         final playsBeforeReplay = previewAudio.files.length;
         await _event(tester, 'activate', 'mix_preview');
         await _waitUntil(
           tester,
           () => previewAudio.files.length == playsBeforeReplay + 1,
         );
-        expect(previewService.calls.last.project.sourceVolume, 1.6);
+        expect(previewService.calls.last.project.sourceVolume, 1.7);
         expect(previewService.calls.last.project.ttsVoice, 'it-IT-DiegoNeural');
         expect(previewService.calls.last.project.systemVoice, isNull);
-        await _event(tester, 'activate', 'mix_preview_stop');
-        expect(controllers.single.isActive, isFalse);
-        expect(_row(tester, 'mix_preview_stop').enabled, isFalse);
+        expect(previewAudio.resumeCalls, 1);
+        expectPreviewButton('Pausa');
 
         // Automatic preview errors stay inline, with no modal or focus jump.
         previewService.failure = StateError(
           'Preview unavailable in this fixture',
         );
         await _event(tester, 'slider', 'source_volume', 6);
-        await _waitUntil(tester, () => controllers.single.error != null);
+        await _waitUntil(
+          tester,
+          () => controllers.single.error != null && !controllers.single.isActive,
+        );
         expect(find.byType(AlertDialog), findsNothing);
         expect(_row(tester, 'mix_preview').value, isNotNull);
-        expect(tester.getSemantics(_control('source_volume')).id, volumeId);
-        expect(tester.getSemantics(_control('mix_preview')).id, playId);
-        expect(textFocus?.hasFocus, isTrue);
+        expectPreviewButton('Riprendi');
         expect(_row(tester, 'description_text').value, 'Testo in lavorazione');
       });
     },

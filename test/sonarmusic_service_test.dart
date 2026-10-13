@@ -7,6 +7,42 @@ import 'package:sonarpad_mobile_starter/services/sonarmusic_service.dart';
 import 'package:sonarpad_mobile_starter/services/sonarmusic_library_service.dart';
 
 void main() {
+  for (final locale in ['tr', 'tr-TR', 'tr_TR']) {
+    test('Turkish music locale $locale reaches direct and fallback requests', () async {
+      final requests = <http.Request>[];
+      final service = SonarMusicService(
+        endpoint: Uri.parse('https://example.test/api/youtube_music_resolve.php'),
+        client: MockClient((request) async {
+          requests.add(request);
+          if (request.method == 'POST') {
+            return http.Response('Unavailable', 503);
+          }
+          expect(request.url.queryParameters['hl'], 'tr');
+          expect(request.url.queryParameters['gl'], 'TR');
+          return http.Response(
+            jsonEncode({'ok': true, 'items': [
+              {'kind': 'song', 'id': 'abc12345678', 'video_id': 'abc12345678',
+                'title': 'Özgün başlık', 'artist': 'Sanatçı'},
+            ]}),
+            200,
+            headers: {'content-type': 'application/json; charset=utf-8'},
+          );
+        }),
+      );
+      service.setLocaleName(locale);
+      final page = await service.search('İstanbul', type: 'song');
+      expect(page.items.single.title, 'Özgün başlık');
+      expect(page.items.single.artist, 'Sanatçı');
+      expect(requests.map((request) => request.method), ['POST', 'GET']);
+      // Check after search(): its direct-request catch must not swallow a
+      // failed test assertion before the successful PHP fallback.
+      final body = jsonDecode(requests.first.body) as Map<String, dynamic>;
+      final directClient = (body['context'] as Map)['client'] as Map;
+      expect(directClient['hl'], 'tr');
+      expect(directClient['gl'], 'TR');
+    });
+  }
+
   test('direct search preserves artist, song and pagination', () async {
     final service = SonarMusicService(client: MockClient((request) async {
       expect(request.url.host, 'music.youtube.com');

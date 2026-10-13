@@ -115,5 +115,69 @@ void main() {
         ),
       );
     });
+
+    test('Turkish geocoding and routes use TUR and preserve the language',
+        () async {
+      final requestedUris = <Uri>[];
+      final service = RouteService(
+        client: MockClient((request) async {
+          requestedUris.add(request.url);
+          return http.Response(
+            jsonEncode({
+              'ok': true,
+              'results': [],
+              'distance_meters': 1000,
+              'duration_seconds': 600,
+              'steps': [],
+            }),
+            200,
+          );
+        }),
+      );
+      const from = GeocodeCandidate(
+        label: 'Taksim',
+        name: 'Taksim',
+        country: 'Türkiye',
+        region: '',
+        locality: 'İstanbul',
+        postalcode: '',
+        latitude: 41.0369,
+        longitude: 28.9850,
+      );
+      const to = GeocodeCandidate(
+        label: 'Sultanahmet',
+        name: 'Sultanahmet',
+        country: 'Türkiye',
+        region: '',
+        locality: 'İstanbul',
+        postalcode: '',
+        latitude: 41.0086,
+        longitude: 28.9802,
+      );
+
+      for (final country in ['tr', 'TR', 'TUR']) {
+        await service.geocode(
+          query: 'Taksim, İstanbul',
+          language: 'tr',
+          countryCode: country,
+        );
+        await service.calculateRoute(
+          from: from,
+          to: to,
+          profile: RouteProfile.walking,
+          preference: RoutePreference.fastest,
+          includeMunicipalities: false,
+          language: 'tr',
+          countryCode: country,
+        );
+      }
+
+      expect(requestedUris, hasLength(6));
+      for (final uri in requestedUris) {
+        expect(uri.queryParameters['boundary.country'], 'TUR');
+        expect(uri.queryParameters['language'], 'tr');
+      }
+      expect(requestedUris.first.queryParameters['q'], 'Taksim, İstanbul');
+    });
   });
 }

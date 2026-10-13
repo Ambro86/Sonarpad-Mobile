@@ -14,6 +14,11 @@ import 'document_reader_screen.dart';
 import '../utils/status_message.dart';
 import '../widgets/universal_accessible_view.dart';
 
+String _gutenbergErrorMessage(Object? error, AppLocalizations l10n) =>
+    error is GutendexException
+        ? error.localizedMessage(l10n)
+        : l10n.error(l10n.technicalErrorGeneric);
+
 class GutenbergScreen extends StatefulWidget {
   final String? parentId;
 
@@ -39,6 +44,7 @@ class _GutenbergScreenState extends State<GutenbergScreen> {
     'uk',
     'ro',
     'zh',
+    'tr',
   ];
 
   @override
@@ -50,6 +56,7 @@ class _GutenbergScreenState extends State<GutenbergScreen> {
     final contentLanguage = switch (locale) {
       'pt_BR' => 'pt',
       'zh_CN' => 'zh',
+      'tr_TR' || 'tr-TR' => 'tr',
       _ => locale,
     };
     if (_languages.contains(contentLanguage)) {
@@ -247,7 +254,7 @@ class _GutenbergResultsScreenState extends State<_GutenbergResultsScreen> {
             );
           }
           if (_error != null) {
-            return Center(child: Text(l10n.error(l10n.technicalErrorGeneric)));
+            return Center(child: Text(_gutenbergErrorMessage(_error, l10n)));
           }
           if (_books.isEmpty) {
             return Center(child: Text(l10n.noGutenbergBooksFound));
@@ -256,7 +263,11 @@ class _GutenbergResultsScreenState extends State<_GutenbergResultsScreen> {
             return UniversalAccessibleList(
               sections: [AccessibleListSection(rows: [
                 for (var i = 0; i < _books.length; i++)
-                  AccessibleListRow(id: 'book_$i', title: _books[i].title, subtitle: _books[i].authorLabel),
+                  AccessibleListRow(
+                    id: 'book_$i',
+                    title: _books[i].titleLabel(l10n),
+                    subtitle: _books[i].authorLabel(l10n),
+                  ),
                 if (_nextPage != null)
                   AccessibleListRow(
                     id: 'more',
@@ -297,8 +308,8 @@ class _GutenbergResultsScreenState extends State<_GutenbergResultsScreen> {
               }
               final book = _books[index];
               return ListTile(
-                title: Text(book.title),
-                subtitle: Text(book.authorLabel),
+                title: Text(book.titleLabel(l10n)),
+                subtitle: Text(book.authorLabel(l10n)),
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () => _openBook(book),
               );
@@ -326,12 +337,16 @@ class _GutenbergBookScreenState extends State<_GutenbergBookScreen> {
 
   Future<void> _importAndRead() async {
     if (_importing) return;
+    final l10n = AppLocalizations.of(context);
     setState(() => _importing = true);
     try {
       await AppLogger.log(
         'Gutenberg import: start id=${widget.book.id} title="${widget.book.title}"',
       );
-      final download = await _service.downloadForImport(widget.book);
+      final download = await _service.downloadForImport(
+        widget.book,
+        localizations: l10n,
+      );
       await AppLogger.log(
         'Gutenberg import: download ready fileName="${download.fileName}" '
         'isFile=${download.isFile} bytes=${download.bytes?.length ?? 0} '
@@ -360,7 +375,7 @@ class _GutenbergBookScreenState extends State<_GutenbergBookScreen> {
     } catch (error) {
       await AppLogger.log('Gutenberg import: error $error');
       if (!mounted) return;
-            showStatusMessage(context, AppLocalizations.of(context).error(AppLocalizations.of(context).technicalErrorGeneric));
+      showStatusMessage(context, _gutenbergErrorMessage(error, l10n));
     } finally {
       if (mounted) {
         setState(() => _importing = false);
@@ -397,16 +412,21 @@ class _GutenbergBookScreenState extends State<_GutenbergBookScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final book = widget.book;
+    final languageLabel = book.languages.map(l10n.languageLabel).join(', ');
     final summary = book.summaries.isEmpty ? null : book.summaries.first;
     return Scaffold(
-      appBar: SonarpadAppBar(title: Text(book.title)),
+      appBar: SonarpadAppBar(title: Text(book.titleLabel(l10n))),
       body: useSharedAccessibleViewModel
           ? UniversalAccessibleList(
               sections: [AccessibleListSection(rows: [
-                AccessibleListRow(id: 'title', kind: 'header', title: book.title),
-                AccessibleListRow(id: 'author', kind: 'text', title: book.authorLabel),
+                AccessibleListRow(id: 'title', kind: 'header', title: book.titleLabel(l10n)),
+                AccessibleListRow(id: 'author', kind: 'text', title: book.authorLabel(l10n)),
                 if (book.languageLabel.isNotEmpty)
-                  AccessibleListRow(id: 'language', kind: 'text', title: l10n.sourceLanguageValue(book.languageLabel)),
+                  AccessibleListRow(
+                    id: 'language',
+                    kind: 'text',
+                    title: l10n.sourceLanguageValue(languageLabel),
+                  ),
                 if (summary != null && summary.trim().isNotEmpty)
                   AccessibleListRow(id: 'summary', kind: 'text', title: summary),
                 AccessibleListRow(
@@ -423,12 +443,12 @@ class _GutenbergBookScreenState extends State<_GutenbergBookScreen> {
           : ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          Text(book.title, style: Theme.of(context).textTheme.headlineSmall),
+          Text(book.titleLabel(l10n), style: Theme.of(context).textTheme.headlineSmall),
           const SizedBox(height: 8),
-          Text(book.authorLabel),
+          Text(book.authorLabel(l10n)),
           if (book.languageLabel.isNotEmpty) ...[
             const SizedBox(height: 8),
-            Text(l10n.sourceLanguageValue(book.languageLabel)),
+            Text(l10n.sourceLanguageValue(languageLabel)),
           ],
           if (summary != null && summary.trim().isNotEmpty) ...[
             const SizedBox(height: 16),

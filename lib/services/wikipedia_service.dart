@@ -4,6 +4,31 @@ import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as html_parser;
 import 'package:http/http.dart' as http;
 
+import '../l10n/app_localizations.dart';
+import '../l10n/app_localizations_lookup.dart';
+
+class WikipediaRequestException implements Exception {
+  final int statusCode;
+  final String languageCode;
+  final bool isImport;
+
+  const WikipediaRequestException({
+    required this.statusCode,
+    required this.languageCode,
+    this.isImport = false,
+  });
+
+  String localizedMessage(AppLocalizations l10n) => isImport
+      ? l10n.wikipediaImportHttpError(statusCode)
+      : l10n.wikipediaSearchHttpError(statusCode);
+
+  @override
+  String toString() => localizedMessage(lookupSupportedAppLocalizations(
+        languageCode,
+        fallbackLanguage: 'it',
+      ));
+}
+
 class WikipediaSearchResult {
   final int pageId;
   final String title;
@@ -47,7 +72,10 @@ class WikipediaService {
     final response =
         await _client.get(uri, headers: {'User-Agent': 'SonarpadMobile/0.1'});
     if (response.statusCode < 200 || response.statusCode >= 300) {
-      throw Exception(_searchError(lang, response.statusCode));
+      throw WikipediaRequestException(
+        statusCode: response.statusCode,
+        languageCode: lang,
+      );
     }
     final json = jsonDecode(response.body) as Map<String, dynamic>;
     final hits = (json['query']['search'] as List).cast<Map<String, dynamic>>();
@@ -70,7 +98,11 @@ class WikipediaService {
     final response =
         await _client.get(uri, headers: {'User-Agent': 'SonarpadMobile/0.1'});
     if (response.statusCode < 200 || response.statusCode >= 300) {
-      throw Exception(_importError(lang, response.statusCode));
+      throw WikipediaRequestException(
+        statusCode: response.statusCode,
+        languageCode: lang,
+        isImport: true,
+      );
     }
     final json = jsonDecode(response.body) as Map<String, dynamic>;
     final parse = json['parse'] as Map<String, dynamic>;
@@ -363,25 +395,4 @@ class WikipediaService {
     }
     return null;
   }
-
-  String _searchError(String lang, int statusCode) => switch (lang) {
-        'en' => 'Wikipedia error: $statusCode',
-        'fr' => 'Erreur Wikipedia : $statusCode',
-        'es' => 'Error de Wikipedia: $statusCode',
-        'pt' || 'pt_BR' || 'pt-BR' => 'Erro da Wikipédia: $statusCode',
-        'ro' => 'Eroare Wikipedia: $statusCode',
-        'zh' || 'zh_CN' || 'zh-CN' => '维基百科错误：$statusCode',
-        _ => 'Errore Wikipedia: $statusCode',
-      };
-
-  String _importError(String lang, int statusCode) => switch (lang) {
-        'en' => 'Wikipedia import error: $statusCode',
-        'fr' => 'Erreur d\'importation Wikipedia : $statusCode',
-        'es' => 'Error de importación de Wikipedia: $statusCode',
-        'pt' || 'pt_BR' || 'pt-BR' =>
-          'Erro ao importar da Wikipédia: $statusCode',
-        'ro' => 'Eroare la importul din Wikipedia: $statusCode',
-        'zh' || 'zh_CN' || 'zh-CN' => '维基百科导入错误：$statusCode',
-        _ => 'Errore importazione Wikipedia: $statusCode',
-      };
 }

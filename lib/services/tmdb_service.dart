@@ -16,7 +16,7 @@ class TmdbService {
       };
 
   String _tmdbLanguage(String languageCode) {
-    final normalized = languageCode.replaceAll('-', '_');
+    final normalized = languageCode.trim().replaceAll('-', '_').toLowerCase();
     if (normalized.toLowerCase() == 'pt_br') return 'pt-BR';
     final lang = normalized.split('_').first;
     return switch (lang) {
@@ -30,6 +30,7 @@ class TmdbService {
       'zh' => 'zh-CN',
       'uk' => 'uk-UA',
       'ro' => 'ro-RO',
+      'tr' => 'tr-TR',
       _ => 'en-US',
     };
   }

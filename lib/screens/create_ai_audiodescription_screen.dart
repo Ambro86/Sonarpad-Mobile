@@ -207,6 +207,19 @@ class _CreateAiAudiodescriptionScreenState
     }
   }
 
+  Future<void> _toggleMixPreview() async {
+    if (_running || _choosingVideo) return;
+    if (_mixPreview.isPreparing) {
+      await _mixPreview.stop();
+    } else if (_mixPreview.isPlaying) {
+      await _mixPreview.pause();
+    } else if (_mixPreview.isPaused) {
+      await _mixPreview.resume();
+    } else {
+      await _playMixPreview();
+    }
+  }
+
   Future<void> _playMixPreview() async {
     if (_running || _choosingVideo) return;
     final source = _sourcePath;
@@ -219,7 +232,14 @@ class _CreateAiAudiodescriptionScreenState
 
   Future<void> _load() async {
     try {
-      final preferences = await AiAudioDescriptionPreferences.load();
+      final appLanguage = await _settings.loadAppLanguage();
+      final defaultLanguage = switch (appLanguage) {
+        'tr' || 'tr_TR' || 'tr-TR' => 'tr',
+        _ => 'it',
+      };
+      final preferences = await AiAudioDescriptionPreferences.load(
+        defaultLanguage: defaultLanguage,
+      );
       final edgeVoices = await AppSettingsService.loadEdgeVoices();
       final edgeLanguages = AppSettingsService.languagesForVoices(edgeVoices);
       final settingEngine = await _settings.loadTtsEngine();
@@ -365,33 +385,11 @@ class _CreateAiAudiodescriptionScreenState
     );
   }
 
-  String _chooseFromFilesLabel(AppLocalizations l10n) => switch (l10n.localeName) {
-    'en' => 'Choose video from Files',
-    'es' => 'Elegir vídeo desde Archivos',
-    'fr' => 'Choisir une vidéo dans Fichiers',
-    'de' => 'Video aus Dateien wählen',
-    'pt' || 'pt_BR' => 'Escolher vídeo dos Arquivos',
-    'pl' => 'Wybierz wideo z Plików',
-    'cs' => 'Vybrat video ze Souborů',
-    'uk' => 'Вибрати відео з Файлів',
-    'ro' => 'Alege video din Fișiere',
-    'zh_CN' => '从文件选择视频',
-    _ => 'Scegli video da File',
-  };
+  String _chooseFromFilesLabel(AppLocalizations l10n) =>
+      l10n.audioDescriptionProjectChooseFromFiles;
 
-  String _importFromPhotosLabel(AppLocalizations l10n) => switch (l10n.localeName) {
-    'en' => 'Import video from Photos',
-    'es' => 'Importar vídeo desde Fotos',
-    'fr' => 'Importer une vidéo depuis Photos',
-    'de' => 'Video aus Fotos importieren',
-    'pt' || 'pt_BR' => 'Importar vídeo de Fotos',
-    'pl' => 'Importuj wideo ze Zdjęć',
-    'cs' => 'Importovat video z Fotek',
-    'uk' => 'Імпортувати відео з Фото',
-    'ro' => 'Importă video din Poze',
-    'zh_CN' => '从照片导入视频',
-    _ => 'Importa video da Foto',
-  };
+  String _importFromPhotosLabel(AppLocalizations l10n) =>
+      l10n.audioDescriptionProjectImportFromPhotos;
 
   Future<void> _chooseVideo() async {
     if (_running || _choosingVideo) return;
@@ -1411,6 +1409,7 @@ class _CreateAiAudiodescriptionScreenState
         ),
         AccessibleOption(value: 'uk', label: l10n.radioLanguageUk),
         AccessibleOption(value: 'ro', label: l10n.languageLabel('ro')),
+        AccessibleOption(value: 'tr', label: l10n.languageLabel('tr')),
       ];
 
   String _languageLabel(AppLocalizations l10n, String code) {
@@ -1420,9 +1419,29 @@ class _CreateAiAudiodescriptionScreenState
     return code;
   }
 
-  String _edgeLanguageLabel(String code) {
+  String _localizedTurkishTtsLanguageLabel(
+    AppLocalizations l10n,
+    String code,
+    String fallbackLabel,
+  ) {
+    final normalized = code.trim().replaceAll('_', '-').toLowerCase();
+    if (normalized == 'tr') return l10n.languageLabel('tr');
+    if (normalized == 'tr-tr') {
+      return l10n.audioDescriptionLanguageCountry(
+        l10n.languageLabel('tr'),
+        l10n.radioCountryOptionTr,
+      );
+    }
+    return fallbackLabel;
+  }
+
+  String _edgeLanguageLabel(AppLocalizations l10n, String code) {
     final language = _edgeLanguages.where((item) => item.code == code);
-    return language.isEmpty ? code : language.first.label;
+    return _localizedTurkishTtsLanguageLabel(
+      l10n,
+      code,
+      language.isEmpty ? code : language.first.label,
+    );
   }
 
   String _edgeVoiceLabel(String voice) {
@@ -1430,10 +1449,15 @@ class _CreateAiAudiodescriptionScreenState
     return item.isEmpty ? voice : item.first.label;
   }
 
-  List<AccessibleOption> _systemLanguageOptions() {
+  List<AccessibleOption> _systemLanguageOptions(AppLocalizations l10n) {
     final values = _systemVoices.map((item) => item['locale'] ?? '').where((e) => e.isNotEmpty).toSet().toList()
       ..sort();
-    return values.map((value) => AccessibleOption(value: value, label: value)).toList();
+    return values
+        .map((value) => AccessibleOption(
+              value: value,
+              label: _localizedTurkishTtsLanguageLabel(l10n, value, value),
+            ))
+        .toList();
   }
 
   List<AccessibleOption> _systemVoiceOptions(AppLocalizations l10n) {
@@ -1453,10 +1477,13 @@ class _CreateAiAudiodescriptionScreenState
       children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-          child: LinearProgressIndicator(
-            value: _progress.clamp(0.0, 1.0).toDouble(),
-            semanticsLabel: _stage,
-            semanticsValue: '${(_progress * 100).round()}%',
+          // The accessible progress row below already announces the stage
+          // and percentage. Avoid a second identical VoiceOver announcement
+          // from the visual progress indicator, including during Brief retry.
+          child: ExcludeSemantics(
+            child: LinearProgressIndicator(
+              value: _progress.clamp(0.0, 1.0).toDouble(),
+            ),
           ),
         ),
         Expanded(
@@ -1495,6 +1522,15 @@ class _CreateAiAudiodescriptionScreenState
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final providerIndex = _provider == 'sonarpad' ? 1 : 0;
+    final providerLabels = [
+      l10n.audioDescriptionUseGeminiKey,
+      l10n.audioDescriptionUseSonarpadAi,
+    ];
+    // Preserve server ordering, deduplicate and always include the saved
+    // selection so rapid VoiceOver flicks never lose their selected index.
+    final geminiModels = <String>{..._models, _model}.toList();
+    final geminiModelIndex = geminiModels.indexOf(_model);
     final bitrateIndex = audioDescriptionMp3Bitrates.indexOf(_bitrateKbps);
     final bitrateLabels = [
       for (final bitrate in audioDescriptionMp3Bitrates)
@@ -1535,21 +1571,22 @@ class _CreateAiAudiodescriptionScreenState
                     AccessibleListRow(
                       id: 'provider',
                       title: l10n.audioDescriptionAiService,
-                      kind: 'picker',
-                      value: _provider,
-                      valueLabel: _provider == 'sonarpad'
-                          ? l10n.audioDescriptionUseSonarpadAi
-                          : l10n.audioDescriptionUseGeminiKey,
+                      kind: 'slider',
+                      accessibilityButtonTrait: false,
+                      value: providerLabels[providerIndex],
+                      valueLabel: providerLabels[providerIndex],
+                      sliderValue: providerIndex.toDouble(),
+                      sliderMin: 0,
+                      sliderMax: 1,
+                      sliderStep: 1,
+                      sliderIncreasedValueLabel: providerLabels[
+                        (providerIndex + 1).clamp(0, 1)],
+                      sliderDecreasedValueLabel: providerLabels[
+                        (providerIndex - 1).clamp(0, 1)],
                       enabled: !_running,
                       options: [
-                        AccessibleOption(
-                          value: 'gemini',
-                          label: l10n.audioDescriptionUseGeminiKey,
-                        ),
-                        AccessibleOption(
-                          value: 'sonarpad',
-                          label: l10n.audioDescriptionUseSonarpadAi,
-                        ),
+                        AccessibleOption(value: 0, label: providerLabels[0]),
+                        AccessibleOption(value: 1, label: providerLabels[1]),
                       ],
                     ),
                     if (_provider == 'gemini') ...[
@@ -1574,13 +1611,23 @@ class _CreateAiAudiodescriptionScreenState
                       AccessibleListRow(
                         id: 'model',
                         title: l10n.audioDescriptionGeminiModel,
-                        kind: 'picker',
+                        kind: 'slider',
+                        accessibilityButtonTrait: false,
                         value: _model,
                         valueLabel: _model,
-                        enabled: !_running,
-                        options: _models
-                            .map((value) => AccessibleOption(value: value, label: value))
-                            .toList(),
+                        sliderValue: geminiModelIndex.toDouble(),
+                        sliderMin: 0,
+                        sliderMax: (geminiModels.length - 1).toDouble(),
+                        sliderStep: 1,
+                        sliderIncreasedValueLabel: geminiModels[
+                          (geminiModelIndex + 1).clamp(0, geminiModels.length - 1).toInt()],
+                        sliderDecreasedValueLabel: geminiModels[
+                          (geminiModelIndex - 1).clamp(0, geminiModels.length - 1).toInt()],
+                        enabled: !_running && geminiModels.length > 1,
+                        options: [
+                          for (var index = 0; index < geminiModels.length; index++)
+                            AccessibleOption(value: index, label: geminiModels[index]),
+                        ],
                       ),
                       AccessibleListRow(
                         id: 'refresh_models',
@@ -1717,7 +1764,9 @@ class _CreateAiAudiodescriptionScreenState
                     ),
                     AccessibleListRow(
                       id: 'mix_preview',
-                      title: l10n.audioDescriptionMixPreview,
+                      title: _mixPreview.isPreparing || _mixPreview.isPlaying
+                          ? l10n.pause
+                          : l10n.audioDescriptionResume,
                       value: _mixPreview.isPreparing
                           ? l10n.audioDescriptionMixPreviewPreparing
                           : _mixPreview.error != null
@@ -1725,11 +1774,6 @@ class _CreateAiAudiodescriptionScreenState
                               : null,
                       hint: l10n.audioDescriptionMixPreviewHint,
                       enabled: !_running,
-                    ),
-                    AccessibleListRow(
-                      id: 'mix_preview_stop',
-                      title: l10n.audioDescriptionMixPreviewStop,
-                      enabled: !_running && _mixPreview.isActive,
                     ),
                     AccessibleListRow(
                       id: 'characters',
@@ -1818,12 +1862,16 @@ class _CreateAiAudiodescriptionScreenState
                         title: l10n.ttsVoiceLanguage,
                         kind: 'picker',
                         value: _edgeLanguage,
-                        valueLabel: _edgeLanguageLabel(_edgeLanguage),
+                        valueLabel: _edgeLanguageLabel(l10n, _edgeLanguage),
                         enabled: !_running,
                         options: _edgeLanguages
                             .map((item) => AccessibleOption(
                                   value: item.code,
-                                  label: item.label,
+                                  label: _localizedTurkishTtsLanguageLabel(
+                                    l10n,
+                                    item.code,
+                                    item.label,
+                                  ),
                                 ))
                             .toList(),
                       ),
@@ -1845,15 +1893,19 @@ class _CreateAiAudiodescriptionScreenState
                             .toList(),
                       ),
                     ] else ...[
-                      if (_systemLanguageOptions().isNotEmpty)
+                      if (_systemLanguageOptions(l10n).isNotEmpty)
                         AccessibleListRow(
                           id: 'system_language',
                           title: l10n.settingsSystemLanguage,
                           kind: 'picker',
                           value: _systemLanguage,
-                          valueLabel: _systemLanguage,
+                          valueLabel: _localizedTurkishTtsLanguageLabel(
+                            l10n,
+                            _systemLanguage,
+                            _systemLanguage,
+                          ),
                           enabled: !_running,
-                          options: _systemLanguageOptions(),
+                          options: _systemLanguageOptions(l10n),
                         ),
                       AccessibleListRow(
                         id: 'system_voice',
@@ -1943,7 +1995,32 @@ class _CreateAiAudiodescriptionScreenState
                       ? rawValue.toDouble()
                       : double.tryParse(rawValue?.toString() ?? '');
                   if (value == null || !value.isFinite) return;
-                  if (id == 'mp3_bitrate') {
+                  if (id == 'provider') {
+                    final newProvider = value.round().clamp(0, 1) == 0
+                        ? 'gemini' : 'sonarpad';
+                    if (newProvider != _provider) {
+                      setState(() => _provider = newProvider);
+                      // Keep UI updates synchronous for quick consecutive
+                      // VoiceOver/TalkBack flicks, and persist in background.
+                      unawaited(AiAudioDescriptionPreferences.saveProvider(newProvider));
+                      if (newProvider == 'sonarpad') {
+                        unawaited(_refreshSonarpadBalance());
+                      }
+                      unawaited(AppLogger.log(
+                        'SONARPAD_AI_DIAG UI provider changed value=$newProvider '
+                        'codeChars=${_sonarpadCode.runes.length}',
+                      ));
+                    }
+                  } else if (id == 'model' && _provider == 'gemini') {
+                    final index = value.round().clamp(0, geminiModels.length - 1).toInt();
+                    final newModel = geminiModels[index];
+                    if (newModel != _model) {
+                      // Update synchronously: native accessibility cells keep
+                      // their VoiceOver/TalkBack focus during consecutive flicks.
+                      setState(() => _model = newModel);
+                      unawaited(AiAudioDescriptionPreferences.saveGeminiModel(newModel));
+                    }
+                  } else if (id == 'mp3_bitrate') {
                     final index = value.clamp(0, audioDescriptionMp3Bitrates.length - 1).round();
                     final bitrate = audioDescriptionMp3Bitrates[index];
                     if (bitrate != _bitrateKbps) {
@@ -1961,12 +2038,6 @@ class _CreateAiAudiodescriptionScreenState
                   final value = event.value?.toString() ?? '';
                   setState(() {
                     switch (id) {
-                      case 'provider':
-                        _provider = value;
-                        break;
-                      case 'model':
-                        _model = value;
-                        break;
                       case 'language':
                         _language = value;
                         break;
@@ -2004,15 +2075,7 @@ class _CreateAiAudiodescriptionScreenState
                   }.contains(id)) {
                     unawaited(_stopPreviews());
                   }
-                  if (id == 'provider') {
-                    await AppLogger.log(
-                      'SONARPAD_AI_DIAG UI provider changed value=$value codeChars=${_sonarpadCode.runes.length}',
-                    );
-                    await AiAudioDescriptionPreferences.saveProvider(value);
-                    if (value == 'sonarpad') {
-                      unawaited(_refreshSonarpadBalance());
-                    }
-                  } else if (id == 'character_catalog') {
+                  if (id == 'character_catalog') {
                     await _persistCharacterCatalogPreference();
                   }
                 } else if (event.type == 'toggle') {
@@ -2080,10 +2143,7 @@ class _CreateAiAudiodescriptionScreenState
                       await _testVoice();
                       break;
                     case 'mix_preview':
-                      await _playMixPreview();
-                      break;
-                    case 'mix_preview_stop':
-                      await _mixPreview.stop();
+                      await _toggleMixPreview();
                       break;
                     case 'load_character_catalog':
                       await _loadCharacterCatalog();

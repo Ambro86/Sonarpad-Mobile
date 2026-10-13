@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sonarpad_mobile_starter/l10n/app_localizations_lookup.dart';
+import 'package:sonarpad_mobile_starter/services/podcast_service.dart';
 
 void main() {
   test('Romanian phase 2 translates a substantial part of the ARB catalog', () {
@@ -27,8 +29,9 @@ void main() {
     expect(service, contains("_WindowsPromptLanguage('Romanian'"));
     expect(service, contains("if (code.startsWith('ro')) return 'ro-RO';"));
     expect(service, contains('O mașină gonește pe stradă.'));
-    expect(projectStrings, contains("'ro': _merge({"));
-    expect(projectStrings, contains('Editează proiectul de audiodescriere'));
+    expect(projectStrings, contains('_l10n.audioDescriptionProjectEditorTitle'));
+    expect(lookupSupportedAppLocalizations('ro').audioDescriptionProjectEditorTitle,
+        'Editează proiectul de audiodescriere');
   });
 
   test('Romanian routes use Romania and Romanian service messages', () {
@@ -39,8 +42,11 @@ void main() {
     expect(screen, contains("value: 'ro'"));
     expect(route, contains("case 'ro':"));
     expect(route, contains("return 'ROU';"));
-    expect(route, contains("'ro' => 'Adresă nevalidă'"));
-    expect(route, contains('Adresa de destinație nu a fost găsită'));
+    final l10n = lookupSupportedAppLocalizations('ro');
+    expect(route, contains('_strings(language).routeServiceInvalidAddress'));
+    expect(l10n.routeServiceInvalidAddress, 'Adresă nevalidă');
+    expect(l10n.routeServiceDestinationNotFound,
+        'Adresa de destinație nu a fost găsită');
   });
 
   test('Romanian radio is supported by directory and community flows', () {
@@ -54,23 +60,27 @@ void main() {
     expect(radio, contains("'ro' => 'romanian'"));
     expect(radio, contains("'romanian' || 'romana' => 'ro'"));
     expect(screen, contains("'ro' => 'ro'"));
-    expect(add, contains("_addLanguage = 'romanian'"));
+    expect(add, contains("'ro' => 'romanian'"));
     expect(add, contains('uiLanguage: l10n.localeName'));
   });
 
   test('Romanian Podcasts use Romania and localized Apple categories', () {
     final service = File('lib/services/podcast_service.dart').readAsStringSync();
-    final model = File('lib/models/podcast.dart').readAsStringSync();
     final screen = File('lib/screens/podcast_screen.dart').readAsStringSync();
 
     expect(service, contains("PodcastCountry('ro', 'Romania')"));
     expect(screen, contains("case 'ro':"));
     expect(screen, contains("return 'ro';"));
-    expect(model, contains('final String? romanianName;'));
-    expect(model, contains("'ro' => romanianName ?? englishName ?? name"));
-    expect(RegExp(r'romanianName:').allMatches(service).length, 111);
-    expect(service, contains("romanianName: 'Toate categoriile'"));
-    expect(service, contains("romanianName: 'Știri'"));
+    expect(PodcastService.categories, hasLength(111));
+    expect(PodcastService.categories.first.nameForLanguage('ro'),
+        'Toate categoriile');
+    expect(PodcastService.categories
+        .singleWhere((category) => category.genreId == 1489)
+        .nameForLanguage('ro-RO'), 'Știri');
+    for (final category in PodcastService.categories) {
+      expect(category.nameForLanguage('ro'), isNotEmpty);
+      expect(category.nameForLanguage('ro'), category.nameForLanguage('ro_RO'));
+    }
   });
 
   test('Romanian is wired into remaining language-aware services', () {
@@ -83,10 +93,13 @@ void main() {
 
     expect(changelog, contains("'uk', 'ro'"));
     expect(weather, contains("'ro' => 'ro'"));
-    expect(weatherScreen, contains("'ro' => _weatherCodeLabelsRo"));
-    expect(weatherScreen, contains("0: 'Cer senin'"));
-    expect(html, contains("'ro' => 'Titlu necunoscut'"));
-    expect(wikipedia, contains("'ro' => 'Eroare Wikipedia: \$statusCode'"));
+    final l10n = lookupSupportedAppLocalizations('ro');
+    expect(weatherScreen, contains('l10n.weatherConditionClearSky'));
+    expect(l10n.weatherConditionClearSky, 'Cer senin');
+    expect(html, contains('.articleUnknownTitle'));
+    expect(l10n.articleUnknownTitle, 'Titlu necunoscut');
+    expect(wikipedia, contains('l10n.wikipediaSearchHttpError(statusCode)'));
+    expect(l10n.wikipediaSearchHttpError(503), 'Eroare Wikipedia: 503');
     expect(settings, contains("'ro' || 'ro-RO' => 'ro-RO-AlinaNeural'"));
   });
 }

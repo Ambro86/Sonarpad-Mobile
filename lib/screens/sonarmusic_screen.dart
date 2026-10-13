@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/semantics.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../l10n/app_localizations.dart';
+import '../l10n/localized_dynamic_labels.dart';
 import '../models/media_playback_speed.dart';
 import '../models/podcast.dart';
 import '../services/app_settings_service.dart';
@@ -10,6 +12,7 @@ import '../services/recording_feature_access.dart';
 import '../services/sonarmusic_library_service.dart';
 import '../services/sonarmusic_service.dart';
 import '../services/sonartube_service.dart';
+import '../utils/app_logger.dart';
 import '../utils/sonarmusic_item_subtitle.dart';
 import '../widgets/online_ai_audiodescription_action.dart';
 import '../widgets/sonartube_save_media_dialog.dart';
@@ -53,35 +56,35 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
   bool get _isCollection => widget.collection != null;
 
   String _label(String key) {
-    final lang = AppLocalizations.of(context).localeName;
-    final table = <String, List<String>>{
-      'all': ['Tutto','All','Tout','Todo','Alles','Tudo','Wszystko','Vše','Все','Toate','全部'],
-      'song': ['Brani','Songs','Titres','Canciones','Songs','Músicas','Utwory','Skladby','Пісні','Melodii','歌曲'],
-      'video': ['Video musicali','Music videos','Clips','Vídeos musicales','Musikvideos','Vídeos musicais','Teledyski','Hudební videa','Музичні відео','Videoclipuri','音乐视频'],
-      'album': ['Album','Albums','Albums','Álbumes','Alben','Álbuns','Albumy','Alba','Альбоми','Albume','专辑'],
-      'artist': ['Artisti','Artists','Artistes','Artistas','Künstler','Artistas','Artyści','Umělci','Виконавці','Artiști','艺人'],
-      'playlist': ['Playlist','Playlists','Playlists','Listas','Playlists','Playlists','Playlisty','Playlisty','Плейлисти','Liste','播放列表'],
-      'favorites': ['Preferiti','Favorites','Favoris','Favoritos','Favoriten','Favoritos','Ulubione','Oblíbené','Улюблене','Favorite','收藏'],
-      'recent': ['Ascoltati di recente','Recently played','Écoutés récemment','Recientes','Zuletzt gehört','Ouvidos recentemente','Ostatnio słuchane','Nedávno přehrané','Нещодавні','Redate recent','最近播放'],
-      'open': ['Apri URL','Open URL','Ouvrir URL','Abrir URL','URL öffnen','Abrir URL','Otwórz URL','Otevřít URL','Відкрити URL','Deschide URL','打开链接'],
-      'load': ['Carica altri risultati','Load more','Charger plus','Cargar más','Mehr laden','Carregar mais','Więcej','Načíst další','Більше','Încarcă mai mult','加载更多'],
-      'artist_open': ['Vai all’artista','Go to artist','Voir l’artiste','Ir al artista','Zum Künstler','Ir para artista','Przejdź do artysty','Přejít na interpreta','До виконавця','Vezi artistul','查看艺人'],
-      'album_open': ['Vai all’album','Go to album','Voir l’album','Ir al álbum','Zum Album','Ir para álbum','Przejdź do albumu','Přejít na album','До альбому','Vezi albumul','查看专辑'],
-      'play_all': ['Riproduci tutto','Play all','Tout lire','Reproducir todo','Alles abspielen','Reproduzir tudo','Odtwórz wszystko','Přehrát vše','Відтворити все','Redă tot','播放全部'],
-      'share': ['Condividi','Share','Partager','Compartir','Teilen','Compartilhar','Udostępnij','Sdílet','Поділитися','Distribuie','分享'],
-      'add': ['Aggiungi ai preferiti','Add to favorites','Ajouter aux favoris','Añadir a favoritos','Zu Favoriten','Adicionar aos favoritos','Dodaj do ulubionych','Přidat mezi oblíbené','Додати в обране','Adaugă la favorite','加入收藏'],
-      'remove': ['Rimuovi dai preferiti','Remove favorite','Retirer des favoris','Quitar de favoritos','Aus Favoriten entfernen','Remover dos favoritos','Usuń z ulubionych','Odebrat z oblíbených','Вилучити з обраного','Elimină favorit','取消收藏'],
-      'empty': ['Nessun risultato','No results','Aucun résultat','Sin resultados','Keine Ergebnisse','Sem resultados','Brak wyników','Žádné výsledky','Немає результатів','Fără rezultate','无结果'],
-      'invalid': ['Impossibile aprire questo elemento','Cannot open this item','Impossible d’ouvrir','No se puede abrir','Kann nicht geöffnet werden','Não é possível abrir','Nie można otworzyć','Nelze otevřít','Не вдалося відкрити','Nu se poate deschide','无法打开'],
-      'description': ['Descrizione','Description','Description','Descripción','Beschreibung','Descrição','Opis','Popis','Опис','Descriere','说明'],
-      'shuffle': ['Riproduzione casuale','Shuffle','Aléatoire','Aleatorio','Zufällig','Aleatório','Losowo','Náhodně','Випадково','Aleatoriu','随机播放'],
-      'save': ['Salva media','Save media','Enregistrer le média','Guardar medio','Medien speichern','Guardar multimédia','Zapisz multimedia','Uložit média','Зберегти медіа','Salvează media','保存媒体'],
-      'suggest': ['Suggerimenti','Suggestions','Suggestions','Sugerencias','Vorschläge','Sugestões','Podpowiedzi','Návrhy','Підказки','Sugestii','搜索建议'],
-      'search_hint': ['Titolo, artista o album','Song, artist or album','Titre, artiste ou album','Canción, artista o álbum','Titel, Künstler oder Album','Música, artista ou álbum','Utwór, artysta lub album','Skladba, interpret nebo album','Пісня, виконавець або альбом','Melodie, artist sau album','歌曲、艺人或专辑'],
+    final l10n = AppLocalizations.of(context);
+    return switch (key) {
+      'all' => l10n.sonarMusicAll,
+      'song' => l10n.sonarMusicSong,
+      'video' => l10n.sonarMusicVideo,
+      'album' => l10n.sonarMusicAlbum,
+      'artist' => l10n.sonarMusicArtist,
+      'playlist' => l10n.sonarMusicPlaylist,
+      'podcast' => l10n.podcasts,
+      'episode' => l10n.episodes,
+      'favorites' => l10n.sonarMusicFavorites,
+      'recent' => l10n.sonarMusicRecent,
+      'open' => l10n.sonarMusicOpen,
+      'load' => l10n.sonarMusicLoad,
+      'artist_open' => l10n.sonarMusicArtistOpen,
+      'album_open' => l10n.sonarMusicAlbumOpen,
+      'play_all' => l10n.sonarMusicPlayAll,
+      'share' => l10n.sonarMusicShare,
+      'add' => l10n.sonarMusicAdd,
+      'remove' => l10n.sonarMusicRemove,
+      'empty' => l10n.sonarMusicEmpty,
+      'invalid' => l10n.sonarMusicInvalid,
+      'description' => l10n.sonarMusicDescription,
+      'shuffle' => l10n.sonarMusicShuffle,
+      'save' => l10n.sonarMusicSave,
+      'suggest' => l10n.sonarMusicSuggest,
+      'search_hint' => l10n.sonarMusicSearchHint,
+      _ => key,
     };
-    final idx = switch(lang) {'en'=>1,'fr'=>2,'es'=>3,'de'=>4,
-      'pt'||'pt_BR'=>5,'pl'=>6,'cs'=>7,'uk'=>8,'ro'=>9,'zh_CN'=>10,_=>0};
-    return table[key]?[idx] ?? key;
   }
 
   @override
@@ -139,7 +142,10 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
           firstAppendedIndex = previousCount;
         }
         _nextToken = result.nextToken;
-        _title = result.title ?? widget.collection?.title;
+        // Some YouTube Music album headers return an empty title; keep the
+        // collection name already shown in the app bar instead.
+        final fetchedTitle = result.title?.trim() ?? '';
+        _title = fetchedTitle.isNotEmpty ? fetchedTitle : widget.collection?.title;
         _description = result.description;
         _page = page;
       });
@@ -160,18 +166,28 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
   Future<void> _suggest() async {
     final query = _searchController.text.trim();
     if (query.isEmpty) return;
+    // A route instead of an AlertDialog is essential on iOS: the old dialog
+    // left the focused search field and keyboard reachable through VoiceOver.
+    _searchFocus.unfocus();
+    FocusScope.of(context).unfocus();
+    await SystemChannels.textInput.invokeMethod<void>('TextInput.hide');
     final options = await _service.suggestions(query);
     if (!mounted || options.isEmpty) {
       if (mounted) _showError(_label('empty'));
       return;
     }
-    final choice = await showDialog<String>(context: context, builder: (dialog) =>
-      AlertDialog(title: Text(_label('suggest')), content: SizedBox(
-        width: double.maxFinite,
-        child: ListView(shrinkWrap: true, children: [
-          for (final text in options) ListTile(title: Text(text),
-            onTap: () => Navigator.pop(dialog, text)),
-        ]))));
+    final suggestionsTitle = _label('suggest');
+    final cancelLabel = AppLocalizations.of(context).cancel;
+    final choice = await Navigator.of(context).push<String>(
+      MaterialPageRoute<String>(
+        settings: const RouteSettings(name: '/sonarmusic/suggestions'),
+        builder: (_) => _SonarMusicSuggestionsPage(
+          title: suggestionsTitle,
+          cancel: cancelLabel,
+          suggestions: options,
+        ),
+      ),
+    );
     if (!mounted || choice == null) return;
     _searchController.text = choice;
     await _search();
@@ -247,7 +263,9 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
       service: _exportAdapter, item: item.toVideoItem());
   }
   Future<void> _createAd(SonarMusicItem item) async {
-    if (!_canSave(item) || item.kind != 'video') return;
+    // Both songs and music videos expose a playable YouTube video ID.
+    // Keep the same authorized-user/Italian-language gate as SonarTube.
+    if (!_canSave(item)) return;
     await createAiAudiodescriptionFromSonarTube(context,
       service: _exportAdapter, item: item.toVideoItem());
   }
@@ -338,7 +356,7 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
           PodcastPlayerExtraAction(id: 'save_media', label: () => _label('save'),
             icon: Icons.download_outlined, pauseBeforeOpen: true,
             onPressed: () => _save(currentItem())),
-        if (_canSave(item) && item.kind == 'video')
+        if (_canSave(item))
           PodcastPlayerExtraAction(id: 'create_ad',
             label: () => l10n.audioDescriptionCreateAiTitle,
             icon: Icons.auto_awesome, pauseBeforeOpen: true,
@@ -362,7 +380,15 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
           autoNavigateNext: forceAutoplay || autoplay,
           extraActions: extra,
         )));
-    } catch (e) { if (mounted) _showError(e.toString()); }
+    } catch (error, stackTrace) {
+      await AppLogger.log(
+        'SonarMusic playback failed error=$error\n$stackTrace',
+      );
+      if (mounted) {
+        final l10n = AppLocalizations.of(context);
+        _showError(l10n.error(l10n.technicalErrorGeneric));
+      }
+    }
     finally {
       if (mounted) {
         setState(() => _opening = null);
@@ -395,14 +421,19 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
     await _play(playable.first, shuffle: shuffle, forceAutoplay: true);
   }
 
-  String _itemSubtitle(SonarMusicItem item) => sonarMusicItemSubtitle(
-    title: item.title,
-    kind: item.kind,
-    kindLabel: _label(item.kind),
-    artist: item.artist,
-    duration: item.duration,
-    subtitle: item.subtitle,
-  );
+  String _itemSubtitle(SonarMusicItem item) {
+    final l10n = AppLocalizations.of(context);
+    return sonarMusicItemSubtitle(
+      title: item.title,
+      kind: item.kind,
+      kindLabel: _label(item.kind),
+      artist: item.artist,
+      duration: item.duration,
+      subtitle: item.subtitle,
+      formatDuration: (raw) =>
+          l10n.sourceDurationValue(l10n.formatMediaResultDuration(raw)),
+    );
+  }
 
   Widget _itemVisual(SonarMusicItem item, int i) {
     final isFav = _favorites.contains(item.key);
@@ -426,6 +457,9 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
       },
       if (_canSave(item)) CustomSemanticsAction(label: _label('save')):
         () => _save(item),
+      if (_canSave(item)) CustomSemanticsAction(
+        label: AppLocalizations.of(context).audioDescriptionCreateAiTitle):
+        () => _createAd(item),
     };
     return Semantics(
       container: true, button: true,
@@ -463,6 +497,9 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
             onPressed: () => _openVideoInfo(item, 'description')),
           if (_canSave(item)) IconButton(tooltip: _label('save'),
             icon: const Icon(Icons.download), onPressed: () => _save(item)),
+          if (_canSave(item)) IconButton(
+            tooltip: AppLocalizations.of(context).audioDescriptionCreateAiTitle,
+            icon: const Icon(Icons.auto_awesome), onPressed: () => _createAd(item)),
         ]),
       ]))));
   }
@@ -517,11 +554,12 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
         flutterChild: FilledButton(onPressed: _search, child: Text(l10n.search))));
     }
     if (_isCollection) {
-      rows.add(AccessibleListRow(id: 'collection_title', title: _title ?? widget.collection!.title,
-        kind: 'text', accessibilityButtonTrait: false));
-      if (_description?.isNotEmpty == true) {
+      // The collection title is already the AppBar title. Adding it here
+      // created a duplicate (sometimes empty) VoiceOver element between
+      // Back and Play all on album pages.
+      if (_description?.trim().isNotEmpty == true) {
         rows.add(AccessibleListRow(
-          id: 'description', title: _description!, kind: 'text',
+          id: 'description', title: _description!.trim(), kind: 'text',
           accessibilityButtonTrait: false));
       }
     }
@@ -566,7 +604,7 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
             AccessibleCustomAction(id: 'description', label: l10n.sonarTubeViewDescription),
           ],
           if (_canSave(item)) AccessibleCustomAction(id: 'save_media', label: _label('save')),
-          if (_canSave(item) && item.kind == 'video') AccessibleCustomAction(
+          if (_canSave(item)) AccessibleCustomAction(
             id: 'create_ai_audiodescription', label: l10n.audioDescriptionCreateAiTitle),
         ],
         flutterChild: _itemVisual(item, i)));
@@ -628,12 +666,43 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
         )
       : SonarpadAppBar(title: Text(_home ? 'SonarMusic'
           : widget.libraryType != null ? _label(widget.libraryType!)
-          : _isCollection ? (_title ?? widget.collection!.title) : 'SonarMusic'),
-          actions: [if (!_home) IconButton(icon: const Icon(Icons.search),
-            tooltip: AppLocalizations.of(context).search,
-            onPressed: () => Navigator.push(context, MaterialPageRoute(
-              builder: (_) => SonarMusicScreen(service: _service, library: _library))) )]),
+          : _isCollection ? (_title ?? widget.collection!.title) : 'SonarMusic')),
     body: SafeArea(child: _buildList()));
+}
+
+/// Full-screen suggestions route: no input field, keyboard, underlying
+/// search controls, or duplicate "Ignore" action in VoiceOver's traversal.
+class _SonarMusicSuggestionsPage extends StatelessWidget {
+  const _SonarMusicSuggestionsPage({
+    required this.title,
+    required this.cancel,
+    required this.suggestions,
+  });
+
+  final String title;
+  final String cancel;
+  final List<String> suggestions;
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(
+      title: Text(title),
+      automaticallyImplyLeading: false,
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(cancel),
+        ),
+      ],
+    ),
+    body: ListView.builder(
+      itemCount: suggestions.length,
+      itemBuilder: (context, index) => ListTile(
+        title: Text(suggestions[index]),
+        onTap: () => Navigator.of(context).pop(suggestions[index]),
+      ),
+    ),
+  );
 }
 
 /// Read-only video information. Reuses SonarTube's existing comments,

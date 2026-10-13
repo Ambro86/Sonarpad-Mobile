@@ -1,0 +1,6 @@
+"NSCameraUsageDescription" = "Sonarpad, kamerayı yalnızca başlattığınız tarama veya görüntü yakalama işlemleri için kullanır.";
+"NSLocationWhenInUseUsageDescription" = "Sonarpad, yol tariflerini hesaplamak ve yakındaki yerleri bulmak için konumunuzu yalnızca rota veya navigasyon özelliklerini seçtiğinizde kullanır.";
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "Sonarpad normalde konumunuza sürekli erişim istemez. Bu açıklama, uygulamada kullanılan bazı iOS bileşenleri konum hizmetlerine başvurabildiği için bulunur. Konumunuz yalnızca rota veya navigasyon özelliklerini seçtiğinizde kullanılır.";
+"NSCalendarsUsageDescription" = "Sonarpad, hatırlatıcılarınızı ve etkinliklerinizi eklemek için takviminize erişim ister.";
+"NSCalendarsFullAccessUsageDescription" = "Sonarpad, hatırlatıcılarınızı doğrudan sistem takviminde oluşturup kaydetmek için takviminize tam erişim ister.";
+"NSContactsUsageDescription" = "Sonarpad, davetlileri takvim etkinlikleriyle ilişkilendirmek için kişilerinize erişim ister.";

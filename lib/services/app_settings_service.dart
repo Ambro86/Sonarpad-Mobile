@@ -48,7 +48,7 @@ enum WeatherTemperatureUnit {
 }
 
 class AppSettingsService {
-  static const _supportedAppLanguages = {'it', 'en', 'es', 'fr', 'pt', 'pt_BR', 'pl', 'cs', 'de', 'zh_CN', 'uk', 'ro'};
+  static const _supportedAppLanguages = {'it', 'en', 'es', 'fr', 'pt', 'pt_BR', 'pl', 'cs', 'de', 'zh_CN', 'uk', 'ro', 'tr'};
   static const _ttsLanguageKey = 'sonarpad_tts_language';
   static const _ttsVoiceKey = 'sonarpad_tts_voice';
   static const _tvSecretCodeKey = 'tvSecretCode';
@@ -137,6 +137,7 @@ class AppSettingsService {
     TtsVoiceLanguage('cs', 'Čeština'),
     TtsVoiceLanguage('de', 'Deutsch'),
     TtsVoiceLanguage('ro', 'Română'),
+    TtsVoiceLanguage('tr', 'tr'),
     TtsVoiceLanguage('zh-CN', '简体中文'),
   ];
 
@@ -230,6 +231,16 @@ class AppSettingsService {
       languageCode: 'de',
       voice: 'de-DE-ConradNeural',
       label: 'Conrad',
+    ),
+    TtsVoiceOption(
+      languageCode: 'tr',
+      voice: 'tr-TR-EmelNeural',
+      label: 'Emel',
+    ),
+    TtsVoiceOption(
+      languageCode: 'tr',
+      voice: 'tr-TR-AhmetNeural',
+      label: 'Ahmet',
     ),
     TtsVoiceOption(
       languageCode: 'ro',
@@ -416,12 +427,21 @@ class AppSettingsService {
 
   Future<String> loadTtsLanguage() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_ttsLanguageKey) ?? 'it';
+    final saved = prefs.getString(_ttsLanguageKey);
+    if (saved != null) return saved;
+    return await loadAppLanguage() == 'tr' ? 'tr-TR' : 'it';
   }
 
-  Future<String> loadTtsVoice() async {
+  /// A content-language fallback applies only when neither Edge preference
+  /// is stored. Explicit values, including an empty value, keep their priority.
+  Future<String> loadTtsVoice({String? fallbackLanguageCode}) async {
     final prefs = await SharedPreferences.getInstance();
-    final language = prefs.getString(_ttsLanguageKey) ?? 'it';
+    if (fallbackLanguageCode != null &&
+        !prefs.containsKey(_ttsVoiceKey) &&
+        !prefs.containsKey(_ttsLanguageKey)) {
+      return defaultVoiceForLanguage(fallbackLanguageCode);
+    }
+    final language = await loadTtsLanguage();
     return prefs.getString(_ttsVoiceKey) ?? defaultVoiceForLanguage(language);
   }
 
@@ -566,9 +586,18 @@ class AppSettingsService {
     await prefs.setString(_ttsEngineKey, engine);
   }
 
-  Future<String> loadSystemTtsLanguage() async {
+  /// A content-language fallback must not replace either saved system TTS
+  /// preference, including a voice saved without a language.
+  Future<String> loadSystemTtsLanguage({String? fallbackLanguageCode}) async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_systemTtsLanguageKey) ?? 'it-IT';
+    final saved = prefs.getString(_systemTtsLanguageKey);
+    if (saved != null) return saved;
+    if (fallbackLanguageCode != null &&
+        !prefs.containsKey(_systemTtsLanguageKey) &&
+        !prefs.containsKey(_systemTtsVoiceKey)) {
+      return fallbackLanguageCode;
+    }
+    return await loadAppLanguage() == 'tr' ? 'tr-TR' : 'it-IT';
   }
 
   Future<void> saveSystemTtsLanguage(String language) async {
@@ -659,6 +688,7 @@ class AppSettingsService {
     List<TtsVoiceOption> voices,
     String languageCode,
   ) {
+    if (languageCode == 'tr_TR') languageCode = 'tr-TR';
     final exactMatches =
         voices.where((voice) => voice.languageCode == languageCode).toList();
     if (exactMatches.isNotEmpty) return exactMatches;
@@ -690,6 +720,7 @@ class AppSettingsService {
     String languageCode,
     String voice,
   ) {
+    if (languageCode == 'tr_TR') languageCode = 'tr-TR';
     if (languages.any((language) => language.code == languageCode)) {
       return languageCode;
     }
@@ -724,6 +755,7 @@ class AppSettingsService {
       'zh' || 'zh-CN' || 'zh_CN' => 'zh-CN-XiaoxiaoNeural',
       'uk' || 'uk-UA' => 'uk-UA-PolinaNeural',
       'ro' || 'ro-RO' => 'ro-RO-AlinaNeural',
+      'tr' || 'tr-TR' || 'tr_TR' => 'tr-TR-EmelNeural',
       _ => '',
     };
   }

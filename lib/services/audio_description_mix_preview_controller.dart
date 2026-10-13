@@ -12,7 +12,7 @@ typedef AudioDescriptionMixPreviewRenderer =
       AiAudioDescriptionService service,
     );
 
-enum _PreviewState { idle, preparing, playing }
+enum _PreviewState { idle, preparing, playing, paused }
 
 /// Debounces adjustments and keeps one preview render/player active at a time.
 /// The renderer owns the mix: playback never applies the source gain again.
@@ -41,6 +41,7 @@ class AudioDescriptionMixPreviewController extends ChangeNotifier {
 
   bool get isPreparing => _state == _PreviewState.preparing;
   bool get isPlaying => _state == _PreviewState.playing;
+  bool get isPaused => _state == _PreviewState.paused;
   bool get isActive => _state != _PreviewState.idle;
   Object? get error => _error;
 
@@ -50,6 +51,38 @@ class AudioDescriptionMixPreviewController extends ChangeNotifier {
 
   void playNow(AudioDescriptionMixPreviewRenderer render) {
     _request(render, Duration.zero);
+  }
+
+  /// Retain the rendered sample and its position until resumed or replaced.
+  Future<void> pause() => _setPaused(true);
+
+  Future<void> resume() => _setPaused(false);
+
+  Future<void> _setPaused(bool paused) async {
+    if (_closed || (paused ? !isPlaying : !isPaused)) return;
+    final audio = _audio;
+    if (audio == null) return;
+    final revision = _revision;
+    _error = null;
+    _state = paused ? _PreviewState.paused : _PreviewState.playing;
+    try {
+      final change = paused
+          ? audio.pauseVoicePreview()
+          : audio.resumeVoicePreview();
+      notifyListeners();
+      // The render/playback worker remains pending through a real pause.
+      // Waiting for it here would prevent the user from resuming the sample.
+      await change;
+    } catch (error, stack) {
+      if (_current(revision)) {
+        await stop();
+        if (_current(revision + 1)) {
+          _error = error;
+          notifyListeners();
+        }
+      }
+      await AppLogger.log('Audio mix preview pause/resume failed $error\n$stack');
+    }
   }
 
   void _request(AudioDescriptionMixPreviewRenderer render, Duration delay) {
@@ -105,14 +138,17 @@ class AudioDescriptionMixPreviewController extends ChangeNotifier {
         final sample = await render(service);
         if (!_current(revision)) return;
         final audio = _audio ??= _audioFactory();
-        _state = _PreviewState.playing;
-        notifyListeners();
         // Use the same media session and master volume as exported media.
         // The encoded sample already contains source gain, TTS and ducking.
-        await audio.playVoicePreview(
+        final playback = audio.playVoicePreview(
           File(sample.path),
           sessionType: AudioSessionType.playback,
         );
+        // Install the player's preview session before exposing Pausa. A pause
+        // during source loading must also suppress the initial playback.
+        _state = _PreviewState.playing;
+        notifyListeners();
+        await playback;
       } catch (error, stack) {
         if (_current(revision)) {
           _error = error;

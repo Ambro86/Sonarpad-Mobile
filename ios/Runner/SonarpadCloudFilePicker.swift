@@ -79,6 +79,16 @@ final class SonarpadCloudFilePicker: NSObject, FlutterPlugin, FlutterStreamHandl
   func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
     activePicker = nil
     guard !urls.isEmpty else { finish(nil); return }
+    // The document picker can still be animating out when the delegate runs.
+    // Delay beginning the copy until the system sheet has cleared, otherwise
+    // the Flutter progress dialog opens underneath it and goes unnoticed.
+    DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(350)) {
+      if self.isCancelled() { self.finish(nil); return }
+      self.beginCopy(urls)
+    }
+  }
+
+  private func beginCopy(_ urls: [URL]) {
     publish(["stage": "preparing", "copied": 0, "total": -1])
     let selectedExtensions = allowedExtensions
     DispatchQueue.global(qos: .userInitiated).async {

@@ -46,6 +46,9 @@ enum _WavBitDepth {
 
   final String codec;
   final String label;
+
+  String localizedLabel(AppLocalizations l10n) =>
+      this == _WavBitDepth.float32 ? l10n.convertMediaWavFloat32 : label;
 }
 
 class ConvertMediaScreen extends StatefulWidget {
@@ -636,7 +639,7 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
           enabled: !_running,
           options: [
             for (final value in _WavBitDepth.values)
-              AccessibleOption(value: value.name, label: value.label),
+              AccessibleOption(value: value.name, label: value.localizedLabel(l10n)),
           ],
         ),
       AccessibleListRow(id: 'status', kind: 'text', title: _status ?? l10n.convertMediaReady),
@@ -787,7 +790,7 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
                     .map(
                       (value) => DropdownMenuItem(
                         value: value,
-                        child: Text(value.label),
+                        child: Text(value.localizedLabel(l10n)),
                       ),
                     )
                     .toList(),

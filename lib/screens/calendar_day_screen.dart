@@ -18,14 +18,15 @@ import '../widgets/calendar_reminder_dialog.dart';
 
 class CalendarDayScreen extends StatefulWidget {
   final DateTime date;
-  const CalendarDayScreen({super.key, required this.date});
+  final CalendarService? service;
+  const CalendarDayScreen({super.key, required this.date, this.service});
 
   @override
   State<CalendarDayScreen> createState() => _CalendarDayScreenState();
 }
 
 class _CalendarDayScreenState extends State<CalendarDayScreen> {
-  final _service = CalendarService();
+  late final _service = widget.service ?? CalendarService();
   final _audio = AudioPlayerService();
   final _settings = AppSettingsService();
   final _tts = EdgeTtsBridge();
@@ -37,7 +38,10 @@ class _CalendarDayScreenState extends State<CalendarDayScreen> {
   int _readingToken = 0;
   String? _saint;
 
-  bool _saintLoaded = false;
+  String? _saintLanguage;
+  DateTime? _saintDate;
+  int _saintRequest = 0;
+  int _eventsRequest = 0;
 
   @override
   void initState() {
@@ -48,21 +52,44 @@ class _CalendarDayScreenState extends State<CalendarDayScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (!_saintLoaded) {
-      _saintLoaded = true;
-      _loadSaint();
+    _refreshSaint();
+  }
+
+  @override
+  void didUpdateWidget(covariant CalendarDayScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!DateUtils.isSameDay(oldWidget.date, widget.date)) {
+      _events = [];
+      _loadEvents();
+      _refreshSaint();
     }
   }
 
-  Future<void> _loadSaint() async {
-    final l10n = AppLocalizations.of(context);
-    final s = await _service.getSaintAsync(widget.date, l10n.localeName);
-    if (mounted) setState(() => _saint = s);
+  void _refreshSaint() {
+    final language = AppLocalizations.of(context).localeName;
+    final date = widget.date;
+    if (_saintLanguage == language && DateUtils.isSameDay(_saintDate, date)) {
+      return;
+    }
+    _saintLanguage = language;
+    _saintDate = date;
+    // Replace a previous locale immediately with the bundled translation.
+    // Keep the same accessible row identity while any fallback is loading.
+    _saint = _service.getSaint(date, language);
+    _loadSaint(date, language, ++_saintRequest);
+  }
+
+  Future<void> _loadSaint(DateTime date, String language, int request) async {
+    final saint = await _service.getSaintAsync(date, language);
+    if (mounted && request == _saintRequest && saint != _saint) {
+      setState(() => _saint = saint);
+    }
   }
 
   Future<void> _loadEvents() async {
+    final request = ++_eventsRequest;
     final evs = await _service.getEventsForDate(widget.date);
-    if (mounted) {
+    if (mounted && request == _eventsRequest) {
       setState(() {
         _events = evs;
       });

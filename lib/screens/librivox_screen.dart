@@ -10,6 +10,11 @@ import 'podcast_episode_player_screen.dart';
 import '../utils/status_message.dart';
 import '../widgets/universal_accessible_view.dart';
 
+String _librivoxErrorMessage(Object? error, AppLocalizations l10n) =>
+    error is LibrivoxRequestException
+        ? error.localizedMessage(l10n)
+        : l10n.error(l10n.technicalErrorGeneric);
+
 class LibrivoxScreen extends StatefulWidget {
   final String? parentId;
 
@@ -183,7 +188,7 @@ class _LibrivoxResultsScreenState extends State<_LibrivoxResultsScreen> {
             );
           }
           if (_error != null) {
-            return Center(child: Text(l10n.error(l10n.technicalErrorGeneric)));
+            return Center(child: Text(_librivoxErrorMessage(_error, l10n)));
           }
           if (_books.isEmpty) {
             return Center(child: Text(l10n.noLibrivoxAudiobooksFound));
@@ -192,7 +197,7 @@ class _LibrivoxResultsScreenState extends State<_LibrivoxResultsScreen> {
             return UniversalAccessibleList(
               sections: [AccessibleListSection(rows: [
                 for (var i = 0; i < _books.length; i++)
-                  AccessibleListRow(id: 'book_$i', title: _books[i].title, subtitle: _books[i].authorLabel),
+                  AccessibleListRow(id: 'book_$i', title: _books[i].titleLabel(l10n), subtitle: _books[i].authorLabel(l10n)),
                 if (_hasMore)
                   AccessibleListRow(id: 'more', title: _loadingMore ? l10n.loading : l10n.loadMore, kind: 'button', enabled: !_loadingMore),
               ])],
@@ -226,8 +231,8 @@ class _LibrivoxResultsScreenState extends State<_LibrivoxResultsScreen> {
               }
               final book = _books[index];
               return ListTile(
-                title: Text(book.title),
-                subtitle: Text(book.authorLabel),
+                title: Text(book.titleLabel(l10n)),
+                subtitle: Text(book.authorLabel(l10n)),
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () => _openBook(book),
               );
@@ -268,12 +273,13 @@ class _LibrivoxBookScreenState extends State<_LibrivoxBookScreen> {
   }
 
   void _playTrack(LibrivoxBook book, LibrivoxTrack track) {
+    final l10n = AppLocalizations.of(context);
     final title = track.number > 0
-        ? '${track.number}. ${track.title}'
-        : track.title;
+        ? '${track.number}. ${track.titleLabel(l10n)}'
+        : track.titleLabel(l10n);
     final episode = PodcastEpisode(
       title: title,
-      description: book.title,
+      description: book.titleLabel(l10n),
       audioUrl: track.listenUrl,
       id: 'librivox:${book.id}:${track.id}:${track.listenUrl}',
     );
@@ -288,13 +294,14 @@ class _LibrivoxBookScreenState extends State<_LibrivoxBookScreen> {
 
   Future<void> _saveToLibrary(LibrivoxBook book) async {
     if (_saving) return;
+    final l10n = AppLocalizations.of(context);
     setState(() => _saving = true);
     try {
       final service = DocumentLibraryService();
       await service.load();
       final doc = DocumentItem(
         id: 'librivox_${book.id}_${DateTime.now().microsecondsSinceEpoch}',
-        name: book.title,
+        name: book.titleLabel(l10n),
         path: book.encodeForLibrary(),
         extension: 'librivox',
         addedAt: DateTime.now(),
@@ -315,7 +322,7 @@ class _LibrivoxBookScreenState extends State<_LibrivoxBookScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: SonarpadAppBar(title: Text(widget.book.title)),
+      appBar: SonarpadAppBar(title: Text(widget.book.titleLabel(l10n))),
       body: FutureBuilder<LibrivoxBook>(
         future: _book,
         builder: (context, snapshot) {
@@ -327,14 +334,14 @@ class _LibrivoxBookScreenState extends State<_LibrivoxBookScreen> {
             );
           }
           if (snapshot.hasError) {
-            return Center(child: Text(l10n.error(l10n.technicalErrorGeneric)));
+            return Center(child: Text(_librivoxErrorMessage(snapshot.error, l10n)));
           }
           final book = snapshot.data ?? widget.book;
           if (useSharedAccessibleViewModel) {
             return UniversalAccessibleList(
               sections: [AccessibleListSection(rows: [
-                AccessibleListRow(id: 'title', kind: 'header', title: book.title),
-                AccessibleListRow(id: 'author', kind: 'text', title: book.authorLabel),
+                AccessibleListRow(id: 'title', kind: 'header', title: book.titleLabel(l10n)),
+                AccessibleListRow(id: 'author', kind: 'text', title: book.authorLabel(l10n)),
                 if (book.language.isNotEmpty) AccessibleListRow(id: 'language', kind: 'text', title: l10n.sourceLanguageValue(book.language)),
                 if (book.totalTime.isNotEmpty) AccessibleListRow(id: 'duration', kind: 'text', title: l10n.sourceDurationValue(book.totalTime)),
                 if (book.description.isNotEmpty) AccessibleListRow(id: 'description', kind: 'text', title: book.description),
@@ -345,7 +352,7 @@ class _LibrivoxBookScreenState extends State<_LibrivoxBookScreen> {
                   for (var i = 0; i < book.sections.length; i++)
                     AccessibleListRow(
                       id: 'track_$i',
-                      title: book.sections[i].number > 0 ? '${book.sections[i].number}. ${book.sections[i].title}' : book.sections[i].title,
+                      title: book.sections[i].number > 0 ? '${book.sections[i].number}. ${book.sections[i].titleLabel(l10n)}' : book.sections[i].titleLabel(l10n),
                     ),
               ])],
               onEvent: (event) {
@@ -362,9 +369,9 @@ class _LibrivoxBookScreenState extends State<_LibrivoxBookScreen> {
           return ListView(
             padding: const EdgeInsets.all(16),
             children: [
-              Text(book.title, style: Theme.of(context).textTheme.headlineSmall),
+              Text(book.titleLabel(l10n), style: Theme.of(context).textTheme.headlineSmall),
               const SizedBox(height: 8),
-              Text(book.authorLabel),
+              Text(book.authorLabel(l10n)),
               if (book.language.isNotEmpty) ...[
                 const SizedBox(height: 8),
                 Text(l10n.sourceLanguageValue(book.language)),
@@ -402,8 +409,8 @@ class _LibrivoxBookScreenState extends State<_LibrivoxBookScreen> {
                     leading: const Icon(Icons.play_arrow),
                     title: Text(
                       track.number > 0
-                          ? '${track.number}. ${track.title}'
-                          : track.title,
+                          ? '${track.number}. ${track.titleLabel(l10n)}'
+                          : track.titleLabel(l10n),
                     ),
                     subtitle:
                         track.playTime.isEmpty ? null : Text(track.playTime),

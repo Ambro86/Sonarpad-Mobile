@@ -112,12 +112,15 @@ class SonarMusicService {
   static const _userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/130.0.0.0 Safari/537.36';
 
   void setLocaleName(String locale) {
-    final name = locale.toLowerCase().replaceAll('-', '_');
-    _hl = switch(name) {'pt_br' => 'pt', 'zh_cn' => 'zh-CN', _ => name};
+    final name = locale.trim().toLowerCase().replaceAll('-', '_');
+    _hl = switch(name) {
+      'pt_br' => 'pt', 'zh_cn' => 'zh-CN', 'tr_tr' => 'tr', _ => name,
+    };
     _gl = switch(name) {
       'cs' => 'CZ', 'de' => 'DE', 'en' => 'US', 'es' => 'ES',
       'fr' => 'FR', 'pt' => 'PT', 'pt_br' => 'BR', 'pl' => 'PL',
-      'ro' => 'RO', 'uk' => 'UA', 'zh_cn' => 'CN', _ => 'IT',
+      'ro' => 'RO', 'uk' => 'UA', 'zh_cn' => 'CN',
+      'tr' || 'tr_tr' => 'TR', _ => 'IT',
     };
     _tube.setLocaleName(locale);
   }

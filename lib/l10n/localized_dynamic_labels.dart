@@ -18,7 +18,7 @@ extension LocalizedDynamicLabels on AppLocalizations {
       'fr' => radioLanguageFr,
       'sr' => radioLanguageSr,
       'uk' => radioLanguageUk,
-      'ro' => localeName.toLowerCase().startsWith('it') ? 'Romena' : 'Română',
+      'ro' => radioLanguageRo,
       'hi' => radioLanguageHi,
       'lt' => radioLanguageLt,
       'ru' => radioLanguageRu,
@@ -52,7 +52,7 @@ extension LocalizedDynamicLabels on AppLocalizations {
         'pl' => radioCountryOptionPl,
         'jp' => radioCountryOptionJp,
         'cn' => chinaCountryName,
-        'ro' => 'România',
+        'ro' => radioCountryOptionRo,
         _ => code.toUpperCase(),
       };
 
@@ -98,7 +98,7 @@ extension LocalizedDynamicLabels on AppLocalizations {
         'polish' => radioCommunityLanguagePolish,
         'serbian' => radioCommunityLanguageSerbian,
         'ukrainian' => radioCommunityLanguageUkrainian,
-        'romanian' => localeName.toLowerCase().startsWith('it') ? 'Romena' : 'Română',
+        'romanian' => radioLanguageRo,
         'lithuanian' => radioCommunityLanguageLithuanian,
         'russian' => radioCommunityLanguageRussian,
         'chinese' => radioCommunityLanguageChinese,
@@ -131,6 +131,23 @@ extension LocalizedDynamicLabels on AppLocalizations {
       return '$hours:${minutes.toString().padLeft(2, '0')}:$seconds';
     }
     return '$minutes:$seconds';
+  }
+
+  /// Converts a YouTube/YouTube Music duration into the same localized
+  /// spoken wording used by the media player's time slider. A two-part
+  /// clock can have more than 59 minutes (e.g. 62:03); a three-part clock
+  /// uses hours:minutes:seconds. Leave unrecognized metadata untouched.
+  String formatMediaResultDuration(String clock) {
+    final value = clock.trim();
+    if (!RegExp(r'^\d+:[0-5]\d(?::[0-5]\d)?$').hasMatch(value)) {
+      return value;
+    }
+    final parts = value.split(':').map(int.parse).toList();
+    if (parts.length == 3 && parts[1] >= 60) return value;
+    final seconds = parts.length == 2
+        ? parts[0] * 60 + parts[1]
+        : parts[0] * 3600 + parts[1] * 60 + parts[2];
+    return formatPlaybackSpokenDuration(Duration(seconds: seconds));
   }
 
   /// Natural-language playback duration for screen readers. Reuses the

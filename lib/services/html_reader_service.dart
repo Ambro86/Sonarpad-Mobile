@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:html/parser.dart' as html_parser;
 import 'package:html/dom.dart';
 
+import '../l10n/app_localizations_lookup.dart';
+
 class ArticleContent {
   final String title;
   final String content;
@@ -540,20 +542,8 @@ class HtmlReaderService {
         !rawContent.contains("Title:")) {
       return null;
     }
-    String title = switch (languageCode.replaceAll('-', '_')) {
-      'en' => 'Unknown title',
-      'fr' => 'Titre inconnu',
-      'es' => 'Título desconocido',
-      'pt' => 'Título desconhecido',
-      'pt_BR' => 'Título desconhecido',
-      'pl' => 'Nieznany tytuł',
-      'cs' => 'Neznámý název',
-      'de' => 'Unbekannter Titel',
-      'uk' => 'Невідома назва',
-      'ro' => 'Titlu necunoscut',
-      'zh' || 'zh_CN' => '未知标题',
-      _ => 'Titolo sconosciuto',
-    };
+    String title = lookupSupportedAppLocalizations(languageCode,
+        fallbackLanguage: 'it').articleUnknownTitle;
     for (var line in rawContent.split('\n')) {
       if (line.startsWith("Title:")) {
         String t = line.substring(6).trim();
@@ -594,36 +584,9 @@ class HtmlReaderService {
     return ArticleContent(title: title, content: content);
   }
 
-  static String authorPrefix(String languageCode) {
-    switch (languageCode) {
-      case 'it':
-        return "Di";
-      case 'fr':
-        return "Par";
-      case 'es':
-        return "Por";
-      case 'pt':
-      case 'pt_BR':
-      case 'pt-BR':
-        return "Por";
-      case 'pl':
-        return "Autor";
-      case 'de':
-        return "Von";
-      case 'uk':
-        return "Автор";
-      case 'ro':
-        return "De";
-      case 'en':
-        return "By";
-      case 'zh':
-      case 'zh_CN':
-      case 'zh-CN':
-        return "作者：";
-      default:
-        return "Di";
-    }
-  }
+  static String authorPrefix(String languageCode) =>
+      lookupSupportedAppLocalizations(languageCode, fallbackLanguage: 'it')
+          .articleAuthorPrefix;
 
   static String pickTitle(Document document, String languageCode) {
     final selectors = ["meta[property='og:title']", "h1", "title"];
@@ -639,20 +602,8 @@ class HtmlReaderService {
         }
       }
     }
-    return switch (languageCode.replaceAll('-', '_')) {
-      'en' => 'Title not found',
-      'fr' => 'Titre introuvable',
-      'es' => 'Título no encontrado',
-      'pt' => 'Título não encontrado',
-      'pt_BR' => 'Título não encontrado',
-      'pl' => 'Nie znaleziono tytułu',
-      'cs' => 'Název nenalezen',
-      'de' => 'Titel nicht gefunden',
-      'uk' => 'Назву не знайдено',
-      'ro' => 'Titlul nu a fost găsit',
-      'zh' || 'zh_CN' => '未找到标题',
-      _ => 'Titolo non trovato',
-    };
+    return lookupSupportedAppLocalizations(languageCode,
+        fallbackLanguage: 'it').articleTitleNotFound;
   }
 
   static String? pickMetaDescription(Document document) {

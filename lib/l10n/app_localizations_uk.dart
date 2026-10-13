@@ -4529,4 +4529,799 @@ class AppLocalizationsUk extends AppLocalizations {
   @override
   String mediaPlaybackSpeedChanged(String speed) => "Швидкість відтворення: $speed";
 
+
+  @override
+  String get routeServiceInvalidAddress => "Недійсна адреса";
+
+  @override
+  String routeServiceGeocodingNetworkError(int statusCode) => "Помилка мережі геокодування: HTTP ${statusCode}";
+
+  @override
+  String routeServiceNetworkError(int statusCode) => "Помилка мережі маршруту: HTTP ${statusCode}";
+
+  @override
+  String get routeServiceServerError => "Помилка сервера";
+
+  @override
+  String get routeServiceCalculationError => "Помилка розрахунку маршруту на сервері";
+
+  @override
+  String get routeServiceUnauthorized => "Неавторизований клієнт. Оновіть Sonarpad або перевірте конфігурацію застосунку.";
+
+  @override
+  String get routeServiceStartNotFound => "Адресу відправлення не знайдено";
+
+  @override
+  String get routeServiceDestinationNotFound => "Адресу призначення не знайдено";
+
+  @override
+  String get radioLanguageRo => "Румунська";
+
+  @override
+  String get radioCountryOptionRo => "Румунія";
+
+  @override
+  String get sonarTubeServiceError => "Errore SonarTube";
+
+  @override
+  String get sonarTubeServiceInvalidResponse => "Risposta SonarTube non valida.";
+
+  @override
+  String get sonarTubeServiceInnerTubeError => "Errore API InnerTube.";
+
+  @override
+  String get sonarTubeServiceInvalidInnerTubeResponse => "Risposta InnerTube non valida.";
+
+  @override
+  String get sonarTubeServiceNoStream => "Nessun flusso riproducibile disponibile.";
+
+  @override
+  String get sonarTubeServiceOnlyVideo => "È possibile risolvere soltanto un video.";
+
+  @override
+  String get sonarTubeServiceNotCollection => "Un video non è una raccolta SonarTube.";
+
+  @override
+  String get listTimestampToday => "сьогодні";
+
+  @override
+  String get listTimestampYesterday => "вчора";
+
+  @override
+  String get listTimestampDayBeforeYesterday => "позавчора";
+
+  @override
+  String get listTimestampTomorrow => "завтра";
+
+  @override
+  String get listTimestampDayAfterTomorrow => "післязавтра";
+
+  @override
+  String get articleTitleNotFound => "Назву не знайдено";
+
+  @override
+  String get articleUnknownTitle => "Невідома назва";
+
+  @override
+  String get articleAuthorPrefix => "Автор";
+
+  @override
+  String get audioDescriptionProjectEditorTitle => "Редагувати проєкт аудіодескрипції";
+
+  @override
+  String get audioDescriptionProjectOpen => "Відкрити проєкт аудіодескрипції";
+
+  @override
+  String get audioDescriptionProjectLabel => "Project";
+
+  @override
+  String get audioDescriptionProjectChooseSource => "Вибрати оригінальне відео";
+
+  @override
+  String get audioDescriptionProjectSource => "Original video";
+
+  @override
+  String get audioDescriptionProjectDescription => "Опис";
+
+  @override
+  String get audioDescriptionProjectDescriptionText => "Текст опису";
+
+  @override
+  String get audioDescriptionProjectPreviewDescription => "Відтворити опис";
+
+  @override
+  String get audioDescriptionProjectApplyText => "Застосувати зміну";
+
+  @override
+  String get audioDescriptionProjectDeleteDescription => "Видалити опис";
+
+  @override
+  String get audioDescriptionProjectDeleteConfirmation => "Delete the selected description from the project?";
+
+  @override
+  String get audioDescriptionProjectCannotDeleteLast => "The only description in the project cannot be deleted.";
+
+  @override
+  String get audioDescriptionProjectApplyVoice => "Застосувати голос до проєкту";
+
+  @override
+  String get audioDescriptionProjectReadingEngine => "Reading engine";
+
+  @override
+  String get audioDescriptionProjectEdgeVoice => "Microsoft Edge voice";
+
+  @override
+  String get audioDescriptionProjectSystemVoice => "System / VoiceOver / Android voice";
+
+  @override
+  String get audioDescriptionProjectVoiceLanguage => "Voice language";
+
+  @override
+  String get audioDescriptionProjectVoice => "Voice";
+
+  @override
+  String get audioDescriptionProjectReexportMp3 => "Повторно експортувати MP3";
+
+  @override
+  String get audioDescriptionProjectExportSrt => "Експортувати як SRT";
+
+  @override
+  String get audioDescriptionProjectExportVtt => "Експортувати як VTT";
+
+  @override
+  String get audioDescriptionProjectNormalWithDucking => "normal with ducking";
+
+  @override
+  String get audioDescriptionProjectExtendedPause => "extended pause";
+
+  @override
+  String get audioDescriptionProjectReady => "Project ready.";
+
+  @override
+  String get audioDescriptionProjectDescriptionApplied => "Description checked and saved in the project.";
+
+  @override
+  String get audioDescriptionProjectDescriptionDeleted => "Description deleted and project saved.";
+
+  @override
+  String get audioDescriptionProjectVoiceChanged => "Voice changed and all descriptions were checked.";
+
+  @override
+  String audioDescriptionProjectDescriptionTooLong(String actual, String available) => "The synthesized description lasts ${actual} seconds, but only ${available} seconds are available. The previous text was not changed.";
+
+  @override
+  String get audioDescriptionProjectSourceMissing => "The original video is not available. Choose it before re-exporting the MP3.";
+
+  @override
+  String get audioDescriptionProjectInvalid => "The selected file is not a valid Sonarpad audio description project.";
+
+  @override
+  String get audioDescriptionProjectUnsavedText => "Apply the current text before re-exporting the MP3.";
+
+  @override
+  String get audioDescriptionProjectWorking => "Обробка проєкту…";
+
+  @override
+  String get audioDescriptionProjectExported => "Проєкт експортовано.";
+
+  @override
+  String get audioDescriptionProjectSelectFirst => "Open a project first.";
+
+  @override
+  String get audioDescriptionProjectSelectDescription => "Select a description.";
+
+  @override
+  String audioDescriptionProjectDescriptionDetails(String source, String start, String end, String duration, String mode) => "Scene ${source} s; MP3 ${start}-${end} s; voice ${duration} s; ${mode}";
+
+  @override
+  String get audioDescriptionProjectShare => "Поділитися";
+
+  @override
+  String get audioDescriptionProjectSaveDocuments => "Зберегти в Документах Sonarpad";
+
+  @override
+  String get audioDescriptionProjectSavedDocuments => "Files saved in Sonarpad Documents.";
+
+  @override
+  String get audioDescriptionProjectCancel => "Cancel";
+
+  @override
+  String get audioDescriptionProjectChooseFromFiles => "Вибрати відео з Файлів";
+
+  @override
+  String get audioDescriptionProjectImportFromPhotos => "Імпортувати відео з Фото";
+
+  @override
+  String get newsCategoryWorld => "World";
+
+  @override
+  String get newsCategoryBusiness => "Business";
+
+  @override
+  String get newsCategoryTechnology => "Technology";
+
+  @override
+  String get newsCategoryEntertainment => "Entertainment";
+
+  @override
+  String get newsCategorySports => "Sports";
+
+  @override
+  String get newsCategoryHealth => "Health";
+
+  @override
+  String get newsArticleSubscribersOnly => "Ця стаття доступна лише передплатникам.";
+
+  @override
+  String wikipediaSearchHttpError(int statusCode) => "Errore Wikipedia: ${statusCode}";
+
+  @override
+  String wikipediaImportHttpError(int statusCode) => "Errore importazione Wikipedia: ${statusCode}";
+
+  @override
+  String gutenbergSearchHttpError(int statusCode) => "Errore Gutenberg ${statusCode}";
+
+  @override
+  String gutenbergDownloadHttpError(int statusCode) => "Errore download ${statusCode}";
+
+  @override
+  String gutenbergEpubDownloadHttpError(int statusCode) => "Errore download EPUB ${statusCode}";
+
+  @override
+  String get gutenbergInvalidBookId => "ID Gutenberg non valido.";
+
+  @override
+  String get gutenbergDownloadTimeout => "Download Gutenberg troppo lento. Riprova tra poco o scegli un altro formato.";
+
+  @override
+  String get gutenbergUnreadableArchive => "Archivio ZIP Gutenberg senza file di testo leggibile.";
+
+  @override
+  String get gutenbergUntitledBook => "Senza titolo";
+
+  @override
+  String get gutenbergUnknownAuthor => "Autore sconosciuto";
+
+  @override
+  String get podcastCategoryAll => "Усі категорії";
+
+  @override
+  String get podcastCategoryArts => "Мистецтво";
+
+  @override
+  String get podcastCategoryBusiness => "Бізнес";
+
+  @override
+  String get podcastCategoryComedy => "Комедія";
+
+  @override
+  String get podcastCategoryEducation => "Освіта";
+
+  @override
+  String get podcastCategoryFiction => "Художня література";
+
+  @override
+  String get podcastCategoryGovernment => "Уряд";
+
+  @override
+  String get podcastCategoryHealthAndFitness => "Здоров’я та фітнес";
+
+  @override
+  String get podcastCategoryHistory => "Історія";
+
+  @override
+  String get podcastCategoryKidsAndFamily => "Діти та сім’я";
+
+  @override
+  String get podcastCategoryLeisure => "Дозвілля";
+
+  @override
+  String get podcastCategoryMusic => "Музика";
+
+  @override
+  String get podcastCategoryNews => "Новини";
+
+  @override
+  String get podcastCategoryReligionAndSpirituality => "Релігія та духовність";
+
+  @override
+  String get podcastCategoryScience => "Наука";
+
+  @override
+  String get podcastCategorySocietyAndCulture => "Суспільство та культура";
+
+  @override
+  String get podcastCategorySports => "Спорт";
+
+  @override
+  String get podcastCategoryTechnology => "Технології";
+
+  @override
+  String get podcastCategoryTrueCrime => "Справжні злочини";
+
+  @override
+  String get podcastCategoryTvAndFilm => "Телебачення та кіно";
+
+  @override
+  String get podcastCategoryBooks => "Книги";
+
+  @override
+  String get podcastCategoryDesign => "Дизайн";
+
+  @override
+  String get podcastCategoryFashionAndBeauty => "Мода та краса";
+
+  @override
+  String get podcastCategoryFood => "Їжа";
+
+  @override
+  String get podcastCategoryPerformingArts => "Виконавські мистецтва";
+
+  @override
+  String get podcastCategoryVisualArts => "Образотворче мистецтво";
+
+  @override
+  String get podcastCategoryCareers => "Кар’єра";
+
+  @override
+  String get podcastCategoryEntrepreneurship => "Підприємництво";
+
+  @override
+  String get podcastCategoryInvesting => "Інвестиції";
+
+  @override
+  String get podcastCategoryManagement => "Менеджмент";
+
+  @override
+  String get podcastCategoryMarketing => "Маркетинг";
+
+  @override
+  String get podcastCategoryNonProfit => "Некомерційні організації";
+
+  @override
+  String get podcastCategoryComedyInterviews => "Комедійні інтерв’ю";
+
+  @override
+  String get podcastCategoryImprov => "Імпровізація";
+
+  @override
+  String get podcastCategoryStandUp => "Стендап";
+
+  @override
+  String get podcastCategoryCourses => "Курси";
+
+  @override
+  String get podcastCategoryHowTo => "Практичні поради";
+
+  @override
+  String get podcastCategoryLanguageLearning => "Вивчення мов";
+
+  @override
+  String get podcastCategorySelfImprovement => "Особистісний розвиток";
+
+  @override
+  String get podcastCategoryComedyFiction => "Комедійна проза";
+
+  @override
+  String get podcastCategoryDrama => "Драма";
+
+  @override
+  String get podcastCategoryScienceFiction => "Наукова фантастика";
+
+  @override
+  String get podcastCategoryAlternativeHealth => "Альтернативне здоров’я";
+
+  @override
+  String get podcastCategoryFitness => "Фітнес";
+
+  @override
+  String get podcastCategoryMedicine => "Медицина";
+
+  @override
+  String get podcastCategoryMentalHealth => "Психічне здоров’я";
+
+  @override
+  String get podcastCategoryNutrition => "Харчування";
+
+  @override
+  String get podcastCategorySexuality => "Сексуальність";
+
+  @override
+  String get podcastCategoryEducationForKids => "Освіта дітей";
+
+  @override
+  String get podcastCategoryParenting => "Батьківство";
+
+  @override
+  String get podcastCategoryPetsAndAnimals => "Домашні тварини";
+
+  @override
+  String get podcastCategoryStoriesForKids => "Історії для дітей";
+
+  @override
+  String get podcastCategoryAnimationAndManga => "Анімація та манґа";
+
+  @override
+  String get podcastCategoryAutomotive => "Автомобілі";
+
+  @override
+  String get podcastCategoryAviation => "Авіація";
+
+  @override
+  String get podcastCategoryCrafts => "Ремесла";
+
+  @override
+  String get podcastCategoryGames => "Ігри";
+
+  @override
+  String get podcastCategoryHobbies => "Хобі";
+
+  @override
+  String get podcastCategoryHomeAndGarden => "Дім і сад";
+
+  @override
+  String get podcastCategoryVideoGames => "Відеоігри";
+
+  @override
+  String get podcastCategoryMusicCommentary => "Музичні коментарі";
+
+  @override
+  String get podcastCategoryMusicHistory => "Історія музики";
+
+  @override
+  String get podcastCategoryMusicInterviews => "Музичні інтерв’ю";
+
+  @override
+  String get podcastCategoryBusinessNews => "Ділові новини";
+
+  @override
+  String get podcastCategoryDailyNews => "Щоденні новини";
+
+  @override
+  String get podcastCategoryEntertainmentNews => "Новини шоу-бізнесу";
+
+  @override
+  String get podcastCategoryNewsCommentary => "Коментарі до новин";
+
+  @override
+  String get podcastCategoryPolitics => "Політика";
+
+  @override
+  String get podcastCategorySportsNews => "Спортивні новини";
+
+  @override
+  String get podcastCategoryTechNews => "Технологічні новини";
+
+  @override
+  String get podcastCategoryBuddhism => "Буддизм";
+
+  @override
+  String get podcastCategoryChristianity => "Християнство";
+
+  @override
+  String get podcastCategoryHinduism => "Індуїзм";
+
+  @override
+  String get podcastCategoryIslam => "Іслам";
+
+  @override
+  String get podcastCategoryJudaism => "Юдаїзм";
+
+  @override
+  String get podcastCategoryReligion => "Релігія";
+
+  @override
+  String get podcastCategorySpirituality => "Духовність";
+
+  @override
+  String get podcastCategoryAstronomy => "Астрономія";
+
+  @override
+  String get podcastCategoryChemistry => "Хімія";
+
+  @override
+  String get podcastCategoryEarthSciences => "Науки про Землю";
+
+  @override
+  String get podcastCategoryLifeSciences => "Науки про життя";
+
+  @override
+  String get podcastCategoryMathematics => "Математика";
+
+  @override
+  String get podcastCategoryNaturalSciences => "Природничі науки";
+
+  @override
+  String get podcastCategoryNature => "Природа";
+
+  @override
+  String get podcastCategoryPhysics => "Фізика";
+
+  @override
+  String get podcastCategorySocialSciences => "Соціальні науки";
+
+  @override
+  String get podcastCategoryDocumentary => "Документалістика";
+
+  @override
+  String get podcastCategoryPersonalJournals => "Особисті щоденники";
+
+  @override
+  String get podcastCategoryPhilosophy => "Філософія";
+
+  @override
+  String get podcastCategoryPlacesAndTravel => "Місця та подорожі";
+
+  @override
+  String get podcastCategoryRelationships => "Стосунки";
+
+  @override
+  String get podcastCategoryBaseball => "Бейсбол";
+
+  @override
+  String get podcastCategoryBasketball => "Баскетбол";
+
+  @override
+  String get podcastCategoryCricket => "Крикет";
+
+  @override
+  String get podcastCategoryFantasySports => "Фентезі-спорт";
+
+  @override
+  String get podcastCategoryFootball => "Американський футбол";
+
+  @override
+  String get podcastCategoryGolf => "Гольф";
+
+  @override
+  String get podcastCategoryHockey => "Хокей";
+
+  @override
+  String get podcastCategoryRugby => "Регбі";
+
+  @override
+  String get podcastCategoryRunning => "Біг";
+
+  @override
+  String get podcastCategorySoccer => "Футбол";
+
+  @override
+  String get podcastCategorySwimming => "Плавання";
+
+  @override
+  String get podcastCategoryTennis => "Теніс";
+
+  @override
+  String get podcastCategoryVolleyball => "Волейбол";
+
+  @override
+  String get podcastCategoryWilderness => "Дика природа";
+
+  @override
+  String get podcastCategoryWrestling => "Боротьба";
+
+  @override
+  String get podcastCategoryAfterShows => "Післяшоу";
+
+  @override
+  String get podcastCategoryFilmHistory => "Історія кіно";
+
+  @override
+  String get podcastCategoryFilmInterviews => "Інтерв’ю про кіно";
+
+  @override
+  String get podcastCategoryFilmReviews => "Рецензії на фільми";
+
+  @override
+  String get podcastCategoryTvReviews => "Рецензії на телебачення";
+
+  @override
+  String get weatherConditionClearSky => "Ясно";
+
+  @override
+  String get weatherConditionMainlyClear => "Переважно ясно";
+
+  @override
+  String get weatherConditionPartlyCloudy => "Мінлива хмарність";
+
+  @override
+  String get weatherConditionOvercast => "Хмарно";
+
+  @override
+  String get weatherConditionFog => "Туман";
+
+  @override
+  String get weatherConditionRimeFog => "Туман з памороззю";
+
+  @override
+  String get weatherConditionLightDrizzle => "Слабка мряка";
+
+  @override
+  String get weatherConditionModerateDrizzle => "Помірна мряка";
+
+  @override
+  String get weatherConditionDenseDrizzle => "Сильна мряка";
+
+  @override
+  String get weatherConditionLightFreezingDrizzle => "Слабка крижана мряка";
+
+  @override
+  String get weatherConditionDenseFreezingDrizzle => "Сильна крижана мряка";
+
+  @override
+  String get weatherConditionLightRain => "Слабкий дощ";
+
+  @override
+  String get weatherConditionModerateRain => "Помірний дощ";
+
+  @override
+  String get weatherConditionHeavyRain => "Сильний дощ";
+
+  @override
+  String get weatherConditionLightFreezingRain => "Слабкий крижаний дощ";
+
+  @override
+  String get weatherConditionHeavyFreezingRain => "Сильний крижаний дощ";
+
+  @override
+  String get weatherConditionLightSnowfall => "Слабкий сніг";
+
+  @override
+  String get weatherConditionModerateSnowfall => "Помірний сніг";
+
+  @override
+  String get weatherConditionHeavySnowfall => "Сильний сніг";
+
+  @override
+  String get weatherConditionSnowGrains => "Снігові зерна";
+
+  @override
+  String get weatherConditionLightRainShowers => "Слабкі зливи";
+
+  @override
+  String get weatherConditionModerateRainShowers => "Помірні зливи";
+
+  @override
+  String get weatherConditionViolentRainShowers => "Сильні зливи";
+
+  @override
+  String get weatherConditionLightSnowShowers => "Слабкі снігові заряди";
+
+  @override
+  String get weatherConditionHeavySnowShowers => "Сильні снігові заряди";
+
+  @override
+  String get weatherConditionThunderstorm => "Гроза";
+
+  @override
+  String get weatherConditionThunderstormLightHail => "Гроза зі слабким градом";
+
+  @override
+  String get weatherConditionThunderstormHeavyHail => "Гроза із сильним градом";
+
+  @override
+  String get documentsImportFromFiles => "Імпортувати з Файлів";
+
+  @override
+  String get sonarTubeOpenUrl => "Відкрити URL";
+
+  @override
+  String get sonarTubeUrlPrompt => "Вставте URL відео YouTube";
+
+  @override
+  String get sonarMusicAll => "Все";
+
+  @override
+  String get sonarMusicSong => "Пісні";
+
+  @override
+  String get sonarMusicVideo => "Музичні відео";
+
+  @override
+  String get sonarMusicAlbum => "Альбоми";
+
+  @override
+  String get sonarMusicArtist => "Виконавці";
+
+  @override
+  String get sonarMusicPlaylist => "Плейлисти";
+
+  @override
+  String get sonarMusicFavorites => "Улюблене";
+
+  @override
+  String get sonarMusicRecent => "Нещодавні";
+
+  @override
+  String get sonarMusicOpen => "Відкрити URL";
+
+  @override
+  String get sonarMusicLoad => "Більше";
+
+  @override
+  String get sonarMusicArtistOpen => "До виконавця";
+
+  @override
+  String get sonarMusicAlbumOpen => "До альбому";
+
+  @override
+  String get sonarMusicPlayAll => "Відтворити все";
+
+  @override
+  String get sonarMusicShare => "Поділитися";
+
+  @override
+  String get sonarMusicAdd => "Додати в обране";
+
+  @override
+  String get sonarMusicRemove => "Вилучити з обраного";
+
+  @override
+  String get sonarMusicEmpty => "Немає результатів";
+
+  @override
+  String get sonarMusicInvalid => "Не вдалося відкрити";
+
+  @override
+  String get sonarMusicDescription => "Опис";
+
+  @override
+  String get sonarMusicShuffle => "Випадково";
+
+  @override
+  String get sonarMusicSave => "Зберегти медіа";
+
+  @override
+  String get sonarMusicSuggest => "Підказки";
+
+  @override
+  String get sonarMusicSearchHint => "Пісня, виконавець або альбом";
+
+  @override
+  String get catalogUntitled => "Senza titolo";
+
+  @override
+  String get catalogUnknownAuthor => "Autore sconosciuto";
+
+  @override
+  String get librivoxChapterFallback => "Capitolo";
+
+  @override
+  String get internetArchiveAudioFallback => "Audio";
+
+  @override
+  String librivoxHttpError(int statusCode) => "Errore LibriVox ${statusCode}";
+
+  @override
+  String get librivoxBookNotFound => "Audiolibro non trovato.";
+
+  @override
+  String internetArchiveHttpError(int statusCode) => "Internet Archive ${statusCode}";
+
+  @override
+  String poetryDbHttpError(int statusCode) => "Errore PoetryDB ${statusCode}";
+
+  @override
+  String get cloudFilePickerLoading => "Завантаження файлу";
+
+  @override
+  String get cloudFilePickerPreparing => "Підготовка файлу з хмари…";
+
+  @override
+  String get cloudFilePickerUnknownSize => "Завантаження…";
+
+  @override
+  String get cloudFilePickerCancelling => "Скасування…";
+
+  @override
+  String get audioPlaybackNotificationChannelName => "Відтворення аудіо";
+
+  @override
+  String get documentExportFallbackName => "Документ";
+
+  @override
+  String get documentExportAudiobookSuffix => "аудіокнига";
+
+  @override
+  String get convertMediaWavFloat32 => "32 біти з рухомою комою";
 }

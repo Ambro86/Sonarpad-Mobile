@@ -30,9 +30,11 @@ class _AddRadioScreenState extends State<AddRadioScreen> {
     super.didChangeDependencies();
     if (_languageInitializedFromLocale) return;
     _languageInitializedFromLocale = true;
-    if (AppLocalizations.of(context).localeName == 'ro') {
-      _addLanguage = 'romanian';
-    }
+    _addLanguage = switch (AppLocalizations.of(context).localeName) {
+      'ro' => 'romanian',
+      'tr' || 'tr_TR' || 'tr-TR' => 'turkish',
+      _ => _addLanguage,
+    };
   }
 
   Future<void> _addCommunityRadio() async {

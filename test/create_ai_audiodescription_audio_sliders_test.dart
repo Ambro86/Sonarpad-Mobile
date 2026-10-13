@@ -100,6 +100,9 @@ class _PreviewService extends Fake implements AiAudioDescriptionService {
 class _PreviewAudio extends Fake implements AudioPlayerService {
   final sessions = <AudioSessionType>[];
   Completer<void>? playing;
+  int pauseCalls = 0;
+  int resumeCalls = 0;
+  int stopCalls = 0;
 
   @override
   Future<void> playVoicePreview(
@@ -112,7 +115,14 @@ class _PreviewAudio extends Fake implements AudioPlayerService {
   }
 
   @override
+  Future<void> pauseVoicePreview() async => pauseCalls++;
+
+  @override
+  Future<void> resumeVoicePreview() async => resumeCalls++;
+
+  @override
   Future<void> stop() async {
+    stopCalls++;
     final active = playing;
     if (active != null && !active.isCompleted) active.complete();
   }
@@ -600,7 +610,7 @@ void main() {
   );
 
   testWidgets(
-    'volume preview uses current voice and mix settings without moving focus',
+    'one preview button pauses and resumes the current mix without moving focus',
     (tester) async {
       final service = _PreviewService();
       final audio = _PreviewAudio();
@@ -645,16 +655,54 @@ void main() {
           await _sliderEvent(tester, 'mp3_bitrate', 4);
           final volume = _control('source_volume');
           final nodeId = tester.getSemantics(volume).id;
+          final previewNodeId =
+              tester.getSemantics(_control('mix_preview')).id;
           final rowIds = _form(tester).sections
               .expand((section) => section.rows)
               .map((row) => row.id)
               .toList();
+          expect(
+            rowIds.where((id) => id.startsWith('mix_preview')),
+            ['mix_preview'],
+          );
+          void expectPreviewButton(String title) {
+            expect(
+              _form(tester).sections
+                  .expand((section) => section.rows)
+                  .map((row) => row.id)
+                  .toList(),
+              rowIds,
+            );
+            expect(_control('mix_preview'), findsOneWidget);
+            expect(_control('mix_preview_stop'), findsNothing);
+            expect(_row(tester, 'mix_preview').title, title);
+            expect(_row(tester, 'mix_preview').enabled, isTrue);
+            expect(_row(tester, 'mix_preview').accessibilityButtonTrait, isTrue);
+            final node = tester.getSemantics(_control('mix_preview'));
+            expect(node.id, previewNodeId);
+            expect(node.getSemanticsData().hasAction(SemanticsAction.tap), isTrue);
+            expect(node.getSemanticsData().label, contains(title));
+            expect(tester.getSemantics(volume).id, nodeId);
+            expect(focus?.hasFocus, isTrue);
+          }
+
+          Future<void> togglePreview() async {
+            await tester.runAsync(() async {
+              await _form(tester).onEvent!(
+                const AccessibleListEvent(type: 'activate', id: 'mix_preview'),
+              );
+            });
+            await tester.pump();
+          }
+
+          expectPreviewButton('Riprendi');
           await _sliderEvent(tester, 'source_volume', 30);
           await _sliderEvent(tester, 'source_volume', 27);
           expect(
             _row(tester, 'mix_preview').value,
             'Preparazione della prova audio',
           );
+          expectPreviewButton('Pausa');
           expect(service.settings, isEmpty);
           await _waitUntil(tester, () => audio.sessions.length == 1);
           final selected = service.settings.single;
@@ -665,9 +713,7 @@ void main() {
           expect(service.sources, [source.path]);
           expect(service.phrases, ['Prova audiodescrizione con ducking.']);
           expect(audio.sessions, [AudioSessionType.playback]);
-          expect(_row(tester, 'mix_preview_stop').enabled, isTrue);
-          expect(tester.getSemantics(volume).id, nodeId);
-          expect(focus?.hasFocus, isTrue);
+          expectPreviewButton('Pausa');
           expect(_row(tester, 'api_key').value, 'kept-during-preview');
           expect(
             _form(tester).sections
@@ -677,33 +723,78 @@ void main() {
             rowIds,
           );
 
+          // Pause keeps the current playback future open; Resume must not
+          // synthesize, load another file, or stop the existing sample.
+          final firstPlayback = audio.playing!;
+          final stopsBeforePause = audio.stopCalls;
+          await togglePreview();
+          expect(preview.isPaused, isTrue);
+          expect(preview.isPlaying, isFalse);
+          expect(preview.isActive, isTrue);
+          expect(audio.pauseCalls, 1);
+          expect(firstPlayback.isCompleted, isFalse);
+          expectPreviewButton('Riprendi');
+          await togglePreview();
+          expect(preview.isPlaying, isTrue);
+          expect(preview.isPaused, isFalse);
+          expect(audio.resumeCalls, 1);
+          expect(audio.stopCalls, stopsBeforePause);
+          expect(audio.playing, same(firstPlayback));
+          expect(firstPlayback.isCompleted, isFalse);
+          expect(audio.sessions, hasLength(1));
+          expect(service.settings, hasLength(1));
+          expectPreviewButton('Pausa');
+
           // Adjust while playing: the earlier sample stops and only the new
           // snapshot can be heard after the accessibility gesture settles.
           await _sliderEvent(tester, 'source_volume', 32);
           await _waitUntil(tester, () => audio.sessions.length == 2);
           expect(service.settings.last.sourceVolume, 1.6);
-          expect(tester.getSemantics(volume).id, nodeId);
-          await tester.runAsync(() async {
-            await _form(tester).onEvent!(
-              const AccessibleListEvent(
-                type: 'activate',
-                id: 'mix_preview_stop',
-              ),
-            );
-          });
-          await tester.pump();
-          expect(preview.isActive, isFalse);
-          expect(_row(tester, 'mix_preview_stop').enabled, isFalse);
+          expect(firstPlayback.isCompleted, isTrue);
+          expectPreviewButton('Pausa');
 
-          // A manual replay uses the same controls without another adjustment.
-          await tester.runAsync(() async {
-            await _form(tester).onEvent!(
-              const AccessibleListEvent(type: 'activate', id: 'mix_preview'),
-            );
-          });
+          // A new slider value also restarts automatically from a paused mix.
+          final pausedPlayback = audio.playing!;
+          await togglePreview();
+          expect(preview.isPaused, isTrue);
+          expectPreviewButton('Riprendi');
+          await _sliderEvent(tester, 'source_volume', 34);
           await _waitUntil(tester, () => audio.sessions.length == 3);
-          expect(service.settings.last.sourceVolume, 1.6);
+          expect(pausedPlayback.isCompleted, isTrue);
+          expect(service.settings.last.sourceVolume, 1.7);
+          expect(preview.isPlaying, isTrue);
+          expect(audio.resumeCalls, 1);
+          expectPreviewButton('Pausa');
+
+          // At the end of a sample the same button starts a fresh preview.
+          audio.playing!.complete();
+          await _waitUntil(tester, () => !preview.isActive);
+          expectPreviewButton('Riprendi');
+          await togglePreview();
+          await _waitUntil(tester, () => audio.sessions.length == 4);
+          expect(service.settings.last.sourceVolume, 1.7);
           expect(service.settings.last.bitrateKbps, 256);
+          expectPreviewButton('Pausa');
+
+          // Pausing during debounce cancels the pending render as well as
+          // the old playback. It must not start later on its own.
+          await _sliderEvent(tester, 'source_volume', 36);
+          expect(preview.isPreparing, isTrue);
+          expectPreviewButton('Pausa');
+          await togglePreview();
+          expect(preview.isActive, isFalse);
+          expect(preview.isPaused, isFalse);
+          expect(audio.playing!.isCompleted, isTrue);
+          expectPreviewButton('Riprendi');
+          await tester.runAsync(
+            () => Future<void>.delayed(
+              preview.adjustmentDelay + const Duration(milliseconds: 20),
+            ),
+          );
+          await tester.pump();
+          expect(audio.sessions, hasLength(4));
+          expect(service.settings, hasLength(4));
+          expectPreviewButton('Riprendi');
         },
         sourcePath: source.path,
         previewFactory: () => preview = AudioDescriptionMixPreviewController(
@@ -776,4 +867,41 @@ void main() {
       TargetPlatform.iOS,
     }),
   );
+  testWidgets(
+    'provider is a two-position accessible slider and rapid flicks preserve the selection',
+    (tester) async {
+      await http.runWithClient(
+        () async {
+          await _mountScreen(tester);
+          final initial = _row(tester, 'provider');
+          expect(initial.kind, 'slider');
+          expect(initial.accessibilityButtonTrait, isFalse);
+          expect(initial.sliderValue, 0);
+          expect(initial.sliderMin, 0);
+          expect(initial.sliderMax, 1);
+          expect(initial.sliderStep, 1);
+          expect(initial.options.map((option) => option.value), [0, 1]);
+          final node = _control('provider');
+          expect(node, findsOneWidget);
+
+          await _sliderEvent(tester, 'provider', 1);
+          expect(_row(tester, 'provider').sliderValue, 1);
+          expect(_row(tester, 'sonarpad_code').kind, 'textField');
+          await _sliderEvent(tester, 'provider', 0);
+          expect(_row(tester, 'provider').sliderValue, 0);
+          expect(_row(tester, 'api_key').kind, 'textField');
+          await _sliderEvent(tester, 'provider', 1);
+          await _sliderEvent(tester, 'provider', 0);
+          expect(_row(tester, 'provider').sliderValue, 0);
+          expect(_control('provider'), findsOneWidget);
+          final preference = await AiAudioDescriptionPreferences.load();
+          expect(preference['provider'], 'gemini');
+        },
+        () => MockClient((_) async => http.Response('{}', 503)),
+      );
+      await _unmountScreen(tester);
+    },
+    variant: TargetPlatformVariant({TargetPlatform.android, TargetPlatform.iOS}),
+  );
+
 }

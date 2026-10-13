@@ -21,6 +21,8 @@ void main() {
     'radioLanguageRu',
     'radioLanguageZh',
     'radioLanguageHi',
+    'radioLanguageTr',
+    'radioLanguageRo',
   ];
 
   test('Wikipedia language names are localized through AppLocalizations', () {
@@ -74,6 +76,8 @@ void main() {
       'app_zh.arb',
       'app_uk.arb',
       'app_zh_CN.arb',
+      'app_ro.arb',
+      'app_tr.arb',
     ];
 
     for (final file in arbFiles) {

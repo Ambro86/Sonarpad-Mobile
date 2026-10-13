@@ -1,13 +1,40 @@
+import '../../l10n/app_localizations.dart';
+
+enum NewsRssCategoryLabel {
+  myCity,
+  turkey,
+  world,
+  business,
+  technology,
+  entertainment,
+  sports,
+  health,
+}
+
 class NewsRssCategory {
   final String name;
   final Uri uri;
   final bool isLocal;
+  final NewsRssCategoryLabel? label;
 
   const NewsRssCategory({
     required this.name,
     required this.uri,
     this.isLocal = false,
+    this.label,
   });
+
+  String displayName(AppLocalizations l10n) => switch (label) {
+        NewsRssCategoryLabel.myCity => l10n.newsCategoryMyCity,
+        NewsRssCategoryLabel.turkey => l10n.radioCountryOptionTr,
+        NewsRssCategoryLabel.world => l10n.newsCategoryWorld,
+        NewsRssCategoryLabel.business => l10n.newsCategoryBusiness,
+        NewsRssCategoryLabel.technology => l10n.newsCategoryTechnology,
+        NewsRssCategoryLabel.entertainment => l10n.newsCategoryEntertainment,
+        NewsRssCategoryLabel.sports => l10n.newsCategorySports,
+        NewsRssCategoryLabel.health => l10n.newsCategoryHealth,
+        null => name,
+      };
 }
 
 class NewsSourceFolder {

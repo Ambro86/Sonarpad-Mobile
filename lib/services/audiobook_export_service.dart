@@ -73,11 +73,13 @@ class AudiobookExportService {
     required String title,
     required String outputDirectory,
     required AudiobookExportFormat format,
+    String fileNameSuffix = 'audiobook',
     AudiobookExportProgressCallback? onProgress,
   }) async {
     final cleanTitle = _safeBaseName(title);
     final extension = format.extension;
-    final output = File(p.join(outputDirectory, '${cleanTitle}_audiobook.$extension'));
+    final safeSuffix = _safeBaseName(fileNameSuffix);
+    final output = File(p.join(outputDirectory, '${cleanTitle}_$safeSuffix.$extension'));
 
     await AppLogger.log(
       'Audiobook export: start title="$cleanTitle" format=${format.name} '

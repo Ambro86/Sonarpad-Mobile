@@ -24,6 +24,8 @@ class AudioPlayerService {
   final AudioPlayer _player;
   final bool _isAndroid;
   Completer<void>? _voicePreviewCancelled;
+  Future<void> Function(bool paused)? _voicePreviewPauseControl;
+  Future<void> _voicePreviewControls = Future<void>.value();
   bool _stopRequested = false;
   bool _sessionReady = false;
   AudioSessionType _currentSessionType = AudioSessionType.speech;
@@ -416,8 +418,17 @@ class AudioPlayerService {
   void _cancelVoicePreview() {
     final cancelled = _voicePreviewCancelled;
     _voicePreviewCancelled = null;
+    _voicePreviewPauseControl = null;
     if (cancelled != null && !cancelled.isCompleted) cancelled.complete();
   }
+
+  /// Pause only the mixed-volume preview, retaining its loaded sample/position.
+  /// Ordinary voice tests keep their existing pause/stop behavior.
+  Future<void> pauseVoicePreview() =>
+      _voicePreviewPauseControl?.call(true) ?? Future<void>.value();
+
+  Future<void> resumeVoicePreview() =>
+      _voicePreviewPauseControl?.call(false) ?? Future<void>.value();
 
   /// Android previews must stop at EOF: just_audio otherwise remains playing,
   /// and an audio-focus interruption can replay the completed sample.
@@ -432,9 +443,50 @@ class AudioPlayerService {
     final cancelled = Completer<void>();
     _voicePreviewCancelled = cancelled;
     bool isCurrent() => identical(_voicePreviewCancelled, cancelled);
+    final completed = Completer<void>();
+    void fail(Object error, StackTrace stack) {
+      if (isCurrent() && !completed.isCompleted) {
+        completed.completeError(error, stack);
+      }
+    }
+
+    var previewReady = false;
+    var previewPaused = false;
+    var controlRevision = 0;
+    Future<void> setPaused(bool paused) {
+      // Record intent synchronously, including while setAudioSource is loading.
+      previewPaused = paused;
+      final revision = ++controlRevision;
+      bool isLatest() =>
+          isCurrent() && revision == controlRevision &&
+          !completed.isCompleted &&
+          _player.processingState != ProcessingState.completed;
+      _voicePreviewControls = _voicePreviewControls.then((_) async {
+        if (!isLatest() || !previewReady) return;
+        if (paused) {
+          await _player.pause();
+          if (isLatest()) await _disableWakelock();
+        } else {
+          await _enableWakelock();
+          if (!isLatest() || previewPaused) return;
+          // play() completes at a subsequent pause/EOF; resuming must return
+          // immediately so the same button can pause the sample again.
+          unawaited(_player.play().catchError(fail));
+        }
+      }).catchError((Object error, StackTrace stack) {
+        fail(error, stack);
+      });
+      return _voicePreviewControls;
+    }
+
+    if (sessionType == AudioSessionType.playback) {
+      _voicePreviewPauseControl = setPaused;
+    }
     StreamSubscription<PlayerState>? subscription;
     _stopRequested = false;
     try {
+      await _voicePreviewControls;
+      if (!isCurrent()) return;
       await _player.stop();
       if (!isCurrent()) return;
       await _prepareAudioSession(sessionType);
@@ -448,28 +500,36 @@ class AudioPlayerService {
         ),
       );
       if (!isCurrent()) return;
-      await _enableWakelock();
-      if (!isCurrent()) return;
-      final completed = Completer<void>();
-      void fail(Object error, StackTrace stack) {
-        if (!completed.isCompleted) completed.completeError(error, stack);
+      if (sessionType != AudioSessionType.playback) {
+        await _enableWakelock();
+        if (!isCurrent()) return;
       }
-
-      subscription = _player.playerStateStream.listen((state) {
-        if (state.processingState == ProcessingState.completed &&
-            !completed.isCompleted) {
-          completed.complete();
-        }
-      }, onError: fail);
       // Attach the error handler before playback starts. A temporary focus
       // pause resolves play(), but must not finish the preview before EOF.
       final finished = Future.any([completed.future, cancelled.future]);
-      unawaited(_player.play().catchError(fail));
+      subscription = _player.playerStateStream.listen((state) {
+        if (state.processingState == ProcessingState.completed) {
+          if (!completed.isCompleted) completed.complete();
+        } else if (sessionType == AudioSessionType.playback &&
+            previewPaused && state.playing && isCurrent()) {
+          // just_audio may auto-resume after an audio-focus interruption even
+          // if Pausa was pressed while already interrupted. Honor that intent.
+          unawaited(setPaused(true));
+        }
+      }, onError: fail);
+      if (sessionType == AudioSessionType.playback) {
+        previewReady = true;
+        unawaited(setPaused(previewPaused));
+      } else {
+        unawaited(_player.play().catchError(fail));
+      }
       await finished;
     } finally {
+      previewReady = false;
       // Cancel before cleanup so idle/error events from stop cannot complete
       // an abandoned preview or leave a listener attached after a stop error.
       await subscription?.cancel();
+      await _voicePreviewControls;
       if (isCurrent()) {
         _stopRequested = true;
         try {
@@ -780,6 +840,7 @@ class AudioPlayerService {
     _stopRequested = true;
     AppLogger.log('Sonarpad audio: stop requested');
     await saveCurrentBookmark();
+    await _voicePreviewControls;
     await _player.stop();
     await _player.setLoopMode(LoopMode.off);
     await _player.setVolume(1);
@@ -795,6 +856,7 @@ class AudioPlayerService {
       _stopRequested = true;
       AppLogger.log('Sonarpad audio: stopAndDispose requested');
       await saveCurrentBookmark();
+      await _voicePreviewControls;
       await _player.stop();
       await _disableWakelock();
       await _player.dispose();
@@ -823,6 +885,7 @@ class AudioPlayerService {
     _pendingDispose = completer.future;
 
     await saveCurrentBookmark();
+    await _voicePreviewControls;
     await _disableWakelock();
     try {
       await _player.dispose();

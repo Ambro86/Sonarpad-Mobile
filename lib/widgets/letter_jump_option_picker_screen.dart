@@ -35,27 +35,35 @@ class LetterJumpOptionPickerScreen<T> extends StatefulWidget {
 
 class _LetterJumpOptionPickerScreenState<T>
     extends State<LetterJumpOptionPickerScreen<T>> {
+  bool get _usesTurkishAlphabet =>
+      Localizations.localeOf(context).languageCode == 'tr';
+
   bool get _showLetterPicker =>
       widget.enableLetterPicker &&
       widget.options.length >= widget.minimumItemsForLetterPicker &&
       _availableLetters().length > 1;
 
   List<String> _availableLetters() {
+    final turkish = _usesTurkishAlphabet;
     final letters = <String>{};
     for (final option in widget.options) {
-      final letter = _initialLetter(widget.labelBuilder(option));
+      final letter = _initialLetter(widget.labelBuilder(option), turkish: turkish);
       if (letter != null && letter.isNotEmpty) {
         letters.add(letter);
       }
     }
-    final sorted = letters.toList()..sort((a, b) => a.compareTo(b));
+    final sorted = letters.toList()
+      ..sort(turkish ? _compareTurkishLetters : (a, b) => a.compareTo(b));
     return sorted;
   }
 
   List<T> _optionsForLetter(String letter) {
+    final turkish = _usesTurkishAlphabet;
     return widget.options
         .where(
-          (option) => _initialLetter(widget.labelBuilder(option)) == letter,
+          (option) =>
+              _initialLetter(widget.labelBuilder(option), turkish: turkish) ==
+              letter,
         )
         .toList(growable: false);
   }
@@ -387,16 +395,32 @@ class _LetterFilteredOptionsScreen<T> extends StatelessWidget {
   }
 }
 
-String? _initialLetter(String value) {
+String? _initialLetter(String value, {bool turkish = false}) {
   final trimmed = value.trim();
   if (trimmed.isEmpty) return null;
   for (final rune in trimmed.runes) {
     if (!_isLetterCandidate(rune)) continue;
+    // Turkish has two separate letters: i/İ and ı/I. The default Unicode
+    // uppercase operation maps a lowercase i to the wrong letter here.
+    if (turkish && rune == 0x69) return 'İ';
+    if (turkish && rune == 0x131) return 'I';
     final upper = String.fromCharCode(rune).toUpperCase();
     if (upper.isEmpty) continue;
     return String.fromCharCodes(upper.runes.take(1));
   }
   return null;
+}
+
+int _compareTurkishLetters(String a, String b) {
+  // Keep foreign-name letters Q/W/X available in their usual positions.
+  // Ç, Ğ, Ö, Ş and Ü belong next to their base letters, and I precedes İ.
+  const alphabet = '0123456789ABCÇDEFGĞHIİJKLMNOÖPQRSŞTUÜVWXYZ';
+  final aIndex = alphabet.indexOf(a);
+  final bIndex = alphabet.indexOf(b);
+  if (aIndex < 0 && bIndex < 0) return a.compareTo(b);
+  if (aIndex < 0) return 1;
+  if (bIndex < 0) return -1;
+  return aIndex.compareTo(bIndex);
 }
 
 bool _isLetterCandidate(int rune) {

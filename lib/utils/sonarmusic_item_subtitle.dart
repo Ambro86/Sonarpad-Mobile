@@ -8,6 +8,7 @@ String sonarMusicItemSubtitle({
   String? artist,
   String? duration,
   String? subtitle,
+  String Function(String rawDuration)? formatDuration,
 }) {
   String normalized(String value) => value
       .trim()
@@ -34,6 +35,19 @@ String sonarMusicItemSubtitle({
       'список відтворення', 'плейлисти', '播放列表'},
   };
 
+  // The server sometimes supplies the clock only in the free-form
+  // subtitle, not in the dedicated duration field. Extract it once so it
+  // can be spoken naturally and never repeated in the metadata.
+  final metadata = subtitle?.split(RegExp(r'\s*[•·]\s*')) ?? const <String>[];
+  final clockPattern = RegExp(r'^\d+:[0-5]\d(?::[0-5]\d)?$');
+  final embeddedClock = metadata
+      .map((part) => part.trim())
+      .where((part) => clockPattern.hasMatch(part))
+      .firstOrNull;
+  final clock = duration?.trim().isNotEmpty == true
+      ? duration!.trim()
+      : embeddedClock;
+
   final parts = <String>[];
   final seen = <String>{normalized(title)};
 
@@ -43,6 +57,9 @@ String sonarMusicItemSubtitle({
       final piece = rawPiece.trim();
       final key = normalized(piece);
       if (key.isEmpty) continue;
+      if (fromServer && clock != null && clockPattern.hasMatch(piece)) {
+        continue;
+      }
       if (fromServer && (key == normalized(kindLabel) ||
           (kindDescriptors[kind]?.contains(key) ?? false))) {
         continue;
@@ -53,7 +70,9 @@ String sonarMusicItemSubtitle({
 
   append(kindLabel);
   append(artist);
-  append(duration);
+  if (clock != null) {
+    append(formatDuration?.call(clock) ?? clock);
+  }
   append(subtitle, fromServer: true);
-  return parts.join(' · ');
+  return parts.join('. ');
 }

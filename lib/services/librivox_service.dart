@@ -2,6 +2,23 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
+import '../l10n/app_localizations.dart';
+import '../l10n/app_localizations_lookup.dart';
+
+class LibrivoxRequestException implements Exception {
+  final int? statusCode;
+
+  const LibrivoxRequestException.http(int code) : statusCode = code;
+  const LibrivoxRequestException.notFound() : statusCode = null;
+
+  String localizedMessage(AppLocalizations l10n) => statusCode == null
+      ? l10n.librivoxBookNotFound
+      : l10n.librivoxHttpError(statusCode!);
+
+  @override
+  String toString() => localizedMessage(lookupSupportedAppLocalizations('it'));
+}
+
 class LibrivoxPage {
   final List<LibrivoxBook> books;
   final bool hasMore;
@@ -35,8 +52,17 @@ class LibrivoxBook {
     required this.sections,
   });
 
-  String get authorLabel =>
-      authors.isEmpty ? 'Autore sconosciuto' : authors.join(', ');
+  String titleLabel(AppLocalizations l10n) =>
+      title.trim().isEmpty ? l10n.catalogUntitled : title;
+
+  String authorLabel(AppLocalizations l10n) =>
+      authors.isEmpty ? l10n.catalogUnknownAuthor : authors.join(', ');
+
+  // Keep the existing catalogue matching and ordering independent of UI locale.
+  String get _searchTitle =>
+      titleLabel(lookupSupportedAppLocalizations('it'));
+  String get _searchAuthor =>
+      authorLabel(lookupSupportedAppLocalizations('it'));
 
   Map<String, dynamic> toLibraryJson() => {
         'id': id,
@@ -53,7 +79,7 @@ class LibrivoxBook {
   factory LibrivoxBook.fromLibraryJson(Map<String, dynamic> json) =>
       LibrivoxBook(
         id: _parseInt(json['id']),
-        title: _parseString(json['title'], fallback: 'Senza titolo'),
+        title: _parseString(json['title']),
         description: _parseString(json['description']),
         language: _parseString(json['language']),
         totalTime: _parseString(json['totalTime']),
@@ -86,6 +112,9 @@ class LibrivoxTrack {
     required this.playTime,
   });
 
+  String titleLabel(AppLocalizations l10n) =>
+      title.trim().isEmpty ? l10n.librivoxChapterFallback : title;
+
   Map<String, dynamic> toJson() => {
         'id': id,
         'number': number,
@@ -97,7 +126,7 @@ class LibrivoxTrack {
   factory LibrivoxTrack.fromJson(Map<String, dynamic> json) => LibrivoxTrack(
         id: _parseInt(json['id']),
         number: _parseInt(json['number']),
-        title: _parseString(json['title'], fallback: 'Capitolo'),
+        title: _parseString(json['title']),
         listenUrl: _parseString(json['listenUrl']),
         playTime: _parseString(json['playTime']),
       );
@@ -197,8 +226,8 @@ class LibrivoxService {
           _matchScore(a, terms),
         );
         if (scoreCompare != 0) return scoreCompare;
-        final titleCompare = a.title.toLowerCase().compareTo(
-              b.title.toLowerCase(),
+        final titleCompare = a._searchTitle.toLowerCase().compareTo(
+              b._searchTitle.toLowerCase(),
             );
         if (titleCompare != 0) return titleCompare;
         return a.id.compareTo(b.id);
@@ -293,7 +322,7 @@ class LibrivoxService {
       return const [];
     }
     if (response.statusCode < 200 || response.statusCode >= 300) {
-      throw Exception('Errore LibriVox ${response.statusCode}');
+      throw LibrivoxRequestException.http(response.statusCode);
     }
 
     return _booksFromResponse(response.bodyBytes);
@@ -334,7 +363,7 @@ class LibrivoxService {
   bool _matchesAllTerms(LibrivoxBook book, List<String> terms) {
     if (terms.isEmpty) return true;
     final haystack = _normalizeForSearch(
-      '${book.title} ${book.authorLabel} ${book.description} ${book.language}',
+      '${book._searchTitle} ${book._searchAuthor} ${book.description} ${book.language}',
     );
     final matchedTerms = terms.where(haystack.contains).length;
     if (matchedTerms == terms.length) return true;
@@ -342,8 +371,8 @@ class LibrivoxService {
   }
 
   int _matchScore(LibrivoxBook book, List<String> terms) {
-    final title = _normalizeForSearch(book.title);
-    final authors = _normalizeForSearch(book.authorLabel);
+    final title = _normalizeForSearch(book._searchTitle);
+    final authors = _normalizeForSearch(book._searchAuthor);
     final description = _normalizeForSearch(book.description);
     var score = 0;
     for (final term in terms) {
@@ -418,15 +447,15 @@ class LibrivoxService {
     ).timeout(const Duration(seconds: 30));
     
     if (response.statusCode == 404) {
-      throw Exception('Audiolibro non trovato.');
+      throw const LibrivoxRequestException.notFound();
     }
     if (response.statusCode < 200 || response.statusCode >= 300) {
-      throw Exception('Errore LibriVox ${response.statusCode}');
+      throw LibrivoxRequestException.http(response.statusCode);
     }
 
     final books = _booksFromResponse(response.bodyBytes);
     if (books.isEmpty) {
-      throw Exception('Audiolibro non trovato.');
+      throw const LibrivoxRequestException.notFound();
     }
     return books.first;
   }
@@ -444,7 +473,7 @@ class LibrivoxService {
   LibrivoxBook _bookFromJson(Map<String, dynamic> json) {
     return LibrivoxBook(
       id: _intValue(json['id']),
-      title: _stringValue(json['title'], fallback: 'Senza titolo'),
+      title: _stringValue(json['title']),
       description: _stringValue(json['description']),
       language: _stringValue(json['language']),
       totalTime: _stringValue(json['totaltime']),
@@ -476,10 +505,7 @@ class LibrivoxService {
         .map((section) => LibrivoxTrack(
               id: _intValue(section['id']),
               number: _intValue(section['section_number']),
-              title: _stringValue(
-                section['title'],
-                fallback: 'Capitolo',
-              ),
+              title: _stringValue(section['title']),
               listenUrl: _stringValue(section['listen_url']),
               playTime: _stringValue(section['playtime']),
             ))

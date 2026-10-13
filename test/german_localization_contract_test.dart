@@ -70,7 +70,9 @@ void main() {
 
     expect(news, contains('NewsLanguage.german'));
     expect(news, contains('germanNewsSources'));
-    expect(weather, contains("'de' => _weatherCodeLabelsDe"));
+    expect(weather, contains('l10n.weatherConditionClearSky'));
+    expect(_arb('lib/l10n/app_de.arb')['weatherConditionClearSky'],
+        'Klarer Himmel');
     expect(radio, contains("'de' => 'de'"));
     expect(routes, contains("'de' => 'de'"));
   });

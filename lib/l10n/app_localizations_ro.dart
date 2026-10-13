@@ -4392,4 +4392,799 @@ class AppLocalizationsRo extends AppLocalizations {
   @override
   String mediaPlaybackSpeedChanged(String speed) => "Viteza de redare: $speed";
 
+
+  @override
+  String get routeServiceInvalidAddress => "Adresă nevalidă";
+
+  @override
+  String routeServiceGeocodingNetworkError(int statusCode) => "Eroare de rețea la geocodificare: HTTP ${statusCode}";
+
+  @override
+  String routeServiceNetworkError(int statusCode) => "Eroare de rețea la calcularea traseului: HTTP ${statusCode}";
+
+  @override
+  String get routeServiceServerError => "Eroare de server";
+
+  @override
+  String get routeServiceCalculationError => "Eroare de calculare a traseului pe server";
+
+  @override
+  String get routeServiceUnauthorized => "Client neautorizat. Actualizează Sonarpad sau verifică configurația aplicației.";
+
+  @override
+  String get routeServiceStartNotFound => "Adresa de plecare nu a fost găsită";
+
+  @override
+  String get routeServiceDestinationNotFound => "Adresa de destinație nu a fost găsită";
+
+  @override
+  String get radioLanguageRo => "Română";
+
+  @override
+  String get radioCountryOptionRo => "România";
+
+  @override
+  String get sonarTubeServiceError => "Eroare SonarTube";
+
+  @override
+  String get sonarTubeServiceInvalidResponse => "Răspuns SonarTube nevalid.";
+
+  @override
+  String get sonarTubeServiceInnerTubeError => "Eroare API InnerTube.";
+
+  @override
+  String get sonarTubeServiceInvalidInnerTubeResponse => "Răspuns InnerTube nevalid.";
+
+  @override
+  String get sonarTubeServiceNoStream => "Nu este disponibil niciun flux redabil.";
+
+  @override
+  String get sonarTubeServiceOnlyVideo => "Poate fi rezolvat doar un videoclip.";
+
+  @override
+  String get sonarTubeServiceNotCollection => "Un videoclip nu este o colecție SonarTube.";
+
+  @override
+  String get listTimestampToday => "astăzi";
+
+  @override
+  String get listTimestampYesterday => "ieri";
+
+  @override
+  String get listTimestampDayBeforeYesterday => "alaltăieri";
+
+  @override
+  String get listTimestampTomorrow => "mâine";
+
+  @override
+  String get listTimestampDayAfterTomorrow => "poimâine";
+
+  @override
+  String get articleTitleNotFound => "Titlul nu a fost găsit";
+
+  @override
+  String get articleUnknownTitle => "Titlu necunoscut";
+
+  @override
+  String get articleAuthorPrefix => "De";
+
+  @override
+  String get audioDescriptionProjectEditorTitle => "Editează proiectul de audiodescriere";
+
+  @override
+  String get audioDescriptionProjectOpen => "Deschide proiectul de audiodescriere";
+
+  @override
+  String get audioDescriptionProjectLabel => "Proiect";
+
+  @override
+  String get audioDescriptionProjectChooseSource => "Alege videoclipul original";
+
+  @override
+  String get audioDescriptionProjectSource => "Videoclip original";
+
+  @override
+  String get audioDescriptionProjectDescription => "Descriere";
+
+  @override
+  String get audioDescriptionProjectDescriptionText => "Textul descrierii";
+
+  @override
+  String get audioDescriptionProjectPreviewDescription => "Redă descrierea";
+
+  @override
+  String get audioDescriptionProjectApplyText => "Aplică textul";
+
+  @override
+  String get audioDescriptionProjectDeleteDescription => "Șterge descrierea";
+
+  @override
+  String get audioDescriptionProjectDeleteConfirmation => "Ștergi descrierea selectată din proiect?";
+
+  @override
+  String get audioDescriptionProjectCannotDeleteLast => "Singura descriere din proiect nu poate fi ștearsă.";
+
+  @override
+  String get audioDescriptionProjectApplyVoice => "Aplică vocea proiectului";
+
+  @override
+  String get audioDescriptionProjectReadingEngine => "Motor de citire";
+
+  @override
+  String get audioDescriptionProjectEdgeVoice => "Voce Microsoft Edge";
+
+  @override
+  String get audioDescriptionProjectSystemVoice => "Voce de sistem / VoiceOver / Android";
+
+  @override
+  String get audioDescriptionProjectVoiceLanguage => "Limba vocii";
+
+  @override
+  String get audioDescriptionProjectVoice => "Voce";
+
+  @override
+  String get audioDescriptionProjectReexportMp3 => "Reexportă MP3";
+
+  @override
+  String get audioDescriptionProjectExportSrt => "Exportă ca SRT";
+
+  @override
+  String get audioDescriptionProjectExportVtt => "Exportă ca VTT";
+
+  @override
+  String get audioDescriptionProjectNormalWithDucking => "normal cu reducerea volumului de fundal";
+
+  @override
+  String get audioDescriptionProjectExtendedPause => "pauză extinsă";
+
+  @override
+  String get audioDescriptionProjectReady => "Proiect pregătit.";
+
+  @override
+  String get audioDescriptionProjectDescriptionApplied => "Descrierea a fost verificată și salvată în proiect.";
+
+  @override
+  String get audioDescriptionProjectDescriptionDeleted => "Descrierea a fost ștearsă și proiectul a fost salvat.";
+
+  @override
+  String get audioDescriptionProjectVoiceChanged => "Vocea a fost schimbată și toate descrierile au fost verificate.";
+
+  @override
+  String audioDescriptionProjectDescriptionTooLong(String actual, String available) => "Descrierea sintetizată durează ${actual} secunde, dar sunt disponibile doar ${available} secunde. Textul anterior nu a fost modificat.";
+
+  @override
+  String get audioDescriptionProjectSourceMissing => "Videoclipul original nu este disponibil. Alege-l înainte de a reexporta MP3-ul.";
+
+  @override
+  String get audioDescriptionProjectInvalid => "Fișierul selectat nu este un proiect valid de audiodescriere Sonarpad.";
+
+  @override
+  String get audioDescriptionProjectUnsavedText => "Aplică textul curent înainte de a reexporta MP3-ul.";
+
+  @override
+  String get audioDescriptionProjectWorking => "Se procesează proiectul…";
+
+  @override
+  String get audioDescriptionProjectExported => "Proiect exportat.";
+
+  @override
+  String get audioDescriptionProjectSelectFirst => "Deschide mai întâi un proiect.";
+
+  @override
+  String get audioDescriptionProjectSelectDescription => "Selectează o descriere.";
+
+  @override
+  String audioDescriptionProjectDescriptionDetails(String source, String start, String end, String duration, String mode) => "Scenă ${source} s; MP3 ${start}-${end} s; voce ${duration} s; ${mode}";
+
+  @override
+  String get audioDescriptionProjectShare => "Distribuie";
+
+  @override
+  String get audioDescriptionProjectSaveDocuments => "Salvează în Documentele Sonarpad";
+
+  @override
+  String get audioDescriptionProjectSavedDocuments => "Fișierele au fost salvate în Documentele Sonarpad.";
+
+  @override
+  String get audioDescriptionProjectCancel => "Anulează";
+
+  @override
+  String get audioDescriptionProjectChooseFromFiles => "Alege video din Fișiere";
+
+  @override
+  String get audioDescriptionProjectImportFromPhotos => "Importă video din Poze";
+
+  @override
+  String get newsCategoryWorld => "World";
+
+  @override
+  String get newsCategoryBusiness => "Business";
+
+  @override
+  String get newsCategoryTechnology => "Technology";
+
+  @override
+  String get newsCategoryEntertainment => "Entertainment";
+
+  @override
+  String get newsCategorySports => "Sports";
+
+  @override
+  String get newsCategoryHealth => "Health";
+
+  @override
+  String get newsArticleSubscribersOnly => "Acest articol este disponibil doar abonaților.";
+
+  @override
+  String wikipediaSearchHttpError(int statusCode) => "Eroare Wikipedia: ${statusCode}";
+
+  @override
+  String wikipediaImportHttpError(int statusCode) => "Eroare la importul din Wikipedia: ${statusCode}";
+
+  @override
+  String gutenbergSearchHttpError(int statusCode) => "Errore Gutenberg ${statusCode}";
+
+  @override
+  String gutenbergDownloadHttpError(int statusCode) => "Errore download ${statusCode}";
+
+  @override
+  String gutenbergEpubDownloadHttpError(int statusCode) => "Errore download EPUB ${statusCode}";
+
+  @override
+  String get gutenbergInvalidBookId => "ID Gutenberg non valido.";
+
+  @override
+  String get gutenbergDownloadTimeout => "Download Gutenberg troppo lento. Riprova tra poco o scegli un altro formato.";
+
+  @override
+  String get gutenbergUnreadableArchive => "Archivio ZIP Gutenberg senza file di testo leggibile.";
+
+  @override
+  String get gutenbergUntitledBook => "Senza titolo";
+
+  @override
+  String get gutenbergUnknownAuthor => "Autore sconosciuto";
+
+  @override
+  String get podcastCategoryAll => "Toate categoriile";
+
+  @override
+  String get podcastCategoryArts => "Arte";
+
+  @override
+  String get podcastCategoryBusiness => "Afaceri";
+
+  @override
+  String get podcastCategoryComedy => "Comedie";
+
+  @override
+  String get podcastCategoryEducation => "Educație";
+
+  @override
+  String get podcastCategoryFiction => "Ficțiune";
+
+  @override
+  String get podcastCategoryGovernment => "Guvern";
+
+  @override
+  String get podcastCategoryHealthAndFitness => "Sănătate și fitness";
+
+  @override
+  String get podcastCategoryHistory => "Istorie";
+
+  @override
+  String get podcastCategoryKidsAndFamily => "Copii și familie";
+
+  @override
+  String get podcastCategoryLeisure => "Timp liber";
+
+  @override
+  String get podcastCategoryMusic => "Muzică";
+
+  @override
+  String get podcastCategoryNews => "Știri";
+
+  @override
+  String get podcastCategoryReligionAndSpirituality => "Religie și spiritualitate";
+
+  @override
+  String get podcastCategoryScience => "Știință";
+
+  @override
+  String get podcastCategorySocietyAndCulture => "Societate și cultură";
+
+  @override
+  String get podcastCategorySports => "Sport";
+
+  @override
+  String get podcastCategoryTechnology => "Tehnologie";
+
+  @override
+  String get podcastCategoryTrueCrime => "Crime reale";
+
+  @override
+  String get podcastCategoryTvAndFilm => "TV și film";
+
+  @override
+  String get podcastCategoryBooks => "Cărți";
+
+  @override
+  String get podcastCategoryDesign => "Design";
+
+  @override
+  String get podcastCategoryFashionAndBeauty => "Modă și frumusețe";
+
+  @override
+  String get podcastCategoryFood => "Gastronomie";
+
+  @override
+  String get podcastCategoryPerformingArts => "Artele spectacolului";
+
+  @override
+  String get podcastCategoryVisualArts => "Arte vizuale";
+
+  @override
+  String get podcastCategoryCareers => "Cariere";
+
+  @override
+  String get podcastCategoryEntrepreneurship => "Antreprenoriat";
+
+  @override
+  String get podcastCategoryInvesting => "Investiții";
+
+  @override
+  String get podcastCategoryManagement => "Management";
+
+  @override
+  String get podcastCategoryMarketing => "Marketing";
+
+  @override
+  String get podcastCategoryNonProfit => "Organizații non-profit";
+
+  @override
+  String get podcastCategoryComedyInterviews => "Interviuri de comedie";
+
+  @override
+  String get podcastCategoryImprov => "Improvizație";
+
+  @override
+  String get podcastCategoryStandUp => "Stand-up";
+
+  @override
+  String get podcastCategoryCourses => "Cursuri";
+
+  @override
+  String get podcastCategoryHowTo => "Ghiduri practice";
+
+  @override
+  String get podcastCategoryLanguageLearning => "Învățarea limbilor";
+
+  @override
+  String get podcastCategorySelfImprovement => "Dezvoltare personală";
+
+  @override
+  String get podcastCategoryComedyFiction => "Ficțiune comică";
+
+  @override
+  String get podcastCategoryDrama => "Dramă";
+
+  @override
+  String get podcastCategoryScienceFiction => "Științifico-fantastic";
+
+  @override
+  String get podcastCategoryAlternativeHealth => "Sănătate alternativă";
+
+  @override
+  String get podcastCategoryFitness => "Fitness";
+
+  @override
+  String get podcastCategoryMedicine => "Medicină";
+
+  @override
+  String get podcastCategoryMentalHealth => "Sănătate mintală";
+
+  @override
+  String get podcastCategoryNutrition => "Nutriție";
+
+  @override
+  String get podcastCategorySexuality => "Sexualitate";
+
+  @override
+  String get podcastCategoryEducationForKids => "Educație pentru copii";
+
+  @override
+  String get podcastCategoryParenting => "Parenting";
+
+  @override
+  String get podcastCategoryPetsAndAnimals => "Animale de companie și animale";
+
+  @override
+  String get podcastCategoryStoriesForKids => "Povești pentru copii";
+
+  @override
+  String get podcastCategoryAnimationAndManga => "Animație și manga";
+
+  @override
+  String get podcastCategoryAutomotive => "Automobile";
+
+  @override
+  String get podcastCategoryAviation => "Aviație";
+
+  @override
+  String get podcastCategoryCrafts => "Meșteșuguri";
+
+  @override
+  String get podcastCategoryGames => "Jocuri";
+
+  @override
+  String get podcastCategoryHobbies => "Hobby-uri";
+
+  @override
+  String get podcastCategoryHomeAndGarden => "Casă și grădină";
+
+  @override
+  String get podcastCategoryVideoGames => "Jocuri video";
+
+  @override
+  String get podcastCategoryMusicCommentary => "Comentarii despre muzică";
+
+  @override
+  String get podcastCategoryMusicHistory => "Istoria muzicii";
+
+  @override
+  String get podcastCategoryMusicInterviews => "Interviuri muzicale";
+
+  @override
+  String get podcastCategoryBusinessNews => "Știri economice";
+
+  @override
+  String get podcastCategoryDailyNews => "Știri zilnice";
+
+  @override
+  String get podcastCategoryEntertainmentNews => "Știri de divertisment";
+
+  @override
+  String get podcastCategoryNewsCommentary => "Comentarii despre știri";
+
+  @override
+  String get podcastCategoryPolitics => "Politică";
+
+  @override
+  String get podcastCategorySportsNews => "Știri sportive";
+
+  @override
+  String get podcastCategoryTechNews => "Știri despre tehnologie";
+
+  @override
+  String get podcastCategoryBuddhism => "Budism";
+
+  @override
+  String get podcastCategoryChristianity => "Creștinism";
+
+  @override
+  String get podcastCategoryHinduism => "Hinduism";
+
+  @override
+  String get podcastCategoryIslam => "Islam";
+
+  @override
+  String get podcastCategoryJudaism => "Iudaism";
+
+  @override
+  String get podcastCategoryReligion => "Religie";
+
+  @override
+  String get podcastCategorySpirituality => "Spiritualitate";
+
+  @override
+  String get podcastCategoryAstronomy => "Astronomie";
+
+  @override
+  String get podcastCategoryChemistry => "Chimie";
+
+  @override
+  String get podcastCategoryEarthSciences => "Științele Pământului";
+
+  @override
+  String get podcastCategoryLifeSciences => "Științele vieții";
+
+  @override
+  String get podcastCategoryMathematics => "Matematică";
+
+  @override
+  String get podcastCategoryNaturalSciences => "Științe naturale";
+
+  @override
+  String get podcastCategoryNature => "Natură";
+
+  @override
+  String get podcastCategoryPhysics => "Fizică";
+
+  @override
+  String get podcastCategorySocialSciences => "Științe sociale";
+
+  @override
+  String get podcastCategoryDocumentary => "Documentar";
+
+  @override
+  String get podcastCategoryPersonalJournals => "Jurnale personale";
+
+  @override
+  String get podcastCategoryPhilosophy => "Filosofie";
+
+  @override
+  String get podcastCategoryPlacesAndTravel => "Locuri și călătorii";
+
+  @override
+  String get podcastCategoryRelationships => "Relații";
+
+  @override
+  String get podcastCategoryBaseball => "Baseball";
+
+  @override
+  String get podcastCategoryBasketball => "Baschet";
+
+  @override
+  String get podcastCategoryCricket => "Cricket";
+
+  @override
+  String get podcastCategoryFantasySports => "Sporturi fantasy";
+
+  @override
+  String get podcastCategoryFootball => "Fotbal american";
+
+  @override
+  String get podcastCategoryGolf => "Golf";
+
+  @override
+  String get podcastCategoryHockey => "Hochei";
+
+  @override
+  String get podcastCategoryRugby => "Rugby";
+
+  @override
+  String get podcastCategoryRunning => "Alergare";
+
+  @override
+  String get podcastCategorySoccer => "Fotbal";
+
+  @override
+  String get podcastCategorySwimming => "Înot";
+
+  @override
+  String get podcastCategoryTennis => "Tenis";
+
+  @override
+  String get podcastCategoryVolleyball => "Volei";
+
+  @override
+  String get podcastCategoryWilderness => "Natură sălbatică";
+
+  @override
+  String get podcastCategoryWrestling => "Wrestling";
+
+  @override
+  String get podcastCategoryAfterShows => "Emisiuni de după show";
+
+  @override
+  String get podcastCategoryFilmHistory => "Istoria filmului";
+
+  @override
+  String get podcastCategoryFilmInterviews => "Interviuri despre film";
+
+  @override
+  String get podcastCategoryFilmReviews => "Recenzii de film";
+
+  @override
+  String get podcastCategoryTvReviews => "Recenzii TV";
+
+  @override
+  String get weatherConditionClearSky => "Cer senin";
+
+  @override
+  String get weatherConditionMainlyClear => "Predominant senin";
+
+  @override
+  String get weatherConditionPartlyCloudy => "Parțial noros";
+
+  @override
+  String get weatherConditionOvercast => "Acoperit";
+
+  @override
+  String get weatherConditionFog => "Ceață";
+
+  @override
+  String get weatherConditionRimeFog => "Ceață cu depunere de chiciură";
+
+  @override
+  String get weatherConditionLightDrizzle => "Burniță slabă";
+
+  @override
+  String get weatherConditionModerateDrizzle => "Burniță moderată";
+
+  @override
+  String get weatherConditionDenseDrizzle => "Burniță densă";
+
+  @override
+  String get weatherConditionLightFreezingDrizzle => "Burniță înghețată slabă";
+
+  @override
+  String get weatherConditionDenseFreezingDrizzle => "Burniță înghețată densă";
+
+  @override
+  String get weatherConditionLightRain => "Ploaie slabă";
+
+  @override
+  String get weatherConditionModerateRain => "Ploaie moderată";
+
+  @override
+  String get weatherConditionHeavyRain => "Ploaie puternică";
+
+  @override
+  String get weatherConditionLightFreezingRain => "Ploaie înghețată slabă";
+
+  @override
+  String get weatherConditionHeavyFreezingRain => "Ploaie înghețată puternică";
+
+  @override
+  String get weatherConditionLightSnowfall => "Ninsoare slabă";
+
+  @override
+  String get weatherConditionModerateSnowfall => "Ninsoare moderată";
+
+  @override
+  String get weatherConditionHeavySnowfall => "Ninsoare puternică";
+
+  @override
+  String get weatherConditionSnowGrains => "Granule de zăpadă";
+
+  @override
+  String get weatherConditionLightRainShowers => "Averse slabe de ploaie";
+
+  @override
+  String get weatherConditionModerateRainShowers => "Averse moderate de ploaie";
+
+  @override
+  String get weatherConditionViolentRainShowers => "Averse puternice de ploaie";
+
+  @override
+  String get weatherConditionLightSnowShowers => "Averse slabe de zăpadă";
+
+  @override
+  String get weatherConditionHeavySnowShowers => "Averse puternice de zăpadă";
+
+  @override
+  String get weatherConditionThunderstorm => "Furtună";
+
+  @override
+  String get weatherConditionThunderstormLightHail => "Furtună cu grindină slabă";
+
+  @override
+  String get weatherConditionThunderstormHeavyHail => "Furtună cu grindină puternică";
+
+  @override
+  String get documentsImportFromFiles => "Importă din Fișiere";
+
+  @override
+  String get sonarTubeOpenUrl => "Deschide URL";
+
+  @override
+  String get sonarTubeUrlPrompt => "Lipește adresa URL a unui videoclip YouTube";
+
+  @override
+  String get sonarMusicAll => "Toate";
+
+  @override
+  String get sonarMusicSong => "Melodii";
+
+  @override
+  String get sonarMusicVideo => "Videoclipuri";
+
+  @override
+  String get sonarMusicAlbum => "Albume";
+
+  @override
+  String get sonarMusicArtist => "Artiști";
+
+  @override
+  String get sonarMusicPlaylist => "Liste";
+
+  @override
+  String get sonarMusicFavorites => "Favorite";
+
+  @override
+  String get sonarMusicRecent => "Redate recent";
+
+  @override
+  String get sonarMusicOpen => "Deschide URL";
+
+  @override
+  String get sonarMusicLoad => "Încarcă mai mult";
+
+  @override
+  String get sonarMusicArtistOpen => "Vezi artistul";
+
+  @override
+  String get sonarMusicAlbumOpen => "Vezi albumul";
+
+  @override
+  String get sonarMusicPlayAll => "Redă tot";
+
+  @override
+  String get sonarMusicShare => "Distribuie";
+
+  @override
+  String get sonarMusicAdd => "Adaugă la favorite";
+
+  @override
+  String get sonarMusicRemove => "Elimină favorit";
+
+  @override
+  String get sonarMusicEmpty => "Fără rezultate";
+
+  @override
+  String get sonarMusicInvalid => "Nu se poate deschide";
+
+  @override
+  String get sonarMusicDescription => "Descriere";
+
+  @override
+  String get sonarMusicShuffle => "Aleatoriu";
+
+  @override
+  String get sonarMusicSave => "Salvează media";
+
+  @override
+  String get sonarMusicSuggest => "Sugestii";
+
+  @override
+  String get sonarMusicSearchHint => "Melodie, artist sau album";
+
+  @override
+  String get catalogUntitled => "Senza titolo";
+
+  @override
+  String get catalogUnknownAuthor => "Autore sconosciuto";
+
+  @override
+  String get librivoxChapterFallback => "Capitolo";
+
+  @override
+  String get internetArchiveAudioFallback => "Audio";
+
+  @override
+  String librivoxHttpError(int statusCode) => "Errore LibriVox ${statusCode}";
+
+  @override
+  String get librivoxBookNotFound => "Audiolibro non trovato.";
+
+  @override
+  String internetArchiveHttpError(int statusCode) => "Internet Archive ${statusCode}";
+
+  @override
+  String poetryDbHttpError(int statusCode) => "Errore PoetryDB ${statusCode}";
+
+  @override
+  String get cloudFilePickerLoading => "Se încarcă fișierul";
+
+  @override
+  String get cloudFilePickerPreparing => "Se pregătește fișierul din cloud…";
+
+  @override
+  String get cloudFilePickerUnknownSize => "Se încarcă…";
+
+  @override
+  String get cloudFilePickerCancelling => "Se anulează…";
+
+  @override
+  String get audioPlaybackNotificationChannelName => "Redare audio";
+
+  @override
+  String get documentExportFallbackName => "Document";
+
+  @override
+  String get documentExportAudiobookSuffix => "carte audio";
+
+  @override
+  String get convertMediaWavFloat32 => "32 de biți în virgulă mobilă";
 }

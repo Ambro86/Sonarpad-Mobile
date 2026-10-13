@@ -14,6 +14,7 @@ import 'app_localizations_it.dart';
 import 'app_localizations_pl.dart';
 import 'app_localizations_pt.dart';
 import 'app_localizations_ro.dart';
+import 'app_localizations_tr.dart';
 import 'app_localizations_uk.dart';
 import 'app_localizations_zh.dart';
 
@@ -166,6 +167,7 @@ abstract class AppLocalizations {
     Locale('pt'),
     Locale('pt', 'BR'),
     Locale('ro'),
+    Locale('tr'),
     Locale('uk'),
     Locale('zh'),
     Locale('zh', 'CN'),
@@ -7910,6 +7912,801 @@ abstract class AppLocalizations {
 
   String mediaPlaybackSpeedChanged(String speed);
 
+
+  /// Route service message migrated from _invalidAddress.
+  String get routeServiceInvalidAddress;
+
+  /// Route service message migrated from _networkGeocodeError.
+  String routeServiceGeocodingNetworkError(int statusCode);
+
+  /// Route service message migrated from _networkRouteError.
+  String routeServiceNetworkError(int statusCode);
+
+  /// Route service message migrated from _serverGenericError.
+  String get routeServiceServerError;
+
+  /// Route service message migrated from _routeCalculationServerError.
+  String get routeServiceCalculationError;
+
+  /// Route service message migrated from _unauthorizedError.
+  String get routeServiceUnauthorized;
+
+  /// Route address lookup failure.
+  String get routeServiceStartNotFound;
+
+  /// Route address lookup failure.
+  String get routeServiceDestinationNotFound;
+
+  /// Romanian language label shared by language pickers.
+  String get radioLanguageRo;
+
+  /// Romania country label for radio pickers.
+  String get radioCountryOptionRo;
+
+  /// SonarTube service failure message migrated to ARB.
+  String get sonarTubeServiceError;
+
+  /// SonarTube service failure message migrated to ARB.
+  String get sonarTubeServiceInvalidResponse;
+
+  /// SonarTube service failure message migrated to ARB.
+  String get sonarTubeServiceInnerTubeError;
+
+  /// SonarTube service failure message migrated to ARB.
+  String get sonarTubeServiceInvalidInnerTubeResponse;
+
+  /// SonarTube service failure message migrated to ARB.
+  String get sonarTubeServiceNoStream;
+
+  /// SonarTube service failure message migrated to ARB.
+  String get sonarTubeServiceOnlyVideo;
+
+  /// SonarTube service failure message migrated to ARB.
+  String get sonarTubeServiceNotCollection;
+
+  /// Relative day label for publication timestamps in lists.
+  String get listTimestampToday;
+
+  /// Relative day label for publication timestamps in lists.
+  String get listTimestampYesterday;
+
+  /// Relative day label for publication timestamps in lists.
+  String get listTimestampDayBeforeYesterday;
+
+  /// Relative day label for publication timestamps in lists.
+  String get listTimestampTomorrow;
+
+  /// Relative day label for publication timestamps in lists.
+  String get listTimestampDayAfterTomorrow;
+
+  /// Fallback article title when the imported source has no usable title.
+  String get articleTitleNotFound;
+
+  /// Fallback article title when the imported source has no usable title.
+  String get articleUnknownTitle;
+
+  /// Prefix before the author name in imported article text.
+  String get articleAuthorPrefix;
+
+  /// Title and menu command for editing an audio description project.
+  String get audioDescriptionProjectEditorTitle;
+
+  /// Audio description project editor text for the legacy open label or status.
+  String get audioDescriptionProjectOpen;
+
+  /// Audio description project editor text for the legacy project label or status.
+  String get audioDescriptionProjectLabel;
+
+  /// Audio description project editor text for the legacy chooseSource label or status.
+  String get audioDescriptionProjectChooseSource;
+
+  /// Audio description project editor text for the legacy source label or status.
+  String get audioDescriptionProjectSource;
+
+  /// Audio description project editor text for the legacy description label or status.
+  String get audioDescriptionProjectDescription;
+
+  /// Audio description project editor text for the legacy text label or status.
+  String get audioDescriptionProjectDescriptionText;
+
+  /// Audio description project editor text for the legacy preview label or status.
+  String get audioDescriptionProjectPreviewDescription;
+
+  /// Audio description project editor text for the legacy apply label or status.
+  String get audioDescriptionProjectApplyText;
+
+  /// Audio description project editor text for the legacy delete label or status.
+  String get audioDescriptionProjectDeleteDescription;
+
+  /// Audio description project editor text for the legacy deleteConfirm label or status.
+  String get audioDescriptionProjectDeleteConfirmation;
+
+  /// Audio description project editor text for the legacy deleteLast label or status.
+  String get audioDescriptionProjectCannotDeleteLast;
+
+  /// Audio description project editor text for the legacy changeVoice label or status.
+  String get audioDescriptionProjectApplyVoice;
+
+  /// Audio description project editor text for the legacy engine label or status.
+  String get audioDescriptionProjectReadingEngine;
+
+  /// Audio description project editor text for the legacy edge label or status.
+  String get audioDescriptionProjectEdgeVoice;
+
+  /// Audio description project editor text for the legacy system label or status.
+  String get audioDescriptionProjectSystemVoice;
+
+  /// Audio description project editor text for the legacy language label or status.
+  String get audioDescriptionProjectVoiceLanguage;
+
+  /// Audio description project editor text for the legacy voice label or status.
+  String get audioDescriptionProjectVoice;
+
+  /// Audio description project editor text for the legacy reexport label or status.
+  String get audioDescriptionProjectReexportMp3;
+
+  /// Audio description project editor text for the legacy srt label or status.
+  String get audioDescriptionProjectExportSrt;
+
+  /// Audio description project editor text for the legacy vtt label or status.
+  String get audioDescriptionProjectExportVtt;
+
+  /// Audio description project editor text for the legacy normal label or status.
+  String get audioDescriptionProjectNormalWithDucking;
+
+  /// Audio description project editor text for the legacy extended label or status.
+  String get audioDescriptionProjectExtendedPause;
+
+  /// Audio description project editor text for the legacy ready label or status.
+  String get audioDescriptionProjectReady;
+
+  /// Audio description project editor text for the legacy applied label or status.
+  String get audioDescriptionProjectDescriptionApplied;
+
+  /// Audio description project editor text for the legacy deleted label or status.
+  String get audioDescriptionProjectDescriptionDeleted;
+
+  /// Audio description project editor text for the legacy voiceChanged label or status.
+  String get audioDescriptionProjectVoiceChanged;
+
+  /// Duration validation error after synthesizing a description. actual and available are seconds already formatted to two decimal places by the caller; the previous project text remains unchanged.
+  String audioDescriptionProjectDescriptionTooLong(String actual, String available);
+
+  /// Audio description project editor text for the legacy sourceMissing label or status.
+  String get audioDescriptionProjectSourceMissing;
+
+  /// Audio description project editor text for the legacy invalidProject label or status.
+  String get audioDescriptionProjectInvalid;
+
+  /// Audio description project editor text for the legacy unsaved label or status.
+  String get audioDescriptionProjectUnsavedText;
+
+  /// Audio description project editor text for the legacy working label or status.
+  String get audioDescriptionProjectWorking;
+
+  /// Audio description project editor text for the legacy completed label or status.
+  String get audioDescriptionProjectExported;
+
+  /// Audio description project editor text for the legacy selectFirst label or status.
+  String get audioDescriptionProjectSelectFirst;
+
+  /// Audio description project editor text for the legacy selectDescription label or status.
+  String get audioDescriptionProjectSelectDescription;
+
+  /// Selected description timing summary. source is its scene position; start and end are MP3 positions; duration is synthesized voice length. Times are seconds already formatted to two decimal places; mode is a localized playback mode label.
+  String audioDescriptionProjectDescriptionDetails(String source, String start, String end, String duration, String mode);
+
+  /// Audio description project editor text for the legacy share label or status.
+  String get audioDescriptionProjectShare;
+
+  /// Audio description project editor text for the legacy saveDocuments label or status.
+  String get audioDescriptionProjectSaveDocuments;
+
+  /// Audio description project editor text for the legacy saved label or status.
+  String get audioDescriptionProjectSavedDocuments;
+
+  /// Audio description project editor text for the legacy cancel label or status.
+  String get audioDescriptionProjectCancel;
+
+  /// Source-picker action to choose a video from the Files app.
+  String get audioDescriptionProjectChooseFromFiles;
+
+  /// Source-picker action to import a video from the Photos app.
+  String get audioDescriptionProjectImportFromPhotos;
+
+  /// World-news category label for built-in feeds.
+  String get newsCategoryWorld;
+
+  /// Business-news category label for built-in feeds.
+  String get newsCategoryBusiness;
+
+  /// Technology-news category label for built-in feeds.
+  String get newsCategoryTechnology;
+
+  /// Entertainment-news category label for built-in feeds.
+  String get newsCategoryEntertainment;
+
+  /// Sports-news category label for built-in feeds.
+  String get newsCategorySports;
+
+  /// Health-news category label for built-in feeds.
+  String get newsCategoryHealth;
+
+  /// Message shown when the news article requires a subscription.
+  String get newsArticleSubscribersOnly;
+
+  /// HTTP failure returned by a Wikipedia search request.
+  String wikipediaSearchHttpError(int statusCode);
+
+  /// HTTP failure returned by a Wikipedia article import request.
+  String wikipediaImportHttpError(int statusCode);
+
+  /// HTTP failure returned by a Gutenberg catalog search.
+  String gutenbergSearchHttpError(int statusCode);
+
+  /// HTTP failure while downloading a Gutenberg text file.
+  String gutenbergDownloadHttpError(int statusCode);
+
+  /// HTTP failure while downloading a Gutenberg EPUB file.
+  String gutenbergEpubDownloadHttpError(int statusCode);
+
+  /// Error shown when a Gutenberg download has no valid book identifier.
+  String get gutenbergInvalidBookId;
+
+  /// Error shown when a Gutenberg download times out.
+  String get gutenbergDownloadTimeout;
+
+  /// Error shown when a Gutenberg ZIP archive has no readable text.
+  String get gutenbergUnreadableArchive;
+
+  /// Fallback label for a Gutenberg book with no title.
+  String get gutenbergUntitledBook;
+
+  /// Fallback label for a Gutenberg book with no author.
+  String get gutenbergUnknownAuthor;
+
+  /// Display name for the podcast category selector without a genre filter.
+  String get podcastCategoryAll;
+
+  /// Display name for podcast genre 1301 (Arts). The genre ID is stable and is not translated.
+  String get podcastCategoryArts;
+
+  /// Display name for podcast genre 1321 (Business). The genre ID is stable and is not translated.
+  String get podcastCategoryBusiness;
+
+  /// Display name for podcast genre 1303 (Comedy). The genre ID is stable and is not translated.
+  String get podcastCategoryComedy;
+
+  /// Display name for podcast genre 1304 (Education). The genre ID is stable and is not translated.
+  String get podcastCategoryEducation;
+
+  /// Display name for podcast genre 1483 (Fiction). The genre ID is stable and is not translated.
+  String get podcastCategoryFiction;
+
+  /// Display name for podcast genre 1511 (Government). The genre ID is stable and is not translated.
+  String get podcastCategoryGovernment;
+
+  /// Display name for podcast genre 1512 (Health & Fitness). The genre ID is stable and is not translated.
+  String get podcastCategoryHealthAndFitness;
+
+  /// Display name for podcast genre 1487 (History). The genre ID is stable and is not translated.
+  String get podcastCategoryHistory;
+
+  /// Display name for podcast genre 1305 (Kids & Family). The genre ID is stable and is not translated.
+  String get podcastCategoryKidsAndFamily;
+
+  /// Display name for podcast genre 1502 (Leisure). The genre ID is stable and is not translated.
+  String get podcastCategoryLeisure;
+
+  /// Display name for podcast genre 1310 (Music). The genre ID is stable and is not translated.
+  String get podcastCategoryMusic;
+
+  /// Display name for podcast genre 1489 (News). The genre ID is stable and is not translated.
+  String get podcastCategoryNews;
+
+  /// Display name for podcast genre 1314 (Religion & Spirituality). The genre ID is stable and is not translated.
+  String get podcastCategoryReligionAndSpirituality;
+
+  /// Display name for podcast genre 1533 (Science). The genre ID is stable and is not translated.
+  String get podcastCategoryScience;
+
+  /// Display name for podcast genre 1324 (Society & Culture). The genre ID is stable and is not translated.
+  String get podcastCategorySocietyAndCulture;
+
+  /// Display name for podcast genre 1545 (Sports). The genre ID is stable and is not translated.
+  String get podcastCategorySports;
+
+  /// Display name for podcast genre 1318 (Technology). The genre ID is stable and is not translated.
+  String get podcastCategoryTechnology;
+
+  /// Display name for podcast genre 1488 (True Crime). The genre ID is stable and is not translated.
+  String get podcastCategoryTrueCrime;
+
+  /// Display name for podcast genre 1309 (TV & Film). The genre ID is stable and is not translated.
+  String get podcastCategoryTvAndFilm;
+
+  /// Display name for podcast genre 1482 (Books). The genre ID is stable and is not translated.
+  String get podcastCategoryBooks;
+
+  /// Display name for podcast genre 1402 (Design). The genre ID is stable and is not translated.
+  String get podcastCategoryDesign;
+
+  /// Display name for podcast genre 1459 (Fashion & Beauty). The genre ID is stable and is not translated.
+  String get podcastCategoryFashionAndBeauty;
+
+  /// Display name for podcast genre 1306 (Food). The genre ID is stable and is not translated.
+  String get podcastCategoryFood;
+
+  /// Display name for podcast genre 1405 (Performing Arts). The genre ID is stable and is not translated.
+  String get podcastCategoryPerformingArts;
+
+  /// Display name for podcast genre 1406 (Visual Arts). The genre ID is stable and is not translated.
+  String get podcastCategoryVisualArts;
+
+  /// Display name for podcast genre 1410 (Careers). The genre ID is stable and is not translated.
+  String get podcastCategoryCareers;
+
+  /// Display name for podcast genre 1493 (Entrepreneurship). The genre ID is stable and is not translated.
+  String get podcastCategoryEntrepreneurship;
+
+  /// Display name for podcast genre 1412 (Investing). The genre ID is stable and is not translated.
+  String get podcastCategoryInvesting;
+
+  /// Display name for podcast genre 1491 (Management). The genre ID is stable and is not translated.
+  String get podcastCategoryManagement;
+
+  /// Display name for podcast genre 1492 (Marketing). The genre ID is stable and is not translated.
+  String get podcastCategoryMarketing;
+
+  /// Display name for podcast genre 1494 (Non-Profit). The genre ID is stable and is not translated.
+  String get podcastCategoryNonProfit;
+
+  /// Display name for podcast genre 1496 (Comedy Interviews). The genre ID is stable and is not translated.
+  String get podcastCategoryComedyInterviews;
+
+  /// Display name for podcast genre 1495 (Improv). The genre ID is stable and is not translated.
+  String get podcastCategoryImprov;
+
+  /// Display name for podcast genre 1497 (Stand-Up). The genre ID is stable and is not translated.
+  String get podcastCategoryStandUp;
+
+  /// Display name for podcast genre 1501 (Courses). The genre ID is stable and is not translated.
+  String get podcastCategoryCourses;
+
+  /// Display name for podcast genre 1499 (How To). The genre ID is stable and is not translated.
+  String get podcastCategoryHowTo;
+
+  /// Display name for podcast genre 1498 (Language Learning). The genre ID is stable and is not translated.
+  String get podcastCategoryLanguageLearning;
+
+  /// Display name for podcast genre 1500 (Self-Improvement). The genre ID is stable and is not translated.
+  String get podcastCategorySelfImprovement;
+
+  /// Display name for podcast genre 1486 (Comedy Fiction). The genre ID is stable and is not translated.
+  String get podcastCategoryComedyFiction;
+
+  /// Display name for podcast genre 1484 (Drama). The genre ID is stable and is not translated.
+  String get podcastCategoryDrama;
+
+  /// Display name for podcast genre 1485 (Science Fiction). The genre ID is stable and is not translated.
+  String get podcastCategoryScienceFiction;
+
+  /// Display name for podcast genre 1513 (Alternative Health). The genre ID is stable and is not translated.
+  String get podcastCategoryAlternativeHealth;
+
+  /// Display name for podcast genre 1514 (Fitness). The genre ID is stable and is not translated.
+  String get podcastCategoryFitness;
+
+  /// Display name for podcast genre 1518 (Medicine). The genre ID is stable and is not translated.
+  String get podcastCategoryMedicine;
+
+  /// Display name for podcast genre 1517 (Mental Health). The genre ID is stable and is not translated.
+  String get podcastCategoryMentalHealth;
+
+  /// Display name for podcast genre 1515 (Nutrition). The genre ID is stable and is not translated.
+  String get podcastCategoryNutrition;
+
+  /// Display name for podcast genre 1516 (Sexuality). The genre ID is stable and is not translated.
+  String get podcastCategorySexuality;
+
+  /// Display name for podcast genre 1519 (Education for Kids). The genre ID is stable and is not translated.
+  String get podcastCategoryEducationForKids;
+
+  /// Display name for podcast genre 1521 (Parenting). The genre ID is stable and is not translated.
+  String get podcastCategoryParenting;
+
+  /// Display name for podcast genre 1522 (Pets & Animals). The genre ID is stable and is not translated.
+  String get podcastCategoryPetsAndAnimals;
+
+  /// Display name for podcast genre 1520 (Stories for Kids). The genre ID is stable and is not translated.
+  String get podcastCategoryStoriesForKids;
+
+  /// Display name for podcast genre 1510 (Animation & Manga). The genre ID is stable and is not translated.
+  String get podcastCategoryAnimationAndManga;
+
+  /// Display name for podcast genre 1503 (Automotive). The genre ID is stable and is not translated.
+  String get podcastCategoryAutomotive;
+
+  /// Display name for podcast genre 1504 (Aviation). The genre ID is stable and is not translated.
+  String get podcastCategoryAviation;
+
+  /// Display name for podcast genre 1506 (Crafts). The genre ID is stable and is not translated.
+  String get podcastCategoryCrafts;
+
+  /// Display name for podcast genre 1507 (Games). The genre ID is stable and is not translated.
+  String get podcastCategoryGames;
+
+  /// Display name for podcast genre 1505 (Hobbies). The genre ID is stable and is not translated.
+  String get podcastCategoryHobbies;
+
+  /// Display name for podcast genre 1508 (Home & Garden). The genre ID is stable and is not translated.
+  String get podcastCategoryHomeAndGarden;
+
+  /// Display name for podcast genre 1509 (Video Games). The genre ID is stable and is not translated.
+  String get podcastCategoryVideoGames;
+
+  /// Display name for podcast genre 1523 (Music Commentary). The genre ID is stable and is not translated.
+  String get podcastCategoryMusicCommentary;
+
+  /// Display name for podcast genre 1524 (Music History). The genre ID is stable and is not translated.
+  String get podcastCategoryMusicHistory;
+
+  /// Display name for podcast genre 1525 (Music Interviews). The genre ID is stable and is not translated.
+  String get podcastCategoryMusicInterviews;
+
+  /// Display name for podcast genre 1490 (Business News). The genre ID is stable and is not translated.
+  String get podcastCategoryBusinessNews;
+
+  /// Display name for podcast genre 1526 (Daily News). The genre ID is stable and is not translated.
+  String get podcastCategoryDailyNews;
+
+  /// Display name for podcast genre 1531 (Entertainment News). The genre ID is stable and is not translated.
+  String get podcastCategoryEntertainmentNews;
+
+  /// Display name for podcast genre 1530 (News Commentary). The genre ID is stable and is not translated.
+  String get podcastCategoryNewsCommentary;
+
+  /// Display name for podcast genre 1527 (Politics). The genre ID is stable and is not translated.
+  String get podcastCategoryPolitics;
+
+  /// Display name for podcast genre 1529 (Sports News). The genre ID is stable and is not translated.
+  String get podcastCategorySportsNews;
+
+  /// Display name for podcast genre 1528 (Tech News). The genre ID is stable and is not translated.
+  String get podcastCategoryTechNews;
+
+  /// Display name for podcast genre 1438 (Buddhism). The genre ID is stable and is not translated.
+  String get podcastCategoryBuddhism;
+
+  /// Display name for podcast genre 1439 (Christianity). The genre ID is stable and is not translated.
+  String get podcastCategoryChristianity;
+
+  /// Display name for podcast genre 1463 (Hinduism). The genre ID is stable and is not translated.
+  String get podcastCategoryHinduism;
+
+  /// Display name for podcast genre 1440 (Islam). The genre ID is stable and is not translated.
+  String get podcastCategoryIslam;
+
+  /// Display name for podcast genre 1441 (Judaism). The genre ID is stable and is not translated.
+  String get podcastCategoryJudaism;
+
+  /// Display name for podcast genre 1532 (Religion). The genre ID is stable and is not translated.
+  String get podcastCategoryReligion;
+
+  /// Display name for podcast genre 1444 (Spirituality). The genre ID is stable and is not translated.
+  String get podcastCategorySpirituality;
+
+  /// Display name for podcast genre 1538 (Astronomy). The genre ID is stable and is not translated.
+  String get podcastCategoryAstronomy;
+
+  /// Display name for podcast genre 1539 (Chemistry). The genre ID is stable and is not translated.
+  String get podcastCategoryChemistry;
+
+  /// Display name for podcast genre 1540 (Earth Sciences). The genre ID is stable and is not translated.
+  String get podcastCategoryEarthSciences;
+
+  /// Display name for podcast genre 1541 (Life Sciences). The genre ID is stable and is not translated.
+  String get podcastCategoryLifeSciences;
+
+  /// Display name for podcast genre 1536 (Mathematics). The genre ID is stable and is not translated.
+  String get podcastCategoryMathematics;
+
+  /// Display name for podcast genre 1534 (Natural Sciences). The genre ID is stable and is not translated.
+  String get podcastCategoryNaturalSciences;
+
+  /// Display name for podcast genre 1537 (Nature). The genre ID is stable and is not translated.
+  String get podcastCategoryNature;
+
+  /// Display name for podcast genre 1542 (Physics). The genre ID is stable and is not translated.
+  String get podcastCategoryPhysics;
+
+  /// Display name for podcast genre 1535 (Social Sciences). The genre ID is stable and is not translated.
+  String get podcastCategorySocialSciences;
+
+  /// Display name for podcast genre 1543 (Documentary). The genre ID is stable and is not translated.
+  String get podcastCategoryDocumentary;
+
+  /// Display name for podcast genre 1302 (Personal Journals). The genre ID is stable and is not translated.
+  String get podcastCategoryPersonalJournals;
+
+  /// Display name for podcast genre 1443 (Philosophy). The genre ID is stable and is not translated.
+  String get podcastCategoryPhilosophy;
+
+  /// Display name for podcast genre 1320 (Places & Travel). The genre ID is stable and is not translated.
+  String get podcastCategoryPlacesAndTravel;
+
+  /// Display name for podcast genre 1544 (Relationships). The genre ID is stable and is not translated.
+  String get podcastCategoryRelationships;
+
+  /// Display name for podcast genre 1549 (Baseball). The genre ID is stable and is not translated.
+  String get podcastCategoryBaseball;
+
+  /// Display name for podcast genre 1548 (Basketball). The genre ID is stable and is not translated.
+  String get podcastCategoryBasketball;
+
+  /// Display name for podcast genre 1554 (Cricket). The genre ID is stable and is not translated.
+  String get podcastCategoryCricket;
+
+  /// Display name for podcast genre 1560 (Fantasy Sports). The genre ID is stable and is not translated.
+  String get podcastCategoryFantasySports;
+
+  /// Display name for podcast genre 1547 (Football). The genre ID is stable and is not translated.
+  String get podcastCategoryFootball;
+
+  /// Display name for podcast genre 1553 (Golf). The genre ID is stable and is not translated.
+  String get podcastCategoryGolf;
+
+  /// Display name for podcast genre 1550 (Hockey). The genre ID is stable and is not translated.
+  String get podcastCategoryHockey;
+
+  /// Display name for podcast genre 1552 (Rugby). The genre ID is stable and is not translated.
+  String get podcastCategoryRugby;
+
+  /// Display name for podcast genre 1551 (Running). The genre ID is stable and is not translated.
+  String get podcastCategoryRunning;
+
+  /// Display name for podcast genre 1546 (Soccer). The genre ID is stable and is not translated.
+  String get podcastCategorySoccer;
+
+  /// Display name for podcast genre 1558 (Swimming). The genre ID is stable and is not translated.
+  String get podcastCategorySwimming;
+
+  /// Display name for podcast genre 1556 (Tennis). The genre ID is stable and is not translated.
+  String get podcastCategoryTennis;
+
+  /// Display name for podcast genre 1557 (Volleyball). The genre ID is stable and is not translated.
+  String get podcastCategoryVolleyball;
+
+  /// Display name for podcast genre 1559 (Wilderness). The genre ID is stable and is not translated.
+  String get podcastCategoryWilderness;
+
+  /// Display name for podcast genre 1555 (Wrestling). The genre ID is stable and is not translated.
+  String get podcastCategoryWrestling;
+
+  /// Display name for podcast genre 1562 (After Shows). The genre ID is stable and is not translated.
+  String get podcastCategoryAfterShows;
+
+  /// Display name for podcast genre 1564 (Film History). The genre ID is stable and is not translated.
+  String get podcastCategoryFilmHistory;
+
+  /// Display name for podcast genre 1565 (Film Interviews). The genre ID is stable and is not translated.
+  String get podcastCategoryFilmInterviews;
+
+  /// Display name for podcast genre 1563 (Film Reviews). The genre ID is stable and is not translated.
+  String get podcastCategoryFilmReviews;
+
+  /// Display name for podcast genre 1561 (TV Reviews). The genre ID is stable and is not translated.
+  String get podcastCategoryTvReviews;
+
+  /// Weather condition for WMO code 0. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels.
+  String get weatherConditionClearSky;
+
+  /// Weather condition for WMO code 1. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels.
+  String get weatherConditionMainlyClear;
+
+  /// Weather condition for WMO code 2. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels.
+  String get weatherConditionPartlyCloudy;
+
+  /// Weather condition for WMO code 3. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels.
+  String get weatherConditionOvercast;
+
+  /// Weather condition for WMO code 45. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels.
+  String get weatherConditionFog;
+
+  /// Weather condition for WMO code 48. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels.
+  String get weatherConditionRimeFog;
+
+  /// Weather condition for WMO code 51. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels.
+  String get weatherConditionLightDrizzle;
+
+  /// Weather condition for WMO code 53. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels.
+  String get weatherConditionModerateDrizzle;
+
+  /// Weather condition for WMO code 55. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels.
+  String get weatherConditionDenseDrizzle;
+
+  /// Weather condition for WMO code 56. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels.
+  String get weatherConditionLightFreezingDrizzle;
+
+  /// Weather condition for WMO code 57. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels.
+  String get weatherConditionDenseFreezingDrizzle;
+
+  /// Weather condition for WMO code 61. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels.
+  String get weatherConditionLightRain;
+
+  /// Weather condition for WMO code 63. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels.
+  String get weatherConditionModerateRain;
+
+  /// Weather condition for WMO code 65. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels.
+  String get weatherConditionHeavyRain;
+
+  /// Weather condition for WMO code 66. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels.
+  String get weatherConditionLightFreezingRain;
+
+  /// Weather condition for WMO code 67. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels.
+  String get weatherConditionHeavyFreezingRain;
+
+  /// Weather condition for WMO code 71. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels.
+  String get weatherConditionLightSnowfall;
+
+  /// Weather condition for WMO code 73. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels.
+  String get weatherConditionModerateSnowfall;
+
+  /// Weather condition for WMO code 75. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels.
+  String get weatherConditionHeavySnowfall;
+
+  /// Weather condition for WMO code 77. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels.
+  String get weatherConditionSnowGrains;
+
+  /// Weather condition for WMO code 80. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels.
+  String get weatherConditionLightRainShowers;
+
+  /// Weather condition for WMO code 81. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels.
+  String get weatherConditionModerateRainShowers;
+
+  /// Weather condition for WMO code 82. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels.
+  String get weatherConditionViolentRainShowers;
+
+  /// Weather condition for WMO code 85. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels.
+  String get weatherConditionLightSnowShowers;
+
+  /// Weather condition for WMO code 86. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels.
+  String get weatherConditionHeavySnowShowers;
+
+  /// Weather condition for WMO code 95. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels.
+  String get weatherConditionThunderstorm;
+
+  /// Weather condition for WMO code 96. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels.
+  String get weatherConditionThunderstormLightHail;
+
+  /// Weather condition for WMO code 99. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels.
+  String get weatherConditionThunderstormHeavyHail;
+
+  /// Label migrated from _importFromFilesLabel to ARB for all app languages.
+  String get documentsImportFromFiles;
+
+  /// Label migrated from _openUrlLabel to ARB for all app languages.
+  String get sonarTubeOpenUrl;
+
+  /// Label migrated from _urlPromptLabel to ARB for all app languages.
+  String get sonarTubeUrlPrompt;
+
+  /// SonarMusic label for all, migrated from the existing language table.
+  String get sonarMusicAll;
+
+  /// SonarMusic label for song, migrated from the existing language table.
+  String get sonarMusicSong;
+
+  /// SonarMusic label for video, migrated from the existing language table.
+  String get sonarMusicVideo;
+
+  /// SonarMusic label for album, migrated from the existing language table.
+  String get sonarMusicAlbum;
+
+  /// SonarMusic label for artist, migrated from the existing language table.
+  String get sonarMusicArtist;
+
+  /// SonarMusic label for playlist, migrated from the existing language table.
+  String get sonarMusicPlaylist;
+
+  /// SonarMusic label for favorites, migrated from the existing language table.
+  String get sonarMusicFavorites;
+
+  /// SonarMusic label for recent, migrated from the existing language table.
+  String get sonarMusicRecent;
+
+  /// SonarMusic label for open, migrated from the existing language table.
+  String get sonarMusicOpen;
+
+  /// SonarMusic label for load, migrated from the existing language table.
+  String get sonarMusicLoad;
+
+  /// SonarMusic label for artist_open, migrated from the existing language table.
+  String get sonarMusicArtistOpen;
+
+  /// SonarMusic label for album_open, migrated from the existing language table.
+  String get sonarMusicAlbumOpen;
+
+  /// SonarMusic label for play_all, migrated from the existing language table.
+  String get sonarMusicPlayAll;
+
+  /// SonarMusic label for share, migrated from the existing language table.
+  String get sonarMusicShare;
+
+  /// SonarMusic label for add, migrated from the existing language table.
+  String get sonarMusicAdd;
+
+  /// SonarMusic label for remove, migrated from the existing language table.
+  String get sonarMusicRemove;
+
+  /// SonarMusic label for empty, migrated from the existing language table.
+  String get sonarMusicEmpty;
+
+  /// SonarMusic label for invalid, migrated from the existing language table.
+  String get sonarMusicInvalid;
+
+  /// SonarMusic label for description, migrated from the existing language table.
+  String get sonarMusicDescription;
+
+  /// SonarMusic label for shuffle, migrated from the existing language table.
+  String get sonarMusicShuffle;
+
+  /// SonarMusic label for save, migrated from the existing language table.
+  String get sonarMusicSave;
+
+  /// SonarMusic label for suggest, migrated from the existing language table.
+  String get sonarMusicSuggest;
+
+  /// SonarMusic label for search_hint, migrated from the existing language table.
+  String get sonarMusicSearchHint;
+
+  /// Fallback title for missing LibriVox or PoetryDB metadata. Original supplied titles must be retained.
+  String get catalogUntitled;
+
+  /// Fallback author for missing LibriVox or PoetryDB metadata. Original supplied author names must be retained.
+  String get catalogUnknownAuthor;
+
+  /// Fallback title for a LibriVox section whose title is absent; a section number may be added by the screen.
+  String get librivoxChapterFallback;
+
+  /// Fallback title for a saved Internet Archive audio track whose title is absent.
+  String get internetArchiveAudioFallback;
+
+  /// LibriVox HTTP failure, localized in the app language while preserving its HTTP status.
+  String librivoxHttpError(int statusCode);
+
+  /// A requested LibriVox audiobook is absent, including HTTP 404 or an empty book response.
+  String get librivoxBookNotFound;
+
+  /// Internet Archive HTTP failure, localized in the app language while preserving its HTTP status.
+  String internetArchiveHttpError(int statusCode);
+
+  /// PoetryDB HTTP failure, localized in the app language while preserving its HTTP status.
+  String poetryDbHttpError(int statusCode);
+
+  /// Title and accessible status while a chosen cloud file is copied into the app.
+  String get cloudFilePickerLoading;
+
+  /// Progress message while the document provider prepares a selected cloud file.
+  String get cloudFilePickerPreparing;
+
+  /// Progress message when the cloud file total byte size is not yet known.
+  String get cloudFilePickerUnknownSize;
+
+  /// Progress message while a requested cloud file import cancellation is being completed.
+  String get cloudFilePickerCancelling;
+
+  /// Android audio notification channel display name; keep the existing channel identifier and audio behavior.
+  String get audioPlaybackNotificationChannelName;
+
+  /// Name for a new exported document only when its source display name sanitizes to an empty string; do not rename existing documents.
+  String get documentExportFallbackName;
+
+  /// Descriptive suffix appended to a newly exported audiobook filename; keep user-supplied title unchanged.
+  String get documentExportAudiobookSuffix;
+
+  /// Label for 32-bit floating-point PCM audio in the WAV bit-depth selector; does not change the codec or saved choice.
+  String get convertMediaWavFloat32;
 }
 
 class _AppLocalizationsDelegate
@@ -7932,6 +8729,7 @@ class _AppLocalizationsDelegate
     'pl',
     'pt',
     'ro',
+    'tr',
     'uk',
     'zh',
   ].contains(locale.languageCode);
@@ -7981,6 +8779,8 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
       return AppLocalizationsPt();
     case 'ro':
       return AppLocalizationsRo();
+    case 'tr':
+      return AppLocalizationsTr();
     case 'uk':
       return AppLocalizationsUk();
     case 'zh':

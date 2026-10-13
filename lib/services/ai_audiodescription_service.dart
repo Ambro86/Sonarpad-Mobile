@@ -510,14 +510,14 @@ class AiAudioDescriptionPreferences {
   static const _tokenKey = 'ad_mobile_sonarpad_token';
   static const _deviceIdKey = 'ad_mobile_sonarpad_device_id';
 
-  static Future<Map<String, Object?>> load() async {
+  static Future<Map<String, Object?>> load({String defaultLanguage = 'it'}) async {
     final prefs = await SharedPreferences.getInstance();
     return <String, Object?>{
       'provider': prefs.getString(_providerKey) ?? 'gemini',
       'apiKey': prefs.getString(_apiKeyKey) ?? '',
       'sonarpadCode': prefs.getString(_sonarpadCodeKey) ?? '',
       'model': prefs.getString(_modelKey) ?? 'gemini-3.5-flash-lite',
-      'language': prefs.getString(_languageKey) ?? 'it',
+      'language': prefs.getString(_languageKey) ?? defaultLanguage,
       'verbosity': prefs.getString(_verbosityKey) ?? 'detailed',
       'extended': prefs.getBool(_extendedKey) ?? false,
       'characters': prefs.getBool(_charactersKey) ?? true,
@@ -2667,7 +2667,7 @@ $screenTextSchema$coreDirectives
       'ro' => const _WindowsPromptLanguage('Romanian', 'O mașină gonește pe stradă.', 'Un bărbat înalt, îmbrăcat într-un costum închis la culoare.'),
       'sr' => const _WindowsPromptLanguage('Serbian', 'Аутомобил јури улицом.', 'Висок мушкарац у тамном оделу.'),
       'sv' => const _WindowsPromptLanguage('Swedish', 'En bil rusar längs gatan.', 'En lång man i mörk kostym.'),
-      'tr' => const _WindowsPromptLanguage('Turkish', 'A car speeds down the street.', 'A tall man in a dark suit.'),
+      'tr' => const _WindowsPromptLanguage('Turkish', 'Bir araba caddede hızla ilerliyor.', 'Koyu renk takım elbiseli, uzun boylu bir adam.'),
       'uk' => const _WindowsPromptLanguage('Ukrainian', 'Автомобіль мчить вулицею.', 'Високий чоловік у темному костюмі.'),
       'vi' => const _WindowsPromptLanguage('Vietnamese', 'Một chiếc ô tô lao nhanh trên phố.', 'Một người đàn ông cao mặc bộ vest tối màu.'),
       'zh' => const _WindowsPromptLanguage('Chinese', '一辆汽车沿街疾驰。', '一名身穿深色西装的高个男子。'),
@@ -5303,6 +5303,7 @@ $screenTextSchema$coreDirectives
     final language = switch (rawLanguage.replaceAll('-', '_').toLowerCase()) {
       'pt_br' => 'pt_BR',
       'zh' || 'zh_cn' => 'zh_CN',
+      'tr' || 'tr_tr' => 'tr',
       _ => rawLanguage.replaceAll('-', '_'),
     };
     final mobileEngine = string(map['mobile_tts_engine']);
@@ -5363,6 +5364,7 @@ $screenTextSchema$coreDirectives
     if (code.startsWith('cs')) return 'cs-CZ';
     if (code.startsWith('uk')) return 'uk-UA';
     if (code.startsWith('ro')) return 'ro-RO';
+    if (code.startsWith('tr')) return 'tr-TR';
     if (code.startsWith('zh')) return 'zh-CN';
     return 'it-IT';
   }

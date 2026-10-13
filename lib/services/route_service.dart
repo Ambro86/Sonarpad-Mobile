@@ -2,6 +2,9 @@ import 'dart:convert';
 import 'dart:developer' as developer;
 import 'package:http/http.dart' as http;
 
+import '../l10n/app_localizations.dart';
+import '../l10n/app_localizations_lookup.dart';
+
 enum RouteProfile {
   walking('foot-walking'),
   cycling('cycling-regular'),
@@ -185,6 +188,9 @@ class RouteService {
         return 'POL';
       case 'ro':
         return 'ROU';
+      case 'tr':
+      case 'tur':
+        return 'TUR';
       case 'cz':
       case 'cs':
         return 'CZE';
@@ -364,128 +370,30 @@ class RouteService {
     );
   }
 
-  String _invalidAddress(String language) => switch (language) {
-        'en' => 'Invalid address',
-        'fr' => 'Adresse non valide',
-        'es' => 'Dirección no válida',
-        'pt' || 'pt_BR' => 'Endereço inválido',
-        'zh' || 'zh_CN' => '地址无效',
-        'pl' => 'Nieprawidłowy adres',
-        'de' => 'Ungültige Adresse',
-        'uk' => 'Недійсна адреса',
-        'ro' => 'Adresă nevalidă',
-        _ => 'Indirizzo non valido',
-      };
+  AppLocalizations _strings(String language) =>
+      lookupSupportedAppLocalizations(language, fallbackLanguage: 'it');
+
+  String _invalidAddress(String language) =>
+      _strings(language).routeServiceInvalidAddress;
 
   String _networkGeocodeError(String language, int statusCode) =>
-      switch (language) {
-        'en' => 'Geocoding network error: HTTP $statusCode',
-        'fr' => 'Erreur réseau de géocodage : HTTP $statusCode',
-        'es' => 'Error de red de geocodificación: HTTP $statusCode',
-        'pt' || 'pt_BR' => 'Erro de rede de geocodificação: HTTP $statusCode',
-        'zh' || 'zh_CN' => '地理编码网络错误：HTTP $statusCode',
-        'pl' => 'Błąd sieci geokodowania: HTTP $statusCode',
-        'de' => 'Netzwerkfehler bei der Geokodierung: HTTP $statusCode',
-        'uk' => 'Помилка мережі геокодування: HTTP $statusCode',
-        'ro' => 'Eroare de rețea la geocodificare: HTTP $statusCode',
-        _ => 'Errore di rete geocode: HTTP $statusCode',
-      };
+      _strings(language).routeServiceGeocodingNetworkError(statusCode);
 
   String _networkRouteError(String language, int statusCode) =>
-      switch (language) {
-        'en' => 'Route network error: HTTP $statusCode',
-        'fr' => 'Erreur réseau de calcul d\'itinéraire : HTTP $statusCode',
-        'es' => 'Error de red de ruta: HTTP $statusCode',
-        'pt' || 'pt_BR' => 'Erro de rede de rota: HTTP $statusCode',
-        'zh' || 'zh_CN' => '路线网络错误：HTTP $statusCode',
-        'pl' => 'Błąd sieci trasy: HTTP $statusCode',
-        'de' => 'Netzwerkfehler bei der Routenberechnung: HTTP $statusCode',
-        'uk' => 'Помилка мережі маршруту: HTTP $statusCode',
-        'ro' => 'Eroare de rețea la calcularea traseului: HTTP $statusCode',
-        _ => 'Errore di rete route: HTTP $statusCode',
-      };
+      _strings(language).routeServiceNetworkError(statusCode);
 
-  String _serverGenericError(String language) => switch (language) {
-        'en' => 'Server error',
-        'fr' => 'Erreur du serveur',
-        'es' => 'Error del servidor',
-        'pt' || 'pt_BR' => 'Erro do servidor',
-        'zh' || 'zh_CN' => '服务器错误',
-        'pl' => 'Błąd serwera',
-        'de' => 'Serverfehler',
-        'uk' => 'Помилка сервера',
-        'ro' => 'Eroare de server',
-        _ => 'Errore dal server',
-      };
+  String _serverGenericError(String language) =>
+      _strings(language).routeServiceServerError;
 
-  String _routeCalculationServerError(String language) => switch (language) {
-        'en' => 'Route calculation error from server',
-        'fr' => 'Erreur de calcul d\'itinéraire du serveur',
-        'es' => 'Error de cálculo de ruta del servidor',
-        'pt' || 'pt_BR' => 'Erro de cálculo de rota do servidor',
-        'zh' || 'zh_CN' => '服务器路线计算错误',
-        'pl' => 'Błąd obliczania trasy po stronie serwera',
-        'de' => 'Fehler bei der Routenberechnung auf dem Server',
-        'uk' => 'Помилка розрахунку маршруту на сервері',
-        'ro' => 'Eroare de calculare a traseului pe server',
-        _ => 'Errore di calcolo percorso dal server',
-      };
+  String _routeCalculationServerError(String language) =>
+      _strings(language).routeServiceCalculationError;
 
-  String _unauthorizedError(String language) => switch (language) {
-        'en' =>
-          'Unauthorized client. Update Sonarpad or check the app configuration.',
-        'fr' =>
-          'Client non autorisé. Mettez à jour Sonarpad ou vérifiez la configuration de l\'application.',
-        'es' =>
-          'Cliente no autorizado. Actualiza Sonarpad o comprueba la configuración de la app.',
-        'pt' =>
-          'Cliente não autorizado. Atualize o Sonarpad ou verifique a configuração da app.',
-        'pt_BR' || 'pt-BR' =>
-          'Cliente não autorizado. Atualize o Sonarpad ou verifique a configuração do aplicativo.',
-        'zh' || 'zh_CN' || 'zh-CN' =>
-          '客户端未授权。请更新 Sonarpad 或检查应用配置。',
-        'pl' =>
-          'Klient nieautoryzowany. Zaktualizuj Sonarpad albo sprawdź konfigurację aplikacji.',
-        'de' =>
-          'Nicht autorisierter Client. Aktualisiere Sonarpad oder überprüfe die App-Konfiguration.',
-        'uk' =>
-          'Неавторизований клієнт. Оновіть Sonarpad або перевірте конфігурацію застосунку.',
-        'ro' =>
-          'Client neautorizat. Actualizează Sonarpad sau verifică configurația aplicației.',
-        _ =>
-          'Client non autorizzato. Aggiorna Sonarpad o verifica la configurazione dell\'app.',
-      };
+  String _unauthorizedError(String language) =>
+      _strings(language).routeServiceUnauthorized;
 
-  String _addressNotFound(String language, bool isStart) => switch (language) {
-        'en' => isStart
-            ? 'Starting address not found'
-            : 'Destination address not found',
-        'fr' => isStart
-            ? 'Adresse de départ introuvable'
-            : 'Adresse de destination introuvable',
-        'es' => isStart
-            ? 'Dirección de salida no encontrada'
-            : 'Dirección de llegada no encontrada',
-        'pt' || 'pt_BR' => isStart
-            ? 'Endereço de partida não encontrado'
-            : 'Endereço de destino não encontrado',
-        'zh' || 'zh_CN' => isStart ? '未找到起始地址' : '未找到目的地地址',
-        'pl' => isStart
-            ? 'Nie znaleziono adresu początkowego'
-            : 'Nie znaleziono adresu docelowego',
-        'de' => isStart
-            ? 'Startadresse nicht gefunden'
-            : 'Zieladresse nicht gefunden',
-        'uk' => isStart
-            ? 'Адресу відправлення не знайдено'
-            : 'Адресу призначення не знайдено',
-        'ro' => isStart
-            ? 'Adresa de plecare nu a fost găsită'
-            : 'Adresa de destinație nu a fost găsită',
-        _ => isStart
-            ? 'Indirizzo di partenza non trovato'
-            : 'Indirizzo di arrivo non trovato',
-      };
+  String _addressNotFound(String language, bool isStart) => isStart
+      ? _strings(language).routeServiceStartNotFound
+      : _strings(language).routeServiceDestinationNotFound;
 
   String _serverError(dynamic error, String fallback, String language) {
     final message = error?.toString();

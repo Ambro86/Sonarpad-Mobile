@@ -4,6 +4,7 @@ import 'package:flutter/semantics.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../l10n/app_localizations.dart';
+import '../l10n/localized_dynamic_labels.dart';
 import '../models/podcast.dart';
 import '../services/document_library_service.dart';
 import '../services/app_settings_service.dart';
@@ -132,33 +133,9 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
     }
   }
 
-  String _openUrlLabel(AppLocalizations l10n) => switch (l10n.localeName) {
-    'en' => 'Open URL',
-    'es' => 'Abrir URL',
-    'fr' => 'Ouvrir une URL',
-    'de' => 'URL öffnen',
-    'pt' || 'pt_BR' => 'Abrir URL',
-    'pl' => 'Otwórz URL',
-    'cs' => 'Otevřít URL',
-    'uk' => 'Відкрити URL',
-    'ro' => 'Deschide URL',
-    'zh_CN' => '打开网址',
-    _ => 'Apri URL',
-  };
+  String _openUrlLabel(AppLocalizations l10n) => l10n.sonarTubeOpenUrl;
 
-  String _urlPromptLabel(AppLocalizations l10n) => switch (l10n.localeName) {
-    'en' => 'Paste a YouTube video URL',
-    'es' => 'Pega la URL de un vídeo de YouTube',
-    'fr' => 'Collez l’URL d’une vidéo YouTube',
-    'de' => 'YouTube-Video-URL einfügen',
-    'pt' || 'pt_BR' => 'Cole o URL de um vídeo do YouTube',
-    'pl' => 'Wklej adres URL filmu YouTube',
-    'cs' => 'Vložte URL videa YouTube',
-    'uk' => 'Вставте URL відео YouTube',
-    'ro' => 'Lipește adresa URL a unui videoclip YouTube',
-    'zh_CN' => '粘贴 YouTube 视频网址',
-    _ => 'Incolla l’URL di un video YouTube',
-  };
+  String _urlPromptLabel(AppLocalizations l10n) => l10n.sonarTubeUrlPrompt;
 
   Future<void> _openUrl() async {
     if (_itemOpenInProgress || !mounted) return;
@@ -1036,7 +1013,7 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
       if (item.kind == SonarTubeItemKind.playlist && item.videoCount != null)
         l10n.sonarTubeVideoCount(item.videoCount!),
       if (item.duration?.isNotEmpty ?? false)
-        l10n.sourceDurationValue(item.duration!),
+        l10n.sourceDurationValue(l10n.formatMediaResultDuration(item.duration!)),
       if (item.published?.isNotEmpty ?? false) item.published!,
       if (item.views?.isNotEmpty ?? false) item.views!,
     ].where((value) => value.isNotEmpty).toList();
@@ -3190,7 +3167,7 @@ class _SonarTubeRecentVideosScreenState
     final values = <String>[
       if (item.channel?.isNotEmpty ?? false) item.channel!,
       if (item.duration?.isNotEmpty ?? false)
-        l10n.sourceDurationValue(item.duration!),
+        l10n.sourceDurationValue(l10n.formatMediaResultDuration(item.duration!)),
       if (item.published?.isNotEmpty ?? false) item.published!,
       if (item.views?.isNotEmpty ?? false) item.views!,
     ];

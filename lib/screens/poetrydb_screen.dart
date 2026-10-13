@@ -7,6 +7,11 @@ import 'document_reader_screen.dart';
 import '../utils/status_message.dart';
 import '../widgets/universal_accessible_view.dart';
 
+String _poetryDbErrorMessage(Object? error, AppLocalizations l10n) =>
+    error is PoetryDbRequestException
+        ? error.localizedMessage(l10n)
+        : l10n.error(l10n.technicalErrorGeneric);
+
 class PoetryDbScreen extends StatefulWidget {
   final String? parentId;
 
@@ -140,12 +145,13 @@ class _PoetryDbResultsScreenState extends State<_PoetryDbResultsScreen> {
   }
 
   Future<void> _importPoem(PoetryDbPoem poem) async {
+    final l10n = AppLocalizations.of(context);
     try {
       final library = DocumentLibraryService();
       await library.load();
       final doc = await library.createTextDocument(
-        name: '${poem.title} - ${poem.author}.txt',
-        content: poem.toDocumentText(),
+        name: '${poem.titleLabel(l10n)} - ${poem.authorLabel(l10n)}.txt',
+        content: poem.toDocumentText(localizations: l10n),
         parentId: widget.parentId,
       );
       await library.add(doc);
@@ -178,7 +184,7 @@ class _PoetryDbResultsScreenState extends State<_PoetryDbResultsScreen> {
             );
           }
           if (snapshot.hasError) {
-            return Center(child: Text(l10n.error(l10n.technicalErrorGeneric)));
+            return Center(child: Text(_poetryDbErrorMessage(snapshot.error, l10n)));
           }
           final poems = snapshot.data ?? const [];
           if (poems.isEmpty) {
@@ -190,10 +196,10 @@ class _PoetryDbResultsScreenState extends State<_PoetryDbResultsScreen> {
                 for (var i = 0; i < poems.length; i++)
                   AccessibleListRow(
                     id: 'poem_$i',
-                    title: poems[i].title,
+                    title: poems[i].titleLabel(l10n),
                     subtitle: poems[i].lineCount > 0
-                        ? '${poems[i].author} - ${l10n.poetryDbLineCount(poems[i].lineCount)}'
-                        : poems[i].author,
+                        ? '${poems[i].authorLabel(l10n)} - ${l10n.poetryDbLineCount(poems[i].lineCount)}'
+                        : poems[i].authorLabel(l10n),
                   ),
               ])],
               onEvent: (event) {
@@ -209,10 +215,10 @@ class _PoetryDbResultsScreenState extends State<_PoetryDbResultsScreen> {
             itemBuilder: (context, index) {
               final poem = poems[index];
               final subtitle = poem.lineCount > 0
-                  ? '${poem.author} - ${l10n.poetryDbLineCount(poem.lineCount)}'
-                  : poem.author;
+                  ? '${poem.authorLabel(l10n)} - ${l10n.poetryDbLineCount(poem.lineCount)}'
+                  : poem.authorLabel(l10n);
               return ListTile(
-                title: Text(poem.title),
+                title: Text(poem.titleLabel(l10n)),
                 subtitle: Text(subtitle),
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () => _importPoem(poem),

@@ -85,6 +85,8 @@ flutter:
   assets:
     - assets/aifa_cache_seed.db
     - assets/changelog.json
+    - assets/fonts/DejaVuSans.ttf
+    - assets/fonts/DEJAVU_LICENSE.txt
     - assets/models/pyannote-segmentation/
     - assets/data/edge_voices.json
     - assets/rss/feed_cs.txt

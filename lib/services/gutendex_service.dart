@@ -4,7 +4,57 @@ import 'dart:convert';
 import 'package:archive/archive.dart';
 import 'package:http/http.dart' as http;
 
+import '../l10n/app_localizations.dart';
+import '../l10n/app_localizations_lookup.dart';
 import '../utils/app_logger.dart';
+
+enum GutendexFailureKind {
+  searchHttp,
+  downloadHttp,
+  epubDownloadHttp,
+  invalidId,
+  downloadTimeout,
+  unreadableArchive,
+}
+
+class GutendexException implements Exception {
+  final GutendexFailureKind kind;
+  final int? statusCode;
+
+  const GutendexException.searchHttp(int code)
+      : kind = GutendexFailureKind.searchHttp,
+        statusCode = code;
+  const GutendexException.downloadHttp(int code)
+      : kind = GutendexFailureKind.downloadHttp,
+        statusCode = code;
+  const GutendexException.epubDownloadHttp(int code)
+      : kind = GutendexFailureKind.epubDownloadHttp,
+        statusCode = code;
+  const GutendexException.invalidId()
+      : kind = GutendexFailureKind.invalidId,
+        statusCode = null;
+  const GutendexException.downloadTimeout()
+      : kind = GutendexFailureKind.downloadTimeout,
+        statusCode = null;
+  const GutendexException.unreadableArchive()
+      : kind = GutendexFailureKind.unreadableArchive,
+        statusCode = null;
+
+  String localizedMessage(AppLocalizations l10n) => switch (kind) {
+        GutendexFailureKind.searchHttp =>
+          l10n.gutenbergSearchHttpError(statusCode!),
+        GutendexFailureKind.downloadHttp =>
+          l10n.gutenbergDownloadHttpError(statusCode!),
+        GutendexFailureKind.epubDownloadHttp =>
+          l10n.gutenbergEpubDownloadHttpError(statusCode!),
+        GutendexFailureKind.invalidId => l10n.gutenbergInvalidBookId,
+        GutendexFailureKind.downloadTimeout => l10n.gutenbergDownloadTimeout,
+        GutendexFailureKind.unreadableArchive => l10n.gutenbergUnreadableArchive,
+      };
+
+  @override
+  String toString() => localizedMessage(lookupSupportedAppLocalizations('it'));
+}
 
 class GutendexPage {
   final int count;
@@ -37,8 +87,11 @@ class GutendexBook {
     required this.downloadCount,
   });
 
-  String get authorLabel =>
-      authors.isEmpty ? 'Autore sconosciuto' : authors.join(', ');
+  String titleLabel(AppLocalizations l10n) =>
+      title.trim().isEmpty ? l10n.gutenbergUntitledBook : title;
+
+  String authorLabel(AppLocalizations l10n) =>
+      authors.isEmpty ? l10n.gutenbergUnknownAuthor : authors.join(', ');
 
   String get languageLabel => languages.join(', ');
 }
@@ -90,7 +143,7 @@ class GutendexService {
       headers: {'User-Agent': 'SonarpadMobile/0.1'},
     ).timeout(const Duration(seconds: 15));
     if (response.statusCode < 200 || response.statusCode >= 300) {
-      throw Exception('Errore Gutenberg ${response.statusCode}');
+      throw GutendexException.searchHttp(response.statusCode);
     }
 
     final decoded = jsonDecode(
@@ -112,12 +165,15 @@ class GutendexService {
     final url = _sonarpadDownloadUrl(book, 'txt');
     final response = await _download(url);
     if (response.statusCode < 200 || response.statusCode >= 300) {
-      throw Exception('Errore download ${response.statusCode}');
+      throw GutendexException.downloadHttp(response.statusCode);
     }
     return _cleanGutenbergText(_decodeDownloadedText(response.bodyBytes, url));
   }
 
-  Future<GutendexDownload> downloadForImport(GutendexBook book) async {
+  Future<GutendexDownload> downloadForImport(
+    GutendexBook book, {
+    AppLocalizations? localizations,
+  }) async {
     final url = _sonarpadDownloadUrl(book, 'epub');
     await AppLogger.log('Gutenberg download: Sonarpad EPUB $url');
     final response = await _download(url);
@@ -125,12 +181,15 @@ class GutendexService {
       'Gutenberg download: Sonarpad EPUB status=${response.statusCode} bytes=${response.bodyBytes.length}',
     );
     if (response.statusCode >= 200 && response.statusCode < 300) {
+      final title = book.titleLabel(
+        localizations ?? lookupSupportedAppLocalizations('it'),
+      );
       return GutendexDownload.file(
-        fileName: '${book.title}.epub',
+        fileName: '$title.epub',
         bytes: response.bodyBytes,
       );
     }
-    throw Exception('Errore download EPUB ${response.statusCode}');
+    throw GutendexException.epubDownloadHttp(response.statusCode);
   }
 
   GutendexBook _bookFromJson(Map<String, dynamic> json) {
@@ -151,7 +210,7 @@ class GutendexService {
     }
     return GutendexBook(
       id: json['id'] as int? ?? 0,
-      title: json['title'] as String? ?? 'Senza titolo',
+      title: json['title'] as String? ?? '',
       authors: authors,
       languages: (json['languages'] as List<dynamic>? ?? const [])
           .whereType<String>()
@@ -172,7 +231,7 @@ class GutendexService {
 
   String _sonarpadDownloadUrl(GutendexBook book, String format) {
     if (book.id <= 0) {
-      throw Exception('ID Gutenberg non valido.');
+      throw const GutendexException.invalidId();
     }
     return Uri.https('sonarpad.com', '/api/gutenberg/download.php', {
       'id': book.id.toString(),
@@ -188,9 +247,7 @@ class GutendexService {
         headers: {'User-Agent': 'SonarpadMobile/0.1'},
       ).timeout(const Duration(seconds: 120));
     } on TimeoutException {
-      throw Exception(
-        'Download Gutenberg troppo lento. Riprova tra poco o scegli un altro formato.',
-      );
+      throw const GutendexException.downloadTimeout();
     }
   }
 
@@ -234,7 +291,7 @@ class GutendexService {
       if (text.isNotEmpty) return text;
     }
 
-    throw Exception('Archivio ZIP Gutenberg senza file di testo leggibile.');
+    throw const GutendexException.unreadableArchive();
   }
 
   String _cleanGutenbergText(String raw) {

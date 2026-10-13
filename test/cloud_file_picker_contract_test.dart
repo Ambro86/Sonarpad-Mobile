@@ -32,7 +32,10 @@ void main() {
     expect(source, contains('Semantics('));
     expect(source, contains("_channel.invokeMethod<void>('cancel')"));
     expect(source, contains('total <= 0 ? null'));
-    expect(source, contains('Caricamento del file in corso'));
+    expect(source, contains('l10n.cloudFilePickerLoading'));
+    final italian = jsonDecode(File('lib/l10n/app_it.arb').readAsStringSync())
+        as Map<String, dynamic>;
+    expect(italian['cloudFilePickerLoading'], 'Caricamento del file in corso');
   });
 
   test('Android streams cloud bytes and cleans cancelled imports', () {
@@ -68,4 +71,16 @@ void main() {
       expect(entries.last, isNotEmpty, reason: locale);
     }
   });
+  test('iCloud picker shows progress after system dismissal even for cached files', () {
+    final dart = File('lib/services/cloud_file_picker_service.dart').readAsStringSync();
+    final swift = File('ios/Runner/SonarpadCloudFilePicker.swift').readAsStringSync();
+    expect(dart, contains('minimumVisibility = Duration(milliseconds: 900)'));
+    expect(dart, contains("stage: 'done'"));
+    expect(dart, contains('importCompleted = true;'));
+    expect(dart, contains('await dialogClosed;'));
+    expect(swift, contains('DispatchQueue.main.asyncAfter'));
+    expect(swift, contains('self.beginCopy(urls)'));
+    expect(swift, contains('NSFileCoordinator'));
+  });
+
 }

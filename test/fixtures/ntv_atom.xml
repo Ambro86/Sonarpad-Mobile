@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Synthetic test data. No publisher article text is reproduced. -->
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>NTV fixture</title>
+  <id>urn:sonarpad:ntv-fixture</id>
+  <updated>2026-10-13T12:15:00+03:00</updated>
+  <link rel="self" href="https://www.ntv.com.tr/son-dakika.rss" />
+  <entry>
+    <id>urn:sonarpad:ntv-fixture:older</id>
+    <title>İstanbul'da kütüphane buluşması</title>
+    <link rel="self" type="application/atom+xml" href="https://example.org/ntv/older/metadata" />
+    <link rel="alternate" type="text/html" href="https://example.org/ntv/older" />
+    <published>2026-10-12T10:00:00+03:00</published>
+    <summary type="html">&lt;p&gt;Öğrenciler kitap &amp;amp; dergi seçiyor.&lt;/p&gt;</summary>
+  </entry>
+  <entry>
+    <id>urn:sonarpad:ntv-fixture:newer</id>
+    <title>Ankara'da bilim ve kültür günü</title>
+    <link rel="alternate" type="text/html" href="https://example.org/ntv/newer" />
+    <updated>2026-10-13T12:15:00+03:00</updated>
+    <content type="html">&lt;p&gt;Ankara'da açık ders.&lt;/p&gt; &lt;a href="https://example.org/program.pdf"&gt;Programı indir&lt;/a&gt;</content>
+  </entry>
+</feed>

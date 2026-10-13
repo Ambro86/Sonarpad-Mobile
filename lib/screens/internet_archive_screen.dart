@@ -9,6 +9,11 @@ import 'podcast_episode_player_screen.dart';
 import '../utils/status_message.dart';
 import '../widgets/universal_accessible_view.dart';
 
+String _internetArchiveErrorMessage(Object? error, AppLocalizations l10n) =>
+    error is InternetArchiveRequestException
+        ? error.localizedMessage(l10n)
+        : l10n.error(l10n.technicalErrorGeneric);
+
 class InternetArchiveScreen extends StatefulWidget {
   final String? parentId;
 
@@ -233,7 +238,7 @@ class _InternetArchiveResultsScreenState
             );
           }
           if (_error != null) {
-            return Center(child: Text(l10n.error(l10n.technicalErrorGeneric)));
+            return Center(child: Text(_internetArchiveErrorMessage(_error, l10n)));
           }
           if (_items.isEmpty) {
             return Center(child: Text(l10n.internetArchiveNoItemsFound));
@@ -333,8 +338,9 @@ class _InternetArchiveItemScreenState
   }
 
   void _playTrack(InternetArchiveItem item, InternetArchiveTrack track) {
+    final l10n = AppLocalizations.of(context);
     final episode = PodcastEpisode(
-      title: track.title,
+      title: track.titleLabel(l10n),
       description: item.title,
       audioUrl: track.audioUrl,
       id: 'archive:${item.identifier}:${track.fileName}',
@@ -395,7 +401,7 @@ class _InternetArchiveItemScreenState
             if (useSharedAccessibleViewModel) {
               return UniversalAccessibleList(
                 sections: [AccessibleListSection(rows: [
-                  AccessibleListRow(id: 'error', kind: 'text', title: l10n.error(l10n.technicalErrorGeneric)),
+                  AccessibleListRow(id: 'error', kind: 'text', title: _internetArchiveErrorMessage(snapshot.error, l10n)),
                   AccessibleListRow(id: 'retry', title: l10n.retry, kind: 'button'),
                   if (widget.allowSave) AccessibleListRow(id: 'save', title: l10n.saveAudioInDocuments, kind: 'button', enabled: !_saving),
                 ])],
@@ -409,7 +415,7 @@ class _InternetArchiveItemScreenState
             return ListView(
               padding: const EdgeInsets.all(16),
               children: [
-                Text(l10n.error(l10n.technicalErrorGeneric)),
+                Text(_internetArchiveErrorMessage(snapshot.error, l10n)),
                 const SizedBox(height: 16),
                 FilledButton(
                   onPressed: _retryLoad,
@@ -441,7 +447,7 @@ class _InternetArchiveItemScreenState
                   for (var i = 0; i < item.tracks.length; i++)
                     AccessibleListRow(
                       id: 'track_$i',
-                      title: item.tracks[i].title,
+                      title: item.tracks[i].titleLabel(l10n),
                       subtitle: item.tracks[i].length.isEmpty ? item.tracks[i].format : '${item.tracks[i].format} - ${item.tracks[i].length}',
                     ),
               ])],
@@ -492,7 +498,7 @@ class _InternetArchiveItemScreenState
                 for (final track in item.tracks)
                   ListTile(
                     leading: const Icon(Icons.play_arrow),
-                    title: Text(track.title),
+                    title: Text(track.titleLabel(l10n)),
                     subtitle: track.length.isEmpty
                         ? Text(track.format)
                         : Text('${track.format} - ${track.length}'),

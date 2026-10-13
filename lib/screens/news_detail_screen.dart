@@ -48,11 +48,15 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
   int _totalChunks = 0;
 
   Future<String> _voice() async {
-    final configured = await _settings.loadTtsVoice();
+    final configured = await _settings.loadTtsVoice(
+      fallbackLanguageCode:
+          widget.language == NewsLanguage.turkish ? 'tr-TR' : null,
+    );
     if (configured.trim().isNotEmpty) return configured;
     return switch (widget.language) {
       NewsLanguage.italian => 'it-IT-IsabellaNeural',
       NewsLanguage.romanian => 'ro-RO-AlinaNeural',
+      NewsLanguage.turkish => 'tr-TR-EmelNeural',
       _ => 'en-US-JennyNeural',
     };
   }
@@ -170,7 +174,10 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
         await _flutterTts.setSpeechRate(speed * 0.5);
         await _flutterTts.setPitch(pitch);
 
-        final sysLang = await _settings.loadSystemTtsLanguage();
+        final sysLang = await _settings.loadSystemTtsLanguage(
+          fallbackLanguageCode:
+              widget.language == NewsLanguage.turkish ? 'tr-TR' : null,
+        );
         final sysVoice = await _settings.loadSystemTtsVoice();
 
         if (sysVoice != null) {

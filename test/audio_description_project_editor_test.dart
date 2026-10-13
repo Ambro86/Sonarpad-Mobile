@@ -222,6 +222,34 @@ void main() {
       expect(loaded.toJson()['format'], 'sonarpad-audio-description-project');
     });
 
+    test('Turkish projects retain their language and default to Turkish voices',
+        () async {
+      final dir = await Directory.systemTemp.createTemp('sonarpad-tr-project-');
+      addTearDown(() => dir.delete(recursive: true));
+      final service = AiAudioDescriptionService();
+      addTearDown(service.dispose);
+
+      for (final language in ['tr', 'tr-TR', 'tr_TR']) {
+        final path = '${dir.path}/$language.sonarpad-ad.json';
+        final data = sampleProject(path).toJson()
+          ..['language'] = language
+          ..['language_code'] = language
+          ..['tts_voice'] = 'tr-TR-EmelNeural'
+          ..remove('mobile_tts_voice')
+          ..remove('mobile_edge_language')
+          ..remove('mobile_system_language');
+        await File(path).writeAsString(jsonEncode(data));
+
+        final loaded = await service.loadEditableProject(path);
+        expect(loaded.languageCode, 'tr');
+        expect(loaded.edgeLanguage, 'tr-TR');
+        expect(loaded.systemLanguage, 'tr-TR');
+        expect(loaded.ttsVoice, 'tr-TR-EmelNeural');
+        expect(loaded.toJson()['language'], 'tr');
+        expect(loaded.descriptions, hasLength(2));
+      }
+    });
+
     test('available duration is limited by saved Pyannote gap and next description', () {
       final service = AiAudioDescriptionService();
       addTearDown(service.dispose);

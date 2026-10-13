@@ -10,6 +10,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../l10n/app_localizations.dart';
+import '../l10n/localized_dynamic_labels.dart';
 import 'audio_description_project_picker_screen.dart';
 import '../services/cloud_file_picker_service.dart';
 import '../services/ai_audiodescription_service.dart';
@@ -170,6 +171,19 @@ class _AudioDescriptionProjectEditorScreenState
     }
   }
 
+  Future<void> _toggleMixPreview() async {
+    if (_running || _project == null) return;
+    if (_mixPreview.isPreparing) {
+      await _mixPreview.stop();
+    } else if (_mixPreview.isPlaying) {
+      await _mixPreview.pause();
+    } else if (_mixPreview.isPaused) {
+      await _mixPreview.resume();
+    } else {
+      await _playMixPreview();
+    }
+  }
+
   Future<void> _playMixPreview() async {
     if (_running || _project == null) return;
     final source = _sourceOverride;
@@ -316,7 +330,7 @@ class _AudioDescriptionProjectEditorScreenState
         _selectedIndex = 0;
         _editText = project.descriptions.first.text;
         _dirty = false;
-        _status = s['ready'];
+        _status = s.ready;
         _technicalError = null;
         _applyProjectVoiceToUi(project);
       });
@@ -329,7 +343,7 @@ class _AudioDescriptionProjectEditorScreenState
       if (!mounted) return;
       setState(() {
         _technicalError = error.toString();
-        _status = s['invalidProject'];
+        _status = s.invalidProject;
       });
     } finally {
       if (mounted) setState(() => _running = false);
@@ -411,9 +425,10 @@ class _AudioDescriptionProjectEditorScreenState
     AudioDescriptionProjectStrings strings,
     AudioDescriptionProjectTooLongException error,
   ) =>
-      strings['tooLong']
-          .replaceAll('{actual}', error.actualSec.toStringAsFixed(2))
-          .replaceAll('{available}', error.availableSec.toStringAsFixed(2));
+      strings.tooLong(
+        actual: error.actualSec.toStringAsFixed(2),
+        available: error.availableSec.toStringAsFixed(2),
+      );
 
   Future<void> _preview() async {
     final project = _project;
@@ -423,7 +438,7 @@ class _AudioDescriptionProjectEditorScreenState
     setState(() {
       _running = true;
       _progress = 0.3;
-      _status = strings['working'];
+      _status = strings.working;
       _technicalError = null;
     });
     try {
@@ -440,7 +455,7 @@ class _AudioDescriptionProjectEditorScreenState
       if (!mounted) return;
       setState(() {
         _progress = 1;
-        _status = strings['ready'];
+        _status = strings.ready;
       });
     } on _EditorOperationCancelled {
       // Cancellation also covers time spent draining the previous preview.
@@ -467,7 +482,7 @@ class _AudioDescriptionProjectEditorScreenState
     setState(() {
       _running = true;
       _progress = 0.25;
-      _status = strings['working'];
+      _status = strings.working;
       _technicalError = null;
     });
     try {
@@ -486,7 +501,7 @@ class _AudioDescriptionProjectEditorScreenState
         _editText = updated.descriptions[_selectedIndex].text;
         _dirty = false;
         _progress = 1;
-        _status = strings['applied'];
+        _status = strings.applied;
       });
     } on _EditorOperationCancelled {
       // Cancellation also covers time spent draining the previous preview.
@@ -510,21 +525,21 @@ class _AudioDescriptionProjectEditorScreenState
     if (project == null || _running) return;
     final strings = AudioDescriptionProjectStrings.of(context);
     if (project.descriptions.length <= 1) {
-      setState(() => _status = strings['deleteLast']);
+      setState(() => _status = strings.deleteLast);
       return;
     }
     final confirmed = await showDialog<bool>(
           context: context,
           builder: (dialogContext) => AlertDialog(
-            content: Text(strings['deleteConfirm']),
+            content: Text(strings.deleteConfirm),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(dialogContext, false),
-                child: Text(strings['cancel']),
+                child: Text(strings.cancel),
               ),
               FilledButton(
                 onPressed: () => Navigator.pop(dialogContext, true),
-                child: Text(strings['delete']),
+                child: Text(strings.delete),
               ),
             ],
           ),
@@ -554,7 +569,7 @@ class _AudioDescriptionProjectEditorScreenState
         _selectedIndex = newIndex;
         _editText = updated.descriptions[newIndex].text;
         _dirty = false;
-        _status = strings['deleted'];
+        _status = strings.deleted;
       });
     } on _EditorOperationCancelled {
       // The queued write has not started if cancellation happened in the drain.
@@ -575,7 +590,7 @@ class _AudioDescriptionProjectEditorScreenState
     setState(() {
       _running = true;
       _progress = 0;
-      _status = strings['working'];
+      _status = strings.working;
       _technicalError = null;
     });
     try {
@@ -601,7 +616,7 @@ class _AudioDescriptionProjectEditorScreenState
       setState(() {
         _project = updated;
         _progress = 1;
-        _status = strings['voiceChanged'];
+        _status = strings.voiceChanged;
       });
     } on _EditorOperationCancelled {
       // Cancellation also covers time spent draining the previous preview.
@@ -625,7 +640,7 @@ class _AudioDescriptionProjectEditorScreenState
     if (project == null || _running) return;
     final strings = AudioDescriptionProjectStrings.of(context);
     if (_dirty) {
-      setState(() => _status = strings['unsaved']);
+      setState(() => _status = strings.unsaved);
       return;
     }
     var source = _sourceOverride;
@@ -633,7 +648,7 @@ class _AudioDescriptionProjectEditorScreenState
         await File(source).exists();
     if (!mounted) return;
     if (!sourceExists) {
-      setState(() => _status = strings['sourceMissing']);
+      setState(() => _status = strings.sourceMissing);
       await _chooseSource();
       source = _sourceOverride;
       if (source == null || source.isEmpty) return;
@@ -642,14 +657,14 @@ class _AudioDescriptionProjectEditorScreenState
     final latest = _project;
     if (latest == null || latest.projectPath != project.projectPath) return;
     if (_dirty) {
-      setState(() => _status = strings['unsaved']);
+      setState(() => _status = strings.unsaved);
       return;
     }
     final operation = ++_operationRevision;
     setState(() {
       _running = true;
       _progress = 0;
-      _status = strings['working'];
+      _status = strings.working;
       _technicalError = null;
     });
     try {
@@ -685,7 +700,7 @@ class _AudioDescriptionProjectEditorScreenState
         _selectedIndex = _selectedIndex.clamp(0, result.project.descriptions.length - 1).toInt();
         _editText = result.project.descriptions[_selectedIndex].text;
         _progress = 1;
-        _status = strings['completed'];
+        _status = strings.completed;
       });
       await _showOutputDialog(result.outputPaths);
     } on _EditorOperationCancelled {
@@ -710,7 +725,7 @@ class _AudioDescriptionProjectEditorScreenState
     if (project == null || _running) return;
     final strings = AudioDescriptionProjectStrings.of(context);
     if (_dirty) {
-      setState(() => _status = strings['unsaved']);
+      setState(() => _status = strings.unsaved);
       return;
     }
     try {
@@ -734,15 +749,15 @@ class _AudioDescriptionProjectEditorScreenState
       context: context,
       barrierDismissible: false,
       builder: (dialogContext) => AlertDialog(
-        content: Text(strings['completed']),
+        content: Text(strings.completed),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, _OutputAction.share),
-            child: Text(strings['share']),
+            child: Text(strings.share),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(dialogContext, _OutputAction.saveDocuments),
-            child: Text(strings['saveDocuments']),
+            child: Text(strings.saveDocuments),
           ),
         ],
       ),
@@ -759,7 +774,7 @@ class _AudioDescriptionProjectEditorScreenState
           originalName: p.basename(path),
         );
       }
-      if (mounted) showStatusMessage(context, strings['saved']);
+      if (mounted) showStatusMessage(context, strings.saved);
     }
   }
 
@@ -768,7 +783,7 @@ class _AudioDescriptionProjectEditorScreenState
     if (_serviceOperationStarted) _service.cancel();
     unawaited(_mixPreview.stop());
     unawaited(_audio.stop());
-    setState(() => _status = AudioDescriptionProjectStrings.of(context)['cancel']);
+    setState(() => _status = AudioDescriptionProjectStrings.of(context).cancel);
   }
 
   List<AccessibleOption> _descriptionOptions() {
@@ -788,8 +803,31 @@ class _AudioDescriptionProjectEditorScreenState
     });
   }
 
-  List<AccessibleOption> _edgeLanguageOptions() => _edgeLanguages
-      .map((item) => AccessibleOption(value: item.code, label: item.label))
+  String _localizedTurkishTtsLanguageLabel(
+    AppLocalizations l10n,
+    String code,
+    String fallbackLabel,
+  ) {
+    final normalized = code.trim().replaceAll('_', '-').toLowerCase();
+    if (normalized == 'tr') return l10n.languageLabel('tr');
+    if (normalized == 'tr-tr') {
+      return l10n.audioDescriptionLanguageCountry(
+        l10n.languageLabel('tr'),
+        l10n.radioCountryOptionTr,
+      );
+    }
+    return fallbackLabel;
+  }
+
+  List<AccessibleOption> _edgeLanguageOptions(AppLocalizations l10n) => _edgeLanguages
+      .map((item) => AccessibleOption(
+            value: item.code,
+            label: _localizedTurkishTtsLanguageLabel(
+              l10n,
+              item.code,
+              item.label,
+            ),
+          ))
       .toList();
 
   List<AccessibleOption> _edgeVoiceOptions() =>
@@ -797,7 +835,7 @@ class _AudioDescriptionProjectEditorScreenState
           .map((item) => AccessibleOption(value: item.voice, label: item.label))
           .toList();
 
-  List<AccessibleOption> _systemLanguageOptions() {
+  List<AccessibleOption> _systemLanguageOptions(AppLocalizations l10n) {
     final values = _systemVoices
         .map((item) => item['locale'] ?? '')
         .where((value) => value.isNotEmpty)
@@ -805,7 +843,10 @@ class _AudioDescriptionProjectEditorScreenState
         .toList()
       ..sort();
     return values
-        .map((value) => AccessibleOption(value: value, label: value))
+        .map((value) => AccessibleOption(
+              value: value,
+              label: _localizedTurkishTtsLanguageLabel(l10n, value, value),
+            ))
         .toList();
   }
 
@@ -824,12 +865,13 @@ class _AudioDescriptionProjectEditorScreenState
   String _detailValue(AudioDescriptionProjectStrings strings) {
     final item = _selected;
     if (item == null) return '';
-    return strings['details']
-        .replaceAll('{source}', item.sourceStartSec.toStringAsFixed(2))
-        .replaceAll('{start}', item.outputStartSec.toStringAsFixed(2))
-        .replaceAll('{end}', item.outputEndSec.toStringAsFixed(2))
-        .replaceAll('{duration}', item.ttsDurationSec.toStringAsFixed(2))
-        .replaceAll('{mode}', item.extendedPause ? strings['extended'] : strings['normal']);
+    return strings.details(
+      source: item.sourceStartSec.toStringAsFixed(2),
+      start: item.outputStartSec.toStringAsFixed(2),
+      end: item.outputEndSec.toStringAsFixed(2),
+      duration: item.ttsDurationSec.toStringAsFixed(2),
+      mode: item.extendedPause ? strings.extended : strings.normal,
+    );
   }
 
   @override
@@ -852,7 +894,7 @@ class _AudioDescriptionProjectEditorScreenState
         '${volumeFormat.format(index / 20)}${index == 20 ? ' (${l10n.audioDescriptionAudioNormal})' : ''}',
     ];
     return Scaffold(
-      appBar: SonarpadAppBar(title: Text(strings['title'])),
+      appBar: SonarpadAppBar(title: Text(strings.title)),
       body: Column(
         children: [
           if (_running)
@@ -883,7 +925,7 @@ class _AudioDescriptionProjectEditorScreenState
                   if (project != null)
                     AccessibleListRow(
                       id: 'project_name',
-                      title: strings['project'],
+                      title: strings.project,
                       value: p.basename(project.projectPath),
                       kind: 'text',
                       accessibilityButtonTrait: false,
@@ -891,7 +933,7 @@ class _AudioDescriptionProjectEditorScreenState
                   if (project != null)
                     AccessibleListRow(
                       id: 'choose_source',
-                      title: strings['chooseSource'],
+                      title: strings.chooseSource,
                       value: source == null || source.isEmpty ? null : p.basename(source),
                       enabled: !_running,
                     ),
@@ -900,7 +942,7 @@ class _AudioDescriptionProjectEditorScreenState
                   AccessibleListSection(rows: [
                     AccessibleListRow(
                       id: 'description',
-                      title: strings['description'],
+                      title: strings.description,
                       kind: 'picker',
                       value: '$_selectedIndex',
                       valueLabel: _descriptionOptions()[_selectedIndex].label,
@@ -909,31 +951,31 @@ class _AudioDescriptionProjectEditorScreenState
                     ),
                     AccessibleListRow(
                       id: 'description_details',
-                      title: strings['description'],
+                      title: strings.description,
                       subtitle: _detailValue(strings),
                       kind: 'text',
                       accessibilityButtonTrait: false,
                     ),
                     AccessibleListRow(
                       id: 'description_text',
-                      title: strings['text'],
+                      title: strings.text,
                       kind: 'textField',
                       value: _editText,
                       enabled: !_running,
                     ),
                     AccessibleListRow(
                       id: 'preview',
-                      title: strings['preview'],
+                      title: strings.preview,
                       enabled: !_running,
                     ),
                     AccessibleListRow(
                       id: 'apply',
-                      title: strings['apply'],
+                      title: strings.apply,
                       enabled: !_running,
                     ),
                     AccessibleListRow(
                       id: 'delete',
-                      title: strings['delete'],
+                      title: strings.delete,
                       enabled: !_running,
                     ),
                   ]),
@@ -941,29 +983,33 @@ class _AudioDescriptionProjectEditorScreenState
                   AccessibleListSection(rows: [
                     AccessibleListRow(
                       id: 'tts_engine',
-                      title: strings['engine'],
+                      title: strings.engine,
                       kind: 'picker',
                       value: _ttsEngine,
-                      valueLabel: _ttsEngine == 'system' ? strings['system'] : strings['edge'],
+                      valueLabel: _ttsEngine == 'system' ? strings.system : strings.edge,
                       enabled: !_running,
                       options: [
-                        AccessibleOption(value: 'edge', label: strings['edge']),
-                        AccessibleOption(value: 'system', label: strings['system']),
+                        AccessibleOption(value: 'edge', label: strings.edge),
+                        AccessibleOption(value: 'system', label: strings.system),
                       ],
                     ),
                     if (_ttsEngine == 'edge') ...[
                       AccessibleListRow(
                         id: 'edge_language',
-                        title: strings['language'],
+                        title: strings.language,
                         kind: 'picker',
                         value: _edgeLanguage,
-                        valueLabel: _edgeLanguage,
+                        valueLabel: _localizedTurkishTtsLanguageLabel(
+                          l10n,
+                          _edgeLanguage,
+                          _edgeLanguage,
+                        ),
                         enabled: !_running,
-                        options: _edgeLanguageOptions(),
+                        options: _edgeLanguageOptions(l10n),
                       ),
                       AccessibleListRow(
                         id: 'edge_voice',
-                        title: strings['voice'],
+                        title: strings.voice,
                         kind: 'picker',
                         value: _edgeVoice,
                         valueLabel: _edgeVoice,
@@ -971,19 +1017,23 @@ class _AudioDescriptionProjectEditorScreenState
                         options: _edgeVoiceOptions(),
                       ),
                     ] else ...[
-                      if (_systemLanguageOptions().isNotEmpty)
+                      if (_systemLanguageOptions(l10n).isNotEmpty)
                         AccessibleListRow(
                           id: 'system_language',
-                          title: strings['language'],
+                          title: strings.language,
                           kind: 'picker',
                           value: _systemLanguage,
-                          valueLabel: _systemLanguage,
+                          valueLabel: _localizedTurkishTtsLanguageLabel(
+                            l10n,
+                            _systemLanguage,
+                            _systemLanguage,
+                          ),
                           enabled: !_running,
-                          options: _systemLanguageOptions(),
+                          options: _systemLanguageOptions(l10n),
                         ),
                       AccessibleListRow(
                         id: 'system_voice',
-                        title: strings['voice'],
+                        title: strings.voice,
                         kind: 'picker',
                         value: _systemVoice ?? '',
                         valueLabel: _systemVoice ?? l10n.settingsDefaultVoice,
@@ -993,7 +1043,7 @@ class _AudioDescriptionProjectEditorScreenState
                     ],
                     AccessibleListRow(
                       id: 'change_voice',
-                      title: strings['changeVoice'],
+                      title: strings.changeVoice,
                       enabled: !_running,
                     ),
                   ]),
@@ -1042,7 +1092,9 @@ class _AudioDescriptionProjectEditorScreenState
                     ),
                     AccessibleListRow(
                       id: 'mix_preview',
-                      title: l10n.audioDescriptionMixPreview,
+                      title: _mixPreview.isPreparing || _mixPreview.isPlaying
+                          ? l10n.pause
+                          : l10n.audioDescriptionResume,
                       value: _mixPreview.isPreparing
                           ? l10n.audioDescriptionMixPreviewPreparing
                           : _mixPreview.error != null
@@ -1051,27 +1103,22 @@ class _AudioDescriptionProjectEditorScreenState
                       hint: l10n.audioDescriptionMixPreviewHint,
                       enabled: !_running,
                     ),
-                    AccessibleListRow(
-                      id: 'mix_preview_stop',
-                      title: l10n.audioDescriptionMixPreviewStop,
-                      enabled: !_running && _mixPreview.isActive,
-                    ),
                   ]),
                 if (project != null)
                   AccessibleListSection(rows: [
                     AccessibleListRow(
                       id: 'reexport',
-                      title: strings['reexport'],
+                      title: strings.reexport,
                       enabled: !_running,
                     ),
                     AccessibleListRow(
                       id: 'export_srt',
-                      title: strings['srt'],
+                      title: strings.srt,
                       enabled: !_running,
                     ),
                     AccessibleListRow(
                       id: 'export_vtt',
-                      title: strings['vtt'],
+                      title: strings.vtt,
                       enabled: !_running,
                     ),
                     if (_running)
@@ -1085,7 +1132,7 @@ class _AudioDescriptionProjectEditorScreenState
                     if (_running)
                       AccessibleListRow(
                         id: 'cancel',
-                        title: strings['cancel'],
+                        title: strings.cancel,
                       ),
                     if (!_running && _status.isNotEmpty)
                       AccessibleListRow(
@@ -1108,7 +1155,7 @@ class _AudioDescriptionProjectEditorScreenState
               onEvent: (event) async {
                 final id = event.id;
                 if (id == null || !mounted) return;
-                if (_running && id != 'cancel' && id != 'mix_preview_stop') return;
+                if (_running && id != 'cancel') return;
                 if (event.type == 'slider') {
                   await _setAudioSetting(event);
                 } else if (event.type == 'picker') {
@@ -1161,10 +1208,7 @@ class _AudioDescriptionProjectEditorScreenState
                       await _chooseSource();
                       break;
                     case 'mix_preview':
-                      await _playMixPreview();
-                      break;
-                    case 'mix_preview_stop':
-                      await _mixPreview.stop();
+                      await _toggleMixPreview();
                       break;
                     case 'preview':
                       await _preview();

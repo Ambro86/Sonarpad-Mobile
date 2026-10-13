@@ -9,7 +9,6 @@ import 'package:flutter/services.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:syncfusion_flutter_pdf/pdf.dart';
 
 import '../l10n/app_localizations.dart';
 import '../models/document_item.dart';
@@ -25,6 +24,7 @@ import '../services/epub_export_service.dart';
 import '../services/internet_archive_service.dart';
 import '../services/ios_photo_library_import_service.dart';
 import '../services/librivox_service.dart';
+import '../services/pdf_export_service.dart';
 import '../utils/app_logger.dart';
 import 'package:sonarpad_mobile_starter/utils/accessibility_list_behavior.dart';
 import '../utils/document_unicode_normalizer.dart';
@@ -163,33 +163,10 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
   }
 
 
-  String _importFromPhotosLabel(AppLocalizations l10n) => switch (l10n.localeName) {
-    'en' => 'Import video from Photos',
-    'es' => 'Importar vídeo desde Fotos',
-    'fr' => 'Importer une vidéo depuis Photos',
-    'de' => 'Video aus Fotos importieren',
-    'pt' || 'pt_BR' => 'Importar vídeo de Fotos',
-    'pl' => 'Importuj wideo ze Zdjęć',
-    'cs' => 'Importovat video z Fotek',
-    'uk' => 'Імпортувати відео з Фото',
-    'ro' => 'Importă video din Poze',
-    'zh_CN' => '从照片导入视频',
-    _ => 'Importa video da Foto',
-  };
+  String _importFromPhotosLabel(AppLocalizations l10n) =>
+      l10n.audioDescriptionProjectImportFromPhotos;
 
-  String _importFromFilesLabel(AppLocalizations l10n) => switch (l10n.localeName) {
-    'en' => 'Import from Files',
-    'es' => 'Importar desde Archivos',
-    'fr' => 'Importer depuis Fichiers',
-    'de' => 'Aus Dateien importieren',
-    'pt' || 'pt_BR' => 'Importar de Arquivos',
-    'pl' => 'Importuj z Plików',
-    'cs' => 'Importovat ze Souborů',
-    'uk' => 'Імпортувати з Файлів',
-    'ro' => 'Importă din Fișiere',
-    'zh_CN' => '从文件导入',
-    _ => 'Importa da File',
-  };
+  String _importFromFilesLabel(AppLocalizations l10n) => l10n.documentsImportFromFiles;
 
   Future<void> _addToLibrary() async {
     if (!_iosPhotoImport.isSupported) {
@@ -890,6 +867,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
 
     if (format == null || !mounted) return;
 
+    final l10n = AppLocalizations.of(context);
     try {
       await AppLogger.log('Inizio esportazione documento in formato $format');
       final text = await _exportTextForDocument(doc);
@@ -897,30 +875,32 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
           'Testo estratto correttamente (lunghezza: ${text.length})');
 
       final appDir = await getTemporaryDirectory();
-      final baseName = doc.displayName;
+      // Only names for this new export are localized. The source document's
+      // saved name and identity stay intact.
+      final baseName = _safeExportBaseName(doc.displayName, l10n);
       String? path;
       String? saveName;
 
       if (format == 'txt') {
-        path = '${appDir.path}/${_safeExportBaseName(baseName)}_export.txt';
-        saveName = _exportLibraryFileName(baseName, 'txt');
+        path = '${appDir.path}/${baseName}_export.txt';
+        saveName = _exportLibraryFileName(baseName, 'txt', l10n);
         await AppLogger.log('Scrittura file txt in: $path');
         await File(path).writeAsString(normalizeDocumentUnicode(text));
         await AppLogger.log('File txt scritto');
       } else if (format == 'pdf') {
         await AppLogger.log('Inizio generazione PDF');
         path = await _generatePdf(baseName, text, appDir.path);
-        saveName = _exportLibraryFileName(baseName, 'pdf');
+        saveName = _exportLibraryFileName(baseName, 'pdf', l10n);
         await AppLogger.log('PDF generato in: $path');
       } else if (format == 'docx') {
         await AppLogger.log('Inizio generazione DOCX Unicode');
         path = await _generateDocx(baseName, text, appDir.path);
-        saveName = _exportLibraryFileName(baseName, 'docx');
+        saveName = _exportLibraryFileName(baseName, 'docx', l10n);
         await AppLogger.log('DOCX generato in: $path');
       } else if (format == 'epub') {
         await AppLogger.log('Inizio generazione EPUB Unicode');
         path = await _generateEpub(baseName, text, appDir.path);
-        saveName = _exportLibraryFileName(baseName, 'epub');
+        saveName = _exportLibraryFileName(baseName, 'epub', l10n);
         await AppLogger.log('EPUB generato in: $path');
       } else if (format == 'audiobook_mp3') {
         await AppLogger.log('Inizio generazione audiolibro MP3');
@@ -930,7 +910,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
           appDir.path,
           AudiobookExportFormat.mp3,
         );
-        saveName = _exportLibraryFileName(baseName, 'mp3', audiobook: true);
+        saveName = _exportLibraryFileName(baseName, 'mp3', l10n, audiobook: true);
         await AppLogger.log('Audiolibro MP3 generato in: $path');
       } else if (format == 'audiobook_m4b') {
         await AppLogger.log('Inizio generazione audiolibro M4B');
@@ -940,7 +920,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
           appDir.path,
           AudiobookExportFormat.m4b,
         );
-        saveName = _exportLibraryFileName(baseName, 'm4b', audiobook: true);
+        saveName = _exportLibraryFileName(baseName, 'm4b', l10n, audiobook: true);
         await AppLogger.log('Audiolibro M4B generato in: $path');
       }
 
@@ -1054,31 +1034,9 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     return result.text;
   }
 
-  String _sanitizeTextForPdf(String text) {
-    var sanitized = text
-        .replaceAll('’', "'")
-        .replaceAll('‘', "'")
-        .replaceAll('“', '"')
-        .replaceAll('”', '"')
-        .replaceAll('–', '-')
-        .replaceAll('—', '-')
-        .replaceAll('…', '...')
-        .replaceAll('€', 'EUR')
-        .replaceAll('™', '(TM)')
-        .replaceAll('\u200B', '') // Zero width space
-        .replaceAll('\uFEFF', '') // Byte order mark
-        .replaceAll('\r\n', '\n');
-
-    // PdfStandardFont supporta solo caratteri 0-255 (WinAnsi)
-    return sanitized.replaceAllMapped(RegExp(r'[^\x00-\xFF]'), (match) => '?');
-  }
-
-
-
   Future<String> _generateDocx(
       String baseName, String text, String outDir) async {
-    final safeBaseName = _safeExportBaseName(baseName);
-    final path = '$outDir/${safeBaseName}_export.docx';
+    final path = '$outDir/${baseName}_export.docx';
     final bytes = DocxExportService().buildDocx(text);
     await File(path).writeAsBytes(bytes, flush: true);
     return path;
@@ -1086,9 +1044,8 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
 
   Future<String> _generateEpub(
       String baseName, String text, String outDir) async {
-    final safeBaseName = _safeExportBaseName(baseName);
-    final path = '$outDir/${safeBaseName}_export.epub';
-    final bytes = EpubExportService().buildEpub(text, title: safeBaseName);
+    final path = '$outDir/${baseName}_export.epub';
+    final bytes = EpubExportService().buildEpub(text, title: baseName);
     await File(path).writeAsBytes(bytes, flush: true);
     return path;
   }
@@ -1100,7 +1057,6 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     AudiobookExportFormat format,
   ) async {
     final l10n = AppLocalizations.of(context);
-    final safeBaseName = _safeExportBaseName(baseName);
     final progressNotifier = ValueNotifier<_AudiobookExportProgressUi>(
       _AudiobookExportProgressUi(
         message: l10n.audiobookExportPreparing,
@@ -1149,9 +1105,10 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     try {
       final file = await AudiobookExportService().export(
         text: text,
-        title: safeBaseName,
+        title: baseName,
         outputDirectory: outDir,
         format: format,
+        fileNameSuffix: l10n.documentExportAudiobookSuffix,
         onProgress: (progress) {
           progressNotifier.value = _AudiobookExportProgressUi(
             message: _audiobookExportProgressMessage(l10n, progress),
@@ -1187,7 +1144,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     }
   }
 
-  String _safeExportBaseName(String value) {
+  String _safeExportBaseName(String value, AppLocalizations l10n) {
     final cleaned = value
         .replaceAll('/', ' ')
         .replaceAll('\\', ' ')
@@ -1202,45 +1159,25 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
         .where((part) => part.trim().isNotEmpty)
         .join(' ')
         .trim();
-    return cleaned.isEmpty ? 'Documento' : cleaned;
+    return cleaned.isEmpty ? l10n.documentExportFallbackName : cleaned;
   }
 
   String _exportLibraryFileName(
     String baseName,
-    String extension, {
+    String extension,
+    AppLocalizations l10n, {
     bool audiobook = false,
   }) {
-    final safeBaseName = _safeExportBaseName(baseName);
-    if (audiobook) return '$safeBaseName - audiolibro.$extension';
-    return '$safeBaseName.$extension';
+    if (audiobook) {
+      return '$baseName - ${l10n.documentExportAudiobookSuffix}.$extension';
+    }
+    return '$baseName.$extension';
   }
 
   Future<String> _generatePdf(
       String baseName, String text, String outDir) async {
-    final PdfDocument document = PdfDocument();
-    final PdfPage page = document.pages.add();
-    final PdfFont font = PdfStandardFont(PdfFontFamily.helvetica, 12);
-
-    final safeText = _sanitizeTextForPdf(text);
-
-    final PdfTextElement element = PdfTextElement(
-      text: safeText,
-      font: font,
-    );
-
-    element.draw(
-      page: page,
-      bounds: Rect.fromLTWH(
-          0, 0, page.getClientSize().width, page.getClientSize().height),
-      format: PdfLayoutFormat(
-        layoutType: PdfLayoutType.paginate,
-      ),
-    );
-
+    final bytes = await PdfExportService().buildPdf(text);
     final path = '$outDir/${baseName}_export.pdf';
-    final List<int> bytes = await document.save();
-    document.dispose();
-
     await File(path).writeAsBytes(bytes);
     return path;
   }

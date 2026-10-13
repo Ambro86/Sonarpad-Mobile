@@ -5250,5 +5250,1140 @@
         "type": "String"
       }
     }
+  },
+  "routeServiceInvalidAddress": "Indirizzo non valido",
+  "@routeServiceInvalidAddress": {
+    "description": "Route service message migrated from _invalidAddress."
+  },
+  "routeServiceGeocodingNetworkError": "Errore di rete geocode: HTTP {statusCode}",
+  "@routeServiceGeocodingNetworkError": {
+    "description": "Route service message migrated from _networkGeocodeError.",
+    "placeholders": {
+      "statusCode": {
+        "type": "int"
+      }
+    }
+  },
+  "routeServiceNetworkError": "Errore di rete route: HTTP {statusCode}",
+  "@routeServiceNetworkError": {
+    "description": "Route service message migrated from _networkRouteError.",
+    "placeholders": {
+      "statusCode": {
+        "type": "int"
+      }
+    }
+  },
+  "routeServiceServerError": "Errore dal server",
+  "@routeServiceServerError": {
+    "description": "Route service message migrated from _serverGenericError."
+  },
+  "routeServiceCalculationError": "Errore di calcolo percorso dal server",
+  "@routeServiceCalculationError": {
+    "description": "Route service message migrated from _routeCalculationServerError."
+  },
+  "routeServiceUnauthorized": "Client non autorizzato. Aggiorna Sonarpad o verifica la configurazione dell'app.",
+  "@routeServiceUnauthorized": {
+    "description": "Route service message migrated from _unauthorizedError."
+  },
+  "routeServiceStartNotFound": "Indirizzo di partenza non trovato",
+  "@routeServiceStartNotFound": {
+    "description": "Route address lookup failure."
+  },
+  "routeServiceDestinationNotFound": "Indirizzo di arrivo non trovato",
+  "@routeServiceDestinationNotFound": {
+    "description": "Route address lookup failure."
+  },
+  "radioLanguageRo": "Romena",
+  "@radioLanguageRo": {
+    "description": "Romanian language label shared by language pickers."
+  },
+  "radioCountryOptionRo": "Romania",
+  "@radioCountryOptionRo": {
+    "description": "Romania country label for radio pickers."
+  },
+  "sonarTubeServiceError": "Errore SonarTube",
+  "@sonarTubeServiceError": {
+    "description": "SonarTube service failure message migrated to ARB."
+  },
+  "sonarTubeServiceInvalidResponse": "Risposta SonarTube non valida.",
+  "@sonarTubeServiceInvalidResponse": {
+    "description": "SonarTube service failure message migrated to ARB."
+  },
+  "sonarTubeServiceInnerTubeError": "Errore API InnerTube.",
+  "@sonarTubeServiceInnerTubeError": {
+    "description": "SonarTube service failure message migrated to ARB."
+  },
+  "sonarTubeServiceInvalidInnerTubeResponse": "Risposta InnerTube non valida.",
+  "@sonarTubeServiceInvalidInnerTubeResponse": {
+    "description": "SonarTube service failure message migrated to ARB."
+  },
+  "sonarTubeServiceNoStream": "Nessun flusso riproducibile disponibile.",
+  "@sonarTubeServiceNoStream": {
+    "description": "SonarTube service failure message migrated to ARB."
+  },
+  "sonarTubeServiceOnlyVideo": "È possibile risolvere soltanto un video.",
+  "@sonarTubeServiceOnlyVideo": {
+    "description": "SonarTube service failure message migrated to ARB."
+  },
+  "sonarTubeServiceNotCollection": "Un video non è una raccolta SonarTube.",
+  "@sonarTubeServiceNotCollection": {
+    "description": "SonarTube service failure message migrated to ARB."
+  },
+  "listTimestampToday": "oggi",
+  "@listTimestampToday": {
+    "description": "Relative day label for publication timestamps in lists."
+  },
+  "listTimestampYesterday": "ieri",
+  "@listTimestampYesterday": {
+    "description": "Relative day label for publication timestamps in lists."
+  },
+  "listTimestampDayBeforeYesterday": "l'altro ieri",
+  "@listTimestampDayBeforeYesterday": {
+    "description": "Relative day label for publication timestamps in lists."
+  },
+  "listTimestampTomorrow": "domani",
+  "@listTimestampTomorrow": {
+    "description": "Relative day label for publication timestamps in lists."
+  },
+  "listTimestampDayAfterTomorrow": "dopodomani",
+  "@listTimestampDayAfterTomorrow": {
+    "description": "Relative day label for publication timestamps in lists."
+  },
+  "articleTitleNotFound": "Titolo non trovato",
+  "@articleTitleNotFound": {
+    "description": "Fallback article title when the imported source has no usable title."
+  },
+  "articleUnknownTitle": "Titolo sconosciuto",
+  "@articleUnknownTitle": {
+    "description": "Fallback article title when the imported source has no usable title."
+  },
+  "articleAuthorPrefix": "Di",
+  "@articleAuthorPrefix": {
+    "description": "Prefix before the author name in imported article text."
+  },
+  "audioDescriptionProjectEditorTitle": "Modifica progetto audiodescrizione",
+  "@audioDescriptionProjectEditorTitle": {
+    "description": "Title and menu command for editing an audio description project."
+  },
+  "audioDescriptionProjectOpen": "Apri progetto audiodescrizione",
+  "@audioDescriptionProjectOpen": {
+    "description": "Audio description project editor text for the legacy open label or status."
+  },
+  "audioDescriptionProjectLabel": "Progetto",
+  "@audioDescriptionProjectLabel": {
+    "description": "Audio description project editor text for the legacy project label or status."
+  },
+  "audioDescriptionProjectChooseSource": "Scegli video originale",
+  "@audioDescriptionProjectChooseSource": {
+    "description": "Audio description project editor text for the legacy chooseSource label or status."
+  },
+  "audioDescriptionProjectSource": "Video originale",
+  "@audioDescriptionProjectSource": {
+    "description": "Audio description project editor text for the legacy source label or status."
+  },
+  "audioDescriptionProjectDescription": "Descrizione",
+  "@audioDescriptionProjectDescription": {
+    "description": "Audio description project editor text for the legacy description label or status."
+  },
+  "audioDescriptionProjectDescriptionText": "Testo della descrizione",
+  "@audioDescriptionProjectDescriptionText": {
+    "description": "Audio description project editor text for the legacy text label or status."
+  },
+  "audioDescriptionProjectPreviewDescription": "Riproduci descrizione",
+  "@audioDescriptionProjectPreviewDescription": {
+    "description": "Audio description project editor text for the legacy preview label or status."
+  },
+  "audioDescriptionProjectApplyText": "Applica modifica",
+  "@audioDescriptionProjectApplyText": {
+    "description": "Audio description project editor text for the legacy apply label or status."
+  },
+  "audioDescriptionProjectDeleteDescription": "Elimina descrizione",
+  "@audioDescriptionProjectDeleteDescription": {
+    "description": "Audio description project editor text for the legacy delete label or status."
+  },
+  "audioDescriptionProjectDeleteConfirmation": "Eliminare la descrizione selezionata dal progetto?",
+  "@audioDescriptionProjectDeleteConfirmation": {
+    "description": "Audio description project editor text for the legacy deleteConfirm label or status."
+  },
+  "audioDescriptionProjectCannotDeleteLast": "Non è possibile eliminare l’unica descrizione del progetto.",
+  "@audioDescriptionProjectCannotDeleteLast": {
+    "description": "Audio description project editor text for the legacy deleteLast label or status."
+  },
+  "audioDescriptionProjectApplyVoice": "Applica voce al progetto",
+  "@audioDescriptionProjectApplyVoice": {
+    "description": "Audio description project editor text for the legacy changeVoice label or status."
+  },
+  "audioDescriptionProjectReadingEngine": "Motore di lettura",
+  "@audioDescriptionProjectReadingEngine": {
+    "description": "Audio description project editor text for the legacy engine label or status."
+  },
+  "audioDescriptionProjectEdgeVoice": "Voce Microsoft Edge",
+  "@audioDescriptionProjectEdgeVoice": {
+    "description": "Audio description project editor text for the legacy edge label or status."
+  },
+  "audioDescriptionProjectSystemVoice": "Voce di sistema / VoiceOver / Android",
+  "@audioDescriptionProjectSystemVoice": {
+    "description": "Audio description project editor text for the legacy system label or status."
+  },
+  "audioDescriptionProjectVoiceLanguage": "Lingua della voce",
+  "@audioDescriptionProjectVoiceLanguage": {
+    "description": "Audio description project editor text for the legacy language label or status."
+  },
+  "audioDescriptionProjectVoice": "Voce",
+  "@audioDescriptionProjectVoice": {
+    "description": "Audio description project editor text for the legacy voice label or status."
+  },
+  "audioDescriptionProjectReexportMp3": "Esporta nuovamente MP3",
+  "@audioDescriptionProjectReexportMp3": {
+    "description": "Audio description project editor text for the legacy reexport label or status."
+  },
+  "audioDescriptionProjectExportSrt": "Esporta come SRT",
+  "@audioDescriptionProjectExportSrt": {
+    "description": "Audio description project editor text for the legacy srt label or status."
+  },
+  "audioDescriptionProjectExportVtt": "Esporta come VTT",
+  "@audioDescriptionProjectExportVtt": {
+    "description": "Audio description project editor text for the legacy vtt label or status."
+  },
+  "audioDescriptionProjectNormalWithDucking": "normale con ducking",
+  "@audioDescriptionProjectNormalWithDucking": {
+    "description": "Audio description project editor text for the legacy normal label or status."
+  },
+  "audioDescriptionProjectExtendedPause": "pausa estesa",
+  "@audioDescriptionProjectExtendedPause": {
+    "description": "Audio description project editor text for the legacy extended label or status."
+  },
+  "audioDescriptionProjectReady": "Progetto pronto.",
+  "@audioDescriptionProjectReady": {
+    "description": "Audio description project editor text for the legacy ready label or status."
+  },
+  "audioDescriptionProjectDescriptionApplied": "Descrizione verificata e salvata nel progetto.",
+  "@audioDescriptionProjectDescriptionApplied": {
+    "description": "Audio description project editor text for the legacy applied label or status."
+  },
+  "audioDescriptionProjectDescriptionDeleted": "Descrizione eliminata e progetto salvato.",
+  "@audioDescriptionProjectDescriptionDeleted": {
+    "description": "Audio description project editor text for the legacy deleted label or status."
+  },
+  "audioDescriptionProjectVoiceChanged": "Voce cambiata e tutte le descrizioni sono state verificate.",
+  "@audioDescriptionProjectVoiceChanged": {
+    "description": "Audio description project editor text for the legacy voiceChanged label or status."
+  },
+  "audioDescriptionProjectDescriptionTooLong": "La descrizione sintetizzata dura {actual} secondi, ma sono disponibili solo {available} secondi. Il testo precedente non è stato modificato.",
+  "@audioDescriptionProjectDescriptionTooLong": {
+    "description": "Duration validation error after synthesizing a description. actual and available are seconds already formatted to two decimal places by the caller; the previous project text remains unchanged.",
+    "placeholders": {
+      "actual": {
+        "type": "String"
+      },
+      "available": {
+        "type": "String"
+      }
+    }
+  },
+  "audioDescriptionProjectSourceMissing": "Il video originale non è disponibile. Sceglilo prima di riesportare l’MP3.",
+  "@audioDescriptionProjectSourceMissing": {
+    "description": "Audio description project editor text for the legacy sourceMissing label or status."
+  },
+  "audioDescriptionProjectInvalid": "Il file selezionato non è un progetto audiodescrizione Sonarpad valido.",
+  "@audioDescriptionProjectInvalid": {
+    "description": "Audio description project editor text for the legacy invalidProject label or status."
+  },
+  "audioDescriptionProjectUnsavedText": "Applica prima la modifica corrente, poi riesporta l’MP3.",
+  "@audioDescriptionProjectUnsavedText": {
+    "description": "Audio description project editor text for the legacy unsaved label or status."
+  },
+  "audioDescriptionProjectWorking": "Elaborazione progetto…",
+  "@audioDescriptionProjectWorking": {
+    "description": "Audio description project editor text for the legacy working label or status."
+  },
+  "audioDescriptionProjectExported": "Progetto esportato.",
+  "@audioDescriptionProjectExported": {
+    "description": "Audio description project editor text for the legacy completed label or status."
+  },
+  "audioDescriptionProjectSelectFirst": "Apri prima un progetto.",
+  "@audioDescriptionProjectSelectFirst": {
+    "description": "Audio description project editor text for the legacy selectFirst label or status."
+  },
+  "audioDescriptionProjectSelectDescription": "Seleziona una descrizione.",
+  "@audioDescriptionProjectSelectDescription": {
+    "description": "Audio description project editor text for the legacy selectDescription label or status."
+  },
+  "audioDescriptionProjectDescriptionDetails": "Scena {source} s; MP3 {start}-{end} s; voce {duration} s; {mode}",
+  "@audioDescriptionProjectDescriptionDetails": {
+    "description": "Selected description timing summary. source is its scene position; start and end are MP3 positions; duration is synthesized voice length. Times are seconds already formatted to two decimal places; mode is a localized playback mode label.",
+    "placeholders": {
+      "source": {
+        "type": "String"
+      },
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      },
+      "duration": {
+        "type": "String"
+      },
+      "mode": {
+        "type": "String"
+      }
+    }
+  },
+  "audioDescriptionProjectShare": "Condividi",
+  "@audioDescriptionProjectShare": {
+    "description": "Audio description project editor text for the legacy share label or status."
+  },
+  "audioDescriptionProjectSaveDocuments": "Salva in Documenti Sonarpad",
+  "@audioDescriptionProjectSaveDocuments": {
+    "description": "Audio description project editor text for the legacy saveDocuments label or status."
+  },
+  "audioDescriptionProjectSavedDocuments": "File salvati in Documenti Sonarpad.",
+  "@audioDescriptionProjectSavedDocuments": {
+    "description": "Audio description project editor text for the legacy saved label or status."
+  },
+  "audioDescriptionProjectCancel": "Annulla",
+  "@audioDescriptionProjectCancel": {
+    "description": "Audio description project editor text for the legacy cancel label or status."
+  },
+  "audioDescriptionProjectChooseFromFiles": "Scegli video da File",
+  "@audioDescriptionProjectChooseFromFiles": {
+    "description": "Source-picker action to choose a video from the Files app."
+  },
+  "audioDescriptionProjectImportFromPhotos": "Importa video da Foto",
+  "@audioDescriptionProjectImportFromPhotos": {
+    "description": "Source-picker action to import a video from the Photos app."
+  },
+  "newsCategoryWorld": "Mondo",
+  "@newsCategoryWorld": {
+    "description": "World-news category label for built-in feeds."
+  },
+  "newsCategoryBusiness": "Economia",
+  "@newsCategoryBusiness": {
+    "description": "Business-news category label for built-in feeds."
+  },
+  "newsCategoryTechnology": "Tecnologia",
+  "@newsCategoryTechnology": {
+    "description": "Technology-news category label for built-in feeds."
+  },
+  "newsCategoryEntertainment": "Intrattenimento",
+  "@newsCategoryEntertainment": {
+    "description": "Entertainment-news category label for built-in feeds."
+  },
+  "newsCategorySports": "Sport",
+  "@newsCategorySports": {
+    "description": "Sports-news category label for built-in feeds."
+  },
+  "newsCategoryHealth": "Salute",
+  "@newsCategoryHealth": {
+    "description": "Health-news category label for built-in feeds."
+  },
+  "newsArticleSubscribersOnly": "Questo articolo è riservato agli abbonati.",
+  "@newsArticleSubscribersOnly": {
+    "description": "Message shown when the news article requires a subscription."
+  },
+  "wikipediaSearchHttpError": "Errore Wikipedia: {statusCode}",
+  "@wikipediaSearchHttpError": {
+    "description": "HTTP failure returned by a Wikipedia search request.",
+    "placeholders": {
+      "statusCode": {
+        "type": "int"
+      }
+    }
+  },
+  "wikipediaImportHttpError": "Errore importazione Wikipedia: {statusCode}",
+  "@wikipediaImportHttpError": {
+    "description": "HTTP failure returned by a Wikipedia article import request.",
+    "placeholders": {
+      "statusCode": {
+        "type": "int"
+      }
+    }
+  },
+  "gutenbergSearchHttpError": "Errore Gutenberg {statusCode}",
+  "@gutenbergSearchHttpError": {
+    "description": "HTTP failure returned by a Gutenberg catalog search.",
+    "placeholders": {
+      "statusCode": {
+        "type": "int"
+      }
+    }
+  },
+  "gutenbergDownloadHttpError": "Errore download {statusCode}",
+  "@gutenbergDownloadHttpError": {
+    "description": "HTTP failure while downloading a Gutenberg text file.",
+    "placeholders": {
+      "statusCode": {
+        "type": "int"
+      }
+    }
+  },
+  "gutenbergEpubDownloadHttpError": "Errore download EPUB {statusCode}",
+  "@gutenbergEpubDownloadHttpError": {
+    "description": "HTTP failure while downloading a Gutenberg EPUB file.",
+    "placeholders": {
+      "statusCode": {
+        "type": "int"
+      }
+    }
+  },
+  "gutenbergInvalidBookId": "ID Gutenberg non valido.",
+  "@gutenbergInvalidBookId": {
+    "description": "Error shown when a Gutenberg download has no valid book identifier."
+  },
+  "gutenbergDownloadTimeout": "Download Gutenberg troppo lento. Riprova tra poco o scegli un altro formato.",
+  "@gutenbergDownloadTimeout": {
+    "description": "Error shown when a Gutenberg download times out."
+  },
+  "gutenbergUnreadableArchive": "Archivio ZIP Gutenberg senza file di testo leggibile.",
+  "@gutenbergUnreadableArchive": {
+    "description": "Error shown when a Gutenberg ZIP archive has no readable text."
+  },
+  "gutenbergUntitledBook": "Senza titolo",
+  "@gutenbergUntitledBook": {
+    "description": "Fallback label for a Gutenberg book with no title."
+  },
+  "gutenbergUnknownAuthor": "Autore sconosciuto",
+  "@gutenbergUnknownAuthor": {
+    "description": "Fallback label for a Gutenberg book with no author."
+  },
+  "podcastCategoryAll": "Tutte le categorie",
+  "@podcastCategoryAll": {
+    "description": "Display name for the podcast category selector without a genre filter."
+  },
+  "podcastCategoryArts": "Arti",
+  "@podcastCategoryArts": {
+    "description": "Display name for podcast genre 1301 (Arts). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryBusiness": "Affari",
+  "@podcastCategoryBusiness": {
+    "description": "Display name for podcast genre 1321 (Business). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryComedy": "Commedia",
+  "@podcastCategoryComedy": {
+    "description": "Display name for podcast genre 1303 (Comedy). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryEducation": "Istruzione",
+  "@podcastCategoryEducation": {
+    "description": "Display name for podcast genre 1304 (Education). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryFiction": "Narrativa",
+  "@podcastCategoryFiction": {
+    "description": "Display name for podcast genre 1483 (Fiction). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryGovernment": "Governo",
+  "@podcastCategoryGovernment": {
+    "description": "Display name for podcast genre 1511 (Government). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryHealthAndFitness": "Salute e fitness",
+  "@podcastCategoryHealthAndFitness": {
+    "description": "Display name for podcast genre 1512 (Health & Fitness). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryHistory": "Storia",
+  "@podcastCategoryHistory": {
+    "description": "Display name for podcast genre 1487 (History). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryKidsAndFamily": "Bambini e famiglia",
+  "@podcastCategoryKidsAndFamily": {
+    "description": "Display name for podcast genre 1305 (Kids & Family). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryLeisure": "Tempo libero",
+  "@podcastCategoryLeisure": {
+    "description": "Display name for podcast genre 1502 (Leisure). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryMusic": "Musica",
+  "@podcastCategoryMusic": {
+    "description": "Display name for podcast genre 1310 (Music). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryNews": "Notizie",
+  "@podcastCategoryNews": {
+    "description": "Display name for podcast genre 1489 (News). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryReligionAndSpirituality": "Religione e spiritualità",
+  "@podcastCategoryReligionAndSpirituality": {
+    "description": "Display name for podcast genre 1314 (Religion & Spirituality). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryScience": "Scienza",
+  "@podcastCategoryScience": {
+    "description": "Display name for podcast genre 1533 (Science). The genre ID is stable and is not translated."
+  },
+  "podcastCategorySocietyAndCulture": "Società e cultura",
+  "@podcastCategorySocietyAndCulture": {
+    "description": "Display name for podcast genre 1324 (Society & Culture). The genre ID is stable and is not translated."
+  },
+  "podcastCategorySports": "Sport",
+  "@podcastCategorySports": {
+    "description": "Display name for podcast genre 1545 (Sports). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryTechnology": "Tecnologia",
+  "@podcastCategoryTechnology": {
+    "description": "Display name for podcast genre 1318 (Technology). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryTrueCrime": "True crime",
+  "@podcastCategoryTrueCrime": {
+    "description": "Display name for podcast genre 1488 (True Crime). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryTvAndFilm": "TV e film",
+  "@podcastCategoryTvAndFilm": {
+    "description": "Display name for podcast genre 1309 (TV & Film). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryBooks": "Libri",
+  "@podcastCategoryBooks": {
+    "description": "Display name for podcast genre 1482 (Books). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryDesign": "Design",
+  "@podcastCategoryDesign": {
+    "description": "Display name for podcast genre 1402 (Design). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryFashionAndBeauty": "Moda e bellezza",
+  "@podcastCategoryFashionAndBeauty": {
+    "description": "Display name for podcast genre 1459 (Fashion & Beauty). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryFood": "Cibo",
+  "@podcastCategoryFood": {
+    "description": "Display name for podcast genre 1306 (Food). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryPerformingArts": "Arti performative",
+  "@podcastCategoryPerformingArts": {
+    "description": "Display name for podcast genre 1405 (Performing Arts). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryVisualArts": "Arti visive",
+  "@podcastCategoryVisualArts": {
+    "description": "Display name for podcast genre 1406 (Visual Arts). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryCareers": "Carriere",
+  "@podcastCategoryCareers": {
+    "description": "Display name for podcast genre 1410 (Careers). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryEntrepreneurship": "Imprenditoria",
+  "@podcastCategoryEntrepreneurship": {
+    "description": "Display name for podcast genre 1493 (Entrepreneurship). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryInvesting": "Investimenti",
+  "@podcastCategoryInvesting": {
+    "description": "Display name for podcast genre 1412 (Investing). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryManagement": "Management",
+  "@podcastCategoryManagement": {
+    "description": "Display name for podcast genre 1491 (Management). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryMarketing": "Marketing",
+  "@podcastCategoryMarketing": {
+    "description": "Display name for podcast genre 1492 (Marketing). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryNonProfit": "Non profit",
+  "@podcastCategoryNonProfit": {
+    "description": "Display name for podcast genre 1494 (Non-Profit). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryComedyInterviews": "Interviste comiche",
+  "@podcastCategoryComedyInterviews": {
+    "description": "Display name for podcast genre 1496 (Comedy Interviews). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryImprov": "Improvvisazione",
+  "@podcastCategoryImprov": {
+    "description": "Display name for podcast genre 1495 (Improv). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryStandUp": "Stand-up",
+  "@podcastCategoryStandUp": {
+    "description": "Display name for podcast genre 1497 (Stand-Up). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryCourses": "Corsi",
+  "@podcastCategoryCourses": {
+    "description": "Display name for podcast genre 1501 (Courses). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryHowTo": "Come fare",
+  "@podcastCategoryHowTo": {
+    "description": "Display name for podcast genre 1499 (How To). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryLanguageLearning": "Apprendimento lingue",
+  "@podcastCategoryLanguageLearning": {
+    "description": "Display name for podcast genre 1498 (Language Learning). The genre ID is stable and is not translated."
+  },
+  "podcastCategorySelfImprovement": "Crescita personale",
+  "@podcastCategorySelfImprovement": {
+    "description": "Display name for podcast genre 1500 (Self-Improvement). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryComedyFiction": "Narrativa comica",
+  "@podcastCategoryComedyFiction": {
+    "description": "Display name for podcast genre 1486 (Comedy Fiction). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryDrama": "Dramma",
+  "@podcastCategoryDrama": {
+    "description": "Display name for podcast genre 1484 (Drama). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryScienceFiction": "Fantascienza",
+  "@podcastCategoryScienceFiction": {
+    "description": "Display name for podcast genre 1485 (Science Fiction). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryAlternativeHealth": "Salute alternativa",
+  "@podcastCategoryAlternativeHealth": {
+    "description": "Display name for podcast genre 1513 (Alternative Health). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryFitness": "Fitness",
+  "@podcastCategoryFitness": {
+    "description": "Display name for podcast genre 1514 (Fitness). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryMedicine": "Medicina",
+  "@podcastCategoryMedicine": {
+    "description": "Display name for podcast genre 1518 (Medicine). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryMentalHealth": "Salute mentale",
+  "@podcastCategoryMentalHealth": {
+    "description": "Display name for podcast genre 1517 (Mental Health). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryNutrition": "Nutrizione",
+  "@podcastCategoryNutrition": {
+    "description": "Display name for podcast genre 1515 (Nutrition). The genre ID is stable and is not translated."
+  },
+  "podcastCategorySexuality": "Sessualità",
+  "@podcastCategorySexuality": {
+    "description": "Display name for podcast genre 1516 (Sexuality). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryEducationForKids": "Educazione per bambini",
+  "@podcastCategoryEducationForKids": {
+    "description": "Display name for podcast genre 1519 (Education for Kids). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryParenting": "Genitorialità",
+  "@podcastCategoryParenting": {
+    "description": "Display name for podcast genre 1521 (Parenting). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryPetsAndAnimals": "Animali domestici",
+  "@podcastCategoryPetsAndAnimals": {
+    "description": "Display name for podcast genre 1522 (Pets & Animals). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryStoriesForKids": "Storie per bambini",
+  "@podcastCategoryStoriesForKids": {
+    "description": "Display name for podcast genre 1520 (Stories for Kids). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryAnimationAndManga": "Animazione e manga",
+  "@podcastCategoryAnimationAndManga": {
+    "description": "Display name for podcast genre 1510 (Animation & Manga). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryAutomotive": "Automobili",
+  "@podcastCategoryAutomotive": {
+    "description": "Display name for podcast genre 1503 (Automotive). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryAviation": "Aviazione",
+  "@podcastCategoryAviation": {
+    "description": "Display name for podcast genre 1504 (Aviation). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryCrafts": "Artigianato",
+  "@podcastCategoryCrafts": {
+    "description": "Display name for podcast genre 1506 (Crafts). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryGames": "Giochi",
+  "@podcastCategoryGames": {
+    "description": "Display name for podcast genre 1507 (Games). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryHobbies": "Hobby",
+  "@podcastCategoryHobbies": {
+    "description": "Display name for podcast genre 1505 (Hobbies). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryHomeAndGarden": "Casa e giardino",
+  "@podcastCategoryHomeAndGarden": {
+    "description": "Display name for podcast genre 1508 (Home & Garden). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryVideoGames": "Videogiochi",
+  "@podcastCategoryVideoGames": {
+    "description": "Display name for podcast genre 1509 (Video Games). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryMusicCommentary": "Commenti musicali",
+  "@podcastCategoryMusicCommentary": {
+    "description": "Display name for podcast genre 1523 (Music Commentary). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryMusicHistory": "Storia della musica",
+  "@podcastCategoryMusicHistory": {
+    "description": "Display name for podcast genre 1524 (Music History). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryMusicInterviews": "Interviste musicali",
+  "@podcastCategoryMusicInterviews": {
+    "description": "Display name for podcast genre 1525 (Music Interviews). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryBusinessNews": "Notizie di economia",
+  "@podcastCategoryBusinessNews": {
+    "description": "Display name for podcast genre 1490 (Business News). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryDailyNews": "Notizie quotidiane",
+  "@podcastCategoryDailyNews": {
+    "description": "Display name for podcast genre 1526 (Daily News). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryEntertainmentNews": "Notizie di spettacolo",
+  "@podcastCategoryEntertainmentNews": {
+    "description": "Display name for podcast genre 1531 (Entertainment News). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryNewsCommentary": "Commenti alle notizie",
+  "@podcastCategoryNewsCommentary": {
+    "description": "Display name for podcast genre 1530 (News Commentary). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryPolitics": "Politica",
+  "@podcastCategoryPolitics": {
+    "description": "Display name for podcast genre 1527 (Politics). The genre ID is stable and is not translated."
+  },
+  "podcastCategorySportsNews": "Notizie sportive",
+  "@podcastCategorySportsNews": {
+    "description": "Display name for podcast genre 1529 (Sports News). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryTechNews": "Notizie tecnologiche",
+  "@podcastCategoryTechNews": {
+    "description": "Display name for podcast genre 1528 (Tech News). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryBuddhism": "Buddismo",
+  "@podcastCategoryBuddhism": {
+    "description": "Display name for podcast genre 1438 (Buddhism). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryChristianity": "Cristianesimo",
+  "@podcastCategoryChristianity": {
+    "description": "Display name for podcast genre 1439 (Christianity). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryHinduism": "Induismo",
+  "@podcastCategoryHinduism": {
+    "description": "Display name for podcast genre 1463 (Hinduism). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryIslam": "Islam",
+  "@podcastCategoryIslam": {
+    "description": "Display name for podcast genre 1440 (Islam). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryJudaism": "Ebraismo",
+  "@podcastCategoryJudaism": {
+    "description": "Display name for podcast genre 1441 (Judaism). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryReligion": "Religione",
+  "@podcastCategoryReligion": {
+    "description": "Display name for podcast genre 1532 (Religion). The genre ID is stable and is not translated."
+  },
+  "podcastCategorySpirituality": "Spiritualità",
+  "@podcastCategorySpirituality": {
+    "description": "Display name for podcast genre 1444 (Spirituality). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryAstronomy": "Astronomia",
+  "@podcastCategoryAstronomy": {
+    "description": "Display name for podcast genre 1538 (Astronomy). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryChemistry": "Chimica",
+  "@podcastCategoryChemistry": {
+    "description": "Display name for podcast genre 1539 (Chemistry). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryEarthSciences": "Scienze della terra",
+  "@podcastCategoryEarthSciences": {
+    "description": "Display name for podcast genre 1540 (Earth Sciences). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryLifeSciences": "Scienze della vita",
+  "@podcastCategoryLifeSciences": {
+    "description": "Display name for podcast genre 1541 (Life Sciences). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryMathematics": "Matematica",
+  "@podcastCategoryMathematics": {
+    "description": "Display name for podcast genre 1536 (Mathematics). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryNaturalSciences": "Scienze naturali",
+  "@podcastCategoryNaturalSciences": {
+    "description": "Display name for podcast genre 1534 (Natural Sciences). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryNature": "Natura",
+  "@podcastCategoryNature": {
+    "description": "Display name for podcast genre 1537 (Nature). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryPhysics": "Fisica",
+  "@podcastCategoryPhysics": {
+    "description": "Display name for podcast genre 1542 (Physics). The genre ID is stable and is not translated."
+  },
+  "podcastCategorySocialSciences": "Scienze sociali",
+  "@podcastCategorySocialSciences": {
+    "description": "Display name for podcast genre 1535 (Social Sciences). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryDocumentary": "Documentari",
+  "@podcastCategoryDocumentary": {
+    "description": "Display name for podcast genre 1543 (Documentary). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryPersonalJournals": "Diari personali",
+  "@podcastCategoryPersonalJournals": {
+    "description": "Display name for podcast genre 1302 (Personal Journals). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryPhilosophy": "Filosofia",
+  "@podcastCategoryPhilosophy": {
+    "description": "Display name for podcast genre 1443 (Philosophy). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryPlacesAndTravel": "Luoghi e viaggi",
+  "@podcastCategoryPlacesAndTravel": {
+    "description": "Display name for podcast genre 1320 (Places & Travel). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryRelationships": "Relazioni",
+  "@podcastCategoryRelationships": {
+    "description": "Display name for podcast genre 1544 (Relationships). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryBaseball": "Baseball",
+  "@podcastCategoryBaseball": {
+    "description": "Display name for podcast genre 1549 (Baseball). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryBasketball": "Pallacanestro",
+  "@podcastCategoryBasketball": {
+    "description": "Display name for podcast genre 1548 (Basketball). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryCricket": "Cricket",
+  "@podcastCategoryCricket": {
+    "description": "Display name for podcast genre 1554 (Cricket). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryFantasySports": "Fantasy sport",
+  "@podcastCategoryFantasySports": {
+    "description": "Display name for podcast genre 1560 (Fantasy Sports). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryFootball": "Football americano",
+  "@podcastCategoryFootball": {
+    "description": "Display name for podcast genre 1547 (Football). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryGolf": "Golf",
+  "@podcastCategoryGolf": {
+    "description": "Display name for podcast genre 1553 (Golf). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryHockey": "Hockey",
+  "@podcastCategoryHockey": {
+    "description": "Display name for podcast genre 1550 (Hockey). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryRugby": "Rugby",
+  "@podcastCategoryRugby": {
+    "description": "Display name for podcast genre 1552 (Rugby). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryRunning": "Corsa",
+  "@podcastCategoryRunning": {
+    "description": "Display name for podcast genre 1551 (Running). The genre ID is stable and is not translated."
+  },
+  "podcastCategorySoccer": "Calcio",
+  "@podcastCategorySoccer": {
+    "description": "Display name for podcast genre 1546 (Soccer). The genre ID is stable and is not translated."
+  },
+  "podcastCategorySwimming": "Nuoto",
+  "@podcastCategorySwimming": {
+    "description": "Display name for podcast genre 1558 (Swimming). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryTennis": "Tennis",
+  "@podcastCategoryTennis": {
+    "description": "Display name for podcast genre 1556 (Tennis). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryVolleyball": "Pallavolo",
+  "@podcastCategoryVolleyball": {
+    "description": "Display name for podcast genre 1557 (Volleyball). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryWilderness": "Natura selvaggia",
+  "@podcastCategoryWilderness": {
+    "description": "Display name for podcast genre 1559 (Wilderness). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryWrestling": "Lotta",
+  "@podcastCategoryWrestling": {
+    "description": "Display name for podcast genre 1555 (Wrestling). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryAfterShows": "Dopo show",
+  "@podcastCategoryAfterShows": {
+    "description": "Display name for podcast genre 1562 (After Shows). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryFilmHistory": "Storia del cinema",
+  "@podcastCategoryFilmHistory": {
+    "description": "Display name for podcast genre 1564 (Film History). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryFilmInterviews": "Interviste sul cinema",
+  "@podcastCategoryFilmInterviews": {
+    "description": "Display name for podcast genre 1565 (Film Interviews). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryFilmReviews": "Recensioni di film",
+  "@podcastCategoryFilmReviews": {
+    "description": "Display name for podcast genre 1563 (Film Reviews). The genre ID is stable and is not translated."
+  },
+  "podcastCategoryTvReviews": "Recensioni TV",
+  "@podcastCategoryTvReviews": {
+    "description": "Display name for podcast genre 1561 (TV Reviews). The genre ID is stable and is not translated."
+  },
+  "weatherConditionClearSky": "Sereno",
+  "@weatherConditionClearSky": {
+    "description": "Weather condition for WMO code 0. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels."
+  },
+  "weatherConditionMainlyClear": "Prevalentemente sereno",
+  "@weatherConditionMainlyClear": {
+    "description": "Weather condition for WMO code 1. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels."
+  },
+  "weatherConditionPartlyCloudy": "Parzialmente nuvoloso",
+  "@weatherConditionPartlyCloudy": {
+    "description": "Weather condition for WMO code 2. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels."
+  },
+  "weatherConditionOvercast": "Coperto",
+  "@weatherConditionOvercast": {
+    "description": "Weather condition for WMO code 3. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels."
+  },
+  "weatherConditionFog": "Nebbia",
+  "@weatherConditionFog": {
+    "description": "Weather condition for WMO code 45. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels."
+  },
+  "weatherConditionRimeFog": "Nebbia con brina",
+  "@weatherConditionRimeFog": {
+    "description": "Weather condition for WMO code 48. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels."
+  },
+  "weatherConditionLightDrizzle": "Pioviggine leggera",
+  "@weatherConditionLightDrizzle": {
+    "description": "Weather condition for WMO code 51. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels."
+  },
+  "weatherConditionModerateDrizzle": "Pioviggine moderata",
+  "@weatherConditionModerateDrizzle": {
+    "description": "Weather condition for WMO code 53. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels."
+  },
+  "weatherConditionDenseDrizzle": "Pioviggine intensa",
+  "@weatherConditionDenseDrizzle": {
+    "description": "Weather condition for WMO code 55. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels."
+  },
+  "weatherConditionLightFreezingDrizzle": "Pioviggine gelata leggera",
+  "@weatherConditionLightFreezingDrizzle": {
+    "description": "Weather condition for WMO code 56. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels."
+  },
+  "weatherConditionDenseFreezingDrizzle": "Pioviggine gelata intensa",
+  "@weatherConditionDenseFreezingDrizzle": {
+    "description": "Weather condition for WMO code 57. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels."
+  },
+  "weatherConditionLightRain": "Pioggia leggera",
+  "@weatherConditionLightRain": {
+    "description": "Weather condition for WMO code 61. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels."
+  },
+  "weatherConditionModerateRain": "Pioggia moderata",
+  "@weatherConditionModerateRain": {
+    "description": "Weather condition for WMO code 63. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels."
+  },
+  "weatherConditionHeavyRain": "Pioggia intensa",
+  "@weatherConditionHeavyRain": {
+    "description": "Weather condition for WMO code 65. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels."
+  },
+  "weatherConditionLightFreezingRain": "Pioggia gelata leggera",
+  "@weatherConditionLightFreezingRain": {
+    "description": "Weather condition for WMO code 66. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels."
+  },
+  "weatherConditionHeavyFreezingRain": "Pioggia gelata intensa",
+  "@weatherConditionHeavyFreezingRain": {
+    "description": "Weather condition for WMO code 67. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels."
+  },
+  "weatherConditionLightSnowfall": "Neve leggera",
+  "@weatherConditionLightSnowfall": {
+    "description": "Weather condition for WMO code 71. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels."
+  },
+  "weatherConditionModerateSnowfall": "Neve moderata",
+  "@weatherConditionModerateSnowfall": {
+    "description": "Weather condition for WMO code 73. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels."
+  },
+  "weatherConditionHeavySnowfall": "Neve intensa",
+  "@weatherConditionHeavySnowfall": {
+    "description": "Weather condition for WMO code 75. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels."
+  },
+  "weatherConditionSnowGrains": "Granelli di neve",
+  "@weatherConditionSnowGrains": {
+    "description": "Weather condition for WMO code 77. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels."
+  },
+  "weatherConditionLightRainShowers": "Rovesci leggeri",
+  "@weatherConditionLightRainShowers": {
+    "description": "Weather condition for WMO code 80. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels."
+  },
+  "weatherConditionModerateRainShowers": "Rovesci moderati",
+  "@weatherConditionModerateRainShowers": {
+    "description": "Weather condition for WMO code 81. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels."
+  },
+  "weatherConditionViolentRainShowers": "Rovesci violenti",
+  "@weatherConditionViolentRainShowers": {
+    "description": "Weather condition for WMO code 82. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels."
+  },
+  "weatherConditionLightSnowShowers": "Rovesci di neve leggeri",
+  "@weatherConditionLightSnowShowers": {
+    "description": "Weather condition for WMO code 85. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels."
+  },
+  "weatherConditionHeavySnowShowers": "Rovesci di neve intensi",
+  "@weatherConditionHeavySnowShowers": {
+    "description": "Weather condition for WMO code 86. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels."
+  },
+  "weatherConditionThunderstorm": "Temporale",
+  "@weatherConditionThunderstorm": {
+    "description": "Weather condition for WMO code 95. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels."
+  },
+  "weatherConditionThunderstormLightHail": "Temporale con grandine leggera",
+  "@weatherConditionThunderstormLightHail": {
+    "description": "Weather condition for WMO code 96. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels."
+  },
+  "weatherConditionThunderstormHeavyHail": "Temporale con grandine intensa",
+  "@weatherConditionThunderstormHeavyHail": {
+    "description": "Weather condition for WMO code 99. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels."
+  },
+  "documentsImportFromFiles": "Importa da File",
+  "@documentsImportFromFiles": {
+    "description": "Label migrated from _importFromFilesLabel to ARB for all app languages."
+  },
+  "sonarTubeOpenUrl": "Apri URL",
+  "@sonarTubeOpenUrl": {
+    "description": "Label migrated from _openUrlLabel to ARB for all app languages."
+  },
+  "sonarTubeUrlPrompt": "Incolla l’URL di un video YouTube",
+  "@sonarTubeUrlPrompt": {
+    "description": "Label migrated from _urlPromptLabel to ARB for all app languages."
+  },
+  "sonarMusicAll": "Tutto",
+  "@sonarMusicAll": {
+    "description": "SonarMusic label for all, migrated from the existing language table."
+  },
+  "sonarMusicSong": "Brani",
+  "@sonarMusicSong": {
+    "description": "SonarMusic label for song, migrated from the existing language table."
+  },
+  "sonarMusicVideo": "Video musicali",
+  "@sonarMusicVideo": {
+    "description": "SonarMusic label for video, migrated from the existing language table."
+  },
+  "sonarMusicAlbum": "Album",
+  "@sonarMusicAlbum": {
+    "description": "SonarMusic label for album, migrated from the existing language table."
+  },
+  "sonarMusicArtist": "Artisti",
+  "@sonarMusicArtist": {
+    "description": "SonarMusic label for artist, migrated from the existing language table."
+  },
+  "sonarMusicPlaylist": "Playlist",
+  "@sonarMusicPlaylist": {
+    "description": "SonarMusic label for playlist, migrated from the existing language table."
+  },
+  "sonarMusicFavorites": "Preferiti",
+  "@sonarMusicFavorites": {
+    "description": "SonarMusic label for favorites, migrated from the existing language table."
+  },
+  "sonarMusicRecent": "Ascoltati di recente",
+  "@sonarMusicRecent": {
+    "description": "SonarMusic label for recent, migrated from the existing language table."
+  },
+  "sonarMusicOpen": "Apri URL",
+  "@sonarMusicOpen": {
+    "description": "SonarMusic label for open, migrated from the existing language table."
+  },
+  "sonarMusicLoad": "Carica altri risultati",
+  "@sonarMusicLoad": {
+    "description": "SonarMusic label for load, migrated from the existing language table."
+  },
+  "sonarMusicArtistOpen": "Vai all’artista",
+  "@sonarMusicArtistOpen": {
+    "description": "SonarMusic label for artist_open, migrated from the existing language table."
+  },
+  "sonarMusicAlbumOpen": "Vai all’album",
+  "@sonarMusicAlbumOpen": {
+    "description": "SonarMusic label for album_open, migrated from the existing language table."
+  },
+  "sonarMusicPlayAll": "Riproduci tutto",
+  "@sonarMusicPlayAll": {
+    "description": "SonarMusic label for play_all, migrated from the existing language table."
+  },
+  "sonarMusicShare": "Condividi",
+  "@sonarMusicShare": {
+    "description": "SonarMusic label for share, migrated from the existing language table."
+  },
+  "sonarMusicAdd": "Aggiungi ai preferiti",
+  "@sonarMusicAdd": {
+    "description": "SonarMusic label for add, migrated from the existing language table."
+  },
+  "sonarMusicRemove": "Rimuovi dai preferiti",
+  "@sonarMusicRemove": {
+    "description": "SonarMusic label for remove, migrated from the existing language table."
+  },
+  "sonarMusicEmpty": "Nessun risultato",
+  "@sonarMusicEmpty": {
+    "description": "SonarMusic label for empty, migrated from the existing language table."
+  },
+  "sonarMusicInvalid": "Impossibile aprire questo elemento",
+  "@sonarMusicInvalid": {
+    "description": "SonarMusic label for invalid, migrated from the existing language table."
+  },
+  "sonarMusicDescription": "Descrizione",
+  "@sonarMusicDescription": {
+    "description": "SonarMusic label for description, migrated from the existing language table."
+  },
+  "sonarMusicShuffle": "Riproduzione casuale",
+  "@sonarMusicShuffle": {
+    "description": "SonarMusic label for shuffle, migrated from the existing language table."
+  },
+  "sonarMusicSave": "Salva media",
+  "@sonarMusicSave": {
+    "description": "SonarMusic label for save, migrated from the existing language table."
+  },
+  "sonarMusicSuggest": "Suggerimenti",
+  "@sonarMusicSuggest": {
+    "description": "SonarMusic label for suggest, migrated from the existing language table."
+  },
+  "sonarMusicSearchHint": "Titolo, artista o album",
+  "@sonarMusicSearchHint": {
+    "description": "SonarMusic label for search_hint, migrated from the existing language table."
+  },
+  "catalogUntitled": "Senza titolo",
+  "@catalogUntitled": {
+    "description": "Fallback title for missing LibriVox or PoetryDB metadata. Original supplied titles must be retained."
+  },
+  "catalogUnknownAuthor": "Autore sconosciuto",
+  "@catalogUnknownAuthor": {
+    "description": "Fallback author for missing LibriVox or PoetryDB metadata. Original supplied author names must be retained."
+  },
+  "librivoxChapterFallback": "Capitolo",
+  "@librivoxChapterFallback": {
+    "description": "Fallback title for a LibriVox section whose title is absent; a section number may be added by the screen."
+  },
+  "internetArchiveAudioFallback": "Audio",
+  "@internetArchiveAudioFallback": {
+    "description": "Fallback title for a saved Internet Archive audio track whose title is absent."
+  },
+  "librivoxHttpError": "Errore LibriVox {statusCode}",
+  "@librivoxHttpError": {
+    "description": "LibriVox HTTP failure, localized in the app language while preserving its HTTP status.",
+    "placeholders": {
+      "statusCode": {
+        "type": "int"
+      }
+    }
+  },
+  "librivoxBookNotFound": "Audiolibro non trovato.",
+  "@librivoxBookNotFound": {
+    "description": "A requested LibriVox audiobook is absent, including HTTP 404 or an empty book response."
+  },
+  "internetArchiveHttpError": "Internet Archive {statusCode}",
+  "@internetArchiveHttpError": {
+    "description": "Internet Archive HTTP failure, localized in the app language while preserving its HTTP status.",
+    "placeholders": {
+      "statusCode": {
+        "type": "int"
+      }
+    }
+  },
+  "poetryDbHttpError": "Errore PoetryDB {statusCode}",
+  "@poetryDbHttpError": {
+    "description": "PoetryDB HTTP failure, localized in the app language while preserving its HTTP status.",
+    "placeholders": {
+      "statusCode": {
+        "type": "int"
+      }
+    }
+  },
+  "cloudFilePickerLoading": "Caricamento del file in corso",
+  "@cloudFilePickerLoading": {
+    "description": "Title and accessible status while a chosen cloud file is copied into the app."
+  },
+  "cloudFilePickerPreparing": "Preparazione del file dal cloud…",
+  "@cloudFilePickerPreparing": {
+    "description": "Progress message while the document provider prepares a selected cloud file."
+  },
+  "cloudFilePickerUnknownSize": "Caricamento in corso…",
+  "@cloudFilePickerUnknownSize": {
+    "description": "Progress message when the cloud file total byte size is not yet known."
+  },
+  "cloudFilePickerCancelling": "Annullamento in corso…",
+  "@cloudFilePickerCancelling": {
+    "description": "Progress message while a requested cloud file import cancellation is being completed."
+  },
+  "audioPlaybackNotificationChannelName": "Riproduzione audio",
+  "@audioPlaybackNotificationChannelName": {
+    "description": "Android audio notification channel display name; keep the existing channel identifier and audio behavior."
+  },
+  "documentExportFallbackName": "Documento",
+  "@documentExportFallbackName": {
+    "description": "Name for a new exported document only when its source display name sanitizes to an empty string; do not rename existing documents."
+  },
+  "documentExportAudiobookSuffix": "audiolibro",
+  "@documentExportAudiobookSuffix": {
+    "description": "Descriptive suffix appended to a newly exported audiobook filename; keep user-supplied title unchanged."
+  },
+  "convertMediaWavFloat32": "32 bit a virgola mobile",
+  "@convertMediaWavFloat32": {
+    "description": "Label for 32-bit floating-point PCM audio in the WAV bit-depth selector; does not change the codec or saved choice."
   }
 }

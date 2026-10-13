@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../l10n/app_localizations.dart';
+import '../l10n/app_localizations_lookup.dart';
 import '../utils/app_logger.dart';
 
 /// Native document picker with a real, cancellable stream copy. On iOS and
@@ -52,15 +53,20 @@ class CloudFilePicker {
     StreamSubscription<dynamic>? subscription;
     bool dialogIsOpen = false;
     bool cancelRequested = false;
+    bool importCompleted = false;
+    int lastReportedDecile = -1;
+    DateTime? dialogOpenedAt;
+    Future<void>? dialogClosed;
 
     void openDialog() {
       if (dialogIsOpen || !context.mounted) {
         return;
       }
       dialogIsOpen = true;
+      dialogOpenedAt = DateTime.now();
       // Do not wait for this Future: native stream copying must continue while
       // the accessible dialog is visible.
-      unawaited(showDialog<void>(
+      dialogClosed = showDialog<void>(
         context: context,
         barrierDismissible: false,
         builder: (ctx) {
@@ -97,39 +103,56 @@ class CloudFilePicker {
                 },
               ),
               actions: [
-                TextButton(
-                  onPressed: cancelRequested
-                      ? null
-                      : () {
-                          cancelRequested = true;
-                          progress.value = const _CloudCopyProgress(
-                            stage: 'cancelling', current: 0, total: -1,
-                          );
-                          unawaited(_channel.invokeMethod<void>('cancel'));
-                        },
-                  child: Text(labels.cancel),
+                ValueListenableBuilder<_CloudCopyProgress>(
+                  valueListenable: progress,
+                  builder: (context, state, _) => TextButton(
+                    onPressed: cancelRequested || state.stage == 'done'
+                        ? null
+                        : () {
+                            cancelRequested = true;
+                            progress.value = const _CloudCopyProgress(
+                              stage: 'cancelling', current: 0, total: -1,
+                            );
+                            unawaited(_channel.invokeMethod<void>('cancel'));
+                          },
+                    child: Text(labels.cancel),
+                  ),
                 ),
               ],
             ),
           );
         },
-      ));
+      );
     }
 
     try {
+      unawaited(AppLogger.log(
+        'Cloud file picker: opening native picker on '
+        '${Platform.isIOS ? 'iOS' : 'Android'}',
+      ));
       subscription = _events.receiveBroadcastStream().listen((raw) {
-        if (raw is! Map) {
+        if (raw is! Map || importCompleted) {
           return;
         }
         final data = Map<String, dynamic>.from(raw);
         final stage = data['stage']?.toString() ?? 'copying';
+        final copied = (data['copied'] as num?)?.toInt() ?? 0;
+        final total = (data['total'] as num?)?.toInt() ?? -1;
+        final decile = total > 0 ? (copied * 10 ~/ total).clamp(0, 10).toInt() : -1;
+        if (stage == 'preparing' ||
+            (stage == 'copying' && decile != lastReportedDecile)) {
+          lastReportedDecile = decile;
+          unawaited(AppLogger.log(
+            'Cloud file picker: stage=$stage copied=$copied total=$total',
+          ));
+        }
         if (stage == 'preparing' || stage == 'copying') {
           openDialog();
           if (!cancelRequested) {
             progress.value = _CloudCopyProgress(
               stage: stage,
-              current: (data['copied'] as num?)?.toInt() ?? 0,
-              total: (data['total'] as num?)?.toInt() ?? -1,
+              current: copied,
+              total: total,
             );
           }
         }
@@ -145,6 +168,24 @@ class CloudFilePicker {
       if (cancelRequested || raw == null || raw.isEmpty) {
         return null;
       }
+      // Small/cached iCloud imports can finish before the progress event is
+      // rendered. In that case still show the same dialog for long enough to
+      // be perceived, with 100% based on the bytes actually imported.
+      openDialog();
+      final completedBytes = raw.fold<int>(0, (sum, item) {
+        if (item is! Map) return sum;
+        return sum + ((item['size'] as num?)?.toInt() ?? 0);
+      });
+      importCompleted = true;
+      progress.value = _CloudCopyProgress(
+        stage: 'done',
+        current: completedBytes,
+        total: completedBytes,
+      );
+      unawaited(AppLogger.log(
+        'Cloud file picker: import complete files=${raw.length} '
+        'bytes=$completedBytes progressDialog=$dialogIsOpen',
+      ));
       final files = <PlatformFile>[];
       for (final entry in raw) {
         final item = Map<String, dynamic>.from(entry as Map);
@@ -176,12 +217,23 @@ class CloudFilePicker {
       return null;
     } finally {
       await subscription?.cancel();
-      if (dialogIsOpen && context.mounted) {
-        // showDialog pushes synchronously; the builder may not yet have run
-        // when a very small file finishes copying. Pop the root route safely.
-        final navigator = Navigator.of(context, rootNavigator: true);
-        if (navigator.canPop()) {
-          navigator.pop();
+      if (dialogIsOpen) {
+        // iCloud may already have cached the file, so the native copy lasts
+        // only milliseconds. Do not dismiss the dialog before VoiceOver can
+        // find it. This delay is presentation time, NOT fabricated progress.
+        if (!cancelRequested && dialogOpenedAt != null) {
+          const minimumVisibility = Duration(milliseconds: 900);
+          final elapsed = DateTime.now().difference(dialogOpenedAt!);
+          if (elapsed < minimumVisibility) {
+            await Future<void>.delayed(minimumVisibility - elapsed);
+          }
+        }
+        if (context.mounted) {
+          Navigator.of(context, rootNavigator: true).pop();
+        }
+        // Keep the notifier alive until the route has finished closing.
+        if (dialogClosed != null) {
+          await dialogClosed;
         }
       }
       progress.dispose();
@@ -220,19 +272,13 @@ class _CloudPickerLabels {
   final String cancelling;
 
   static _CloudPickerLabels forLanguage(String language) {
-    switch (language) {
-      case 'it': return const _CloudPickerLabels('Caricamento del file in corso', 'Preparazione del file dal cloud…', 'Caricamento in corso…', 'Annulla', 'Annullamento in corso…');
-      case 'fr': return const _CloudPickerLabels('Chargement du fichier', 'Préparation du fichier cloud…', 'Chargement en cours…', 'Annuler', 'Annulation…');
-      case 'es': return const _CloudPickerLabels('Cargando archivo', 'Preparando archivo de la nube…', 'Cargando…', 'Cancelar', 'Cancelando…');
-      case 'de': return const _CloudPickerLabels('Datei wird geladen', 'Cloud-Datei wird vorbereitet…', 'Wird geladen…', 'Abbrechen', 'Wird abgebrochen…');
-      case 'pt': return const _CloudPickerLabels('A carregar ficheiro', 'A preparar ficheiro da nuvem…', 'A carregar…', 'Cancelar', 'Cancelando…');
-      case 'pt_BR': return const _CloudPickerLabels('Carregando arquivo', 'Preparando arquivo da nuvem…', 'Carregando…', 'Cancelar', 'Cancelando…');
-      case 'pl': return const _CloudPickerLabels('Wczytywanie pliku', 'Przygotowywanie pliku z chmury…', 'Wczytywanie…', 'Anuluj', 'Anulowanie…');
-      case 'cs': return const _CloudPickerLabels('Načítání souboru', 'Příprava souboru z cloudu…', 'Načítání…', 'Zrušit', 'Rušení…');
-      case 'ro': return const _CloudPickerLabels('Se încarcă fișierul', 'Se pregătește fișierul din cloud…', 'Se încarcă…', 'Anulează', 'Se anulează…');
-      case 'uk': return const _CloudPickerLabels('Завантаження файлу', 'Підготовка файлу з хмари…', 'Завантаження…', 'Скасувати', 'Скасування…');
-      case 'zh': return const _CloudPickerLabels('正在加载文件', '正在准备云端文件…', '正在加载…', '取消', '正在取消…');
-      default: return const _CloudPickerLabels('Loading file', 'Preparing cloud file…', 'Loading…', 'Cancel', 'Cancelling…');
-    }
+    final l10n = lookupSupportedAppLocalizations(language);
+    return _CloudPickerLabels(
+      l10n.cloudFilePickerLoading,
+      l10n.cloudFilePickerPreparing,
+      l10n.cloudFilePickerUnknownSize,
+      l10n.cancel,
+      l10n.cloudFilePickerCancelling,
+    );
   }
 }

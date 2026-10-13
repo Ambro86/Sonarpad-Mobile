@@ -4534,4 +4534,799 @@ class AppLocalizationsCs extends AppLocalizations {
   @override
   String mediaPlaybackSpeedChanged(String speed) => "Rychlost přehrávání: $speed";
 
+
+  @override
+  String get routeServiceInvalidAddress => "Indirizzo non valido";
+
+  @override
+  String routeServiceGeocodingNetworkError(int statusCode) => "Errore di rete geocode: HTTP ${statusCode}";
+
+  @override
+  String routeServiceNetworkError(int statusCode) => "Errore di rete route: HTTP ${statusCode}";
+
+  @override
+  String get routeServiceServerError => "Errore dal server";
+
+  @override
+  String get routeServiceCalculationError => "Errore di calcolo percorso dal server";
+
+  @override
+  String get routeServiceUnauthorized => "Client non autorizzato. Aggiorna Sonarpad o verifica la configurazione dell'app.";
+
+  @override
+  String get routeServiceStartNotFound => "Indirizzo di partenza non trovato";
+
+  @override
+  String get routeServiceDestinationNotFound => "Indirizzo di arrivo non trovato";
+
+  @override
+  String get radioLanguageRo => "Rumunština";
+
+  @override
+  String get radioCountryOptionRo => "Rumunsko";
+
+  @override
+  String get sonarTubeServiceError => "Errore SonarTube";
+
+  @override
+  String get sonarTubeServiceInvalidResponse => "Risposta SonarTube non valida.";
+
+  @override
+  String get sonarTubeServiceInnerTubeError => "Errore API InnerTube.";
+
+  @override
+  String get sonarTubeServiceInvalidInnerTubeResponse => "Risposta InnerTube non valida.";
+
+  @override
+  String get sonarTubeServiceNoStream => "Nessun flusso riproducibile disponibile.";
+
+  @override
+  String get sonarTubeServiceOnlyVideo => "È possibile risolvere soltanto un video.";
+
+  @override
+  String get sonarTubeServiceNotCollection => "Un video non è una raccolta SonarTube.";
+
+  @override
+  String get listTimestampToday => "dnes";
+
+  @override
+  String get listTimestampYesterday => "včera";
+
+  @override
+  String get listTimestampDayBeforeYesterday => "předevčírem";
+
+  @override
+  String get listTimestampTomorrow => "zítra";
+
+  @override
+  String get listTimestampDayAfterTomorrow => "pozítří";
+
+  @override
+  String get articleTitleNotFound => "Název nenalezen";
+
+  @override
+  String get articleUnknownTitle => "Neznámý název";
+
+  @override
+  String get articleAuthorPrefix => "Di";
+
+  @override
+  String get audioDescriptionProjectEditorTitle => "Upravit projekt audiopopisu";
+
+  @override
+  String get audioDescriptionProjectOpen => "Otevřít projekt audiopopisu";
+
+  @override
+  String get audioDescriptionProjectLabel => "Project";
+
+  @override
+  String get audioDescriptionProjectChooseSource => "Vybrat původní video";
+
+  @override
+  String get audioDescriptionProjectSource => "Original video";
+
+  @override
+  String get audioDescriptionProjectDescription => "Popis";
+
+  @override
+  String get audioDescriptionProjectDescriptionText => "Text popisu";
+
+  @override
+  String get audioDescriptionProjectPreviewDescription => "Přehrát popis";
+
+  @override
+  String get audioDescriptionProjectApplyText => "Použít změnu";
+
+  @override
+  String get audioDescriptionProjectDeleteDescription => "Odstranit popis";
+
+  @override
+  String get audioDescriptionProjectDeleteConfirmation => "Delete the selected description from the project?";
+
+  @override
+  String get audioDescriptionProjectCannotDeleteLast => "The only description in the project cannot be deleted.";
+
+  @override
+  String get audioDescriptionProjectApplyVoice => "Použít hlas na projekt";
+
+  @override
+  String get audioDescriptionProjectReadingEngine => "Reading engine";
+
+  @override
+  String get audioDescriptionProjectEdgeVoice => "Microsoft Edge voice";
+
+  @override
+  String get audioDescriptionProjectSystemVoice => "System / VoiceOver / Android voice";
+
+  @override
+  String get audioDescriptionProjectVoiceLanguage => "Voice language";
+
+  @override
+  String get audioDescriptionProjectVoice => "Voice";
+
+  @override
+  String get audioDescriptionProjectReexportMp3 => "Znovu exportovat MP3";
+
+  @override
+  String get audioDescriptionProjectExportSrt => "Exportovat jako SRT";
+
+  @override
+  String get audioDescriptionProjectExportVtt => "Exportovat jako VTT";
+
+  @override
+  String get audioDescriptionProjectNormalWithDucking => "normal with ducking";
+
+  @override
+  String get audioDescriptionProjectExtendedPause => "extended pause";
+
+  @override
+  String get audioDescriptionProjectReady => "Project ready.";
+
+  @override
+  String get audioDescriptionProjectDescriptionApplied => "Description checked and saved in the project.";
+
+  @override
+  String get audioDescriptionProjectDescriptionDeleted => "Description deleted and project saved.";
+
+  @override
+  String get audioDescriptionProjectVoiceChanged => "Voice changed and all descriptions were checked.";
+
+  @override
+  String audioDescriptionProjectDescriptionTooLong(String actual, String available) => "The synthesized description lasts ${actual} seconds, but only ${available} seconds are available. The previous text was not changed.";
+
+  @override
+  String get audioDescriptionProjectSourceMissing => "The original video is not available. Choose it before re-exporting the MP3.";
+
+  @override
+  String get audioDescriptionProjectInvalid => "The selected file is not a valid Sonarpad audio description project.";
+
+  @override
+  String get audioDescriptionProjectUnsavedText => "Apply the current text before re-exporting the MP3.";
+
+  @override
+  String get audioDescriptionProjectWorking => "Zpracování projektu…";
+
+  @override
+  String get audioDescriptionProjectExported => "Projekt exportován.";
+
+  @override
+  String get audioDescriptionProjectSelectFirst => "Open a project first.";
+
+  @override
+  String get audioDescriptionProjectSelectDescription => "Select a description.";
+
+  @override
+  String audioDescriptionProjectDescriptionDetails(String source, String start, String end, String duration, String mode) => "Scene ${source} s; MP3 ${start}-${end} s; voice ${duration} s; ${mode}";
+
+  @override
+  String get audioDescriptionProjectShare => "Sdílet";
+
+  @override
+  String get audioDescriptionProjectSaveDocuments => "Uložit do Dokumentů Sonarpad";
+
+  @override
+  String get audioDescriptionProjectSavedDocuments => "Files saved in Sonarpad Documents.";
+
+  @override
+  String get audioDescriptionProjectCancel => "Cancel";
+
+  @override
+  String get audioDescriptionProjectChooseFromFiles => "Vybrat video ze Souborů";
+
+  @override
+  String get audioDescriptionProjectImportFromPhotos => "Importovat video z Fotek";
+
+  @override
+  String get newsCategoryWorld => "World";
+
+  @override
+  String get newsCategoryBusiness => "Business";
+
+  @override
+  String get newsCategoryTechnology => "Technology";
+
+  @override
+  String get newsCategoryEntertainment => "Entertainment";
+
+  @override
+  String get newsCategorySports => "Sports";
+
+  @override
+  String get newsCategoryHealth => "Health";
+
+  @override
+  String get newsArticleSubscribersOnly => "Tento článek je určen pouze předplatitelům.";
+
+  @override
+  String wikipediaSearchHttpError(int statusCode) => "Errore Wikipedia: ${statusCode}";
+
+  @override
+  String wikipediaImportHttpError(int statusCode) => "Errore importazione Wikipedia: ${statusCode}";
+
+  @override
+  String gutenbergSearchHttpError(int statusCode) => "Errore Gutenberg ${statusCode}";
+
+  @override
+  String gutenbergDownloadHttpError(int statusCode) => "Errore download ${statusCode}";
+
+  @override
+  String gutenbergEpubDownloadHttpError(int statusCode) => "Errore download EPUB ${statusCode}";
+
+  @override
+  String get gutenbergInvalidBookId => "ID Gutenberg non valido.";
+
+  @override
+  String get gutenbergDownloadTimeout => "Download Gutenberg troppo lento. Riprova tra poco o scegli un altro formato.";
+
+  @override
+  String get gutenbergUnreadableArchive => "Archivio ZIP Gutenberg senza file di testo leggibile.";
+
+  @override
+  String get gutenbergUntitledBook => "Senza titolo";
+
+  @override
+  String get gutenbergUnknownAuthor => "Autore sconosciuto";
+
+  @override
+  String get podcastCategoryAll => "Všechny kategorie";
+
+  @override
+  String get podcastCategoryArts => "Umění";
+
+  @override
+  String get podcastCategoryBusiness => "Obchod";
+
+  @override
+  String get podcastCategoryComedy => "Komedie";
+
+  @override
+  String get podcastCategoryEducation => "Vzdělávání";
+
+  @override
+  String get podcastCategoryFiction => "Fikce";
+
+  @override
+  String get podcastCategoryGovernment => "Vláda";
+
+  @override
+  String get podcastCategoryHealthAndFitness => "Zdraví a fitness";
+
+  @override
+  String get podcastCategoryHistory => "Historie";
+
+  @override
+  String get podcastCategoryKidsAndFamily => "Děti a rodina";
+
+  @override
+  String get podcastCategoryLeisure => "Volný čas";
+
+  @override
+  String get podcastCategoryMusic => "Hudba";
+
+  @override
+  String get podcastCategoryNews => "Zprávy";
+
+  @override
+  String get podcastCategoryReligionAndSpirituality => "Náboženství a spiritualita";
+
+  @override
+  String get podcastCategoryScience => "Věda";
+
+  @override
+  String get podcastCategorySocietyAndCulture => "Společnost a kultura";
+
+  @override
+  String get podcastCategorySports => "Sport";
+
+  @override
+  String get podcastCategoryTechnology => "Technologie";
+
+  @override
+  String get podcastCategoryTrueCrime => "Skutečné zločiny";
+
+  @override
+  String get podcastCategoryTvAndFilm => "TV a film";
+
+  @override
+  String get podcastCategoryBooks => "Knihy";
+
+  @override
+  String get podcastCategoryDesign => "Design";
+
+  @override
+  String get podcastCategoryFashionAndBeauty => "Móda a krása";
+
+  @override
+  String get podcastCategoryFood => "Jídlo";
+
+  @override
+  String get podcastCategoryPerformingArts => "Performativní umění";
+
+  @override
+  String get podcastCategoryVisualArts => "Výtvarné umění";
+
+  @override
+  String get podcastCategoryCareers => "Kariéra";
+
+  @override
+  String get podcastCategoryEntrepreneurship => "Podnikání";
+
+  @override
+  String get podcastCategoryInvesting => "Investice";
+
+  @override
+  String get podcastCategoryManagement => "Management";
+
+  @override
+  String get podcastCategoryMarketing => "Marketing";
+
+  @override
+  String get podcastCategoryNonProfit => "Neziskové organizace";
+
+  @override
+  String get podcastCategoryComedyInterviews => "Komediální rozhovory";
+
+  @override
+  String get podcastCategoryImprov => "Improvizace";
+
+  @override
+  String get podcastCategoryStandUp => "Stand-up";
+
+  @override
+  String get podcastCategoryCourses => "Kurzy";
+
+  @override
+  String get podcastCategoryHowTo => "Návody";
+
+  @override
+  String get podcastCategoryLanguageLearning => "Učení jazyků";
+
+  @override
+  String get podcastCategorySelfImprovement => "Osobní růst";
+
+  @override
+  String get podcastCategoryComedyFiction => "Komediální fikce";
+
+  @override
+  String get podcastCategoryDrama => "Drama";
+
+  @override
+  String get podcastCategoryScienceFiction => "Sci-fi";
+
+  @override
+  String get podcastCategoryAlternativeHealth => "Alternativní zdraví";
+
+  @override
+  String get podcastCategoryFitness => "Fitness";
+
+  @override
+  String get podcastCategoryMedicine => "Medicína";
+
+  @override
+  String get podcastCategoryMentalHealth => "Duševní zdraví";
+
+  @override
+  String get podcastCategoryNutrition => "Výživa";
+
+  @override
+  String get podcastCategorySexuality => "Sexualita";
+
+  @override
+  String get podcastCategoryEducationForKids => "Vzdělávání dětí";
+
+  @override
+  String get podcastCategoryParenting => "Rodičovství";
+
+  @override
+  String get podcastCategoryPetsAndAnimals => "Domácí mazlíčci";
+
+  @override
+  String get podcastCategoryStoriesForKids => "Příběhy pro děti";
+
+  @override
+  String get podcastCategoryAnimationAndManga => "Animace a manga";
+
+  @override
+  String get podcastCategoryAutomotive => "Automobily";
+
+  @override
+  String get podcastCategoryAviation => "Letectví";
+
+  @override
+  String get podcastCategoryCrafts => "Řemesla";
+
+  @override
+  String get podcastCategoryGames => "Hry";
+
+  @override
+  String get podcastCategoryHobbies => "Koníčky";
+
+  @override
+  String get podcastCategoryHomeAndGarden => "Dům a zahrada";
+
+  @override
+  String get podcastCategoryVideoGames => "Videohry";
+
+  @override
+  String get podcastCategoryMusicCommentary => "Hudební komentáře";
+
+  @override
+  String get podcastCategoryMusicHistory => "Historie hudby";
+
+  @override
+  String get podcastCategoryMusicInterviews => "Hudební rozhovory";
+
+  @override
+  String get podcastCategoryBusinessNews => "Ekonomické zprávy";
+
+  @override
+  String get podcastCategoryDailyNews => "Denní zprávy";
+
+  @override
+  String get podcastCategoryEntertainmentNews => "Zprávy ze zábavy";
+
+  @override
+  String get podcastCategoryNewsCommentary => "Komentáře ke zprávám";
+
+  @override
+  String get podcastCategoryPolitics => "Politika";
+
+  @override
+  String get podcastCategorySportsNews => "Sportovní zprávy";
+
+  @override
+  String get podcastCategoryTechNews => "Technologické zprávy";
+
+  @override
+  String get podcastCategoryBuddhism => "Buddhismus";
+
+  @override
+  String get podcastCategoryChristianity => "Křesťanství";
+
+  @override
+  String get podcastCategoryHinduism => "Hinduismus";
+
+  @override
+  String get podcastCategoryIslam => "Islám";
+
+  @override
+  String get podcastCategoryJudaism => "Judaismus";
+
+  @override
+  String get podcastCategoryReligion => "Náboženství";
+
+  @override
+  String get podcastCategorySpirituality => "Spiritualita";
+
+  @override
+  String get podcastCategoryAstronomy => "Astronomie";
+
+  @override
+  String get podcastCategoryChemistry => "Chemie";
+
+  @override
+  String get podcastCategoryEarthSciences => "Vědy o Zemi";
+
+  @override
+  String get podcastCategoryLifeSciences => "Vědy o životě";
+
+  @override
+  String get podcastCategoryMathematics => "Matematika";
+
+  @override
+  String get podcastCategoryNaturalSciences => "Přírodní vědy";
+
+  @override
+  String get podcastCategoryNature => "Příroda";
+
+  @override
+  String get podcastCategoryPhysics => "Fyzika";
+
+  @override
+  String get podcastCategorySocialSciences => "Sociální vědy";
+
+  @override
+  String get podcastCategoryDocumentary => "Dokumenty";
+
+  @override
+  String get podcastCategoryPersonalJournals => "Osobní deníky";
+
+  @override
+  String get podcastCategoryPhilosophy => "Filozofie";
+
+  @override
+  String get podcastCategoryPlacesAndTravel => "Místa a cestování";
+
+  @override
+  String get podcastCategoryRelationships => "Vztahy";
+
+  @override
+  String get podcastCategoryBaseball => "Baseball";
+
+  @override
+  String get podcastCategoryBasketball => "Basketbal";
+
+  @override
+  String get podcastCategoryCricket => "Kriket";
+
+  @override
+  String get podcastCategoryFantasySports => "Fantasy sporty";
+
+  @override
+  String get podcastCategoryFootball => "Americký fotbal";
+
+  @override
+  String get podcastCategoryGolf => "Golf";
+
+  @override
+  String get podcastCategoryHockey => "Hokej";
+
+  @override
+  String get podcastCategoryRugby => "Ragby";
+
+  @override
+  String get podcastCategoryRunning => "Běh";
+
+  @override
+  String get podcastCategorySoccer => "Fotbal";
+
+  @override
+  String get podcastCategorySwimming => "Plavání";
+
+  @override
+  String get podcastCategoryTennis => "Tenis";
+
+  @override
+  String get podcastCategoryVolleyball => "Volejbal";
+
+  @override
+  String get podcastCategoryWilderness => "Divoká příroda";
+
+  @override
+  String get podcastCategoryWrestling => "Zápas";
+
+  @override
+  String get podcastCategoryAfterShows => "Aftershow";
+
+  @override
+  String get podcastCategoryFilmHistory => "Historie filmu";
+
+  @override
+  String get podcastCategoryFilmInterviews => "Filmové rozhovory";
+
+  @override
+  String get podcastCategoryFilmReviews => "Filmové recenze";
+
+  @override
+  String get podcastCategoryTvReviews => "TV recenze";
+
+  @override
+  String get weatherConditionClearSky => "Sereno";
+
+  @override
+  String get weatherConditionMainlyClear => "Prevalentemente sereno";
+
+  @override
+  String get weatherConditionPartlyCloudy => "Parzialmente nuvoloso";
+
+  @override
+  String get weatherConditionOvercast => "Coperto";
+
+  @override
+  String get weatherConditionFog => "Nebbia";
+
+  @override
+  String get weatherConditionRimeFog => "Nebbia con brina";
+
+  @override
+  String get weatherConditionLightDrizzle => "Pioviggine leggera";
+
+  @override
+  String get weatherConditionModerateDrizzle => "Pioviggine moderata";
+
+  @override
+  String get weatherConditionDenseDrizzle => "Pioviggine intensa";
+
+  @override
+  String get weatherConditionLightFreezingDrizzle => "Pioviggine gelata leggera";
+
+  @override
+  String get weatherConditionDenseFreezingDrizzle => "Pioviggine gelata intensa";
+
+  @override
+  String get weatherConditionLightRain => "Pioggia leggera";
+
+  @override
+  String get weatherConditionModerateRain => "Pioggia moderata";
+
+  @override
+  String get weatherConditionHeavyRain => "Pioggia intensa";
+
+  @override
+  String get weatherConditionLightFreezingRain => "Pioggia gelata leggera";
+
+  @override
+  String get weatherConditionHeavyFreezingRain => "Pioggia gelata intensa";
+
+  @override
+  String get weatherConditionLightSnowfall => "Neve leggera";
+
+  @override
+  String get weatherConditionModerateSnowfall => "Neve moderata";
+
+  @override
+  String get weatherConditionHeavySnowfall => "Neve intensa";
+
+  @override
+  String get weatherConditionSnowGrains => "Granelli di neve";
+
+  @override
+  String get weatherConditionLightRainShowers => "Rovesci leggeri";
+
+  @override
+  String get weatherConditionModerateRainShowers => "Rovesci moderati";
+
+  @override
+  String get weatherConditionViolentRainShowers => "Rovesci violenti";
+
+  @override
+  String get weatherConditionLightSnowShowers => "Rovesci di neve leggeri";
+
+  @override
+  String get weatherConditionHeavySnowShowers => "Rovesci di neve intensi";
+
+  @override
+  String get weatherConditionThunderstorm => "Temporale";
+
+  @override
+  String get weatherConditionThunderstormLightHail => "Temporale con grandine leggera";
+
+  @override
+  String get weatherConditionThunderstormHeavyHail => "Temporale con grandine intensa";
+
+  @override
+  String get documentsImportFromFiles => "Importovat ze Souborů";
+
+  @override
+  String get sonarTubeOpenUrl => "Otevřít URL";
+
+  @override
+  String get sonarTubeUrlPrompt => "Vložte URL videa YouTube";
+
+  @override
+  String get sonarMusicAll => "Vše";
+
+  @override
+  String get sonarMusicSong => "Skladby";
+
+  @override
+  String get sonarMusicVideo => "Hudební videa";
+
+  @override
+  String get sonarMusicAlbum => "Alba";
+
+  @override
+  String get sonarMusicArtist => "Umělci";
+
+  @override
+  String get sonarMusicPlaylist => "Playlisty";
+
+  @override
+  String get sonarMusicFavorites => "Oblíbené";
+
+  @override
+  String get sonarMusicRecent => "Nedávno přehrané";
+
+  @override
+  String get sonarMusicOpen => "Otevřít URL";
+
+  @override
+  String get sonarMusicLoad => "Načíst další";
+
+  @override
+  String get sonarMusicArtistOpen => "Přejít na interpreta";
+
+  @override
+  String get sonarMusicAlbumOpen => "Přejít na album";
+
+  @override
+  String get sonarMusicPlayAll => "Přehrát vše";
+
+  @override
+  String get sonarMusicShare => "Sdílet";
+
+  @override
+  String get sonarMusicAdd => "Přidat mezi oblíbené";
+
+  @override
+  String get sonarMusicRemove => "Odebrat z oblíbených";
+
+  @override
+  String get sonarMusicEmpty => "Žádné výsledky";
+
+  @override
+  String get sonarMusicInvalid => "Nelze otevřít";
+
+  @override
+  String get sonarMusicDescription => "Popis";
+
+  @override
+  String get sonarMusicShuffle => "Náhodně";
+
+  @override
+  String get sonarMusicSave => "Uložit média";
+
+  @override
+  String get sonarMusicSuggest => "Návrhy";
+
+  @override
+  String get sonarMusicSearchHint => "Skladba, interpret nebo album";
+
+  @override
+  String get catalogUntitled => "Senza titolo";
+
+  @override
+  String get catalogUnknownAuthor => "Autore sconosciuto";
+
+  @override
+  String get librivoxChapterFallback => "Capitolo";
+
+  @override
+  String get internetArchiveAudioFallback => "Audio";
+
+  @override
+  String librivoxHttpError(int statusCode) => "Errore LibriVox ${statusCode}";
+
+  @override
+  String get librivoxBookNotFound => "Audiolibro non trovato.";
+
+  @override
+  String internetArchiveHttpError(int statusCode) => "Internet Archive ${statusCode}";
+
+  @override
+  String poetryDbHttpError(int statusCode) => "Errore PoetryDB ${statusCode}";
+
+  @override
+  String get cloudFilePickerLoading => "Načítání souboru";
+
+  @override
+  String get cloudFilePickerPreparing => "Příprava souboru z cloudu…";
+
+  @override
+  String get cloudFilePickerUnknownSize => "Načítání…";
+
+  @override
+  String get cloudFilePickerCancelling => "Rušení…";
+
+  @override
+  String get audioPlaybackNotificationChannelName => "Přehrávání zvuku";
+
+  @override
+  String get documentExportFallbackName => "Dokument";
+
+  @override
+  String get documentExportAudiobookSuffix => "audiokniha";
+
+  @override
+  String get convertMediaWavFloat32 => "32 bitů s plovoucí desetinnou čárkou";
 }

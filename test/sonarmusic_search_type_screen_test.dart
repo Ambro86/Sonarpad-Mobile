@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sonarpad_mobile_starter/l10n/app_localizations.dart';
+import 'package:sonarpad_mobile_starter/l10n/app_localizations_lookup.dart';
 import 'package:sonarpad_mobile_starter/screens/sonarmusic_screen.dart';
 import 'package:sonarpad_mobile_starter/services/sonarmusic_service.dart';
 import 'package:sonarpad_mobile_starter/widgets/universal_accessible_view.dart';
@@ -20,8 +21,8 @@ const _labels = [
   'Video musicali',
 ];
 
-Widget _app(SonarMusicService service) => MaterialApp(
-  locale: const Locale('it'),
+Widget _app(SonarMusicService service, {Locale locale = const Locale('it')}) => MaterialApp(
+  locale: locale,
   localizationsDelegates: AppLocalizations.localizationsDelegates,
   supportedLocales: AppLocalizations.supportedLocales,
   home: SonarMusicScreen(service: service),
@@ -51,6 +52,36 @@ void main() {
   tearDown(() {
     configureAccessibleRendererRuntime(useFlutterOnIos: false);
   });
+
+  testWidgets('Turkish music choices use ARB labels and retain the search text',
+    (tester) async {
+      final service = SonarMusicService(
+        directCatalog: false,
+        endpoint: Uri.parse('https://example.test/youtube_music_resolve.php'),
+        client: MockClient((_) async {
+          fail('Changing a category must not start a search.');
+        }),
+      );
+      final l10n = lookupSupportedAppLocalizations('tr');
+      await tester.pumpWidget(_app(service, locale: const Locale('tr')));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byType(TextField), 'İstanbul');
+      final row = _searchTypeRow(tester);
+      expect(row.options.map((option) => option.label), [
+        l10n.sonarMusicAll, l10n.sonarMusicSong, l10n.sonarMusicAlbum,
+        l10n.sonarMusicArtist, l10n.sonarMusicPlaylist, l10n.sonarMusicVideo,
+      ]);
+      final selector = find.bySemanticsLabel(row.title);
+      final node = tester.getSemantics(selector);
+      final originalId = node.id;
+      expect(node.getSemanticsData().value, 'Tümü');
+      node.owner!.performAction(node.id, SemanticsAction.increase);
+      await tester.pump();
+      expect(tester.getSemantics(selector).id, originalId);
+      expect(tester.getSemantics(selector).getSemanticsData().value, 'Şarkılar');
+      expect(tester.widget<TextField>(find.byType(TextField)).controller!.text, 'İstanbul');
+    },
+  );
 
   testWidgets(
     'all music categories keep one adjustable node and preserve the query',
@@ -121,6 +152,57 @@ void main() {
       TargetPlatform.android,
       TargetPlatform.iOS,
     }),
+  );
+
+  testWidgets(
+    'artist page shows songs without a duplicate search button',
+    (tester) async {
+      final service = SonarMusicService(
+        directCatalog: false,
+        endpoint: Uri.parse('https://example.test/youtube_music_resolve.php'),
+        client: MockClient((request) async {
+          expect(request.url.queryParameters['browse'], 'UCelisa');
+          return http.Response(jsonEncode({
+            'ok': true,
+            'title': 'Elisa',
+            'items': [
+              {
+                'kind': 'song',
+                'id': 'abcdefghijk',
+                'video_id': 'abcdefghijk',
+                'title': 'Canzone di Elisa',
+                'artist': 'Elisa',
+              },
+            ],
+          }), 200);
+        }),
+      );
+      await tester.pumpWidget(MaterialApp(
+        locale: const Locale('it'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: SonarMusicScreen(
+          service: service,
+          collection: const SonarMusicItem(
+            kind: 'artist',
+            id: 'UCelisa',
+            browseId: 'UCelisa',
+            title: 'Elisa',
+          ),
+        ),
+      ));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Canzone di Elisa'), findsOneWidget);
+      expect(find.widgetWithIcon(IconButton, Icons.search), findsNothing);
+      expect(find.byType(TextField), findsNothing);
+      final rows = tester.widget<UniversalAccessibleList>(
+        find.byType(UniversalAccessibleList),
+      ).sections.expand((section) => section.rows);
+      expect(rows.any((row) => row.id == 'search' ||
+          row.id == 'search_field' || row.id == 'search_type' ||
+          row.id == 'suggest'), isFalse);
+    },
   );
 
   testWidgets(
@@ -196,6 +278,8 @@ void main() {
       await tester.tap(find.text('Album Elisa 2'));
       await tester.pumpAndSettle();
       expect(find.text('Traccia album'), findsOneWidget);
+      expect(find.widgetWithIcon(IconButton, Icons.search), findsNothing);
+      expect(find.byType(TextField), findsNothing);
       expect(browses.single['browse'], 'MPREalbum2');
       await tester.tap(find.byType(SonarpadBackButton));
       await tester.pumpAndSettle();

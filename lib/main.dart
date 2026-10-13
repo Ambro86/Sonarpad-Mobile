@@ -9,6 +9,7 @@ import 'package:path/path.dart' as p;
 import 'package:rhttp_plus/rhttp_plus.dart' as rhttp;
 
 import 'l10n/app_localizations.dart';
+import 'l10n/app_localizations_lookup.dart';
 import 'models/podcast.dart';
 import 'utils/app_logger.dart';
 import 'services/app_cache_service.dart';
@@ -161,10 +162,16 @@ Future<void> main() async {
     await AppLogger.log('Sonarpad bootstrap rhttp_plus init failed: $error');
   }
   try {
+    final startupLanguage = await startupSettings.loadAppLanguage();
+    final startupL10n = lookupSupportedAppLocalizations(
+      startupLanguage,
+      fallbackLanguage: 'it',
+    );
     await AppLogger.log('Sonarpad bootstrap just_audio_background init start');
     await JustAudioBackground.init(
       androidNotificationChannelId: 'com.ryanheise.bg_demo.channel.audio',
-      androidNotificationChannelName: 'Audio playback',
+      androidNotificationChannelName:
+          startupL10n.audioPlaybackNotificationChannelName,
       androidNotificationOngoing: true,
     );
     await AppLogger.log('Sonarpad bootstrap just_audio_background init ok');

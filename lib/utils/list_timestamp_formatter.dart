@@ -1,5 +1,7 @@
 import 'package:intl/intl.dart';
 
+import '../l10n/app_localizations_lookup.dart';
+
 String titleWithListTimestamp(
   String title,
   DateTime? publishedAt,
@@ -34,87 +36,15 @@ String? formatListTimestamp(DateTime? dateTime, String localeName) {
 }
 
 String? _relativeDayLabel(int dayDiff, String localeName) {
-  final language = _languageCode(localeName);
-  final labels = switch (language) {
-    'it' => const {
-        0: 'oggi',
-        -1: 'ieri',
-        -2: "l'altro ieri",
-        1: 'domani',
-        2: 'dopodomani',
-      },
-    'fr' => const {
-        0: "aujourd'hui",
-        -1: 'hier',
-        -2: 'avant-hier',
-        1: 'demain',
-        2: 'après-demain',
-      },
-    'es' => const {
-        0: 'hoy',
-        -1: 'ayer',
-        -2: 'anteayer',
-        1: 'mañana',
-        2: 'pasado mañana',
-      },
-    'pt' => const {
-        0: 'hoje',
-        -1: 'ontem',
-        -2: 'anteontem',
-        1: 'amanhã',
-        2: 'depois de amanhã',
-      },
-    'pl' => const {
-        0: 'dzisiaj',
-        -1: 'wczoraj',
-        -2: 'przedwczoraj',
-        1: 'jutro',
-        2: 'pojutrze',
-      },
-    'ro' => const {
-        0: 'astăzi',
-        -1: 'ieri',
-        -2: 'alaltăieri',
-        1: 'mâine',
-        2: 'poimâine',
-      },
-    'cs' => const {
-        0: 'dnes',
-        -1: 'včera',
-        -2: 'předevčírem',
-        1: 'zítra',
-        2: 'pozítří',
-      },
-    'de' => const {
-        0: 'heute',
-        -1: 'gestern',
-        -2: 'vorgestern',
-        1: 'morgen',
-        2: 'übermorgen',
-      },
-    'uk' => const {
-        0: 'сьогодні',
-        -1: 'вчора',
-        -2: 'позавчора',
-        1: 'завтра',
-        2: 'післязавтра',
-      },
-    'zh' => const {
-        0: '今天',
-        -1: '昨天',
-        -2: '前天',
-        1: '明天',
-        2: '后天',
-      },
-    _ => const {
-        0: 'today',
-        -1: 'yesterday',
-        -2: 'day before yesterday',
-        1: 'tomorrow',
-        2: 'day after tomorrow',
-      },
+  final strings = lookupSupportedAppLocalizations(localeName);
+  return switch (dayDiff) {
+    0 => strings.listTimestampToday,
+    -1 => strings.listTimestampYesterday,
+    -2 => strings.listTimestampDayBeforeYesterday,
+    1 => strings.listTimestampTomorrow,
+    2 => strings.listTimestampDayAfterTomorrow,
+    _ => null,
   };
-  return labels[dayDiff];
 }
 
 DateFormat _dateFormatter(String localeName) {
@@ -123,7 +53,7 @@ DateFormat _dateFormatter(String localeName) {
       ? 'MM/dd/yyyy'
       : language == 'zh'
           ? 'yyyy/MM/dd'
-          : (language == 'pl' || language == 'cs' || language == 'de' || language == 'uk')
+          : (language == 'pl' || language == 'cs' || language == 'de' || language == 'uk' || language == 'tr')
               ? 'dd.MM.yyyy'
               : 'dd/MM/yyyy';
   return DateFormat(pattern, localeName);

@@ -59,6 +59,7 @@ class _NewsScreenState extends State<NewsScreen> {
         'zh_CN' => NewsLanguage.chineseSimplified,
         'uk' => NewsLanguage.ukrainian,
         'ro' => NewsLanguage.romanian,
+        'tr' || 'tr_TR' || 'tr-TR' => NewsLanguage.turkish,
         _ => NewsLanguage.italian,
       };
       _service.prefetchTinyfishFallbackOnlyPolicy();
@@ -181,7 +182,7 @@ class _NewsScreenState extends State<NewsScreen> {
       context,
       MaterialPageRoute(
         settings: const RouteSettings(name: '/news/community/add'),
-        builder: (_) => _AddCommunityNewsSourceScreen(language: _language!),
+        builder: (_) => AddCommunityNewsSourceScreen(language: _language!),
       ),
     );
   }
@@ -380,22 +381,35 @@ class _NewsScreenState extends State<NewsScreen> {
   }
 }
 
-class _AddCommunityNewsSourceScreen extends StatefulWidget {
-  const _AddCommunityNewsSourceScreen({required this.language});
+class AddCommunityNewsSourceScreen extends StatefulWidget {
+  const AddCommunityNewsSourceScreen({
+    super.key,
+    required this.language,
+    this.service,
+  });
 
   final NewsLanguage language;
+  final NewsService? service;
 
   @override
-  State<_AddCommunityNewsSourceScreen> createState() =>
+  State<AddCommunityNewsSourceScreen> createState() =>
       _AddCommunityNewsSourceScreenState();
 }
 
 class _AddCommunityNewsSourceScreenState
-    extends State<_AddCommunityNewsSourceScreen> {
-  final _service = NewsService();
+    extends State<AddCommunityNewsSourceScreen> {
+  late final NewsService _service;
+  late NewsLanguage _selectedLanguage;
   final _nameController = TextEditingController();
   final _urlController = TextEditingController();
   bool _submitting = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _service = widget.service ?? NewsService();
+    _selectedLanguage = widget.language;
+  }
 
   @override
   void dispose() {
@@ -404,7 +418,15 @@ class _AddCommunityNewsSourceScreenState
     super.dispose();
   }
 
+  void _selectLanguage(NewsLanguage? language) {
+    if (_submitting || language == null || language == _selectedLanguage) {
+      return;
+    }
+    setState(() => _selectedLanguage = language);
+  }
+
   Future<void> _submit() async {
+    if (_submitting) return;
     final l10n = AppLocalizations.of(context);
     final name = _nameController.text.trim();
     final url = _urlController.text.trim();
@@ -413,10 +435,11 @@ class _AddCommunityNewsSourceScreenState
       return;
     }
 
+    final language = _selectedLanguage;
     setState(() => _submitting = true);
     try {
       final message = await _service.addCommunityNewsSource(
-        language: widget.language,
+        language: language,
         name: name,
         feedUrl: url,
         uiLanguageCode: l10n.localeName,
@@ -455,17 +478,29 @@ class _AddCommunityNewsSourceScreenState
                   kind: 'textField',
                   title: l10n.newsCommunitySourceName,
                   value: _nameController.text,
+                  enabled: !_submitting,
                 ),
                 AccessibleListRow(
                   id: 'url',
                   kind: 'textField',
                   title: l10n.newsCommunitySourceUrl,
                   value: _urlController.text,
+                  enabled: !_submitting,
                 ),
                 AccessibleListRow(
                   id: 'language',
-                  kind: 'text',
-                  title: l10n.newsCommunitySelectedLanguage(widget.language.label(l10n)),
+                  kind: 'picker',
+                  title: l10n.sourceLanguageLabel,
+                  value: _selectedLanguage.name,
+                  valueLabel: _selectedLanguage.label(l10n),
+                  enabled: !_submitting,
+                  options: [
+                    for (final language in NewsLanguage.values)
+                      AccessibleOption(
+                        value: language.name,
+                        label: language.label(l10n),
+                      ),
+                  ],
                 ),
                 AccessibleListRow(
                   id: 'submit',
@@ -475,11 +510,16 @@ class _AddCommunityNewsSourceScreenState
                 ),
               ])],
               onEvent: (event) {
+                if (_submitting) return;
                 if (event.id == 'name' && event.type == 'textChanged') {
                   _nameController.text = event.value?.toString() ?? '';
                 } else if (event.id == 'url' && event.type == 'textChanged') {
                   _urlController.text = event.value?.toString() ?? '';
-                } else if (event.id == 'submit' && event.type == 'activate' && !_submitting) {
+                } else if (event.id == 'language' && event.type == 'picker') {
+                  _selectLanguage(NewsLanguage.values
+                      .where((language) => language.name == event.value)
+                      .firstOrNull);
+                } else if (event.id == 'submit' && event.type == 'activate') {
                   _submit();
                 }
               },
@@ -491,6 +531,7 @@ class _AddCommunityNewsSourceScreenState
                 const SizedBox(height: 16),
                 TextField(
                   controller: _nameController,
+                  enabled: !_submitting,
                   decoration: InputDecoration(
                     labelText: l10n.newsCommunitySourceName,
                   ),
@@ -498,14 +539,27 @@ class _AddCommunityNewsSourceScreenState
                 const SizedBox(height: 16),
                 TextField(
                   controller: _urlController,
+                  enabled: !_submitting,
                   decoration: InputDecoration(
                     labelText: l10n.newsCommunitySourceUrl,
                   ),
                   keyboardType: TextInputType.url,
                 ),
                 const SizedBox(height: 16),
-                Text(
-                  l10n.newsCommunitySelectedLanguage(widget.language.label(l10n)),
+                DropdownButtonFormField<NewsLanguage>(
+                  initialValue: _selectedLanguage,
+                  isExpanded: true,
+                  decoration: InputDecoration(
+                    labelText: l10n.sourceLanguageLabel,
+                  ),
+                  items: [
+                    for (final language in NewsLanguage.values)
+                      DropdownMenuItem(
+                        value: language,
+                        child: Text(language.label(l10n)),
+                      ),
+                  ],
+                  onChanged: _submitting ? null : _selectLanguage,
                 ),
                 const SizedBox(height: 24),
                 FilledButton.icon(
@@ -794,7 +848,11 @@ class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
     final savedCity = await _settings.getNewsLocalCity();
     final loc = await _service.getUserLocationData();
     final detectedCity = loc?['city'] ?? '';
-    final country = loc?['countryCode'] ?? _defaultCountryCode(widget.language);
+    // The city remains location-based, while Turkish results use the TR
+    // edition even when the device is in another country.
+    final country = widget.language == NewsLanguage.turkish
+        ? _defaultCountryCode(widget.language)
+        : loc?['countryCode'] ?? _defaultCountryCode(widget.language);
     final city = savedCity.trim().isNotEmpty ? savedCity.trim() : detectedCity;
     if (mounted &&
         _localCityController.text.trim().isEmpty &&
@@ -837,11 +895,13 @@ class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
         NewsLanguage.chineseSimplified => 'CN',
         NewsLanguage.ukrainian => 'UA',
         NewsLanguage.romanian => 'RO',
+        NewsLanguage.turkish => 'TR',
         NewsLanguage.italian => 'IT',
       };
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final showCategories = widget.initialUri == null;
     final currentCategory = widget.source.categories
         ?.where((c) => c.uri == _currentUri)
@@ -896,7 +956,8 @@ class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
                                 index++)
                               AccessibleListRow(
                                 id: 'category_$index',
-                                title: widget.source.categories![index].name,
+                                title: widget.source.categories![index]
+                                    .displayName(l10n),
                                 kind: 'button',
                                 selected: _currentUri ==
                                     widget.source.categories![index].uri,
@@ -922,7 +983,7 @@ class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
                         final category = widget.source.categories![index];
                         _openCategory(
                           category.uri,
-                          '${widget.source.name}: ${category.name}',
+                          '${widget.source.name}: ${category.displayName(l10n)}',
                         );
                       },
                     ),
@@ -946,13 +1007,13 @@ class _NewsSourceArticlesScreenState extends State<_NewsSourceArticlesScreen> {
                           return Padding(
                             padding: const EdgeInsets.only(right: 8),
                             child: ChoiceChip(
-                              label: Text(cat.name),
+                              label: Text(cat.displayName(l10n)),
                               selected: _currentUri == cat.uri,
                               onSelected: (selected) {
                                 if (selected) {
                                   _openCategory(
                                     cat.uri,
-                                    '${widget.source.name}: ${cat.name}',
+                                    '${widget.source.name}: ${cat.displayName(l10n)}',
                                   );
                                 }
                               },

@@ -46,6 +46,7 @@ void main() {
       'app_uk.arb',
       'app_zh_CN.arb',
       'app_ro.arb',
+      'app_tr.arb',
     ];
     final templatePath = 'lib/l10n/${files.first}';
     final templateArb = _readJson(templatePath);
@@ -78,6 +79,7 @@ void main() {
       'uk.json',
       'zh_CN.json',
       'ro.json',
+      'tr.json',
     ];
     for (final file in files) {
       final data = _readJson('assets/calendar/$file');
@@ -140,6 +142,7 @@ void main() {
       'app_uk.arb',
       'app_zh_CN.arb',
       'app_ro.arb',
+      'app_tr.arb',
     ];
     for (final file in arbFiles) {
       final arb = _readJson('lib/l10n/$file');

@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import '../utils/app_logger.dart';
+import '../l10n/app_localizations.dart';
+import '../l10n/app_localizations_lookup.dart';
 
 enum SonarTubeItemKind { video, channel, playlist }
 
@@ -220,9 +222,10 @@ class SonarTubeService {
   String _youtubeLanguage = 'it';
   String _youtubeRegion = 'IT';
 
-  String _localizedMessage(String italian, String romanian) {
-    return _youtubeLanguage == 'ro' ? romanian : italian;
-  }
+  AppLocalizations get _strings => lookupSupportedAppLocalizations(
+        _youtubeLanguage,
+        fallbackLanguage: 'it',
+      );
 
   void setLocaleName(String localeName) {
     final normalized = localeName.replaceAll('-', '_').toLowerCase();
@@ -256,6 +259,9 @@ class SonarTubeService {
     } else if (normalized == 'ro' || normalized.startsWith('ro_')) {
       _youtubeLanguage = 'ro';
       _youtubeRegion = 'RO';
+    } else if (normalized == 'tr' || normalized.startsWith('tr_')) {
+      _youtubeLanguage = 'tr';
+      _youtubeRegion = 'TR';
     } else if (normalized == 'zh' || normalized == 'zh_cn') {
       _youtubeLanguage = 'zh-CN';
       _youtubeRegion = 'CN';
@@ -328,10 +334,7 @@ class SonarTubeService {
     SonarTubeChannelSort channelSort = SonarTubeChannelSort.newest,
   }) async {
     if (collection.kind == SonarTubeItemKind.video) {
-      throw ArgumentError(_localizedMessage(
-        'Un video non è una raccolta SonarTube.',
-        'Un videoclip nu este o colecție SonarTube.',
-      ));
+      throw ArgumentError(_strings.sonarTubeServiceNotCollection);
     }
     final seedVideoId = _mixSeedVideoId(collection);
     final fallbackQuery = <String, String>{
@@ -442,10 +445,7 @@ class SonarTubeService {
 
   Future<SonarTubeResolvedMedia> resolve(SonarTubeItem item) {
     if (item.kind != SonarTubeItemKind.video) {
-      throw ArgumentError(_localizedMessage(
-        'È possibile risolvere soltanto un video.',
-        'Poate fi rezolvat doar un videoclip.',
-      ));
+      throw ArgumentError(_strings.sonarTubeServiceOnlyVideo);
     }
     return resolveUrl(
       item.url.isEmpty ? item.id : item.url,
@@ -510,10 +510,7 @@ class SonarTubeService {
     final streamVideo = _string(data['stream_video']);
     final streamAudio = _string(data['stream_audio']);
     if (stream == null) {
-      throw FormatException(_localizedMessage(
-        'Nessun flusso riproducibile disponibile.',
-        'Nu este disponibil niciun flux redabil.',
-      ));
+      throw FormatException(_strings.sonarTubeServiceNoStream);
     }
 
     final hasSeparateStreams =
@@ -1758,17 +1755,11 @@ class SonarTubeService {
     }
     final decoded = jsonDecode(utf8.decode(response.bodyBytes));
     if (decoded is! Map) {
-      throw FormatException(_localizedMessage(
-        'Risposta InnerTube non valida.',
-        'Răspuns InnerTube nevalid.',
-      ));
+      throw FormatException(_strings.sonarTubeServiceInvalidInnerTubeResponse);
     }
     final data = Map<String, dynamic>.from(decoded);
     if (data['error'] != null) {
-      throw FormatException(_localizedMessage(
-        'Errore API InnerTube.',
-        'Eroare API InnerTube.',
-      ));
+      throw FormatException(_strings.sonarTubeServiceInnerTubeError);
     }
     return data;
   }
@@ -2365,16 +2356,13 @@ class SonarTubeService {
     }
     final decoded = jsonDecode(utf8.decode(response.bodyBytes));
     if (decoded is! Map) {
-      throw FormatException(_localizedMessage(
-        'Risposta SonarTube non valida.',
-        'Răspuns SonarTube nevalid.',
-      ));
+      throw FormatException(_strings.sonarTubeServiceInvalidResponse);
     }
     final data = Map<String, dynamic>.from(decoded);
     if (data['ok'] != true && !allowApiError) {
       final detail = _string(data['detail']);
       final error = _string(data['error']) ??
-          _localizedMessage('Errore SonarTube', 'Eroare SonarTube');
+          _strings.sonarTubeServiceError;
       throw Exception(detail == null ? error : '$error: $detail');
     }
     return data;

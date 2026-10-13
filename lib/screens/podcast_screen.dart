@@ -128,6 +128,10 @@ class _PodcastScreenState extends State<PodcastScreen> {
         return 'ua';
       case 'ro':
         return 'ro';
+      case 'tr':
+      case 'tr_TR':
+      case 'tr-TR':
+        return 'tr';
       case 'it':
       default:
         return 'it';

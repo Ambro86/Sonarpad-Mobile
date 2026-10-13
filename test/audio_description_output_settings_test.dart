@@ -72,6 +72,20 @@ void main() {
     },
   );
 
+  test('Turkish initial language does not override a saved AD language', () async {
+    final initial = await AiAudioDescriptionPreferences.load(
+      defaultLanguage: 'tr',
+    );
+    expect(initial['language'], 'tr');
+
+    await AiAudioDescriptionPreferences.save(_settings);
+    final restored = await AiAudioDescriptionPreferences.load(
+      defaultLanguage: 'tr',
+    );
+    expect(restored['language'], 'it');
+    expect(restored['edgeVoice'], 'it-IT-IsabellaNeural');
+  });
+
   test(
     'settings and corrupt stored values share safe output normalization',
     () async {

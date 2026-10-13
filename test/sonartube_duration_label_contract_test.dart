@@ -8,7 +8,7 @@ void main() {
     final source = File('lib/screens/sonartube_screen.dart').readAsStringSync();
 
     expect(
-      RegExp(r'l10n\.sourceDurationValue\(item\.duration!\)').allMatches(source).length,
+      RegExp(r'l10n\.sourceDurationValue\(l10n\.formatMediaResultDuration\(item\.duration!\)\)').allMatches(source).length,
       greaterThanOrEqualTo(2),
       reason: 'Both the main SonarTube list and recent videos must label duration.',
     );

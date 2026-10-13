@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sonarpad_mobile_starter/services/podcast_service.dart';
 
 Map<String, dynamic> _arb(String path) =>
     jsonDecode(File(path).readAsStringSync()) as Map<String, dynamic>;
@@ -115,12 +116,15 @@ void main() {
   });
 
   test('all podcast categories have a Chinese label', () {
-    final model = File('lib/models/podcast.dart').readAsStringSync();
-    final service = File('lib/services/podcast_service.dart').readAsStringSync();
-    expect(model, contains('final String? chineseName;'));
-    expect(model, contains("'zh' || 'zh_CN' => chineseName"));
-    expect(RegExp(r'PodcastCategory\(').allMatches(service).length, 111);
-    expect(RegExp(r'chineseName:').allMatches(service).length, 111);
+    expect(PodcastService.categories, hasLength(111));
+    for (final category in PodcastService.categories) {
+      final label = category.nameForLanguage('zh_CN');
+      expect(label, isNotEmpty);
+      expect(RegExp(r'[\u3400-\u9FFF]').hasMatch(label), isTrue,
+          reason: 'genre ${category.genreId}');
+      expect(category.nameForLanguage('zh'), label);
+      expect(category.nameForLanguage('zh-CN'), label);
+    }
   });
 
   test('Chinese changelog is complete for every release', () {

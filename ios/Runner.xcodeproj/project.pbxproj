@@ -60,6 +60,7 @@
 		C1D2E3F40516273849A5B6C7 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		D1E2F3A40516273849A5B6C8 /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = uk.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		E2F3A4B5162738495A6B7C9D /* ro */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ro; path = ro.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		EF904BB4B6B7C845864167F4 /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		A11Y0002A11Y0002A11Y0002 /* SonarpadNativeAccessibleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SonarpadNativeAccessibleView.swift; sourceTree = "<group>"; };
 		F1A10002F1A10002F1A10002 /* SonarpadRaiPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SonarpadRaiPlayer.swift; sourceTree = "<group>"; };
 		7AFA3C8E1D35360C0083082E /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Release.xcconfig; path = Flutter/Release.xcconfig; sourceTree = "<group>"; };
@@ -213,6 +214,7 @@
 				"zh-Hans",
 				uk,
 				ro,
+				tr,
 				Base,
 			);
 			mainGroup = 97C146E51CF9000F007C117D;
@@ -340,6 +342,7 @@
 				C1D2E3F40516273849A5B6C7 /* zh-Hans */,
 				D1E2F3A40516273849A5B6C8 /* uk */,
 				E2F3A4B5162738495A6B7C9D /* ro */,
+				EF904BB4B6B7C845864167F4 /* tr */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";

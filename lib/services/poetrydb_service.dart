@@ -2,6 +2,21 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
+import '../l10n/app_localizations.dart';
+import '../l10n/app_localizations_lookup.dart';
+
+class PoetryDbRequestException implements Exception {
+  final int statusCode;
+
+  const PoetryDbRequestException(this.statusCode);
+
+  String localizedMessage(AppLocalizations l10n) =>
+      l10n.poetryDbHttpError(statusCode);
+
+  @override
+  String toString() => localizedMessage(lookupSupportedAppLocalizations('it'));
+}
+
 enum PoetryDbSearchField { title, author }
 
 class PoetryDbPoem {
@@ -17,10 +32,17 @@ class PoetryDbPoem {
     required this.lineCount,
   });
 
-  String toDocumentText() {
+  String titleLabel(AppLocalizations l10n) =>
+      title.trim().isEmpty ? l10n.catalogUntitled : title;
+
+  String authorLabel(AppLocalizations l10n) =>
+      author.trim().isEmpty ? l10n.catalogUnknownAuthor : author;
+
+  String toDocumentText({AppLocalizations? localizations}) {
+    final l10n = localizations ?? lookupSupportedAppLocalizations('it');
     final buffer = StringBuffer()
-      ..writeln(title)
-      ..writeln(author)
+      ..writeln(titleLabel(l10n))
+      ..writeln(authorLabel(l10n))
       ..writeln();
     for (final line in lines) {
       buffer.writeln(line);
@@ -54,7 +76,7 @@ class PoetryDbService {
       headers: {'User-Agent': 'SonarpadMobile/0.1'},
     ).timeout(const Duration(seconds: 30));
     if (response.statusCode < 200 || response.statusCode >= 300) {
-      throw Exception('Errore PoetryDB ${response.statusCode}');
+      throw PoetryDbRequestException(response.statusCode);
     }
 
     final decoded = jsonDecode(utf8.decode(response.bodyBytes, allowMalformed: true));
@@ -73,8 +95,8 @@ class PoetryDbService {
 
   PoetryDbPoem _poemFromJson(Map<String, dynamic> json) {
     return PoetryDbPoem(
-      title: _stringValue(json['title'], fallback: 'Senza titolo'),
-      author: _stringValue(json['author'], fallback: 'Autore sconosciuto'),
+      title: _stringValue(json['title']),
+      author: _stringValue(json['author']),
       lines: (json['lines'] as List<dynamic>? ?? const [])
           .whereType<String>()
           .toList(),

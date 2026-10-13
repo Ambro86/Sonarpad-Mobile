@@ -10,6 +10,11 @@ import 'recent_searches_screen.dart';
 import '../utils/status_message.dart';
 import '../widgets/universal_accessible_view.dart';
 
+String _wikipediaErrorMessage(Object? error, AppLocalizations l10n) =>
+    error is WikipediaRequestException
+        ? error.localizedMessage(l10n)
+        : l10n.error(l10n.technicalErrorGeneric);
+
 class WikipediaScreen extends StatefulWidget {
   const WikipediaScreen({super.key});
 
@@ -37,6 +42,7 @@ class _WikipediaScreenState extends State<WikipediaScreen> {
         'de' => 'de',
         'uk' => 'uk',
         'ro' => 'ro',
+        'tr' || 'tr_TR' || 'tr-TR' => 'tr',
         'zh_CN' => 'zh',
         _ => 'it',
       };
@@ -61,6 +67,7 @@ class _WikipediaScreenState extends State<WikipediaScreen> {
     'ru',
     'zh',
     'hi',
+    'tr',
   ];
 
   @override
@@ -119,7 +126,12 @@ class _WikipediaScreenState extends State<WikipediaScreen> {
     } catch (e) {
       if (mounted) Navigator.of(context).pop();
       if (mounted) {
-                showStatusMessage(context, "${l10n.errorOpening}: ${l10n.technicalErrorGeneric}");
+        showStatusMessage(
+          context,
+          e is WikipediaRequestException
+              ? e.localizedMessage(l10n)
+              : '${l10n.errorOpening}: ${l10n.technicalErrorGeneric}',
+        );
       }
     }
   }
@@ -293,7 +305,9 @@ class _WikipediaResultsScreenState extends State<_WikipediaResultsScreen> {
             );
           }
           if (snapshot.hasError) {
-            return Center(child: Text(l10n.error(l10n.technicalErrorGeneric)));
+            return Center(
+              child: Text(_wikipediaErrorMessage(snapshot.error, l10n)),
+            );
           }
           final results = snapshot.data ?? const [];
           if (results.isEmpty) {
@@ -427,7 +441,7 @@ class _WikipediaArticleScreenState extends State<_WikipediaArticleScreen> {
               ),
             ),
           if (_importError != null)
-            Text(l10n.error(l10n.technicalErrorGeneric)),
+            Text(_wikipediaErrorMessage(_importError, l10n)),
           if (article != null) ...[
             Text(article.title,
                 style: Theme.of(context).textTheme.headlineSmall),

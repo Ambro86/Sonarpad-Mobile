@@ -1196,6 +1196,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               'zh_CN' => l10n.simplifiedChineseLanguageName,
               'uk' => l10n.radioLanguageUk,
               'ro' => l10n.languageLabel('ro'),
+              'tr' => l10n.languageLabel('tr'),
               _ => l10n.italian,
             },
             options: [
@@ -1211,6 +1212,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               AccessibleOption(value: 'zh_CN', label: l10n.simplifiedChineseLanguageName),
               AccessibleOption(value: 'uk', label: l10n.radioLanguageUk),
               AccessibleOption(value: 'ro', label: l10n.languageLabel('ro')),
+              AccessibleOption(value: 'tr', label: l10n.languageLabel('tr')),
             ],
           ),
           AccessibleListRow(
@@ -1815,6 +1817,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             value: 'zh_CN', child: Text(l10n.simplifiedChineseLanguageName)),
                         DropdownMenuItem(
                             value: 'uk', child: Text(l10n.radioLanguageUk)),
+                        DropdownMenuItem(
+                            value: 'tr', child: Text(l10n.languageLabel('tr'))),
                       ],
                       onChanged: (value) {
                         if (value == null || value == _appLanguage) return;

@@ -11,7 +11,7 @@ void main() {
         artist: 'Giorgia', duration: '3:34',
         subtitle: 'Brano • Giorgia • Giorgia • 3:34',
       ),
-      'Brani · Giorgia · 3:34',
+      'Brani. Giorgia. 3:34',
     );
     expect(
       sonarMusicItemSubtitle(
@@ -29,14 +29,14 @@ void main() {
         artist: 'Adele', duration: '4:10',
         subtitle: 'Song • Adele • Album 2026 • 4:10',
       ),
-      'Songs · Adele · 4:10 · Album 2026',
+      'Songs. Adele. 4:10. Album 2026',
     );
     expect(
       sonarMusicItemSubtitle(
         title: 'My Song', kind: 'song', kindLabel: 'Songs',
         subtitle: 'Song • Artist Name • Guest Artist',
       ),
-      'Songs · Artist Name · Guest Artist',
+      'Songs. Artist Name. Guest Artist',
     );
   });
 
@@ -66,4 +66,18 @@ void main() {
     final screen = File('lib/screens/sonarmusic_screen.dart').readAsStringSync();
     expect(RegExp(r'_itemSubtitle\(item\)').allMatches(screen).length, 2);
   });
+  test('search suggestions open as a keyboard-free dedicated accessible route', () {
+    final source = File('lib/screens/sonarmusic_screen.dart').readAsStringSync();
+    final start = source.indexOf('  Future<void> _suggest() async {');
+    final end = source.indexOf('  Future<void> _search() async {', start);
+    final suggestionHandler = source.substring(start, end);
+    expect(suggestionHandler, contains('_searchFocus.unfocus();'));
+    expect(suggestionHandler, contains("SystemChannels.textInput.invokeMethod<void>('TextInput.hide')"));
+    expect(suggestionHandler, contains('MaterialPageRoute<String>('));
+    expect(suggestionHandler, isNot(contains('showDialog<String>')));
+    expect(source, contains('class _SonarMusicSuggestionsPage extends StatelessWidget'));
+    expect(source, contains('automaticallyImplyLeading: false'));
+    expect(source, contains('suggestions[index]'));
+  });
+
 }

@@ -2,6 +2,21 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
+import '../l10n/app_localizations.dart';
+import '../l10n/app_localizations_lookup.dart';
+
+class InternetArchiveRequestException implements Exception {
+  final int statusCode;
+
+  const InternetArchiveRequestException(this.statusCode);
+
+  String localizedMessage(AppLocalizations l10n) =>
+      l10n.internetArchiveHttpError(statusCode);
+
+  @override
+  String toString() => localizedMessage(lookupSupportedAppLocalizations('it'));
+}
+
 enum InternetArchiveSource { oldTimeRadio, speeches, liveMusic }
 
 class InternetArchivePage {
@@ -84,6 +99,9 @@ class InternetArchiveTrack {
     required this.length,
   });
 
+  String titleLabel(AppLocalizations l10n) =>
+      title.trim().isEmpty ? l10n.internetArchiveAudioFallback : title;
+
   Map<String, dynamic> toJson() => {
         'title': title,
         'fileName': fileName,
@@ -94,7 +112,7 @@ class InternetArchiveTrack {
 
   factory InternetArchiveTrack.fromJson(Map<String, dynamic> json) =>
       InternetArchiveTrack(
-        title: _stringValue(json['title'], fallback: 'Audio'),
+        title: _stringValue(json['title']),
         fileName: _stringValue(json['fileName']),
         audioUrl: _stringValue(json['audioUrl']),
         format: _stringValue(json['format']),
@@ -136,7 +154,7 @@ class InternetArchiveService {
       headers: {'User-Agent': 'SonarpadMobile/0.1'},
     );
     if (response.statusCode < 200 || response.statusCode >= 300) {
-      throw Exception('Internet Archive ${response.statusCode}');
+      throw InternetArchiveRequestException(response.statusCode);
     }
 
     final decoded =
@@ -165,7 +183,7 @@ class InternetArchiveService {
       headers: {'User-Agent': 'SonarpadMobile/0.1'},
     );
     if (response.statusCode < 200 || response.statusCode >= 300) {
-      throw Exception('Internet Archive ${response.statusCode}');
+      throw InternetArchiveRequestException(response.statusCode);
     }
 
     final decoded =

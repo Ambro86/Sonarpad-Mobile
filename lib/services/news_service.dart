@@ -28,6 +28,7 @@ import 'news_sources/german_news_sources.dart';
 import 'news_sources/simplified_chinese_news_sources.dart';
 import 'news_sources/ukrainian_news_sources.dart';
 import 'news_sources/romanian_news_sources.dart';
+import 'news_sources/turkish_news_sources.dart';
 
 enum NewsLanguage {
   italian,
@@ -41,7 +42,8 @@ enum NewsLanguage {
   german,
   chineseSimplified,
   ukrainian,
-  romanian
+  romanian,
+  turkish
 }
 
 class _TinyfishArticleFetchResult {
@@ -68,6 +70,7 @@ extension NewsLanguageInfo on NewsLanguage {
         NewsLanguage.chineseSimplified => 'zh-CN',
         NewsLanguage.ukrainian => 'uk',
         NewsLanguage.romanian => 'ro',
+        NewsLanguage.turkish => 'tr',
       };
 
   String get communityKey => switch (this) {
@@ -83,6 +86,7 @@ extension NewsLanguageInfo on NewsLanguage {
         NewsLanguage.chineseSimplified => 'chinese_simplified',
         NewsLanguage.ukrainian => 'ukrainian',
         NewsLanguage.romanian => 'romanian',
+        NewsLanguage.turkish => 'turkish',
       };
 
   String label(AppLocalizations l10n) => switch (this) {
@@ -97,7 +101,8 @@ extension NewsLanguageInfo on NewsLanguage {
         NewsLanguage.german => l10n.german,
         NewsLanguage.chineseSimplified => l10n.simplifiedChineseLanguageName,
         NewsLanguage.ukrainian => l10n.radioLanguageUk,
-        NewsLanguage.romanian => 'Română',
+        NewsLanguage.romanian => l10n.radioLanguageRo,
+        NewsLanguage.turkish => l10n.radioLanguageTr,
       };
 
   List<NewsRssSource> get rssSources => switch (this) {
@@ -113,6 +118,7 @@ extension NewsLanguageInfo on NewsLanguage {
         NewsLanguage.chineseSimplified => simplifiedChineseNewsSources,
         NewsLanguage.ukrainian => ukrainianNewsSources,
         NewsLanguage.romanian => romanianNewsSources,
+        NewsLanguage.turkish => turkishNewsSources,
       };
 }
 
@@ -480,7 +486,7 @@ class NewsService {
       },
     ).timeout(const Duration(seconds: 15));
 
-    final decoded = _decodeJsonMap(response.body);
+    final decoded = _decodeJsonMap(utf8.decode(response.bodyBytes));
     final message = (decoded['message'] ?? '').toString().trim();
     final error = (decoded['error'] ?? '').toString().trim();
     final ok = decoded['ok'] == true;
@@ -531,8 +537,9 @@ class NewsService {
       if (raw is! Map) continue;
       final name = (raw['name'] ?? '').toString().trim();
       final url = (raw['url'] ?? '').toString().trim();
-      final rawLanguage =
-          (raw['language'] ?? '').toString().trim().toLowerCase();
+      final rawLanguage = _canonicalCommunityLanguage(
+        (raw['language'] ?? '').toString(),
+      );
       if (name.isEmpty || url.isEmpty) continue;
       if (rawLanguage.isNotEmpty && rawLanguage != language.communityKey) {
         continue;
@@ -547,6 +554,21 @@ class NewsService {
       ));
     }
     return sources;
+  }
+
+  String _canonicalCommunityLanguage(String value) {
+    final normalized = value.trim().toLowerCase().replaceAll('_', '-');
+    for (final language in NewsLanguage.values) {
+      if (normalized == language.communityKey.replaceAll('_', '-') ||
+          normalized == language.code.toLowerCase()) {
+        return language.communityKey;
+      }
+    }
+    final primary = normalized.split('-').first;
+    for (final language in NewsLanguage.values) {
+      if (primary == language.code.toLowerCase()) return language.communityKey;
+    }
+    return value.trim().toLowerCase();
   }
 
   Map<String, dynamic> _decodeJsonMap(String body) {
@@ -643,6 +665,11 @@ class NewsService {
             hl = 'ro';
             gl = 'RO';
             ceid = 'RO:ro';
+            break;
+          case NewsLanguage.turkish:
+            hl = 'tr';
+            gl = 'TR';
+            ceid = 'TR:tr';
             break;
         }
         finalUrl =
@@ -1681,6 +1708,7 @@ class NewsService {
         NewsLanguage.chineseSimplified => 'CN',
         NewsLanguage.ukrainian => 'UA',
         NewsLanguage.romanian => 'RO',
+        NewsLanguage.turkish => 'TR',
       };
 
   bool _isGoogleNewsUri(Uri uri) =>
@@ -2288,6 +2316,7 @@ class NewsService {
       NewsLanguage.chineseSimplified => 'zh-CN,zh;q=0.9,en-US;q=0.7,en;q=0.6',
       NewsLanguage.ukrainian => 'uk-UA,uk;q=0.9,en-US;q=0.8,en;q=0.7',
       NewsLanguage.romanian => 'ro-RO,ro;q=0.9,en-US;q=0.8,en;q=0.7',
+      NewsLanguage.turkish => 'tr-TR,tr;q=0.9,en-US;q=0.8,en;q=0.7',
     };
   }
 

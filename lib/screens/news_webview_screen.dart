@@ -794,8 +794,12 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   }
 
   Future<String> _voice() async {
-    final configured = await _settings.loadTtsVoice();
+    final configured = await _settings.loadTtsVoice(
+      fallbackLanguageCode:
+          widget.language == NewsLanguage.turkish ? 'tr-TR' : null,
+    );
     if (configured.trim().isNotEmpty) return configured;
+    if (widget.language == NewsLanguage.turkish) return 'tr-TR-EmelNeural';
     return 'it-IT-IsabellaNeural';
   }
 
@@ -1469,30 +1473,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   }
 
   String _paywallMessage(BuildContext context) {
-    switch (Localizations.localeOf(context).languageCode) {
-      case 'it':
-        return 'Questo articolo è riservato agli abbonati.';
-      case 'de':
-        return 'Dieser Artikel ist Abonnenten vorbehalten.';
-      case 'es':
-        return 'Este artículo está reservado para suscriptores.';
-      case 'fr':
-        return 'Cet article est réservé aux abonnés.';
-      case 'pt':
-        return 'Este artigo é reservado a assinantes.';
-      case 'pl':
-        return 'Ten artykuł jest dostępny tylko dla subskrybentów.';
-      case 'cs':
-        return 'Tento článek je určen pouze předplatitelům.';
-      case 'uk':
-        return 'Ця стаття доступна лише передплатникам.';
-      case 'ro':
-        return 'Acest articol este disponibil doar abonaților.';
-      case 'zh':
-        return '此文章仅供订阅用户阅读。';
-      default:
-        return 'This article is reserved for subscribers.';
-    }
+    return AppLocalizations.of(context).newsArticleSubscribersOnly;
   }
 
   Future<void> _revealCleanPureWebView({
@@ -2020,7 +2001,10 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
         await _flutterTts.setSpeechRate(speed * 0.5);
         await _flutterTts.setPitch(pitch);
 
-        final sysLang = await _settings.loadSystemTtsLanguage();
+        final sysLang = await _settings.loadSystemTtsLanguage(
+          fallbackLanguageCode:
+              widget.language == NewsLanguage.turkish ? 'tr-TR' : null,
+        );
         final sysVoice = await _settings.loadSystemTtsVoice();
 
         if (sysVoice != null) {

@@ -43,6 +43,7 @@ class _RouteScreenState extends State<RouteScreen> {
         'zh_CN' => 'cn',
         'uk' => 'ua',
         'ro' => 'ro',
+        'tr' || 'tr_TR' || 'tr-TR' => 'tr',
         _ => 'it',
       };
     }
@@ -262,6 +263,7 @@ class _RouteScreenState extends State<RouteScreen> {
       AccessibleOption(value: 'us', label: l10n.radioCountryOptionUs),
       AccessibleOption(value: 'ua', label: localizedCountryDisplayName('UA', localeName: l10n.localeName)),
       AccessibleOption(value: 'ro', label: localizedCountryDisplayName('RO', localeName: l10n.localeName, fallbackLabel: 'România')),
+      AccessibleOption(value: 'tr', label: l10n.radioCountryOptionTr),
       AccessibleOption(value: 'cn', label: l10n.chinaCountryName),
     ];
     String? countryValueLabel;
@@ -418,6 +420,8 @@ class _RouteScreenState extends State<RouteScreen> {
                   value: 'us', child: Text(l10n.radioCountryOptionUs)),
               DropdownMenuItem(
                   value: 'ua', child: Text(localizedCountryDisplayName('UA', localeName: l10n.localeName))),
+              DropdownMenuItem(
+                  value: 'tr', child: Text(l10n.radioCountryOptionTr)),
               DropdownMenuItem(
                   value: 'cn', child: Text(l10n.chinaCountryName)),
             ],

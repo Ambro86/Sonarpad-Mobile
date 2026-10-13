@@ -38,6 +38,11 @@ class _Audio extends Fake implements AudioPlayerService {
   final files = <String>[];
   final sessionTypes = <AudioSessionType>[];
   Completer<void>? playing;
+  Completer<void>? resumeGate;
+  Object? pauseError;
+  bool paused = false;
+  int pauses = 0;
+  int resumes = 0;
   int stops = 0;
   int disposals = 0;
 
@@ -48,13 +53,33 @@ class _Audio extends Fake implements AudioPlayerService {
   }) {
     files.add(file.path);
     sessionTypes.add(sessionType);
+    paused = false;
     playing = Completer<void>();
     return playing!.future;
   }
 
   void finish() {
+    paused = false;
     final current = playing;
     if (current != null && !current.isCompleted) current.complete();
+  }
+
+  @override
+  Future<void> pauseVoicePreview() async {
+    pauses++;
+    final error = pauseError;
+    if (error != null) throw error;
+    paused = true;
+  }
+
+  @override
+  Future<void> resumeVoicePreview() async {
+    resumes++;
+    final current = playing;
+    await resumeGate?.future;
+    if (identical(playing, current) && current?.isCompleted == false) {
+      paused = false;
+    }
   }
 
   @override
@@ -150,6 +175,124 @@ void main() {
     expect(controller.isPlaying, isTrue);
   });
 
+  test('pause and resume retain the same rendered sample until EOF', () async {
+    var renders = 0;
+    controller.playNow((_) async {
+      renders++;
+      return _sample('retained');
+    });
+    await _tick();
+    final playback = audio.playing!;
+    final stops = audio.stops;
+    final cancellations = service.cancellations;
+    await controller.pause();
+    expect(controller.isPaused, isTrue);
+    expect(controller.isPlaying, isFalse);
+    expect(controller.isActive, isTrue);
+    expect(audio.paused, isTrue);
+    expect(playback.isCompleted, isFalse);
+    await controller.resume();
+    expect(controller.isPaused, isFalse);
+    expect(controller.isPlaying, isTrue);
+    expect(audio.paused, isFalse);
+    expect(audio.pauses, 1);
+    expect(audio.resumes, 1);
+    expect(audio.playing, same(playback));
+    expect(audio.files, ['retained.mp3']);
+    expect(renders, 1);
+    expect(audio.stops, stops);
+    expect(service.cancellations, cancellations);
+    audio.finish();
+    await _tick();
+    expect(controller.isActive, isFalse);
+    await controller.resume();
+    expect(audio.resumes, 1, reason: 'EOF cannot resume a completed session');
+  });
+
+  test('the player session is installed before Pausa becomes available', () async {
+    controller.addListener(() {
+      if (controller.isPlaying) unawaited(controller.pause());
+    });
+    controller.playNow((_) async => _sample('loading'));
+    await _tick();
+    expect(controller.isPaused, isTrue);
+    expect(audio.paused, isTrue);
+    expect(audio.playing!.isCompleted, isFalse);
+    expect(audio.files, ['loading.mp3']);
+  });
+
+  test('an adjustment replaces a paused sample and starts automatically', () async {
+    controller.playNow((_) async => _sample('old-volume'));
+    await _tick();
+    await controller.pause();
+    final oldPlayback = audio.playing!;
+    controller.schedule((_) async => _sample('new-volume'));
+    expect(controller.isPreparing, isTrue);
+    expect(controller.isPaused, isFalse);
+    await controller.resume();
+    await _until(() => audio.files.length == 2);
+    expect(oldPlayback.isCompleted, isTrue);
+    expect(audio.files, ['old-volume.mp3', 'new-volume.mp3']);
+    expect(controller.isPlaying, isTrue);
+    expect(audio.paused, isFalse);
+    expect(audio.resumes, 0, reason: 'Adjustments start their new sample');
+  });
+
+  test('stop drains a paused sample and leaves nothing to resume', () async {
+    controller.playNow((_) async => _sample('paused'));
+    await _tick();
+    await controller.pause();
+    await controller.stop();
+    expect(audio.playing!.isCompleted, isTrue);
+    expect(controller.isActive, isFalse);
+    expect(controller.isPaused, isFalse);
+    await controller.resume();
+    expect(audio.resumes, 0);
+  });
+
+  for (final finishWithStop in [true, false]) {
+    test('late resume completion cannot revive a finished preview, stop=$finishWithStop', () async {
+      controller.playNow((_) async => _sample('first'));
+      await _tick();
+      await controller.pause();
+      final gate = audio.resumeGate = Completer<void>();
+      addTearDown(() {
+        if (!gate.isCompleted) gate.complete();
+      });
+      final resuming = controller.resume();
+      await _tick();
+      if (finishWithStop) {
+        await controller.stop();
+      } else {
+        audio.finish();
+        await _tick();
+      }
+      expect(controller.isActive, isFalse);
+      gate.complete();
+      await resuming;
+      expect(controller.isActive, isFalse);
+      expect(audio.files, ['first.mp3']);
+      expect(audio.playing!.isCompleted, isTrue);
+    });
+  }
+
+  test('pause errors drain playback and leave a recoverable inline error', () async {
+    controller.playNow((_) async => _sample('first'));
+    await _tick();
+    final failure = StateError('pause failed');
+    audio.pauseError = failure;
+    await controller.pause();
+    expect(controller.isActive, isFalse);
+    expect(controller.error, same(failure));
+    expect(audio.playing!.isCompleted, isTrue);
+    audio.pauseError = null;
+    controller.playNow((_) async => _sample('retry'));
+    await _tick();
+    expect(controller.isPlaying, isTrue);
+    expect(controller.error, isNull);
+    expect(audio.files, ['first.mp3', 'retry.mp3']);
+  });
+
   test('Stop drains in-flight work and removes a pending adjustment', () async {
     final heldRender = Completer<AudioDescriptionMixPreview>();
     addTearDown(() {
@@ -180,6 +323,8 @@ void main() {
   test('close stops playback before cleanup and is idempotent', () async {
     controller.playNow((_) async => _sample('one'));
     await _tick();
+    await controller.pause();
+    expect(controller.isPaused, isTrue);
     expect(audio.playing!.isCompleted, isFalse);
     final first = controller.close();
     final second = controller.close();
