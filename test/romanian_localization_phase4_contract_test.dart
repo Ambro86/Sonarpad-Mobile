@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
+import 'package:sonarpad_mobile_starter/l10n/app_localizations_lookup.dart';
 import 'package:sonarpad_mobile_starter/services/app_settings_service.dart';
 import 'package:sonarpad_mobile_starter/services/home_customization_service.dart';
 import 'package:sonarpad_mobile_starter/services/sonartube_service.dart';
@@ -75,6 +76,21 @@ void main() {
       'homeRaiPlaySound',
       'joinMediaVideoLabel',
       'joinMediaAudioLabel',
+      // Shared names, technical formats and established Romanian loanwords.
+      // News categories and Parenting/Wrestling below are genuinely translated.
+      'documentExportFallbackName',
+      'internetArchiveAudioFallback',
+      'internetArchiveHttpError',
+      'podcastCategoryBaseball',
+      'podcastCategoryCricket',
+      'podcastCategoryDesign',
+      'podcastCategoryFitness',
+      'podcastCategoryGolf',
+      'podcastCategoryHinduism',
+      'podcastCategoryIslam',
+      'podcastCategoryManagement',
+      'podcastCategoryMarketing',
+      'podcastCategoryRugby',
     };
 
     final identical = <String>{
@@ -82,6 +98,19 @@ void main() {
         if (en[key] is String && ro[key] == en[key]) key,
     };
     expect(identical, intentionalShared);
+    const translatedCategories = {
+      'newsCategoryWorld': 'Știri internaționale',
+      'newsCategoryBusiness': 'Afaceri',
+      'newsCategoryTechnology': 'Tehnologie',
+      'newsCategoryEntertainment': 'Divertisment',
+      'newsCategorySports': 'Sport',
+      'newsCategoryHealth': 'Sănătate',
+      'podcastCategoryParenting': 'Creșterea copiilor',
+      'podcastCategoryWrestling': 'Lupte',
+    };
+    for (final entry in translatedCategories.entries) {
+      expect(ro[entry.key], entry.value, reason: entry.key);
+    }
 
     expect(ro['sonarTubeLive'], 'În direct');
     expect(ro['folderTypeLabel'], 'Dosar');
@@ -198,10 +227,11 @@ void main() {
 
     final newsReader =
         File('lib/screens/news_webview_screen.dart').readAsStringSync();
-    expect(newsReader, contains("case 'ro':"));
+    expect(newsReader,
+        contains('AppLocalizations.of(context).newsArticleSubscribersOnly'));
     expect(
-      newsReader,
-      contains('Acest articol este disponibil doar abonaților.'),
+      lookupSupportedAppLocalizations('ro').newsArticleSubscribersOnly,
+      'Acest articol este disponibil doar abonaților.',
     );
   });
 

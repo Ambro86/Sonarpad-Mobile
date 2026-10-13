@@ -5,7 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   final screen = File('lib/screens/create_ai_audiodescription_screen.dart')
-      .readAsStringSync();
+      .readAsStringSync().replaceAll('\r\n', '\n');
 
   test('Gemini versus Sonarpad AI uses the same discrete accessible slider as speed', () {
     final start = screen.indexOf("id: 'provider',");
@@ -44,7 +44,7 @@ void main() {
     expect(current['version'], '0.5.1');
     const languages = [
       'it', 'en', 'fr', 'es', 'pt', 'pt_BR', 'de', 'pl', 'cs',
-      'uk', 'ro', 'zh_CN',
+      'uk', 'ro', 'zh_CN', 'tr',
     ];
     for (final language in languages) {
       final items = (current[language] as List).cast<String>();
@@ -53,7 +53,8 @@ void main() {
       expect(items.last, isNot(contains('Radio Browser')));
       expect(items.last, isNot(contains('Radio-Browser')));
       expect(items.last, isNot(contains('RadioBOSS')));
-      expect(items.length, 24);
+      expect(items.length, greaterThanOrEqualTo(24));
+      expect(items.length, (current['it'] as List).length, reason: language);
     }
     final radio = File('lib/services/radio_service.dart').readAsStringSync();
     expect(radio, contains('all.api.radio-browser.info'));

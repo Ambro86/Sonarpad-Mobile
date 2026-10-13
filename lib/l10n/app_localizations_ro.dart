@@ -4595,22 +4595,22 @@ class AppLocalizationsRo extends AppLocalizations {
   String get audioDescriptionProjectImportFromPhotos => "Importă video din Poze";
 
   @override
-  String get newsCategoryWorld => "World";
+  String get newsCategoryWorld => "Știri internaționale";
 
   @override
-  String get newsCategoryBusiness => "Business";
+  String get newsCategoryBusiness => "Afaceri";
 
   @override
-  String get newsCategoryTechnology => "Technology";
+  String get newsCategoryTechnology => "Tehnologie";
 
   @override
-  String get newsCategoryEntertainment => "Entertainment";
+  String get newsCategoryEntertainment => "Divertisment";
 
   @override
-  String get newsCategorySports => "Sports";
+  String get newsCategorySports => "Sport";
 
   @override
-  String get newsCategoryHealth => "Health";
+  String get newsCategoryHealth => "Sănătate";
 
   @override
   String get newsArticleSubscribersOnly => "Acest articol este disponibil doar abonaților.";
@@ -4793,7 +4793,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get podcastCategoryEducationForKids => "Educație pentru copii";
 
   @override
-  String get podcastCategoryParenting => "Parenting";
+  String get podcastCategoryParenting => "Creșterea copiilor";
 
   @override
   String get podcastCategoryPetsAndAnimals => "Animale de companie și animale";
@@ -4961,7 +4961,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get podcastCategoryWilderness => "Natură sălbatică";
 
   @override
-  String get podcastCategoryWrestling => "Wrestling";
+  String get podcastCategoryWrestling => "Lupte";
 
   @override
   String get podcastCategoryAfterShows => "Emisiuni de după show";

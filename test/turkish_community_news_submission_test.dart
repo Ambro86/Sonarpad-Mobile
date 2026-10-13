@@ -187,14 +187,19 @@ void main() {
       final picker = find.byType(DropdownButtonFormField<NewsLanguage>);
       expect(tester.widget<DropdownButtonFormField<NewsLanguage>>(picker).initialValue,
         NewsLanguage.english);
+      await tester.ensureVisible(picker);
       await tester.tap(picker);
       await tester.pumpAndSettle();
+      // Do not use .last on the target: until this lazy dropdown item is
+      // built the finder must be allowed to return an empty iterable.
+      final turkishOption = find.text(l10n.radioLanguageTr);
       await tester.scrollUntilVisible(
-        find.text(l10n.radioLanguageTr).last,
+        turkishOption,
         180,
         scrollable: find.byType(Scrollable).last,
       );
-      await tester.tap(find.text(l10n.radioLanguageTr).last);
+      expect(turkishOption, findsOneWidget);
+      await tester.tap(turkishOption);
       await tester.pumpAndSettle();
 
       await tester.enterText(find.byType(TextField).at(0), _sourceName);

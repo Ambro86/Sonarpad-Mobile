@@ -24,7 +24,20 @@ void main() {
 
     // The player, Flutter semantics, visual button and native iOS actions
     // are all hidden unless the same language-and-unlock gate succeeds.
-    expect(RegExp(r'if \(_canSave\(item\)\)').allMatches(music).length, 4);
+    const saveEntryPoints = <String, String>{
+      'player': r"PodcastPlayerExtraAction\(\s*id:\s*'save_media'",
+      'Flutter semantics': r"CustomSemanticsAction\(\s*label:\s*_label\('save'\)",
+      'visual button': r"IconButton\(\s*tooltip:\s*_label\('save'\)",
+      'shared accessible action': r"AccessibleCustomAction\(\s*id:\s*'save_media'",
+    };
+    for (final entry in saveEntryPoints.entries) {
+      final guarded = RegExp(
+        r'if\s*\(\s*_canSave\(item\)\s*\)\s*' + entry.value,
+      );
+      expect(guarded.allMatches(music), hasLength(1), reason: entry.key);
+      expect(RegExp(entry.value).allMatches(music), hasLength(1),
+          reason: '${entry.key} must not also expose an unguarded Save');
+    }
     expect(music, contains("PodcastPlayerExtraAction(id: 'save_media'"));
     expect(music, contains("CustomSemanticsAction(label: _label('save'))"));
     expect(music, contains("IconButton(tooltip: _label('save')"));

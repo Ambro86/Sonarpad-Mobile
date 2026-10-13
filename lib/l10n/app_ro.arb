@@ -3976,27 +3976,27 @@
   "@audioDescriptionProjectImportFromPhotos": {
     "description": "Source-picker action to import a video from the Photos app."
   },
-  "newsCategoryWorld": "World",
+  "newsCategoryWorld": "Știri internaționale",
   "@newsCategoryWorld": {
     "description": "World-news category label for built-in feeds."
   },
-  "newsCategoryBusiness": "Business",
+  "newsCategoryBusiness": "Afaceri",
   "@newsCategoryBusiness": {
     "description": "Business-news category label for built-in feeds."
   },
-  "newsCategoryTechnology": "Technology",
+  "newsCategoryTechnology": "Tehnologie",
   "@newsCategoryTechnology": {
     "description": "Technology-news category label for built-in feeds."
   },
-  "newsCategoryEntertainment": "Entertainment",
+  "newsCategoryEntertainment": "Divertisment",
   "@newsCategoryEntertainment": {
     "description": "Entertainment-news category label for built-in feeds."
   },
-  "newsCategorySports": "Sports",
+  "newsCategorySports": "Sport",
   "@newsCategorySports": {
     "description": "Sports-news category label for built-in feeds."
   },
-  "newsCategoryHealth": "Health",
+  "newsCategoryHealth": "Sănătate",
   "@newsCategoryHealth": {
     "description": "Health-news category label for built-in feeds."
   },
@@ -4265,7 +4265,7 @@
   "@podcastCategoryEducationForKids": {
     "description": "Display name for podcast genre 1519 (Education for Kids). The genre ID is stable and is not translated."
   },
-  "podcastCategoryParenting": "Parenting",
+  "podcastCategoryParenting": "Creșterea copiilor",
   "@podcastCategoryParenting": {
     "description": "Display name for podcast genre 1521 (Parenting). The genre ID is stable and is not translated."
   },
@@ -4489,7 +4489,7 @@
   "@podcastCategoryWilderness": {
     "description": "Display name for podcast genre 1559 (Wilderness). The genre ID is stable and is not translated."
   },
-  "podcastCategoryWrestling": "Wrestling",
+  "podcastCategoryWrestling": "Lupte",
   "@podcastCategoryWrestling": {
     "description": "Display name for podcast genre 1555 (Wrestling). The genre ID is stable and is not translated."
   },

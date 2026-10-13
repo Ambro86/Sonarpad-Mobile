@@ -49,6 +49,9 @@ class _FailingMusicService extends SonarMusicService {
   int resolveCalls = 0;
 
   @override
+  Future<List<String>> suggestions(String query) async => ['İstanbul şarkısı'];
+
+  @override
   Future<SonarMusicPage> search(String query, {
     String type = 'all', String? token, int page = 1,
   }) async => const SonarMusicPage(items: [
@@ -160,6 +163,35 @@ void main() {
       await tester.pumpWidget(const SizedBox.shrink());
       await tester.pumpAndSettle();
     },
+  );
+
+  testWidgets('Music suggestions use one accessible Back and the shared Home action',
+    (tester) async {
+      final service = _FailingMusicService();
+      final l10n = lookupSupportedAppLocalizations('tr');
+      await tester.pumpWidget(_localizedApp(SonarMusicScreen(service: service)));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byType(TextField), 'İstanbul');
+      final suggestions = find.text(l10n.sonarMusicSuggest);
+      await tester.ensureVisible(suggestions);
+      await tester.tap(suggestions);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(TextField), findsNothing);
+      expect(find.byType(SonarpadAppBar), findsOneWidget);
+      expect(find.byType(SonarpadBackButton), findsOneWidget);
+      expect(find.byType(SonarpadBackSemantics), findsOneWidget);
+      expect(find.byType(SonarpadVisualHomeButton), findsOneWidget);
+      expect(find.text(l10n.cancel), findsNothing);
+      expect(find.text('İstanbul şarkısı'), findsOneWidget);
+      await tester.tap(find.byType(SonarpadBackButton));
+      await tester.pumpAndSettle();
+      expect(tester.widget<TextField>(find.byType(TextField)).controller!.text,
+          'İstanbul');
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.pumpAndSettle();
+    },
+    variant: TargetPlatformVariant({TargetPlatform.android, TargetPlatform.iOS}),
   );
 
   testWidgets('Music playback failures show Turkish text and restore the result',

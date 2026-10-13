@@ -5,7 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   final screen = File('lib/screens/create_ai_audiodescription_screen.dart')
-      .readAsStringSync();
+      .readAsStringSync().replaceAll('\r\n', '\n');
 
   test('Gemini API key uses a discrete model slider with a stable focus', () {
     final start = screen.indexOf("id: 'model',");
@@ -36,9 +36,13 @@ void main() {
     expect(handler, contains('AiAudioDescriptionPreferences.saveGeminiModel(newModel)'));
     expect(screen, contains("if (_provider == 'gemini') ...["));
     final managedStart = screen.indexOf("id: 'sonarpad_model_info',");
-    expect(managedStart, greaterThan(start));
+    final refreshControl = screen.indexOf("id: 'refresh_models',");
+    final languageControl = screen.indexOf("id: 'language'", managedStart);
+    expect(refreshControl, greaterThanOrEqualTo(0));
+    expect(managedStart, greaterThan(refreshControl));
+    expect(languageControl, greaterThan(managedStart));
     expect(
-      screen.substring(managedStart, screen.indexOf("id: 'language'", managedStart)),
+      screen.substring(managedStart, languageControl),
       contains('l10n.audioDescriptionServerManagedModel'),
     );
   });
@@ -53,7 +57,7 @@ void main() {
     expect(running, contains('child: LinearProgressIndicator('));
     expect(running, contains("id: 'progress'"));
     expect(running, contains('title: _stage'));
-    expect(running, contains("value: '${(_progress * 100).round()}%'"));
+    expect(running, contains(r"value: '${(_progress * 100).round()}%'"));
     expect(running, isNot(contains('semanticsLabel: _stage')));
     expect(running, isNot(contains('semanticsValue:')));
     expect(screen, contains("'brief_retry' => l10n.audioDescriptionStageBriefRetry"));
@@ -65,11 +69,14 @@ void main() {
     expect((entries.first as Map)['version'], '0.5.1');
     const languages = [
       'it', 'en', 'fr', 'es', 'pt', 'pt_BR', 'pl', 'cs',
-      'de', 'zh_CN', 'uk', 'ro',
+      'de', 'zh_CN', 'uk', 'ro', 'tr',
     ];
     for (final language in languages) {
       final notes = ((entries.first as Map)[language] as List).cast<String>();
-      expect(notes, hasLength(24));
+      // The original 24 notes remain; later 0.5.1 notes may be appended.
+      expect(notes.length, greaterThanOrEqualTo(24));
+      expect(notes.length, ((entries.first as Map)['it'] as List).length,
+          reason: language);
       expect(notes.skip(21).join(' '), isNot(contains('Radio Browser')));
       expect(notes.skip(21).join(' '), isNot(contains('Radio-Browser')));
       expect(notes.skip(21).join(' '), isNot(contains('RadioBOSS')));

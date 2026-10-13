@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/semantics.dart';
@@ -177,13 +179,11 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
       return;
     }
     final suggestionsTitle = _label('suggest');
-    final cancelLabel = AppLocalizations.of(context).cancel;
     final choice = await Navigator.of(context).push<String>(
       MaterialPageRoute<String>(
         settings: const RouteSettings(name: '/sonarmusic/suggestions'),
         builder: (_) => _SonarMusicSuggestionsPage(
           title: suggestionsTitle,
-          cancel: cancelLabel,
           suggestions: options,
         ),
       ),
@@ -381,9 +381,11 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
           extraActions: extra,
         )));
     } catch (error, stackTrace) {
-      await AppLogger.log(
+      // Diagnostic disk I/O must not postpone the localized error or leave
+      // the result disabled while a playback failure is being reported.
+      unawaited(AppLogger.log(
         'SonarMusic playback failed error=$error\n$stackTrace',
-      );
+      ));
       if (mounted) {
         final l10n = AppLocalizations.of(context);
         _showError(l10n.error(l10n.technicalErrorGeneric));
@@ -675,26 +677,17 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
 class _SonarMusicSuggestionsPage extends StatelessWidget {
   const _SonarMusicSuggestionsPage({
     required this.title,
-    required this.cancel,
     required this.suggestions,
   });
 
   final String title;
-  final String cancel;
   final List<String> suggestions;
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      title: Text(title),
-      automaticallyImplyLeading: false,
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: Text(cancel),
-        ),
-      ],
-    ),
+    // One standard Back control, including Sonarpad's Home action, instead
+    // of a separate Cancel control without the shared navigation semantics.
+    appBar: SonarpadAppBar(title: Text(title)),
     body: ListView.builder(
       itemCount: suggestions.length,
       itemBuilder: (context, index) => ListTile(
