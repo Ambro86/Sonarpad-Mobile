@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sonarpad_mobile_starter/l10n/app_localizations.dart';
 
 void main() {
   test('every TV channel surface exposes direct live playback', () {
@@ -44,31 +46,80 @@ void main() {
     expect(native, contains('button.isAccessibilityElement = false'));
   });
 
+  test('ARB discovery accepts Windows and POSIX paths', () {
+    for (final path in <String>[
+      'lib/l10n/app_tr.arb',
+      r'lib\l10n\app_tr.arb',
+      r'lib/l10n\app_tr.arb',
+      r'C:\project\lib\l10n\app_pt_BR.arb',
+      '/Users/runner/project/lib/l10n/app_zh_CN.arb',
+    ]) {
+      expect(_isAppArbPath(path), isTrue, reason: path);
+    }
+    for (final path in <String>[
+      'lib/l10n/app_localizations.dart',
+      'lib/l10n/app_localizations_lookup.dart',
+      r'lib\l10n\app_localizations_lookup.dart',
+      'lib/l10n/app_tr.arb.bak',
+      'lib/l10n/untranslated_messages.json',
+      'lib/l10n/other.arb',
+    ]) {
+      expect(_isAppArbPath(path), isFalse, reason: path);
+    }
+  });
+
   test('every locale contains the direct TV playback label', () {
     final arbFiles = Directory('lib/l10n')
         .listSync()
         .whereType<File>()
-        .where((file) =>
-            file.path.contains('/app_') && file.path.endsWith('.arb'));
+        .where((file) => _isAppArbPath(file.path))
+        .toList();
 
+    // An empty discovery must fail, rather than silently passing on Windows.
+    expect(arbFiles, isNotEmpty, reason: 'No app ARB files found in lib/l10n');
+
+    final labelsByLocale = <String, String>{};
     for (final file in arbFiles) {
-      expect(
-        file.readAsStringSync(),
-        contains('"tvPlayLive"'),
-        reason: 'Missing tvPlayLive in ${file.path}',
-      );
+      final arb = jsonDecode(file.readAsStringSync()) as Map<String, dynamic>;
+      final localeValue = arb['@@locale'];
+      expect(localeValue, isA<String>(),
+          reason: 'Missing locale in ${file.path}');
+      final localeName = (localeValue as String).replaceAll('-', '_');
+      expect(localeName, isNotEmpty, reason: 'Empty locale in ${file.path}');
+      expect(labelsByLocale, isNot(contains(localeName)),
+          reason: 'Duplicate ARB locale $localeName in ${file.path}');
+
+      final label = arb['tvPlayLive'];
+      expect(label, isA<String>(),
+          reason: 'Missing tvPlayLive in ${file.path}');
+      final text = label as String;
+      expect(text.trim(), isNotEmpty,
+          reason: 'Empty tvPlayLive in ${file.path}');
+      labelsByLocale[localeName] = text;
     }
 
-    final localizations = Directory('lib/l10n')
-        .listSync()
-        .whereType<File>()
-        .where((file) => file.path.contains('/app_localizations'));
-    for (final file in localizations) {
+    // Exercise generated translations, not every file whose name happens to
+    // start with app_localizations. The lookup helper is not a translation.
+    final supportedLocales = AppLocalizations.supportedLocales;
+    expect(supportedLocales, isNotEmpty,
+        reason: 'No generated app locales found');
+    expect(
+      supportedLocales.map((locale) => locale.toString()).toSet(),
+      equals(labelsByLocale.keys.toSet()),
+      reason: 'Generated locales must match the app ARB catalog',
+    );
+    for (final locale in supportedLocales) {
+      final localized = lookupAppLocalizations(locale);
       expect(
-        file.readAsStringSync(),
-        contains('tvPlayLive'),
-        reason: 'Missing generated tvPlayLive in ${file.path}',
+        localized.tvPlayLive,
+        labelsByLocale[locale.toString()],
+        reason: 'Generated tvPlayLive differs from the ARB for $locale',
       );
     }
   });
+}
+
+bool _isAppArbPath(String path) {
+  final name = path.replaceAll('\\', '/').split('/').last;
+  return name.startsWith('app_') && name.endsWith('.arb');
 }
