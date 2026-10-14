@@ -5340,4 +5340,9 @@ class AppLocalizationsPl extends AppLocalizations {
   String get convertMediaWavFloat32 => "32-bitowy format zmiennoprzecinkowy";
   @override
   String get cloudFilePickerCopying => 'Kopiowanie pliku do Sonarpad';
+
+  @override
+  String get importVideoFromGallery => 'Wybierz z galerii';
+  @override
+  String get sharedVideoOpen => 'Otwórz wideo';
 }

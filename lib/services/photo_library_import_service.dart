@@ -2,17 +2,17 @@ import 'dart:io';
 
 import 'package:flutter/services.dart';
 
-class IosPhotoLibraryImportService {
+class PhotoLibraryImportService {
   static const MethodChannel _channel = MethodChannel(
     'sonarpad/photo_library_import',
   );
 
-  const IosPhotoLibraryImportService();
+  const PhotoLibraryImportService();
 
-  bool get isSupported => Platform.isIOS;
+  bool get isSupported => Platform.isIOS || Platform.isAndroid;
 
   Future<List<String>> pickVideos({bool allowMultiple = true}) async {
-    if (!Platform.isIOS) return const <String>[];
+    if (!isSupported) return const <String>[];
     final paths = await _channel.invokeListMethod<String>(
       'pickVideos',
       <String, dynamic>{'allowMultiple': allowMultiple},

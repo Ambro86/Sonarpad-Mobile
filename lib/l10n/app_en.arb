@@ -4814,5 +4814,7 @@
   "audioDescriptionNonverbalVocals": "Allow descriptions during nonverbal vocal sounds",
   "@audioDescriptionNonverbalVocals": {
     "description": "Localized text for audioDescriptionNonverbalVocals."
-  }
+  },
+  "importVideoFromGallery": "Choose from gallery",
+  "sharedVideoOpen": "Open video"
 }

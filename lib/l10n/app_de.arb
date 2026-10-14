@@ -6392,5 +6392,7 @@
   "audioDescriptionNonverbalVocals": "Beschreibungen bei nichtsprachlichen Lautäußerungen erlauben",
   "@audioDescriptionNonverbalVocals": {
     "description": "Localized text for audioDescriptionNonverbalVocals."
-  }
+  },
+  "importVideoFromGallery": "Aus Galerie auswählen",
+  "sharedVideoOpen": "Video öffnen"
 }

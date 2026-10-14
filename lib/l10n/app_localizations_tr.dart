@@ -5122,4 +5122,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get convertMediaWavFloat32 => "32 bit kayan nokta";
   @override
   String get cloudFilePickerCopying => 'Dosya Sonarpad’e kopyalanıyor';
+
+  @override
+  String get importVideoFromGallery => 'Galeriden seç';
+  @override
+  String get sharedVideoOpen => 'Videoyu aç';
 }

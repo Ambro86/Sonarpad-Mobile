@@ -20,7 +20,7 @@ import '../services/audio_description_mix.dart';
 import '../services/audio_description_mix_preview_controller.dart';
 import '../services/audio_player_service.dart';
 import '../services/document_library_service.dart';
-import '../services/ios_photo_library_import_service.dart';
+import '../services/photo_library_import_service.dart';
 import '../services/media_export_destination_service.dart';
 import '../tts/edge_tts_bridge.dart';
 import '../tts/edge_tts_retry.dart';
@@ -51,7 +51,7 @@ class _CreateAiAudiodescriptionScreenState
   final _settings = AppSettingsService();
   final _flutterTts = FlutterTts();
   final _audio = AudioPlayerService();
-  final _iosPhotoImport = const IosPhotoLibraryImportService();
+  final _photoImport = const PhotoLibraryImportService();
   late final AudioDescriptionMixPreviewController _mixPreview;
   Future<void> _voiceTestWork = Future<void>.value();
   EdgeTtsBridge? _voiceTestBridge;
@@ -383,7 +383,7 @@ class _CreateAiAudiodescriptionScreenState
       l10n.audioDescriptionProjectChooseFromFiles;
 
   String _importFromPhotosLabel(AppLocalizations l10n) =>
-      l10n.audioDescriptionProjectImportFromPhotos;
+      Platform.isAndroid ? l10n.importVideoFromGallery : l10n.audioDescriptionProjectImportFromPhotos;
 
   Future<void> _chooseVideo() async {
     if (_running || _choosingVideo) return;
@@ -391,7 +391,7 @@ class _CreateAiAudiodescriptionScreenState
     try {
       await _stopPreviews();
       if (!mounted || _running) return;
-      if (!_iosPhotoImport.isSupported) {
+      if (!_photoImport.isSupported) {
         await _chooseVideoFromFiles();
         return;
       }
@@ -439,11 +439,11 @@ class _CreateAiAudiodescriptionScreenState
 
   Future<void> _chooseVideoFromPhotos() async {
     try {
-      final paths = await _iosPhotoImport.pickVideos(allowMultiple: false);
+      final paths = await _photoImport.pickVideos(allowMultiple: false);
       if (paths.isEmpty) return;
       _setSelectedSourcePath(paths.first);
       await AppLogger.log(
-        'Audio description UI: source imported from iOS Photos file=${p.basename(paths.first)}',
+        'Audio description UI: source imported from photo library file=${p.basename(paths.first)}',
       );
     } on PlatformException catch (error, stackTrace) {
       await AppLogger.log(

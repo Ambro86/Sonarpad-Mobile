@@ -4814,5 +4814,7 @@
   "audioDescriptionNonverbalVocals": "允许在非语言人声期间进行解说",
   "@audioDescriptionNonverbalVocals": {
     "description": "Localized text for audioDescriptionNonverbalVocals."
-  }
+  },
+  "importVideoFromGallery": "从图库选择",
+  "sharedVideoOpen": "打开视频"
 }

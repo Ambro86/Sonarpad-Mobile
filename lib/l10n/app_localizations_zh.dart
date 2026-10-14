@@ -5164,6 +5164,11 @@ class AppLocalizationsZh extends AppLocalizations {
   String get convertMediaWavFloat32 => "32 位浮点";
   @override
   String get cloudFilePickerCopying => '正在将文件复制到 Sonarpad';
+
+  @override
+  String get importVideoFromGallery => '从图库选择';
+  @override
+  String get sharedVideoOpen => '打开视频';
 }
 
 /// The translations for Chinese, as used in China (`zh_CN`).
@@ -10326,4 +10331,9 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
   String get convertMediaWavFloat32 => "32 位浮点";
   @override
   String get cloudFilePickerCopying => '正在将文件复制到 Sonarpad';
+
+  @override
+  String get importVideoFromGallery => '从图库选择';
+  @override
+  String get sharedVideoOpen => '打开视频';
 }

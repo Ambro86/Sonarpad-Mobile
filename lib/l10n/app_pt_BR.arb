@@ -4820,5 +4820,7 @@
   "audioDescriptionNonverbalVocals": "Permitir descrições durante vocalizações não verbais",
   "@audioDescriptionNonverbalVocals": {
     "description": "Localized text for audioDescriptionNonverbalVocals."
-  }
+  },
+  "importVideoFromGallery": "Escolher da galeria",
+  "sharedVideoOpen": "Abrir vídeo"
 }

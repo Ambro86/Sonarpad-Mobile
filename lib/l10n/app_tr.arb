@@ -4814,5 +4814,7 @@
   "audioDescriptionNonverbalVocals": "Sözsüz insan sesleri sırasında betimlemelere izin ver",
   "@audioDescriptionNonverbalVocals": {
     "description": "Localized text for audioDescriptionNonverbalVocals."
-  }
+  },
+  "importVideoFromGallery": "Galeriden seç",
+  "sharedVideoOpen": "Videoyu aç"
 }

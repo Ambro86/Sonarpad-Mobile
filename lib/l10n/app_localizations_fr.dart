@@ -5377,4 +5377,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get convertMediaWavFloat32 => "32 bits à virgule flottante";
   @override
   String get cloudFilePickerCopying => 'Copie du fichier dans Sonarpad';
+
+  @override
+  String get importVideoFromGallery => 'Choisir dans la galerie';
+  @override
+  String get sharedVideoOpen => 'Ouvrir la vidéo';
 }

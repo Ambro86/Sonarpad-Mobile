@@ -5357,4 +5357,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get convertMediaWavFloat32 => "32-Bit-Gleitkomma";
   @override
   String get cloudFilePickerCopying => 'Datei wird nach Sonarpad kopiert';
+
+  @override
+  String get importVideoFromGallery => 'Aus Galerie auswählen';
+  @override
+  String get sharedVideoOpen => 'Video öffnen';
 }

@@ -6392,5 +6392,7 @@
   "audioDescriptionNonverbalVocals": "Дозволити описи під час невербальних голосових звуків",
   "@audioDescriptionNonverbalVocals": {
     "description": "Localized text for audioDescriptionNonverbalVocals."
-  }
+  },
+  "importVideoFromGallery": "Вибрати з галереї",
+  "sharedVideoOpen": "Відкрити відео"
 }

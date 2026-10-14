@@ -5326,4 +5326,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get convertMediaWavFloat32 => "32-bit float";
   @override
   String get cloudFilePickerCopying => 'Copying the file into Sonarpad';
+
+  @override
+  String get importVideoFromGallery => 'Choose from gallery';
+  @override
+  String get sharedVideoOpen => 'Open video';
 }

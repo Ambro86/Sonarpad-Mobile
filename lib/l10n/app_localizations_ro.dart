@@ -5192,4 +5192,9 @@ class AppLocalizationsRo extends AppLocalizations {
   String get convertMediaWavFloat32 => "32 de biți în virgulă mobilă";
   @override
   String get cloudFilePickerCopying => 'Se copiază fișierul în Sonarpad';
+
+  @override
+  String get importVideoFromGallery => 'Alege din galerie';
+  @override
+  String get sharedVideoOpen => 'Deschide videoclipul';
 }

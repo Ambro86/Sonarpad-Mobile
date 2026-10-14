@@ -22,7 +22,7 @@ import '../services/document_text_extractor.dart';
 import '../services/docx_export_service.dart';
 import '../services/epub_export_service.dart';
 import '../services/internet_archive_service.dart';
-import '../services/ios_photo_library_import_service.dart';
+import '../services/photo_library_import_service.dart';
 import '../services/librivox_service.dart';
 import '../services/pdf_export_service.dart';
 import '../utils/app_logger.dart';
@@ -94,7 +94,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
   final _service = DocumentLibraryService();
   final _accessibleListController =
       AccessibleListController(debugName: 'documents');
-  final _iosPhotoImport = const IosPhotoLibraryImportService();
+  final _photoImport = const PhotoLibraryImportService();
   bool _loading = true;
   String? _errorMessage;
 
@@ -164,12 +164,12 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
 
 
   String _importFromPhotosLabel(AppLocalizations l10n) =>
-      l10n.audioDescriptionProjectImportFromPhotos;
+      Platform.isAndroid ? l10n.importVideoFromGallery : l10n.audioDescriptionProjectImportFromPhotos;
 
   String _importFromFilesLabel(AppLocalizations l10n) => l10n.documentsImportFromFiles;
 
   Future<void> _addToLibrary() async {
-    if (!_iosPhotoImport.isSupported) {
+    if (!_photoImport.isSupported) {
       await _pickFile();
       return;
     }
@@ -201,7 +201,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
   Future<void> _pickVideosFromPhotos() async {
     final l10n = AppLocalizations.of(context);
     try {
-      final paths = await _iosPhotoImport.pickVideos();
+      final paths = await _photoImport.pickVideos();
       if (!mounted || paths.isEmpty) return;
       var imported = 0;
       for (final path in paths) {
@@ -215,9 +215,9 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
           );
           await _service.add(doc);
           imported++;
-          await AppLogger.log('Video importato da Foto iOS: ${doc.displayName}');
+          await AppLogger.log('Video importato da galleria: ${doc.displayName}');
         } catch (error) {
-          await AppLogger.log('Errore importazione video da Foto iOS path=$path error=$error');
+          await AppLogger.log('Errore importazione video da galleria path=$path error=$error');
         }
       }
       if (!mounted) return;
@@ -228,10 +228,10 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
         _showSnack(l10n.documentAddError(l10n.technicalErrorGeneric));
       }
     } on PlatformException catch (error) {
-      dev.log('DocumentsScreen: errore selettore Foto iOS: $error');
+      dev.log('DocumentsScreen: errore selettore galleria: $error');
       if (mounted) _showSnack(l10n.fileOpenError(l10n.technicalErrorGeneric));
     } catch (error) {
-      dev.log('DocumentsScreen: errore importazione Foto iOS: $error');
+      dev.log('DocumentsScreen: errore importazione galleria: $error');
       if (mounted) _showSnack(l10n.documentAddError(l10n.technicalErrorGeneric));
     }
   }

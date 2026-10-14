@@ -6395,5 +6395,7 @@
   "audioDescriptionNonverbalVocals": "Zezwalaj na opisy podczas niewerbalnych odgłosów głosowych",
   "@audioDescriptionNonverbalVocals": {
     "description": "Localized text for audioDescriptionNonverbalVocals."
-  }
+  },
+  "importVideoFromGallery": "Wybierz z galerii",
+  "sharedVideoOpen": "Otwórz wideo"
 }

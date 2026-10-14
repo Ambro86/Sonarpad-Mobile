@@ -108,7 +108,12 @@ jobs:
           project = Xcodeproj::Project.open(project_path)
           project.targets.each do |t|
             t.build_configurations.each do |config|
-              config.build_settings['PRODUCT_BUNDLE_IDENTIFIER'] = 'com.ambro86.sonarpad.altstore'
+              config.build_settings['PRODUCT_BUNDLE_IDENTIFIER'] =
+                case t.name
+                when 'Runner' then 'com.ambro86.sonarpad.altstore'
+                when 'ShareExtension' then 'com.ambro86.sonarpad.altstore.ShareExtension'
+                else "com.ambro86.sonarpad.altstore.#{t.name}"
+                end
             end
           end
           project.save

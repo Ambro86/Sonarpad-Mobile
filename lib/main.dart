@@ -1,5 +1,8 @@
 import 'dart:async';
+import 'dart:collection';
 import 'dart:io';
+
+import 'widgets/shared_video_action_dialog.dart';
 
 import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
@@ -207,23 +210,29 @@ class SonarpadApp extends StatefulWidget {
   State<SonarpadApp> createState() => _SonarpadAppState();
 }
 
-class _SonarpadAppState extends State<SonarpadApp> {
+class _SonarpadAppState extends State<SonarpadApp> with WidgetsBindingObserver {
   static const _sharedMediaChannel = MethodChannel('sonarpad/shared_media');
   static const _sharedMediaEvents =
       EventChannel('sonarpad/shared_media_events');
   final _navigatorKey = GlobalKey<NavigatorState>();
   StreamSubscription<Uri>? _linkSubscription;
   StreamSubscription<dynamic>? _sharedMediaSubscription;
-  Uri? _pendingSharedUri;
+  final _pendingSharedUris = Queue<Uri>();
+  final _seenSharedUris = <Uri>{};
+  bool _handlingSharedFile = false;
+  bool _readingShareInbox = false;
   Locale? _locale;
   SonarpadThemeMode? _themeMode;
   bool _changelogChecked = false;
+  bool _startupDialogsComplete = false;
 
   @override
   void initState() {
     super.initState();
     unawaited(AppLogger.log('SonarpadApp initState'));
+    WidgetsBinding.instance.addObserver(this);
     _initAppLinks();
+    unawaited(_readShareInbox());
     _initSharedMediaIntents();
     unawaited(_loadStartupSettings());
   }
@@ -238,8 +247,10 @@ class _SonarpadAppState extends State<SonarpadApp> {
       _locale = SonarpadApp.localeForLanguageCode(lang);
       _themeMode = themeMode;
     });
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _showChangelogIfNeeded(lang);
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await _showChangelogIfNeeded(lang);
+      _startupDialogsComplete = true;
+      unawaited(_drainSharedFiles());
     });
   }
 
@@ -306,9 +317,75 @@ class _SonarpadAppState extends State<SonarpadApp> {
     }, onError: (_) {});
   }
 
-  Future<void> _handleIncomingFile(Uri uri) async {
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      unawaited(_readShareInbox());
+    }
+  }
+
+  Future<void> _readShareInbox() async {
+    if (!Platform.isIOS || _readingShareInbox ||
+        Platform.environment.containsKey('FLUTTER_TEST')) {
+      return;
+    }
+    _readingShareInbox = true;
     try {
-      final decodedPath = Uri.decodeComponent(uri.path);
+      final paths = await _sharedMediaChannel.invokeListMethod<String>(
+        'getPendingSharedVideos',
+      );
+      for (final path in paths ?? <String>[]) {
+        _handleIncomingFile(Uri.file(path));
+      }
+    } catch (error) {
+      await AppLogger.log('Shared video inbox: $error');
+    } finally {
+      _readingShareInbox = false;
+    }
+  }
+
+  void _handleIncomingFile(Uri uri) {
+    if (!_seenSharedUris.add(uri)) return;
+    _pendingSharedUris.add(uri);
+    unawaited(_drainSharedFiles());
+  }
+
+  Future<void> _drainSharedFiles() async {
+    if (_handlingSharedFile || !_startupDialogsComplete || !mounted ||
+        _navigatorKey.currentState == null || _locale == null) {
+      return;
+    }
+    _handlingSharedFile = true;
+    try {
+      while (mounted && _pendingSharedUris.isNotEmpty) {
+        final uri = _pendingSharedUris.removeFirst();
+        try {
+          await _openIncomingFile(uri);
+          if (Platform.isIOS) {
+            await _sharedMediaChannel.invokeMethod<void>(
+              'acknowledgeSharedVideo', uri.toFilePath(),
+            );
+          }
+        } catch (error) {
+          _seenSharedUris.remove(uri);
+          await AppLogger.log('Shared file import failed: $error');
+          final context = _navigatorKey.currentState?.overlay?.context;
+          if (context != null && context.mounted) {
+            final l10n = AppLocalizations.of(context);
+            ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+              SnackBar(content: Text(l10n.fileOpenError(l10n.technicalErrorGeneric))),
+            );
+          }
+        }
+      }
+    } finally {
+      _handlingSharedFile = false;
+    }
+  }
+
+  Future<void> _openIncomingFile(Uri uri) async {
+    try {
+      final decodedPath = uri.toFilePath();
       final originalFile = File(decodedPath);
       if (!await originalFile.exists()) return;
 
@@ -317,11 +394,26 @@ class _SonarpadAppState extends State<SonarpadApp> {
       final ext = p.extension(originalFile.path).toLowerCase();
       final isAudio =
           ['.mp3', '.m4a', '.m4b', '.wav', '.ogg', '.flac', '.aac'].contains(ext);
-      final isVideo = ['.mp4', '.avi', '.mov', '.mkv'].contains(ext);
+      final isVideo = ['.mp4', '.avi', '.mov', '.mkv', '.m4v', '.webm', '.ts', '.mts', '.m2ts', '.3gp'].contains(ext);
       final navigator = _navigatorKey.currentState;
-      if (navigator == null) {
-        _pendingSharedUri = uri;
-        return;
+      if (navigator == null || !mounted) return;
+
+      if (isVideo) {
+        final dialogContext = navigator.overlay!.context;
+        if (!dialogContext.mounted) return;
+        final action = await showSharedVideoActionDialog(
+          dialogContext, filename: displayName,
+        );
+        if (action == null || !navigator.mounted) return;
+        if (action == SharedVideoAction.describe) {
+          navigator.push(MaterialPageRoute<void>(
+            settings: const RouteSettings(name: '/create_ai_audiodescription'),
+            builder: (_) => CreateAiAudiodescriptionScreen(
+              initialSourcePath: originalFile.path,
+            ),
+          ));
+          return;
+        }
       }
 
       if (isAudio || isVideo) {
@@ -365,6 +457,7 @@ class _SonarpadAppState extends State<SonarpadApp> {
       );
     } catch (e) {
       debugPrint('SonarpadApp: Errore importazione file condiviso: $e');
+      rethrow;
     }
   }
 
@@ -391,6 +484,7 @@ class _SonarpadAppState extends State<SonarpadApp> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _linkSubscription?.cancel();
     _sharedMediaSubscription?.cancel();
     super.dispose();
@@ -406,11 +500,9 @@ class _SonarpadAppState extends State<SonarpadApp> {
       );
     }
 
-    final pendingSharedUri = _pendingSharedUri;
-    if (pendingSharedUri != null) {
-      _pendingSharedUri = null;
+    if (_pendingSharedUris.isNotEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        _handleIncomingFile(pendingSharedUri);
+        unawaited(_drainSharedFiles());
       });
     }
 

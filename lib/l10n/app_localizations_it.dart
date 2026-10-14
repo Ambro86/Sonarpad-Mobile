@@ -5352,4 +5352,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get convertMediaWavFloat32 => "32 bit a virgola mobile";
   @override
   String get cloudFilePickerCopying => 'Copia del file in Sonarpad';
+
+  @override
+  String get importVideoFromGallery => 'Scegli dalla galleria';
+  @override
+  String get sharedVideoOpen => 'Apri video';
 }

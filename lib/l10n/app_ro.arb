@@ -4814,5 +4814,7 @@
   "audioDescriptionNonverbalVocals": "Permite descrieri în timpul sunetelor vocale nonverbale",
   "@audioDescriptionNonverbalVocals": {
     "description": "Localized text for audioDescriptionNonverbalVocals."
-  }
+  },
+  "importVideoFromGallery": "Alege din galerie",
+  "sharedVideoOpen": "Deschide videoclipul"
 }
