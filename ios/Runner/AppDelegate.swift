@@ -118,12 +118,6 @@ class SonarpadSharedMediaPlugin: NSObject, FlutterPlugin, FlutterStreamHandler {
       let path = pendingPath
       pendingPath = nil
       result(path)
-    } else if call.method == "getPendingSharedVideos" {
-      do { result(try SharedVideoInbox.pendingPaths()) }
-      catch { result(FlutterError(code: "share_inbox_failed", message: error.localizedDescription, details: nil)) }
-    } else if call.method == "acknowledgeSharedVideo", let path = call.arguments as? String {
-      do { try SharedVideoInbox.acknowledge(path); result(nil) }
-      catch { result(FlutterError(code: "share_ack_failed", message: error.localizedDescription, details: nil)) }
     } else {
       result(FlutterMethodNotImplemented)
     }

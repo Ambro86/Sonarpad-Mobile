@@ -210,7 +210,7 @@ class SonarpadApp extends StatefulWidget {
   State<SonarpadApp> createState() => _SonarpadAppState();
 }
 
-class _SonarpadAppState extends State<SonarpadApp> with WidgetsBindingObserver {
+class _SonarpadAppState extends State<SonarpadApp> {
   static const _sharedMediaChannel = MethodChannel('sonarpad/shared_media');
   static const _sharedMediaEvents =
       EventChannel('sonarpad/shared_media_events');
@@ -220,7 +220,6 @@ class _SonarpadAppState extends State<SonarpadApp> with WidgetsBindingObserver {
   final _pendingSharedUris = Queue<Uri>();
   final _seenSharedUris = <Uri>{};
   bool _handlingSharedFile = false;
-  bool _readingShareInbox = false;
   Locale? _locale;
   SonarpadThemeMode? _themeMode;
   bool _changelogChecked = false;
@@ -230,9 +229,7 @@ class _SonarpadAppState extends State<SonarpadApp> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     unawaited(AppLogger.log('SonarpadApp initState'));
-    WidgetsBinding.instance.addObserver(this);
     _initAppLinks();
-    unawaited(_readShareInbox());
     _initSharedMediaIntents();
     unawaited(_loadStartupSettings());
   }
@@ -317,33 +314,6 @@ class _SonarpadAppState extends State<SonarpadApp> with WidgetsBindingObserver {
     }, onError: (_) {});
   }
 
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      unawaited(_readShareInbox());
-    }
-  }
-
-  Future<void> _readShareInbox() async {
-    if (!Platform.isIOS || _readingShareInbox ||
-        Platform.environment.containsKey('FLUTTER_TEST')) {
-      return;
-    }
-    _readingShareInbox = true;
-    try {
-      final paths = await _sharedMediaChannel.invokeListMethod<String>(
-        'getPendingSharedVideos',
-      );
-      for (final path in paths ?? <String>[]) {
-        _handleIncomingFile(Uri.file(path));
-      }
-    } catch (error) {
-      await AppLogger.log('Shared video inbox: $error');
-    } finally {
-      _readingShareInbox = false;
-    }
-  }
-
   void _handleIncomingFile(Uri uri) {
     if (!_seenSharedUris.add(uri)) return;
     _pendingSharedUris.add(uri);
@@ -361,11 +331,6 @@ class _SonarpadAppState extends State<SonarpadApp> with WidgetsBindingObserver {
         final uri = _pendingSharedUris.removeFirst();
         try {
           await _openIncomingFile(uri);
-          if (Platform.isIOS) {
-            await _sharedMediaChannel.invokeMethod<void>(
-              'acknowledgeSharedVideo', uri.toFilePath(),
-            );
-          }
         } catch (error) {
           _seenSharedUris.remove(uri);
           await AppLogger.log('Shared file import failed: $error');
@@ -484,7 +449,6 @@ class _SonarpadAppState extends State<SonarpadApp> with WidgetsBindingObserver {
 
   @override
   void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
     _linkSubscription?.cancel();
     _sharedMediaSubscription?.cancel();
     super.dispose();
