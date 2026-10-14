@@ -3943,6 +3943,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get audioDescriptionExtendedPauses => '当描述无法放入静音间隙时启用延长暂停';
 
   @override
+  String get audioDescriptionNonverbalVocals => '允许在非语言人声期间进行解说';
+
+  @override
   String get audioDescriptionRecognizeCharacters => '尝试识别角色并使用其姓名';
 
   @override
@@ -9100,6 +9103,9 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get audioDescriptionExtendedPauses => '当描述无法放入静音间隙时启用延长暂停';
+
+  @override
+  String get audioDescriptionNonverbalVocals => '允许在非语言人声期间进行解说';
 
   @override
   String get audioDescriptionRecognizeCharacters => '尝试识别角色并使用其姓名';

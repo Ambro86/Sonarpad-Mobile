@@ -4109,6 +4109,9 @@ class AppLocalizationsPt extends AppLocalizations {
       'Ativar pausas prolongadas quando uma descrição não cabe num silêncio';
 
   @override
+  String get audioDescriptionNonverbalVocals => 'Permitir descrições durante vocalizações não verbais';
+
+  @override
   String get audioDescriptionRecognizeCharacters =>
       'Tentar reconhecer personagens e usar os seus nomes';
 
@@ -9454,6 +9457,9 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   @override
   String get audioDescriptionExtendedPauses =>
       'Ativar pausas prolongadas quando uma descrição não cabe num silêncio';
+
+  @override
+  String get audioDescriptionNonverbalVocals => 'Permitir descrições durante vocalizações não verbais';
 
   @override
   String get audioDescriptionRecognizeCharacters =>

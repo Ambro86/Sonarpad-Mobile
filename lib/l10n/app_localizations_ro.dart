@@ -3977,6 +3977,9 @@ class AppLocalizationsRo extends AppLocalizations {
   String get audioDescriptionExtendedPauses => 'Activează pauze extinse când o descriere nu încape într-un interval de liniște';
 
   @override
+  String get audioDescriptionNonverbalVocals => 'Permite descrieri în timpul sunetelor vocale nonverbale';
+
+  @override
   String get audioDescriptionRecognizeCharacters => 'Încearcă să recunoască personajele și să le folosească numele';
 
   @override

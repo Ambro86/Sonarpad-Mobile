@@ -7405,6 +7405,9 @@ abstract class AppLocalizations {
   /// **'Abilita pause estese quando una descrizione non entra nel silenzio'**
   String get audioDescriptionExtendedPauses;
 
+  /// Localized text for audioDescriptionNonverbalVocals.
+  String get audioDescriptionNonverbalVocals;
+
   /// Localized text for audioDescriptionRecognizeCharacters.
   ///
   /// In it, this message translates to:

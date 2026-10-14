@@ -4089,6 +4089,9 @@ class AppLocalizationsCs extends AppLocalizations {
       'Povolit prodloužené pauzy, když se popis nevejde do ticha';
 
   @override
+  String get audioDescriptionNonverbalVocals => 'Povolit popisy během neverbálních hlasových projevů';
+
+  @override
   String get audioDescriptionRecognizeCharacters =>
       'Pokusit se rozpoznat postavy a používat jejich jména';
 

@@ -4092,6 +4092,9 @@ class AppLocalizationsPl extends AppLocalizations {
       'Włącz wydłużone pauzy, gdy opis nie mieści się w ciszy';
 
   @override
+  String get audioDescriptionNonverbalVocals => 'Zezwalaj na opisy podczas niewerbalnych odgłosów głosowych';
+
+  @override
   String get audioDescriptionRecognizeCharacters =>
       'Spróbuj rozpoznawać postacie i używać ich imion';
 

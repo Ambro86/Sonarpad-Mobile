@@ -3,6 +3,8 @@
     "version": "0.5.1",
     "date": "2026-10-07",
     "it": [
+      "In “Crea audiodescrizione con IA” la nuova casella “Consenti descrizioni su suoni vocali non verbali” è attiva di default e ricorda la scelta. Pyannote individua le vocalizzazioni sospette e Gemini le verifica singolarmente prima di autorizzare nuovi spazi per la descrizione. Disattivandola, la pipeline originale e la protezione del dialogo restano identiche.",
+      "In “Crea audiodescrizione con IA” è stato aggiunto il cursore accessibile “Tono” (da 0,5× a 2,0×, passo 0,1), ispirato alle Impostazioni. Il tono scelto viene usato realmente per prova voce, anteprima ed esportazione, viene ricordato alla riapertura della schermata ed è registrato e ripristinato nei progetti salvati.",
       "In SonarTube è stato aggiunto il pulsante “Apri URL”, che permette di incollare e aprire direttamente un link YouTube, inclusi video, Shorts e dirette.",
       "Sonarpad ora ricorda automaticamente alcune scelte dell’utente quando è utile, ad esempio le preferenze dei Percorsi e l’ordinamento dei video nei canali SonarTube.",
       "Su iOS, nella funzione “Crea audiodescrizione con IA”, il pulsante “Scegli video” permette ora di selezionare il video direttamente dalla libreria Foto oltre che dall’app File. Nei Documenti è disponibile anche l’importazione di video da Foto.",
@@ -36,6 +38,8 @@
       "Anteprima dei volumi: Pausa/Riprendi appare solo dopo l’avvio della riproduzione e scompare al termine. Su iOS l’indicatore distingue la copia in Sonarpad dal download gestito da File/iCloud, senza mostrare una barra artificiale a operazione conclusa."
     ],
     "en": [
+      "In Create audio description with AI, the new “Allow descriptions during nonverbal vocal sounds” option is enabled by default and remembered. Pyannote identifies low-confidence vocal sounds and Gemini individually checks them before allowing extra narration space. Disabling it preserves the original dialogue-protection pipeline unchanged.",
+      "Create AI audio description now has an accessible Voice Pitch slider (0.5×–2.0× in 0.1 steps), matching Settings. The selected pitch affects voice tests, mix previews and exported narration, is remembered when reopening the screen, and is stored and restored in saved projects.",
       "SonarTube now includes an “Open URL” button that lets you paste and open a YouTube link directly, including videos, Shorts and live streams.",
       "Sonarpad now automatically remembers selected user choices when useful, such as Route preferences and the video sorting option used in SonarTube channels.",
       "On iOS, in “Create AI audio description”, the “Choose video” button can now select a video directly from the Photos library as well as from the Files app. Video import from Photos is also available in Documents.",
@@ -69,6 +73,8 @@
       "Volume preview: Pause/Resume appears only after playback starts and disappears when it ends. On iOS, the indicator distinguishes copying into Sonarpad from downloading handled by Files/iCloud, without displaying an artificial progress bar after completion."
     ],
     "fr": [
+      "Dans Créer une audiodescription avec IA, l’option des sons vocaux non verbaux est activée par défaut et mémorisée. Pyannote repère les vocalisations incertaines et Gemini les vérifie avant toute autorisation. L’option désactivée conserve le fonctionnement original.",
+      "Créer une audiodescription avec IA propose désormais un curseur accessible Ton (0,5× à 2,0×, par pas de 0,1), comme dans les paramètres. Le ton choisi s’applique aux essais de voix, aux aperçus et à l’exportation ; il est mémorisé à la réouverture et conservé dans les projets.",
       "SonarTube dispose désormais d’un bouton « Ouvrir une URL » permettant de coller et d’ouvrir directement un lien YouTube, y compris les vidéos, les Shorts et les directs.",
       "Sonarpad mémorise désormais automatiquement certains choix de l’utilisateur lorsque cela est utile, par exemple les préférences des Itinéraires et le tri des vidéos dans les chaînes SonarTube.",
       "Sur iOS, dans « Créer une audiodescription avec l’IA », le bouton « Choisir une vidéo » permet maintenant de sélectionner une vidéo directement depuis la photothèque en plus de l’app Fichiers. L’importation de vidéos depuis Photos est également disponible dans Documents.",
@@ -102,6 +108,8 @@
       "Aperçu des volumes : Pause/Reprendre apparaît uniquement après le début de la lecture et disparaît à la fin. Sur iOS, l’indicateur distingue la copie dans Sonarpad du téléchargement géré par Fichiers/iCloud, sans afficher de barre artificielle après la fin de l’opération."
     ],
     "es": [
+      "En Crear audiodescripción con IA, la opción para sonidos vocales no verbales está activada por defecto y se recuerda. Pyannote detecta candidatos y Gemini los verifica individualmente. Si se desactiva, la protección del diálogo original permanece intacta.",
+      "Crear audiodescripción con IA incluye ahora un control deslizante accesible de tono de voz (de 0,5× a 2,0×, en pasos de 0,1), como en Ajustes. El tono se aplica a las pruebas de voz, las vistas previas y la exportación; se recuerda al volver a abrir la pantalla y se guarda en los proyectos.",
       "SonarTube incorpora ahora el botón «Abrir URL», que permite pegar y abrir directamente un enlace de YouTube, incluidos vídeos, Shorts y emisiones en directo.",
       "Sonarpad ahora recuerda automáticamente algunas elecciones del usuario cuando resulta útil, por ejemplo las preferencias de Rutas y el orden de los vídeos en los canales de SonarTube.",
       "En iOS, dentro de «Crear audiodescripción con IA», el botón «Elegir vídeo» permite ahora seleccionar un vídeo directamente desde la fototeca además de la app Archivos. En Documentos también está disponible la importación de vídeos desde Fotos.",
@@ -135,6 +143,8 @@
       "Vista previa del volumen: Pausa/Reanudar aparece solo al comenzar la reproducción y desaparece al terminar. En iOS, el indicador distingue la copia a Sonarpad de la descarga gestionada por Archivos/iCloud, sin mostrar una barra artificial una vez finalizada la operación."
     ],
     "pt": [
+      "Em Criar audiodescrição com IA, a opção para vocalizações não verbais vem ativada por padrão e é memorizada. Pyannote deteta candidatos e Gemini verifica-os individualmente. Desativá-la mantém o processamento original inalterado.",
+      "Criar audiodescrição com IA inclui agora um controlo deslizante acessível para o tom de voz (0,5×–2,0×, passos de 0,1), como nas Definições. O tom é aplicado aos testes de voz, pré-visualizações e exportações, é recordado ao reabrir o ecrã e fica guardado nos projetos.",
       "O SonarTube agora inclui o botão «Abrir URL», que permite colar e abrir diretamente uma ligação do YouTube, incluindo vídeos, Shorts e transmissões em direto.",
       "O Sonarpad agora memoriza automaticamente algumas escolhas do utilizador quando isso é útil, por exemplo as preferências de Rotas e a ordenação dos vídeos nos canais do SonarTube.",
       "No iOS, em «Criar audiodescrição com IA», o botão «Escolher vídeo» permite agora selecionar um vídeo diretamente da fototeca, além da app Ficheiros. A importação de vídeos de Fotos também está disponível em Documentos.",
@@ -168,6 +178,8 @@
       "Pré-visualização do volume: Pausa/Retomar aparece apenas após o início da reprodução e desaparece no fim. No iOS, o indicador distingue a cópia para o Sonarpad da transferência gerida pela aplicação Ficheiros/iCloud, sem mostrar uma barra artificial após a conclusão."
     ],
     "pt_BR": [
+      "Em Criar audiodescrição com IA, a opção para vocalizações não verbais vem ativada por padrão e é lembrada. Pyannote detecta candidatos e Gemini verifica cada um. Desativá-la mantém o processamento original inalterado.",
+      "Criar audiodescrição com IA agora tem um controle deslizante acessível para o tom da voz (0,5× a 2,0×, passos de 0,1), como nas Configurações. O tom é aplicado aos testes de voz, às prévias e à exportação; é lembrado ao reabrir a tela e salvo nos projetos.",
       "O SonarTube agora inclui o botão “Abrir URL”, que permite colar e abrir diretamente um link do YouTube, incluindo vídeos, Shorts e transmissões ao vivo.",
       "O Sonarpad agora memoriza automaticamente algumas escolhas do usuário quando isso é útil, por exemplo as preferências de Rotas e a ordenação dos vídeos nos canais do SonarTube.",
       "No iOS, em “Criar audiodescrição com IA”, o botão “Escolher vídeo” agora permite selecionar um vídeo diretamente da biblioteca de Fotos, além do app Arquivos. A importação de vídeos de Fotos também está disponível em Documentos.",
@@ -201,6 +213,8 @@
       "Prévia do volume: Pausar/Retomar aparece apenas após o início da reprodução e desaparece ao terminar. No iOS, o indicador distingue a cópia para o Sonarpad do download gerenciado pelo app Arquivos/iCloud, sem mostrar uma barra artificial após a conclusão."
     ],
     "pl": [
+      "W tworzeniu audiodeskrypcji AI opcja niewerbalnych odgłosów głosowych jest domyślnie włączona i zapamiętywana. Pyannote wskazuje kandydatów, a Gemini osobno ich weryfikuje. Wyłączenie zachowuje dotychczasowe działanie.",
+      "W funkcji tworzenia audiodeskrypcji AI dodano dostępny suwak wysokości głosu (0,5×–2,0×, krok 0,1), taki jak w Ustawieniach. Wybrana wysokość działa w testach głosu, podglądach i eksporcie, jest zapamiętywana po ponownym otwarciu ekranu oraz zapisywana w projektach.",
       "W SonarTube dodano przycisk „Otwórz URL”, który pozwala wkleić i bezpośrednio otworzyć link YouTube, w tym filmy, Shorts i transmisje na żywo.",
       "Sonarpad automatycznie zapamiętuje teraz wybrane ustawienia użytkownika, gdy jest to przydatne, na przykład preferencje Tras oraz sposób sortowania filmów na kanałach SonarTube.",
       "W systemie iOS, w funkcji „Utwórz audiodeskrypcję za pomocą AI”, przycisk „Wybierz wideo” pozwala teraz wybrać film bezpośrednio z biblioteki Zdjęcia, a także z aplikacji Pliki. Import wideo ze Zdjęć jest również dostępny w Dokumentach.",
@@ -234,6 +248,8 @@
       "Podgląd głośności: przycisk Pauza/Wznów pojawia się dopiero po rozpoczęciu odtwarzania i znika po jego zakończeniu. W iOS wskaźnik odróżnia kopiowanie do Sonarpad od pobierania obsługiwanego przez Pliki/iCloud, bez sztucznego paska postępu po zakończeniu operacji."
     ],
     "cs": [
+      "Při tvorbě audiopopisu s AI je volba neverbálních hlasových projevů ve výchozím stavu zapnutá a ukládá se. Pyannote označí kandidáty a Gemini je jednotlivě ověří. Vypnutí ponechá původní zpracování beze změn.",
+      "Při vytváření audiopopisu pomocí AI je nyní přístupný posuvník výšky hlasu (0,5×–2,0×, krok 0,1) jako v Nastavení. Zvolená výška se používá při zkoušce hlasu, náhledu i exportu, pamatuje se po opětovném otevření obrazovky a ukládá se do projektů.",
       "V SonarTube bylo přidáno tlačítko „Otevřít URL“, které umožňuje vložit a přímo otevřít odkaz YouTube, včetně videí, Shorts a živých přenosů.",
       "Sonarpad si nyní automaticky pamatuje některé volby uživatele tam, kde je to užitečné, například nastavení Tras a řazení videí v kanálech SonarTube.",
       "Na iOS nyní ve funkci „Vytvořit audiopopis pomocí AI“ umožňuje tlačítko „Vybrat video“ zvolit video přímo z knihovny Fotky i z aplikace Soubory. Import videí z Fotek je dostupný také v Dokumentech.",
@@ -267,6 +283,8 @@
       "Náhled hlasitosti: tlačítko Pozastavit/Pokračovat se objeví až po zahájení přehrávání a na konci zmizí. V iOS ukazatel rozlišuje kopírování do Sonarpadu od stahování zajišťovaného aplikací Soubory/iCloud, bez umělého ukazatele po dokončení operace."
     ],
     "de": [
+      "Beim Erstellen einer KI-Audiodeskription ist die Option für nichtsprachliche Lautäußerungen standardmäßig aktiviert und wird gespeichert. Pyannote findet Kandidaten, Gemini prüft diese einzeln. Bei deaktivierter Option bleibt die ursprüngliche Pipeline unverändert.",
+      "Beim Erstellen einer KI-Audiodeskription gibt es jetzt einen barrierefreien Regler für die Tonhöhe (0,5×–2,0× in 0,1-Schritten), wie in den Einstellungen. Die gewählte Tonhöhe gilt für Stimmtests, Vorschauen und Export, bleibt nach erneutem Öffnen erhalten und wird in Projekten gespeichert.",
       "In SonarTube wurde die Schaltfläche „URL öffnen“ hinzugefügt. Damit lässt sich ein YouTube-Link direkt einfügen und öffnen, einschließlich Videos, Shorts und Livestreams.",
       "Sonarpad merkt sich jetzt automatisch ausgewählte Benutzereinstellungen, wenn dies sinnvoll ist, zum Beispiel die Einstellungen für Routen und die Sortierung der Videos in SonarTube-Kanälen.",
       "Unter iOS kann in „Audiodeskription mit KI erstellen“ über „Video auswählen“ jetzt direkt ein Video aus der Fotomediathek oder aus der Dateien-App gewählt werden. Auch in Dokumente ist der Videoimport aus Fotos verfügbar.",
@@ -300,6 +318,8 @@
       "Lautstärkevorschau: Pause/Fortsetzen erscheint erst nach dem Wiedergabestart und verschwindet am Ende. Unter iOS unterscheidet die Anzeige das Kopieren nach Sonarpad vom Download durch Dateien/iCloud, ohne nach Abschluss einen künstlichen Fortschrittsbalken anzuzeigen."
     ],
     "zh_CN": [
+      "在“使用 AI 创建音频描述”中，非语言人声选项默认开启并记住选择。Pyannote 检测候选人声片段，Gemini 逐一核实，关闭选项则保留原有流程不变。",
+      "“创建 AI 音频描述”现已加入无障碍语调滑块（0.5×–2.0×，步进 0.1），与设置中的选项一致。所选语调用于语音测试、混音预览和导出，并在重新打开界面时保留，同时写入并恢复保存的项目。",
       "SonarTube 新增“打开 URL”按钮，可直接粘贴并打开 YouTube 链接，包括普通视频、Shorts 和直播。",
       "Sonarpad 现在会在适当情况下自动记住部分用户选择，例如“路线”的偏好设置以及 SonarTube 频道中的视频排序方式。",
       "在 iOS 上，“使用 AI 创建音频描述”中的“选择视频”按钮现在除了“文件”App 外，还可以直接从“照片”图库选择视频。“文稿”中也支持从“照片”导入视频。",
@@ -333,6 +353,8 @@
       "音量预览：暂停/继续按钮仅在播放开始后显示，播放结束后隐藏。在 iOS 上，进度指示明确区分复制到 Sonarpad 与由“文件”/iCloud 管理的下载，操作完成后不再人为显示进度条。"
     ],
     "uk": [
+      "Під час створення аудіоопису з ШІ параметр невербальних голосових звуків увімкнено за замовчуванням, а вибір зберігається. Pyannote визначає кандидати, Gemini перевіряє їх окремо. Вимкнення зберігає попередній процес.",
+      "У створенні аудіоопису за допомогою ШІ додано доступний повзунок висоти голосу (0,5×–2,0× із кроком 0,1), як у Налаштуваннях. Вибрана висота використовується під час перевірки голосу, попереднього прослуховування та експорту, запам’ятовується й зберігається у проєктах.",
       "У SonarTube додано кнопку «Відкрити URL», яка дає змогу вставити й безпосередньо відкрити посилання YouTube, зокрема відео, Shorts і прямі трансляції.",
       "Sonarpad тепер автоматично запам’ятовує окремі вибрані налаштування користувача там, де це корисно, наприклад параметри Маршрутів і сортування відео в каналах SonarTube.",
       "На iOS у функції «Створити аудіоопис за допомогою ШІ» кнопка «Вибрати відео» тепер дозволяє вибрати відео безпосередньо з медіатеки Фото, а також із програми Файли. Імпорт відео з Фото також доступний у Документах.",
@@ -366,6 +388,8 @@
       "Попереднє прослуховування гучності: кнопка «Пауза/Продовжити» з’являється лише після початку відтворення та зникає після завершення. В iOS індикатор відрізняє копіювання до Sonarpad від завантаження через Файли/iCloud, без штучної смуги прогресу після завершення операції."
     ],
     "ro": [
+      "La crearea audiodescrierii cu IA, opțiunea pentru sunete vocale nonverbale este activă implicit și este memorată. Pyannote identifică intervalele posibile, iar Gemini le verifică individual. Dezactivarea păstrează fluxul original.",
+      "La crearea audiodescrierii cu IA a fost adăugat un glisor accesibil pentru tonalitatea vocii (0,5×–2,0×, pas 0,1), ca în Setări. Tonalitatea aleasă se aplică testelor vocale, previzualizărilor și exportului, este reținută la redeschidere și salvată în proiecte.",
       "SonarTube include acum butonul „Deschide URL”, care permite lipirea și deschiderea directă a unui link YouTube, inclusiv videoclipuri, Shorts și transmisiuni live.",
       "Sonarpad memorează acum automat anumite alegeri ale utilizatorului atunci când este util, de exemplu preferințele pentru Trasee și ordonarea videoclipurilor în canalele SonarTube.",
       "Pe iOS, în funcția „Creează audiodescriere cu IA”, butonul „Alege videoclip” permite acum selectarea unui videoclip direct din biblioteca Poze, pe lângă aplicația Fișiere. Importul videoclipurilor din Poze este disponibil și în Documente.",
@@ -399,6 +423,8 @@
       "Previzualizarea volumului: Pauză/Reluare apare numai după pornirea redării și dispare la final. Pe iOS, indicatorul distinge copierea în Sonarpad de descărcarea gestionată de Fișiere/iCloud, fără o bară artificială după finalizarea operației."
     ],
     "tr": [
+      "Yapay zekâ ile sesli betimleme oluştururken sözsüz insan sesleri seçeneği varsayılan olarak açıktır ve kaydedilir. Pyannote olası aralıkları bulur, Gemini bunları tek tek doğrular. Kapatıldığında önceki işlem aynen korunur.",
+      "Yapay zekâ ile sesli betimleme oluşturma ekranına, Ayarlar bölümündeki gibi erişilebilir bir ses perdesi kaydırıcısı eklendi (0,5×–2,0×, 0,1 adım). Seçilen perde ses testinde, önizlemede ve dışa aktarmada kullanılır; ekran yeniden açıldığında hatırlanır ve projelerde saklanır.",
       "SonarTube artık videolar, Shorts ve canlı yayınlar dahil olmak üzere bir YouTube bağlantısını yapıştırıp doğrudan açmanızı sağlayan bir “URL aç” düğmesi içeriyor.",
       "Sonarpad artık Rotalar tercihleri ve SonarTube kanallarında kullanılan video sıralama seçeneği gibi bazı kullanıcı seçimlerini yararlı olduğunda otomatik olarak hatırlıyor.",
       "iOS'ta “Yapay zekâyla sesli betimleme oluştur” özelliğindeki “Video seç” düğmesiyle artık Dosyalar uygulamasının yanı sıra doğrudan Fotoğraflar arşivinden de video seçilebilir. Belgeler bölümünde de Fotoğraflar'dan video içe aktarılabilir.",
@@ -433,6 +459,7 @@
     ],
     "it_extra": [
       "Nella guida TV, l’azione “Programma registrazione” non viene più mostrata per i programmi già terminati; resta disponibile per i programmi attualmente in onda e per quelli futuri.",
+      "Creazione audiodescrizioni con IA: nuovo cursore accessibile “Tono”, da 0,5× a 2,0×, con memoria della scelta e salvataggio nel progetto. Il valore scelto è applicato sia alla prova e all’anteprima sia alla sintesi finale.",
       "Nel lettore dei trailer del Cinema è stato aggiunto il comando “Crea audiodescrizione con IA”: scarica il trailer con avanzamento e possibilità di annullare, lo importa nei Documenti e apre la schermata di creazione con il video già selezionato."
     ]
   },

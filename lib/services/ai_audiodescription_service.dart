@@ -36,6 +36,7 @@ class AiAudioDescriptionSettings {
     required this.languageCode,
     required this.verbosity,
     required this.allowExtendedPauses,
+    this.allowNonverbalVocals = false,
     required this.recognizeCharacters,
     required this.recognizeScreenText,
     required this.keepCharacterCatalog,
@@ -49,6 +50,7 @@ class AiAudioDescriptionSettings {
     required this.edgeVoice,
     required this.systemLanguage,
     required this.systemVoice,
+    this.ttsPitch,
   }) : _bitrateKbps = bitrateKbps,
        _sourceVolume = sourceVolume;
 
@@ -59,6 +61,7 @@ class AiAudioDescriptionSettings {
   final String languageCode;
   final String verbosity;
   final bool allowExtendedPauses;
+  final bool allowNonverbalVocals;
   final bool recognizeCharacters;
   final bool recognizeScreenText;
   final bool keepCharacterCatalog;
@@ -74,6 +77,9 @@ class AiAudioDescriptionSettings {
   final String edgeVoice;
   final String systemLanguage;
   final String? systemVoice;
+  /// null preserves the pre-existing global voice-pitch preference.
+  /// Crea audiodescrizione supplies its own persisted value.
+  final double? ttsPitch;
 
   AiAudioDescriptionSettings copyWith({
     String? verbosity,
@@ -82,6 +88,7 @@ class AiAudioDescriptionSettings {
     String? characterCatalogName,
     int? bitrateKbps,
     double? sourceVolume,
+    double? ttsPitch,
   }) =>
       AiAudioDescriptionSettings(
         provider: provider,
@@ -91,6 +98,7 @@ class AiAudioDescriptionSettings {
         languageCode: languageCode,
         verbosity: verbosity ?? this.verbosity,
         allowExtendedPauses: allowExtendedPauses,
+        allowNonverbalVocals: allowNonverbalVocals,
         recognizeCharacters: recognizeCharacters,
         recognizeScreenText: recognizeScreenText,
         keepCharacterCatalog: keepCharacterCatalog ?? this.keepCharacterCatalog,
@@ -104,6 +112,7 @@ class AiAudioDescriptionSettings {
         edgeVoice: edgeVoice,
         systemLanguage: systemLanguage,
         systemVoice: systemVoice,
+        ttsPitch: ttsPitch ?? this.ttsPitch,
       );
 }
 
@@ -262,6 +271,7 @@ class AudioDescriptionEditableProject {
     required this.languageCode,
     required this.verbosity,
     required this.allowExtendedPauses,
+    this.allowNonverbalVocals = false,
     required this.recognizeCharacters,
     required this.recognizeScreenText,
     required this.geminiModel,
@@ -293,6 +303,7 @@ class AudioDescriptionEditableProject {
   final String languageCode;
   final String verbosity;
   final bool allowExtendedPauses;
+  final bool allowNonverbalVocals;
   final bool recognizeCharacters;
   final bool recognizeScreenText;
   final String geminiModel;
@@ -347,6 +358,7 @@ class AudioDescriptionEditableProject {
         languageCode: languageCode,
         verbosity: verbosity,
         allowExtendedPauses: allowExtendedPauses,
+        allowNonverbalVocals: allowNonverbalVocals,
         recognizeCharacters: recognizeCharacters,
         recognizeScreenText: recognizeScreenText,
         geminiModel: geminiModel,
@@ -396,6 +408,7 @@ class AudioDescriptionEditableProject {
       'language_code': windowsLanguageCode,
       'verbosity': verbosity,
       'allow_extended_pauses': allowExtendedPauses,
+      'allow_nonverbal_vocals': allowNonverbalVocals,
       'recognize_characters': recognizeCharacters,
       'recognize_screen_text': recognizeScreenText,
       'gemini_model': geminiModel,
@@ -494,6 +507,7 @@ class AiAudioDescriptionPreferences {
   static const _languageKey = 'ad_mobile_language';
   static const _verbosityKey = 'ad_mobile_verbosity';
   static const _extendedKey = 'ad_mobile_extended_v2';
+  static const _nonverbalKey = 'ad_mobile_nonverbal_vocals';
   static const _charactersKey = 'ad_mobile_characters';
   static const _screenTextKey = 'ad_mobile_screen_text';
   static const _keepCatalogKey = 'ad_mobile_keep_character_catalog';
@@ -502,6 +516,7 @@ class AiAudioDescriptionPreferences {
   static const _createVideoKey = 'ad_mobile_create_video';
   static const _bitrateKey = 'ad_mobile_bitrate_kbps';
   static const _sourceVolumeKey = 'ad_mobile_source_volume';
+  static const _creationPitchKey = 'ad_mobile_creation_voice_pitch';
   static const _ttsEngineKey = 'ad_mobile_tts_engine';
   static const _edgeLanguageKey = 'ad_mobile_edge_language';
   static const _edgeVoiceKey = 'ad_mobile_edge_voice';
@@ -520,6 +535,7 @@ class AiAudioDescriptionPreferences {
       'language': prefs.getString(_languageKey) ?? defaultLanguage,
       'verbosity': prefs.getString(_verbosityKey) ?? 'detailed',
       'extended': prefs.getBool(_extendedKey) ?? false,
+      'nonverbal': prefs.getBool(_nonverbalKey) ?? true,
       'characters': prefs.getBool(_charactersKey) ?? true,
       'screenText': prefs.getBool(_screenTextKey) ?? true,
       'keepCatalog': prefs.getBool(_keepCatalogKey) ?? false,
@@ -528,12 +544,31 @@ class AiAudioDescriptionPreferences {
       'createVideo': prefs.getBool(_createVideoKey) ?? false,
       'bitrateKbps': normalizeAudioDescriptionBitrate(prefs.get(_bitrateKey)),
       'sourceVolume': normalizeAudioDescriptionSourceVolume(prefs.get(_sourceVolumeKey)),
+      'voicePitch': _normalizeCreationVoicePitch(prefs.get(_creationPitchKey)),
       'ttsEngine': prefs.getString(_ttsEngineKey),
       'edgeLanguage': prefs.getString(_edgeLanguageKey),
       'edgeVoice': prefs.getString(_edgeVoiceKey),
       'systemLanguage': prefs.getString(_systemLanguageKey),
       'systemVoice': prefs.getString(_systemVoiceKey),
     };
+  }
+
+  static double? _normalizeCreationVoicePitch(Object? value) {
+    if (value is! num || !value.isFinite) return null;
+    return (value.toDouble().clamp(0.5, 2.0) * 10).round() / 10;
+  }
+
+  /// Persist immediately on slider change, including between app launches.
+  static Future<void> saveCreationVoicePitch(double pitch) async {
+    final normalized = _normalizeCreationVoicePitch(pitch);
+    if (normalized == null) return;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setDouble(_creationPitchKey, normalized);
+  }
+
+  static Future<void> saveNonverbalVocals(bool enabled) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_nonverbalKey, enabled);
   }
 
   static Future<void> save(AiAudioDescriptionSettings settings) async {
@@ -549,6 +584,7 @@ class AiAudioDescriptionPreferences {
     await prefs.setString(_languageKey, settings.languageCode);
     await prefs.setString(_verbosityKey, settings.verbosity);
     await prefs.setBool(_extendedKey, settings.allowExtendedPauses);
+    await prefs.setBool(_nonverbalKey, settings.allowNonverbalVocals);
     await prefs.setBool(_charactersKey, settings.recognizeCharacters);
     await prefs.setBool(_screenTextKey, settings.recognizeScreenText);
     await prefs.setBool(
@@ -565,6 +601,9 @@ class AiAudioDescriptionPreferences {
     await prefs.setBool(_createVideoKey, settings.createVideoOutput);
     await prefs.setInt(_bitrateKey, settings.bitrateKbps);
     await prefs.setDouble(_sourceVolumeKey, settings.sourceVolume);
+    if (settings.ttsPitch != null) {
+      await saveCreationVoicePitch(settings.ttsPitch!);
+    }
     await prefs.setString(_ttsEngineKey, settings.ttsEngine);
     await prefs.setString(_edgeLanguageKey, settings.edgeLanguage);
     await prefs.setString(_edgeVoiceKey, settings.edgeVoice);
@@ -1506,7 +1545,7 @@ class AiAudioDescriptionService {
       await _logSonarpadAi(
         'CREATE START source=${p.basename(sourcePath)} bytes=$sourceLength '
         'language=${settings.languageCode} verbosity=${settings.verbosity} '
-        'extended=${settings.allowExtendedPauses} characters=${settings.recognizeCharacters} '
+        'extended=${settings.allowExtendedPauses} nonverbal=${settings.allowNonverbalVocals} characters=${settings.recognizeCharacters} '
         'screenText=${settings.recognizeScreenText} keepCatalog=${settings.keepCharacterCatalog} '
         'saveProject=${settings.saveProject} createVideo=${settings.createVideoOutput} '
         'ttsEngine=${settings.ttsEngine} modelHint=${settings.geminiModel} '
@@ -1563,6 +1602,7 @@ class AiAudioDescriptionService {
       final pyannote = await PyannoteMobileService.instance.analyzeCanonicalWav(
         canonicalWav,
         paddingSec: PyannoteMobileService.defaultPaddingSec,
+        collectNonverbalCandidates: settings.allowNonverbalVocals,
         checkCancelled: _checkCancel,
         onProgress: (value) {
           _emit(onProgress, 'pyannote', 0.06 + value * 0.16);
@@ -1570,7 +1610,11 @@ class AiAudioDescriptionService {
       );
       _checkCancel();
 
-      final slots = _safeSlots(pyannote.durationSec, pyannote.protectedIntervals);
+      var slots = _safeSlots(pyannote.durationSec, pyannote.protectedIntervals);
+      final nonverbalCandidates = settings.allowNonverbalVocals
+          ? pyannote.nonverbalCandidates
+          : const <PyannoteNonverbalCandidate>[];
+      final approvedNonverbalIds = <String>{};
       await AppLogger.log(
         'Audio description mobile: pyannote complete duration=${pyannote.durationSec.toStringAsFixed(3)} '
         'protected=${pyannote.protectedIntervals.length} slots=${slots.length}',
@@ -1614,6 +1658,7 @@ class AiAudioDescriptionService {
         sourcePath: sourcePath,
         durationSec: pyannote.durationSec,
         chunkCount: chunkCount,
+        allowNonverbalVocals: settings.allowNonverbalVocals,
       );
       if (requireCheckpoint && checkpoint == null) {
         throw const AudioDescriptionResumeUnavailableException();
@@ -1627,6 +1672,7 @@ class AiAudioDescriptionService {
           // UI choices when resuming; accepted AI chunks are independent of them.
           startChunk = checkpoint.completedChunks.clamp(0, chunkCount);
           descriptions.addAll(checkpoint.descriptions);
+          if (settings.allowNonverbalVocals) approvedNonverbalIds.addAll(checkpoint.approvedNonverbalIds);
           final checkpointCatalogName = checkpoint.characterCatalogName?.trim() ?? '';
           if (settings.recognizeCharacters &&
               checkpoint.keepCharacterCatalog &&
@@ -1675,7 +1721,14 @@ class AiAudioDescriptionService {
           return midpoint >= chunkStart && midpoint < chunkEnd;
         }).toList();
 
-        if (chunkSlots.isNotEmpty) {
+        final chunkNonverbal = <PyannoteNonverbalCandidate>[
+          for (final candidate in nonverbalCandidates)
+            // Reject candidates spanning chunk boundaries: Gemini must hear
+            // the *entire* sound before it can authorize any overlap.
+            if (candidate.start >= chunkStart && candidate.end <= chunkEnd)
+              candidate,
+        ];
+        if (chunkSlots.isNotEmpty || chunkNonverbal.isNotEmpty) {
           _emit(
             onProgress,
             'preparing_chunk',
@@ -1699,6 +1752,7 @@ class AiAudioDescriptionService {
             sonarpadToken: token,
             activeGeminiModel: activeGeminiModel,
             chunkSlots: chunkSlots,
+            nonverbalCandidates: chunkNonverbal,
             glossary: glossary,
             recentDescriptions: descriptions,
             onHighDemand: onHighDemand,
@@ -1713,6 +1767,12 @@ class AiAudioDescriptionService {
             activeGeminiModel = processed.model;
           }
           descriptions.addAll(processed.parsed.descriptions);
+          if (settings.allowNonverbalVocals) {
+            approvedNonverbalIds.addAll(processed.parsed.verifiedNonverbalIds);
+            await AppLogger.log('Audio description mobile: optional nonverbal chunk '
+                '${chunkIndex + 1}/$chunkCount candidates=${chunkNonverbal.length} '
+                'Gemini-approved=${processed.parsed.verifiedNonverbalIds.length}');
+          }
           if (settings.recognizeCharacters) {
             _mergeGlossary(glossary, processed.parsed.glossary);
           }
@@ -1737,6 +1797,8 @@ class AiAudioDescriptionService {
           sourceVolume: settings.sourceVolume,
           descriptions: descriptions,
           glossary: glossary,
+          allowNonverbalVocals: settings.allowNonverbalVocals,
+          approvedNonverbalIds: approvedNonverbalIds,
         );
       }
 
@@ -1747,6 +1809,22 @@ class AiAudioDescriptionService {
       }
       if (normalized.isEmpty) {
         throw StateError('AUDIO_DESCRIPTION_NO_DESCRIPTIONS');
+      }
+
+      final effectiveProtectedIntervals = settings.allowNonverbalVocals
+          ? protectedIntervalsAfterVerifiedNonverbal(
+              original: pyannote.protectedIntervals,
+              candidates: nonverbalCandidates,
+              approvedIds: approvedNonverbalIds,
+              durationSec: pyannote.durationSec,
+            )
+          : pyannote.protectedIntervals;
+      if (settings.allowNonverbalVocals) {
+        slots = _safeSlots(pyannote.durationSec, effectiveProtectedIntervals);
+        await AppLogger.log('Audio description mobile: optional nonverbal '
+            'approved=${approvedNonverbalIds.length} '
+            'protectedIntervals=${effectiveProtectedIntervals.length} '
+            'safeSlots=${slots.length}; unapproved speech remains protected');
       }
 
       _emit(onProgress, 'tts', 0.61);
@@ -1947,6 +2025,7 @@ class AiAudioDescriptionService {
           settings: placementSettings,
           effectiveGeminiModel: activeGeminiModel,
           pyannote: pyannote,
+          effectiveProtectedIntervals: effectiveProtectedIntervals,
           glossary: glossary,
           placements: placements,
         );
@@ -2261,12 +2340,19 @@ class AiAudioDescriptionService {
     required String sourcePath,
     required double durationSec,
     required int chunkCount,
+    bool allowNonverbalVocals = false,
   }) async {
     final file = await _checkpointFile(sourcePath);
     if (!await file.exists()) return null;
     try {
       final decoded = jsonDecode(await file.readAsString());
       if (decoded is! Map || decoded['schema'] != 'sonarpad-mobile-ad-checkpoint-v1') {
+        return null;
+      }
+      // An old checkpoint or one from a different mode must not be reused:
+      // the verified IDs and prompt behavior would no longer correspond.
+      if ((decoded['allow_nonverbal_vocals'] == true) != allowNonverbalVocals) {
+        await AppLogger.log('Audio description mobile: checkpoint mode mismatch; ignoring');
         return null;
       }
       final savedDuration = _asDouble(decoded['duration_sec']) ?? -1;
@@ -2309,6 +2395,11 @@ class AiAudioDescriptionService {
         characterCatalogName: decoded['character_catalog_name']?.toString(),
         descriptions: descriptions,
         glossary: glossary,
+        approvedNonverbalIds: <String>{
+          if (decoded['approved_nonverbal_ids'] is List)
+            for (final id in decoded['approved_nonverbal_ids'])
+              if (id is String) id,
+        },
       );
     } catch (error, stackTrace) {
       await AppLogger.log(
@@ -2330,6 +2421,8 @@ class AiAudioDescriptionService {
     required double sourceVolume,
     required List<_GeneratedDescription> descriptions,
     required List<Map<String, Object?>> glossary,
+    bool allowNonverbalVocals = false,
+    Set<String> approvedNonverbalIds = const <String>{},
   }) async {
     final file = await _checkpointFile(sourcePath);
     final temp = File('${file.path}.new');
@@ -2342,6 +2435,8 @@ class AiAudioDescriptionService {
         'chunk_count': chunkCount,
         'completed_chunks': completedChunks,
         'gemini_model': geminiModel,
+        'allow_nonverbal_vocals': allowNonverbalVocals,
+        'approved_nonverbal_ids': approvedNonverbalIds.toList(),
         'keep_character_catalog': keepCharacterCatalog,
         'character_catalog_name': characterCatalogName,
         'bitrate_kbps': normalizeAudioDescriptionBitrate(bitrateKbps),
@@ -2367,6 +2462,7 @@ class AiAudioDescriptionService {
     required double chunkStart,
     required double chunkEnd,
     required List<_SafeSlot> slots,
+    List<PyannoteNonverbalCandidate> nonverbalCandidates = const <PyannoteNonverbalCandidate>[],
     required List<Map<String, Object?>> glossary,
     List<_GeneratedDescription> recentDescriptions = const <_GeneratedDescription>[],
     bool fallbackClipTimeline = false,
@@ -2553,6 +2649,23 @@ $groundingDirective
 ''';
     }
 
+    if (settings.allowNonverbalVocals) {
+      outputKeys = settings.recognizeScreenText
+          ? 'four top-level keys: "character_glossary", "audio_descriptions", "on_screen_text", and "verified_nonverbal_ids"'
+          : 'three top-level keys: "character_glossary", "audio_descriptions", and "verified_nonverbal_ids"';
+    }
+    final nonverbalExample = settings.allowNonverbalVocals ? ',\n  "verified_nonverbal_ids": []' : '';
+    final nonverbalInstruction = settings.allowNonverbalVocals
+        ? '\nOPTIONAL NONVERBAL VOICE MODE: The Pyannote candidates listed by ID are '
+            'uncertain vocal activity, NOT verified safe silence. Listen to each '
+            'candidate within this exact video clip. Return a top-level JSON '
+            'array verified_nonverbal_ids containing ONLY IDs for intervals '
+            'with no intelligible words, whispered words, overlapping speech '
+            'or important story dialogue. Reject all uncertain intervals. '
+            'Only your explicitly approved candidates may be considered '
+            'exceptions to normal dialogue protection; the others MUST remain '
+            'protected. Never invent an ID. Prefer ordinary silence whenever possible.'
+        : '';
     final systemInstruction = '''
 $systemMission
 
@@ -2574,9 +2687,9 @@ $screenTextSchema$coreDirectives
   "character_glossary": $exampleGlossaryJson,
   "audio_descriptions": [
     {"start_time_mmss": "00:10.500", "end_time_mmss": "00:12.000", "visual_evidence_time_seconds": 11.2, "description_text": ${jsonEncode(language.descriptionExample)}}
-  ]$screenTextExample
+  ]$screenTextExample$nonverbalExample
 }
-''';
+$nonverbalInstruction''';
 
     final userPromptParts = <String>[
       'Analyze the provided video and generate a unified JSON object containing '
@@ -2587,10 +2700,24 @@ $screenTextSchema$coreDirectives
       '*   **Target language for every natural-language output field (`description_text` and `character_glossary[].description`):** $targetLanguageName. Names and JSON keys must remain unchanged.',
       '*   **Verbosity Level:** $verbosityInstruction',
     ];
+    if (settings.allowNonverbalVocals && nonverbalCandidates.isNotEmpty) {
+      final candidatesForPrompt = <String>[
+        for (final c in nonverbalCandidates)
+          '${c.id}: ${(c.start - chunkStart).toStringAsFixed(3)}-'
+          '${(c.end - chunkStart).toStringAsFixed(3)}s '
+          '(p50=${c.p50.toStringAsFixed(4)},p90=${c.p90.toStringAsFixed(4)})',
+      ];
+      userPromptParts.add('*   **OPTIONAL NONVERBAL VOICE CANDIDATES (LOCAL CLIP TIMES; NOT AUTOMATICALLY SAFE):** '
+          '${candidatesForPrompt.join('; ')}. Confirm only genuinely nonverbal sounds '
+          'by returning their exact ID in verified_nonverbal_ids.');
+    }
     if (dialogueFreeWindows.isNotEmpty) {
       userPromptParts.addAll(<String>[
         '*   **Authoritative dialogue-free windows (seconds):** $dialogueFreeWindows',
-        '*   Every audio description MUST fit completely inside one of these windows. These windows were measured from the soundtrack with pyannote; never place a description outside them or across a window boundary.',
+        if (settings.allowNonverbalVocals)
+          '*   Every audio description MUST fit inside an ordinary dialogue-free window, OR entirely inside a candidate region that YOU independently approve in verified_nonverbal_ids. Never narrate over an unapproved candidate or any spoken words. An approved candidate is optional and should be used only if long enough to fit a useful description.'
+        else
+          '*   Every audio description MUST fit completely inside one of these windows. These windows were measured from the soundtrack with pyannote; never place a description outside them or across a window boundary.',
       ]);
     }
     if (intensiveSlotsText.isNotEmpty) {
@@ -2605,7 +2732,9 @@ $screenTextSchema$coreDirectives
       }
     } else {
       userPromptParts.add(
-        '*   **INTENSIVE MODE:** This chunk has no dialogue-free interval long enough. Use only an optional intensive short-gap anchor listed below, if one exists; otherwise return an empty `audio_descriptions` array and do not invent timestamps.',
+        settings.allowNonverbalVocals && nonverbalCandidates.isNotEmpty
+            ? '*   **INTENSIVE MODE:** There is no mandatory silent slot in this chunk. Only if you confirm a nonverbal candidate by ID and it is long enough for a useful description may you return one inside that verified candidate; otherwise do not invent timestamps.'
+            : '*   **INTENSIVE MODE:** This chunk has no dialogue-free interval long enough. Use only an optional intensive short-gap anchor listed below, if one exists; otherwise return an empty `audio_descriptions` array and do not invent timestamps.',
       );
     }
     if (extendedAnchorsText.isNotEmpty) {
@@ -2928,6 +3057,7 @@ $screenTextSchema$coreDirectives
     required String? sonarpadToken,
     required String activeGeminiModel,
     required List<_SafeSlot> chunkSlots,
+    List<PyannoteNonverbalCandidate> nonverbalCandidates = const <PyannoteNonverbalCandidate>[],
     required List<Map<String, Object?>> glossary,
     List<_GeneratedDescription> recentDescriptions = const <_GeneratedDescription>[],
     AiAudioDescriptionHighDemandCallback? onHighDemand,
@@ -2956,6 +3086,7 @@ $screenTextSchema$coreDirectives
           chunkStart: chunkStart,
           chunkEnd: chunkEnd,
           slots: chunkSlots,
+          nonverbalCandidates: nonverbalCandidates,
           glossary: glossary,
           recentDescriptions: recentDescriptions,
         );
@@ -2978,6 +3109,7 @@ $screenTextSchema$coreDirectives
           chunkStart: chunkStart,
           chunkEnd: chunkEnd,
           slots: chunkSlots,
+          nonverbalCandidates: nonverbalCandidates,
           onHighDemand: onHighDemand,
           onQuota: onQuota,
         );
@@ -3106,6 +3238,7 @@ $screenTextSchema$coreDirectives
     required double chunkStart,
     required double chunkEnd,
     required List<_SafeSlot> slots,
+    List<PyannoteNonverbalCandidate> nonverbalCandidates = const <PyannoteNonverbalCandidate>[],
     double? blockedParentChunkStart,
     AiAudioDescriptionHighDemandCallback? onHighDemand,
     AiAudioDescriptionQuotaCallback? onQuota,
@@ -3117,6 +3250,7 @@ $screenTextSchema$coreDirectives
         chunkStart: chunkStart,
         chunkEnd: chunkEnd,
         slots: slots,
+        nonverbalCandidates: nonverbalCandidates,
         blockedParentChunkStart: blockedParentChunkStart,
       );
     } catch (_) {
@@ -3151,6 +3285,7 @@ $screenTextSchema$coreDirectives
         chunkStart: chunkStart,
         chunkEnd: chunkEnd,
         slots: slots,
+        nonverbalCandidates: nonverbalCandidates,
         blockedParentChunkStart: blockedParentChunkStart,
       );
       if (initial == null || repaired.descriptions.length >= initial.descriptions.length) {
@@ -3505,6 +3640,7 @@ $screenTextSchema$coreDirectives
             ...recovered.descriptions.where((e) => allowed.contains(e.slotId)),
           ],
           glossary: <Map<String, Object?>>[...current.glossary, ...recovered.glossary],
+          verifiedNonverbalIds: {...current.verifiedNonverbalIds, ...recovered.verifiedNonverbalIds},
         );
       } catch (error, stackTrace) {
         await AppLogger.log(
@@ -3821,6 +3957,7 @@ $screenTextSchema$coreDirectives
     return _ParsedGemini(
       descriptions: updatedDescriptions,
       glossary: updatedGlossary,
+      verifiedNonverbalIds: parsed.verifiedNonverbalIds,
     );
   }
 
@@ -4027,6 +4164,7 @@ $screenTextSchema$coreDirectives
     required double chunkStart,
     required double chunkEnd,
     required List<_SafeSlot> slots,
+    List<PyannoteNonverbalCandidate> nonverbalCandidates = const <PyannoteNonverbalCandidate>[],
     double? blockedParentChunkStart,
   }) {
     final recovery = AudioDescriptionFallbacks.parseOrSalvageUnifiedJson(raw);
@@ -4035,12 +4173,38 @@ $screenTextSchema$coreDirectives
       throw const FormatException('Gemini JSON could not be parsed or salvaged');
     }
 
+    final allowedIds = nonverbalCandidates.map((e) => e.id).toSet();
+    final rawVerifiedIds = decoded['verified_nonverbal_ids'];
+    final verifiedIds = <String>{};
+    if (rawVerifiedIds is List) {
+      for (final id in rawVerifiedIds) {
+        if (id is String && allowedIds.contains(id)) verifiedIds.add(id);
+      }
+    }
     final rawScreenText = decoded['on_screen_text'];
     if (rawScreenText is List) {
       unawaited(AppLogger.log(
         'Audio description mobile: Gemini on-screen text audit (response timeline): ${jsonEncode(rawScreenText)}',
       ));
     }
+    // New candidate slots only exist after explicit, whitelisted Gemini
+    // approval. No approval means the parser uses exactly the original slots.
+    final checkedCandidateSlots = <_SafeSlot>[
+      for (final c in nonverbalCandidates)
+        if (verifiedIds.contains(c.id) && c.end - c.start > 0.10)
+          _SafeSlot(
+            id: c.id,
+            start: c.start + 0.05,
+            end: c.end - 0.05,
+            mandatory: false,
+            maxWords: 12,
+            partitionIndex: 1,
+            partitionCount: 1,
+          ),
+    ];
+    final eligibleSlots = checkedCandidateSlots.isEmpty
+        ? slots
+        : <_SafeSlot>[...slots, ...checkedCandidateSlots];
     final descriptions = <_GeneratedDescription>[];
     final rawDescriptions = decoded['audio_descriptions'];
     if (rawDescriptions is List) {
@@ -4067,7 +4231,7 @@ $screenTextSchema$coreDirectives
           evidenceValue: evidenceValue,
           chunkStart: chunkStart,
           chunkEnd: chunkEnd,
-          slots: slots,
+          slots: eligibleSlots,
           blockedParentChunkStart: blockedParentChunkStart,
           preferredSlotId: item['slot_id']?.toString(),
         );
@@ -4126,6 +4290,7 @@ $screenTextSchema$coreDirectives
       glossary: glossary,
       parseOk: recovery.parseOk,
       salvaged: recovery.salvaged,
+      verifiedNonverbalIds: verifiedIds,
     );
   }
 
@@ -4362,7 +4527,7 @@ $screenTextSchema$coreDirectives
     final voiceDictionary = VoiceDictionaryService();
     final dictionaryEntries = await voiceDictionary.loadEntries();
     final speed = await appSettings.loadTtsSpeed();
-    final pitch = await appSettings.loadTtsPitch();
+    final pitch = settings.ttsPitch ?? await appSettings.loadTtsPitch();
     if (settings.ttsEngine == 'system') {
       await flutterTts.awaitSpeakCompletion(true);
       await flutterTts.setSpeechRate(speed * 0.5);
@@ -5036,13 +5201,14 @@ $screenTextSchema$coreDirectives
     required AiAudioDescriptionSettings settings,
     required String effectiveGeminiModel,
     required PyannoteMobileResult pyannote,
+    required List<PyannoteInterval> effectiveProtectedIntervals,
     required List<Map<String, Object?>> glossary,
     required List<_Placement> placements,
   }) async {
     final now = DateTime.now().toUtc().toIso8601String();
     final appSettings = AppSettingsService();
     final speed = await appSettings.loadTtsSpeed();
-    final pitch = await appSettings.loadTtsPitch();
+    final pitch = settings.ttsPitch ?? await appSettings.loadTtsPitch();
     final inserted = placements.where((item) => item.included).toList()
       ..sort((a, b) => a.originalStart.compareTo(b.originalStart));
     final descriptions = <AudioDescriptionProjectItem>[];
@@ -5085,7 +5251,7 @@ $screenTextSchema$coreDirectives
         'reason': placement.reason ?? 'excluded',
       });
     }
-    final intervals = pyannote.protectedIntervals
+    final intervals = effectiveProtectedIntervals
         .map((item) => AudioDescriptionProjectInterval(
               startSec: item.start,
               endSec: item.end,
@@ -5114,6 +5280,7 @@ $screenTextSchema$coreDirectives
       languageCode: language,
       verbosity: settings.verbosity,
       allowExtendedPauses: settings.allowExtendedPauses,
+      allowNonverbalVocals: settings.allowNonverbalVocals,
       recognizeCharacters: settings.recognizeCharacters,
       recognizeScreenText: settings.recognizeScreenText,
       geminiModel:
@@ -5332,6 +5499,7 @@ $screenTextSchema$coreDirectives
       languageCode: language,
       verbosity: string(map['verbosity'], 'detailed'),
       allowExtendedPauses: boolean(map['allow_extended_pauses'], true),
+      allowNonverbalVocals: boolean(map['allow_nonverbal_vocals'], false),
       recognizeCharacters: boolean(map['recognize_characters'], true),
       recognizeScreenText: boolean(map['recognize_screen_text'], true),
       geminiModel: string(map['gemini_model'], 'gemini-3.5-flash-lite'),
@@ -5459,7 +5627,7 @@ $screenTextSchema$coreDirectives
       }
       final appSettings = AppSettingsService();
       final speed = ttsSpeed ?? await appSettings.loadTtsSpeed();
-      final pitch = ttsPitch ?? await appSettings.loadTtsPitch();
+      final pitch = ttsPitch ?? settings.ttsPitch ?? await appSettings.loadTtsPitch();
       final dictionary = VoiceDictionaryService();
       final entries = await dictionary.loadEntries();
       final spoken = AudioDescriptionFallbacks.normalizePronunciationText(
@@ -5751,6 +5919,7 @@ $screenTextSchema$coreDirectives
         edgeVoice: project.ttsVoice,
         systemLanguage: project.systemLanguage,
         systemVoice: project.systemVoice,
+        ttsPitch: project.ttsPitch,
       );
 
   Future<AudioDescriptionProjectPreview> previewProjectDescription({
@@ -7691,11 +7860,13 @@ class _ParsedGemini {
     required this.glossary,
     this.parseOk = true,
     this.salvaged = false,
+    this.verifiedNonverbalIds = const <String>{},
   });
   final List<_GeneratedDescription> descriptions;
   final List<Map<String, Object?>> glossary;
   final bool parseOk;
   final bool salvaged;
+  final Set<String> verifiedNonverbalIds;
 }
 
 class _AiGenerationResult {
@@ -7735,6 +7906,7 @@ class _AdCheckpoint {
     required this.characterCatalogName,
     required this.descriptions,
     required this.glossary,
+    this.approvedNonverbalIds = const <String>{},
   });
   final String path;
   final int completedChunks;
@@ -7743,6 +7915,7 @@ class _AdCheckpoint {
   final String? characterCatalogName;
   final List<_GeneratedDescription> descriptions;
   final List<Map<String, Object?>> glossary;
+  final Set<String> approvedNonverbalIds;
 }
 
 class _AdProviderException implements Exception {

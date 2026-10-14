@@ -4107,6 +4107,9 @@ class AppLocalizationsDe extends AppLocalizations {
       'Erweiterte Pausen aktivieren, wenn eine Beschreibung nicht in eine Sprechpause passt';
 
   @override
+  String get audioDescriptionNonverbalVocals => 'Beschreibungen bei nichtsprachlichen Lautäußerungen erlauben';
+
+  @override
   String get audioDescriptionRecognizeCharacters =>
       'Figuren möglichst erkennen und ihre Namen verwenden';
 

@@ -5224,7 +5224,9 @@
   "@documentsRemovedCount": {
     "description": "Number of documents removed from the Sonarpad library.",
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "streamReconnecting": "Verbindung wird erneut hergestellt…",
@@ -6386,5 +6388,9 @@
   "@convertMediaWavFloat32": {
     "description": "Label for 32-bit floating-point PCM audio in the WAV bit-depth selector; does not change the codec or saved choice."
   },
-  "cloudFilePickerCopying": "Datei wird nach Sonarpad kopiert"
+  "cloudFilePickerCopying": "Datei wird nach Sonarpad kopiert",
+  "audioDescriptionNonverbalVocals": "Beschreibungen bei nichtsprachlichen Lautäußerungen erlauben",
+  "@audioDescriptionNonverbalVocals": {
+    "description": "Localized text for audioDescriptionNonverbalVocals."
+  }
 }

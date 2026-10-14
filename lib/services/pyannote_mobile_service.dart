@@ -19,6 +19,49 @@ class PyannoteInterval {
   List<double> toJson() => <double>[start, end];
 }
 
+/// Low-confidence *candidates*, never safe gaps until approved by Gemini.
+class PyannoteNonverbalCandidate {
+  const PyannoteNonverbalCandidate({
+    required this.id, required this.start, required this.end,
+    required this.p50, required this.p90,
+  });
+  final String id;
+  final double start;
+  final double end;
+  final double p50;
+  final double p90;
+}
+
+/// Subtract *only* independently approved candidates, with a protective edge.
+/// The default/nonverbal-disabled pipeline never calls this function.
+List<PyannoteInterval> protectedIntervalsAfterVerifiedNonverbal({
+  required List<PyannoteInterval> original,
+  required List<PyannoteNonverbalCandidate> candidates,
+  required Set<String> approvedIds,
+  required double durationSec,
+  double edgeMarginSec = 0.05,
+}) {
+  if (approvedIds.isEmpty || candidates.isEmpty) return original;
+  var remaining = List<PyannoteInterval>.of(original);
+  for (final candidate in candidates) {
+    if (!approvedIds.contains(candidate.id)) continue;
+    final begin = math.max(0.0, candidate.start + edgeMarginSec);
+    final end = math.min(durationSec, candidate.end - edgeMarginSec);
+    if (end <= begin) continue;
+    final next = <PyannoteInterval>[];
+    for (final interval in remaining) {
+      if (begin >= interval.end || end <= interval.start) {
+        next.add(interval);
+      } else {
+        if (interval.start < begin) next.add(PyannoteInterval(interval.start, begin));
+        if (end < interval.end) next.add(PyannoteInterval(end, interval.end));
+      }
+    }
+    remaining = next;
+  }
+  return remaining;
+}
+
 class PyannoteMobileResult {
   const PyannoteMobileResult({
     required this.durationSec,
@@ -32,6 +75,7 @@ class PyannoteMobileResult {
     required this.inputName,
     required this.outputNames,
     required this.elapsedMs,
+    this.nonverbalCandidates = const <PyannoteNonverbalCandidate>[],
   });
 
   final double durationSec;
@@ -45,11 +89,52 @@ class PyannoteMobileResult {
   final String inputName;
   final List<String> outputNames;
   final int elapsedMs;
+  final List<PyannoteNonverbalCandidate> nonverbalCandidates;
 
   double get protectedSeconds => protectedIntervals.fold<double>(
         0.0,
         (value, interval) => value + interval.end - interval.start,
       );
+}
+
+/// Same thresholds and raw-active-interval quantiles as the Windows option.
+List<PyannoteNonverbalCandidate> detectPyannoteNonverbalCandidates({
+  required Uint8List frameCounts,
+  required Float64List confidence,
+  required double durationSec,
+}) {
+  final candidates = <PyannoteNonverbalCandidate>[];
+  final frames = math.min(frameCounts.length, confidence.length);
+  int? start;
+  for (var i = 0; i <= frames; i++) {
+    final active = i < frames && frameCounts[i] > 0;
+    if (active && start == null) {
+      start = i;
+    } else if (!active && start != null) {
+      final begin = start * PyannoteMobileService.frameStepSec;
+      final end = math.min(durationSec,
+          (i - 1) * PyannoteMobileService.frameStepSec + PyannoteMobileService.frameDurationSec);
+      if (end - begin >= 0.25) {
+        final values = confidence.sublist(start, i)..sort();
+        double q(double fraction) {
+          final position = (values.length - 1) * fraction;
+          final low = position.floor();
+          final high = position.ceil();
+          return values[low] + (values[high] - values[low]) * (position - low);
+        }
+        final p50 = q(0.50);
+        final p90 = q(0.90);
+        if (p50 < 0.75 && p90 < 0.80) {
+          candidates.add(PyannoteNonverbalCandidate(
+            id: 'NV-${(begin * 1000).round().toString().padLeft(10, '0')}',
+            start: begin, end: end, p50: p50, p90: p90,
+          ));
+        }
+      }
+      start = null;
+    }
+  }
+  return candidates;
 }
 
 class PyannoteMobileService {
@@ -201,6 +286,7 @@ class PyannoteMobileService {
   Future<PyannoteMobileResult> analyzeCanonicalWav(
     String wavPath, {
     double paddingSec = defaultPaddingSec,
+    bool collectNonverbalCandidates = false,
     void Function(double progress)? onProgress,
     void Function()? checkCancelled,
   }) async {
@@ -281,6 +367,9 @@ class PyannoteMobileService {
 
         final aggregateFrameCount = _aggregateFrameCount(chunkCount);
         final summed = Float64List(aggregateFrameCount);
+        // Strict opt-in: no extra probability work or buffers in the original mode.
+        final confidenceSum = collectNonverbalCandidates
+            ? Float64List(aggregateFrameCount) : null;
         final contributors = Uint16List(aggregateFrameCount);
         final windowSamples = (windowSec * wav.sampleRate).round();
         final inputName = session.inputNames.first;
@@ -352,6 +441,7 @@ class PyannoteMobileService {
               currentBatchSize,
               summed,
               contributors,
+              confidenceSum: confidenceSum,
             );
             await AppLogger.log(
               'PYANNOTE[BATCH] $batchNumber/$totalBatches accumulated',
@@ -395,6 +485,22 @@ class PyannoteMobileService {
         }
 
         final rawIntervals = _countsToIntervals(frameCounts);
+        final nonverbalCandidates = confidenceSum == null
+            ? const <PyannoteNonverbalCandidate>[]
+            : detectPyannoteNonverbalCandidates(
+                frameCounts: frameCounts,
+                confidence: Float64List.fromList(<double>[
+                  for (var i = 0; i < aggregateFrameCount; i++)
+                    contributors[i] == 0 ? 0.0 : confidenceSum[i] / contributors[i],
+                ]),
+                durationSec: wav.durationSec,
+              );
+        if (collectNonverbalCandidates) {
+          await AppLogger.log(
+            'PYANNOTE[NONVERBAL] candidates=${nonverbalCandidates.length} '
+            'thresholds=p50<0.75,p90<0.80,duration>=0.25; all remain protected pending Gemini',
+          );
+        }
         final protectedIntervals = _mergeIntervals(
           rawIntervals,
           paddingSec: paddingSec,
@@ -430,6 +536,7 @@ class PyannoteMobileService {
           inputName: inputName,
           outputNames: List<String>.from(session.outputNames),
           elapsedMs: elapsedMs,
+          nonverbalCandidates: nonverbalCandidates,
         );
       } finally {
         await wav.close();
@@ -449,8 +556,9 @@ class PyannoteMobileService {
     int globalChunkStart,
     int batchLength,
     Float64List summed,
-    Uint16List contributors,
-  ) {
+    Uint16List contributors, {
+    Float64List? confidenceSum,
+  }) {
     if (outputValue is! List || outputValue.length != batchLength) {
       throw StateError(
         'PYANNOTE_OUTPUT_BATCH_SHAPE:${outputValue is List ? outputValue.length : 'non-lista'}:$batchLength',
@@ -489,6 +597,19 @@ class PyannoteMobileService {
         }
         final aggregateIndex = startFrame + frame;
         if (aggregateIndex < 0 || aggregateIndex >= summed.length) continue;
+        if (confidenceSum != null) {
+          // Numerically stable softmax; index 0 is the no-speaker class.
+          // The speaker count and its argmax remain exactly as before.
+          var sumExponentials = 0.0;
+          var noSpeakerExponential = 0.0;
+          for (var classIndex = 0; classIndex < scores.length; classIndex++) {
+            final exponential = math.exp((scores[classIndex] as num).toDouble() - bestScore);
+            sumExponentials += exponential;
+            if (classIndex == 0) noSpeakerExponential = exponential;
+          }
+          confidenceSum[aggregateIndex] +=
+              1.0 - noSpeakerExponential / math.max(1e-12, sumExponentials);
+        }
         summed[aggregateIndex] += _powersetSpeakerCounts[bestIndex];
         contributors[aggregateIndex] += 1;
       }

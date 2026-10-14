@@ -33,18 +33,23 @@ void main() {
       final changes = (entry[language] as List).cast<String>();
       expect(changes.length, greaterThanOrEqualTo(6), reason: language);
       expect(changes.length, (entry['it'] as List).length, reason: language);
-      expect(changes[5], isNotEmpty, reason: language);
-      expect(changes[3], contains('Edge'), reason: language);
-      expect(changes[4], contains('SonarMusic'), reason: language);
+      expect(changes, everyElement(isNotEmpty), reason: language);
+      expect(changes, contains(contains('Edge')), reason: language);
+      expect(changes, contains(contains('SonarMusic')), reason: language);
       expect(changes, isNot(contains(expected)), reason: language);
     }
 
-    expect((entry['it'] as List).cast<String>()[0], contains('Apri URL'));
-    expect((entry['it'] as List).cast<String>()[1], contains('ricorda automaticamente'));
-    expect((entry['it'] as List).cast<String>()[2], contains('Crea audiodescrizione con IA'));
-    expect((entry['it'] as List).cast<String>()[3], contains('voci Edge'));
-    expect((entry['it'] as List).cast<String>()[4], contains('SonarMusic'));
-    expect((entry['it'] as List).cast<String>()[5], contains('Taglia file media'));
+    // New release notes can be prepended without removing existing features.
+    final italian = (entry['it'] as List).cast<String>();
+    expect(italian, contains(contains('Apri URL')));
+    expect(italian, contains(contains('ricorda automaticamente')));
+    expect(italian, contains(allOf(
+      contains('Crea audiodescrizione con IA'),
+      contains('libreria Foto'),
+    )));
+    expect(italian, contains(contains('voci Edge')));
+    expect(italian, contains(contains('SonarMusic')));
+    expect(italian, contains(contains('Taglia file media')));
   });
   test('0.5.0 Rai audio-description preference is Italian extra only', () {
     final decoded = jsonDecode(File('assets/changelog.json').readAsStringSync());

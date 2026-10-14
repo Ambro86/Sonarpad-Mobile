@@ -85,6 +85,7 @@ class _CreateAiAudiodescriptionScreenState
   String _language = 'it';
   String _verbosity = 'detailed';
   bool _extendedPauses = false;
+  bool _nonverbalVocals = true;
   bool _recognizeCharacters = true;
   bool _recognizeScreenText = true;
   bool _keepCharacterCatalog = false;
@@ -94,6 +95,7 @@ class _CreateAiAudiodescriptionScreenState
   bool _createVideoOutput = false;
   int _bitrateKbps = audioDescriptionDefaultBitrateKbps;
   double _sourceVolume = audioDescriptionDefaultSourceVolume;
+  double _voicePitch = 1.0;
 
   String _ttsEngine = 'edge';
   List<TtsVoiceOption> _edgeVoices = const [];
@@ -233,6 +235,7 @@ class _CreateAiAudiodescriptionScreenState
       final settingEdgeVoice = await _settings.loadTtsVoice();
       final settingSystemLanguage = await _settings.loadSystemTtsLanguage();
       final settingSystemVoice = await _settings.loadSystemTtsVoice();
+      final settingVoicePitch = await _settings.loadTtsPitch();
       final systemVoices = await _loadSystemVoices();
       final characterCatalogs = await _service.listCharacterCatalogs();
 
@@ -286,6 +289,7 @@ class _CreateAiAudiodescriptionScreenState
           _ => 'detailed',
         };
         _extendedPauses = preferences['extended'] == true;
+        _nonverbalVocals = preferences['nonverbal'] != false;
         _recognizeCharacters = preferences['characters'] != false;
         _recognizeScreenText = preferences['screenText'] != false;
         _keepCharacterCatalog = preferences['keepCatalog'] == true;
@@ -297,6 +301,10 @@ class _CreateAiAudiodescriptionScreenState
         _sourceVolume =
             (normalizeAudioDescriptionSourceVolume(preferences['sourceVolume']) * 20)
                 .round() / 20;
+        final rememberedPitch = preferences['voicePitch'];
+        _voicePitch = rememberedPitch is num && rememberedPitch.isFinite
+            ? (rememberedPitch.toDouble().clamp(0.5, 2.0) * 10).round() / 10
+            : (settingVoicePitch.clamp(0.5, 2.0) * 10).round() / 10;
         _ttsEngine = preferences['ttsEngine']?.toString().trim().isNotEmpty == true
             ? preferences['ttsEngine']!.toString()
             : settingEngine;
@@ -630,7 +638,7 @@ class _CreateAiAudiodescriptionScreenState
   ) async {
     try {
       final speed = await _settings.loadTtsSpeed();
-      final pitch = await _settings.loadTtsPitch();
+      final pitch = settings.ttsPitch ?? await _settings.loadTtsPitch();
       if (!_voiceTestIsCurrent(revision)) return;
       if (settings.ttsEngine == 'system') {
         await _flutterTts.setSpeechRate(speed * 0.5);
@@ -694,6 +702,7 @@ class _CreateAiAudiodescriptionScreenState
         languageCode: _language,
         verbosity: _verbosity,
         allowExtendedPauses: _extendedPauses && !_createVideoOutput,
+        allowNonverbalVocals: _nonverbalVocals,
         recognizeCharacters: _recognizeCharacters,
         recognizeScreenText: _recognizeScreenText,
         keepCharacterCatalog: _recognizeCharacters && _keepCharacterCatalog,
@@ -707,6 +716,7 @@ class _CreateAiAudiodescriptionScreenState
         edgeVoice: _edgeVoice,
         systemLanguage: _systemLanguage,
         systemVoice: _systemVoice,
+        ttsPitch: _voicePitch,
       );
 
   Future<void> _persistCharacterCatalogPreference() async {
@@ -1694,6 +1704,13 @@ class _CreateAiAudiodescriptionScreenState
                       ],
                     ),
                     AccessibleListRow(
+                      id: 'nonverbal_vocals',
+                      title: l10n.audioDescriptionNonverbalVocals,
+                      kind: 'toggle',
+                      toggleValue: _nonverbalVocals,
+                      enabled: !_running,
+                    ),
+                    AccessibleListRow(
                       id: 'extended',
                       title: l10n.audioDescriptionExtendedPauses,
                       kind: 'toggle',
@@ -1705,6 +1722,22 @@ class _CreateAiAudiodescriptionScreenState
                       title: l10n.audioDescriptionCreateVideoOutput,
                       kind: 'toggle',
                       toggleValue: _createVideoOutput,
+                      enabled: !_running,
+                    ),
+                    AccessibleListRow(
+                      id: 'creation_voice_pitch',
+                      title: l10n.settingsVoicePitchLabel,
+                      kind: 'slider',
+                      value: '${_voicePitch.toStringAsFixed(1)}x',
+                      valueLabel: '${_voicePitch.toStringAsFixed(1)}x',
+                      sliderMin: 0.5,
+                      sliderMax: 2.0,
+                      sliderStep: 0.1,
+                      sliderValue: _voicePitch,
+                      sliderIncreasedValueLabel:
+                          '${(((_voicePitch + 0.1).clamp(0.5, 2.0) * 10).round() / 10).toStringAsFixed(1)}x',
+                      sliderDecreasedValueLabel:
+                          '${(((_voicePitch - 0.1).clamp(0.5, 2.0) * 10).round() / 10).toStringAsFixed(1)}x',
                       enabled: !_running,
                     ),
                     AccessibleListRow(
@@ -2014,6 +2047,14 @@ class _CreateAiAudiodescriptionScreenState
                       setState(() => _model = newModel);
                       unawaited(AiAudioDescriptionPreferences.saveGeminiModel(newModel));
                     }
+                  } else if (id == 'creation_voice_pitch') {
+                    final pitch = (value.clamp(0.5, 2.0) * 10).round() / 10;
+                    if (pitch != _voicePitch) {
+                      setState(() => _voicePitch = pitch);
+                      unawaited(AiAudioDescriptionPreferences.saveCreationVoicePitch(pitch));
+                      unawaited(_stopVoicePreview());
+                      _requestMixPreview(immediately: false);
+                    }
                   } else if (id == 'mp3_bitrate') {
                     final index = value.clamp(0, audioDescriptionMp3Bitrates.length - 1).round();
                     final bitrate = audioDescriptionMp3Bitrates[index];
@@ -2079,6 +2120,9 @@ class _CreateAiAudiodescriptionScreenState
                       case 'extended':
                         _extendedPauses = value;
                         break;
+                      case 'nonverbal_vocals':
+                        _nonverbalVocals = value;
+                        break;
                       case 'create_video_output':
                         _createVideoOutput = value;
                         break;
@@ -2097,6 +2141,9 @@ class _CreateAiAudiodescriptionScreenState
                         break;
                     }
                   });
+                  if (id == 'nonverbal_vocals') {
+                    await AiAudioDescriptionPreferences.saveNonverbalVocals(value);
+                  }
                   if (id == 'characters' || id == 'keep_character_catalog') {
                     await _persistCharacterCatalogPreference();
                   }

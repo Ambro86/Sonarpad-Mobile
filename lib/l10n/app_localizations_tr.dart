@@ -3982,6 +3982,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get audioDescriptionExtendedPauses => "Betimleme sessizliğe sığmadığında uzatılmış duraklamaları etkinleştir";
 
   @override
+  String get audioDescriptionNonverbalVocals => 'Sözsüz insan sesleri sırasında betimlemelere izin ver';
+
+  @override
   String get audioDescriptionRecognizeCharacters => "Karakterleri tanımaya çalış ve adlarını kullan";
 
   @override

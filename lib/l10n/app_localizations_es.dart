@@ -4120,6 +4120,9 @@ class AppLocalizationsEs extends AppLocalizations {
       'Activar pausas extendidas cuando una descripción no cabe en un silencio';
 
   @override
+  String get audioDescriptionNonverbalVocals => 'Permitir descripciones durante sonidos vocales no verbales';
+
+  @override
   String get audioDescriptionRecognizeCharacters =>
       'Intentar reconocer a los personajes y usar sus nombres';
 

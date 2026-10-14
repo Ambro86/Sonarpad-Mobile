@@ -4087,6 +4087,9 @@ class AppLocalizationsUk extends AppLocalizations {
       'Дозволити подовжені паузи, якщо опис не вміщується в тишу';
 
   @override
+  String get audioDescriptionNonverbalVocals => 'Дозволити описи під час невербальних голосових звуків';
+
+  @override
   String get audioDescriptionRecognizeCharacters =>
       'Намагатися розпізнавати персонажів і використовувати їхні імена';
 
