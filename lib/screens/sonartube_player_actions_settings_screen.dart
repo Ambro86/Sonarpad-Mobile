@@ -116,7 +116,7 @@ class _SonarTubePlayerActionsSettingsScreenState
                         AccessibleListRow(
                           id: 'title',
                           title: l10n.settingsSonarTubePlayerActions,
-                          kind: 'text',
+                          kind: 'header',
                           accessibilityButtonTrait: false,
                         ),
                         AccessibleListRow(
@@ -171,12 +171,16 @@ class _SonarTubePlayerActionsSettingsScreenState
               : ListView(
                   padding: const EdgeInsets.all(16),
                   children: [
-                    Text(
-                      l10n.settingsSonarTubePlayerActions,
-                      key: const ValueKey(
-                        'settings_sonartube_player_actions_title',
+                    Semantics(
+                      header: true,
+                      headingLevel: 1,
+                      child: Text(
+                        l10n.settingsSonarTubePlayerActions,
+                        key: const ValueKey(
+                          'settings_sonartube_player_actions_title',
+                        ),
+                        style: Theme.of(context).textTheme.headlineSmall,
                       ),
-                      style: Theme.of(context).textTheme.headlineSmall,
                     ),
                     const SizedBox(height: 12),
                     SwitchListTile(

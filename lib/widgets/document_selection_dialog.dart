@@ -60,6 +60,7 @@ Future<DocumentSelectionResult?> showDocumentSelectionDialog(
           key: const ValueKey('document_selection_title_semantics'),
           container: true,
           header: true,
+          headingLevel: 1,
           label: l10n.selectDocuments,
           child: ExcludeSemantics(
             child: Text(

@@ -138,6 +138,7 @@ class _AudiodescriptionScheduledScreenState
                                     const EdgeInsets.only(top: 8, bottom: 8),
                                 child: Semantics(
                                   header: true,
+                                  headingLevel: 1,
                                   child: Text(
                                     day.label,
                                     style: Theme.of(context)

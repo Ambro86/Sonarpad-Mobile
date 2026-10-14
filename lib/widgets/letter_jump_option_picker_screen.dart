@@ -294,6 +294,7 @@ class _LetterFilteredOptionsScreen<T> extends StatelessWidget {
       ),
       Semantics(
         header: true,
+        headingLevel: 1,
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 8),
           child: Text(

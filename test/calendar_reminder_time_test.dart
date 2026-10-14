@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:ui' show SemanticsAction;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -103,8 +104,9 @@ void main() {
         CalendarEvent(id: 'timed', date: date, text: 'Visita', hasTime: true),
         deviceCalendarDescription: 'Promemoria',
       );
-      final restored = (await service.getEventsForDate(DateTime(2027, 1, 24)))
-          .single;
+      final restored = (await service.getEventsForDate(
+        DateTime(2027, 1, 24),
+      )).single;
       expect(restored.date, date);
       expect(restored.hasTime, isTrue);
       expect(restored.deviceCalendarId, 'test-calendar');
@@ -307,98 +309,147 @@ void main() {
   );
 
   testWidgets(
-    'time entry has labeled fields and preserves reminder text on return',
+    'hour and minute sliders step by one and preserve text and semantics nodes',
     (tester) async {
-      CalendarEvent? saved;
-      await _openReminder(tester, (event) => saved = event);
-      final text = find.byKey(const ValueKey('calendar_reminder_text'));
-      final toggle = find.byKey(const ValueKey('calendar_reminder_has_time'));
-      final pickTime = find.byKey(
-        const ValueKey('calendar_reminder_pick_time'),
-      );
-      await tester.enterText(text, 'Visita dal dentista');
-      expect(tester.widget<SwitchListTile>(toggle).value, isFalse);
-      expect(pickTime, findsNothing);
-      await tester.tap(toggle);
-      await tester.pumpAndSettle();
-      await tester.tap(pickTime);
-      await tester.pumpAndSettle();
-      expect(
-        tester
-            .widget<TimePickerDialog>(find.byType(TimePickerDialog))
-            .initialEntryMode,
-        TimePickerEntryMode.inputOnly,
-      );
-      final fields = find.byType(TextFormField);
-      expect(fields, findsNWidgets(2));
-      final hourText = find.descendant(
-        of: fields.at(0),
-        matching: find.byType(TextField),
-      );
-      final minuteText = find.descendant(
-        of: fields.at(1),
-        matching: find.byType(TextField),
-      );
-      expect(
-        tester.getSemantics(hourText).getSemanticsData().label,
-        contains('Ore'),
-      );
-      expect(
-        tester.getSemantics(minuteText).getSemanticsData().label,
-        contains('Minuti'),
-      );
-      await tester.enterText(fields.at(0), '14');
-      await tester.enterText(fields.at(1), '05');
-      final material = MaterialLocalizations.of(
-        tester.element(find.byType(TimePickerDialog)),
-      );
-      await tester.tap(
-        find.descendant(
-          of: find.byType(TimePickerDialog),
-          matching: find.text(material.okButtonLabel),
-        ),
-      );
-      await tester.pumpAndSettle();
-      expect(
-        tester.widget<TextField>(text).controller!.text,
-        'Visita dal dentista',
-      );
-      expect(
-        find.descendant(of: pickTime, matching: find.textContaining('14:05')),
-        findsOneWidget,
-      );
+      final semantics = tester.ensureSemantics();
+      try {
+        CalendarEvent? saved;
+        await _openReminder(tester, (event) => saved = event);
+        final text = find.byKey(const ValueKey('calendar_reminder_text'));
+        final toggle = find.byKey(const ValueKey('calendar_reminder_has_time'));
+        final hours = find.byKey(const ValueKey('calendar_reminder_hours'));
+        final minutes = find.byKey(const ValueKey('calendar_reminder_minutes'));
+        final hourSemantics = find.byKey(
+          const ValueKey('calendar_reminder_hours_semantics'),
+        );
+        final minuteSemantics = find.byKey(
+          const ValueKey('calendar_reminder_minutes_semantics'),
+        );
+        await tester.enterText(text, 'Visita dal dentista');
+        expect(hours, findsNothing);
+        expect(minutes, findsNothing);
+        await tester.tap(toggle);
+        await tester.pumpAndSettle();
+        expect(find.byType(Slider), findsNWidgets(2));
+        expect(find.byType(TimePickerDialog), findsNothing);
+        expect(tester.widget<Slider>(hours).divisions, 23);
+        expect(tester.widget<Slider>(minutes).divisions, 59);
+        tester.widget<Slider>(hours).onChanged!(13);
+        tester.widget<Slider>(minutes).onChanged!(4);
+        await tester.pump();
 
-      // Cancelling another time selection must retain both the confirmed time
-      // and the previously entered reminder text.
-      await tester.tap(pickTime);
-      await tester.pumpAndSettle();
-      await tester.enterText(find.byType(TextFormField).at(0), '16');
-      await tester.tap(
-        find.descendant(
-          of: find.byType(TimePickerDialog),
-          matching: find.text(material.cancelButtonLabel),
-        ),
-      );
-      await tester.pumpAndSettle();
-      expect(
-        tester.widget<TextField>(text).controller!.text,
-        'Visita dal dentista',
-      );
-      expect(
-        find.descendant(of: pickTime, matching: find.textContaining('14:05')),
-        findsOneWidget,
-      );
-      await tester.tap(find.byKey(const ValueKey('calendar_reminder_save')));
-      await tester.pumpAndSettle();
-      expect(saved?.hasTime, isTrue);
-      expect(saved?.date, DateTime(2027, 1, 24, 14, 5));
-      expect(saved?.text, 'Visita dal dentista');
+        final hourNode = tester.getSemantics(hourSemantics);
+        final minuteNode = tester.getSemantics(minuteSemantics);
+        final l10n = AppLocalizations.of(tester.element(hours));
+        expect(
+          hourNode.getSemanticsData().label,
+          l10n.radioScheduleSelectHours,
+        );
+        expect(
+          minuteNode.getSemanticsData().label,
+          l10n.radioScheduleSelectMinutes,
+        );
+        expect(hourNode.getSemanticsData().value, '13');
+        expect(minuteNode.getSemanticsData().value, '04');
+        final owner = tester.binding.renderViews.first.owner!.semanticsOwner!;
+        owner.performAction(hourNode.id, SemanticsAction.increase);
+        owner.performAction(minuteNode.id, SemanticsAction.increase);
+        await tester.pump();
+        expect(tester.widget<Slider>(hours).value, 14);
+        expect(tester.widget<Slider>(minutes).value, 5);
+        expect(tester.getSemantics(hourSemantics).id, hourNode.id);
+        expect(tester.getSemantics(minuteSemantics).id, minuteNode.id);
+
+        // Rapid gestures must read the current value, not a stale build value.
+        owner.performAction(minuteNode.id, SemanticsAction.increase);
+        owner.performAction(minuteNode.id, SemanticsAction.increase);
+        await tester.pump();
+        expect(tester.widget<Slider>(minutes).value, 7);
+        owner.performAction(minuteNode.id, SemanticsAction.decrease);
+        owner.performAction(minuteNode.id, SemanticsAction.decrease);
+        await tester.pump();
+        expect(tester.widget<Slider>(minutes).value, 5);
+
+        await tester.tap(toggle);
+        await tester.pump();
+        expect(hours, findsNothing);
+        await tester.tap(toggle);
+        await tester.pump();
+        expect(tester.widget<Slider>(hours).value, 14);
+        expect(tester.widget<Slider>(minutes).value, 5);
+        expect(
+          tester.widget<TextField>(text).controller!.text,
+          'Visita dal dentista',
+        );
+        await tester.tap(find.byKey(const ValueKey('calendar_reminder_save')));
+        await tester.pumpAndSettle();
+        expect(saved?.hasTime, isTrue);
+        expect(saved?.date, DateTime(2027, 1, 24, 14, 5));
+        expect(saved?.text, 'Visita dal dentista');
+      } finally {
+        semantics.dispose();
+      }
     },
     variant: TargetPlatformVariant({
       TargetPlatform.android,
       TargetPlatform.iOS,
     }),
   );
+
+  for (final time in [
+    const TimeOfDay(hour: 0, minute: 0),
+    const TimeOfDay(hour: 23, minute: 59),
+  ]) {
+    testWidgets(
+      'time sliders save boundary $time without wrapping',
+      (tester) async {
+        final semantics = tester.ensureSemantics();
+        try {
+          CalendarEvent? saved;
+          await _openReminder(tester, (event) => saved = event);
+          await tester.enterText(
+            find.byKey(const ValueKey('calendar_reminder_text')),
+            'Limite',
+          );
+          await tester.tap(
+            find.byKey(const ValueKey('calendar_reminder_has_time')),
+          );
+          await tester.pump();
+          final hours = find.byKey(const ValueKey('calendar_reminder_hours'));
+          final minutes = find.byKey(
+            const ValueKey('calendar_reminder_minutes'),
+          );
+          tester.widget<Slider>(hours).onChanged!(time.hour.toDouble());
+          tester.widget<Slider>(minutes).onChanged!(time.minute.toDouble());
+          await tester.pump();
+          final unavailableAction = time.hour == 0
+              ? SemanticsAction.decrease
+              : SemanticsAction.increase;
+          for (final name in ['hours', 'minutes']) {
+            final node = tester.getSemantics(
+              find.byKey(ValueKey('calendar_reminder_${name}_semantics')),
+            );
+            expect(
+              node.getSemanticsData().hasAction(unavailableAction),
+              isFalse,
+            );
+          }
+          await tester.tap(
+            find.byKey(const ValueKey('calendar_reminder_save')),
+          );
+          await tester.pumpAndSettle();
+          expect(saved?.hasTime, isTrue);
+          expect(saved?.date, DateTime(2027, 1, 24, time.hour, time.minute));
+        } finally {
+          semantics.dispose();
+        }
+      },
+      variant: TargetPlatformVariant({
+        TargetPlatform.android,
+        TargetPlatform.iOS,
+      }),
+    );
+  }
 
   testWidgets('turning time off saves a day reminder without losing its text', (
     tester,
@@ -414,10 +465,7 @@ void main() {
     await tester.pump();
     await tester.tap(toggle);
     await tester.pump();
-    expect(
-      find.byKey(const ValueKey('calendar_reminder_pick_time')),
-      findsNothing,
-    );
+    expect(find.byType(Slider), findsNothing);
     await tester.tap(find.byKey(const ValueKey('calendar_reminder_save')));
     await tester.pumpAndSettle();
     expect(saved?.text, 'Da fare');

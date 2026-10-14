@@ -1829,7 +1829,7 @@ class _PodcastEpisodePlayerScreenState
       final rows = <AccessibleListRow>[
         AccessibleListRow(
           id: 'now_playing_title',
-          kind: 'text',
+          kind: 'header',
           title: l10n.nowPlayingTitle(_episode.title),
           accessibilityButtonTrait: false,
         ),
@@ -2096,11 +2096,15 @@ class _PodcastEpisodePlayerScreenState
           child: ListView(
             padding: const EdgeInsets.all(16),
             children: [
-              Text(
-                l10n.nowPlayingTitle(_episode.title),
-                key: const ValueKey('podcast_player_now_playing_title'),
-                style: Theme.of(context).textTheme.headlineSmall,
-                textAlign: TextAlign.center,
+              Semantics(
+                header: true,
+                headingLevel: 1,
+                child: Text(
+                  l10n.nowPlayingTitle(_episode.title),
+                  key: const ValueKey('podcast_player_now_playing_title'),
+                  style: Theme.of(context).textTheme.headlineSmall,
+                  textAlign: TextAlign.center,
+                ),
               ),
               const SizedBox(height: 32),
               if (_loading)

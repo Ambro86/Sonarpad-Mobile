@@ -71,6 +71,7 @@ Future<void> showTvProgramDetailsDialog(
         key: const ValueKey('tv_program_details_title_semantics'),
         container: true,
         header: true,
+        headingLevel: 1,
         label: program.title,
         child: ExcludeSemantics(
           child: Text(

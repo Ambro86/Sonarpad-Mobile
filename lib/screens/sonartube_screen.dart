@@ -1405,7 +1405,7 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
         AccessibleListRow(
           id: 'collection_title',
           title: _collectionTitle(l10n),
-          kind: 'text',
+          kind: 'header',
           accessibilityButtonTrait: false,
           flutterChild: Text(
             _collectionTitle(l10n),

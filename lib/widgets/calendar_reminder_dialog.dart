@@ -20,21 +20,61 @@ class _CalendarReminderDialogState extends State<CalendarReminderDialog> {
   bool _hasTime = false;
   TimeOfDay _time = TimeOfDay.now();
 
-  Future<void> _pickTime() async {
-    final l10n = AppLocalizations.of(context);
-    FocusScope.of(context).unfocus();
-    final selected = await showTimePicker(
-      context: context,
-      initialTime: _time,
-      initialEntryMode: TimePickerEntryMode.inputOnly,
-      hourLabelText: l10n.radioScheduleHours,
-      minuteLabelText: l10n.radioScheduleMinutes,
-      builder: (context, child) => MediaQuery(
-        data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
-        child: child!,
-      ),
+  void _setHour(int hour) {
+    setState(() => _time = _time.replacing(hour: hour.clamp(0, 23)));
+  }
+
+  void _setMinute(int minute) {
+    setState(() => _time = _time.replacing(minute: minute.clamp(0, 59)));
+  }
+
+  Widget _timeSlider({
+    required String id,
+    required String label,
+    required String semanticsLabel,
+    required ValueGetter<int> readValue,
+    required int maximum,
+    required ValueChanged<int> onChanged,
+  }) {
+    final value = readValue();
+    String format(int number) => number.toString().padLeft(2, '0');
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        ExcludeSemantics(
+          child: Text(
+            AppLocalizations.of(
+              context,
+            ).radioScheduleLabeledValue(label, format(value)),
+          ),
+        ),
+        Semantics(
+          key: ValueKey('calendar_reminder_${id}_semantics'),
+          slider: true,
+          label: semanticsLabel,
+          value: format(value),
+          increasedValue: value < maximum ? format(value + 1) : null,
+          decreasedValue: value > 0 ? format(value - 1) : null,
+          onIncrease: value < maximum
+              ? () => onChanged((readValue() + 1).clamp(0, maximum))
+              : null,
+          onDecrease: value > 0
+              ? () => onChanged((readValue() - 1).clamp(0, maximum))
+              : null,
+          child: ExcludeSemantics(
+            child: Slider(
+              key: ValueKey('calendar_reminder_$id'),
+              value: value.toDouble(),
+              min: 0,
+              max: maximum.toDouble(),
+              divisions: maximum,
+              label: format(value),
+              onChanged: (value) => onChanged(value.round()),
+            ),
+          ),
+        ),
+      ],
     );
-    if (mounted && selected != null) setState(() => _time = selected);
   }
 
   void _save() {
@@ -65,11 +105,6 @@ class _CalendarReminderDialogState extends State<CalendarReminderDialog> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final material = MaterialLocalizations.of(context);
-    final timeLabel = material.formatTimeOfDay(
-      _time,
-      alwaysUse24HourFormat: true,
-    );
     return AlertDialog(
       title: Text(l10n.addReminder),
       scrollable: true,
@@ -91,18 +126,25 @@ class _CalendarReminderDialogState extends State<CalendarReminderDialog> {
             value: _hasTime,
             onChanged: (value) => setState(() => _hasTime = value),
           ),
-          if (_hasTime)
-            OutlinedButton.icon(
-              key: const ValueKey('calendar_reminder_pick_time'),
-              onPressed: _pickTime,
-              icon: const Icon(Icons.access_time),
-              label: Text(
-                l10n.radioScheduleLabeledValue(
-                  material.timePickerDialHelpText,
-                  timeLabel,
-                ),
-              ),
+          if (_hasTime) ...[
+            _timeSlider(
+              id: 'hours',
+              label: l10n.radioScheduleHours,
+              semanticsLabel: l10n.radioScheduleSelectHours,
+              readValue: () => _time.hour,
+              maximum: 23,
+              onChanged: _setHour,
             ),
+            const SizedBox(height: 16),
+            _timeSlider(
+              id: 'minutes',
+              label: l10n.radioScheduleMinutes,
+              semanticsLabel: l10n.radioScheduleSelectMinutes,
+              readValue: () => _time.minute,
+              maximum: 59,
+              onChanged: _setMinute,
+            ),
+          ],
         ],
       ),
       actions: [

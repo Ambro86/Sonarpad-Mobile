@@ -55,6 +55,7 @@ Future<RecordingSelectionResult?> showRecordingSelectionDialog(
           key: const ValueKey('recording_selection_title_semantics'),
           container: true,
           header: true,
+          headingLevel: 1,
           label: l10n.selectRecordings,
           child: ExcludeSemantics(
             child: Text(

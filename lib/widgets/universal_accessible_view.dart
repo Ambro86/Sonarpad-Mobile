@@ -320,7 +320,10 @@ class SonarpadAppBar extends StatelessWidget implements PreferredSizeWidget {
       automaticallyImplyLeading: false,
       excludeHeaderSemantics: excludeHeaderSemantics,
       leading: effectiveLeading,
-      title: title,
+      // Mobile screen readers use headingLevel, not AppBar's header flag.
+      title: title == null || excludeHeaderSemantics
+          ? title
+          : Semantics(headingLevel: 1, child: title!),
       actions: effectiveActions.isEmpty ? null : effectiveActions,
       bottom: bottom,
     );
@@ -1878,6 +1881,8 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
     final label = row.accessibilityLabel ?? row.title;
     if (row.flutterChild != null) {
       final child = Semantics(
+        header: row.kind == 'header' ? true : null,
+        headingLevel: row.kind == 'header' ? 1 : null,
         label: label == row.title ? null : label,
         hint: row.hint,
         selected: row.selected,
@@ -1895,6 +1900,7 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
       case 'header':
         result = Semantics(
           header: true,
+          headingLevel: 1,
           child: ListTile(
             title: Text(
               row.title,
@@ -2120,6 +2126,7 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
         children.add(
           Semantics(
             header: true,
+            headingLevel: 1,
             child: ListTile(
               title: Text(
                 section.header!,
