@@ -815,6 +815,7 @@ class UniversalAccessibleList extends StatefulWidget {
     this.persistentTopAction,
     this.initialFocusId,
     this.debugTag,
+    this.transientRowIds = const [],
     this.routeReturnSemanticsSettleDelay = const Duration(milliseconds: 80),
     this.routeReturnUseFocusProxy = false,
     this.routeReturnWaitForForeignFocusClear = false,
@@ -842,6 +843,9 @@ class UniversalAccessibleList extends StatefulWidget {
 
   final String? initialFocusId;
   final String? debugTag;
+  /// Rows that may appear/disappear without replacing surviving UIKit cells.
+  /// Other structural changes retain the normal full-list update behavior.
+  final List<String> transientRowIds;
   final Duration routeReturnSemanticsSettleDelay;
   /// Use a one-shot native accessibility proxy during a fresh renderer return.
   /// The proxy is inserted before the UITableView only until VoiceOver enters
@@ -885,6 +889,7 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
     final debugTag = widget.debugTag ?? widget.controller?.debugName;
     return {
       'sections': widget.sections.map((e) => e.toMap()).toList(),
+      'transientRowIds': widget.transientRowIds,
       'refreshEnabled': widget.refreshEnabled,
       'showVerticalScrollIndicator': widget.showVerticalScrollIndicator,
       'clearTextLabel': l10n.clearText,

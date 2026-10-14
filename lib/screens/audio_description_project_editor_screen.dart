@@ -898,6 +898,7 @@ class _AudioDescriptionProjectEditorScreenState
           Expanded(
             child: UniversalAccessibleList(
               key: const ValueKey('audio_description_project_editor'),
+              transientRowIds: const ['mix_preview', 'mix_preview_status'],
               initialFocusId: 'open_project',
               sections: [
                 AccessibleListSection(rows: [

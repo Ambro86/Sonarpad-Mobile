@@ -193,6 +193,44 @@ private func sonarpadSectionsHaveSameStructure(_ lhs: [SonarpadNativeSection], _
   return true
 }
 
+private struct SonarpadTransientRowMutation {
+  let insertedRows: [IndexPath]
+  let deletedRows: [IndexPath]
+}
+
+private func sonarpadTransientRowMutation(
+  oldSections: [SonarpadNativeSection],
+  newSections: [SonarpadNativeSection],
+  transientIds: Set<String>
+) -> SonarpadTransientRowMutation? {
+  guard !transientIds.isEmpty, oldSections.count == newSections.count else { return nil }
+  var inserted: [IndexPath] = []
+  var deleted: [IndexPath] = []
+  for section in oldSections.indices {
+    let old = oldSections[section]
+    let new = newSections[section]
+    guard old.header == new.header, old.footer == new.footer,
+          Set(old.rows.map { $0.id }).count == old.rows.count,
+          Set(new.rows.map { $0.id }).count == new.rows.count else { return nil }
+    let oldStable = old.rows.filter { !transientIds.contains($0.id) }
+    let newStable = new.rows.filter { !transientIds.contains($0.id) }
+    guard oldStable.count == newStable.count else { return nil }
+    for (left, right) in zip(oldStable, newStable) {
+      guard sonarpadRowsHaveSameStructure(left, right) else { return nil }
+    }
+    // Only opted-in rows can be replaced. All surviving controls keep their
+    // cell/accessibility object, even when their numeric index moves.
+    for (row, model) in old.rows.enumerated() where transientIds.contains(model.id) {
+      deleted.append(IndexPath(row: row, section: section))
+    }
+    for (row, model) in new.rows.enumerated() where transientIds.contains(model.id) {
+      inserted.append(IndexPath(row: row, section: section))
+    }
+  }
+  guard !inserted.isEmpty || !deleted.isEmpty else { return nil }
+  return SonarpadTransientRowMutation(insertedRows: inserted, deletedRows: deleted)
+}
+
 private struct SonarpadDocumentParagraphMutation {
   let section: Int
   // Row to use for the immediate VoiceOver handoff in the NEW model.
@@ -565,7 +603,7 @@ private final class SonarpadFocusHandoffState {
   var timeoutWorkItem: DispatchWorkItem?
 }
 
-private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITableViewDataSource, UITableViewDelegate {
+final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITableViewDataSource, UITableViewDelegate {
   private let rootView: UIView
   private let tableView: UITableView
   private let channel: FlutterMethodChannel
@@ -1125,6 +1163,13 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
     let sectionsChanged = !sonarpadSectionsEqual(oldSections, newSections)
     let sameStructureDynamicChange =
       sectionsChanged && sonarpadSectionsHaveSameStructure(oldSections, newSections)
+    let transientMutation = sectionsChanged && !sameStructureDynamicChange
+      ? sonarpadTransientRowMutation(
+          oldSections: oldSections,
+          newSections: newSections,
+          transientIds: Set(map["transientRowIds"] as? [String] ?? [])
+        )
+      : nil
     let documentParagraphMutation =
       debugTag == "document" && sectionsChanged && !sameStructureDynamicChange
         ? sonarpadDocumentParagraphMutation(
@@ -1155,6 +1200,17 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
     if sameStructureDynamicChange {
       emitDebug("apply updateVisibleRowsFromModel visible=\(tableView.indexPathsForVisibleRows?.count ?? 0)")
       updateVisibleRowsFromModel()
+    } else if let mutation = transientMutation {
+      emitDebug("TRANSIENT_ROWS_NO_RELOAD inserted=\(mutation.insertedRows.count) deleted=\(mutation.deletedRows.count)")
+      UIView.performWithoutAnimation {
+        tableView.beginUpdates()
+        tableView.deleteRows(at: mutation.deletedRows, with: .none)
+        tableView.insertRows(at: mutation.insertedRows, with: .none)
+        tableView.endUpdates()
+        tableView.layoutIfNeeded()
+      }
+      updateVisibleRowsFromModel()
+      // No focus notification: the focused surviving cell is still alive.
     } else if let mutation = documentParagraphMutation {
       // A paragraph split/deletion must not use reloadData(). Stable paragraph
       // ids let us insert/delete the exact rows whose identities changed,
@@ -1223,7 +1279,7 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
       }
     }
 
-    if sectionsChanged && !sameStructureDynamicChange,
+    if sectionsChanged && !sameStructureDynamicChange && transientMutation == nil,
        let id = focusedRowBeforeReload,
        indexPath(forRowId: id) != nil {
       restoreFocusRow(id: id)
@@ -1430,14 +1486,14 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
           "SLIDER_GESTURE source=accessoryUISlider direction=increment id=\(row.id) " +
           "modelValue=\(row.sliderValue) step=\(row.sliderStep)"
         )
-        self?.adjustSlider(at: indexPath, delta: row.sliderStep)
+        self?.adjustSlider(id: row.id, delta: row.sliderStep)
       } : nil
       slider.decrementHandler = row.enabled ? { [weak self] in
         self?.emitDebug(
           "SLIDER_GESTURE source=accessoryUISlider direction=decrement id=\(row.id) " +
           "modelValue=\(row.sliderValue) step=\(row.sliderStep)"
         )
-        self?.adjustSlider(at: indexPath, delta: -row.sliderStep)
+        self?.adjustSlider(id: row.id, delta: -row.sliderStep)
       } : nil
       slider.addTarget(self, action: #selector(sliderControlChanged(_:)), for: .valueChanged)
       cell.accessoryView = slider
@@ -1452,14 +1508,14 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
           "SLIDER_GESTURE source=adjustableCell direction=increment id=\(row.id) " +
           "modelValue=\(row.sliderValue) step=\(row.sliderStep)"
         )
-        self?.adjustSlider(at: indexPath, delta: row.sliderStep)
+        self?.adjustSlider(id: row.id, delta: row.sliderStep)
       } : nil
       cell.decrementHandler = row.enabled ? { [weak self] in
         self?.emitDebug(
           "SLIDER_GESTURE source=adjustableCell direction=decrement id=\(row.id) " +
           "modelValue=\(row.sliderValue) step=\(row.sliderStep)"
         )
-        self?.adjustSlider(at: indexPath, delta: -row.sliderStep)
+        self?.adjustSlider(id: row.id, delta: -row.sliderStep)
       } : nil
     case "picker":
       cell.activationHandler = { [weak self, weak cell] in
@@ -1778,6 +1834,12 @@ private final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITab
       return "\(String(format: "%.1f", newValue))x"
     }
     return fallback ?? formatSliderValue(newValue)
+  }
+
+  private func adjustSlider(id: String, delta: Double) {
+    // Transient rows may move a surviving control without recreating it.
+    guard let indexPath = indexPath(forRowId: id) else { return }
+    adjustSlider(at: indexPath, delta: delta)
   }
 
   private func adjustSlider(at indexPath: IndexPath, delta: Double) {

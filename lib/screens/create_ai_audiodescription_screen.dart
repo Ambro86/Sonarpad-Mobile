@@ -1554,6 +1554,7 @@ class _CreateAiAudiodescriptionScreenState
                 Expanded(
                   child: UniversalAccessibleList(
                     key: const ValueKey('audio_description_settings'),
+                    transientRowIds: const ['mix_preview', 'mix_preview_status'],
                     initialFocusId: 'choose_video',
               sections: [
                 AccessibleListSection(
@@ -2053,7 +2054,6 @@ class _CreateAiAudiodescriptionScreenState
                       setState(() => _voicePitch = pitch);
                       unawaited(AiAudioDescriptionPreferences.saveCreationVoicePitch(pitch));
                       unawaited(_stopVoicePreview());
-                      _requestMixPreview(immediately: false);
                     }
                   } else if (id == 'mp3_bitrate') {
                     final index = value.clamp(0, audioDescriptionMp3Bitrates.length - 1).round();

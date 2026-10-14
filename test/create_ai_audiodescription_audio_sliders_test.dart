@@ -312,12 +312,14 @@ void main() {
   late PathProviderPlatform originalPaths;
   late bool ttsAwaitsCompletion;
   late List<String> ttsCalls;
+  late List<double> ttsPitches;
   Completer<int>? cancelledSpeak;
 
   setUp(() async {
     SharedPreferences.setMockInitialValues({});
     ttsAwaitsCompletion = true;
     ttsCalls = [];
+    ttsPitches = [];
     cancelledSpeak = null;
     temporary = await Directory.systemTemp.createTemp(
       'sonarpad_audio_sliders_',
@@ -331,6 +333,9 @@ void main() {
       call,
     ) async {
       ttsCalls.add(call.method);
+      if (call.method == 'setPitch') {
+        ttsPitches.add((call.arguments as num).toDouble());
+      }
       if (call.method == 'awaitSpeakCompletion') {
         ttsAwaitsCompletion = call.arguments == true;
         return 1;
@@ -679,6 +684,63 @@ void main() {
       TargetPlatform.android,
       TargetPlatform.iOS,
     }),
+  );
+
+  testWidgets(
+    'pitch changes stay silent until Test voice and volume still previews the film',
+    (tester) async {
+      final service = _PreviewService();
+      final audio = _PreviewAudio();
+      final source = File('${temporary.path}/pitch-film.mp4')
+        ..writeAsBytesSync([0]);
+      Future<void> passDebounce() async {
+        await tester.runAsync(() => Future<void>.delayed(
+          const Duration(milliseconds: 60),
+        ));
+        await tester.pump(const Duration(milliseconds: 60));
+      }
+
+      await _exerciseScreen(tester, () async {
+        await tester.runAsync(() async {
+          await _form(tester).onEvent!(const AccessibleListEvent(
+            type: 'picker', id: 'tts_engine', value: 'system',
+          ));
+        });
+        await tester.pump();
+        for (final pitch in [0.8, 1.2, 1.7]) {
+          await _sliderEvent(tester, 'creation_voice_pitch', pitch);
+          await passDebounce();
+          expect(service.settings, isEmpty);
+          expect(audio.sessions, isEmpty);
+          expect(ttsCalls.where((call) => call == 'speak'), isEmpty);
+        }
+        expect((await AiAudioDescriptionPreferences.load())['voicePitch'], 1.7);
+        await tester.runAsync(() async {
+          await _form(tester).onEvent!(const AccessibleListEvent(
+            type: 'activate', id: 'test_voice',
+          ));
+        });
+        await tester.pump();
+        expect(ttsPitches.last, 1.7);
+        expect(ttsCalls.where((call) => call == 'speak'), hasLength(1));
+        expect(audio.sessions, isEmpty);
+
+        await _sliderEvent(tester, 'source_volume', 30);
+        await _waitUntil(tester, () => audio.sessions.length == 1);
+        expect(service.settings.single.ttsPitch, 1.7);
+        expect(service.settings.single.sourceVolume, 1.5);
+        await _sliderEvent(tester, 'creation_voice_pitch', 0.9);
+        await passDebounce();
+        expect(audio.sessions, hasLength(1));
+        expect(service.settings, hasLength(1));
+      }, sourcePath: source.path, previewFactory: () =>
+          AudioDescriptionMixPreviewController(
+            serviceFactory: () => service,
+            audioFactory: () => audio,
+            adjustmentDelay: const Duration(milliseconds: 30),
+          ));
+    },
+    variant: TargetPlatformVariant({TargetPlatform.android, TargetPlatform.iOS}),
   );
 
   testWidgets(
