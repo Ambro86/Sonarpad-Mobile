@@ -15,6 +15,9 @@ final class SonarpadCloudFilePicker: NSObject, FlutterPlugin, FlutterStreamHandl
   private var activeInput: FileHandle?
   private var activePicker: UIDocumentPickerViewController?
   private var allowedExtensions: Set<String> = []
+  private var activeRequestId: String?
+  private var requestStartedAt = 0.0
+  private var selectionReceived = false
 
   static func register(with registrar: FlutterPluginRegistrar) {
     let plugin = SonarpadCloudFilePicker()
@@ -33,9 +36,10 @@ final class SonarpadCloudFilePicker: NSObject, FlutterPlugin, FlutterStreamHandl
       cancellationLock.unlock()
       coordinator?.cancel()
       try? input?.close()
-      if let picker = activePicker {
-        picker.dismiss(animated: true)
-        finish(nil)
+      if let picker = activePicker, let requestId = activeRequestId {
+        afterPickerDismissal(picker) {
+          self.finish(nil, requestId: requestId)
+        }
       }
       result(nil)
       return
@@ -64,32 +68,67 @@ final class SonarpadCloudFilePicker: NSObject, FlutterPlugin, FlutterStreamHandl
     }
     cancellationLock.lock(); cancelled = false; cancellationLock.unlock()
     pendingResult = result
+    let requestId = args["requestId"] as? String ?? UUID().uuidString
+    activeRequestId = requestId
+    selectionReceived = false
+    requestStartedAt = ProcessInfo.processInfo.systemUptime
     let picker = UIDocumentPickerViewController(forOpeningContentTypes: types, asCopy: false)
     picker.delegate = self
     picker.allowsMultipleSelection = args["allowMultiple"] as? Bool ?? false
     activePicker = picker
-    presenter.present(picker, animated: true)
-  }
-
-  func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
-    activePicker = nil
-    finish(nil)
-  }
-
-  func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-    activePicker = nil
-    guard !urls.isEmpty else { finish(nil); return }
-    // The document picker can still be animating out when the delegate runs.
-    // Delay beginning the copy until the system sheet has cleared, otherwise
-    // the Flutter progress dialog opens underneath it and goes unnoticed.
-    DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(350)) {
-      if self.isCancelled() { self.finish(nil); return }
-      self.beginCopy(urls)
+    presenter.present(picker, animated: true) {
+      self.publish(["stage": "picker_presented"], requestId: requestId)
     }
   }
 
-  private func beginCopy(_ urls: [URL]) {
-    publish(["stage": "preparing", "copied": 0, "total": -1])
+  func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
+    guard activePicker === controller, let requestId = activeRequestId else { return }
+    cancellationLock.lock(); cancelled = true; cancellationLock.unlock()
+    afterPickerDismissal(controller) {
+      self.finish(nil, requestId: requestId)
+    }
+  }
+
+  func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+    guard activePicker === controller, let requestId = activeRequestId else { return }
+    guard !selectionReceived else { return }
+    selectionReceived = true
+    // This is the FIRST callback carrying selected URLs. Files may already have
+    // downloaded iCloud/provider data. Do not call this a download-start event.
+    publish(["stage": "selection_received", "fileCount": urls.count], requestId: requestId)
+    afterPickerDismissal(controller) {
+      guard self.activeRequestId == requestId, self.pendingResult != nil else { return }
+      self.activePicker = nil
+      self.publish(["stage": "picker_dismissed"], requestId: requestId)
+      if self.isCancelled() || urls.isEmpty {
+        self.finish(nil, requestId: requestId)
+        return
+      }
+      self.beginCopy(urls, requestId: requestId)
+    }
+  }
+
+  private func afterPickerDismissal(_ controller: UIDocumentPickerViewController,
+                                    completion: @escaping () -> Void) {
+    if controller.isBeingDismissed, let transition = controller.transitionCoordinator {
+      let registered = transition.animate(alongsideTransition: nil) { context in
+        if context.isCancelled {
+          controller.dismiss(animated: false, completion: completion)
+        } else {
+          completion()
+        }
+      }
+      if registered { return }
+    }
+    if controller.presentingViewController != nil {
+      controller.dismiss(animated: true, completion: completion)
+    } else {
+      DispatchQueue.main.async(execute: completion)
+    }
+  }
+
+  private func beginCopy(_ urls: [URL], requestId: String) {
+    publish(["stage": "preparing", "copied": 0, "total": -1], requestId: requestId)
     let selectedExtensions = allowedExtensions
     DispatchQueue.global(qos: .userInitiated).async {
       var results = [[String: Any]]()
@@ -106,26 +145,26 @@ final class SonarpadCloudFilePicker: NSObject, FlutterPlugin, FlutterStreamHandl
           let safeName = fileName.replacingOccurrences(of: "/", with: "_")
           let target = destination.appendingPathComponent("\(UUID().uuidString)_\(safeName)")
           copiedFiles.append(target)
-          let size = try self.copyCoordinatedFile(from: source, to: target)
+          let size = try self.copyCoordinatedFile(from: source, to: target, requestId: requestId)
           results.append(["path": target.path, "name": fileName, "size": size])
         }
         DispatchQueue.main.async {
           if self.isCancelled() {
             for file in copiedFiles { try? FileManager.default.removeItem(at: file) }
-            self.finish(nil)
-          } else { self.finish(results) }
+            self.finish(nil, requestId: requestId)
+          } else { self.finish(results, requestId: requestId) }
         }
       } catch {
         for file in copiedFiles { try? FileManager.default.removeItem(at: file) }
         DispatchQueue.main.async {
-          if self.isCancelled() { self.finish(nil) }
-          else { self.finish(FlutterError(code: "cloud_file_error", message: error.localizedDescription, details: nil)) }
+          if self.isCancelled() { self.finish(nil, requestId: requestId) }
+          else { self.finish(FlutterError(code: "cloud_file_error", message: error.localizedDescription, details: nil), requestId: requestId) }
         }
       }
     }
   }
 
-  private func copyCoordinatedFile(from source: URL, to target: URL) throws -> Int64 {
+  private func copyCoordinatedFile(from source: URL, to target: URL, requestId: String) throws -> Int64 {
     let access = source.startAccessingSecurityScopedResource()
     defer { if access { source.stopAccessingSecurityScopedResource() } }
     let coordinator = NSFileCoordinator(filePresenter: nil)
@@ -138,7 +177,7 @@ final class SonarpadCloudFilePicker: NSObject, FlutterPlugin, FlutterStreamHandl
       do {
         if self.isCancelled() { throw CloudCopyError.cancelled }
         let fileSize = (try? coordinatedURL.resourceValues(forKeys: [.fileSizeKey]).fileSize).map(Int64.init) ?? -1
-        self.publish(["stage": "copying", "copied": 0, "total": fileSize])
+        self.publish(["stage": "copying", "copied": 0, "total": fileSize], requestId: requestId)
         FileManager.default.createFile(atPath: target.path, contents: nil)
         let input = try FileHandle(forReadingFrom: coordinatedURL)
         cancellationLock.lock(); activeInput = input; cancellationLock.unlock()
@@ -155,13 +194,13 @@ final class SonarpadCloudFilePicker: NSObject, FlutterPlugin, FlutterStreamHandl
           let percent = fileSize > 0 ? Int(bytesCopied * 100 / fileSize) : -1
           if percent != lastReportedPercent || (fileSize <= 0 && bytesCopied % 1048576 < 65536) {
             lastReportedPercent = percent
-            self.publish(["stage": "copying", "copied": bytesCopied, "total": fileSize])
+            self.publish(["stage": "copying", "copied": bytesCopied, "total": fileSize], requestId: requestId)
           }
         }
         if fileSize > 0 && bytesCopied != fileSize {
           throw CloudCopyError.incomplete
         }
-        self.publish(["stage": "copying", "copied": bytesCopied, "total": bytesCopied])
+        self.publish(["stage": "copying", "copied": bytesCopied, "total": bytesCopied], requestId: requestId)
       } catch { copyError = error }
     }
     if let error = coordinationError { throw error }
@@ -175,14 +214,23 @@ final class SonarpadCloudFilePicker: NSObject, FlutterPlugin, FlutterStreamHandl
     return cancelled
   }
 
-  private func publish(_ data: [String: Any]) {
-    DispatchQueue.main.async { self.eventSink?(data) }
+  private func publish(_ data: [String: Any], requestId: String) {
+    DispatchQueue.main.async {
+      guard self.activeRequestId == requestId, self.pendingResult != nil else { return }
+      var event = data
+      event["requestId"] = requestId
+      event["elapsedMs"] = Int((ProcessInfo.processInfo.systemUptime - self.requestStartedAt) * 1000)
+      self.eventSink?(event)
+    }
   }
 
-  private func finish(_ value: Any?) {
+  private func finish(_ value: Any?, requestId: String) {
+    // A late dismissal/cancel callback must never finish a newer import.
+    guard activeRequestId == requestId else { return }
     let callback = pendingResult
     pendingResult = nil
     activePicker = nil
+    activeRequestId = nil
     callback?(value)
   }
 

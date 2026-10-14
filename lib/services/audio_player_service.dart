@@ -435,6 +435,7 @@ class AudioPlayerService {
   Future<void> playVoicePreview(
     File file, {
     AudioSessionType sessionType = AudioSessionType.speech,
+    VoidCallback? onPlaybackStarted,
   }) async {
     if (!_isAndroid && sessionType == AudioSessionType.speech) {
       return playFile(file);
@@ -451,6 +452,7 @@ class AudioPlayerService {
     }
 
     var previewReady = false;
+    var playbackStartReported = false;
     var previewPaused = false;
     var controlRevision = 0;
     Future<void> setPaused(bool paused) {
@@ -508,6 +510,14 @@ class AudioPlayerService {
       // pause resolves play(), but must not finish the preview before EOF.
       final finished = Future.any([completed.future, cancelled.future]);
       subscription = _player.playerStateStream.listen((state) {
+        // A loaded source is not yet audible. Expose the mix controls only
+        // after the player reports actual playback, never during setAudioSource.
+        if (sessionType == AudioSessionType.playback &&
+            isCurrent() && !previewPaused && !playbackStartReported &&
+            state.playing && state.processingState == ProcessingState.ready) {
+          playbackStartReported = true;
+          onPlaybackStarted?.call();
+        }
         if (state.processingState == ProcessingState.completed) {
           if (!completed.isCompleted) completed.complete();
         } else if (sessionType == AudioSessionType.playback &&

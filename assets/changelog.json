@@ -32,7 +32,8 @@
       "Localizzazione turca, fase 3: tradotte le categorie dei podcast, le condizioni meteo e le schermate dei progetti di audiodescrizione; aggiunto il turco nei servizi Notizie, Wikipedia, Gutenberg, SonarTube e Cinema.",
       "Localizzazione turca, fase 4: aggiunte dieci testate turche con feed verificati e Google News Türkiye; lingua selezionabile nel modulo delle testate della comunità e supporto turco nei relativi servizi server. Completate le traduzioni di SonarMusic, importazione file e messaggi dei cataloghi condivisi.",
       "Completata e revisionata la traduzione turca. Migliorati la selezione per lettera dell’alfabeto turco e l’aggiornamento del calendario al cambio di lingua. L’esportazione PDF conserva ora le lettere turche.",
-      "Aggiunta la lingua turca."
+      "Aggiunta la lingua turca.",
+      "Anteprima dei volumi: Pausa/Riprendi appare solo dopo l’avvio della riproduzione e scompare al termine. Su iOS l’indicatore distingue la copia in Sonarpad dal download gestito da File/iCloud, senza mostrare una barra artificiale a operazione conclusa."
     ],
     "en": [
       "SonarTube now includes an “Open URL” button that lets you paste and open a YouTube link directly, including videos, Shorts and live streams.",
@@ -64,7 +65,8 @@
       "Turkish localization, phase 3: translated podcast categories, weather conditions and audio description project screens; added Turkish support to News, Wikipedia, Gutenberg, SonarTube and cinema content.",
       "Turkish localization, phase 4: added ten Turkish news publishers with verified feeds and Google News Türkiye; language selection in the community news source form and Turkish support in its server services. Completed translations for SonarMusic, file import and shared catalog messages.",
       "Completed and reviewed the Turkish translation. Improved selection by letters of the Turkish alphabet and calendar updates when changing the app language. PDF export now preserves Turkish letters.",
-      "Added Turkish language support."
+      "Added Turkish language support.",
+      "Volume preview: Pause/Resume appears only after playback starts and disappears when it ends. On iOS, the indicator distinguishes copying into Sonarpad from downloading handled by Files/iCloud, without displaying an artificial progress bar after completion."
     ],
     "fr": [
       "SonarTube dispose désormais d’un bouton « Ouvrir une URL » permettant de coller et d’ouvrir directement un lien YouTube, y compris les vidéos, les Shorts et les directs.",
@@ -96,7 +98,8 @@
       "Localisation turque, phase 3 : traduction des catégories de podcasts, des conditions météo et des écrans des projets d’audiodescription ; ajout du turc aux actualités, à Wikipédia, à Gutenberg, à SonarTube et aux contenus de cinéma.",
       "Localisation turque, phase 4 : ajout de dix médias turcs avec des flux vérifiés et de Google News Türkiye ; choix de la langue dans le formulaire des sources d’actualités de la communauté et prise en charge du turc dans les services serveur correspondants. Traductions de SonarMusic, de l’importation de fichiers et des messages des catalogues partagés complétées.",
       "Traduction turque complétée et révisée. Amélioration de la sélection par lettre de l’alphabet turc et de la mise à jour du calendrier lors d’un changement de langue. L’exportation en PDF préserve désormais les lettres turques.",
-      "Ajout de la prise en charge du turc."
+      "Ajout de la prise en charge du turc.",
+      "Aperçu des volumes : Pause/Reprendre apparaît uniquement après le début de la lecture et disparaît à la fin. Sur iOS, l’indicateur distingue la copie dans Sonarpad du téléchargement géré par Fichiers/iCloud, sans afficher de barre artificielle après la fin de l’opération."
     ],
     "es": [
       "SonarTube incorpora ahora el botón «Abrir URL», que permite pegar y abrir directamente un enlace de YouTube, incluidos vídeos, Shorts y emisiones en directo.",
@@ -128,7 +131,8 @@
       "Localización al turco, fase 3: traducidas las categorías de pódcast, las condiciones meteorológicas y las pantallas de proyectos de audiodescripción; añadido el turco a Noticias, Wikipedia, Gutenberg, SonarTube y los contenidos de cine.",
       "Localización al turco, fase 4: añadidos diez medios turcos con feeds verificados y Google News Türkiye; selección de idioma en el formulario de fuentes de noticias de la comunidad y soporte para turco en sus servicios de servidor. Completadas las traducciones de SonarMusic, la importación de archivos y los mensajes de los catálogos compartidos.",
       "Completada y revisada la traducción al turco. Mejoradas la selección por letras del alfabeto turco y la actualización del calendario al cambiar de idioma. La exportación a PDF ahora conserva las letras turcas.",
-      "Añadido soporte para el idioma turco."
+      "Añadido soporte para el idioma turco.",
+      "Vista previa del volumen: Pausa/Reanudar aparece solo al comenzar la reproducción y desaparece al terminar. En iOS, el indicador distingue la copia a Sonarpad de la descarga gestionada por Archivos/iCloud, sin mostrar una barra artificial una vez finalizada la operación."
     ],
     "pt": [
       "O SonarTube agora inclui o botão «Abrir URL», que permite colar e abrir diretamente uma ligação do YouTube, incluindo vídeos, Shorts e transmissões em direto.",
@@ -160,7 +164,8 @@
       "Localização em turco, fase 3: traduzidas as categorias de podcasts, as condições meteorológicas e os ecrãs dos projetos de audiodescrição; adicionado suporte para turco às Notícias, à Wikipédia, ao Gutenberg, ao SonarTube e aos conteúdos de cinema.",
       "Localização em turco, fase 4: adicionados dez meios de comunicação turcos com feeds verificados e o Google News Türkiye; seleção de idioma no formulário de fontes de notícias da comunidade e suporte para turco nos respetivos serviços do servidor. Concluídas as traduções do SonarMusic, da importação de ficheiros e das mensagens dos catálogos partilhados.",
       "Tradução em turco concluída e revista. Melhoradas a seleção por letras do alfabeto turco e a atualização do calendário ao mudar de idioma. A exportação para PDF preserva agora as letras turcas.",
-      "Adicionado suporte para a língua turca."
+      "Adicionado suporte para a língua turca.",
+      "Pré-visualização do volume: Pausa/Retomar aparece apenas após o início da reprodução e desaparece no fim. No iOS, o indicador distingue a cópia para o Sonarpad da transferência gerida pela aplicação Ficheiros/iCloud, sem mostrar uma barra artificial após a conclusão."
     ],
     "pt_BR": [
       "O SonarTube agora inclui o botão “Abrir URL”, que permite colar e abrir diretamente um link do YouTube, incluindo vídeos, Shorts e transmissões ao vivo.",
@@ -192,7 +197,8 @@
       "Localização em turco, fase 3: traduzidas as categorias de podcasts, as condições meteorológicas e as telas dos projetos de audiodescrição; adicionado suporte para turco às Notícias, à Wikipédia, ao Gutenberg, ao SonarTube e aos conteúdos de cinema.",
       "Localização em turco, fase 4: adicionados dez veículos de notícias turcos com feeds verificados e o Google News Türkiye; seleção de idioma no formulário de fontes de notícias da comunidade e suporte para turco nos respectivos serviços do servidor. Concluídas as traduções do SonarMusic, da importação de arquivos e das mensagens dos catálogos compartilhados.",
       "Tradução para o turco concluída e revisada. Melhoradas a seleção por letras do alfabeto turco e a atualização do calendário ao mudar de idioma. A exportação para PDF agora preserva as letras turcas.",
-      "Adicionado suporte ao idioma turco."
+      "Adicionado suporte ao idioma turco.",
+      "Prévia do volume: Pausar/Retomar aparece apenas após o início da reprodução e desaparece ao terminar. No iOS, o indicador distingue a cópia para o Sonarpad do download gerenciado pelo app Arquivos/iCloud, sem mostrar uma barra artificial após a conclusão."
     ],
     "pl": [
       "W SonarTube dodano przycisk „Otwórz URL”, który pozwala wkleić i bezpośrednio otworzyć link YouTube, w tym filmy, Shorts i transmisje na żywo.",
@@ -224,7 +230,8 @@
       "Tłumaczenie na język turecki, etap 3: przetłumaczono kategorie podcastów, warunki pogodowe i ekrany projektów audiodeskrypcji; dodano obsługę tureckiego w wiadomościach, Wikipedii, Gutenbergu, SonarTube i treściach kinowych.",
       "Tłumaczenie na język turecki, etap 4: dodano dziesięciu tureckich wydawców wiadomości ze sprawdzonymi kanałami oraz Google News Türkiye; wybór języka w formularzu źródeł wiadomości społeczności i obsługę tureckiego w odpowiednich usługach serwera. Uzupełniono tłumaczenia SonarMusic, importu plików i komunikatów wspólnych katalogów.",
       "Ukończono i przejrzano tłumaczenie na język turecki. Usprawniono wybór według liter alfabetu tureckiego oraz aktualizowanie kalendarza po zmianie języka. Eksport do PDF zachowuje teraz tureckie litery.",
-      "Dodano obsługę języka tureckiego."
+      "Dodano obsługę języka tureckiego.",
+      "Podgląd głośności: przycisk Pauza/Wznów pojawia się dopiero po rozpoczęciu odtwarzania i znika po jego zakończeniu. W iOS wskaźnik odróżnia kopiowanie do Sonarpad od pobierania obsługiwanego przez Pliki/iCloud, bez sztucznego paska postępu po zakończeniu operacji."
     ],
     "cs": [
       "V SonarTube bylo přidáno tlačítko „Otevřít URL“, které umožňuje vložit a přímo otevřít odkaz YouTube, včetně videí, Shorts a živých přenosů.",
@@ -256,7 +263,8 @@
       "Turecká lokalizace, fáze 3: přeloženy kategorie podcastů, povětrnostní podmínky a obrazovky projektů audiopopisu; přidána podpora turečtiny ve zprávách, Wikipedii, Gutenbergu, SonarTube a filmovém obsahu.",
       "Turecká lokalizace, fáze 4: přidáno deset tureckých zpravodajských zdrojů s ověřenými kanály a Google News Türkiye; výběr jazyka ve formuláři komunitních zpravodajských zdrojů a podpora turečtiny v příslušných serverových službách. Dokončeny překlady SonarMusic, importu souborů a zpráv sdílených katalogů.",
       "Dokončen a zrevidován překlad do turečtiny. Vylepšen výběr podle písmen turecké abecedy; kalendář se nyní aktualizuje při změně jazyka. Export do PDF zachovává turecká písmena.",
-      "Přidána podpora turečtiny."
+      "Přidána podpora turečtiny.",
+      "Náhled hlasitosti: tlačítko Pozastavit/Pokračovat se objeví až po zahájení přehrávání a na konci zmizí. V iOS ukazatel rozlišuje kopírování do Sonarpadu od stahování zajišťovaného aplikací Soubory/iCloud, bez umělého ukazatele po dokončení operace."
     ],
     "de": [
       "In SonarTube wurde die Schaltfläche „URL öffnen“ hinzugefügt. Damit lässt sich ein YouTube-Link direkt einfügen und öffnen, einschließlich Videos, Shorts und Livestreams.",
@@ -288,7 +296,8 @@
       "Türkische Übersetzung, Phase 3: Podcast-Kategorien, Wetterbedingungen und Ansichten für Audiodeskriptionsprojekte übersetzt; Türkisch für Nachrichten, Wikipedia, Gutenberg, SonarTube und Kinoinhalte ergänzt.",
       "Türkische Übersetzung, Phase 4: zehn türkische Nachrichtenanbieter mit geprüften Feeds und Google News Türkiye ergänzt; Sprachauswahl im Formular für Nachrichtenquellen der Community und türkische Unterstützung in den zugehörigen Serverdiensten. Übersetzungen für SonarMusic, Dateiimport und Meldungen gemeinsamer Kataloge vervollständigt.",
       "Die türkische Übersetzung wurde vervollständigt und überarbeitet. Die Auswahl nach Buchstaben des türkischen Alphabets und die Aktualisierung des Kalenders beim Sprachwechsel wurden verbessert. Beim PDF-Export bleiben türkische Buchstaben jetzt erhalten.",
-      "Unterstützung für Türkisch hinzugefügt."
+      "Unterstützung für Türkisch hinzugefügt.",
+      "Lautstärkevorschau: Pause/Fortsetzen erscheint erst nach dem Wiedergabestart und verschwindet am Ende. Unter iOS unterscheidet die Anzeige das Kopieren nach Sonarpad vom Download durch Dateien/iCloud, ohne nach Abschluss einen künstlichen Fortschrittsbalken anzuzeigen."
     ],
     "zh_CN": [
       "SonarTube 新增“打开 URL”按钮，可直接粘贴并打开 YouTube 链接，包括普通视频、Shorts 和直播。",
@@ -320,7 +329,8 @@
       "土耳其语本地化第三阶段：翻译了播客类别、天气状况和音频描述项目界面，并为新闻、维基百科、古腾堡、SonarTube 和影院内容添加了土耳其语支持。",
       "土耳其语本地化第四阶段：添加了十家土耳其新闻媒体的已验证订阅源及 Google News Türkiye；社区新闻源表单支持选择语言，相关服务器服务也支持土耳其语。完成了 SonarMusic、文件导入及共享目录消息的翻译。",
       "完成并校对了土耳其语翻译，改进了土耳其语字母选择及切换语言时的日历更新。导出 PDF 现在会保留土耳其语字母。",
-      "新增土耳其语支持。"
+      "新增土耳其语支持。",
+      "音量预览：暂停/继续按钮仅在播放开始后显示，播放结束后隐藏。在 iOS 上，进度指示明确区分复制到 Sonarpad 与由“文件”/iCloud 管理的下载，操作完成后不再人为显示进度条。"
     ],
     "uk": [
       "У SonarTube додано кнопку «Відкрити URL», яка дає змогу вставити й безпосередньо відкрити посилання YouTube, зокрема відео, Shorts і прямі трансляції.",
@@ -352,7 +362,8 @@
       "Турецька локалізація, етап 3: перекладено категорії подкастів, погодні умови та екрани проєктів аудіоопису; додано підтримку турецької мови в новинах, Вікіпедії, Gutenberg, SonarTube та кіноконтенті.",
       "Турецька локалізація, етап 4: додано десять турецьких новинних видань із перевіреними стрічками та Google News Türkiye; вибір мови у формі новинних джерел спільноти й підтримку турецької у відповідних серверних службах. Завершено переклади SonarMusic, імпорту файлів і повідомлень спільних каталогів.",
       "Переклад турецькою мовою завершено та відредаговано. Поліпшено вибір за літерами турецького алфавіту й оновлення календаря після зміни мови. Експорт у PDF тепер зберігає турецькі літери.",
-      "Додано підтримку турецької мови."
+      "Додано підтримку турецької мови.",
+      "Попереднє прослуховування гучності: кнопка «Пауза/Продовжити» з’являється лише після початку відтворення та зникає після завершення. В iOS індикатор відрізняє копіювання до Sonarpad від завантаження через Файли/iCloud, без штучної смуги прогресу після завершення операції."
     ],
     "ro": [
       "SonarTube include acum butonul „Deschide URL”, care permite lipirea și deschiderea directă a unui link YouTube, inclusiv videoclipuri, Shorts și transmisiuni live.",
@@ -384,7 +395,8 @@
       "Localizare în turcă, faza 3: au fost traduse categoriile de podcasturi, condițiile meteo și ecranele proiectelor de audiodescriere; a fost adăugat suport pentru turcă în Știri, Wikipedia, Gutenberg, SonarTube și conținutul cinematografic.",
       "Localizare în turcă, faza 4: au fost adăugate zece publicații turcești cu fluxuri verificate și Google News Türkiye; alegerea limbii în formularul surselor de știri ale comunității și suport pentru turcă în serviciile de server aferente. Au fost completate traducerile SonarMusic, ale importului de fișiere și ale mesajelor cataloagelor comune.",
       "Traducerea în turcă a fost finalizată și revizuită. Au fost îmbunătățite selecția după literele alfabetului turcesc și actualizarea calendarului la schimbarea limbii. Exportul în PDF păstrează acum literele turcești.",
-      "Adăugat suport pentru limba turcă."
+      "Adăugat suport pentru limba turcă.",
+      "Previzualizarea volumului: Pauză/Reluare apare numai după pornirea redării și dispare la final. Pe iOS, indicatorul distinge copierea în Sonarpad de descărcarea gestionată de Fișiere/iCloud, fără o bară artificială după finalizarea operației."
     ],
     "tr": [
       "SonarTube artık videolar, Shorts ve canlı yayınlar dahil olmak üzere bir YouTube bağlantısını yapıştırıp doğrudan açmanızı sağlayan bir “URL aç” düğmesi içeriyor.",
@@ -416,7 +428,8 @@
       "Türkçe yerelleştirme, 3. aşama: podcast kategorileri, hava durumu koşulları ve sesli betimleme projesi ekranları çevrildi; Haberler, Vikipedi, Gutenberg, SonarTube ve sinema içeriklerine Türkçe desteği eklendi.",
       "Türkçe yerelleştirme, 4. aşama: doğrulanmış haber akışlarıyla on Türk haber kaynağı ve Google News Türkiye eklendi; topluluk haber kaynağı formuna dil seçimi, ilgili sunucu hizmetlerine de Türkçe desteği getirildi. SonarMusic, dosya içe aktarma ve ortak katalog mesajlarının çevirileri tamamlandı.",
       "Türkçe çeviri tamamlandı ve gözden geçirildi. Türk alfabesine göre harf seçimi ve dil değiştirildiğinde takvimin güncellenmesi iyileştirildi. PDF dışa aktarma artık Türkçe harfleri koruyor.",
-      "Türkçe dil desteği eklendi."
+      "Türkçe dil desteği eklendi.",
+      "Ses düzeyi önizlemesinde Duraklat/Devam et düğmesi yalnızca oynatma başladıktan sonra görünür ve oynatma bitince kaybolur. iOS’ta gösterge, Sonarpad’e kopyalama ile Dosyalar/iCloud tarafından yönetilen indirmeyi ayırt eder; işlem bittikten sonra yapay bir ilerleme çubuğu gösterilmez."
     ],
     "it_extra": [
       "Nella guida TV, l’azione “Programma registrazione” non viene più mostrata per i programmi già terminati; resta disponibile per i programmi attualmente in onda e per quelli futuri.",

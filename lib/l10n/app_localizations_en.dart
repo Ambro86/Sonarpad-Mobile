@@ -5321,4 +5321,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get convertMediaWavFloat32 => "32-bit float";
+  @override
+  String get cloudFilePickerCopying => 'Copying the file into Sonarpad';
 }

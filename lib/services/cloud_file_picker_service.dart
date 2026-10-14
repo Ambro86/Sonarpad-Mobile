@@ -9,11 +9,11 @@ import '../l10n/app_localizations.dart';
 import '../l10n/app_localizations_lookup.dart';
 import '../utils/app_logger.dart';
 
-/// Native document picker with a real, cancellable stream copy. On iOS and
-/// Android the standard file_picker plugin may first download a cloud file
-/// before returning the path and cannot report intermediate byte progress.
-/// Keeping that picker would make any progress percentage misleading.
-/// Other desktop platforms retain their previous picker implementation.
+/// Native picker followed by a cancellable, byte-counted import.
+/// iOS can download a provider item BEFORE didPickDocumentsAt is called; neither
+/// file_picker nor this bridge receives progress for that system-owned phase.
+/// Percentages below describe only the subsequent copy into Sonarpad.
+/// Desktop platforms retain their previous picker implementation.
 class CloudFilePicker {
   CloudFilePicker._();
 
@@ -23,6 +23,10 @@ class CloudFilePicker {
       EventChannel('sonarpad/cloud_file_picker_progress');
   static bool _busy = false;
 
+  // Test seam for the method/event-channel contract on desktop test runners.
+  // It is read only inside assert, and cannot change a release build's routing.
+  static bool? debugUseNativePicker;
+
   static Future<FilePickerResult?> pickFiles({
     required BuildContext context,
     FileType type = FileType.any,
@@ -30,7 +34,12 @@ class CloudFilePicker {
     bool allowMultiple = false,
     bool withData = false,
   }) async {
-    if (!Platform.isAndroid && !Platform.isIOS) {
+    var useNativePicker = Platform.isAndroid || Platform.isIOS;
+    assert(() {
+      useNativePicker = debugUseNativePicker ?? useNativePicker;
+      return true;
+    }());
+    if (!useNativePicker) {
       return FilePicker.pickFiles(
         type: type,
         allowedExtensions: allowedExtensions,
@@ -55,18 +64,19 @@ class CloudFilePicker {
     bool cancelRequested = false;
     bool importCompleted = false;
     int lastReportedDecile = -1;
-    DateTime? dialogOpenedAt;
-    Future<void>? dialogClosed;
+    final elapsed = Stopwatch()..start();
+    final requestId = DateTime.now().microsecondsSinceEpoch.toString();
+    Timer? dialogTimer;
+    DialogRoute<void>? dialogRoute;
+    NavigatorState? dialogNavigator;
 
     void openDialog() {
-      if (dialogIsOpen || !context.mounted) {
+      if (dialogIsOpen || importCompleted || !context.mounted) {
         return;
       }
       dialogIsOpen = true;
-      dialogOpenedAt = DateTime.now();
-      // Do not wait for this Future: native stream copying must continue while
-      // the accessible dialog is visible.
-      dialogClosed = showDialog<void>(
+      dialogNavigator = Navigator.of(context, rootNavigator: true);
+      final route = DialogRoute<void>(
         context: context,
         barrierDismissible: false,
         builder: (ctx) {
@@ -83,7 +93,7 @@ class CloudFilePicker {
                       ? labels.cancelling
                       : state.stage == 'preparing'
                       ? labels.preparing
-                      : (percent == null ? labels.unknownSize : '$percent%');
+                      : '${labels.copying}. ${percent == null ? labels.unknownSize : '$percent%'}';
                   return Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -97,7 +107,9 @@ class CloudFilePicker {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      LinearProgressIndicator(value: fraction),
+                      ExcludeSemantics(
+                        child: LinearProgressIndicator(value: fraction),
+                      ),
                     ],
                   );
                 },
@@ -113,7 +125,15 @@ class CloudFilePicker {
                             progress.value = const _CloudCopyProgress(
                               stage: 'cancelling', current: 0, total: -1,
                             );
-                            unawaited(_channel.invokeMethod<void>('cancel'));
+                            unawaited(
+                              _channel.invokeMethod<void>('cancel').catchError(
+                                (Object error, StackTrace stack) {
+                                  unawaited(AppLogger.log(
+                                    'Cloud file picker: cancel failed $error\n$stack',
+                                  ));
+                                },
+                              ),
+                            );
                           },
                     child: Text(labels.cancel),
                   ),
@@ -123,19 +143,41 @@ class CloudFilePicker {
           );
         },
       );
+      dialogRoute = route;
+      unawaited(dialogNavigator!.push<void>(route));
+    }
+
+    void scheduleDialog() {
+      if (dialogIsOpen || dialogTimer != null || importCompleted) return;
+      // Do not flash a finished copy at 100% just to make it look observable.
+      // Only an import still in progress after this delay needs a modal route.
+      dialogTimer = Timer(const Duration(milliseconds: 250), openDialog);
     }
 
     try {
       unawaited(AppLogger.log(
         'Cloud file picker: opening native picker on '
-        '${Platform.isIOS ? 'iOS' : 'Android'}',
+        '${Platform.isIOS ? 'iOS' : 'Android'} request=$requestId',
       ));
       subscription = _events.receiveBroadcastStream().listen((raw) {
         if (raw is! Map || importCompleted) {
           return;
         }
         final data = Map<String, dynamic>.from(raw);
+        final eventRequest = data['requestId']?.toString();
+        if (eventRequest != null && eventRequest != requestId) return;
         final stage = data['stage']?.toString() ?? 'copying';
+        if (stage == 'picker_presented' || stage == 'selection_received' ||
+            stage == 'picker_dismissed') {
+          // Lifecycle is observable; selecting versus cloud downloading inside
+          // Files is not. In particular, never present a loading modal here.
+          unawaited(AppLogger.log(
+            'Cloud file picker: stage=$stage request=$requestId '
+            'elapsedMs=${elapsed.elapsedMilliseconds} '
+            'nativeElapsedMs=${data['elapsedMs']} files=${data['fileCount']}',
+          ));
+          return;
+        }
         final copied = (data['copied'] as num?)?.toInt() ?? 0;
         final total = (data['total'] as num?)?.toInt() ?? -1;
         final decile = total > 0 ? (copied * 10 ~/ total).clamp(0, 10).toInt() : -1;
@@ -143,11 +185,12 @@ class CloudFilePicker {
             (stage == 'copying' && decile != lastReportedDecile)) {
           lastReportedDecile = decile;
           unawaited(AppLogger.log(
-            'Cloud file picker: stage=$stage copied=$copied total=$total',
+            'Cloud file picker: stage=$stage copied=$copied total=$total '
+            'request=$requestId elapsedMs=${elapsed.elapsedMilliseconds}',
           ));
         }
         if (stage == 'preparing' || stage == 'copying') {
-          openDialog();
+          scheduleDialog();
           if (!cancelRequested) {
             progress.value = _CloudCopyProgress(
               stage: stage,
@@ -160,23 +203,21 @@ class CloudFilePicker {
         unawaited(AppLogger.log('Cloud file picker: progress stream error=$error'));
       });
       final raw = await _channel.invokeMethod<List<dynamic>>('pickFiles', {
+        'requestId': requestId,
         'allowMultiple': allowMultiple,
         'allowedExtensions': type == FileType.custom
             ? (allowedExtensions ?? <String>[])
             : <String>[],
       });
+      importCompleted = true;
+      dialogTimer?.cancel();
       if (cancelRequested || raw == null || raw.isEmpty) {
         return null;
       }
-      // Small/cached iCloud imports can finish before the progress event is
-      // rendered. In that case still show the same dialog for long enough to
-      // be perceived, with 100% based on the bytes actually imported.
-      openDialog();
       final completedBytes = raw.fold<int>(0, (sum, item) {
         if (item is! Map) return sum;
         return sum + ((item['size'] as num?)?.toInt() ?? 0);
       });
-      importCompleted = true;
       progress.value = _CloudCopyProgress(
         stage: 'done',
         current: completedBytes,
@@ -216,25 +257,22 @@ class CloudFilePicker {
       }
       return null;
     } finally {
+      importCompleted = true;
+      dialogTimer?.cancel();
       await subscription?.cancel();
-      if (dialogIsOpen) {
-        // iCloud may already have cached the file, so the native copy lasts
-        // only milliseconds. Do not dismiss the dialog before VoiceOver can
-        // find it. This delay is presentation time, NOT fabricated progress.
-        if (!cancelRequested && dialogOpenedAt != null) {
-          const minimumVisibility = Duration(milliseconds: 900);
-          final elapsed = DateTime.now().difference(dialogOpenedAt!);
-          if (elapsed < minimumVisibility) {
-            await Future<void>.delayed(minimumVisibility - elapsed);
-          }
+      final route = dialogRoute;
+      final navigator = dialogNavigator;
+      if (route != null && navigator != null && navigator.mounted) {
+        // Close only our own route: another modal might have been opened by
+        // navigation or error handling while the native import was running.
+        if (route.isCurrent) {
+          navigator.pop();
+        } else if (route.isActive) {
+          navigator.removeRoute(route);
         }
-        if (context.mounted) {
-          Navigator.of(context, rootNavigator: true).pop();
-        }
-        // Keep the notifier alive until the route has finished closing.
-        if (dialogClosed != null) {
-          await dialogClosed;
-        }
+        // popped completes before the exit animation; completed waits until
+        // the ValueListenableBuilder is actually removed before disposing it.
+        await route.completed;
       }
       progress.dispose();
       _busy = false;
@@ -264,10 +302,12 @@ class _CloudCopyProgress {
 }
 
 class _CloudPickerLabels {
-  const _CloudPickerLabels(this.loading, this.preparing, this.unknownSize, this.cancel, this.cancelling);
+  const _CloudPickerLabels(this.loading, this.preparing, this.unknownSize,
+      this.copying, this.cancel, this.cancelling);
   final String loading;
   final String preparing;
   final String unknownSize;
+  final String copying;
   final String cancel;
   final String cancelling;
 
@@ -277,6 +317,7 @@ class _CloudPickerLabels {
       l10n.cloudFilePickerLoading,
       l10n.cloudFilePickerPreparing,
       l10n.cloudFilePickerUnknownSize,
+      l10n.cloudFilePickerCopying,
       l10n.cancel,
       l10n.cloudFilePickerCancelling,
     );

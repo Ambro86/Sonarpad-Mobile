@@ -6385,5 +6385,6 @@
   "convertMediaWavFloat32": "32-Bit-Gleitkomma",
   "@convertMediaWavFloat32": {
     "description": "Label for 32-bit floating-point PCM audio in the WAV bit-depth selector; does not change the codec or saved choice."
-  }
+  },
+  "cloudFilePickerCopying": "Datei wird nach Sonarpad kopiert"
 }

@@ -71,16 +71,24 @@ void main() {
       expect(entries.last, isNotEmpty, reason: locale);
     }
   });
-  test('iCloud picker shows progress after system dismissal even for cached files', () {
+  test('iOS waits for actual dismissal and never invents provider progress', () {
     final dart = File('lib/services/cloud_file_picker_service.dart').readAsStringSync();
     final swift = File('ios/Runner/SonarpadCloudFilePicker.swift').readAsStringSync();
-    expect(dart, contains('minimumVisibility = Duration(milliseconds: 900)'));
+    expect(dart, isNot(contains('minimumVisibility')));
+    expect(dart, contains('dialogTimer?.cancel()'));
     expect(dart, contains("stage: 'done'"));
     expect(dart, contains('importCompleted = true;'));
-    expect(dart, contains('await dialogClosed;'));
-    expect(swift, contains('DispatchQueue.main.asyncAfter'));
-    expect(swift, contains('self.beginCopy(urls)'));
+    expect(dart, contains('await route.completed;'));
+    expect(dart, contains('navigator.removeRoute(route)'));
+    expect(dart, contains('l10n.cloudFilePickerCopying'));
+    expect(swift, isNot(contains('asyncAfter')));
+    expect(swift, contains('afterPickerDismissal'));
+    expect(swift, contains('controller.transitionCoordinator'));
+    expect(swift, contains('self.beginCopy(urls, requestId: requestId)'));
+    expect(swift, contains('guard activeRequestId == requestId'));
+    expect(swift, contains('"selection_received"'));
+    expect(swift, contains('"picker_presented"'));
+    expect(swift, contains('"picker_dismissed"'));
     expect(swift, contains('NSFileCoordinator'));
   });
-
 }

@@ -37,6 +37,8 @@ class _Service extends Fake implements AiAudioDescriptionService {
 class _Audio extends Fake implements AudioPlayerService {
   final files = <String>[];
   final sessionTypes = <AudioSessionType>[];
+  bool autoStart = true;
+  final startCallbacks = <void Function()?>[];
   Completer<void>? playing;
   Completer<void>? resumeGate;
   Object? pauseError;
@@ -50,11 +52,14 @@ class _Audio extends Fake implements AudioPlayerService {
   Future<void> playVoicePreview(
     File file, {
     AudioSessionType sessionType = AudioSessionType.speech,
+    void Function()? onPlaybackStarted,
   }) {
     files.add(file.path);
     sessionTypes.add(sessionType);
     paused = false;
     playing = Completer<void>();
+    startCallbacks.add(onPlaybackStarted);
+    if (autoStart) onPlaybackStarted?.call();
     return playing!.future;
   }
 
@@ -126,6 +131,45 @@ void main() {
   tearDown(() async {
     await controller.close();
     controller.dispose();
+  });
+
+  test('controls wait for actual playback and reject stale start callbacks', () async {
+    audio.autoStart = false;
+    expect(controller.canPauseOrResume, isFalse);
+    final render = Completer<AudioDescriptionMixPreview>();
+    addTearDown(() {
+      if (!render.isCompleted) render.complete(_sample('cleanup'));
+    });
+    controller.playNow((_) => render.future);
+    await _tick();
+    expect(controller.isPreparing, isTrue);
+    expect(controller.canPauseOrResume, isFalse);
+    render.complete(_sample('first'));
+    await _until(() => audio.files.length == 1);
+    expect(controller.canPauseOrResume, isFalse,
+        reason: 'Installing a player session does not mean sound has started');
+    audio.startCallbacks.first!();
+    expect(controller.canPauseOrResume, isTrue);
+    await controller.pause();
+    expect(controller.canPauseOrResume, isTrue);
+    await controller.resume();
+    expect(controller.canPauseOrResume, isTrue);
+    expect(audio.files, hasLength(1));
+    controller.playNow((_) async => _sample('second'));
+    expect(controller.canPauseOrResume, isFalse);
+    await _until(() => audio.files.length == 2);
+    audio.startCallbacks.first!();
+    expect(controller.canPauseOrResume, isFalse,
+        reason: 'The previous sample cannot expose controls on a new request');
+    audio.startCallbacks.last!();
+    expect(controller.canPauseOrResume, isTrue);
+    audio.finish();
+    await _until(() => !controller.isActive);
+    expect(controller.canPauseOrResume, isFalse);
+    await controller.resume();
+    expect(audio.files, hasLength(2));
+    await controller.stop();
+    expect(controller.canPauseOrResume, isFalse);
   });
 
   test('rapid adjustments render only the last choice after a pause', () async {

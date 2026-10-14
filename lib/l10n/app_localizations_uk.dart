@@ -5324,4 +5324,6 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get convertMediaWavFloat32 => "32 біти з рухомою комою";
+  @override
+  String get cloudFilePickerCopying => 'Копіювання файлу до Sonarpad';
 }

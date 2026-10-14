@@ -151,10 +151,12 @@ class _PreviewAudio implements AudioPlayerService {
   Future<void> playVoicePreview(
     File file, {
     AudioSessionType sessionType = AudioSessionType.speech,
+    void Function()? onPlaybackStarted,
   }) {
     expect(sessionType, AudioSessionType.playback);
     files.add(file);
     _playback = Completer<void>();
+    onPlaybackStarted?.call();
     return _playback!.future;
   }
 
@@ -796,7 +798,17 @@ void main() {
         await _event(tester, 'picker', 'tts_engine', 'system');
         await _event(tester, 'picker', 'system_voice', 'Voce di prova');
         final volumeId = tester.getSemantics(_control('source_volume')).id;
-        final previewNodeId = _previewSemantics(tester).id;
+        int? previewNodeId;
+        void expectNoPreviewButton() {
+          expect(_control('mix_preview'), findsNothing);
+          expect(_control('mix_preview_stop'), findsNothing);
+          expect(_editor(tester).sections
+              .expand((section) => section.rows)
+              .where((row) => row.id == 'mix_preview'), isEmpty);
+          previewNodeId = null;
+          expect(tester.getSemantics(_control('source_volume')).id, volumeId);
+          expect(textFocus?.hasFocus, isTrue);
+        }
         void expectPreviewButton(String title) {
           expect(
             _editor(tester).sections
@@ -811,6 +823,7 @@ void main() {
           expect(_row(tester, 'mix_preview').enabled, isTrue);
           expect(_row(tester, 'mix_preview').accessibilityButtonTrait, isTrue);
           final node = _previewSemantics(tester);
+          previewNodeId ??= node.id;
           expect(node.id, previewNodeId);
           expect(node.getSemanticsData().hasAction(SemanticsAction.tap), isTrue);
           expect(node.getSemanticsData().label, contains(title));
@@ -818,7 +831,10 @@ void main() {
           expect(textFocus?.hasFocus, isTrue);
         }
 
-        expectPreviewButton('Riprendi');
+        expectNoPreviewButton();
+        await _event(tester, 'activate', 'mix_preview');
+        expect(previewAudio.files, isEmpty);
+        expect(previewService.calls, isEmpty);
         await _event(tester, 'slider', 'mp3_bitrate', 1);
 
         final handler = _editor(tester).onEvent!;
@@ -879,6 +895,7 @@ void main() {
         expect(previewService.calls, hasLength(1));
         expectPreviewButton('Pausa');
 
+        previewNodeId = null;
         await _event(tester, 'slider', 'source_volume', 32);
         await _waitUntil(tester, () => previewAudio.files.length == 2);
         expect(firstPlayback.isCompleted, isTrue);
@@ -889,6 +906,7 @@ void main() {
         await _event(tester, 'activate', 'mix_preview');
         expect(controllers.single.isPaused, isTrue);
         expectPreviewButton('Riprendi');
+        previewNodeId = null;
         await _event(tester, 'slider', 'source_volume', 34);
         await _waitUntil(tester, () => previewAudio.files.length == 3);
         expect(pausedPlayback.isCompleted, isTrue);
@@ -897,8 +915,8 @@ void main() {
         expect(previewAudio.resumeCalls, 1);
         expectPreviewButton('Pausa');
 
-        // A voice change invalidates a paused sample. The same button must
-        // render the updated settings instead of resuming the obsolete file.
+        // A voice change invalidates the paused sample. Hide Resume and let
+        // the next volume adjustment render the updated voice settings.
         await _event(tester, 'activate', 'mix_preview');
         final obsoletePlayback = previewAudio._playback!;
         expect(controllers.single.isPaused, isTrue);
@@ -911,14 +929,16 @@ void main() {
         );
         expect(controllers.single.isPaused, isFalse);
         expect(obsoletePlayback.isCompleted, isTrue);
-        expectPreviewButton('Riprendi');
+        expectNoPreviewButton();
         final playsBeforeReplay = previewAudio.files.length;
         await _event(tester, 'activate', 'mix_preview');
+        expect(previewAudio.files, hasLength(playsBeforeReplay));
+        await _event(tester, 'slider', 'source_volume', 35);
         await _waitUntil(
           tester,
           () => previewAudio.files.length == playsBeforeReplay + 1,
         );
-        expect(previewService.calls.last.project.sourceVolume, 1.7);
+        expect(previewService.calls.last.project.sourceVolume, 1.75);
         expect(previewService.calls.last.project.ttsVoice, 'it-IT-DiegoNeural');
         expect(previewService.calls.last.project.systemVoice, isNull);
         expect(previewAudio.resumeCalls, 1);
@@ -934,8 +954,10 @@ void main() {
           () => controllers.single.error != null && !controllers.single.isActive,
         );
         expect(find.byType(AlertDialog), findsNothing);
-        expect(_row(tester, 'mix_preview').value, isNotNull);
-        expectPreviewButton('Riprendi');
+        expect(_row(tester, 'mix_preview_status').title, isNotEmpty);
+        expect(_row(tester, 'mix_preview_status').kind, 'text');
+        expect(_row(tester, 'mix_preview_status').accessibilityButtonTrait, isFalse);
+        expectNoPreviewButton();
         expect(_row(tester, 'description_text').value, 'Testo in lavorazione');
       });
     },

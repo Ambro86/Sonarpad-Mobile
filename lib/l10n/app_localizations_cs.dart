@@ -5329,4 +5329,6 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get convertMediaWavFloat32 => "32 bitů s plovoucí desetinnou čárkou";
+  @override
+  String get cloudFilePickerCopying => 'Kopírování souboru do Sonarpadu';
 }

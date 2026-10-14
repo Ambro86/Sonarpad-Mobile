@@ -5335,4 +5335,6 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get convertMediaWavFloat32 => "32-bitowy format zmiennoprzecinkowy";
+  @override
+  String get cloudFilePickerCopying => 'Kopiowanie pliku do Sonarpad';
 }

@@ -178,29 +178,12 @@ class _AudioDescriptionProjectEditorScreenState
   }
 
   Future<void> _toggleMixPreview() async {
-    if (_running || _project == null) return;
-    if (_mixPreview.isPreparing) {
-      await _mixPreview.stop();
-    } else if (_mixPreview.isPlaying) {
+    if (_running || _project == null || !_mixPreview.canPauseOrResume) return;
+    if (_mixPreview.isPlaying) {
       await _mixPreview.pause();
     } else if (_mixPreview.isPaused) {
       await _mixPreview.resume();
-    } else {
-      await _playMixPreview();
     }
-  }
-
-  Future<void> _playMixPreview() async {
-    if (_running || _project == null) return;
-    final source = _sourceOverride;
-    final sourceExists = source != null && source.isNotEmpty &&
-        await File(source).exists();
-    if (!mounted) return;
-    if (!sourceExists) {
-      await _chooseSource();
-      if (!mounted) return;
-    }
-    _requestMixPreview(immediately: true);
   }
 
   Future<void> _setAudioSetting(AccessibleListEvent event) async {
@@ -1096,19 +1079,27 @@ class _AudioDescriptionProjectEditorScreenState
                       ],
                       enabled: !_running,
                     ),
-                    AccessibleListRow(
-                      id: 'mix_preview',
-                      title: _mixPreview.isPreparing || _mixPreview.isPlaying
-                          ? l10n.pause
-                          : l10n.audioDescriptionResume,
-                      value: _mixPreview.isPreparing
-                          ? l10n.audioDescriptionMixPreviewPreparing
-                          : _mixPreview.error != null
-                              ? l10n.technicalErrorGeneric
-                              : null,
-                      hint: l10n.audioDescriptionMixPreviewHint,
-                      enabled: !_running,
-                    ),
+                    // A fresh or completed sample cannot be resumed. Keep
+                    // this row out of both the visual and accessibility trees.
+                    if (_mixPreview.canPauseOrResume)
+                      AccessibleListRow(
+                        id: 'mix_preview',
+                        title: _mixPreview.isPlaying
+                            ? l10n.pause
+                            : l10n.audioDescriptionResume,
+                        hint: l10n.audioDescriptionMixPreviewHint,
+                        enabled: !_running,
+                      ),
+                    if ((_mixPreview.isActive && !_mixPreview.canPauseOrResume) ||
+                        _mixPreview.error != null)
+                      AccessibleListRow(
+                        id: 'mix_preview_status',
+                        title: _mixPreview.error != null
+                            ? l10n.technicalErrorGeneric
+                            : l10n.audioDescriptionMixPreviewPreparing,
+                        kind: 'text',
+                        accessibilityButtonTrait: false,
+                      ),
                   ]),
                 if (project != null)
                   AccessibleListSection(rows: [

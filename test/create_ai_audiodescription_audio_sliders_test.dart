@@ -99,6 +99,8 @@ class _PreviewService extends Fake implements AiAudioDescriptionService {
 
 class _PreviewAudio extends Fake implements AudioPlayerService {
   final sessions = <AudioSessionType>[];
+  bool autoStart = true;
+  void Function()? pendingStart;
   Completer<void>? playing;
   int pauseCalls = 0;
   int resumeCalls = 0;
@@ -108,9 +110,12 @@ class _PreviewAudio extends Fake implements AudioPlayerService {
   Future<void> playVoicePreview(
     File file, {
     AudioSessionType sessionType = AudioSessionType.speech,
+    void Function()? onPlaybackStarted,
   }) {
     sessions.add(sessionType);
     playing = Completer<void>();
+    pendingStart = onPlaybackStarted;
+    if (autoStart) pendingStart?.call();
     return playing!.future;
   }
 
@@ -375,6 +380,31 @@ void main() {
     PathProviderPlatform.instance = originalPaths;
     await temporary.delete(recursive: true);
   });
+
+  testWidgets(
+    'a fresh form without a selected file has no resumable preview action',
+    (tester) async {
+      await _exerciseScreen(tester, () async {
+        expect(_row(tester, 'choose_video').value, isNull);
+        expect(_control('mix_preview'), findsNothing);
+        expect(_control('mix_preview_status'), findsNothing);
+        await tester.runAsync(() async {
+          await _form(tester).onEvent!(const AccessibleListEvent(
+            type: 'activate', id: 'mix_preview',
+          ));
+        });
+        await tester.pump();
+        expect(find.byType(AlertDialog), findsNothing);
+        expect(_control('mix_preview'), findsNothing);
+        expect(_row(tester, 'choose_video').value, isNull);
+        expect(tester.takeException(), isNull);
+      });
+    },
+    variant: TargetPlatformVariant({
+      TargetPlatform.android,
+      TargetPlatform.iOS,
+    }),
+  );
 
   testWidgets(
     'audio sliders announce exact values and keep their nodes and form text',
@@ -652,10 +682,10 @@ void main() {
   );
 
   testWidgets(
-    'one preview button pauses and resumes the current mix without moving focus',
+    'preview controls stay hidden until playback and retain focus during pause/resume',
     (tester) async {
       final service = _PreviewService();
-      final audio = _PreviewAudio();
+      final audio = _PreviewAudio()..autoStart = false;
       late AudioDescriptionMixPreviewController preview;
       final source = File('${temporary.path}/preview-film.mp4')
         ..writeAsBytesSync([0]);
@@ -697,35 +727,45 @@ void main() {
           await _sliderEvent(tester, 'mp3_bitrate', 4);
           final volume = _control('source_volume');
           final nodeId = tester.getSemantics(volume).id;
-          final previewNodeId =
-              _previewSemantics(tester).id;
+          int? previewNodeId;
           final rowIds = _form(tester).sections
               .expand((section) => section.rows)
+              .where((row) => !row.id.startsWith('mix_preview'))
               .map((row) => row.id)
               .toList();
-          expect(
-            rowIds.where((id) => id.startsWith('mix_preview')),
-            ['mix_preview'],
-          );
-          void expectPreviewButton(String title) {
+          void expectStableForm() {
             expect(
               _form(tester).sections
                   .expand((section) => section.rows)
+                  .where((row) => !row.id.startsWith('mix_preview'))
                   .map((row) => row.id)
                   .toList(),
               rowIds,
             );
+            expect(tester.getSemantics(volume).id, nodeId);
+            expect(focus?.hasFocus, isTrue);
+          }
+          void expectNoPreviewButton() {
+            expect(_control('mix_preview'), findsNothing);
+            expect(_control('mix_preview_stop'), findsNothing);
+            expect(_form(tester).sections
+                .expand((section) => section.rows)
+                .where((row) => row.id == 'mix_preview'), isEmpty);
+            previewNodeId = null;
+            expectStableForm();
+          }
+          void expectPreviewButton(String title) {
+            expectStableForm();
             expect(_control('mix_preview'), findsOneWidget);
             expect(_control('mix_preview_stop'), findsNothing);
             expect(_row(tester, 'mix_preview').title, title);
             expect(_row(tester, 'mix_preview').enabled, isTrue);
             expect(_row(tester, 'mix_preview').accessibilityButtonTrait, isTrue);
             final node = _previewSemantics(tester);
+            previewNodeId ??= node.id;
             expect(node.id, previewNodeId);
             expect(node.getSemanticsData().hasAction(SemanticsAction.tap), isTrue);
             expect(node.getSemanticsData().label, contains(title));
-            expect(tester.getSemantics(volume).id, nodeId);
-            expect(focus?.hasFocus, isTrue);
           }
 
           Future<void> togglePreview() async {
@@ -737,16 +777,31 @@ void main() {
             await tester.pump();
           }
 
-          expectPreviewButton('Riprendi');
+          expectNoPreviewButton();
+          // A queued/stale activation must not open a picker or start audio.
+          await togglePreview();
+          expect(service.settings, isEmpty);
+          expect(audio.sessions, isEmpty);
           await _sliderEvent(tester, 'source_volume', 30);
           await _sliderEvent(tester, 'source_volume', 27);
           expect(
-            _row(tester, 'mix_preview').value,
+            _row(tester, 'mix_preview_status').title,
             'Preparazione della prova audio',
           );
-          expectPreviewButton('Pausa');
+          expectNoPreviewButton();
+          expect(_row(tester, 'mix_preview_status').accessibilityButtonTrait, isFalse);
           expect(service.settings, isEmpty);
           await _waitUntil(tester, () => audio.sessions.length == 1);
+          // Rendered bytes and a loading player do not expose Resume/Pause.
+          expect(preview.canPauseOrResume, isFalse);
+          expectNoPreviewButton();
+          await togglePreview();
+          expect(audio.pauseCalls, 0);
+          expect(audio.resumeCalls, 0);
+          audio.pendingStart!();
+          audio.autoStart = true;
+          await tester.pump();
+          expect(preview.canPauseOrResume, isTrue);
           final selected = service.settings.single;
           expect(selected.sourceVolume, 1.35);
           expect(selected.bitrateKbps, 256);
@@ -757,13 +812,7 @@ void main() {
           expect(audio.sessions, [AudioSessionType.playback]);
           expectPreviewButton('Pausa');
           expect(_row(tester, 'api_key').value, 'kept-during-preview');
-          expect(
-            _form(tester).sections
-                .expand((section) => section.rows)
-                .map((row) => row.id)
-                .toList(),
-            rowIds,
-          );
+          expectStableForm();
 
           // Pause keeps the current playback future open; Resume must not
           // synthesize, load another file, or stop the existing sample.
@@ -790,6 +839,7 @@ void main() {
           // Adjust while playing: the earlier sample stops and only the new
           // snapshot can be heard after the accessibility gesture settles.
           await _sliderEvent(tester, 'source_volume', 32);
+          expectNoPreviewButton();
           await _waitUntil(tester, () => audio.sessions.length == 2);
           expect(service.settings.last.sourceVolume, 1.6);
           expect(firstPlayback.isCompleted, isTrue);
@@ -801,6 +851,7 @@ void main() {
           expect(preview.isPaused, isTrue);
           expectPreviewButton('Riprendi');
           await _sliderEvent(tester, 'source_volume', 34);
+          expectNoPreviewButton();
           await _waitUntil(tester, () => audio.sessions.length == 3);
           expect(pausedPlayback.isCompleted, isTrue);
           expect(service.settings.last.sourceVolume, 1.7);
@@ -808,26 +859,40 @@ void main() {
           expect(audio.resumeCalls, 1);
           expectPreviewButton('Pausa');
 
-          // At the end of a sample the same button starts a fresh preview.
+          // EOF hides the button instead of offering a non-resumable sample.
           audio.playing!.complete();
           await _waitUntil(tester, () => !preview.isActive);
-          expectPreviewButton('Riprendi');
+          expectNoPreviewButton();
           await togglePreview();
+          expect(audio.sessions, hasLength(3));
+          expect(service.settings, hasLength(3));
+
+          // Another slider change still starts a new preview automatically.
+          await _sliderEvent(tester, 'source_volume', 35);
+          expectNoPreviewButton();
           await _waitUntil(tester, () => audio.sessions.length == 4);
-          expect(service.settings.last.sourceVolume, 1.7);
+          expect(service.settings.last.sourceVolume, 1.75);
           expect(service.settings.last.bitrateKbps, 256);
           expectPreviewButton('Pausa');
 
-          // Pausing during debounce cancels the pending render as well as
-          // the old playback. It must not start later on its own.
+          // While preparing, a stale activation is harmless. Changing voice
+          // cancels pending synthesis through the existing Stop path.
           await _sliderEvent(tester, 'source_volume', 36);
           expect(preview.isPreparing, isTrue);
-          expectPreviewButton('Pausa');
+          expectNoPreviewButton();
           await togglePreview();
+          expect(preview.isPreparing, isTrue);
+          await tester.runAsync(() async {
+            await _form(tester).onEvent!(const AccessibleListEvent(
+              type: 'picker', id: 'system_voice', value: '',
+            ));
+            await Future<void>.delayed(Duration.zero);
+          });
+          await tester.pump();
           expect(preview.isActive, isFalse);
           expect(preview.isPaused, isFalse);
           expect(audio.playing!.isCompleted, isTrue);
-          expectPreviewButton('Riprendi');
+          expectNoPreviewButton();
           await tester.runAsync(
             () => Future<void>.delayed(
               preview.adjustmentDelay + const Duration(milliseconds: 20),
@@ -836,7 +901,7 @@ void main() {
           await tester.pump();
           expect(audio.sessions, hasLength(4));
           expect(service.settings, hasLength(4));
-          expectPreviewButton('Riprendi');
+          expectNoPreviewButton();
         },
         sourcePath: source.path,
         previewFactory: () => preview = AudioDescriptionMixPreviewController(

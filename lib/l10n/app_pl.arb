@@ -6388,5 +6388,6 @@
   "convertMediaWavFloat32": "32-bitowy format zmiennoprzecinkowy",
   "@convertMediaWavFloat32": {
     "description": "Label for 32-bit floating-point PCM audio in the WAV bit-depth selector; does not change the codec or saved choice."
-  }
+  },
+  "cloudFilePickerCopying": "Kopiowanie pliku do Sonarpad"
 }

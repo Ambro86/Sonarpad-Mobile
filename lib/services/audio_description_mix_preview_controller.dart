@@ -38,12 +38,17 @@ class AudioDescriptionMixPreviewController extends ChangeNotifier {
   _PreviewState _state = _PreviewState.idle;
   Object? _error;
   Object? _interruptionError;
+  bool _playbackStarted = false;
 
   bool get isPreparing => _state == _PreviewState.preparing;
   bool get isPlaying => _state == _PreviewState.playing;
   bool get isPaused => _state == _PreviewState.paused;
   bool get isActive => _state != _PreviewState.idle;
   Object? get error => _error;
+
+  /// A resumable session exists only after this sample has really started.
+  /// Idle, rendering, loading, failed and completed samples have no controls.
+  bool get canPauseOrResume => _playbackStarted && (isPlaying || isPaused);
 
   void schedule(AudioDescriptionMixPreviewRenderer render) {
     _request(render, adjustmentDelay);
@@ -91,6 +96,7 @@ class AudioDescriptionMixPreviewController extends ChangeNotifier {
     _timer?.cancel();
     _error = null;
     _interruptionError = null;
+    _playbackStarted = false;
     _state = _PreviewState.preparing;
     notifyListeners();
     _interrupt(revision);
@@ -143,9 +149,15 @@ class AudioDescriptionMixPreviewController extends ChangeNotifier {
         final playback = audio.playVoicePreview(
           File(sample.path),
           sessionType: AudioSessionType.playback,
+          onPlaybackStarted: () {
+            if (!_current(revision)) return;
+            _playbackStarted = true;
+            notifyListeners();
+          },
         );
-        // Install the player's preview session before exposing Pausa. A pause
-        // during source loading must also suppress the initial playback.
+        // Keep the internal player state available for cancellation during
+        // loading. The UI additionally waits for canPauseOrResume, so merely
+        // installing the session does not expose Pausa before audio starts.
         _state = _PreviewState.playing;
         notifyListeners();
         await playback;
@@ -156,6 +168,7 @@ class AudioDescriptionMixPreviewController extends ChangeNotifier {
         }
       } finally {
         if (_current(revision)) {
+          _playbackStarted = false;
           _state = _PreviewState.idle;
           notifyListeners();
         }
@@ -172,6 +185,7 @@ class AudioDescriptionMixPreviewController extends ChangeNotifier {
     final revision = ++_revision;
     _timer?.cancel();
     _timer = null;
+    _playbackStarted = false;
     _state = _PreviewState.idle;
     _error = null;
     _interruptionError = null;
@@ -191,6 +205,7 @@ class AudioDescriptionMixPreviewController extends ChangeNotifier {
     ++_revision;
     _timer?.cancel();
     _timer = null;
+    _playbackStarted = false;
     _state = _PreviewState.idle;
     _interrupt(_revision);
     await Future.wait<void>([_worker, _interruptions]);

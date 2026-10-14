@@ -296,6 +296,29 @@ void main() {
       await preview;
     });
 
+    test('mixed preview reports playback start once, Android=$isAndroid', () async {
+      await service.dispose();
+      player = PreviewPlayer()..sourceGate = Completer<void>();
+      service = AudioPlayerService(player: player, isAndroid: isAndroid);
+      var starts = 0;
+      final preview = service.playVoicePreview(
+        file,
+        sessionType: AudioSessionType.playback,
+        onPlaybackStarted: () => starts++,
+      );
+      await player.loading.future;
+      expect(starts, 0);
+      player.sourceGate!.complete();
+      await player.started.future;
+      expect(starts, 1);
+      await service.pauseVoicePreview();
+      await service.resumeVoicePreview();
+      expect(starts, 1, reason: 'Resume must not re-announce a new sample');
+      player.complete();
+      await preview;
+      expect(starts, 1);
+    });
+
     test(
       'mixed preview uses final media volume and EOF stop, Android=$isAndroid',
       () async {

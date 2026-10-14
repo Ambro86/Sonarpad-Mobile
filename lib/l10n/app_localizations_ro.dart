@@ -5187,4 +5187,6 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String get convertMediaWavFloat32 => "32 de biți în virgulă mobilă";
+  @override
+  String get cloudFilePickerCopying => 'Se copiază fișierul în Sonarpad';
 }

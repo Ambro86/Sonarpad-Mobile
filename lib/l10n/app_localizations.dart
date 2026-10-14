@@ -8693,6 +8693,9 @@ abstract class AppLocalizations {
   /// Progress message when the cloud file total byte size is not yet known.
   String get cloudFilePickerUnknownSize;
 
+  /// Labels the measured copy, not the system-owned iCloud download.
+  String get cloudFilePickerCopying;
+
   /// Progress message while a requested cloud file import cancellation is being completed.
   String get cloudFilePickerCancelling;
 

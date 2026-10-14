@@ -5364,4 +5364,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get convertMediaWavFloat32 => "32 bits en coma flotante";
+  @override
+  String get cloudFilePickerCopying => 'Copiando el archivo a Sonarpad';
 }

@@ -4809,5 +4809,6 @@
   "convertMediaWavFloat32": "32 bit kayan nokta",
   "@convertMediaWavFloat32": {
     "description": "Label for 32-bit floating-point PCM audio in the WAV bit-depth selector; does not change the codec or saved choice."
-  }
+  },
+  "cloudFilePickerCopying": "Dosya Sonarpad’e kopyalanıyor"
 }

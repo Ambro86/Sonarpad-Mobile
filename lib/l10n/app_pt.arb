@@ -4813,5 +4813,6 @@
   "convertMediaWavFloat32": "32 bits de vírgula flutuante",
   "@convertMediaWavFloat32": {
     "description": "Label for 32-bit floating-point PCM audio in the WAV bit-depth selector; does not change the codec or saved choice."
-  }
+  },
+  "cloudFilePickerCopying": "A copiar o ficheiro para o Sonarpad"
 }

@@ -5352,6 +5352,8 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get convertMediaWavFloat32 => "32 bits de vírgula flutuante";
+  @override
+  String get cloudFilePickerCopying => 'A copiar o ficheiro para o Sonarpad';
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
@@ -10688,4 +10690,6 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get convertMediaWavFloat32 => "32 bits de ponto flutuante";
+  @override
+  String get cloudFilePickerCopying => 'Copiando o arquivo para o Sonarpad';
 }
