@@ -4,8 +4,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('cinema trailers use the SonarTube resolver and Sonarpad player', () {
-    final cinema = File('lib/screens/cinema_detail_screen.dart').readAsStringSync();
-    final sonarTube = File('lib/services/sonartube_service.dart').readAsStringSync();
+    final cinema = File('lib/screens/cinema_detail_screen.dart').readAsStringSync().replaceAll('\r\n', '\n');
+    final sonarTube = File('lib/services/sonartube_service.dart').readAsStringSync().replaceAll('\r\n', '\n');
 
     expect(sonarTube, contains('Future<SonarTubeResolvedMedia> resolveUrl('));
     expect(cinema, contains('_sonarTubeService.resolveUrl('));
@@ -18,10 +18,10 @@ void main() {
 
 
   test('cinema trailer player keeps Back first in VoiceOver order', () {
-    final cinema = File('lib/screens/cinema_detail_screen.dart').readAsStringSync();
+    final cinema = File('lib/screens/cinema_detail_screen.dart').readAsStringSync().replaceAll('\r\n', '\n');
     final player = File(
       'lib/screens/podcast_episode_player_screen.dart',
-    ).readAsStringSync();
+    ).readAsStringSync().replaceAll('\r\n', '\n');
 
     expect(cinema, contains("RouteSettings(name: '/cinema/trailer')"));
     expect(cinema, contains('PodcastEpisodePlayerScreen('));
@@ -38,7 +38,7 @@ void main() {
   test('cinema trailer player exposes volume for inline video audio', () {
     final player = File(
       'lib/screens/podcast_episode_player_screen.dart',
-    ).readAsStringSync();
+    ).readAsStringSync().replaceAll('\r\n', '\n');
 
     expect(player, contains('class _VideoVolumeSlider extends StatefulWidget'));
     expect(player, contains("ValueKey('video_volume_slider_semantics')"));

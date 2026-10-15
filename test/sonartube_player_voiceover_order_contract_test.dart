@@ -6,7 +6,7 @@ void main() {
   test('shared player keeps position immediately after volume for VoiceOver', () {
     final source = File(
       'lib/screens/podcast_episode_player_screen.dart',
-    ).readAsStringSync();
+    ).readAsStringSync().replaceAll('\r\n', '\n');
 
     final start = source.indexOf(
       'Widget _buildSharedAccessiblePlayerBody(AppLocalizations l10n, bool canSeek)',

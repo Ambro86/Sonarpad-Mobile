@@ -13,7 +13,7 @@ String _between(String source, String start, String? end) {
 
 void main() {
   test('every scrollable SonarTube route keeps an accessible Back in the fixed AppBar', () {
-    final source = File('lib/screens/sonartube_screen.dart').readAsStringSync();
+    final source = File('lib/screens/sonartube_screen.dart').readAsStringSync().replaceAll('\r\n', '\n');
 
     final rootAndCollections = _between(
       source,
@@ -68,7 +68,7 @@ void main() {
   test('SonarTube media player exposes AppBar Back before native player controls', () {
     final player = File(
       'lib/screens/podcast_episode_player_screen.dart',
-    ).readAsStringSync();
+    ).readAsStringSync().replaceAll('\r\n', '\n');
 
     expect(player, contains("ValueKey('podcast_player_back')"));
     expect(player, contains('leading: SonarpadBackButton('));
@@ -99,7 +99,7 @@ void main() {
   test('shared renderer still supports persistent route actions when a screen needs one', () {
     final adapter = File(
       'lib/widgets/universal_accessible_view.dart',
-    ).readAsStringSync();
+    ).readAsStringSync().replaceAll('\r\n', '\n');
 
     expect(adapter, contains('final AccessibleListRow? persistentTopAction;'));
     expect(
@@ -112,7 +112,7 @@ void main() {
   test('UIKit can still place a persistent action before a scrolling table', () {
     final native = File(
       'ios/Runner/SonarpadNativeAccessibleView.swift',
-    ).readAsStringSync();
+    ).readAsStringSync().replaceAll('\r\n', '\n');
 
     expect(native, contains('SonarpadPersistentAccessibilityActionElement'));
     expect(native, contains('map["persistentTopAction"]'));
