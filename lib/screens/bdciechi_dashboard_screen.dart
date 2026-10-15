@@ -260,7 +260,11 @@ class _BdCiechiDashboardScreenState extends State<BdCiechiDashboardScreen> {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Azioni'),
+        title: Semantics(
+          header: true,
+          headingLevel: 1,
+          child: const Text('Azioni'),
+        ),
         content: Text('Scegli un\'azione per:\n$record'),
         actions: [
           TextButton(
