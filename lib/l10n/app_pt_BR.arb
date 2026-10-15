@@ -4822,5 +4822,7 @@
     "description": "Localized text for audioDescriptionNonverbalVocals."
   },
   "importVideoFromGallery": "Escolher da galeria",
-  "sharedVideoOpen": "Abrir vídeo"
+  "sharedVideoOpen": "Abrir vídeo",
+  "developerReportEmailOptional": "Email (opcional, para receber resposta)",
+  "developerReportEmailInvalid": "Digite um email válido ou deixe o campo vazio."
 }

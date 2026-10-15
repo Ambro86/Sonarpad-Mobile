@@ -53,6 +53,11 @@ flutter {
 }
 
 dependencies {
+    implementation("androidx.media3:media3-exoplayer:1.9.2")
+    implementation("androidx.media3:media3-exoplayer-hls:1.9.2")
+    implementation("androidx.media3:media3-exoplayer-dash:1.9.2")
+    implementation("androidx.media3:media3-datasource-okhttp:1.9.2")
+    implementation("androidx.media3:media3-ui:1.9.2")
     implementation("androidx.concurrent:concurrent-futures:1.1.0")
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.robolectric:robolectric:4.17")

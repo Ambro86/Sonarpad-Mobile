@@ -4816,5 +4816,7 @@
     "description": "Localized text for audioDescriptionNonverbalVocals."
   },
   "importVideoFromGallery": "从图库选择",
-  "sharedVideoOpen": "打开视频"
+  "sharedVideoOpen": "打开视频",
+  "developerReportEmailOptional": "电子邮件（可选，用于回复）",
+  "developerReportEmailInvalid": "请输入有效的电子邮件地址，或将此字段留空。"
 }

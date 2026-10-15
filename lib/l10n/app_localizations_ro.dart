@@ -5197,4 +5197,11 @@ class AppLocalizationsRo extends AppLocalizations {
   String get importVideoFromGallery => 'Alege din galerie';
   @override
   String get sharedVideoOpen => 'Deschide videoclipul';
+
+  @override
+  String get developerReportEmailOptional => 'Email (opțional, pentru răspuns)';
+
+  @override
+  String get developerReportEmailInvalid =>
+      'Introdu o adresă de email validă sau lasă câmpul gol.';
 }

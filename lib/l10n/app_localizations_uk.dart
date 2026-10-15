@@ -5334,4 +5334,12 @@ class AppLocalizationsUk extends AppLocalizations {
   String get importVideoFromGallery => 'Вибрати з галереї';
   @override
   String get sharedVideoOpen => 'Відкрити відео';
+
+  @override
+  String get developerReportEmailOptional =>
+      'Email (необов’язково, для відповіді)';
+
+  @override
+  String get developerReportEmailInvalid =>
+      'Введіть коректну адресу електронної пошти або залиште поле порожнім.';
 }

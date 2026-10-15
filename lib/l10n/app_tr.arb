@@ -4816,5 +4816,7 @@
     "description": "Localized text for audioDescriptionNonverbalVocals."
   },
   "importVideoFromGallery": "Galeriden seç",
-  "sharedVideoOpen": "Videoyu aç"
+  "sharedVideoOpen": "Videoyu aç",
+  "developerReportEmailOptional": "E-posta (isteğe bağlı, yanıt için)",
+  "developerReportEmailInvalid": "Geçerli bir e-posta adresi girin veya alanı boş bırakın."
 }

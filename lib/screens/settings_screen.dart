@@ -1643,6 +1643,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Future<void> _sendDeveloperReport() async {
     final l10n = AppLocalizations.of(context);
     final nameController = TextEditingController();
+    final emailController = TextEditingController();
     final reportController = TextEditingController();
 
     // The report form is not a login. Explicitly close any autofill context
@@ -1650,69 +1651,97 @@ class _SettingsScreenState extends State<SettingsScreen> {
     // password when the report is submitted.
     TextInput.finishAutofillContext(shouldSave: false);
 
-    final result = await showDialog<({String name, String report})>(
-      context: context,
-      builder: (dialogContext) => StatefulBuilder(
-        builder: (dialogContext, setDialogState) => AlertDialog(
-          title: Text(l10n.sendLogToDeveloper),
-          content: AutofillGroup(
-            onDisposeAction: AutofillContextAction.cancel,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-              TextField(
-                controller: nameController,
-                autofocus: true,
-                autofillHints: const <String>[],
-                textInputAction: TextInputAction.next,
-                decoration: InputDecoration(
-                  labelText: l10n.developerLogNameOptional,
+    final result =
+        await showDialog<({String name, String email, String report})>(
+          context: context,
+          builder: (dialogContext) => StatefulBuilder(
+            builder: (dialogContext, setDialogState) => AlertDialog(
+              title: Text(l10n.sendLogToDeveloper),
+              content: AutofillGroup(
+                onDisposeAction: AutofillContextAction.cancel,
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextField(
+                        controller: nameController,
+                        autofocus: true,
+                        autofillHints: const <String>[],
+                        textInputAction: TextInputAction.next,
+                        decoration: InputDecoration(
+                          labelText: l10n.developerLogNameOptional,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      TextField(
+                        controller: emailController,
+                        keyboardType: TextInputType.emailAddress,
+                        textCapitalization: TextCapitalization.none,
+                        autocorrect: false,
+                        autofillHints: const <String>[],
+                        textInputAction: TextInputAction.next,
+                        decoration: InputDecoration(
+                          labelText: l10n.developerReportEmailOptional,
+                          errorText:
+                              DeveloperLogService.isValidReplyEmail(
+                                emailController.text,
+                              )
+                              ? null
+                              : l10n.developerReportEmailInvalid,
+                        ),
+                        onChanged: (_) => setDialogState(() {}),
+                      ),
+                      const SizedBox(height: 12),
+                      TextField(
+                        controller: reportController,
+                        autofillHints: const <String>[],
+                        minLines: 3,
+                        maxLines: 6,
+                        textInputAction: TextInputAction.newline,
+                        decoration: InputDecoration(
+                          labelText: l10n.developerReportText,
+                        ),
+                        onChanged: (_) => setDialogState(() {}),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: reportController,
-                autofillHints: const <String>[],
-                minLines: 3,
-                maxLines: 6,
-                textInputAction: TextInputAction.newline,
-                decoration: InputDecoration(
-                  labelText: l10n.developerReportText,
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    FocusScope.of(dialogContext).unfocus();
+                    TextInput.finishAutofillContext(shouldSave: false);
+                    Navigator.of(dialogContext).pop();
+                  },
+                  child: Text(
+                    MaterialLocalizations.of(dialogContext).cancelButtonLabel,
+                  ),
                 ),
-                onChanged: (_) => setDialogState(() {}),
-              ),
+                FilledButton(
+                  onPressed:
+                      reportController.text.trim().isEmpty ||
+                          !DeveloperLogService.isValidReplyEmail(
+                            emailController.text,
+                          )
+                      ? null
+                      : () {
+                          FocusScope.of(dialogContext).unfocus();
+                          TextInput.finishAutofillContext(shouldSave: false);
+                          Navigator.of(dialogContext).pop((
+                            name: nameController.text.trim(),
+                            email: emailController.text.trim(),
+                            report: reportController.text.trim(),
+                          ));
+                        },
+                  child: Text(l10n.developerLogSend),
+                ),
               ],
             ),
           ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                FocusScope.of(dialogContext).unfocus();
-                TextInput.finishAutofillContext(shouldSave: false);
-                Navigator.of(dialogContext).pop();
-              },
-              child: Text(
-                MaterialLocalizations.of(dialogContext).cancelButtonLabel,
-              ),
-            ),
-            FilledButton(
-              onPressed: reportController.text.trim().isEmpty
-                  ? null
-                  : () {
-                      FocusScope.of(dialogContext).unfocus();
-                      TextInput.finishAutofillContext(shouldSave: false);
-                      Navigator.of(dialogContext).pop((
-                        name: nameController.text.trim(),
-                        report: reportController.text.trim(),
-                      ));
-                    },
-              child: Text(l10n.developerLogSend),
-            ),
-          ],
-        ),
-      ),
-    );
+        );
     nameController.dispose();
+    emailController.dispose();
     reportController.dispose();
 
     if (result == null || !mounted) return;
@@ -1723,6 +1752,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       log: logs,
       report: result.report,
       name: result.name,
+      email: result.email,
     );
     if (!mounted) return;
 

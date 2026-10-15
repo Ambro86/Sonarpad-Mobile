@@ -5339,4 +5339,11 @@ class AppLocalizationsCs extends AppLocalizations {
   String get importVideoFromGallery => 'Vybrat z galerie';
   @override
   String get sharedVideoOpen => 'Otevřít video';
+
+  @override
+  String get developerReportEmailOptional => 'E-mail (nepovinný, pro odpověď)';
+
+  @override
+  String get developerReportEmailInvalid =>
+      'Zadejte platnou e-mailovou adresu nebo ponechte pole prázdné.';
 }

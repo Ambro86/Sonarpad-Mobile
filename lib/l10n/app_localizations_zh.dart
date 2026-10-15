@@ -5169,6 +5169,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get importVideoFromGallery => '从图库选择';
   @override
   String get sharedVideoOpen => '打开视频';
+
+  @override
+  String get developerReportEmailOptional => '电子邮件（可选，用于回复）';
+
+  @override
+  String get developerReportEmailInvalid => '请输入有效的电子邮件地址，或将此字段留空。';
 }
 
 /// The translations for Chinese, as used in China (`zh_CN`).
@@ -10336,4 +10342,10 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
   String get importVideoFromGallery => '从图库选择';
   @override
   String get sharedVideoOpen => '打开视频';
+
+  @override
+  String get developerReportEmailOptional => '电子邮件（可选，用于回复）';
+
+  @override
+  String get developerReportEmailInvalid => '请输入有效的电子邮件地址，或将此字段留空。';
 }

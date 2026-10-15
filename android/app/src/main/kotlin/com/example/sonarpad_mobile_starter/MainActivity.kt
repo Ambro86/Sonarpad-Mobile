@@ -21,6 +21,9 @@ class MainActivity : AudioServiceActivity() {
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+        if (!flutterEngine.plugins.has(RaiAndroidPlayerPlugin::class.java)) {
+            flutterEngine.plugins.add(RaiAndroidPlayerPlugin())
+        }
         cloudPicker.attach(flutterEngine)
         photoPicker.attach(flutterEngine)
 

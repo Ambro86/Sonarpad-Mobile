@@ -6394,5 +6394,7 @@
     "description": "Localized text for audioDescriptionNonverbalVocals."
   },
   "importVideoFromGallery": "Scegli dalla galleria",
-  "sharedVideoOpen": "Apri video"
+  "sharedVideoOpen": "Apri video",
+  "developerReportEmailOptional": "Email (facoltativa, per essere ricontattati)",
+  "developerReportEmailInvalid": "Inserisci un indirizzo email valido oppure lascia il campo vuoto."
 }

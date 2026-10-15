@@ -5127,4 +5127,12 @@ class AppLocalizationsTr extends AppLocalizations {
   String get importVideoFromGallery => 'Galeriden seç';
   @override
   String get sharedVideoOpen => 'Videoyu aç';
+
+  @override
+  String get developerReportEmailOptional =>
+      'E-posta (isteğe bağlı, yanıt için)';
+
+  @override
+  String get developerReportEmailInvalid =>
+      'Geçerli bir e-posta adresi girin veya alanı boş bırakın.';
 }

@@ -6394,5 +6394,7 @@
     "description": "Localized text for audioDescriptionNonverbalVocals."
   },
   "importVideoFromGallery": "Вибрати з галереї",
-  "sharedVideoOpen": "Відкрити відео"
+  "sharedVideoOpen": "Відкрити відео",
+  "developerReportEmailOptional": "Email (необов’язково, для відповіді)",
+  "developerReportEmailInvalid": "Введіть коректну адресу електронної пошти або залиште поле порожнім."
 }

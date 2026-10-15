@@ -4819,5 +4819,7 @@
     "description": "Localized text for audioDescriptionNonverbalVocals."
   },
   "importVideoFromGallery": "Vybrat z galerie",
-  "sharedVideoOpen": "Otevřít video"
+  "sharedVideoOpen": "Otevřít video",
+  "developerReportEmailOptional": "E-mail (nepovinný, pro odpověď)",
+  "developerReportEmailInvalid": "Zadejte platnou e-mailovou adresu nebo ponechte pole prázdné."
 }

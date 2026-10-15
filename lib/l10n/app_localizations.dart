@@ -8716,6 +8716,18 @@ abstract class AppLocalizations {
 
   /// Label for 32-bit floating-point PCM audio in the WAV bit-depth selector; does not change the codec or saved choice.
   String get convertMediaWavFloat32;
+
+  /// No description provided for @developerReportEmailOptional.
+  ///
+  /// In it, this message translates to:
+  /// **'Email (facoltativa, per essere ricontattati)'**
+  String get developerReportEmailOptional;
+
+  /// No description provided for @developerReportEmailInvalid.
+  ///
+  /// In it, this message translates to:
+  /// **'Inserisci un indirizzo email valido oppure lascia il campo vuoto.'**
+  String get developerReportEmailInvalid;
 }
 
 class _AppLocalizationsDelegate

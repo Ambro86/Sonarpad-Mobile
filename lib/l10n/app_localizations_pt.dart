@@ -5362,6 +5362,14 @@ class AppLocalizationsPt extends AppLocalizations {
   String get importVideoFromGallery => 'Escolher da galeria';
   @override
   String get sharedVideoOpen => 'Abrir vídeo';
+
+  @override
+  String get developerReportEmailOptional =>
+      'Email (opcional, para receber resposta)';
+
+  @override
+  String get developerReportEmailInvalid =>
+      'Introduza um email válido ou deixe o campo vazio.';
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
@@ -10708,4 +10716,12 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   String get importVideoFromGallery => 'Escolher da galeria';
   @override
   String get sharedVideoOpen => 'Abrir vídeo';
+
+  @override
+  String get developerReportEmailOptional =>
+      'Email (opcional, para receber resposta)';
+
+  @override
+  String get developerReportEmailInvalid =>
+      'Digite um email válido ou deixe o campo vazio.';
 }
