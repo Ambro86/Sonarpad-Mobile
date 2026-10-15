@@ -4,7 +4,9 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('Settings exposes Save in the top AppBar on iOS and Android', () {
-    final source = File('lib/screens/settings_screen.dart').readAsStringSync();
+    final source = File('lib/screens/settings_screen.dart')
+        .readAsStringSync()
+        .replaceAll('\r\n', '\n');
 
     expect(source, contains('appBar: SonarpadAppBar('));
     expect(source, contains('actions: ['));
@@ -14,7 +16,9 @@ void main() {
   });
 
   test('top Save reuses existing save logic and closes only after success', () {
-    final source = File('lib/screens/settings_screen.dart').readAsStringSync();
+    final source = File('lib/screens/settings_screen.dart')
+        .readAsStringSync()
+        .replaceAll('\r\n', '\n');
 
     expect(source, contains('Future<void> _saveAndClose() async'));
     expect(source, contains('await _save(showConfirmation: false);'));
@@ -23,7 +27,9 @@ void main() {
   });
 
   test('Settings no longer duplicates Save at the bottom of either renderer', () {
-    final source = File('lib/screens/settings_screen.dart').readAsStringSync();
+    final source = File('lib/screens/settings_screen.dart')
+        .readAsStringSync()
+        .replaceAll('\r\n', '\n');
 
     expect(source, isNot(contains("id: 'save'")));
     expect(
