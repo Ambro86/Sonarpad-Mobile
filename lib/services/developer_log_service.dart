@@ -1,6 +1,19 @@
 import 'dart:convert';
 
+import 'package:archive/archive.dart';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
+
+String _compressDiagnosticLog(String log) {
+  final bytes = utf8.encode(log);
+  final archive = Archive()
+    ..addFile(ArchiveFile('sonarpad-log.txt', bytes.length, bytes));
+  final zip = ZipEncoder().encode(archive)!;
+  if (zip.length > 6 * 1024 * 1024) {
+    throw const FormatException('Diagnostic ZIP exceeds server limit');
+  }
+  return base64Encode(zip);
+}
 
 class DeveloperLogService {
   static final Uri _endpoint = Uri.parse(
@@ -42,6 +55,7 @@ class DeveloperLogService {
   }) async {
     if (!isValidReplyEmail(email)) return false;
     try {
+      final zip = await compute(_compressDiagnosticLog, log);
       final response = await http
           .post(
             _endpoint,
@@ -54,7 +68,8 @@ class DeveloperLogService {
               'name': name.trim(),
               'email': email.trim(),
               'report': report.trim(),
-              'log': log,
+              'platform': 'Sonarpad Mobile (${defaultTargetPlatform.name})',
+              'diagnostics_zip_base64': zip,
             }),
           )
           .timeout(const Duration(seconds: 20));
@@ -64,7 +79,9 @@ class DeveloperLogService {
       }
 
       final decoded = jsonDecode(utf8.decode(response.bodyBytes));
-      return decoded is Map<String, dynamic> && decoded['ok'] == true;
+      return decoded is Map<String, dynamic> &&
+          decoded['ok'] == true &&
+          decoded['attachment_received'] == true;
     } catch (_) {
       return false;
     }

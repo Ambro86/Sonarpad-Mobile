@@ -208,15 +208,18 @@ class SonarMusicService {
     final id = browseId.startsWith('VL') || browseId.startsWith('MPRE') ||
         browseId.startsWith('UC') || browseId.startsWith('MPSP') || browseId.startsWith('MPED')
         ? browseId : 'VL$browseId';
+    final collection = id.startsWith('MPRE') || id.startsWith('VL');
     if (directCatalog) {
       try {
         final data = await _direct('browse', token != null && token.isNotEmpty
             ? {'continuation': token} : {'browseId': id});
-        final items = _collect(data);
-        if (items.isNotEmpty) {
+        final source = collection ? _collectionShelf(data) : data;
+        final items = source == null ? <SonarMusicItem>[] : _collect(source);
+        if (source != null && (collection || items.isNotEmpty)) {
           return SonarMusicPage(items: items,
-              title: _readText(_map(_map(data['header'])?['musicImmersiveHeaderRenderer'])?['title']),
-              nextToken: _nextToken(data));
+              title: _str(_map(_map(data['microformat'])?['microformatDataRenderer'])?['title']) ??
+                  _readText(_map(_map(data['header'])?['musicImmersiveHeaderRenderer'])?['title']),
+              nextToken: _nextToken(source));
         }
       } catch (e) {
         await AppLogger.log('SonarMusic direct browse failed; PHP fallback: $e');
@@ -224,7 +227,35 @@ class SonarMusicService {
     }
     final data = await _server({'browse': id, 'page': '$page',
       if (token != null && token.isNotEmpty) 'token': token});
-    return _fromServer(data);
+    return _fromServer(data, collection: collection);
+  }
+
+  // Album/playlist recommendations have their own items and continuations.
+  // Never use them as the collection's track list, even when it is empty.
+  static Map<String, dynamic>? _collectionShelf(Object? node) {
+    if (node is List) {
+      for (final child in node) {
+        final found = _collectionShelf(child);
+        if (found != null) return found;
+      }
+    }
+    final map = _map(node);
+    if (map == null) return null;
+    for (final key in ['musicPlaylistShelfRenderer', 'musicShelfRenderer',
+      'musicPlaylistShelfContinuation', 'musicShelfContinuation',
+      'appendContinuationItemsAction', 'reloadContinuationItemsCommand']) {
+      final shelf = _map(map[key]);
+      if (shelf != null) return shelf;
+    }
+    for (final entry in map.entries) {
+      if (['musicCarouselShelfRenderer', 'menu', 'header',
+        'musicResponsiveHeaderRenderer', 'navigationEndpoint'].contains(entry.key)) {
+        continue;
+      }
+      final found = _collectionShelf(entry.value);
+      if (found != null) return found;
+    }
+    return null;
   }
 
   Future<List<String>> suggestions(String query) async {
@@ -287,7 +318,7 @@ class SonarMusicService {
       channel: data['artist']?.toString() ?? song.artist);
   }
 
-  SonarMusicPage _fromServer(Map<String, dynamic> data) {
+  SonarMusicPage _fromServer(Map<String, dynamic> data, {bool collection = false}) {
     final result = <SonarMusicItem>[];
     final seen = <String>{};
     void add(Object? items) {
@@ -299,7 +330,7 @@ class SonarMusicService {
       }
     }
     add(data['items']);
-    if (result.isEmpty) {
+    if (result.isEmpty && !collection) {
       final sections = data['sections'];
       if (sections is List) {
         for (final section in sections) {
@@ -461,6 +492,10 @@ class SonarMusicService {
       final cont = _map(m['nextContinuationData']);
       if (_str(cont?['continuation']) != null) {
         found = cont!['continuation'] as String; return;
+      }
+      final command = _map(m['continuationCommand']);
+      if (_str(command?['token']) != null) {
+        found = command!['token'] as String; return;
       }
       for (final value in m.values) {
         if (value is Map || value is List) walk(value, depth + 1);

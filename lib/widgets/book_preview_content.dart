@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import '../utils/book_preview_segments.dart';
-import 'universal_accessible_view.dart';
 
 class BookPreviewContent extends StatelessWidget {
   const BookPreviewContent({super.key, required this.text});
@@ -10,33 +10,24 @@ class BookPreviewContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final segments = splitBookPreview(text);
-    if (useSharedAccessibleViewModel) {
-      return SizedBox(
-        width: 520,
-        height: 420,
-        child: UniversalAccessibleList(
-          sections: [
-            AccessibleListSection(
-              rows: [
-                for (var i = 0; i < segments.length; i++)
-                  AccessibleListRow(
-                    id: 'preview_$i',
-                    kind: 'text',
-                    title: segments[i],
-                  ),
-              ],
-            ),
-          ],
-          onEvent: (_) {},
-        ),
-      );
-    }
+    // Keep every reading block mounted. Native table cells taller than the
+    // dialog viewport get recycled during VoiceOver's backwards traversal.
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          for (final segment in segments)
-            Semantics(container: true, child: Text(segment)),
+          for (var i = 0; i < segments.length; i++)
+            Builder(
+              key: ValueKey('preview_$i'),
+              builder: (context) => Semantics(
+                container: true,
+                sortKey: OrdinalSortKey(i.toDouble()),
+                onDidGainAccessibilityFocus: () {
+                  Scrollable.ensureVisible(context);
+                },
+                child: Text(segments[i]),
+              ),
+            ),
         ],
       ),
     );

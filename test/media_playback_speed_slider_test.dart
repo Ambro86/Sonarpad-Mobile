@@ -98,7 +98,11 @@ Finder _speedControl(bool fullscreen) => find.byKey(
   ),
 );
 
-Future<void> _pumpPlayer(WidgetTester tester, {bool fullscreen = false}) async {
+Future<void> _pumpPlayer(
+  WidgetTester tester, {
+  bool fullscreen = false,
+  bool audioOnly = false,
+}) async {
   tester.view.devicePixelRatio = 1;
   tester.view.physicalSize = fullscreen
       ? const Size(1000, 700)
@@ -115,15 +119,15 @@ Future<void> _pumpPlayer(WidgetTester tester, {bool fullscreen = false}) async {
         locale: const Locale('it'),
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
-        home: const PodcastEpisodePlayerScreen(
-          episode: PodcastEpisode(
+        home: PodcastEpisodePlayerScreen(
+          episode: const PodcastEpisode(
             title: 'Prova velocità',
             description: '',
             audioUrl: 'file:///recorded-video.mp4',
           ),
           speedCategory: MediaPlaybackSpeedCategory.sonartube,
-          isVideoSupported: true,
-          startWithVideo: true,
+          isVideoSupported: !audioOnly,
+          startWithVideo: !audioOnly,
         ),
       ),
     );
@@ -150,6 +154,17 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(
+          const MethodChannel('com.ryanheise.just_audio.methods'),
+          (call) async {
+            if (call.method == 'disposeAllPlayers' ||
+                call.method == 'disposePlayer') {
+              return <String, dynamic>{};
+            }
+            throw PlatformException(code: 'test_audio_unavailable');
+          },
+        );
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(
           const MethodChannel('com.ryanheise.audio_session'),
           (_) async => null,
         );
@@ -163,6 +178,33 @@ void main() {
     VideoPlayerPlatform.instance = originalPlatform;
     configureAccessibleRendererRuntime(useFlutterOnIos: false);
   });
+
+  testWidgets(
+    'SonarMusic audio-only player exposes speed even if audio loading fails',
+    (tester) async {
+      await _pumpPlayer(tester, audioOnly: true);
+      final list = tester.widget<UniversalAccessibleList>(
+        find.byType(UniversalAccessibleList),
+      );
+      final row = list.sections
+          .expand((section) => section.rows)
+          .singleWhere((row) => row.id == 'playback_speed');
+      expect(row.kind, 'slider');
+      expect(row.nativeSliderAccessibilityElement, isTrue);
+      expect(row.value, '1× (Normale)');
+      expect(
+        list.sections
+            .expand((section) => section.rows)
+            .any((row) => row.id == 'video'),
+        isFalse,
+      );
+      await _disposePlayer(tester);
+    },
+    variant: TargetPlatformVariant({
+      TargetPlatform.iOS,
+      TargetPlatform.android,
+    }),
+  );
 
   for (final fullscreen in [false, true]) {
     testWidgets(

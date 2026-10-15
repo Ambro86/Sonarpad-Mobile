@@ -1,0 +1,1413 @@
+{
+  "contents": {
+    "twoColumnBrowseResultsRenderer": {
+      "secondaryContents": {
+        "sectionListRenderer": {
+          "contents": [
+            {
+              "musicShelfRenderer": {
+                "contents": [
+                  {
+                    "musicResponsiveListItemRenderer": {
+                      "overlay": {
+                        "musicItemThumbnailOverlayRenderer": {
+                          "content": {
+                            "musicPlayButtonRenderer": {
+                              "playNavigationEndpoint": {
+                                "watchEndpoint": {
+                                  "videoId": "aKl31VjdYUA"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "flexColumns": [
+                        {
+                          "musicResponsiveListItemFlexColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "Tazmania",
+                                  "navigationEndpoint": {
+                                    "watchEndpoint": {
+                                      "videoId": "aKl31VjdYUA"
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "musicResponsiveListItemFlexColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "Cristina D'Avena",
+                                  "navigationEndpoint": {
+                                    "browseEndpoint": {
+                                      "browseId": "UCXSxZLc5_gy321DlyRNN2zA"
+                                    }
+                                  }
+                                },
+                                {
+                                  "text": " e "
+                                },
+                                {
+                                  "text": "Pietro Ubaldi",
+                                  "navigationEndpoint": {
+                                    "browseEndpoint": {
+                                      "browseId": "UC2OS5xeX5AgePJ8sgqGatKw"
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "musicResponsiveListItemFlexColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "7,9 Mln riproduzioni"
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      ],
+                      "fixedColumns": [
+                        {
+                          "musicResponsiveListItemFixedColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "3:07"
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      ],
+                      "playlistItemData": {
+                        "videoId": "aKl31VjdYUA"
+                      }
+                    }
+                  },
+                  {
+                    "musicResponsiveListItemRenderer": {
+                      "overlay": {
+                        "musicItemThumbnailOverlayRenderer": {
+                          "content": {
+                            "musicPlayButtonRenderer": {
+                              "playNavigationEndpoint": {
+                                "watchEndpoint": {
+                                  "videoId": "m8BTQYZQuI4"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "flexColumns": [
+                        {
+                          "musicResponsiveListItemFlexColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "Mary e il giardino dei misteri",
+                                  "navigationEndpoint": {
+                                    "watchEndpoint": {
+                                      "videoId": "m8BTQYZQuI4"
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "musicResponsiveListItemFlexColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "Cristina D'Avena",
+                                  "navigationEndpoint": {
+                                    "browseEndpoint": {
+                                      "browseId": "UCXSxZLc5_gy321DlyRNN2zA"
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "musicResponsiveListItemFlexColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "672K riproduzioni"
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      ],
+                      "fixedColumns": [
+                        {
+                          "musicResponsiveListItemFixedColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "3:58"
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      ],
+                      "playlistItemData": {
+                        "videoId": "m8BTQYZQuI4"
+                      }
+                    }
+                  },
+                  {
+                    "musicResponsiveListItemRenderer": {
+                      "overlay": {
+                        "musicItemThumbnailOverlayRenderer": {
+                          "content": {
+                            "musicPlayButtonRenderer": {
+                              "playNavigationEndpoint": {
+                                "watchEndpoint": {
+                                  "videoId": "6LjpojgD_-8"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "flexColumns": [
+                        {
+                          "musicResponsiveListItemFlexColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "Batman",
+                                  "navigationEndpoint": {
+                                    "watchEndpoint": {
+                                      "videoId": "6LjpojgD_-8"
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "musicResponsiveListItemFlexColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "Cristina D'Avena",
+                                  "navigationEndpoint": {
+                                    "browseEndpoint": {
+                                      "browseId": "UCXSxZLc5_gy321DlyRNN2zA"
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "musicResponsiveListItemFlexColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "10 Mln riproduzioni"
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      ],
+                      "fixedColumns": [
+                        {
+                          "musicResponsiveListItemFixedColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "3:28"
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      ],
+                      "playlistItemData": {
+                        "videoId": "6LjpojgD_-8"
+                      }
+                    }
+                  },
+                  {
+                    "musicResponsiveListItemRenderer": {
+                      "overlay": {
+                        "musicItemThumbnailOverlayRenderer": {
+                          "content": {
+                            "musicPlayButtonRenderer": {
+                              "playNavigationEndpoint": {
+                                "watchEndpoint": {
+                                  "videoId": "EBroCyB8P3Q"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "flexColumns": [
+                        {
+                          "musicResponsiveListItemFlexColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "L'isola del corallo",
+                                  "navigationEndpoint": {
+                                    "watchEndpoint": {
+                                      "videoId": "EBroCyB8P3Q"
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "musicResponsiveListItemFlexColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "Cristina D'Avena",
+                                  "navigationEndpoint": {
+                                    "browseEndpoint": {
+                                      "browseId": "UCXSxZLc5_gy321DlyRNN2zA"
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "musicResponsiveListItemFlexColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "31K riproduzioni"
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      ],
+                      "fixedColumns": [
+                        {
+                          "musicResponsiveListItemFixedColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "3:02"
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      ],
+                      "playlistItemData": {
+                        "videoId": "EBroCyB8P3Q"
+                      }
+                    }
+                  },
+                  {
+                    "musicResponsiveListItemRenderer": {
+                      "overlay": {
+                        "musicItemThumbnailOverlayRenderer": {
+                          "content": {
+                            "musicPlayButtonRenderer": {
+                              "playNavigationEndpoint": {
+                                "watchEndpoint": {
+                                  "videoId": "pXfHbA71VB4"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "flexColumns": [
+                        {
+                          "musicResponsiveListItemFlexColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "L'ispettore Gadget",
+                                  "navigationEndpoint": {
+                                    "watchEndpoint": {
+                                      "videoId": "pXfHbA71VB4"
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "musicResponsiveListItemFlexColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "Cristina D'Avena",
+                                  "navigationEndpoint": {
+                                    "browseEndpoint": {
+                                      "browseId": "UCXSxZLc5_gy321DlyRNN2zA"
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "musicResponsiveListItemFlexColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "1,9 Mln riproduzioni"
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      ],
+                      "fixedColumns": [
+                        {
+                          "musicResponsiveListItemFixedColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "3:24"
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      ],
+                      "playlistItemData": {
+                        "videoId": "pXfHbA71VB4"
+                      }
+                    }
+                  },
+                  {
+                    "musicResponsiveListItemRenderer": {
+                      "overlay": {
+                        "musicItemThumbnailOverlayRenderer": {
+                          "content": {
+                            "musicPlayButtonRenderer": {
+                              "playNavigationEndpoint": {
+                                "watchEndpoint": {
+                                  "videoId": "-byCuqPZ6NE"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "flexColumns": [
+                        {
+                          "musicResponsiveListItemFlexColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "Gli orsetti del cuore",
+                                  "navigationEndpoint": {
+                                    "watchEndpoint": {
+                                      "videoId": "-byCuqPZ6NE"
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "musicResponsiveListItemFlexColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "Cristina D'Avena",
+                                  "navigationEndpoint": {
+                                    "browseEndpoint": {
+                                      "browseId": "UCXSxZLc5_gy321DlyRNN2zA"
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "musicResponsiveListItemFlexColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "150K riproduzioni"
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      ],
+                      "fixedColumns": [
+                        {
+                          "musicResponsiveListItemFixedColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "3:20"
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      ],
+                      "playlistItemData": {
+                        "videoId": "-byCuqPZ6NE"
+                      }
+                    }
+                  },
+                  {
+                    "musicResponsiveListItemRenderer": {
+                      "overlay": {
+                        "musicItemThumbnailOverlayRenderer": {
+                          "content": {
+                            "musicPlayButtonRenderer": {
+                              "playNavigationEndpoint": {
+                                "watchEndpoint": {
+                                  "videoId": "SCDNvM-apAY"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "flexColumns": [
+                        {
+                          "musicResponsiveListItemFlexColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "Principe Valiant",
+                                  "navigationEndpoint": {
+                                    "watchEndpoint": {
+                                      "videoId": "SCDNvM-apAY"
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "musicResponsiveListItemFlexColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "Cristina D'Avena",
+                                  "navigationEndpoint": {
+                                    "browseEndpoint": {
+                                      "browseId": "UCXSxZLc5_gy321DlyRNN2zA"
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "musicResponsiveListItemFlexColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "1,4 Mln riproduzioni"
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      ],
+                      "fixedColumns": [
+                        {
+                          "musicResponsiveListItemFixedColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "3:18"
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      ],
+                      "playlistItemData": {
+                        "videoId": "SCDNvM-apAY"
+                      }
+                    }
+                  },
+                  {
+                    "musicResponsiveListItemRenderer": {
+                      "overlay": {
+                        "musicItemThumbnailOverlayRenderer": {
+                          "content": {
+                            "musicPlayButtonRenderer": {
+                              "playNavigationEndpoint": {
+                                "watchEndpoint": {
+                                  "videoId": "f3VLsVvZRo0"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "flexColumns": [
+                        {
+                          "musicResponsiveListItemFlexColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "Widget: un alieno per amico",
+                                  "navigationEndpoint": {
+                                    "watchEndpoint": {
+                                      "videoId": "f3VLsVvZRo0"
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "musicResponsiveListItemFlexColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "Cristina D'Avena",
+                                  "navigationEndpoint": {
+                                    "browseEndpoint": {
+                                      "browseId": "UCXSxZLc5_gy321DlyRNN2zA"
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "musicResponsiveListItemFlexColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "203K riproduzioni"
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      ],
+                      "fixedColumns": [
+                        {
+                          "musicResponsiveListItemFixedColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "2:57"
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      ],
+                      "playlistItemData": {
+                        "videoId": "f3VLsVvZRo0"
+                      }
+                    }
+                  },
+                  {
+                    "musicResponsiveListItemRenderer": {
+                      "overlay": {
+                        "musicItemThumbnailOverlayRenderer": {
+                          "content": {
+                            "musicPlayButtonRenderer": {
+                              "playNavigationEndpoint": {
+                                "watchEndpoint": {
+                                  "videoId": "RPFFzVj14RE"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "flexColumns": [
+                        {
+                          "musicResponsiveListItemFlexColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "A tutto goal",
+                                  "navigationEndpoint": {
+                                    "watchEndpoint": {
+                                      "videoId": "RPFFzVj14RE"
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "musicResponsiveListItemFlexColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "Cristina D'Avena",
+                                  "navigationEndpoint": {
+                                    "browseEndpoint": {
+                                      "browseId": "UCXSxZLc5_gy321DlyRNN2zA"
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "musicResponsiveListItemFlexColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "26K riproduzioni"
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      ],
+                      "fixedColumns": [
+                        {
+                          "musicResponsiveListItemFixedColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "3:52"
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      ],
+                      "playlistItemData": {
+                        "videoId": "RPFFzVj14RE"
+                      }
+                    }
+                  },
+                  {
+                    "musicResponsiveListItemRenderer": {
+                      "overlay": {
+                        "musicItemThumbnailOverlayRenderer": {
+                          "content": {
+                            "musicPlayButtonRenderer": {
+                              "playNavigationEndpoint": {
+                                "watchEndpoint": {
+                                  "videoId": "2cF-aPL-oig"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "flexColumns": [
+                        {
+                          "musicResponsiveListItemFlexColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "I mille colori dell'allegria",
+                                  "navigationEndpoint": {
+                                    "watchEndpoint": {
+                                      "videoId": "2cF-aPL-oig"
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "musicResponsiveListItemFlexColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "Cristina D'Avena",
+                                  "navigationEndpoint": {
+                                    "browseEndpoint": {
+                                      "browseId": "UCXSxZLc5_gy321DlyRNN2zA"
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "musicResponsiveListItemFlexColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "22K riproduzioni"
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      ],
+                      "fixedColumns": [
+                        {
+                          "musicResponsiveListItemFixedColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "3:10"
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      ],
+                      "playlistItemData": {
+                        "videoId": "2cF-aPL-oig"
+                      }
+                    }
+                  },
+                  {
+                    "musicResponsiveListItemRenderer": {
+                      "overlay": {
+                        "musicItemThumbnailOverlayRenderer": {
+                          "content": {
+                            "musicPlayButtonRenderer": {
+                              "playNavigationEndpoint": {
+                                "watchEndpoint": {
+                                  "videoId": "KCRwojJdryo"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "flexColumns": [
+                        {
+                          "musicResponsiveListItemFlexColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "Riscopriamo le Americhe",
+                                  "navigationEndpoint": {
+                                    "watchEndpoint": {
+                                      "videoId": "KCRwojJdryo"
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "musicResponsiveListItemFlexColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "Cristina D'Avena",
+                                  "navigationEndpoint": {
+                                    "browseEndpoint": {
+                                      "browseId": "UCXSxZLc5_gy321DlyRNN2zA"
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "musicResponsiveListItemFlexColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "29K riproduzioni"
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      ],
+                      "fixedColumns": [
+                        {
+                          "musicResponsiveListItemFixedColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "3:33"
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      ],
+                      "playlistItemData": {
+                        "videoId": "KCRwojJdryo"
+                      }
+                    }
+                  },
+                  {
+                    "musicResponsiveListItemRenderer": {
+                      "overlay": {
+                        "musicItemThumbnailOverlayRenderer": {
+                          "content": {
+                            "musicPlayButtonRenderer": {
+                              "playNavigationEndpoint": {
+                                "watchEndpoint": {
+                                  "videoId": "XcfxWlyO8LI"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "flexColumns": [
+                        {
+                          "musicResponsiveListItemFlexColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "Il gatto con gli stivali",
+                                  "navigationEndpoint": {
+                                    "watchEndpoint": {
+                                      "videoId": "XcfxWlyO8LI"
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "musicResponsiveListItemFlexColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "Cristina D'Avena",
+                                  "navigationEndpoint": {
+                                    "browseEndpoint": {
+                                      "browseId": "UCXSxZLc5_gy321DlyRNN2zA"
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "musicResponsiveListItemFlexColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "48K riproduzioni"
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      ],
+                      "fixedColumns": [
+                        {
+                          "musicResponsiveListItemFixedColumnRenderer": {
+                            "text": {
+                              "runs": [
+                                {
+                                  "text": "3:06"
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      ],
+                      "playlistItemData": {
+                        "videoId": "XcfxWlyO8LI"
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "musicCarouselShelfRenderer": {
+                "contents": [
+                  {
+                    "musicTwoRowItemRenderer": {
+                      "title": {
+                        "runs": [
+                          {
+                            "text": "Hanno ucciso l'Uomo Ragno",
+                            "navigationEndpoint": {
+                              "browseEndpoint": {
+                                "browseId": "MPREb_FPJweDFEIVe"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "subtitle": {
+                        "runs": [
+                          {
+                            "text": "Album"
+                          },
+                          {
+                            "text": " • "
+                          },
+                          {
+                            "text": "883",
+                            "navigationEndpoint": {
+                              "browseEndpoint": {
+                                "browseId": "UCGLvQtUqrFLmKZ8i1WMbxIQ"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "navigationEndpoint": {
+                        "browseEndpoint": {
+                          "browseId": "MPREb_FPJweDFEIVe"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "musicTwoRowItemRenderer": {
+                      "title": {
+                        "runs": [
+                          {
+                            "text": "Hanno ucciso l'Uomo Ragno (2012)",
+                            "navigationEndpoint": {
+                              "browseEndpoint": {
+                                "browseId": "MPREb_WRPV0utepq9"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "subtitle": {
+                        "runs": [
+                          {
+                            "text": "Album"
+                          },
+                          {
+                            "text": " • "
+                          },
+                          {
+                            "text": "Max Pezzali / 883",
+                            "navigationEndpoint": {
+                              "browseEndpoint": {
+                                "browseId": "UCnFdqtAU7T13owOPQ6RN7HQ"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "navigationEndpoint": {
+                        "browseEndpoint": {
+                          "browseId": "MPREb_WRPV0utepq9"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "musicTwoRowItemRenderer": {
+                      "title": {
+                        "runs": [
+                          {
+                            "text": "Remix '94 (Special for DJ)",
+                            "navigationEndpoint": {
+                              "browseEndpoint": {
+                                "browseId": "MPREb_HxLzMKssHF0"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "subtitle": {
+                        "runs": [
+                          {
+                            "text": "Album"
+                          },
+                          {
+                            "text": " • "
+                          },
+                          {
+                            "text": "883",
+                            "navigationEndpoint": {
+                              "browseEndpoint": {
+                                "browseId": "UCGLvQtUqrFLmKZ8i1WMbxIQ"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "navigationEndpoint": {
+                        "browseEndpoint": {
+                          "browseId": "MPREb_HxLzMKssHF0"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "musicTwoRowItemRenderer": {
+                      "title": {
+                        "runs": [
+                          {
+                            "text": "Oro",
+                            "navigationEndpoint": {
+                              "browseEndpoint": {
+                                "browseId": "MPREb_13p8hZiFKgk"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "subtitle": {
+                        "runs": [
+                          {
+                            "text": "Singolo"
+                          },
+                          {
+                            "text": " • "
+                          },
+                          {
+                            "text": "GamBeat",
+                            "navigationEndpoint": {
+                              "browseEndpoint": {
+                                "browseId": "UC-vy8ZvDuUkaYyDz556GZuA"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "navigationEndpoint": {
+                        "browseEndpoint": {
+                          "browseId": "MPREb_13p8hZiFKgk"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "musicTwoRowItemRenderer": {
+                      "title": {
+                        "runs": [
+                          {
+                            "text": "Notte Di Mezza Estate",
+                            "navigationEndpoint": {
+                              "browseEndpoint": {
+                                "browseId": "MPREb_sMJiY2QClgO"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "subtitle": {
+                        "runs": [
+                          {
+                            "text": "Singolo"
+                          },
+                          {
+                            "text": " • "
+                          },
+                          {
+                            "text": "Alex Britti",
+                            "navigationEndpoint": {
+                              "browseEndpoint": {
+                                "browseId": "UCGHPzgNnCEojKkC8JZPUDxA"
+                              }
+                            }
+                          },
+                          {
+                            "text": " e "
+                          },
+                          {
+                            "text": "Edoardo Bennato",
+                            "navigationEndpoint": {
+                              "browseEndpoint": {
+                                "browseId": "UC1UuFitSGddi2s3-SkzHgJg"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "navigationEndpoint": {
+                        "browseEndpoint": {
+                          "browseId": "MPREb_sMJiY2QClgO"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "musicTwoRowItemRenderer": {
+                      "title": {
+                        "runs": [
+                          {
+                            "text": "Spiagge E Lune",
+                            "navigationEndpoint": {
+                              "browseEndpoint": {
+                                "browseId": "MPREb_I3AThwphXHZ"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "subtitle": {
+                        "runs": [
+                          {
+                            "text": "Album"
+                          },
+                          {
+                            "text": " • "
+                          },
+                          {
+                            "text": "Fiorello",
+                            "navigationEndpoint": {
+                              "browseEndpoint": {
+                                "browseId": "UCpyUofxL_J4XV7MObcEKFQA"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "navigationEndpoint": {
+                        "browseEndpoint": {
+                          "browseId": "MPREb_I3AThwphXHZ"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "musicTwoRowItemRenderer": {
+                      "title": {
+                        "runs": [
+                          {
+                            "text": "Rimani così",
+                            "navigationEndpoint": {
+                              "browseEndpoint": {
+                                "browseId": "MPREb_S4IwZ90Q8OK"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "subtitle": {
+                        "runs": [
+                          {
+                            "text": "Singolo"
+                          },
+                          {
+                            "text": " • "
+                          },
+                          {
+                            "text": "Marco Masini",
+                            "navigationEndpoint": {
+                              "browseEndpoint": {
+                                "browseId": "UCeN29g94G5yPdqivVYAFfHw"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "navigationEndpoint": {
+                        "browseEndpoint": {
+                          "browseId": "MPREb_S4IwZ90Q8OK"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "musicTwoRowItemRenderer": {
+                      "title": {
+                        "runs": [
+                          {
+                            "text": "I Bambini Fanno \"Oh...\"",
+                            "navigationEndpoint": {
+                              "browseEndpoint": {
+                                "browseId": "MPREb_pGxtLvyUC85"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "subtitle": {
+                        "runs": [
+                          {
+                            "text": "Singolo"
+                          },
+                          {
+                            "text": " • "
+                          },
+                          {
+                            "text": "Povia",
+                            "navigationEndpoint": {
+                              "browseEndpoint": {
+                                "browseId": "UCDfbtlOPfKYWbstUP1mR2dA"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "navigationEndpoint": {
+                        "browseEndpoint": {
+                          "browseId": "MPREb_pGxtLvyUC85"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "musicTwoRowItemRenderer": {
+                      "title": {
+                        "runs": [
+                          {
+                            "text": "Pensiero D'Amore",
+                            "navigationEndpoint": {
+                              "browseEndpoint": {
+                                "browseId": "MPREb_TpiAzgcWPjp"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "subtitle": {
+                        "runs": [
+                          {
+                            "text": "Album"
+                          },
+                          {
+                            "text": " • "
+                          },
+                          {
+                            "text": "Mal",
+                            "navigationEndpoint": {
+                              "browseEndpoint": {
+                                "browseId": "UCXIfYty6iel4_I79wL7bhVA"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "navigationEndpoint": {
+                        "browseEndpoint": {
+                          "browseId": "MPREb_TpiAzgcWPjp"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "musicTwoRowItemRenderer": {
+                      "title": {
+                        "runs": [
+                          {
+                            "text": "Ci Chiamano Bambine",
+                            "navigationEndpoint": {
+                              "browseEndpoint": {
+                                "browseId": "MPREb_7vON0PQFmbB"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "subtitle": {
+                        "runs": [
+                          {
+                            "text": "Album"
+                          },
+                          {
+                            "text": " • "
+                          },
+                          {
+                            "text": "Paola & Chiara",
+                            "navigationEndpoint": {
+                              "browseEndpoint": {
+                                "browseId": "UC2ScHZjMW886933vDDZDFTg"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "navigationEndpoint": {
+                        "browseEndpoint": {
+                          "browseId": "MPREb_7vON0PQFmbB"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "tabs": [
+        {
+          "tabRenderer": {
+            "content": {
+              "sectionListRenderer": {
+                "contents": [
+                  {
+                    "musicResponsiveHeaderRenderer": {
+                      "title": {
+                        "runs": [
+                          {
+                            "text": "Fivelandia 11"
+                          }
+                        ]
+                      },
+                      "subtitle": {
+                        "runs": [
+                          {
+                            "text": "Album"
+                          },
+                          {
+                            "text": " • "
+                          },
+                          {
+                            "text": "1993"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "microformat": {
+    "microformatDataRenderer": {
+      "title": "Fivelandia 11"
+    }
+  }
+}

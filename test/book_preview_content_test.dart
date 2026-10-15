@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'dart:ui' show SemanticsAction;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sonarpad_mobile_starter/l10n/app_localizations.dart';
 import 'package:sonarpad_mobile_starter/utils/book_preview_segments.dart';
 import 'package:sonarpad_mobile_starter/widgets/book_preview_content.dart';
-import 'package:sonarpad_mobile_starter/widgets/universal_accessible_view.dart';
 
 void main() {
   const introduction =
@@ -40,11 +40,52 @@ void main() {
     }
     expect(splitBookPreview(''), isEmpty);
   });
+
+  testWidgets(
+    'long preview nodes survive forward and backward accessibility focus',
+    (tester) async {
+      final semantics = tester.ensureSemantics();
+      final text =
+          '$introduction${List.filled(150, 'Un paragrafo di esempio abbastanza lungo.\n\n').join()}';
+      final segments = splitBookPreview(text);
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: Center(
+              child: SizedBox(
+                width: 320,
+                height: 240,
+                child: BookPreviewContent(text: text),
+              ),
+            ),
+          ),
+        ),
+      );
+      final ids = [
+        for (var i = 0; i < segments.length; i++)
+          tester.getSemantics(find.byKey(ValueKey('preview_$i'))).id,
+      ];
+      for (final index in [0, 1, 2, 3, 2, 1, 0]) {
+        tester.getSemantics(find.byKey(ValueKey('preview_$index'))).owner!.performAction(
+          ids[index],
+          SemanticsAction.didGainAccessibilityFocus,
+        );
+        await tester.pumpAndSettle();
+        expect(
+          tester.getSemantics(find.byKey(ValueKey('preview_$index'))).id,
+          ids[index],
+        );
+        expect(find.byKey(ValueKey('preview_$index')), findsOneWidget);
+      }
+      final scrollable = tester.state<ScrollableState>(find.byType(Scrollable));
+      expect(scrollable.position.pixels, 0);
+      semantics.dispose();
+    },
+  );
   testWidgets(
     'preview exposes separate reading nodes in order',
     (tester) async {
       final semantics = tester.ensureSemantics();
-      configureAccessibleRendererRuntime(useFlutterOnIos: true);
       final excerpt = List.filled(30, 'Una frase di esempio. ').join();
       final content = '$introduction$excerpt';
       try {
@@ -63,20 +104,7 @@ void main() {
         expect(first.label, introduction);
         expect(second.label, excerpt);
         expect(find.text(content), findsNothing);
-        final shared = find.byType(UniversalAccessibleList);
-        if (shared.evaluate().isNotEmpty) {
-          final rows = tester
-              .widget<UniversalAccessibleList>(shared)
-              .sections
-              .single
-              .rows;
-          expect(rows.map((row) => row.title).toList(), [
-            introduction,
-            excerpt,
-          ]);
-        }
       } finally {
-        configureAccessibleRendererRuntime(useFlutterOnIos: false);
         semantics.dispose();
       }
     },

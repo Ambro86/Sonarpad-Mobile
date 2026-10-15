@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
@@ -7,6 +8,69 @@ import 'package:sonarpad_mobile_starter/services/sonarmusic_service.dart';
 import 'package:sonarpad_mobile_starter/services/sonarmusic_library_service.dart';
 
 void main() {
+  test('Fivelandia album returns its twelve tracks, not recommended albums', () async {
+    final fixture = File('test/fixtures/sonarmusic/fivelandia_11.json').readAsStringSync();
+    final service = SonarMusicService(client: MockClient((request) async {
+      if (request.method != 'POST') throw StateError('Unexpected PHP fallback');
+      return http.Response(fixture, 200, headers: {'content-type': 'application/json; charset=utf-8'});
+    }));
+    final result = await service.browse('MPREb_X6w2nwaDyy9');
+    expect(result.title, 'Fivelandia 11');
+    expect(result.items.length, 12);
+    expect(result.items.every((item) => item.playable), isTrue);
+    expect(result.items.first.title, 'Tazmania');
+    expect(result.nextToken, isNull);
+  });
+
+  for (final id in ['MPREalbum', 'VLplaylist']) {
+    test('$id keeps track pagination separate from recommendations', () async {
+      var calls = 0;
+      Map<String, Object> row(String title) => {'musicResponsiveListItemRenderer': {
+        'flexColumns': [{'musicResponsiveListItemFlexColumnRenderer': {'text': {'simpleText': title}}}],
+        'playlistItemData': {'videoId': title},
+      }};
+      final service = SonarMusicService(client: MockClient((request) async {
+        final body = jsonDecode(request.body) as Map;
+        final continued = body['continuation'] == 'tracks-next';
+        calls++;
+        return http.Response(jsonEncode(continued ? {
+          'onResponseReceivedActions': [{'appendContinuationItemsAction': {
+            'continuationItems': [row('second')],
+          }}],
+        } : {
+          'contents': [
+            {'musicCarouselShelfRenderer': {
+              'contents': [row('unrelated')],
+              'continuations': [{'nextContinuationData': {'continuation': 'wrong-next'}}],
+            }},
+            {'musicShelfRenderer': {
+              'contents': [row('first'), {'continuationItemRenderer': {
+                'continuationEndpoint': {'continuationCommand': {'token': 'tracks-next'}},
+              }}],
+            }},
+          ],
+        }), 200);
+      }));
+      final first = await service.browse(id);
+      expect(first.items.map((i) => i.title), ['first']);
+      expect(first.nextToken, 'tracks-next');
+      final second = await service.browse(id, token: first.nextToken, page: 2);
+      expect(second.items.map((i) => i.title), ['second']);
+      expect(second.nextToken, isNull);
+      expect(calls, 2);
+    });
+  }
+
+  test('empty server album never substitutes recommendation sections', () async {
+    final service = SonarMusicService(directCatalog: false,
+      client: MockClient((_) async => http.Response(jsonEncode({
+        'ok': true, 'items': [], 'sections': [{'items': [
+          {'kind': 'album', 'id': 'MPREwrong', 'title': 'Wrong album'},
+        ]}],
+      }), 200)));
+    expect((await service.browse('MPREempty')).items, isEmpty);
+  });
+
   for (final locale in ['tr', 'tr-TR', 'tr_TR']) {
     test('Turkish music locale $locale reaches direct and fallback requests', () async {
       final requests = <http.Request>[];

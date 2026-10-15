@@ -1002,8 +1002,10 @@ class _PodcastEpisodePlayerScreenState
     if (!mounted) {
       return;
     }
-    _mediaSpeedControlEnabled = enabled;
-    _preferredPlaybackSpeed = speed;
+    setState(() {
+      _mediaSpeedControlEnabled = enabled;
+      _preferredPlaybackSpeed = speed;
+    });
   }
 
   List<MediaPlaybackRateTarget> _playbackRateTargets(
@@ -1885,6 +1887,7 @@ class _PodcastEpisodePlayerScreenState
             value: _playbackSpeedLabel(l10n, _sliderPlaybackSpeed),
             valueLabel: _playbackSpeedLabel(l10n, _sliderPlaybackSpeed),
             kind: 'slider',
+            nativeSliderAccessibilityElement: true,
             accessibilityButtonTrait: false,
             sliderValue: _playbackSpeedIndex.toDouble(),
             sliderMin: 0,
