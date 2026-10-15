@@ -3583,11 +3583,80 @@ private final class SonarpadNativeGridFactory: NSObject, FlutterPlatformViewFact
   func createArgsCodec() -> FlutterMessageCodec & NSObjectProtocol { FlutterStandardMessageCodec.sharedInstance() }
 }
 
+// Reading excerpts have only a few long blocks. Keep real native elements for
+// all blocks instead of recycled table cells or a single Flutter text surface.
+private final class SonarpadReadingBlockLabel: UILabel {
+  weak var readingScrollView: UIScrollView?
+
+  override func accessibilityElementDidBecomeFocused() {
+    super.accessibilityElementDidBecomeFocused()
+    guard let scroll = readingScrollView else { return }
+    let rect = convert(bounds, to: scroll)
+    // For a block taller than the viewport, reveal its beginning, not its end.
+    scroll.scrollRectToVisible(
+      CGRect(x: rect.minX, y: rect.minY, width: rect.width,
+             height: min(rect.height, scroll.bounds.height)), animated: false)
+  }
+}
+
+private final class SonarpadNativeTextBlocksView: NSObject, FlutterPlatformView {
+  private let scroll: UIScrollView
+
+  init(frame: CGRect, arguments: Any?) {
+    scroll = UIScrollView(frame: frame)
+    super.init()
+    scroll.isAccessibilityElement = false
+    let stack = UIStackView()
+    stack.axis = .vertical
+    stack.spacing = 16
+    stack.isAccessibilityElement = false
+    stack.translatesAutoresizingMaskIntoConstraints = false
+    scroll.addSubview(stack)
+    NSLayoutConstraint.activate([
+      stack.leadingAnchor.constraint(equalTo: scroll.contentLayoutGuide.leadingAnchor),
+      stack.trailingAnchor.constraint(equalTo: scroll.contentLayoutGuide.trailingAnchor),
+      stack.topAnchor.constraint(equalTo: scroll.contentLayoutGuide.topAnchor),
+      stack.bottomAnchor.constraint(equalTo: scroll.contentLayoutGuide.bottomAnchor),
+      stack.widthAnchor.constraint(equalTo: scroll.frameLayoutGuide.widthAnchor),
+    ])
+    let map = arguments as? [String: Any] ?? [:]
+    let rows = map["rows"] as? [[String: Any]] ?? []
+    var elements: [UILabel] = []
+    for row in rows {
+      let label = SonarpadReadingBlockLabel()
+      label.numberOfLines = 0
+      label.font = UIFont.preferredFont(forTextStyle: .body)
+      label.adjustsFontForContentSizeCategory = true
+      label.textColor = .label
+      label.text = row["title"] as? String ?? ""
+      label.isAccessibilityElement = true
+      label.accessibilityTraits = .staticText
+      label.accessibilityIdentifier = row["id"] as? String
+      label.accessibilityLabel = label.text
+      label.readingScrollView = scroll
+      stack.addArrangedSubview(label)
+      elements.append(label)
+    }
+    // Explicit order includes off-screen blocks, in both traversal directions.
+    scroll.accessibilityElements = elements
+  }
+
+  func view() -> UIView { scroll }
+}
+
+private final class SonarpadNativeTextBlocksFactory: NSObject, FlutterPlatformViewFactory {
+  func create(withFrame frame: CGRect, viewIdentifier viewId: Int64, arguments args: Any?) -> FlutterPlatformView {
+    SonarpadNativeTextBlocksView(frame: frame, arguments: args)
+  }
+  func createArgsCodec() -> FlutterMessageCodec & NSObjectProtocol { FlutterStandardMessageCodec.sharedInstance() }
+}
+
 extension FlutterPluginRegistry {
   func registerSonarpadNativeAccessibleViews() {
     guard let registrar = registrar(forPlugin: "SonarpadNativeAccessibleViews") else { return }
     registrar.register(SonarpadNativeListFactory(messenger: registrar.messenger()), withId: "sonarpad/native_accessible_list")
     registrar.register(SonarpadNativeGridFactory(messenger: registrar.messenger()), withId: "sonarpad/native_accessible_grid")
+    registrar.register(SonarpadNativeTextBlocksFactory(), withId: "sonarpad/native_accessible_text_blocks")
   }
 }
 

@@ -2381,23 +2381,47 @@ class UniversalAccessibleTextBlocks extends StatelessWidget {
   final List<AccessibleListRow> rows;
 
   @override
-  Widget build(BuildContext context) => SingleChildScrollView(
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        for (var i = 0; i < rows.length; i++)
-          Builder(
-            key: ValueKey(rows[i].id),
-            builder: (context) => Semantics(
-              container: true,
-              sortKey: OrdinalSortKey(i.toDouble()),
-              onDidGainAccessibilityFocus: () {
-                Scrollable.ensureVisible(context);
-              },
-              child: Text(rows[i].title),
-            ),
-          ),
-      ],
-    ),
-  );
+  Widget build(BuildContext context) {
+    if (useNativeIosAccessibleViews) {
+      return SizedBox(
+        width: 520,
+        height: 420,
+        child: UiKitView(
+          viewType: 'sonarpad/native_accessible_text_blocks',
+          creationParamsCodec: const StandardMessageCodec(),
+          creationParams: {
+            'rows': rows
+                .map((row) => {'id': row.id, 'title': row.title})
+                .toList(),
+          },
+        ),
+      );
+    }
+    return Semantics(
+      container: true,
+      explicitChildNodes: true,
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            for (var i = 0; i < rows.length; i++)
+              Builder(
+                key: ValueKey(rows[i].id),
+                builder: (context) => Semantics(
+                  container: true,
+                  explicitChildNodes: true,
+                  label: rows[i].title,
+                  excludeSemantics: true,
+                  sortKey: OrdinalSortKey(i.toDouble()),
+                  onDidGainAccessibilityFocus: () {
+                    Scrollable.ensureVisible(context);
+                  },
+                  child: Text(rows[i].title),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
 }

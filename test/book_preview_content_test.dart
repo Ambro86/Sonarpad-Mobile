@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:sonarpad_mobile_starter/widgets/universal_accessible_view.dart';
 import 'dart:ui' show SemanticsAction;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sonarpad_mobile_starter/l10n/app_localizations.dart';
@@ -6,11 +8,58 @@ import 'package:sonarpad_mobile_starter/utils/book_preview_segments.dart';
 import 'package:sonarpad_mobile_starter/widgets/book_preview_content.dart';
 
 void main() {
+  setUp(() => configureAccessibleRendererRuntime(useFlutterOnIos: true));
+  tearDown(() => configureAccessibleRendererRuntime(useFlutterOnIos: false));
+
   const introduction =
       'Target di lettura: Adulti\r\ngenere: Romanzo\r\n'
       'Riassunto di prova.\r\n'
       'Avvertenza: informazioni generate automaticamente tramite intelligenza artificiale.\r\n'
       '----------\r\n\r\n';
+  testWidgets(
+    'iOS preview sends separate full blocks to the native reading view',
+    (tester) async {
+      configureAccessibleRendererRuntime(useFlutterOnIos: false);
+      final calls = <MethodCall>[];
+      tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        SystemChannels.platform_views,
+        (call) async {
+          calls.add(call);
+          return null;
+        },
+      );
+      addTearDown(
+        () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+          SystemChannels.platform_views,
+          null,
+        ),
+      );
+      final text =
+          '$introduction${List.filled(150, 'Frase del libro. ').join()}';
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: AlertDialog(
+              title: const Text("Testo d'assaggio"),
+              content: BookPreviewContent(text: text),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      final view = tester.widget<UiKitView>(find.byType(UiKitView));
+      expect(view.viewType, 'sonarpad/native_accessible_text_blocks');
+      final rows = (view.creationParams as Map)['rows'] as List;
+      expect(rows.map((row) => row['title']), splitBookPreview(text));
+      expect(rows.first['title'], introduction);
+      expect(rows.length, greaterThan(1));
+      expect(calls.any((call) => call.method == 'create'), isTrue);
+      await tester.pumpWidget(const SizedBox());
+      await tester.pumpAndSettle();
+    },
+    variant: TargetPlatformVariant({TargetPlatform.iOS}),
+  );
+
   test('AI introduction stays in one stop and excerpt in three', () {
     final excerpt = List.filled(
       180,
@@ -66,10 +115,13 @@ void main() {
           tester.getSemantics(find.byKey(ValueKey('preview_$i'))).id,
       ];
       for (final index in [0, 1, 2, 3, 2, 1, 0]) {
-        tester.getSemantics(find.byKey(ValueKey('preview_$index'))).owner!.performAction(
-          ids[index],
-          SemanticsAction.didGainAccessibilityFocus,
-        );
+        tester
+            .getSemantics(find.byKey(ValueKey('preview_$index')))
+            .owner!
+            .performAction(
+              ids[index],
+              SemanticsAction.didGainAccessibilityFocus,
+            );
         await tester.pumpAndSettle();
         expect(
           tester.getSemantics(find.byKey(ValueKey('preview_$index'))).id,
