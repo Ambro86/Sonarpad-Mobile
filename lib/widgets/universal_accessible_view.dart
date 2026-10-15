@@ -2371,3 +2371,33 @@ typedef NativeIosListController = AccessibleListController;
 typedef NativeIosAccessibleList = UniversalAccessibleList;
 typedef NativeIosGridItem = AccessibleGridItem;
 typedef NativeIosAccessibleGrid = UniversalAccessibleGrid;
+
+/// A small set of long reading blocks, kept mounted on every platform.
+/// Unlike a virtualized native table, this preserves backwards accessibility
+/// traversal when an individual block is taller than the dialog viewport.
+class UniversalAccessibleTextBlocks extends StatelessWidget {
+  const UniversalAccessibleTextBlocks({super.key, required this.rows});
+
+  final List<AccessibleListRow> rows;
+
+  @override
+  Widget build(BuildContext context) => SingleChildScrollView(
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        for (var i = 0; i < rows.length; i++)
+          Builder(
+            key: ValueKey(rows[i].id),
+            builder: (context) => Semantics(
+              container: true,
+              sortKey: OrdinalSortKey(i.toDouble()),
+              onDidGainAccessibilityFocus: () {
+                Scrollable.ensureVisible(context);
+              },
+              child: Text(rows[i].title),
+            ),
+          ),
+      ],
+    ),
+  );
+}

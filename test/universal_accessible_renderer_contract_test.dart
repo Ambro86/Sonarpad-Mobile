@@ -94,6 +94,7 @@ void main() {
         final covered =
             text.contains('useSharedAccessibleViewModel') ||
             text.contains('UniversalAccessibleList(') ||
+            text.contains('UniversalAccessibleTextBlocks(') ||
             text.contains('UniversalAccessibleGrid(');
         if (!covered) uncovered.add(entity.path);
       }
