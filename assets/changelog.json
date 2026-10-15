@@ -4,7 +4,7 @@
     "date": "2026-10-17",
     "it": [
       "Aggiunta la lingua turca con traduzione completa dell’app e delle note di versione, fonti di notizie dedicate e supporto dell’alfabeto turco nella navigazione e nei PDF.",
-      "Aggiunta SonarMusic per cercare e ascoltare brani, video musicali, artisti, album e playlist di YouTube Music, con filtri accessibili, riproduzione continua, preferiti e cronologia. Gli utenti autorizzati possono anche salvare i media e creare audiodescrizioni.",
+      "Aggiunta SonarMusic per cercare e ascoltare brani, video musicali, artisti, album e playlist, con filtri accessibili, riproduzione continua, preferiti e cronologia.",
       "Migliorata l’accessibilità di SonarMusic: suggerimenti di ricerca in una schermata dedicata, pagine di artisti, album e playlist più semplici e rimozione degli elementi vuoti letti da VoiceOver.",
       "SonarTube permette di aprire direttamente link a video, Shorts e dirette con “Apri URL” e di filtrare la ricerca per Tutto, Playlist o Canali, mantenendo il filtro durante il caricamento dei risultati.",
       "In SonarMusic e SonarTube, i risultati mostrano ora durate più chiare, come “4 minuti e 32 secondi”, con informazioni separate in modo uniforme e senza ripetizioni.",
@@ -25,7 +25,7 @@
     ],
     "en": [
       "Added Turkish with a complete translation of the app and release notes, dedicated news sources, and support for the Turkish alphabet in navigation and PDFs.",
-      "Added SonarMusic to search and play YouTube Music songs, music videos, artists, albums and playlists, with accessible filters, continuous playback, favorites and history. Authorized users can also save media and create audio descriptions.",
+      "Added SonarMusic to search and play songs, music videos, artists, albums and playlists, with accessible filters, continuous playback, favorites and history.",
       "Improved SonarMusic accessibility: search suggestions have their own screen, artist, album and playlist pages are simpler, and empty elements read by VoiceOver have been removed.",
       "SonarTube lets you open video, Shorts and live stream links directly with Open URL and filter searches by All, Playlists or Channels, preserving the filter while loading results.",
       "SonarMusic and SonarTube results now show clearer durations, such as “4 minutes and 32 seconds”, with consistent separators and no repeated information.",
@@ -46,7 +46,7 @@
     ],
     "fr": [
       "Ajout du turc avec une traduction complète de l’application et des notes de version, des sources d’actualités dédiées et la prise en charge de l’alphabet turc dans la navigation et les PDF.",
-      "Ajout de SonarMusic pour rechercher et écouter des titres, clips, artistes, albums et playlists YouTube Music, avec filtres accessibles, lecture continue, favoris et historique. Les utilisateurs autorisés peuvent aussi enregistrer les médias et créer des audiodescriptions.",
+      "Ajout de SonarMusic pour rechercher et écouter des titres, clips, artistes, albums et playlists, avec filtres accessibles, lecture continue, favoris et historique.",
       "Accessibilité de SonarMusic améliorée : écran dédié aux suggestions de recherche, pages d’artistes, d’albums et de playlists simplifiées et suppression des éléments vides lus par VoiceOver.",
       "SonarTube permet d’ouvrir directement des liens vers des vidéos, Shorts et directs avec « Ouvrir URL » et de filtrer la recherche par Tout, Playlists ou Chaînes, en conservant le filtre lors du chargement des résultats.",
       "Dans SonarMusic et SonarTube, les résultats affichent désormais des durées plus claires, comme « 4 minutes et 32 secondes », avec une présentation uniforme et sans répétitions.",
@@ -67,7 +67,7 @@
     ],
     "es": [
       "Añadido el turco con traducción completa de la aplicación y las notas de versión, fuentes de noticias propias y compatibilidad con el alfabeto turco en la navegación y los PDF.",
-      "Añadido SonarMusic para buscar y reproducir canciones, vídeos musicales, artistas, álbumes y listas de YouTube Music, con filtros accesibles, reproducción continua, favoritos e historial. Los usuarios autorizados también pueden guardar medios y crear audiodescripciones.",
+      "Añadido SonarMusic para buscar y reproducir canciones, vídeos musicales, artistas, álbumes y listas, con filtros accesibles, reproducción continua, favoritos e historial.",
       "Mejorada la accesibilidad de SonarMusic: pantalla propia para sugerencias de búsqueda, páginas de artistas, álbumes y listas simplificadas y eliminación de elementos vacíos leídos por VoiceOver.",
       "SonarTube permite abrir enlaces a vídeos, Shorts y directos con «Abrir URL» y filtrar las búsquedas por Todo, Listas o Canales, conservando el filtro al cargar resultados.",
       "Los resultados de SonarMusic y SonarTube ahora muestran duraciones más claras, como «4 minutos y 32 segundos», con separadores uniformes y sin información repetida.",
@@ -88,7 +88,7 @@
     ],
     "pt": [
       "Adicionado o turco com tradução completa da aplicação e das notas de versão, fontes de notícias próprias e suporte do alfabeto turco na navegação e nos PDF.",
-      "Adicionado o SonarMusic para pesquisar e ouvir músicas, vídeos musicais, artistas, álbuns e listas do YouTube Music, com filtros acessíveis, reprodução contínua, favoritos e histórico. Os utilizadores autorizados também podem guardar multimédia e criar audiodescrições.",
+      "Adicionado o SonarMusic para pesquisar e ouvir músicas, vídeos musicais, artistas, álbuns e listas, com filtros acessíveis, reprodução contínua, favoritos e histórico.",
       "Melhorada a acessibilidade do SonarMusic: ecrã próprio para sugestões de pesquisa, páginas de artistas, álbuns e listas simplificadas e remoção de elementos vazios lidos pelo VoiceOver.",
       "O SonarTube permite abrir ligações para vídeos, Shorts e diretos com «Abrir URL» e filtrar a pesquisa por Tudo, Listas ou Canais, mantendo o filtro ao carregar resultados.",
       "Os resultados do SonarMusic e do SonarTube apresentam agora durações mais claras, como «4 minutos e 32 segundos», com separadores uniformes e sem repetições.",
@@ -109,7 +109,7 @@
     ],
     "pt_BR": [
       "Adicionado o turco com tradução completa do aplicativo e das notas de versão, fontes de notícias próprias e suporte ao alfabeto turco na navegação e nos PDFs.",
-      "Adicionado o SonarMusic para pesquisar e ouvir músicas, vídeos musicais, artistas, álbuns e playlists do YouTube Music, com filtros acessíveis, reprodução contínua, favoritos e histórico. Usuários autorizados também podem salvar mídia e criar audiodescrições.",
+      "Adicionado o SonarMusic para pesquisar e ouvir músicas, vídeos musicais, artistas, álbuns e playlists, com filtros acessíveis, reprodução contínua, favoritos e histórico.",
       "Acessibilidade do SonarMusic melhorada: tela própria para sugestões de pesquisa, páginas de artistas, álbuns e playlists simplificadas e remoção de elementos vazios lidos pelo VoiceOver.",
       "O SonarTube permite abrir links de vídeos, Shorts e transmissões ao vivo com “Abrir URL” e filtrar a pesquisa por Tudo, Playlists ou Canais, mantendo o filtro ao carregar resultados.",
       "Os resultados do SonarMusic e do SonarTube agora mostram durações mais claras, como “4 minutos e 32 segundos”, com separadores padronizados e sem repetições.",
@@ -130,7 +130,7 @@
     ],
     "pl": [
       "Dodano język turecki z pełnym tłumaczeniem aplikacji i informacji o wersjach, własnymi źródłami wiadomości oraz obsługą alfabetu tureckiego w nawigacji i plikach PDF.",
-      "Dodano SonarMusic do wyszukiwania i odtwarzania utworów, teledysków, wykonawców, albumów i playlist YouTube Music, z dostępnymi filtrami, ciągłym odtwarzaniem, ulubionymi i historią. Uprawnieni użytkownicy mogą również zapisywać multimedia i tworzyć audiodeskrypcje.",
+      "Dodano SonarMusic do wyszukiwania i odtwarzania utworów, teledysków, wykonawców, albumów i playlist, z dostępnymi filtrami, ciągłym odtwarzaniem, ulubionymi i historią.",
       "Poprawiono dostępność SonarMusic: osobny ekran podpowiedzi wyszukiwania, prostsze strony wykonawców, albumów i playlist oraz usunięcie pustych elementów odczytywanych przez VoiceOver.",
       "SonarTube pozwala otwierać linki do filmów, Shorts i transmisji na żywo przez „Otwórz URL” oraz filtrować wyszukiwanie według Wszystko, Playlisty lub Kanały, zachowując filtr przy ładowaniu wyników.",
       "Wyniki SonarMusic i SonarTube pokazują teraz czas trwania w naturalnej formie, na przykład „4 minuty i 32 sekundy”, ze spójnymi separatorami i bez powtórzeń.",
@@ -151,7 +151,7 @@
     ],
     "cs": [
       "Přidána turečtina s úplným překladem aplikace a poznámek k verzím, vlastními zpravodajskými zdroji a podporou turecké abecedy při navigaci a v PDF.",
-      "Přidán SonarMusic pro vyhledávání a přehrávání skladeb, hudebních videí, umělců, alb a seznamů skladeb YouTube Music s přístupnými filtry, nepřetržitým přehráváním, oblíbenými položkami a historií. Oprávnění uživatelé mohou také ukládat média a vytvářet audiopopisy.",
+      "Přidán SonarMusic pro vyhledávání a přehrávání skladeb, hudebních videí, umělců, alb a seznamů skladeb s přístupnými filtry, nepřetržitým přehráváním, oblíbenými položkami a historií.",
       "Zlepšena přístupnost SonarMusic: samostatná obrazovka návrhů vyhledávání, jednodušší stránky umělců, alb a seznamů skladeb a odstranění prázdných prvků čtených VoiceOverem.",
       "SonarTube umožňuje přímo otevírat odkazy na videa, Shorts a živé přenosy pomocí „Otevřít URL“ a filtrovat vyhledávání podle Vše, Seznamy skladeb nebo Kanály. Filtr se zachová při načítání výsledků.",
       "Výsledky SonarMusic a SonarTube nyní uvádějí délku přirozeně, například „4 minuty a 32 sekund“, s jednotným oddělením údajů a bez opakování.",
@@ -172,7 +172,7 @@
     ],
     "de": [
       "Türkisch wurde mit einer vollständigen Übersetzung der App und der Versionshinweise, eigenen Nachrichtenquellen und Unterstützung des türkischen Alphabets bei der Navigation und in PDFs hinzugefügt.",
-      "SonarMusic wurde hinzugefügt: Songs, Musikvideos, Künstler, Alben und Playlists von YouTube Music suchen und abspielen, mit barrierefreien Filtern, fortlaufender Wiedergabe, Favoriten und Verlauf. Berechtigte Nutzer können auch Medien speichern und Audiodeskriptionen erstellen.",
+      "SonarMusic wurde hinzugefügt: Songs, Musikvideos, Künstler, Alben und Playlists suchen und abspielen, mit barrierefreien Filtern, fortlaufender Wiedergabe, Favoriten und Verlauf.",
       "Die Barrierefreiheit von SonarMusic wurde verbessert: eigene Ansicht für Suchvorschläge, vereinfachte Künstler-, Album- und Playlist-Seiten und keine leeren Elemente mehr für VoiceOver.",
       "SonarTube öffnet Links zu Videos, Shorts und Livestreams direkt über „URL öffnen“. Die Suche lässt sich nach Alle, Playlists oder Kanäle filtern; der Filter bleibt beim Laden weiterer Ergebnisse erhalten.",
       "SonarMusic und SonarTube zeigen die Dauer in Ergebnissen jetzt verständlicher an, zum Beispiel „4 Minuten und 32 Sekunden“, mit einheitlicher Trennung und ohne Wiederholungen.",
@@ -193,7 +193,7 @@
     ],
     "zh_CN": [
       "新增土耳其语，完成应用和版本说明的翻译，提供专属新闻来源，并在导航和 PDF 中支持土耳其字母。",
-      "新增 SonarMusic，可搜索和播放 YouTube Music 的歌曲、音乐视频、艺术家、专辑和播放列表，支持无障碍筛选、连续播放、收藏和历史记录。获授权用户还可保存媒体并创建音频描述。",
+      "新增 SonarMusic，可搜索和播放歌曲、音乐视频、艺术家、专辑和播放列表，支持无障碍筛选、连续播放、收藏和历史记录。",
       "改进 SonarMusic 无障碍体验：搜索建议使用独立页面，简化艺术家、专辑和播放列表页面，并移除 VoiceOver 会读到的空白元素。",
       "SonarTube 可通过“打开 URL”直接打开视频、Shorts 和直播链接，并按全部、播放列表或频道筛选搜索，加载结果时保留筛选条件。",
       "SonarMusic 和 SonarTube 的搜索结果现在以更自然的方式显示时长，例如“4 分钟 32 秒”，信息分隔更统一，也不会重复。",
@@ -214,7 +214,7 @@
     ],
     "uk": [
       "Додано турецьку мову з повним перекладом застосунку й приміток до версій, окремими джерелами новин і підтримкою турецького алфавіту в навігації та PDF.",
-      "Додано SonarMusic для пошуку й відтворення пісень, музичних відео, виконавців, альбомів і списків YouTube Music із доступними фільтрами, безперервним відтворенням, обраним та історією. Уповноважені користувачі також можуть зберігати медіа й створювати аудіоописи.",
+      "Додано SonarMusic для пошуку й відтворення пісень, музичних відео, виконавців, альбомів і списків відтворення із доступними фільтрами, безперервним відтворенням, обраним та історією.",
       "Покращено доступність SonarMusic: окремий екран підказок пошуку, простіші сторінки виконавців, альбомів і списків відтворення та видалення порожніх елементів, які читав VoiceOver.",
       "SonarTube дозволяє відкривати посилання на відео, Shorts і прямі ефіри через «Відкрити URL» та фільтрувати пошук за категоріями Усе, Списки відтворення або Канали, зберігаючи фільтр під час завантаження результатів.",
       "У результатах SonarMusic і SonarTube тривалість тепер подається зрозуміліше, наприклад «4 хвилини і 32 секунди», з однаковими роздільниками та без повторів.",
@@ -235,7 +235,7 @@
     ],
     "ro": [
       "A fost adăugată limba turcă, cu traducerea completă a aplicației și a notelor de versiune, surse de știri dedicate și suport pentru alfabetul turc în navigare și PDF-uri.",
-      "A fost adăugat SonarMusic pentru căutarea și redarea melodiilor, videoclipurilor muzicale, artiștilor, albumelor și listelor YouTube Music, cu filtre accesibile, redare continuă, favorite și istoric. Utilizatorii autorizați pot și salva fișiere media și crea audiodescrieri.",
+      "A fost adăugat SonarMusic pentru căutarea și redarea melodiilor, videoclipurilor muzicale, artiștilor, albumelor și listelor de redare, cu filtre accesibile, redare continuă, favorite și istoric.",
       "Accesibilitatea SonarMusic a fost îmbunătățită: ecran separat pentru sugestiile de căutare, pagini simplificate pentru artiști, albume și liste de redare și eliminarea elementelor goale citite de VoiceOver.",
       "SonarTube permite deschiderea directă a linkurilor către videoclipuri, Shorts și transmisiuni live prin „Deschide URL” și filtrarea căutării după Toate, Liste sau Canale, păstrând filtrul la încărcarea rezultatelor.",
       "Rezultatele SonarMusic și SonarTube afișează acum duratele mai clar, de exemplu „4 minute și 32 de secunde”, cu separatoare uniforme și fără repetări.",
@@ -256,7 +256,7 @@
     ],
     "tr": [
       "Uygulamanın ve sürüm notlarının tam çevirisi, özel haber kaynakları, gezinme ve PDF’lerde Türk alfabesi desteğiyle Türkçe eklendi.",
-      "YouTube Music şarkılarını, müzik videolarını, sanatçılarını, albümlerini ve çalma listelerini erişilebilir filtreler, kesintisiz oynatma, favoriler ve geçmiş ile arayıp oynatmak için SonarMusic eklendi. Yetkili kullanıcılar medya kaydedebilir ve sesli betimleme de oluşturabilir.",
+      "Şarkıları, müzik videolarını, sanatçıları, albümleri ve çalma listelerini erişilebilir filtreler, kesintisiz oynatma, favoriler ve geçmiş ile arayıp oynatmak için SonarMusic eklendi.",
       "SonarMusic erişilebilirliği iyileştirildi: arama önerileri için ayrı ekran, daha sade sanatçı, albüm ve çalma listesi sayfaları ve VoiceOver’ın okuduğu boş öğelerin kaldırılması.",
       "SonarTube, “URL aç” ile video, Shorts ve canlı yayın bağlantılarını doğrudan açmayı ve aramayı Tümü, Çalma listeleri veya Kanallar olarak filtrelemeyi sağlar. Sonuçlar yüklenirken filtre korunur.",
       "SonarMusic ve SonarTube sonuçlarında süreler artık “4 dakika ve 32 saniye” gibi daha açık biçimde gösteriliyor. Ayırıcılar tutarlı ve bilgiler tekrarlanmıyor.",
