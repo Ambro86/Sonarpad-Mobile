@@ -367,7 +367,13 @@ class _TreccaniArticleScreenState extends State<_TreccaniArticleScreen> {
     final l10n = AppLocalizations.of(context);
     final article = _article;
     return Scaffold(
-      appBar: SonarpadAppBar(title: Text(widget.result.title)),
+      appBar: SonarpadAppBar(
+        excludeHeaderSemantics: article != null,
+        title: ExcludeSemantics(
+          excluding: article != null,
+          child: Text(widget.result.title),
+        ),
+      ),
       body: useSharedAccessibleViewModel &&
               !_loading &&
               _loadError == null &&
@@ -413,9 +419,13 @@ class _TreccaniArticleScreenState extends State<_TreccaniArticleScreen> {
                 if (_loadError != null)
                   Text(l10n.error(l10n.technicalErrorGeneric)),
                 if (article != null) ...[
-                  Text(
-                    article.title,
-                    style: Theme.of(context).textTheme.headlineSmall,
+                  Semantics(
+                    header: true,
+                    headingLevel: 1,
+                    child: Text(
+                      article.title,
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
                   ),
                   const SizedBox(height: 12),
                   ListTile(

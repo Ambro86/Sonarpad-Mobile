@@ -200,7 +200,11 @@ class _BdCiechiDashboardScreenState extends State<BdCiechiDashboardScreen> {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Testo d\'assaggio'),
+        title: Semantics(
+          header: true,
+          headingLevel: 1,
+          child: const Text('Testo d\'assaggio'),
+        ),
         content: useSharedAccessibleViewModel
             ? SizedBox(
                 width: 520,

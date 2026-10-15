@@ -380,7 +380,11 @@ class _RaiPlaySoundScreenState extends State<RaiPlaySoundScreen> {
     final items = _page?.items ?? const <RaiPlaySoundItem>[];
     final hasDateButton = _hasDatedAudioItems(items);
     return Scaffold(
-      appBar: SonarpadAppBar(title: Text(_page?.title ?? 'RaiPlay Sound')),
+      appBar: SonarpadAppBar(
+        title: Text(
+          _isRoot ? l10n.homeRaiPlaySound : (_page?.title ?? l10n.homeRaiPlaySound),
+        ),
+      ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _error != null && _page == null

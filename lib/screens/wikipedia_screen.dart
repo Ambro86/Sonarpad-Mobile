@@ -403,7 +403,13 @@ class _WikipediaArticleScreenState extends State<_WikipediaArticleScreen> {
     final l10n = AppLocalizations.of(context);
     final article = _article;
     return Scaffold(
-      appBar: SonarpadAppBar(title: Text(widget.result.title)),
+      appBar: SonarpadAppBar(
+        excludeHeaderSemantics: article != null,
+        title: ExcludeSemantics(
+          excluding: article != null,
+          child: Text(widget.result.title),
+        ),
+      ),
       body: useSharedAccessibleViewModel && !_importing && _importError == null && article != null
           ? UniversalAccessibleList(
               key: ValueKey('shared-wikipedia-article-${article.sections.length}'),
@@ -443,8 +449,12 @@ class _WikipediaArticleScreenState extends State<_WikipediaArticleScreen> {
           if (_importError != null)
             Text(_wikipediaErrorMessage(_importError, l10n)),
           if (article != null) ...[
-            Text(article.title,
-                style: Theme.of(context).textTheme.headlineSmall),
+            Semantics(
+              header: true,
+              headingLevel: 1,
+              child: Text(article.title,
+                  style: Theme.of(context).textTheme.headlineSmall),
+            ),
             const SizedBox(height: 12),
             ListTile(
               leading: const Icon(Icons.article),

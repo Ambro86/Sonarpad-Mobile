@@ -120,46 +120,45 @@ class WikipediaService {
 
   String _parseArticleHtmlToText(String html) {
     final document = html_parser.parseFragment(html);
-    final container = document.querySelector('.mw-parser-output');
-    if (container == null) {
-      _removeUnwantedElements(document);
-      return _normalizeTextBlock(document.text ?? '');
-    }
-
-    _removeUnwantedElements(container);
+    final root = document.querySelector('.mw-parser-output') ?? document;
+    _removeUnwantedElements(root);
     final blocks = <String>[];
-    for (final child in container.children) {
-      if (_shouldSkipElement(child)) continue;
 
-      final name = child.localName ?? '';
-      if (!_acceptedBlockNames.contains(name) &&
-          _wrappedHeadingName(child) == null) {
-        continue;
+    void collectBlocks(dom.Node node) {
+      if (node is dom.Text) {
+        final text = _normalizeTextBlock(node.data);
+        if (text.isNotEmpty) blocks.add(text);
+        return;
       }
-
-      final text = _normalizeTextBlock(_nodeText(child));
-      if (text.isEmpty) continue;
-
-      final wrappedHeading = _wrappedHeadingName(child);
-      if (wrappedHeading != null) {
-        blocks.add(_headingText(wrappedHeading, text));
-      } else if (name.startsWith('h')) {
-        blocks.add(_headingText(name, text));
-      } else {
-        blocks.add(text);
+      if (node is dom.Element) {
+        if (_shouldSkipElement(node)) return;
+        final name = node.localName ?? '';
+        final heading = _wrappedHeadingName(node) ??
+            (RegExp(r'^h[2-6]$').hasMatch(name) ? name : null);
+        if (heading != null) {
+          final text = _normalizeTextBlock(_nodeText(node));
+          if (text.isNotEmpty) blocks.add(_headingText(heading, text));
+          return;
+        }
+        // Parsoid nests headings and content in section elements. Walk these
+        // containers in document order instead of flattening away headings.
+        // Also unwrap legacy divs containing headings without duplicating text.
+        if (_acceptedBlockNames.contains(name) &&
+            node.querySelector('h2, h3, h4, h5, h6') == null) {
+          final text = _normalizeTextBlock(_nodeText(node));
+          if (text.isNotEmpty) blocks.add(text);
+          return;
+        }
+      }
+      for (final child in node.nodes) {
+        collectBlocks(child);
       }
     }
 
-    final fullText = _normalizeTextBlock(container.text);
-    if (blocks.isEmpty) {
-      return fullText;
+    for (final child in root.nodes) {
+      collectBlocks(child);
     }
-
-    final structuredText = blocks.join('\n\n');
-    if (fullText.length > structuredText.length * 2) {
-      return fullText;
-    }
-    return structuredText;
+    return blocks.join('\n\n');
   }
 
   static const _acceptedBlockNames = {

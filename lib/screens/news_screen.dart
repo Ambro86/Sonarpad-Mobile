@@ -300,7 +300,8 @@ class _NewsScreenState extends State<NewsScreen> {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: SonarpadAppBar(
-        title: Text(widget.title ?? l10n.news),
+        excludeHeaderSemantics: true,
+        title: ExcludeSemantics(child: Text(widget.title ?? l10n.news)),
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
@@ -336,6 +337,21 @@ class _NewsScreenState extends State<NewsScreen> {
       ),
       body: Column(
         children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
+            child: Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: Semantics(
+                header: true,
+                headingLevel: 1,
+                child: Text(
+                  widget.title ?? l10n.news,
+                  key: const ValueKey('news_screen_title'),
+                  style: Theme.of(context).textTheme.headlineSmall,
+                ),
+              ),
+            ),
+          ),
           if (widget.folderId == null)
             Padding(
               padding: const EdgeInsets.all(12),
