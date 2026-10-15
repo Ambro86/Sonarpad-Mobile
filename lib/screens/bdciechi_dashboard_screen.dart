@@ -7,6 +7,7 @@ import '../services/document_library_service.dart';
 import 'document_reader_screen.dart';
 import '../utils/status_message.dart';
 import '../widgets/universal_accessible_view.dart';
+import '../widgets/book_preview_content.dart';
 
 class BdCiechiDashboardScreen extends StatefulWidget {
   final String username;
@@ -205,20 +206,7 @@ class _BdCiechiDashboardScreenState extends State<BdCiechiDashboardScreen> {
           headingLevel: 1,
           child: const Text('Testo d\'assaggio'),
         ),
-        content: useSharedAccessibleViewModel
-            ? SizedBox(
-                width: 520,
-                height: 420,
-                child: UniversalAccessibleList(
-                  sections: [AccessibleListSection(rows: [
-                    AccessibleListRow(id: 'preview', kind: 'text', title: content),
-                  ])],
-                  onEvent: (_) {},
-                ),
-              )
-            : SingleChildScrollView(
-                child: Text(content),
-              ),
+        content: BookPreviewContent(text: content),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
