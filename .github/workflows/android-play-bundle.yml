@@ -1,0 +1,212 @@
+name: Sonarpad Google Play AAB (manual)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build signed Google Play bundle
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      RUN_EMULATOR: 'false'
+      APP_NAME: Sonarpad
+
+    steps:
+      - name: Validate Google Play signing secrets
+        env:
+          PLAY_UPLOAD_KEYSTORE_BASE64: ${{ secrets.PLAY_UPLOAD_KEYSTORE_BASE64 }}
+          PLAY_UPLOAD_STORE_PASSWORD: ${{ secrets.PLAY_UPLOAD_STORE_PASSWORD }}
+          PLAY_UPLOAD_KEY_ALIAS: ${{ secrets.PLAY_UPLOAD_KEY_ALIAS }}
+          PLAY_UPLOAD_KEY_PASSWORD: ${{ secrets.PLAY_UPLOAD_KEY_PASSWORD }}
+        run: |
+          python3 - <<'PY'
+          import os
+          required = (
+              "PLAY_UPLOAD_KEYSTORE_BASE64", "PLAY_UPLOAD_STORE_PASSWORD",
+              "PLAY_UPLOAD_KEY_ALIAS", "PLAY_UPLOAD_KEY_PASSWORD",
+          )
+          missing = [name for name in required if not os.environ.get(name)]
+          if missing:
+              raise SystemExit("Configure these repository Actions secrets first: " + ", ".join(missing))
+          PY
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Ensure Android project exists
+        run: |
+          if [ ! -d "android/app" ]; then
+            flutter create --platforms=android --project-name sonarpad .
+          fi
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: gradle
+          cache-dependency-path: |
+            android/**/*.gradle*
+            android/gradle/wrapper/gradle-wrapper.properties
+
+      - name: Accept Android SDK licenses
+        run: yes | flutter doctor --android-licenses || true
+
+      - name: Install Flutter dependencies
+        run: flutter pub get
+
+      - name: Verify native DSP assets
+        run: python3 tools/verify_native_dsp_assets.py
+
+      - name: Run Flutter tests
+        run: flutter test --exclude-tags golden --dart-define=SONARPAD_ROUTE_CLIENT_TOKEN=${{ secrets.SONARPAD_ROUTE_CLIENT_TOKEN }}
+
+      - name: Configure Android project
+        run: |
+          python3 - <<'PY'
+          import os
+          import re
+          from pathlib import Path
+
+          app_name = os.environ.get("APP_NAME", "Sonarpad")
+          manifest = Path("android/app/src/main/AndroidManifest.xml")
+
+          if manifest.exists():
+              text = manifest.read_text(encoding="utf-8")
+
+              # Internet è necessario per TTS, RSS, podcast, aggiornamenti, mappe e API.
+              if "android.permission.INTERNET" not in text:
+                  text = text.replace(
+                      ">",
+                      ">\n    <uses-permission android:name=\"android.permission.INTERNET\" />",
+                      1,
+                  )
+
+              # Permessi per just_audio_background
+              if "android.permission.WAKE_LOCK" not in text:
+                  text = text.replace(
+                      "<application",
+                      "    <uses-permission android:name=\"android.permission.WAKE_LOCK\" />\n    <uses-permission android:name=\"android.permission.FOREGROUND_SERVICE\" />\n    <uses-permission android:name=\"android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK\" />\n    <application",
+                      1,
+                  )
+
+              # Servizi e receiver per just_audio_background
+              if "com.ryanheise.audioservice.AudioService" not in text:
+                  text = text.replace(
+                      "</activity>",
+                      "</activity>\n        <service android:name=\"com.ryanheise.audioservice.AudioService\" android:foregroundServiceType=\"mediaPlayback\" android:exported=\"true\">\n            <intent-filter>\n                <action android:name=\"android.media.browse.MediaBrowserService\" />\n            </intent-filter>\n        </service>\n        <receiver android:name=\"com.ryanheise.audioservice.MediaButtonReceiver\" android:exported=\"true\">\n            <intent-filter>\n                <action android:name=\"android.intent.action.MEDIA_BUTTON\" />\n            </intent-filter>\n        </receiver>",
+                      1,
+                  )
+
+              # Mantiene il nome dell'app coerente con iOS.
+              if "android:label=" in text:
+                  text = re.sub(r'android:label="[^"]*"', f'android:label="{app_name}"', text, count=1)
+
+              manifest.write_text(text, encoding="utf-8")
+              print("AndroidManifest.xml configurato")
+          else:
+              print("AndroidManifest.xml non trovato")
+
+          gradle = Path("android/app/build.gradle.kts")
+          if not gradle.exists():
+              gradle = Path("android/app/build.gradle")
+
+          if gradle.exists():
+              gradle_text = gradle.read_text(encoding="utf-8")
+              gradle_text = re.sub(r'compileSdk\s*=\s*flutter\.compileSdkVersion', 'compileSdk = 36', gradle_text)
+              gradle_text = re.sub(r'compileSdkVersion\s+flutter\.compileSdkVersion', 'compileSdkVersion 36', gradle_text)
+              gradle_text = re.sub(r'compileSdk\s*=\s*\d+', 'compileSdk = 36', gradle_text)
+              gradle_text = re.sub(r'compileSdkVersion\s+\d+', 'compileSdkVersion 36', gradle_text)
+              gradle.write_text(gradle_text, encoding="utf-8")
+              print("build.gradle configurato (compileSdk=36)")
+          PY
+
+      - name: Force compileSdk 36 in plugins
+        run: |
+          find ~/.pub-cache/hosted/pub.dev -name "build.gradle*" -exec sed -i -E 's/compileSdk\s*=?\s*([0-9]+|flutter\.compileSdkVersion)/compileSdk = 36/g' {} + || true
+          find ~/.pub-cache/hosted/pub.dev -name "build.gradle*" -exec sed -i -E 's/compileSdkVersion\s*=?\s*([0-9]+|flutter\.compileSdkVersion)/compileSdkVersion 36/g' {} + || true
+
+      - name: Ensure Android Proguard rules
+        run: |
+          mkdir -p android/app
+          touch android/app/proguard-rules.pro
+          grep -qxF -- "-keep class com.antonkarpenko.ffmpegkit.** { *; }" android/app/proguard-rules.pro || echo "-keep class com.antonkarpenko.ffmpegkit.** { *; }" >> android/app/proguard-rules.pro
+          grep -qxF -- "-keep class com.google.mlkit.vision.text.** { *; }" android/app/proguard-rules.pro || echo "-keep class com.google.mlkit.vision.text.** { *; }" >> android/app/proguard-rules.pro
+          grep -qxF -- "-dontwarn com.google.mlkit.vision.text.**" android/app/proguard-rules.pro || echo "-dontwarn com.google.mlkit.vision.text.**" >> android/app/proguard-rules.pro
+
+      - name: Restore upload keystore outside the repository
+        env:
+          PLAY_UPLOAD_KEYSTORE_BASE64: ${{ secrets.PLAY_UPLOAD_KEYSTORE_BASE64 }}
+        run: |
+          python3 - <<'PY'
+          import base64
+          import os
+          from pathlib import Path
+          path = Path(os.environ["RUNNER_TEMP"]) / "sonarpad-play-upload.jks"
+          encoded = "".join(os.environ["PLAY_UPLOAD_KEYSTORE_BASE64"].split())
+          data = base64.b64decode(encoded, validate=True)
+          if not data:
+              raise SystemExit("The upload keystore is empty")
+          with path.open("wb") as handle:
+              os.chmod(path, 0o600)
+              handle.write(data)
+          PY
+
+      - name: Build signed release AAB
+        env:
+          SONARPAD_GOOGLE_PLAY_BUILD: 'true'
+          PLAY_UPLOAD_KEYSTORE_PATH: ${{ runner.temp }}/sonarpad-play-upload.jks
+          PLAY_UPLOAD_STORE_PASSWORD: ${{ secrets.PLAY_UPLOAD_STORE_PASSWORD }}
+          PLAY_UPLOAD_KEY_ALIAS: ${{ secrets.PLAY_UPLOAD_KEY_ALIAS }}
+          PLAY_UPLOAD_KEY_PASSWORD: ${{ secrets.PLAY_UPLOAD_KEY_PASSWORD }}
+          SONARPAD_ROUTE_CLIENT_TOKEN: ${{ secrets.SONARPAD_ROUTE_CLIENT_TOKEN }}
+        run: >-
+          flutter build appbundle --release
+          --dart-define=SONARPAD_ROUTE_CLIENT_TOKEN="$SONARPAD_ROUTE_CLIENT_TOKEN"
+
+      - name: Verify bundle signature and prepare artifact
+        run: |
+          python3 - <<'PY'
+          from zipfile import ZipFile
+          from pathlib import Path
+          import shutil
+          import subprocess
+          source = Path("build/app/outputs/bundle/release/app-release.aab")
+          with ZipFile(source) as archive:
+              names = [name.upper() for name in archive.namelist()]
+              if not any(n.startswith("META-INF/") and n.endswith(".SF") for n in names):
+                  raise SystemExit("Bundle is not signed")
+              if not any(n.startswith("META-INF/") and n.endswith((".RSA", ".DSA", ".EC")) for n in names):
+                  raise SystemExit("Bundle has no signing certificate")
+          subprocess.run(["jarsigner", "-verify", str(source)], check=True)
+          target = Path("build/play-release/Sonarpad-google-play.aab")
+          target.parent.mkdir(parents=True, exist_ok=True)
+          shutil.copyfile(source, target)
+          PY
+
+      - name: Remove temporary upload keystore
+        if: always()
+        run: |
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+          (Path(os.environ["RUNNER_TEMP"]) / "sonarpad-play-upload.jks").unlink(missing_ok=True)
+          PY
+
+      - name: Upload signed Google Play bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: Sonarpad-google-play-aab
+          path: build/play-release/Sonarpad-google-play.aab
+          if-no-files-found: error
+          retention-days: 30

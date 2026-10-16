@@ -1,4 +1,4 @@
-package com.example.sonarpad_mobile_starter
+package com.ambro86.sonarpad
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodChannel

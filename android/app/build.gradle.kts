@@ -5,8 +5,14 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+// The Play workflow opts in explicitly; direct APK builds keep their existing signing.
+val googlePlayBuild = System.getenv("SONARPAD_GOOGLE_PLAY_BUILD") == "true"
+fun requiredPlaySigningValue(name: String): String =
+    System.getenv(name)?.takeIf { it.isNotBlank() }
+        ?: throw GradleException("Missing Google Play signing setting: $name")
+
 android {
-    namespace = "com.example.sonarpad_mobile_starter"
+    namespace = "com.ambro86.sonarpad"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -24,8 +30,7 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.sonarpad_mobile_starter"
+        applicationId = "com.ambro86.sonarpad"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = 24
@@ -34,11 +39,22 @@ android {
         versionName = flutter.versionName
     }
 
+    if (googlePlayBuild) {
+        signingConfigs {
+            create("googlePlayUpload") {
+                storeFile = file(requiredPlaySigningValue("PLAY_UPLOAD_KEYSTORE_PATH"))
+                storePassword = requiredPlaySigningValue("PLAY_UPLOAD_STORE_PASSWORD")
+                keyAlias = requiredPlaySigningValue("PLAY_UPLOAD_KEY_ALIAS")
+                keyPassword = requiredPlaySigningValue("PLAY_UPLOAD_KEY_PASSWORD")
+            }
+        }
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName(
+                if (googlePlayBuild) "googlePlayUpload" else "debug"
+            )
             isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),

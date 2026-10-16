@@ -32,6 +32,8 @@ const String _screenshotDevice = String.fromEnvironment(
 
 Size _screenshotSurfaceSize() {
   switch (_screenshotDevice) {
+    case 'android':
+      return const Size(360, 640);
     case 'ipad':
       // Same aspect ratio as the 12.9/13-inch iPad App Store screenshots.
       // The workflow later exports this to 2048 x 2732.
@@ -146,7 +148,9 @@ Widget _wrapScreen(Widget child) {
     localizationsDelegates: delegates,
     supportedLocales: AppLocalizations.supportedLocales,
     locale: const Locale('it'),
-    theme: sonarpadTheme(),
+    theme: _screenshotDevice == 'android'
+        ? sonarpadTheme().copyWith(platform: TargetPlatform.android)
+        : sonarpadTheme(),
     home: child,
   );
 }

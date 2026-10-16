@@ -1,4 +1,4 @@
-package com.example.sonarpad_mobile_starter
+package com.ambro86.sonarpad
 
 import org.junit.Assert.*
 import org.junit.Test

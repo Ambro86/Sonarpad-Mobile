@@ -40,7 +40,7 @@ void main() {
 
   test('Android streams cloud bytes and cleans cancelled imports', () {
     final source = File(
-      'android/app/src/main/kotlin/com/example/sonarpad_mobile_starter/SonarpadCloudFilePicker.kt',
+      'android/app/src/main/kotlin/com/ambro86/sonarpad/SonarpadCloudFilePicker.kt',
     ).readAsStringSync();
     expect(source, contains('Intent.ACTION_OPEN_DOCUMENT'));
     expect(source, contains('contentResolver.openInputStream(uri)'));

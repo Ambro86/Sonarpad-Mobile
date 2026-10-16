@@ -1,0 +1,46 @@
+name: Android Store Screenshots
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  screenshots:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Install dependencies
+        run: flutter pub get
+      - name: Generate Android phone screenshots
+        run: >-
+          flutter test test/screenshots_test.dart --update-goldens
+          --dart-define=SONARPAD_SCREENSHOT_DEVICE=android
+          --dart-define=SONARPAD_ROUTE_CLIENT_TOKEN=${{ secrets.SONARPAD_ROUTE_CLIENT_TOKEN }}
+      - name: Prepare Google Play images
+        run: |
+          python3 -m pip install --quiet pillow
+          python3 tool/prepare_android_store_images.py
+      - name: Upload Google Play images
+        uses: actions/upload-artifact@v4
+        with:
+          name: sonarpad-google-play-images
+          if-no-files-found: error
+          path: build/google_play_images/
+      - name: Upload screenshot diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sonarpad-android-screenshot-diagnostics
+          if-no-files-found: warn
+          path: |
+            test/goldens/
+            test/failures/

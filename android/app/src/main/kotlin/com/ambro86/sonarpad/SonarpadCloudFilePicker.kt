@@ -1,4 +1,4 @@
-package com.example.sonarpad_mobile_starter
+package com.ambro86.sonarpad
 
 import android.app.Activity
 import android.content.Intent
