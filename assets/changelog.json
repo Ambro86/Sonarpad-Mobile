@@ -1,5 +1,48 @@
 [
   {
+    "version": "0.5.2",
+    "date": "2026-10-17",
+    "it": [
+      "Corretta la gestione dei cataloghi dei personaggi: quelli eliminati da Documenti non compaiono più in Crea audiodescrizione con IA. Ricreare un catalogo con lo stesso nome non recupera più i personaggi eliminati."
+    ],
+    "en": [
+      "Fixed character catalog handling: catalogs deleted from Documents no longer appear in Create audio description with AI. Recreating a catalog with the same name no longer restores deleted characters."
+    ],
+    "fr": [
+      "Correction de la gestion des catalogues de personnages : les catalogues supprimés de Documents ne figurent plus dans Créer une audiodescription avec IA. Recréer un catalogue portant le même nom ne restaure plus les personnages supprimés."
+    ],
+    "es": [
+      "Corregida la gestión de los catálogos de personajes: los eliminados de Documentos ya no aparecen en Crear audiodescripción con IA. Recrear un catálogo con el mismo nombre ya no recupera los personajes eliminados."
+    ],
+    "pt": [
+      "Corrigida a gestão dos catálogos de personagens: os eliminados de Documentos já não aparecem em Criar audiodescrição com IA. Recriar um catálogo com o mesmo nome já não recupera as personagens eliminadas."
+    ],
+    "pt_BR": [
+      "Corrigido o gerenciamento dos catálogos de personagens: os excluídos de Documentos não aparecem mais em Criar audiodescrição com IA. Recriar um catálogo com o mesmo nome não restaura mais os personagens excluídos."
+    ],
+    "pl": [
+      "Poprawiono obsługę katalogów postaci: katalogi usunięte z Dokumentów nie pojawiają się już podczas tworzenia audiodeskrypcji z AI. Ponowne utworzenie katalogu o tej samej nazwie nie przywraca usuniętych postaci."
+    ],
+    "cs": [
+      "Opravena správa katalogů postav: katalogy odstraněné z Dokumentů se již nezobrazují při vytváření audiopopisu pomocí AI. Opětovné vytvoření katalogu se stejným názvem již neobnovuje odstraněné postavy."
+    ],
+    "de": [
+      "Verwaltung der Figurenkataloge korrigiert: Aus Dokumente gelöschte Kataloge erscheinen nicht mehr beim Erstellen einer Audiodeskription mit KI. Beim erneuten Erstellen eines Katalogs mit demselben Namen werden gelöschte Figuren nicht mehr wiederhergestellt."
+    ],
+    "zh_CN": [
+      "修复角色目录管理：从“文档”中删除的目录不再显示在“使用 AI 创建音频描述”中。重新创建同名目录时，也不会恢复已删除的角色。"
+    ],
+    "uk": [
+      "Виправлено керування каталогами персонажів: каталоги, видалені з Документів, більше не відображаються під час створення аудіодискрипції за допомогою ШІ. Повторне створення каталогу з тією самою назвою більше не відновлює видалених персонажів."
+    ],
+    "ro": [
+      "Corectată gestionarea cataloagelor de personaje: cele șterse din Documente nu mai apar la crearea audiodescrierilor cu IA. Recrearea unui catalog cu același nume nu mai restabilește personajele șterse."
+    ],
+    "tr": [
+      "Karakter kataloglarının yönetimi düzeltildi: Belgelerden silinen kataloglar artık yapay zekâ ile sesli betimleme oluştururken görünmüyor. Aynı adla yeniden katalog oluşturmak, silinen karakterleri artık geri getirmiyor."
+    ]
+  },
+  {
     "version": "0.5.1",
     "date": "2026-10-17",
     "it": [

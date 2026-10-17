@@ -1322,11 +1322,14 @@ class AiAudioDescriptionService {
   }
 
   Future<List<String>> listCharacterCatalogs() async {
-    await _syncCatalogsFromSonarpadDocuments();
+    final visible = await _syncCatalogsFromSonarpadDocuments();
     final directory = await _characterCatalogDirectory();
     final catalogs = <String>[];
     await for (final entity in directory.list(followLinks: false)) {
       if (entity is! File || p.extension(entity.path).toLowerCase() != '.json') {
+        continue;
+      }
+      if (visible != null && !visible.contains(p.basenameWithoutExtension(entity.path))) {
         continue;
       }
       try {
@@ -1347,7 +1350,10 @@ class AiAudioDescriptionService {
   }
 
   Future<List<Map<String, Object?>>> loadCharacterCatalog(String name) async {
-    await _syncCatalogsFromSonarpadDocuments();
+    final visible = await _syncCatalogsFromSonarpadDocuments();
+    if (visible != null && !visible.contains(_catalogFileStem(name))) {
+      return <Map<String, Object?>>[];
+    }
     final directory = await _characterCatalogDirectory();
     final file = File(p.join(directory.path, '${_catalogFileStem(name)}.json'));
     if (!await file.exists()) return <Map<String, Object?>>[];
@@ -1366,9 +1372,11 @@ class AiAudioDescriptionService {
   ) async {
     final directory = await _characterCatalogDirectory();
     final file = File(p.join(directory.path, '${_catalogFileStem(name)}.json'));
+    final visible = await _syncCatalogsFromSonarpadDocuments();
     String? createdAt;
     List<Map<String, Object?>> established = <Map<String, Object?>>[];
-    if (await file.exists()) {
+    if ((visible == null || visible.contains(_catalogFileStem(name))) &&
+        await file.exists()) {
       try {
         final old = jsonDecode(await file.readAsString());
         if (old is Map) {
@@ -1414,7 +1422,10 @@ class AiAudioDescriptionService {
     );
   }
 
-  Future<void> _syncCatalogsFromSonarpadDocuments() async {
+  // Documents is authoritative. Private copies are retained for recovery, but
+  // must not resurrect catalogs that the user removed from the library.
+  // null means the library could not be read, not that every catalog was deleted.
+  Future<Set<String>?> _syncCatalogsFromSonarpadDocuments() async {
     try {
       final library = DocumentLibraryService();
       await library.load();
@@ -1424,15 +1435,16 @@ class AiAudioDescriptionService {
             item.parentId == null &&
             item.displayName.trim().toLowerCase() == 'audiodescriptions',
       ).toList(growable: false);
-      if (audioFolder.isEmpty) return;
+      if (audioFolder.isEmpty) return <String>{};
       final catalogsFolder = library.documents.where(
         (item) =>
             item.isFolder &&
             item.parentId == audioFolder.first.id &&
             item.displayName.trim().toLowerCase() == 'catalogs',
       ).toList(growable: false);
-      if (catalogsFolder.isEmpty) return;
+      if (catalogsFolder.isEmpty) return <String>{};
       final directory = await _characterCatalogDirectory();
+      final visible = <String>{};
       for (final item in library.documents.where(
         (item) =>
             !item.isFolder &&
@@ -1454,13 +1466,18 @@ class AiAudioDescriptionService {
             name?.isNotEmpty == true ? name! : p.basenameWithoutExtension(path),
           );
           await source.copy(p.join(directory.path, '$stem.json'));
-        } catch (_) {}
+          visible.add(stem);
+        } on FormatException {
+          // Invalid JSON is not a catalog.
+        }
       }
+      return visible;
     } catch (error, stackTrace) {
       await AppLogger.log(
         'Audio description mobile: catalog Documents sync warning '
         'error=$error\n$stackTrace',
       );
+      return null;
     }
   }
 

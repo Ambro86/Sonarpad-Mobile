@@ -293,7 +293,8 @@ class _CreateAiAudiodescriptionScreenState
         _recognizeCharacters = preferences['characters'] != false;
         _recognizeScreenText = preferences['screenText'] != false;
         _keepCharacterCatalog = preferences['keepCatalog'] == true;
-        _characterCatalogName = preferences['catalogName']?.toString();
+        final savedCatalog = preferences['catalogName']?.toString();
+        _characterCatalogName = characterCatalogs.contains(savedCatalog) ? savedCatalog : null;
         _characterCatalogs = characterCatalogs;
         _saveProject = preferences['project'] == true;
         _createVideoOutput = preferences['createVideo'] == true;
