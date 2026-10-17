@@ -3,43 +3,56 @@
     "version": "0.5.2",
     "date": "2026-10-17",
     "it": [
-      "Corretta la gestione dei cataloghi dei personaggi: quelli eliminati da Documenti non compaiono più in Crea audiodescrizione con IA. Ricreare un catalogo con lo stesso nome non recupera più i personaggi eliminati."
+      "Corretta la gestione dei cataloghi dei personaggi: quelli eliminati da Documenti non compaiono più in Crea audiodescrizione con IA. Ricreare un catalogo con lo stesso nome non recupera più i personaggi eliminati.",
+      "In SonarMusic, “Ascoltati di recente” permette ora di eliminare singole voci dalle azioni secondarie di VoiceOver o dal pulsante visivo, escluso dalla lettura dello screen reader, e di cancellare tutta la cronologia con conferma, come in SonarTube."
     ],
     "en": [
-      "Fixed character catalog handling: catalogs deleted from Documents no longer appear in Create audio description with AI. Recreating a catalog with the same name no longer restores deleted characters."
+      "Fixed character catalog handling: catalogs deleted from Documents no longer appear in Create audio description with AI. Recreating a catalog with the same name no longer restores deleted characters.",
+      "SonarMusic Recently listened now supports deleting individual entries through VoiceOver actions or a visual button excluded from screen reader navigation, and clearing the entire history with confirmation, as in SonarTube."
     ],
     "fr": [
-      "Correction de la gestion des catalogues de personnages : les catalogues supprimés de Documents ne figurent plus dans Créer une audiodescription avec IA. Recréer un catalogue portant le même nom ne restaure plus les personnages supprimés."
+      "Correction de la gestion des catalogues de personnages : les catalogues supprimés de Documents ne figurent plus dans Créer une audiodescription avec IA. Recréer un catalogue portant le même nom ne restaure plus les personnages supprimés.",
+      "Dans SonarMusic, les écoutes récentes permettent désormais de supprimer chaque entrée via les actions VoiceOver ou un bouton visuel exclu de la navigation du lecteur d’écran, et d’effacer tout l’historique après confirmation, comme dans SonarTube."
     ],
     "es": [
-      "Corregida la gestión de los catálogos de personajes: los eliminados de Documentos ya no aparecen en Crear audiodescripción con IA. Recrear un catálogo con el mismo nombre ya no recupera los personajes eliminados."
+      "Corregida la gestión de los catálogos de personajes: los eliminados de Documentos ya no aparecen en Crear audiodescripción con IA. Recrear un catálogo con el mismo nombre ya no recupera los personajes eliminados.",
+      "En SonarMusic, las escuchas recientes permiten eliminar entradas mediante las acciones de VoiceOver o un botón visual excluido de la navegación del lector de pantalla, y borrar todo el historial con confirmación, como en SonarTube."
     ],
     "pt": [
-      "Corrigida a gestão dos catálogos de personagens: os eliminados de Documentos já não aparecem em Criar audiodescrição com IA. Recriar um catálogo com o mesmo nome já não recupera as personagens eliminadas."
+      "Corrigida a gestão dos catálogos de personagens: os eliminados de Documentos já não aparecem em Criar audiodescrição com IA. Recriar um catálogo com o mesmo nome já não recupera as personagens eliminadas.",
+      "No SonarMusic, as reproduções recentes permitem eliminar entradas pelas ações do VoiceOver ou por um botão visual excluído da navegação do leitor de ecrã, e limpar todo o histórico com confirmação, como no SonarTube."
     ],
     "pt_BR": [
-      "Corrigido o gerenciamento dos catálogos de personagens: os excluídos de Documentos não aparecem mais em Criar audiodescrição com IA. Recriar um catálogo com o mesmo nome não restaura mais os personagens excluídos."
+      "Corrigido o gerenciamento dos catálogos de personagens: os excluídos de Documentos não aparecem mais em Criar audiodescrição com IA. Recriar um catálogo com o mesmo nome não restaura mais os personagens excluídos.",
+      "No SonarMusic, as reproduções recentes permitem excluir entradas pelas ações do VoiceOver ou por um botão visual excluído da navegação do leitor de tela, e limpar todo o histórico com confirmação, como no SonarTube."
     ],
     "pl": [
-      "Poprawiono obsługę katalogów postaci: katalogi usunięte z Dokumentów nie pojawiają się już podczas tworzenia audiodeskrypcji z AI. Ponowne utworzenie katalogu o tej samej nazwie nie przywraca usuniętych postaci."
+      "Poprawiono obsługę katalogów postaci: katalogi usunięte z Dokumentów nie pojawiają się już podczas tworzenia audiodeskrypcji z AI. Ponowne utworzenie katalogu o tej samej nazwie nie przywraca usuniętych postaci.",
+      "Ostatnio słuchane w SonarMusic umożliwiają usuwanie wpisów za pomocą czynności VoiceOver lub przycisku pomijanego przez czytnik ekranu oraz czyszczenie całej historii po potwierdzeniu, tak jak w SonarTube."
     ],
     "cs": [
-      "Opravena správa katalogů postav: katalogy odstraněné z Dokumentů se již nezobrazují při vytváření audiopopisu pomocí AI. Opětovné vytvoření katalogu se stejným názvem již neobnovuje odstraněné postavy."
+      "Opravena správa katalogů postav: katalogy odstraněné z Dokumentů se již nezobrazují při vytváření audiopopisu pomocí AI. Opětovné vytvoření katalogu se stejným názvem již neobnovuje odstraněné postavy.",
+      "Nedávno poslouchané v SonarMusic nyní umožňují odstranit položky pomocí akcí VoiceOver nebo tlačítka vynechaného při navigaci čtečkou obrazovky a vymazat celou historii po potvrzení, stejně jako v SonarTube."
     ],
     "de": [
-      "Verwaltung der Figurenkataloge korrigiert: Aus Dokumente gelöschte Kataloge erscheinen nicht mehr beim Erstellen einer Audiodeskription mit KI. Beim erneuten Erstellen eines Katalogs mit demselben Namen werden gelöschte Figuren nicht mehr wiederhergestellt."
+      "Verwaltung der Figurenkataloge korrigiert: Aus Dokumente gelöschte Kataloge erscheinen nicht mehr beim Erstellen einer Audiodeskription mit KI. Beim erneuten Erstellen eines Katalogs mit demselben Namen werden gelöschte Figuren nicht mehr wiederhergestellt.",
+      "In SonarMusic lassen sich zuletzt gehörte Einträge jetzt über VoiceOver-Aktionen oder eine von der Screenreader-Navigation ausgeschlossene Schaltfläche löschen. Der gesamte Verlauf kann nach Bestätigung geleert werden, wie in SonarTube."
     ],
     "zh_CN": [
-      "修复角色目录管理：从“文档”中删除的目录不再显示在“使用 AI 创建音频描述”中。重新创建同名目录时，也不会恢复已删除的角色。"
+      "修复角色目录管理：从“文档”中删除的目录不再显示在“使用 AI 创建音频描述”中。重新创建同名目录时，也不会恢复已删除的角色。",
+      "SonarMusic 的“最近收听”现可通过 VoiceOver 操作或不参与屏幕阅读器导航的可视按钮删除单条记录，也可在确认后清空全部历史记录，与 SonarTube 一致。"
     ],
     "uk": [
-      "Виправлено керування каталогами персонажів: каталоги, видалені з Документів, більше не відображаються під час створення аудіодискрипції за допомогою ШІ. Повторне створення каталогу з тією самою назвою більше не відновлює видалених персонажів."
+      "Виправлено керування каталогами персонажів: каталоги, видалені з Документів, більше не відображаються під час створення аудіодискрипції за допомогою ШІ. Повторне створення каталогу з тією самою назвою більше не відновлює видалених персонажів.",
+      "У SonarMusic нещодавно прослухані записи тепер можна видаляти через дії VoiceOver або візуальну кнопку, виключену з навігації читача екрана, а всю історію — очищати після підтвердження, як у SonarTube."
     ],
     "ro": [
-      "Corectată gestionarea cataloagelor de personaje: cele șterse din Documente nu mai apar la crearea audiodescrierilor cu IA. Recrearea unui catalog cu același nume nu mai restabilește personajele șterse."
+      "Corectată gestionarea cataloagelor de personaje: cele șterse din Documente nu mai apar la crearea audiodescrierilor cu IA. Recrearea unui catalog cu același nume nu mai restabilește personajele șterse.",
+      "În SonarMusic, ascultările recente permit acum ștergerea intrărilor prin acțiunile VoiceOver sau printr-un buton vizual exclus din navigarea cititorului de ecran și golirea întregului istoric după confirmare, ca în SonarTube."
     ],
     "tr": [
-      "Karakter kataloglarının yönetimi düzeltildi: Belgelerden silinen kataloglar artık yapay zekâ ile sesli betimleme oluştururken görünmüyor. Aynı adla yeniden katalog oluşturmak, silinen karakterleri artık geri getirmiyor."
+      "Karakter kataloglarının yönetimi düzeltildi: Belgelerden silinen kataloglar artık yapay zekâ ile sesli betimleme oluştururken görünmüyor. Aynı adla yeniden katalog oluşturmak, silinen karakterleri artık geri getirmiyor.",
+      "SonarMusic son dinlenenler artık VoiceOver eylemleri veya ekran okuyucu gezinmesine dahil edilmeyen görsel bir düğme ile tek tek silinebiliyor. SonarTube gibi tüm geçmiş de onay alınarak temizlenebiliyor."
     ]
   },
   {

@@ -25,6 +25,11 @@ class SonarMusicLibraryService {
     if (current.length > 100) current.removeRange(100, current.length);
     await _save(historyKey, current);
   }
+  Future<void> removeRecent(SonarMusicItem item) async {
+    final current = await recent();
+    current.removeWhere((existing) => existing.key == item.key);
+    await _save(historyKey, current);
+  }
   Future<void> clearHistory() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(historyKey);

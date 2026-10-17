@@ -56,6 +56,7 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
   bool get _home => widget.collection == null && widget.searchQuery == null && widget.libraryType == null;
   bool get _busy => _opening != null;
   bool get _isCollection => widget.collection != null;
+  bool get _isRecent => widget.libraryType == 'recent';
 
   String _label(String key) {
     final l10n = AppLocalizations.of(context);
@@ -423,6 +424,37 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
     await _play(playable.first, shuffle: shuffle, forceAutoplay: true);
   }
 
+  Future<void> _deleteRecent(SonarMusicItem item) async {
+    if (!_isRecent) return;
+    await _library.removeRecent(item);
+    if (!mounted) return;
+    setState(() => _items.removeWhere((entry) => entry.key == item.key));
+  }
+
+  Future<void> _clearHistory() async {
+    if (!_isRecent) return;
+    final l10n = AppLocalizations.of(context);
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.clearHistory),
+        content: Text(l10n.sonarMusicRecent),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: Text(l10n.cancel)),
+          FilledButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: Text(l10n.clear)),
+        ],
+      ),
+    );
+    if (confirm != true) return;
+    await _library.clearHistory();
+    if (!mounted) return;
+    setState(() => _items = []);
+  }
+
   String _itemSubtitle(SonarMusicItem item) {
     final l10n = AppLocalizations.of(context);
     return sonarMusicItemSubtitle(
@@ -441,6 +473,8 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
     final isFav = _favorites.contains(item.key);
     final subtitle = _itemSubtitle(item);
     final actions = <CustomSemanticsAction, VoidCallback>{
+      if (_isRecent) CustomSemanticsAction(
+        label: AppLocalizations.of(context).deleteItem): () => _deleteRecent(item),
       CustomSemanticsAction(label: isFav ? _label('remove') : _label('add')):
         () => _toggleFavorite(item, focusId: 'item_$i'),
       CustomSemanticsAction(label: _label('share')):
@@ -476,6 +510,11 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
           title: Text(item.title), subtitle: Text(subtitle),
           onTap: !_busy ? () => _openItem(item) : null),
         Wrap(spacing: 4, children: [
+          if (_isRecent) IconButton(
+            key: ValueKey('sonarmusic_delete_recent_${item.key}'),
+            tooltip: AppLocalizations.of(context).deleteItem,
+            icon: const Icon(Icons.delete_outline),
+            onPressed: () => _deleteRecent(item)),
           IconButton(tooltip: isFav ? _label('remove') : _label('add'),
             icon: Icon(isFav ? Icons.favorite : Icons.favorite_border),
             onPressed: () => _toggleFavorite(item, focusId: 'item_$i')),
@@ -508,6 +547,15 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
   Widget _buildList() {
     final l10n = AppLocalizations.of(context);
     final rows = <AccessibleListRow>[];
+    if (_isRecent && _items.isNotEmpty) {
+      rows.add(AccessibleListRow(
+        id: 'clear_history', title: l10n.clearHistory, kind: 'button',
+        flutterChild: OutlinedButton.icon(
+          key: const ValueKey('sonarmusic_clear_history'),
+          onPressed: _clearHistory,
+          icon: const Icon(Icons.delete_sweep),
+          label: Text(l10n.clearHistory))));
+    }
     if (_home) {
       for (final type in ['favorites', 'recent', 'open']) {
         rows.add(AccessibleListRow(id: type, title: _label(type), kind: 'button',
@@ -596,6 +644,7 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
         subtitle: _itemSubtitle(item),
         enabled: item.available && !_busy,
         actions: [
+          if (_isRecent) AccessibleCustomAction(id: 'delete_recent', label: l10n.deleteItem),
           AccessibleCustomAction(id: 'favorite', label: isFav ? _label('remove') : _label('add')),
           AccessibleCustomAction(id: 'share', label: _label('share')),
           if (item.playable) AccessibleCustomAction(id: 'artist', label: _label('artist_open')),
@@ -608,6 +657,10 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
           if (_canSave(item)) AccessibleCustomAction(id: 'save_media', label: _label('save')),
           if (_canSave(item)) AccessibleCustomAction(
             id: 'create_ai_audiodescription', label: l10n.audioDescriptionCreateAiTitle),
+        ],
+        visualActions: [
+          if (_isRecent) AccessibleVisualAction(
+            id: 'delete_recent', label: l10n.deleteItem, icon: 'remove'),
         ],
         flutterChild: _itemVisual(item, i)));
     }
@@ -632,6 +685,7 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
           if (event.type == 'activate') await _openItem(item);
           if (event.type == 'customAction') {
             switch (event.action) {
+              case 'delete_recent': await _deleteRecent(item);
               case 'favorite': await _toggleFavorite(item, focusId: id);
               case 'share': await _shareItem(item);
               case 'artist': await _openArtist(item);
@@ -646,6 +700,7 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
           return;
         }
         if (event.type != 'activate') return;
+        if (id == 'clear_history') await _clearHistory();
         if (id == 'search') await _search();
         if (id == 'suggest') await _suggest();
         if (id == 'favorites' || id == 'recent') await _openLibrary(id);
