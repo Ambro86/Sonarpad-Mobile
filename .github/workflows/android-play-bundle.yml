@@ -6,6 +6,11 @@ on:
 permissions:
   contents: read
 
+# Serialize bundles so each build receives a distinct, increasing versionCode.
+concurrency:
+  group: sonarpad-google-play-bundle
+  cancel-in-progress: false
+
 jobs:
   build:
     name: Build signed Google Play bundle
@@ -162,6 +167,24 @@ jobs:
               handle.write(data)
           PY
 
+      - name: Assign Google Play build number
+        run: |
+          python3 - <<'PY'
+          import os
+          import time
+
+          # Seconds since 2020-01-01 UTC: newer builds (including re-runs)
+          # get newer codes, independently of the marketing version in pubspec.
+          build_number = int(time.time()) - 1577836800
+          if not 11 < build_number <= 2100000000:
+              raise SystemExit("Generated versionCode is outside Google Play's range")
+          with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as output:
+              output.write(f"PLAY_BUILD_NUMBER={build_number}\n")
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as output:
+              output.write(f"Google Play versionCode: **{build_number}**\n")
+          print(f"Google Play build number: {build_number}")
+          PY
+
       - name: Build signed release AAB
         env:
           SONARPAD_GOOGLE_PLAY_BUILD: 'true'
@@ -172,6 +195,7 @@ jobs:
           SONARPAD_ROUTE_CLIENT_TOKEN: ${{ secrets.SONARPAD_ROUTE_CLIENT_TOKEN }}
         run: >-
           flutter build appbundle --release
+          --build-number="$PLAY_BUILD_NUMBER"
           --dart-define=SONARPAD_ROUTE_CLIENT_TOKEN="$SONARPAD_ROUTE_CLIENT_TOKEN"
 
       - name: Verify bundle signature and prepare artifact
