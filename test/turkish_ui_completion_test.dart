@@ -171,7 +171,9 @@ void main() {
       final l10n = lookupSupportedAppLocalizations('tr');
       await tester.pumpWidget(_localizedApp(SonarMusicScreen(service: service)));
       await tester.pumpAndSettle();
+      expect(find.text(l10n.sonarMusicSuggest), findsNothing);
       await tester.enterText(find.byType(TextField), 'İstanbul');
+      await tester.pump(); // Suggestions appear after the empty-to-text change.
       final suggestions = find.text(l10n.sonarMusicSuggest);
       await tester.ensureVisible(suggestions);
       await tester.tap(suggestions);
