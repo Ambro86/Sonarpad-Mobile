@@ -4,55 +4,81 @@
     "date": "2026-10-17",
     "it": [
       "Corretta la gestione dei cataloghi dei personaggi: quelli eliminati da Documenti non compaiono più in Crea audiodescrizione con IA. Ricreare un catalogo con lo stesso nome non recupera più i personaggi eliminati.",
-      "In SonarMusic, “Ascoltati di recente” permette ora di eliminare singole voci dalle azioni secondarie di VoiceOver o dal pulsante visivo, escluso dalla lettura dello screen reader, e di cancellare tutta la cronologia con conferma, come in SonarTube."
+      "In SonarMusic, “Ascoltati di recente” permette ora di eliminare singole voci dalle azioni secondarie di VoiceOver o dal pulsante visivo, escluso dalla lettura dello screen reader, e di cancellare tutta la cronologia con conferma, come in SonarTube.",
+      "Su Android, la lettura con le voci locali supporta ora pausa e ripresa tramite il doppio tocco con due dita di TalkBack, anche in notizie, documenti, Wikipedia e Treccani.",
+      "In SonarMusic, il pulsante Suggerimenti compare solo quando il campo di ricerca contiene testo. La sua comparsa o scomparsa mantiene stabile il focus di VoiceOver, senza ricaricare tutto l’elenco."
     ],
     "en": [
       "Fixed character catalog handling: catalogs deleted from Documents no longer appear in Create audio description with AI. Recreating a catalog with the same name no longer restores deleted characters.",
-      "SonarMusic Recently listened now supports deleting individual entries through VoiceOver actions or a visual button excluded from screen reader navigation, and clearing the entire history with confirmation, as in SonarTube."
+      "SonarMusic Recently listened now supports deleting individual entries through VoiceOver actions or a visual button excluded from screen reader navigation, and clearing the entire history with confirmation, as in SonarTube.",
+      "On Android, reading with local voices now supports pause and resume using the TalkBack two-finger double tap, including news, documents, Wikipedia and Treccani.",
+      "In SonarMusic, Suggestions appears only when the search field contains text. Showing or hiding the button preserves VoiceOver focus without reloading the entire list."
     ],
     "fr": [
       "Correction de la gestion des catalogues de personnages : les catalogues supprimés de Documents ne figurent plus dans Créer une audiodescription avec IA. Recréer un catalogue portant le même nom ne restaure plus les personnages supprimés.",
-      "Dans SonarMusic, les écoutes récentes permettent désormais de supprimer chaque entrée via les actions VoiceOver ou un bouton visuel exclu de la navigation du lecteur d’écran, et d’effacer tout l’historique après confirmation, comme dans SonarTube."
+      "Dans SonarMusic, les écoutes récentes permettent désormais de supprimer chaque entrée via les actions VoiceOver ou un bouton visuel exclu de la navigation du lecteur d’écran, et d’effacer tout l’historique après confirmation, comme dans SonarTube.",
+      "Sur Android, la lecture avec les voix locales peut désormais être mise en pause et reprise par un double toucher avec deux doigts dans TalkBack, notamment pour les actualités, les documents, Wikipédia et Treccani.",
+      "Dans SonarMusic, le bouton Suggestions apparaît uniquement lorsque le champ de recherche contient du texte. Son affichage ou son masquage préserve le focus VoiceOver sans recharger toute la liste."
     ],
     "es": [
       "Corregida la gestión de los catálogos de personajes: los eliminados de Documentos ya no aparecen en Crear audiodescripción con IA. Recrear un catálogo con el mismo nombre ya no recupera los personajes eliminados.",
-      "En SonarMusic, las escuchas recientes permiten eliminar entradas mediante las acciones de VoiceOver o un botón visual excluido de la navegación del lector de pantalla, y borrar todo el historial con confirmación, como en SonarTube."
+      "En SonarMusic, las escuchas recientes permiten eliminar entradas mediante las acciones de VoiceOver o un botón visual excluido de la navegación del lector de pantalla, y borrar todo el historial con confirmación, como en SonarTube.",
+      "En Android, la lectura con voces locales permite pausar y reanudar con el doble toque con dos dedos de TalkBack, también en noticias, documentos, Wikipedia y Treccani.",
+      "En SonarMusic, Sugerencias aparece solo cuando el campo de búsqueda contiene texto. Mostrar u ocultar el botón mantiene el foco de VoiceOver sin recargar toda la lista."
     ],
     "pt": [
       "Corrigida a gestão dos catálogos de personagens: os eliminados de Documentos já não aparecem em Criar audiodescrição com IA. Recriar um catálogo com o mesmo nome já não recupera as personagens eliminadas.",
-      "No SonarMusic, as reproduções recentes permitem eliminar entradas pelas ações do VoiceOver ou por um botão visual excluído da navegação do leitor de ecrã, e limpar todo o histórico com confirmação, como no SonarTube."
+      "No SonarMusic, as reproduções recentes permitem eliminar entradas pelas ações do VoiceOver ou por um botão visual excluído da navegação do leitor de ecrã, e limpar todo o histórico com confirmação, como no SonarTube.",
+      "No Android, a leitura com vozes locais permite agora pausar e retomar com o duplo toque com dois dedos do TalkBack, incluindo notícias, documentos, Wikipédia e Treccani.",
+      "No SonarMusic, o botão Sugestões aparece apenas quando o campo de pesquisa contém texto. Mostrar ou ocultar o botão mantém o foco do VoiceOver sem recarregar toda a lista."
     ],
     "pt_BR": [
       "Corrigido o gerenciamento dos catálogos de personagens: os excluídos de Documentos não aparecem mais em Criar audiodescrição com IA. Recriar um catálogo com o mesmo nome não restaura mais os personagens excluídos.",
-      "No SonarMusic, as reproduções recentes permitem excluir entradas pelas ações do VoiceOver ou por um botão visual excluído da navegação do leitor de tela, e limpar todo o histórico com confirmação, como no SonarTube."
+      "No SonarMusic, as reproduções recentes permitem excluir entradas pelas ações do VoiceOver ou por um botão visual excluído da navegação do leitor de tela, e limpar todo o histórico com confirmação, como no SonarTube.",
+      "No Android, a leitura com vozes locais agora permite pausar e retomar com o toque duplo com dois dedos do TalkBack, inclusive em notícias, documentos, Wikipédia e Treccani.",
+      "No SonarMusic, o botão Sugestões aparece apenas quando o campo de pesquisa contém texto. Mostrar ou ocultar o botão mantém o foco do VoiceOver sem recarregar toda a lista."
     ],
     "pl": [
       "Poprawiono obsługę katalogów postaci: katalogi usunięte z Dokumentów nie pojawiają się już podczas tworzenia audiodeskrypcji z AI. Ponowne utworzenie katalogu o tej samej nazwie nie przywraca usuniętych postaci.",
-      "Ostatnio słuchane w SonarMusic umożliwiają usuwanie wpisów za pomocą czynności VoiceOver lub przycisku pomijanego przez czytnik ekranu oraz czyszczenie całej historii po potwierdzeniu, tak jak w SonarTube."
+      "Ostatnio słuchane w SonarMusic umożliwiają usuwanie wpisów za pomocą czynności VoiceOver lub przycisku pomijanego przez czytnik ekranu oraz czyszczenie całej historii po potwierdzeniu, tak jak w SonarTube.",
+      "Na Androidzie czytanie głosami lokalnymi obsługuje teraz pauzę i wznowienie przez dwukrotne stuknięcie dwoma palcami w TalkBack, także w wiadomościach, dokumentach, Wikipedii i Treccani.",
+      "W SonarMusic przycisk sugestii pojawia się tylko wtedy, gdy pole wyszukiwania zawiera tekst. Pokazywanie i ukrywanie przycisku zachowuje fokus VoiceOver bez ponownego ładowania całej listy."
     ],
     "cs": [
       "Opravena správa katalogů postav: katalogy odstraněné z Dokumentů se již nezobrazují při vytváření audiopopisu pomocí AI. Opětovné vytvoření katalogu se stejným názvem již neobnovuje odstraněné postavy.",
-      "Nedávno poslouchané v SonarMusic nyní umožňují odstranit položky pomocí akcí VoiceOver nebo tlačítka vynechaného při navigaci čtečkou obrazovky a vymazat celou historii po potvrzení, stejně jako v SonarTube."
+      "Nedávno poslouchané v SonarMusic nyní umožňují odstranit položky pomocí akcí VoiceOver nebo tlačítka vynechaného při navigaci čtečkou obrazovky a vymazat celou historii po potvrzení, stejně jako v SonarTube.",
+      "V Androidu lze nyní čtení místními hlasy pozastavit a obnovit dvojitým klepnutím dvěma prsty v TalkBacku, také ve zprávách, dokumentech, Wikipedii a Treccani.",
+      "V SonarMusic se tlačítko návrhů zobrazuje pouze tehdy, když vyhledávací pole obsahuje text. Zobrazení nebo skrytí tlačítka zachovává zaměření VoiceOveru bez opětovného načtení celého seznamu."
     ],
     "de": [
       "Verwaltung der Figurenkataloge korrigiert: Aus Dokumente gelöschte Kataloge erscheinen nicht mehr beim Erstellen einer Audiodeskription mit KI. Beim erneuten Erstellen eines Katalogs mit demselben Namen werden gelöschte Figuren nicht mehr wiederhergestellt.",
-      "In SonarMusic lassen sich zuletzt gehörte Einträge jetzt über VoiceOver-Aktionen oder eine von der Screenreader-Navigation ausgeschlossene Schaltfläche löschen. Der gesamte Verlauf kann nach Bestätigung geleert werden, wie in SonarTube."
+      "In SonarMusic lassen sich zuletzt gehörte Einträge jetzt über VoiceOver-Aktionen oder eine von der Screenreader-Navigation ausgeschlossene Schaltfläche löschen. Der gesamte Verlauf kann nach Bestätigung geleert werden, wie in SonarTube.",
+      "Unter Android lässt sich das Vorlesen mit lokalen Stimmen jetzt durch doppeltes Tippen mit zwei Fingern in TalkBack pausieren und fortsetzen, auch in Nachrichten, Dokumenten, Wikipedia und Treccani.",
+      "In SonarMusic erscheint die Schaltfläche Vorschläge nur, wenn das Suchfeld Text enthält. Beim Ein- und Ausblenden bleibt der VoiceOver-Fokus erhalten, ohne die gesamte Liste neu zu laden."
     ],
     "zh_CN": [
       "修复角色目录管理：从“文档”中删除的目录不再显示在“使用 AI 创建音频描述”中。重新创建同名目录时，也不会恢复已删除的角色。",
-      "SonarMusic 的“最近收听”现可通过 VoiceOver 操作或不参与屏幕阅读器导航的可视按钮删除单条记录，也可在确认后清空全部历史记录，与 SonarTube 一致。"
+      "SonarMusic 的“最近收听”现可通过 VoiceOver 操作或不参与屏幕阅读器导航的可视按钮删除单条记录，也可在确认后清空全部历史记录，与 SonarTube 一致。",
+      "在 Android 上，使用本地语音朗读时，现在可以通过 TalkBack 的双指双击手势暂停和继续，包括新闻、文档、维基百科和 Treccani。",
+      "在 SonarMusic 中，只有搜索框包含文字时才会显示“建议”按钮。显示或隐藏按钮时会保留 VoiceOver 焦点，不会重新加载整个列表。"
     ],
     "uk": [
       "Виправлено керування каталогами персонажів: каталоги, видалені з Документів, більше не відображаються під час створення аудіодискрипції за допомогою ШІ. Повторне створення каталогу з тією самою назвою більше не відновлює видалених персонажів.",
-      "У SonarMusic нещодавно прослухані записи тепер можна видаляти через дії VoiceOver або візуальну кнопку, виключену з навігації читача екрана, а всю історію — очищати після підтвердження, як у SonarTube."
+      "У SonarMusic нещодавно прослухані записи тепер можна видаляти через дії VoiceOver або візуальну кнопку, виключену з навігації читача екрана, а всю історію — очищати після підтвердження, як у SonarTube.",
+      "На Android читання локальними голосами тепер можна призупиняти й відновлювати подвійним дотиком двома пальцями в TalkBack, зокрема в новинах, документах, Вікіпедії та Treccani.",
+      "У SonarMusic кнопка підказок з’являється лише тоді, коли поле пошуку містить текст. Показ і приховування кнопки зберігають фокус VoiceOver без перезавантаження всього списку."
     ],
     "ro": [
       "Corectată gestionarea cataloagelor de personaje: cele șterse din Documente nu mai apar la crearea audiodescrierilor cu IA. Recrearea unui catalog cu același nume nu mai restabilește personajele șterse.",
-      "În SonarMusic, ascultările recente permit acum ștergerea intrărilor prin acțiunile VoiceOver sau printr-un buton vizual exclus din navigarea cititorului de ecran și golirea întregului istoric după confirmare, ca în SonarTube."
+      "În SonarMusic, ascultările recente permit acum ștergerea intrărilor prin acțiunile VoiceOver sau printr-un buton vizual exclus din navigarea cititorului de ecran și golirea întregului istoric după confirmare, ca în SonarTube.",
+      "Pe Android, citirea cu vocile locale acceptă acum pauza și reluarea prin atingerea dublă cu două degete în TalkBack, inclusiv în știri, documente, Wikipedia și Treccani.",
+      "În SonarMusic, butonul Sugestii apare doar când câmpul de căutare conține text. Afișarea sau ascunderea lui păstrează focalizarea VoiceOver fără a reîncărca întreaga listă."
     ],
     "tr": [
       "Karakter kataloglarının yönetimi düzeltildi: Belgelerden silinen kataloglar artık yapay zekâ ile sesli betimleme oluştururken görünmüyor. Aynı adla yeniden katalog oluşturmak, silinen karakterleri artık geri getirmiyor.",
-      "SonarMusic son dinlenenler artık VoiceOver eylemleri veya ekran okuyucu gezinmesine dahil edilmeyen görsel bir düğme ile tek tek silinebiliyor. SonarTube gibi tüm geçmiş de onay alınarak temizlenebiliyor."
+      "SonarMusic son dinlenenler artık VoiceOver eylemleri veya ekran okuyucu gezinmesine dahil edilmeyen görsel bir düğme ile tek tek silinebiliyor. SonarTube gibi tüm geçmiş de onay alınarak temizlenebiliyor.",
+      "Android’de yerel seslerle okuma artık TalkBack’te iki parmakla çift dokunarak duraklatılabilir ve sürdürülebilir; haberler, belgeler, Wikipedia ve Treccani de buna dahildir.",
+      "SonarMusic’te Öneriler düğmesi yalnızca arama alanında metin olduğunda görünür. Düğmenin gösterilmesi veya gizlenmesi, tüm listeyi yeniden yüklemeden VoiceOver odağını korur."
     ]
   },
   {
