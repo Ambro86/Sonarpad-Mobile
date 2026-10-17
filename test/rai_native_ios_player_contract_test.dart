@@ -10,7 +10,7 @@ void main() {
     expect(
       source,
       contains(
-        'Platform.isIOS && _requiresRaiAudioDescriptionMediaKitPlayback',
+        '(Platform.isIOS || Platform.isAndroid)',
       ),
     );
     expect(source, contains('await _playRaiNative('));
@@ -21,7 +21,7 @@ void main() {
       isTrue,
       reason: 'The native path must receive the resolved Rai master, not a child audio playlist.',
     );
-    expect(source, contains('preferAudioDescription: _preferRaiAudioDescription'));
+    expect(source, contains('preferAudioDescription: _requiresRaiAudioDescriptionMediaKitPlayback &&'));
   });
 
   test('Rai native player uses AVFoundation and native audio media selection', () {
@@ -51,7 +51,7 @@ void main() {
     expect(source, contains('_playRaiMediaKitFallback'));
     expect(
       source,
-      contains('RAI AVPlayer fallback to existing MediaKit path'),
+      contains('native TV player fallback to existing MediaKit path'),
     );
     expect(
       source,
@@ -59,7 +59,7 @@ void main() {
     );
   });
 
-  test('native Rai view is iOS-only and other TV playback stays on MediaKit', () {
+  test('native view is iOS-only and supported TV playback precedes MediaKit', () {
     final service =
         File('lib/services/rai_native_player_service.dart').readAsStringSync();
     final player =
@@ -70,7 +70,7 @@ void main() {
     expect(service, contains("viewType: 'sonarpad/rai_player_view'"));
     expect(service, contains('bool get isSupported => Platform.isIOS;'));
 
-    final nativeBranch = player.indexOf('if (_useNativeRaiPlayback)');
+    final nativeBranch = player.indexOf('if (_useNativeTvPlayback)');
     final genericTvBranch = player.indexOf('if (_requiresTvMediaKitPlayback)');
     expect(nativeBranch, greaterThanOrEqualTo(0));
     expect(genericTvBranch, greaterThan(nativeBranch));

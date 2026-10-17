@@ -158,7 +158,13 @@ class RaiAndroidPlayerPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, E
         })
         selectTracks()
         surface?.player = created
-        created.setMediaItem(MediaItem.fromUri(url))
+        val item = MediaItem.Builder().setUri(url)
+        // PHP/redirect URLs have no extension: pass the detected manifest type.
+        when (call.argument<String>("streamFormat")) {
+            "hls" -> item.setMimeType(MimeTypes.APPLICATION_M3U8)
+            "dash" -> item.setMimeType(MimeTypes.APPLICATION_MPD)
+        }
+        created.setMediaItem(item.build())
         created.prepare()
         created.play()
         handler.post(position)

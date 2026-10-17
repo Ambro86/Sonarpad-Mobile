@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
-/// iOS-only bridge used for Rai live streams.
+/// iOS bridge for compatible live TV streams, including Rai.
 ///
 /// RaiPlay itself uses AVPlayer/AVFoundation for HLS playback. Keeping the
 /// complete master playlist inside AVFoundation lets the native stack manage
@@ -23,6 +23,7 @@ class RaiNativePlayerService {
 
   Future<void> open({
     required String url,
+    String? streamFormat,
     required Map<String, String> headers,
     required bool preferAudioDescription,
     required bool videoEnabled,
@@ -31,6 +32,7 @@ class RaiNativePlayerService {
     if (!isSupported) return;
     await _commands.invokeMethod<void>('open', {
       'url': url,
+      'streamFormat': streamFormat,
       'headers': headers,
       'preferAudioDescription': preferAudioDescription,
       'videoEnabled': videoEnabled,

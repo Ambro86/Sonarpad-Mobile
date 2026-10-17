@@ -1,3 +1,4 @@
+import '../services/tv_native_stream.dart';
 import '../services/rai_android_player_service.dart';
 import 'dart:async';
 import 'dart:io';
@@ -86,6 +87,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   VideoPlayerController? _videoController;
   mk.Player? _mediaKitPlayer;
   mkv.VideoController? _mediaKitController;
+  bool _nativeTvFallbackSelected = false;
   bool _raiNativeActive = false;
   bool _raiNativePlaying = false;
   bool _raiNativeBuffering = false;
@@ -264,8 +266,9 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         );
         if (!mounted || requestId != _playRequestId || _streamUserPaused) return;
       }
-      if (_useNativeRaiPlayback) {
+      if (_useNativeTvPlayback) {
         await _playRaiNative(
+          reconnecting: reconnecting,
           requestId: requestId,
           diagnostics: diagnostics,
         );
@@ -280,9 +283,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         return;
       }
 
-      // Tutti gli altri canali TV continuano a usare MediaKit su Android e
-      // iOS. Solo i canali Rai con relinker Mediapolis prendono il percorso
-      // AVPlayer nativo sopra, esclusivamente su iOS.
+      // Unsupported streams and failed native attempts retain MediaKit.
       if (_requiresTvMediaKitPlayback) {
         await AppLogger.log(
           'RadioPlayer: TV MediaKit playback selected '
@@ -385,6 +386,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   }
 
   Future<void> _playRaiNative({
+    required bool reconnecting,
     required int requestId,
     required StreamDiagnosticsSession? diagnostics,
   }) async {
@@ -399,12 +401,29 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       await _raiNativePlayer.dispose();
     }
 
-    final masterUrl = await TvService().resolveStreamUrl(
-      channel,
-      diagnostics: diagnostics,
-    );
+    final masterUrl = _requiresRaiAudioDescriptionMediaKitPlayback || reconnecting
+        ? await TvService().resolveStreamUrl(channel, diagnostics: diagnostics)
+        : widget.station.streamUrl;
+    final headers = _requiresRaiAudioDescriptionMediaKitPlayback
+        ? <String, String>{
+            'User-Agent': channel.playbackUserAgent,
+            ...channel.playbackHeaders,
+          }
+        : _mediaKitHttpHeaders();
+    final format = _requiresRaiAudioDescriptionMediaKitPlayback
+        ? TvNativeStreamFormat.hls
+        : await TvNativeStream.detect(masterUrl, headers: headers);
     if (!mounted || requestId != _playRequestId ||
         generation != _raiNativeGeneration || (Platform.isAndroid && _streamUserPaused)) {
+      return;
+    }
+
+    if (!TvNativeStream.supported(format, android: Platform.isAndroid)) {
+      _nativeTvFallbackSelected = true;
+      diagnostics?.record('native_tv_format_fallback', {
+        'format': format?.name ?? 'unknown',
+      });
+      await _playMediaKitVideo(streamUrl: masterUrl, playRequestId: requestId);
       return;
     }
 
@@ -424,11 +443,6 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       return;
     }
 
-    final headers = <String, String>{
-      'User-Agent': channel.playbackUserAgent,
-      ...channel.playbackHeaders,
-    };
-
     _raiNativeActive = true;
     _raiNativePlaying = false;
     _raiNativeBuffering = true;
@@ -447,12 +461,12 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       'stage': _mediaKitStage,
       'url': StreamDiagnosticsSession.safeUrl(masterUrl),
       'videoEnabled': _isVideoEnabled,
-      'preferAD': _preferRaiAudioDescription,
+      'preferAD': _requiresRaiAudioDescriptionMediaKitPlayback && _preferRaiAudioDescription,
       'userAgent': headers['User-Agent'],
       'architecture': Platform.isAndroid ? 'media3_master_stream' : 'avfoundation_master_hls',
     });
     await AppLogger.log(
-      'RadioPlayer: RAI ${Platform.isAndroid ? 'Android ExoPlayer' : 'iOS native AVPlayer'} selected '
+      'RadioPlayer: TV ${Platform.isAndroid ? 'Android ExoPlayer' : 'iOS native AVPlayer'} selected '
       'master=${StreamDiagnosticsSession.safeUrl(masterUrl)} '
       'videoEnabled=$_isVideoEnabled preferAD=$_preferRaiAudioDescription',
     );
@@ -469,7 +483,9 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       await _raiNativePlayer.open(
         url: masterUrl,
         headers: headers,
-        preferAudioDescription: _preferRaiAudioDescription,
+        preferAudioDescription: _requiresRaiAudioDescriptionMediaKitPlayback &&
+            _preferRaiAudioDescription,
+        streamFormat: format?.name,
         videoEnabled: _isVideoEnabled,
         volume: _mediaKitVolume,
       );
@@ -483,7 +499,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         'error': error.toString(),
       });
       await AppLogger.log(
-        'RadioPlayer: RAI AVPlayer open failed; using existing MediaKit fallback '
+        'RadioPlayer: native TV player open failed; using existing MediaKit fallback '
         'error=${StreamDiagnosticsSession.redact(error.toString())}',
       );
       await _activateRaiNativeFallback(reason: 'native_open_failed');
@@ -584,7 +600,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         return;
       }
       unawaited(AppLogger.log(
-        'RadioPlayer: RAI AVPlayer audio tracks '
+        'RadioPlayer: native TV player audio tracks '
         'preferAD=${event['preferAudioDescription']} '
         'selected=${event['selected']} locale=${event['selectedLocale']} '
         'selectedAD=${event['selectedIsAudioDescription']} '
@@ -611,7 +627,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         'positionMs': stalledAt.inMilliseconds,
       });
       unawaited(AppLogger.log(
-        'RadioPlayer: RAI AVPlayer reported playback stalled '
+        'RadioPlayer: native TV player reported playback stalled '
         'position=$stalledAt buffering=$_raiNativeBuffering',
       ));
       _raiNativeStallTimer?.cancel();
@@ -638,7 +654,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         'error': message,
       });
       unawaited(AppLogger.log(
-        'RadioPlayer: RAI AVPlayer native error; trying MediaKit fallback '
+        'RadioPlayer: native TV player native error; trying MediaKit fallback '
         'error=${StreamDiagnosticsSession.redact(message)}',
       ));
       unawaited(_recoverRaiNative(reason: 'native_error'));
@@ -647,7 +663,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
 
     if (type == 'log') {
       unawaited(AppLogger.log(
-        'RadioPlayer: RAI AVPlayer ${event['category']}: '
+        'RadioPlayer: native TV player ${event['category']}: '
         '${StreamDiagnosticsSession.redact(event['message']?.toString() ?? '')}',
       ));
     }
@@ -660,6 +676,10 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     }
     _raiNativeStallTimer?.cancel();
     _raiNativeStallTimer = null;
+    if (!_requiresRaiAudioDescriptionMediaKitPlayback) {
+      await _activateRaiNativeFallback(reason: reason);
+      return;
+    }
     if (_raiNativeRestartCount == 0) {
       _raiNativeRestartCount = 1;
       final requestId = _playRequestId;
@@ -670,7 +690,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         'positionMs': _mediaKitLastPosition?.inMilliseconds,
       });
       await AppLogger.log(
-        'RadioPlayer: RAI AVPlayer restarting once with a fresh Mediapolis URL '
+        'RadioPlayer: native TV player restarting once with a fresh Mediapolis URL '
         'reason=$reason station="${widget.station.name}"',
       );
       await _play(reconnecting: true);
@@ -681,7 +701,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
 
   Future<void> _activateRaiNativeFallback({required String reason}) async {
     if (!mounted || !_raiNativeActive || _raiNativeFallbackInProgress ||
-        !_requiresRaiAudioDescriptionMediaKitPlayback) {
+        !_requiresTvMediaKitPlayback) {
       return;
     }
     final requestId = _playRequestId;
@@ -698,7 +718,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
 
     try {
       await AppLogger.log(
-        'RadioPlayer: RAI AVPlayer fallback to existing MediaKit path '
+        'RadioPlayer: native TV player fallback to existing MediaKit path '
         'reason=$reason station="${widget.station.name}"',
       );
       await _raiNativePlayer.dispose();
@@ -708,10 +728,18 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       if (!mounted || requestId != _playRequestId) {
         return;
       }
-      await _playRaiMediaKitFallback(
-        requestId: requestId,
-        diagnostics: _streamDiagnostics,
-      );
+      if (_requiresRaiAudioDescriptionMediaKitPlayback) {
+        await _playRaiMediaKitFallback(
+          requestId: requestId,
+          diagnostics: _streamDiagnostics,
+        );
+      } else {
+        _nativeTvFallbackSelected = true;
+        await _playMediaKitVideo(
+          streamUrl: _mediaKitPlaybackUrl ?? widget.station.streamUrl,
+          playRequestId: requestId,
+        );
+      }
     } catch (error) {
       await AppLogger.log(
         'RadioPlayer: RAI MediaKit fallback after AVPlayer failed: '
@@ -1130,6 +1158,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   Future<void> _retryStreamPlayback() async {
     if (!mounted || _streamRetryInProgress || widget.tvChannel == null) return;
     _streamDiagnostics?.record('manual_retry');
+    _nativeTvFallbackSelected = false;
     _raiNativeRestartCount = 0;
     setState(() => _streamRetryInProgress = true);
     announceStatusMessage(context, AppLocalizations.of(context).streamReconnecting);
@@ -2440,9 +2469,9 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   bool get _hasPendingScheduledRecording =>
       _recordingService.hasPendingScheduleFor(_recordingTarget.id);
 
-  bool get _useNativeRaiPlayback =>
-      (Platform.isIOS && _requiresRaiAudioDescriptionMediaKitPlayback) ||
-      (Platform.isAndroid && _requiresRaiAudioDescriptionMediaKitPlayback);
+  bool get _useNativeTvPlayback =>
+      (Platform.isIOS || Platform.isAndroid) &&
+      _requiresTvMediaKitPlayback && !_nativeTvFallbackSelected;
 
   bool get _requiresRaiAudioDescriptionMediaKitPlayback =>
       widget.isVideoSupported &&
@@ -2795,7 +2824,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     return _buildFullscreenVideoSurface(
       child: Platform.isAndroid ? const RaiAndroidVideoView() : const RaiNativeVideoView(),
       aspectRatio: 16 / 9,
-      engine: Platform.isAndroid ? 'exoplayer_rai' : 'avplayer_rai',
+      engine: Platform.isAndroid ? 'exoplayer' : 'avplayer',
     );
   }
 
