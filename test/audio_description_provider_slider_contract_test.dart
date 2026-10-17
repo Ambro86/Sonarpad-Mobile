@@ -59,7 +59,9 @@ void main() {
     () {
       final changes =
           jsonDecode(File('assets/changelog.json').readAsStringSync()) as List;
-      final current = changes.first as Map<String, dynamic>;
+      final current = changes.cast<Map<String, dynamic>>().singleWhere(
+        (entry) => entry['version'] == '0.5.1',
+      );
       expect(current['version'], '0.5.1');
       const languages = [
         'it',

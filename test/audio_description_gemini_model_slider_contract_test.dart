@@ -80,7 +80,9 @@ void main() {
   test('0.5.1 release notes stay source-neutral for expanded radio search', () {
     final entries =
         jsonDecode(File('assets/changelog.json').readAsStringSync()) as List;
-    expect((entries.first as Map)['version'], '0.5.1');
+    final release = entries.cast<Map<String, dynamic>>().singleWhere(
+      (entry) => entry['version'] == '0.5.1',
+    );
     const languages = [
       'it',
       'en',
@@ -97,11 +99,11 @@ void main() {
       'tr',
     ];
     for (final language in languages) {
-      final notes = ((entries.first as Map)[language] as List).cast<String>();
+      final notes = (release[language] as List).cast<String>();
       expect(notes, isNotEmpty);
       expect(
         notes.length,
-        ((entries.first as Map)['it'] as List).length,
+        (release['it'] as List).length,
         reason: language,
       );
       expect(notes.join(' '), isNot(contains('Radio Browser')));

@@ -57,10 +57,12 @@ void main() {
     expect(source, contains('CloudCopyError.incomplete'));
   });
 
-  test('only the latest changelog entry is extended without Markdown bold', () {
+  test('0.5.1 release notes remain populated without Markdown bold', () {
     final data = jsonDecode(File('assets/changelog.json').readAsStringSync())
         as List<dynamic>;
-    final latest = data.first as Map<String, dynamic>;
+    final latest = data.cast<Map<String, dynamic>>().singleWhere(
+      (entry) => entry['version'] == '0.5.1',
+    );
     expect(latest['version'], '0.5.1');
     for (final locale in [
       'it', 'en', 'fr', 'es', 'pt', 'pt_BR', 'pl', 'cs', 'de',
