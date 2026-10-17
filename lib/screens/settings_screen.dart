@@ -760,7 +760,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
         if (file == null || !mounted || !_testingVoice) return;
         await _audio.playVoicePreview(file);
       }
-    } catch (e) {
+    } catch (e, stack) {
+      await AppLogger.log('Settings: voice test failed: $e\n$stack');
       if (!mounted) return;
       showStatusMessage(context, l10n.settingsVoiceTestError(l10n.technicalErrorGeneric));
     } finally {

@@ -20,6 +20,72 @@ enum AudioSessionType { speech, playback }
 class AudioPlayerService {
   static const _audioSessionTimeout = Duration(seconds: 4);
   static Future<void>? _pendingDispose;
+  static Future<void> _playerTransition = Future<void>.value();
+  static AudioPlayerService? _activeService;
+  bool _yieldedToAnotherPlayer = false;
+  bool _disposed = false;
+
+  // just_audio_background owns one native player. Serialize activation and
+  // release the previous owner, including paused players, before loading.
+  Future<T?> _withActivePlayer<T>(Future<T> Function() action) {
+    final operation = _playerTransition.then<T?>((_) async {
+      await _pendingDispose;
+      if (_disposed || _yieldedToAnotherPlayer || _stopRequested) return null;
+      final previous = _activeService;
+      if (previous != null && !identical(previous, this)) {
+        await AppLogger.log(
+          'Sonarpad audio: handing background player to another reader',
+        );
+        previous._yieldedToAnotherPlayer = true;
+        previous._stopRequested = true;
+        previous._cancelVoicePreview();
+        await previous.saveCurrentBookmark();
+        // stop releases native resources but retains source/index/position.
+        await previous._player.stop();
+        previous._sessionReady = false;
+      }
+      _activeService = this;
+      return action();
+    });
+    // A failed load must not poison the next user's playback request.
+    _playerTransition = operation.then<void>(
+      (_) {},
+      onError: (Object _, StackTrace _) {},
+    );
+    return operation;
+  }
+
+  Future<void> _playOwned() async {
+    Future<void>? playback;
+    await _withActivePlayer<void>(() async {
+      if (_stopRequested) return;
+      playback = _player.play();
+      // Attach immediately: play can fail before the transition completes.
+      unawaited(
+        playback!.then<void>((_) {}, onError: (Object _, StackTrace _) {}),
+      );
+    });
+    await playback;
+  }
+
+  Future<Duration?> _loadSource(
+    AudioSource source, {
+    Duration? initialPosition,
+  }) => _withActivePlayer<Duration?>(
+    () => _player.setAudioSource(source, initialPosition: initialPosition),
+  );
+
+  Future<Duration?> _loadSources(
+    List<AudioSource> sources, {
+    int initialIndex = 0,
+    Duration initialPosition = Duration.zero,
+  }) => _withActivePlayer<Duration?>(
+    () => _player.setAudioSources(
+      sources,
+      initialIndex: initialIndex,
+      initialPosition: initialPosition,
+    ),
+  );
 
   final AudioPlayer _player;
   final bool _isAndroid;
@@ -38,8 +104,8 @@ class AudioPlayerService {
   final AppSettingsService _settings = AppSettingsService();
 
   AudioPlayerService({AudioPlayer? player, bool? isAndroid})
-      : _player = player ?? AudioPlayer(),
-        _isAndroid = isAndroid ?? Platform.isAndroid {
+    : _player = player ?? AudioPlayer(),
+      _isAndroid = isAndroid ?? Platform.isAndroid {
     _initBookmarkListener();
   }
 
@@ -53,44 +119,57 @@ class AudioPlayerService {
   int _lastSavedBookmarkSecond = -1;
 
   void _initBookmarkListener() {
-    _player.durationStream.listen((d) {
-      AppLogger.log('Sonarpad audio: durationStream emitted $d');
-      _currentDuration = d;
-    }, onError: (Object error, StackTrace stackTrace) {
-      AppLogger.log('Sonarpad audio: durationStream error: $error');
-    }, onDone: () {
-      AppLogger.log('Sonarpad audio: durationStream done');
-    });
-    _player.playerStateStream.listen((state) {
-      AppLogger.log('Sonarpad audio: playerStateStream emitted $state');
-      if (state.processingState == ProcessingState.completed ||
-          !state.playing) {
-        saveCurrentBookmark();
-      }
-    }, onError: (Object error, StackTrace stackTrace) {
-      AppLogger.log('Sonarpad audio: playerStateStream error: $error');
-    }, onDone: () {
-      AppLogger.log('Sonarpad audio: playerStateStream done');
-    });
-    _positionSubscription = _player.positionStream.listen((pos) async {
-      if (_currentMediaId != null &&
-          _currentSessionType == AudioSessionType.playback) {
-        final currentSecond = pos.inSeconds;
-        // Salva ogni 15 secondi, assicurandoci di non martellare il disco
-        if (currentSecond > 0 && currentSecond % 15 == 0) {
-          if (_lastSavedBookmarkSecond != currentSecond) {
-            _lastSavedBookmarkSecond = currentSecond;
-            AppLogger.log(
-                'Sonarpad audio: background auto-save at $currentSecond sec');
-            await saveCurrentBookmark();
+    _player.durationStream.listen(
+      (d) {
+        AppLogger.log('Sonarpad audio: durationStream emitted $d');
+        _currentDuration = d;
+      },
+      onError: (Object error, StackTrace stackTrace) {
+        AppLogger.log('Sonarpad audio: durationStream error: $error');
+      },
+      onDone: () {
+        AppLogger.log('Sonarpad audio: durationStream done');
+      },
+    );
+    _player.playerStateStream.listen(
+      (state) {
+        AppLogger.log('Sonarpad audio: playerStateStream emitted $state');
+        if (state.processingState == ProcessingState.completed ||
+            !state.playing) {
+          saveCurrentBookmark();
+        }
+      },
+      onError: (Object error, StackTrace stackTrace) {
+        AppLogger.log('Sonarpad audio: playerStateStream error: $error');
+      },
+      onDone: () {
+        AppLogger.log('Sonarpad audio: playerStateStream done');
+      },
+    );
+    _positionSubscription = _player.positionStream.listen(
+      (pos) async {
+        if (_currentMediaId != null &&
+            _currentSessionType == AudioSessionType.playback) {
+          final currentSecond = pos.inSeconds;
+          // Salva ogni 15 secondi, assicurandoci di non martellare il disco
+          if (currentSecond > 0 && currentSecond % 15 == 0) {
+            if (_lastSavedBookmarkSecond != currentSecond) {
+              _lastSavedBookmarkSecond = currentSecond;
+              AppLogger.log(
+                'Sonarpad audio: background auto-save at $currentSecond sec',
+              );
+              await saveCurrentBookmark();
+            }
           }
         }
-      }
-    }, onError: (Object error, StackTrace stackTrace) {
-      AppLogger.log('Sonarpad audio: positionStream error: $error');
-    }, onDone: () {
-      AppLogger.log('Sonarpad audio: positionStream done');
-    });
+      },
+      onError: (Object error, StackTrace stackTrace) {
+        AppLogger.log('Sonarpad audio: positionStream error: $error');
+      },
+      onDone: () {
+        AppLogger.log('Sonarpad audio: positionStream done');
+      },
+    );
   }
 
   Future<void> saveCurrentBookmark() async {
@@ -105,7 +184,8 @@ class AudioPlayerService {
     }
 
     AppLogger.log(
-        'Sonarpad audio: saveCurrentBookmark() called, position: ${pos.inSeconds}s, duration: ${_currentDuration?.inSeconds}s');
+      'Sonarpad audio: saveCurrentBookmark() called, position: ${pos.inSeconds}s, duration: ${_currentDuration?.inSeconds}s',
+    );
 
     if (await _settings.isAutoBookmarkEnabled()) {
       bool isFinished = false;
@@ -127,11 +207,13 @@ class AudioPlayerService {
 
       if (isFinished) {
         AppLogger.log(
-            'Sonarpad audio: saveCurrentBookmark() saving 0 (finished)');
+          'Sonarpad audio: saveCurrentBookmark() saving 0 (finished)',
+        );
         await _settings.saveMediaBookmark(_currentMediaId!, 0);
       } else {
         AppLogger.log(
-            'Sonarpad audio: saveCurrentBookmark() saving ${pos.inSeconds}');
+          'Sonarpad audio: saveCurrentBookmark() saving ${pos.inSeconds}',
+        );
         await _settings.saveMediaBookmark(_currentMediaId!, pos.inSeconds);
       }
     }
@@ -159,17 +241,20 @@ class AudioPlayerService {
   Future<void> _prepareAudioSession(AudioSessionType type) async {
     if (_pendingDispose != null) {
       AppLogger.log(
-          'Sonarpad audio: waiting for previous player to dispose...');
+        'Sonarpad audio: waiting for previous player to dispose...',
+      );
       await _pendingDispose;
       AppLogger.log('Sonarpad audio: previous player dispose completed');
     }
 
     final stopwatch = Stopwatch()..start();
     AppLogger.log(
-        'Sonarpad audio: prepare session start type=$type state=$_playerDebugState');
+      'Sonarpad audio: prepare session start type=$type state=$_playerDebugState',
+    );
     final session = await AudioSession.instance;
     AppLogger.log(
-        'Sonarpad audio: AudioSession.instance completed after ${stopwatch.elapsedMilliseconds}ms');
+      'Sonarpad audio: AudioSession.instance completed after ${stopwatch.elapsedMilliseconds}ms',
+    );
 
     if (!_sessionReady || _currentSessionType != type) {
       if (type == AudioSessionType.playback) {
@@ -185,16 +270,18 @@ class AudioPlayerService {
     }
 
     AppLogger.log('Sonarpad audio: setActive(true) start');
-    await session.setActive(true).timeout(
-      _audioSessionTimeout,
-      onTimeout: () async {
-        await AppLogger.log(
-          'Sonarpad audio: setActive(true) timeout after '
-          '${_audioSessionTimeout.inSeconds}s; continuing state=$_playerDebugState',
+    await session
+        .setActive(true)
+        .timeout(
+          _audioSessionTimeout,
+          onTimeout: () async {
+            await AppLogger.log(
+              'Sonarpad audio: setActive(true) timeout after '
+              '${_audioSessionTimeout.inSeconds}s; continuing state=$_playerDebugState',
+            );
+            return true;
+          },
         );
-        return true;
-      },
-    );
     AppLogger.log(
       'Sonarpad audio: setActive(true) completed/continued after '
       '${stopwatch.elapsedMilliseconds}ms',
@@ -210,7 +297,8 @@ class AudioPlayerService {
       AppLogger.log('Sonarpad audio: player volume set for speech');
     }
     AppLogger.log(
-        'Sonarpad audio: prepare session done after ${stopwatch.elapsedMilliseconds}ms state=$_playerDebugState');
+      'Sonarpad audio: prepare session done after ${stopwatch.elapsedMilliseconds}ms state=$_playerDebugState',
+    );
   }
 
   Future<void> setVolume(double volume) async {
@@ -229,6 +317,7 @@ class AudioPlayerService {
 
   /// Disattiva il wakelock quando la riproduzione termina o viene fermata.
   Future<void> _disableWakelock() async {
+    if (_activeService != null && !identical(_activeService, this)) return;
     if (!kIsWeb && (Platform.isIOS || Platform.isAndroid)) {
       AppLogger.log('Sonarpad audio: wakelock disable start');
       await WakelockPlus.disable();
@@ -247,6 +336,7 @@ class AudioPlayerService {
       'Sonarpad audio: playUrl start url=$url, title="${title ?? 'none'}", '
       'mediaId=$mediaId, sessionType=$sessionType',
     );
+    _yieldedToAnotherPlayer = false;
     _stopRequested = false;
     await setUrl(
       url,
@@ -274,13 +364,16 @@ class AudioPlayerService {
   }) async {
     if (_pendingDispose != null) {
       AppLogger.log(
-          'Sonarpad audio: waiting for previous player to dispose in setUrl...');
+        'Sonarpad audio: waiting for previous player to dispose in setUrl...',
+      );
       await _pendingDispose;
       AppLogger.log(
-          'Sonarpad audio: previous player dispose completed in setUrl');
+        'Sonarpad audio: previous player dispose completed in setUrl',
+      );
     }
     String itemTitle = title ?? 'Sonarpad';
 
+    _yieldedToAnotherPlayer = false;
     _stopRequested = false;
     _currentMediaId = mediaId;
     _currentTitle = itemTitle;
@@ -298,17 +391,13 @@ class AudioPlayerService {
     final source = AudioSource.uri(
       Uri.parse(url),
       headers: headers,
-      tag: MediaItem(
-        id: mediaId ?? url,
-        album: 'Sonarpad',
-        title: itemTitle,
-      ),
+      tag: MediaItem(id: mediaId ?? url, album: 'Sonarpad', title: itemTitle),
     );
     AppLogger.log(
       'Sonarpad audio: setAudioSource start title="$itemTitle" '
       'state=$_playerDebugState',
     );
-    final duration = await _player.setAudioSource(source);
+    final duration = await _loadSource(source);
     AppLogger.log(
       'Sonarpad audio: setAudioSource completed after '
       '${stopwatch.elapsedMilliseconds}ms title="$itemTitle" '
@@ -319,10 +408,12 @@ class AudioPlayerService {
         _currentMediaId != null &&
         await _settings.isAutoBookmarkEnabled()) {
       AppLogger.log(
-          'Sonarpad audio: bookmark lookup start mediaId=$_currentMediaId title="$itemTitle"');
+        'Sonarpad audio: bookmark lookup start mediaId=$_currentMediaId title="$itemTitle"',
+      );
       final savedPos = await _settings.getMediaBookmark(_currentMediaId!);
       AppLogger.log(
-          'Sonarpad audio: bookmark lookup completed savedPos=$savedPos title="$itemTitle"');
+        'Sonarpad audio: bookmark lookup completed savedPos=$savedPos title="$itemTitle"',
+      );
       if (savedPos != null && savedPos >= 3) {
         bool shouldSeek = true;
         if (duration != null && duration.inSeconds > 0) {
@@ -334,10 +425,12 @@ class AudioPlayerService {
         if (shouldSeek) {
           try {
             AppLogger.log(
-                'Sonarpad audio: bookmark seek start seconds=$savedPos');
+              'Sonarpad audio: bookmark seek start seconds=$savedPos',
+            );
             await _player.seek(Duration(seconds: savedPos));
             AppLogger.log(
-                'Sonarpad audio: bookmark seek completed state=$_playerDebugState');
+              'Sonarpad audio: bookmark seek completed state=$_playerDebugState',
+            );
           } catch (e) {
             AppLogger.log('Sonarpad audio: seek error: $e');
           }
@@ -347,41 +440,43 @@ class AudioPlayerService {
   }
 
   Future<void> play() async {
+    if (_yieldedToAnotherPlayer && !_disposed) {
+      _yieldedToAnotherPlayer = false;
+      _stopRequested = false;
+      await _prepareAudioSession(_currentSessionType);
+    }
     if (!_stopRequested) {
       final stopwatch = Stopwatch()..start();
       AppLogger.log('Sonarpad audio: play start state=$_playerDebugState');
       await _enableWakelock();
       AppLogger.log('Sonarpad audio: player.play() await start');
-      await _player.play();
+      await _playOwned();
       AppLogger.log(
-          'Sonarpad audio: play completed after ${stopwatch.elapsedMilliseconds}ms state=$_playerDebugState');
+        'Sonarpad audio: play completed after ${stopwatch.elapsedMilliseconds}ms state=$_playerDebugState',
+      );
     } else {
       AppLogger.log(
-          'Sonarpad audio: play skipped because stop requested state=$_playerDebugState');
+        'Sonarpad audio: play skipped because stop requested state=$_playerDebugState',
+      );
     }
   }
 
-  Future<void> startSilentPlaybackSession({
-    String title = 'Sonarpad',
-  }) async {
+  Future<void> startSilentPlaybackSession({String title = 'Sonarpad'}) async {
+    _yieldedToAnotherPlayer = false;
     _stopRequested = false;
     await _prepareAudioSession(AudioSessionType.speech);
     await _enableWakelock();
     final file = await _silentWavFile();
     await _player.setVolume(0);
     await _player.setLoopMode(LoopMode.one);
-    await _player.setAudioSource(
+    await _loadSource(
       AudioSource.uri(
         Uri.file(file.path),
-        tag: MediaItem(
-          id: file.path,
-          album: 'Sonarpad',
-          title: title,
-        ),
+        tag: MediaItem(id: file.path, album: 'Sonarpad', title: title),
       ),
     );
     if (!_stopRequested) {
-      await _player.play();
+      await _playOwned();
     }
   }
 
@@ -460,24 +555,30 @@ class AudioPlayerService {
       previewPaused = paused;
       final revision = ++controlRevision;
       bool isLatest() =>
-          isCurrent() && revision == controlRevision &&
+          isCurrent() &&
+          revision == controlRevision &&
           !completed.isCompleted &&
           _player.processingState != ProcessingState.completed;
-      _voicePreviewControls = _voicePreviewControls.then((_) async {
-        if (!isLatest() || !previewReady) return;
-        if (paused) {
-          await _player.pause();
-          if (isLatest()) await _disableWakelock();
-        } else {
-          await _enableWakelock();
-          if (!isLatest() || previewPaused) return;
-          // play() completes at a subsequent pause/EOF; resuming must return
-          // immediately so the same button can pause the sample again.
-          unawaited(_player.play().catchError(fail));
-        }
-      }).catchError((Object error, StackTrace stack) {
-        fail(error, stack);
-      });
+      _voicePreviewControls = _voicePreviewControls
+          .then((_) async {
+            if (!isLatest() || !previewReady) return;
+            if (paused) {
+              await _player.pause();
+              if (isLatest()) await _disableWakelock();
+            } else {
+              await _enableWakelock();
+              if (!isLatest() || previewPaused) return;
+              // play() completes at a subsequent pause/EOF; resuming must return
+              // immediately so the same button can pause the sample again.
+              await _withActivePlayer<void>(() async {
+                if (!isCurrent() || previewPaused || _stopRequested) return;
+                unawaited(_player.play().catchError(fail));
+              });
+            }
+          })
+          .catchError((Object error, StackTrace stack) {
+            fail(error, stack);
+          });
       return _voicePreviewControls;
     }
 
@@ -485,6 +586,7 @@ class AudioPlayerService {
       _voicePreviewPauseControl = setPaused;
     }
     StreamSubscription<PlayerState>? subscription;
+    _yieldedToAnotherPlayer = false;
     _stopRequested = false;
     try {
       await _voicePreviewControls;
@@ -495,7 +597,7 @@ class AudioPlayerService {
       if (!isCurrent()) return;
       await _player.setLoopMode(LoopMode.off);
       if (!isCurrent()) return;
-      await _player.setAudioSource(
+      await _loadSource(
         AudioSource.uri(
           Uri.file(file.path),
           tag: MediaItem(id: file.path, album: 'Sonarpad', title: 'Sonarpad'),
@@ -513,15 +615,20 @@ class AudioPlayerService {
         // A loaded source is not yet audible. Expose the mix controls only
         // after the player reports actual playback, never during setAudioSource.
         if (sessionType == AudioSessionType.playback &&
-            isCurrent() && !previewPaused && !playbackStartReported &&
-            state.playing && state.processingState == ProcessingState.ready) {
+            isCurrent() &&
+            !previewPaused &&
+            !playbackStartReported &&
+            state.playing &&
+            state.processingState == ProcessingState.ready) {
           playbackStartReported = true;
           onPlaybackStarted?.call();
         }
         if (state.processingState == ProcessingState.completed) {
           if (!completed.isCompleted) completed.complete();
         } else if (sessionType == AudioSessionType.playback &&
-            previewPaused && state.playing && isCurrent()) {
+            previewPaused &&
+            state.playing &&
+            isCurrent()) {
           // just_audio may auto-resume after an audio-focus interruption even
           // if Pausa was pressed while already interrupted. Honor that intent.
           unawaited(setPaused(true));
@@ -531,7 +638,7 @@ class AudioPlayerService {
         previewReady = true;
         unawaited(setPaused(previewPaused));
       } else {
-        unawaited(_player.play().catchError(fail));
+        unawaited(_playOwned().catchError(fail));
       }
       await finished;
     } finally {
@@ -557,6 +664,7 @@ class AudioPlayerService {
   }
 
   Future<void> playFile(File file) async {
+    _yieldedToAnotherPlayer = false;
     _stopRequested = false;
     await _prepareAudioSession(AudioSessionType.speech);
     final exists = await file.exists();
@@ -564,21 +672,17 @@ class AudioPlayerService {
     AppLogger.log(
       'Sonarpad audio: playFile path=${file.path} exists=$exists size=$size',
     );
-    final duration = await _player.setAudioSource(
+    final duration = await _loadSource(
       AudioSource.uri(
         Uri.file(file.path),
-        tag: MediaItem(
-          id: file.path,
-          album: 'Sonarpad',
-          title: 'Sonarpad',
-        ),
+        tag: MediaItem(id: file.path, album: 'Sonarpad', title: 'Sonarpad'),
       ),
     );
     AppLogger.log('Sonarpad audio: playFile duration=$duration');
     if (!_stopRequested) {
       AppLogger.log('Sonarpad audio: playFile play');
       await _enableWakelock();
-      await _player.play();
+      await _playOwned();
     }
   }
 
@@ -590,6 +694,7 @@ class AudioPlayerService {
     String title = 'Sonarpad',
     bool resetAfterCompletion = true,
   }) async {
+    _yieldedToAnotherPlayer = false;
     _stopRequested = false;
     if (files.isEmpty) return;
     await _prepareAudioSession(sessionType);
@@ -607,11 +712,7 @@ class AudioPlayerService {
         sources.add(
           AudioSource.uri(
             Uri.file(file.path),
-            tag: MediaItem(
-              id: file.path,
-              album: 'Sonarpad',
-              title: title,
-            ),
+            tag: MediaItem(id: file.path, album: 'Sonarpad', title: title),
           ),
         );
       }
@@ -624,7 +725,7 @@ class AudioPlayerService {
         onChunkStarted?.call(index, files[index]);
       });
       try {
-        final duration = await _player.setAudioSources(
+        final duration = await _loadSources(
           sources,
           initialIndex: 0,
           initialPosition: Duration.zero,
@@ -633,6 +734,7 @@ class AudioPlayerService {
           'Sonarpad audio: playlist duration=$duration chunks=${files.length} '
           'sessionType=$sessionType resetAfterCompletion=$resetAfterCompletion',
         );
+        if (_stopRequested || _disposed) return;
         if (lastNotifiedIndex != 0) {
           lastNotifiedIndex = 0;
           onChunkStarted?.call(0, files[0]);
@@ -644,7 +746,7 @@ class AudioPlayerService {
         );
         if (!_stopRequested) {
           AppLogger.log('Sonarpad audio: playlist play');
-          await _player.play();
+          await _playOwned();
         }
         final completedState = await completedFuture;
         AppLogger.log(
@@ -685,6 +787,7 @@ class AudioPlayerService {
     int initialBufferCount = 1,
     bool Function()? isPaused,
   }) async {
+    _yieldedToAnotherPlayer = false;
     _stopRequested = false;
     await _prepareAudioSession(sessionType);
     await _enableWakelock();
@@ -718,12 +821,13 @@ class AudioPlayerService {
           }
         } catch (e) {
           AppLogger.log(
-              'Sonarpad audio: stream playlist pre-reset ignored: $e');
+            'Sonarpad audio: stream playlist pre-reset ignored: $e',
+          );
         }
 
         Duration? duration;
         try {
-          duration = await _player.setAudioSources(
+          duration = await _loadSources(
             safeSources,
             initialIndex: 0,
             initialPosition: Duration.zero,
@@ -733,12 +837,9 @@ class AudioPlayerService {
             'Sonarpad audio: stream playlist setAudioSources failed, '
             'fallback to single source + append. error=$e sources=${safeSources.length}',
           );
-          await _player.setAudioSource(
-            safeSources.first,
-            initialPosition: Duration.zero,
-          );
+          await _loadSource(safeSources.first, initialPosition: Duration.zero);
           for (final extraSource in safeSources.skip(1)) {
-            await _player.addAudioSource(extraSource);
+            await _withActivePlayer(() => _player.addAudioSource(extraSource));
           }
           duration = _player.duration;
         }
@@ -747,12 +848,13 @@ class AudioPlayerService {
           'Sonarpad audio: stream playlist start duration=$duration '
           'initialSources=${safeSources.length} sessionType=$sessionType',
         );
+        if (_stopRequested || _disposed) return;
         lastNotifiedIndex = 0;
         onChunkStarted?.call(0, queuedFiles[0]);
         started = true;
         if (!_stopRequested && !(isPaused?.call() ?? false)) {
           AppLogger.log('Sonarpad audio: stream playlist play');
-          await _player.play();
+          await _playOwned();
         }
       }
 
@@ -768,11 +870,7 @@ class AudioPlayerService {
         );
         final source = AudioSource.uri(
           Uri.file(file.path),
-          tag: MediaItem(
-            id: file.path,
-            album: 'Sonarpad',
-            title: title,
-          ),
+          tag: MediaItem(id: file.path, album: 'Sonarpad', title: title),
         );
 
         if (!started) {
@@ -781,7 +879,7 @@ class AudioPlayerService {
             await startPlayback(pendingSources);
           }
         } else {
-          await _player.addAudioSource(source);
+          await _withActivePlayer(() => _player.addAudioSource(source));
           AppLogger.log(
             'Sonarpad audio: stream playlist appended chunk ${index + 1}',
           );
@@ -792,7 +890,7 @@ class AudioPlayerService {
               'Sonarpad audio: stream playlist resumed after late append',
             );
             await _player.seek(Duration.zero, index: index);
-            await _player.play();
+            await _playOwned();
           }
         }
       }
@@ -825,15 +923,17 @@ class AudioPlayerService {
     }
   }
 
-  Future<void> seekBackward(
-      [Duration duration = const Duration(seconds: 15)]) async {
+  Future<void> seekBackward([
+    Duration duration = const Duration(seconds: 15),
+  ]) async {
     final current = _player.position;
     final newPosition = current - duration;
     await seek(newPosition < Duration.zero ? Duration.zero : newPosition);
   }
 
-  Future<void> seekForward(
-      [Duration duration = const Duration(seconds: 15)]) async {
+  Future<void> seekForward([
+    Duration duration = const Duration(seconds: 15),
+  ]) async {
     final current = _player.position;
     final newPosition = current + duration;
     final max = _player.duration;
@@ -846,6 +946,7 @@ class AudioPlayerService {
   }
 
   Future<void> stop() async {
+    _yieldedToAnotherPlayer = false;
     _cancelVoicePreview();
     _stopRequested = true;
     AppLogger.log('Sonarpad audio: stop requested');
@@ -858,6 +959,9 @@ class AudioPlayerService {
   }
 
   Future<void> stopAndDispose() async {
+    if (_disposed) return;
+    _disposed = true;
+    if (identical(_activeService, this)) _activeService = null;
     _cancelVoicePreview();
     final completer = Completer<void>();
     _pendingDispose = completer.future;
@@ -884,12 +988,17 @@ class AudioPlayerService {
   Future<void> seek(Duration position) async {
     if (position.inSeconds < 10 && _currentMediaId != null) {
       await _settings.saveMediaBookmark(
-          _currentMediaId!, 0); // Cancella bookmark
+        _currentMediaId!,
+        0,
+      ); // Cancella bookmark
     }
     await _player.seek(position);
   }
 
   Future<void> dispose() async {
+    if (_disposed) return;
+    _disposed = true;
+    if (identical(_activeService, this)) _activeService = null;
     _cancelVoicePreview();
     final completer = Completer<void>();
     _pendingDispose = completer.future;
@@ -912,8 +1021,9 @@ class AudioPlayerService {
 
   Future<File> _silentWavFile() async {
     final dir = await getTemporaryDirectory();
-    final file =
-        File('${dir.path}${Platform.pathSeparator}sonarpad_silence.wav');
+    final file = File(
+      '${dir.path}${Platform.pathSeparator}sonarpad_silence.wav',
+    );
     if (!await file.exists()) {
       await file.writeAsBytes(_silentWavBytes(), flush: true);
     }

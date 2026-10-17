@@ -682,7 +682,8 @@ class _CreateAiAudiodescriptionScreenState
           showStatusMessage(context, l10n.audioDescriptionEdgeVoiceReady);
         }
       }
-    } catch (error) {
+    } catch (error, stack) {
+      await AppLogger.log('Audio description: voice test failed: $error\n$stack');
       if (!mounted || !_voiceTestIsCurrent(revision)) return;
       setState(() => _technicalError = error.toString());
       showStatusMessage(context, l10n.settingsVoiceTestError(l10n.technicalErrorGeneric));
