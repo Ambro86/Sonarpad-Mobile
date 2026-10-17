@@ -1,3 +1,4 @@
+import '../services/accessible_reading_tts.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -25,7 +26,6 @@ import '../tts/edge_tts_bridge.dart';
 import '../tts/edge_tts_retry.dart';
 import '../utils/app_logger.dart';
 import '../utils/media_open_guard.dart';
-import 'package:flutter_tts/flutter_tts.dart';
 import '../utils/status_message.dart';
 import '../widgets/universal_accessible_view.dart';
 import 'document_reader_screen.dart';
@@ -52,7 +52,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   final _settings = AppSettingsService();
   final _newsService = NewsService();
   final _tts = EdgeTtsBridge();
-  final _flutterTts = FlutterTts();
+  late final _flutterTts = AccessibleReadingTts(audio: _audio);
   final _voiceDictionary = VoiceDictionaryService();
   final _sonarTubeService = SonarTubeService();
   final _mediaOpenGuard = MediaOpenGuard();

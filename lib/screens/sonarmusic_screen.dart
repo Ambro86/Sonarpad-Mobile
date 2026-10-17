@@ -51,6 +51,7 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
   String _type = 'all';
   int _page = 1;
   bool _loading = false, _loadingMore = false, _unlocked = false;
+  bool _showSuggestions = false;
   Object? _error;
   String? _opening;
   bool get _home => widget.collection == null && widget.searchQuery == null && widget.libraryType == null;
@@ -95,6 +96,8 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
     super.initState();
     _type = _searchTypes.contains(widget.searchType) ? widget.searchType : 'all';
     _searchController.text = widget.searchQuery ?? '';
+    _showSuggestions = _searchController.text.trim().isNotEmpty;
+    _searchController.addListener(_updateSuggestionsVisibility);
     _init();
   }
   @override
@@ -112,6 +115,14 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
   @override
   void dispose() {
     _searchController.dispose(); _searchFocus.dispose(); super.dispose();
+  }
+
+  void _updateSuggestionsVisibility() {
+    final visible = _searchController.text.trim().isNotEmpty;
+    if (!mounted || visible == _showSuggestions) return;
+    // Only insert/remove the transient row at the empty/nonempty boundary.
+    // Ordinary typing must not send a fresh list model to VoiceOver.
+    setState(() => _showSuggestions = visible);
   }
 
   Future<void> _load({bool more = false}) async {
@@ -572,7 +583,7 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
             prefixIcon: const Icon(Icons.search),
             suffixIcon: IconButton(icon: const Icon(Icons.clear),
               tooltip: l10n.clearSearch,
-              onPressed: () { _searchController.clear(); setState(() {}); _searchFocus.requestFocus(); })),
+              onPressed: () { _searchController.clear(); _searchFocus.requestFocus(); })),
           onSubmitted: (_) => _search())));
       final typeIndex = _searchTypes.indexOf(_type);
       rows.add(AccessibleListRow(
@@ -598,8 +609,10 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
         ),
         onValueChanged: _setSearchType,
       ));
-      rows.add(AccessibleListRow(id: 'suggest', title: _label('suggest'), kind: 'button',
-        flutterChild: OutlinedButton(onPressed: _suggest, child: Text(_label('suggest')))));
+      if (_showSuggestions) {
+        rows.add(AccessibleListRow(id: 'suggest', title: _label('suggest'), kind: 'button',
+          flutterChild: OutlinedButton(onPressed: _suggest, child: Text(_label('suggest')))));
+      }
       rows.add(AccessibleListRow(id: 'search', title: l10n.search, kind: 'button',
         flutterChild: FilledButton(onPressed: _search, child: Text(l10n.search))));
     }
@@ -671,6 +684,7 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
           child: Text(_loadingMore ? l10n.loading : _label('load')))));
     }
     return UniversalAccessibleList(debugTag: 'sonarmusic',
+        transientRowIds: const ['suggest'],
         controller: _accessible, sections: [AccessibleListSection(rows: rows)],
       onEvent: (event) async {
         final id = event.id ?? '';

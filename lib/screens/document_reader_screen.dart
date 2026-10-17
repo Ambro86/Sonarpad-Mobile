@@ -1,3 +1,4 @@
+import '../services/accessible_reading_tts.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer' as dev;
@@ -1678,7 +1679,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     }
   }
 
-  final _flutterTts = FlutterTts();
+  late final _flutterTts = AccessibleReadingTts(audio: _audio);
 
   Future<void> _configureSystemTtsAudioSession() async {
     if (!Platform.isIOS) return;

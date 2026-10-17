@@ -1,3 +1,4 @@
+import '../services/accessible_reading_tts.dart';
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -54,7 +55,7 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
       multipleObjects: false,
     ),
   );
-  final FlutterTts _flutterTts = FlutterTts();
+  late final _flutterTts = AccessibleReadingTts(audio: _audio);
   final AifaService _aifaService = AifaService();
   final AppSettingsService _settings = AppSettingsService();
   final EdgeTtsBridge _edgeTts = EdgeTtsBridge();

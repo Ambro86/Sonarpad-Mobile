@@ -53,6 +53,46 @@ void main() {
     configureAccessibleRendererRuntime(useFlutterOnIos: false);
   });
 
+  testWidgets('suggestions appear only for text and preserve the search field', (tester) async {
+    final service = SonarMusicService(
+      directCatalog: false,
+      endpoint: Uri.parse('https://example.test/youtube_music_resolve.php'),
+      client: MockClient((_) async => throw StateError('Unexpected network request')),
+    );
+    await tester.pumpWidget(_app(service));
+    await tester.pumpAndSettle();
+    UniversalAccessibleList list() => tester.widget<UniversalAccessibleList>(
+      find.byType(UniversalAccessibleList));
+    bool suggestionsVisible() => list().sections.expand((s) => s.rows)
+        .any((r) => r.id == 'suggest');
+    final field = find.byType(TextField);
+    final element = tester.element(field);
+    final controller = tester.widget<TextField>(field).controller;
+    final focus = tester.widget<TextField>(field).focusNode!;
+    expect(suggestionsVisible(), isFalse);
+    expect(list().transientRowIds, contains('suggest'));
+    await tester.enterText(field, '   ');
+    await tester.pump();
+    expect(suggestionsVisible(), isFalse);
+    await tester.enterText(field, 'A');
+    await tester.pump();
+    expect(suggestionsVisible(), isTrue);
+    expect(focus.hasFocus, isTrue);
+    expect(identical(tester.element(field), element), isTrue);
+    expect(identical(tester.widget<TextField>(field).controller, controller), isTrue);
+    final model = list();
+    await tester.enterText(field, 'Abba');
+    await tester.pump();
+    expect(identical(list(), model), isTrue,
+      reason: 'Typing with suggestions already visible must not rebuild the list.');
+    expect(focus.hasFocus, isTrue);
+    await tester.enterText(field, '');
+    await tester.pump();
+    expect(suggestionsVisible(), isFalse);
+    expect(focus.hasFocus, isTrue);
+    expect(identical(tester.element(field), element), isTrue);
+  }, variant: TargetPlatformVariant({TargetPlatform.android, TargetPlatform.iOS}));
+
   testWidgets('Turkish music choices use ARB labels and retain the search text',
     (tester) async {
       final service = SonarMusicService(

@@ -1,3 +1,4 @@
+import '../services/accessible_reading_tts.dart';
 import 'dart:async';
 import 'dart:io';
 
@@ -15,7 +16,6 @@ import '../services/news_service.dart';
 import '../services/voice_dictionary_service.dart';
 import '../tts/edge_tts_bridge.dart';
 import '../tts/edge_tts_retry.dart';
-import 'package:flutter_tts/flutter_tts.dart';
 import 'news_webview_screen.dart';
 import '../utils/status_message.dart';
 
@@ -31,7 +31,7 @@ class NewsDetailScreen extends StatefulWidget {
 
 class _NewsDetailScreenState extends State<NewsDetailScreen> {
   final _tts = EdgeTtsBridge();
-  final _flutterTts = FlutterTts();
+  late final _flutterTts = AccessibleReadingTts(audio: _audio);
   final _audio = AudioPlayerService();
   final _settings = AppSettingsService();
   final _voiceDictionary = VoiceDictionaryService();

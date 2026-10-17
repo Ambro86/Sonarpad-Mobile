@@ -1,3 +1,4 @@
+import '../services/accessible_reading_tts.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
@@ -11,7 +12,6 @@ import '../services/voice_dictionary_service.dart';
 import '../tts/edge_tts_bridge.dart';
 import '../tts/edge_tts_retry.dart';
 
-import 'package:flutter_tts/flutter_tts.dart';
 
 import '../widgets/universal_accessible_view.dart';
 import '../widgets/calendar_reminder_dialog.dart';
@@ -30,7 +30,7 @@ class _CalendarDayScreenState extends State<CalendarDayScreen> {
   final _audio = AudioPlayerService();
   final _settings = AppSettingsService();
   final _tts = EdgeTtsBridge();
-  final _flutterTts = FlutterTts();
+  late final _flutterTts = AccessibleReadingTts(audio: _audio);
   final _voiceDictionary = VoiceDictionaryService();
 
   List<CalendarEvent> _events = [];

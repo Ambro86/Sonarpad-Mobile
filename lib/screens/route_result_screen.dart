@@ -1,10 +1,10 @@
+import '../services/accessible_reading_tts.dart';
 import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_tts/flutter_tts.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../l10n/app_localizations.dart';
@@ -119,7 +119,7 @@ class _RouteStepsScreenState extends State<RouteStepsScreen> {
   final AppSettingsService _settings = AppSettingsService();
   final EdgeTtsBridge _edgeTts = EdgeTtsBridge();
   final AudioPlayerService _audio = AudioPlayerService();
-  final FlutterTts _flutterTts = FlutterTts();
+  late final _flutterTts = AccessibleReadingTts(audio: _audio);
   final VoiceDictionaryService _voiceDictionary = VoiceDictionaryService();
   bool _speaking = false;
   bool _ttsPaused = false;

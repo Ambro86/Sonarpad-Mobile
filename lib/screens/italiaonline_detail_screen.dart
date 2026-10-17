@@ -1,9 +1,9 @@
+import '../services/accessible_reading_tts.dart';
 import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:flutter_tts/flutter_tts.dart';
 import '../services/app_settings_service.dart';
 import '../services/audio_player_service.dart';
 import '../services/italiaonline_service.dart';
@@ -24,7 +24,7 @@ class ItaliaOnlineDetailScreen extends StatefulWidget {
 }
 
 class _ItaliaOnlineDetailScreenState extends State<ItaliaOnlineDetailScreen> {
-  final FlutterTts _tts = FlutterTts();
+  late final _tts = AccessibleReadingTts(audio: _audio);
   final EdgeTtsBridge _edgeTts = EdgeTtsBridge();
   final AudioPlayerService _audio = AudioPlayerService();
   final AppSettingsService _settings = AppSettingsService();
