@@ -3634,6 +3634,15 @@ class AppLocalizationsRo extends AppLocalizations {
   String get mediaProcessingCompleted => 'Procesare finalizată.';
 
   @override
+  String get convertMediaDestination => 'Destinația fișierelor convertite';
+
+  @override
+  String get exportAskEveryTime => 'Întreabă de fiecare dată';
+
+  @override
+  String get selectAudioTrack => "Selectează pista audio";
+
+  @override
   String get saveInSonarpadDocuments => 'Salvează în Documentele Sonarpad';
 
   @override

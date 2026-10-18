@@ -1,3 +1,4 @@
+import 'media_audio_track.dart';
 import '../l10n/app_localizations_lookup.dart';
 
 class PodcastSubscription {
@@ -216,6 +217,8 @@ class PodcastEpisode {
   final String? chaptersUrl;
   final String? chaptersType;
   final bool isLive;
+  final List<MediaAudioTrack> audioTracks;
+  final String? selectedAudioTrackId;
 
   const PodcastEpisode({
     required this.title,
@@ -227,5 +230,19 @@ class PodcastEpisode {
     this.chaptersUrl,
     this.chaptersType,
     this.isLive = false,
+    this.audioTracks = const [],
+    this.selectedAudioTrackId,
   });
+
+  PodcastEpisode withAudioTrack(String trackId) {
+    final matches = audioTracks.where((track) => track.id == trackId);
+    if (matches.isEmpty) return this;
+    return PodcastEpisode(
+      title: title, description: description, id: id,
+      audioUrl: matches.first.url, videoUrl: videoUrl ?? audioUrl,
+      publishedAt: publishedAt, chaptersUrl: chaptersUrl,
+      chaptersType: chaptersType, isLive: isLive,
+      audioTracks: audioTracks, selectedAudioTrackId: trackId,
+    );
+  }
 }

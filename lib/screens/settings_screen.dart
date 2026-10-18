@@ -1,3 +1,4 @@
+import '../services/persistent_form_preferences.dart';
 import 'dart:async';
 import 'dart:io';
 
@@ -1643,8 +1644,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Future<void> _sendDeveloperReport() async {
     final l10n = AppLocalizations.of(context);
-    final nameController = TextEditingController();
-    final emailController = TextEditingController();
+    final preferences = PersistentFormPreferences();
+    var contact = (name: '', email: '');
+    try {
+      contact = await preferences.loadReportContact();
+    } catch (_) {
+      await AppLogger.log('Report: unable to load saved contact');
+    }
+    if (!mounted) return;
+    final nameController = TextEditingController(text: contact.name);
+    final emailController = TextEditingController(text: contact.email);
     final reportController = TextEditingController();
 
     // The report form is not a login. Explicitly close any autofill context
@@ -1747,6 +1756,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     if (result == null || !mounted) return;
 
+    // Save even if sending fails, so a retry does not require retyping contact details.
+    try {
+      await preferences.saveReportContact(name: result.name, email: result.email);
+    } catch (_) {
+      await AppLogger.log('Report: unable to save contact');
+    }
+    if (!mounted) return;
     showStatusMessage(context, l10n.developerLogSending);
     final logs = await AppLogger.readLogs();
     final sent = await DeveloperLogService.sendReport(

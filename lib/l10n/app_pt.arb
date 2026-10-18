@@ -4824,5 +4824,8 @@
   "importVideoFromGallery": "Escolher da galeria",
   "sharedVideoOpen": "Abrir vídeo",
   "developerReportEmailOptional": "Email (opcional, para receber resposta)",
-  "developerReportEmailInvalid": "Introduza um email válido ou deixe o campo vazio."
+  "developerReportEmailInvalid": "Introduza um email válido ou deixe o campo vazio.",
+  "convertMediaDestination": "Destino dos ficheiros convertidos",
+  "exportAskEveryTime": "Perguntar sempre",
+  "selectAudioTrack": "Selecionar faixa de áudio"
 }

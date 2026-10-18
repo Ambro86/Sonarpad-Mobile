@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('SonarTube root exposes recent videos next to favorites in shared and Flutter renderers', () {
-    final source = File('lib/screens/sonartube_screen.dart').readAsStringSync();
+    final source = File('lib/screens/sonartube_screen.dart').readAsStringSync().replaceAll('\r\n', '\n');
 
     expect(source, contains("id: 'favorites'"));
     expect(source, contains("ValueKey('sonartube_favorites_button')"));
@@ -15,7 +15,7 @@ void main() {
   });
 
   test('successful SonarTube playback records video history including next and previous navigation', () {
-    final source = File('lib/screens/sonartube_screen.dart').readAsStringSync();
+    final source = File('lib/screens/sonartube_screen.dart').readAsStringSync().replaceAll('\r\n', '\n');
 
     expect(source, contains('await _historyService.addRecentVideo(item);'));
     expect(source, contains('await _historyService.addRecentVideo(targetItem);'));
@@ -23,7 +23,7 @@ void main() {
   });
 
   test('recent videos expose localized clear history in shared UIKit model and Flutter', () {
-    final source = File('lib/screens/sonartube_screen.dart').readAsStringSync();
+    final source = File('lib/screens/sonartube_screen.dart').readAsStringSync().replaceAll('\r\n', '\n');
 
     expect(source, contains("id: 'clear_history'"));
     expect(source, contains('title: l10n.clearHistory'));
@@ -33,7 +33,7 @@ void main() {
   });
 
   test('history storage is capped at 100 and stores videos only', () {
-    final source = File('lib/services/sonartube_history_service.dart').readAsStringSync();
+    final source = File('lib/services/sonartube_history_service.dart').readAsStringSync().replaceAll('\r\n', '\n');
 
     expect(source, contains('static const maxItems = 100;'));
     expect(source, contains('item.kind != SonarTubeItemKind.video'));
@@ -43,10 +43,10 @@ void main() {
 
 
   test('recent videos expose per-video delete as secondary action and sighted-only button', () {
-    final screen = File('lib/screens/sonartube_screen.dart').readAsStringSync();
+    final screen = File('lib/screens/sonartube_screen.dart').readAsStringSync().replaceAll('\r\n', '\n');
     final history = File(
       'lib/services/sonartube_history_service.dart',
-    ).readAsStringSync();
+    ).readAsStringSync().replaceAll('\r\n', '\n');
 
     expect(screen, contains("id: 'delete_video'"));
     expect(screen, contains('label: l10n.sonarTubeDeleteRecentVideo'));
@@ -63,7 +63,7 @@ void main() {
 
 
   test('recent videos stay open under the player and restore focus on Back', () {
-    final source = File('lib/screens/sonartube_screen.dart').readAsStringSync();
+    final source = File('lib/screens/sonartube_screen.dart').readAsStringSync().replaceAll('\r\n', '\n');
 
     final openRecentStart = source.indexOf('Future<void> _openRecentVideos()');
     final disposeStart = source.indexOf('  @override\n  void dispose()', openRecentStart);

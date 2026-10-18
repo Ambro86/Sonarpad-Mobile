@@ -3618,6 +3618,15 @@ class AppLocalizationsZh extends AppLocalizations {
   String get mediaProcessingCompleted => '处理完成。';
 
   @override
+  String get convertMediaDestination => '转换文件的保存位置';
+
+  @override
+  String get exportAskEveryTime => '每次询问';
+
+  @override
+  String get selectAudioTrack => "选择音轨";
+
+  @override
   String get saveInSonarpadDocuments => '保存到 Sonarpad 文档';
 
   @override
@@ -10348,4 +10357,13 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get developerReportEmailInvalid => '请输入有效的电子邮件地址，或将此字段留空。';
+
+  @override
+  String get convertMediaDestination => '转换文件的保存位置';
+
+  @override
+  String get exportAskEveryTime => '每次询问';
+
+  @override
+  String get selectAudioTrack => "选择音轨";
 }

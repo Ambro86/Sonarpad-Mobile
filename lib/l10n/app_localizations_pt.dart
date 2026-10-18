@@ -3746,6 +3746,15 @@ class AppLocalizationsPt extends AppLocalizations {
   String get mediaProcessingCompleted => 'Processamento concluído.';
 
   @override
+  String get convertMediaDestination => 'Destino dos ficheiros convertidos';
+
+  @override
+  String get exportAskEveryTime => 'Perguntar sempre';
+
+  @override
+  String get selectAudioTrack => "Selecionar faixa de áudio";
+
+  @override
   String get saveInSonarpadDocuments => 'Guardar nos Documentos do Sonarpad';
 
   @override
@@ -9109,6 +9118,15 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get mediaProcessingCompleted => 'Processamento concluído.';
+
+  @override
+  String get convertMediaDestination => 'Destino dos arquivos convertidos';
+
+  @override
+  String get exportAskEveryTime => 'Perguntar sempre';
+
+  @override
+  String get selectAudioTrack => "Selecionar faixa de áudio";
 
   @override
   String get saveInSonarpadDocuments => 'Salvar nos Documentos do Sonarpad';

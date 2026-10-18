@@ -4818,5 +4818,8 @@
   "importVideoFromGallery": "从图库选择",
   "sharedVideoOpen": "打开视频",
   "developerReportEmailOptional": "电子邮件（可选，用于回复）",
-  "developerReportEmailInvalid": "请输入有效的电子邮件地址，或将此字段留空。"
+  "developerReportEmailInvalid": "请输入有效的电子邮件地址，或将此字段留空。",
+  "convertMediaDestination": "转换文件的保存位置",
+  "exportAskEveryTime": "每次询问",
+  "selectAudioTrack": "选择音轨"
 }

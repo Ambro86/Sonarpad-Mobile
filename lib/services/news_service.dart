@@ -43,14 +43,11 @@ enum NewsLanguage {
   chineseSimplified,
   ukrainian,
   romanian,
-  turkish
+  turkish,
 }
 
 class _TinyfishArticleFetchResult {
-  const _TinyfishArticleFetchResult({
-    this.content,
-    this.disabled = false,
-  });
+  const _TinyfishArticleFetchResult({this.content, this.disabled = false});
 
   final NewsArticleContent? content;
   final bool disabled;
@@ -94,8 +91,10 @@ extension NewsLanguageInfo on NewsLanguage {
         NewsLanguage.english => l10n.english,
         NewsLanguage.french => l10n.french,
         NewsLanguage.spanish => l10n.spanish,
-        NewsLanguage.portuguese => '${l10n.radioLanguagePt} (${l10n.radioCountryOptionPt})',
-        NewsLanguage.portugueseBrazil => '${l10n.radioLanguagePt} (${l10n.radioCountryOptionBr})',
+        NewsLanguage.portuguese =>
+          '${l10n.radioLanguagePt} (${l10n.radioCountryOptionPt})',
+        NewsLanguage.portugueseBrazil =>
+          '${l10n.radioLanguagePt} (${l10n.radioCountryOptionBr})',
         NewsLanguage.polish => l10n.radioLanguagePl,
         NewsLanguage.czech => l10n.radioLanguageCs,
         NewsLanguage.german => l10n.german,
@@ -212,7 +211,9 @@ class NewsService {
     return value
         .toLowerCase()
         .replaceAll(
-          RegExp(r'''[\s.,;:!?\u2026'"\u201c\u201d\u2018\u2019\u00ab\u00bb()\[\]{}<>|/\\\u2014\u2013_-]+'''),
+          RegExp(
+            r'''[\s.,;:!?\u2026'"\u201c\u201d\u2018\u2019\u00ab\u00bb()\[\]{}<>|/\\\u2014\u2013_-]+''',
+          ),
           ' ',
         )
         .trim()
@@ -247,11 +248,14 @@ class NewsService {
         'publishedAt': article.publishedAt?.toIso8601String(),
         if (article.allowInternalMediaLinks) 'allowInternalMediaLinks': true,
         if (article.allowInternalMediaLinks && article.mediaLinks.isNotEmpty)
-          'mediaLinks': article.mediaLinks.map((link) => link.toJson()).toList(),
+          'mediaLinks':
+              article.mediaLinks.map((link) => link.toJson()).toList(),
       });
 
   Future<List<NewsArticle>> getReadArticles(
-      NewsLanguage language, String sourceName) async {
+    NewsLanguage language,
+    String sourceName,
+  ) async {
     final prefs = await SharedPreferences.getInstance();
     final listStr =
         prefs.getStringList(_getReadArticlesKey(language, sourceName)) ?? [];
@@ -268,8 +272,7 @@ class NewsService {
               publishedAt: map['publishedAt'] != null
                   ? DateTime.parse(map['publishedAt'])
                   : null,
-              allowInternalMediaLinks:
-                  map['allowInternalMediaLinks'] == true,
+              allowInternalMediaLinks: map['allowInternalMediaLinks'] == true,
               mediaLinks: map['allowInternalMediaLinks'] == true
                   ? (map['mediaLinks'] as List? ?? const [])
                       .map(NewsArticleMediaLink.fromJson)
@@ -286,7 +289,10 @@ class NewsService {
   }
 
   Future<void> addReadArticle(
-      NewsLanguage language, String sourceName, NewsArticle article) async {
+    NewsLanguage language,
+    String sourceName,
+    NewsArticle article,
+  ) async {
     final prefs = await SharedPreferences.getInstance();
     final key = _getReadArticlesKey(language, sourceName);
     var current = await getReadArticles(language, sourceName);
@@ -301,7 +307,10 @@ class NewsService {
   }
 
   Future<void> removeReadArticle(
-      NewsLanguage language, String sourceName, String articleId) async {
+    NewsLanguage language,
+    String sourceName,
+    String articleId,
+  ) async {
     final prefs = await SharedPreferences.getInstance();
     final key = _getReadArticlesKey(language, sourceName);
     final current = await getReadArticles(language, sourceName);
@@ -310,7 +319,9 @@ class NewsService {
   }
 
   Future<void> clearReadArticles(
-      NewsLanguage language, String sourceName) async {
+    NewsLanguage language,
+    String sourceName,
+  ) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_getReadArticlesKey(language, sourceName));
   }
@@ -362,15 +373,17 @@ class NewsService {
   }
 
   Future<Map<String, String>> _getSourceFolderAssignments(
-      NewsLanguage language) async {
+    NewsLanguage language,
+  ) async {
     final prefs = await SharedPreferences.getInstance();
     final jsonText = prefs.getString(_getSourceFoldersPrefsKey(language));
     if (jsonText == null || jsonText.trim().isEmpty) return {};
     try {
       final decoded = jsonDecode(jsonText);
       if (decoded is! Map) return {};
-      return decoded
-          .map((key, value) => MapEntry(key.toString(), value.toString()));
+      return decoded.map(
+        (key, value) => MapEntry(key.toString(), value.toString()),
+      );
     } catch (_) {
       return {};
     }
@@ -409,9 +422,11 @@ class NewsService {
 
     final customSources = await getCustomSources(language);
     final updatedCustomSources = customSources
-        .map((source) => source.parentFolderId == folderId
-            ? source.copyWith(clearParentFolderId: true)
-            : source)
+        .map(
+          (source) => source.parentFolderId == folderId
+              ? source.copyWith(clearParentFolderId: true)
+              : source,
+        )
         .toList();
     final prefs = await SharedPreferences.getInstance();
     await prefs.setStringList(
@@ -461,7 +476,8 @@ class NewsService {
     await _saveSourceFolderAssignments(language, assignments);
 
     for (final key in prefs.getKeys().where(
-        (key) => key.startsWith('news_sources_order_${language.name}'))) {
+          (key) => key.startsWith('news_sources_order_${language.name}'),
+        )) {
       final order = prefs.getStringList(key) ?? [];
       if (order.remove(_itemOrderKey(source)) || order.remove(source.name)) {
         await prefs.setStringList(key, order);
@@ -502,9 +518,9 @@ class NewsService {
   Future<List<NewsRssSource>> fetchCommunityNewsSources(
     NewsLanguage language,
   ) async {
-    final uri = Uri.parse(_communityNewsSourcesUrl).replace(
-      queryParameters: {'language': language.communityKey},
-    );
+    final uri = Uri.parse(
+      _communityNewsSourcesUrl,
+    ).replace(queryParameters: {'language': language.communityKey});
     final response = await _client
         .get(uri, headers: _communityHeaders)
         .timeout(const Duration(seconds: 12));
@@ -522,10 +538,12 @@ class NewsService {
 
     final currentCustomSources = await getCustomSources(language);
     final knownUrls = <String>{
-      ...language.rssSources
-          .map((source) => source.uri.toString().trim().toLowerCase()),
-      ...currentCustomSources
-          .map((source) => source.uri.toString().trim().toLowerCase()),
+      ...language.rssSources.map(
+        (source) => source.uri.toString().trim().toLowerCase(),
+      ),
+      ...currentCustomSources.map(
+        (source) => source.uri.toString().trim().toLowerCase(),
+      ),
     };
     final knownNames = <String>{
       ...language.rssSources.map((source) => source.name),
@@ -547,11 +565,13 @@ class NewsService {
       final uri = Uri.tryParse(url);
       if (uri == null || !uri.hasScheme || uri.host.isEmpty) continue;
       if (knownUrls.contains(uri.toString().trim().toLowerCase())) continue;
-      sources.add(NewsRssSource(
-        name: _uniqueSourceName(name, knownNames),
-        uri: uri,
-        isCustom: true,
-      ));
+      sources.add(
+        NewsRssSource(
+          name: _uniqueSourceName(name, knownNames),
+          uri: uri,
+          isCustom: true,
+        ),
+      );
     }
     return sources;
   }
@@ -783,7 +803,8 @@ class NewsService {
       await _saveSourceFolderAssignments(language, assignments);
     }
     for (final key in prefs.getKeys().where(
-        (key) => key.startsWith('news_sources_order_${language.name}'))) {
+          (key) => key.startsWith('news_sources_order_${language.name}'),
+        )) {
       final order = prefs.getStringList(key) ?? [];
       if (order.remove('source:$name') || order.remove(name)) {
         await prefs.setStringList(key, order);
@@ -804,10 +825,12 @@ class NewsService {
       for (final folder in folders) folder.name.trim().toLowerCase(): folder,
     };
     final knownUrls = <String>{
-      ...language.rssSources
-          .map((source) => source.uri.toString().trim().toLowerCase()),
-      ...currentCustomSources
-          .map((source) => source.uri.toString().trim().toLowerCase()),
+      ...language.rssSources.map(
+        (source) => source.uri.toString().trim().toLowerCase(),
+      ),
+      ...currentCustomSources.map(
+        (source) => source.uri.toString().trim().toLowerCase(),
+      ),
     };
     final knownNames = <String>{
       ...language.rssSources.map((source) => source.name),
@@ -831,7 +854,10 @@ class NewsService {
     }
 
     void importOutline(
-        XmlElement outline, String? currentFolderId, List<String> folderPath) {
+      XmlElement outline,
+      String? currentFolderId,
+      List<String> folderPath,
+    ) {
       final feedUrl =
           (_opmlAttribute(outline, 'xmlUrl') ?? _opmlAttribute(outline, 'url'))
               ?.trim();
@@ -850,23 +876,27 @@ class NewsService {
                 ? textAttr!
                 : fallbackName;
 
-        toAdd.add(NewsRssSource(
-          name: _uniqueSourceName(baseName, knownNames),
-          uri: uri,
-          isCustom: true,
-          parentFolderId: currentFolderId ?? parentFolderId,
-        ));
+        toAdd.add(
+          NewsRssSource(
+            name: _uniqueSourceName(baseName, knownNames),
+            uri: uri,
+            isCustom: true,
+            parentFolderId: currentFolderId ?? parentFolderId,
+          ),
+        );
         return;
       }
 
       final childOutlines = outline.findElements('outline').toList();
       if (childOutlines.isEmpty) return;
-      final hasFeedChildren = childOutlines.any((child) =>
-          (_opmlAttribute(child, 'xmlUrl') ?? _opmlAttribute(child, 'url'))
-                  ?.trim()
-                  .isNotEmpty ==
-              true ||
-          child.findAllElements('outline').isNotEmpty);
+      final hasFeedChildren = childOutlines.any(
+        (child) =>
+            (_opmlAttribute(child, 'xmlUrl') ?? _opmlAttribute(child, 'url'))
+                    ?.trim()
+                    .isNotEmpty ==
+                true ||
+            child.findAllElements('outline').isNotEmpty,
+      );
       if (!hasFeedChildren) return;
 
       final titleAttr = _opmlAttribute(outline, 'title')?.trim();
@@ -911,9 +941,11 @@ class NewsService {
     for (final source in customSources) {
       sourcesByFolder.putIfAbsent(source.parentFolderId, () => []).add(source);
     }
-    final hasFolders = customSources.any((source) =>
-        source.parentFolderId != null &&
-        folderById.containsKey(source.parentFolderId));
+    final hasFolders = customSources.any(
+      (source) =>
+          source.parentFolderId != null &&
+          folderById.containsKey(source.parentFolderId),
+    );
 
     final buffer = StringBuffer()
       ..writeln('<?xml version="1.0" encoding="UTF-8"?>')
@@ -950,9 +982,11 @@ class NewsService {
         }
         buffer.writeln('  </outline>');
       }
-      final unknownFolderSources = customSources.where((source) =>
-          source.parentFolderId != null &&
-          !folderById.containsKey(source.parentFolderId));
+      final unknownFolderSources = customSources.where(
+        (source) =>
+            source.parentFolderId != null &&
+            !folderById.containsKey(source.parentFolderId),
+      );
       for (final source in unknownFolderSources) {
         writeSource(source, '  ');
       }
@@ -1007,12 +1041,14 @@ class NewsService {
 
     final allSources = [
       ...folders.map(NewsRssSource.folder),
-      ...defaultSources.map((source) => source.copyWith(
-            parentFolderId: assignments[source.name],
-          )),
-      ...customSources.map((source) => source.copyWith(
-            parentFolderId: assignments[source.name] ?? source.parentFolderId,
-          )),
+      ...defaultSources.map(
+        (source) => source.copyWith(parentFolderId: assignments[source.name]),
+      ),
+      ...customSources.map(
+        (source) => source.copyWith(
+          parentFolderId: assignments[source.name] ?? source.parentFolderId,
+        ),
+      ),
     ];
     final hiddenNames = prefs.getStringList(_getHiddenPrefsKey(language)) ?? [];
 
@@ -1022,8 +1058,9 @@ class NewsService {
       return source.parentFolderId == folderId;
     }).toList();
 
-    final savedOrder =
-        prefs.getStringList(_getFolderOrderPrefsKey(language, folderId));
+    final savedOrder = prefs.getStringList(
+      _getFolderOrderPrefsKey(language, folderId),
+    );
     if (savedOrder == null || savedOrder.isEmpty) {
       return visibleSources;
     }
@@ -1074,8 +1111,9 @@ class NewsService {
   Future<void> restoreHiddenSources(NewsLanguage language) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_getHiddenPrefsKey(language));
-    await prefs
-        .remove(_getPrefsKey(language)); // Also reset order when restoring
+    await prefs.remove(
+      _getPrefsKey(language),
+    ); // Also reset order when restoring
   }
 
   Future<List<NewsArticle>> fetchTopNews(
@@ -1161,33 +1199,41 @@ class NewsService {
         return resolved;
       }
     } catch (e) {
-      unawaited(AppLogger.log(
-        'News share: risoluzione URL fallita, uso URL originale error=$e',
-      ));
+      unawaited(
+        AppLogger.log(
+          'News share: risoluzione URL fallita, uso URL originale error=$e',
+        ),
+      );
     }
 
     return original;
   }
 
-  Future<NewsArticleContent> fetchArticleContent(NewsArticle article,
-      {required NewsLanguage language}) async {
+  Future<NewsArticleContent> fetchArticleContent(
+    NewsArticle article, {
+    required NewsLanguage language,
+  }) async {
     final resolvedUrl = await _resolveArticleUrl(article.link);
     final fallbackOnly = _tinyfishFallbackOnlyPolicyForCurrentSession();
     final policySource = _sessionTinyfishFallbackOnlyPolicy == null
         ? 'default_pending'
         : 'session_cache';
 
-    unawaited(AppLogger.log(
-      'News articolo: recupero contenuto avviato '
-      'language=${language.code} fallbackOnly=$fallbackOnly '
-      'policySource=$policySource '
-      'originalUrl=${article.link} resolvedUrl=$resolvedUrl',
-    ));
+    unawaited(
+      AppLogger.log(
+        'News articolo: recupero contenuto avviato '
+        'language=${language.code} fallbackOnly=$fallbackOnly '
+        'policySource=$policySource '
+        'originalUrl=${article.link} resolvedUrl=$resolvedUrl',
+      ),
+    );
 
     if (fallbackOnly) {
-      unawaited(AppLogger.log(
-        'News articolo: ordine recupero = reader locale -> WebView -> Tinyfish',
-      ));
+      unawaited(
+        AppLogger.log(
+          'News articolo: ordine recupero = reader locale -> WebView -> reader server',
+        ),
+      );
       return _fetchArticleContentLocalBeforeWebView(
         article,
         language: language,
@@ -1195,9 +1241,11 @@ class NewsService {
       );
     }
 
-    unawaited(AppLogger.log(
-      'News articolo: ordine recupero = Tinyfish -> reader locale -> WebView',
-    ));
+    unawaited(
+      AppLogger.log(
+        'News articolo: ordine recupero = reader server -> reader locale -> WebView',
+      ),
+    );
     return _fetchArticleContentTinyfishFirst(
       article,
       language: language,
@@ -1208,25 +1256,31 @@ class NewsService {
   void prefetchTinyfishFallbackOnlyPolicy() {
     final cached = _sessionTinyfishFallbackOnlyPolicy;
     if (cached != null) {
-      unawaited(AppLogger.log(
-        'News Tinyfish: policy già in memoria per questa sessione '
-        'fallbackOnly=$cached',
-      ));
+      unawaited(
+        AppLogger.log(
+          'News reader server: policy già in memoria per questa sessione '
+          'fallbackOnly=$cached',
+        ),
+      );
       return;
     }
 
     if (_sessionTinyfishPolicyFuture != null) {
-      unawaited(AppLogger.log(
-        'News Tinyfish: richiesta policy già in corso, riuso la stessa '
-        'richiesta',
-      ));
+      unawaited(
+        AppLogger.log(
+          'News reader server: richiesta policy già in corso, riuso la stessa '
+          'richiesta',
+        ),
+      );
       return;
     }
 
-    unawaited(AppLogger.log(
-      'News Tinyfish: richiesta policy avviata in background per questa '
-      'sessione',
-    ));
+    unawaited(
+      AppLogger.log(
+        'News reader server: richiesta policy avviata in background per questa '
+        'sessione',
+      ),
+    );
     unawaited(loadTinyfishFallbackOnlyPolicyForSession());
   }
 
@@ -1256,13 +1310,12 @@ class NewsService {
 
   Future<bool> _loadTinyfishFallbackOnlyPolicyFromServer() async {
     try {
-      final uri = Uri.parse(_tinyfishArticleFetchUrl).replace(
-        queryParameters: {'policy': '1'},
-      );
-      final response = await _client.get(
-        uri,
-        headers: const {'Accept': 'application/json'},
-      ).timeout(_tinyfishPolicyTimeout);
+      final uri = Uri.parse(
+        _tinyfishArticleFetchUrl,
+      ).replace(queryParameters: {'policy': '1'});
+      final response = await _client.get(uri, headers: const {
+        'Accept': 'application/json'
+      }).timeout(_tinyfishPolicyTimeout);
       if (response.statusCode >= 200 && response.statusCode < 300) {
         final decoded = jsonDecode(
           utf8.decode(response.bodyBytes, allowMalformed: true),
@@ -1272,35 +1325,45 @@ class NewsService {
               decoded['fallback_only'] == true ||
               decoded['mode']?.toString().toLowerCase() == 'fallback_only';
           _sessionTinyfishFallbackOnlyPolicy = fallbackOnly;
-          unawaited(AppLogger.log(
-            'News Tinyfish: policy ricevuta dal server e mantenuta in '
-            'memoria per questa sessione fallbackOnly=$fallbackOnly',
-          ));
+          unawaited(
+            AppLogger.log(
+              'News reader server: policy ricevuta dal server e mantenuta in '
+              'memoria per questa sessione fallbackOnly=$fallbackOnly',
+            ),
+          );
           return fallbackOnly;
         }
 
-        unawaited(AppLogger.log(
-          'News Tinyfish: risposta policy non valida, uso default sicuro '
-          'fallbackOnly=$_tinyfishFallbackOnlyDefault',
-        ));
+        unawaited(
+          AppLogger.log(
+            'News reader server: risposta policy non valida, uso default sicuro '
+            'fallbackOnly=$_tinyfishFallbackOnlyDefault',
+          ),
+        );
       } else {
-        unawaited(AppLogger.log(
-          'News Tinyfish: risposta policy HTTP ${response.statusCode}, uso '
-          'default sicuro fallbackOnly=$_tinyfishFallbackOnlyDefault',
-        ));
+        unawaited(
+          AppLogger.log(
+            'News reader server: risposta policy HTTP ${response.statusCode}, uso '
+            'default sicuro fallbackOnly=$_tinyfishFallbackOnlyDefault',
+          ),
+        );
       }
     } catch (e) {
-      unawaited(AppLogger.log(
-        'News Tinyfish: policy non disponibile, uso default sicuro '
-        'fallbackOnly=$_tinyfishFallbackOnlyDefault error=$e',
-      ));
+      unawaited(
+        AppLogger.log(
+          'News reader server: policy non disponibile, uso default sicuro '
+          'fallbackOnly=$_tinyfishFallbackOnlyDefault error=$e',
+        ),
+      );
     }
 
     _sessionTinyfishFallbackOnlyPolicy = _tinyfishFallbackOnlyDefault;
-    unawaited(AppLogger.log(
-      'News Tinyfish: default sicuro mantenuto in memoria per questa '
-      'sessione fallbackOnly=$_tinyfishFallbackOnlyDefault',
-    ));
+    unawaited(
+      AppLogger.log(
+        'News reader server: default sicuro mantenuto in memoria per questa '
+        'sessione fallbackOnly=$_tinyfishFallbackOnlyDefault',
+      ),
+    );
     return _tinyfishFallbackOnlyDefault;
   }
 
@@ -1316,42 +1379,53 @@ class NewsService {
     required String resolvedUrl,
   }) async {
     if (_isGoogleNewsArticleUrl(resolvedUrl)) {
-      unawaited(AppLogger.log(
-        'News Tinyfish: URL Google News non risolto, provo Tinyfish '
-        'url=$resolvedUrl',
-      ));
-      final tinyfishGoogleNewsResult =
-          await _tryFetchTinyfishArticleContent(resolvedUrl);
+      unawaited(
+        AppLogger.log(
+          'News reader server: URL Google News non risolto, provo reader server '
+          'url=$resolvedUrl',
+        ),
+      );
+      final tinyfishGoogleNewsResult = await _tryFetchTinyfishArticleContent(
+        resolvedUrl,
+      );
       final tinyfishGoogleNewsContent = tinyfishGoogleNewsResult.content;
       if (tinyfishGoogleNewsContent != null &&
           tinyfishGoogleNewsContent.text.trim().length >= 100) {
-        unawaited(AppLogger.log(
-          'News Tinyfish: testo Google News accettato '
-          'length=${tinyfishGoogleNewsContent.text.trim().length} '
-          'url=${tinyfishGoogleNewsContent.url}',
-        ));
+        unawaited(
+          AppLogger.log(
+            'News reader server: testo Google News accettato '
+            'length=${tinyfishGoogleNewsContent.text.trim().length} '
+            'url=${tinyfishGoogleNewsContent.url}',
+          ),
+        );
         return tinyfishGoogleNewsContent;
       }
       if (tinyfishGoogleNewsResult.disabled) {
-        unawaited(AppLogger.log(
-          'News Tinyfish: disabilitato su Google News non risolto, '
-          'uso riassunto RSS url=$resolvedUrl',
-        ));
+        unawaited(
+          AppLogger.log(
+            'News reader server: disabilitato su Google News non risolto, '
+            'uso riassunto RSS url=$resolvedUrl',
+          ),
+        );
         return NewsArticleContent(text: article.summary, url: article.link);
       }
-      unawaited(AppLogger.log(
-        'News Tinyfish: URL Google News non risolto, uso riassunto RSS '
-        'url=$resolvedUrl',
-      ));
+      unawaited(
+        AppLogger.log(
+          'News reader server: URL Google News non risolto, uso riassunto RSS '
+          'url=$resolvedUrl',
+        ),
+      );
       return NewsArticleContent(text: article.summary, url: article.link);
     }
     final tinyfishResult = await _tryFetchTinyfishArticleContent(resolvedUrl);
     final tinyfishContent = tinyfishResult.content;
     if (tinyfishContent != null && tinyfishContent.text.trim().length >= 100) {
-      unawaited(AppLogger.log(
-        'News Tinyfish: testo accettato length=${tinyfishContent.text.trim().length} '
-        'url=${tinyfishContent.url}',
-      ));
+      unawaited(
+        AppLogger.log(
+          'News reader server: testo accettato length=${tinyfishContent.text.trim().length} '
+          'url=${tinyfishContent.url}',
+        ),
+      );
       return tinyfishContent;
     }
 
@@ -1367,18 +1441,22 @@ class NewsService {
     required NewsLanguage language,
     required String resolvedUrl,
   }) async {
-    unawaited(AppLogger.log(
-      'News Tinyfish: modalità fallback-only attiva, eseguo solo il reader '
-      'locale prima della WebView '
-      'url=$resolvedUrl',
-    ));
+    unawaited(
+      AppLogger.log(
+        'News reader server: modalità fallback-only attiva, eseguo solo il reader '
+        'locale prima della WebView '
+        'url=$resolvedUrl',
+      ),
+    );
 
     if (_isGoogleNewsArticleUrl(resolvedUrl)) {
-      unawaited(AppLogger.log(
-        'News Tinyfish: URL Google News non risolto in fallback-only, '
-        'reader locale non utile; Tinyfish verrà valutato soltanto dopo la '
-        'WebView url=$resolvedUrl',
-      ));
+      unawaited(
+        AppLogger.log(
+          'News reader server: URL Google News non risolto in fallback-only, '
+          'reader locale non utile; reader server verrà valutato soltanto dopo la '
+          'WebView url=$resolvedUrl',
+        ),
+      );
       return NewsArticleContent(text: article.summary, url: article.link);
     }
 
@@ -1389,17 +1467,21 @@ class NewsService {
         resolvedUrl: resolvedUrl,
       );
       final localLength = localContent.text.trim().length;
-      unawaited(AppLogger.log(
-        'News Tinyfish: reader locale completato in fallback-only '
-        'length=$localLength url=$resolvedUrl',
-      ));
+      unawaited(
+        AppLogger.log(
+          'News reader server: reader locale completato in fallback-only '
+          'length=$localLength url=$resolvedUrl',
+        ),
+      );
       return localContent;
     } catch (e) {
-      unawaited(AppLogger.log(
-        'News Tinyfish: reader locale fallito in fallback-only, '
-        'resta la WebView; Tinyfish verrà valutato dopo url=$resolvedUrl '
-        'error=$e',
-      ));
+      unawaited(
+        AppLogger.log(
+          'News reader server: reader locale fallito in fallback-only, '
+          'resta la WebView; reader server verrà valutato dopo url=$resolvedUrl '
+          'error=$e',
+        ),
+      );
     }
 
     return NewsArticleContent(text: article.summary, url: article.link);
@@ -1417,10 +1499,12 @@ class NewsService {
   }) async {
     final fallbackOnly = _tinyfishFallbackOnlyPolicyForCurrentSession();
     if (!fallbackOnly) {
-      unawaited(AppLogger.log(
-        'News Tinyfish: fallback dopo WebView ignorato perché la modalità '
-        'corrente è Tinyfish-first',
-      ));
+      unawaited(
+        AppLogger.log(
+          'News reader server: fallback dopo WebView ignorato perché la modalità '
+          'corrente è reader server-first',
+        ),
+      );
       return null;
     }
 
@@ -1430,27 +1514,33 @@ class NewsService {
     }
     if (targetUrl.isEmpty) targetUrl = article.link;
 
-    unawaited(AppLogger.log(
-      'News Tinyfish: reader HTTP e WebView insufficienti, avvio ultimo '
-      'fallback url=$targetUrl',
-    ));
+    unawaited(
+      AppLogger.log(
+        'News reader server: reader HTTP e WebView insufficienti, avvio ultimo '
+        'fallback url=$targetUrl',
+      ),
+    );
     final tinyfishResult = await _tryFetchTinyfishArticleContent(
       targetUrl,
       fallbackAttempt: true,
     );
     final tinyfishContent = tinyfishResult.content;
     if (tinyfishContent != null && tinyfishContent.text.trim().length >= 100) {
-      unawaited(AppLogger.log(
-        'News Tinyfish: ultimo fallback accettato '
-        'length=${tinyfishContent.text.trim().length} '
-        'url=${tinyfishContent.url}',
-      ));
+      unawaited(
+        AppLogger.log(
+          'News reader server: ultimo fallback accettato '
+          'length=${tinyfishContent.text.trim().length} '
+          'url=${tinyfishContent.url}',
+        ),
+      );
       return tinyfishContent;
     }
 
-    unawaited(AppLogger.log(
-      'News Tinyfish: ultimo fallback senza testo valido url=$targetUrl',
-    ));
+    unawaited(
+      AppLogger.log(
+        'News reader server: ultimo fallback senza testo valido url=$targetUrl',
+      ),
+    );
     return null;
   }
 
@@ -1459,9 +1549,11 @@ class NewsService {
     required NewsLanguage language,
     required String resolvedUrl,
   }) async {
-    unawaited(AppLogger.log(
-      'News reader HTML: estrazione senza Tinyfish url=$resolvedUrl',
-    ));
+    unawaited(
+      AppLogger.log(
+        'News reader HTML: estrazione senza reader server url=$resolvedUrl',
+      ),
+    );
     final langHeader = _acceptLanguageHeader(language);
     final fetch = await _browserGetWithFallback(
       Uri.parse(resolvedUrl),
@@ -1472,10 +1564,12 @@ class NewsService {
       },
     );
     final response = fetch.response;
-    unawaited(AppLogger.log(
-      'News reader HTML: risposta HTTP code=${response.statusCode} '
-      'profile=${fetch.profile.name} url=$resolvedUrl',
-    ));
+    unawaited(
+      AppLogger.log(
+        'News reader HTML: risposta HTTP code=${response.statusCode} '
+        'profile=${fetch.profile.name} url=$resolvedUrl',
+      ),
+    );
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception('Articolo non raggiungibile: ${response.statusCode}');
     }
@@ -1484,10 +1578,12 @@ class NewsService {
       return NewsArticleContent(text: article.summary, url: article.link);
     }
     var text = _extractArticleText(html, language: language);
-    unawaited(AppLogger.log(
-      'News reader HTML: estrazione iniziale length=${text.trim().length} '
-      'profile=${fetch.profile.name} url=$resolvedUrl',
-    ));
+    unawaited(
+      AppLogger.log(
+        'News reader HTML: estrazione iniziale length=${text.trim().length} '
+        'profile=${fetch.profile.name} url=$resolvedUrl',
+      ),
+    );
     final resolvedUri = Uri.parse(resolvedUrl);
     final ampUri = _ampArticleUri(resolvedUri);
     if (fetch.profile != _BrowserFetchProfile.iphone &&
@@ -1496,9 +1592,11 @@ class NewsService {
           article.summary,
           includeTruncated: ampUri != null,
         )) {
-      unawaited(AppLogger.log(
-        'News reader HTML: testo debole, provo profilo iPhone url=$resolvedUrl',
-      ));
+      unawaited(
+        AppLogger.log(
+          'News reader HTML: testo debole, provo profilo iPhone url=$resolvedUrl',
+        ),
+      );
       final iphoneResponse = await _browserGetWithProfile(
         _BrowserFetchProfile.iphone,
         Uri.parse(resolvedUrl),
@@ -1511,53 +1609,56 @@ class NewsService {
       if (iphoneResponse.statusCode >= 200 && iphoneResponse.statusCode < 300) {
         final iphoneHtml = _decodeHtmlResponse(iphoneResponse);
         final iphoneText = _extractArticleText(iphoneHtml, language: language);
-        unawaited(AppLogger.log(
-          'News reader HTML: profilo iPhone length=${iphoneText.trim().length} '
-          'previousLength=${text.trim().length} url=$resolvedUrl',
-        ));
+        unawaited(
+          AppLogger.log(
+            'News reader HTML: profilo iPhone length=${iphoneText.trim().length} '
+            'previousLength=${text.trim().length} url=$resolvedUrl',
+          ),
+        );
         if (iphoneText.trim().length > text.trim().length) {
           text = iphoneText;
-          unawaited(AppLogger.log(
-            'News reader HTML: profilo iPhone accettato url=$resolvedUrl',
-          ));
+          unawaited(
+            AppLogger.log(
+              'News reader HTML: profilo iPhone accettato url=$resolvedUrl',
+            ),
+          );
         }
       }
     }
     if (ampUri != null &&
-        _isWeakArticleText(
-          text,
-          article.summary,
-          includeTruncated: true,
-        )) {
-      unawaited(AppLogger.log(
-        'News reader HTML: testo ancora debole, provo AMP url=$ampUri',
-      ));
+        _isWeakArticleText(text, article.summary, includeTruncated: true)) {
+      unawaited(
+        AppLogger.log(
+          'News reader HTML: testo ancora debole, provo AMP url=$ampUri',
+        ),
+      );
       final ampFetch = await _browserGetWithFallback(ampUri);
       final ampResponse = ampFetch.response;
       if (ampResponse.statusCode >= 200 && ampResponse.statusCode < 300) {
         final ampHtml = _decodeHtmlResponse(ampResponse);
         final ampText = _extractArticleText(ampHtml, language: language);
-        unawaited(AppLogger.log(
-          'News reader HTML: AMP length=${ampText.trim().length} '
-          'previousLength=${text.trim().length} url=$ampUri',
-        ));
+        unawaited(
+          AppLogger.log(
+            'News reader HTML: AMP length=${ampText.trim().length} '
+            'previousLength=${text.trim().length} url=$ampUri',
+          ),
+        );
         if (ampText.trim().length > text.trim().length) {
           text = ampText;
-          unawaited(AppLogger.log(
-            'News reader HTML: AMP accettato url=$ampUri',
-          ));
+          unawaited(
+            AppLogger.log('News reader HTML: AMP accettato url=$ampUri'),
+          );
         }
       }
     }
     final finalText = text.isEmpty ? article.summary : text;
-    unawaited(AppLogger.log(
-      'News reader HTML: risultato finale length=${finalText.trim().length} '
-      'usedSummary=${text.isEmpty} url=$resolvedUrl',
-    ));
-    return NewsArticleContent(
-      text: finalText,
-      url: resolvedUrl,
+    unawaited(
+      AppLogger.log(
+        'News reader HTML: risultato finale length=${finalText.trim().length} '
+        'usedSummary=${text.isEmpty} url=$resolvedUrl',
+      ),
     );
+    return NewsArticleContent(text: finalText, url: resolvedUrl);
   }
 
   Future<_TinyfishArticleFetchResult> _tryFetchTinyfishArticleContent(
@@ -1565,27 +1666,31 @@ class NewsService {
     bool fallbackAttempt = false,
   }) async {
     try {
-      unawaited(AppLogger.log(
-        'News Tinyfish: tentativo url=$articleUrl fallbackAttempt=$fallbackAttempt',
-      ));
+      unawaited(
+        AppLogger.log(
+          'News reader server: tentativo url=$articleUrl fallbackAttempt=$fallbackAttempt',
+        ),
+      );
       final uri = Uri.parse(_tinyfishArticleFetchUrl).replace(
         queryParameters: {
           'url': articleUrl,
           if (fallbackAttempt) 'fallback': '1',
         },
       );
-      final response = await _client.get(
-        uri,
-        headers: const {'Accept': 'application/json'},
-      ).timeout(_tinyfishArticleTimeout);
+      final response = await _client.get(uri, headers: const {
+        'Accept': 'application/json'
+      }).timeout(_tinyfishArticleTimeout);
+      unawaited(AppLogger.log(articleReaderResponseLog(response, articleUrl)));
       if (response.statusCode < 200 || response.statusCode >= 300) {
         final disabled = _isTinyfishDisabledResponse(response);
-        unawaited(AppLogger.log(
-          'News Tinyfish: HTTP ${response.statusCode}, fallback reader '
-          'disabled=$disabled url=$articleUrl',
-        ));
+        unawaited(
+          AppLogger.log(
+            'News reader server: HTTP ${response.statusCode}, fallback reader '
+            'disabled=$disabled url=$articleUrl',
+          ),
+        );
         debugPrint(
-          'Sonarpad news Tinyfish: HTTP ${response.statusCode}, fallback reader',
+          'Sonarpad news reader server: HTTP ${response.statusCode}, fallback reader',
         );
         return _TinyfishArticleFetchResult(disabled: disabled);
       }
@@ -1594,9 +1699,11 @@ class NewsService {
         utf8.decode(response.bodyBytes, allowMalformed: true),
       );
       if (decoded is! Map || decoded['ok'] != true) {
-        unawaited(AppLogger.log(
-          'News Tinyfish: risposta non valida, fallback reader url=$articleUrl',
-        ));
+        unawaited(
+          AppLogger.log(
+            'News reader server: risposta non valida, fallback reader url=$articleUrl',
+          ),
+        );
         return const _TinyfishArticleFetchResult();
       }
 
@@ -1604,19 +1711,27 @@ class NewsService {
       final cacheHit = decoded['cache_hit'];
       final tinyfishEnabled = decoded['tinyfish_enabled'];
       final fallbackOnly = decoded['tinyfish_fallback_only'];
-      unawaited(AppLogger.log(
-        'News Tinyfish: risposta ok cache_hit=$cacheHit '
-        'tinyfish_enabled=$tinyfishEnabled fallbackOnly=$fallbackOnly '
-        'markdownLength=${markdown.length} url=$articleUrl',
-      ));
+      unawaited(
+        AppLogger.log(
+          'News reader server: risposta ok cache_hit=$cacheHit '
+          'tinyfish_enabled=$tinyfishEnabled fallbackOnly=$fallbackOnly '
+          'markdownLength=${markdown.length} url=$articleUrl',
+        ),
+      );
       if (markdown.isEmpty) return const _TinyfishArticleFetchResult();
 
-      final text = _plainTextFromMarkdown(markdown);
+      // Python already returns plain text. Do not interpret article punctuation
+      // (comparisons, underscores or asterisks) as HTML/Markdown.
+      final text = decoded['format'] == 'text'
+          ? markdown
+          : _plainTextFromMarkdown(markdown);
       if (text.trim().isEmpty) {
-        unawaited(AppLogger.log(
-          'News Tinyfish: markdown vuoto dopo conversione, fallback reader '
-          'url=$articleUrl',
-        ));
+        unawaited(
+          AppLogger.log(
+            'News reader server: markdown vuoto dopo conversione, fallback reader '
+            'url=$articleUrl',
+          ),
+        );
         return const _TinyfishArticleFetchResult();
       }
 
@@ -1630,12 +1745,58 @@ class NewsService {
         ),
       );
     } catch (e) {
-      unawaited(AppLogger.log(
-        'News Tinyfish: errore, fallback reader url=$articleUrl error=$e',
-      ));
-      debugPrint('Sonarpad news Tinyfish: fetch fallito, fallback reader: $e');
+      unawaited(
+        AppLogger.log(
+          'News reader server: errore, fallback reader url=$articleUrl error=$e',
+        ),
+      );
+      debugPrint(
+        'Sonarpad news reader server: fetch fallito, fallback reader: $e',
+      );
       return const _TinyfishArticleFetchResult();
     }
+  }
+
+  /// Log only protocol metadata, never article bodies or server diagnostics.
+  @visibleForTesting
+  static String articleReaderResponseLog(http.Response response, String url) {
+    Map metadata = const {};
+    try {
+      final decoded = jsonDecode(utf8.decode(response.bodyBytes));
+      if (decoded is Map) metadata = decoded;
+    } catch (_) {
+      // An HTML error page must not prevent the normal fallback.
+    }
+    String field(Object? value) => (value ?? 'non comunicato')
+        .toString()
+        .replaceAll(RegExp(r'[\r\n]'), ' ');
+    final provider =
+        metadata['provider'] ?? response.headers['x-sonarpad-provider'];
+    final tinyfish = metadata['tinyfish_used'];
+    final tinyfishHeader =
+        response.headers['x-sonarpad-tinyfish']?.toUpperCase();
+    final cache = metadata['cache_hit'] ?? response.headers['x-sonarpad-cache'];
+    final engine = provider == 'tinyfish' ||
+            tinyfish == true ||
+            tinyfishHeader == 'USED' ||
+            tinyfishHeader == 'CACHED'
+        ? 'Tinyfish'
+        : provider == 'curl_impersonate'
+            ? 'Python (curl_cffi/BeautifulSoup)'
+            : 'non comunicato';
+    final failed = response.statusCode < 200 ||
+        response.statusCode >= 300 ||
+        metadata['ok'] != true;
+    return 'News reader server: HTTP ${response.statusCode} '
+        'motore=$engine provider=${field(provider)} '
+        'tinyfish_used=${field(tinyfish ?? tinyfishHeader)} '
+        'cache_hit=${field(cache)} '
+        'metodo=${field(metadata['extraction_method'])} '
+        'profilo=${field(metadata['browser_profile'])} '
+        'caratteri=${field(metadata['text_length'])} '
+        'tempo_ms=${field(metadata['latency_ms'])} '
+        'esito=${failed ? "non disponibile, proseguo con i fallback dell app" : "risposta ricevuta"} '
+        'url=$url';
   }
 
   bool _isTinyfishDisabledResponse(http.Response response) {
@@ -1711,8 +1872,7 @@ class NewsService {
         NewsLanguage.turkish => 'TR',
       };
 
-  bool _isGoogleNewsUri(Uri uri) =>
-      uri.host.toLowerCase() == 'news.google.com';
+  bool _isGoogleNewsUri(Uri uri) => uri.host.toLowerCase() == 'news.google.com';
 
   String? _googleNewsSiteForSource(NewsRssSource source) {
     final override = _googleNewsSiteOverrides[source.name];
@@ -1745,10 +1905,7 @@ class NewsService {
     return host.isEmpty ? null : host;
   }
 
-  Uri? _googleNewsFallbackUri(
-    NewsRssSource source,
-    NewsLanguage language,
-  ) {
+  Uri? _googleNewsFallbackUri(NewsRssSource source, NewsLanguage language) {
     if (_isGoogleNewsUri(source.uri)) return null;
     final site = _googleNewsSiteForSource(source);
     if (site == null || site.isEmpty) return null;
@@ -1763,7 +1920,9 @@ class NewsService {
       _ => lang,
     };
     return Uri.https('news.google.com', '/rss/search', {
-      'q': 'site:$site',
+      'q': const {'micromega.net', 'startmag.it'}.contains(site)
+          ? 'site:$site -inurl:/tag/ -inurl:/author/ -inurl:/category/'
+          : 'site:$site',
       'hl': lang,
       'gl': country,
       'ceid': '$country:$ceidLanguage',
@@ -1802,10 +1961,12 @@ class NewsService {
           return cachedFallback;
         }
       } catch (e) {
-        unawaited(AppLogger.log(
-          'NEWS_FALLBACK ${rssSource.name}: fallback di sessione fallito, '
-          'riprovo RSS primario error=$e',
-        ));
+        unawaited(
+          AppLogger.log(
+            'NEWS_FALLBACK ${rssSource.name}: fallback di sessione fallito, '
+            'riprovo RSS primario error=$e',
+          ),
+        );
       }
       _sessionGoogleNewsFallbackSites.remove(sessionKey);
     }
@@ -1818,16 +1979,20 @@ class NewsService {
       );
       if (primary.isNotEmpty) return primary;
       primaryError = StateError('RSS senza articoli');
-      unawaited(AppLogger.log(
-        'NEWS_FALLBACK ${rssSource.name}: RSS primario senza articoli, '
-        'provo Google News site:$site',
-      ));
+      unawaited(
+        AppLogger.log(
+          'NEWS_FALLBACK ${rssSource.name}: RSS primario senza articoli, '
+          'provo Google News site:$site',
+        ),
+      );
     } catch (e) {
       primaryError = e;
-      unawaited(AppLogger.log(
-        'NEWS_FALLBACK ${rssSource.name}: RSS primario fallito error=$e; '
-        'provo Google News site:$site',
-      ));
+      unawaited(
+        AppLogger.log(
+          'NEWS_FALLBACK ${rssSource.name}: RSS primario fallito error=$e; '
+          'provo Google News site:$site',
+        ),
+      );
     }
 
     try {
@@ -1837,17 +2002,21 @@ class NewsService {
       );
       if (fallback.isNotEmpty) {
         _sessionGoogleNewsFallbackSites.add(sessionKey);
-        unawaited(AppLogger.log(
-          'NEWS_FALLBACK ${rssSource.name}: Google News attivo per la sessione '
-          'site:$site articoli=${fallback.length}',
-        ));
+        unawaited(
+          AppLogger.log(
+            'NEWS_FALLBACK ${rssSource.name}: Google News attivo per la sessione '
+            'site:$site articoli=${fallback.length}',
+          ),
+        );
         return fallback;
       }
     } catch (fallbackError) {
-      unawaited(AppLogger.log(
-        'NEWS_FALLBACK ${rssSource.name}: anche Google News fallito '
-        'site:$site error=$fallbackError',
-      ));
+      unawaited(
+        AppLogger.log(
+          'NEWS_FALLBACK ${rssSource.name}: anche Google News fallito '
+          'site:$site error=$fallbackError',
+        ),
+      );
       throw Exception(
         'Impossibile caricare ${rssSource.name}: RSS primario e fallback '
         'Google News non disponibili. Primario: $primaryError; '
@@ -1891,7 +2060,10 @@ class NewsService {
       return items.map((item) {
         index++;
         final title = _text(item, 'title');
-        final link = _text(item, 'link');
+        final rawLink = _text(item, 'link');
+        final link = rawLink.isEmpty
+            ? ''
+            : _resolveRelativeUrl(rawLink, rssSource.uri.toString());
         final guid = _text(item, 'guid');
         final rawDescription = _rssDescription(item);
         final description = _cleanRssDescription(rawDescription);
@@ -1972,7 +2144,10 @@ class NewsService {
     return entries.map((entry) {
       index++;
       final title = _text(entry, 'title');
-      final link = _atomLink(entry);
+      final rawLink = _atomLink(entry);
+      final link = rawLink.isEmpty
+          ? ''
+          : _resolveRelativeUrl(rawLink, rssSource.uri.toString());
       final rawSummary = _text(entry, 'summary').isNotEmpty
           ? _text(entry, 'summary')
           : _text(entry, 'content');
@@ -2010,18 +2185,17 @@ class NewsService {
   String _atomLink(XmlElement entry) {
     final links = entry.findElements('link').toList();
     if (links.isEmpty) return '';
-    final alternate = links.firstWhere(
-      (link) {
-        final rel = link.getAttribute('rel');
-        return rel == null || rel == 'alternate';
-      },
-      orElse: () => links.first,
-    );
+    final alternate = links.firstWhere((link) {
+      final rel = link.getAttribute('rel');
+      return rel == null || rel == 'alternate';
+    }, orElse: () => links.first);
     return alternate.getAttribute('href') ?? alternate.innerText.trim();
   }
 
   List<NewsArticle> _extractArticlesFromHtml(
-      String htmlStr, NewsRssSource rssSource) {
+    String htmlStr,
+    NewsRssSource rssSource,
+  ) {
     final doc = html_parser.parse(htmlStr);
     final links = doc.querySelectorAll('a');
     final articles = <NewsArticle>[];
@@ -2049,18 +2223,20 @@ class NewsService {
       seenHrefs.add(fullUrl);
 
       index++;
-      articles.add(NewsArticle(
-        id: _stableArticleId(
-          rssSource,
+      articles.add(
+        NewsArticle(
+          id: _stableArticleId(
+            rssSource,
+            link: fullUrl,
+            fallback: '$text|$index',
+          ),
+          title: text,
           link: fullUrl,
-          fallback: '$text|$index',
+          summary: '',
+          source: rssSource.name,
+          publishedAt: DateTime.now(),
         ),
-        title: text,
-        link: fullUrl,
-        summary: '',
-        source: rssSource.name,
-        publishedAt: DateTime.now(),
-      ));
+      );
       if (articles.length >= 30) break;
     }
     return articles;
@@ -2133,9 +2309,9 @@ class NewsService {
   String _cleanFeedText(String value) {
     if (value.trim().isEmpty) return '';
     final parsedText = html_parser.parse(value).body?.text ?? value;
-    return HtmlReaderService.cleanText(parsedText)
-        .replaceAll(RegExp(r'\s+'), ' ')
-        .trim();
+    return HtmlReaderService.cleanText(
+      parsedText,
+    ).replaceAll('\u0080', '€').replaceAll(RegExp(r'\s+'), ' ').trim();
   }
 
   String _cleanRssDescription(String value) {
@@ -2193,17 +2369,28 @@ class NewsService {
       return null;
     }
     final html = utf8.decode(htmlResponse.bodyBytes, allowMalformed: true);
-    if (_isGoogleConsentPage(html) || _isGoogleFullCoveragePage(html)) {
+    if (_isGoogleConsentPage(html)) {
       return null;
     }
-    final directUrl = _extractGoogleNewsDirectUrl(html);
+    final articleId = _extractGoogleNewsArticleId(url);
+    final articleNodes =
+        html_parser.parse(html).querySelectorAll('[data-n-a-id]');
+    final matchingNodes = articleNodes.where(
+      (node) => node.attributes['data-n-a-id'] == articleId,
+    );
+    if (articleNodes.isNotEmpty && matchingNodes.isEmpty) return null;
+    final articleNode = matchingNodes.isEmpty ? null : matchingNodes.first;
+    // Google includes "Full coverage" in shared scripts even on its article
+    // redirect page. A matching article node is stronger evidence than that text.
+    if (articleNode == null && _isGoogleFullCoveragePage(html)) return null;
+    final articleHtml = articleNode?.outerHtml ?? html;
+    final directUrl = _extractGoogleNewsDirectUrl(articleHtml);
     if (directUrl != null) return directUrl;
 
-    final articleId = _extractGoogleNewsArticleId(url);
-    final signature = _extractBetween(html, 'data-n-a-sg="', '"') ??
-        _extractBetween(html, "data-n-a-sg='", "'");
-    final timestamp = _extractBetween(html, 'data-n-a-ts="', '"') ??
-        _extractBetween(html, "data-n-a-ts='", "'");
+    final signature = _extractBetween(articleHtml, 'data-n-a-sg="', '"') ??
+        _extractBetween(articleHtml, "data-n-a-sg='", "'");
+    final timestamp = _extractBetween(articleHtml, 'data-n-a-ts="', '"') ??
+        _extractBetween(articleHtml, "data-n-a-ts='", "'");
     if (articleId == null || signature == null || timestamp == null) {
       return null;
     }
@@ -2212,8 +2399,8 @@ class NewsService {
         '["garturlreq",[["en-US","US",["WEB_TEST_1_0_0"],null,null,1,1,"US:en",null,180,null,null,null,null,null,0,null,null,[1608992183,723341000]],"en-US","US",1,[2,3,4,8],1,0,"655000234",0,0,null,0],"$articleId",$timestamp,"$signature"]';
     final fReq = jsonEncode([
       [
-        ['Fbv4je', jsonEncode(requestInner)]
-      ]
+        ['Fbv4je', requestInner],
+      ],
     ]);
     final response = await _browserPost(
       Uri.parse(
@@ -2240,7 +2427,9 @@ class NewsService {
     final uri = Uri.tryParse(url);
     final segments = uri?.pathSegments;
     if (segments == null) return null;
-    final index = segments.indexWhere((segment) => segment == 'articles');
+    final index = segments.indexWhere(
+      (segment) => segment == 'articles' || segment == 'read',
+    );
     if (index < 0 || index + 1 >= segments.length) return null;
     final id = segments[index + 1].trim();
     return id.isEmpty ? null : id;
@@ -2286,8 +2475,9 @@ class NewsService {
     final articleElements = document.getElementsByTagName('article');
     final paragraphs = articleElements.isEmpty
         ? document.getElementsByTagName('p')
-        : articleElements
-            .expand((element) => element.getElementsByTagName('p'));
+        : articleElements.expand(
+            (element) => element.getElementsByTagName('p'),
+          );
     final text = paragraphs
         .map((element) => _cleanHtml(element.text))
         .where((value) => value.length > 40)
@@ -2349,9 +2539,13 @@ class NewsService {
   static Future<http.Client> _browserClient(_BrowserFetchProfile profile) {
     return switch (profile) {
       _BrowserFetchProfile.chrome => _chromeClientFuture ??=
-          rhttp.RhttpCompatibleClient.create(settings: _chromeClientSettings),
+            rhttp.RhttpCompatibleClient.create(
+          settings: _chromeClientSettings,
+        ),
       _BrowserFetchProfile.iphone => _iphoneClientFuture ??=
-          rhttp.RhttpCompatibleClient.create(settings: _iphoneClientSettings),
+            rhttp.RhttpCompatibleClient.create(
+          settings: _iphoneClientSettings,
+        ),
     };
   }
 
@@ -2363,10 +2557,7 @@ class NewsService {
   }
 
   Future<({http.Response response, _BrowserFetchProfile profile})>
-      _browserGetWithFallback(
-    Uri uri, {
-    Map<String, String>? headers,
-  }) async {
+      _browserGetWithFallback(Uri uri, {Map<String, String>? headers}) async {
     if (!_useBrowserClient) {
       return (
         response: await _client.get(uri, headers: headers),
@@ -2393,10 +2584,7 @@ class NewsService {
         headers: headers,
       );
       if (!_shouldFallbackBrowserResponse(chromeResponse)) {
-        return (
-          response: chromeResponse,
-          profile: _BrowserFetchProfile.chrome,
-        );
+        return (response: chromeResponse, profile: _BrowserFetchProfile.chrome);
       }
     } catch (_) {}
 
@@ -2408,19 +2596,13 @@ class NewsService {
         headers: headers,
       );
       if (!_shouldFallbackBrowserResponse(iphoneResponse)) {
-        return (
-          response: iphoneResponse,
-          profile: _BrowserFetchProfile.iphone,
-        );
+        return (response: iphoneResponse, profile: _BrowserFetchProfile.iphone);
       }
     } catch (_) {}
 
     if (chromeResponse != null &&
         !_shouldFallbackBrowserResponse(chromeResponse)) {
-      return (
-        response: chromeResponse,
-        profile: _BrowserFetchProfile.chrome,
-      );
+      return (response: chromeResponse, profile: _BrowserFetchProfile.chrome);
     }
 
     return (
@@ -2551,10 +2733,7 @@ class NewsService {
     }
   }
 
-  static String? _declaredHtmlCharset(
-    http.Response response,
-    List<int> bytes,
-  ) {
+  static String? _declaredHtmlCharset(http.Response response, List<int> bytes) {
     String? contentType;
     for (final entry in response.headers.entries) {
       if (entry.key.toLowerCase() == 'content-type') {

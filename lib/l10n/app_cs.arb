@@ -4821,5 +4821,8 @@
   "importVideoFromGallery": "Vybrat z galerie",
   "sharedVideoOpen": "Otevřít video",
   "developerReportEmailOptional": "E-mail (nepovinný, pro odpověď)",
-  "developerReportEmailInvalid": "Zadejte platnou e-mailovou adresu nebo ponechte pole prázdné."
+  "developerReportEmailInvalid": "Zadejte platnou e-mailovou adresu nebo ponechte pole prázdné.",
+  "convertMediaDestination": "Cíl převedených souborů",
+  "exportAskEveryTime": "Vždy se zeptat",
+  "selectAudioTrack": "Vybrat zvukovou stopu"
 }

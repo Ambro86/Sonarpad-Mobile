@@ -4818,5 +4818,8 @@
   "importVideoFromGallery": "Galeriden seç",
   "sharedVideoOpen": "Videoyu aç",
   "developerReportEmailOptional": "E-posta (isteğe bağlı, yanıt için)",
-  "developerReportEmailInvalid": "Geçerli bir e-posta adresi girin veya alanı boş bırakın."
+  "developerReportEmailInvalid": "Geçerli bir e-posta adresi girin veya alanı boş bırakın.",
+  "convertMediaDestination": "Dönüştürülen dosyaların hedefi",
+  "exportAskEveryTime": "Her seferinde sor",
+  "selectAudioTrack": "Ses parçası seç"
 }

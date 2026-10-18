@@ -986,6 +986,8 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
       description: media.channel ?? '',
       audioUrl: media.audioUrl,
       videoUrl: media.videoUrl,
+      audioTracks: media.audioTracks,
+      selectedAudioTrackId: media.selectedAudioTrackId,
       isLive: item.isLive || media.isLive,
     );
   }

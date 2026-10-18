@@ -3730,6 +3730,15 @@ class AppLocalizationsUk extends AppLocalizations {
   String get mediaProcessingCompleted => 'Обробку завершено.';
 
   @override
+  String get convertMediaDestination => 'Місце збереження перетворених файлів';
+
+  @override
+  String get exportAskEveryTime => 'Запитувати щоразу';
+
+  @override
+  String get selectAudioTrack => "Вибрати звукову доріжку";
+
+  @override
   String get saveInSonarpadDocuments => 'Зберегти в Документах Sonarpad';
 
   @override

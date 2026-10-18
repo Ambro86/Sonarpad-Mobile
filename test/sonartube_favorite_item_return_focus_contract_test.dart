@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('all SonarTube favorites stay on Favorites and restore focus on Back', () {
-    final source = File('lib/screens/sonartube_screen.dart').readAsStringSync();
+    final source = File('lib/screens/sonartube_screen.dart').readAsStringSync().replaceAll('\r\n', '\n');
 
     final openFavoritesStart = source.indexOf('Future<void> _openFavorites()');
     final openRecentStart = source.indexOf('Future<void> _openRecentVideos()', openFavoritesStart);

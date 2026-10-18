@@ -3662,6 +3662,15 @@ class AppLocalizationsTr extends AppLocalizations {
   String get mediaProcessingCompleted => "İşleme tamamlandı.";
 
   @override
+  String get convertMediaDestination => 'Dönüştürülen dosyaların hedefi';
+
+  @override
+  String get exportAskEveryTime => 'Her seferinde sor';
+
+  @override
+  String get selectAudioTrack => "Ses parçası seç";
+
+  @override
   String get saveInSonarpadDocuments => "Sonarpad Belgeler klasörüne kaydet";
 
   @override

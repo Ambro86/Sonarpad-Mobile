@@ -4818,5 +4818,8 @@
   "importVideoFromGallery": "Alege din galerie",
   "sharedVideoOpen": "Deschide videoclipul",
   "developerReportEmailOptional": "Email (opțional, pentru răspuns)",
-  "developerReportEmailInvalid": "Introdu o adresă de email validă sau lasă câmpul gol."
+  "developerReportEmailInvalid": "Introdu o adresă de email validă sau lasă câmpul gol.",
+  "convertMediaDestination": "Destinația fișierelor convertite",
+  "exportAskEveryTime": "Întreabă de fiecare dată",
+  "selectAudioTrack": "Selectează pista audio"
 }

@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('custom RSS articles route only their known media links internally', () {
-    final source = File('lib/screens/news_webview_screen.dart').readAsStringSync();
+    final source = File('lib/screens/news_webview_screen.dart').readAsStringSync().replaceAll('\r\n', '\n');
     expect(source, contains('if (!widget.article.allowInternalMediaLinks) return null;'));
     expect(source, contains('for (final link in widget.article.mediaLinks)'));
     expect(source, contains('if (_sameNormalizedUrl(link.url, url)) return link;'));
@@ -19,7 +19,7 @@ void main() {
   });
 
   test('ordinary news articles cannot auto-open arbitrary embedded media', () {
-    final source = File('lib/screens/news_webview_screen.dart').readAsStringSync();
+    final source = File('lib/screens/news_webview_screen.dart').readAsStringSync().replaceAll('\r\n', '\n');
     expect(source, isNot(contains('NewsArticleMediaLink.tryParse(request.url)')));
     expect(source, isNot(contains('_knownArticleMediaLink(request.url)')));
     expect(

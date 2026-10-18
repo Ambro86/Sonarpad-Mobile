@@ -1,3 +1,4 @@
+import '../models/media_audio_track.dart';
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
@@ -82,6 +83,8 @@ class SonarTubeResolvedMedia {
     this.videoUrl,
     this.channel,
     this.isLive = false,
+    this.audioTracks = const [],
+    this.selectedAudioTrackId,
   });
 
   final String title;
@@ -89,6 +92,8 @@ class SonarTubeResolvedMedia {
   final String? videoUrl;
   final String? channel;
   final bool isLive;
+  final List<MediaAudioTrack> audioTracks;
+  final String? selectedAudioTrackId;
 }
 
 
@@ -519,6 +524,8 @@ class SonarTubeService {
       title: _string(data['title']) ?? fallbackTitle,
       channel: _string(data['channel']) ?? fallbackChannel,
       audioUrl: hasSeparateStreams ? streamAudio : stream,
+      audioTracks: MediaAudioTrack.fromServer(data['audio_tracks']),
+      selectedAudioTrackId: _string(data['selected_audio_track_id']),
       videoUrl: hasSeparateStreams ? streamVideo : null,
       // Older server responses have no live metadata. Treat unclassified
       // YouTube HLS conservatively; normal progressive/on-demand files remain
@@ -553,6 +560,26 @@ class SonarTubeService {
     }
 
     final formats = _directPlayableFormats(streaming);
+    var audioTracks = MediaAudioTrack.fromYouTube(streaming);
+    final declaredTracks = _asList(streaming['adaptiveFormats'])
+        .map((value) => _string(_asMap(_asMap(value)?['audioTrack'])?['id']))
+        .whereType<String>().toSet();
+    if (declaredTracks.length > 1 && audioTracks.length < declaredTracks.length) {
+      try {
+        final alternative = await _playerDataDirect(videoId,
+          clientVersion: '20.10.38');
+        final alternativeStreaming = _asMap(alternative['streamingData']);
+        if (_string(_asMap(alternative['videoDetails'])?['videoId']) == videoId &&
+            alternativeStreaming != null) {
+          final tracks = MediaAudioTrack.fromYouTube(alternativeStreaming);
+          if (tracks.length > audioTracks.length) audioTracks = tracks;
+        }
+      } catch (_) {
+        await AppLogger.log('SonarTube: alternate audio profile unavailable');
+      }
+    }
+    await AppLogger.log('SonarTube: audio tracks available=${audioTracks.length} '
+        'declared=${declaredTracks.length} id=$videoId');
     final progressive = formats
         .where((format) => format.progressive)
         .toList(growable: false)
@@ -605,11 +632,20 @@ class SonarTubeService {
       throw const FormatException('youtube_no_direct_stream');
     }
 
+    // The playing codec can differ from the AAC variant offered in the picker.
+    final playingTrackId = _asList(streaming['adaptiveFormats'])
+        .map(_asMap).where((format) => format?['url'] == audioUrl)
+        .map((format) => _string(_asMap(format?['audioTrack'])?['id']))
+        .whereType<String>().firstOrNull;
     return SonarTubeResolvedMedia(
       title: _string(details?['title']) ?? fallbackTitle,
       channel: _string(details?['author']) ?? fallbackChannel,
       audioUrl: audioUrl,
       videoUrl: videoUrl,
+      audioTracks: playbackIsLive ? const [] : audioTracks,
+      selectedAudioTrackId: playingTrackId ?? audioTracks.where((track) =>
+          track.url == audioUrl || (videoUrl == null && track.isDefault))
+          .firstOrNull?.id,
       // isLiveContent also describes archived broadcasts; an explicit
       // isLiveNow/isLive=false or endTimestamp keeps recordings eligible.
       isLive: playbackIsLive,
@@ -1666,7 +1702,9 @@ class SonarTubeService {
         'append:$appendActions';
   }
 
-  Future<Map<String, dynamic>> _playerDataDirect(String videoId) async {
+  Future<Map<String, dynamic>> _playerDataDirect(String videoId, {
+    String clientVersion = _androidClientVersion,
+  }) async {
     if (!RegExp(r'^[A-Za-z0-9_-]{11}$').hasMatch(videoId)) {
       throw const FormatException('invalid_video_id');
     }
@@ -1678,7 +1716,7 @@ class SonarTubeService {
             'hl': _youtubeLanguage,
             'gl': _youtubeRegion,
             'clientName': 'ANDROID',
-            'clientVersion': _androidClientVersion,
+            'clientVersion': clientVersion,
             'androidSdkVersion': 33,
             'osName': 'Android',
             'osVersion': '16',
@@ -1745,7 +1783,9 @@ class SonarTubeService {
             'User-Agent': _androidUserAgent,
             'X-YouTube-Client-Name': webClient ? '1' : '3',
             'X-YouTube-Client-Version':
-                webClient ? _webClientVersion : _androidClientVersion,
+                webClient ? _webClientVersion :
+                    (_asMap(_asMap(payload['context'])?['client'])?['clientVersion']
+                        ?.toString() ?? _androidClientVersion),
           },
           body: jsonEncode(payload),
         )

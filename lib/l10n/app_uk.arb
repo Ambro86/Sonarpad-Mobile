@@ -6396,5 +6396,8 @@
   "importVideoFromGallery": "Вибрати з галереї",
   "sharedVideoOpen": "Відкрити відео",
   "developerReportEmailOptional": "Email (необов’язково, для відповіді)",
-  "developerReportEmailInvalid": "Введіть коректну адресу електронної пошти або залиште поле порожнім."
+  "developerReportEmailInvalid": "Введіть коректну адресу електронної пошти або залиште поле порожнім.",
+  "convertMediaDestination": "Місце збереження перетворених файлів",
+  "exportAskEveryTime": "Запитувати щоразу",
+  "selectAudioTrack": "Вибрати звукову доріжку"
 }

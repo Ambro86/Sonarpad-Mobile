@@ -32,11 +32,12 @@ import 'document_reader_screen.dart';
 import 'podcast_episode_player_screen.dart';
 
 class NewsWebViewScreen extends StatefulWidget {
-  const NewsWebViewScreen(
-      {super.key,
-      required this.article,
-      required this.language,
-      this.readSourceName});
+  const NewsWebViewScreen({
+    super.key,
+    required this.article,
+    required this.language,
+    this.readSourceName,
+  });
 
   final NewsArticle article;
   final NewsLanguage language;
@@ -76,6 +77,8 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   Future<void>? _finalReaderLoad;
   Future<NewsArticleContent?>? _tinyfishFallbackFuture;
   int _webViewPageGeneration = 0;
+  final Map<String, int> _cookieConsentAttempts = {};
+  bool _cookieConsentRunning = false;
   int? _activeVisibleExtractionGeneration;
   bool _pureWebViewRevealInProgress = false;
   // Quando tutti i reader testuali sono insufficienti, la WebView ripulita
@@ -122,8 +125,10 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   Future<void> _saveArticle() async {
     if (_readerText == null) return;
     try {
-      final safeName =
-          widget.article.title.replaceAll(RegExp(r'[<>:"/\\|?*]'), '_');
+      final safeName = widget.article.title.replaceAll(
+        RegExp(r'[<>:"/\\|?*]'),
+        '_',
+      );
       final titleSafe = '$safeName.txt';
       final service = DocumentLibraryService();
       await service.load();
@@ -154,6 +159,11 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   }
 
   Future<String> _shareableArticleUrl() async {
+    // The current WebView can have navigated to a recommendation. Resolve the
+    // selected Google article, never attach its title to that unrelated page.
+    if (_isGoogleNewsUrl(widget.article.link)) {
+      return _newsService.resolveArticleUrlForSharing(widget.article.link);
+    }
     final candidates = <String?>[
       _resolvedArticleUrlForReader,
       _allowedMainArticleUrl,
@@ -169,8 +179,9 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
       }
     }
 
-    final resolved =
-        await _newsService.resolveArticleUrlForSharing(widget.article.link);
+    final resolved = await _newsService.resolveArticleUrlForSharing(
+      widget.article.link,
+    );
     if (_isHttpArticleUrl(resolved) && !_isGoogleConsentUrl(resolved)) {
       return resolved;
     }
@@ -180,10 +191,12 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   Future<void> _shareArticle() async {
     try {
       final url = await _shareableArticleUrl();
-      unawaited(AppLogger.log(
-        'News share: title="${widget.article.title}" '
-        'originalUrl=${widget.article.link} sharedUrl=$url',
-      ));
+      unawaited(
+        AppLogger.log(
+          'News share: title="${widget.article.title}" '
+          'originalUrl=${widget.article.link} sharedUrl=$url',
+        ),
+      );
       await SharePlus.instance.share(
         ShareParams(
           text: '${widget.article.title}\n$url',
@@ -201,12 +214,14 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
 
     try {
       final url = await _shareableArticleUrl();
-      final safeName = widget.article.title
-          .replaceAll(RegExp(r'[<>:"/\\|?*]'), '_')
-          .trim();
+      final safeName =
+          widget.article.title.replaceAll(RegExp(r'[<>:"/\\|?*]'), '_').trim();
       final baseName = safeName.isEmpty
           ? 'article'
-          : safeName.substring(0, safeName.length > 120 ? 120 : safeName.length);
+          : safeName.substring(
+              0,
+              safeName.length > 120 ? 120 : safeName.length,
+            );
       final fileName = '$baseName.txt';
       final tempDir = await getTemporaryDirectory();
       final file = File(
@@ -229,15 +244,14 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
         ..writeln(url);
 
       await file.writeAsString(buffer.toString(), flush: true);
-      unawaited(AppLogger.log(
-        'News TXT share: title="${widget.article.title}" '
-        'file=${file.path} sharedUrl=$url',
-      ));
-      await SharePlus.instance.share(
-        ShareParams(
-          files: [XFile(file.path)],
-          subject: widget.article.title,
+      unawaited(
+        AppLogger.log(
+          'News TXT share: title="${widget.article.title}" '
+          'file=${file.path} sharedUrl=$url',
         ),
+      );
+      await SharePlus.instance.share(
+        ShareParams(files: [XFile(file.path)], subject: widget.article.title),
       );
     } catch (e) {
       debugPrint('Error sharing article as TXT: $e');
@@ -247,15 +261,19 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   @override
   void initState() {
     super.initState();
-    unawaited(AppLogger.log(
-      'News: apertura articolo title="${widget.article.title}" '
-      'url=${widget.article.link}',
-    ));
-    unawaited(_newsService.addReadArticle(
-      widget.language,
-      widget.readSourceName ?? widget.article.source,
-      widget.article,
-    ));
+    unawaited(
+      AppLogger.log(
+        'News: apertura articolo title="${widget.article.title}" '
+        'url=${widget.article.link}',
+      ),
+    );
+    unawaited(
+      _newsService.addReadArticle(
+        widget.language,
+        widget.readSourceName ?? widget.article.source,
+        widget.article,
+      ),
+    );
     if (_isHttpArticleUrl(widget.article.link) &&
         !_isGoogleNewsUrl(widget.article.link) &&
         !_isGoogleConsentUrl(widget.article.link)) {
@@ -267,7 +285,9 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
         NavigationDelegate(
           onPageStarted: (url) {
             _webViewPageGeneration += 1;
-            unawaited(AppLogger.log('News WebView: caricamento avviato url=$url'));
+            unawaited(
+              AppLogger.log('News WebView: caricamento avviato url=$url'),
+            );
             if (mounted) {
               setState(() {
                 _loading = true;
@@ -276,21 +296,27 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
           },
           onPageFinished: (url) {
             final generation = _webViewPageGeneration;
-            unawaited(AppLogger.log('News WebView: caricamento completato url=$url'));
+            unawaited(
+              AppLogger.log('News WebView: caricamento completato url=$url'),
+            );
             if (mounted) setState(() => _loading = false);
             unawaited(_acceptCookieConsentIfPresent());
             final finalReaderLoad = _loadReaderArticleFromFinalUrl(url);
             _finalReaderLoad = finalReaderLoad;
-            unawaited(finalReaderLoad.whenComplete(() {
-              if (identical(_finalReaderLoad, finalReaderLoad)) {
-                _finalReaderLoad = null;
-              }
-            }));
+            unawaited(
+              finalReaderLoad.whenComplete(() {
+                if (identical(_finalReaderLoad, finalReaderLoad)) {
+                  _finalReaderLoad = null;
+                }
+              }),
+            );
             unawaited(_neutralizeEmbeddedSiteMedia(url));
-            unawaited(_loadVisibleReaderArticleFromWebView(
-              pageUrl: url,
-              generation: generation,
-            ));
+            unawaited(
+              _loadVisibleReaderArticleFromWebView(
+                pageUrl: url,
+                generation: generation,
+              ),
+            );
           },
           onNavigationRequest: (NavigationRequest request) {
             if (_isRepubblicaPaywallNavigation(request.url)) {
@@ -298,33 +324,42 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
                 _allowedMainArticleUrl ?? widget.article.link,
                 source: 'navigation',
               );
-              unawaited(AppLogger.log(
-                'News WebView: navigazione paywall Repubblica bloccata '
-                'url=${request.url}',
-              ));
+              unawaited(
+                AppLogger.log(
+                  'News WebView: navigazione paywall Repubblica bloccata '
+                  'url=${request.url}',
+                ),
+              );
               return NavigationDecision.prevent;
             }
             if (_shouldBlockEmbeddedMediaNavigation(request.url)) {
-              unawaited(AppLogger.log(
-                'News WebView: navigazione bloccata per contenuto media '
-                'url=${request.url}',
-              ));
+              unawaited(
+                AppLogger.log(
+                  'News WebView: navigazione bloccata per contenuto media '
+                  'url=${request.url}',
+                ),
+              );
               return NavigationDecision.prevent;
             }
-            if (_shouldBlockUnexpectedArticleNavigation(request.url)) {
-              unawaited(AppLogger.log(
-                'News WebView: navigazione articolo inattesa bloccata '
-                'url=${request.url} allowed=$_allowedMainArticleUrl',
-              ));
+            if (request.isMainFrame &&
+                _shouldBlockUnexpectedArticleNavigation(request.url)) {
+              unawaited(
+                AppLogger.log(
+                  'News WebView: navigazione articolo inattesa bloccata '
+                  'url=${request.url} allowed=$_allowedMainArticleUrl',
+                ),
+              );
               return NavigationDecision.prevent;
             }
             return NavigationDecision.navigate;
           },
           onWebResourceError: (error) {
-            unawaited(AppLogger.log(
-              'News WebView: errore caricamento '
-              'code=${error.errorCode} description="${error.description}"',
-            ));
+            unawaited(
+              AppLogger.log(
+                'News WebView: errore caricamento '
+                'code=${error.errorCode} description="${error.description}"',
+              ),
+            );
             if (mounted) {
               setState(() {
                 _loading = false;
@@ -332,10 +367,8 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
             }
           },
         ),
-      )
-      ..loadRequest(Uri.parse(widget.article.link));
-    _initialReaderLoad = _loadReaderArticle();
-    unawaited(_initialReaderLoad);
+      );
+    unawaited(_openSelectedArticle());
 
     _ttsEventsSub = _ttsEvents.receiveBroadcastStream().listen((event) {
       if (event == 'toggle' && mounted) {
@@ -351,6 +384,28 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   }
 
   Future<void> _acceptCookieConsentIfPresent() async {
+    if (!mounted || _cookieConsentRunning) return;
+    _cookieConsentRunning = true;
+    String key;
+    try {
+      final current = await _controller.currentUrl();
+      if (!mounted || current == null) {
+        _cookieConsentRunning = false;
+        return;
+      }
+      final uri = Uri.parse(current);
+      key = uri.replace(query: '', fragment: '').toString();
+    } catch (_) {
+      _cookieConsentRunning = false;
+      return;
+    }
+    final used = _cookieConsentAttempts[key] ?? 0;
+    if (used >= 2) {
+      _cookieConsentRunning = false;
+      return;
+    }
+    // Reserve attempts before awaiting JavaScript: page callbacks may overlap.
+    _cookieConsentAttempts[key] = 2;
     Future<bool> run() async {
       final result = await _controller.runJavaScriptReturningResult(r'''
         (function () {
@@ -423,7 +478,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
               if (text.indexOf(rejectTexts[i]) !== -1) return false;
             }
             for (var j = 0; j < acceptTexts.length; j++) {
-              if (text === acceptTexts[j] || text.indexOf(acceptTexts[j]) !== -1) return true;
+              if (text === acceptTexts[j]) return true;
             }
             return false;
           }
@@ -432,8 +487,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
             'button',
             'input[type="button"]',
             'input[type="submit"]',
-            '[role="button"]',
-            'a'
+            '[role="button"]'
           ];
           var elements = document.querySelectorAll(selectors.join(','));
           for (var k = 0; k < elements.length; k++) {
@@ -452,17 +506,25 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
 
     try {
       final firstClicked = await run();
-      unawaited(AppLogger.log(
-        'News cookie: primo tentativo consenso clicked=$firstClicked',
-      ));
+      unawaited(
+        AppLogger.log(
+          'News cookie: primo tentativo consenso clicked=$firstClicked',
+        ),
+      );
+      if (firstClicked) return;
+      final generation = _webViewPageGeneration;
       await Future.delayed(const Duration(milliseconds: 900));
-      if (!mounted) return;
+      if (!mounted || generation != _webViewPageGeneration) return;
       final secondClicked = await run();
-      unawaited(AppLogger.log(
-        'News cookie: secondo tentativo consenso clicked=$secondClicked',
-      ));
+      unawaited(
+        AppLogger.log(
+          'News cookie: secondo tentativo consenso clicked=$secondClicked',
+        ),
+      );
     } catch (e) {
       unawaited(AppLogger.log('News cookie: gestione consenso fallita: $e'));
+    } finally {
+      _cookieConsentRunning = false;
     }
   }
 
@@ -569,9 +631,9 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
           })();
         ''');
       } catch (e) {
-        unawaited(AppLogger.log(
-          'News WebView: rimozione contenuti media fallita: $e',
-        ));
+        unawaited(
+          AppLogger.log('News WebView: rimozione contenuti media fallita: $e'),
+        );
       }
     }
   }
@@ -617,10 +679,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
       );
       if (mounted) {
         final l10n = AppLocalizations.of(context);
-        showStatusMessage(
-          context,
-          l10n.error(l10n.technicalErrorGeneric),
-        );
+        showStatusMessage(context, l10n.error(l10n.technicalErrorGeneric));
       }
     } finally {
       _mediaOpenGuard.release(key);
@@ -660,9 +719,9 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
 
     final uri = Uri.parse(link.url);
     var fileName = uri.pathSegments.isEmpty ? '' : uri.pathSegments.last;
-    fileName = Uri.decodeComponent(fileName)
-        .replaceAll(RegExp(r'[<>:"/\\|?*]'), '_')
-        .trim();
+    fileName = Uri.decodeComponent(
+      fileName,
+    ).replaceAll(RegExp(r'[<>:"/\\|?*]'), '_').trim();
     if (fileName.isEmpty) fileName = 'documento.pdf';
     if (!fileName.toLowerCase().endsWith('.pdf')) fileName = '$fileName.pdf';
     final tempDir = await getTemporaryDirectory();
@@ -810,7 +869,6 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
     return host == 'repubblica.it' || host.endsWith('.repubblica.it');
   }
 
-
   bool _isShortRepubblicaReaderText(String pageUrl, String text) =>
       _isRepubblicaUrl(pageUrl) &&
       text.trim().length >= _httpMinLength &&
@@ -834,11 +892,13 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
       _readerBestTextLength = 0;
       _readerPreparing = false;
     });
-    unawaited(AppLogger.log(
-      'News reader UI: paywall Repubblica rilevato'
-      '${source == null ? '' : ' source=$source'}; '
-      'mostro avviso invece della WebView url=$pageUrl',
-    ));
+    unawaited(
+      AppLogger.log(
+        'News reader UI: paywall Repubblica rilevato'
+        '${source == null ? '' : ' source=$source'}; '
+        'mostro avviso invece della WebView url=$pageUrl',
+      ),
+    );
   }
 
   bool _isGoogleNewsUrl(String url) {
@@ -890,6 +950,26 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
     return entries.map((entry) => '${entry.key}=${entry.value}').join('&');
   }
 
+  Future<void> _openSelectedArticle() async {
+    var url = widget.article.link;
+    if (_isGoogleNewsUrl(url)) {
+      url = await _newsService.resolveArticleUrlForSharing(url).timeout(
+            const Duration(seconds: 12),
+            onTimeout: () => widget.article.link,
+          );
+    }
+    if (!mounted) return;
+    if (_isHttpArticleUrl(url) &&
+        !_isGoogleNewsUrl(url) &&
+        !_isGoogleConsentUrl(url)) {
+      _allowedMainArticleUrl = url;
+      _resolvedArticleUrlForReader = url;
+    }
+    _initialReaderLoad = _loadReaderArticle();
+    unawaited(_initialReaderLoad);
+    await _controller.loadRequest(Uri.parse(url));
+  }
+
   bool _shouldBlockUnexpectedArticleNavigation(String url) {
     if (!_isHttpArticleUrl(url) ||
         _isGoogleNewsUrl(url) ||
@@ -898,7 +978,6 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
     }
     final allowed = _allowedMainArticleUrl;
     if (allowed == null || allowed.isEmpty) return false;
-    if (_readerText == null && !_pureWebViewMode) return false;
     return !_isSameArticleNavigation(url, allowed);
   }
 
@@ -942,17 +1021,16 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
     final allowed = _allowedMainArticleUrl;
     if (allowed != null &&
         allowed.isNotEmpty &&
-        _readerText != null &&
         !_isSameArticleNavigation(finalUrl, allowed)) {
-      unawaited(AppLogger.log(
-        'News reader final URL HTTP: skip url inatteso '
-        'url=$finalUrl allowed=$allowed',
-      ));
+      unawaited(
+        AppLogger.log(
+          'News reader final URL HTTP: skip url inatteso '
+          'url=$finalUrl allowed=$allowed',
+        ),
+      );
       return;
     }
-    if (allowed == null ||
-        allowed.isEmpty ||
-        (_readerText == null && !_isSameArticleNavigation(finalUrl, allowed))) {
+    if (allowed == null || allowed.isEmpty) {
       _allowedMainArticleUrl = finalUrl;
     }
 
@@ -968,28 +1046,34 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
         try {
           await initialLoad.timeout(const Duration(seconds: 1));
         } on TimeoutException {
-          unawaited(AppLogger.log(
-            'News reader final URL HTTP: il reader iniziale Google News è '
-            'ancora in corso; avvio comunque il reader dell URL finale '
-            'url=$finalUrl',
-          ));
+          unawaited(
+            AppLogger.log(
+              'News reader final URL HTTP: il reader iniziale Google News è '
+              'ancora in corso; avvio comunque il reader dell URL finale '
+              'url=$finalUrl',
+            ),
+          );
         }
         if (!mounted) return;
         if (_lastFinalReaderFetchUrl != null &&
             _sameNormalizedUrl(_lastFinalReaderFetchUrl!, finalUrl)) {
-          unawaited(AppLogger.log(
-            'News reader final URL HTTP: skip fetch gia avviato '
-            'url=$finalUrl',
-          ));
+          unawaited(
+            AppLogger.log(
+              'News reader final URL HTTP: skip fetch gia avviato '
+              'url=$finalUrl',
+            ),
+          );
           return;
         }
         final loadedLen = _readerText?.trim().length ?? 0;
         if (loadedLen >= _httpShortThreshold &&
             !_isOnlyArticleTitle(_readerText ?? '')) {
-          unawaited(AppLogger.log(
-            'News reader final URL HTTP: skip, reader iniziale gia buono '
-            'length=$loadedLen url=$finalUrl',
-          ));
+          unawaited(
+            AppLogger.log(
+              'News reader final URL HTTP: skip, reader iniziale gia buono '
+              'length=$loadedLen url=$finalUrl',
+            ),
+          );
           return;
         }
       }
@@ -997,9 +1081,11 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
 
     _lastFinalReaderFetchUrl = finalUrl;
     _resolvedArticleUrlForReader = finalUrl;
-    unawaited(AppLogger.log(
-      'News reader final URL HTTP: estrazione avviata url=$finalUrl',
-    ));
+    unawaited(
+      AppLogger.log(
+        'News reader final URL HTTP: estrazione avviata url=$finalUrl',
+      ),
+    );
     if (mounted && _readerText == null) {
       setState(() => _readerPreparing = true);
     }
@@ -1010,11 +1096,13 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
       final text = _cleanVisibleText(content.text);
       final existingLen = _readerText?.trim().length ?? 0;
       final onlyRssSummary = _isOnlyRssSummary(text);
-      unawaited(AppLogger.log(
-        'News reader final URL HTTP: estrazione completata '
-        'length=${text.length} existingLength=$existingLen '
-        'onlyRssSummary=$onlyRssSummary url=$finalUrl',
-      ));
+      unawaited(
+        AppLogger.log(
+          'News reader final URL HTTP: estrazione completata '
+          'length=${text.length} existingLength=$existingLen '
+          'onlyRssSummary=$onlyRssSummary url=$finalUrl',
+        ),
+      );
       final shortRepubblica = _isShortRepubblicaReaderText(finalUrl, text);
       if (text.length >= _httpMinLength &&
           text.length > existingLen &&
@@ -1028,21 +1116,27 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
           _readerBestTextLength = text.length;
           _readerPreparing = false;
         });
-        unawaited(AppLogger.log(
-          'News reader final URL HTTP: testo accettato length=${text.length}',
-        ));
+        unawaited(
+          AppLogger.log(
+            'News reader final URL HTTP: testo accettato length=${text.length}',
+          ),
+        );
         return;
       }
       if (shortRepubblica) {
-        unawaited(AppLogger.log(
-          'News reader final URL HTTP: testo Repubblica breve tenuto '
-          'provvisorio length=${text.length}; attendo controllo paywall WebView',
-        ));
+        unawaited(
+          AppLogger.log(
+            'News reader final URL HTTP: testo Repubblica breve tenuto '
+            'provvisorio length=${text.length}; attendo controllo paywall WebView',
+          ),
+        );
       }
     } catch (e) {
-      unawaited(AppLogger.log(
-        'News reader final URL HTTP: estrazione fallita url=$finalUrl: $e',
-      ));
+      unawaited(
+        AppLogger.log(
+          'News reader final URL HTTP: estrazione fallita url=$finalUrl: $e',
+        ),
+      );
     }
 
     // Se anche il reader dell'URL finale non basta, la WebView resta
@@ -1053,29 +1147,39 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   Future<void> _loadReaderArticle() async {
     unawaited(AppLogger.log('News reader HTTP: estrazione avviata'));
     try {
-      final content = await _fetchReaderContent();
+      final content = await _fetchReaderContent(
+        url: _resolvedArticleUrlForReader,
+      );
       if (!mounted) return;
       final text = content.text.trim();
-      unawaited(AppLogger.log(
-        'News reader HTTP: estrazione completata length=${text.length}',
-      ));
+      unawaited(
+        AppLogger.log(
+          'News reader HTTP: estrazione completata length=${text.length}',
+        ),
+      );
       final onlyTitle = _isOnlyArticleTitle(text);
       final onlyRssSummary = _isOnlyRssSummary(text);
       if (text.length < _httpMinLength || onlyTitle || onlyRssSummary) {
-        unawaited(AppLogger.log(
-          'News reader HTTP: testo insufficiente, resta WebView '
-          'length=${text.length} onlyTitle=$onlyTitle '
-          'onlyRssSummary=$onlyRssSummary',
-        ));
-        unawaited(AppLogger.log(
-          'News reader UI: reader HTTP insufficiente; attendo WebView e, solo '
-          'se necessario, Tinyfish length=${text.length}',
-        ));
+        unawaited(
+          AppLogger.log(
+            'News reader HTTP: testo insufficiente, resta WebView '
+            'length=${text.length} onlyTitle=$onlyTitle '
+            'onlyRssSummary=$onlyRssSummary',
+          ),
+        );
+        unawaited(
+          AppLogger.log(
+            'News reader UI: reader HTTP insufficiente; attendo WebView e, solo '
+            'se necessario, reader server length=${text.length}',
+          ),
+        );
       } else {
-        unawaited(AppLogger.log(
-          'News reader UI: reader testuale disponibile, WebView non necessaria '
-          'length=${text.length}',
-        ));
+        unawaited(
+          AppLogger.log(
+            'News reader UI: reader testuale disponibile, WebView non necessaria '
+            'length=${text.length}',
+          ),
+        );
       }
       final readerUrl = _resolvedArticleUrlForReader ?? widget.article.link;
       final shortRepubblica = _isShortRepubblicaReaderText(readerUrl, text);
@@ -1091,17 +1195,21 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
           _readerPreparing = false;
         });
       } else if (shortRepubblica) {
-        unawaited(AppLogger.log(
-          'News reader HTTP: testo Repubblica breve tenuto provvisorio '
-          'length=${text.length}; attendo controllo paywall WebView',
-        ));
+        unawaited(
+          AppLogger.log(
+            'News reader HTTP: testo Repubblica breve tenuto provvisorio '
+            'length=${text.length}; attendo controllo paywall WebView',
+          ),
+        );
       }
     } catch (e) {
       debugPrint('Sonarpad reader: rhttp reader failed: $e');
       unawaited(AppLogger.log('News reader HTTP: estrazione fallita: $e'));
-      unawaited(AppLogger.log(
-        'News reader UI: WebView mantenuta perché il recupero testuale è fallito',
-      ));
+      unawaited(
+        AppLogger.log(
+          'News reader UI: WebView mantenuta perché il recupero testuale è fallito',
+        ),
+      );
       // Non mostriamo ancora la WebView grezza: può contenere per un
       // istante banner cookie e altri elementi che VoiceOver annuncerebbe.
       // Il tentativo WebView/Tinyfish terminerà la preparazione.
@@ -1116,10 +1224,12 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
     if (!_isHttpArticleUrl(pageUrl) ||
         _isGoogleNewsUrl(pageUrl) ||
         _isGoogleConsentUrl(pageUrl)) {
-      unawaited(AppLogger.log(
-        'News reader WebView: pagina intermedia, attendo il redirect prima '
-        'dell\'ultimo fallback url=$pageUrl generation=$generation',
-      ));
+      unawaited(
+        AppLogger.log(
+          'News reader WebView: pagina intermedia, attendo il redirect prima '
+          'dell\'ultimo fallback url=$pageUrl generation=$generation',
+        ),
+      );
       await Future.delayed(const Duration(seconds: 7));
       if (!mounted || generation != _webViewPageGeneration) return;
       await _waitForPendingLocalReaders(generation);
@@ -1134,23 +1244,26 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
     if (_activeVisibleExtractionGeneration == generation) return;
     _activeVisibleExtractionGeneration = generation;
 
-    unawaited(AppLogger.log(
-      'News reader WebView: controllo testo visibile avviato '
-      'generation=$generation url=$pageUrl',
-    ));
+    unawaited(
+      AppLogger.log(
+        'News reader WebView: controllo testo visibile avviato '
+        'generation=$generation url=$pageUrl',
+      ),
+    );
     try {
       // Repubblica tende a restituire rapidamente estratti brevi o
       // incompleti. Due tentativi lasciano tempo al caricamento dinamico
       // senza ritardare inutilmente il fallback alla WebView ripulita.
-      final maxVisibleExtractionAttempts =
-          _isRepubblicaUrl(pageUrl) ? 2 : 4;
+      final maxVisibleExtractionAttempts = _isRepubblicaUrl(pageUrl) ? 2 : 4;
       for (int i = 0; i < maxVisibleExtractionAttempts; i++) {
         await Future.delayed(const Duration(milliseconds: 1500));
         if (!mounted || generation != _webViewPageGeneration) {
-          unawaited(AppLogger.log(
-            'News reader WebView: tentativi annullati perché la pagina è '
-            'cambiata generation=$generation current=$_webViewPageGeneration',
-          ));
+          unawaited(
+            AppLogger.log(
+              'News reader WebView: tentativi annullati perché la pagina è '
+              'cambiata generation=$generation current=$_webViewPageGeneration',
+            ),
+          );
           return;
         }
 
@@ -1160,23 +1273,29 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
         if (_readerText != null &&
             httpLen >= _httpShortThreshold &&
             !_isOnlyArticleTitle(_readerText!)) {
-          unawaited(AppLogger.log(
-            'News reader WebView: skip tentativo ${i + 1}, '
-            'testo HTTP già buono length=$httpLen',
-          ));
+          unawaited(
+            AppLogger.log(
+              'News reader WebView: skip tentativo ${i + 1}, '
+              'testo HTTP già buono length=$httpLen',
+            ),
+          );
           return;
         }
 
         try {
-          unawaited(AppLogger.log(
-            'News reader WebView: estrazione visibile tentativo ${i + 1}',
-          ));
+          unawaited(
+            AppLogger.log(
+              'News reader WebView: estrazione visibile tentativo ${i + 1}',
+            ),
+          );
           final text = await _extractVisibleArticleText();
           if (!mounted || generation != _webViewPageGeneration) return;
 
-          unawaited(AppLogger.log(
-            'News reader WebView: tentativo ${i + 1} length=${text.length}',
-          ));
+          unawaited(
+            AppLogger.log(
+              'News reader WebView: tentativo ${i + 1} length=${text.length}',
+            ),
+          );
           // Sostituisce il testo HTTP se il WebView trova qualcosa di più
           // lungo e abbastanza consistente da rappresentare l'articolo.
           if (text.length >= 400 &&
@@ -1193,11 +1312,13 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
                 return;
               }
               if (i + 1 < maxVisibleExtractionAttempts) {
-                unawaited(AppLogger.log(
-                  'News reader WebView: testo Repubblica breve ancora '
-                  'provvisorio al tentativo ${i + 1}; riprovo il paywall '
-                  'prima di mostrarlo',
-                ));
+                unawaited(
+                  AppLogger.log(
+                    'News reader WebView: testo Repubblica breve ancora '
+                    'provvisorio al tentativo ${i + 1}; riprovo il paywall '
+                    'prima di mostrarlo',
+                  ),
+                );
                 continue;
               }
             }
@@ -1208,18 +1329,22 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
               _readerBestTextLength = text.length;
               _readerPreparing = false;
             });
-            unawaited(AppLogger.log(
-              'News reader WebView: testo accettato tentativo ${i + 1} '
-              'length=${text.length} (sostituisce HTTP len=$httpLen); '
-              'Tinyfish non usato',
-            ));
+            unawaited(
+              AppLogger.log(
+                'News reader WebView: testo accettato tentativo ${i + 1} '
+                'length=${text.length} (sostituisce HTTP len=$httpLen); '
+                'reader server non usato',
+              ),
+            );
             return;
           }
         } catch (e) {
           debugPrint('Sonarpad reader: visible WebView extraction failed: $e');
-          unawaited(AppLogger.log(
-            'News reader WebView: estrazione fallita tentativo ${i + 1}: $e',
-          ));
+          unawaited(
+            AppLogger.log(
+              'News reader WebView: estrazione fallita tentativo ${i + 1}: $e',
+            ),
+          );
         }
       }
 
@@ -1227,11 +1352,13 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
       await _waitForPendingLocalReaders(generation);
       if (!mounted || generation != _webViewPageGeneration) return;
       if (_hasSufficientReaderTextForTinyfishSkip()) {
-        unawaited(AppLogger.log(
-          'News reader WebView: nessun miglioramento necessario, il testo '
-          'locale è già sufficiente; Tinyfish non usato '
-          'length=${_readerText?.trim().length ?? 0}',
-        ));
+        unawaited(
+          AppLogger.log(
+            'News reader WebView: nessun miglioramento necessario, il testo '
+            'locale è già sufficiente; reader server non usato '
+            'length=${_readerText?.trim().length ?? 0}',
+          ),
+        );
         if (_readerPreparing) setState(() => _readerPreparing = false);
         return;
       }
@@ -1257,22 +1384,28 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
     }
     if (pending.isEmpty) return;
 
-    unawaited(AppLogger.log(
-      'News reader WebView: attendo il completamento dei reader locali prima '
-      'di Tinyfish generation=$generation pending=${pending.length}',
-    ));
+    unawaited(
+      AppLogger.log(
+        'News reader WebView: attendo il completamento dei reader locali prima '
+        'di reader server generation=$generation pending=${pending.length}',
+      ),
+    );
     try {
       await Future.wait(pending).timeout(const Duration(seconds: 3));
     } on TimeoutException {
-      unawaited(AppLogger.log(
-        'News reader WebView: timeout dei reader locali, Tinyfish può essere '
-        'usato come ultimo fallback generation=$generation',
-      ));
+      unawaited(
+        AppLogger.log(
+          'News reader WebView: timeout dei reader locali, reader server può essere '
+          'usato come ultimo fallback generation=$generation',
+        ),
+      );
     } catch (e) {
-      unawaited(AppLogger.log(
-        'News reader WebView: reader locale concluso con errore prima di '
-        'Tinyfish generation=$generation error=$e',
-      ));
+      unawaited(
+        AppLogger.log(
+          'News reader WebView: reader locale concluso con errore prima di '
+          'reader server generation=$generation error=$e',
+        ),
+      );
     }
   }
 
@@ -1293,9 +1426,9 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   bool _isOnlyRssSummary(String text) {
     final summary = widget.article.summary.trim();
     if (text.trim().isEmpty || summary.isEmpty) return false;
-    String normalize(String value) => HtmlReaderService.cleanText(value)
-        .replaceAll(RegExp(r'\s+'), ' ')
-        .trim();
+    String normalize(String value) => HtmlReaderService.cleanText(
+          value,
+        ).replaceAll(RegExp(r'\s+'), ' ').trim();
     return normalize(text) == normalize(summary);
   }
 
@@ -1325,10 +1458,12 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
     required String pageUrl,
     required int generation,
   }) async {
-    unawaited(AppLogger.log(
-      'News reader WebView: nessun testo valido disponibile, '
-      'provo Tinyfish come ultimo fallback url=$pageUrl',
-    ));
+    unawaited(
+      AppLogger.log(
+        'News reader WebView: nessun testo valido disponibile, '
+        'provo reader server come ultimo fallback url=$pageUrl',
+      ),
+    );
     final content = await _requestTinyfishFallback(pageUrl: pageUrl);
     if (!mounted || generation != _webViewPageGeneration) return;
 
@@ -1351,18 +1486,22 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
         _readerBestTextLength = text.length;
         _readerPreparing = false;
       });
-      unawaited(AppLogger.log(
-        'News reader UI: Tinyfish ultimo fallback accettato '
-        'length=${text.length} previousLength=$existingLength',
-      ));
+      unawaited(
+        AppLogger.log(
+          'News reader UI: reader server ultimo fallback accettato '
+          'length=${text.length} previousLength=$existingLength',
+        ),
+      );
       return;
     }
 
-    unawaited(AppLogger.log(
-      'News reader UI: Tinyfish ultimo fallback non disponibile; '
-      'verifico eventuale paywall prima della WebView ripulita '
-      'length=${text.length} previousLength=$existingLength',
-    ));
+    unawaited(
+      AppLogger.log(
+        'News reader UI: reader server ultimo fallback non disponibile; '
+        'verifico eventuale paywall prima della WebView ripulita '
+        'length=${text.length} previousLength=$existingLength',
+      ),
+    );
 
     if (_isRepubblicaUrl(pageUrl) &&
         await _detectRepubblicaPaywall(pageUrl: pageUrl)) {
@@ -1371,10 +1510,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
       return;
     }
 
-    await _revealCleanPureWebView(
-      pageUrl: pageUrl,
-      generation: generation,
-    );
+    await _revealCleanPureWebView(pageUrl: pageUrl, generation: generation);
   }
 
   Future<bool> _detectRepubblicaPaywall({required String pageUrl}) async {
@@ -1449,14 +1585,18 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
       ''');
       final detected = result == true ||
           result.toString().replaceAll('"', '').toLowerCase() == 'true';
-      unawaited(AppLogger.log(
-        'News reader paywall: Repubblica detected=$detected url=$pageUrl',
-      ));
+      unawaited(
+        AppLogger.log(
+          'News reader paywall: Repubblica detected=$detected url=$pageUrl',
+        ),
+      );
       return detected;
     } catch (e) {
-      unawaited(AppLogger.log(
-        'News reader paywall: controllo Repubblica fallito url=$pageUrl: $e',
-      ));
+      unawaited(
+        AppLogger.log(
+          'News reader paywall: controllo Repubblica fallito url=$pageUrl: $e',
+        ),
+      );
       return false;
     }
   }
@@ -1467,9 +1607,11 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
       _pureWebViewMode = true;
       _readerPreparing = false;
     });
-    unawaited(AppLogger.log(
-      'News reader paywall: apertura pagina originale richiesta dall utente',
-    ));
+    unawaited(
+      AppLogger.log(
+        'News reader paywall: apertura pagina originale richiesta dall utente',
+      ),
+    );
   }
 
   String _paywallMessage(BuildContext context) {
@@ -1589,9 +1731,11 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
           ''');
           hidden += int.tryParse(result.toString().replaceAll('"', '')) ?? 0;
         } catch (error) {
-          unawaited(AppLogger.log(
-            'News WebView: pulizia prima della visualizzazione fallita: $error',
-          ));
+          unawaited(
+            AppLogger.log(
+              'News WebView: pulizia prima della visualizzazione fallita: $error',
+            ),
+          );
         }
       }
       if (!mounted || generation != _webViewPageGeneration) return;
@@ -1603,19 +1747,20 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
         _readerBestTextLength = 0;
         _readerPreparing = false;
       });
-      unawaited(AppLogger.log(
-        'News WebView: pagina pura mostrata solo dopo pulizia '
-        'hiddenElements=$hidden discardedReaderLength=$discardedReaderLength '
-        'url=$pageUrl generation=$generation',
-      ));
+      unawaited(
+        AppLogger.log(
+          'News WebView: pagina pura mostrata solo dopo pulizia '
+          'hiddenElements=$hidden discardedReaderLength=$discardedReaderLength '
+          'url=$pageUrl generation=$generation',
+        ),
+      );
     } finally {
       _pureWebViewRevealInProgress = false;
     }
   }
 
   Future<String> _extractVisibleArticleText() async {
-    final result = await _controller.runJavaScriptReturningResult(
-      r'''
+    final result = await _controller.runJavaScriptReturningResult(r'''
         (function() {
           function asText(value) {
             if (!value) return '';
@@ -1670,8 +1815,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
                    document.body;
           return el ? el.innerText : '';
         })()
-      ''',
-    );
+      ''');
     return _cleanVisibleText(_stringFromJavaScriptResult(result));
   }
 
@@ -1699,9 +1843,9 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
 
   String _cleanVisibleText(String value) {
     final seen = <String>{};
-    final cleanedValue = HtmlReaderService.cleanText(value)
-        .replaceAll('\u00a0', ' ')
-        .replaceAll('\r', '\n');
+    final cleanedValue = HtmlReaderService.cleanText(
+      value,
+    ).replaceAll('\u00a0', ' ').replaceAll('\r', '\n');
     final lines = cleanedValue
         .split('\n')
         .map((line) => line.replaceAll(RegExp(r'\s+'), ' ').trim())
@@ -1733,15 +1877,20 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   bool _hasReadableWords(String line) {
     final words = line
         .split(' ')
-        .where((word) =>
-            word.replaceAll(RegExp(r'[^\p{L}]', unicode: true), '').length >= 3)
+        .where(
+          (word) =>
+              word.replaceAll(RegExp(r'[^\p{L}]', unicode: true), '').length >=
+              3,
+        )
         .length;
     return words >= 4;
   }
 
   bool _isMostlySymbols(String line) {
-    final letters =
-        RegExp(r'\p{L}', unicode: true).allMatches(line).length.toDouble();
+    final letters = RegExp(
+      r'\p{L}',
+      unicode: true,
+    ).allMatches(line).length.toDouble();
     if (letters == 0) return true;
     return letters / line.length < 0.45;
   }
@@ -1839,9 +1988,11 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   Future<String> _textForReading(AppLocalizations l10n) async {
     final readerText = _readerText;
     if (readerText != null && readerText.length >= 200) {
-      unawaited(AppLogger.log(
-        'News TTS: uso testo reader già pronto length=${readerText.length}',
-      ));
+      unawaited(
+        AppLogger.log(
+          'News TTS: uso testo reader già pronto length=${readerText.length}',
+        ),
+      );
       return _visibleReaderTextForSpeech(readerText);
     }
 
@@ -1849,15 +2000,15 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
     try {
       final extractedReaderText = await _extractReaderArticleText();
       if (extractedReaderText != null) {
-        unawaited(AppLogger.log(
-          'News TTS: uso estrazione HTTP pulita '
-          'length=${extractedReaderText.length}',
-        ));
+        unawaited(
+          AppLogger.log(
+            'News TTS: uso estrazione HTTP pulita '
+            'length=${extractedReaderText.length}',
+          ),
+        );
         return extractedReaderText;
       }
-      unawaited(AppLogger.log(
-        'News TTS: estrazione HTTP pulita non valida',
-      ));
+      unawaited(AppLogger.log('News TTS: estrazione HTTP pulita non valida'));
     } catch (e) {
       debugPrint('Sonarpad TTS: rhttp reader extraction failed: $e');
       unawaited(AppLogger.log('News TTS: estrazione HTTP fallita: $e'));
@@ -1866,17 +2017,19 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
     setState(() => _status = l10n.extractingVisibleArticleText);
     try {
       final visibleText = await _extractVisibleArticleText();
-      unawaited(AppLogger.log(
-        'News TTS: estrazione visibile WebView length=${visibleText.length}',
-      ));
+      unawaited(
+        AppLogger.log(
+          'News TTS: estrazione visibile WebView length=${visibleText.length}',
+        ),
+      );
       if (visibleText.length >= 400) {
         unawaited(AppLogger.log('News TTS: uso testo visibile WebView'));
         return visibleText;
       }
     } catch (e) {
-      unawaited(AppLogger.log(
-        'News TTS: estrazione visibile WebView fallita: $e',
-      ));
+      unawaited(
+        AppLogger.log('News TTS: estrazione visibile WebView fallita: $e'),
+      );
     }
 
     setState(() => _status = l10n.loadingArticle);
@@ -1885,20 +2038,26 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
         pageUrl: _resolvedArticleUrlForReader,
       );
       final text = content?.text.trim() ?? '';
-      unawaited(AppLogger.log(
-        'News TTS: Tinyfish ultimo fallback length=${text.length}',
-      ));
+      unawaited(
+        AppLogger.log(
+          'News TTS: reader server ultimo fallback length=${text.length}',
+        ),
+      );
       if (text.length >= 200) return text;
     } catch (e) {
-      debugPrint('Sonarpad TTS: Tinyfish fallback failed: $e');
-      unawaited(AppLogger.log('News TTS: Tinyfish ultimo fallback fallito: $e'));
+      debugPrint('Sonarpad TTS: reader server fallback failed: $e');
+      unawaited(
+        AppLogger.log('News TTS: reader server ultimo fallback fallito: $e'),
+      );
     }
 
     final fallback =
         '${widget.article.title}. ${widget.article.summary}'.trim();
-    unawaited(AppLogger.log(
-      'News TTS: uso fallback titolo/riassunto length=${fallback.length}',
-    ));
+    unawaited(
+      AppLogger.log(
+        'News TTS: uso fallback titolo/riassunto length=${fallback.length}',
+      ),
+    );
     if (fallback.isEmpty) throw Exception(l10n.noTextToRead);
     return fallback;
   }
@@ -1933,17 +2092,17 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
     required List<String> chunks,
   }) async {
     await AppLogger.log(
-      'News Edge TTS debug [$readingToken]: piano lettura veloce ' 
-      'engine=$engine voice=$voice title="${widget.article.title}" ' 
-      'url=${widget.article.link} textLength=${textForChunks.length} ' 
-      'textHash=${textForChunks.hashCode} chunks=${chunks.length} ' 
+      'News Edge TTS debug [$readingToken]: piano lettura veloce '
+      'engine=$engine voice=$voice title="${widget.article.title}" '
+      'url=${widget.article.link} textLength=${textForChunks.length} '
+      'textHash=${textForChunks.hashCode} chunks=${chunks.length} '
       'lastText="${_newsTtsDebugSnippet(textForChunks)}"',
     );
     for (var i = 0; i < chunks.length; i++) {
       final chunk = chunks[i];
       await AppLogger.log(
-        'News Edge TTS debug [$readingToken]: chunk ${i + 1}/${chunks.length} ' 
-        'len=${chunk.length} hash=${chunk.hashCode} ' 
+        'News Edge TTS debug [$readingToken]: chunk ${i + 1}/${chunks.length} '
+        'len=${chunk.length} hash=${chunk.hashCode} '
         'tail="${_newsTtsDebugSnippet(chunk, maxChars: 140)}"',
       );
     }
@@ -1967,7 +2126,10 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
       final engine = await _settings.loadTtsEngine();
       final dictionaryEntries = await _voiceDictionary.loadEntries();
       final textForChunks = _sanitizeNewsTextForEdge(text);
-      final chunks = _tts.splitTextForStreaming(textForChunks, maxChunkChars: 650);
+      final chunks = _tts.splitTextForStreaming(
+        textForChunks,
+        maxChunkChars: 650,
+      );
       await _logNewsTtsChunkPlan(
         readingToken: readingToken,
         engine: engine,
@@ -1986,7 +2148,9 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
         if (Platform.isIOS) {
           try {
             await _ttsCommands.invokeMethod(
-                'setupMagicTap', widget.article.title);
+              'setupMagicTap',
+              widget.article.title,
+            );
           } catch (e) {
             debugPrint('Errore setupMagicTap $e');
           }
@@ -2020,8 +2184,10 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
             await Future.delayed(const Duration(milliseconds: 100));
           }
           if (!mounted || !_speaking || readingToken != _readingToken) break;
-          final textToSpeak =
-              _voiceDictionary.applyToText(chunks[i], dictionaryEntries);
+          final textToSpeak = _voiceDictionary.applyToText(
+            chunks[i],
+            dictionaryEntries,
+          );
           await _flutterTts.speak(textToSpeak);
         }
 
@@ -2053,8 +2219,9 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
               );
               break;
             }
-            final textToSpeak =
-                _voiceDictionary.applyToText(chunks[i], dictionaryEntries).trim();
+            final textToSpeak = _voiceDictionary
+                .applyToText(chunks[i], dictionaryEntries)
+                .trim();
             if (!EdgeTtsRetry.isTextUsable(textToSpeak)) {
               await AppLogger.log(
                 'News Edge TTS debug [$readingToken]: chunk ${i + 1}/${chunks.length} '
@@ -2069,9 +2236,9 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
             );
             final file = await EdgeTtsRetry.run(
               retryUntilCancelled: true,
-              generate: () =>
-                  _tts.speakToFile(text: textToSpeak, voice: voice),
-              isActive: () => mounted &&
+              generate: () => _tts.speakToFile(text: textToSpeak, voice: voice),
+              isActive: () =>
+                  mounted &&
                   _speaking &&
                   readingToken == _readingToken &&
                   !controller.isClosed,
@@ -2155,10 +2322,12 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
             title: widget.article.title,
             resetAfterCompletion: false,
             onChunkStarted: (index, startedFile) {
-              unawaited(AppLogger.log(
-                'News Edge TTS debug [$readingToken]: AudioPlayer onChunkStarted '
-                'index=${index + 1} path=${startedFile.path}',
-              ));
+              unawaited(
+                AppLogger.log(
+                  'News Edge TTS debug [$readingToken]: AudioPlayer onChunkStarted '
+                  'index=${index + 1} path=${startedFile.path}',
+                ),
+              );
             },
           );
           await AppLogger.log(
@@ -2187,18 +2356,20 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
       }
     } catch (e) {
       debugPrint('Sonarpad TTS: web article reading error=$e');
-      unawaited(AppLogger.log(
-        'News Edge TTS debug [$readingToken]: ERRORE lettura $e',
-      ));
+      unawaited(
+        AppLogger.log('News Edge TTS debug [$readingToken]: ERRORE lettura $e'),
+      );
       if (!mounted) return;
       if (readingToken != _readingToken) return;
       setState(() => _status = l10n.edgeTtsError(l10n.technicalErrorGeneric));
-            showStatusMessage(context, l10n.edgeTtsError(l10n.technicalErrorGeneric));
+      showStatusMessage(context, l10n.edgeTtsError(l10n.technicalErrorGeneric));
     } finally {
-      unawaited(AppLogger.log(
-        'News Edge TTS debug [$readingToken]: finally '
-        'mounted=$mounted currentToken=$_readingToken speaking=$_speaking',
-      ));
+      unawaited(
+        AppLogger.log(
+          'News Edge TTS debug [$readingToken]: finally '
+          'mounted=$mounted currentToken=$_readingToken speaking=$_speaking',
+        ),
+      );
       if (mounted && readingToken == _readingToken) {
         setState(() => _speaking = false);
       }
@@ -2209,10 +2380,12 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
     if (!_speaking) return;
     final previousToken = _readingToken;
     _readingToken += 1;
-    unawaited(AppLogger.log(
-      'News Edge TTS debug [$previousToken]: stop richiesto, '
-      'nuovoToken=$_readingToken',
-    ));
+    unawaited(
+      AppLogger.log(
+        'News Edge TTS debug [$previousToken]: stop richiesto, '
+        'nuovoToken=$_readingToken',
+      ),
+    );
     final edgeController = _edgeFileController;
     _edgeFileController = null;
     final stopAudio = _audio.stop();
@@ -2283,9 +2456,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text(_status!),
-                  ],
+                  children: [Text(_status!)],
                 ),
               ),
             ),
@@ -2376,8 +2547,9 @@ class _ReaderArticleView extends StatelessWidget {
         .where((label) => label.isNotEmpty)
         .toSet();
     final paragraphs = _dropLeadingDuplicateTitle(title, readerParagraphs(text))
-        .where((paragraph) =>
-            !mediaLabels.contains(_normalizedLinkLabel(paragraph)))
+        .where(
+          (paragraph) => !mediaLabels.contains(_normalizedLinkLabel(paragraph)),
+        )
         .toList(growable: false);
 
     if (useSharedAccessibleViewModel) {
@@ -2426,10 +2598,7 @@ class _ReaderArticleView extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             sliver: SliverList(
               delegate: SliverChildListDelegate([
-                SelectableText(
-                  title,
-                  style: theme.textTheme.headlineSmall,
-                ),
+                SelectableText(title, style: theme.textTheme.headlineSmall),
                 const SizedBox(height: 16),
                 ...paragraphs.map(
                   (p) => Semantics(
@@ -2517,10 +2686,7 @@ class _ReaderArticleView extends StatelessWidget {
   }
 }
 
-List<String> _dropLeadingDuplicateTitle(
-  String title,
-  List<String> paragraphs,
-) {
+List<String> _dropLeadingDuplicateTitle(String title, List<String> paragraphs) {
   if (title.trim().isEmpty || paragraphs.isEmpty) return paragraphs;
   if (!_sameNewsText(title, paragraphs.first)) return paragraphs;
   return paragraphs.skip(1).toList();

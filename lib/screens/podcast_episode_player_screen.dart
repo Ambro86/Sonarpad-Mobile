@@ -153,6 +153,7 @@ class _PodcastEpisodePlayerScreenState
   bool _restoreVideoOffAfterBootstrap = false;
   bool _refreshingEpisode = false;
   bool _switchingVideoMode = false;
+  bool _choosingAudioTrack = false;
   String? _autoAdvanceHandledMediaId;
 
   PodcastEpisode get _episode => _refreshedEpisode ?? widget.episode;
@@ -507,6 +508,99 @@ class _PodcastEpisodePlayerScreenState
     }
   }
 
+  bool get _canSelectAudioTrack => _episode.audioTracks.length > 1 &&
+      _loaded && !_loading && !_switchingVideoMode && !_changingPlaybackSpeed;
+
+  Widget _audioTrackButton(AppLocalizations l10n) => OutlinedButton.icon(
+    key: const ValueKey('player_audio_track'),
+    onPressed: _canSelectAudioTrack ? _selectAudioTrack : null,
+    icon: const Icon(Icons.language),
+    label: Text(l10n.selectAudioTrack),
+  );
+
+  Future<void> _selectAudioTrack() async {
+    if (!_canSelectAudioTrack || _choosingAudioTrack) return;
+    _choosingAudioTrack = true;
+    final source = _episode;
+    try {
+      final selected = await showDialog<String>(
+        context: context,
+        builder: (context) => SimpleDialog(
+          title: Text(AppLocalizations.of(context).selectAudioTrack),
+          children: [for (final track in source.audioTracks)
+            Semantics(
+              selected: track.id == source.selectedAudioTrackId,
+              child: SimpleDialogOption(
+                onPressed: () => Navigator.pop(context, track.id),
+                child: Row(children: [
+                  Expanded(child: Text(track.label)),
+                  if (track.id == source.selectedAudioTrackId)
+                    const Icon(Icons.check),
+                ]),
+              ),
+            ),
+          ],
+        ),
+      );
+      if (!mounted || selected == null || selected == _episode.selectedAudioTrackId ||
+          !identical(source, _episode) || !_canSelectAudioTrack) {
+        return;
+      }
+      final position = _videoController?.value.position ?? _audio.position;
+      final wasPlaying = _videoController?.value.isPlaying ?? _audio.isPlaying;
+      final pauseGeneration = _androidPauseGeneration;
+      setState(() {
+        _switchingVideoMode = true;
+        _loading = true;
+      });
+      try {
+        await _saveVideoBookmark();
+        await _videoController?.pause();
+        await _audio.stop();
+        if (!mounted) return;
+        _refreshedEpisode = source.withAudioTrack(selected);
+        _loaded = false;
+        await AppLogger.log('Player: audio track=$selected '
+            'position_ms=${position.inMilliseconds} playing=$wasPlaying');
+        await _play(resumePosition: position,
+          shouldPlay: wasPlaying && (!Platform.isAndroid ||
+              pauseGeneration == _androidPauseGeneration));
+        if (mounted && _error != null) {
+          // Keep a failed alternate stream from replacing a working track.
+          _refreshedEpisode = source;
+          _loaded = false;
+          await _play(allowMediaRefresh: false, resumePosition: position,
+            shouldPlay: wasPlaying && (!Platform.isAndroid ||
+                pauseGeneration == _androidPauseGeneration));
+          if (mounted) {
+            showStatusMessage(context, AppLocalizations.of(context).technicalErrorGeneric);
+          }
+        }
+      } catch (error) {
+        await AppLogger.log('Player: audio track switch failed: $error');
+        if (mounted) {
+          _refreshedEpisode = source;
+          _loaded = false;
+          await _play(allowMediaRefresh: false, resumePosition: position,
+            shouldPlay: wasPlaying && (!Platform.isAndroid ||
+                pauseGeneration == _androidPauseGeneration));
+          if (mounted) {
+            showStatusMessage(context, AppLocalizations.of(context).technicalErrorGeneric);
+          }
+        }
+      } finally {
+        if (mounted) {
+          setState(() {
+            _switchingVideoMode = false;
+            _loading = false;
+          });
+        }
+      }
+    } finally {
+      _choosingAudioTrack = false;
+    }
+  }
+
   Future<bool> _refreshEpisodeAfterPlaybackFailure(Object error) async {
     final refresh = widget.refreshEpisode;
     if (refresh == null || _refreshingEpisode) return false;
@@ -526,7 +620,9 @@ class _PodcastEpisodePlayerScreenState
         await _audio.stop();
       }
       _loaded = false;
-      _refreshedEpisode = refreshed;
+      _refreshedEpisode = _episode.selectedAudioTrackId == null
+          ? refreshed
+          : refreshed.withAudioTrack(_episode.selectedAudioTrackId!);
       AppLogger.log('PodcastPlayer: temporary media refreshed, $_logSubject');
       return true;
     } catch (refreshError) {
@@ -1634,6 +1730,7 @@ class _PodcastEpisodePlayerScreenState
               contentPadding: EdgeInsets.zero,
               dense: true,
             ),
+            if (_episode.audioTracks.length > 1) _audioTrackButton(l10n),
             if (_showPlaybackSpeed) _buildPlaybackSpeedSlider(l10n),
             Wrap(
               spacing: 12,
@@ -1858,6 +1955,11 @@ class _PodcastEpisodePlayerScreenState
             toggleValue: _isVideoEnabled,
             enabled: !_changingPlaybackSpeed && !_loading && !_switchingVideoMode,
           ),
+        if (_episode.audioTracks.length > 1)
+          AccessibleListRow(
+            id: 'audio_track', title: l10n.selectAudioTrack,
+            kind: 'button', enabled: _canSelectAudioTrack,
+          ),
         if (canSeek)
           AccessibleListRow(
             id: 'rewind',
@@ -1991,6 +2093,8 @@ class _PodcastEpisodePlayerScreenState
                 Duration(milliseconds: (value * 1000).round()),
               );
             }
+          } else if (event.id == 'audio_track' && event.type == 'activate') {
+            await _selectAudioTrack();
           } else if (event.id == 'chapters' && event.type == 'activate') {
             await _openChapters();
           } else if (event.id == 'video' && event.type == 'toggle') {
@@ -2144,6 +2248,7 @@ class _PodcastEpisodePlayerScreenState
                   contentPadding: EdgeInsets.zero,
                 ),
               ],
+              if (_episode.audioTracks.length > 1) _audioTrackButton(l10n),
               if (_showPlaybackSpeed) ...[
                 const SizedBox(height: 16),
                 _buildPlaybackSpeedSlider(l10n),

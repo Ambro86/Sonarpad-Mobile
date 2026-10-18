@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('opened SonarTube playlists expose the same persistent favorite control as channels', () {
-    final source = File('lib/screens/sonartube_screen.dart').readAsStringSync();
+    final source = File('lib/screens/sonartube_screen.dart').readAsStringSync().replaceAll('\r\n', '\n');
 
     expect(
       source,
@@ -28,8 +28,8 @@ void main() {
   test('playlist favorites are persisted and reopened through the normal collection path', () {
     final favorites = File(
       'lib/services/sonartube_favorites_service.dart',
-    ).readAsStringSync();
-    final screen = File('lib/screens/sonartube_screen.dart').readAsStringSync();
+    ).readAsStringSync().replaceAll('\r\n', '\n');
+    final screen = File('lib/screens/sonartube_screen.dart').readAsStringSync().replaceAll('\r\n', '\n');
 
     expect(
       favorites,

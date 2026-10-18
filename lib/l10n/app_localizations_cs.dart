@@ -3732,6 +3732,15 @@ class AppLocalizationsCs extends AppLocalizations {
   String get mediaProcessingCompleted => 'Zpracování dokončeno.';
 
   @override
+  String get convertMediaDestination => 'Cíl převedených souborů';
+
+  @override
+  String get exportAskEveryTime => 'Vždy se zeptat';
+
+  @override
+  String get selectAudioTrack => "Vybrat zvukovou stopu";
+
+  @override
   String get saveInSonarpadDocuments => 'Uložit do Dokumentů Sonarpadu';
 
   @override

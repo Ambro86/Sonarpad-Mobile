@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('SonarTube load more focuses the first appended row renderer-neutrally', () {
-    final source = File('lib/screens/sonartube_screen.dart').readAsStringSync();
+    final source = File('lib/screens/sonartube_screen.dart').readAsStringSync().replaceAll('\r\n', '\n');
 
     expect(source, contains('final firstAppendedIndex = _items.length;'));
     expect(source, contains('shouldFocusFirstAppendedItem = true;'));
@@ -29,7 +29,7 @@ void main() {
     }
   });
   test('Material SonarTube load more focuses the first appended result', () {
-    final source = File('lib/screens/sonartube_screen.dart').readAsStringSync();
+    final source = File('lib/screens/sonartube_screen.dart').readAsStringSync().replaceAll('\r\n', '\n');
 
     expect(source, contains('_loadMoreFocusIndex = firstAppendedIndex;'));
     expect(source, contains('_focusFirstAppendedMaterialResult(firstAppendedIndex)'));
@@ -42,10 +42,10 @@ void main() {
   test('UIKit retries an ignored SonarTube load-more focus exactly once', () {
     final swift = File(
       'ios/Runner/SonarpadNativeAccessibleView.swift',
-    ).readAsStringSync();
+    ).readAsStringSync().replaceAll('\r\n', '\n');
     final shared = File(
       'lib/widgets/universal_accessible_view.dart',
-    ).readAsStringSync();
+    ).readAsStringSync().replaceAll('\r\n', '\n');
 
     expect(shared, contains('widget.debugTag ?? widget.controller?.debugName'));
     expect(swift, contains('self.debugTag == "sonartube"'));

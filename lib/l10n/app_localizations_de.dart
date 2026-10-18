@@ -3747,6 +3747,15 @@ class AppLocalizationsDe extends AppLocalizations {
   String get mediaProcessingCompleted => 'Verarbeitung abgeschlossen.';
 
   @override
+  String get convertMediaDestination => 'Ziel für konvertierte Dateien';
+
+  @override
+  String get exportAskEveryTime => 'Jedes Mal fragen';
+
+  @override
+  String get selectAudioTrack => "Audiospur auswählen";
+
+  @override
   String get saveInSonarpadDocuments => 'In Sonarpad-Dokumenten speichern';
 
   @override

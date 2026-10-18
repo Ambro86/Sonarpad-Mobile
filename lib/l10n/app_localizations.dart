@@ -6784,6 +6784,12 @@ abstract class AppLocalizations {
   /// **'Salva nei Documenti di Sonarpad'**
   String get saveInSonarpadDocuments;
 
+  String get selectAudioTrack;
+
+  String get convertMediaDestination;
+
+  String get exportAskEveryTime;
+
   /// Button that processes the current Media Cutter edits before choosing a destination.
   ///
   /// In it, this message translates to:

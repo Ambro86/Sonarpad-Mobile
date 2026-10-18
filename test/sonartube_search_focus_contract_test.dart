@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('SonarTube search opens a clean shared-accessible results route without initial focus jump', () {
-    final source = File('lib/screens/sonartube_screen.dart').readAsStringSync();
+    final source = File('lib/screens/sonartube_screen.dart').readAsStringSync().replaceAll('\r\n', '\n');
 
     expect(source, contains("name: '/sonartube/search-results'"));
     expect(source, contains('searchQuery: query'));
@@ -22,7 +22,7 @@ void main() {
   });
 
   test('clean SonarTube search results keep Back outside the scrolling results', () {
-    final source = File('lib/screens/sonartube_screen.dart').readAsStringSync();
+    final source = File('lib/screens/sonartube_screen.dart').readAsStringSync().replaceAll('\r\n', '\n');
     final accessibleStart = source.indexOf(
       'Widget _buildSearchResultsAccessible(AppLocalizations l10n)',
     );

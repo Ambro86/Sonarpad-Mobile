@@ -7,6 +7,8 @@ import 'package:http/http.dart' as http;
 
 import 'aifa_service.dart';
 import 'app_cache_service.dart';
+import 'multicentrum_catalog.dart';
+import 'pharmacy_manufacturer_catalog.dart';
 import '../utils/app_logger.dart';
 
 class ParafarmacoSearchResult {
@@ -376,11 +378,21 @@ class ParafarmacoService {
 
     final list = found.values.toList();
     list.sort((a, b) {
+      final manufacturerOrder = (_isManufacturerSource(b.sourceUrl) ? 1 : 0)
+          .compareTo(_isManufacturerSource(a.sourceUrl) ? 1 : 0);
+      if (manufacturerOrder != 0) return manufacturerOrder;
       final aScore = _resultScore(a, query);
       final bScore = _resultScore(b, query);
       return bScore.compareTo(aScore);
     });
-    return list.take(30).toList();
+    // A brand search can contain many Codifa package sizes. Do not let those
+    // hide products from the manufacturer catalogue behind the result limit.
+    return [
+      ...list.take(30),
+      ...list
+          .skip(30)
+          .where((result) => _isManufacturerSource(result.sourceUrl)),
+    ];
   }
 
   Future<List<ParafarmacoSearchResult>> _searchCurrentCodifa(
@@ -705,6 +717,82 @@ class ParafarmacoService {
     return tokens.first.length >= 3;
   }
 
+  bool _isManufacturerSource(String url) => const {
+    'www.multicentrum.it',
+    'www.aboca.com',
+    'www.supradyn.it',
+  }.contains(Uri.tryParse(url)?.host);
+
+  dom.Document? _manufacturerDocument(dom.Document document, String host) {
+    if (host == 'www.aboca.com') {
+      final title = document.querySelector('.product-page h1');
+      final blocks = document.querySelectorAll('.product-page .prmoreinfo');
+      if (title == null || blocks.isEmpty) return null;
+      final output = dom.Document.html('<html><body></body></html>');
+      output.body!.append(title.clone(true));
+      for (final block in blocks) {
+        final heading = block.querySelector('.prmoreinfo__title');
+        final content = block.querySelector(
+          '.prmoreinfo__description .prtexts',
+        );
+        if (heading == null || content == null) continue;
+        final label = _normalize(heading.text);
+        final type = label == 'maggiori informazioni'
+            ? ParafarmacoSectionType.indications
+            : _sectionTypeFromHeading(label);
+        if (type == null || type == ParafarmacoSectionType.complete) continue;
+        final section = dom.Element.tag('section')
+          ..attributes['data-manufacturer-section'] = type.name;
+        section.append(dom.Element.tag('h2')..text = heading.text);
+        section.append(content.clone(true));
+        output.body!.append(section);
+      }
+      return output.querySelector('section') == null ? null : output;
+    }
+
+    // Retain product text from the first title until recommendations begin.
+    // Reject challenges/home pages rather than interpreting them as a product.
+    final root = document.querySelector('main, [role="main"]');
+    final title = root?.querySelector('h1');
+    if (root == null ||
+        title == null ||
+        !_normalize(title.text).startsWith('supradyn')) {
+      return null;
+    }
+    final output = dom.Document.html('<html><body></body></html>');
+    var started = false;
+    final copied = <dom.Element>{};
+    for (final element in root.querySelectorAll('h1,h2,h3,p,ul,ol,table')) {
+      if (element == title) started = true;
+      if (!started) continue;
+      if ((element.localName?.startsWith('h') ?? false) &&
+          _containsAny(_normalize(element.text), const [
+            'scopri la gamma',
+            'potrebbe interessarti',
+            'prodotti correlati',
+          ])) {
+        break;
+      }
+      var parent = element.parent;
+      var nested = false;
+      while (parent != null && parent != root) {
+        if (copied.contains(parent)) {
+          nested = true;
+          break;
+        }
+        parent = parent.parent;
+      }
+      if (nested) continue;
+      final clone = element.clone(true);
+      if (_normalize(element.text) == 'come assumerlo') {
+        clone.text = 'Modalità d’uso';
+      }
+      output.body!.append(clone);
+      copied.add(element);
+    }
+    return output;
+  }
+
   Future<ParafarmacoDetail> loadDetail(ParafarmacoSearchResult result) async {
     if (result.sourceUrl.startsWith('sonarpad://')) {
       return _detailFromCuratedSearchResult(result);
@@ -737,7 +825,41 @@ class ParafarmacoService {
     }
 
     final body = _decodeResponse(response);
-    final document = html_parser.parse(body);
+    var document = html_parser.parse(body);
+    final manufacturerHost = Uri.parse(result.sourceUrl).host;
+    if (manufacturerHost == 'www.aboca.com' ||
+        manufacturerHost == 'www.supradyn.it') {
+      final scoped = _manufacturerDocument(document, manufacturerHost);
+      if (scoped == null) {
+        final fallback = _detailFromFallbackSnippet(
+          result,
+          statusCode: response.statusCode,
+          reason: 'la pagina del produttore non espone la scheda prevista',
+        );
+        if (fallback != null) return fallback;
+        throw const FormatException('Scheda del produttore non riconosciuta');
+      }
+      document = scoped;
+    }
+    if (Uri.parse(result.sourceUrl).host == 'www.multicentrum.it') {
+      // Keep the selected product, not the navigation or related products.
+      final product = document.querySelector('.product-detail-top-block');
+      if (product == null) {
+        final fallback = _detailFromFallbackSnippet(
+          result,
+          statusCode: response.statusCode,
+          reason: 'la pagina del produttore non espone la scheda prevista',
+        );
+        if (fallback != null) return fallback;
+        throw const FormatException('Scheda Multicentrum non riconosciuta');
+      }
+      final tabs = product.nextElementSibling;
+      document = html_parser.parse(
+        '${product.outerHtml}'
+        '${tabs != null && tabs.classes.contains('tabs') ? tabs.outerHtml : ''}',
+      );
+      document.querySelectorAll('a').forEach((element) => element.remove());
+    }
     final embeddedDetail = _embeddedCodifaDetailDocument(document);
     _removeNoise(document);
     if (embeddedDetail != null) _removeNoise(embeddedDetail);
@@ -746,7 +868,18 @@ class ParafarmacoService {
     final contentDocument = embeddedDetail ?? document;
     final code = _extractCode(document) ?? result.code;
     final fullText = _cleanText(_bestBodyText(contentDocument));
-    final sections = _extractSections(contentDocument, fullText);
+    final sections = manufacturerHost == 'www.aboca.com'
+        ? <ParafarmacoSectionType, String>{
+            for (final section in document.querySelectorAll(
+              'section[data-manufacturer-section]',
+            ))
+              ParafarmacoSectionType.values.byName(
+                section.attributes['data-manufacturer-section']!,
+              ): _cleanText(
+                section.querySelector('.prtexts')?.text ?? '',
+              ),
+          }
+        : _extractSections(contentDocument, fullText);
 
     // Alcuni siti esterni caricano il contenuto via JavaScript oppure mostrano
     // soprattutto prezzi, pulsanti e materiale commerciale. In quei casi è più
@@ -922,6 +1055,63 @@ class ParafarmacoService {
   List<ParafarmacoSearchResult> _knownDirectProductResults(String query) {
     final normalized = _normalize(query);
     final results = <ParafarmacoSearchResult>[];
+
+    final manufacturerTokens = _normalize(query).split(' ');
+    for (final product in pharmacyManufacturerCatalog) {
+      final brand = product.brand.toLowerCase();
+      final name = _normalize(product.name);
+      final first = manufacturerTokens.first;
+      // Without the company name, require the actual product line (Grintuss,
+      // NeoBianacid, etc.), not a generic word such as "capsule".
+      if (!manufacturerTokens.contains(brand) &&
+          (first.length < 4 || !name.startsWith(first))) {
+        continue;
+      }
+      final words = _normalize('$brand ${product.name}').split(' ');
+      final compact = words.join();
+      if (!manufacturerTokens.every(
+        (token) =>
+            token.length == 1 ? words.contains(token) : compact.contains(token),
+      )) {
+        continue;
+      }
+      results.add(
+        ParafarmacoSearchResult(
+          name: product.name,
+          category: 'Prodotto da farmacia / scheda produttore',
+          sourceName: '${product.brand} (sito ufficiale)',
+          sourceUrl: product.url,
+          snippet:
+              'Scheda del produttore ${product.brand} per ${product.name}. '
+              'Consultare la pagina ufficiale e la confezione per le informazioni '
+              'complete sulla specifica variante.',
+        ),
+      );
+    }
+
+    // Keep the complete manufacturer catalogue available even when Codifa
+    // returns no matches. Aliases never merge different formulations.
+    final tokens = _searchTokens(query);
+    if (tokens.contains('multicentrum')) {
+      for (final product in multicentrumCatalog) {
+        final searchable = _normalize(
+          '${product.name} ${product.aliases}',
+        ).replaceAll(' ', '');
+        if (!tokens.every((token) => searchable.contains(token))) continue;
+        results.add(
+          ParafarmacoSearchResult(
+            name: product.name,
+            category: 'Integratore / prodotto da farmacia',
+            sourceName: 'Multicentrum (sito ufficiale)',
+            sourceUrl: 'https://www.multicentrum.it${product.path}',
+            snippet:
+                'Scheda del produttore per ${product.name}. '
+                'Le informazioni complete sulla specifica variante sono '
+                'disponibili nella pagina ufficiale e sulla confezione.',
+          ),
+        );
+      }
+    }
 
     void addIf(bool condition, ParafarmacoSearchResult result) {
       if (condition) results.add(result);

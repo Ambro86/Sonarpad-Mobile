@@ -12,7 +12,7 @@ String _between(String source, String start, String end) {
 
 void main() {
   test('SonarTube collections expose fixed Back before the channel or playlist title', () {
-    final source = File('lib/screens/sonartube_screen.dart').readAsStringSync();
+    final source = File('lib/screens/sonartube_screen.dart').readAsStringSync().replaceAll('\r\n', '\n');
 
     final shared = _between(
       source,

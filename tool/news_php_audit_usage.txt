@@ -1,0 +1,37 @@
+Verifica locale del modulo Notizie Sonarpad
+
+Il test usa il vero NewsService: feed RSS/Google News -> risoluzione URL -> PHP locale -> Python -> testo Dart.
+Avvia sei processi PHP limitati a 127.0.0.1, senza esporre la cartella Documents.
+Le richieste agli articoli sono serializzate per host. I risultati vengono salvati dopo ogni articolo.
+Il test live è escluso automaticamente dai normali flutter test quando mancano le variabili richieste.
+
+Requisiti: PHP CLI 8, Flutter, Python con beautifulsoup4 e curl_cffi.
+Il PHP da distribuire è esterno al repository: C:\Users\ambro\Documents\tinyfish_fetch_article.php.
+La chiave del servizio di riserva non viene copiata nel repository.
+Il percorso Python Linux originale è conservato; SONARPAD_READER_PYTHON serve per scegliere un interprete locale.
+
+Esempio PowerShell (scegliere una nuova cartella per ogni nuova esecuzione):
+$env:SONARPAD_NEWS_AUDIT_DIR = "$env:TEMP\sonarpad-news-audit-new"
+$env:SONARPAD_NEWS_PHP = 'C:\Users\ambro\Documents\tinyfish_fetch_article.php'
+$env:SONARPAD_READER_PYTHON = 'C:\Users\ambro\AppData\Local\Programs\Python\Python314\python.exe'
+$env:SONARPAD_READER_DISABLE_CACHE = '1'
+$env:SONARPAD_READER_AUDIT_HTML_DIR = "$env:SONARPAD_NEWS_AUDIT_DIR\html"
+$env:SONARPAD_NEWS_ENABLE_TINYFISH = '1'
+flutter test --no-pub test/news_php_live_integration_test.dart --reporter expanded
+py -X utf8 tool/audit_news_php_quality.py $env:SONARPAD_NEWS_AUDIT_DIR
+
+Per il solo motore Python, omettere SONARPAD_NEWS_ENABLE_TINYFISH.
+SONARPAD_NEWS_INTERNATIONAL=1 seleziona cinque fonti inglesi, cinque spagnole e Repubblica.
+SONARPAD_NEWS_SOURCES permette di limitare le fonti per nome, separandole con |.
+SONARPAD_NEWS_COLLECT_ONLY=1 raccoglie il campione senza leggere i corpi.
+Un manifest.json già presente mantiene gli stessi articoli tra le esecuzioni.
+Un results.jsonl già presente riprende solo gli articoli non completati.
+
+Test di regressione offline:
+py -X utf8 tool/test_news_php_extractor.py $env:SONARPAD_NEWS_PHP
+flutter test --no-pub test/news_php_contract_test.dart test/google_news_article_resolution_test.dart test/news_service_test.dart
+
+La copertura confronta il testo con i paragrafi disponibili nel corpo selezionato dell'HTML effettivamente scaricato.
+Non certifica l'accesso al testo riservato agli abbonati, le parti in immagini/audio/video, né una pagina non scaricata.
+Gli HTTP 403, le anteprime, il testo offuscato e le risposte del servizio di riserva vanno esaminati separatamente.
+Un test live completato indica che tutti i casi sono stati eseguiti e il contratto PHP/Dart è rispettato, non che tutti i siti hanno fornito l'articolo completo.

@@ -3,78 +3,130 @@
     "version": "0.5.2",
     "date": "2026-10-17",
     "it": [
+      "In SonarTube puoi scegliere la traccia audio dei video disponibili in più lingue, senza perdere il punto di riproduzione. Il pulsante “Seleziona traccia audio” compare solo quando sono disponibili più tracce.",
+      "Sonarpad ricorda nome e indirizzo email inseriti nelle segnalazioni, così non devi riscriverli ogni volta. Puoi modificarli o cancellarli nelle segnalazioni successive.",
+      "Il convertitore ricorda il formato e le impostazioni scelti, anche WAV e FLAC. Puoi scegliere se salvare sempre i file convertiti nei Documenti di Sonarpad, aprire la condivisione oppure chiedere ogni volta.",
+      "Migliorata la lettura delle notizie: articoli più completi e puliti, con meno interruzioni, pubblicità e contenuti estranei. Corretti alcuni collegamenti che aprivano una notizia diversa da quella scelta.",
       "Corretta la gestione dei cataloghi dei personaggi: quelli eliminati da Documenti non compaiono più in Crea audiodescrizione con IA. Ricreare un catalogo con lo stesso nome non recupera più i personaggi eliminati.",
       "In SonarMusic, “Ascoltati di recente” permette ora di eliminare singole voci dalle azioni secondarie di VoiceOver o dal pulsante visivo, escluso dalla lettura dello screen reader, e di cancellare tutta la cronologia con conferma, come in SonarTube.",
       "Su Android, la lettura con le voci locali supporta ora pausa e ripresa tramite il doppio tocco con due dita di TalkBack, anche in notizie, documenti, Wikipedia e Treccani.",
       "In SonarMusic, il pulsante Suggerimenti compare solo quando il campo di ricerca contiene testo. La sua comparsa o scomparsa mantiene stabile il focus di VoiceOver, senza ricaricare tutto l’elenco."
     ],
     "en": [
+      "In SonarTube, you can choose the audio track for videos available in multiple languages without losing your playback position. The “Select audio track” button appears only when multiple tracks are available.",
+      "Sonarpad remembers the name and email address entered in reports, so you do not have to type them again. You can change or clear them in later reports.",
+      "The converter remembers your chosen format and settings, including WAV and FLAC. You can always save converted files in Sonarpad Documents, open the Share sheet, or choose each time.",
+      "Improved news reading: more complete, cleaner articles, with fewer interruptions, ads and unrelated content. Fixed some links that opened a different story from the one selected.",
       "Fixed character catalog handling: catalogs deleted from Documents no longer appear in Create audio description with AI. Recreating a catalog with the same name no longer restores deleted characters.",
       "SonarMusic Recently listened now supports deleting individual entries through VoiceOver actions or a visual button excluded from screen reader navigation, and clearing the entire history with confirmation, as in SonarTube.",
       "On Android, reading with local voices now supports pause and resume using the TalkBack two-finger double tap, including news, documents, Wikipedia and Treccani.",
       "In SonarMusic, Suggestions appears only when the search field contains text. Showing or hiding the button preserves VoiceOver focus without reloading the entire list."
     ],
     "fr": [
+      "Dans SonarTube, vous pouvez choisir la piste audio des vidéos disponibles en plusieurs langues sans perdre votre position de lecture. Le bouton « Choisir la piste audio » apparaît uniquement lorsque plusieurs pistes sont disponibles.",
+      "Sonarpad mémorise le nom et l’adresse e-mail saisis dans les signalements pour éviter de les ressaisir. Vous pouvez les modifier ou les effacer lors des signalements suivants.",
+      "Le convertisseur mémorise le format et les réglages choisis, y compris WAV et FLAC. Vous pouvez toujours enregistrer les fichiers convertis dans Documents de Sonarpad, ouvrir le partage ou choisir à chaque fois.",
+      "Lecture des actualités améliorée : des articles plus complets et mieux nettoyés, avec moins de coupures, de publicités et de contenus sans rapport. Correction de certains liens qui ouvraient un autre article que celui choisi.",
       "Correction de la gestion des catalogues de personnages : les catalogues supprimés de Documents ne figurent plus dans Créer une audiodescription avec IA. Recréer un catalogue portant le même nom ne restaure plus les personnages supprimés.",
       "Dans SonarMusic, les écoutes récentes permettent désormais de supprimer chaque entrée via les actions VoiceOver ou un bouton visuel exclu de la navigation du lecteur d’écran, et d’effacer tout l’historique après confirmation, comme dans SonarTube.",
       "Sur Android, la lecture avec les voix locales peut désormais être mise en pause et reprise par un double toucher avec deux doigts dans TalkBack, notamment pour les actualités, les documents, Wikipédia et Treccani.",
       "Dans SonarMusic, le bouton Suggestions apparaît uniquement lorsque le champ de recherche contient du texte. Son affichage ou son masquage préserve le focus VoiceOver sans recharger toute la liste."
     ],
     "es": [
+      "En SonarTube puedes elegir la pista de audio de los vídeos disponibles en varios idiomas sin perder el punto de reproducción. El botón «Seleccionar pista de audio» solo aparece cuando hay varias pistas disponibles.",
+      "Sonarpad recuerda el nombre y el correo electrónico de los informes para que no tengas que volver a escribirlos. Puedes modificarlos o borrarlos en informes posteriores.",
+      "El convertidor recuerda el formato y los ajustes elegidos, incluidos WAV y FLAC. Puedes guardar siempre los archivos convertidos en Documentos de Sonarpad, abrir el menú para compartir o elegir cada vez.",
+      "Mejorada la lectura de noticias: artículos más completos y limpios, con menos cortes, publicidad y contenido ajeno. Corregidos algunos enlaces que abrían una noticia distinta de la seleccionada.",
       "Corregida la gestión de los catálogos de personajes: los eliminados de Documentos ya no aparecen en Crear audiodescripción con IA. Recrear un catálogo con el mismo nombre ya no recupera los personajes eliminados.",
       "En SonarMusic, las escuchas recientes permiten eliminar entradas mediante las acciones de VoiceOver o un botón visual excluido de la navegación del lector de pantalla, y borrar todo el historial con confirmación, como en SonarTube.",
       "En Android, la lectura con voces locales permite pausar y reanudar con el doble toque con dos dedos de TalkBack, también en noticias, documentos, Wikipedia y Treccani.",
       "En SonarMusic, Sugerencias aparece solo cuando el campo de búsqueda contiene texto. Mostrar u ocultar el botón mantiene el foco de VoiceOver sin recargar toda la lista."
     ],
     "pt": [
+      "No SonarTube pode escolher a faixa de áudio dos vídeos disponíveis em vários idiomas sem perder o ponto de reprodução. O botão «Selecionar faixa de áudio» só aparece quando existem várias faixas disponíveis.",
+      "O Sonarpad guarda o nome e o endereço de email dos relatos para não ter de os escrever novamente. Pode alterá-los ou apagá-los nos relatos seguintes.",
+      "O conversor guarda o formato e as definições escolhidos, incluindo WAV e FLAC. Pode guardar sempre os ficheiros convertidos nos Documentos do Sonarpad, abrir a partilha ou escolher de cada vez.",
+      "Melhorada a leitura de notícias: artigos mais completos e limpos, com menos cortes, publicidade e conteúdos alheios. Corrigidas algumas ligações que abriam uma notícia diferente da escolhida.",
       "Corrigida a gestão dos catálogos de personagens: os eliminados de Documentos já não aparecem em Criar audiodescrição com IA. Recriar um catálogo com o mesmo nome já não recupera as personagens eliminadas.",
       "No SonarMusic, as reproduções recentes permitem eliminar entradas pelas ações do VoiceOver ou por um botão visual excluído da navegação do leitor de ecrã, e limpar todo o histórico com confirmação, como no SonarTube.",
       "No Android, a leitura com vozes locais permite agora pausar e retomar com o duplo toque com dois dedos do TalkBack, incluindo notícias, documentos, Wikipédia e Treccani.",
       "No SonarMusic, o botão Sugestões aparece apenas quando o campo de pesquisa contém texto. Mostrar ou ocultar o botão mantém o foco do VoiceOver sem recarregar toda a lista."
     ],
     "pt_BR": [
+      "No SonarTube, você pode escolher a faixa de áudio dos vídeos disponíveis em vários idiomas sem perder o ponto de reprodução. O botão “Selecionar faixa de áudio” aparece apenas quando há várias faixas disponíveis.",
+      "O Sonarpad lembra o nome e o e-mail dos relatos para você não precisar digitá-los novamente. Você pode alterá-los ou apagá-los nos próximos relatos.",
+      "O conversor lembra o formato e as configurações escolhidos, incluindo WAV e FLAC. Você pode sempre salvar os arquivos convertidos nos Documentos do Sonarpad, abrir o compartilhamento ou escolher a cada vez.",
+      "Melhorada a leitura de notícias: artigos mais completos e limpos, com menos cortes, anúncios e conteúdo sem relação. Corrigidos alguns links que abriam uma notícia diferente da escolhida.",
       "Corrigido o gerenciamento dos catálogos de personagens: os excluídos de Documentos não aparecem mais em Criar audiodescrição com IA. Recriar um catálogo com o mesmo nome não restaura mais os personagens excluídos.",
       "No SonarMusic, as reproduções recentes permitem excluir entradas pelas ações do VoiceOver ou por um botão visual excluído da navegação do leitor de tela, e limpar todo o histórico com confirmação, como no SonarTube.",
       "No Android, a leitura com vozes locais agora permite pausar e retomar com o toque duplo com dois dedos do TalkBack, inclusive em notícias, documentos, Wikipédia e Treccani.",
       "No SonarMusic, o botão Sugestões aparece apenas quando o campo de pesquisa contém texto. Mostrar ou ocultar o botão mantém o foco do VoiceOver sem recarregar toda a lista."
     ],
     "pl": [
+      "W SonarTube można wybrać ścieżkę dźwiękową filmów dostępnych w wielu językach bez utraty miejsca odtwarzania. Przycisk „Wybierz ścieżkę dźwiękową” pojawia się tylko wtedy, gdy dostępnych jest kilka ścieżek.",
+      "Sonarpad zapamiętuje imię i adres e-mail ze zgłoszeń, aby nie trzeba było wpisywać ich ponownie. Można je zmienić lub usunąć w kolejnych zgłoszeniach.",
+      "Konwerter zapamiętuje wybrany format i ustawienia, także WAV i FLAC. Można zawsze zapisywać przekonwertowane pliki w Dokumentach Sonarpad, otwierać udostępnianie lub wybierać za każdym razem.",
+      "Ulepszono czytanie wiadomości: pełniejsze i lepiej oczyszczone artykuły, z mniejszą liczbą urwanych fragmentów, reklam i niepowiązanych treści. Poprawiono niektóre odnośniki otwierające inną wiadomość niż wybrana.",
       "Poprawiono obsługę katalogów postaci: katalogi usunięte z Dokumentów nie pojawiają się już podczas tworzenia audiodeskrypcji z AI. Ponowne utworzenie katalogu o tej samej nazwie nie przywraca usuniętych postaci.",
       "Ostatnio słuchane w SonarMusic umożliwiają usuwanie wpisów za pomocą czynności VoiceOver lub przycisku pomijanego przez czytnik ekranu oraz czyszczenie całej historii po potwierdzeniu, tak jak w SonarTube.",
       "Na Androidzie czytanie głosami lokalnymi obsługuje teraz pauzę i wznowienie przez dwukrotne stuknięcie dwoma palcami w TalkBack, także w wiadomościach, dokumentach, Wikipedii i Treccani.",
       "W SonarMusic przycisk sugestii pojawia się tylko wtedy, gdy pole wyszukiwania zawiera tekst. Pokazywanie i ukrywanie przycisku zachowuje fokus VoiceOver bez ponownego ładowania całej listy."
     ],
     "cs": [
+      "V SonarTube můžete vybrat zvukovou stopu videí dostupných ve více jazycích, aniž byste ztratili místo přehrávání. Tlačítko „Vybrat zvukovou stopu“ se zobrazí pouze tehdy, když je dostupných více stop.",
+      "Sonarpad si pamatuje jméno a e-mailovou adresu z hlášení, abyste je nemuseli zadávat znovu. V dalších hlášeních je můžete změnit nebo vymazat.",
+      "Převodník si pamatuje zvolený formát a nastavení, včetně WAV a FLAC. Převedené soubory můžete vždy ukládat do Dokumentů Sonarpadu, otevřít sdílení nebo se rozhodnout pokaždé.",
+      "Vylepšeno čtení zpráv: úplnější a čistší články s méně přerušeným textem, reklamami a nesouvisejícím obsahem. Opraveny některé odkazy, které otevíraly jinou zprávu než vybranou.",
       "Opravena správa katalogů postav: katalogy odstraněné z Dokumentů se již nezobrazují při vytváření audiopopisu pomocí AI. Opětovné vytvoření katalogu se stejným názvem již neobnovuje odstraněné postavy.",
       "Nedávno poslouchané v SonarMusic nyní umožňují odstranit položky pomocí akcí VoiceOver nebo tlačítka vynechaného při navigaci čtečkou obrazovky a vymazat celou historii po potvrzení, stejně jako v SonarTube.",
       "V Androidu lze nyní čtení místními hlasy pozastavit a obnovit dvojitým klepnutím dvěma prsty v TalkBacku, také ve zprávách, dokumentech, Wikipedii a Treccani.",
       "V SonarMusic se tlačítko návrhů zobrazuje pouze tehdy, když vyhledávací pole obsahuje text. Zobrazení nebo skrytí tlačítka zachovává zaměření VoiceOveru bez opětovného načtení celého seznamu."
     ],
     "de": [
+      "In SonarTube lässt sich bei mehrsprachigen Videos die Audiospur auswählen, ohne die Wiedergabeposition zu verlieren. Die Schaltfläche „Audiospur auswählen“ erscheint nur, wenn mehrere Spuren verfügbar sind.",
+      "Sonarpad merkt sich den Namen und die E-Mail-Adresse aus Meldungen, damit sie nicht erneut eingegeben werden müssen. In späteren Meldungen können sie geändert oder gelöscht werden.",
+      "Der Konverter merkt sich das gewählte Format und die Einstellungen, auch WAV und FLAC. Konvertierte Dateien können immer in Sonarpad-Dokumenten gespeichert oder zum Teilen geöffnet werden. Alternativ lässt sich das Ziel jedes Mal auswählen.",
+      "Nachrichten lassen sich jetzt besser lesen: vollständigere, bereinigte Artikel mit weniger Textabbrüchen, Werbung und fremden Inhalten. Einige Links wurden korrigiert, die eine andere als die ausgewählte Nachricht öffneten.",
       "Verwaltung der Figurenkataloge korrigiert: Aus Dokumente gelöschte Kataloge erscheinen nicht mehr beim Erstellen einer Audiodeskription mit KI. Beim erneuten Erstellen eines Katalogs mit demselben Namen werden gelöschte Figuren nicht mehr wiederhergestellt.",
       "In SonarMusic lassen sich zuletzt gehörte Einträge jetzt über VoiceOver-Aktionen oder eine von der Screenreader-Navigation ausgeschlossene Schaltfläche löschen. Der gesamte Verlauf kann nach Bestätigung geleert werden, wie in SonarTube.",
       "Unter Android lässt sich das Vorlesen mit lokalen Stimmen jetzt durch doppeltes Tippen mit zwei Fingern in TalkBack pausieren und fortsetzen, auch in Nachrichten, Dokumenten, Wikipedia und Treccani.",
       "In SonarMusic erscheint die Schaltfläche Vorschläge nur, wenn das Suchfeld Text enthält. Beim Ein- und Ausblenden bleibt der VoiceOver-Fokus erhalten, ohne die gesamte Liste neu zu laden."
     ],
     "zh_CN": [
+      "在 SonarTube 中，你可以为提供多种语言的视频选择音轨，而不会丢失播放位置。只有存在多条音轨时，才会显示“选择音轨”按钮。",
+      "Sonarpad 会记住反馈中填写的姓名和电子邮箱，无需每次重新输入。你可以在之后的反馈中修改或清空它们。",
+      "转换器会记住所选格式和设置，包括 WAV 和 FLAC。你可以选择始终将转换后的文件保存到 Sonarpad 文档、打开分享菜单，或每次询问。",
+      "改进新闻阅读：文章内容更完整、更清晰，减少文字截断、广告和无关内容。修复部分链接打开的新闻与所选新闻不一致的问题。",
       "修复角色目录管理：从“文档”中删除的目录不再显示在“使用 AI 创建音频描述”中。重新创建同名目录时，也不会恢复已删除的角色。",
       "SonarMusic 的“最近收听”现可通过 VoiceOver 操作或不参与屏幕阅读器导航的可视按钮删除单条记录，也可在确认后清空全部历史记录，与 SonarTube 一致。",
       "在 Android 上，使用本地语音朗读时，现在可以通过 TalkBack 的双指双击手势暂停和继续，包括新闻、文档、维基百科和 Treccani。",
       "在 SonarMusic 中，只有搜索框包含文字时才会显示“建议”按钮。显示或隐藏按钮时会保留 VoiceOver 焦点，不会重新加载整个列表。"
     ],
     "uk": [
+      "У SonarTube можна вибирати звукову доріжку відео, доступних кількома мовами, не втрачаючи місця відтворення. Кнопка «Вибрати звукову доріжку» з’являється лише за наявності кількох доріжок.",
+      "Sonarpad запам’ятовує ім’я та електронну адресу зі звернень, щоб не вводити їх щоразу. У наступних зверненнях їх можна змінити або видалити.",
+      "Конвертер запам’ятовує вибраний формат і налаштування, зокрема WAV та FLAC. Можна завжди зберігати перетворені файли в Документах Sonarpad, відкривати меню поширення або вибирати щоразу.",
+      "Покращено читання новин: повніші й чистіші статті з меншою кількістю обривів тексту, реклами та стороннього вмісту. Виправлено деякі посилання, що відкривали іншу новину замість вибраної.",
       "Виправлено керування каталогами персонажів: каталоги, видалені з Документів, більше не відображаються під час створення аудіодискрипції за допомогою ШІ. Повторне створення каталогу з тією самою назвою більше не відновлює видалених персонажів.",
       "У SonarMusic нещодавно прослухані записи тепер можна видаляти через дії VoiceOver або візуальну кнопку, виключену з навігації читача екрана, а всю історію — очищати після підтвердження, як у SonarTube.",
       "На Android читання локальними голосами тепер можна призупиняти й відновлювати подвійним дотиком двома пальцями в TalkBack, зокрема в новинах, документах, Вікіпедії та Treccani.",
       "У SonarMusic кнопка підказок з’являється лише тоді, коли поле пошуку містить текст. Показ і приховування кнопки зберігають фокус VoiceOver без перезавантаження всього списку."
     ],
     "ro": [
+      "În SonarTube poți alege pista audio a videoclipurilor disponibile în mai multe limbi fără a pierde poziția de redare. Butonul „Selectează pista audio” apare doar când sunt disponibile mai multe piste.",
+      "Sonarpad reține numele și adresa de e-mail din sesizări, pentru a nu le introduce de fiecare dată. Le poți modifica sau șterge în sesizările următoare.",
+      "Convertorul reține formatul și setările alese, inclusiv WAV și FLAC. Poți salva întotdeauna fișierele convertite în Documentele Sonarpad, deschide meniul de partajare sau alege de fiecare dată.",
+      "Lectură îmbunătățită a știrilor: articole mai complete și mai curate, cu mai puține întreruperi, reclame și conținut fără legătură. Au fost corectate unele linkuri care deschideau o altă știre decât cea selectată.",
       "Corectată gestionarea cataloagelor de personaje: cele șterse din Documente nu mai apar la crearea audiodescrierilor cu IA. Recrearea unui catalog cu același nume nu mai restabilește personajele șterse.",
       "În SonarMusic, ascultările recente permit acum ștergerea intrărilor prin acțiunile VoiceOver sau printr-un buton vizual exclus din navigarea cititorului de ecran și golirea întregului istoric după confirmare, ca în SonarTube.",
       "Pe Android, citirea cu vocile locale acceptă acum pauza și reluarea prin atingerea dublă cu două degete în TalkBack, inclusiv în știri, documente, Wikipedia și Treccani.",
       "În SonarMusic, butonul Sugestii apare doar când câmpul de căutare conține text. Afișarea sau ascunderea lui păstrează focalizarea VoiceOver fără a reîncărca întreaga listă."
     ],
     "tr": [
+      "SonarTube’da birden fazla dilde sunulan videoların ses parçasını oynatma konumunu kaybetmeden seçebilirsiniz. “Ses parçası seç” düğmesi yalnızca birden fazla parça olduğunda görünür.",
+      "Sonarpad, bildirimlerde girilen adı ve e-posta adresini hatırlar; böylece her seferinde yeniden yazmanız gerekmez. Sonraki bildirimlerde bunları değiştirebilir veya silebilirsiniz.",
+      "Dönüştürücü, WAV ve FLAC dahil seçtiğiniz biçimi ve ayarları hatırlar. Dönüştürülen dosyaları her zaman Sonarpad Belgelerine kaydetmeyi, paylaşım menüsünü açmayı veya her seferinde seçmeyi tercih edebilirsiniz.",
+      "Haber okuma iyileştirildi: daha az metin kesintisi, reklam ve ilgisiz içerikle daha eksiksiz ve temiz makaleler. Seçilen haber yerine farklı bir haberi açan bazı bağlantılar düzeltildi.",
       "Karakter kataloglarının yönetimi düzeltildi: Belgelerden silinen kataloglar artık yapay zekâ ile sesli betimleme oluştururken görünmüyor. Aynı adla yeniden katalog oluşturmak, silinen karakterleri artık geri getirmiyor.",
       "SonarMusic son dinlenenler artık VoiceOver eylemleri veya ekran okuyucu gezinmesine dahil edilmeyen görsel bir düğme ile tek tek silinebiliyor. SonarTube gibi tüm geçmiş de onay alınarak temizlenebiliyor.",
       "Android’de yerel seslerle okuma artık TalkBack’te iki parmakla çift dokunarak duraklatılabilir ve sürdürülebilir; haberler, belgeler, Wikipedia ve Treccani de buna dahildir.",

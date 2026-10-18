@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:ffmpeg_kit_flutter_new/ffmpeg_kit.dart';
@@ -11,6 +12,7 @@ import '../l10n/app_localizations.dart';
 import '../services/cloud_file_picker_service.dart';
 import '../services/app_cache_service.dart';
 import '../services/media_export_destination_service.dart';
+import '../services/persistent_form_preferences.dart';
 import '../utils/app_logger.dart';
 import '../utils/status_message.dart';
 import '../widgets/universal_accessible_view.dart';
@@ -69,6 +71,10 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
   _WavBitDepth _wavBitDepth = _WavBitDepth.pcm16;
   int _oggQuality = 5;
   int _flacCompression = 5;
+  final _preferences = PersistentFormPreferences();
+  bool _preferencesLoaded = false;
+  int _savedBitrate = 192;
+  MediaExportPreference _destination = MediaExportPreference.ask;
   bool _running = false;
   String? _status;
 
@@ -110,9 +116,70 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _bitrateController.addListener(_onBitrateChanged);
+    unawaited(_loadPreferences());
+  }
+
+  Future<void> _loadPreferences() async {
+    try {
+      final value = await _preferences.loadConverter();
+      if (!mounted) return;
+      setState(() {
+        _format = _MediaFormat.values.byName(value.format);
+        _wavBitDepth = _WavBitDepth.values.byName(value.wavBitDepth);
+        _savedBitrate = value.bitrate;
+        _bitrateController.text = value.bitrate.toString();
+        _oggQuality = value.oggQuality;
+        _flacCompression = value.flacCompression;
+        _destination = value.destination;
+        _preferencesLoaded = true;
+      });
+    } catch (_) {
+      await AppLogger.log('Convert media: unable to load preferences');
+      if (mounted) setState(() => _preferencesLoaded = true);
+    }
+  }
+
+  void _onBitrateChanged() {
+    if (!_preferencesLoaded) return;
+    final value = int.tryParse(_bitrateController.text.trim());
+    if (value == null || value < 64 || value > 320) return;
+    _savedBitrate = value;
+    unawaited(_savePreferences());
+  }
+
+  Future<void> _savePreferences() async {
+    if (!_preferencesLoaded) return;
+    try {
+      await _preferences.saveConverter(ConverterPreferences(
+        format: _format.name, bitrate: _savedBitrate,
+        wavBitDepth: _wavBitDepth.name, oggQuality: _oggQuality,
+        flacCompression: _flacCompression, destination: _destination,
+      ));
+    } catch (_) {
+      await AppLogger.log('Convert media: unable to save preferences');
+    }
+  }
+
+  void _changePreference(VoidCallback change) {
+    setState(change);
+    unawaited(_savePreferences());
+  }
+
+  String _destinationLabel(MediaExportPreference value, AppLocalizations l10n) =>
+      switch (value) {
+        MediaExportPreference.ask => l10n.exportAskEveryTime,
+        MediaExportPreference.documents => l10n.saveInSonarpadDocuments,
+        MediaExportPreference.share => l10n.share,
+      };
+
+  @override
   void dispose() {
     _inputController.dispose();
     _imageController.dispose();
+    _bitrateController.removeListener(_onBitrateChanged);
     _bitrateController.dispose();
     super.dispose();
   }
@@ -304,9 +371,15 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
     final l10n = AppLocalizations.of(context);
     final destinationService = MediaExportDestinationService();
 
+    var automaticAction = switch (_destination) {
+      MediaExportPreference.ask => null,
+      MediaExportPreference.documents => _ConvertDoneAction.saveDocuments,
+      MediaExportPreference.share => _ConvertDoneAction.share,
+    };
     while (true) {
       if (!mounted) return;
-      final action = await showDialog<_ConvertDoneAction>(
+      // If an automatic export fails, let the user choose a different destination.
+      final action = automaticAction ?? await showDialog<_ConvertDoneAction>(
         context: context,
         barrierDismissible: false,
         builder: (context) => PopScope(
@@ -331,15 +404,18 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
         ),
       );
 
-      if (!mounted || action == null) continue;
+      automaticAction = null;
+      if (!mounted) return;
+      if (action == null) continue;
       if (action == _ConvertDoneAction.share) {
         try {
-          await SharePlus.instance.share(
+          final shared = await SharePlus.instance.share(
             ShareParams(
               files: [XFile(filePath)],
               text: p.basename(filePath),
             ),
           );
+          if (shared.status == ShareResultStatus.dismissed) continue;
           await _cleanupStagedOutput(filePath);
           return;
         } catch (error) {
@@ -546,7 +622,7 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
 
   Future<void> _onFormatChanged(_MediaFormat? value) async {
     if (value == null) return;
-    setState(() {
+    _changePreference(() {
       _format = value;
       if (_format == _MediaFormat.opus &&
           (_bitrateController.text.trim().isEmpty ||
@@ -642,6 +718,12 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
               AccessibleOption(value: value.name, label: value.localizedLabel(l10n)),
           ],
         ),
+      AccessibleListRow(
+        id: 'destination', title: l10n.convertMediaDestination,
+        kind: 'picker', value: _destination.name, enabled: !_running,
+        options: [for (final value in MediaExportPreference.values)
+          AccessibleOption(value: value.name, label: _destinationLabel(value, l10n))],
+      ),
       AccessibleListRow(id: 'status', kind: 'text', title: _status ?? l10n.convertMediaReady),
       AccessibleListRow(
         id: 'convert',
@@ -666,14 +748,18 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
           _bitrateController.text = event.value?.toString() ?? '';
         } else if (event.id == 'ogg' && event.type == 'picker') {
           final value = event.value is num ? (event.value as num).toInt() : int.tryParse(event.value?.toString() ?? '');
-          if (value != null) setState(() => _oggQuality = value);
+          if (value != null) _changePreference(() => _oggQuality = value);
         } else if (event.id == 'flac' && event.type == 'picker') {
           final value = event.value is num ? (event.value as num).toInt() : int.tryParse(event.value?.toString() ?? '');
-          if (value != null) setState(() => _flacCompression = value);
+          if (value != null) _changePreference(() => _flacCompression = value);
         } else if (event.id == 'wav' && event.type == 'picker') {
           final name = event.value?.toString();
           final found = _WavBitDepth.values.where((value) => value.name == name);
-          if (found.isNotEmpty) setState(() => _wavBitDepth = found.first);
+          if (found.isNotEmpty) _changePreference(() => _wavBitDepth = found.first);
+        } else if (event.id == 'destination' && event.type == 'picker') {
+          final values = MediaExportPreference.values.where(
+            (value) => value.name == event.value?.toString());
+          if (values.isNotEmpty) _changePreference(() => _destination = values.first);
         } else if (event.id == 'convert' && event.type == 'activate' && _canConvert) {
           await _convert();
         }
@@ -688,7 +774,9 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
     return Scaffold(
       appBar: SonarpadAppBar(title: Text(l10n.convertMediaTitle)),
       body: SafeArea(
-        child: useSharedAccessibleViewModel
+        child: !_preferencesLoaded
+            ? const Center(child: CircularProgressIndicator())
+            : useSharedAccessibleViewModel
             ? _buildSharedAccessibleConvertForm(l10n)
             : ListView(
           padding: const EdgeInsets.all(16),
@@ -760,7 +848,7 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
                     .toList(),
                 onChanged: _running
                     ? null
-                    : (value) => setState(() => _oggQuality = value ?? 5),
+                    : (value) => _changePreference(() => _oggQuality = value ?? 5),
               )
             else if (_format == _MediaFormat.flac)
               DropdownButtonFormField<int>(
@@ -778,7 +866,7 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
                     .toList(),
                 onChanged: _running
                     ? null
-                    : (value) => setState(() => _flacCompression = value ?? 5),
+                    : (value) => _changePreference(() => _flacCompression = value ?? 5),
               )
             else if (_format == _MediaFormat.wav)
               DropdownButtonFormField<_WavBitDepth>(
@@ -796,10 +884,20 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
                     .toList(),
                 onChanged: _running
                     ? null
-                    : (value) => setState(
+                    : (value) => _changePreference(
                           () => _wavBitDepth = value ?? _WavBitDepth.pcm16,
                         ),
               ),
+            const SizedBox(height: 16),
+            DropdownButtonFormField<MediaExportPreference>(
+              initialValue: _destination,
+              decoration: InputDecoration(labelText: l10n.convertMediaDestination),
+              items: [for (final value in MediaExportPreference.values)
+                DropdownMenuItem(value: value, child: Text(_destinationLabel(value, l10n)))],
+              onChanged: _running ? null : (value) {
+                if (value != null) _changePreference(() => _destination = value);
+              },
+            ),
             const SizedBox(height: 16),
             Text(_status ?? l10n.convertMediaReady),
             const SizedBox(height: 16),
