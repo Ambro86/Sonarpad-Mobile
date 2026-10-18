@@ -6,6 +6,19 @@ import 'app_localizations.dart';
 
 /// The translations for Chinese (`zh`).
 class AppLocalizationsZh extends AppLocalizations {
+  @override
+  String get castToDevice => "通过 Chromecast 投放";
+  @override
+  String get castNoDevices => "未找到设备。请确认设备连接到同一 Wi-Fi 网络，然后重试。";
+  @override
+  String get castFailure => "投放失败或连接已断开。你可以在此设备上继续播放。";
+  @override
+  String get castResumeHere => "在此设备上继续播放";
+  @override
+  String get settingsShowCast => "在兼容的播放器中显示 Chromecast";
+  @override
+  String get castStop => "停止投放";
+
   AppLocalizationsZh([String locale = 'zh']) : super(locale);
 
   @override
@@ -5188,6 +5201,19 @@ class AppLocalizationsZh extends AppLocalizations {
 
 /// The translations for Chinese, as used in China (`zh_CN`).
 class AppLocalizationsZhCn extends AppLocalizationsZh {
+  @override
+  String get castToDevice => "通过 Chromecast 投放";
+  @override
+  String get castNoDevices => "未找到设备。请确认设备连接到同一 Wi-Fi 网络，然后重试。";
+  @override
+  String get castFailure => "投放失败或连接已断开。你可以在此设备上继续播放。";
+  @override
+  String get castResumeHere => "在此设备上继续播放";
+  @override
+  String get settingsShowCast => "在兼容的播放器中显示 Chromecast";
+  @override
+  String get castStop => "停止投放";
+
   AppLocalizationsZhCn() : super('zh_CN');
 
   @override

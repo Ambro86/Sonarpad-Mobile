@@ -1,3 +1,6 @@
+import '../models/chromecast_media.dart';
+import '../models/podcast.dart';
+import 'chromecast_screen.dart';
 import '../services/tv_native_stream.dart';
 import '../services/rai_android_player_service.dart';
 import 'dart:async';
@@ -47,6 +50,30 @@ class RadioPlayerScreen extends StatefulWidget {
 class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   static const _mediaCommands = MethodChannel('sonarpad/tts_commands');
   static const _mediaEvents = EventChannel('sonarpad/tts_events');
+
+  bool _showCast = true;
+  bool _castRouteOpen = false;
+  ChromecastMedia? get _castMedia => widget.tvChannel != null || widget.isVideoSupported
+      ? null : ChromecastMedia.fromEpisode(PodcastEpisode(title: widget.station.name,
+          description: '', audioUrl: widget.station.streamUrl, isLive: true), video: false);
+  bool get _showCastButton => _showCast && _castMedia != null;
+  Future<void> _openChromecast() async {
+    final media = _castMedia;
+    if (media == null || _castRouteOpen || _loading) return;
+    _castRouteOpen = true;
+    try {
+      final result = await Navigator.push<ChromecastReturn>(context,
+        MaterialPageRoute(settings: const RouteSettings(name: '/radio/chromecast'),
+          builder: (_) => ChromecastScreen(media: media, title: widget.station.name,
+            live: true, position: () => Duration.zero,
+            onStarted: () async { await _stop(); await _audio.stopAndDispose(); },
+            onPosition: (_) async {})));
+      if (mounted && result?.resume == true) await _play();
+    } finally {
+      _castRouteOpen = false;
+      if (mounted) setState(() {});
+    }
+  }
 
   final _audio = AudioPlayerService();
   final _androidBackground = AndroidMediaPlaybackService();
@@ -161,6 +188,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       _raiNativeEventsSubscription = _raiNativePlayer.events.listen(_handleRaiNativePlayerEvent);
     }
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      _showCast = await _settings.isChromecastButtonEnabled();
       _isVideoEnabled = await _settings.isVideoEnabled();
       _displayVideoInPortrait = await _settings.displayVideoInPortrait();
       _isFavorite = await _loadIsFavorite();
@@ -3011,6 +3039,8 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
           AccessibleListRow(id: 'retry_stream', kind: 'button', title: l10n.retry,
               enabled: !_streamRetryInProgress),
         if (widget.isVideoSupported) AccessibleListRow(id: 'video', title: l10n.enableVideo, kind: 'toggle', toggleValue: _isVideoEnabled),
+        if (_showCastButton) AccessibleListRow(id: 'chromecast',
+          title: l10n.castToDevice, kind: 'button', enabled: !_loading && !_castRouteOpen),
         AccessibleListRow(
           id: 'play_pause',
           title: videoMode ? (_isVideoPlaying ? l10n.pause : l10n.play) : (audioPlaying ? l10n.pause : l10n.play),
@@ -3043,7 +3073,9 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       return UniversalAccessibleList(
         sections: [AccessibleListSection(rows: rows)],
         onEvent: (event) async {
-          if (event.id == 'retry_stream' && event.type == 'activate') {
+          if (event.id == 'chromecast' && event.type == 'activate') {
+            await _openChromecast();
+          } else if (event.id == 'retry_stream' && event.type == 'activate') {
             await _retryStreamPlayback();
           } else if (event.id == 'video' && event.type == 'toggle') {
             _toggleVideo(event.value == true);
@@ -3141,6 +3173,9 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
               textAlign: TextAlign.center,
             ),
           ],
+          if (_showCastButton) OutlinedButton.icon(
+            onPressed: _loading || _castRouteOpen ? null : _openChromecast,
+            icon: const Icon(Icons.cast), label: Text(l10n.castToDevice)),
           const SizedBox(height: 32),
           if (_loading || _streamReconnecting)
             LinearProgressIndicator(semanticsLabel: _streamReconnecting

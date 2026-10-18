@@ -72,6 +72,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _multipleDocumentBookmarks = false;
   bool _displayVideoInPortrait = false;
   bool _mediaSpeedControl = false;
+  bool _showCast = true;
+  bool _savedShowCast = true;
   bool _preferRaiAudioDescription = true;
   bool _extraFeaturesUnlocked = false;
   bool _homeGroupingEnabled = false;
@@ -272,6 +274,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final sysLang = await _settings.loadSystemTtsLanguage();
     final sysVoice = await _settings.loadSystemTtsVoice();
     final autoBookmark = await _settings.isAutoBookmarkEnabled();
+    final showCast = await _settings.isChromecastButtonEnabled();
     final mediaSpeedControl = await _settings.isMediaSpeedControlEnabled();
     final preferRaiAudioDescription =
         await _settings.preferRaiAudioDescription();
@@ -335,6 +338,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _savedSystemTtsVoice = sysVoice;
       _autoBookmark = autoBookmark;
       _savedAutoBookmark = autoBookmark;
+      _showCast = showCast;
+      _savedShowCast = showCast;
       _mediaSpeedControl = mediaSpeedControl;
       _savedMediaSpeedControl = mediaSpeedControl;
       _preferRaiAudioDescription = preferRaiAudioDescription;
@@ -394,7 +399,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final weatherTemperatureUnitChanged =
         _weatherTemperatureUnit != _savedWeatherTemperatureUnit;
     final autoBookmarkChanged = _autoBookmark != _savedAutoBookmark;
-    final mediaSpeedControlChanged = _mediaSpeedControl != _savedMediaSpeedControl;
+    final mediaSpeedControlChanged = _showCast != _savedShowCast || _mediaSpeedControl != _savedMediaSpeedControl;
     final preferRaiAudioDescriptionChanged = _preferRaiAudioDescription !=
         _savedPreferRaiAudioDescription;
     final includeEpubFootnotesChanged = _includeEpubFootnotesInText !=
@@ -484,6 +489,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     await _settings.setTvSecretCode(rawCode);
     await _settings.setAutoBookmarkEnabled(_autoBookmark);
     await _settings.setMediaSpeedControlEnabled(_mediaSpeedControl);
+    await _settings.setChromecastButtonEnabled(_showCast);
     await _settings.setPreferRaiAudioDescription(_preferRaiAudioDescription);
     await _settings.setIncludeEpubFootnotesInText(_includeEpubFootnotesInText);
     await _settings.setMultipleDocumentBookmarksEnabled(_multipleDocumentBookmarks);
@@ -592,6 +598,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     _savedTvSecretCode = rawCode;
     _savedAutoBookmark = _autoBookmark;
     _savedMediaSpeedControl = _mediaSpeedControl;
+    _savedShowCast = _showCast;
     _savedPreferRaiAudioDescription = _preferRaiAudioDescription;
     _extraFeaturesUnlocked = RecordingFeatureAccess.isCodeValid(rawCode);
     _savedIncludeEpubFootnotesInText = _includeEpubFootnotesInText;
@@ -617,7 +624,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         _ttsPitch != _savedTtsPitch ||
         _tvSecretCodeController.text.trim() != _savedTvSecretCode ||
         _autoBookmark != _savedAutoBookmark ||
-        _mediaSpeedControl != _savedMediaSpeedControl ||
+        _showCast != _savedShowCast || _mediaSpeedControl != _savedMediaSpeedControl ||
         _preferRaiAudioDescription != _savedPreferRaiAudioDescription ||
         _includeEpubFootnotesInText != _savedIncludeEpubFootnotesInText ||
         _multipleDocumentBookmarks != _savedMultipleDocumentBookmarks ||
@@ -1436,6 +1443,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
             toggleValue: _displayVideoInPortrait,
             valueLabel: toggleLabel(_displayVideoInPortrait),
           ),
+          AccessibleListRow(id: 'show_chromecast', title: l10n.settingsShowCast,
+            kind: 'toggle', toggleValue: _showCast, valueLabel: toggleLabel(_showCast)),
           AccessibleListRow(
             id: 'media_speed_control',
             title: l10n.settingsMediaSpeedControl,
@@ -1585,6 +1594,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           }
           setState(() {
             switch (id) {
+              case 'show_chromecast': _showCast = value; break;
               case 'media_speed_control': _mediaSpeedControl = value; break;
               case 'prefer_rai_audio_description': _preferRaiAudioDescription = value; break;
               case 'auto_bookmark': _autoBookmark = value; break;
@@ -2299,6 +2309,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       contentPadding: EdgeInsets.zero,
                     ),
                     const SizedBox(height: 12),
+                    SwitchListTile(key: const ValueKey('settings-chromecast'),
+                      title: Text(l10n.settingsShowCast), value: _showCast,
+                      onChanged: (value) => setState(() => _showCast = value)),
                     SwitchListTile(
                       key: const ValueKey('settings-media-speed-control'),
                       title: Text(l10n.settingsMediaSpeedControl),

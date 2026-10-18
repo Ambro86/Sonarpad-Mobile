@@ -7,6 +7,19 @@ import 'app_localizations.dart';
 /// The Romanian translations (`ro`) — phase 3 (partial).
 /// Remaining untranslated messages temporarily keep their English text until the next phase.
 class AppLocalizationsRo extends AppLocalizations {
+  @override
+  String get castToDevice => "Transmite cu Chromecast";
+  @override
+  String get castNoDevices => "Nu s-au găsit dispozitive. Verifică dacă folosesc aceeași rețea Wi-Fi și încearcă din nou.";
+  @override
+  String get castFailure => "Transmiterea a eșuat sau conexiunea s-a pierdut. Poți continua pe acest dispozitiv.";
+  @override
+  String get castResumeHere => "Continuă pe acest dispozitiv";
+  @override
+  String get settingsShowCast => "Afișează Chromecast în playerele compatibile";
+  @override
+  String get castStop => "Oprește transmiterea";
+
   AppLocalizationsRo([String locale = 'ro']) : super(locale);
 
   @override

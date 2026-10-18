@@ -4821,5 +4821,11 @@
   "developerReportEmailInvalid": "请输入有效的电子邮件地址，或将此字段留空。",
   "convertMediaDestination": "转换文件的保存位置",
   "exportAskEveryTime": "每次询问",
-  "selectAudioTrack": "选择音轨"
+  "selectAudioTrack": "选择音轨",
+  "castToDevice": "通过 Chromecast 投放",
+  "castNoDevices": "未找到设备。请确认设备连接到同一 Wi-Fi 网络，然后重试。",
+  "castFailure": "投放失败或连接已断开。你可以在此设备上继续播放。",
+  "castResumeHere": "在此设备上继续播放",
+  "settingsShowCast": "在兼容的播放器中显示 Chromecast",
+  "castStop": "停止投放"
 }

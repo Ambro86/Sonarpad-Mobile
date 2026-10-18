@@ -4,6 +4,7 @@
 
 list(APPEND FLUTTER_PLUGIN_LIST
   app_links
+  bonsoir_windows
   desktop_webview_window
   ffmpeg_kit_flutter_new
   flutter_tts

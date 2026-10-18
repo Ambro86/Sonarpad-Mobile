@@ -933,6 +933,16 @@ class AppSettingsService {
   static const _mediaSpeedControlKey = 'sonarpad_media_speed_control';
   static const _mediaPlaybackSpeedPrefix = 'sonarpad_media_playback_speed_';
 
+  Future<bool> isChromecastButtonEnabled() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('sonarpad_chromecast_button') ?? true;
+  }
+
+  Future<void> setChromecastButtonEnabled(bool enabled) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('sonarpad_chromecast_button', enabled);
+  }
+
   Future<bool> isMediaSpeedControlEnabled() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool(_mediaSpeedControlKey) ?? true;

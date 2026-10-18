@@ -110,6 +110,11 @@
 	</array>
 
 	<!-- Necessario se nel progetto è ancora presente codice o plugin che possono accedere alla fotocamera -->
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Sonarpad cerca dispositivi Chromecast sulla rete locale quando scegli di trasmettere un contenuto.</string>
+	<key>NSBonjourServices</key>
+	<array><string>_googlecast._tcp</string></array>
+
 	<key>NSCameraUsageDescription</key>
 	<string>Sonarpad può usare la fotocamera solo per funzioni di scansione o acquisizione immagini attivate dall’utente.</string>
 

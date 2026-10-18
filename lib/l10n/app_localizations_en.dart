@@ -6,6 +6,19 @@ import 'app_localizations.dart';
 
 /// The translations for English (`en`).
 class AppLocalizationsEn extends AppLocalizations {
+  @override
+  String get castToDevice => "Cast with Chromecast";
+  @override
+  String get castNoDevices => "No devices found. Check that both devices use the same Wi-Fi network and try again.";
+  @override
+  String get castFailure => "Casting failed or the connection was lost. You can resume on this device.";
+  @override
+  String get castResumeHere => "Resume on this device";
+  @override
+  String get settingsShowCast => "Show Chromecast in compatible players";
+  @override
+  String get castStop => "Stop casting";
+
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override

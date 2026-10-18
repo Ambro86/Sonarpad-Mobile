@@ -6,6 +6,19 @@ import 'app_localizations.dart';
 
 /// The translations for Italian (`it`).
 class AppLocalizationsIt extends AppLocalizations {
+  @override
+  String get castToDevice => "Trasmetti con Chromecast";
+  @override
+  String get castNoDevices => "Nessun dispositivo trovato. Verifica la connessione alla stessa rete Wi-Fi e riprova.";
+  @override
+  String get castFailure => "Trasmissione non riuscita o connessione interrotta. Puoi riprendere su questo dispositivo.";
+  @override
+  String get castResumeHere => "Riprendi su questo dispositivo";
+  @override
+  String get settingsShowCast => "Mostra Chromecast nei player compatibili";
+  @override
+  String get castStop => "Interrompi trasmissione";
+
   AppLocalizationsIt([String locale = 'it']) : super(locale);
 
   @override

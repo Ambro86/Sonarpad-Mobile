@@ -6,6 +6,19 @@ import 'app_localizations.dart';
 
 /// The translations for French (`fr`).
 class AppLocalizationsFr extends AppLocalizations {
+  @override
+  String get castToDevice => "Diffuser avec Chromecast";
+  @override
+  String get castNoDevices => "Aucun appareil trouvé. Vérifiez que les appareils utilisent le même réseau Wi-Fi et réessayez.";
+  @override
+  String get castFailure => "Échec de la diffusion ou connexion perdue. Vous pouvez reprendre sur cet appareil.";
+  @override
+  String get castResumeHere => "Reprendre sur cet appareil";
+  @override
+  String get settingsShowCast => "Afficher Chromecast dans les lecteurs compatibles";
+  @override
+  String get castStop => "Arrêter la diffusion";
+
   AppLocalizationsFr([String locale = 'fr']) : super(locale);
 
   @override

@@ -6402,5 +6402,11 @@
   "developerReportEmailInvalid": "Wpisz prawidłowy adres e-mail lub pozostaw pole puste.",
   "convertMediaDestination": "Miejsce zapisu przekonwertowanych plików",
   "exportAskEveryTime": "Pytaj za każdym razem",
-  "selectAudioTrack": "Wybierz ścieżkę dźwiękową"
+  "selectAudioTrack": "Wybierz ścieżkę dźwiękową",
+  "castToDevice": "Przesyłaj przez Chromecast",
+  "castNoDevices": "Nie znaleziono urządzeń. Sprawdź, czy korzystają z tej samej sieci Wi-Fi, i spróbuj ponownie.",
+  "castFailure": "Przesyłanie nie powiodło się lub utracono połączenie. Możesz wznowić na tym urządzeniu.",
+  "castResumeHere": "Wznów na tym urządzeniu",
+  "settingsShowCast": "Pokazuj Chromecast w zgodnych odtwarzaczach",
+  "castStop": "Zatrzymaj przesyłanie"
 }

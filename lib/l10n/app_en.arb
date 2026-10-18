@@ -4821,5 +4821,11 @@
   "developerReportEmailInvalid": "Enter a valid email address or leave the field empty.",
   "convertMediaDestination": "Converted file destination",
   "exportAskEveryTime": "Ask every time",
-  "selectAudioTrack": "Select audio track"
+  "selectAudioTrack": "Select audio track",
+  "castToDevice": "Cast with Chromecast",
+  "castNoDevices": "No devices found. Check that both devices use the same Wi-Fi network and try again.",
+  "castFailure": "Casting failed or the connection was lost. You can resume on this device.",
+  "castResumeHere": "Resume on this device",
+  "settingsShowCast": "Show Chromecast in compatible players",
+  "castStop": "Stop casting"
 }

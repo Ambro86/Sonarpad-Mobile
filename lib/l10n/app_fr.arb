@@ -4827,5 +4827,11 @@
   "developerReportEmailInvalid": "Saisissez une adresse e-mail valide ou laissez le champ vide.",
   "convertMediaDestination": "Destination des fichiers convertis",
   "exportAskEveryTime": "Demander à chaque fois",
-  "selectAudioTrack": "Choisir la piste audio"
+  "selectAudioTrack": "Choisir la piste audio",
+  "castToDevice": "Diffuser avec Chromecast",
+  "castNoDevices": "Aucun appareil trouvé. Vérifiez que les appareils utilisent le même réseau Wi-Fi et réessayez.",
+  "castFailure": "Échec de la diffusion ou connexion perdue. Vous pouvez reprendre sur cet appareil.",
+  "castResumeHere": "Reprendre sur cet appareil",
+  "settingsShowCast": "Afficher Chromecast dans les lecteurs compatibles",
+  "castStop": "Arrêter la diffusion"
 }

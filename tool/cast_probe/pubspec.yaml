@@ -1,0 +1,7 @@
+name: sonarpad_cast_probe
+publish_to: none
+environment:
+  sdk: '>=3.10.0 <4.0.0'
+dependencies:
+  dart_cast: 0.7.4
+  multicast_dns: ^0.3.3+1

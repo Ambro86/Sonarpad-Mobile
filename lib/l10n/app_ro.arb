@@ -4821,5 +4821,11 @@
   "developerReportEmailInvalid": "Introdu o adresă de email validă sau lasă câmpul gol.",
   "convertMediaDestination": "Destinația fișierelor convertite",
   "exportAskEveryTime": "Întreabă de fiecare dată",
-  "selectAudioTrack": "Selectează pista audio"
+  "selectAudioTrack": "Selectează pista audio",
+  "castToDevice": "Transmite cu Chromecast",
+  "castNoDevices": "Nu s-au găsit dispozitive. Verifică dacă folosesc aceeași rețea Wi-Fi și încearcă din nou.",
+  "castFailure": "Transmiterea a eșuat sau conexiunea s-a pierdut. Poți continua pe acest dispozitiv.",
+  "castResumeHere": "Continuă pe acest dispozitiv",
+  "settingsShowCast": "Afișează Chromecast în playerele compatibile",
+  "castStop": "Oprește transmiterea"
 }

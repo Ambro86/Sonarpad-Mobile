@@ -6,6 +6,19 @@ import 'app_localizations.dart';
 
 /// The translations for Portuguese (`pt`).
 class AppLocalizationsPt extends AppLocalizations {
+  @override
+  String get castToDevice => "Transmitir com Chromecast";
+  @override
+  String get castNoDevices => "Nenhum dispositivo encontrado. Verifique se usam a mesma rede Wi-Fi e tente novamente.";
+  @override
+  String get castFailure => "A transmissão falhou ou a ligação foi perdida. Pode continuar neste dispositivo.";
+  @override
+  String get castResumeHere => "Continuar neste dispositivo";
+  @override
+  String get settingsShowCast => "Mostrar Chromecast nos leitores compatíveis";
+  @override
+  String get castStop => "Parar transmissão";
+
   AppLocalizationsPt([String locale = 'pt']) : super(locale);
 
   @override
@@ -5383,6 +5396,19 @@ class AppLocalizationsPt extends AppLocalizations {
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
 class AppLocalizationsPtBr extends AppLocalizationsPt {
+  @override
+  String get castToDevice => "Transmitir com Chromecast";
+  @override
+  String get castNoDevices => "Nenhum dispositivo encontrado. Verifique se usam a mesma rede Wi-Fi e tente novamente.";
+  @override
+  String get castFailure => "A transmissão falhou ou a conexão foi perdida. Você pode continuar neste dispositivo.";
+  @override
+  String get castResumeHere => "Continuar neste dispositivo";
+  @override
+  String get settingsShowCast => "Mostrar Chromecast nos reprodutores compatíveis";
+  @override
+  String get castStop => "Parar transmissão";
+
   AppLocalizationsPtBr() : super('pt_BR');
 
   @override

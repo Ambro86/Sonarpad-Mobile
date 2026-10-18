@@ -6,6 +6,19 @@ import 'app_localizations.dart';
 
 /// The translations for Turkish (`tr`).
 class AppLocalizationsTr extends AppLocalizations {
+  @override
+  String get castToDevice => "Chromecast ile yayınla";
+  @override
+  String get castNoDevices => "Cihaz bulunamadı. Aynı Wi-Fi ağına bağlı olduklarını kontrol edip tekrar deneyin.";
+  @override
+  String get castFailure => "Yayın başarısız oldu veya bağlantı kesildi. Bu cihazda devam edebilirsiniz.";
+  @override
+  String get castResumeHere => "Bu cihazda devam et";
+  @override
+  String get settingsShowCast => "Uyumlu oynatıcılarda Chromecast göster";
+  @override
+  String get castStop => "Yayını durdur";
+
   AppLocalizationsTr([String locale = 'tr']) : super(locale);
 
   @override

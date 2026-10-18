@@ -6399,5 +6399,11 @@
   "developerReportEmailInvalid": "Geben Sie eine gültige E-Mail-Adresse ein oder lassen Sie das Feld leer.",
   "convertMediaDestination": "Ziel für konvertierte Dateien",
   "exportAskEveryTime": "Jedes Mal fragen",
-  "selectAudioTrack": "Audiospur auswählen"
+  "selectAudioTrack": "Audiospur auswählen",
+  "castToDevice": "Mit Chromecast übertragen",
+  "castNoDevices": "Keine Geräte gefunden. Prüfe, ob beide Geräte dasselbe WLAN verwenden, und versuche es erneut.",
+  "castFailure": "Übertragung fehlgeschlagen oder Verbindung unterbrochen. Du kannst auf diesem Gerät fortfahren.",
+  "castResumeHere": "Auf diesem Gerät fortsetzen",
+  "settingsShowCast": "Chromecast in kompatiblen Playern anzeigen",
+  "castStop": "Übertragung beenden"
 }

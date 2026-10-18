@@ -1,3 +1,5 @@
+import '../models/chromecast_media.dart';
+import 'chromecast_screen.dart';
 import 'dart:async';
 import 'dart:io';
 
@@ -134,6 +136,9 @@ class _PodcastEpisodePlayerScreenState
   double _playbackSpeedAtIndex(int index) =>
       mediaPlaybackSpeeds[index.clamp(0, mediaPlaybackSpeeds.length - 1).toInt()];
 
+  bool _showCast = true;
+  bool _castRouteOpen = false;
+  bool _casting = false;
   bool _loaded = false;
   bool _loading = false;
   List<PodcastChapter>? _detectedChapters;
@@ -220,6 +225,7 @@ class _PodcastEpisodePlayerScreenState
   }
 
   Future<void> _saveVideoBookmark() async {
+    if (_casting) return;
     if (_videoController == null) return;
     final pos = _videoController!.value.position;
     final dur = _videoController!.value.duration;
@@ -508,6 +514,54 @@ class _PodcastEpisodePlayerScreenState
     }
   }
 
+  ChromecastMedia? get _castMedia => ChromecastMedia.fromEpisode(_episode,
+      video: widget.isVideoSupported);
+
+  bool get _showCastButton => _showCast && _castMedia != null;
+
+  Widget _castButton(AppLocalizations l10n) => OutlinedButton.icon(
+    key: const ValueKey('player_chromecast'),
+    onPressed: _loaded && !_loading && !_switchingVideoMode &&
+        !_changingPlaybackSpeed && !_castRouteOpen ? _openChromecast : null,
+    icon: const Icon(Icons.cast), label: Text(l10n.castToDevice),
+  );
+
+  Future<void> _openChromecast() async {
+    final media = _castMedia;
+    if (media == null || _castRouteOpen || !_loaded || _loading ||
+        _changingPlaybackSpeed || _switchingVideoMode) { return; }
+    _castRouteOpen = true;
+    final stableId = _getStableId();
+    final bookmarkEnabled = await _settings.isAutoBookmarkEnabled();
+    if (!mounted) { _castRouteOpen = false; return; }
+    try {
+      final result = await Navigator.push<ChromecastReturn>(context,
+        MaterialPageRoute(settings: const RouteSettings(name: '/player/chromecast'),
+          builder: (_) => ChromecastScreen(media: media, title: _episode.title,
+            live: _episode.isLive,
+            position: () => _videoController?.value.position ?? _audio.position,
+            onStarted: () async {
+              await _pause(force: true);
+              await _audio.stopAndDispose();
+              _casting = true;
+            },
+            onPosition: (position) async {
+              if (bookmarkEnabled && !_episode.isLive) {
+                await _settings.saveMediaBookmark(stableId, position.inSeconds);
+              }
+            },
+          )));
+      _casting = false;
+      if (mounted && result != null) {
+        await _play(resumePosition: result.position, shouldPlay: result.resume);
+      }
+    } finally {
+      _casting = false;
+      _castRouteOpen = false;
+      if (mounted) setState(() {});
+    }
+  }
+
   bool get _canSelectAudioTrack => _episode.audioTracks.length > 1 &&
       _loaded && !_loading && !_switchingVideoMode && !_changingPlaybackSpeed;
 
@@ -654,6 +708,7 @@ class _PodcastEpisodePlayerScreenState
       _hasNavigableNext;
 
   Future<void> _handlePlaybackCompleted() async {
+    if (_castRouteOpen) return;
     if (!widget.autoNavigateNext || !mounted || _changingPlaybackSpeed) {
       return;
     }
@@ -1047,7 +1102,7 @@ class _PodcastEpisodePlayerScreenState
     if (Platform.isIOS) {
       _mediaEventsSubscription =
           _mediaEvents.receiveBroadcastStream().listen((event) {
-        if (event == 'toggle' && mounted && _videoController != null) {
+        if (event == 'toggle' && mounted && !_casting && _videoController != null) {
           unawaited(_toggleVideoPlayback());
         }
       });
@@ -1489,11 +1544,13 @@ class _PodcastEpisodePlayerScreenState
     final results = await Future.wait<Object>([
       _settings.loadSeekSliderStep(),
       _settings.loadMediaVolume(),
+      _settings.isChromecastButtonEnabled(),
     ]);
     final step = results[0] as int;
     final volume = (results[1] as double).clamp(0.0, 1.0).toDouble();
     if (mounted) {
       setState(() {
+        _showCast = results[2] as bool;
         _seekStep = step;
         _accessibleVolume = volume;
         _accessibleVolumeLoaded = true;
@@ -1559,9 +1616,9 @@ class _PodcastEpisodePlayerScreenState
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.paused ||
+    if (!_casting && (state == AppLifecycleState.paused ||
         state == AppLifecycleState.detached ||
-        state == AppLifecycleState.inactive) {
+        state == AppLifecycleState.inactive)) {
       _saveVideoBookmark();
       _audio.saveCurrentBookmark();
     }
@@ -1730,7 +1787,8 @@ class _PodcastEpisodePlayerScreenState
               contentPadding: EdgeInsets.zero,
               dense: true,
             ),
-            if (_episode.audioTracks.length > 1) _audioTrackButton(l10n),
+            if (_showCastButton) _castButton(l10n),
+              if (_episode.audioTracks.length > 1) _audioTrackButton(l10n),
             if (_showPlaybackSpeed) _buildPlaybackSpeedSlider(l10n),
             Wrap(
               spacing: 12,
@@ -1955,6 +2013,10 @@ class _PodcastEpisodePlayerScreenState
             toggleValue: _isVideoEnabled,
             enabled: !_changingPlaybackSpeed && !_loading && !_switchingVideoMode,
           ),
+        if (_showCastButton)
+          AccessibleListRow(id: 'chromecast', title: l10n.castToDevice,
+            kind: 'button', enabled: _loaded && !_loading &&
+                !_switchingVideoMode && !_changingPlaybackSpeed && !_castRouteOpen),
         if (_episode.audioTracks.length > 1)
           AccessibleListRow(
             id: 'audio_track', title: l10n.selectAudioTrack,
@@ -2093,6 +2155,8 @@ class _PodcastEpisodePlayerScreenState
                 Duration(milliseconds: (value * 1000).round()),
               );
             }
+          } else if (event.id == 'chromecast' && event.type == 'activate') {
+            await _openChromecast();
           } else if (event.id == 'audio_track' && event.type == 'activate') {
             await _selectAudioTrack();
           } else if (event.id == 'chapters' && event.type == 'activate') {
@@ -2248,6 +2312,7 @@ class _PodcastEpisodePlayerScreenState
                   contentPadding: EdgeInsets.zero,
                 ),
               ],
+              if (_showCastButton) _castButton(l10n),
               if (_episode.audioTracks.length > 1) _audioTrackButton(l10n),
               if (_showPlaybackSpeed) ...[
                 const SizedBox(height: 16),

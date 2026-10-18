@@ -4821,5 +4821,11 @@
   "developerReportEmailInvalid": "Geçerli bir e-posta adresi girin veya alanı boş bırakın.",
   "convertMediaDestination": "Dönüştürülen dosyaların hedefi",
   "exportAskEveryTime": "Her seferinde sor",
-  "selectAudioTrack": "Ses parçası seç"
+  "selectAudioTrack": "Ses parçası seç",
+  "castToDevice": "Chromecast ile yayınla",
+  "castNoDevices": "Cihaz bulunamadı. Aynı Wi-Fi ağına bağlı olduklarını kontrol edip tekrar deneyin.",
+  "castFailure": "Yayın başarısız oldu veya bağlantı kesildi. Bu cihazda devam edebilirsiniz.",
+  "castResumeHere": "Bu cihazda devam et",
+  "settingsShowCast": "Uyumlu oynatıcılarda Chromecast göster",
+  "castStop": "Yayını durdur"
 }

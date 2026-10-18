@@ -1,0 +1,52 @@
+SONARPAD: PROVA CAST DA DART
+
+Questo programma diagnostico e' indipendente dall'app Flutter. Non aggiunge
+ancora Chromecast al player e non verifica gli SDK Google su iOS/Android.
+Usa dart_cast 0.7.4 per il trasporto Cast V2 e multicast_dns per la ricerca.
+Il trasporto diagnostico accetta certificati TLS autofirmati e non verifica
+le credenziali dispositivo Google: il risultato non dimostra che un SDK
+Google accettera' OpenChromecast.
+
+ESECUZIONE (PowerShell, dalla cartella tool/cast_probe)
+dart pub get
+dart run bin/probe.dart
+
+Argomenti facoltativi: nome ricevitore, URL o percorso locale, MIME.
+Esempio video:
+dart run bin/probe.dart Sonarpad-Test C:\percorso\video.mp4 video/mp4
+Usare un contenuto di almeno 40 secondi: la prova salta a 30 secondi.
+I file locali vengono serviti temporaneamente via HTTP con MediaProxy.
+Il test avvia e arresta effettivamente la riproduzione sul dispositivo scelto.
+CAST_INTERFACE puo' limitare la ricerca a una specifica interfaccia di rete.
+
+RISULTATI LOCALI, 18 OTTOBRE 2026
+Ricevitore: openchromecast.exe, Sonarpad-Test.
+- Scoperta mDNS da Dart, connessione e lancio ricevitore: riusciti.
+- SoundHelix-Song-1.mp3: avvio, pausa, salto a 30 secondi, ripresa,
+  avanzamento oltre 32 secondi e STOP verificati dalle risposte Cast.
+- MP4 sintetico H.264/AAC di 45 secondi, servito da Dart: stessi controlli
+  superati; pausa durante il salto mantenuta; avanzamento fino a 33 secondi.
+- La prova verifica stato e posizione, non solo l'invio dei comandi.
+
+LIMITI OSSERVATI
+- Con l'MP3, dopo SEEK in pausa OpenChromecast puo' segnalare PLAYING
+  anche quando la posizione resta ferma. Il sorgente upstream media.rs
+  non gestisce resumeState. La prova lo segnala come LIMITATION e verifica
+  separatamente la ripresa effettiva. Non considerare validata questa
+  particolare combinazione di stato/seek sull'emulatore.
+- La prima versione del test metteva in pausa troppo presto dopo LOAD.
+  Ora attende avanzamento reale prima di proseguire, evitando stati iniziali
+  obsoleti del ricevitore.
+- L'MP4 pubblico Google BigBuckBunny ha restituito HTTP 403 nel log mpv.
+  Per verificare il video si e' usato il file sintetico locale, non quel link.
+- La chiusura TLS del pacchetto puo' restare pendente; il programma limita
+  l'attesa e termina dopo il cleanup. Non e' una gestione da copiare nel
+  ciclo di vita dell'app mobile.
+- Nessuna prova ancora di YouTube, tracce separate, ripresa dopo riapertura
+  dell'app, SDK nativi o Chromecast fisico. Nessuna verifica visiva automatica
+  dell'immagine: il risultato video si riferisce al flusso e allo stato Cast.
+
+Sorgenti consultati:
+https://github.com/yukarikaname/openchromecast
+https://raw.githubusercontent.com/yukarikaname/openchromecast/main/src/media.rs
+https://pub.dev/packages/dart_cast

@@ -6,6 +6,19 @@ import 'app_localizations.dart';
 
 /// The translations for German (`de`).
 class AppLocalizationsDe extends AppLocalizations {
+  @override
+  String get castToDevice => "Mit Chromecast übertragen";
+  @override
+  String get castNoDevices => "Keine Geräte gefunden. Prüfe, ob beide Geräte dasselbe WLAN verwenden, und versuche es erneut.";
+  @override
+  String get castFailure => "Übertragung fehlgeschlagen oder Verbindung unterbrochen. Du kannst auf diesem Gerät fortfahren.";
+  @override
+  String get castResumeHere => "Auf diesem Gerät fortsetzen";
+  @override
+  String get settingsShowCast => "Chromecast in kompatiblen Playern anzeigen";
+  @override
+  String get castStop => "Übertragung beenden";
+
   AppLocalizationsDe([String locale = 'de']) : super(locale);
 
   @override

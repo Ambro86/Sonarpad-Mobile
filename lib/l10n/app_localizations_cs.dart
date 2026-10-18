@@ -6,6 +6,19 @@ import 'app_localizations.dart';
 
 /// The translations for Czech (`cs`).
 class AppLocalizationsCs extends AppLocalizations {
+  @override
+  String get castToDevice => "Odesílat přes Chromecast";
+  @override
+  String get castNoDevices => "Nebyla nalezena žádná zařízení. Ověřte stejnou síť Wi-Fi a zkuste to znovu.";
+  @override
+  String get castFailure => "Odesílání selhalo nebo bylo přerušeno připojení. Můžete pokračovat na tomto zařízení.";
+  @override
+  String get castResumeHere => "Pokračovat na tomto zařízení";
+  @override
+  String get settingsShowCast => "Zobrazit Chromecast v podporovaných přehrávačích";
+  @override
+  String get castStop => "Zastavit odesílání";
+
   AppLocalizationsCs([String locale = 'cs']) : super(locale);
 
   @override

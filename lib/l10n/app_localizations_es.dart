@@ -6,6 +6,19 @@ import 'app_localizations.dart';
 
 /// The translations for Spanish Castilian (`es`).
 class AppLocalizationsEs extends AppLocalizations {
+  @override
+  String get castToDevice => "Transmitir con Chromecast";
+  @override
+  String get castNoDevices => "No se encontraron dispositivos. Comprueba que usen la misma red Wi-Fi e inténtalo de nuevo.";
+  @override
+  String get castFailure => "La transmisión falló o se perdió la conexión. Puedes continuar en este dispositivo.";
+  @override
+  String get castResumeHere => "Continuar en este dispositivo";
+  @override
+  String get settingsShowCast => "Mostrar Chromecast en reproductores compatibles";
+  @override
+  String get castStop => "Detener transmisión";
+
   AppLocalizationsEs([String locale = 'es']) : super(locale);
 
   @override

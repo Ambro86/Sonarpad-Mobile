@@ -4824,5 +4824,11 @@
   "developerReportEmailInvalid": "Zadejte platnou e-mailovou adresu nebo ponechte pole prázdné.",
   "convertMediaDestination": "Cíl převedených souborů",
   "exportAskEveryTime": "Vždy se zeptat",
-  "selectAudioTrack": "Vybrat zvukovou stopu"
+  "selectAudioTrack": "Vybrat zvukovou stopu",
+  "castToDevice": "Odesílat přes Chromecast",
+  "castNoDevices": "Nebyla nalezena žádná zařízení. Ověřte stejnou síť Wi-Fi a zkuste to znovu.",
+  "castFailure": "Odesílání selhalo nebo bylo přerušeno připojení. Můžete pokračovat na tomto zařízení.",
+  "castResumeHere": "Pokračovat na tomto zařízení",
+  "settingsShowCast": "Zobrazit Chromecast v podporovaných přehrávačích",
+  "castStop": "Zastavit odesílání"
 }

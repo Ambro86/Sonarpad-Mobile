@@ -12,6 +12,8 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   http: ^1.2.2
+  bonsoir: ^7.1.5
+  dart_cast: 0.7.4
   l10n_countries: ^2.0.2
   sealed_countries: ^3.2.0
   rhttp_plus: ^0.11.7

@@ -6,6 +6,19 @@ import 'app_localizations.dart';
 
 /// The translations for Ukrainian (`uk`).
 class AppLocalizationsUk extends AppLocalizations {
+  @override
+  String get castToDevice => "Транслювати через Chromecast";
+  @override
+  String get castNoDevices => "Пристроїв не знайдено. Перевірте підключення до однієї мережі Wi-Fi та спробуйте знову.";
+  @override
+  String get castFailure => "Не вдалося транслювати або з’єднання втрачено. Можна продовжити на цьому пристрої.";
+  @override
+  String get castResumeHere => "Продовжити на цьому пристрої";
+  @override
+  String get settingsShowCast => "Показувати Chromecast у сумісних програвачах";
+  @override
+  String get castStop => "Зупинити трансляцію";
+
   AppLocalizationsUk([String locale = 'uk']) : super(locale);
 
   @override

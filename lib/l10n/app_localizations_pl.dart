@@ -6,6 +6,19 @@ import 'app_localizations.dart';
 
 /// The translations for Polish (`pl`).
 class AppLocalizationsPl extends AppLocalizations {
+  @override
+  String get castToDevice => "Przesyłaj przez Chromecast";
+  @override
+  String get castNoDevices => "Nie znaleziono urządzeń. Sprawdź, czy korzystają z tej samej sieci Wi-Fi, i spróbuj ponownie.";
+  @override
+  String get castFailure => "Przesyłanie nie powiodło się lub utracono połączenie. Możesz wznowić na tym urządzeniu.";
+  @override
+  String get castResumeHere => "Wznów na tym urządzeniu";
+  @override
+  String get settingsShowCast => "Pokazuj Chromecast w zgodnych odtwarzaczach";
+  @override
+  String get castStop => "Zatrzymaj przesyłanie";
+
   AppLocalizationsPl([String locale = 'pl']) : super(locale);
 
   @override

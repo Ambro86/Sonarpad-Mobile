@@ -72,6 +72,13 @@ import 'app_localizations_zh.dart';
 /// be consistent with the languages listed in the AppLocalizations.supportedLocales
 /// property.
 abstract class AppLocalizations {
+  String get castToDevice;
+  String get castNoDevices;
+  String get castFailure;
+  String get castResumeHere;
+  String get settingsShowCast;
+  String get castStop;
+
   String get importVideoFromGallery;
   String get sharedVideoOpen;
 

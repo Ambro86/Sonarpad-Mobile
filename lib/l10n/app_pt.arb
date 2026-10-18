@@ -4827,5 +4827,11 @@
   "developerReportEmailInvalid": "Introduza um email válido ou deixe o campo vazio.",
   "convertMediaDestination": "Destino dos ficheiros convertidos",
   "exportAskEveryTime": "Perguntar sempre",
-  "selectAudioTrack": "Selecionar faixa de áudio"
+  "selectAudioTrack": "Selecionar faixa de áudio",
+  "castToDevice": "Transmitir com Chromecast",
+  "castNoDevices": "Nenhum dispositivo encontrado. Verifique se usam a mesma rede Wi-Fi e tente novamente.",
+  "castFailure": "A transmissão falhou ou a ligação foi perdida. Pode continuar neste dispositivo.",
+  "castResumeHere": "Continuar neste dispositivo",
+  "settingsShowCast": "Mostrar Chromecast nos leitores compatíveis",
+  "castStop": "Parar transmissão"
 }
