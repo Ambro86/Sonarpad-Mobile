@@ -25,6 +25,8 @@ class ChromecastScreen extends StatefulWidget {
     required this.onStarted,
     required this.onPosition,
     this.live = false,
+    this.initialSpeed = 1,
+    this.onStartFailed,
     this.discoveryOverride,
     this.sessionFactory,
   });
@@ -36,6 +38,8 @@ class ChromecastScreen extends StatefulWidget {
   final Future<void> Function() onStarted;
   final Future<void> Function(Duration) onPosition;
   final bool live;
+  final double initialSpeed;
+  final Future<void> Function()? onStartFailed;
 
   @override
   State<ChromecastScreen> createState() => _ChromecastScreenState();
@@ -52,6 +56,8 @@ class _ChromecastScreenState extends State<ChromecastScreen> {
   Timer? _searchTimer;
   bool _searching = true, _busy = false, _failed = false, _started = false;
   bool _leaving = false;
+  bool _speedFailed = false;
+  double? _speedTarget;
   int _searchGeneration = 0;
   int _savedSecond = -1;
   Duration? _lastPosition;
@@ -195,8 +201,14 @@ class _ChromecastScreenState extends State<ChromecastScreen> {
     await _stopSearch();
     final session = widget.sessionFactory?.call() ?? ChromecastSession();
     _session = session;
+    var localPaused = false;
     try {
       await session.connect(device);
+      if (!mounted) return;
+      // Pause locally before LOAD: some receivers ignore paused preloads.
+      // Recovery below restores the phone if loading fails.
+      localPaused = true;
+      await widget.onStarted();
       if (!mounted) return;
       await session.load(
         url: widget.media.url,
@@ -206,8 +218,15 @@ class _ChromecastScreenState extends State<ChromecastScreen> {
         live: widget.live,
       );
       if (!mounted) return;
-      // Local playback remains untouched until the receiver confirms playback.
-      await widget.onStarted();
+      if (!widget.live &&
+          session.status.supportsPlaybackRate &&
+          widget.initialSpeed != 1) {
+        try {
+          await session.setPlaybackRate(widget.initialSpeed.clamp(0.5, 2));
+        } catch (_) {
+          _speedFailed = true;
+        }
+      }
       _started = true;
       _lastPosition = session.status.position;
       if (!mounted) return;
@@ -230,6 +249,14 @@ class _ChromecastScreenState extends State<ChromecastScreen> {
     } catch (e) {
       AppLogger.log('Cast: connect/load failed: ${e.runtimeType}');
       await session.close();
+      if (localPaused && mounted) {
+        try {
+          await widget.onStartFailed?.call();
+          AppLogger.log('Cast: failed handoff restored local playback');
+        } catch (error) {
+          AppLogger.log('Cast: local recovery failed: ${error.runtimeType}');
+        }
+      }
       if (mounted) {
         setState(() {
           _session = null;
@@ -297,6 +324,40 @@ class _ChromecastScreenState extends State<ChromecastScreen> {
     }
   }
 
+  void _adjustSpeed(double rate) {
+    setState(() {
+      _speedTarget = rate;
+      _speedFailed = false;
+    });
+    _adjustments = _adjustments.then((_) async {
+      if (!mounted || _leaving || _session == null) return;
+      try {
+        await _session!.setPlaybackRate(rate);
+        AppLogger.log('Cast: playback speed confirmed rate=$rate');
+      } catch (error) {
+        AppLogger.log('Cast: playback speed rejected: ${error.runtimeType}');
+        if (mounted) setState(() => _speedFailed = true);
+      } finally {
+        if (mounted && _speedTarget == rate) {
+          setState(() => _speedTarget = null);
+        }
+      }
+    });
+  }
+
+  Widget _speedSlider(AppLocalizations l10n, bool enabled) => Semantics(
+    label: l10n.mediaPlaybackSpeed,
+    child: Slider(
+      key: const ValueKey('cast_speed'),
+      value: (_speedTarget ?? _session?.status.playbackRate ?? 1).clamp(0.5, 2),
+      min: 0.5,
+      max: 2,
+      divisions: 6,
+      semanticFormatterCallback: (value) => '${value}x',
+      onChanged: enabled ? _adjustSpeed : null,
+    ),
+  );
+
   Future<void> _leave(bool resume) async {
     if (_leaving || _busy) return;
     _leaving = true;
@@ -304,7 +365,20 @@ class _ChromecastScreenState extends State<ChromecastScreen> {
     _volumeDebounce?.cancel();
     _seekDebounce?.cancel();
     await _adjustments;
+    if (_started && _session != null && !_session!.status.disconnected) {
+      try {
+        await _session!.refresh();
+        if (_session!.status.state != 'IDLE') {
+          _lastPosition = _session!.status.position;
+        }
+      } catch (_) {
+        /* Keep the last known position if the receiver is offline. */
+      }
+    }
     final position = _lastPosition ?? widget.position();
+    AppLogger.log(
+      'Cast: leaving resume=$resume positionMs=${position.inMilliseconds}',
+    );
     await _statusSubscription?.cancel();
     await _session?.close();
     if (_started && !widget.live) await _savePosition(position);
@@ -366,6 +440,12 @@ class _ChromecastScreenState extends State<ChromecastScreen> {
               AccessibleListRow(
                 id: 'error',
                 title: l10n.castFailure,
+                kind: 'text',
+              ),
+            if (_speedFailed)
+              AccessibleListRow(
+                id: 'speed_error',
+                title: l10n.mediaPlaybackSpeedUnavailable,
                 kind: 'text',
               ),
             if (_busy || (_searching && !remote))
@@ -432,6 +512,25 @@ class _ChromecastScreenState extends State<ChromecastScreen> {
                     ),
                   ),
                 ),
+              if (!widget.live)
+                AccessibleListRow(
+                  id: 'cast_speed',
+                  title: l10n.mediaPlaybackSpeed,
+                  kind: 'slider',
+                  enabled: canControl && status!.supportsPlaybackRate,
+                  accessibilityButtonTrait: false,
+                  nativeSliderAccessibilityElement: true,
+                  sliderValue: (_speedTarget ?? status?.playbackRate ?? 1)
+                      .clamp(0.5, 2),
+                  sliderMin: 0.5,
+                  sliderMax: 2,
+                  sliderStep: 0.25,
+                  valueLabel: '${_speedTarget ?? status?.playbackRate ?? 1}x',
+                  flutterChild: _speedSlider(
+                    l10n,
+                    canControl && status!.supportsPlaybackRate,
+                  ),
+                ),
               AccessibleListRow(
                 id: 'cast_volume',
                 title: l10n.adjustVolume,
@@ -477,6 +576,10 @@ class _ChromecastScreenState extends State<ChromecastScreen> {
       ],
       onEvent: (event) async {
         if (event.type == 'slider' && canControl && event.value is num) {
+          if (event.id == 'cast_speed' && status!.supportsPlaybackRate) {
+            _adjustSpeed((event.value as num).toDouble());
+            return;
+          }
           if (event.id == 'cast_volume' || event.id == 'cast_position') {
             _adjust(
               (event.value as num).toDouble(),
@@ -528,6 +631,7 @@ class _ChromecastScreenState extends State<ChromecastScreen> {
                   Semantics(header: true, child: Text(widget.title)),
                   if (_failed)
                     Semantics(liveRegion: true, child: Text(l10n.castFailure)),
+                  if (_speedFailed) Text(l10n.mediaPlaybackSpeedUnavailable),
                   if (_busy || (_searching && !remote)) Text(l10n.loading),
                   if (!remote && !_busy) ...[
                     if (!_searching && _devices.isEmpty)
@@ -581,6 +685,13 @@ class _ChromecastScreenState extends State<ChromecastScreen> {
                               ? (v) => _adjust(v, volume: false)
                               : null,
                         ),
+                      ),
+                    ],
+                    if (!widget.live) ...[
+                      Text(l10n.mediaPlaybackSpeed),
+                      _speedSlider(
+                        l10n,
+                        canControl && status.supportsPlaybackRate,
                       ),
                     ],
                     Text(l10n.adjustVolume),

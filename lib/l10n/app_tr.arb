@@ -4827,5 +4827,8 @@
   "castFailure": "Yayın başarısız oldu veya bağlantı kesildi. Bu cihazda devam edebilirsiniz.",
   "castResumeHere": "Bu cihazda devam et",
   "settingsShowCast": "Uyumlu oynatıcılarda Chromecast göster",
-  "castStop": "Yayını durdur"
+  "castStop": "Yayını durdur",
+  "settingsHideCalendarSaints": "Takvimde azizleri gizle",
+  "markdownFormat": "Markdown (.md)",
+  "htmlFormat": "HTML (.html)"
 }

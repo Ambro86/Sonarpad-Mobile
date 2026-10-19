@@ -15,6 +15,9 @@ class AppLocalizationsCs extends AppLocalizations {
   @override
   String get castResumeHere => "Pokračovat na tomto zařízení";
   @override
+  String get settingsHideCalendarSaints => "Skrýt svaté v kalendáři";
+
+  @override
   String get settingsShowCast => "Zobrazit Chromecast v podporovaných přehrávačích";
   @override
   String get castStop => "Zastavit odesílání";
@@ -1422,6 +1425,12 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get pdfFormat => 'PDF (.pdf)';
+
+  @override
+  String get markdownFormat => 'Markdown (.md)';
+
+  @override
+  String get htmlFormat => 'HTML (.html)';
 
   @override
   String get docxFormat => 'DOCX (.docx)';

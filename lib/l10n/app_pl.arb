@@ -6408,5 +6408,8 @@
   "castFailure": "Przesyłanie nie powiodło się lub utracono połączenie. Możesz wznowić na tym urządzeniu.",
   "castResumeHere": "Wznów na tym urządzeniu",
   "settingsShowCast": "Pokazuj Chromecast w zgodnych odtwarzaczach",
-  "castStop": "Zatrzymaj przesyłanie"
+  "castStop": "Zatrzymaj przesyłanie",
+  "settingsHideCalendarSaints": "Ukryj świętych w kalendarzu",
+  "markdownFormat": "Markdown (.md)",
+  "htmlFormat": "HTML (.html)"
 }

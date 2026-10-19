@@ -1,3 +1,5 @@
+import 'package:sonarpad_mobile_starter/services/app_settings_service.dart';
+import 'package:sonarpad_mobile_starter/screens/calendar_screen.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -217,6 +219,32 @@ void main() {
       await tester.pumpAndSettle();
     },
   );
+
+  test('Calendar saints remain visible by default and the preference persists', () async {
+    final settings = AppSettingsService();
+    expect(await settings.isCalendarSaintsHidden(), isFalse);
+    await settings.setCalendarSaintsHidden(true);
+    expect(await AppSettingsService().isCalendarSaintsHidden(), isTrue);
+    await settings.setCalendarSaintsHidden(false);
+    expect(await AppSettingsService().isCalendarSaintsHidden(), isFalse);
+  });
+
+  testWidgets('Hidden saints are absent from calendar list and accessible day details', (tester) async {
+    await AppSettingsService().setCalendarSaintsHidden(true);
+    final l10n = lookupSupportedAppLocalizations('tr');
+    await tester.pumpWidget(_localizedApp(const CalendarScreen()));
+    await tester.pumpAndSettle();
+    expect(_visibleRows(tester).any((row) => (row.subtitle ?? '').contains(l10n.saintOfTheDay)), isFalse);
+    final service = _PendingCalendarService();
+    await tester.pumpWidget(_localizedApp(CalendarDayScreen(date: DateTime(2026, 10, 13), service: service)));
+    await tester.pumpAndSettle();
+    expect(service.saints, isEmpty);
+    expect(_visibleRows(tester).any((row) => row.id == 'saint'), isFalse);
+    expect(find.textContaining(l10n.saintOfTheDay), findsNothing);
+    expect(_visibleRows(tester).any((row) => row.title.contains(l10n.quoteOfTheDay)), isTrue);
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pumpAndSettle();
+  });
 
   testWidgets('Reused calendar routes refresh Turkish saints and ignore stale results',
     (tester) async {

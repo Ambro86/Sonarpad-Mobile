@@ -61,12 +61,17 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     final media = _castMedia;
     if (media == null || _castRouteOpen || _loading) return;
     _castRouteOpen = true;
+    var wasPlayingBeforeCast = false;
     try {
       final result = await Navigator.push<ChromecastReturn>(context,
         MaterialPageRoute(settings: const RouteSettings(name: '/radio/chromecast'),
           builder: (_) => ChromecastScreen(media: media, title: widget.station.name,
             live: true, position: () => Duration.zero,
-            onStarted: () async { await _stop(); await _audio.stopAndDispose(); },
+            onStarted: () async {
+              wasPlayingBeforeCast = _audio.isPlaying;
+              await _stop();
+            },
+            onStartFailed: () async { if (mounted && wasPlayingBeforeCast) await _play(); },
             onPosition: (_) async {})));
       if (mounted && result?.resume == true) await _play();
     } finally {

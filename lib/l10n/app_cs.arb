@@ -4830,5 +4830,8 @@
   "castFailure": "Odesílání selhalo nebo bylo přerušeno připojení. Můžete pokračovat na tomto zařízení.",
   "castResumeHere": "Pokračovat na tomto zařízení",
   "settingsShowCast": "Zobrazit Chromecast v podporovaných přehrávačích",
-  "castStop": "Zastavit odesílání"
+  "castStop": "Zastavit odesílání",
+  "settingsHideCalendarSaints": "Skrýt svaté v kalendáři",
+  "markdownFormat": "Markdown (.md)",
+  "htmlFormat": "HTML (.html)"
 }

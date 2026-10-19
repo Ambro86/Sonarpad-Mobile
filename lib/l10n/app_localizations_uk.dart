@@ -15,6 +15,9 @@ class AppLocalizationsUk extends AppLocalizations {
   @override
   String get castResumeHere => "Продовжити на цьому пристрої";
   @override
+  String get settingsHideCalendarSaints => "Приховувати святих у календарі";
+
+  @override
   String get settingsShowCast => "Показувати Chromecast у сумісних програвачах";
   @override
   String get castStop => "Зупинити трансляцію";
@@ -1420,6 +1423,12 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get pdfFormat => 'PDF (.pdf)';
+
+  @override
+  String get markdownFormat => 'Markdown (.md)';
+
+  @override
+  String get htmlFormat => 'HTML (.html)';
 
   @override
   String get docxFormat => 'DOCX (.docx)';

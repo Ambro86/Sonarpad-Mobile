@@ -72,6 +72,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _multipleDocumentBookmarks = false;
   bool _displayVideoInPortrait = false;
   bool _mediaSpeedControl = false;
+  bool _hideCalendarSaints = false;
+  bool _savedHideCalendarSaints = false;
   bool _showCast = true;
   bool _savedShowCast = true;
   bool _preferRaiAudioDescription = true;
@@ -274,6 +276,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final sysLang = await _settings.loadSystemTtsLanguage();
     final sysVoice = await _settings.loadSystemTtsVoice();
     final autoBookmark = await _settings.isAutoBookmarkEnabled();
+    final hideCalendarSaints = await _settings.isCalendarSaintsHidden();
     final showCast = await _settings.isChromecastButtonEnabled();
     final mediaSpeedControl = await _settings.isMediaSpeedControlEnabled();
     final preferRaiAudioDescription =
@@ -338,6 +341,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _savedSystemTtsVoice = sysVoice;
       _autoBookmark = autoBookmark;
       _savedAutoBookmark = autoBookmark;
+      _hideCalendarSaints = hideCalendarSaints;
+      _savedHideCalendarSaints = hideCalendarSaints;
       _showCast = showCast;
       _savedShowCast = showCast;
       _mediaSpeedControl = mediaSpeedControl;
@@ -399,7 +404,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final weatherTemperatureUnitChanged =
         _weatherTemperatureUnit != _savedWeatherTemperatureUnit;
     final autoBookmarkChanged = _autoBookmark != _savedAutoBookmark;
-    final mediaSpeedControlChanged = _showCast != _savedShowCast || _mediaSpeedControl != _savedMediaSpeedControl;
+    final mediaSpeedControlChanged = _hideCalendarSaints != _savedHideCalendarSaints || _showCast != _savedShowCast || _mediaSpeedControl != _savedMediaSpeedControl;
     final preferRaiAudioDescriptionChanged = _preferRaiAudioDescription !=
         _savedPreferRaiAudioDescription;
     final includeEpubFootnotesChanged = _includeEpubFootnotesInText !=
@@ -489,6 +494,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     await _settings.setTvSecretCode(rawCode);
     await _settings.setAutoBookmarkEnabled(_autoBookmark);
     await _settings.setMediaSpeedControlEnabled(_mediaSpeedControl);
+    await _settings.setCalendarSaintsHidden(_hideCalendarSaints);
     await _settings.setChromecastButtonEnabled(_showCast);
     await _settings.setPreferRaiAudioDescription(_preferRaiAudioDescription);
     await _settings.setIncludeEpubFootnotesInText(_includeEpubFootnotesInText);
@@ -598,6 +604,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     _savedTvSecretCode = rawCode;
     _savedAutoBookmark = _autoBookmark;
     _savedMediaSpeedControl = _mediaSpeedControl;
+    _savedHideCalendarSaints = _hideCalendarSaints;
     _savedShowCast = _showCast;
     _savedPreferRaiAudioDescription = _preferRaiAudioDescription;
     _extraFeaturesUnlocked = RecordingFeatureAccess.isCodeValid(rawCode);
@@ -624,7 +631,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         _ttsPitch != _savedTtsPitch ||
         _tvSecretCodeController.text.trim() != _savedTvSecretCode ||
         _autoBookmark != _savedAutoBookmark ||
-        _showCast != _savedShowCast || _mediaSpeedControl != _savedMediaSpeedControl ||
+        _hideCalendarSaints != _savedHideCalendarSaints || _showCast != _savedShowCast || _mediaSpeedControl != _savedMediaSpeedControl ||
         _preferRaiAudioDescription != _savedPreferRaiAudioDescription ||
         _includeEpubFootnotesInText != _savedIncludeEpubFootnotesInText ||
         _multipleDocumentBookmarks != _savedMultipleDocumentBookmarks ||
@@ -1443,6 +1450,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
             toggleValue: _displayVideoInPortrait,
             valueLabel: toggleLabel(_displayVideoInPortrait),
           ),
+          AccessibleListRow(id: 'hide_calendar_saints', title: l10n.settingsHideCalendarSaints,
+            kind: 'toggle', toggleValue: _hideCalendarSaints, valueLabel: toggleLabel(_hideCalendarSaints)),
           AccessibleListRow(id: 'show_chromecast', title: l10n.settingsShowCast,
             kind: 'toggle', toggleValue: _showCast, valueLabel: toggleLabel(_showCast)),
           AccessibleListRow(
@@ -1594,6 +1603,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           }
           setState(() {
             switch (id) {
+              case 'hide_calendar_saints': _hideCalendarSaints = value; break;
               case 'show_chromecast': _showCast = value; break;
               case 'media_speed_control': _mediaSpeedControl = value; break;
               case 'prefer_rai_audio_description': _preferRaiAudioDescription = value; break;
@@ -1714,6 +1724,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       const SizedBox(height: 12),
                       TextField(
                         controller: reportController,
+                        textCapitalization: TextCapitalization.sentences,
                         autofillHints: const <String>[],
                         minLines: 3,
                         maxLines: 6,
@@ -2309,6 +2320,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       contentPadding: EdgeInsets.zero,
                     ),
                     const SizedBox(height: 12),
+                    SwitchListTile(key: const ValueKey('settings-hide-calendar-saints'),
+                      title: Text(l10n.settingsHideCalendarSaints), value: _hideCalendarSaints,
+                      onChanged: (value) => setState(() => _hideCalendarSaints = value)),
                     SwitchListTile(key: const ValueKey('settings-chromecast'),
                       title: Text(l10n.settingsShowCast), value: _showCast,
                       onChanged: (value) => setState(() => _showCast = value)),

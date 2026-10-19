@@ -15,6 +15,9 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get castResumeHere => "在此设备上继续播放";
   @override
+  String get settingsHideCalendarSaints => "在日历中隐藏圣人";
+
+  @override
   String get settingsShowCast => "在兼容的播放器中显示 Chromecast";
   @override
   String get castStop => "停止投放";
@@ -1384,6 +1387,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get pdfFormat => 'PDF（.pdf）';
+
+  @override
+  String get markdownFormat => 'Markdown (.md)';
+
+  @override
+  String get htmlFormat => 'HTML (.html)';
 
   @override
   String get docxFormat => 'DOCX（.docx）';
@@ -5210,6 +5219,9 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
   @override
   String get castResumeHere => "在此设备上继续播放";
   @override
+  String get settingsHideCalendarSaints => "在日历中隐藏圣人";
+
+  @override
   String get settingsShowCast => "在兼容的播放器中显示 Chromecast";
   @override
   String get castStop => "停止投放";
@@ -6579,6 +6591,12 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get pdfFormat => 'PDF（.pdf）';
+
+  @override
+  String get markdownFormat => 'Markdown (.md)';
+
+  @override
+  String get htmlFormat => 'HTML (.html)';
 
   @override
   String get docxFormat => 'DOCX（.docx）';

@@ -6405,5 +6405,8 @@
   "castFailure": "Не вдалося транслювати або з’єднання втрачено. Можна продовжити на цьому пристрої.",
   "castResumeHere": "Продовжити на цьому пристрої",
   "settingsShowCast": "Показувати Chromecast у сумісних програвачах",
-  "castStop": "Зупинити трансляцію"
+  "castStop": "Зупинити трансляцію",
+  "settingsHideCalendarSaints": "Приховувати святих у календарі",
+  "markdownFormat": "Markdown (.md)",
+  "htmlFormat": "HTML (.html)"
 }

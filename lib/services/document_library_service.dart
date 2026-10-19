@@ -931,6 +931,8 @@ class DocumentLibraryService {
         lower == 'debug_parser_html.txt' ||
         lower == 'debug_parser_text.txt' ||
         lower.endsWith('_export.txt') ||
+        lower.endsWith('_export.md') ||
+        lower.endsWith('_export.html') ||
         lower.endsWith('_export.pdf') ||
         lower.endsWith('_export.docx') ||
         lower.endsWith('_export.epub') ||

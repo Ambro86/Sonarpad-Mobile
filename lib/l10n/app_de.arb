@@ -6405,5 +6405,8 @@
   "castFailure": "Übertragung fehlgeschlagen oder Verbindung unterbrochen. Du kannst auf diesem Gerät fortfahren.",
   "castResumeHere": "Auf diesem Gerät fortsetzen",
   "settingsShowCast": "Chromecast in kompatiblen Playern anzeigen",
-  "castStop": "Übertragung beenden"
+  "castStop": "Übertragung beenden",
+  "settingsHideCalendarSaints": "Heilige im Kalender ausblenden",
+  "markdownFormat": "Markdown (.md)",
+  "htmlFormat": "HTML (.html)"
 }

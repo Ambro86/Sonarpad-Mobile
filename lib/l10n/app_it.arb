@@ -6405,5 +6405,8 @@
   "castFailure": "Trasmissione non riuscita o connessione interrotta. Puoi riprendere su questo dispositivo.",
   "castResumeHere": "Riprendi su questo dispositivo",
   "settingsShowCast": "Mostra Chromecast nei player compatibili",
-  "castStop": "Interrompi trasmissione"
+  "castStop": "Interrompi trasmissione",
+  "settingsHideCalendarSaints": "Nascondi i santi nel calendario",
+  "markdownFormat": "Markdown (.md)",
+  "htmlFormat": "HTML (.html)"
 }

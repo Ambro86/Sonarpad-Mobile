@@ -76,6 +76,8 @@ abstract class AppLocalizations {
   String get castNoDevices;
   String get castFailure;
   String get castResumeHere;
+  String get settingsHideCalendarSaints;
+
   String get settingsShowCast;
   String get castStop;
 
@@ -2688,6 +2690,10 @@ abstract class AppLocalizations {
   ///
   /// In it, this message translates to:
   /// **'DOCX (.docx)'**
+  String get markdownFormat;
+
+  String get htmlFormat;
+
   String get docxFormat;
 
   /// No description provided for @epubFormat.

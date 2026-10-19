@@ -458,13 +458,11 @@ class _PodcastEpisodePlayerScreenState
             'PodcastPlayer: audio setUrl completed loaded=$_loaded, '
             'title="In riproduzione: ${_episode.title}", $_logSubject',
           );
-          if (resumePosition != null) {
-            await _audio.seek(resumePosition);
-            AppLogger.log(
-              'PodcastPlayer: audio transition restored position='
-              '${resumePosition.inMilliseconds}ms, $_logSubject',
-            );
-          }
+        }
+        // A cast handoff retains the loaded player. Restore its position too.
+        if (resumePosition != null) {
+          await _audio.seek(resumePosition);
+          AppLogger.log('PodcastPlayer: audio transition restored position=${resumePosition.inMilliseconds}ms');
         }
         await _applyPreferredPlaybackSpeed();
         if (!mounted) return;
@@ -531,6 +529,8 @@ class _PodcastEpisodePlayerScreenState
     if (media == null || _castRouteOpen || !_loaded || _loading ||
         _changingPlaybackSpeed || _switchingVideoMode) { return; }
     _castRouteOpen = true;
+    var wasPlayingBeforeCast = false;
+    Duration? positionBeforeCast;
     final stableId = _getStableId();
     final bookmarkEnabled = await _settings.isAutoBookmarkEnabled();
     if (!mounted) { _castRouteOpen = false; return; }
@@ -539,11 +539,18 @@ class _PodcastEpisodePlayerScreenState
         MaterialPageRoute(settings: const RouteSettings(name: '/player/chromecast'),
           builder: (_) => ChromecastScreen(media: media, title: _episode.title,
             live: _episode.isLive,
+            initialSpeed: _playbackSpeed,
+            onStartFailed: () async {
+              _casting = false;
+              if (mounted) await _play(resumePosition: positionBeforeCast, shouldPlay: wasPlayingBeforeCast);
+            },
             position: () => _videoController?.value.position ?? _audio.position,
             onStarted: () async {
+              wasPlayingBeforeCast = _videoController?.value.isPlaying ?? _audio.isPlaying;
               await _pause(force: true);
-              await _audio.stopAndDispose();
+              positionBeforeCast = _videoController?.value.position ?? _audio.position;
               _casting = true;
+              AppLogger.log('Cast: local playback paused; player retained');
             },
             onPosition: (position) async {
               if (bookmarkEnabled && !_episode.isLive) {
@@ -553,6 +560,7 @@ class _PodcastEpisodePlayerScreenState
           )));
       _casting = false;
       if (mounted && result != null) {
+        AppLogger.log('Cast: returning locally resume=${result.resume} positionMs=${result.position.inMilliseconds}');
         await _play(resumePosition: result.position, shouldPlay: result.resume);
       }
     } finally {

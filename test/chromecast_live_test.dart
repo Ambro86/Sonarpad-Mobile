@@ -38,6 +38,14 @@ void main() {
             title: 'Sonarpad Cast test',
             position: Duration.zero,
           );
+          if (session.status.supportsPlaybackRate) {
+            await session.setPlaybackRate(1.5);
+            expect(session.status.playbackRate, closeTo(1.5, 0.01));
+          }
+          // ignore: avoid_print
+          print(
+            'Cast live: speed supported=${session.status.supportsPlaybackRate}',
+          );
           final deadline = DateTime.now().add(const Duration(seconds: 25));
           while (session.status.position.inSeconds < 2 &&
               DateTime.now().isBefore(deadline)) {

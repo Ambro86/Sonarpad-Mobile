@@ -33,6 +33,8 @@ void main() {
       'pdfFormat',
       'docxFormat',
       'epubFormat',
+      'markdownFormat',
+      'htmlFormat',
       'internetArchiveTitle',
       'calendar',
       'radio',

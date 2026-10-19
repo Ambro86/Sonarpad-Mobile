@@ -15,6 +15,9 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get castResumeHere => "Reprendre sur cet appareil";
   @override
+  String get settingsHideCalendarSaints => "Masquer les saints dans le calendrier";
+
+  @override
   String get settingsShowCast => "Afficher Chromecast dans les lecteurs compatibles";
   @override
   String get castStop => "Arrêter la diffusion";
@@ -1436,6 +1439,12 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get pdfFormat => 'PDF (.pdf)';
+
+  @override
+  String get markdownFormat => 'Markdown (.md)';
+
+  @override
+  String get htmlFormat => 'HTML (.html)';
 
   @override
   String get docxFormat => 'DOCX (.docx)';

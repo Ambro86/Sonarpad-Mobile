@@ -15,6 +15,9 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get castResumeHere => "Continuar neste dispositivo";
   @override
+  String get settingsHideCalendarSaints => "Ocultar os santos no calendário";
+
+  @override
   String get settingsShowCast => "Mostrar Chromecast nos leitores compatíveis";
   @override
   String get castStop => "Parar transmissão";
@@ -1428,6 +1431,12 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get pdfFormat => 'PDF (.pdf)';
+
+  @override
+  String get markdownFormat => 'Markdown (.md)';
+
+  @override
+  String get htmlFormat => 'HTML (.html)';
 
   @override
   String get docxFormat => 'DOCX (.docx)';
@@ -5405,6 +5414,9 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   @override
   String get castResumeHere => "Continuar neste dispositivo";
   @override
+  String get settingsHideCalendarSaints => "Ocultar os santos no calendário";
+
+  @override
   String get settingsShowCast => "Mostrar Chromecast nos reprodutores compatíveis";
   @override
   String get castStop => "Parar transmissão";
@@ -6818,6 +6830,12 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get pdfFormat => 'PDF (.pdf)';
+
+  @override
+  String get markdownFormat => 'Markdown (.md)';
+
+  @override
+  String get htmlFormat => 'HTML (.html)';
 
   @override
   String get docxFormat => 'DOCX (.docx)';

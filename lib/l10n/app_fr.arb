@@ -4833,5 +4833,8 @@
   "castFailure": "Échec de la diffusion ou connexion perdue. Vous pouvez reprendre sur cet appareil.",
   "castResumeHere": "Reprendre sur cet appareil",
   "settingsShowCast": "Afficher Chromecast dans les lecteurs compatibles",
-  "castStop": "Arrêter la diffusion"
+  "castStop": "Arrêter la diffusion",
+  "settingsHideCalendarSaints": "Masquer les saints dans le calendrier",
+  "markdownFormat": "Markdown (.md)",
+  "htmlFormat": "HTML (.html)"
 }

@@ -20,7 +20,7 @@ import 'package:sonarpad_mobile_starter/widgets/universal_accessible_view.dart';
 // ignore: depend_on_referenced_packages
 import 'package:video_player_platform_interface/video_player_platform_interface.dart';
 
-class _VideoBackend extends VideoPlayerPlatform {
+class PlayerTestVideoBackend extends VideoPlayerPlatform {
   final requestedRates = <double>[];
   double speed = 1;
   bool playing = false;
@@ -103,10 +103,11 @@ class _VideoBackend extends VideoPlayerPlatform {
   Future<void> dispose(int playerId) async {}
 }
 
-Future<void> _pumpPlayer(
+Future<void> pumpTestPlayer(
   WidgetTester tester, {
   bool fullscreen = false,
   bool audioOnly = false,
+  bool remote = false,
   List<MediaAudioTrack> tracks = const [],
 }) async {
   tester.view.devicePixelRatio = 1;
@@ -129,7 +130,9 @@ Future<void> _pumpPlayer(
           episode: PodcastEpisode(
             title: 'Prova velocità',
             description: '',
-            audioUrl: 'file:///recorded-video.mp4',
+            audioUrl: remote
+                ? 'https://example.org/video.mp4'
+                : 'file:///recorded-video.mp4',
             audioTracks: tracks,
             selectedAudioTrackId: 'it',
           ),
@@ -145,7 +148,7 @@ Future<void> _pumpPlayer(
   await tester.pump();
 }
 
-Future<void> _disposePlayer(WidgetTester tester) async {
+Future<void> disposeTestPlayer(WidgetTester tester) async {
   await tester.runAsync(() async {
     await tester.pumpWidget(const SizedBox());
     await Future<void>.delayed(Duration.zero);
@@ -159,12 +162,12 @@ Future<void> _disposePlayer(WidgetTester tester) async {
   await tester.pumpAndSettle();
 }
 
-class _AudioPlatform extends JustAudioPlatform {
-  _AudioBackend? latest;
+class PlayerTestAudioPlatform extends JustAudioPlatform {
+  PlayerTestAudioBackend? latest;
   bool rejectLoad = false;
   @override
   Future<AudioPlayerPlatform> init(InitRequest request) async =>
-      latest = _AudioBackend(request.id, this);
+      latest = PlayerTestAudioBackend(request.id, this);
   @override
   Future<DisposePlayerResponse> disposePlayer(
     DisposePlayerRequest request,
@@ -179,9 +182,9 @@ class _AudioPlatform extends JustAudioPlatform {
   ) async => DisposeAllPlayersResponse();
 }
 
-class _AudioBackend extends AudioPlayerPlatform {
-  _AudioBackend(super.id, this.owner);
-  final _AudioPlatform owner;
+class PlayerTestAudioBackend extends AudioPlayerPlatform {
+  PlayerTestAudioBackend(super.id, this.owner);
+  final PlayerTestAudioPlatform owner;
   final events = StreamController<PlaybackEventMessage>.broadcast();
   String? url;
   Duration position = Duration.zero;
@@ -282,15 +285,15 @@ class _AudioBackend extends AudioPlayerPlatform {
   ) async => SetSkipSilenceResponse();
 }
 
-class _NoLogFiles extends PathProviderPlatform {
+class PlayerTestNoLogFiles extends PathProviderPlatform {
   @override
   Future<String?> getApplicationSupportPath() async =>
       throw MissingPluginException('test');
 }
 
 void main() {
-  late _VideoBackend video;
-  late _AudioPlatform audio;
+  late PlayerTestVideoBackend video;
+  late PlayerTestAudioPlatform audio;
   late VideoPlayerPlatform originalVideo;
   late JustAudioPlatform originalAudio;
   const tracks = [
@@ -298,12 +301,12 @@ void main() {
     MediaAudioTrack(id: 'pl', label: 'Polski', url: 'https://example.org/pl'),
   ];
   setUp(() {
-    PathProviderPlatform.instance = _NoLogFiles();
+    PathProviderPlatform.instance = PlayerTestNoLogFiles();
     SharedPreferences.setMockInitialValues({});
     originalVideo = VideoPlayerPlatform.instance;
     originalAudio = JustAudioPlatform.instance;
-    video = _VideoBackend();
-    audio = _AudioPlatform();
+    video = PlayerTestVideoBackend();
+    audio = PlayerTestAudioPlatform();
     VideoPlayerPlatform.instance = video;
     JustAudioPlatform.instance = audio;
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
@@ -339,7 +342,7 @@ void main() {
         for (final paused in [false, true]) {
           for (final rejected in [false, true]) {
             audio.rejectLoad = rejected;
-            await _pumpPlayer(tester, tracks: tracks);
+            await pumpTestPlayer(tester, tracks: tracks);
             await form(tester).onEvent!(
               const AccessibleListEvent(
                 type: 'slider',
@@ -376,7 +379,7 @@ void main() {
             expect(video.position.inSeconds, 123);
             expect(video.volume, rejected ? 1 : 0);
             expect(video.playing, !paused);
-            await _disposePlayer(tester);
+            await disposeTestPlayer(tester);
           }
         }
       }
@@ -384,13 +387,13 @@ void main() {
     },
   );
   testWidgets('single audio track has no selector', (tester) async {
-    await _pumpPlayer(tester, tracks: [tracks.first]);
+    await pumpTestPlayer(tester, tracks: [tracks.first]);
     expect(
       form(tester).sections
           .expand((section) => section.rows)
           .where((row) => row.id == 'audio_track'),
       isEmpty,
     );
-    await _disposePlayer(tester);
+    await disposeTestPlayer(tester);
   });
 }

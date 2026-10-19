@@ -4827,5 +4827,8 @@
   "castFailure": "Casting failed or the connection was lost. You can resume on this device.",
   "castResumeHere": "Resume on this device",
   "settingsShowCast": "Show Chromecast in compatible players",
-  "castStop": "Stop casting"
+  "castStop": "Stop casting",
+  "settingsHideCalendarSaints": "Hide saints in the calendar",
+  "markdownFormat": "Markdown (.md)",
+  "htmlFormat": "HTML (.html)"
 }

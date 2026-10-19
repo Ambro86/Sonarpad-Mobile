@@ -20,12 +20,16 @@ class ChromecastStatus {
     this.position = Duration.zero,
     this.duration = Duration.zero,
     this.volume = 1,
+    this.playbackRate = 1,
+    this.supportedMediaCommands = 0,
     this.sessionId,
     this.disconnected = false,
   });
   final String state;
   final Duration position, duration;
-  final double volume;
+  final double volume, playbackRate;
+  final int supportedMediaCommands;
+  bool get supportsPlaybackRate => supportedMediaCommands & (1 << 13) != 0;
   final int? sessionId;
   final bool disconnected;
   bool get playing => state == 'PLAYING';
@@ -111,6 +115,8 @@ class ChromecastSession {
             sessionId: status.sessionId,
             disconnected: status.disconnected,
             volume: _receiverVolume,
+            playbackRate: status.playbackRate,
+            supportedMediaCommands: status.supportedMediaCommands,
           );
           _updates.add(status);
         }
@@ -141,6 +147,12 @@ class ChromecastSession {
                     )
                   : status.duration,
               volume: _receiverVolume,
+              playbackRate:
+                  (value['playbackRate'] as num?)?.toDouble() ??
+                  status.playbackRate,
+              supportedMediaCommands:
+                  (value['supportedMediaCommands'] as num?)?.toInt() ??
+                  status.supportedMediaCommands,
               sessionId: value['mediaSessionId'] as int?,
             );
             _updates.add(status);
@@ -168,6 +180,8 @@ class ChromecastSession {
       position: status.position,
       duration: status.duration,
       volume: status.volume,
+      playbackRate: status.playbackRate,
+      supportedMediaCommands: status.supportedMediaCommands,
       sessionId: status.sessionId,
       disconnected: true,
     );
@@ -286,6 +300,32 @@ class ChromecastSession {
       'resumeState': paused ? 'PLAYBACK_PAUSE' : 'PLAYBACK_START',
     });
     if (paused) await command('PAUSE');
+  }
+
+  Future<void> setPlaybackRate(double rate) async {
+    if (!status.supportsPlaybackRate ||
+        !rate.isFinite ||
+        rate < 0.5 ||
+        rate > 2) {
+      throw UnsupportedError('cast_playback_rate_unavailable');
+    }
+    final previous = status.playbackRate;
+    try {
+      await command('SET_PLAYBACK_RATE', {'playbackRate': rate});
+      await refresh();
+      if ((status.playbackRate - rate).abs() > 0.01) {
+        throw StateError('cast_playback_rate_not_applied');
+      }
+    } catch (_) {
+      // A receiver may acknowledge a request without applying the rate.
+      try {
+        await command('SET_PLAYBACK_RATE', {'playbackRate': previous});
+        await refresh();
+      } catch (_) {
+        /* The next status still reports the receiver's actual rate. */
+      }
+      rethrow;
+    }
   }
 
   Future<void> setVolume(double volume) async {

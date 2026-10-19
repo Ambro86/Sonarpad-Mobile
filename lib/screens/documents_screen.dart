@@ -1,3 +1,4 @@
+import '../services/text_document_export_service.dart';
 import 'dart:async';
 import 'dart:developer' as dev;
 import 'dart:io';
@@ -842,6 +843,14 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
             child: Text(AppLocalizations.of(context).textFormat),
           ),
           TextButton(
+            onPressed: () => Navigator.pop(ctx, 'md'),
+            child: Text(AppLocalizations.of(context).markdownFormat),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, 'html'),
+            child: Text(AppLocalizations.of(context).htmlFormat),
+          ),
+          TextButton(
             onPressed: () => Navigator.pop(ctx, 'pdf'),
             child: Text(AppLocalizations.of(context).pdfFormat),
           ),
@@ -887,6 +896,16 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
         await AppLogger.log('Scrittura file txt in: $path');
         await File(path).writeAsString(normalizeDocumentUnicode(text));
         await AppLogger.log('File txt scritto');
+      } else if (format == 'md' || format == 'html') {
+        path = '${appDir.path}/${baseName}_export.$format';
+        saveName = _exportLibraryFileName(baseName, format, l10n);
+        await TextDocumentExportService().write(
+          path: path,
+          text: text,
+          format: format == 'md' ? TextDocumentExportFormat.markdown : TextDocumentExportFormat.html,
+          title: doc.displayName,
+          language: l10n.localeName,
+        );
       } else if (format == 'pdf') {
         await AppLogger.log('Inizio generazione PDF');
         path = await _generatePdf(baseName, text, appDir.path);

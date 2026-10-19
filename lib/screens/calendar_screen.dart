@@ -1,3 +1,4 @@
+import '../services/app_settings_service.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../l10n/app_localizations.dart';
@@ -15,6 +16,7 @@ class CalendarScreen extends StatefulWidget {
 
 class _CalendarScreenState extends State<CalendarScreen> {
   final _service = CalendarService();
+  bool _saintsVisible = false;
   late final ScrollController _scrollController;
   final int _todayIndex =
       10000; // Un numero grande per simulare uno scroll infinito indietro
@@ -33,10 +35,12 @@ class _CalendarScreenState extends State<CalendarScreen> {
   }
 
   Future<void> _loadEvents() async {
+    final saintsVisible = !await AppSettingsService().isCalendarSaintsHidden();
     final events = await _service.getEvents();
     if (mounted) {
       setState(() {
         _allEvents = events;
+        _saintsVisible = saintsVisible;
       });
     }
   }
@@ -73,7 +77,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
   String? _accessibleDaySubtitle(DateTime date, AppLocalizations l10n) {
     final parts = <String>[];
     final holiday = _service.getHoliday(date, l10n.localeName);
-    final saint = _service.getSaint(date, l10n.localeName);
+    final saint = _saintsVisible ? _service.getSaint(date, l10n.localeName) : null;
     final dayEvents = _allEvents.where((e) =>
       e.date.year == date.year && e.date.month == date.month && e.date.day == date.day).toList();
     if (holiday != null) parts.add(holiday);
@@ -134,7 +138,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
           final capTitle = titleStr[0].toUpperCase() + titleStr.substring(1);
 
           final holiday = _service.getHoliday(date, l10n.localeName);
-          final saint = _service.getSaint(date, l10n.localeName);
+          final saint = _saintsVisible ? _service.getSaint(date, l10n.localeName) : null;
           final dayEvents = _allEvents
               .where((e) =>
                   e.date.year == date.year &&

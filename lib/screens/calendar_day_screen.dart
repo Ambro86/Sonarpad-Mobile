@@ -37,6 +37,7 @@ class _CalendarDayScreenState extends State<CalendarDayScreen> {
   bool _speaking = false;
   int _readingToken = 0;
   String? _saint;
+  bool _saintsVisible = false;
 
   String? _saintLanguage;
   DateTime? _saintDate;
@@ -47,6 +48,7 @@ class _CalendarDayScreenState extends State<CalendarDayScreen> {
   void initState() {
     super.initState();
     _loadEvents();
+    _loadSaintVisibility();
   }
 
   @override
@@ -65,7 +67,17 @@ class _CalendarDayScreenState extends State<CalendarDayScreen> {
     }
   }
 
+  Future<void> _loadSaintVisibility() async {
+    final visible = !await _settings.isCalendarSaintsHidden();
+    if (!mounted) return;
+    setState(() {
+      _saintsVisible = visible;
+      if (visible) _refreshSaint();
+    });
+  }
+
   void _refreshSaint() {
+    if (!_saintsVisible) return;
     final language = AppLocalizations.of(context).localeName;
     final date = widget.date;
     if (_saintLanguage == language && DateUtils.isSameDay(_saintDate, date)) {

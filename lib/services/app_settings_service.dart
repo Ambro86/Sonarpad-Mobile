@@ -933,6 +933,16 @@ class AppSettingsService {
   static const _mediaSpeedControlKey = 'sonarpad_media_speed_control';
   static const _mediaPlaybackSpeedPrefix = 'sonarpad_media_playback_speed_';
 
+  Future<bool> isCalendarSaintsHidden() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('sonarpad_calendar_hide_saints') ?? false;
+  }
+
+  Future<void> setCalendarSaintsHidden(bool hidden) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('sonarpad_calendar_hide_saints', hidden);
+  }
+
   Future<bool> isChromecastButtonEnabled() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool('sonarpad_chromecast_button') ?? true;

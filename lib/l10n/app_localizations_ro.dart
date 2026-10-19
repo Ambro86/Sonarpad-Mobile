@@ -16,6 +16,9 @@ class AppLocalizationsRo extends AppLocalizations {
   @override
   String get castResumeHere => "Continuă pe acest dispozitiv";
   @override
+  String get settingsHideCalendarSaints => "Ascunde sfinții din calendar";
+
+  @override
   String get settingsShowCast => "Afișează Chromecast în playerele compatibile";
   @override
   String get castStop => "Oprește transmiterea";
@@ -1391,6 +1394,12 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String get pdfFormat => 'PDF (.pdf)';
+
+  @override
+  String get markdownFormat => 'Markdown (.md)';
+
+  @override
+  String get htmlFormat => 'HTML (.html)';
 
   @override
   String get docxFormat => 'DOCX (.docx)';

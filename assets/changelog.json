@@ -3,6 +3,8 @@
     "version": "0.5.2",
     "date": "2026-10-17",
     "it": [
+      "Nei Documenti puoi ora esportare i testi anche in Markdown (.md) e HTML (.html), salvarli in Sonarpad o condividerli.",
+      "Aggiunta nelle impostazioni la possibilità di nascondere i santi nel calendario.",
       "In SonarTube puoi scegliere la traccia audio dei video disponibili in più lingue, senza perdere il punto di riproduzione. Il pulsante “Seleziona traccia audio” compare solo quando sono disponibili più tracce.",
       "Sonarpad ricorda nome e indirizzo email inseriti nelle segnalazioni, così non devi riscriverli ogni volta. Puoi modificarli o cancellarli nelle segnalazioni successive.",
       "Il convertitore ricorda il formato e le impostazioni scelti, anche WAV e FLAC. Puoi scegliere se salvare sempre i file convertiti nei Documenti di Sonarpad, aprire la condivisione oppure chiedere ogni volta.",
@@ -14,6 +16,8 @@
       "Aggiunto il supporto Chromecast nei player compatibili, con scelta del dispositivo, controlli di riproduzione e ritorno al telefono dalla posizione raggiunta. Il pulsante si può nascondere nelle impostazioni."
     ],
     "en": [
+      "In Documents, you can now export text as Markdown (.md) and HTML (.html), save it in Sonarpad or share it.",
+      "Added an option in Settings to hide saints in the calendar.",
       "In SonarTube, you can choose the audio track for videos available in multiple languages without losing your playback position. The “Select audio track” button appears only when multiple tracks are available.",
       "Sonarpad remembers the name and email address entered in reports, so you do not have to type them again. You can change or clear them in later reports.",
       "The converter remembers your chosen format and settings, including WAV and FLAC. You can always save converted files in Sonarpad Documents, open the Share sheet, or choose each time.",
@@ -25,6 +29,8 @@
       "Added Chromecast casting in compatible players, with device selection, playback controls and return to your phone at the current position. You can hide the button in settings."
     ],
     "fr": [
+      "Dans Documents, vous pouvez désormais exporter les textes en Markdown (.md) et HTML (.html), les enregistrer dans Sonarpad ou les partager.",
+      "Ajout d’une option dans les paramètres pour masquer les saints dans le calendrier.",
       "Dans SonarTube, vous pouvez choisir la piste audio des vidéos disponibles en plusieurs langues sans perdre votre position de lecture. Le bouton « Choisir la piste audio » apparaît uniquement lorsque plusieurs pistes sont disponibles.",
       "Sonarpad mémorise le nom et l’adresse e-mail saisis dans les signalements pour éviter de les ressaisir. Vous pouvez les modifier ou les effacer lors des signalements suivants.",
       "Le convertisseur mémorise le format et les réglages choisis, y compris WAV et FLAC. Vous pouvez toujours enregistrer les fichiers convertis dans Documents de Sonarpad, ouvrir le partage ou choisir à chaque fois.",
@@ -36,6 +42,8 @@
       "Ajout de Chromecast dans les lecteurs compatibles, avec choix de l’appareil, commandes de lecture et reprise sur le téléphone à la position actuelle. Le bouton peut être masqué dans les réglages."
     ],
     "es": [
+      "En Documentos ya puedes exportar textos en Markdown (.md) y HTML (.html), guardarlos en Sonarpad o compartirlos.",
+      "Añadida una opción en los ajustes para ocultar los santos en el calendario.",
       "En SonarTube puedes elegir la pista de audio de los vídeos disponibles en varios idiomas sin perder el punto de reproducción. El botón «Seleccionar pista de audio» solo aparece cuando hay varias pistas disponibles.",
       "Sonarpad recuerda el nombre y el correo electrónico de los informes para que no tengas que volver a escribirlos. Puedes modificarlos o borrarlos en informes posteriores.",
       "El convertidor recuerda el formato y los ajustes elegidos, incluidos WAV y FLAC. Puedes guardar siempre los archivos convertidos en Documentos de Sonarpad, abrir el menú para compartir o elegir cada vez.",
@@ -47,6 +55,8 @@
       "Añadida la transmisión con Chromecast en reproductores compatibles, con selección del dispositivo, controles y regreso al teléfono desde la posición actual. El botón se puede ocultar en los ajustes."
     ],
     "pt": [
+      "Nos Documentos, pode agora exportar textos em Markdown (.md) e HTML (.html), guardá-los no Sonarpad ou partilhá-los.",
+      "Adicionada uma opção nas definições para ocultar os santos no calendário.",
       "No SonarTube pode escolher a faixa de áudio dos vídeos disponíveis em vários idiomas sem perder o ponto de reprodução. O botão «Selecionar faixa de áudio» só aparece quando existem várias faixas disponíveis.",
       "O Sonarpad guarda o nome e o endereço de email dos relatos para não ter de os escrever novamente. Pode alterá-los ou apagá-los nos relatos seguintes.",
       "O conversor guarda o formato e as definições escolhidos, incluindo WAV e FLAC. Pode guardar sempre os ficheiros convertidos nos Documentos do Sonarpad, abrir a partilha ou escolher de cada vez.",
@@ -58,6 +68,8 @@
       "Adicionada a transmissão com Chromecast nos leitores compatíveis, com escolha do dispositivo, controlos e regresso ao telemóvel na posição atual. O botão pode ser ocultado nas definições."
     ],
     "pt_BR": [
+      "Em Documentos, agora você pode exportar textos em Markdown (.md) e HTML (.html), salvá-los no Sonarpad ou compartilhá-los.",
+      "Adicionada uma opção nas configurações para ocultar os santos no calendário.",
       "No SonarTube, você pode escolher a faixa de áudio dos vídeos disponíveis em vários idiomas sem perder o ponto de reprodução. O botão “Selecionar faixa de áudio” aparece apenas quando há várias faixas disponíveis.",
       "O Sonarpad lembra o nome e o e-mail dos relatos para você não precisar digitá-los novamente. Você pode alterá-los ou apagá-los nos próximos relatos.",
       "O conversor lembra o formato e as configurações escolhidos, incluindo WAV e FLAC. Você pode sempre salvar os arquivos convertidos nos Documentos do Sonarpad, abrir o compartilhamento ou escolher a cada vez.",
@@ -69,6 +81,8 @@
       "Adicionada a transmissão com Chromecast nos reprodutores compatíveis, com escolha do dispositivo, controles e retorno ao celular na posição atual. O botão pode ser ocultado nas configurações."
     ],
     "pl": [
+      "W Dokumentach można teraz eksportować teksty do formatów Markdown (.md) i HTML (.html), zapisywać je w Sonarpad lub udostępniać.",
+      "Dodano w ustawieniach opcję ukrywania świętych w kalendarzu.",
       "W SonarTube można wybrać ścieżkę dźwiękową filmów dostępnych w wielu językach bez utraty miejsca odtwarzania. Przycisk „Wybierz ścieżkę dźwiękową” pojawia się tylko wtedy, gdy dostępnych jest kilka ścieżek.",
       "Sonarpad zapamiętuje imię i adres e-mail ze zgłoszeń, aby nie trzeba było wpisywać ich ponownie. Można je zmienić lub usunąć w kolejnych zgłoszeniach.",
       "Konwerter zapamiętuje wybrany format i ustawienia, także WAV i FLAC. Można zawsze zapisywać przekonwertowane pliki w Dokumentach Sonarpad, otwierać udostępnianie lub wybierać za każdym razem.",
@@ -80,6 +94,8 @@
       "Dodano Chromecast w zgodnych odtwarzaczach: wybór urządzenia, sterowanie i powrót do telefonu w bieżącej pozycji. Przycisk można ukryć w ustawieniach."
     ],
     "cs": [
+      "V Dokumentech nyní můžete exportovat texty do formátů Markdown (.md) a HTML (.html), uložit je do Sonarpadu nebo je sdílet.",
+      "Do nastavení byla přidána možnost skrýt svaté v kalendáři.",
       "V SonarTube můžete vybrat zvukovou stopu videí dostupných ve více jazycích, aniž byste ztratili místo přehrávání. Tlačítko „Vybrat zvukovou stopu“ se zobrazí pouze tehdy, když je dostupných více stop.",
       "Sonarpad si pamatuje jméno a e-mailovou adresu z hlášení, abyste je nemuseli zadávat znovu. V dalších hlášeních je můžete změnit nebo vymazat.",
       "Převodník si pamatuje zvolený formát a nastavení, včetně WAV a FLAC. Převedené soubory můžete vždy ukládat do Dokumentů Sonarpadu, otevřít sdílení nebo se rozhodnout pokaždé.",
@@ -91,6 +107,8 @@
       "Přidáno odesílání přes Chromecast v podporovaných přehrávačích, výběr zařízení, ovládání a návrat na telefon od aktuální pozice. Tlačítko lze skrýt v nastavení."
     ],
     "de": [
+      "In Dokumente lassen sich Texte jetzt auch als Markdown (.md) und HTML (.html) exportieren, in Sonarpad speichern oder teilen.",
+      "In den Einstellungen kann die Anzeige der Heiligen im Kalender jetzt ausgeblendet werden.",
       "In SonarTube lässt sich bei mehrsprachigen Videos die Audiospur auswählen, ohne die Wiedergabeposition zu verlieren. Die Schaltfläche „Audiospur auswählen“ erscheint nur, wenn mehrere Spuren verfügbar sind.",
       "Sonarpad merkt sich den Namen und die E-Mail-Adresse aus Meldungen, damit sie nicht erneut eingegeben werden müssen. In späteren Meldungen können sie geändert oder gelöscht werden.",
       "Der Konverter merkt sich das gewählte Format und die Einstellungen, auch WAV und FLAC. Konvertierte Dateien können immer in Sonarpad-Dokumenten gespeichert oder zum Teilen geöffnet werden. Alternativ lässt sich das Ziel jedes Mal auswählen.",
@@ -102,6 +120,8 @@
       "Chromecast in kompatiblen Playern hinzugefügt: Geräteauswahl, Wiedergabesteuerung und Rückkehr zum Telefon an der aktuellen Position. Die Schaltfläche lässt sich in den Einstellungen ausblenden."
     ],
     "zh_CN": [
+      "文档现已支持将文本导出为 Markdown（.md）和 HTML（.html），并保存到 Sonarpad 或分享。",
+      "新增设置选项，可隐藏日历中的圣人信息。",
       "在 SonarTube 中，你可以为提供多种语言的视频选择音轨，而不会丢失播放位置。只有存在多条音轨时，才会显示“选择音轨”按钮。",
       "Sonarpad 会记住反馈中填写的姓名和电子邮箱，无需每次重新输入。你可以在之后的反馈中修改或清空它们。",
       "转换器会记住所选格式和设置，包括 WAV 和 FLAC。你可以选择始终将转换后的文件保存到 Sonarpad 文档、打开分享菜单，或每次询问。",
@@ -113,6 +133,8 @@
       "兼容播放器新增 Chromecast 投放，支持选择设备、控制播放，以及从当前位置返回手机播放。可在设置中隐藏此按钮。"
     ],
     "uk": [
+      "У Документах тепер можна експортувати тексти у формати Markdown (.md) та HTML (.html), зберігати їх у Sonarpad або ділитися ними.",
+      "У налаштуваннях додано можливість приховувати святих у календарі.",
       "У SonarTube можна вибирати звукову доріжку відео, доступних кількома мовами, не втрачаючи місця відтворення. Кнопка «Вибрати звукову доріжку» з’являється лише за наявності кількох доріжок.",
       "Sonarpad запам’ятовує ім’я та електронну адресу зі звернень, щоб не вводити їх щоразу. У наступних зверненнях їх можна змінити або видалити.",
       "Конвертер запам’ятовує вибраний формат і налаштування, зокрема WAV та FLAC. Можна завжди зберігати перетворені файли в Документах Sonarpad, відкривати меню поширення або вибирати щоразу.",
@@ -124,6 +146,8 @@
       "Додано Chromecast у сумісних програвачах: вибір пристрою, керування та повернення до телефону з поточної позиції. Кнопку можна приховати в налаштуваннях."
     ],
     "ro": [
+      "În Documente, poți acum exporta textele în Markdown (.md) și HTML (.html), le poți salva în Sonarpad sau distribui.",
+      "A fost adăugată în setări posibilitatea de a ascunde sfinții din calendar.",
       "În SonarTube poți alege pista audio a videoclipurilor disponibile în mai multe limbi fără a pierde poziția de redare. Butonul „Selectează pista audio” apare doar când sunt disponibile mai multe piste.",
       "Sonarpad reține numele și adresa de e-mail din sesizări, pentru a nu le introduce de fiecare dată. Le poți modifica sau șterge în sesizările următoare.",
       "Convertorul reține formatul și setările alese, inclusiv WAV și FLAC. Poți salva întotdeauna fișierele convertite în Documentele Sonarpad, deschide meniul de partajare sau alege de fiecare dată.",
@@ -135,6 +159,8 @@
       "Adăugată transmiterea prin Chromecast în playerele compatibile, cu alegerea dispozitivului, comenzi și revenire pe telefon de la poziția curentă. Butonul poate fi ascuns din setări."
     ],
     "tr": [
+      "Belgeler bölümünde metinleri artık Markdown (.md) ve HTML (.html) olarak dışa aktarabilir, Sonarpad içinde kaydedebilir veya paylaşabilirsiniz.",
+      "Ayarlara takvimde azizleri gizleme seçeneği eklendi.",
       "SonarTube’da birden fazla dilde sunulan videoların ses parçasını oynatma konumunu kaybetmeden seçebilirsiniz. “Ses parçası seç” düğmesi yalnızca birden fazla parça olduğunda görünür.",
       "Sonarpad, bildirimlerde girilen adı ve e-posta adresini hatırlar; böylece her seferinde yeniden yazmanız gerekmez. Sonraki bildirimlerde bunları değiştirebilir veya silebilirsiniz.",
       "Dönüştürücü, WAV ve FLAC dahil seçtiğiniz biçimi ve ayarları hatırlar. Dönüştürülen dosyaları her zaman Sonarpad Belgelerine kaydetmeyi, paylaşım menüsünü açmayı veya her seferinde seçmeyi tercih edebilirsiniz.",

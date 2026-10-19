@@ -4833,5 +4833,8 @@
   "castFailure": "A transmissão falhou ou a ligação foi perdida. Pode continuar neste dispositivo.",
   "castResumeHere": "Continuar neste dispositivo",
   "settingsShowCast": "Mostrar Chromecast nos leitores compatíveis",
-  "castStop": "Parar transmissão"
+  "castStop": "Parar transmissão",
+  "settingsHideCalendarSaints": "Ocultar os santos no calendário",
+  "markdownFormat": "Markdown (.md)",
+  "htmlFormat": "HTML (.html)"
 }

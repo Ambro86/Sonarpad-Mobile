@@ -15,6 +15,9 @@ class FakeSession extends ChromecastSession {
   final events = StreamController<ChromecastStatus>.broadcast();
   final commands = <String>[];
   bool reject = false;
+  bool rejectConnect = false;
+  final handoff = <String>[];
+  final rates = <double>[];
   int closes = 0;
   Duration? requestedPosition;
   final volumes = <double>[];
@@ -22,7 +25,10 @@ class FakeSession extends ChromecastSession {
   @override
   Stream<ChromecastStatus> get updates => events.stream;
   @override
-  Future<void> connect(ChromecastDevice device) async {}
+  Future<void> connect(ChromecastDevice device) async {
+    if (rejectConnect) throw StateError('connect_failed');
+  }
+
   @override
   Future<void> load({
     required String url,
@@ -33,9 +39,11 @@ class FakeSession extends ChromecastSession {
     bool autoplay = true,
   }) async {
     requestedPosition = position;
+    handoff.add(autoplay ? 'load_playing' : 'load_paused');
     if (reject) throw StateError('load_failed');
     status = ChromecastStatus(
-      state: 'PLAYING',
+      state: autoplay ? 'PLAYING' : 'PAUSED',
+      supportedMediaCommands: 1 << 13,
       position: position,
       duration: const Duration(minutes: 5),
       sessionId: 1,
@@ -48,6 +56,15 @@ class FakeSession extends ChromecastSession {
     Map<String, dynamic> extra = const {},
   ]) async {
     commands.add(type);
+    handoff.add(type);
+  }
+
+  @override
+  Future<void> refresh() async {}
+
+  @override
+  Future<void> setPlaybackRate(double rate) async {
+    rates.add(rate);
   }
 
   @override
@@ -67,7 +84,57 @@ class FakeSession extends ChromecastSession {
   }
 }
 
+class RateSession extends ChromecastSession {
+  final requested = <double>[];
+  bool ignoreRate = false;
+  RateSession({bool supported = true}) {
+    status = ChromecastStatus(
+      sessionId: 1,
+      supportedMediaCommands: supported ? 1 << 13 : 0,
+    );
+  }
+  @override
+  Future<void> refresh() async {}
+  @override
+  Future<void> command(
+    String type, [
+    Map<String, dynamic> extra = const {},
+  ]) async {
+    if (type == 'SET_PLAYBACK_RATE') {
+      final rate = extra['playbackRate'] as double;
+      requested.add(rate);
+      if (!ignoreRate) {
+        status = ChromecastStatus(
+          sessionId: 1,
+          supportedMediaCommands: 1 << 13,
+          playbackRate: rate,
+        );
+      }
+    }
+  }
+}
+
 void main() {
+  test(
+    'Cast speed requires capability and confirmation from the receiver',
+    () async {
+      final supported = RateSession();
+      await supported.setPlaybackRate(1.5);
+      expect(supported.status.playbackRate, 1.5);
+      supported.ignoreRate = true;
+      await expectLater(supported.setPlaybackRate(2), throwsStateError);
+      expect(supported.requested, [1.5, 2.0, 1.5]);
+      expect(supported.status.playbackRate, 1.5);
+      final unsupported = RateSession(supported: false);
+      await expectLater(
+        unsupported.setPlaybackRate(1.5),
+        throwsUnsupportedError,
+      );
+      expect(unsupported.requested, isEmpty);
+      await supported.close(stop: false);
+      await unsupported.close(stop: false);
+    },
+  );
   tearDown(() {
     debugDefaultTargetPlatformOverride = null;
     configureAccessibleRendererRuntime(useFlutterOnIos: false);
@@ -143,6 +210,7 @@ void main() {
                       title: 'Video',
                       position: () => const Duration(seconds: 42),
                       onStarted: () async {
+                        session.handoff.add('pause_local');
                         started++;
                       },
                       onPosition: (p) async {
@@ -175,6 +243,14 @@ void main() {
       );
       await tester.pumpAndSettle();
       expect(started, 1);
+      expect(session.handoff, ['pause_local', 'load_playing']);
+      final speed = find.byKey(const ValueKey('cast_speed'));
+      final speedElement = tester.element(speed);
+      tester.widget<Slider>(speed).onChanged!(1.5);
+      await tester.pumpAndSettle();
+      expect(session.rates, [1.5]);
+      expect(tester.element(speed), same(speedElement));
+      expect(tester.widget<Slider>(speed).onChanged, isNotNull);
       expect(session.requestedPosition, const Duration(seconds: 42));
       final slider = find.byKey(const ValueKey('cast_volume'));
       final element = tester.element(slider);
@@ -213,45 +289,54 @@ void main() {
     });
   }
 
-  testWidgets(
-    'A failed load leaves local playback untouched and allows retry',
-    (tester) async {
-      final session = FakeSession()..reject = true;
-      var started = false;
-      await tester.pumpWidget(
-        MaterialApp(
-          locale: const Locale('en'),
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: ChromecastScreen(
-            media: const ChromecastMedia(
-              'https://example.org/a.mp3',
-              'audio/mpeg',
+  for (final failAfterPause in [false, true]) {
+    testWidgets(
+      'Failed handoff recovers local playback: after pause=$failAfterPause',
+      (tester) async {
+        final session = FakeSession()
+          ..reject = failAfterPause
+          ..rejectConnect = !failAfterPause;
+        var recovered = false;
+        var started = false;
+        await tester.pumpWidget(
+          MaterialApp(
+            locale: const Locale('en'),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: ChromecastScreen(
+              media: const ChromecastMedia(
+                'https://example.org/a.mp3',
+                'audio/mpeg',
+              ),
+              title: 'Audio',
+              position: () => Duration.zero,
+              onStarted: () async {
+                started = true;
+              },
+              onPosition: (_) async {},
+              onStartFailed: () async {
+                recovered = true;
+              },
+              sessionFactory: () => session,
+              discoveryOverride: () => Stream.value([
+                const ChromecastDevice('id', 'Test TV', '127.0.0.1', 8009),
+              ]),
             ),
-            title: 'Audio',
-            position: () => Duration.zero,
-            onStarted: () async {
-              started = true;
-            },
-            onPosition: (_) async {},
-            sessionFactory: () => session,
-            discoveryOverride: () => Stream.value([
-              const ChromecastDevice('id', 'Test TV', '127.0.0.1', 8009),
-            ]),
           ),
-        ),
-      );
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Test TV'));
-      await tester.runAsync(
-        () => Future<void>.delayed(const Duration(milliseconds: 30)),
-      );
-      await tester.pumpAndSettle();
-      expect(started, isFalse);
-      expect(find.textContaining('Casting failed'), findsOneWidget);
-      expect(find.text('Retry'), findsOneWidget);
-      await tester.pumpWidget(const SizedBox.shrink());
-      await session.events.close();
-    },
-  );
+        );
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Test TV'));
+        await tester.runAsync(
+          () => Future<void>.delayed(const Duration(milliseconds: 30)),
+        );
+        await tester.pumpAndSettle();
+        expect(started, failAfterPause);
+        expect(recovered, failAfterPause);
+        expect(find.textContaining('Casting failed'), findsOneWidget);
+        expect(find.text('Retry'), findsOneWidget);
+        await tester.pumpWidget(const SizedBox.shrink());
+        await session.events.close();
+      },
+    );
+  }
 }

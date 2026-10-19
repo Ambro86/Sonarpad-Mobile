@@ -4827,5 +4827,8 @@
   "castFailure": "投放失败或连接已断开。你可以在此设备上继续播放。",
   "castResumeHere": "在此设备上继续播放",
   "settingsShowCast": "在兼容的播放器中显示 Chromecast",
-  "castStop": "停止投放"
+  "castStop": "停止投放",
+  "settingsHideCalendarSaints": "在日历中隐藏圣人",
+  "markdownFormat": "Markdown (.md)",
+  "htmlFormat": "HTML (.html)"
 }
