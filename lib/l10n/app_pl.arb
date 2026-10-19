@@ -6411,5 +6411,6 @@
   "castStop": "Zatrzymaj przesyłanie",
   "settingsHideCalendarSaints": "Ukryj świętych w kalendarzu",
   "markdownFormat": "Markdown (.md)",
-  "htmlFormat": "HTML (.html)"
+  "htmlFormat": "HTML (.html)",
+  "recordingNotAdvancing": "Nagranie nie odbiera nowych danych. Sprawdź połączenie i w razie potrzeby uruchom nagrywanie ponownie."
 }

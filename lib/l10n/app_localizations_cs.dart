@@ -7,6 +7,9 @@ import 'app_localizations.dart';
 /// The translations for Czech (`cs`).
 class AppLocalizationsCs extends AppLocalizations {
   @override
+  String get recordingNotAdvancing => "Nahrávání nepřijímá nová data. Zkontrolujte připojení a v případě potřeby nahrávání restartujte.";
+
+  @override
   String get castToDevice => "Odesílat přes Chromecast";
   @override
   String get castNoDevices => "Nebyla nalezena žádná zařízení. Ověřte stejnou síť Wi-Fi a zkuste to znovu.";

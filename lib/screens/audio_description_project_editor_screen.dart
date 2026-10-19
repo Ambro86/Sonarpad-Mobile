@@ -7,7 +7,7 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
 import 'package:share_plus/share_plus.dart';
-import 'package:wakelock_plus/wakelock_plus.dart';
+import '../services/protected_wakelock.dart';
 
 import '../l10n/app_localizations.dart';
 import '../l10n/localized_dynamic_labels.dart';

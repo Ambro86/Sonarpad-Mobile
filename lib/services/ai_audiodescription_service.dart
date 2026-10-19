@@ -14,7 +14,7 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
-import 'package:wakelock_plus/wakelock_plus.dart';
+import 'protected_wakelock.dart';
 
 import '../tts/edge_tts_bridge.dart';
 import '../utils/app_logger.dart';

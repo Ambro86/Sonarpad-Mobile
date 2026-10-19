@@ -6408,5 +6408,6 @@
   "castStop": "Зупинити трансляцію",
   "settingsHideCalendarSaints": "Приховувати святих у календарі",
   "markdownFormat": "Markdown (.md)",
-  "htmlFormat": "HTML (.html)"
+  "htmlFormat": "HTML (.html)",
+  "recordingNotAdvancing": "Запис не отримує нових даних. Перевірте з’єднання та за потреби перезапустіть запис."
 }

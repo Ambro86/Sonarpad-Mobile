@@ -1,4 +1,8 @@
 import 'dart:io';
+import 'dart:async';
+import 'package:flutter/widgets.dart';
+import 'protected_wakelock.dart';
+import 'recording_health_monitor.dart';
 
 import 'package:ffmpeg_kit_flutter_new/ffmpeg_kit.dart';
 import 'package:ffmpeg_kit_flutter_new/ffmpeg_session.dart';
@@ -7,7 +11,7 @@ import 'package:path_provider/path_provider.dart';
 
 import '../utils/app_logger.dart';
 
-class RadioRecordingService {
+class RadioRecordingService extends ChangeNotifier with WidgetsBindingObserver {
   static const _ffmpegUserAgent =
       'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) '
       'AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1';
@@ -18,6 +22,81 @@ class RadioRecordingService {
   FFmpegSession? _session;
   File? _outputFile;
   int _ffmpegLogLines = 0;
+  Timer? _monitorTimer;
+  RecordingHealthMonitor? _health;
+  Completer<void>? _completion;
+  bool _stopping = false, _checking = false, _holdingAwake = false;
+  bool stoppedUnexpectedly = false;
+  int _mediaMs = 0;
+  bool get stalled => _health?.stalled ?? false;
+
+  Future<void> _beginMonitoring() async {
+    _health = RecordingHealthMonitor(DateTime.now());
+    if (Platform.isIOS || Platform.isAndroid) {
+      await WakelockPlus.coordinator.acquire(this);
+      _holdingAwake = true;
+    }
+    WidgetsBinding.instance.addObserver(this);
+    _monitorTimer = Timer.periodic(
+      const Duration(seconds: 15),
+      (_) => unawaited(_checkProgress()),
+    );
+    AppLogger.log(
+      'Radio recording: monitoring started screenHeld=$_holdingAwake',
+    );
+  }
+
+  Future<void> _endMonitoring() async {
+    _monitorTimer?.cancel();
+    _monitorTimer = null;
+    WidgetsBinding.instance.removeObserver(this);
+    if (_holdingAwake) {
+      _holdingAwake = false;
+      try {
+        await WakelockPlus.coordinator.release(this);
+      } catch (error) {
+        AppLogger.log(
+          'Radio recording: screen release failed ${error.runtimeType}',
+        );
+      }
+    }
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    AppLogger.log(
+      'Radio recording: lifecycle=$state active=$isRecording stopping=$_stopping mediaMs=$_mediaMs',
+    );
+    if (state == AppLifecycleState.resumed) {
+      unawaited(_checkProgress());
+    }
+  }
+
+  Future<void> _checkProgress() async {
+    if (_checking || !isRecording || _stopping) return;
+    _checking = true;
+    try {
+      if (_holdingAwake) await WakelockPlus.coordinator.refresh();
+      final file = _outputFile;
+      final bytes = file != null && await file.exists()
+          ? await file.length()
+          : 0;
+      if (!isRecording || _stopping) return;
+      final now = DateTime.now();
+      final changed =
+          _health?.update(now: now, bytes: bytes, mediaMs: _mediaMs) ?? false;
+      AppLogger.log(
+        'Radio recording: progress bytes=$bytes mediaMs=$_mediaMs idleSec=${_health?.idleFor(now).inSeconds} stalled=$stalled lifecycle=${WidgetsBinding.instance.lifecycleState}',
+      );
+      if (changed) notifyListeners();
+    } catch (error) {
+      AppLogger.log(
+        'Radio recording: progress check failed ${error.runtimeType}',
+      );
+    } finally {
+      _checking = false;
+    }
+  }
 
   RadioRecordingService({
     this.directoryName = 'Radio Registrazioni',
@@ -46,7 +125,8 @@ class RadioRecordingService {
     await for (final entity in dir.list(followLinks: false)) {
       if (entity is! File) {
         await AppLogger.log(
-            'Radio recording: ignored non-file "${entity.path}"');
+          'Radio recording: ignored non-file "${entity.path}"',
+        );
         continue;
       }
       final ext = p.extension(entity.path).toLowerCase();
@@ -90,10 +170,9 @@ class RadioRecordingService {
     final ext = isRaiAudioDescriptionRecording
         ? '.mp4'
         : _recordingExtension(streamUrl);
-    final file = File(p.join(
-      dir.path,
-      '${_safeFileName(stationName)} - ${_timestamp()}$ext',
-    ));
+    final file = File(
+      p.join(dir.path, '${_safeFileName(stationName)} - ${_timestamp()}$ext'),
+    );
     final List<String> arguments;
     if (raiVideoUrl != null && raiAudioUrl != null) {
       arguments = _raiAudioDescriptionRecordingArguments(
@@ -121,33 +200,58 @@ class RadioRecordingService {
     await AppLogger.log('Radio recording: ffmpeg args=${arguments.join(' ')}');
     _outputFile = file;
     _ffmpegLogLines = 0;
-    _session = await FFmpegKit.executeWithArgumentsAsync(
-      arguments,
-      (session) async {
-        final returnCode = await session.getReturnCode();
-        final exists = await file.exists();
-        final size = exists ? await file.length() : 0;
-        await AppLogger.log(
-          'Radio recording: finished output="${file.path}" '
-          'returnCode=${returnCode?.getValue()} exists=$exists size=$size',
-        );
-      },
-      (log) async {
-        final message = log.getMessage().trim();
-        if (message.isNotEmpty && _shouldLogFfmpegLine(message)) {
-          _ffmpegLogLines += 1;
-          await AppLogger.log('Radio recording ffmpeg: $message');
-        }
-      },
-    );
+    _stopping = false;
+    stoppedUnexpectedly = false;
+    _mediaMs = 0;
+    _completion = Completer<void>();
+    try {
+      await _beginMonitoring();
+      final startedSession = await FFmpegKit.executeWithArgumentsAsync(
+        arguments,
+        (session) async {
+          try {
+            final returnCode = await session.getReturnCode();
+            final exists = await file.exists();
+            final size = exists ? await file.length() : 0;
+            stoppedUnexpectedly = !_stopping;
+            await AppLogger.log(
+              'Radio recording: finished output="${file.path}" '
+              'returnCode=${returnCode?.getValue()} exists=$exists size=$size unexpected=$stoppedUnexpectedly mediaMs=$_mediaMs',
+            );
+          } finally {
+            _session = null;
+            await _endMonitoring();
+            if (!_completion!.isCompleted) _completion!.complete();
+            notifyListeners();
+          }
+        },
+        (log) async {
+          final message = log.getMessage().trim();
+          if (message.isNotEmpty && _shouldLogFfmpegLine(message)) {
+            _ffmpegLogLines += 1;
+            await AppLogger.log(
+              'Radio recording ffmpeg: ${message.replaceAll(RegExp(r"https?://[^\s]+"), "[stream]")}',
+            );
+          }
+        },
+        (statistics) {
+          _mediaMs = statistics.getTime().round();
+        },
+      );
+      _session = _completion!.isCompleted ? null : startedSession;
+    } catch (_) {
+      await _endMonitoring();
+      _session = null;
+      rethrow;
+    }
     await Future<void>.delayed(const Duration(milliseconds: 500));
     final earlyReturnCode = await _session?.getReturnCode();
-    if (earlyReturnCode != null) {
+    if (earlyReturnCode != null || _completion!.isCompleted) {
       final exists = await file.exists();
       final size = exists ? await file.length() : 0;
       await AppLogger.log(
         'Radio recording: early finish output="${file.path}" '
-        'returnCode=${earlyReturnCode.getValue()} exists=$exists size=$size',
+        'returnCode=${earlyReturnCode?.getValue()} exists=$exists size=$size',
       );
       if (!exists || size == 0) {
         _session = null;
@@ -162,33 +266,20 @@ class RadioRecordingService {
     final session = _session;
     final file = _outputFile;
     if (session == null) return file;
-
-    await AppLogger.log('Radio recording: stop output="${file?.path}"');
+    _stopping = true;
+    await AppLogger.log(
+      'Radio recording: stop requested; awaiting finalization',
+    );
     await FFmpegKit.cancel(session.getSessionId());
-    if (file != null) {
-      await _waitForFile(file);
-      final exists = await file.exists();
-      final size = exists ? await file.length() : 0;
-      await AppLogger.log(
-        'Radio recording: stopped output="${file.path}" exists=$exists size=$size',
-      );
-      _session = null;
-      _outputFile = null;
-      if (!exists || size == 0) {
-        throw Exception('Registrazione non creata dallo stream.');
-      }
-      return file;
+    // Cancellation is asynchronous: the file is not ready until FFmpeg closes it.
+    await _completion!.future.timeout(const Duration(seconds: 30));
+    if (file == null || !await file.exists() || await file.length() == 0) {
+      throw StateError('recording_output_missing');
     }
-    _session = null;
-    _outputFile = null;
-    return null;
-  }
-
-  Future<void> _waitForFile(File file) async {
-    for (var attempt = 0; attempt < 10; attempt += 1) {
-      if (await file.exists() && await file.length() > 0) return;
-      await Future<void>.delayed(const Duration(milliseconds: 250));
-    }
+    await AppLogger.log(
+      'Radio recording: finalized bytes=${await file.length()}',
+    );
+    return file;
   }
 
   String _recordingExtension(String streamUrl) {
@@ -293,7 +384,12 @@ class RadioRecordingService {
   }
 
   bool _shouldLogFfmpegLine(String message) {
-    if (_ffmpegLogLines >= 40) return false;
+    // Repeated timestamp warnings must not consume the budget for later errors.
+    if (_ffmpegLogLines >= 40 &&
+        message.toLowerCase().contains('invalid timestamps')) {
+      return false;
+    }
+    if (_ffmpegLogLines >= 200) return false;
     final lower = message.toLowerCase();
     return lower.contains('error') ||
         lower.contains('forbidden') ||

@@ -6408,5 +6408,6 @@
   "castStop": "Interrompi trasmissione",
   "settingsHideCalendarSaints": "Nascondi i santi nel calendario",
   "markdownFormat": "Markdown (.md)",
-  "htmlFormat": "HTML (.html)"
+  "htmlFormat": "HTML (.html)",
+  "recordingNotAdvancing": "La registrazione non sta acquisendo nuovi dati. Controlla la connessione e riavviala se necessario."
 }

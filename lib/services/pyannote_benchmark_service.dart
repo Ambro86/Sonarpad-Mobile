@@ -11,7 +11,7 @@ import 'package:flutter/services.dart';
 import 'package:onnxruntime_plus/onnxruntime_plus.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
-import 'package:wakelock_plus/wakelock_plus.dart';
+import 'protected_wakelock.dart';
 
 import '../utils/app_logger.dart';
 import 'pyannote_mobile_service.dart';

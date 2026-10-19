@@ -7,6 +7,9 @@ import 'app_localizations.dart';
 /// The translations for Portuguese (`pt`).
 class AppLocalizationsPt extends AppLocalizations {
   @override
+  String get recordingNotAdvancing => "A gravação não está a receber novos dados. Verifica a ligação e reinicia-a se necessário.";
+
+  @override
   String get castToDevice => "Transmitir com Chromecast";
   @override
   String get castNoDevices => "Nenhum dispositivo encontrado. Verifique se usam a mesma rede Wi-Fi e tente novamente.";
@@ -5405,6 +5408,9 @@ class AppLocalizationsPt extends AppLocalizations {
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
 class AppLocalizationsPtBr extends AppLocalizationsPt {
+  @override
+  String get recordingNotAdvancing => "A gravação não está recebendo novos dados. Verifique a conexão e reinicie-a se necessário.";
+
   @override
   String get castToDevice => "Transmitir com Chromecast";
   @override

@@ -16,7 +16,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 import 'package:share_plus/share_plus.dart';
-import 'package:wakelock_plus/wakelock_plus.dart';
+import '../services/protected_wakelock.dart';
 
 import '../utils/app_logger.dart';
 import '../utils/gs1_parser.dart';

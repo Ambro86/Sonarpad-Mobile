@@ -58,6 +58,14 @@ class GlobalRecordingService extends ChangeNotifier {
 
   bool get isRecording => _recordingService?.isRecording ?? false;
   bool get isStarting => _starting;
+  bool hasRecordingIssueFor(String id) =>
+      _activeTarget?.id == id &&
+      (_recordingService?.stalled == true ||
+          _recordingService?.stoppedUnexpectedly == true);
+  void _onRecordingChanged() {
+    notifyListeners();
+  }
+
   bool get hasAnyActiveRecording => isRecording || _starting;
   bool get hasAnySchedule => _scheduledTarget != null;
 
@@ -93,9 +101,7 @@ class GlobalRecordingService extends ChangeNotifier {
   File? pendingScheduledOutput({required bool includeVideo}) {
     final target = _scheduledTarget;
     final path = _pendingScheduledOutputPath;
-    if (target == null ||
-        target.includeVideo != includeVideo ||
-        path == null) {
+    if (target == null || target.includeVideo != includeVideo || path == null) {
       return null;
     }
     return File(path);
@@ -118,7 +124,9 @@ class GlobalRecordingService extends ChangeNotifier {
         .replaceAll(RegExp(r'\s+'), ' ')
         .trim();
     final extension = target.includeVideo ? '.mp4' : '.mp3';
-    final displayName = safeName.isEmpty ? target.id.hashCode.toString() : safeName;
+    final displayName = safeName.isEmpty
+        ? target.id.hashCode.toString()
+        : safeName;
     final kind = target.includeVideo ? 'tv' : 'radio';
     return '/__sonarpad_scheduled__/$kind/${start.millisecondsSinceEpoch}/$displayName$extension';
   }
@@ -167,11 +175,13 @@ class GlobalRecordingService extends ChangeNotifier {
       () => unawaited(_startScheduledRecording()),
     );
     notifyListeners();
-    unawaited(AppLogger.log(
-      'Global recording: schedule set target="${target.stationName}" '
-      'start=$start end=$end title=${_scheduledTitle ?? ''} '
-      'tv=${target.includeVideo}',
-    ));
+    unawaited(
+      AppLogger.log(
+        'Global recording: schedule set target="${target.stationName}" '
+        'start=$start end=$end title=${_scheduledTitle ?? ''} '
+        'tv=${target.includeVideo}',
+      ),
+    );
   }
 
   bool cancelSchedule({String? targetId}) {
@@ -180,9 +190,11 @@ class GlobalRecordingService extends ChangeNotifier {
     final targetName = _scheduledTarget?.stationName;
     _cancelScheduleInternal();
     notifyListeners();
-    unawaited(AppLogger.log(
-      'Global recording: schedule cancelled target="${targetName ?? ''}"',
-    ));
+    unawaited(
+      AppLogger.log(
+        'Global recording: schedule cancelled target="${targetName ?? ''}"',
+      ),
+    );
     return true;
   }
 
@@ -194,16 +206,20 @@ class GlobalRecordingService extends ChangeNotifier {
       throw StateError('A recording is already active.');
     }
 
+    _recordingService?.removeListener(_onRecordingChanged);
     _starting = true;
     _activeTarget = target;
     notifyListeners();
     try {
       final recordingService = RadioRecordingService(
-        directoryName:
-            target.includeVideo ? 'TV Registrazioni' : 'Radio Registrazioni',
+        directoryName: target.includeVideo
+            ? 'TV Registrazioni'
+            : 'Radio Registrazioni',
         includeVideo: target.includeVideo,
       );
 
+      _recordingService = recordingService;
+      recordingService.addListener(_onRecordingChanged);
       String? recordingVideoUrl;
       String? recordingAudioUrl;
       final originalTvChannel = target.tvChannel;
@@ -216,8 +232,9 @@ class GlobalRecordingService extends ChangeNotifier {
         );
         effectiveTvChannel = refreshedTvChannel;
         try {
-          effectiveStreamUrl =
-              await TvService().resolveStreamUrl(refreshedTvChannel);
+          effectiveStreamUrl = await TvService().resolveStreamUrl(
+            refreshedTvChannel,
+          );
           await AppLogger.log(
             'Global recording: refreshed TV stream target="${target.stationName}" '
             'channel="${refreshedTvChannel.name}"',
@@ -232,9 +249,11 @@ class GlobalRecordingService extends ChangeNotifier {
       if (effectiveTvChannel != null &&
           TvService().isRaiAudioDescriptionChannel(effectiveTvChannel) &&
           !TvService.isDashStreamUrl(effectiveStreamUrl)) {
-        final streams =
-            await TvService().resolveAudioDescriptionStreams(effectiveTvChannel);
-        if (streams.hasAudioDescription && streams.videoUrl != streams.audioUrl) {
+        final streams = await TvService().resolveAudioDescriptionStreams(
+          effectiveTvChannel,
+        );
+        if (streams.hasAudioDescription &&
+            streams.videoUrl != streams.audioUrl) {
           recordingVideoUrl = streams.videoUrl;
           recordingAudioUrl = streams.audioUrl;
           await AppLogger.log(
@@ -268,6 +287,7 @@ class GlobalRecordingService extends ChangeNotifier {
       );
       return file;
     } catch (error) {
+      _recordingService?.removeListener(_onRecordingChanged);
       _recordingService = null;
       _activeTarget = null;
       _activeOutput = null;
@@ -340,14 +360,17 @@ class GlobalRecordingService extends ChangeNotifier {
       );
       return file;
     } finally {
-      _recordingService = null;
-      _activeTarget = null;
-      _activeOutput = null;
-      if (cancelLinkedSchedule &&
-          target != null &&
-          _scheduledTarget?.id == target.id &&
-          _scheduledStopTimer != null) {
-        _cancelScheduleInternal();
+      if (!service.isRecording) {
+        service.removeListener(_onRecordingChanged);
+        _recordingService = null;
+        _activeTarget = null;
+        _activeOutput = null;
+        if (cancelLinkedSchedule &&
+            target != null &&
+            _scheduledTarget?.id == target.id &&
+            _scheduledStopTimer != null) {
+          _cancelScheduleInternal();
+        }
       }
       notifyListeners();
     }

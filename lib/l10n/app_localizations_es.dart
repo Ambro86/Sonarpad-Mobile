@@ -7,6 +7,9 @@ import 'app_localizations.dart';
 /// The translations for Spanish Castilian (`es`).
 class AppLocalizationsEs extends AppLocalizations {
   @override
+  String get recordingNotAdvancing => "La grabación no está recibiendo datos nuevos. Comprueba la conexión y reiníciala si es necesario.";
+
+  @override
   String get castToDevice => "Transmitir con Chromecast";
   @override
   String get castNoDevices => "No se encontraron dispositivos. Comprueba que usen la misma red Wi-Fi e inténtalo de nuevo.";

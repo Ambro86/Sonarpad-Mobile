@@ -115,4 +115,18 @@ final turkishNewsSources = [
     name: 'Ensonhaber',
     uri: Uri.parse('https://www.ensonhaber.com/rss/ensonhaber.xml'),
   ),
+  NewsRssSource(
+    name: 'Edebiyat Haber – Kitaplar Arasında',
+    uri: Uri.parse(
+      'https://www.edebiyathaber.net/category/kitaplar-arasinda/feed/',
+    ),
+  ),
+  NewsRssSource(
+    name: 'Meb Personel',
+    uri: Uri.parse('https://mebpersonel.com/service/rss.php'),
+  ),
+  NewsRssSource(
+    name: 'Yaşadıkça',
+    uri: Uri.parse('https://yasadikca.com/feed/'),
+  ),
 ];

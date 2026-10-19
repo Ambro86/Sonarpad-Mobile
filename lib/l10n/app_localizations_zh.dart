@@ -7,6 +7,9 @@ import 'app_localizations.dart';
 /// The translations for Chinese (`zh`).
 class AppLocalizationsZh extends AppLocalizations {
   @override
+  String get recordingNotAdvancing => "录制未收到新数据。请检查网络连接，必要时重新开始录制。";
+
+  @override
   String get castToDevice => "通过 Chromecast 投放";
   @override
   String get castNoDevices => "未找到设备。请确认设备连接到同一 Wi-Fi 网络，然后重试。";
@@ -5210,6 +5213,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
 /// The translations for Chinese, as used in China (`zh_CN`).
 class AppLocalizationsZhCn extends AppLocalizationsZh {
+  @override
+  String get recordingNotAdvancing => "录制未收到新数据。请检查网络连接，必要时重新开始录制。";
+
   @override
   String get castToDevice => "通过 Chromecast 投放";
   @override

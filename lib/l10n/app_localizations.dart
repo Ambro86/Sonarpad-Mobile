@@ -72,6 +72,7 @@ import 'app_localizations_zh.dart';
 /// be consistent with the languages listed in the AppLocalizations.supportedLocales
 /// property.
 abstract class AppLocalizations {
+  String get recordingNotAdvancing;
   String get castToDevice;
   String get castNoDevices;
   String get castFailure;

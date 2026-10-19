@@ -4836,5 +4836,6 @@
   "castStop": "Arrêter la diffusion",
   "settingsHideCalendarSaints": "Masquer les saints dans le calendrier",
   "markdownFormat": "Markdown (.md)",
-  "htmlFormat": "HTML (.html)"
+  "htmlFormat": "HTML (.html)",
+  "recordingNotAdvancing": "L’enregistrement ne reçoit plus de données. Vérifiez la connexion et relancez-le si nécessaire."
 }

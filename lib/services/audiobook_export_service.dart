@@ -5,7 +5,7 @@ import 'package:ffmpeg_kit_flutter_new/ffmpeg_kit.dart';
 import 'package:ffmpeg_kit_flutter_new/return_code.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:path/path.dart' as p;
-import 'package:wakelock_plus/wakelock_plus.dart';
+import 'protected_wakelock.dart';
 
 import '../tts/edge_tts_bridge.dart';
 import '../utils/app_logger.dart';

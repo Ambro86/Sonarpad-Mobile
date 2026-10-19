@@ -4833,5 +4833,6 @@
   "castStop": "Zastavit odesílání",
   "settingsHideCalendarSaints": "Skrýt svaté v kalendáři",
   "markdownFormat": "Markdown (.md)",
-  "htmlFormat": "HTML (.html)"
+  "htmlFormat": "HTML (.html)",
+  "recordingNotAdvancing": "Nahrávání nepřijímá nová data. Zkontrolujte připojení a v případě potřeby nahrávání restartujte."
 }

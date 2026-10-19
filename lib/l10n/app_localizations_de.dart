@@ -7,6 +7,9 @@ import 'app_localizations.dart';
 /// The translations for German (`de`).
 class AppLocalizationsDe extends AppLocalizations {
   @override
+  String get recordingNotAdvancing => "Die Aufnahme empfängt keine neuen Daten. Prüfe deine Verbindung und starte sie bei Bedarf neu.";
+
+  @override
   String get castToDevice => "Mit Chromecast übertragen";
   @override
   String get castNoDevices => "Keine Geräte gefunden. Prüfe, ob beide Geräte dasselbe WLAN verwenden, und versuche es erneut.";

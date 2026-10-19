@@ -4830,5 +4830,6 @@
   "castStop": "停止投放",
   "settingsHideCalendarSaints": "在日历中隐藏圣人",
   "markdownFormat": "Markdown (.md)",
-  "htmlFormat": "HTML (.html)"
+  "htmlFormat": "HTML (.html)",
+  "recordingNotAdvancing": "录制未收到新数据。请检查网络连接，必要时重新开始录制。"
 }

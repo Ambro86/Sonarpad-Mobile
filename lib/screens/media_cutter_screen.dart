@@ -19,7 +19,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:sonarpad_audio_dsp/sonarpad_audio_dsp.dart';
 import 'package:video_player/video_player.dart';
-import 'package:wakelock_plus/wakelock_plus.dart';
+import '../services/protected_wakelock.dart';
 
 import '../l10n/app_localizations.dart';
 import '../services/cloud_file_picker_service.dart';

@@ -4836,5 +4836,6 @@
   "castStop": "Parar transmissão",
   "settingsHideCalendarSaints": "Ocultar os santos no calendário",
   "markdownFormat": "Markdown (.md)",
-  "htmlFormat": "HTML (.html)"
+  "htmlFormat": "HTML (.html)",
+  "recordingNotAdvancing": "A gravação não está a receber novos dados. Verifica a ligação e reinicia-a se necessário."
 }

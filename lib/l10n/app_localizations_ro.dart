@@ -8,6 +8,9 @@ import 'app_localizations.dart';
 /// Remaining untranslated messages temporarily keep their English text until the next phase.
 class AppLocalizationsRo extends AppLocalizations {
   @override
+  String get recordingNotAdvancing => "Înregistrarea nu primește date noi. Verifică conexiunea și repornește înregistrarea dacă este necesar.";
+
+  @override
   String get castToDevice => "Transmite cu Chromecast";
   @override
   String get castNoDevices => "Nu s-au găsit dispozitive. Verifică dacă folosesc aceeași rețea Wi-Fi și încearcă din nou.";

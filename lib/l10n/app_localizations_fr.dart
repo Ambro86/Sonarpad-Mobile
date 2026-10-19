@@ -7,6 +7,9 @@ import 'app_localizations.dart';
 /// The translations for French (`fr`).
 class AppLocalizationsFr extends AppLocalizations {
   @override
+  String get recordingNotAdvancing => "L’enregistrement ne reçoit plus de données. Vérifiez la connexion et relancez-le si nécessaire.";
+
+  @override
   String get castToDevice => "Diffuser avec Chromecast";
   @override
   String get castNoDevices => "Aucun appareil trouvé. Vérifiez que les appareils utilisent le même réseau Wi-Fi et réessayez.";

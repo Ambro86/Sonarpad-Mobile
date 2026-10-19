@@ -7,6 +7,9 @@ import 'app_localizations.dart';
 /// The translations for English (`en`).
 class AppLocalizationsEn extends AppLocalizations {
   @override
+  String get recordingNotAdvancing => "The recording is not receiving new data. Check your connection and restart it if needed.";
+
+  @override
   String get castToDevice => "Cast with Chromecast";
   @override
   String get castNoDevices => "No devices found. Check that both devices use the same Wi-Fi network and try again.";

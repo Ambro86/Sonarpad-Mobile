@@ -4830,5 +4830,6 @@
   "castStop": "Stop casting",
   "settingsHideCalendarSaints": "Hide saints in the calendar",
   "markdownFormat": "Markdown (.md)",
-  "htmlFormat": "HTML (.html)"
+  "htmlFormat": "HTML (.html)",
+  "recordingNotAdvancing": "The recording is not receiving new data. Check your connection and restart it if needed."
 }

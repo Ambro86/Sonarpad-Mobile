@@ -18,7 +18,7 @@ void main() {
     NewsService.resetTinyfishFallbackOnlyPolicyForTests();
   });
 
-  test('Turkish catalog exposes ten publishers and localized Google topics', () {
+  test('Turkish catalog exposes thirteen publishers and localized Google topics', () {
     final sources = NewsLanguage.turkish.rssSources;
     expect(sources.map((source) => source.name), [
       'Google News',
@@ -32,8 +32,11 @@ void main() {
       'Sabah',
       'BirGün',
       'Ensonhaber',
+      'Edebiyat Haber – Kitaplar Arasında',
+      'Meb Personel',
+      'Yaşadıkça',
     ]);
-    expect(sources.map((source) => source.uri).toSet(), hasLength(11));
+    expect(sources.map((source) => source.uri).toSet(), hasLength(14));
     expect(sources.every((source) => !source.isCustom), isTrue);
     expect(sources.every((source) => source.uri.scheme == 'https'), isTrue);
     expect(
@@ -155,7 +158,7 @@ void main() {
     }));
 
     final sources = await service.getOrderedSources(NewsLanguage.turkish);
-    expect(sources, hasLength(11));
+    expect(sources, hasLength(14));
     expect(sources.first.name, 'Saved Turkish source');
     expect(sources.first.isCustom, isTrue);
     expect(sources.first.uri.toString(), 'https://example.org/saved-feed');

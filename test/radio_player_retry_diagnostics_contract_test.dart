@@ -21,7 +21,17 @@ void main() {
     expect(RegExp(r'_streamRecovery\.reconnect\(\);\s*_error = null;').hasMatch(source), isTrue);
     expect(source, contains('position > Duration.zero && _mediaKitPlaying && !_mediaKitBuffering'));
     expect(source, contains('_streamRecovery.observe('));
-    expect(source, contains('announceStatusMessage(context, message)'));
+    expect(source, isNot(contains('announceStatusMessage(')));
+    final startupNotice = source.substring(
+      source.indexOf('  void _scheduleStreamConnectionNotice('),
+      source.indexOf('  void _probeCurrentStream('),
+    );
+    expect(startupNotice, isNot(contains('_setStreamFailure(')));
+    final recordingChanged = source.substring(
+      source.indexOf('  void _onGlobalRecordingChanged('),
+      source.indexOf('  bool get _recording =>'),
+    );
+    expect(recordingChanged, isNot(contains('showStatusMessage(')));
     expect(source, contains('startup_wait_exceeded'));
     expect(source, contains('l10n.streamReconnecting'));
   });

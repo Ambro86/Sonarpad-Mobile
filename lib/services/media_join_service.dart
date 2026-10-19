@@ -9,7 +9,7 @@ import 'package:ffmpeg_kit_flutter_new/return_code.dart';
 import 'package:ffmpeg_kit_flutter_new/statistics.dart';
 import 'package:ffmpeg_kit_flutter_new/stream_information.dart';
 import 'package:path/path.dart' as p;
-import 'package:wakelock_plus/wakelock_plus.dart';
+import 'protected_wakelock.dart';
 
 import '../utils/app_logger.dart';
 import 'app_cache_service.dart';

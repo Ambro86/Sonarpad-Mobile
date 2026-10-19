@@ -10,7 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:media_kit/media_kit.dart' as mk;
 import 'package:media_kit_video/media_kit_video.dart' as mkv;
 import 'package:path/path.dart' as p;
-import 'package:wakelock_plus/wakelock_plus.dart';
+import '../services/protected_wakelock.dart';
 import '../l10n/app_localizations.dart';
 import '../models/radio_station.dart';
 import '../services/audio_player_service.dart';
@@ -227,8 +227,10 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     await _toggleRecording();
   }
 
+  bool get _recordingHasIssue => _recordingService.hasRecordingIssueFor(_recordingTarget.id);
   void _onGlobalRecordingChanged() {
-    if (mounted) setState(() {});
+    if (!mounted) return;
+    setState(() {});
   }
 
   bool get _recording =>
@@ -1194,7 +1196,6 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     _nativeTvFallbackSelected = false;
     _raiNativeRestartCount = 0;
     setState(() => _streamRetryInProgress = true);
-    announceStatusMessage(context, AppLocalizations.of(context).streamReconnecting);
     try {
       // _play resolves the RAI relinker again; no expired stream is reused.
       // Request tokens invalidate all callbacks belonging to the old attempt.
@@ -1208,16 +1209,12 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     if (!mounted || requestId != _playRequestId) {
       return;
     }
-    final announce = !_streamRecovery.isReconnecting;
     setState(() {
       _streamRecovery.reconnect();
       _error = null;
     });
     _streamDiagnostics?.record('reconnecting', {'stage': _mediaKitStage});
     _scheduleStreamConnectionNotice(requestId);
-    if (announce) {
-      announceStatusMessage(context, AppLocalizations.of(context).streamReconnecting);
-    }
   }
 
   void _setStreamFailure(int requestId) {
@@ -1225,14 +1222,12 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       return;
     }
     final message = AppLocalizations.of(context).streamPlaybackRetryMessage;
-    final announce = _error != message;
     _streamConnectionTimer?.cancel();
     setState(() {
       _streamRecovery.fail();
       _error = message;
       _loading = false;
     });
-    if (announce) announceStatusMessage(context, message);
   }
 
   void _scheduleStreamConnectionNotice(int requestId) {
@@ -1266,7 +1261,8 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         unawaited(_recoverRaiNative(reason: 'startup_wait_exceeded'));
         return;
       }
-      _setStreamFailure(requestId);
+      // A slow startup is not a playback failure. Keep waiting for progress
+      // or an actual player error, without showing a premature retry prompt.
     });
   }
 
@@ -2905,7 +2901,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
                   ),
                   if (_canRecordStream)
                     FilledButton.icon(
-                      onPressed: _loading || _anotherRecordingActive ? null : _toggleRecording,
+                      onPressed: (_loading && !_recording) || _anotherRecordingActive ? null : _toggleRecording,
                       icon: Icon(
                         _recording ? Icons.stop : Icons.fiber_manual_record,
                       ),
@@ -2923,6 +2919,8 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
                     ),
                 ],
               ),
+              if (_recordingHasIssue)
+                Text(l10n.recordingNotAdvancing),
               if (_recordingOutput != null) ...[
                 const SizedBox(height: 12),
                 Text(
@@ -3053,13 +3051,15 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
           enabled: !_loading,
         ),
         if (_canRecordStream)
-          AccessibleListRow(id: 'record', title: _recording ? l10n.stopRecording : l10n.startRecording, kind: 'button', enabled: !_loading && !_anotherRecordingActive),
+          AccessibleListRow(id: 'record', title: _recording ? l10n.stopRecording : l10n.startRecording, kind: 'button', enabled: (!_loading || _recording) && !_anotherRecordingActive),
         if (_canRecordStream)
           AccessibleListRow(
             id: 'schedule',
             title: l10n.radioScheduleDialogTitle,
             enabled: !_loading && !_recordingService.hasAnyActiveRecording,
           ),
+        if (_recordingHasIssue)
+          AccessibleListRow(id: 'recording_issue', kind: 'text', title: l10n.recordingNotAdvancing),
         if (_recordingOutput != null)
           AccessibleListRow(id: 'recording_name', kind: 'text', title: p.basenameWithoutExtension(_recordingOutput!.path)),
         if (_scheduledRecordingSummary != null)
@@ -3253,7 +3253,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
                 ),
               if (_canRecordStream)
                 FilledButton.icon(
-                  onPressed: _loading || _anotherRecordingActive ? null : _toggleRecording,
+                  onPressed: (_loading && !_recording) || _anotherRecordingActive ? null : _toggleRecording,
                   icon:
                       Icon(_recording ? Icons.stop : Icons.fiber_manual_record),
                   label: Text(
@@ -3269,6 +3269,8 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
                 ),
             ],
           ),
+          if (_recordingHasIssue)
+            Text(l10n.recordingNotAdvancing),
           if (_recordingOutput != null) ...[
             const SizedBox(height: 12),
             Text(

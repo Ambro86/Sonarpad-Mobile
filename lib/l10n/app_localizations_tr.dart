@@ -7,6 +7,9 @@ import 'app_localizations.dart';
 /// The translations for Turkish (`tr`).
 class AppLocalizationsTr extends AppLocalizations {
   @override
+  String get recordingNotAdvancing => "Kayıt yeni veri almıyor. Bağlantınızı kontrol edin ve gerekirse kaydı yeniden başlatın.";
+
+  @override
   String get castToDevice => "Chromecast ile yayınla";
   @override
   String get castNoDevices => "Cihaz bulunamadı. Aynı Wi-Fi ağına bağlı olduklarını kontrol edip tekrar deneyin.";
