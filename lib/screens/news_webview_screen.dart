@@ -18,6 +18,7 @@ import '../models/media_playback_speed.dart';
 import '../services/app_settings_service.dart';
 import '../services/audio_player_service.dart';
 import '../services/news_service.dart';
+import '../services/tgcom_video_service.dart';
 import '../services/sonartube_service.dart';
 import '../services/document_library_service.dart';
 import '../services/html_reader_service.dart';
@@ -57,6 +58,15 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   final _voiceDictionary = VoiceDictionaryService();
   final _sonarTubeService = SonarTubeService();
   final _mediaOpenGuard = MediaOpenGuard();
+  final _tgcomVideoService = TgcomVideoService();
+  TgcomVideo? _tgcomVideo;
+  List<NewsArticleMediaLink> get _articleMediaLinks => [
+    if (widget.article.allowInternalMediaLinks) ...widget.article.mediaLinks,
+    if (_tgcomVideo != null) NewsArticleMediaLink(
+      kind: NewsArticleMediaKind.video, url: widget.article.link,
+      label: '${AppLocalizations.of(context).play}: ${AppLocalizations.of(context).sonarTubeVideo}',
+    ),
+  ];
 
   bool _loading = true;
   String? _readerTitle;
@@ -639,8 +649,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   }
 
   Future<void> _openArticleMediaLink(NewsArticleMediaLink link) async {
-    if (!widget.article.allowInternalMediaLinks ||
-        !_isKnownArticleMediaLink(link.url)) {
+    if (!_isKnownArticleMediaLink(link.url)) {
       await AppLogger.log(
         'News media link: ignored untrusted link url=${link.url} '
         'allowed=${widget.article.allowInternalMediaLinks}',
@@ -662,6 +671,9 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
         'url=${link.url}',
       );
       switch (link.kind) {
+        case NewsArticleMediaKind.video:
+          await _openTgcomVideo();
+          break;
         case NewsArticleMediaKind.audio:
           await _openArticleAudio(link);
           break;
@@ -684,6 +696,22 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
     } finally {
       _mediaOpenGuard.release(key);
     }
+  }
+
+  Future<void> _openTgcomVideo() async {
+    final video = _tgcomVideo;
+    if (video == null) return;
+    await _stopReading();
+    final episode = await _tgcomVideoService.resolve(video);
+    if (!mounted) return;
+    await Navigator.of(context).push<void>(MaterialPageRoute(
+      settings: const RouteSettings(name: '/news/media/video'),
+      builder: (_) => PodcastEpisodePlayerScreen(
+        episode: episode, isVideoSupported: true,
+        startWithVideoThenRestorePreference: true,
+        refreshEpisode: () => _tgcomVideoService.resolve(video),
+      ),
+    ));
   }
 
   Future<void> _openArticleAudio(NewsArticleMediaLink link) async {
@@ -804,8 +832,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   }
 
   NewsArticleMediaLink? _knownArticleMediaLink(String url) {
-    if (!widget.article.allowInternalMediaLinks) return null;
-    for (final link in widget.article.mediaLinks) {
+    for (final link in _articleMediaLinks) {
       if (_sameNormalizedUrl(link.url, url)) return link;
     }
     return null;
@@ -837,6 +864,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
 
   @override
   void dispose() {
+    _tgcomVideoService.dispose();
     _readingToken += 1;
     final edgeController = _edgeFileController;
     _edgeFileController = null;
@@ -1007,6 +1035,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   }
 
   Future<void> _loadReaderArticleFromFinalUrl(String url) async {
+    if (_tgcomVideo != null) return;
     final finalUrl = url.trim();
     if (!_isHttpArticleUrl(finalUrl) ||
         _isGoogleNewsUrl(finalUrl) ||
@@ -1146,6 +1175,27 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
 
   Future<void> _loadReaderArticle() async {
     unawaited(AppLogger.log('News reader HTTP: estrazione avviata'));
+    if (TgcomVideoService.supports(widget.article.link)) {
+      try {
+        final video = await _tgcomVideoService.fetch(widget.article.link);
+        if (!mounted) return;
+        if (video != null) {
+          final description = video.description.isNotEmpty ? video.description : widget.article.summary;
+          setState(() {
+            _tgcomVideo = video;
+            _readerTitle = widget.article.title;
+            _readerText = description.isNotEmpty ? description : widget.article.title;
+            _readerBestTextLength = _readerText!.length;
+            _readerPreparing = false;
+            _pureWebViewMode = false;
+          });
+          AppLogger.log('News TGcom video: reader ready id=${video.guid} descriptionLength=${description.length}');
+          return;
+        }
+      } catch (error) {
+        AppLogger.log('News TGcom video: metadata failed error=${error.runtimeType}; continuing article reader');
+      }
+    }
     try {
       final content = await _fetchReaderContent(
         url: _resolvedArticleUrlForReader,
@@ -1269,6 +1319,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
 
         // Salta solo se il testo HTTP è già lungo; i testi brevi possono
         // essere migliorati dalla pagina visibile.
+        if (_tgcomVideo != null) return;
         final httpLen = _readerBestTextLength;
         if (_readerText != null &&
             httpLen >= _httpShortThreshold &&
@@ -1289,6 +1340,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
             ),
           );
           final text = await _extractVisibleArticleText();
+          if (_tgcomVideo != null) return;
           if (!mounted || generation != _webViewPageGeneration) return;
 
           unawaited(
@@ -1410,6 +1462,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   }
 
   bool _hasSufficientReaderTextForTinyfishSkip() {
+    if (_tgcomVideo != null) return true;
     final text = _readerText?.trim() ?? '';
     if (text.length < _httpMinLength) return false;
     if (_isOnlyArticleTitle(text)) return false;
@@ -1622,7 +1675,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
     required String pageUrl,
     required int generation,
   }) async {
-    if (_pureWebViewRevealInProgress ||
+    if (_tgcomVideo != null || _pureWebViewRevealInProgress ||
         !mounted ||
         generation != _webViewPageGeneration) {
       return;
@@ -1739,6 +1792,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
         }
       }
       if (!mounted || generation != _webViewPageGeneration) return;
+      if (_tgcomVideo != null) return;
       final discardedReaderLength = _readerText?.trim().length ?? 0;
       setState(() {
         _pureWebViewMode = true;
@@ -2501,9 +2555,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
       return _ReaderArticleView(
         title: _readerTitle ?? widget.article.title,
         text: readerText,
-        mediaLinks: widget.article.allowInternalMediaLinks
-            ? widget.article.mediaLinks
-            : const <NewsArticleMediaLink>[],
+        mediaLinks: _articleMediaLinks,
         onOpenMediaLink: _openArticleMediaLink,
       );
     }
@@ -2643,6 +2695,7 @@ class _ReaderArticleView extends StatelessWidget {
         NewsArticleMediaKind.audio => Icons.play_arrow,
         NewsArticleMediaKind.pdf => Icons.picture_as_pdf,
         NewsArticleMediaKind.youtube => Icons.smart_display,
+        NewsArticleMediaKind.video => Icons.smart_display,
       };
 
   static List<String> readerParagraphs(String value) {

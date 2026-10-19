@@ -1,4 +1,4 @@
-enum NewsArticleMediaKind { audio, pdf, youtube }
+enum NewsArticleMediaKind { audio, pdf, youtube, video }
 
 class NewsArticleMediaLink {
   final NewsArticleMediaKind kind;
