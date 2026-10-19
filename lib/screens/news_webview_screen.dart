@@ -64,7 +64,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
     if (widget.article.allowInternalMediaLinks) ...widget.article.mediaLinks,
     if (_tgcomVideo != null) NewsArticleMediaLink(
       kind: NewsArticleMediaKind.video, url: widget.article.link,
-      label: '${AppLocalizations.of(context).play}: ${AppLocalizations.of(context).sonarTubeVideo}',
+      label: AppLocalizations.of(context).sharedVideoOpen,
     ),
   ];
 
