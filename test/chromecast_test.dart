@@ -22,10 +22,12 @@ class FakeSession extends ChromecastSession {
   Duration? requestedPosition;
   final volumes = <double>[];
   Completer<void>? volumeGate;
+  Completer<void>? loadGate, connectGate, rateGate;
   @override
   Stream<ChromecastStatus> get updates => events.stream;
   @override
   Future<void> connect(ChromecastDevice device) async {
+    await connectGate?.future;
     if (rejectConnect) throw StateError('connect_failed');
   }
 
@@ -38,6 +40,7 @@ class FakeSession extends ChromecastSession {
     bool live = false,
     bool autoplay = true,
   }) async {
+    await loadGate?.future;
     requestedPosition = position;
     handoff.add(autoplay ? 'load_playing' : 'load_paused');
     if (reject) throw StateError('load_failed');
@@ -65,6 +68,7 @@ class FakeSession extends ChromecastSession {
   @override
   Future<void> setPlaybackRate(double rate) async {
     rates.add(rate);
+    await rateGate?.future;
   }
 
   @override
@@ -286,6 +290,79 @@ void main() {
       await tester.pumpWidget(const SizedBox.shrink());
       debugDefaultTargetPlatformOverride = null;
       configureAccessibleRendererRuntime(useFlutterOnIos: false);
+    });
+  }
+
+  for (final phase in ['connect', 'load', 'speed']) {
+    testWidgets('Back remains available during stalled $phase', (tester) async {
+      final gate = Completer<void>();
+      final session = FakeSession();
+      if (phase == 'connect') session.connectGate = gate;
+      if (phase == 'load') session.loadGate = gate;
+      if (phase == 'speed') session.rateGate = gate;
+      var paused = 0, recovered = 0;
+      var localPosition = const Duration(seconds: 40);
+      final navigator = GlobalKey<NavigatorState>();
+      await tester.pumpWidget(
+        MaterialApp(
+          navigatorKey: navigator,
+          locale: const Locale('en'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const Scaffold(body: Text('Local player')),
+        ),
+      );
+      unawaited(
+        navigator.currentState!.push(
+          MaterialPageRoute<void>(
+            builder: (_) => ChromecastScreen(
+              media: const ChromecastMedia(
+                'https://example.org/a.mp3',
+                'audio/mpeg',
+              ),
+              title: 'Audio',
+              initialSpeed: 1.5,
+              position: () => localPosition,
+              onStarted: () async {
+                paused++;
+                localPosition = Duration.zero;
+              },
+              onStartFailed: () async {
+                recovered++;
+              },
+              onPosition: (_) async {},
+              sessionFactory: () => session,
+              discoveryOverride: () => Stream.value([
+                const ChromecastDevice('id', 'Test TV', 'localhost', 8009),
+              ]),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Test TV'));
+      await tester.runAsync(
+        () => Future<void>.delayed(const Duration(milliseconds: 30)),
+      );
+      await tester.pumpAndSettle();
+      if (phase == 'speed') {
+        expect(session.requestedPosition, const Duration(seconds: 40));
+        expect(find.byKey(const ValueKey('cast_volume')), findsOneWidget);
+        expect(find.text('Loading...'), findsNothing);
+      }
+      await navigator.currentState!.maybePop();
+      await tester.runAsync(
+        () => Future<void>.delayed(const Duration(milliseconds: 30)),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('Local player'), findsOneWidget);
+      expect(recovered, phase == 'load' ? 1 : 0);
+      expect(paused, phase == 'connect' ? 0 : 1);
+      gate.complete();
+      await tester.pumpAndSettle();
+      expect(paused, phase == 'connect' ? 0 : 1);
+      expect(recovered, phase == 'load' ? 1 : 0);
+      await session.events.close();
     });
   }
 

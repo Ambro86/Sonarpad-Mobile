@@ -56,6 +56,8 @@ class _ChromecastScreenState extends State<ChromecastScreen> {
   Timer? _searchTimer;
   bool _searching = true, _busy = false, _failed = false, _started = false;
   bool _leaving = false;
+  Future<void>? _localPause;
+  bool _localPaused = false;
   bool _speedFailed = false;
   double? _speedTarget;
   int _searchGeneration = 0;
@@ -100,7 +102,7 @@ class _ChromecastScreenState extends State<ChromecastScreen> {
     if (widget.discoveryOverride != null) {
       _testDiscoverySubscription = widget.discoveryOverride!().listen(
         (devices) {
-          if (!mounted) return;
+          if (!mounted || _leaving) return;
           setState(() {
             _devices.clear();
             for (final device in devices) {
@@ -192,44 +194,40 @@ class _ChromecastScreenState extends State<ChromecastScreen> {
   }
 
   Future<void> _connect(ChromecastDevice device) async {
-    if (_busy) return;
+    if (_busy || _leaving) return;
     setState(() {
       _busy = true;
       _failed = false;
     });
     ++_searchGeneration;
     await _stopSearch();
+    if (!mounted || _leaving) return;
     final session = widget.sessionFactory?.call() ?? ChromecastSession();
     _session = session;
-    var localPaused = false;
     try {
       await session.connect(device);
-      if (!mounted) return;
+      if (!mounted || _leaving) return;
       // Pause locally before LOAD: some receivers ignore paused preloads.
       // Recovery below restores the phone if loading fails.
-      localPaused = true;
-      await widget.onStarted();
-      if (!mounted) return;
+      final handoffPosition = widget.position();
+      AppLogger.log(
+        'Cast: pausing local playback positionMs=${handoffPosition.inMilliseconds}',
+      );
+      _localPaused = true;
+      _localPause = widget.onStarted();
+      await _localPause;
+      if (!mounted || _leaving) return;
       await session.load(
         url: widget.media.url,
         mime: widget.media.mime,
         title: widget.title,
-        position: widget.position(),
+        position: handoffPosition,
         live: widget.live,
       );
-      if (!mounted) return;
-      if (!widget.live &&
-          session.status.supportsPlaybackRate &&
-          widget.initialSpeed != 1) {
-        try {
-          await session.setPlaybackRate(widget.initialSpeed.clamp(0.5, 2));
-        } catch (_) {
-          _speedFailed = true;
-        }
-      }
+      if (!mounted || _leaving) return;
       _started = true;
       _lastPosition = session.status.position;
-      if (!mounted) return;
+      if (!mounted || _leaving) return;
       _statusSubscription = session.updates.listen((status) {
         if (!mounted || _leaving) return;
         if (status.state != 'IDLE' && !status.disconnected) {
@@ -244,12 +242,22 @@ class _ChromecastScreenState extends State<ChromecastScreen> {
           if (status.disconnected) _failed = true;
         });
       });
-      setState(() => _device = device);
+      setState(() {
+        _device = device;
+        _busy = false;
+        _failed = session.positionRestoreFailed;
+      });
+      if (!widget.live &&
+          session.status.supportsPlaybackRate &&
+          widget.initialSpeed != 1) {
+        _adjustSpeed(widget.initialSpeed.clamp(0.5, 2));
+      }
       AppLogger.log('Cast: remote playback started mime=${widget.media.mime}');
     } catch (e) {
       AppLogger.log('Cast: connect/load failed: ${e.runtimeType}');
       await session.close();
-      if (localPaused && mounted) {
+      if (_localPaused && mounted && !_leaving) {
+        _localPaused = false;
         try {
           await widget.onStartFailed?.call();
           AppLogger.log('Cast: failed handoff restored local playback');
@@ -269,7 +277,7 @@ class _ChromecastScreenState extends State<ChromecastScreen> {
   }
 
   Future<void> _command(Future<void> Function() action) async {
-    if (_busy) return;
+    if (_busy || _leaving) return;
     setState(() => _busy = true);
     try {
       await action();
@@ -359,28 +367,33 @@ class _ChromecastScreenState extends State<ChromecastScreen> {
   );
 
   Future<void> _leave(bool resume) async {
-    if (_leaving || _busy) return;
+    if (_leaving) return;
     _leaving = true;
+    AppLogger.log(
+      'Cast: exit requested started=$_started busy=$_busy resume=$resume',
+    );
     setState(() => _busy = true);
     _volumeDebounce?.cancel();
     _seekDebounce?.cancel();
-    await _adjustments;
-    if (_started && _session != null && !_session!.status.disconnected) {
-      try {
-        await _session!.refresh();
-        if (_session!.status.state != 'IDLE') {
-          _lastPosition = _session!.status.position;
-        }
-      } catch (_) {
-        /* Keep the last known position if the receiver is offline. */
-      }
-    }
+    // The latest status is already polled. Do not wait for another network
+    // request (or a queued slider request) to let the user leave.
     final position = _lastPosition ?? widget.position();
     AppLogger.log(
       'Cast: leaving resume=$resume positionMs=${position.inMilliseconds}',
     );
     await _statusSubscription?.cancel();
     await _session?.close();
+    if (!_started && _localPaused) {
+      _localPaused = false;
+      try {
+        await _localPause;
+        await widget.onStartFailed?.call();
+      } catch (error) {
+        AppLogger.log(
+          'Cast: cancelled handoff recovery failed: ${error.runtimeType}',
+        );
+      }
+    }
     if (_started && !widget.live) await _savePosition(position);
     if (mounted) {
       Navigator.pop(
@@ -563,12 +576,12 @@ class _ChromecastScreenState extends State<ChromecastScreen> {
               AccessibleListRow(
                 id: 'resume_here',
                 title: l10n.castResumeHere,
-                enabled: !_busy,
+                enabled: !_leaving,
               ),
               AccessibleListRow(
                 id: 'stop_cast',
                 title: l10n.castStop,
-                enabled: !_busy,
+                enabled: !_leaving,
               ),
             ],
           ],
@@ -712,11 +725,11 @@ class _ChromecastScreenState extends State<ChromecastScreen> {
                       ),
                     ),
                     OutlinedButton(
-                      onPressed: _busy ? null : () => _leave(true),
+                      onPressed: _leaving ? null : () => _leave(true),
                       child: Text(l10n.castResumeHere),
                     ),
                     OutlinedButton(
-                      onPressed: _busy ? null : () => _leave(false),
+                      onPressed: _leaving ? null : () => _leave(false),
                       child: Text(l10n.castStop),
                     ),
                   ],

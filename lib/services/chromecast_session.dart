@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import '../utils/app_logger.dart';
+
 // Pinned protocol codec; transport lifetime is owned here so sockets are destroyed.
 // ignore: implementation_imports
 import 'package:dart_cast/src/protocols/chromecast/castv2_channel.dart';
@@ -39,13 +41,18 @@ class ChromecastStatus {
 /// TLS Cast receivers use local certificates, not public web PKI certificates.
 /// This transport does not attest Google device credentials.
 class ChromecastSession {
+  ChromecastSession({Future<Socket> Function(ChromecastDevice)? socketFactory})
+    : _socketFactory = socketFactory;
+  final Future<Socket> Function(ChromecastDevice)? _socketFactory;
+  bool positionRestoreFailed = false;
+  Future<void>? _closing;
   static const _receiver = 'urn:x-cast:com.google.cast.receiver';
   static const _media = 'urn:x-cast:com.google.cast.media';
   static const _connection = 'urn:x-cast:com.google.cast.tp.connection';
   static const _heartbeat = 'urn:x-cast:com.google.cast.tp.heartbeat';
   final _updates = StreamController<ChromecastStatus>.broadcast();
   final _pending = <int, Completer<Map<String, dynamic>>>{};
-  SecureSocket? _socket;
+  Socket? _socket;
   StreamSubscription<CastMessage>? _messages;
   Timer? _poll;
   bool _polling = false, _closed = false;
@@ -54,6 +61,9 @@ class ChromecastSession {
   String? _expectedContentId;
   bool _mediaConfirmed = false;
   double _receiverVolume = 1;
+  String? _loggedState;
+  int? _loggedPosition;
+  int _ignoredStatuses = 0;
   ChromecastStatus status = const ChromecastStatus();
   Stream<ChromecastStatus> get updates => _updates.stream;
 
@@ -75,6 +85,9 @@ class ChromecastSession {
     Map<String, dynamic> data,
   ) async {
     final id = ++_sequence;
+    final elapsed = Stopwatch()..start();
+    final type = data['type'];
+    if (type != 'GET_STATUS') AppLogger.log('Cast: request id=$id type=$type');
     final completer = Completer<Map<String, dynamic>>();
     _pending[id] = completer;
     try {
@@ -90,7 +103,17 @@ class ChromecastSession {
       ].contains(reply['type'])) {
         throw StateError('cast_request_rejected');
       }
+      if (type != 'GET_STATUS') {
+        AppLogger.log(
+          'Cast: reply id=$id type=$type result=${reply['type']} elapsedMs=${elapsed.elapsedMilliseconds}',
+        );
+      }
       return reply;
+    } catch (error) {
+      AppLogger.log(
+        'Cast: request failed id=$id type=$type elapsedMs=${elapsed.elapsedMilliseconds} error=${error.runtimeType} closed=$_closed',
+      );
+      rethrow;
     } finally {
       _pending.remove(id);
     }
@@ -133,6 +156,11 @@ class ChromecastSession {
               (contentId == null &&
                   _mediaConfirmed &&
                   value['mediaSessionId'] == status.sessionId);
+          if (!belongsToLoad && ++_ignoredStatuses <= 3) {
+            AppLogger.log(
+              'Cast: ignored unrelated media status session=${value['mediaSessionId']} hasContentId=${contentId != null}',
+            );
+          }
           if (belongsToLoad) {
             _mediaConfirmed = true;
             status = ChromecastStatus(
@@ -155,6 +183,15 @@ class ChromecastSession {
                   status.supportedMediaCommands,
               sessionId: value['mediaSessionId'] as int?,
             );
+            if (_loggedState != status.state ||
+                _loggedPosition == null ||
+                (status.position.inSeconds - _loggedPosition!).abs() >= 10) {
+              AppLogger.log(
+                'Cast: status state=${status.state} session=${status.sessionId} positionMs=${status.position.inMilliseconds} durationMs=${status.duration.inMilliseconds} rate=${status.playbackRate} commands=${status.supportedMediaCommands}',
+              );
+              _loggedState = status.state;
+              _loggedPosition = status.position.inSeconds;
+            }
             _updates.add(status);
             if (value['idleReason'] == 'ERROR') {
               final pending = _pending[data['requestId']];
@@ -174,6 +211,9 @@ class ChromecastSession {
 
   void _lost() {
     if (_closed || status.disconnected) return;
+    AppLogger.log(
+      'Cast: connection lost state=${status.state} positionMs=${status.position.inMilliseconds} pending=${_pending.length}',
+    );
     _poll?.cancel();
     status = ChromecastStatus(
       state: status.state,
@@ -194,12 +234,15 @@ class ChromecastSession {
   }
 
   Future<void> connect(ChromecastDevice device) async {
-    _socket = await SecureSocket.connect(
-      device.host,
-      device.port,
-      onBadCertificate: (_) => true,
-      timeout: const Duration(seconds: 8),
-    );
+    AppLogger.log('Cast: connecting');
+    _socket =
+        await (_socketFactory?.call(device) ??
+            SecureSocket.connect(
+              device.host,
+              device.port,
+              onBadCertificate: (_) => true,
+              timeout: const Duration(seconds: 8),
+            ));
     if (_closed) {
       _socket?.destroy();
       throw StateError('cast_cancelled');
@@ -207,6 +250,7 @@ class ChromecastSession {
     _messages = CastV2Channel.parseMessages(
       _socket!,
     ).listen(_receive, onError: (Object _) => _lost(), onDone: _lost);
+    AppLogger.log('Cast: transport connected; launching receiver');
     _send(_connection, 'receiver-0', {'type': 'CONNECT'});
     final reply = await _request(_receiver, 'receiver-0', {
       'type': 'LAUNCH',
@@ -215,6 +259,7 @@ class ChromecastSession {
     final applications = reply['status']['applications'] as List;
     final app = applications.firstWhere((a) => a['appId'] == 'CC1AD845');
     _transport = app['transportId'] as String;
+    AppLogger.log('Cast: receiver launched');
     _send(_connection, _transport!, {'type': 'CONNECT'});
     _poll = Timer.periodic(const Duration(seconds: 2), (_) async {
       if (_polling || _closed) return;
@@ -242,7 +287,11 @@ class ChromecastSession {
     bool live = false,
     bool autoplay = true,
   }) async {
+    positionRestoreFailed = false;
     _expectedContentId = url;
+    AppLogger.log(
+      'Cast: load requested positionMs=${position.inMilliseconds} live=$live',
+    );
     _mediaConfirmed = false;
     status = const ChromecastStatus();
     await _request(_media, _transport!, {
@@ -262,12 +311,37 @@ class ChromecastSession {
       if (status.disconnected) throw StateError('cast_connection_lost');
       if (_mediaConfirmed &&
           status.sessionId != null &&
-          (live || (status.position - position).inSeconds.abs() <= 5) &&
           status.state == (autoplay ? 'PLAYING' : 'PAUSED')) {
+        AppLogger.log(
+          'Cast: media ready state=${status.state} positionMs=${status.position.inMilliseconds}',
+        );
+        // LOAD.currentTime is ignored by some receivers. Readiness and seeking
+        // are separate: a playing receiver must never wait for the clock to
+        // happen to reach the requested position.
+        if (!live && (status.position - position).inSeconds.abs() > 5) {
+          try {
+            await (() async {
+              await seek(position);
+              await refresh();
+            })().timeout(const Duration(seconds: 3));
+            positionRestoreFailed =
+                (status.position - position).inSeconds.abs() > 5;
+          } catch (_) {
+            if (_closed) throw StateError('cast_cancelled');
+            positionRestoreFailed = true;
+          }
+          AppLogger.log(
+            'Cast: position restore requestedMs=${position.inMilliseconds} actualMs=${status.position.inMilliseconds} failed=$positionRestoreFailed',
+          );
+        }
+        if (_closed) throw StateError('cast_cancelled');
         return;
       }
       await Future<void>.delayed(const Duration(milliseconds: 500));
     } while (!_closed && DateTime.now().isBefore(deadline));
+    AppLogger.log(
+      'Cast: load timeout confirmed=$_mediaConfirmed state=${status.state} positionMs=${status.position.inMilliseconds}',
+    );
     throw TimeoutException('cast_load_timeout');
   }
 
@@ -336,24 +410,37 @@ class ChromecastSession {
     await refresh();
   }
 
-  Future<void> close({bool stop = true}) async {
-    if (_closed) return;
+  Future<void> close({bool stop = true}) => _closing ??= _close(stop);
+
+  Future<void> _close(bool stop) async {
     _poll?.cancel();
-    if (stop && status.sessionId != null && !status.disconnected) {
+    // Send STOP without waiting for an acknowledgement before cancelling the
+    // pending operations. A silent receiver must not trap the user here.
+    if (stop && status.sessionId != null && !status.disconnected && !_closed) {
       try {
-        await command('STOP');
+        _send(_media, _transport!, {
+          'type': 'STOP',
+          'mediaSessionId': status.sessionId,
+          'requestId': ++_sequence,
+        });
       } catch (_) {
-        /* Receiver may be offline. */
+        /* Receiver may already be offline. */
       }
     }
     _closed = true;
-    _socket?.destroy();
-    await _messages?.cancel();
     for (final pending in _pending.values) {
       if (!pending.isCompleted) {
         pending.completeError(StateError('cast_closed'));
       }
     }
+    try {
+      await _socket?.flush().timeout(const Duration(milliseconds: 500));
+    } catch (_) {
+      /* Best effort delivery before closing the connection. */
+    }
+    _socket?.destroy();
+    AppLogger.log('Cast: transport closed stop=$stop');
+    await _messages?.cancel();
     await _updates.close();
   }
 }

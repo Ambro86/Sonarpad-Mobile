@@ -547,8 +547,8 @@ class _PodcastEpisodePlayerScreenState
             position: () => _videoController?.value.position ?? _audio.position,
             onStarted: () async {
               wasPlayingBeforeCast = _videoController?.value.isPlaying ?? _audio.isPlaying;
-              await _pause(force: true);
               positionBeforeCast = _videoController?.value.position ?? _audio.position;
+              await _pause(force: true);
               _casting = true;
               AppLogger.log('Cast: local playback paused; player retained');
             },
