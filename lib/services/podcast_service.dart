@@ -615,9 +615,7 @@ class PodcastService {
       'User-Agent': 'SonarpadMobile/0.1', 'Accept': 'application/json',
     }).timeout(const Duration(seconds: 30));
     if (response.statusCode == 404) return [];
-    if (response.statusCode < 200 || response.statusCode >= 300) {
-      throw Exception('Spreaker: ${response.statusCode}');
-    }
+    _checkSpreakerResponse(response);
     final decoded = jsonDecode(response.body) as Map<String, dynamic>;
     final payload = decoded['response'] as Map<String, dynamic>? ?? const {};
     final show = payload['show'];
@@ -635,14 +633,18 @@ class PodcastService {
     final response = await _client.get(uri, headers: const {
       'User-Agent': 'SonarpadMobile/0.1', 'Accept': 'application/json',
     }).timeout(const Duration(seconds: 30));
-    if (response.statusCode < 200 || response.statusCode >= 300) {
-      throw Exception('Ricerca Spreaker non riuscita: ${response.statusCode}');
-    }
+    _checkSpreakerResponse(response);
     final decoded = jsonDecode(response.body) as Map<String, dynamic>;
     final payload = decoded['response'] as Map<String, dynamic>? ?? const {};
     final results = payload['items'] as List<dynamic>? ?? const [];
     return results.whereType<Map<String, dynamic>>()
         .map(_spreakerResult).whereType<PodcastSearchResult>().toList();
+  }
+
+  void _checkSpreakerResponse(http.Response response) {
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw Exception('Ricerca Spreaker non riuscita: ${response.statusCode}');
+    }
   }
 
   PodcastSearchResult? _spreakerResult(Map<String, dynamic> item) {
