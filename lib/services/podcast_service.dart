@@ -445,7 +445,13 @@ class PodcastService {
     if (results.isEmpty && errors.isNotEmpty) {
       throw Exception(errors.join(' | '));
     }
-    return _dedupResults(results);
+    final unique = _dedupResults(results);
+    if (q.isEmpty) return unique;
+    final key = _podcastTitleKey(q);
+    return [
+      ...unique.where((item) => _podcastTitleKey(item.title) == key),
+      ...unique.where((item) => _podcastTitleKey(item.title) != key),
+    ];
   }
 
   Future<List<PodcastSearchResult>> _searchApple(
@@ -580,56 +586,85 @@ class PodcastService {
     return false;
   }
 
+  String _podcastTitleKey(String title) => title.toLowerCase()
+      .split(RegExp(r'[^\p{L}\p{N}]+', unicode: true))
+      .where((part) => part.isNotEmpty).join('-');
+
   Future<List<PodcastSearchResult>> _searchSpreaker(String query) async {
     final q = query.trim();
     if (q.isEmpty) return const [];
+    final errors = <Object>[];
+    Future<List<PodcastSearchResult>> attempt(
+        Future<List<PodcastSearchResult>> Function() action) async {
+      try { return await action(); }
+      catch (error) { errors.add(error); return []; }
+    }
+    final groups = await Future.wait([
+      attempt(() => _searchSpreakerExact(q)),
+      attempt(() => _searchSpreakerCatalog(q)),
+    ]);
+    if (errors.length == 2) throw Exception(errors.join(' | '));
+    return _dedupResults(groups.expand((group) => group).toList());
+  }
+
+  Future<List<PodcastSearchResult>> _searchSpreakerExact(String query) async {
+    final key = _podcastTitleKey(query);
+    if (key.isEmpty) return [];
+    final uri = Uri.https('api.spreaker.com', '/v2/shows/$key');
+    final response = await _client.get(uri, headers: const {
+      'User-Agent': 'SonarpadMobile/0.1', 'Accept': 'application/json',
+    }).timeout(const Duration(seconds: 30));
+    if (response.statusCode == 404) return [];
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw Exception('Spreaker: ${response.statusCode}');
+    }
+    final decoded = jsonDecode(response.body) as Map<String, dynamic>;
+    final payload = decoded['response'] as Map<String, dynamic>? ?? const {};
+    final show = payload['show'];
+    if (show is! Map<String, dynamic>) return [];
+    final result = _spreakerResult(show);
+    // A permalink can survive a rename: accept only the requested title.
+    if (result == null || _podcastTitleKey(result.title) != key) return [];
+    return [result];
+  }
+
+  Future<List<PodcastSearchResult>> _searchSpreakerCatalog(String query) async {
     final uri = Uri.https('api.spreaker.com', '/v2/search', {
-      'q': q,
-      'type': 'shows',
-      'limit': '20',
+      'q': query, 'type': 'shows', 'limit': '20',
     });
     final response = await _client.get(uri, headers: const {
-      'User-Agent': 'SonarpadMobile/0.1',
-      'Accept': 'application/json',
-    });
+      'User-Agent': 'SonarpadMobile/0.1', 'Accept': 'application/json',
+    }).timeout(const Duration(seconds: 30));
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception('Ricerca Spreaker non riuscita: ${response.statusCode}');
     }
     final decoded = jsonDecode(response.body) as Map<String, dynamic>;
     final payload = decoded['response'] as Map<String, dynamic>? ?? const {};
     final results = payload['items'] as List<dynamic>? ?? const [];
-    return results
-        .map((raw) {
-          final item = raw as Map<String, dynamic>;
-          final showId = item['show_id']?.toString() ?? '';
-          final title = (item['title'] ?? '').toString();
-          if (showId.isEmpty || title.trim().isEmpty) return null;
-          final image = item['image_url'] ?? item['site_url'];
-          return PodcastSearchResult(
-            title: title,
-            author: (item['author_name'] ?? '').toString(),
-            feedUrl: 'https://www.spreaker.com/show/$showId/episodes/feed',
-            artworkUrl: image?.toString(),
-          );
-        })
-        .whereType<PodcastSearchResult>()
-        .toList();
+    return results.whereType<Map<String, dynamic>>()
+        .map(_spreakerResult).whereType<PodcastSearchResult>().toList();
+  }
+
+  PodcastSearchResult? _spreakerResult(Map<String, dynamic> item) {
+    final showId = item['show_id']?.toString() ?? '';
+    final title = (item['title'] ?? '').toString();
+    if (showId.isEmpty || title.trim().isEmpty) return null;
+    final author = (item['author_name'] ?? '').toString();
+    final nestedAuthor = item['author'];
+    final fallbackAuthor = nestedAuthor is Map ? nestedAuthor['fullname'] : null;
+    return PodcastSearchResult(
+      title: title,
+      author: author.trim().isNotEmpty ? author : (fallbackAuthor ?? '').toString(),
+      feedUrl: 'https://www.spreaker.com/show/$showId/episodes/feed',
+      artworkUrl: (item['image_url'] ?? item['site_url'])?.toString(),
+    );
   }
 
   List<PodcastSearchResult> _dedupResults(List<PodcastSearchResult> results) {
     final seenFeedUrls = <String>{};
-    final seenTitles = <String>{};
-    return results.where((result) {
-      final feedKey = result.feedUrl.trim().toLowerCase();
-      final titleKey =
-          '${result.title.trim().toLowerCase()}|${result.author.trim().toLowerCase()}';
-      if (seenFeedUrls.contains(feedKey) || seenTitles.contains(titleKey)) {
-        return false;
-      }
-      seenFeedUrls.add(feedKey);
-      seenTitles.add(titleKey);
-      return true;
-    }).toList();
+    // Identical titles can belong to different podcasts.
+    return results.where((result) =>
+        seenFeedUrls.add(result.feedUrl.trim().toLowerCase())).toList();
   }
 
   Future<PodcastSubscription> addSearchResult(
