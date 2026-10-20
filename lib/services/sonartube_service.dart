@@ -523,6 +523,24 @@ class SonarTubeService {
     );
   }
 
+  /// A player failure can be a CDN routing failure even when InnerTube says
+  /// OK. Resolve through the server so recovery does not repeat the same route.
+  Future<SonarTubeResolvedMedia> recoverPlayback(SonarTubeItem item) async {
+    if (item.kind != SonarTubeItemKind.video) {
+      throw ArgumentError(_strings.sonarTubeServiceOnlyVideo);
+    }
+    await AppLogger.log('SonarTube playback recovery id=${item.id} provider=server');
+    final media = await _resolveUrlServer(
+      item.url.isEmpty ? item.id : item.url,
+      fallbackTitle: item.title,
+      fallbackChannel: item.channel,
+    );
+    await AppLogger.log('SonarTube playback recovery resolved id=${item.id} '
+        'audioHost=${Uri.tryParse(media.audioUrl)?.host} '
+        'videoHost=${Uri.tryParse(media.videoUrl ?? media.audioUrl)?.host}');
+    return media;
+  }
+
   Future<SonarTubeResolvedMedia> resolveUrl(
     String url, {
     required String fallbackTitle,

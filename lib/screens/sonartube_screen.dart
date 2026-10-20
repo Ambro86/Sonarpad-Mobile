@@ -1022,7 +1022,7 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
               final currentItem = navigationIndex >= 0
                   ? navigationItems[navigationIndex]
                   : item;
-              return _resolveEpisode(currentItem);
+              return _resolveEpisode(currentItem, afterPlaybackFailure: true);
             },
             navigateEpisode: navigationIndex >= 0 ? navigateEpisode : null,
             hasPreviousEpisode: navigationIndex >= 0
@@ -1062,8 +1062,12 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
     }
   }
 
-  Future<PodcastEpisode> _resolveEpisode(SonarTubeItem item) async {
-    final media = await _service.resolve(item);
+  Future<PodcastEpisode> _resolveEpisode(
+    SonarTubeItem item, {bool afterPlaybackFailure = false}
+  ) async {
+    final media = afterPlaybackFailure
+        ? await _service.recoverPlayback(item)
+        : await _service.resolve(item);
     return PodcastEpisode(
       id: 'sonartube:${item.id}',
       title: media.title,
