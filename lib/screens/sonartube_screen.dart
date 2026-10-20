@@ -31,14 +31,20 @@ class SonarTubeScreen extends StatefulWidget {
     this.historyService,
     this.showChannelPlaylists = false,
     this.showChannelShorts = false,
+    this.showChannelCourses = false,
+    this.showChannelPodcasts = false,
   }) : assert(collection == null || searchQuery == null),
-       assert(!showChannelPlaylists || !showChannelShorts);
+       assert(!showChannelPlaylists || !showChannelShorts),
+       assert(!showChannelCourses || (!showChannelPlaylists && !showChannelShorts && !showChannelPodcasts)),
+       assert(!showChannelPodcasts || (!showChannelPlaylists && !showChannelShorts));
 
   final SonarTubeItem? collection;
   final String? searchQuery;
   final SonarTubeSearchType searchType;
   final bool showChannelPlaylists;
   final bool showChannelShorts;
+  final bool showChannelCourses;
+  final bool showChannelPodcasts;
   final SonarTubeService? service;
   final SonarTubeFavoritesService? favoritesService;
   final SonarTubeHistoryService? historyService;
@@ -87,9 +93,17 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
   bool get _isChannelShorts =>
       widget.showChannelShorts &&
       widget.collection?.kind == SonarTubeItemKind.channel;
+  bool get _isChannelCourses =>
+      widget.showChannelCourses &&
+      widget.collection?.kind == SonarTubeItemKind.channel;
+  bool get _isChannelPodcasts =>
+      widget.showChannelPodcasts &&
+      widget.collection?.kind == SonarTubeItemKind.channel;
   bool get _isChannelCollection =>
       !_isChannelPlaylists &&
       !_isChannelShorts &&
+      !_isChannelCourses &&
+      !_isChannelPodcasts &&
       widget.collection?.kind == SonarTubeItemKind.channel;
   bool get _isPlaylistCollection =>
       widget.collection?.kind == SonarTubeItemKind.playlist;
@@ -107,7 +121,7 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
   void initState() {
     super.initState();
     assert(
-      (!widget.showChannelPlaylists && !widget.showChannelShorts) ||
+      (!widget.showChannelPlaylists && !widget.showChannelShorts && !widget.showChannelCourses && !widget.showChannelPodcasts) ||
           widget.collection?.kind == SonarTubeItemKind.channel,
     );
     _loadFavoriteKeys();
@@ -296,6 +310,8 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
       ? l10n.sonarTubeChannelPlaylists
       : _isChannelShorts
           ? l10n.sonarTubeChannelShorts
+          : _isChannelCourses ? l10n.sonarTubeChannelCourses
+          : _isChannelPodcasts ? l10n.sonarTubeChannelPodcasts
           : widget.collection!.title;
 
   Future<void> _openChannelPlaylists() async {
@@ -358,6 +374,66 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
       onPressed: (_loading || _loadingMore) ? null : _openChannelShorts,
       icon: const Icon(Icons.video_collection_outlined),
       label: Text(l10n.sonarTubeChannelShorts),
+    );
+  }
+
+  Future<void> _openChannelCourses() async {
+    if (!_isChannelCollection || !mounted) return;
+    await Navigator.push<void>(
+      context,
+      MaterialPageRoute(
+        settings: const RouteSettings(name: '/sonartube/channel-courses'),
+        builder: (_) => SonarTubeScreen(
+          collection: widget.collection!,
+          showChannelCourses: true,
+          service: _service,
+          favoritesService: _favoritesService,
+          historyService: _historyService,
+        ),
+      ),
+    );
+    if (!mounted || !useSharedAccessibleViewModel) return;
+    await WidgetsBinding.instance.endOfFrame;
+    if (!mounted) return;
+    await _accessibleListController.focusTo('channel_courses', animated: false);
+  }
+
+  Widget _buildChannelCoursesButton(AppLocalizations l10n) {
+    return FilledButton.tonalIcon(
+      key: const ValueKey('sonartube_channel_courses'),
+      onPressed: (_loading || _loadingMore) ? null : _openChannelCourses,
+      icon: const Icon(Icons.video_collection_outlined),
+      label: Text(l10n.sonarTubeChannelCourses),
+    );
+  }
+
+  Future<void> _openChannelPodcasts() async {
+    if (!_isChannelCollection || !mounted) return;
+    await Navigator.push<void>(
+      context,
+      MaterialPageRoute(
+        settings: const RouteSettings(name: '/sonartube/channel-podcasts'),
+        builder: (_) => SonarTubeScreen(
+          collection: widget.collection!,
+          showChannelPodcasts: true,
+          service: _service,
+          favoritesService: _favoritesService,
+          historyService: _historyService,
+        ),
+      ),
+    );
+    if (!mounted || !useSharedAccessibleViewModel) return;
+    await WidgetsBinding.instance.endOfFrame;
+    if (!mounted) return;
+    await _accessibleListController.focusTo('channel_podcasts', animated: false);
+  }
+
+  Widget _buildChannelPodcastsButton(AppLocalizations l10n) {
+    return FilledButton.tonalIcon(
+      key: const ValueKey('sonartube_channel_podcasts'),
+      onPressed: (_loading || _loadingMore) ? null : _openChannelPodcasts,
+      icon: const Icon(Icons.video_collection_outlined),
+      label: Text(l10n.sonarTubeChannelPodcasts),
     );
   }
 
@@ -488,7 +564,11 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
       _page = 1;
     });
     try {
-      final result = _isChannelPlaylists
+      final result = _isChannelCourses
+          ? await _service.channelCourses(widget.collection!)
+          : _isChannelPodcasts
+          ? await _service.channelPodcasts(widget.collection!)
+          : _isChannelPlaylists
           ? await _service.channelPlaylists(widget.collection!)
           : _isChannelShorts
               ? await _service.channelShorts(widget.collection!)
@@ -543,7 +623,11 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
           break;
         }
         final nextPage = currentPage + 1;
-        final result = _isChannelPlaylists
+        final result = _isChannelCourses
+            ? await _service.channelCourses(widget.collection!, token: token, page: nextPage)
+            : _isChannelPodcasts
+            ? await _service.channelPodcasts(widget.collection!, token: token, page: nextPage)
+            : _isChannelPlaylists
             ? await _service.channelPlaylists(
                 widget.collection!,
                 token: token,
@@ -1324,6 +1408,8 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
     SonarTubeSearchType.all => l10n.sonarTubeSearchAll,
     SonarTubeSearchType.playlists => l10n.sonarTubeSearchPlaylists,
     SonarTubeSearchType.channels => l10n.sonarTubeSearchChannels,
+    SonarTubeSearchType.courses => l10n.sonarTubeChannelCourses,
+    SonarTubeSearchType.podcasts => l10n.sonarTubeChannelPodcasts,
   };
 
   SonarTubeSearchType _searchTypeAt(double value) =>
@@ -1515,6 +1601,28 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
           kind: 'button',
           enabled: !_loading && !_loadingMore,
           flutterChild: _buildChannelShortsButton(l10n),
+        ),
+      );
+    }
+    if (_isChannelCollection) {
+      rows.add(
+        AccessibleListRow(
+          id: 'channel_courses',
+          title: l10n.sonarTubeChannelCourses,
+          kind: 'button',
+          enabled: !_loading && !_loadingMore,
+          flutterChild: _buildChannelCoursesButton(l10n),
+        ),
+      );
+    }
+    if (_isChannelCollection) {
+      rows.add(
+        AccessibleListRow(
+          id: 'channel_podcasts',
+          title: l10n.sonarTubeChannelPodcasts,
+          kind: 'button',
+          enabled: !_loading && !_loadingMore,
+          flutterChild: _buildChannelPodcastsButton(l10n),
         ),
       );
     }
@@ -1775,6 +1883,10 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
             widget.collection!,
             accessibleRowId: 'playlist_favorite',
           );
+        } else if (event.id == 'channel_courses' && _isChannelCollection) {
+          await _openChannelCourses();
+        } else if (event.id == 'channel_podcasts' && _isChannelCollection) {
+          await _openChannelPodcasts();
         } else if (event.id == 'channel_playlists' && _isChannelCollection) {
           await _openChannelPlaylists();
         } else if (event.id == 'channel_shorts' && _isChannelCollection) {
@@ -2245,7 +2357,7 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
                   : ListView.builder(
                       padding: const EdgeInsets.fromLTRB(12, 8, 12, 16),
                       itemCount: (_hasCollectionFavoriteButton ? 1 : 0) +
-                          (_isChannelCollection ? 3 : 0) +
+                          (_isChannelCollection ? 5 : 0) +
                           _items.length +
                           (!_loading && _items.isEmpty && _isCollection ? 1 : 0) +
                           (_nextToken == null ? 0 : 1),
@@ -2296,6 +2408,20 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
                             return Padding(
                               padding: const EdgeInsets.only(bottom: 8),
                               child: _buildChannelShortsButton(l10n),
+                            );
+                          }
+                          leadingControls++;
+                          if (index == leadingControls) {
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 8),
+                              child: _buildChannelCoursesButton(l10n),
+                            );
+                          }
+                          leadingControls++;
+                          if (index == leadingControls) {
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 8),
+                              child: _buildChannelPodcastsButton(l10n),
                             );
                           }
                           leadingControls++;

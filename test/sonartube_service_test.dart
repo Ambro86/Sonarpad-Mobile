@@ -1719,6 +1719,166 @@ void main() {
     expect(calls, 2);
   });
 
+  test('channel courses use the verified resolver endpoint and continuation', () async {
+    var calls = 0;
+    final service = SonarTubeService(
+      endpoint: Uri.parse('https://example.test/youtube_resolve.php'),
+      clientToken: 'route-token',
+      client: MockClient((request) async {
+        calls++;
+        expect(request.method, 'GET');
+        expect(request.url.host, 'example.test');
+        expect(request.url.queryParameters['browse'], 'UCabcdefghijklmnopqrstuv');
+        expect(request.url.queryParameters['kind'], 'channel_courses');
+        expect(request.url.queryParameters['format'], 'json');
+        expect(request.headers['X-Sonarpad-Route-Token'], 'route-token');
+        if (calls == 1) {
+          expect(request.url.queryParameters['token'], isNull);
+          return http.Response(
+            jsonEncode({
+              'ok': true,
+              'page': 1,
+              'next_token': 'playlist-next',
+              'items': [
+                {
+                  'kind': 'playlist',
+                  'id': 'PLchannel001',
+                  'title': 'Playlist del canale',
+                  'channel': 'Canale prova',
+                  'channel_id': 'UCabcdefghijklmnopqrstuv',
+                  'video_count': 24,
+                  'url': 'https://www.youtube.com/playlist?list=PLchannel001',
+                },
+              ],
+            }),
+            200,
+          );
+        }
+        expect(request.url.queryParameters['token'], 'playlist-next');
+        expect(request.url.queryParameters['page'], '2');
+        return http.Response(
+          jsonEncode({
+            'ok': true,
+            'page': 2,
+            'next_token': null,
+            'items': [
+              {
+                'kind': 'playlist',
+                'id': 'PLchannel002',
+                'title': 'Seconda playlist',
+                'channel': 'Canale prova',
+                'channel_id': 'UCabcdefghijklmnopqrstuv',
+                'url': 'https://www.youtube.com/playlist?list=PLchannel002',
+              },
+            ],
+          }),
+          200,
+        );
+      }),
+    );
+    const channel = SonarTubeItem(
+      kind: SonarTubeItemKind.channel,
+      id: 'UCabcdefghijklmnopqrstuv',
+      title: 'Canale prova',
+      url: 'https://www.youtube.com/channel/UCabcdefghijklmnopqrstuv',
+    );
+
+    final first = await service.channelCourses(channel);
+    final second = await service.channelCourses(
+      channel,
+      token: first.nextToken,
+      page: 2,
+    );
+
+    expect(first.items.single.kind, SonarTubeItemKind.playlist);
+    expect(first.items.single.id, 'PLchannel001');
+    expect(first.items.single.videoCount, 24);
+    expect(first.nextToken, 'playlist-next');
+    expect(second.items.single.id, 'PLchannel002');
+    expect(second.hasMore, isFalse);
+    expect(calls, 2);
+  });
+
+  test('channel podcasts use the verified resolver endpoint and continuation', () async {
+    var calls = 0;
+    final service = SonarTubeService(
+      endpoint: Uri.parse('https://example.test/youtube_resolve.php'),
+      clientToken: 'route-token',
+      client: MockClient((request) async {
+        calls++;
+        expect(request.method, 'GET');
+        expect(request.url.host, 'example.test');
+        expect(request.url.queryParameters['browse'], 'UCabcdefghijklmnopqrstuv');
+        expect(request.url.queryParameters['kind'], 'channel_podcasts');
+        expect(request.url.queryParameters['format'], 'json');
+        expect(request.headers['X-Sonarpad-Route-Token'], 'route-token');
+        if (calls == 1) {
+          expect(request.url.queryParameters['token'], isNull);
+          return http.Response(
+            jsonEncode({
+              'ok': true,
+              'page': 1,
+              'next_token': 'playlist-next',
+              'items': [
+                {
+                  'kind': 'playlist',
+                  'id': 'PLchannel001',
+                  'title': 'Playlist del canale',
+                  'channel': 'Canale prova',
+                  'channel_id': 'UCabcdefghijklmnopqrstuv',
+                  'video_count': 24,
+                  'url': 'https://www.youtube.com/playlist?list=PLchannel001',
+                },
+              ],
+            }),
+            200,
+          );
+        }
+        expect(request.url.queryParameters['token'], 'playlist-next');
+        expect(request.url.queryParameters['page'], '2');
+        return http.Response(
+          jsonEncode({
+            'ok': true,
+            'page': 2,
+            'next_token': null,
+            'items': [
+              {
+                'kind': 'playlist',
+                'id': 'PLchannel002',
+                'title': 'Seconda playlist',
+                'channel': 'Canale prova',
+                'channel_id': 'UCabcdefghijklmnopqrstuv',
+                'url': 'https://www.youtube.com/playlist?list=PLchannel002',
+              },
+            ],
+          }),
+          200,
+        );
+      }),
+    );
+    const channel = SonarTubeItem(
+      kind: SonarTubeItemKind.channel,
+      id: 'UCabcdefghijklmnopqrstuv',
+      title: 'Canale prova',
+      url: 'https://www.youtube.com/channel/UCabcdefghijklmnopqrstuv',
+    );
+
+    final first = await service.channelPodcasts(channel);
+    final second = await service.channelPodcasts(
+      channel,
+      token: first.nextToken,
+      page: 2,
+    );
+
+    expect(first.items.single.kind, SonarTubeItemKind.playlist);
+    expect(first.items.single.id, 'PLchannel001');
+    expect(first.items.single.videoCount, 24);
+    expect(first.nextToken, 'playlist-next');
+    expect(second.items.single.id, 'PLchannel002');
+    expect(second.hasMore, isFalse);
+    expect(calls, 2);
+  });
+
   test('channel Shorts use the verified resolver endpoint and continuation', () async {
     var calls = 0;
     final service = SonarTubeService(

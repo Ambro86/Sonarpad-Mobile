@@ -3843,6 +3843,12 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String get sonarTubeChannelShorts => 'Videoclipuri scurte';
+  @override
+  String get sonarTubeChannelCourses => 'Cursuri';
+
+  @override
+  String get sonarTubeChannelPodcasts => 'Podcasturi';
+
 
   @override
   String sonarTubeVideoCount(int count) {

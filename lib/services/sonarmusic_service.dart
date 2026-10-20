@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
@@ -30,19 +31,19 @@ class SonarMusicItem {
     required this.kind, required this.id, required this.title,
     this.videoId, this.browseId, this.url, this.artist, this.artistId,
     this.album, this.albumId, this.duration, this.thumbnail,
-    this.subtitle, this.description, this.available = true,
+    this.subtitle, this.description, this.browseParams, this.available = true,
   });
   final String kind;
   final String id;
   final String title;
   final String? videoId, browseId, url, artist, artistId, album, albumId;
-  final String? duration, thumbnail, subtitle, description;
+  final String? duration, thumbnail, subtitle, description, browseParams;
   final bool available;
   bool get playable => available &&
       (kind == 'song' || kind == 'video' || kind == 'episode') &&
       videoId != null && videoId!.isNotEmpty;
   bool get browsable => !playable && (browseId != null || id.isNotEmpty);
-  String get key => '$kind:$id';
+  String get key => browseParams == null ? '$kind:$id' : '$kind:$id:$browseParams';
 
   factory SonarMusicItem.fromJson(Map<String, dynamic> value) {
     String? string(Object? v) => v == null || v.toString().trim().isEmpty
@@ -62,7 +63,7 @@ class SonarMusicItem {
     final browseId = string(value['browse_id']);
     return SonarMusicItem(kind: kind, id: id,
       title: string(value['title']) ?? id,
-      videoId: videoId, browseId: browseId,
+      videoId: videoId, browseId: browseId, browseParams: string(value['browse_params']),
       url: string(value['url']), artist: string(value['artist']),
       artistId: artistId, album: string(value['album']),
       albumId: string(value['album_id']), duration: string(value['duration']),
@@ -71,7 +72,7 @@ class SonarMusicItem {
   }
   Map<String, Object?> toJson() => {
     'kind': kind, 'id': id, 'title': title, 'video_id': videoId,
-    'browse_id': browseId, 'url': url, 'artist': artist,
+    'browse_id': browseId, 'browse_params': browseParams, 'url': url, 'artist': artist,
     'artists': artistId == null ? null : [{'name': artist, 'id': artistId}],
     'album': album, 'album_id': albumId, 'duration': duration,
     'thumbnail': thumbnail, 'subtitle': subtitle, 'description': description,
@@ -107,6 +108,7 @@ class SonarMusicService {
   final SonarTubeService _tube;
   final bool directCatalog;
   String _hl = 'it', _gl = 'IT';
+  String? _visitorData;
   static const _musicKey = 'AIzaSyC9XL3ZjWddXya6X74dJoCTL-WEYFDNX30';
   static const _base = 'https://music.youtube.com/youtubei/v1';
   static const _userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/130.0.0.0 Safari/537.36';
@@ -158,10 +160,12 @@ class SonarMusicService {
         'Referer': 'https://music.youtube.com/',
         'X-YouTube-Client-Name': '67', 'X-YouTube-Client-Version': version,
         'Cookie': 'SOCS=CAI',
+        'X-Goog-Visitor-Id': ?_visitorData,
       },
       body: jsonEncode({
         'context': {'client': {'clientName': 'WEB_REMIX',
-          'clientVersion': version, 'hl': _hl, 'gl': _gl}},
+          'clientVersion': version, 'hl': _hl, 'gl': _gl,
+          'visitorData': ?_visitorData}},
         ...payload,
       }),
     ).timeout(const Duration(seconds: 12));
@@ -172,6 +176,8 @@ class SonarMusicService {
     }
     final result = jsonDecode(utf8.decode(response.bodyBytes));
     if (result is! Map) throw const FormatException('Music direct JSON');
+    if (result['error'] != null) throw const FormatException('Music direct API error');
+    _visitorData = _str(_map(result['responseContext'])?['visitorData']) ?? _visitorData;
     return Map<String, dynamic>.from(result);
   }
 
@@ -192,7 +198,9 @@ class SonarMusicService {
             ? {'continuation': token}
             : {'query': query, if (_filter(type) != null) 'params': _filter(type)});
         final items = _collect(data);
-        if (items.isNotEmpty) {
+        final skipped = _unparsedCatalogRows(data);
+        unawaited(AppLogger.log('SonarMusic search provider=direct type=$type locale=$_hl/$_gl page=$page items=${items.length} skipped=$skipped hasMore=${_nextToken(data) != null}'));
+        if (items.isNotEmpty || data.containsKey('contents') || data.containsKey('continuationContents')) {
           return SonarMusicPage(items: items, nextToken: _nextToken(data));
         }
       } catch (e) {
@@ -201,20 +209,22 @@ class SonarMusicService {
     }
     final data = await _server({'q': query, 'type': type, 'page': '$page',
       if (token != null && token.isNotEmpty) 'token': token});
-    return _fromServer(data);
+    final result = _fromServer(data);
+    unawaited(AppLogger.log('SonarMusic search provider=php type=$type locale=$_hl/$_gl page=$page items=${result.items.length} hasMore=${result.hasMore}'));
+    return result;
   }
 
-  Future<SonarMusicPage> browse(String browseId, {String? token, int page = 1}) async {
+  Future<SonarMusicPage> browse(String browseId, {String? token, int page = 1, String? params}) async {
     final id = browseId.startsWith('VL') || browseId.startsWith('MPRE') ||
-        browseId.startsWith('UC') || browseId.startsWith('MPSP') || browseId.startsWith('MPED')
+        browseId.startsWith('MPAD') || browseId.startsWith('UC') || browseId.startsWith('MPSP') || browseId.startsWith('MPED')
         ? browseId : 'VL$browseId';
     final collection = id.startsWith('MPRE') || id.startsWith('VL');
     if (directCatalog) {
       try {
         final data = await _direct('browse', token != null && token.isNotEmpty
-            ? {'continuation': token} : {'browseId': id});
+            ? {'continuation': Uri.decodeComponent(token)} : {'browseId': id, 'params': ?params});
         final source = collection ? _collectionShelf(data) : data;
-        final items = source == null ? <SonarMusicItem>[] : _collect(source);
+        final items = source == null ? <SonarMusicItem>[] : _collect(source, includeDiscography: id.startsWith('UC'));
         if (source != null && (collection || items.isNotEmpty)) {
           return SonarMusicPage(items: items,
               title: _str(_map(_map(data['microformat'])?['microformatDataRenderer'])?['title']) ??
@@ -226,6 +236,7 @@ class SonarMusicService {
       }
     }
     final data = await _server({'browse': id, 'page': '$page',
+      'params': ?params,
       if (token != null && token.isNotEmpty) 'token': token});
     return _fromServer(data, collection: collection);
   }
@@ -330,7 +341,7 @@ class SonarMusicService {
       }
     }
     add(data['items']);
-    if (result.isEmpty && !collection) {
+    if (!collection) {
       final sections = data['sections'];
       if (sections is List) {
         for (final section in sections) {
@@ -363,7 +374,19 @@ class SonarMusicService {
   static String? _str(Object? raw) => raw == null || raw.toString().trim().isEmpty
       ? null : raw.toString();
 
-  List<SonarMusicItem> _collect(Map<String, dynamic> data) {
+  int _unparsedCatalogRows(Object? node) {
+    if (node is List) return node.fold(0, (sum, child) => sum + _unparsedCatalogRows(child));
+    final map = _map(node);
+    if (map == null) return 0;
+    final row = _map(map['musicResponsiveListItemRenderer']);
+    if (row != null) return _parseRow(row) == null ? 1 : 0;
+    final card = _map(map['musicTwoRowItemRenderer']);
+    if (card != null) return _parseTwoRow(card) == null ? 1 : 0;
+    return map.entries.where((entry) => entry.key != 'menu')
+        .fold(0, (sum, entry) => sum + _unparsedCatalogRows(entry.value));
+  }
+
+  List<SonarMusicItem> _collect(Map<String, dynamic> data, {bool includeDiscography = false}) {
     final results = <SonarMusicItem>[];
     final seen = <String>{};
     void add(SonarMusicItem? item) {
@@ -376,6 +399,19 @@ class SonarMusicService {
       if (node is List) { for (final v in node) { walk(v, depth + 1); } return; }
       final m = _map(node);
       if (m == null) return;
+      if (includeDiscography) {
+        final shelf = _map(m['musicCarouselShelfRenderer']);
+        final header = _map(_map(shelf?['header'])?['musicCarouselShelfBasicHeaderRenderer']);
+        final button = _map(_map(header?['moreContentButton'])?['buttonRenderer']);
+        final endpoint = _endpoint(button, 'browseEndpoint');
+        final target = _str(endpoint?['browseId']);
+        final params = _str(endpoint?['params']);
+        final title = _readText(header?['title']);
+        if (target != null && target.startsWith('MPAD') && title.isNotEmpty) {
+          add(SonarMusicItem(kind: 'collection', id: target, browseId: target,
+              browseParams: params, title: title));
+        }
+      }
       final row = _map(m['musicResponsiveListItemRenderer']);
       if (row != null) add(_parseRow(row));
       final card = _map(m['musicTwoRowItemRenderer']);
@@ -422,54 +458,86 @@ class SonarMusicService {
         if (RegExp(r'^\d+:\d\d(?::\d\d)?$').hasMatch(t)) duration = t;
       }
     }
-    final navigation = _map(row['navigationEndpoint']);
+    final titleRuns = _map(first?['text'])?['runs'];
+    final titleRun = titleRuns is List && titleRuns.isNotEmpty ? _map(titleRuns.first) : null;
+    final navigation = _catalogEndpoint([
+      row['navigationEndpoint'], titleRun?['navigationEndpoint'], row['onTap'],
+    ]);
     final browser = _map(navigation?['browseEndpoint']);
     final browseId = _str(browser?['browseId']);
     final overlay = _map(_map(_map(row['overlay'])?['musicItemThumbnailOverlayRenderer'])?['content']);
     final play = _map(_map(overlay?['musicPlayButtonRenderer'])?['playNavigationEndpoint']);
-    final watch = _map(navigation?['watchEndpoint']) ?? _map(play?['watchEndpoint']);
-    final videoId = _str(row['playlistItemData'] is Map ? (row['playlistItemData'] as Map)['videoId'] : null)
-        ?? _str(watch?['videoId']);
-    final videoType = _str(_map(_map(watch?['watchEndpointMusicSupportedConfigs'])?['watchEndpointMusicConfig'])?['musicVideoType']) ?? '';
-    final kind = browseId?.startsWith('UC') == true && videoId == null ? 'artist'
-      : browseId?.startsWith('MPRE') == true && videoId == null ? 'album'
-      : browseId != null && (browseId.startsWith('VL') || browseId.startsWith('PL')) && videoId == null ? 'playlist'
-      : videoType.contains('OMV') || videoType.contains('UGC') ? 'video'
-      : videoId != null ? 'song' : 'unknown';
-    if (kind == 'unknown') return null;
-    final id = videoId ?? browseId!;
+    final directWatch = _map(navigation?['watchEndpoint']);
+    final watch = directWatch ?? _map(play?['watchEndpoint']);
+    var videoId = _str(_map(row['playlistItemData'])?['videoId']) ?? _str(watch?['videoId']);
+    final playWatch = _map(play?['watchEndpoint']);
+    final videoType = _str(_map(_map(playWatch?['watchEndpointMusicSupportedConfigs'])?['watchEndpointMusicConfig'])?['musicVideoType'])
+        ?? _str(_map(_map(watch?['watchEndpointMusicSupportedConfigs'])?['watchEndpointMusicConfig'])?['musicVideoType']) ?? '';
+    final collectionKind = _catalogBrowseKind(browser);
+    final kind = collectionKind != null && directWatch == null
+        ? collectionKind
+        : videoType.contains('PODCAST') ? 'episode'
+        : videoType.contains('OMV') || videoType.contains('UGC') ||
+            videoType == 'MUSIC_VIDEO_TYPE_OFFICIAL_MUSIC_VIDEO' ||
+            videoType == 'MUSIC_VIDEO_TYPE_OFFICIAL_SOURCE_MUSIC' ? 'video'
+        : videoId != null ? 'song' : collectionKind;
+    if (kind == null) return null;
+    final isCollection = !['song', 'video', 'episode'].contains(kind);
+    if (isCollection) videoId = null;
+    final id = isCollection ? browseId : videoId;
+    if (id == null) return null;
+    if (kind == 'artist') { artist = title; artistId = browseId; }
+    duration ??= meta.expand((text) => text.split(RegExp(r'\s*[•·]\s*')))
+        .where((text) => RegExp(r'^\d+:[0-5]\d(?::[0-5]\d)?$').hasMatch(text)).firstOrNull;
     final thumb = _map(_map(row['thumbnail'])?['musicThumbnailRenderer']);
     return SonarMusicItem(kind: kind, id: id, title: title, videoId: videoId,
-      browseId: browseId, artist: artist ?? (meta.isNotEmpty ? meta.first.split(' • ').first : null),
+      browseId: browseId, browseParams: _str(browser?['params']), artist: artist,
       artistId: artistId, albumId: albumId, duration: duration,
       subtitle: meta.join(' • '), thumbnail: _thumb(thumb?['thumbnail']),
+      available: row['musicItemRendererDisplayPolicy'] != 'MUSIC_ITEM_RENDERER_DISPLAY_POLICY_GREY_OUT',
       url: videoId != null ? 'https://music.youtube.com/watch?v=$videoId' : null);
   }
 
+  static Map<String, dynamic>? _catalogEndpoint(List<Object?> candidates) {
+    for (final candidate in candidates) {
+      final nav = _map(candidate);
+      if (nav != null && (nav['browseEndpoint'] is Map || nav['watchEndpoint'] is Map)) return nav;
+    }
+    return null;
+  }
+
+  static String? _catalogBrowseKind(Map<String, dynamic>? browse) {
+    final id = _str(browse?['browseId']);
+    if (id == null) return null;
+    final config = _map(_map(browse?['browseEndpointContextSupportedConfigs'])?['browseEndpointContextMusicConfig']);
+    final explicit = switch (_str(config?['pageType'])) {
+      'MUSIC_PAGE_TYPE_ALBUM' => 'album',
+      'MUSIC_PAGE_TYPE_ARTIST' || 'MUSIC_PAGE_TYPE_USER_CHANNEL' => 'artist',
+      'MUSIC_PAGE_TYPE_PLAYLIST' => 'playlist',
+      'MUSIC_PAGE_TYPE_PODCAST_SHOW_DETAIL_PAGE' => 'podcast',
+      'MUSIC_PAGE_TYPE_ARTIST_DISCOGRAPHY' => 'collection',
+      _ => null,
+    };
+    if (explicit != null) return explicit;
+    if (id.startsWith('UC')) return 'artist';
+    if (id.startsWith('MPRE')) return 'album';
+    if (id.startsWith('MPAD')) return 'collection';
+    if (id.startsWith('MPSP')) return 'podcast';
+    if (id.startsWith('VL') || id.startsWith('PL') || id.startsWith('RD')) return 'playlist';
+    return null;
+  }
+
   SonarMusicItem? _parseTwoRow(Map<String, dynamic> row) {
-    final title = _readText(row['title']);
-    if (title.isEmpty) return null;
-    final titleRuns = _map(row['title'])?['runs'];
-    final firstTitleRun = titleRuns is List && titleRuns.isNotEmpty ? titleRuns.first : null;
-    final nav = _map(row['navigationEndpoint']) ??
-      _map(_map(firstTitleRun)?['navigationEndpoint']) ??
-      _map(row['onTap']);
-    final browse = _map(nav?['browseEndpoint']);
-    final browseId = _str(browse?['browseId']);
-    final videoId = _str(_map(nav?['watchEndpoint'])?['videoId']);
-    final kind = browseId?.startsWith('UC') == true ? 'artist'
-      : browseId?.startsWith('MPRE') == true ? 'album'
-      : browseId != null && (browseId.startsWith('VL') || browseId.startsWith('PL') || browseId.startsWith('RD')) ? 'playlist'
-      : videoId != null ? 'song' : 'unknown';
-    if (kind == 'unknown') return null;
-    final thumbRenderer = _map(row['thumbnailRenderer']);
-    return SonarMusicItem(kind: kind, id: videoId ?? browseId!,
-      videoId: videoId, browseId: browseId, title: title,
-      subtitle: _readText(row['subtitle']),
-      artist: kind == 'artist' ? title : null,
-      artistId: kind == 'artist' ? browseId : null,
-      thumbnail: _thumb(_map(thumbRenderer?['musicThumbnailRenderer'])?['thumbnail'] ?? thumbRenderer?['thumbnail']),
-      url: videoId != null ? 'https://music.youtube.com/watch?v=$videoId' : null);
+    // Cards, carousel tiles and ordinary rows share endpoint and metadata rules.
+    final thumbnail = _map(row['thumbnailRenderer']);
+    return _parseRow({
+      ...row,
+      'flexColumns': [
+        {'musicResponsiveListItemFlexColumnRenderer': {'text': row['title']}},
+        {'musicResponsiveListItemFlexColumnRenderer': {'text': row['subtitle']}},
+      ],
+      'thumbnail': thumbnail ?? row['thumbnail'],
+    });
   }
 
   static String? _thumb(Object? raw) {

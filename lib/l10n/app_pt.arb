@@ -4837,5 +4837,13 @@
   "settingsHideCalendarSaints": "Ocultar os santos no calendário",
   "markdownFormat": "Markdown (.md)",
   "htmlFormat": "HTML (.html)",
-  "recordingNotAdvancing": "A gravação não está a receber novos dados. Verifica a ligação e reinicia-a se necessário."
+  "recordingNotAdvancing": "A gravação não está a receber novos dados. Verifica a ligação e reinicia-a se necessário.",
+  "sonarTubeChannelCourses": "Cursos",
+  "@sonarTubeChannelCourses": {
+    "description": "YouTube channel courses section"
+  },
+  "sonarTubeChannelPodcasts": "Podcasts",
+  "@sonarTubeChannelPodcasts": {
+    "description": "YouTube channel podcasts section"
+  }
 }

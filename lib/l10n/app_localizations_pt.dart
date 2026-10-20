@@ -3970,6 +3970,12 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get sonarTubeChannelShorts => 'Shorts';
+  @override
+  String get sonarTubeChannelCourses => 'Cursos';
+
+  @override
+  String get sonarTubeChannelPodcasts => 'Podcasts';
+
 
   @override
   String sonarTubeVideoCount(int count) {
@@ -9367,6 +9373,12 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get sonarTubeChannelShorts => 'Shorts';
+  @override
+  String get sonarTubeChannelCourses => 'Cursos';
+
+  @override
+  String get sonarTubeChannelPodcasts => 'Podcasts';
+
 
   @override
   String sonarTubeVideoCount(int count) {

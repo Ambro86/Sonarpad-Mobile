@@ -3981,6 +3981,12 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get sonarTubeChannelShorts => 'Shorts';
+  @override
+  String get sonarTubeChannelCourses => 'Cursos';
+
+  @override
+  String get sonarTubeChannelPodcasts => 'Pódcasts';
+
 
   @override
   String sonarTubeVideoCount(int count) {

@@ -7144,6 +7144,8 @@ abstract class AppLocalizations {
   ///
   /// In it, this message translates to:
   /// **'Shorts'**
+  String get sonarTubeChannelCourses;
+  String get sonarTubeChannelPodcasts;
   String get sonarTubeChannelShorts;
 
   /// Number of videos contained in a SonarTube playlist.

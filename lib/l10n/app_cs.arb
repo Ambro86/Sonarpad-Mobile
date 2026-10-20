@@ -4834,5 +4834,13 @@
   "settingsHideCalendarSaints": "Skrýt svaté v kalendáři",
   "markdownFormat": "Markdown (.md)",
   "htmlFormat": "HTML (.html)",
-  "recordingNotAdvancing": "Nahrávání nepřijímá nová data. Zkontrolujte připojení a v případě potřeby nahrávání restartujte."
+  "recordingNotAdvancing": "Nahrávání nepřijímá nová data. Zkontrolujte připojení a v případě potřeby nahrávání restartujte.",
+  "sonarTubeChannelCourses": "Kurzy",
+  "@sonarTubeChannelCourses": {
+    "description": "YouTube channel courses section"
+  },
+  "sonarTubeChannelPodcasts": "Podcasty",
+  "@sonarTubeChannelPodcasts": {
+    "description": "YouTube channel podcasts section"
+  }
 }

@@ -66,6 +66,7 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
       'song' => l10n.sonarMusicSong,
       'video' => l10n.sonarMusicVideo,
       'album' => l10n.sonarMusicAlbum,
+      'collection' => l10n.sonarMusicOpen,
       'artist' => l10n.sonarMusicArtist,
       'playlist' => l10n.sonarMusicPlaylist,
       'podcast' => l10n.podcasts,
@@ -139,7 +140,7 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
         result = SonarMusicPage(items: await _library.recent());
       } else if (widget.collection != null) {
         result = await _service.browse(widget.collection!.browseId ?? widget.collection!.id,
-            token: token, page: page);
+            token: token, page: page, params: widget.collection!.browseParams);
       } else {
         result = await _service.search(widget.searchQuery ?? '', type: _type,
             token: token, page: page);

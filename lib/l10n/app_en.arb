@@ -4831,5 +4831,13 @@
   "settingsHideCalendarSaints": "Hide saints in the calendar",
   "markdownFormat": "Markdown (.md)",
   "htmlFormat": "HTML (.html)",
-  "recordingNotAdvancing": "The recording is not receiving new data. Check your connection and restart it if needed."
+  "recordingNotAdvancing": "The recording is not receiving new data. Check your connection and restart it if needed.",
+  "sonarTubeChannelCourses": "Courses",
+  "@sonarTubeChannelCourses": {
+    "description": "YouTube channel courses section"
+  },
+  "sonarTubeChannelPodcasts": "Podcasts",
+  "@sonarTubeChannelPodcasts": {
+    "description": "YouTube channel podcasts section"
+  }
 }

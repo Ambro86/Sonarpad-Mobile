@@ -6409,5 +6409,13 @@
   "settingsHideCalendarSaints": "Приховувати святих у календарі",
   "markdownFormat": "Markdown (.md)",
   "htmlFormat": "HTML (.html)",
-  "recordingNotAdvancing": "Запис не отримує нових даних. Перевірте з’єднання та за потреби перезапустіть запис."
+  "recordingNotAdvancing": "Запис не отримує нових даних. Перевірте з’єднання та за потреби перезапустіть запис.",
+  "sonarTubeChannelCourses": "Курси",
+  "@sonarTubeChannelCourses": {
+    "description": "YouTube channel courses section"
+  },
+  "sonarTubeChannelPodcasts": "Подкасти",
+  "@sonarTubeChannelPodcasts": {
+    "description": "YouTube channel podcasts section"
+  }
 }

@@ -4831,5 +4831,13 @@
   "settingsHideCalendarSaints": "Ascunde sfinții din calendar",
   "markdownFormat": "Markdown (.md)",
   "htmlFormat": "HTML (.html)",
-  "recordingNotAdvancing": "Înregistrarea nu primește date noi. Verifică conexiunea și repornește înregistrarea dacă este necesar."
+  "recordingNotAdvancing": "Înregistrarea nu primește date noi. Verifică conexiunea și repornește înregistrarea dacă este necesar.",
+  "sonarTubeChannelCourses": "Cursuri",
+  "@sonarTubeChannelCourses": {
+    "description": "YouTube channel courses section"
+  },
+  "sonarTubeChannelPodcasts": "Podcasturi",
+  "@sonarTubeChannelPodcasts": {
+    "description": "YouTube channel podcasts section"
+  }
 }

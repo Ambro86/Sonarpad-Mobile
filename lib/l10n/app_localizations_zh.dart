@@ -3824,6 +3824,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get sonarTubeChannelShorts => 'Shorts';
+  @override
+  String get sonarTubeChannelCourses => '课程';
+
+  @override
+  String get sonarTubeChannelPodcasts => '播客';
+
 
   @override
   String sonarTubeVideoCount(int count) {
@@ -9022,6 +9028,12 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get sonarTubeChannelShorts => 'Shorts';
+  @override
+  String get sonarTubeChannelCourses => '课程';
+
+  @override
+  String get sonarTubeChannelPodcasts => '播客';
+
 
   @override
   String sonarTubeVideoCount(int count) {

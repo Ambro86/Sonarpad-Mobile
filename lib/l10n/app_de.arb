@@ -6409,5 +6409,13 @@
   "settingsHideCalendarSaints": "Heilige im Kalender ausblenden",
   "markdownFormat": "Markdown (.md)",
   "htmlFormat": "HTML (.html)",
-  "recordingNotAdvancing": "Die Aufnahme empfängt keine neuen Daten. Prüfe deine Verbindung und starte sie bei Bedarf neu."
+  "recordingNotAdvancing": "Die Aufnahme empfängt keine neuen Daten. Prüfe deine Verbindung und starte sie bei Bedarf neu.",
+  "sonarTubeChannelCourses": "Kurse",
+  "@sonarTubeChannelCourses": {
+    "description": "YouTube channel courses section"
+  },
+  "sonarTubeChannelPodcasts": "Podcasts",
+  "@sonarTubeChannelPodcasts": {
+    "description": "YouTube channel podcasts section"
+  }
 }

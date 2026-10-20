@@ -9,7 +9,7 @@ import '../l10n/app_localizations_lookup.dart';
 
 enum SonarTubeItemKind { video, channel, playlist }
 
-enum SonarTubeSearchType { all, playlists, channels }
+enum SonarTubeSearchType { all, playlists, channels, courses, podcasts }
 
 enum SonarTubeChannelSort { newest, oldest, popular }
 
@@ -42,6 +42,7 @@ class SonarTubeItem {
     this.handle,
     this.description,
     this.videoCount,
+    this.collectionType,
     this.isLive = false,
   });
 
@@ -59,6 +60,7 @@ class SonarTubeItem {
   final String? handle;
   final String? description;
   final int? videoCount;
+  final String? collectionType;
   final bool isLive;
 }
 
@@ -282,6 +284,24 @@ class SonarTubeService {
     String? token,
     int page = 1,
   }) async {
+    final visited = <String>{?token};
+    var result = await _searchPage(query, type: type, token: token, page: page);
+    if (type != SonarTubeSearchType.courses && type != SonarTubeSearchType.podcasts) {
+      return result;
+    }
+    for (var attempt = 0; attempt < 2 && result.items.isEmpty && result.hasMore; attempt++) {
+      if (!visited.add(result.nextToken!)) break;
+      result = await _searchPage(query, type: type, token: result.nextToken, page: result.page + 1);
+    }
+    return result;
+  }
+
+  Future<SonarTubePage> _searchPage(
+    String query, {
+    SonarTubeSearchType type = SonarTubeSearchType.all,
+    String? token,
+    int page = 1,
+  }) async {
     final trimmedQuery = query.trim();
     final fallbackQuery = <String, String>{
       'hl': _youtubeLanguage,
@@ -322,6 +342,8 @@ class SonarTubeService {
     SonarTubeSearchType.all => 'all',
     SonarTubeSearchType.playlists => 'playlist',
     SonarTubeSearchType.channels => 'channel',
+    SonarTubeSearchType.courses => 'course',
+    SonarTubeSearchType.podcasts => 'podcast',
   };
 
   bool _matchesSearchType(SonarTubeItem item, SonarTubeSearchType type) =>
@@ -330,6 +352,8 @@ class SonarTubeService {
         SonarTubeSearchType.playlists =>
           item.kind == SonarTubeItemKind.playlist,
         SonarTubeSearchType.channels => item.kind == SonarTubeItemKind.channel,
+        SonarTubeSearchType.courses => item.kind == SonarTubeItemKind.playlist && item.collectionType == 'course',
+        SonarTubeSearchType.podcasts => item.kind == SonarTubeItemKind.playlist && item.collectionType == 'podcast',
       };
 
   Future<SonarTubePage> browse(
@@ -387,6 +411,46 @@ class SonarTubeService {
       'gl': _youtubeRegion,
       'browse': channel.id,
       'kind': 'channel_playlists',
+      'title': channel.title,
+      'format': 'json',
+      if (token != null && token.isNotEmpty) 'token': token,
+      'page': '$page',
+    });
+  }
+
+  Future<SonarTubePage> channelCourses(
+    SonarTubeItem channel, {
+    String? token,
+    int page = 1,
+  }) async {
+    if (channel.kind != SonarTubeItemKind.channel) {
+      throw ArgumentError('channel_required');
+    }
+    return _loadServerPage({
+      'hl': _youtubeLanguage,
+      'gl': _youtubeRegion,
+      'browse': channel.id,
+      'kind': 'channel_courses',
+      'title': channel.title,
+      'format': 'json',
+      if (token != null && token.isNotEmpty) 'token': token,
+      'page': '$page',
+    });
+  }
+
+  Future<SonarTubePage> channelPodcasts(
+    SonarTubeItem channel, {
+    String? token,
+    int page = 1,
+  }) async {
+    if (channel.kind != SonarTubeItemKind.channel) {
+      throw ArgumentError('channel_required');
+    }
+    return _loadServerPage({
+      'hl': _youtubeLanguage,
+      'gl': _youtubeRegion,
+      'browse': channel.id,
+      'kind': 'channel_podcasts',
       'title': channel.title,
       'format': 'json',
       if (token != null && token.isNotEmpty) 'token': token,
@@ -1178,7 +1242,11 @@ class SonarTubeService {
         )
         .toList(growable: false);
 
-    if (items.isEmpty && query.isNotEmpty) {
+    // Courses and podcasts share the playlist search: a page can legitimately
+    // contain only other collection types. Keep its continuation for scanning.
+    if (items.isEmpty && query.isNotEmpty &&
+        type != SonarTubeSearchType.courses &&
+        type != SonarTubeSearchType.podcasts) {
       throw const FormatException('empty_direct_search_results');
     }
     return SonarTubePage(
@@ -1762,7 +1830,7 @@ class SonarTubeService {
       'video' || 'videos' => 'EgIQAQ==',
       'live' || 'stream' => 'EgJAAQ==',
       'channel' || 'channels' => 'EgIQAg==',
-      'playlist' || 'playlists' => 'EgIQAw==',
+      'playlist' || 'playlists' || 'course' || 'podcast' => 'EgIQAw==',
       'all' || '' => null,
       _ => 'EgIQAQ==',
     };
@@ -1932,7 +2000,8 @@ class SonarTubeService {
       final contentType = _string(lockup['contentType']) ?? '';
       final isVideo = contentType == 'LOCKUP_CONTENT_TYPE_VIDEO';
       final isPlaylist = contentType == 'LOCKUP_CONTENT_TYPE_PLAYLIST' ||
-          contentType == 'LOCKUP_CONTENT_TYPE_PODCAST';
+          contentType == 'LOCKUP_CONTENT_TYPE_PODCAST' ||
+          contentType == 'LOCKUP_CONTENT_TYPE_COURSE';
       if (!isVideo && !isPlaylist) return;
       final id = _string(lockup['contentId']);
       if (id == null) return;
@@ -1949,8 +2018,10 @@ class SonarTubeService {
       String? channel;
       String? views;
       String? published;
-      if (channelContextTitle != null && rows.length == 1) {
-        // Inside a channel's Videos tab YouTube omits the redundant channel
+      if (rows.length == 1 &&
+          (channelContextTitle != null ||
+              (isVideo && _asMap(metadata?['image'])?['decoratedAvatarViewModel'] != null))) {
+        // In channel tabs and course playlists YouTube can omit the channel
         // name and packs views + publication age into the only metadata row.
         // Treating its first value as the channel produced labels such as
         // "199 visualizzazioni · 1:48" and lost "55 minuti fa".
@@ -2014,6 +2085,11 @@ class SonarTubeService {
           kind: isPlaylist
               ? SonarTubeItemKind.playlist
               : SonarTubeItemKind.video,
+          collectionType: switch (contentType) {
+            'LOCKUP_CONTENT_TYPE_COURSE' => 'course',
+            'LOCKUP_CONTENT_TYPE_PODCAST' => 'podcast',
+            _ => null,
+          },
           id: id,
           title: title,
           channel: channel,
@@ -2433,6 +2509,7 @@ class SonarTubeService {
       handle: _string(raw['handle']),
       description: _string(raw['description']),
       videoCount: _int(raw['video_count']),
+      collectionType: _string(raw['collection_type']),
       isLive: raw['live'] == true,
     );
   }

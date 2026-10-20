@@ -3947,6 +3947,12 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get sonarTubeChannelShorts => 'Shorts';
+  @override
+  String get sonarTubeChannelCourses => 'Курси';
+
+  @override
+  String get sonarTubeChannelPodcasts => 'Подкасти';
+
 
   @override
   String sonarTubeVideoCount(int count) {

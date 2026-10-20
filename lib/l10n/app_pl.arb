@@ -6412,5 +6412,13 @@
   "settingsHideCalendarSaints": "Ukryj świętych w kalendarzu",
   "markdownFormat": "Markdown (.md)",
   "htmlFormat": "HTML (.html)",
-  "recordingNotAdvancing": "Nagranie nie odbiera nowych danych. Sprawdź połączenie i w razie potrzeby uruchom nagrywanie ponownie."
+  "recordingNotAdvancing": "Nagranie nie odbiera nowych danych. Sprawdź połączenie i w razie potrzeby uruchom nagrywanie ponownie.",
+  "sonarTubeChannelCourses": "Kursy",
+  "@sonarTubeChannelCourses": {
+    "description": "YouTube channel courses section"
+  },
+  "sonarTubeChannelPodcasts": "Podcasty",
+  "@sonarTubeChannelPodcasts": {
+    "description": "YouTube channel podcasts section"
+  }
 }
