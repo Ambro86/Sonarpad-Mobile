@@ -24,6 +24,8 @@ class AudioPlayerService {
   static AudioPlayerService? _activeService;
   bool _yieldedToAnotherPlayer = false;
   bool _disposed = false;
+  final Completer<void> _disposeFinished = Completer<void>();
+  final Duration _sourceLoadTimeout;
 
   // just_audio_background owns one native player. Serialize activation and
   // release the previous owner, including paused players, before loading.
@@ -45,7 +47,12 @@ class AudioPlayerService {
         previous._sessionReady = false;
       }
       _activeService = this;
-      return action();
+      // Native plugins may leave a load Future pending after disposal. Do not
+      // let that abandoned Future hold the shared player queue forever.
+      return Future.any<T?>([
+        action(),
+        _disposeFinished.future.then<T?>((_) => null),
+      ]);
     });
     // A failed load must not poison the next user's playback request.
     _playerTransition = operation.then<void>(
@@ -72,7 +79,9 @@ class AudioPlayerService {
     AudioSource source, {
     Duration? initialPosition,
   }) => _withActivePlayer<Duration?>(
-    () => _player.setAudioSource(source, initialPosition: initialPosition),
+    () => _boundedSourceLoad(
+      () => _player.setAudioSource(source, initialPosition: initialPosition),
+    ),
   );
 
   Future<Duration?> _loadSources(
@@ -80,12 +89,38 @@ class AudioPlayerService {
     int initialIndex = 0,
     Duration initialPosition = Duration.zero,
   }) => _withActivePlayer<Duration?>(
-    () => _player.setAudioSources(
-      sources,
-      initialIndex: initialIndex,
-      initialPosition: initialPosition,
+    () => _boundedSourceLoad(
+      () => _player.setAudioSources(
+        sources,
+        initialIndex: initialIndex,
+        initialPosition: initialPosition,
+      ),
     ),
   );
+
+  Future<Duration?> _boundedSourceLoad(
+    Future<Duration?> Function() load,
+  ) async {
+    AppLogger.log(
+      'Sonarpad audio: native source load entered mediaId=$_currentMediaId',
+    );
+    try {
+      return await Future.any<Duration?>([
+        load(),
+        _disposeFinished.future.then<Duration?>((_) => null),
+      ]).timeout(_sourceLoadTimeout);
+    } on TimeoutException {
+      AppLogger.log(
+        'Sonarpad audio: native source load timed out mediaId=$_currentMediaId',
+      );
+      // Stop the native request before releasing ownership or refreshing a URL.
+      // If this screen was already closed, never stop a newer player's backend.
+      if (!_disposed && identical(_activeService, this)) {
+        await _player.stop().timeout(_audioSessionTimeout);
+      }
+      rethrow;
+    }
+  }
 
   final AudioPlayer _player;
   final bool _isAndroid;
@@ -103,9 +138,13 @@ class AudioPlayerService {
   Duration? _currentDuration;
   final AppSettingsService _settings = AppSettingsService();
 
-  AudioPlayerService({AudioPlayer? player, bool? isAndroid})
-    : _player = player ?? AudioPlayer(),
-      _isAndroid = isAndroid ?? Platform.isAndroid {
+  AudioPlayerService({
+    AudioPlayer? player,
+    bool? isAndroid,
+    Duration sourceLoadTimeout = const Duration(seconds: 20),
+  }) : _sourceLoadTimeout = sourceLoadTimeout,
+       _player = player ?? AudioPlayer(),
+       _isAndroid = isAndroid ?? Platform.isAndroid {
     _initBookmarkListener();
   }
 
@@ -398,6 +437,7 @@ class AudioPlayerService {
       'state=$_playerDebugState',
     );
     final duration = await _loadSource(source);
+    if (_disposed || _stopRequested) return;
     AppLogger.log(
       'Sonarpad audio: setAudioSource completed after '
       '${stopwatch.elapsedMilliseconds}ms title="$itemTitle" '
@@ -979,6 +1019,7 @@ class AudioPlayerService {
       AppLogger.log('Sonarpad audio: stopAndDispose error: $e');
     }
 
+    if (!_disposeFinished.isCompleted) _disposeFinished.complete();
     completer.complete();
     if (_pendingDispose == completer.future) {
       _pendingDispose = null;
@@ -1013,6 +1054,7 @@ class AudioPlayerService {
       AppLogger.log('Sonarpad audio: dispose error: $e');
     }
 
+    if (!_disposeFinished.isCompleted) _disposeFinished.complete();
     completer.complete();
     if (_pendingDispose == completer.future) {
       _pendingDispose = null;

@@ -381,7 +381,10 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
         builder: (_) => PodcastEpisodePlayerScreen(
           speedCategory: MediaPlaybackSpeedCategory.sonartube,
           episode: first,
-          isVideoSupported: item.kind == 'video',
+          // Songs and album tracks can also resolve to progressive MP4 media.
+          // Use the same initialization as SonarTube, regardless of search kind.
+          isVideoSupported: true,
+          startWithVideoThenRestorePreference: true,
           refreshEpisode: () => _episode(currentItem()),
           navigateEpisode: queue.length > 1 ? navigate : null,
           hasPreviousEpisode: () => current > 0,

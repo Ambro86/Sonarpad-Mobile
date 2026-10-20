@@ -182,6 +182,55 @@ void main() {
       await resumed;
     },
   );
+  for (final stopFirst in [true, false]) {
+    test(
+      'closing stalled load releases next player, stopFirst=$stopFirst',
+      () async {
+        media.sourceGate = Completer<void>();
+        final abandoned = mediaService.setUrl(
+          'https://example.com/stalled.mp4',
+        );
+        await media.loading.future;
+        if (stopFirst) {
+          await mediaService.stopAndDispose();
+        } else {
+          await mediaService.dispose();
+        }
+        await voiceService
+            .setUrl('https://example.com/next.mp3')
+            .timeout(const Duration(seconds: 2));
+        await abandoned;
+        expect(voice.loads, 1);
+        expect(SingleNativePlayer.owner, voice);
+        // Late completion of the abandoned request must not reclaim ownership.
+        media.sourceGate!.complete();
+        await Future<void>.delayed(Duration.zero);
+        expect(SingleNativePlayer.owner, voice);
+      },
+    );
+  }
+  test(
+    'source timeout stops native load and lets the next song start',
+    () async {
+      await mediaService.dispose();
+      media = SingleNativePlayer()..sourceGate = Completer<void>();
+      mediaService = AudioPlayerService(
+        player: media,
+        isAndroid: false,
+        sourceLoadTimeout: const Duration(milliseconds: 30),
+      );
+      await expectLater(
+        mediaService.setUrl('https://example.com/stalled.mp4'),
+        throwsA(isA<TimeoutException>()),
+      );
+      expect(SingleNativePlayer.owner, isNull);
+      await voiceService
+          .setUrl('https://example.com/next.mp3')
+          .timeout(const Duration(seconds: 2));
+      expect(SingleNativePlayer.owner, voice);
+      media.sourceGate!.complete();
+    },
+  );
   test('closing an old screen does not release the new player', () async {
     await loadPausedMedia();
     final preview = voiceService.playVoicePreview(File('sample.mp3'));

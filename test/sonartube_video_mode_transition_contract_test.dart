@@ -37,6 +37,13 @@ void main() {
     expect(player, contains('_toggleVideo(false);'));
   });
 
+  test('SonarMusic album songs use the same bootstrap as videos', () {
+    final music = File('lib/screens/sonarmusic_screen.dart').readAsStringSync();
+    expect(music, contains('isVideoSupported: true,'));
+    expect(music, contains('startWithVideoThenRestorePreference: true,'));
+    expect(music, isNot(contains("isVideoSupported: item.kind == 'video'")));
+  });
+
   test('YouTube fullscreen gives video_player a real surface size', () {
     final player = File(
       'lib/screens/podcast_episode_player_screen.dart',
