@@ -32,6 +32,21 @@ final turkishNewsSources = [
     ],
   ),
   NewsRssSource(
+    name: 'Türkiye Gazetesi',
+    uri: Uri.parse('https://www.turkiyegazetesi.com.tr/rss'),
+  ),
+  // IHA currently exposes no working public feed: use recent indexed news.
+  NewsRssSource(
+    name: 'İhlas Haber Ajansı (İHA)',
+    uri: Uri.parse(
+      'https://news.google.com/rss/search?q=site%3Aiha.com.tr%20when%3A7d&hl=tr&gl=TR&ceid=TR%3Atr',
+    ),
+  ),
+  NewsRssSource(
+    name: 'TGRT Haber',
+    uri: Uri.parse('https://www.tgrthaber.com/rss/manset'),
+  ),
+  NewsRssSource(
     name: 'Anadolu Ajansı',
     uri: Uri.parse('https://www.aa.com.tr/tr/rss/default?cat=guncel'),
   ),

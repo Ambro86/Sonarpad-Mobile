@@ -3,6 +3,7 @@
     "version": "0.5.2",
     "date": "2026-10-17",
     "it": [
+      "Corrette le date e gli orari delle notizie e alcuni indirizzi che mostravano articoli vecchi. Quando la data di pubblicazione non è disponibile, non viene più mostrata l’ora di aggiornamento. Aggiunte Türkiye Gazetesi, İHA e TGRT Haber alle testate turche.",
       "Migliorata la ricerca in SonarMusic, con risultati più completi per brani, album, artisti, playlist e video, un caricamento più affidabile dei risultati successivi e accesso agli elenchi completi di album e singoli degli artisti.",
       "In SonarTube sono ora disponibili Corsi e Podcast, sia nelle sezioni dei canali sia tra i filtri di ricerca.",
       "Nei Documenti puoi ora esportare i testi anche in Markdown (.md) e HTML (.html), salvarli in Sonarpad o condividerli.",
@@ -18,6 +19,7 @@
       "Aggiunto il supporto Chromecast nei player compatibili, con scelta del dispositivo, controlli di riproduzione e ritorno al telefono dalla posizione raggiunta. Il pulsante si può nascondere nelle impostazioni."
     ],
     "en": [
+      "Fixed news dates and times and some feed addresses that showed old articles. When the publication date is unavailable, the refresh time is no longer shown instead. Added Türkiye Gazetesi, İHA and TGRT Haber to the Turkish news sources.",
       "Improved SonarMusic search with more complete results for songs, albums, artists, playlists and videos, more reliable loading of further results, and access to full artist album and singles lists.",
       "Courses and Podcasts are now available in SonarTube, both in channel sections and in search filters.",
       "In Documents, you can now export text as Markdown (.md) and HTML (.html), save it in Sonarpad or share it.",
@@ -33,6 +35,7 @@
       "Added Chromecast casting in compatible players, with device selection, playback controls and return to your phone at the current position. You can hide the button in settings."
     ],
     "fr": [
+      "Correction des dates et heures des actualités et de certaines adresses affichant des articles anciens. Lorsque la date de publication est indisponible, l’heure d’actualisation ne la remplace plus. Ajout de Türkiye Gazetesi, İHA et TGRT Haber aux sources turques.",
       "Recherche SonarMusic améliorée : résultats plus complets pour les titres, albums, artistes, playlists et vidéos, chargement plus fiable des résultats suivants et accès aux listes complètes des albums et singles des artistes.",
       "Les cours et les podcasts sont désormais disponibles dans SonarTube, dans les rubriques des chaînes et les filtres de recherche.",
       "Dans Documents, vous pouvez désormais exporter les textes en Markdown (.md) et HTML (.html), les enregistrer dans Sonarpad ou les partager.",
@@ -48,6 +51,7 @@
       "Ajout de Chromecast dans les lecteurs compatibles, avec choix de l’appareil, commandes de lecture et reprise sur le téléphone à la position actuelle. Le bouton peut être masqué dans les réglages."
     ],
     "es": [
+      "Corregidas las fechas y horas de las noticias y algunas direcciones que mostraban artículos antiguos. Si no hay fecha de publicación, ya no se muestra en su lugar la hora de actualización. Añadidas Türkiye Gazetesi, İHA y TGRT Haber a las fuentes turcas.",
       "Mejorada la búsqueda en SonarMusic, con resultados más completos de canciones, álbumes, artistas, listas y vídeos, una carga más fiable de los resultados siguientes y acceso a las listas completas de álbumes y sencillos de los artistas.",
       "SonarTube ahora incluye Cursos y Pódcasts, tanto en las secciones de los canales como en los filtros de búsqueda.",
       "En Documentos ya puedes exportar textos en Markdown (.md) y HTML (.html), guardarlos en Sonarpad o compartirlos.",
@@ -63,6 +67,7 @@
       "Añadida la transmisión con Chromecast en reproductores compatibles, con selección del dispositivo, controles y regreso al teléfono desde la posición actual. El botón se puede ocultar en los ajustes."
     ],
     "pt": [
+      "Corrigidas as datas e horas das notícias e alguns endereços que mostravam artigos antigos. Quando a data de publicação não está disponível, a hora de atualização deixa de ser apresentada em seu lugar. Adicionadas Türkiye Gazetesi, İHA e TGRT Haber às fontes turcas.",
       "Pesquisa do SonarMusic melhorada, com resultados mais completos para músicas, álbuns, artistas, listas de reprodução e vídeos, carregamento mais fiável dos resultados seguintes e acesso às listas completas de álbuns e singles dos artistas.",
       "O SonarTube inclui agora Cursos e Podcasts, tanto nas secções dos canais como nos filtros de pesquisa.",
       "Nos Documentos, pode agora exportar textos em Markdown (.md) e HTML (.html), guardá-los no Sonarpad ou partilhá-los.",
@@ -78,6 +83,7 @@
       "Adicionada a transmissão com Chromecast nos leitores compatíveis, com escolha do dispositivo, controlos e regresso ao telemóvel na posição atual. O botão pode ser ocultado nas definições."
     ],
     "pt_BR": [
+      "Corrigidas as datas e os horários das notícias e alguns endereços que mostravam artigos antigos. Quando a data de publicação não está disponível, o horário de atualização não é mais exibido em seu lugar. Adicionadas Türkiye Gazetesi, İHA e TGRT Haber às fontes turcas.",
       "Busca do SonarMusic aprimorada, com resultados mais completos para músicas, álbuns, artistas, playlists e vídeos, carregamento mais confiável dos próximos resultados e acesso às listas completas de álbuns e singles dos artistas.",
       "O SonarTube agora inclui Cursos e Podcasts, tanto nas seções dos canais quanto nos filtros de pesquisa.",
       "Em Documentos, agora você pode exportar textos em Markdown (.md) e HTML (.html), salvá-los no Sonarpad ou compartilhá-los.",
@@ -93,6 +99,7 @@
       "Adicionada a transmissão com Chromecast nos reprodutores compatíveis, com escolha do dispositivo, controles e retorno ao celular na posição atual. O botão pode ser ocultado nas configurações."
     ],
     "pl": [
+      "Poprawiono daty i godziny wiadomości oraz niektóre adresy wyświetlające stare artykuły. Gdy data publikacji jest niedostępna, czas odświeżenia nie jest już pokazywany zamiast niej. Dodano Türkiye Gazetesi, İHA i TGRT Haber do tureckich źródeł wiadomości.",
       "Ulepszono wyszukiwanie w SonarMusic: pełniejsze wyniki dla utworów, albumów, wykonawców, playlist i filmów, bardziej niezawodne wczytywanie kolejnych wyników oraz dostęp do pełnych list albumów i singli wykonawców.",
       "W SonarTube są teraz dostępne kursy i podcasty, zarówno w sekcjach kanałów, jak i w filtrach wyszukiwania.",
       "W Dokumentach można teraz eksportować teksty do formatów Markdown (.md) i HTML (.html), zapisywać je w Sonarpad lub udostępniać.",
@@ -108,6 +115,7 @@
       "Dodano Chromecast w zgodnych odtwarzaczach: wybór urządzenia, sterowanie i powrót do telefonu w bieżącej pozycji. Przycisk można ukryć w ustawieniach."
     ],
     "cs": [
+      "Opraveny datumy a časy zpráv a některé adresy zobrazující staré články. Pokud datum publikace není dostupné, již se místo něj nezobrazuje čas aktualizace. Mezi turecké zdroje byly přidány Türkiye Gazetesi, İHA a TGRT Haber.",
       "Vylepšené vyhledávání v SonarMusic nabízí úplnější výsledky pro skladby, alba, interprety, playlisty a videa, spolehlivější načítání dalších výsledků a přístup k úplným seznamům alb a singlů interpretů.",
       "V SonarTube jsou nyní dostupné kurzy a podcasty, a to v sekcích kanálů i ve filtrech vyhledávání.",
       "V Dokumentech nyní můžete exportovat texty do formátů Markdown (.md) a HTML (.html), uložit je do Sonarpadu nebo je sdílet.",
@@ -123,6 +131,7 @@
       "Přidáno odesílání přes Chromecast v podporovaných přehrávačích, výběr zařízení, ovládání a návrat na telefon od aktuální pozice. Tlačítko lze skrýt v nastavení."
     ],
     "de": [
+      "Datum und Uhrzeit von Nachrichten sowie einige Adressen mit veralteten Artikeln korrigiert. Bei fehlendem Veröffentlichungsdatum wird nicht mehr die Aktualisierungszeit angezeigt. Türkiye Gazetesi, İHA und TGRT Haber zu den türkischen Nachrichtenquellen hinzugefügt.",
       "Verbesserte SonarMusic-Suche mit vollständigeren Ergebnissen für Titel, Alben, Künstler, Playlists und Videos, zuverlässigerem Laden weiterer Ergebnisse und Zugriff auf vollständige Album- und Single-Listen der Künstler.",
       "In SonarTube sind jetzt Kurse und Podcasts verfügbar, sowohl in den Kanalbereichen als auch in den Suchfiltern.",
       "In Dokumente lassen sich Texte jetzt auch als Markdown (.md) und HTML (.html) exportieren, in Sonarpad speichern oder teilen.",
@@ -138,6 +147,7 @@
       "Chromecast in kompatiblen Playern hinzugefügt: Geräteauswahl, Wiedergabesteuerung und Rückkehr zum Telefon an der aktuellen Position. Die Schaltfläche lässt sich in den Einstellungen ausblenden."
     ],
     "zh_CN": [
+      "修正了新闻日期、时间及部分显示旧文章的订阅地址。没有发布日期时，不再用刷新时间代替。土耳其新闻来源新增 Türkiye Gazetesi、İHA 和 TGRT Haber。",
       "改进了 SonarMusic 搜索：歌曲、专辑、艺人、播放列表和视频的结果更完整，后续结果加载更可靠，并可访问艺人的完整专辑和单曲列表。",
       "SonarTube 现已支持课程和播客，可在频道栏目和搜索筛选条件中找到。",
       "文档现已支持将文本导出为 Markdown（.md）和 HTML（.html），并保存到 Sonarpad 或分享。",
@@ -153,6 +163,7 @@
       "兼容播放器新增 Chromecast 投放，支持选择设备、控制播放，以及从当前位置返回手机播放。可在设置中隐藏此按钮。"
     ],
     "uk": [
+      "Виправлено дати й час новин та деякі адреси, що показували старі статті. Якщо дата публікації недоступна, час оновлення більше не відображається замість неї. До турецьких джерел додано Türkiye Gazetesi, İHA та TGRT Haber.",
       "Покращено пошук у SonarMusic: повніші результати для пісень, альбомів, виконавців, списків відтворення та відео, надійніше завантаження наступних результатів і доступ до повних списків альбомів та синглів виконавців.",
       "У SonarTube тепер доступні курси та подкасти — як у розділах каналів, так і серед фільтрів пошуку.",
       "У Документах тепер можна експортувати тексти у формати Markdown (.md) та HTML (.html), зберігати їх у Sonarpad або ділитися ними.",
@@ -168,6 +179,7 @@
       "Додано Chromecast у сумісних програвачах: вибір пристрою, керування та повернення до телефону з поточної позиції. Кнопку можна приховати в налаштуваннях."
     ],
     "ro": [
+      "Corectate datele și orele știrilor și unele adrese care afișau articole vechi. Când data publicării nu este disponibilă, ora actualizării nu mai este afișată în locul ei. Adăugate Türkiye Gazetesi, İHA și TGRT Haber la sursele turcești.",
       "Căutare îmbunătățită în SonarMusic, cu rezultate mai complete pentru melodii, albume, artiști, liste de redare și videoclipuri, încărcare mai fiabilă a rezultatelor următoare și acces la listele complete de albume și single-uri ale artiștilor.",
       "În SonarTube sunt acum disponibile cursuri și podcasturi, atât în secțiunile canalelor, cât și în filtrele de căutare.",
       "În Documente, poți acum exporta textele în Markdown (.md) și HTML (.html), le poți salva în Sonarpad sau distribui.",
@@ -183,6 +195,7 @@
       "Adăugată transmiterea prin Chromecast în playerele compatibile, cu alegerea dispozitivului, comenzi și revenire pe telefon de la poziția curentă. Butonul poate fi ascuns din setări."
     ],
     "tr": [
+      "Haberlerin tarih ve saatleri ile eski yazıları gösteren bazı kaynak adresleri düzeltildi. Yayın tarihi bulunamadığında artık bunun yerine yenileme saati gösterilmiyor. Türkçe haber kaynaklarına Türkiye Gazetesi, İHA ve TGRT Haber eklendi.",
       "SonarMusic araması iyileştirildi: şarkılar, albümler, sanatçılar, çalma listeleri ve videolar için daha kapsamlı sonuçlar, sonraki sonuçların daha güvenilir yüklenmesi ve sanatçıların tüm albüm ve single listelerine erişim.",
       "SonarTube artık hem kanal bölümlerinde hem de arama filtrelerinde Kurslar ve Podcastler seçeneklerini sunuyor.",
       "Belgeler bölümünde metinleri artık Markdown (.md) ve HTML (.html) olarak dışa aktarabilir, Sonarpad içinde kaydedebilir veya paylaşabilirsiniz.",

@@ -2052,6 +2052,9 @@ class NewsService {
     final decodedBody = utf8.decode(response.bodyBytes, allowMalformed: true);
     try {
       final doc = XmlDocument.parse(decodedBody);
+      if (doc.rootElement.name.local.toLowerCase() == 'html') {
+        return _extractArticlesFromHtml(decodedBody, rssSource);
+      }
       final items = doc.findAllElements('item');
       if (items.isEmpty) {
         return _articlesFromAtomEntries(doc, rssSource);
@@ -2234,7 +2237,7 @@ class NewsService {
           link: fullUrl,
           summary: '',
           source: rssSource.name,
-          publishedAt: DateTime.now(),
+          publishedAt: null,
         ),
       );
       if (articles.length >= 30) break;
@@ -2271,6 +2274,24 @@ class NewsService {
   }
 
   Uri _normalizedRssUri(Uri uri) {
+    final host = uri.host.toLowerCase().replaceFirst(RegExp(r'^www\.'), '');
+    final path = uri.path.replaceFirst(RegExp(r'/+$'), '');
+    if ((host == 'iha.com.tr' && const ['', '/rss'].contains(path)) ||
+        (host == 'news.google.com' && uri.queryParameters['q'] == 'site:iha.com.tr')) {
+      return Uri.parse('https://news.google.com/rss/search?q=site%3Aiha.com.tr%20when%3A7d&hl=tr&gl=TR&ceid=TR%3Atr');
+    }
+    // Repair known obsolete front-page feeds, including saved community URLs.
+    if (host == 'turkiyegazetesi.com.tr' &&
+        const ['', '/rss', '/rss/manset', '/rss/son-dakika-haberleri'].contains(path)) {
+      return Uri.parse('https://www.turkiyegazetesi.com.tr/rss');
+    }
+    if (host == 'tgrthaber.com' &&
+        const ['', '/rss', '/rss/son-dakika', '/rss/manset'].contains(path)) {
+      return Uri.parse('https://www.tgrthaber.com/rss/manset');
+    }
+    if (host == 'aa.com.tr' && const ['', '/tr'].contains(path)) {
+      return Uri.parse('https://www.aa.com.tr/tr/rss/default?cat=guncel');
+    }
     if (_isCorriereHomeFeedUri(uri)) {
       return _corriereHomeFeedUri;
     }
@@ -2896,29 +2917,44 @@ extension FirstOrNullList<T> on List<T> {
 
 class HttpDate {
   static DateTime parse(String value) {
-    final months = {
-      'Jan': 1,
-      'Feb': 2,
-      'Mar': 3,
-      'Apr': 4,
-      'May': 5,
-      'Jun': 6,
-      'Jul': 7,
-      'Aug': 8,
-      'Sep': 9,
-      'Oct': 10,
-      'Nov': 11,
-      'Dec': 12,
+    // RSS dates may use English or Turkish names. Never ignore the zone.
+    const months = {
+      'jan': 1, 'feb': 2, 'mar': 3, 'apr': 4, 'may': 5, 'jun': 6,
+      'jul': 7, 'aug': 8, 'sep': 9, 'oct': 10, 'nov': 11, 'dec': 12,
+      'oca': 1, 'şub': 2, 'nis': 4, 'haz': 6, 'tem': 7, 'ağu': 8,
+      'eyl': 9, 'eki': 10, 'kas': 11, 'ara': 12,
     };
-    final parts =
-        value.split(RegExp(r'[ ,:]')).where((e) => e.isNotEmpty).toList();
-    if (parts.length < 7) throw const FormatException('Data RSS non valida');
-    final day = int.parse(parts[1]);
-    final month = months[parts[2]]!;
-    final year = int.parse(parts[3]);
-    final hour = int.parse(parts[4]);
-    final minute = int.parse(parts[5]);
-    final second = int.parse(parts[6]);
-    return DateTime.utc(year, month, day, hour, minute, second).toLocal();
+    final match = RegExp(
+      r'^(?:[^,]+,\s*)?(\d{1,2})\s+(\S+)\s+(\d{4})\s+(\d{2}):(\d{2})(?::(\d{2}))?\s+([+-]\d{2}:?\d{2}|GMT|UTC|UT|Z|EST|EDT|CST|CDT|MST|MDT|PST|PDT)$',
+      caseSensitive: false,
+    ).firstMatch(value.trim());
+    if (match == null) throw const FormatException('Invalid RSS date');
+    final month = months[match[2]!.toLowerCase()];
+    if (month == null) throw const FormatException('Invalid RSS month');
+    final day = int.parse(match[1]!);
+    final year = int.parse(match[3]!);
+    final hour = int.parse(match[4]!);
+    final minute = int.parse(match[5]!);
+    final second = int.parse(match[6] ?? '0');
+    final date = DateTime.utc(year, month, day, hour, minute, second);
+    if (date.month != month || date.day != day || hour > 23 ||
+        minute > 59 || second > 59) {
+      throw const FormatException('Invalid RSS date components');
+    }
+    final zone = match[7]!.toUpperCase();
+    const zones = {'GMT': 0, 'UTC': 0, 'UT': 0, 'Z': 0,
+      'EST': -300, 'EDT': -240, 'CST': -360, 'CDT': -300,
+      'MST': -420, 'MDT': -360, 'PST': -480, 'PDT': -420};
+    var offset = zones[zone];
+    if (offset == null) {
+      final digits = zone.substring(1).replaceAll(':', '');
+      final hours = int.parse(digits.substring(0, 2));
+      final minutes = int.parse(digits.substring(2));
+      if (hours > 23 || minutes > 59) {
+        throw const FormatException('Invalid RSS timezone');
+      }
+      offset = (hours * 60 + minutes) * (zone.startsWith('-') ? -1 : 1);
+    }
+    return date.subtract(Duration(minutes: offset));
   }
 }
