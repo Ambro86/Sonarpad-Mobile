@@ -16,7 +16,8 @@
       "In SonarMusic, “Ascoltati di recente” permette ora di eliminare singole voci dalle azioni secondarie di VoiceOver o dal pulsante visivo, escluso dalla lettura dello screen reader, e di cancellare tutta la cronologia con conferma, come in SonarTube.",
       "Su Android, la lettura con le voci locali supporta ora pausa e ripresa tramite il doppio tocco con due dita di TalkBack, anche in notizie, documenti, Wikipedia e Treccani.",
       "In SonarMusic, il pulsante Suggerimenti compare solo quando il campo di ricerca contiene testo. La sua comparsa o scomparsa mantiene stabile il focus di VoiceOver, senza ricaricare tutto l’elenco.",
-      "Aggiunto il supporto Chromecast nei player compatibili, con scelta del dispositivo, controlli di riproduzione e ritorno al telefono dalla posizione raggiunta. Il pulsante si può nascondere nelle impostazioni."
+      "Aggiunto il supporto Chromecast nei player compatibili, con scelta del dispositivo, controlli di riproduzione e ritorno al telefono dalla posizione raggiunta. Il pulsante si può nascondere nelle impostazioni.",
+      "Corretti i nomi dei file importati: Unisci file, Taglia file media, Converti media e le audiodescrizioni con IA mostrano i nomi originali invece dei codici temporanei, anche negli annunci di VoiceOver durante il riordino. I file con lo stesso nome restano distinti."
     ],
     "en": [
       "Fixed news dates and times and some feed addresses that showed old articles. When the publication date is unavailable, the refresh time is no longer shown instead. Added Türkiye Gazetesi, İHA and TGRT Haber to the Turkish news sources.",
@@ -32,7 +33,8 @@
       "SonarMusic Recently listened now supports deleting individual entries through VoiceOver actions or a visual button excluded from screen reader navigation, and clearing the entire history with confirmation, as in SonarTube.",
       "On Android, reading with local voices now supports pause and resume using the TalkBack two-finger double tap, including news, documents, Wikipedia and Treccani.",
       "In SonarMusic, Suggestions appears only when the search field contains text. Showing or hiding the button preserves VoiceOver focus without reloading the entire list.",
-      "Added Chromecast casting in compatible players, with device selection, playback controls and return to your phone at the current position. You can hide the button in settings."
+      "Added Chromecast casting in compatible players, with device selection, playback controls and return to your phone at the current position. You can hide the button in settings.",
+      "Fixed imported file names: Join files, Cut media, Convert media and AI audio descriptions show original names instead of temporary codes, including VoiceOver announcements when reordering. Files with the same name remain separate."
     ],
     "fr": [
       "Correction des dates et heures des actualités et de certaines adresses affichant des articles anciens. Lorsque la date de publication est indisponible, l’heure d’actualisation ne la remplace plus. Ajout de Türkiye Gazetesi, İHA et TGRT Haber aux sources turques.",
@@ -48,7 +50,8 @@
       "Dans SonarMusic, les écoutes récentes permettent désormais de supprimer chaque entrée via les actions VoiceOver ou un bouton visuel exclu de la navigation du lecteur d’écran, et d’effacer tout l’historique après confirmation, comme dans SonarTube.",
       "Sur Android, la lecture avec les voix locales peut désormais être mise en pause et reprise par un double toucher avec deux doigts dans TalkBack, notamment pour les actualités, les documents, Wikipédia et Treccani.",
       "Dans SonarMusic, le bouton Suggestions apparaît uniquement lorsque le champ de recherche contient du texte. Son affichage ou son masquage préserve le focus VoiceOver sans recharger toute la liste.",
-      "Ajout de Chromecast dans les lecteurs compatibles, avec choix de l’appareil, commandes de lecture et reprise sur le téléphone à la position actuelle. Le bouton peut être masqué dans les réglages."
+      "Ajout de Chromecast dans les lecteurs compatibles, avec choix de l’appareil, commandes de lecture et reprise sur le téléphone à la position actuelle. Le bouton peut être masqué dans les réglages.",
+      "Correction des noms des fichiers importés : la fusion, le découpage, la conversion et les audiodescriptions par IA affichent les noms originaux au lieu des codes temporaires, y compris dans les annonces VoiceOver lors du réordonnancement. Les fichiers de même nom restent distincts."
     ],
     "es": [
       "Corregidas las fechas y horas de las noticias y algunas direcciones que mostraban artículos antiguos. Si no hay fecha de publicación, ya no se muestra en su lugar la hora de actualización. Añadidas Türkiye Gazetesi, İHA y TGRT Haber a las fuentes turcas.",
@@ -64,7 +67,8 @@
       "En SonarMusic, las escuchas recientes permiten eliminar entradas mediante las acciones de VoiceOver o un botón visual excluido de la navegación del lector de pantalla, y borrar todo el historial con confirmación, como en SonarTube.",
       "En Android, la lectura con voces locales permite pausar y reanudar con el doble toque con dos dedos de TalkBack, también en noticias, documentos, Wikipedia y Treccani.",
       "En SonarMusic, Sugerencias aparece solo cuando el campo de búsqueda contiene texto. Mostrar u ocultar el botón mantiene el foco de VoiceOver sin recargar toda la lista.",
-      "Añadida la transmisión con Chromecast en reproductores compatibles, con selección del dispositivo, controles y regreso al teléfono desde la posición actual. El botón se puede ocultar en los ajustes."
+      "Añadida la transmisión con Chromecast en reproductores compatibles, con selección del dispositivo, controles y regreso al teléfono desde la posición actual. El botón se puede ocultar en los ajustes.",
+      "Corregidos los nombres de los archivos importados: unir, cortar y convertir archivos multimedia y las audiodescripciones con IA muestran los nombres originales en lugar de códigos temporales, también en los anuncios de VoiceOver al reordenarlos. Los archivos con el mismo nombre se mantienen separados."
     ],
     "pt": [
       "Corrigidas as datas e horas das notícias e alguns endereços que mostravam artigos antigos. Quando a data de publicação não está disponível, a hora de atualização deixa de ser apresentada em seu lugar. Adicionadas Türkiye Gazetesi, İHA e TGRT Haber às fontes turcas.",
@@ -80,7 +84,8 @@
       "No SonarMusic, as reproduções recentes permitem eliminar entradas pelas ações do VoiceOver ou por um botão visual excluído da navegação do leitor de ecrã, e limpar todo o histórico com confirmação, como no SonarTube.",
       "No Android, a leitura com vozes locais permite agora pausar e retomar com o duplo toque com dois dedos do TalkBack, incluindo notícias, documentos, Wikipédia e Treccani.",
       "No SonarMusic, o botão Sugestões aparece apenas quando o campo de pesquisa contém texto. Mostrar ou ocultar o botão mantém o foco do VoiceOver sem recarregar toda a lista.",
-      "Adicionada a transmissão com Chromecast nos leitores compatíveis, com escolha do dispositivo, controlos e regresso ao telemóvel na posição atual. O botão pode ser ocultado nas definições."
+      "Adicionada a transmissão com Chromecast nos leitores compatíveis, com escolha do dispositivo, controlos e regresso ao telemóvel na posição atual. O botão pode ser ocultado nas definições.",
+      "Corrigidos os nomes dos ficheiros importados: unir, cortar e converter multimédia e as audiodescrições com IA mostram os nomes originais em vez de códigos temporários, incluindo os anúncios do VoiceOver ao reordenar. Os ficheiros com o mesmo nome permanecem separados."
     ],
     "pt_BR": [
       "Corrigidas as datas e os horários das notícias e alguns endereços que mostravam artigos antigos. Quando a data de publicação não está disponível, o horário de atualização não é mais exibido em seu lugar. Adicionadas Türkiye Gazetesi, İHA e TGRT Haber às fontes turcas.",
@@ -96,7 +101,8 @@
       "No SonarMusic, as reproduções recentes permitem excluir entradas pelas ações do VoiceOver ou por um botão visual excluído da navegação do leitor de tela, e limpar todo o histórico com confirmação, como no SonarTube.",
       "No Android, a leitura com vozes locais agora permite pausar e retomar com o toque duplo com dois dedos do TalkBack, inclusive em notícias, documentos, Wikipédia e Treccani.",
       "No SonarMusic, o botão Sugestões aparece apenas quando o campo de pesquisa contém texto. Mostrar ou ocultar o botão mantém o foco do VoiceOver sem recarregar toda a lista.",
-      "Adicionada a transmissão com Chromecast nos reprodutores compatíveis, com escolha do dispositivo, controles e retorno ao celular na posição atual. O botão pode ser ocultado nas configurações."
+      "Adicionada a transmissão com Chromecast nos reprodutores compatíveis, com escolha do dispositivo, controles e retorno ao celular na posição atual. O botão pode ser ocultado nas configurações.",
+      "Corrigidos os nomes dos arquivos importados: unir, cortar e converter mídia e as audiodescrições com IA mostram os nomes originais em vez de códigos temporários, inclusive nos anúncios do VoiceOver ao reordenar. Arquivos com o mesmo nome continuam separados."
     ],
     "pl": [
       "Poprawiono daty i godziny wiadomości oraz niektóre adresy wyświetlające stare artykuły. Gdy data publikacji jest niedostępna, czas odświeżenia nie jest już pokazywany zamiast niej. Dodano Türkiye Gazetesi, İHA i TGRT Haber do tureckich źródeł wiadomości.",
@@ -112,7 +118,8 @@
       "Ostatnio słuchane w SonarMusic umożliwiają usuwanie wpisów za pomocą czynności VoiceOver lub przycisku pomijanego przez czytnik ekranu oraz czyszczenie całej historii po potwierdzeniu, tak jak w SonarTube.",
       "Na Androidzie czytanie głosami lokalnymi obsługuje teraz pauzę i wznowienie przez dwukrotne stuknięcie dwoma palcami w TalkBack, także w wiadomościach, dokumentach, Wikipedii i Treccani.",
       "W SonarMusic przycisk sugestii pojawia się tylko wtedy, gdy pole wyszukiwania zawiera tekst. Pokazywanie i ukrywanie przycisku zachowuje fokus VoiceOver bez ponownego ładowania całej listy.",
-      "Dodano Chromecast w zgodnych odtwarzaczach: wybór urządzenia, sterowanie i powrót do telefonu w bieżącej pozycji. Przycisk można ukryć w ustawieniach."
+      "Dodano Chromecast w zgodnych odtwarzaczach: wybór urządzenia, sterowanie i powrót do telefonu w bieżącej pozycji. Przycisk można ukryć w ustawieniach.",
+      "Poprawiono nazwy importowanych plików: łączenie, przycinanie i konwersja multimediów oraz audiodeskrypcja AI pokazują oryginalne nazwy zamiast kodów tymczasowych, również w komunikatach VoiceOver podczas zmiany kolejności. Pliki o tej samej nazwie pozostają oddzielne."
     ],
     "cs": [
       "Opraveny datumy a časy zpráv a některé adresy zobrazující staré články. Pokud datum publikace není dostupné, již se místo něj nezobrazuje čas aktualizace. Mezi turecké zdroje byly přidány Türkiye Gazetesi, İHA a TGRT Haber.",
@@ -128,7 +135,8 @@
       "Nedávno poslouchané v SonarMusic nyní umožňují odstranit položky pomocí akcí VoiceOver nebo tlačítka vynechaného při navigaci čtečkou obrazovky a vymazat celou historii po potvrzení, stejně jako v SonarTube.",
       "V Androidu lze nyní čtení místními hlasy pozastavit a obnovit dvojitým klepnutím dvěma prsty v TalkBacku, také ve zprávách, dokumentech, Wikipedii a Treccani.",
       "V SonarMusic se tlačítko návrhů zobrazuje pouze tehdy, když vyhledávací pole obsahuje text. Zobrazení nebo skrytí tlačítka zachovává zaměření VoiceOveru bez opětovného načtení celého seznamu.",
-      "Přidáno odesílání přes Chromecast v podporovaných přehrávačích, výběr zařízení, ovládání a návrat na telefon od aktuální pozice. Tlačítko lze skrýt v nastavení."
+      "Přidáno odesílání přes Chromecast v podporovaných přehrávačích, výběr zařízení, ovládání a návrat na telefon od aktuální pozice. Tlačítko lze skrýt v nastavení.",
+      "Opraveny názvy importovaných souborů: spojování, stříhání a převod médií i audiopopis s AI zobrazují původní názvy místo dočasných kódů, také v oznámeních VoiceOver při změně pořadí. Soubory se stejným názvem zůstávají oddělené."
     ],
     "de": [
       "Datum und Uhrzeit von Nachrichten sowie einige Adressen mit veralteten Artikeln korrigiert. Bei fehlendem Veröffentlichungsdatum wird nicht mehr die Aktualisierungszeit angezeigt. Türkiye Gazetesi, İHA und TGRT Haber zu den türkischen Nachrichtenquellen hinzugefügt.",
@@ -144,7 +152,8 @@
       "In SonarMusic lassen sich zuletzt gehörte Einträge jetzt über VoiceOver-Aktionen oder eine von der Screenreader-Navigation ausgeschlossene Schaltfläche löschen. Der gesamte Verlauf kann nach Bestätigung geleert werden, wie in SonarTube.",
       "Unter Android lässt sich das Vorlesen mit lokalen Stimmen jetzt durch doppeltes Tippen mit zwei Fingern in TalkBack pausieren und fortsetzen, auch in Nachrichten, Dokumenten, Wikipedia und Treccani.",
       "In SonarMusic erscheint die Schaltfläche Vorschläge nur, wenn das Suchfeld Text enthält. Beim Ein- und Ausblenden bleibt der VoiceOver-Fokus erhalten, ohne die gesamte Liste neu zu laden.",
-      "Chromecast in kompatiblen Playern hinzugefügt: Geräteauswahl, Wiedergabesteuerung und Rückkehr zum Telefon an der aktuellen Position. Die Schaltfläche lässt sich in den Einstellungen ausblenden."
+      "Chromecast in kompatiblen Playern hinzugefügt: Geräteauswahl, Wiedergabesteuerung und Rückkehr zum Telefon an der aktuellen Position. Die Schaltfläche lässt sich in den Einstellungen ausblenden.",
+      "Namen importierter Dateien korrigiert: Beim Zusammenfügen, Schneiden und Konvertieren von Medien sowie bei KI-Audiobeschreibungen erscheinen die ursprünglichen Namen statt temporärer Codes, auch in VoiceOver-Ansagen beim Umsortieren. Gleichnamige Dateien bleiben getrennt."
     ],
     "zh_CN": [
       "修正了新闻日期、时间及部分显示旧文章的订阅地址。没有发布日期时，不再用刷新时间代替。土耳其新闻来源新增 Türkiye Gazetesi、İHA 和 TGRT Haber。",
@@ -160,7 +169,8 @@
       "SonarMusic 的“最近收听”现可通过 VoiceOver 操作或不参与屏幕阅读器导航的可视按钮删除单条记录，也可在确认后清空全部历史记录，与 SonarTube 一致。",
       "在 Android 上，使用本地语音朗读时，现在可以通过 TalkBack 的双指双击手势暂停和继续，包括新闻、文档、维基百科和 Treccani。",
       "在 SonarMusic 中，只有搜索框包含文字时才会显示“建议”按钮。显示或隐藏按钮时会保留 VoiceOver 焦点，不会重新加载整个列表。",
-      "兼容播放器新增 Chromecast 投放，支持选择设备、控制播放，以及从当前位置返回手机播放。可在设置中隐藏此按钮。"
+      "兼容播放器新增 Chromecast 投放，支持选择设备、控制播放，以及从当前位置返回手机播放。可在设置中隐藏此按钮。",
+      "修复导入文件的名称显示：合并、剪切和转换媒体以及 AI 音频描述现在显示原始名称，而不是临时代码，包括调整顺序时的 VoiceOver 播报。同名文件仍分别保存。"
     ],
     "uk": [
       "Виправлено дати й час новин та деякі адреси, що показували старі статті. Якщо дата публікації недоступна, час оновлення більше не відображається замість неї. До турецьких джерел додано Türkiye Gazetesi, İHA та TGRT Haber.",
@@ -176,7 +186,8 @@
       "У SonarMusic нещодавно прослухані записи тепер можна видаляти через дії VoiceOver або візуальну кнопку, виключену з навігації читача екрана, а всю історію — очищати після підтвердження, як у SonarTube.",
       "На Android читання локальними голосами тепер можна призупиняти й відновлювати подвійним дотиком двома пальцями в TalkBack, зокрема в новинах, документах, Вікіпедії та Treccani.",
       "У SonarMusic кнопка підказок з’являється лише тоді, коли поле пошуку містить текст. Показ і приховування кнопки зберігають фокус VoiceOver без перезавантаження всього списку.",
-      "Додано Chromecast у сумісних програвачах: вибір пристрою, керування та повернення до телефону з поточної позиції. Кнопку можна приховати в налаштуваннях."
+      "Додано Chromecast у сумісних програвачах: вибір пристрою, керування та повернення до телефону з поточної позиції. Кнопку можна приховати в налаштуваннях.",
+      "Виправлено назви імпортованих файлів: об’єднання, обрізання й перетворення медіа та аудіоопис із ШІ показують оригінальні назви замість тимчасових кодів, зокрема в оголошеннях VoiceOver під час зміни порядку. Файли з однаковими назвами залишаються окремими."
     ],
     "ro": [
       "Corectate datele și orele știrilor și unele adrese care afișau articole vechi. Când data publicării nu este disponibilă, ora actualizării nu mai este afișată în locul ei. Adăugate Türkiye Gazetesi, İHA și TGRT Haber la sursele turcești.",
@@ -192,7 +203,8 @@
       "În SonarMusic, ascultările recente permit acum ștergerea intrărilor prin acțiunile VoiceOver sau printr-un buton vizual exclus din navigarea cititorului de ecran și golirea întregului istoric după confirmare, ca în SonarTube.",
       "Pe Android, citirea cu vocile locale acceptă acum pauza și reluarea prin atingerea dublă cu două degete în TalkBack, inclusiv în știri, documente, Wikipedia și Treccani.",
       "În SonarMusic, butonul Sugestii apare doar când câmpul de căutare conține text. Afișarea sau ascunderea lui păstrează focalizarea VoiceOver fără a reîncărca întreaga listă.",
-      "Adăugată transmiterea prin Chromecast în playerele compatibile, cu alegerea dispozitivului, comenzi și revenire pe telefon de la poziția curentă. Butonul poate fi ascuns din setări."
+      "Adăugată transmiterea prin Chromecast în playerele compatibile, cu alegerea dispozitivului, comenzi și revenire pe telefon de la poziția curentă. Butonul poate fi ascuns din setări.",
+      "Corectate numele fișierelor importate: unirea, tăierea și conversia media, precum și audiodescrierile cu IA afișează numele originale în locul codurilor temporare, inclusiv în anunțurile VoiceOver la reordonare. Fișierele cu același nume rămân separate."
     ],
     "tr": [
       "Haberlerin tarih ve saatleri ile eski yazıları gösteren bazı kaynak adresleri düzeltildi. Yayın tarihi bulunamadığında artık bunun yerine yenileme saati gösterilmiyor. Türkçe haber kaynaklarına Türkiye Gazetesi, İHA ve TGRT Haber eklendi.",
@@ -208,7 +220,8 @@
       "SonarMusic son dinlenenler artık VoiceOver eylemleri veya ekran okuyucu gezinmesine dahil edilmeyen görsel bir düğme ile tek tek silinebiliyor. SonarTube gibi tüm geçmiş de onay alınarak temizlenebiliyor.",
       "Android’de yerel seslerle okuma artık TalkBack’te iki parmakla çift dokunarak duraklatılabilir ve sürdürülebilir; haberler, belgeler, Wikipedia ve Treccani de buna dahildir.",
       "SonarMusic’te Öneriler düğmesi yalnızca arama alanında metin olduğunda görünür. Düğmenin gösterilmesi veya gizlenmesi, tüm listeyi yeniden yüklemeden VoiceOver odağını korur.",
-      "Uyumlu oynatıcılara Chromecast eklendi: cihaz seçimi, oynatma kontrolleri ve mevcut konumdan telefonda devam etme. Düğme ayarlardan gizlenebilir."
+      "Uyumlu oynatıcılara Chromecast eklendi: cihaz seçimi, oynatma kontrolleri ve mevcut konumdan telefonda devam etme. Düğme ayarlardan gizlenebilir.",
+      "İçe aktarılan dosya adları düzeltildi: dosya birleştirme, medya kesme ve dönüştürme ile yapay zekâ sesli betimleme, geçici kodlar yerine özgün adları gösterir. Sıralama değiştirilirken VoiceOver duyurularında da özgün adlar kullanılır. Aynı adlı dosyalar ayrı tutulur."
     ]
   },
   {

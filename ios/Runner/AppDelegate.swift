@@ -257,16 +257,14 @@ class SonarpadPhotoLibraryImportPlugin: NSObject, FlutterPlugin, PHPickerViewCon
           let targetDir = fileManager.temporaryDirectory
             .appendingPathComponent("sonarpad_photo_import", isDirectory: true)
             .appendingPathComponent(importSession, isDirectory: true)
+            .appendingPathComponent(UUID().uuidString, isDirectory: true)
           try fileManager.createDirectory(at: targetDir, withIntermediateDirectories: true)
           let ext = url.pathExtension.isEmpty ? "mov" : url.pathExtension
           let suggestedName = provider.suggestedName?.trimmingCharacters(in: .whitespacesAndNewlines)
           let rawBase = (suggestedName?.isEmpty == false ? suggestedName! : "video")
           let base = URL(fileURLWithPath: rawBase).deletingPathExtension().lastPathComponent
             .replacingOccurrences(of: "/", with: "_")
-          var target = targetDir.appendingPathComponent("\(base).\(ext)")
-          if fileManager.fileExists(atPath: target.path) {
-            target = targetDir.appendingPathComponent("\(base)_\(UUID().uuidString).\(ext)")
-          }
+          let target = targetDir.appendingPathComponent("\(base).\(ext)")
           try fileManager.copyItem(at: url, to: target)
           lock.lock(); paths.append(target.path); lock.unlock()
         } catch {

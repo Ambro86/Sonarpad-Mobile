@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
 import 'package:share_plus/share_plus.dart';
 
+import '../utils/imported_file_display_name.dart';
 import '../l10n/app_localizations.dart';
 import '../services/cloud_file_picker_service.dart';
 import '../services/app_cache_service.dart';
@@ -195,7 +196,7 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
 
     setState(() {
       _inputPath = path;
-      _inputController.text = _shortPath(path, parentCount: 1);
+      _inputController.text = importedFileDisplayName(path);
     });
   }
 
@@ -209,7 +210,7 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
     if (path == null || path.isEmpty) return;
     setState(() {
       _imagePath = path;
-      _imageController.text = _shortPath(path, parentCount: 1);
+      _imageController.text = importedFileDisplayName(path);
     });
   }
 
@@ -222,7 +223,7 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
       return;
     }
     if (!await File(input).exists()) {
-      _showSnack(l10n.fileInaccessible(p.basename(input)));
+      _showSnack(l10n.fileInaccessible(importedFileDisplayName(input)));
       return;
     }
     if (_requiresImage(input)) {
@@ -232,7 +233,7 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
         return;
       }
       if (!await File(image).exists()) {
-        _showSnack(l10n.fileInaccessible(p.basename(image)));
+        _showSnack(l10n.fileInaccessible(importedFileDisplayName(image)));
         return;
       }
     }
@@ -412,7 +413,7 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
           final shared = await SharePlus.instance.share(
             ShareParams(
               files: [XFile(filePath)],
-              text: p.basename(filePath),
+              text: importedFileDisplayName(filePath),
             ),
           );
           if (shared.status == ShareResultStatus.dismissed) continue;
@@ -428,7 +429,7 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
       try {
         await destinationService.saveInSonarpadDocuments(
           filePath,
-          originalName: p.basename(filePath),
+          originalName: importedFileDisplayName(filePath),
         );
         if (mounted) _showSnack(l10n.exportSavedInSonarpad);
         await _cleanupStagedOutput(filePath);
@@ -616,7 +617,7 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
   }
 
   String _buildOutputPath(String inputPath, String outputDirectory) {
-    final stem = p.basenameWithoutExtension(inputPath);
+    final stem = p.basenameWithoutExtension(importedFileDisplayName(inputPath));
     return p.join(outputDirectory, '${stem}_converted.${_format.extension}');
   }
 
@@ -633,21 +634,6 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
         _bitrateController.text = '192';
       }
     });
-  }
-
-  String _shortPath(String path, {required int parentCount}) {
-    final normalized = p.normalize(path);
-    final parts = p.split(normalized);
-    final fileName = parts.isEmpty ? path : parts.last;
-    final parents = parts.length <= 1
-        ? const <String>[]
-        : parts
-            .sublist(0, parts.length - 1)
-            .reversed
-            .take(parentCount)
-            .toList()
-            .reversed;
-    return [...parents, fileName].join('/');
   }
 
   void _showSnack(String message) {

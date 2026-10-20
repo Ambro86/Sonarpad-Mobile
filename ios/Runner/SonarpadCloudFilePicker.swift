@@ -132,7 +132,7 @@ final class SonarpadCloudFilePicker: NSObject, FlutterPlugin, FlutterStreamHandl
     let selectedExtensions = allowedExtensions
     DispatchQueue.global(qos: .userInitiated).async {
       var results = [[String: Any]]()
-      var copiedFiles = [URL]()
+      var copiedDirectories = [URL]()
       do {
         let destination = FileManager.default.temporaryDirectory.appendingPathComponent("sonarpad_cloud_import", isDirectory: true)
         try FileManager.default.createDirectory(at: destination, withIntermediateDirectories: true)
@@ -143,19 +143,21 @@ final class SonarpadCloudFilePicker: NSObject, FlutterPlugin, FlutterStreamHandl
             throw CloudCopyError.unsupported
           }
           let safeName = fileName.replacingOccurrences(of: "/", with: "_")
-          let target = destination.appendingPathComponent("\(UUID().uuidString)_\(safeName)")
-          copiedFiles.append(target)
+          let itemDirectory = destination.appendingPathComponent(UUID().uuidString, isDirectory: true)
+          copiedDirectories.append(itemDirectory)
+          try FileManager.default.createDirectory(at: itemDirectory, withIntermediateDirectories: true)
+          let target = itemDirectory.appendingPathComponent(safeName)
           let size = try self.copyCoordinatedFile(from: source, to: target, requestId: requestId)
           results.append(["path": target.path, "name": fileName, "size": size])
         }
         DispatchQueue.main.async {
           if self.isCancelled() {
-            for file in copiedFiles { try? FileManager.default.removeItem(at: file) }
+            for directory in copiedDirectories { try? FileManager.default.removeItem(at: directory) }
             self.finish(nil, requestId: requestId)
           } else { self.finish(results, requestId: requestId) }
         }
       } catch {
-        for file in copiedFiles { try? FileManager.default.removeItem(at: file) }
+        for directory in copiedDirectories { try? FileManager.default.removeItem(at: directory) }
         DispatchQueue.main.async {
           if self.isCancelled() { self.finish(nil, requestId: requestId) }
           else { self.finish(FlutterError(code: "cloud_file_error", message: error.localizedDescription, details: nil), requestId: requestId) }

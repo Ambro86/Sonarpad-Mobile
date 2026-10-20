@@ -45,7 +45,7 @@ void main() {
     expect(source, contains('Intent.ACTION_OPEN_DOCUMENT'));
     expect(source, contains('contentResolver.openInputStream(uri)'));
     expect(source, contains('cancelled.get()'));
-    expect(source, contains('tempFiles.forEach { it.delete() }'));
+    expect(source, contains('tempDirectories.forEach { it.deleteRecursively() }'));
   });
 
   test('iOS uses provider-coordinated reads and supports cancellation', () {

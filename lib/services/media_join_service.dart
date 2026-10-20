@@ -11,6 +11,7 @@ import 'package:ffmpeg_kit_flutter_new/stream_information.dart';
 import 'package:path/path.dart' as p;
 import 'protected_wakelock.dart';
 
+import '../utils/imported_file_display_name.dart';
 import '../utils/app_logger.dart';
 import 'app_cache_service.dart';
 
@@ -126,6 +127,7 @@ class MediaJoinCancellationToken {
 class MediaJoinItemInfo {
   const MediaJoinItemInfo({
     required this.path,
+    this.originalName,
     required this.hasVideo,
     required this.hasAudio,
     required this.duration,
@@ -138,6 +140,13 @@ class MediaJoinItemInfo {
   });
 
   final String path;
+  final String? originalName;
+
+  // Keep the user-facing name separate from the unique imported cache path.
+  String get displayName => originalName?.trim().isNotEmpty == true
+      ? originalName!
+      : importedFileDisplayName(path);
+
   final bool hasVideo;
   final bool hasAudio;
   final Duration duration;
@@ -208,7 +217,7 @@ class MediaJoinService {
     'wav',
   ];
 
-  Future<MediaJoinItemInfo> probe(String path) async {
+  Future<MediaJoinItemInfo> probe(String path, {String? originalName}) async {
     final file = File(path);
     if (!await file.exists()) {
       throw FileSystemException('media_join_file_inaccessible', path);
@@ -253,6 +262,7 @@ class MediaJoinService {
 
     final result = MediaJoinItemInfo(
       path: path,
+      originalName: originalName,
       hasVideo: video != null,
       hasAudio: audio != null,
       duration: duration,

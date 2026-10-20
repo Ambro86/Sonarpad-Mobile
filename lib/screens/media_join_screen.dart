@@ -86,7 +86,7 @@ class _MediaJoinScreenState extends State<MediaJoinScreen> {
         ..._items.asMap().entries.map((entry) {
           final index = entry.key;
           final item = entry.value;
-          final fileName = p.basename(item.path);
+          final fileName = item.displayName;
           final typeLabel = item.hasVideo
               ? l10n.joinMediaVideoLabel
               : l10n.joinMediaAudioLabel;
@@ -305,7 +305,7 @@ class _MediaJoinScreenState extends State<MediaJoinScreen> {
 
   Widget _buildMediaItem(AppLocalizations l10n, int index) {
     final item = _items[index];
-    final fileName = p.basename(item.path);
+    final fileName = item.displayName;
     final typeLabel = item.hasVideo
         ? l10n.joinMediaVideoLabel
         : l10n.joinMediaAudioLabel;
@@ -412,7 +412,7 @@ class _MediaJoinScreenState extends State<MediaJoinScreen> {
           continue;
         }
         try {
-          final info = await _service.probe(path);
+          final info = await _service.probe(path, originalName: picked.name);
           if (!mounted) return;
           setState(() {
             _items.add(info);
@@ -421,7 +421,7 @@ class _MediaJoinScreenState extends State<MediaJoinScreen> {
           added++;
           await AppLogger.log(
             'Media join: file added index=${_items.length - 1} '
-            'name="${p.basename(path)}" ${info.logSummary}',
+            'name="${info.displayName}" ${info.logSummary}',
           );
         } catch (error) {
           await AppLogger.log(
@@ -454,12 +454,12 @@ class _MediaJoinScreenState extends State<MediaJoinScreen> {
     unawaited(
       AppLogger.log(
         'Media join: item moved from=${from + 1} to=${to + 1} '
-        'name="${p.basename(_items[to].path)}"',
+        'name="${_items[to].displayName}"',
       ),
     );
     announceStatusMessage(
       context,
-      '${to + 1}. ${p.basename(_items[to].path)}',
+      '${to + 1}. ${_items[to].displayName}',
     );
     if (useSharedAccessibleViewModel) {
       unawaited(
@@ -478,7 +478,7 @@ class _MediaJoinScreenState extends State<MediaJoinScreen> {
     unawaited(
       AppLogger.log(
         'Media join: item removed index=${index + 1} '
-        'name="${p.basename(removed.path)}"',
+        'name="${removed.displayName}"',
       ),
     );
     showStatusMessage(context, AppLocalizations.of(context).joinMediaRemoved);

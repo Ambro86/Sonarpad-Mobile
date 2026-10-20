@@ -99,7 +99,7 @@ class SonarpadCloudFilePicker(private val activity: AudioServiceActivity) {
         }
         publish("preparing", 0, -1)
         worker = Thread {
-            val tempFiles = mutableListOf<File>()
+            val tempDirectories = mutableListOf<File>()
             val picked = mutableListOf<Map<String, Any>>()
             try {
                 val dir = File(activity.cacheDir, "sonarpad_cloud_import")
@@ -112,8 +112,12 @@ class SonarpadCloudFilePicker(private val activity: AudioServiceActivity) {
                     if (allowedExtensions.isNotEmpty() && ext !in allowedExtensions) {
                         throw IllegalArgumentException("Selected file type is not supported")
                     }
-                    val target = File(dir, "${UUID.randomUUID()}_$name")
-                    tempFiles.add(target)
+                    val itemDirectory = File(dir, UUID.randomUUID().toString())
+                    tempDirectories.add(itemDirectory)
+                    if (!itemDirectory.mkdir()) throw IllegalStateException("Cannot create import directory")
+                    val target = File(itemDirectory, name.ifBlank { "document" }.let {
+                        if (it == "." || it == "..") "document" else it
+                    })
                     var copied = 0L
                     var lastPercent = -1
                     publish("copying", 0, expectedSize)
@@ -146,7 +150,7 @@ class SonarpadCloudFilePicker(private val activity: AudioServiceActivity) {
                 activity.runOnUiThread { complete(picked) }
             } catch (error: Exception) {
                 activeInput = null
-                tempFiles.forEach { it.delete() }
+                tempDirectories.forEach { it.deleteRecursively() }
                 activity.runOnUiThread {
                     if (cancelled.get()) complete(null)
                     else completeError("cloud_file_error", error.message ?: "Could not copy file")

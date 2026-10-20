@@ -1,3 +1,4 @@
+import '../utils/imported_file_display_name.dart';
 import '../services/cloud_file_picker_service.dart';
 import 'dart:async';
 import 'dart:io';
@@ -290,7 +291,7 @@ class _MediaCutterAddTrackScreenState
                           id: 'selected_track',
                           kind: 'text',
                           title: l10n.mediaCutterAddedTrackSelected(
-                            p.basename(trackPath),
+                            importedFileDisplayName(trackPath),
                           ),
                         ),
                         AccessibleListRow(
@@ -394,7 +395,7 @@ class _MediaCutterAddTrackScreenState
                   if (trackPath != null) ...[
                     const SizedBox(height: 16),
                     Text(
-                      l10n.mediaCutterAddedTrackSelected(p.basename(trackPath)),
+                      l10n.mediaCutterAddedTrackSelected(importedFileDisplayName(trackPath)),
                     ),
                     const SizedBox(height: 24),
                     Semantics(

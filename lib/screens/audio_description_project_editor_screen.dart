@@ -5,8 +5,8 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:intl/intl.dart';
-import 'package:path/path.dart' as p;
 import 'package:share_plus/share_plus.dart';
+import '../utils/imported_file_display_name.dart';
 import '../services/protected_wakelock.dart';
 
 import '../l10n/app_localizations.dart';
@@ -760,7 +760,7 @@ class _AudioDescriptionProjectEditorScreenState
       for (final path in paths) {
         await destination.saveInSonarpadAudiodescriptions(
           path,
-          originalName: p.basename(path),
+          originalName: importedFileDisplayName(path),
         );
       }
       if (mounted) showStatusMessage(context, strings.saved);
@@ -916,7 +916,7 @@ class _AudioDescriptionProjectEditorScreenState
                     AccessibleListRow(
                       id: 'project_name',
                       title: strings.project,
-                      value: p.basename(project.projectPath),
+                      value: importedFileDisplayName(project.projectPath),
                       kind: 'text',
                       accessibilityButtonTrait: false,
                     ),
@@ -924,7 +924,7 @@ class _AudioDescriptionProjectEditorScreenState
                     AccessibleListRow(
                       id: 'choose_source',
                       title: strings.chooseSource,
-                      value: source == null || source.isEmpty ? null : p.basename(source),
+                      value: source == null || source.isEmpty ? null : importedFileDisplayName(source),
                       enabled: !_running,
                     ),
                 ]),

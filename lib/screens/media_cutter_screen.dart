@@ -19,6 +19,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:sonarpad_audio_dsp/sonarpad_audio_dsp.dart';
 import 'package:video_player/video_player.dart';
+import '../utils/imported_file_display_name.dart';
 import '../services/protected_wakelock.dart';
 
 import '../l10n/app_localizations.dart';
@@ -745,7 +746,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
   int get _deletedPartCount => _parts.where((part) => !part.keep).length;
 
   String _logPlaybackState() {
-    return 'file="${_displayName.isEmpty ? p.basename(_inputPath) : _displayName}" '
+    return 'file="${_displayName.isEmpty ? importedFileDisplayName(_inputPath) : _displayName}" '
         'type=${_isVideo ? 'video' : 'audio'} '
         'playing=$_playing '
         'original=${_logDuration(_position)} '
@@ -877,10 +878,10 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       return;
     }
     unawaited(
-        _logMediaCutter('file picked path="$path" name="${p.basename(path)}"'));
+        _logMediaCutter('file picked path="$path" name="${importedFileDisplayName(path)}"'));
     if (!await File(path).exists()) {
       if (!mounted) return;
-      _showSnack(l10n.fileInaccessible(p.basename(path)));
+      _showSnack(l10n.fileInaccessible(importedFileDisplayName(path)));
       return;
     }
 
@@ -904,7 +905,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           tag: MediaItem(
             id: 'media_cutter_added_track_preview:${File(path).absolute.path}',
             album: 'Sonarpad',
-            title: p.basename(path),
+            title: importedFileDisplayName(path),
           ),
         ),
       );
@@ -990,7 +991,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     setState(() {
       _addedTrackSettings = applied;
       _hasUnsavedEdit = true;
-      _status = l10n.mediaCutterAddedTrackApplied(p.basename(applied.path));
+      _status = l10n.mediaCutterAddedTrackApplied(importedFileDisplayName(applied.path));
     });
     unawaited(_logMediaCutter(
       'added track configured path="${applied.path}" '
@@ -1045,7 +1046,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
             tag: MediaItem(
               id: 'media_cutter:${File(path).absolute.path}',
               album: 'Sonarpad',
-              title: _displayName.isEmpty ? p.basename(path) : _displayName,
+              title: _displayName.isEmpty ? importedFileDisplayName(path) : _displayName,
             ),
           ),
         );
@@ -1075,7 +1076,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       _loading = true;
       _status = null;
       _inputPath = path;
-      _displayName = p.basename(path);
+      _displayName = importedFileDisplayName(path);
       _isVideo = _isVideoInput(path);
       _inputProbe = null;
       _showVideoPreview = false;
@@ -1100,7 +1101,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     });
 
     unawaited(_logMediaCutter(
-      'load start path="$path" name="${p.basename(path)}" '
+      'load start path="$path" name="${importedFileDisplayName(path)}" '
       'type=${_isVideo ? 'video' : 'audio'}',
     ));
 
@@ -1265,11 +1266,11 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     try {
       await _mediaCommands.invokeMethod(
         'setupMagicTap',
-        _displayName.isEmpty ? p.basename(_inputPath) : _displayName,
+        _displayName.isEmpty ? importedFileDisplayName(_inputPath) : _displayName,
       );
       await _setMagicTapPlaying(false);
       unawaited(_logMediaCutter(
-          'magic tap setup ok title="${_displayName.isEmpty ? p.basename(_inputPath) : _displayName}"'));
+          'magic tap setup ok title="${_displayName.isEmpty ? importedFileDisplayName(_inputPath) : _displayName}"'));
     } catch (error) {
       await AppLogger.log('Media cutter: setupMagicTap failed error=$error');
     }
@@ -1616,7 +1617,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           tag: MediaItem(
             id: 'media_cutter_preview:${previewFile.path}',
             album: 'Sonarpad',
-            title: _displayName.isEmpty ? p.basename(_inputPath) : _displayName,
+            title: _displayName.isEmpty ? importedFileDisplayName(_inputPath) : _displayName,
           ),
         ),
       );
@@ -1743,7 +1744,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           tag: MediaItem(
             id: 'media_cutter:${File(_inputPath).absolute.path}',
             album: 'Sonarpad',
-            title: _displayName.isEmpty ? p.basename(_inputPath) : _displayName,
+            title: _displayName.isEmpty ? importedFileDisplayName(_inputPath) : _displayName,
           ),
         ),
       );
@@ -3968,7 +3969,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     try {
       await for (final entity in directory.list(followLinks: false)) {
         if (entity is! File) continue;
-        final name = p.basename(entity.path);
+        final name = importedFileDisplayName(entity.path);
         if (!name.startsWith('.sonarpad-media-cutter-') ||
             !name.contains('.partial')) {
           continue;
@@ -4909,7 +4910,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       try {
         await destinationService.saveInSonarpadDocuments(
           filePath,
-          originalName: p.basename(filePath),
+          originalName: importedFileDisplayName(filePath),
         );
         if (!mounted) return;
         await showDialog<void>(
@@ -4942,7 +4943,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
 
   Future<void> _shareOutputFile(String filePath) async {
     await SharePlus.instance.share(
-      ShareParams(files: [XFile(filePath)], text: p.basename(filePath)),
+      ShareParams(files: [XFile(filePath)], text: importedFileDisplayName(filePath)),
     );
   }
 
@@ -4974,7 +4975,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
   }
 
   Future<String> _uniqueOutputPath(String outputDir, String inputPath) async {
-    final stem = p.basenameWithoutExtension(inputPath);
+    final stem = p.basenameWithoutExtension(importedFileDisplayName(inputPath));
     final ext = _outputExtension(inputPath);
     var candidate = p.join(outputDir, '${stem}_tagliato$ext');
     var index = 2;
@@ -5415,7 +5416,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       await _logMediaCutter(
         'native DSP start label="$label" effect=${slot.effect.name} '
         'engine=${nativeEffect.name} amount=${slot.amountPercent}% '
-        'asset=${assetPath == null ? 'procedural-fallback' : p.basename(assetPath)}',
+        'asset=${assetPath == null ? 'procedural-fallback' : importedFileDisplayName(assetPath)}',
       );
       await _processNativeDspStep(
         inputPath: current,
@@ -6918,7 +6919,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     if (_inputPath.isEmpty || _duration == Duration.zero) {
       return const SizedBox();
     }
-    final title = _displayName.isEmpty ? p.basename(_inputPath) : _displayName;
+    final title = _displayName.isEmpty ? importedFileDisplayName(_inputPath) : _displayName;
     final summary = _guidedCurrentSummary;
     final effectsAction = CustomSemanticsAction(label: _guidedEffectsLabel);
     return Semantics(
@@ -6975,7 +6976,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           title: l10n.mediaCutterAddTrack,
           subtitle: _addedTrackSettings == null
               ? null
-              : p.basename(_addedTrackSettings!.path),
+              : importedFileDisplayName(_addedTrackSettings!.path),
           kind: 'button',
           enabled: canUseMedia,
         ),
@@ -7026,7 +7027,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         if (_inputPath.isNotEmpty && _duration != Duration.zero)
           AccessibleListRow(
             id: 'guided_summary',
-            title: _displayName.isEmpty ? p.basename(_inputPath) : _displayName,
+            title: _displayName.isEmpty ? importedFileDisplayName(_inputPath) : _displayName,
             subtitle: _guidedCurrentSummary,
             enabled: !_saving,
             actions: [AccessibleCustomAction(id: 'effects', label: _guidedEffectsLabel)],
@@ -7185,7 +7186,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                   const SizedBox(height: 8),
                   Text(
                     l10n.mediaCutterAddedTrackSelected(
-                      p.basename(_addedTrackSettings!.path),
+                      importedFileDisplayName(_addedTrackSettings!.path),
                     ),
                   ),
                 ],

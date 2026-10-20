@@ -9,6 +9,7 @@ import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../utils/imported_file_display_name.dart';
 import '../services/protected_wakelock.dart';
 
 import '../l10n/app_localizations.dart';
@@ -444,7 +445,7 @@ class _CreateAiAudiodescriptionScreenState
       if (paths.isEmpty) return;
       _setSelectedSourcePath(paths.first);
       await AppLogger.log(
-        'Audio description UI: source imported from photo library file=${p.basename(paths.first)}',
+        'Audio description UI: source imported from photo library file=${importedFileDisplayName(paths.first)}',
       );
     } on PlatformException catch (error, stackTrace) {
       await AppLogger.log(
@@ -890,7 +891,7 @@ class _CreateAiAudiodescriptionScreenState
       final savedToken = await AiAudioDescriptionPreferences.loadSonarpadToken();
       final savedCode = await AiAudioDescriptionPreferences.loadSonarpadCode();
       await AppLogger.log(
-        'SONARPAD_AI_DIAG UI create preflight resumeOnly=$resumeOnly source=${p.basename(sourcePath)} '
+        'SONARPAD_AI_DIAG UI create preflight resumeOnly=$resumeOnly source=${importedFileDisplayName(sourcePath)} '
         'codeChars=${_sonarpadCode.runes.length} trimmedCodeChars=${_sonarpadCode.trim().runes.length} '
         'trimChanged=${_sonarpadCode != _sonarpadCode.trim()} savedCodePresent=${savedCode != null} '
         'savedCodeChars=${savedCode?.runes.length ?? 0} savedTokenPresent=${savedToken != null} '
@@ -1322,7 +1323,7 @@ class _CreateAiAudiodescriptionScreenState
           await SharePlus.instance.share(
             ShareParams(
               files: outputPaths.map((path) => XFile(path)).toList(),
-              text: p.basename(result.mp3Path),
+              text: importedFileDisplayName(result.mp3Path),
             ),
           );
         } else {
@@ -1336,7 +1337,7 @@ class _CreateAiAudiodescriptionScreenState
             }
             await destinationService.saveInSonarpadAudiodescriptions(
               path,
-              originalName: p.basename(path),
+              originalName: importedFileDisplayName(path),
             );
           }
           if (!mounted) return;
@@ -1564,7 +1565,7 @@ class _CreateAiAudiodescriptionScreenState
                     AccessibleListRow(
                       id: 'choose_video',
                       title: l10n.audioDescriptionChooseVideo,
-                      value: _sourcePath == null ? null : p.basename(_sourcePath!),
+                      value: _sourcePath == null ? null : importedFileDisplayName(_sourcePath!),
                       enabled: !_running,
                     ),
                     AccessibleListRow(
