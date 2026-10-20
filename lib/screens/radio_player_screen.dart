@@ -3032,7 +3032,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       final videoMode =
           _raiNativeActive || _mediaKitPlayer != null || _videoController != null;
       final rows = <AccessibleListRow>[
-        AccessibleListRow(id: 'title', kind: 'header', title: widget.station.name),
+        AccessibleListRow(id: 'title', kind: 'header', title: l10n.nowPlayingTitle(widget.station.name)),
         if (showStationDetails) AccessibleListRow(id: 'details', kind: 'text', title: widget.station.detailsText),
         if (_loading) AccessibleListRow(id: 'loading', kind: 'text', title: l10n.loading),
         if (_streamReconnecting)
@@ -3156,7 +3156,10 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     }
     return _withRecordingExitGuard(Scaffold(
       appBar: SonarpadAppBar(
-        title: Text('${l10n.nowPlaying}: ${widget.station.name}'),
+        excludeHeaderSemantics: true,
+        title: ExcludeSemantics(
+          child: Text(l10n.nowPlayingTitle(widget.station.name)),
+        ),
         leading: SonarpadBackButton(
           onPressed: _requestPlayerExit,
         ),
@@ -3166,10 +3169,14 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
           : ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          Text(
-            widget.station.name,
-            style: Theme.of(context).textTheme.headlineSmall,
-            textAlign: TextAlign.center,
+          Semantics(
+            header: true,
+            headingLevel: 1,
+            child: Text(
+              l10n.nowPlayingTitle(widget.station.name),
+              style: Theme.of(context).textTheme.headlineSmall,
+              textAlign: TextAlign.center,
+            ),
           ),
           if (showStationDetails) ...[
             const SizedBox(height: 8),

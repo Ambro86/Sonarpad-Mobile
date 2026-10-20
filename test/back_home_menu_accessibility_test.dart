@@ -90,6 +90,8 @@ void main() {
         await tester.pumpAndSettle();
         expect(find.byType(SimpleDialog), findsOneWidget);
         expect(find.text('Vai alla Home'), findsOneWidget);
+        expect(tester.widget<SimpleDialog>(find.byType(SimpleDialog)).title, isNull);
+        expect(find.text('Altro'), findsNothing);
         expect(backCalls, 0);
 
         await tester.tap(find.text('Vai alla Home'));

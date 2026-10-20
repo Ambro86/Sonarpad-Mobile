@@ -2329,12 +2329,8 @@ class _PodcastEpisodePlayerScreenState
               if (_videoController != null && _videoController!.value.isInitialized) ...[
                 const SizedBox(height: 24),
                 if (_videoUsesExternalAudio)
-                  Semantics(
+                  ExcludeSemantics(
                     key: const ValueKey('podcast_video_external_audio'),
-                    label: l10n.nowPlayingTitle(_episode.title),
-                    value: _videoController!.value.isPlaying
-                        ? l10n.pause
-                        : l10n.play,
                     child: _buildVideoPlayerSurface(_videoController!),
                   )
                 else

@@ -146,7 +146,6 @@ class _SonarpadBackSemanticsState extends State<SonarpadBackSemantics> {
       actionId = await showDialog<String>(
         context: context,
         builder: (dialogContext) => SimpleDialog(
-          title: Text(MaterialLocalizations.of(dialogContext).moreButtonTooltip),
           children: [
             SimpleDialogOption(
               onPressed: () =>
