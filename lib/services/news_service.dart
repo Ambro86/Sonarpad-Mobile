@@ -2030,6 +2030,30 @@ class NewsService {
     );
   }
 
+  bool _excludedGoogleNewsItem(XmlElement item) {
+    bool isRepubblicaUrl(String value) {
+      final raw = value.trim();
+      final uri = Uri.tryParse(raw.contains('://') ? raw : 'https://$raw');
+      final host = uri?.host.toLowerCase() ?? '';
+      return host == 'repubblica.it' || host.endsWith('.repubblica.it');
+    }
+
+    // Google links are opaque redirects; RSS source metadata identifies the
+    // publisher without resolving or downloading every article.
+    if (isRepubblicaUrl(_text(item, 'link'))) return true;
+    for (final source in item.findElements('source')) {
+      if (isRepubblicaUrl(source.getAttribute('url') ?? '')) return true;
+      final name = _cleanFeedText(source.innerText).trim().toLowerCase();
+      if (isRepubblicaUrl(name) ||
+          name == 'la repubblica' ||
+          name == 'repubblica' ||
+          name.startsWith('la repubblica - ')) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   Future<List<NewsArticle>> _fetchRssSourceDirect(
     NewsRssSource rssSource, {
     NewsLanguage? language,
@@ -2060,7 +2084,10 @@ class NewsService {
         return _articlesFromAtomEntries(doc, rssSource);
       }
       var index = 0;
-      return items.map((item) {
+      final visibleItems = _isGoogleNewsUri(rssSource.uri)
+          ? items.where((item) => !_excludedGoogleNewsItem(item))
+          : items;
+      return visibleItems.map((item) {
         index++;
         final title = _text(item, 'title');
         final rawLink = _text(item, 'link');
