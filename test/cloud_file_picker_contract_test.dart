@@ -31,7 +31,7 @@ void main() {
     expect(source, contains('LinearProgressIndicator(value: fraction)'));
     expect(source, contains('Semantics('));
     expect(source, contains("_channel.invokeMethod<void>('cancel')"));
-    expect(source, contains('total <= 0 ? null'));
+    expect(source, contains("total <= 0 || (current == 0 && stage != 'done')"));
     expect(source, contains('l10n.cloudFilePickerLoading'));
     final italian = jsonDecode(File('lib/l10n/app_it.arb').readAsStringSync())
         as Map<String, dynamic>;
