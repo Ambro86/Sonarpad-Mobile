@@ -7,6 +7,7 @@ import '../l10n/app_localizations.dart';
 import '../l10n/localized_dynamic_labels.dart';
 import '../models/chromecast_media.dart';
 import '../services/chromecast_session.dart';
+import '../services/protected_wakelock.dart';
 import '../utils/app_logger.dart';
 import '../widgets/universal_accessible_view.dart';
 
@@ -29,9 +30,11 @@ class ChromecastScreen extends StatefulWidget {
     this.onStartFailed,
     this.discoveryOverride,
     this.sessionFactory,
+    this.wakeLockCoordinator,
   });
   final Stream<List<ChromecastDevice>> Function()? discoveryOverride;
   final ChromecastSession Function()? sessionFactory;
+  final WakeLockCoordinator? wakeLockCoordinator;
   final ChromecastMedia media;
   final String title;
   final Duration Function() position;
@@ -45,7 +48,36 @@ class ChromecastScreen extends StatefulWidget {
   State<ChromecastScreen> createState() => _ChromecastScreenState();
 }
 
-class _ChromecastScreenState extends State<ChromecastScreen> {
+class _ChromecastScreenState extends State<ChromecastScreen>
+    with WidgetsBindingObserver {
+  final _wakeLockOwner = Object();
+  bool _keepAwake = false;
+  WakeLockCoordinator get _wakeLock =>
+      widget.wakeLockCoordinator ?? WakelockPlus.coordinator;
+
+  Future<void> _setKeepAwake(bool enabled) async {
+    _keepAwake = enabled;
+    try {
+      if (enabled) {
+        await _wakeLock.acquire(_wakeLockOwner);
+      } else {
+        await _wakeLock.release(_wakeLockOwner);
+      }
+    } catch (error) {
+      AppLogger.log(
+        'Cast: screen protection enabled=$enabled failed: ${error.runtimeType}',
+      );
+    }
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed && _keepAwake) {
+      unawaited(_wakeLock.refresh().catchError((Object error) {
+        AppLogger.log('Cast: screen protection refresh failed: ${error.runtimeType}');
+      }));
+    }
+  }
   BonsoirDiscovery? _discovery;
   StreamSubscription<BonsoirDiscoveryEvent>? _discoverySubscription;
   StreamSubscription<List<ChromecastDevice>>? _testDiscoverySubscription;
@@ -70,6 +102,7 @@ class _ChromecastScreenState extends State<ChromecastScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     unawaited(_search());
   }
 
@@ -205,6 +238,9 @@ class _ChromecastScreenState extends State<ChromecastScreen> {
     final session = widget.sessionFactory?.call() ?? ChromecastSession();
     _session = session;
     try {
+      // Own a hold before pausing locally: the local player releases its lock.
+      await _setKeepAwake(true);
+      if (!mounted || _leaving) return;
       await session.connect(device);
       if (!mounted || _leaving) return;
       // Pause locally before LOAD: some receivers ignore paused preloads.
@@ -256,6 +292,7 @@ class _ChromecastScreenState extends State<ChromecastScreen> {
       AppLogger.log('Cast: remote playback started mime=${widget.media.mime}');
     } catch (e) {
       AppLogger.log('Cast: connect/load failed: ${e.runtimeType}');
+      await _setKeepAwake(false);
       await session.close();
       if (_localPaused && mounted && !_leaving) {
         _localPaused = false;
@@ -370,6 +407,7 @@ class _ChromecastScreenState extends State<ChromecastScreen> {
   Future<void> _leave(bool resume) async {
     if (_leaving) return;
     _leaving = true;
+    unawaited(_setKeepAwake(false));
     AppLogger.log(
       'Cast: exit requested started=$_started busy=$_busy resume=$resume',
     );
@@ -414,6 +452,8 @@ class _ChromecastScreenState extends State<ChromecastScreen> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    unawaited(_setKeepAwake(false));
     ++_searchGeneration;
     _volumeDebounce?.cancel();
     _seekDebounce?.cancel();

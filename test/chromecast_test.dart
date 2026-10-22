@@ -1,3 +1,4 @@
+import 'package:sonarpad_mobile_starter/services/protected_wakelock.dart';
 import 'package:flutter/foundation.dart';
 import 'package:sonarpad_mobile_starter/widgets/universal_accessible_view.dart';
 import 'dart:async';
@@ -190,6 +191,11 @@ void main() {
     ) async {
       debugDefaultTargetPlatformOverride = platform;
       configureAccessibleRendererRuntime(useFlutterOnIos: true);
+      var awake = false;
+      final wakeLock = WakeLockCoordinator(
+        read: () async => awake,
+        write: (value) async { awake = value; },
+      );
       final session = FakeSession()..positionRestoreFailed = true;
       var started = 0;
       final bookmarks = <Duration>[];
@@ -212,8 +218,10 @@ void main() {
                         'video/mp4',
                       ),
                       title: 'Video',
+                      wakeLockCoordinator: wakeLock,
                       position: () => const Duration(seconds: 42),
                       onStarted: () async {
+                        await wakeLock.toggle(false);
                         session.handoff.add('pause_local');
                         started++;
                       },
@@ -247,6 +255,7 @@ void main() {
       );
       await tester.pumpAndSettle();
       expect(started, 1);
+      expect(awake, isTrue, reason: 'Local pause must not release Cast protection');
       final rows = tester.widget<UniversalAccessibleList>(
         find.byType(UniversalAccessibleList),
       ).sections.expand((section) => section.rows).toList();
@@ -282,6 +291,11 @@ void main() {
       );
       session.events.add(session.status);
       await tester.pumpAndSettle();
+      expect(awake, isTrue, reason: 'Keep screen awake while Cast is paused too');
+      awake = false;
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+      await tester.pumpAndSettle();
+      expect(awake, isTrue);
       await tester.ensureVisible(find.text('Resume on this device'));
       await tester.tap(find.text('Resume on this device'));
       await tester.runAsync(
@@ -289,6 +303,7 @@ void main() {
       );
       await tester.pumpAndSettle();
       expect(result?.resume, isTrue);
+      expect(awake, isFalse, reason: 'Leaving Cast releases its own hold');
       expect(result?.position, const Duration(seconds: 87));
       expect(bookmarks.last, const Duration(seconds: 87));
       expect(session.closes, greaterThanOrEqualTo(1));
@@ -301,6 +316,11 @@ void main() {
 
   for (final phase in ['connect', 'load', 'speed']) {
     testWidgets('Back remains available during stalled $phase', (tester) async {
+      var awake = false;
+      final wakeLock = WakeLockCoordinator(
+        read: () async => awake,
+        write: (value) async { awake = value; },
+      );
       final gate = Completer<void>();
       final session = FakeSession();
       if (phase == 'connect') session.connectGate = gate;
@@ -327,6 +347,7 @@ void main() {
                 'audio/mpeg',
               ),
               title: 'Audio',
+              wakeLockCoordinator: wakeLock,
               initialSpeed: 1.5,
               position: () => localPosition,
               onStarted: () async {
@@ -351,6 +372,7 @@ void main() {
         () => Future<void>.delayed(const Duration(milliseconds: 30)),
       );
       await tester.pumpAndSettle();
+      expect(awake, isTrue);
       if (phase == 'speed') {
         expect(session.requestedPosition, const Duration(seconds: 40));
         expect(find.byKey(const ValueKey('cast_volume')), findsOneWidget);
@@ -362,6 +384,7 @@ void main() {
       );
       await tester.pumpAndSettle();
       expect(find.text('Local player'), findsOneWidget);
+      expect(awake, isFalse);
       expect(recovered, phase == 'load' ? 1 : 0);
       expect(paused, phase == 'connect' ? 0 : 1);
       gate.complete();
@@ -376,6 +399,11 @@ void main() {
     testWidgets(
       'Failed handoff recovers local playback: after pause=$failAfterPause',
       (tester) async {
+        var awake = false;
+        final wakeLock = WakeLockCoordinator(
+          read: () async => awake,
+          write: (value) async { awake = value; },
+        );
         final session = FakeSession()
           ..reject = failAfterPause
           ..rejectConnect = !failAfterPause;
@@ -392,6 +420,7 @@ void main() {
                 'audio/mpeg',
               ),
               title: 'Audio',
+              wakeLockCoordinator: wakeLock,
               position: () => Duration.zero,
               onStarted: () async {
                 started = true;
@@ -413,6 +442,7 @@ void main() {
           () => Future<void>.delayed(const Duration(milliseconds: 30)),
         );
         await tester.pumpAndSettle();
+        expect(awake, isFalse);
         expect(started, failAfterPause);
         expect(recovered, failAfterPause);
         expect(find.textContaining('Casting failed'), findsOneWidget);

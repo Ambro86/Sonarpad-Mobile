@@ -24,6 +24,7 @@ class AudioPlayerService {
   static AudioPlayerService? _activeService;
   bool _yieldedToAnotherPlayer = false;
   bool _disposed = false;
+  bool _bookmarkSourceReady = false;
   final Completer<void> _disposeFinished = Completer<void>();
   final Duration _sourceLoadTimeout;
 
@@ -187,7 +188,8 @@ class AudioPlayerService {
     );
     _positionSubscription = _player.positionStream.listen(
       (pos) async {
-        if (_currentMediaId != null &&
+        if (_bookmarkSourceReady &&
+            _currentMediaId != null &&
             _currentSessionType == AudioSessionType.playback) {
           final currentSecond = pos.inSeconds;
           // Salva ogni 15 secondi, assicurandoci di non martellare il disco
@@ -212,7 +214,12 @@ class AudioPlayerService {
   }
 
   Future<void> saveCurrentBookmark() async {
-    if (_currentMediaId == null ||
+    // Keep identity, position and duration from the same loaded source across
+    // asynchronous settings access. Loading events can still carry old times.
+    final mediaId = _currentMediaId;
+    final sourceDuration = _currentDuration;
+    if (!_bookmarkSourceReady ||
+        mediaId == null ||
         _currentSessionType != AudioSessionType.playback) {
       return;
     }
@@ -223,14 +230,14 @@ class AudioPlayerService {
     }
 
     AppLogger.log(
-      'Sonarpad audio: saveCurrentBookmark() called, position: ${pos.inSeconds}s, duration: ${_currentDuration?.inSeconds}s',
+      'Sonarpad audio: saveCurrentBookmark() called, position: ${pos.inSeconds}s, duration: ${sourceDuration?.inSeconds}s',
     );
 
     if (await _settings.isAutoBookmarkEnabled()) {
       bool isFinished = false;
 
-      if (_currentDuration != null && _currentDuration!.inSeconds > 0) {
-        final durationSecs = _currentDuration!.inSeconds;
+      if (sourceDuration != null && sourceDuration.inSeconds > 0) {
+        final durationSecs = sourceDuration.inSeconds;
         final remaining = durationSecs - pos.inSeconds;
 
         if (durationSecs > 600) {
@@ -248,12 +255,12 @@ class AudioPlayerService {
         AppLogger.log(
           'Sonarpad audio: saveCurrentBookmark() saving 0 (finished)',
         );
-        await _settings.saveMediaBookmark(_currentMediaId!, 0);
+        await _settings.saveMediaBookmark(mediaId, 0);
       } else {
         AppLogger.log(
           'Sonarpad audio: saveCurrentBookmark() saving ${pos.inSeconds}',
         );
-        await _settings.saveMediaBookmark(_currentMediaId!, pos.inSeconds);
+        await _settings.saveMediaBookmark(mediaId, pos.inSeconds);
       }
     }
   }
@@ -412,6 +419,9 @@ class AudioPlayerService {
     }
     String itemTitle = title ?? 'Sonarpad';
 
+    await saveCurrentBookmark();
+    _bookmarkSourceReady = false;
+    _lastSavedBookmarkSecond = -1;
     _yieldedToAnotherPlayer = false;
     _stopRequested = false;
     _currentMediaId = mediaId;
@@ -476,6 +486,9 @@ class AudioPlayerService {
           }
         }
       }
+    }
+    if (!_disposed && !_stopRequested) {
+      _bookmarkSourceReady = true;
     }
   }
 
