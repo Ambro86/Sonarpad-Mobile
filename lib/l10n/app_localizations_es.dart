@@ -7,6 +7,17 @@ import 'app_localizations.dart';
 /// The translations for Spanish Castilian (`es`).
 class AppLocalizationsEs extends AppLocalizations {
   @override
+  String get favoritesSortAlphabetically => "Ordenar alfabéticamente";
+
+  @override
+  String get favoriteVideosLatest => 'Últimos vídeos';
+  @override
+  String get favoriteVideosTitle => 'Últimos vídeos de favoritos';
+  @override
+  String get favoriteVideosPartial =>
+      'No se pudieron cargar algunos canales. Se muestran los vídeos de los demás canales.';
+
+  @override
   String get recordingNotAdvancing => "La grabación no está recibiendo datos nuevos. Comprueba la conexión y reiníciala si es necesario.";
 
   @override

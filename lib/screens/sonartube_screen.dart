@@ -1,3 +1,6 @@
+import '../widgets/favorite_reorder.dart';
+import 'package:intl/intl.dart';
+import '../services/favorite_channel_videos_service.dart';
 import '../models/media_playback_speed.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
@@ -24,6 +27,8 @@ class SonarTubeScreen extends StatefulWidget {
   const SonarTubeScreen({
     super.key,
     this.collection,
+    this.latestChannels,
+    this.latestVideosService,
     this.searchQuery,
     this.searchType = SonarTubeSearchType.all,
     this.service,
@@ -38,6 +43,8 @@ class SonarTubeScreen extends StatefulWidget {
        assert(!showChannelCourses || (!showChannelPlaylists && !showChannelShorts && !showChannelPodcasts)),
        assert(!showChannelPodcasts || (!showChannelPlaylists && !showChannelShorts));
 
+  final FavoriteChannelVideosService? latestVideosService;
+  final List<SonarTubeItem>? latestChannels;
   final SonarTubeItem? collection;
   final String? searchQuery;
   final SonarTubeSearchType searchType;
@@ -109,7 +116,7 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
       widget.collection?.kind == SonarTubeItemKind.playlist;
   bool get _hasCollectionFavoriteButton =>
       _isChannelCollection || _isPlaylistCollection;
-  bool get _isSearchResults => widget.searchQuery != null;
+  bool get _isSearchResults => widget.searchQuery != null || widget.latestChannels != null;
 
   @override
   void didChangeDependencies() {
@@ -530,7 +537,7 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
 
   Future<void> _loadSearchResults() async {
     if (_loading || !_isSearchResults) return;
-    final query = widget.searchQuery!.trim();
+    final query = widget.searchQuery?.trim() ?? '';
     _query = query;
     setState(() {
       _loading = true;
@@ -540,7 +547,16 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
       _page = 1;
     });
     try {
-      final result = await _service.search(query, type: _searchType);
+      final SonarTubePage result;
+      if (widget.latestChannels != null) {
+        final latest = await (widget.latestVideosService ?? FavoriteChannelVideosService(tube: _service)).load(widget.latestChannels!);
+        result = SonarTubePage(items: latest.items, page: 1);
+        if (mounted && latest.failedChannels > 0) {
+          showStatusMessage(context, AppLocalizations.of(context).favoriteVideosPartial);
+        }
+      } else {
+        result = await _service.search(query, type: _searchType);
+      }
       if (!mounted) return;
       setState(() {
         _items = result.items;
@@ -1104,7 +1120,10 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
         l10n.sonarTubeVideoCount(item.videoCount!),
       if (item.duration?.isNotEmpty ?? false)
         l10n.sourceDurationValue(l10n.formatMediaResultDuration(item.duration!)),
-      if (item.published?.isNotEmpty ?? false) item.published!,
+      if (item.published?.isNotEmpty ?? false)
+        DateTime.tryParse(item.published!) != null
+          ? DateFormat.yMMMd(l10n.localeName).format(DateTime.parse(item.published!).toLocal())
+          : item.published!,
       if (item.views?.isNotEmpty ?? false) item.views!,
     ].where((value) => value.isNotEmpty).toList();
     return values.isEmpty ? null : values.join('. ');
@@ -1919,11 +1938,11 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
     final rows = <AccessibleListRow>[
       AccessibleListRow(
         id: 'title',
-        title: l10n.searchResults,
+        title: widget.latestChannels != null ? l10n.favoriteVideosTitle : l10n.searchResults,
         kind: 'text',
         accessibilityButtonTrait: false,
         flutterChild: Text(
-          l10n.searchResults,
+          widget.latestChannels != null ? l10n.favoriteVideosTitle : l10n.searchResults,
           key: const ValueKey('sonartube_search_results_title'),
           style: Theme.of(context).textTheme.headlineSmall,
         ),
@@ -2131,7 +2150,7 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
   Widget _buildSearchResultsMaterial(AppLocalizations l10n) {
     final rows = <Widget>[
       Text(
-        l10n.searchResults,
+        widget.latestChannels != null ? l10n.favoriteVideosTitle : l10n.searchResults,
         key: const ValueKey('sonartube_search_results_title'),
         style: Theme.of(context).textTheme.headlineSmall,
       ),
@@ -3600,6 +3619,14 @@ class _SonarTubeFavoritesScreenState extends State<_SonarTubeFavoritesScreen> {
     _loadSaveMediaAccess();
   }
 
+  Future<void> _openLatestVideos() async {
+    await Navigator.push<void>(context, MaterialPageRoute(builder: (_) => SonarTubeScreen(
+      latestChannels: List.of(_favorites), service: widget.service,
+      favoritesService: widget.favoritesService,
+    )));
+    await _load();
+  }
+
   Future<void> _load() async {
     final favorites = await widget.favoritesService.loadFavorites();
     if (!mounted) return;
@@ -3642,6 +3669,14 @@ class _SonarTubeFavoritesScreenState extends State<_SonarTubeFavoritesScreen> {
       service: widget.service,
       item: item,
     );
+  }
+
+  Future<void> _reorderFavorite(SonarTubeItem item, String action) async {
+    final reordered=await reorderFavorites(context,_favorites,_favoriteIndexFor(item),action,(e)=>e.title);
+    if (reordered==null || !mounted) return;
+    await widget.favoritesService.reorderFavorites(reordered.map(widget.favoritesService.itemKey).toList());
+    await _load();
+    await _restoreFavoriteFocus(item);
   }
 
   Future<void> _remove(SonarTubeItem item) async {
@@ -3812,7 +3847,11 @@ class _SonarTubeFavoritesScreenState extends State<_SonarTubeFavoritesScreen> {
   }
 
   Widget _buildSharedAccessibleFavorites(AppLocalizations l10n) {
-    final rows = <AccessibleListRow>[];
+    final rows = <AccessibleListRow>[
+      if (!_loading) AccessibleListRow(id: 'latest_videos', title: l10n.favoriteVideosLatest,
+        kind: 'button', flutterChild: OutlinedButton(onPressed: _openLatestVideos,
+          child: Text(l10n.favoriteVideosLatest))),
+    ];
     if (_loading) {
       rows.add(
         AccessibleListRow(
@@ -3858,6 +3897,7 @@ class _SonarTubeFavoritesScreenState extends State<_SonarTubeFavoritesScreen> {
             subtitle: favoriteSubtitle,
             enabled: !_openingFavoriteItem,
             actions: [
+              ...favoriteReorderActions(l10n,entry.key,_favorites.length),
               AccessibleCustomAction(id: 'remove', label: removeLabel),
               if (_canSaveMedia(l10n, item))
                 const AccessibleCustomAction(
@@ -3891,6 +3931,7 @@ class _SonarTubeFavoritesScreenState extends State<_SonarTubeFavoritesScreen> {
                 ),
             ],
             visualActions: [
+              ...favoriteReorderVisuals(l10n,entry.key,_favorites.length),
               AccessibleVisualAction(
                 id: 'remove',
                 label: removeLabel,
@@ -3942,11 +3983,14 @@ class _SonarTubeFavoritesScreenState extends State<_SonarTubeFavoritesScreen> {
       controller: _accessibleListController,
       sections: [AccessibleListSection(rows: rows)],
       onEvent: (event) async {
+        if (event.type == 'activate' && event.id == 'latest_videos') { await _openLatestVideos(); return; }
         if (event.id?.startsWith('favorite_') != true) return;
         final index = int.tryParse(event.id!.substring(9));
         if (index == null || index < 0 || index >= _favorites.length) return;
         final item = _favorites[index];
-        if (event.type == 'customAction' && event.action == 'remove') {
+        if (event.type == 'customAction' && const ['move_up','move_down','move_position','sort_favorites'].contains(event.action)) {
+          await _reorderFavorite(item,event.action!);
+        } else if (event.type == 'customAction' && event.action == 'remove') {
           await _remove(item);
         } else if (event.type == 'customAction' &&
             event.action == 'save_media') {
@@ -3987,7 +4031,10 @@ class _SonarTubeFavoritesScreenState extends State<_SonarTubeFavoritesScreen> {
         title: Text(l10n.sonarTubeFavorites),
       ),
       body: SafeArea(
-        child: useSharedAccessibleViewModel
+        child: Column(children: [
+          if (!useSharedAccessibleViewModel && !_loading)
+            OutlinedButton(onPressed: _openLatestVideos, child: Text(l10n.favoriteVideosLatest)),
+          Expanded(child: useSharedAccessibleViewModel
             ? _buildSharedAccessibleFavorites(l10n)
             : _loading
                 ? Center(
@@ -4027,6 +4074,8 @@ class _SonarTubeFavoritesScreenState extends State<_SonarTubeFavoritesScreen> {
                                   : l10n.sonarTubeRemoveFavorite;
                           return Semantics(
                             customSemanticsActions: {
+                              for (final a in favoriteReorderActions(l10n,index,_favorites.length))
+                                CustomSemanticsAction(label:a.label):()=>_reorderFavorite(item,a.id),
                               CustomSemanticsAction(label: removeLabel):
                                   () => _remove(item),
                               if (_canSaveMedia(l10n, item))
@@ -4058,6 +4107,7 @@ class _SonarTubeFavoritesScreenState extends State<_SonarTubeFavoritesScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
+                                  favoriteReorderButtons(l10n,index,_favorites.length,(a)=>_reorderFavorite(item,a)),
                                   ListTile(
                                     key: ValueKey(
                                       'sonartube_favorite_item_${item.kind.name}_${item.id}',
@@ -4171,6 +4221,8 @@ class _SonarTubeFavoritesScreenState extends State<_SonarTubeFavoritesScreen> {
                           );
                         },
                       ),
+          ),
+        ]),
       ),
     );
   }

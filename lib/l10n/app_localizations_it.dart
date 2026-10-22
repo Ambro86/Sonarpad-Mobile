@@ -7,6 +7,17 @@ import 'app_localizations.dart';
 /// The translations for Italian (`it`).
 class AppLocalizationsIt extends AppLocalizations {
   @override
+  String get favoritesSortAlphabetically => "Ordina alfabeticamente";
+
+  @override
+  String get favoriteVideosLatest => 'Ultimi video';
+  @override
+  String get favoriteVideosTitle => 'Ultimi video dai preferiti';
+  @override
+  String get favoriteVideosPartial =>
+      'Non è stato possibile caricare alcuni canali. Sono mostrati i video degli altri canali.';
+
+  @override
   String get recordingNotAdvancing => "La registrazione non sta acquisendo nuovi dati. Controlla la connessione e riavviala se necessario.";
 
   @override

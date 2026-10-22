@@ -4842,5 +4842,9 @@
   "sonarTubeChannelPodcasts": "Podcasturi",
   "@sonarTubeChannelPodcasts": {
     "description": "YouTube channel podcasts section"
-  }
+  },
+  "favoriteVideosLatest": "Cele mai noi videoclipuri",
+  "favoriteVideosTitle": "Cele mai noi videoclipuri din favorite",
+  "favoriteVideosPartial": "Unele canale nu au putut fi încărcate. Sunt afișate videoclipurile celorlalte canale.",
+  "favoritesSortAlphabetically": "Sortează alfabetic"
 }

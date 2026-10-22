@@ -7,6 +7,17 @@ import 'app_localizations.dart';
 /// The translations for Turkish (`tr`).
 class AppLocalizationsTr extends AppLocalizations {
   @override
+  String get favoritesSortAlphabetically => "Alfabetik sırala";
+
+  @override
+  String get favoriteVideosLatest => 'Son videolar';
+  @override
+  String get favoriteVideosTitle => 'Favorilerden son videolar';
+  @override
+  String get favoriteVideosPartial =>
+      'Bazı kanallar yüklenemedi. Diğer kanalların videoları gösteriliyor.';
+
+  @override
   String get recordingNotAdvancing => "Kayıt yeni veri almıyor. Bağlantınızı kontrol edin ve gerekirse kaydı yeniden başlatın.";
 
   @override

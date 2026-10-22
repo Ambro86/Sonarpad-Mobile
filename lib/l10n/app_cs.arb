@@ -4845,5 +4845,9 @@
   "sonarTubeChannelPodcasts": "Podcasty",
   "@sonarTubeChannelPodcasts": {
     "description": "YouTube channel podcasts section"
-  }
+  },
+  "favoriteVideosLatest": "Nejnovější videa",
+  "favoriteVideosTitle": "Nejnovější videa z oblíbených",
+  "favoriteVideosPartial": "Některé kanály se nepodařilo načíst. Zobrazují se videa z ostatních kanálů.",
+  "favoritesSortAlphabetically": "Seřadit abecedně"
 }

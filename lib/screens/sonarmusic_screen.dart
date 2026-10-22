@@ -1,3 +1,6 @@
+import '../widgets/favorite_reorder.dart';
+import '../services/favorite_channel_videos_service.dart';
+import 'package:intl/intl.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -24,10 +27,11 @@ import 'podcast_episode_player_screen.dart';
 class SonarMusicScreen extends StatefulWidget {
   const SonarMusicScreen({super.key, this.collection, this.searchQuery,
     this.searchType = 'all', this.libraryType,
-    this.service, this.library});
+    this.service, this.library, this.latestVideosService});
   final SonarMusicItem? collection;
   final String? searchQuery, libraryType;
   final String searchType;
+  final FavoriteChannelVideosService? latestVideosService;
   final SonarMusicService? service;
   final SonarMusicLibraryService? library;
   @override
@@ -72,6 +76,7 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
       'podcast' => l10n.podcasts,
       'episode' => l10n.episodes,
       'favorites' => l10n.sonarMusicFavorites,
+      'latest' => l10n.favoriteVideosTitle,
       'recent' => l10n.sonarMusicRecent,
       'open' => l10n.sonarMusicOpen,
       'load' => l10n.sonarMusicLoad,
@@ -136,6 +141,20 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
       SonarMusicPage result;
       if (widget.libraryType == 'favorites') {
         result = SonarMusicPage(items: await _library.favorites());
+      } else if (widget.libraryType == 'latest') {
+        final favorites = await _library.favorites();
+        final channels = favorites.where((item) => item.kind == 'artist' || item.kind == 'channel')
+          .map((item) => SonarTubeItem(kind: SonarTubeItemKind.channel,
+            id: item.browseId ?? item.id, title: item.title, url: item.url ?? '')).toList();
+        final latest = await (widget.latestVideosService ?? FavoriteChannelVideosService()).load(channels);
+        if (!mounted) return;
+        final l10n = AppLocalizations.of(context);
+        if (latest.failedChannels > 0) _showError(l10n.favoriteVideosPartial);
+        result = SonarMusicPage(items: latest.items.map((item) => SonarMusicItem(
+          kind: 'video', id: item.id, videoId: item.id, title: item.title,
+          url: item.url, artist: item.channel, artistId: item.channelId,
+          subtitle: DateFormat.yMMMd(l10n.localeName).format(DateTime.parse(item.published!).toLocal()),
+        )).toList());
       } else if (widget.libraryType == 'recent') {
         result = SonarMusicPage(items: await _library.recent());
       } else if (widget.collection != null) {
@@ -215,9 +234,26 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
   }
   Future<void> _openLibrary(String type) async {
     await Navigator.push(context, MaterialPageRoute(
-      builder: (_) => SonarMusicScreen(libraryType: type, service: _service, library: _library)));
+      builder: (_) => SonarMusicScreen(libraryType: type, service: _service, library: _library, latestVideosService: widget.latestVideosService)));
     await _refreshFavorites();
   }
+  Future<void> _openLatestVideos() => _openLibrary('latest');
+
+  Future<void> _reorderFavorite(SonarMusicItem item, String action) async {
+    if (widget.libraryType != 'favorites') return;
+    final index = _items.indexWhere((e)=>e.key==item.key);
+    final reordered = await reorderFavorites(context,_items,index,action,(e)=>e.title);
+    if (reordered==null || !mounted) return;
+    await _library.reorderFavorites(reordered.map((e)=>e.key).toList());
+    final updated = await _library.favorites();
+    if (!mounted) return;
+    setState(()=>_items=updated);
+    await WidgetsBinding.instance.endOfFrame;
+    if (!mounted) return;
+    final newIndex=_items.indexWhere((e)=>e.key==item.key);
+    if (newIndex>=0) await _accessible.focusAccessibleRow('item_$newIndex',mode:AccessibleFocusMode.routeReturnJump,animated:false);
+  }
+
   Future<void> _refreshFavorites() async {
     final fav = await _library.favorites();
     if (mounted) setState(() => _favorites = fav.map((e) => e.key).toSet());
@@ -489,6 +525,9 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
     final isFav = _favorites.contains(item.key);
     final subtitle = _itemSubtitle(item);
     final actions = <CustomSemanticsAction, VoidCallback>{
+      if (widget.libraryType == 'favorites')
+        for (final a in favoriteReorderActions(AppLocalizations.of(context),i,_items.length))
+          CustomSemanticsAction(label:a.label):()=>_reorderFavorite(item,a.id),
       if (_isRecent) CustomSemanticsAction(
         label: AppLocalizations.of(context).deleteItem): () => _deleteRecent(item),
       CustomSemanticsAction(label: isFav ? _label('remove') : _label('add')):
@@ -526,6 +565,7 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
           title: Text(item.title), subtitle: Text(subtitle),
           onTap: !_busy ? () => _openItem(item) : null),
         Wrap(spacing: 4, children: [
+          if (widget.libraryType == 'favorites') favoriteReorderButtons(AppLocalizations.of(context),i,_items.length,(a)=>_reorderFavorite(item,a)),
           if (_isRecent) IconButton(
             key: ValueKey('sonarmusic_delete_recent_${item.key}'),
             tooltip: AppLocalizations.of(context).deleteItem,
@@ -562,7 +602,11 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
   }
   Widget _buildList() {
     final l10n = AppLocalizations.of(context);
-    final rows = <AccessibleListRow>[];
+    final rows = <AccessibleListRow>[
+      if (widget.libraryType == 'favorites')
+        AccessibleListRow(id: 'latest_videos', title: l10n.favoriteVideosLatest, kind: 'button',
+          flutterChild: OutlinedButton(onPressed: _openLatestVideos, child: Text(l10n.favoriteVideosLatest))),
+    ];
     if (_isRecent && _items.isNotEmpty) {
       rows.add(AccessibleListRow(
         id: 'clear_history', title: l10n.clearHistory, kind: 'button',
@@ -662,6 +706,7 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
         subtitle: _itemSubtitle(item),
         enabled: item.available && !_busy,
         actions: [
+          if (widget.libraryType == 'favorites') ...favoriteReorderActions(l10n,i,_items.length),
           if (_isRecent) AccessibleCustomAction(id: 'delete_recent', label: l10n.deleteItem),
           AccessibleCustomAction(id: 'favorite', label: isFav ? _label('remove') : _label('add')),
           AccessibleCustomAction(id: 'share', label: _label('share')),
@@ -677,6 +722,7 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
             id: 'create_ai_audiodescription', label: l10n.audioDescriptionCreateAiTitle),
         ],
         visualActions: [
+          if (widget.libraryType == 'favorites') ...favoriteReorderVisuals(l10n,i,_items.length),
           if (_isRecent) AccessibleVisualAction(
             id: 'delete_recent', label: l10n.deleteItem, icon: 'remove'),
         ],
@@ -704,6 +750,7 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
           if (event.type == 'activate') await _openItem(item);
           if (event.type == 'customAction') {
             switch (event.action) {
+              case 'move_up': case 'move_down': case 'move_position': case 'sort_favorites': await _reorderFavorite(item,event.action!);
               case 'delete_recent': await _deleteRecent(item);
               case 'favorite': await _toggleFavorite(item, focusId: id);
               case 'share': await _shareItem(item);
@@ -723,6 +770,7 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
         if (id == 'search') await _search();
         if (id == 'suggest') await _suggest();
         if (id == 'favorites' || id == 'recent') await _openLibrary(id);
+        if (id == 'latest_videos') await _openLatestVideos();
         if (id == 'open') await _openUrl();
         if (id == 'retry') await _load();
         if (id == 'more') await _load(more: true);

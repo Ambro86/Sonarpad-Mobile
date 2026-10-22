@@ -7,6 +7,17 @@ import 'app_localizations.dart';
 /// The translations for Ukrainian (`uk`).
 class AppLocalizationsUk extends AppLocalizations {
   @override
+  String get favoritesSortAlphabetically => "Сортувати за абеткою";
+
+  @override
+  String get favoriteVideosLatest => 'Найновіші відео';
+  @override
+  String get favoriteVideosTitle => 'Найновіші відео з обраного';
+  @override
+  String get favoriteVideosPartial =>
+      'Не вдалося завантажити деякі канали. Показано відео з інших каналів.';
+
+  @override
   String get recordingNotAdvancing => "Запис не отримує нових даних. Перевірте з’єднання та за потреби перезапустіть запис.";
 
   @override

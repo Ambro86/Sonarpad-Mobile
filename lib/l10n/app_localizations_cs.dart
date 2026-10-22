@@ -7,6 +7,17 @@ import 'app_localizations.dart';
 /// The translations for Czech (`cs`).
 class AppLocalizationsCs extends AppLocalizations {
   @override
+  String get favoritesSortAlphabetically => "Seřadit abecedně";
+
+  @override
+  String get favoriteVideosLatest => 'Nejnovější videa';
+  @override
+  String get favoriteVideosTitle => 'Nejnovější videa z oblíbených';
+  @override
+  String get favoriteVideosPartial =>
+      'Některé kanály se nepodařilo načíst. Zobrazují se videa z ostatních kanálů.';
+
+  @override
   String get recordingNotAdvancing => "Nahrávání nepřijímá nová data. Zkontrolujte připojení a v případě potřeby nahrávání restartujte.";
 
   @override

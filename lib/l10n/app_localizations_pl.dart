@@ -7,6 +7,17 @@ import 'app_localizations.dart';
 /// The translations for Polish (`pl`).
 class AppLocalizationsPl extends AppLocalizations {
   @override
+  String get favoritesSortAlphabetically => "Sortuj alfabetycznie";
+
+  @override
+  String get favoriteVideosLatest => 'Najnowsze filmy';
+  @override
+  String get favoriteVideosTitle => 'Najnowsze filmy z ulubionych';
+  @override
+  String get favoriteVideosPartial =>
+      'Nie udało się wczytać niektórych kanałów. Wyświetlane są filmy z pozostałych kanałów.';
+
+  @override
   String get recordingNotAdvancing => "Nagranie nie odbiera nowych danych. Sprawdź połączenie i w razie potrzeby uruchom nagrywanie ponownie.";
 
   @override

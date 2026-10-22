@@ -7,6 +7,17 @@ import 'app_localizations.dart';
 /// The translations for Portuguese (`pt`).
 class AppLocalizationsPt extends AppLocalizations {
   @override
+  String get favoritesSortAlphabetically => "Ordenar alfabeticamente";
+
+  @override
+  String get favoriteVideosLatest => 'Vídeos mais recentes';
+  @override
+  String get favoriteVideosTitle => 'Vídeos mais recentes dos favoritos';
+  @override
+  String get favoriteVideosPartial =>
+      'Não foi possível carregar alguns canais. São apresentados os vídeos dos outros canais.';
+
+  @override
   String get recordingNotAdvancing => "A gravação não está a receber novos dados. Verifica a ligação e reinicia-a se necessário.";
 
   @override
@@ -5423,6 +5434,17 @@ class AppLocalizationsPt extends AppLocalizations {
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
 class AppLocalizationsPtBr extends AppLocalizationsPt {
+  @override
+  String get favoritesSortAlphabetically => "Ordenar alfabeticamente";
+
+  @override
+  String get favoriteVideosLatest => 'Vídeos mais recentes';
+  @override
+  String get favoriteVideosTitle => 'Vídeos mais recentes dos favoritos';
+  @override
+  String get favoriteVideosPartial =>
+      'Não foi possível carregar alguns canais. Os vídeos dos outros canais são exibidos.';
+
   @override
   String get recordingNotAdvancing => "A gravação não está recebendo novos dados. Verifique a conexão e reinicie-a se necessário.";
 

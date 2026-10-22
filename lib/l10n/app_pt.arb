@@ -4848,5 +4848,9 @@
   "sonarTubeChannelPodcasts": "Podcasts",
   "@sonarTubeChannelPodcasts": {
     "description": "YouTube channel podcasts section"
-  }
+  },
+  "favoriteVideosLatest": "Vídeos mais recentes",
+  "favoriteVideosTitle": "Vídeos mais recentes dos favoritos",
+  "favoriteVideosPartial": "Não foi possível carregar alguns canais. São apresentados os vídeos dos outros canais.",
+  "favoritesSortAlphabetically": "Ordenar alfabeticamente"
 }

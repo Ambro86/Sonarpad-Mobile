@@ -8,6 +8,17 @@ import 'app_localizations.dart';
 /// Remaining untranslated messages temporarily keep their English text until the next phase.
 class AppLocalizationsRo extends AppLocalizations {
   @override
+  String get favoritesSortAlphabetically => "Sortează alfabetic";
+
+  @override
+  String get favoriteVideosLatest => 'Cele mai noi videoclipuri';
+  @override
+  String get favoriteVideosTitle => 'Cele mai noi videoclipuri din favorite';
+  @override
+  String get favoriteVideosPartial =>
+      'Unele canale nu au putut fi încărcate. Sunt afișate videoclipurile celorlalte canale.';
+
+  @override
   String get recordingNotAdvancing => "Înregistrarea nu primește date noi. Verifică conexiunea și repornește înregistrarea dacă este necesar.";
 
   @override

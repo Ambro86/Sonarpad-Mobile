@@ -4842,5 +4842,9 @@
   "sonarTubeChannelPodcasts": "播客",
   "@sonarTubeChannelPodcasts": {
     "description": "YouTube channel podcasts section"
-  }
+  },
+  "favoriteVideosLatest": "最新视频",
+  "favoriteVideosTitle": "收藏中的最新视频",
+  "favoriteVideosPartial": "部分频道无法加载。现显示其他频道的视频。",
+  "favoritesSortAlphabetically": "按字母顺序排序"
 }

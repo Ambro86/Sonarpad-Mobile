@@ -7,6 +7,17 @@ import 'app_localizations.dart';
 /// The translations for German (`de`).
 class AppLocalizationsDe extends AppLocalizations {
   @override
+  String get favoritesSortAlphabetically => "Alphabetisch sortieren";
+
+  @override
+  String get favoriteVideosLatest => 'Neueste Videos';
+  @override
+  String get favoriteVideosTitle => 'Neueste Videos aus Favoriten';
+  @override
+  String get favoriteVideosPartial =>
+      'Einige Kanäle konnten nicht geladen werden. Videos der anderen Kanäle werden angezeigt.';
+
+  @override
   String get recordingNotAdvancing => "Die Aufnahme empfängt keine neuen Daten. Prüfe deine Verbindung und starte sie bei Bedarf neu.";
 
   @override

@@ -24,6 +24,18 @@ class SonarTubeFavoritesService {
     return favorites;
   }
 
+  Future<void> reorderFavorites(List<String> keys) async {
+    final current = await loadFavorites();
+    final byKey = {for (final item in current) itemKey(item): item};
+    final ordered = <SonarTubeItem>[];
+    for (final key in keys) {
+      final item = byKey.remove(key);
+      if (item != null) ordered.add(item);
+    }
+    ordered.addAll(byKey.values);
+    await _save(ordered);
+  }
+
   Future<bool> toggleFavorite(SonarTubeItem item) async {
     final favorites = await loadFavorites();
     final key = itemKey(item);

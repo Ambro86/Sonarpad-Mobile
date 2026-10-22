@@ -7,6 +7,17 @@ import 'app_localizations.dart';
 /// The translations for Chinese (`zh`).
 class AppLocalizationsZh extends AppLocalizations {
   @override
+  String get favoritesSortAlphabetically => "按字母顺序排序";
+
+  @override
+  String get favoriteVideosLatest => 'Ultimi video';
+  @override
+  String get favoriteVideosTitle => 'Ultimi video dai preferiti';
+  @override
+  String get favoriteVideosPartial =>
+      'Non è stato possibile caricare alcuni canali. Sono mostrati i video degli altri canali.';
+
+  @override
   String get recordingNotAdvancing => "录制未收到新数据。请检查网络连接，必要时重新开始录制。";
 
   @override
@@ -5228,6 +5239,16 @@ class AppLocalizationsZh extends AppLocalizations {
 
 /// The translations for Chinese, as used in China (`zh_CN`).
 class AppLocalizationsZhCn extends AppLocalizationsZh {
+  @override
+  String get favoritesSortAlphabetically => "按字母顺序排序";
+
+  @override
+  String get favoriteVideosLatest => '最新视频';
+  @override
+  String get favoriteVideosTitle => '收藏中的最新视频';
+  @override
+  String get favoriteVideosPartial => '部分频道无法加载。现显示其他频道的视频。';
+
   @override
   String get recordingNotAdvancing => "录制未收到新数据。请检查网络连接，必要时重新开始录制。";
 

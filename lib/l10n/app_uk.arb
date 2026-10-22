@@ -6420,5 +6420,9 @@
   "sonarTubeChannelPodcasts": "Подкасти",
   "@sonarTubeChannelPodcasts": {
     "description": "YouTube channel podcasts section"
-  }
+  },
+  "favoriteVideosLatest": "Найновіші відео",
+  "favoriteVideosTitle": "Найновіші відео з обраного",
+  "favoriteVideosPartial": "Не вдалося завантажити деякі канали. Показано відео з інших каналів.",
+  "favoritesSortAlphabetically": "Сортувати за абеткою"
 }
