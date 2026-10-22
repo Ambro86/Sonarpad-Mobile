@@ -1,7 +1,7 @@
 [
   {
     "version": "0.5.2",
-    "date": "2026-10-17",
+    "date": "2026-10-26",
     "it": [
       "Corrette le date e gli orari delle notizie e alcuni indirizzi che mostravano articoli vecchi. Quando la data di pubblicazione non è disponibile, non viene più mostrata l’ora di aggiornamento. Aggiunte Türkiye Gazetesi, İHA e TGRT Haber alle testate turche.",
       "Migliorata la ricerca in SonarMusic, con risultati più completi per brani, album, artisti, playlist e video, un caricamento più affidabile dei risultati successivi e accesso agli elenchi completi di album e singoli degli artisti.",
@@ -17,7 +17,8 @@
       "Su Android, la lettura con le voci locali supporta ora pausa e ripresa tramite il doppio tocco con due dita di TalkBack, anche in notizie, documenti, Wikipedia e Treccani.",
       "In SonarMusic, il pulsante Suggerimenti compare solo quando il campo di ricerca contiene testo. La sua comparsa o scomparsa mantiene stabile il focus di VoiceOver, senza ricaricare tutto l’elenco.",
       "Aggiunto il supporto Chromecast nei player compatibili, con scelta del dispositivo, controlli di riproduzione e ritorno al telefono dalla posizione raggiunta. Il pulsante si può nascondere nelle impostazioni.",
-      "Corretti i nomi dei file importati: Unisci file, Taglia file media, Converti media e le audiodescrizioni con IA mostrano i nomi originali invece dei codici temporanei, anche negli annunci di VoiceOver durante il riordino. I file con lo stesso nome restano distinti."
+      "Corretti i nomi dei file importati: Unisci file, Taglia file media, Converti media e le audiodescrizioni con IA mostrano i nomi originali invece dei codici temporanei, anche negli annunci di VoiceOver durante il riordino. I file con lo stesso nome restano distinti.",
+      "Nei Documenti puoi ora esportare un’intera cartella come archivio ZIP, includendo i file e le sottocartelle."
     ],
     "en": [
       "Fixed news dates and times and some feed addresses that showed old articles. When the publication date is unavailable, the refresh time is no longer shown instead. Added Türkiye Gazetesi, İHA and TGRT Haber to the Turkish news sources.",
@@ -34,7 +35,8 @@
       "On Android, reading with local voices now supports pause and resume using the TalkBack two-finger double tap, including news, documents, Wikipedia and Treccani.",
       "In SonarMusic, Suggestions appears only when the search field contains text. Showing or hiding the button preserves VoiceOver focus without reloading the entire list.",
       "Added Chromecast casting in compatible players, with device selection, playback controls and return to your phone at the current position. You can hide the button in settings.",
-      "Fixed imported file names: Join files, Cut media, Convert media and AI audio descriptions show original names instead of temporary codes, including VoiceOver announcements when reordering. Files with the same name remain separate."
+      "Fixed imported file names: Join files, Cut media, Convert media and AI audio descriptions show original names instead of temporary codes, including VoiceOver announcements when reordering. Files with the same name remain separate.",
+      "In Documents, you can now export an entire folder as a ZIP archive, including its files and subfolders."
     ],
     "fr": [
       "Correction des dates et heures des actualités et de certaines adresses affichant des articles anciens. Lorsque la date de publication est indisponible, l’heure d’actualisation ne la remplace plus. Ajout de Türkiye Gazetesi, İHA et TGRT Haber aux sources turques.",
@@ -51,7 +53,8 @@
       "Sur Android, la lecture avec les voix locales peut désormais être mise en pause et reprise par un double toucher avec deux doigts dans TalkBack, notamment pour les actualités, les documents, Wikipédia et Treccani.",
       "Dans SonarMusic, le bouton Suggestions apparaît uniquement lorsque le champ de recherche contient du texte. Son affichage ou son masquage préserve le focus VoiceOver sans recharger toute la liste.",
       "Ajout de Chromecast dans les lecteurs compatibles, avec choix de l’appareil, commandes de lecture et reprise sur le téléphone à la position actuelle. Le bouton peut être masqué dans les réglages.",
-      "Correction des noms des fichiers importés : la fusion, le découpage, la conversion et les audiodescriptions par IA affichent les noms originaux au lieu des codes temporaires, y compris dans les annonces VoiceOver lors du réordonnancement. Les fichiers de même nom restent distincts."
+      "Correction des noms des fichiers importés : la fusion, le découpage, la conversion et les audiodescriptions par IA affichent les noms originaux au lieu des codes temporaires, y compris dans les annonces VoiceOver lors du réordonnancement. Les fichiers de même nom restent distincts.",
+      "Dans Documents, vous pouvez désormais exporter un dossier entier en archive ZIP, avec ses fichiers et sous-dossiers."
     ],
     "es": [
       "Corregidas las fechas y horas de las noticias y algunas direcciones que mostraban artículos antiguos. Si no hay fecha de publicación, ya no se muestra en su lugar la hora de actualización. Añadidas Türkiye Gazetesi, İHA y TGRT Haber a las fuentes turcas.",
@@ -68,7 +71,8 @@
       "En Android, la lectura con voces locales permite pausar y reanudar con el doble toque con dos dedos de TalkBack, también en noticias, documentos, Wikipedia y Treccani.",
       "En SonarMusic, Sugerencias aparece solo cuando el campo de búsqueda contiene texto. Mostrar u ocultar el botón mantiene el foco de VoiceOver sin recargar toda la lista.",
       "Añadida la transmisión con Chromecast en reproductores compatibles, con selección del dispositivo, controles y regreso al teléfono desde la posición actual. El botón se puede ocultar en los ajustes.",
-      "Corregidos los nombres de los archivos importados: unir, cortar y convertir archivos multimedia y las audiodescripciones con IA muestran los nombres originales en lugar de códigos temporales, también en los anuncios de VoiceOver al reordenarlos. Los archivos con el mismo nombre se mantienen separados."
+      "Corregidos los nombres de los archivos importados: unir, cortar y convertir archivos multimedia y las audiodescripciones con IA muestran los nombres originales en lugar de códigos temporales, también en los anuncios de VoiceOver al reordenarlos. Los archivos con el mismo nombre se mantienen separados.",
+      "En Documentos, ahora puedes exportar una carpeta completa como archivo ZIP, incluidos sus archivos y subcarpetas."
     ],
     "pt": [
       "Corrigidas as datas e horas das notícias e alguns endereços que mostravam artigos antigos. Quando a data de publicação não está disponível, a hora de atualização deixa de ser apresentada em seu lugar. Adicionadas Türkiye Gazetesi, İHA e TGRT Haber às fontes turcas.",
@@ -85,7 +89,8 @@
       "No Android, a leitura com vozes locais permite agora pausar e retomar com o duplo toque com dois dedos do TalkBack, incluindo notícias, documentos, Wikipédia e Treccani.",
       "No SonarMusic, o botão Sugestões aparece apenas quando o campo de pesquisa contém texto. Mostrar ou ocultar o botão mantém o foco do VoiceOver sem recarregar toda a lista.",
       "Adicionada a transmissão com Chromecast nos leitores compatíveis, com escolha do dispositivo, controlos e regresso ao telemóvel na posição atual. O botão pode ser ocultado nas definições.",
-      "Corrigidos os nomes dos ficheiros importados: unir, cortar e converter multimédia e as audiodescrições com IA mostram os nomes originais em vez de códigos temporários, incluindo os anúncios do VoiceOver ao reordenar. Os ficheiros com o mesmo nome permanecem separados."
+      "Corrigidos os nomes dos ficheiros importados: unir, cortar e converter multimédia e as audiodescrições com IA mostram os nomes originais em vez de códigos temporários, incluindo os anúncios do VoiceOver ao reordenar. Os ficheiros com o mesmo nome permanecem separados.",
+      "Nos Documentos, pode agora exportar uma pasta inteira como arquivo ZIP, incluindo os ficheiros e as subpastas."
     ],
     "pt_BR": [
       "Corrigidas as datas e os horários das notícias e alguns endereços que mostravam artigos antigos. Quando a data de publicação não está disponível, o horário de atualização não é mais exibido em seu lugar. Adicionadas Türkiye Gazetesi, İHA e TGRT Haber às fontes turcas.",
@@ -102,7 +107,8 @@
       "No Android, a leitura com vozes locais agora permite pausar e retomar com o toque duplo com dois dedos do TalkBack, inclusive em notícias, documentos, Wikipédia e Treccani.",
       "No SonarMusic, o botão Sugestões aparece apenas quando o campo de pesquisa contém texto. Mostrar ou ocultar o botão mantém o foco do VoiceOver sem recarregar toda a lista.",
       "Adicionada a transmissão com Chromecast nos reprodutores compatíveis, com escolha do dispositivo, controles e retorno ao celular na posição atual. O botão pode ser ocultado nas configurações.",
-      "Corrigidos os nomes dos arquivos importados: unir, cortar e converter mídia e as audiodescrições com IA mostram os nomes originais em vez de códigos temporários, inclusive nos anúncios do VoiceOver ao reordenar. Arquivos com o mesmo nome continuam separados."
+      "Corrigidos os nomes dos arquivos importados: unir, cortar e converter mídia e as audiodescrições com IA mostram os nomes originais em vez de códigos temporários, inclusive nos anúncios do VoiceOver ao reordenar. Arquivos com o mesmo nome continuam separados.",
+      "Em Documentos, agora você pode exportar uma pasta inteira como arquivo ZIP, incluindo os arquivos e as subpastas."
     ],
     "pl": [
       "Poprawiono daty i godziny wiadomości oraz niektóre adresy wyświetlające stare artykuły. Gdy data publikacji jest niedostępna, czas odświeżenia nie jest już pokazywany zamiast niej. Dodano Türkiye Gazetesi, İHA i TGRT Haber do tureckich źródeł wiadomości.",
@@ -119,7 +125,8 @@
       "Na Androidzie czytanie głosami lokalnymi obsługuje teraz pauzę i wznowienie przez dwukrotne stuknięcie dwoma palcami w TalkBack, także w wiadomościach, dokumentach, Wikipedii i Treccani.",
       "W SonarMusic przycisk sugestii pojawia się tylko wtedy, gdy pole wyszukiwania zawiera tekst. Pokazywanie i ukrywanie przycisku zachowuje fokus VoiceOver bez ponownego ładowania całej listy.",
       "Dodano Chromecast w zgodnych odtwarzaczach: wybór urządzenia, sterowanie i powrót do telefonu w bieżącej pozycji. Przycisk można ukryć w ustawieniach.",
-      "Poprawiono nazwy importowanych plików: łączenie, przycinanie i konwersja multimediów oraz audiodeskrypcja AI pokazują oryginalne nazwy zamiast kodów tymczasowych, również w komunikatach VoiceOver podczas zmiany kolejności. Pliki o tej samej nazwie pozostają oddzielne."
+      "Poprawiono nazwy importowanych plików: łączenie, przycinanie i konwersja multimediów oraz audiodeskrypcja AI pokazują oryginalne nazwy zamiast kodów tymczasowych, również w komunikatach VoiceOver podczas zmiany kolejności. Pliki o tej samej nazwie pozostają oddzielne.",
+      "W Dokumentach można teraz wyeksportować cały folder jako archiwum ZIP, wraz z plikami i podfolderami."
     ],
     "cs": [
       "Opraveny datumy a časy zpráv a některé adresy zobrazující staré články. Pokud datum publikace není dostupné, již se místo něj nezobrazuje čas aktualizace. Mezi turecké zdroje byly přidány Türkiye Gazetesi, İHA a TGRT Haber.",
@@ -136,7 +143,8 @@
       "V Androidu lze nyní čtení místními hlasy pozastavit a obnovit dvojitým klepnutím dvěma prsty v TalkBacku, také ve zprávách, dokumentech, Wikipedii a Treccani.",
       "V SonarMusic se tlačítko návrhů zobrazuje pouze tehdy, když vyhledávací pole obsahuje text. Zobrazení nebo skrytí tlačítka zachovává zaměření VoiceOveru bez opětovného načtení celého seznamu.",
       "Přidáno odesílání přes Chromecast v podporovaných přehrávačích, výběr zařízení, ovládání a návrat na telefon od aktuální pozice. Tlačítko lze skrýt v nastavení.",
-      "Opraveny názvy importovaných souborů: spojování, stříhání a převod médií i audiopopis s AI zobrazují původní názvy místo dočasných kódů, také v oznámeních VoiceOver při změně pořadí. Soubory se stejným názvem zůstávají oddělené."
+      "Opraveny názvy importovaných souborů: spojování, stříhání a převod médií i audiopopis s AI zobrazují původní názvy místo dočasných kódů, také v oznámeních VoiceOver při změně pořadí. Soubory se stejným názvem zůstávají oddělené.",
+      "V Dokumentech nyní můžete exportovat celou složku jako archiv ZIP včetně souborů a podsložek."
     ],
     "de": [
       "Datum und Uhrzeit von Nachrichten sowie einige Adressen mit veralteten Artikeln korrigiert. Bei fehlendem Veröffentlichungsdatum wird nicht mehr die Aktualisierungszeit angezeigt. Türkiye Gazetesi, İHA und TGRT Haber zu den türkischen Nachrichtenquellen hinzugefügt.",
@@ -153,7 +161,8 @@
       "Unter Android lässt sich das Vorlesen mit lokalen Stimmen jetzt durch doppeltes Tippen mit zwei Fingern in TalkBack pausieren und fortsetzen, auch in Nachrichten, Dokumenten, Wikipedia und Treccani.",
       "In SonarMusic erscheint die Schaltfläche Vorschläge nur, wenn das Suchfeld Text enthält. Beim Ein- und Ausblenden bleibt der VoiceOver-Fokus erhalten, ohne die gesamte Liste neu zu laden.",
       "Chromecast in kompatiblen Playern hinzugefügt: Geräteauswahl, Wiedergabesteuerung und Rückkehr zum Telefon an der aktuellen Position. Die Schaltfläche lässt sich in den Einstellungen ausblenden.",
-      "Namen importierter Dateien korrigiert: Beim Zusammenfügen, Schneiden und Konvertieren von Medien sowie bei KI-Audiobeschreibungen erscheinen die ursprünglichen Namen statt temporärer Codes, auch in VoiceOver-Ansagen beim Umsortieren. Gleichnamige Dateien bleiben getrennt."
+      "Namen importierter Dateien korrigiert: Beim Zusammenfügen, Schneiden und Konvertieren von Medien sowie bei KI-Audiobeschreibungen erscheinen die ursprünglichen Namen statt temporärer Codes, auch in VoiceOver-Ansagen beim Umsortieren. Gleichnamige Dateien bleiben getrennt.",
+      "In Dokumente kannst du jetzt einen ganzen Ordner einschließlich seiner Dateien und Unterordner als ZIP-Archiv exportieren."
     ],
     "zh_CN": [
       "修正了新闻日期、时间及部分显示旧文章的订阅地址。没有发布日期时，不再用刷新时间代替。土耳其新闻来源新增 Türkiye Gazetesi、İHA 和 TGRT Haber。",
@@ -170,7 +179,8 @@
       "在 Android 上，使用本地语音朗读时，现在可以通过 TalkBack 的双指双击手势暂停和继续，包括新闻、文档、维基百科和 Treccani。",
       "在 SonarMusic 中，只有搜索框包含文字时才会显示“建议”按钮。显示或隐藏按钮时会保留 VoiceOver 焦点，不会重新加载整个列表。",
       "兼容播放器新增 Chromecast 投放，支持选择设备、控制播放，以及从当前位置返回手机播放。可在设置中隐藏此按钮。",
-      "修复导入文件的名称显示：合并、剪切和转换媒体以及 AI 音频描述现在显示原始名称，而不是临时代码，包括调整顺序时的 VoiceOver 播报。同名文件仍分别保存。"
+      "修复导入文件的名称显示：合并、剪切和转换媒体以及 AI 音频描述现在显示原始名称，而不是临时代码，包括调整顺序时的 VoiceOver 播报。同名文件仍分别保存。",
+      "现在可以在“文档”中将整个文件夹导出为 ZIP 压缩包，包含其中的文件和子文件夹。"
     ],
     "uk": [
       "Виправлено дати й час новин та деякі адреси, що показували старі статті. Якщо дата публікації недоступна, час оновлення більше не відображається замість неї. До турецьких джерел додано Türkiye Gazetesi, İHA та TGRT Haber.",
@@ -187,7 +197,8 @@
       "На Android читання локальними голосами тепер можна призупиняти й відновлювати подвійним дотиком двома пальцями в TalkBack, зокрема в новинах, документах, Вікіпедії та Treccani.",
       "У SonarMusic кнопка підказок з’являється лише тоді, коли поле пошуку містить текст. Показ і приховування кнопки зберігають фокус VoiceOver без перезавантаження всього списку.",
       "Додано Chromecast у сумісних програвачах: вибір пристрою, керування та повернення до телефону з поточної позиції. Кнопку можна приховати в налаштуваннях.",
-      "Виправлено назви імпортованих файлів: об’єднання, обрізання й перетворення медіа та аудіоопис із ШІ показують оригінальні назви замість тимчасових кодів, зокрема в оголошеннях VoiceOver під час зміни порядку. Файли з однаковими назвами залишаються окремими."
+      "Виправлено назви імпортованих файлів: об’єднання, обрізання й перетворення медіа та аудіоопис із ШІ показують оригінальні назви замість тимчасових кодів, зокрема в оголошеннях VoiceOver під час зміни порядку. Файли з однаковими назвами залишаються окремими.",
+      "У Документах тепер можна експортувати цілу папку як ZIP-архів, включно з файлами та підпапками."
     ],
     "ro": [
       "Corectate datele și orele știrilor și unele adrese care afișau articole vechi. Când data publicării nu este disponibilă, ora actualizării nu mai este afișată în locul ei. Adăugate Türkiye Gazetesi, İHA și TGRT Haber la sursele turcești.",
@@ -204,7 +215,8 @@
       "Pe Android, citirea cu vocile locale acceptă acum pauza și reluarea prin atingerea dublă cu două degete în TalkBack, inclusiv în știri, documente, Wikipedia și Treccani.",
       "În SonarMusic, butonul Sugestii apare doar când câmpul de căutare conține text. Afișarea sau ascunderea lui păstrează focalizarea VoiceOver fără a reîncărca întreaga listă.",
       "Adăugată transmiterea prin Chromecast în playerele compatibile, cu alegerea dispozitivului, comenzi și revenire pe telefon de la poziția curentă. Butonul poate fi ascuns din setări.",
-      "Corectate numele fișierelor importate: unirea, tăierea și conversia media, precum și audiodescrierile cu IA afișează numele originale în locul codurilor temporare, inclusiv în anunțurile VoiceOver la reordonare. Fișierele cu același nume rămân separate."
+      "Corectate numele fișierelor importate: unirea, tăierea și conversia media, precum și audiodescrierile cu IA afișează numele originale în locul codurilor temporare, inclusiv în anunțurile VoiceOver la reordonare. Fișierele cu același nume rămân separate.",
+      "În Documente, acum poți exporta un dosar întreg ca arhivă ZIP, inclusiv fișierele și subdosarele sale."
     ],
     "tr": [
       "Haberlerin tarih ve saatleri ile eski yazıları gösteren bazı kaynak adresleri düzeltildi. Yayın tarihi bulunamadığında artık bunun yerine yenileme saati gösterilmiyor. Türkçe haber kaynaklarına Türkiye Gazetesi, İHA ve TGRT Haber eklendi.",
@@ -221,7 +233,8 @@
       "Android’de yerel seslerle okuma artık TalkBack’te iki parmakla çift dokunarak duraklatılabilir ve sürdürülebilir; haberler, belgeler, Wikipedia ve Treccani de buna dahildir.",
       "SonarMusic’te Öneriler düğmesi yalnızca arama alanında metin olduğunda görünür. Düğmenin gösterilmesi veya gizlenmesi, tüm listeyi yeniden yüklemeden VoiceOver odağını korur.",
       "Uyumlu oynatıcılara Chromecast eklendi: cihaz seçimi, oynatma kontrolleri ve mevcut konumdan telefonda devam etme. Düğme ayarlardan gizlenebilir.",
-      "İçe aktarılan dosya adları düzeltildi: dosya birleştirme, medya kesme ve dönüştürme ile yapay zekâ sesli betimleme, geçici kodlar yerine özgün adları gösterir. Sıralama değiştirilirken VoiceOver duyurularında da özgün adlar kullanılır. Aynı adlı dosyalar ayrı tutulur."
+      "İçe aktarılan dosya adları düzeltildi: dosya birleştirme, medya kesme ve dönüştürme ile yapay zekâ sesli betimleme, geçici kodlar yerine özgün adları gösterir. Sıralama değiştirilirken VoiceOver duyurularında da özgün adlar kullanılır. Aynı adlı dosyalar ayrı tutulur.",
+      "Belgeler bölümünde artık bir klasörün tamamını, dosyaları ve alt klasörleriyle birlikte ZIP arşivi olarak dışa aktarabilirsiniz."
     ]
   },
   {

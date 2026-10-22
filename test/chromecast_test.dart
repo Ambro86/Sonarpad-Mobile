@@ -19,7 +19,8 @@ class FakeSession extends ChromecastSession {
   bool rejectConnect = false;
   final handoff = <String>[];
   final rates = <double>[];
-  int closes = 0;
+  int closes = 0, connects = 0;
+  final loadedUrls = <String>[];
   Duration? requestedPosition;
   final volumes = <double>[];
   Completer<void>? volumeGate;
@@ -28,6 +29,7 @@ class FakeSession extends ChromecastSession {
   Stream<ChromecastStatus> get updates => events.stream;
   @override
   Future<void> connect(ChromecastDevice device) async {
+    connects++;
     await connectGate?.future;
     if (rejectConnect) throw StateError('connect_failed');
   }
@@ -42,6 +44,7 @@ class FakeSession extends ChromecastSession {
     bool autoplay = true,
   }) async {
     await loadGate?.future;
+    loadedUrls.add(url);
     requestedPosition = position;
     handoff.add(autoplay ? 'load_playing' : 'load_paused');
     if (reject) throw StateError('load_failed');
@@ -311,6 +314,80 @@ void main() {
       await tester.pumpWidget(const SizedBox.shrink());
       debugDefaultTargetPlatformOverride = null;
       configureAccessibleRendererRuntime(useFlutterOnIos: false);
+    });
+  }
+
+  for (final mode in ['next', 'disabled', 'end', 'cancel', 'error']) {
+    testWidgets('Cast autoplay completion: $mode', (tester) async {
+      final session = FakeSession();
+      final gate = Completer<ChromecastQueueItem?>();
+      final navigator = GlobalKey<NavigatorState>();
+      var requests = 0;
+      var starts = 0;
+      final saved = <Duration>[];
+      await tester.pumpWidget(MaterialApp(
+        navigatorKey: navigator,
+        locale: const Locale('en'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: const Scaffold(body: Text('Local')),
+      ));
+      unawaited(navigator.currentState!.push(MaterialPageRoute<void>(
+        builder: (_) => ChromecastScreen(
+          media: const ChromecastMedia('https://example.org/first.mp3', 'audio/mpeg'),
+          title: 'First song', position: () => Duration.zero,
+          wakeLockCoordinator: WakeLockCoordinator(read: () async => false, write: (_) async {}),
+          onStarted: () async { starts++; },
+          onPosition: (position) async { saved.add(position); },
+          sessionFactory: () => session,
+          discoveryOverride: () => Stream.value([
+            const ChromecastDevice('id', 'Test TV', 'localhost', 8009)]),
+          nextMedia: mode == 'disabled' ? null : (active) async {
+            requests++;
+            expect(active(), isTrue);
+            if (mode == 'error') throw StateError('resolve_failed');
+            if (mode == 'end') return null;
+            return gate.future;
+          },
+        ),
+      )));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Test TV'));
+      await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 30)));
+      await tester.pumpAndSettle();
+      expect(session.loadedUrls, hasLength(1));
+      for (final reason in ['CANCELLED', 'ERROR', 'INTERRUPTED']) {
+        session.events.add(ChromecastStatus(state: 'IDLE', idleReason: reason));
+        await tester.pumpAndSettle();
+        expect(requests, 0);
+      }
+      const finished = ChromecastStatus(state: 'IDLE', idleReason: 'FINISHED', sessionId: 1);
+      session.events.add(finished);
+      session.events.add(finished);
+      await tester.pumpAndSettle();
+      expect(requests, mode == 'disabled' ? 0 : 1);
+      if (mode == 'cancel') {
+        await navigator.currentState!.maybePop();
+        await tester.pumpAndSettle();
+      }
+      if (mode == 'next' || mode == 'cancel') {
+        gate.complete(const ChromecastQueueItem(
+          media: ChromecastMedia('https://example.org/second.mp3', 'audio/mpeg'),
+          title: 'Second song',
+        ));
+        await tester.pumpAndSettle();
+      }
+      expect(session.connects, 1);
+      expect(starts, 1, reason: 'No second local handoff');
+      expect(session.loadedUrls.length, mode == 'next' ? 2 : 1);
+      if (mode == 'next') {
+        expect(find.text('Second song'), findsOneWidget);
+        expect(session.requestedPosition, Duration.zero);
+        expect(session.closes, 0);
+      }
+      expect(saved, contains(Duration.zero));
+      await tester.pumpWidget(const SizedBox.shrink());
+      await session.events.close();
     });
   }
 

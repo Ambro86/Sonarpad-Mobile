@@ -531,7 +531,6 @@ class _PodcastEpisodePlayerScreenState
     _castRouteOpen = true;
     var wasPlayingBeforeCast = false;
     Duration? positionBeforeCast;
-    final stableId = _getStableId();
     final bookmarkEnabled = await _settings.isAutoBookmarkEnabled();
     if (!mounted) { _castRouteOpen = false; return; }
     try {
@@ -540,6 +539,7 @@ class _PodcastEpisodePlayerScreenState
           builder: (_) => ChromecastScreen(media: media, title: _episode.title,
             live: _episode.isLive,
             initialSpeed: _playbackSpeed,
+            nextMedia: widget.autoNavigateNext ? _nextChromecastMedia : null,
             onStartFailed: () async {
               _casting = false;
               if (mounted) await _play(resumePosition: positionBeforeCast, shouldPlay: wasPlayingBeforeCast);
@@ -553,8 +553,9 @@ class _PodcastEpisodePlayerScreenState
               AppLogger.log('Cast: local playback paused; player retained');
             },
             onPosition: (position) async {
+              final mediaId = _getStableId();
               if (bookmarkEnabled && !_episode.isLive) {
-                await _settings.saveMediaBookmark(stableId, position.inSeconds);
+                await _settings.saveMediaBookmark(mediaId, position.inSeconds);
               }
             },
           )));
@@ -568,6 +569,38 @@ class _PodcastEpisodePlayerScreenState
       _castRouteOpen = false;
       if (mounted) setState(() {});
     }
+  }
+
+  Future<ChromecastQueueItem?> _nextChromecastMedia(bool Function() isActive) async {
+    if (!mounted || !isActive() || !_hasNavigableNext) return null;
+    final replacement = await widget.navigateEpisode!(1);
+    if (!mounted || !isActive() || replacement == null) return null;
+    final media = ChromecastMedia.fromEpisode(replacement, video: widget.isVideoSupported);
+    if (media == null) throw StateError('cast_next_media_unsupported');
+    final previousId = _getStableId();
+    // Discard the paused local position so it cannot overwrite the completed
+    // remote bookmark when playback eventually returns to this screen.
+    if (_videoController == null || _videoUsesExternalAudio) {
+      await _audio.seek(Duration.zero);
+    }
+    if (!mounted || !isActive()) return null;
+    final oldVideo = _videoController;
+    _videoController = null;
+    if (oldVideo != null) unawaited(oldVideo.dispose());
+    if (await _settings.isAutoBookmarkEnabled()) {
+      await _settings.saveMediaBookmark(previousId, 0);
+    }
+    if (!mounted || !isActive()) return null;
+    setState(() {
+      _loaded = false;
+      _videoUsesExternalAudio = false;
+      _detectedChapters = null;
+      _lastVideoBookmarkSecond = -1;
+      _refreshedEpisode = replacement;
+      _autoAdvanceHandledMediaId = null;
+      _restoreVideoOffAfterBootstrap = false;
+    });
+    return ChromecastQueueItem(media: media, title: replacement.title, live: replacement.isLive);
   }
 
   bool get _canSelectAudioTrack => _episode.audioTracks.length > 1 &&

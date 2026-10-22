@@ -17,6 +17,13 @@ class ChromecastReturn {
   final bool resume;
 }
 
+class ChromecastQueueItem {
+  const ChromecastQueueItem({required this.media, required this.title, this.live = false});
+  final ChromecastMedia media;
+  final String title;
+  final bool live;
+}
+
 class ChromecastScreen extends StatefulWidget {
   const ChromecastScreen({
     super.key,
@@ -31,10 +38,12 @@ class ChromecastScreen extends StatefulWidget {
     this.discoveryOverride,
     this.sessionFactory,
     this.wakeLockCoordinator,
+    this.nextMedia,
   });
   final Stream<List<ChromecastDevice>> Function()? discoveryOverride;
   final ChromecastSession Function()? sessionFactory;
   final WakeLockCoordinator? wakeLockCoordinator;
+  final Future<ChromecastQueueItem?> Function(bool Function() isActive)? nextMedia;
   final ChromecastMedia media;
   final String title;
   final Duration Function() position;
@@ -50,6 +59,9 @@ class ChromecastScreen extends StatefulWidget {
 
 class _ChromecastScreenState extends State<ChromecastScreen>
     with WidgetsBindingObserver {
+  late String _title;
+  late bool _live;
+  bool _completionHandled = false;
   final _wakeLockOwner = Object();
   bool _keepAwake = false;
   WakeLockCoordinator get _wakeLock =>
@@ -102,6 +114,8 @@ class _ChromecastScreenState extends State<ChromecastScreen>
   @override
   void initState() {
     super.initState();
+    _title = widget.title;
+    _live = widget.live;
     WidgetsBinding.instance.addObserver(this);
     unawaited(_search());
   }
@@ -256,9 +270,9 @@ class _ChromecastScreenState extends State<ChromecastScreen>
       await session.load(
         url: widget.media.url,
         mime: widget.media.mime,
-        title: widget.title,
+        title: _title,
         position: handoffPosition,
-        live: widget.live,
+        live: _live,
       );
       if (!mounted || _leaving) return;
       _started = true;
@@ -266,9 +280,12 @@ class _ChromecastScreenState extends State<ChromecastScreen>
       if (!mounted || _leaving) return;
       _statusSubscription = session.updates.listen((status) {
         if (!mounted || _leaving) return;
+        if (status.completed && !_live && !_completionHandled && !_busy) {
+          unawaited(_advanceAfterCompletion());
+        }
         if (status.state != 'IDLE' && !status.disconnected) {
           _lastPosition = status.position;
-          if (!widget.live &&
+          if (!_live &&
               (status.position.inSeconds - _savedSecond).abs() >= 5) {
             _savedSecond = status.position.inSeconds;
             unawaited(_savePosition(status.position));
@@ -284,7 +301,7 @@ class _ChromecastScreenState extends State<ChromecastScreen>
         // A position warning does not mean the remote playback failed.
         _failed = false;
       });
-      if (!widget.live &&
+      if (!_live &&
           session.status.supportsPlaybackRate &&
           widget.initialSpeed != 1) {
         _adjustSpeed(widget.initialSpeed.clamp(0.5, 2));
@@ -311,6 +328,45 @@ class _ChromecastScreenState extends State<ChromecastScreen>
       }
     } finally {
       if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  Future<void> _advanceAfterCompletion() async {
+    _completionHandled = true;
+    _lastPosition = Duration.zero;
+    final session = _session;
+    if (session == null) return;
+    setState(() => _busy = true);
+    bool active() => mounted && !_leaving && identical(_session, session);
+    try {
+      await _savePosition(Duration.zero);
+      if (!active()) return;
+      final next = await widget.nextMedia?.call(active);
+      if (!active() || next == null) return;
+      _seekDebounce?.cancel();
+      _seekTarget = null;
+      _savedSecond = -1;
+      setState(() {
+        _title = next.title;
+        _live = next.live;
+        _lastPosition = Duration.zero;
+        _failed = false;
+      });
+      // Reuse the connected receiver; never hand playback back to the phone.
+      await session.load(url: next.media.url, mime: next.media.mime,
+        title: next.title, position: Duration.zero, live: next.live);
+      if (!active()) return;
+      _completionHandled = false;
+      _lastPosition = session.status.position;
+      if (!_live && session.status.supportsPlaybackRate && widget.initialSpeed != 1) {
+        _adjustSpeed(widget.initialSpeed.clamp(0.5, 2));
+      }
+      AppLogger.log('Cast: autoplay loaded next item on the same receiver');
+    } catch (error) {
+      AppLogger.log('Cast: autoplay failed: ${error.runtimeType}');
+      if (active()) setState(() => _failed = true);
+    } finally {
+      if (active()) setState(() => _busy = false);
     }
   }
 
@@ -433,7 +489,7 @@ class _ChromecastScreenState extends State<ChromecastScreen>
         );
       }
     }
-    if (_started && !widget.live) await _savePosition(position);
+    if (_started && !_live) await _savePosition(position);
     if (mounted) {
       Navigator.pop(
         context,
@@ -486,7 +542,7 @@ class _ChromecastScreenState extends State<ChromecastScreen>
           rows: [
             AccessibleListRow(
               id: 'title',
-              title: widget.title,
+              title: _title,
               kind: 'header',
               accessibilityButtonTrait: false,
             ),
@@ -538,7 +594,7 @@ class _ChromecastScreenState extends State<ChromecastScreen>
                 title: status?.playing == true ? l10n.pause : l10n.play,
                 enabled: canControl,
               ),
-              if (!widget.live && duration > 0)
+              if (!_live && duration > 0)
                 AccessibleListRow(
                   id: 'cast_position',
                   title: l10n.playbackPosition,
@@ -571,7 +627,7 @@ class _ChromecastScreenState extends State<ChromecastScreen>
                     ),
                   ),
                 ),
-              if (!widget.live)
+              if (!_live)
                 AccessibleListRow(
                   id: 'cast_speed',
                   title: l10n.mediaPlaybackSpeed,
@@ -682,7 +738,7 @@ class _ChromecastScreenState extends State<ChromecastScreen>
             : ListView(
                 padding: const EdgeInsets.all(16),
                 children: [
-                  Semantics(header: true, child: Text(widget.title)),
+                  Semantics(header: true, child: Text(_title)),
                   if (_failed)
                     Semantics(liveRegion: true, child: Text(l10n.castFailure)),
                   if (_speedFailed) Text(l10n.mediaPlaybackSpeedUnavailable),
@@ -716,7 +772,7 @@ class _ChromecastScreenState extends State<ChromecastScreen>
                         status?.playing == true ? l10n.pause : l10n.play,
                       ),
                     ),
-                    if (!widget.live &&
+                    if (!_live &&
                         status != null &&
                         status.duration > Duration.zero) ...[
                       Text(l10n.playbackPosition),
@@ -745,7 +801,7 @@ class _ChromecastScreenState extends State<ChromecastScreen>
                         ),
                       ),
                     ],
-                    if (!widget.live) ...[
+                    if (!_live) ...[
                       Text(l10n.mediaPlaybackSpeed),
                       _speedSlider(
                         l10n,

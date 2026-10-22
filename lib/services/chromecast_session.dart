@@ -19,6 +19,7 @@ class ChromecastDevice {
 class ChromecastStatus {
   const ChromecastStatus({
     this.state = 'IDLE',
+    this.idleReason,
     this.position = Duration.zero,
     this.duration = Duration.zero,
     this.volume = 1,
@@ -28,6 +29,8 @@ class ChromecastStatus {
     this.disconnected = false,
   });
   final String state;
+  final String? idleReason;
+  bool get completed => !disconnected && state == 'IDLE' && idleReason == 'FINISHED';
   final Duration position, duration;
   final double volume, playbackRate;
   final int supportedMediaCommands;
@@ -133,6 +136,7 @@ class ChromecastSession {
           _receiverVolume = (volume!['level'] as num).toDouble();
           status = ChromecastStatus(
             state: status.state,
+            idleReason: status.idleReason,
             position: status.position,
             duration: status.duration,
             sessionId: status.sessionId,
@@ -165,6 +169,7 @@ class ChromecastSession {
             _mediaConfirmed = true;
             status = ChromecastStatus(
               state: value['playerState'] as String? ?? 'IDLE',
+              idleReason: value['idleReason'] as String?,
               position: Duration(
                 milliseconds: ((value['currentTime'] as num? ?? 0) * 1000)
                     .round(),

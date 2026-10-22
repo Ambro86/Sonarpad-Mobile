@@ -17,6 +17,7 @@ class ReceiverSocket extends Stream<Uint8List> implements Socket {
   Duration seekDelay = Duration.zero;
   bool ignoreLoadPosition = true, ignoreSeek = false, silent = false;
   String state = 'PLAYING';
+  String? idleReason;
   String content = '';
   bool destroyed = false;
   @override
@@ -71,6 +72,7 @@ class ReceiverSocket extends Stream<Uint8List> implements Socket {
             {
               'mediaSessionId': 7,
               'playerState': state,
+              'idleReason': idleReason,
               'currentTime': position,
               'media': {'contentId': content, 'duration': 216},
             },
@@ -155,6 +157,24 @@ void main() {
     expect(session.status.playing, isTrue);
     expect(session.status.position, const Duration(seconds: 35));
     expect(session.positionRestoreFailed, isFalse);
+  });
+  test('Only receiver FINISHED status marks natural completion', () async {
+    final receiver = ReceiverSocket();
+    final session = ChromecastSession(socketFactory: (_) async => receiver);
+    addTearDown(session.close);
+    await session.connect(device);
+    await session.load(url: 'https://example.org/song.mp3', mime: 'audio/mpeg',
+      title: 'Song', position: Duration.zero);
+    for (final reason in ['CANCELLED', 'ERROR', 'INTERRUPTED', 'FINISHED']) {
+      receiver.state = 'IDLE';
+      receiver.idleReason = reason;
+      if (reason == 'ERROR') {
+        await expectLater(session.refresh(), throwsStateError);
+      } else {
+        await session.refresh();
+      }
+      expect(session.status.completed, reason == 'FINISHED');
+    }
   });
   test('Closing cancels an unanswered request immediately', () async {
     final receiver = ReceiverSocket();
