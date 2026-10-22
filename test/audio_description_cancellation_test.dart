@@ -93,6 +93,17 @@ void main() {
         find.text(l10n.audioDescriptionCancelConfirmation),
         findsOneWidget,
       );
+      expect(find.text(l10n.cancel), findsNothing);
+      final semantics = tester.ensureSemantics();
+      expect(tester.getSemantics(find.text(l10n.audioDescriptionCancelConfirmation))
+          .flagsCollection.isHeader, isTrue);
+      expect(find.bySemanticsLabel(MaterialLocalizations.of(
+          tester.element(find.byType(AlertDialog))).modalBarrierDismissLabel), findsNothing);
+      semantics.dispose();
+      // Tapping outside the dialog must not dismiss the confirmation.
+      await tester.tapAt(const Offset(1, 1));
+      await tester.pumpAndSettle();
+      expect(find.byType(AlertDialog), findsOneWidget);
       await tester.tap(find.text(l10n.no));
       await tester.pumpAndSettle();
       expect(decision, isFalse);

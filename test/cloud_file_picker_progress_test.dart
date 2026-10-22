@@ -160,6 +160,21 @@ void main() {
     expect(selected, isNull);
   });
 
+  testWidgets('waiting for first bytes stays indeterminate then reports real percentages', (tester) async {
+    final session = _Session();
+    await session.start(tester);
+    await session.emit(tester, 'copying', copied: 0, total: 100);
+    await tester.pump(const Duration(milliseconds: 300));
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(tester.widget<LinearProgressIndicator>(find.byType(LinearProgressIndicator)).value, isNull);
+    for (final bytes in [25, 50, 75, 100]) {
+      await session.emit(tester, 'copying', copied: bytes, total: 100);
+      expect(tester.widget<LinearProgressIndicator>(find.byType(LinearProgressIndicator)).value, bytes / 100);
+      expect(find.bySemanticsLabel(RegExp('Copia del file in Sonarpad.*$bytes%')), findsOneWidget);
+    }
+    await session.finish(tester);
+  });
+
   testWidgets('finishing a copy closes only its own modal route', (tester) async {
     final session = _Session();
     await session.start(tester);

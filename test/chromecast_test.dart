@@ -190,7 +190,7 @@ void main() {
     ) async {
       debugDefaultTargetPlatformOverride = platform;
       configureAccessibleRendererRuntime(useFlutterOnIos: true);
-      final session = FakeSession();
+      final session = FakeSession()..positionRestoreFailed = true;
       var started = 0;
       final bookmarks = <Duration>[];
       ChromecastReturn? result;
@@ -247,6 +247,12 @@ void main() {
       );
       await tester.pumpAndSettle();
       expect(started, 1);
+      final rows = tester.widget<UniversalAccessibleList>(
+        find.byType(UniversalAccessibleList),
+      ).sections.expand((section) => section.rows).toList();
+      expect(rows.any((row) => row.id == 'error'), isFalse);
+      final deviceIndex = rows.indexWhere((row) => row.id == 'device_name');
+      expect(rows[deviceIndex - 1].id, 'resume_here');
       expect(session.handoff, ['pause_local', 'load_playing']);
       final speed = find.byKey(const ValueKey('cast_speed'));
       final speedElement = tester.element(speed);

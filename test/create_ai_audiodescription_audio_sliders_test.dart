@@ -404,7 +404,7 @@ void main() {
           var revision = _row(tester, id).textRevision;
           for (final value in ['A' * 44, 'B' * 39, r'TEST!#@|+%&=?/\']) {
             // Plain clipboard content, including the final literal backslash.
-            clipboard = '  $value' + String.fromCharCodes([13, 10]);
+            clipboard = '  $value\r\n';
             await tester.runAsync(() async { await _form(tester).onEvent!(
                 const AccessibleListEvent(type: 'activate', id: 'paste_ai_credential')); });
             await tester.pump();
@@ -423,6 +423,27 @@ void main() {
     },
     variant: TargetPlatformVariant({TargetPlatform.android, TargetPlatform.iOS}),
   );
+
+  testWidgets('video keeps effective audio bitrate with a format-neutral label', (tester) async {
+    await _exerciseScreen(tester, () async {
+      final before = _row(tester, 'mp3_bitrate');
+      final l10n = AppLocalizations.of(tester.element(find.byKey(_formKey)));
+      expect(before.title, l10n.audioDescriptionMp3Bitrate);
+      await tester.runAsync(() async {
+        await _form(tester).onEvent!(const AccessibleListEvent(
+            type: 'toggle', id: 'create_video_output', value: true));
+      });
+      await tester.pump();
+      expect(_row(tester, 'mp3_bitrate').title, l10n.convertMediaBitrate);
+      expect(_row(tester, 'mp3_bitrate').sliderValue, before.sliderValue);
+      await tester.runAsync(() async {
+        await _form(tester).onEvent!(const AccessibleListEvent(
+            type: 'toggle', id: 'create_video_output', value: false));
+      });
+      await tester.pump();
+      expect(_row(tester, 'mp3_bitrate').title, l10n.audioDescriptionMp3Bitrate);
+    });
+  }, variant: TargetPlatformVariant({TargetPlatform.android, TargetPlatform.iOS}));
 
   testWidgets(
     'a fresh form without a selected file has no resumable preview action',

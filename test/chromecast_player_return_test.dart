@@ -1,3 +1,8 @@
+import 'package:sonarpad_mobile_starter/l10n/app_localizations.dart';
+import 'package:sonarpad_mobile_starter/models/radio_station.dart';
+import 'package:sonarpad_mobile_starter/screens/radio_player_screen.dart';
+import 'package:sonarpad_mobile_starter/services/app_settings_service.dart';
+import 'package:sonarpad_mobile_starter/services/tv_service.dart';
 import 'package:flutter/foundation.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
@@ -53,6 +58,40 @@ void main() {
     JustAudioPlatform.instance = originalAudio;
     configureAccessibleRendererRuntime(useFlutterOnIos: false);
   });
+  for (final enabled in [true, false]) {
+    testWidgets('TV Cast respects the visibility setting: $enabled', (tester) async {
+      await AppSettingsService().setChromecastButtonEnabled(enabled);
+      await tester.runAsync(() async {
+        await tester.pumpWidget(MaterialApp(
+          locale: const Locale('en'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: RadioPlayerScreen(
+            station: const RadioStation(name: 'TV test',
+              streamUrl: 'https://example.org/live.m3u8', languageCode: 'en'),
+            tvChannel: TvChannel(name: 'TV test',
+              url: 'https://example.org/live.m3u8', category: 'TV'),
+          ),
+        ));
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+      });
+      await tester.pumpAndSettle();
+      final form = tester.widget<UniversalAccessibleList>(
+        find.byType(UniversalAccessibleList).first);
+      final rows = form.sections.expand((section) => section.rows);
+      expect(rows.any((row) => row.id == 'chromecast'), enabled);
+      if (enabled) {
+        unawaited(Future<void>.value(form.onEvent!(
+          const AccessibleListEvent(type: 'activate', id: 'chromecast'))));
+        await tester.pumpAndSettle();
+        final cast = tester.widget<ChromecastScreen>(find.byType(ChromecastScreen));
+        expect(cast.live, isTrue);
+        expect(cast.media.url, 'https://example.org/live.m3u8');
+        expect(cast.media.mime, 'application/x-mpegURL');
+      }
+      await disposeTestPlayer(tester);
+    });
+  }
   testWidgets('Cast return reuses local audio and restores remote position', (
     tester,
   ) async {

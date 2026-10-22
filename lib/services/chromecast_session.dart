@@ -322,7 +322,15 @@ class ChromecastSession {
           try {
             await (() async {
               await seek(position);
-              await refresh();
+              final seekDeadline = DateTime.now().add(
+                const Duration(milliseconds: 2500),
+              );
+              do {
+                if (_closed) throw StateError('cast_cancelled');
+                await refresh();
+                if ((status.position - position).inSeconds.abs() <= 5) break;
+                await Future<void>.delayed(const Duration(milliseconds: 200));
+              } while (!_closed && DateTime.now().isBefore(seekDeadline));
             })().timeout(const Duration(seconds: 3));
             positionRestoreFailed =
                 (status.position - position).inSeconds.abs() > 5;

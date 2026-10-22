@@ -106,6 +106,7 @@ class SonarpadCloudFilePicker(private val activity: AudioServiceActivity) {
                 if (!dir.exists() && !dir.mkdirs()) throw IllegalStateException("Cannot create import cache")
                 for (uri in uris) {
                     if (cancelled.get()) throw InterruptedException("Copy cancelled")
+                    publish("preparing", 0, -1)
                     val (rawName, expectedSize) = fileDetails(uri)
                     val name = rawName.replace(Regex("[\\\\/:*?\"<>|]"), "_")
                     val ext = name.substringAfterLast('.', "").lowercase()
@@ -120,7 +121,8 @@ class SonarpadCloudFilePicker(private val activity: AudioServiceActivity) {
                     })
                     var copied = 0L
                     var lastPercent = -1
-                    publish("copying", 0, expectedSize)
+                    // Cloud providers can block opening/reading before exposing any bytes.
+                    // Remain indeterminate until the first successful read.
                     activity.contentResolver.openInputStream(uri)?.use { input ->
                         activeInput = input
                         target.outputStream().buffered(65536).use { output ->

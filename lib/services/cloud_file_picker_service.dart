@@ -91,7 +91,7 @@ class CloudFilePicker {
                   final percent = fraction == null ? null : (fraction * 100).floor();
                   final detail = state.stage == 'cancelling'
                       ? labels.cancelling
-                      : state.stage == 'preparing'
+                      : (state.stage == 'preparing' || (state.stage == 'copying' && state.current == 0))
                       ? labels.preparing
                       : '${labels.copying}. ${percent == null ? labels.unknownSize : '$percent%'}';
                   return Column(
@@ -298,7 +298,8 @@ class _CloudCopyProgress {
   final String stage;
   final int current;
   final int total;
-  double? get fraction => total <= 0 ? null : (current / total).clamp(0.0, 1.0);
+  double? get fraction => total <= 0 || (current == 0 && stage != 'done')
+      ? null : (current / total).clamp(0.0, 1.0);
 }
 
 class _CloudPickerLabels {

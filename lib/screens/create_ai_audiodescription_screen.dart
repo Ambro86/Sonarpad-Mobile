@@ -1753,7 +1753,9 @@ class _CreateAiAudiodescriptionScreenState
                     ),
                     AccessibleListRow(
                       id: 'mp3_bitrate',
-                      title: l10n.audioDescriptionMp3Bitrate,
+                      title: _createVideoOutput
+                          ? l10n.convertMediaBitrate
+                          : l10n.audioDescriptionMp3Bitrate,
                       kind: 'slider',
                       value: bitrateLabels[bitrateIndex],
                       valueLabel: bitrateLabels[bitrateIndex],
@@ -2222,9 +2224,15 @@ Future<bool> showAudioDescriptionCancelConfirmation(BuildContext context) async 
   final l10n = AppLocalizations.of(context);
   final confirmed = await showDialog<bool>(
     context: context,
+    barrierDismissible: false,
     builder: (dialogContext) => AlertDialog(
-      title: Text(l10n.cancel),
-      content: Text(l10n.audioDescriptionCancelConfirmation),
+      title: Focus(
+        autofocus: true,
+        child: Semantics(
+          header: true,
+          child: Text(l10n.audioDescriptionCancelConfirmation),
+        ),
+      ),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(dialogContext, false),

@@ -14,6 +14,7 @@ class ReceiverSocket extends Stream<Uint8List> implements Socket {
   final incoming = StreamController<Uint8List>();
   final requests = <Map<String, dynamic>>[];
   double position = 0;
+  Duration seekDelay = Duration.zero;
   bool ignoreLoadPosition = true, ignoreSeek = false, silent = false;
   String state = 'PLAYING';
   String content = '';
@@ -57,7 +58,12 @@ class ReceiverSocket extends Stream<Uint8List> implements Socket {
           state = request['autoplay'] == true ? 'PLAYING' : 'PAUSED';
         }
         if (request['type'] == 'SEEK' && !ignoreSeek) {
-          position = (request['currentTime'] as num).toDouble();
+          final target = (request['currentTime'] as num).toDouble();
+          if (seekDelay == Duration.zero) {
+            position = target;
+          } else {
+            Timer(seekDelay, () => position = target);
+          }
         }
         reply = {
           'type': 'MEDIA_STATUS',
@@ -134,6 +140,22 @@ void main() {
       expect(session.positionRestoreFailed, isTrue);
     },
   );
+  test('SEEK acknowledgement can precede the actual receiver position', () async {
+    final receiver = ReceiverSocket()
+      ..seekDelay = const Duration(milliseconds: 550);
+    final session = ChromecastSession(socketFactory: (_) async => receiver);
+    addTearDown(session.close);
+    await session.connect(device);
+    await session.load(
+      url: 'https://example.org/song.mp3',
+      mime: 'audio/mpeg',
+      title: 'Song',
+      position: const Duration(seconds: 35),
+    );
+    expect(session.status.playing, isTrue);
+    expect(session.status.position, const Duration(seconds: 35));
+    expect(session.positionRestoreFailed, isFalse);
+  });
   test('Closing cancels an unanswered request immediately', () async {
     final receiver = ReceiverSocket();
     final session = ChromecastSession(socketFactory: (_) async => receiver);

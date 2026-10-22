@@ -53,9 +53,15 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
 
   bool _showCast = true;
   bool _castRouteOpen = false;
-  ChromecastMedia? get _castMedia => widget.tvChannel != null || widget.isVideoSupported
-      ? null : ChromecastMedia.fromEpisode(PodcastEpisode(title: widget.station.name,
-          description: '', audioUrl: widget.station.streamUrl, isLive: true), video: false);
+  ChromecastMedia? get _castMedia => ChromecastMedia.fromEpisode(
+    PodcastEpisode(
+      title: widget.station.name,
+      description: '',
+      audioUrl: _mediaKitPlaybackUrl ?? widget.station.streamUrl,
+      isLive: true,
+    ),
+    video: widget.tvChannel != null || widget.isVideoSupported,
+  );
   bool get _showCastButton => _showCast && _castMedia != null;
   Future<void> _openChromecast() async {
     final media = _castMedia;
@@ -68,7 +74,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
           builder: (_) => ChromecastScreen(media: media, title: widget.station.name,
             live: true, position: () => Duration.zero,
             onStarted: () async {
-              wasPlayingBeforeCast = _audio.isPlaying;
+              wasPlayingBeforeCast = _isVideoPlaying || _audio.isPlaying;
               await _stop();
             },
             onStartFailed: () async { if (mounted && wasPlayingBeforeCast) await _play(); },

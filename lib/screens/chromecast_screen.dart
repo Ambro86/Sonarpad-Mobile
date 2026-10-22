@@ -245,7 +245,8 @@ class _ChromecastScreenState extends State<ChromecastScreen> {
       setState(() {
         _device = device;
         _busy = false;
-        _failed = session.positionRestoreFailed;
+        // A position warning does not mean the remote playback failed.
+        _failed = false;
       });
       if (!widget.live &&
           session.status.supportsPlaybackRate &&
@@ -483,6 +484,11 @@ class _ChromecastScreenState extends State<ChromecastScreen> {
             ],
             if (remote) ...[
               AccessibleListRow(
+                id: 'resume_here',
+                title: l10n.castResumeHere,
+                enabled: !_leaving,
+              ),
+              AccessibleListRow(
                 id: 'device_name',
                 title: _device!.name,
                 kind: 'text',
@@ -574,11 +580,6 @@ class _ChromecastScreenState extends State<ChromecastScreen> {
                 ),
               ),
               AccessibleListRow(
-                id: 'resume_here',
-                title: l10n.castResumeHere,
-                enabled: !_leaving,
-              ),
-              AccessibleListRow(
                 id: 'stop_cast',
                 title: l10n.castStop,
                 enabled: !_leaving,
@@ -658,6 +659,10 @@ class _ChromecastScreenState extends State<ChromecastScreen> {
                     OutlinedButton(onPressed: _search, child: Text(l10n.retry)),
                   ],
                   if (remote) ...[
+                    OutlinedButton(
+                      onPressed: _leaving ? null : () => _leave(true),
+                      child: Text(l10n.castResumeHere),
+                    ),
                     Text(_device!.name),
                     FilledButton(
                       onPressed: canControl
@@ -723,10 +728,6 @@ class _ChromecastScreenState extends State<ChromecastScreen> {
                             ? (v) => _adjust(v, volume: true)
                             : null,
                       ),
-                    ),
-                    OutlinedButton(
-                      onPressed: _leaving ? null : () => _leave(true),
-                      child: Text(l10n.castResumeHere),
                     ),
                     OutlinedButton(
                       onPressed: _leaving ? null : () => _leave(false),
