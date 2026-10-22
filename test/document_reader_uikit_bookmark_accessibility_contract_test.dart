@@ -30,7 +30,7 @@ void main() {
 
     final native = File(
       'ios/Runner/SonarpadNativeAccessibleView.swift',
-    ).readAsStringSync();
+    ).readAsStringSync().replaceAll('\r\n', '\n');
     expect(
       native,
       contains(
