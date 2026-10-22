@@ -78,6 +78,7 @@ class _CreateAiAudiodescriptionScreenState
   String? _technicalError;
 
   String _provider = 'gemini';
+  int _credentialTextRevision = 0;
   String _apiKey = '';
   String _sonarpadCode = '';
   double? _sonarpadBalanceEur;
@@ -477,25 +478,29 @@ class _CreateAiAudiodescriptionScreenState
 
   Future<void> _pasteAiCredential() async {
     if (_running) return;
+    final provider = _provider;
     final data = await Clipboard.getData(Clipboard.kTextPlain);
-    final text = data?.text?.trim();
-    if (text == null || text.isEmpty || !mounted) return;
+    final raw = data?.text;
+    final text = raw?.trim();
+    if (text == null || text.isEmpty || !mounted || _running || _provider != provider) return;
 
-    if (_provider == 'sonarpad') {
-      await AppLogger.log(
-        'SONARPAD_AI_DIAG UI paste code clipboardChars=${text.runes.length} '
-        'trimmedChars=${text.trim().runes.length} trimChanged=${text != text.trim()} '
-        'codeUnits=${text.codeUnits.length}',
-      );
-      setState(() {
+    setState(() {
+      _credentialTextRevision++;
+      if (provider == 'sonarpad') {
         _sonarpadCode = text;
         _sonarpadBalanceEur = null;
-      });
-      return;
+      } else {
+        _apiKey = text;
+      }
+    });
+    unawaited(AppLogger.log(
+      'AI credential paste provider=$provider clipboardChars=${raw!.runes.length} '
+      'storedChars=${text.runes.length} trimChanged=${raw != text} '
+      'textRevision=$_credentialTextRevision',
+    ));
+    if (provider == 'gemini') {
+      await AiAudioDescriptionPreferences.saveGeminiApiKey(text);
     }
-
-    setState(() => _apiKey = text);
-    await AiAudioDescriptionPreferences.saveGeminiApiKey(text);
   }
 
   Future<void> _refreshModels() async {
@@ -1595,6 +1600,7 @@ class _CreateAiAudiodescriptionScreenState
                         title: l10n.audioDescriptionGeminiApiKey,
                         kind: 'textField',
                         value: _apiKey,
+                        textRevision: _credentialTextRevision,
                         secure: true,
                         enabled: !_running,
                       ),
@@ -1642,6 +1648,7 @@ class _CreateAiAudiodescriptionScreenState
                         title: l10n.audioDescriptionSonarpadCode,
                         kind: 'textField',
                         value: _sonarpadCode,
+                        textRevision: _credentialTextRevision,
                         secure: true,
                         enabled: !_running,
                       ),

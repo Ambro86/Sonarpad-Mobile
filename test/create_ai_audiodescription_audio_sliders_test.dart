@@ -387,6 +387,44 @@ void main() {
   });
 
   testWidgets(
+    'credential paste replaces 44 with 39 characters and preserves special characters',
+    (tester) async {
+      var clipboard = '';
+      final messenger = TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+      messenger.setMockMethodCallHandler(SystemChannels.platform, (call) async {
+        if (call.method == 'Clipboard.getData') return {'text': clipboard};
+        return null;
+      });
+      addTearDown(() => messenger.setMockMethodCallHandler(SystemChannels.platform, null));
+      await http.runWithClient(() async {
+        await _mountScreen(tester);
+        for (final provider in [0, 1]) {
+          await _sliderEvent(tester, 'provider', provider);
+          final id = provider == 0 ? 'api_key' : 'sonarpad_code';
+          var revision = _row(tester, id).textRevision;
+          for (final value in ['A' * 44, 'B' * 39, r'TEST!#@|+%&=?/\']) {
+            // Plain clipboard content, including the final literal backslash.
+            clipboard = '  $value' + String.fromCharCodes([13, 10]);
+            await tester.runAsync(() async { await _form(tester).onEvent!(
+                const AccessibleListEvent(type: 'activate', id: 'paste_ai_credential')); });
+            await tester.pump();
+            final row = _row(tester, id);
+            expect(row.value, value);
+            expect(row.textRevision, ++revision);
+            expect(row.toMap()['textRevision'], revision);
+            final field = tester.widget<TextField>(find.descendant(
+                of: _control(id), matching: find.byType(TextField)));
+            expect(field.controller!.text, value);
+            expect(field.controller!.selection.baseOffset, value.length);
+          }
+        }
+      }, () => MockClient((_) async => http.Response('{}', 503)));
+      await _unmountScreen(tester);
+    },
+    variant: TargetPlatformVariant({TargetPlatform.android, TargetPlatform.iOS}),
+  );
+
+  testWidgets(
     'a fresh form without a selected file has no resumable preview action',
     (tester) async {
       await _exerciseScreen(tester, () async {

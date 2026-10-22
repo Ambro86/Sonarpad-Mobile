@@ -428,6 +428,7 @@ class AccessibleListRow {
     this.sliderDecreasedValueLabel,
     this.nativeSliderAccessibilityElement = false,
     this.secure = false,
+    this.textRevision = 0,
     this.placeholder,
     this.options = const [],
     this.actions = const [],
@@ -475,6 +476,8 @@ class AccessibleListRow {
   /// iOS slider. Flutter/Android ignore this presentation flag.
   final bool nativeSliderAccessibilityElement;
   final bool secure;
+  /// Increment for explicit replacements (paste), even while the field is editing.
+  final int textRevision;
   final String? placeholder;
   /// Picker choices, or localized stops for a discrete slider. For sliders,
   /// each numeric value must match its corresponding slider value so native
@@ -550,6 +553,7 @@ class AccessibleListRow {
           'sliderDecreasedValueLabel': sliderDecreasedValueLabel,
         'nativeSliderAccessibilityElement': nativeSliderAccessibilityElement,
         'secure': secure,
+        'textRevision': textRevision,
         if (placeholder != null) 'placeholder': placeholder,
         'submitOnReturn': onSubmitted != null,
         if (textInputAction != null) 'textInputAction': textInputAction,

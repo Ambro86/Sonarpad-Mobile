@@ -38,6 +38,7 @@ private struct SonarpadNativeRow {
   var sliderIncreasedValueLabel: String?
   var sliderDecreasedValueLabel: String?
   var nativeSliderAccessibilityElement: Bool
+  var textRevision: Int
   var secure: Bool
   var placeholder: String?
   var submitOnReturn: Bool
@@ -82,6 +83,7 @@ private struct SonarpadNativeRow {
     sliderIncreasedValueLabel = map["sliderIncreasedValueLabel"] as? String
     sliderDecreasedValueLabel = map["sliderDecreasedValueLabel"] as? String
     nativeSliderAccessibilityElement = map["nativeSliderAccessibilityElement"] as? Bool ?? false
+    textRevision = (map["textRevision"] as? NSNumber)?.intValue ?? 0
     secure = map["secure"] as? Bool ?? false
     placeholder = map["placeholder"] as? String
     submitOnReturn = map["submitOnReturn"] as? Bool ?? false
@@ -147,6 +149,7 @@ private func sonarpadRowsEqual(_ lhs: SonarpadNativeRow, _ rhs: SonarpadNativeRo
         lhs.sliderDecreasedValueLabel == rhs.sliderDecreasedValueLabel,
         lhs.nativeSliderAccessibilityElement == rhs.nativeSliderAccessibilityElement,
         lhs.secure == rhs.secure,
+        lhs.textRevision == rhs.textRevision,
         lhs.placeholder == rhs.placeholder,
         lhs.submitOnReturn == rhs.submitOnReturn,
         lhs.textInputAction == rhs.textInputAction,
@@ -420,6 +423,7 @@ private final class SonarpadTextFieldCell: UITableViewCell, UITextFieldDelegate 
   let field = UITextField(frame: .zero)
   private let clearButton = UIButton(type: .system)
   var rowId = ""
+  var appliedTextRevision = 0
   var submitOnReturn = false
   var stabilizeFocusOnBegin = false
   var onChanged: ((String, String) -> Void)?
@@ -1309,10 +1313,11 @@ final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITableViewDa
         ?? SonarpadTextFieldCell(style: .default, reuseIdentifier: identifier)
       cell.rowId = row.id
       cell.field.text = row.value ?? ""
+      cell.appliedTextRevision = row.textRevision
       cell.field.placeholder = row.placeholder
       cell.field.accessibilityLabel = row.effectiveAccessibilityLabel
       cell.field.accessibilityHint = row.hint
-      cell.field.isSecureTextEntry = row.secure
+      if cell.field.isSecureTextEntry != row.secure { cell.field.isSecureTextEntry = row.secure }
       cell.field.textContentType = row.id == "tv_secret_code" ? .oneTimeCode : nil
       cell.field.isEnabled = row.enabled
       cell.configureClearButton(label: row.clearAsSearch ? clearSearchLabel : clearTextLabel)
@@ -2015,13 +2020,19 @@ final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITableViewDa
       if row.kind == "textField" {
         guard let cell = tableView.cellForRow(at: indexPath) as? SonarpadTextFieldCell else { continue }
         cell.rowId = row.id
-        if cell.field.text != (row.value ?? "") && !cell.field.isFirstResponder {
+        let explicitReplacement = cell.appliedTextRevision != row.textRevision
+        if explicitReplacement || (cell.field.text != (row.value ?? "") && !cell.field.isFirstResponder) {
           cell.field.text = row.value ?? ""
+          if explicitReplacement && cell.field.isFirstResponder {
+            let end = cell.field.endOfDocument
+            cell.field.selectedTextRange = cell.field.textRange(from: end, to: end)
+          }
         }
+        cell.appliedTextRevision = row.textRevision
         cell.field.placeholder = row.placeholder
         cell.field.accessibilityLabel = row.effectiveAccessibilityLabel
         cell.field.accessibilityHint = row.hint
-        cell.field.isSecureTextEntry = row.secure
+        if cell.field.isSecureTextEntry != row.secure { cell.field.isSecureTextEntry = row.secure }
         cell.field.textContentType = row.id == "tv_secret_code" ? .oneTimeCode : nil
         cell.field.isEnabled = row.enabled
         cell.configureClearButton(label: row.clearAsSearch ? clearSearchLabel : clearTextLabel)
