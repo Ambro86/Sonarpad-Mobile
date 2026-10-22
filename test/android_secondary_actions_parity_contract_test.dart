@@ -40,7 +40,7 @@ void main() {
 
     expect(documents, contains("AccessibleCustomAction(id: 'rename', label: l10n.rename)"));
     expect(documents, contains("id: 'remove',"));
-    expect(documents, contains("AccessibleCustomAction(id: 'export', label: l10n.exportDocument)"));
+    expect(documents, contains("AccessibleCustomAction(id: 'export', label: doc.isFolder ? l10n.exportFolderZip : l10n.exportDocument)"));
 
     expect(tv, contains("id: 'favorite',"));
     expect(tv, contains('label: AppLocalizations.of(context).tvPlayLive'));

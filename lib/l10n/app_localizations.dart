@@ -2669,6 +2669,9 @@ abstract class AppLocalizations {
   /// **'Esporta documento'**
   String get exportDocument;
 
+  /// Export a Documents folder and its contents as a ZIP archive.
+  String get exportFolderZip;
+
   /// Localized text for exportFormatPrompt.
   ///
   /// In it, this message translates to:
@@ -3866,6 +3869,9 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Ferma registrazione'**
   String get stopRecording;
+
+  String get pauseRecording;
+  String get resumeRecording;
 
   /// No description provided for @recordings.
   ///

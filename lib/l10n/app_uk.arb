@@ -1803,6 +1803,7 @@
     "description": "Localized text for selectFolder."
   },
   "exportDocument": "Експортувати документ",
+  "exportFolderZip": "Експортувати папку як ZIP",
   "@exportDocument": {
     "description": "Localized text for exportDocument."
   },
@@ -2662,6 +2663,8 @@
     "description": "Localized text for radioPlay."
   },
   "startRecording": "Почати запис",
+  "pauseRecording": "Призупинити запис",
+  "resumeRecording": "Продовжити запис",
   "stopRecording": "Зупинити запис",
   "recordings": "Записи",
   "recordingInProgressStatus": "Триває запис",

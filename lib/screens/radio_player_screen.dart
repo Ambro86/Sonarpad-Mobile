@@ -2085,6 +2085,23 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
             : l10n.radioFavoriteAdded(widget.station.name));
   }
 
+  Future<void> _toggleRecordingPause() async {
+    try {
+      await _recordingService.toggleRecordingPause();
+    } catch (error) {
+      await AppLogger.log('Recording pause/resume failed: $error');
+      if (!mounted) return;
+      final l10n = AppLocalizations.of(context);
+      showStatusMessage(context, l10n.recordingError(l10n.technicalErrorGeneric));
+    }
+  }
+
+  Widget _recordingPauseButton(AppLocalizations l10n) => FilledButton.icon(
+    onPressed: _recordingService.isRecordingTransitioning ? null : _toggleRecordingPause,
+    icon: Icon(_recordingService.isPaused ? Icons.fiber_manual_record : Icons.pause),
+    label: Text(_recordingService.isPaused ? l10n.resumeRecording : l10n.pauseRecording),
+  );
+
   Future<void> _toggleRecording() async {
     try {
       if (_recording) {
@@ -2899,9 +2916,11 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
                         Icon(_isVideoPlaying ? Icons.pause : Icons.play_arrow),
                     label: Text(_isVideoPlaying ? l10n.pause : l10n.play),
                   ),
+                  if (_canRecordStream && _recording)
+                    _recordingPauseButton(l10n),
                   if (_canRecordStream)
                     FilledButton.icon(
-                      onPressed: (_loading && !_recording) || _anotherRecordingActive ? null : _toggleRecording,
+                      onPressed: (_loading && !_recording) || _anotherRecordingActive || _recordingService.isRecordingTransitioning ? null : _toggleRecording,
                       icon: Icon(
                         _recording ? Icons.stop : Icons.fiber_manual_record,
                       ),
@@ -3050,8 +3069,10 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
           kind: 'button',
           enabled: !_loading,
         ),
+        if (_canRecordStream && _recording)
+          AccessibleListRow(id: 'pause_recording', kind: 'button', title: _recordingService.isPaused ? l10n.resumeRecording : l10n.pauseRecording, enabled: !_recordingService.isRecordingTransitioning),
         if (_canRecordStream)
-          AccessibleListRow(id: 'record', title: _recording ? l10n.stopRecording : l10n.startRecording, kind: 'button', enabled: (!_loading || _recording) && !_anotherRecordingActive),
+          AccessibleListRow(id: 'record', title: _recording ? l10n.stopRecording : l10n.startRecording, kind: 'button', enabled: (!_loading || _recording) && !_anotherRecordingActive && !_recordingService.isRecordingTransitioning),
         if (_canRecordStream)
           AccessibleListRow(
             id: 'schedule',
@@ -3092,6 +3113,8 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
             } else {
               await _play();
             }
+          } else if (event.id == 'pause_recording' && event.type == 'activate') {
+            await _toggleRecordingPause();
           } else if (event.id == 'record' && event.type == 'activate') {
             await _toggleRecording();
           } else if (event.id == 'schedule' && event.type == 'activate' && !_recordingService.hasAnyActiveRecording) {
@@ -3258,9 +3281,11 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
                     );
                   },
                 ),
+              if (_canRecordStream && _recording)
+                _recordingPauseButton(l10n),
               if (_canRecordStream)
                 FilledButton.icon(
-                  onPressed: (_loading && !_recording) || _anotherRecordingActive ? null : _toggleRecording,
+                  onPressed: (_loading && !_recording) || _anotherRecordingActive || _recordingService.isRecordingTransitioning ? null : _toggleRecording,
                   icon:
                       Icon(_recording ? Icons.stop : Icons.fiber_manual_record),
                   label: Text(

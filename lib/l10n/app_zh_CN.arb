@@ -565,6 +565,7 @@
   "compilaTuttiICampiPerRichiedereIlCodice": "请填写所有字段以申请代码。",
   "selectFolder": "选择文件夹",
   "exportDocument": "导出文档",
+  "exportFolderZip": "将文件夹导出为 ZIP",
   "exportFormatPrompt": "要以哪种格式导出文档？",
   "textFormat": "文本（.txt）",
   "pdfFormat": "PDF（.pdf）",
@@ -804,6 +805,8 @@
     "description": "Secondary action that opens a radio or TV channel and immediately starts recording."
   },
   "startRecording": "开始录制",
+  "pauseRecording": "暂停录制",
+  "resumeRecording": "继续录制",
   "stopRecording": "停止录制",
   "recordings": "录音",
   "recordingInProgressStatus": "录制进行中",

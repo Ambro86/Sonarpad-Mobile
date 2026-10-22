@@ -1,3 +1,4 @@
+import '../services/activation_link_service.dart';
 import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
@@ -38,11 +39,13 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    ActivationLinkService.changes.addListener(_load);
     _load();
   }
 
   @override
   void dispose() {
+    ActivationLinkService.changes.removeListener(_load);
     _settingsFocusNode.dispose();
     super.dispose();
   }

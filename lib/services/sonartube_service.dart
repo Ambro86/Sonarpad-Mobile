@@ -2032,7 +2032,18 @@ class SonarTubeService {
       final contentMetadata = _asMap(
         _asMap(metadata?['metadata'])?['contentMetadataViewModel'],
       );
-      final rows = _asList(contentMetadata?['metadataRows']);
+      final metadataRows = _asList(contentMetadata?['metadataRows']);
+      // Badge-only rows (for example the Hype chart) are not channel/view
+      // metadata. Check membership before ignoring them, so a publication
+      // date on its own cannot make a members-only video appear playable.
+      if (isVideo && metadataRows.any((row) =>
+          _asList(_asMap(row)?['badges']).any((badge) =>
+              _asMap(_asMap(badge)?['badgeViewModel'])?['badgeStyle'] ==
+                  'BADGE_MEMBERS_ONLY'))) {
+        return;
+      }
+      final rows = metadataRows.where((row) =>
+          _asList(_asMap(row)?['metadataParts']).isNotEmpty).toList();
       String? channel;
       String? views;
       String? published;

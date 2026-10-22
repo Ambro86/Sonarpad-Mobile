@@ -84,6 +84,19 @@ void main() {
         .searchPodcasts('Almanacco'), throwsException);
   });
 
+  test('real Coffee Break Spanish search without country and feed', () async {
+    final client = http.Client();
+    addTearDown(client.close);
+    final podcasts = PodcastService(client: client);
+    final results = await podcasts.searchPodcasts('Coffee Break Spanish', country: null);
+    final found = results.firstWhere((item) => item.title == 'Coffee Break Spanish');
+    expect(results.first.title, 'Coffee Break Spanish');
+    expect(found.feedUrl, isNotEmpty);
+    final details = await podcasts.fetchPodcastDetails(found);
+    expect(details.title, contains('Coffee Break Spanish'));
+  }, skip: !const bool.fromEnvironment('SONARPAD_LIVE_PODCAST_TEST'),
+     timeout: const Timeout(Duration(seconds: 120)));
+
   test('real Almanacco search and feed', () async {
     final client = http.Client();
     addTearDown(client.close);

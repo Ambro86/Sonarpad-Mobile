@@ -19,6 +19,7 @@ import '../services/app_settings_service.dart';
 import '../services/audio_description_project_library.dart';
 import '../services/audiobook_export_service.dart';
 import '../services/document_library_service.dart';
+import '../services/document_folder_export_service.dart';
 import '../services/document_text_extractor.dart';
 import '../services/docx_export_service.dart';
 import '../services/epub_export_service.dart';
@@ -827,7 +828,82 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     }
   }
 
+  bool _folderExportBusy = false;
+
+  Future<void> _exportFolder(DocumentItem folder) async {
+    if (_folderExportBusy) return;
+    _folderExportBusy = true;
+    Directory? work;
+    BuildContext? progressContext;
+    try {
+      await _service.load();
+      final entries = DocumentFolderExportService.plan(folder, _service.documents);
+      for (final entry in entries) {
+        if (entry.document.isPasswordProtected &&
+            !await _authorizeDocumentShare(entry.document)) {
+          return;
+        }
+      }
+      if (!mounted) return;
+      final l10n = AppLocalizations.of(context);
+      final progressReady = Completer<void>();
+      unawaited(showDialog<void>(
+        context: context,
+        barrierDismissible: false,
+        builder: (ctx) {
+          progressContext = ctx;
+          if (!progressReady.isCompleted) progressReady.complete();
+          return PopScope(
+            canPop: false,
+            child: AlertDialog(
+              title: Text(l10n.exportFolderZip),
+              content: Column(mainAxisSize: MainAxisSize.min, children: [
+                CircularProgressIndicator(semanticsLabel: l10n.loading),
+                const SizedBox(height: 16), Text(l10n.loading),
+              ]),
+            ),
+          );
+        },
+      ));
+      await progressReady.future;
+      work = await (await getTemporaryDirectory()).createTemp('folder-export-');
+      final output = p.join(work.path,
+          '${DocumentFolderExportService.safeName(folder.name)}.zip');
+      final sources = <({String name, String? source})>[];
+      for (final entry in entries) {
+        sources.add((name: entry.archivePath, source: entry.document.isFolder
+            ? null : await _service.resolveFilePath(entry.document)));
+      }
+      await DocumentFolderExportService.writeZip(output, sources);
+      if (progressContext case final ctx? when ctx.mounted) {
+        Navigator.of(ctx).pop();
+        progressContext = null;
+      }
+      if (!mounted) return;
+      await _handleExportedFile(output, p.basename(output), folder);
+    } catch (error) {
+      await AppLogger.log('Folder ZIP export failed: $error');
+      if (work != null && await work.exists()) await work.delete(recursive: true);
+      if (progressContext case final ctx? when ctx.mounted) {
+        Navigator.of(ctx).pop();
+        progressContext = null;
+      }
+      if (mounted) {
+        final l10n = AppLocalizations.of(context);
+        showStatusMessage(context, '${l10n.exportError}: ${l10n.technicalErrorGeneric}');
+      }
+    } finally {
+      if (progressContext case final ctx? when ctx.mounted) Navigator.of(ctx).pop();
+      // Keep successfully exported files available to the platform share sheet.
+      _folderExportBusy = false;
+    }
+  }
+
   Future<void> _exportDocument(DocumentItem doc) async {
+    if (doc.isFolder) {
+      await _exportFolder(doc);
+      return;
+    }
     if (_isRemoteAudioDocument(doc)) {
       _showSnack(AppLocalizations.of(context).librivoxNotTextExportable);
       return;
@@ -1000,6 +1076,10 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
         ShareParams(
           files: [XFile(path)],
           text: p.basename(path),
+          sharePositionOrigin: () {
+            final box = context.findRenderObject() as RenderBox?;
+            return box == null ? null : box.localToGlobal(Offset.zero) & box.size;
+          }(),
         ),
       );
       await AppLogger.log('Condivisione file esportato completata o chiusa');
@@ -1489,7 +1569,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
         if (_isLocalMediaDocument(doc))
           AccessibleCustomAction(id: 'share', label: l10n.share),
         if (!_isRemoteAudioDocument(doc) && !_isLocalMediaDocument(doc))
-          AccessibleCustomAction(id: 'export', label: l10n.exportDocument),
+          AccessibleCustomAction(id: 'export', label: doc.isFolder ? l10n.exportFolderZip : l10n.exportDocument),
         if (index > 0)
           AccessibleCustomAction(id: 'move_up', label: l10n.moveUp),
         if (index < docs.length - 1)
@@ -1833,7 +1913,7 @@ class _DocumentTile extends StatelessWidget {
               doc.extension != 'archiveaudio' &&
               !_localMediaDocumentExtensions
                   .contains(doc.extension.toLowerCase()))
-            CustomSemanticsAction(label: l10n.exportDocument): onExport,
+            CustomSemanticsAction(label: doc.isFolder ? l10n.exportFolderZip : l10n.exportDocument): onExport,
           if (!isFirst)
             CustomSemanticsAction(label: l10n.moveUp): () =>
                 onAction(_DocumentAction.moveUp),

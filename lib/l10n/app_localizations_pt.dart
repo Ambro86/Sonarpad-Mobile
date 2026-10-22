@@ -1427,6 +1427,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get exportDocument => 'Exportar documento';
 
   @override
+  String get exportFolderZip => "Exportar pasta como ZIP";
+
+  @override
   String get exportFormatPrompt => 'Em que formato quer exportar o documento?';
 
   @override
@@ -2082,6 +2085,12 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get startRecording => 'Iniciar gravação';
+
+  @override
+  String get pauseRecording => 'Pausar gravação';
+
+  @override
+  String get resumeRecording => 'Retomar gravação';
 
   @override
   String get stopRecording => 'Parar gravação';
@@ -6835,6 +6844,9 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   String get exportDocument => 'Exportar documento';
 
   @override
+  String get exportFolderZip => "Exportar pasta como ZIP";
+
+  @override
   String get exportFormatPrompt => 'Em que formato quer exportar o documento?';
 
   @override
@@ -7489,6 +7501,12 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get startRecording => 'Iniciar gravação';
+
+  @override
+  String get pauseRecording => 'Pausar gravação';
+
+  @override
+  String get resumeRecording => 'Retomar gravação';
 
   @override
   String get stopRecording => 'Parar gravação';

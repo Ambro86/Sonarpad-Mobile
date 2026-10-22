@@ -1803,6 +1803,7 @@
     "description": "Localized text for selectFolder."
   },
   "exportDocument": "Esporta documento",
+  "exportFolderZip": "Esporta cartella come ZIP",
   "@exportDocument": {
     "description": "Localized text for exportDocument."
   },
@@ -2662,6 +2663,8 @@
     "description": "Localized text for radioPlay."
   },
   "startRecording": "Avvia registrazione",
+  "pauseRecording": "Pausa registrazione",
+  "resumeRecording": "Riprendi registrazione",
   "stopRecording": "Ferma registrazione",
   "recordings": "Registrazioni",
   "recordingInProgressStatus": "Registrazione in corso",

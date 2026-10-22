@@ -1419,6 +1419,9 @@ class AppLocalizationsUk extends AppLocalizations {
   String get exportDocument => 'Експортувати документ';
 
   @override
+  String get exportFolderZip => "Експортувати папку як ZIP";
+
+  @override
   String get exportFormatPrompt => 'У якому форматі експортувати документ?';
 
   @override
@@ -2071,6 +2074,12 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get startRecording => 'Почати запис';
+
+  @override
+  String get pauseRecording => 'Призупинити запис';
+
+  @override
+  String get resumeRecording => 'Продовжити запис';
 
   @override
   String get stopRecording => 'Зупинити запис';

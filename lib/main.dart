@@ -1,3 +1,5 @@
+import 'services/activation_link_service.dart';
+import 'widgets/activation_link_dialog.dart';
 import 'dart:async';
 import 'dart:collection';
 import 'dart:io';
@@ -284,13 +286,13 @@ class _SonarpadAppState extends State<SonarpadApp> {
     try {
       final appLinks = AppLinks();
       appLinks.getInitialLink().then((uri) {
-        if (uri != null && uri.scheme == 'file') {
+        if (uri != null && (uri.scheme == 'file' || ActivationLinkService.recognizes(uri))) {
           _handleIncomingFile(uri);
         }
       }).catchError((_) {});
 
       _linkSubscription = appLinks.uriLinkStream.listen((uri) {
-        if (uri.scheme == 'file') {
+        if (uri.scheme == 'file' || ActivationLinkService.recognizes(uri)) {
           _handleIncomingFile(uri);
         }
       }, onError: (_) {});
@@ -330,10 +332,23 @@ class _SonarpadAppState extends State<SonarpadApp> {
       while (mounted && _pendingSharedUris.isNotEmpty) {
         final uri = _pendingSharedUris.removeFirst();
         try {
-          await _openIncomingFile(uri);
+          if (ActivationLinkService.recognizes(uri)) {
+            final context = _navigatorKey.currentState?.overlay?.context;
+            if (context != null && context.mounted) {
+              await showDialog<void>(
+                context: context,
+                barrierDismissible: false,
+                builder: (_) => ActivationLinkDialog(uri: uri),
+              );
+            }
+          } else {
+            await _openIncomingFile(uri);
+          }
         } catch (error) {
           _seenSharedUris.remove(uri);
-          await AppLogger.log('Shared file import failed: $error');
+          await AppLogger.log(ActivationLinkService.recognizes(uri)
+              ? 'Activation link: dialog failed'
+              : 'Shared file import failed: $error');
           final context = _navigatorKey.currentState?.overlay?.context;
           if (context != null && context.mounted) {
             final l10n = AppLocalizations.of(context);
@@ -341,6 +356,10 @@ class _SonarpadAppState extends State<SonarpadApp> {
               SnackBar(content: Text(l10n.fileOpenError(l10n.technicalErrorGeneric))),
             );
           }
+        } finally {
+          // Initial-link and stream duplicates are suppressed while processing;
+          // allow the same activation link again later, including after a failure.
+          if (ActivationLinkService.recognizes(uri)) _seenSharedUris.remove(uri);
         }
       }
     } finally {

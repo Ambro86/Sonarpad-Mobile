@@ -57,6 +57,17 @@ class GlobalRecordingService extends ChangeNotifier {
   final Map<String, File> _lastOutputByTarget = <String, File>{};
 
   bool get isRecording => _recordingService?.isRecording ?? false;
+  bool get isPaused => _recordingService?.isPaused ?? false;
+  bool get isRecordingTransitioning => _recordingService?.isTransitioning ?? false;
+  Future<void> toggleRecordingPause() async {
+    final service = _recordingService;
+    if (service == null || service.isTransitioning) return;
+    if (service.isPaused) {
+      await service.resume();
+    } else {
+      await service.pause();
+    }
+  }
   bool get isStarting => _starting;
   bool hasRecordingIssueFor(String id) =>
       _activeTarget?.id == id &&

@@ -565,6 +565,7 @@
   "compilaTuttiICampiPerRichiedereIlCodice": "Completează toate câmpurile pentru a solicita codul.",
   "selectFolder": "Selectează folderul",
   "exportDocument": "Exportă documentul",
+  "exportFolderZip": "Exportă folderul ca ZIP",
   "exportFormatPrompt": "În ce format dorești să exporți documentul?",
   "textFormat": "Text (.txt)",
   "pdfFormat": "PDF (.pdf)",
@@ -804,6 +805,8 @@
     "description": "Secondary action that opens a radio or TV channel and immediately starts recording."
   },
   "startRecording": "Începe înregistrarea",
+  "pauseRecording": "Pauză înregistrare",
+  "resumeRecording": "Reia înregistrarea",
   "stopRecording": "Oprește înregistrarea",
   "recordings": "Înregistrări",
   "recordingInProgressStatus": "Înregistrare în curs",

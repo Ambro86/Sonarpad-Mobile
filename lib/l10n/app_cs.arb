@@ -562,6 +562,7 @@
   "compilaTuttiICampiPerRichiedereIlCodice": "Vyplňte všechna pole pro vyžádání kódu.",
   "selectFolder": "Vybrat složku",
   "exportDocument": "Exportovat dokument",
+  "exportFolderZip": "Exportovat složku jako ZIP",
   "exportFormatPrompt": "V jakém formátu chcete dokument exportovat?",
   "textFormat": "Text (.txt)",
   "pdfFormat": "PDF (.pdf)",
@@ -807,6 +808,8 @@
     "description": "Secondary action that opens a radio or TV channel and immediately starts recording."
   },
   "startRecording": "Spustit nahrávání",
+  "pauseRecording": "Pozastavit nahrávání",
+  "resumeRecording": "Pokračovat v nahrávání",
   "stopRecording": "Zastavit nahrávání",
   "recordings": "Nahrávky",
   "recordingInProgressStatus": "Probíhá nahrávání",

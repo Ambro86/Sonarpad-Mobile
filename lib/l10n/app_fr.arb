@@ -562,6 +562,7 @@
   "compilaTuttiICampiPerRichiedereIlCodice": "Remplissez tous les champs pour demander le code.",
   "selectFolder": "Sélectionner le dossier",
   "exportDocument": "Exporter le document",
+  "exportFolderZip": "Exporter le dossier au format ZIP",
   "exportFormatPrompt": "Dans quel format souhaitez-vous exporter le document ?",
   "textFormat": "Texte (.txt)",
   "pdfFormat": "PDF (.pdf)",
@@ -807,6 +808,8 @@
     "description": "Secondary action that opens a radio or TV channel and immediately starts recording."
   },
   "startRecording": "Démarrer l'enregistrement",
+  "pauseRecording": "Mettre en pause l’enregistrement",
+  "resumeRecording": "Reprendre l’enregistrement",
   "stopRecording": "Arrêter l'enregistrement",
   "recordings": "Enregistrements",
   "recordingInProgressStatus": "Enregistrement en cours",

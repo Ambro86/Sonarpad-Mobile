@@ -78,6 +78,7 @@ class MainActivity : AudioServiceActivity() {
 
     private fun handleSharedIntent(intent: Intent?) {
         val uri = sharedUriFrom(intent) ?: return
+        if (uri.scheme != "content" && uri.scheme != "file") return
         Thread {
             val path = copySharedUri(uri) ?: return@Thread
             runOnUiThread {

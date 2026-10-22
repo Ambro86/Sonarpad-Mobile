@@ -1390,6 +1390,9 @@ class AppLocalizationsRo extends AppLocalizations {
   String get exportDocument => 'Exportă documentul';
 
   @override
+  String get exportFolderZip => "Exportă folderul ca ZIP";
+
+  @override
   String get exportFormatPrompt => 'În ce format dorești să exporți documentul?';
 
   @override
@@ -2032,6 +2035,12 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String get startRecording => 'Începe înregistrarea';
+
+  @override
+  String get pauseRecording => 'Pauză înregistrare';
+
+  @override
+  String get resumeRecording => 'Reia înregistrarea';
 
   @override
   String get stopRecording => 'Oprește înregistrarea';

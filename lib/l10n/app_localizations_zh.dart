@@ -1383,6 +1383,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get exportDocument => '导出文档';
 
   @override
+  String get exportFolderZip => "将文件夹导出为 ZIP";
+
+  @override
   String get exportFormatPrompt => '要以哪种格式导出文档？';
 
   @override
@@ -2024,6 +2027,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get startRecording => '开始录制';
+
+  @override
+  String get pauseRecording => '暂停录制';
+
+  @override
+  String get resumeRecording => '继续录制';
 
   @override
   String get stopRecording => '停止录制';
@@ -6596,6 +6605,9 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
   String get exportDocument => '导出文档';
 
   @override
+  String get exportFolderZip => "将文件夹导出为 ZIP";
+
+  @override
   String get exportFormatPrompt => '要以哪种格式导出文档？';
 
   @override
@@ -7237,6 +7249,12 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get startRecording => '开始录制';
+
+  @override
+  String get pauseRecording => '暂停录制';
+
+  @override
+  String get resumeRecording => '继续录制';
 
   @override
   String get stopRecording => '停止录制';

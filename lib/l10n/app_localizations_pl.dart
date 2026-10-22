@@ -1422,6 +1422,9 @@ class AppLocalizationsPl extends AppLocalizations {
   String get exportDocument => 'Eksportuj dokument';
 
   @override
+  String get exportFolderZip => "Eksportuj folder jako ZIP";
+
+  @override
   String get exportFormatPrompt =>
       'W jakim formacie chcesz wyeksportować dokument?';
 
@@ -2076,6 +2079,12 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get startRecording => 'Rozpocznij nagrywanie';
+
+  @override
+  String get pauseRecording => 'Wstrzymaj nagrywanie';
+
+  @override
+  String get resumeRecording => 'Wznów nagrywanie';
 
   @override
   String get stopRecording => 'Zatrzymaj nagrywanie';

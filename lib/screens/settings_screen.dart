@@ -1,3 +1,5 @@
+import '../widgets/request_code_dialog.dart';
+import '../services/activation_link_service.dart';
 import '../services/persistent_form_preferences.dart';
 import 'dart:async';
 import 'dart:io';
@@ -247,7 +249,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void initState() {
     super.initState();
     _tvSecretCodeController = TextEditingController();
+    ActivationLinkService.changes.addListener(_reloadActivatedCode);
     _load();
+  }
+
+  Future<void> _reloadActivatedCode() async {
+    final code = await _settings.getTvSecretCode();
+    if (!mounted) return;
+    setState(() {
+      _tvSecretCodeController.text = code;
+      _savedTvSecretCode = code;
+      _extraFeaturesUnlocked = RecordingFeatureAccess.isCodeValid(code);
+    });
   }
 
   @override
@@ -257,6 +270,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     _edgeVoiceFocusNode.dispose();
     _sendReportFocusNode.dispose();
     _viewLogFocusNode.dispose();
+    ActivationLinkService.changes.removeListener(_reloadActivatedCode);
     _tvSecretCodeController.dispose();
     unawaited(_audio.stop().whenComplete(_audio.dispose));
     super.dispose();
@@ -1038,99 +1052,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Future<void> _requestSecretCode() async {
     final l10n = AppLocalizations.of(context);
-    final nameCtrl = TextEditingController();
-    final surnameCtrl = TextEditingController();
-    final emailCtrl = TextEditingController();
-
-    final result = await showDialog<bool>(
+    await showDialog<void>(
       context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text(l10n.settingsRequestCode),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: nameCtrl,
-                decoration: InputDecoration(labelText: l10n.settingsName),
-              ),
-              const SizedBox(height: 8),
-              TextField(
-                controller: surnameCtrl,
-                decoration: InputDecoration(labelText: l10n.settingsSurname),
-              ),
-              const SizedBox(height: 8),
-              TextField(
-                controller: emailCtrl,
-                decoration: InputDecoration(labelText: l10n.settingsEmail),
-                keyboardType: TextInputType.emailAddress,
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context, false),
-              child: Text(l10n.settingsCancel),
-            ),
-            FilledButton(
-              onPressed: () => Navigator.pop(context, true),
-              child: Text(l10n.settingsSend),
-            ),
-          ],
-        );
-      },
-    );
-
-    if (result == true) {
-      final name = nameCtrl.text.trim();
-      final surname = surnameCtrl.text.trim();
-      final email = emailCtrl.text.trim();
-
-      if (name.isEmpty || surname.isEmpty || email.isEmpty) {
-        if (!mounted) return;
-                showStatusMessage(context, l10n.settingsFillFieldsCode);
-        return;
-      }
-
-      const subject = 'Richiesta Codice Sonarpad';
-      final os = Platform.isIOS
-          ? 'iOS'
-          : Platform.isAndroid
-              ? 'Android'
-              : Platform.isWindows
-                  ? 'Windows'
-                  : Platform.isMacOS
-                      ? 'macOS'
-                      : Platform.isLinux
-                          ? 'Linux'
-                          : 'Sconosciuto';
-
-      final body = l10n.settingsCodeRequestBody(name, surname, email, os);
-
-      // I client mail richiedono %20 per gli spazi nei link mailto, mentre Uri(queryParameters)
-      // usa il '+' tipico dell'HTTP, che i client mail non decodificano.
-      // Quindi, codifichiamo manualmente con Uri.encodeComponent.
-      String encodeQueryParameters(Map<String, String> params) {
-        return params.entries
-            .map((e) =>
-                '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
+      barrierDismissible: false,
+      builder: (_) => RequestCodeDialog(openMail: (name, surname, email) async {
+        final os = Platform.isIOS ? 'iOS' : Platform.isAndroid ? 'Android'
+            : Platform.isWindows ? 'Windows' : Platform.isMacOS ? 'macOS'
+            : Platform.isLinux ? 'Linux' : 'Sconosciuto';
+        final body = l10n.settingsCodeRequestBody(name, surname, email, os);
+        // Mail clients require percent-encoded spaces rather than HTTP form '+'.
+        final query = {'subject': 'Richiesta Codice Sonarpad', 'body': body}
+            .entries.map((e) => '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
             .join('&');
-      }
-
-      final url = Uri.parse(
-        'mailto:ambro86@gmail.com?${encodeQueryParameters({
-              'subject': subject,
-              'body': body,
-            })}',
-      );
-
-      try {
-        await launchUrl(url);
-      } catch (e) {
-        if (!mounted) return;
-                showStatusMessage(context, l10n.settingsMailOpenError(l10n.technicalErrorGeneric));
-      }
-    }
+        final url = Uri.parse('mailto:ambro86@gmail.com?$query');
+        // Requesting a code never validates, clears or saves the code field.
+        final opened = await launchUrl(url, mode: LaunchMode.externalApplication);
+        unawaited(AppLogger.log('Code request: mail application opened=$opened'));
+        return opened;
+      }),
+    );
   }
 
   Future<void> _pasteSecretCode() async {

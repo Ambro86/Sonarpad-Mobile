@@ -28,7 +28,15 @@ class RadioRecordingService extends ChangeNotifier with WidgetsBindingObserver {
   bool _stopping = false, _checking = false, _holdingAwake = false;
   bool stoppedUnexpectedly = false;
   int _mediaMs = 0;
-  bool get stalled => _health?.stalled ?? false;
+  bool _paused = false;
+  Completer<void>? _transition;
+  File? _finalOutput;
+  Directory? _partsDirectory;
+  final List<File> _parts = [];
+  Future<File> Function(String)? _restart;
+  bool get isPaused => _paused;
+  bool get isTransitioning => _transition != null;
+  bool get stalled => !_paused && (_health?.stalled ?? false);
 
   Future<void> _beginMonitoring() async {
     _health = RecordingHealthMonitor(DateTime.now());
@@ -73,7 +81,7 @@ class RadioRecordingService extends ChangeNotifier with WidgetsBindingObserver {
   }
 
   Future<void> _checkProgress() async {
-    if (_checking || !isRecording || _stopping) return;
+    if (_checking || !isRecording || _stopping || _paused) return;
     _checking = true;
     try {
       if (_holdingAwake) await WakelockPlus.coordinator.refresh();
@@ -103,8 +111,8 @@ class RadioRecordingService extends ChangeNotifier with WidgetsBindingObserver {
     this.includeVideo = false,
   });
 
-  bool get isRecording => _session != null;
-  File? get outputFile => _outputFile;
+  bool get isRecording => _session != null || _paused || isTransitioning;
+  File? get outputFile => _finalOutput ?? _outputFile;
 
   Future<Directory> recordingsDirectory() async {
     final documents = await getApplicationDocumentsDirectory();
@@ -156,6 +164,38 @@ class RadioRecordingService extends ChangeNotifier with WidgetsBindingObserver {
     String? audioStreamUrl,
     String? httpUserAgent,
   }) async {
+    if (isRecording) throw StateError('recording_already_active');
+    _parts.clear();
+    _finalOutput = null;
+    _partsDirectory = null;
+    _restart = (path) => _startSegment(
+      stationName: stationName,
+      streamUrl: streamUrl,
+      videoStreamUrl: videoStreamUrl,
+      audioStreamUrl: audioStreamUrl,
+      httpUserAgent: httpUserAgent,
+      outputOverride: path,
+    );
+    final file = await _startSegment(
+      stationName: stationName,
+      streamUrl: streamUrl,
+      videoStreamUrl: videoStreamUrl,
+      audioStreamUrl: audioStreamUrl,
+      httpUserAgent: httpUserAgent,
+    );
+    _finalOutput = file;
+    _parts.add(file);
+    return file;
+  }
+
+  Future<File> _startSegment({
+    required String stationName,
+    required String streamUrl,
+    String? videoStreamUrl,
+    String? audioStreamUrl,
+    String? httpUserAgent,
+    String? outputOverride,
+  }) async {
     if (_session != null) {
       throw StateError('Registrazione gia in corso.');
     }
@@ -171,7 +211,11 @@ class RadioRecordingService extends ChangeNotifier with WidgetsBindingObserver {
         ? '.mp4'
         : _recordingExtension(streamUrl);
     final file = File(
-      p.join(dir.path, '${_safeFileName(stationName)} - ${_timestamp()}$ext'),
+      outputOverride ??
+          p.join(
+            dir.path,
+            '${_safeFileName(stationName)} - ${_timestamp()}$ext',
+          ),
     );
     final List<String> arguments;
     if (raiVideoUrl != null && raiAudioUrl != null) {
@@ -262,7 +306,127 @@ class RadioRecordingService extends ChangeNotifier with WidgetsBindingObserver {
     return file;
   }
 
+  Future<void> pause() async {
+    if (_paused || isTransitioning || _session == null) return;
+    final transition = Completer<void>();
+    _transition = transition;
+    _paused = true;
+    notifyListeners();
+    try {
+      await _stopSegment();
+      stoppedUnexpectedly = false;
+      await AppLogger.log('Radio recording: paused parts=${_parts.length}');
+    } catch (_) {
+      _paused = _session == null;
+      rethrow;
+    } finally {
+      _transition = null;
+      transition.complete();
+      notifyListeners();
+    }
+  }
+
+  Future<void> resume() async {
+    if (!_paused || isTransitioning || _restart == null) return;
+    final transition = Completer<void>();
+    _transition = transition;
+    notifyListeners();
+    try {
+      // Reconnect to the live stream: suspending the old network reader would
+      // retain buffered adverts and record them when the user resumes.
+      _partsDirectory ??= await _finalOutput!.parent.createTemp(
+        '.recording-parts-',
+      );
+      final path = p.join(
+        _partsDirectory!.path,
+        'part_${_parts.length}${p.extension(_finalOutput!.path)}',
+      );
+      final file = await _restart!(path);
+      _parts.add(file);
+      _paused = false;
+      await AppLogger.log('Radio recording: resumed parts=${_parts.length}');
+    } finally {
+      _transition = null;
+      transition.complete();
+      notifyListeners();
+    }
+  }
+
   Future<File?> stop() async {
+    await _transition?.future;
+    final transition = Completer<void>();
+    _transition = transition;
+    notifyListeners();
+    try {
+      await _stopSegment();
+      _paused = false;
+      if (_parts.length > 1) {
+        await _joinParts();
+      }
+      return _finalOutput ?? _outputFile;
+    } finally {
+      _transition = null;
+      transition.complete();
+      notifyListeners();
+    }
+  }
+
+  Future<void> _joinParts() async {
+    final directory = _partsDirectory!;
+    final list = File(p.join(directory.path, 'parts.txt'));
+    // FFmpeg concat uses its own quoting, not shell quoting.
+    String escape(String path) => path.replaceAll("'", "'\\''");
+    await list.writeAsString(
+      _parts.map((f) => "file '${escape(f.path)}'\n").join(),
+    );
+    final joined = File(
+      p.join(directory.path, 'joined${p.extension(_finalOutput!.path)}'),
+    );
+    final session = await FFmpegKit.executeWithArguments([
+      '-y',
+      '-f',
+      'concat',
+      '-safe',
+      '0',
+      '-i',
+      list.path,
+      '-map',
+      '0',
+      '-c',
+      'copy',
+      joined.path,
+    ]);
+    if ((await session.getReturnCode())?.getValue() != 0 ||
+        !await joined.exists() ||
+        await joined.length() == 0) {
+      await AppLogger.log(
+        'Radio recording: join failed; parts retained at ${directory.path}',
+      );
+      throw StateError('recording_join_failed');
+    }
+    // Keep the first segment recoverable until the completed file is in place.
+    final originalPath = _finalOutput!.path;
+    final backup = await _finalOutput!.rename(
+      p.join(directory.path, 'original${p.extension(originalPath)}'),
+    );
+    try {
+      await joined.rename(originalPath);
+    } catch (_) {
+      await backup.rename(originalPath);
+      rethrow;
+    }
+    await directory.delete(recursive: true);
+    _partsDirectory = null;
+    _outputFile = _finalOutput;
+    _parts
+      ..clear()
+      ..add(_finalOutput!);
+    await AppLogger.log(
+      'Radio recording: paused sections excluded, join complete',
+    );
+  }
+
+  Future<File?> _stopSegment() async {
     final session = _session;
     final file = _outputFile;
     if (session == null) return file;

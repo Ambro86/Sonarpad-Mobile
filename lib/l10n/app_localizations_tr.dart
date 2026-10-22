@@ -1443,6 +1443,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get exportDocument => "Belgeyi dışa aktar";
 
   @override
+  String get exportFolderZip => "Klasörü ZIP olarak dışa aktar";
+
+  @override
   String get exportFormatPrompt => "Belgeyi hangi biçimde dışa aktarmak istiyorsunuz?";
 
   @override
@@ -2083,6 +2086,12 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get startRecording => "Kaydı başlat";
+
+  @override
+  String get pauseRecording => 'Kaydı duraklat';
+
+  @override
+  String get resumeRecording => 'Kaydı sürdür';
 
   @override
   String get stopRecording => "Kaydı durdur";

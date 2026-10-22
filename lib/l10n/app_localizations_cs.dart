@@ -1420,6 +1420,9 @@ class AppLocalizationsCs extends AppLocalizations {
   String get exportDocument => 'Exportovat dokument';
 
   @override
+  String get exportFolderZip => "Exportovat složku jako ZIP";
+
+  @override
   String get exportFormatPrompt =>
       'V jakém formátu chcete dokument exportovat?';
 
@@ -2074,6 +2077,12 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get startRecording => 'Spustit nahrávání';
+
+  @override
+  String get pauseRecording => 'Pozastavit nahrávání';
+
+  @override
+  String get resumeRecording => 'Pokračovat v nahrávání';
 
   @override
   String get stopRecording => 'Zastavit nahrávání';

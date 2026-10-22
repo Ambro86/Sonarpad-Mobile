@@ -24,10 +24,13 @@ class NativeRecording extends FFmpegKitPlatform {
   late Map<String, Object?> session;
   late File file;
   bool cancelled = false;
+  bool failJoin = false;
+  List<String> arguments = [];
   @override
   Future<Map<dynamic, dynamic>?> abstractSessionCreateFFmpegSession(
     List<String> args,
   ) async {
+    arguments = List.of(args);
     code = null;
     cancelled = false;
     session = {
@@ -44,6 +47,23 @@ class NativeRecording extends FFmpegKitPlatform {
   @override
   Future<void> ffmpegKitConfigAsyncFFmpegExecute(int? sessionId) async {
     await file.writeAsBytes([1, 2, 3]);
+  }
+
+  @override
+  Future<void> ffmpegKitConfigFFmpegExecute(int? sessionId) async {
+    expect(arguments, containsAll(['concat', '-safe', '0', '-c', 'copy']));
+    if (failJoin) {
+      code = 1;
+      return;
+    }
+    final list = File(arguments[arguments.indexOf('-i') + 1]);
+    final bytes = <int>[];
+    for (final line in await list.readAsLines()) {
+      final path = line.substring(6, line.length - 1).replaceAll("'\\''", "'");
+      bytes.addAll(await File(path).readAsBytes());
+    }
+    await file.writeAsBytes(bytes);
+    code = 0;
   }
 
   @override
@@ -181,7 +201,8 @@ void main() {
   FFmpegKitPlatform.instance = native;
   late Directory root;
   setUp(() async {
-    root = await Directory.systemTemp.createTemp('recording-lifecycle-');
+    native.failJoin = false;
+    root = await Directory.systemTemp.createTemp("recording's-lifecycle-");
     final messenger =
         TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
     messenger.setMockMethodCallHandler(
@@ -239,4 +260,75 @@ void main() {
       service.dispose();
     },
   );
+  Future<void> finishCancellation(Future<void> operation) async {
+    await Future<void>.delayed(const Duration(milliseconds: 20));
+    native.finish(255);
+    await operation;
+  }
+
+  test(
+    'Pause remains active and stopping while paused saves the first part',
+    () async {
+      final service = RecordingFixture(root);
+      final original = await service.start(
+        stationName: 'Radio',
+        streamUrl: 'https://example.org/live',
+      );
+      await finishCancellation(service.pause());
+      expect(service.isRecording, isTrue);
+      expect(service.isPaused, isTrue);
+      expect(service.stoppedUnexpectedly, isFalse);
+      final sessions = native.id;
+      await service.pause();
+      expect(native.id, sessions);
+      expect((await service.stop())!.path, original.path);
+      expect(await original.readAsBytes(), [1, 2, 3]);
+      expect(service.isRecording, isFalse);
+      service.dispose();
+    },
+  );
+
+  test(
+    'Resume reconnects, retains the output name and joins only recorded parts',
+    () async {
+      final service = RecordingFixture(root);
+      final original = await service.start(
+        stationName: 'Radio',
+        streamUrl: 'https://example.org/live',
+      );
+      await finishCancellation(service.pause());
+      final sessions = native.id;
+      await service.resume();
+      expect(native.id, sessions + 1);
+      expect(native.arguments, contains('https://example.org/live'));
+      expect(service.outputFile!.path, original.path);
+      expect(service.isPaused, isFalse);
+      await native.file.writeAsBytes([4, 5]);
+      final stopping = service.stop();
+      await Future<void>.delayed(const Duration(milliseconds: 20));
+      native.finish(255);
+      final output = await stopping;
+      expect(output!.path, original.path);
+      expect(await output.readAsBytes(), [1, 2, 3, 4, 5]);
+      expect(service.isRecording, isFalse);
+      service.dispose();
+    },
+  );
+
+  test('Join failure preserves the original and recorded segments', () async {
+    final service = RecordingFixture(root);
+    final original = await service.start(
+      stationName: 'Radio',
+      streamUrl: 'https://example.org/live',
+    );
+    await finishCancellation(service.pause());
+    await service.resume();
+    final second = native.file;
+    await finishCancellation(service.pause());
+    native.failJoin = true;
+    await expectLater(service.stop(), throwsStateError);
+    expect(await original.readAsBytes(), [1, 2, 3]);
+    expect(await second.exists(), isTrue);
+    service.dispose();
+  });
 }
