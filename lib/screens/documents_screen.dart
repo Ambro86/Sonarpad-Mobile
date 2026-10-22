@@ -283,7 +283,8 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
 
       if (f.path.toLowerCase().endsWith('.zip')) {
         try {
-          await _service.importZip(f, parentId: widget.folderId);
+          await _service.importZip(f, parentId: widget.folderId,
+            folderName: p.basenameWithoutExtension(file.name.isNotEmpty ? file.name : path));
           await AppLogger.log('Zip importato: ${p.basename(path)}');
         } catch (e) {
           dev.log('DocumentsScreen: errore importazione zip: $e');
@@ -1298,6 +1299,25 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     if (!await _authorizeDocumentOpen(doc)) return;
     if (!mounted) return;
 
+    if (doc.extension.toLowerCase() == 'zip') {
+      if (_loading) return;
+      setState(() => _loading = true);
+      DocumentItem? folder;
+      try {
+        folder = await _service.openZip(doc);
+      } catch (error) {
+        await AppLogger.log('Documents: ZIP opening failed: ${error.runtimeType}');
+        if (mounted) {
+          _showSnack(AppLocalizations.of(context).importZipError(
+            AppLocalizations.of(context).technicalErrorGeneric));
+        }
+      } finally {
+        if (mounted) setState(() => _loading = false);
+      }
+      if (mounted && folder != null) await _openDocument(folder);
+      return;
+    }
+
     if (doc.extension.toLowerCase() == 'json') {
       final path = await _service.resolveFilePath(doc);
       final isProject = await isAudioDescriptionProjectFile(path);
@@ -1653,10 +1673,9 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     final l10n = AppLocalizations.of(context);
     final docs = _displayedDocs;
     final currentFolderName = widget.folderId != null
-        ? _service.documents
-            .firstWhere((d) => d.id == widget.folderId,
-                orElse: () => _service.documents.first)
-            .name
+        ? (_service.documents
+            .where((d) => d.id == widget.folderId)
+            .firstOrNull?.name ?? l10n.documents)
         : l10n.documents;
 
     return Scaffold(

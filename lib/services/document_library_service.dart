@@ -134,35 +134,84 @@ class DocumentLibraryService {
     return doc;
   }
 
-  Future<void> importZip(File zipFile,
+  /// Saved archives retain their original ZIP and reuse an extracted library
+  /// subtree on subsequent opens, rather than opening binary data as text.
+  Future<DocumentItem> openZip(DocumentItem document) async {
+    await load();
+    for (final folder in _documents) {
+      if (folder.isFolder && folder.parentId == document.id) return folder;
+    }
+    return importZip(File(await resolveFilePath(document)),
+      folderName: document.displayName, parentId: document.id);
+  }
+
+  Future<DocumentItem> importZip(File zipFile,
       {String? folderName, String? parentId}) async {
     final bytes = await zipFile.readAsBytes();
-    final archive = ZipDecoder().decodeBytes(bytes);
-
+    final archive = ZipDecoder().decodeBytes(bytes, verify: true);
     final name = folderName ?? p.basenameWithoutExtension(zipFile.path);
-    final folder = await createFolder(name, parentId: parentId);
-
-    final allowed = ['pdf', 'epub', 'txt', 'rtf', 'docx', 'doc'];
-    final tempDir = await getTemporaryDirectory();
-
+    final entries = <({ArchiveFile file, List<String> parts})>[];
     for (final file in archive) {
-      if (file.isFile) {
-        final filename = p.basename(file.name);
-        if (filename.startsWith('.') || filename.startsWith('__MACOSX')) {
-          continue;
-        }
-
-        final ext = p.extension(filename).replaceFirst('.', '').toLowerCase();
-        if (allowed.contains(ext)) {
-          final data = file.content as List<int>;
-          final tempFile = File(p.join(tempDir.path, filename));
-          await tempFile.writeAsBytes(data);
-
-          final doc = await importFile(tempFile,
-              originalName: filename, parentId: folder.id);
-          await add(doc);
-        }
+      final path = file.name.replaceAll('\\', '/');
+      final parts = path.split('/').where((part) => part.isNotEmpty && part != '.').toList();
+      if (path.startsWith('/') || RegExp(r'^[A-Za-z]:').hasMatch(path) ||
+          parts.contains('..') || parts.any((part) => part.contains('\x00'))) {
+        throw const FormatException('Invalid ZIP path');
       }
+      if (parts.isEmpty || parts.any((part) => part.startsWith('.') || part == '__MACOSX')) continue;
+      if ((file.mode & 0xf000) == 0xa000) continue;
+      entries.add((file: file, parts: parts));
+    }
+    // Our folder exports already include their root directory.
+    final stripRoot = entries.isNotEmpty && entries.every((entry) =>
+      entry.parts.first == name && (!entry.file.isFile || entry.parts.length > 1));
+    final now = DateTime.now();
+    final prefix = 'zip_${now.microsecondsSinceEpoch}_${Random.secure().nextInt(1 << 30)}';
+    final root = DocumentItem(id: prefix, name: name, path: '', extension: 'folder',
+      addedAt: now, isFolder: true, parentId: parentId);
+    final pending = <DocumentItem>[root];
+    final folders = <String, DocumentItem>{'': root};
+    final copiedFiles = <String>[];
+    final work = await (await getTemporaryDirectory()).createTemp('zip-import-');
+    try {
+      for (final entry in entries) {
+        final parts = stripRoot ? entry.parts.sublist(1) : entry.parts;
+        if (parts.isEmpty) continue;
+        var parent = root;
+        final folderCount = entry.file.isFile ? parts.length - 1 : parts.length;
+        for (var i = 0; i < folderCount; i++) {
+          final key = parts.take(i + 1).join('/');
+          var folder = folders[key];
+          if (folder == null) {
+            folder = DocumentItem(id: '${prefix}_${folders.length}', name: parts[i],
+              path: '', extension: 'folder', addedAt: now, isFolder: true, parentId: parent.id);
+            folders[key] = folder;
+            pending.add(folder);
+          }
+          parent = folder;
+        }
+        if (!entry.file.isFile) continue;
+        // Never extract an archive-supplied path onto the filesystem.
+        final temp = File(p.join(work.path, 'entry'));
+        await temp.writeAsBytes(entry.file.content as List<int>);
+        final document = await importFile(temp, originalName: parts.last, parentId: parent.id);
+        copiedFiles.add(await resolveFilePath(document));
+        // Preserve the archive's user-facing name even if storage needs a suffix.
+        pending.add(document.copyWith(name: parts.last));
+      }
+      await load();
+      await _persistPlacementsFor(pending);
+      _documents = [...pending, ..._documents];
+      await _save();
+      return root;
+    } catch (_) {
+      for (final path in copiedFiles) {
+        final file = File(path);
+        if (await file.exists()) await file.delete();
+      }
+      rethrow;
+    } finally {
+      await work.delete(recursive: true);
     }
   }
 

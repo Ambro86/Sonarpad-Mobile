@@ -8,12 +8,24 @@ Map<String, dynamic> _arb(String name) =>
         as Map<String, dynamic>;
 
 void main() {
+  test('podcast preservation requires unlocked access and covers played episodes', () {
+    final source = File('lib/screens/podcast_episodes_screen.dart').readAsStringSync();
+    expect(source, contains('RecordingFeatureAccess.isUnlocked()'));
+    expect(source, contains('if (!await RecordingFeatureAccess.isUnlocked() || !mounted) return;'));
+    expect(source, contains('if (_canPreserve)'));
+    expect(source, contains('CustomSemanticsAction(label: label)'));
+    expect(source, contains('resolveUrl: () async => episode.audioUrl'));
+    expect(RegExp(r'actions: _preservationActions\(l10n\)').allMatches(source).length, 2);
+    expect(RegExp(r'with _PodcastPreservation<').allMatches(source).length, 2);
+  });
+
   test('playable Audiodescriptions and RaiPlay Sound expose preserve media', () {
     const screens = [
       'lib/screens/audiodescription_recent_screen.dart',
       'lib/screens/audiodescription_film_screen.dart',
       'lib/screens/audiodescription_series_screen.dart',
       'lib/screens/raiplaysound_screen.dart',
+      'lib/screens/podcast_episodes_screen.dart',
     ];
     for (final path in screens) {
       final source = File(path).readAsStringSync();
@@ -100,6 +112,7 @@ void main() {
       'lib/screens/audiodescription_film_screen.dart',
       'lib/screens/audiodescription_series_screen.dart',
       'lib/screens/raiplaysound_screen.dart',
+      'lib/screens/podcast_episodes_screen.dart',
     ];
     for (final path in screens) {
       final source = File(path).readAsStringSync();

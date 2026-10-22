@@ -54,11 +54,16 @@ void main() {
     expect(source, contains('controller?.ensureNotCancelled()'));
   });
 
-  test('SonarTube AI audio description is gated by code and Italian UI', () {
+  test('SonarTube AI audio description is available in every locale without code', () {
     final screen = File('lib/screens/sonartube_screen.dart').readAsStringSync();
 
-    expect(screen, contains('RecordingFeatureAccess.isUnlocked()'));
-    expect(screen, contains("l10n.localeName == 'it'"));
+    final guards = RegExp(
+      r'bool _canCreateAiAudiodescription\([\s\S]*?=> ([^;]+);',
+    ).allMatches(screen).toList();
+    expect(guards, hasLength(3));
+    for (final guard in guards) {
+      expect(guard.group(1), 'item.kind == SonarTubeItemKind.video && !item.isLive');
+    }
     expect(screen, contains("id: 'create_ai_audiodescription'"));
     expect(screen, contains('createAiAudiodescriptionFromSonarTube('));
   });

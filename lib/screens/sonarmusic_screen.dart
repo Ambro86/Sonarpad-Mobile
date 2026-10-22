@@ -275,10 +275,11 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
     await saveSonarTubeMediaWithDestination(context,
       service: _exportAdapter, item: item.toVideoItem());
   }
+  bool _canCreateAd(SonarMusicItem item) => item.playable;
+
   Future<void> _createAd(SonarMusicItem item) async {
     // Both songs and music videos expose a playable YouTube video ID.
-    // Keep the same authorized-user/Italian-language gate as SonarTube.
-    if (!_canSave(item)) return;
+    if (!_canCreateAd(item)) return;
     await createAiAudiodescriptionFromSonarTube(context,
       service: _exportAdapter, item: item.toVideoItem());
   }
@@ -369,7 +370,7 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
           PodcastPlayerExtraAction(id: 'save_media', label: () => _label('save'),
             icon: Icons.download_outlined, pauseBeforeOpen: true,
             onPressed: () => _save(currentItem())),
-        if (_canSave(item))
+        if (_canCreateAd(item))
           PodcastPlayerExtraAction(id: 'create_ad',
             label: () => l10n.audioDescriptionCreateAiTitle,
             icon: Icons.auto_awesome, pauseBeforeOpen: true,
@@ -508,7 +509,7 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
       },
       if (_canSave(item)) CustomSemanticsAction(label: _label('save')):
         () => _save(item),
-      if (_canSave(item)) CustomSemanticsAction(
+      if (_canCreateAd(item)) CustomSemanticsAction(
         label: AppLocalizations.of(context).audioDescriptionCreateAiTitle):
         () => _createAd(item),
     };
@@ -553,7 +554,7 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
             onPressed: () => _openVideoInfo(item, 'description')),
           if (_canSave(item)) IconButton(tooltip: _label('save'),
             icon: const Icon(Icons.download), onPressed: () => _save(item)),
-          if (_canSave(item)) IconButton(
+          if (_canCreateAd(item)) IconButton(
             tooltip: AppLocalizations.of(context).audioDescriptionCreateAiTitle,
             icon: const Icon(Icons.auto_awesome), onPressed: () => _createAd(item)),
         ]),
@@ -672,7 +673,7 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
             AccessibleCustomAction(id: 'description', label: l10n.sonarTubeViewDescription),
           ],
           if (_canSave(item)) AccessibleCustomAction(id: 'save_media', label: _label('save')),
-          if (_canSave(item)) AccessibleCustomAction(
+          if (_canCreateAd(item)) AccessibleCustomAction(
             id: 'create_ai_audiodescription', label: l10n.audioDescriptionCreateAiTitle),
         ],
         visualActions: [

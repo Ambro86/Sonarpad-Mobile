@@ -14,7 +14,9 @@ void main() {
   });
 
   test('songs and music videos have AI audio description in both rotors', () {
-    expect(screen, contains('if (!_canSave(item)) return;'));
+    expect(screen, contains('if (!_canCreateAd(item)) return;'));
+    expect(screen, contains('bool _canCreateAd(SonarMusicItem item) => item.playable;'));
+    expect(RegExp(r'if \(_canCreateAd\(item\)\)').allMatches(screen), hasLength(4));
     expect(screen, isNot(contains("_canSave(item) && item.kind == 'video'")));
     expect(screen, isNot(contains("_canSave(item) || item.kind != 'video'")));
     expect(screen, contains(RegExp(

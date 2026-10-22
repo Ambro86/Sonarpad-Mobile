@@ -212,7 +212,7 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
   bool _canCreateAiAudiodescription(
     AppLocalizations l10n,
     SonarTubeItem item,
-  ) => _canSaveMedia(l10n, item);
+  ) => item.kind == SonarTubeItemKind.video && !item.isLive;
 
   Future<void> _saveMedia(SonarTubeItem item) async {
     if (!mounted || item.kind != SonarTubeItemKind.video || item.isLive) return;
@@ -3189,7 +3189,7 @@ class _SonarTubeRecentVideosScreenState
   bool _canCreateAiAudiodescription(
     AppLocalizations l10n,
     SonarTubeItem item,
-  ) => _canSaveMedia(l10n, item);
+  ) => item.kind == SonarTubeItemKind.video && !item.isLive;
 
   Future<void> _saveMedia(SonarTubeItem item) async {
     if (!mounted || item.isLive) return;
@@ -3624,7 +3624,7 @@ class _SonarTubeFavoritesScreenState extends State<_SonarTubeFavoritesScreen> {
   bool _canCreateAiAudiodescription(
     AppLocalizations l10n,
     SonarTubeItem item,
-  ) => _canSaveMedia(l10n, item);
+  ) => item.kind == SonarTubeItemKind.video && !item.isLive;
 
   Future<void> _saveMedia(SonarTubeItem item) async {
     if (!mounted || item.kind != SonarTubeItemKind.video || item.isLive) return;
