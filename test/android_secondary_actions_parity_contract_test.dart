@@ -74,6 +74,19 @@ void main() {
             source.contains('AccessibleCustomAction(') ||
             source.contains('CustomSemanticsAction(');
         if (!exposesSecondaryActions) continue;
+        // This helper produces shared action descriptors; the two screens own
+        // rendering. It is not an independent action-bearing screen.
+        if (entity.path.endsWith('favorite_reorder.dart')) {
+          expect(source, contains('List<AccessibleCustomAction> favoriteReorderActions'));
+          expect(source, isNot(contains('CustomSemanticsAction(')));
+          for (final path in ['lib/screens/sonartube_screen.dart', 'lib/screens/sonarmusic_screen.dart']) {
+            final consumer = File(path).readAsStringSync();
+            expect(consumer, contains('favoriteReorderActions('));
+            expect(consumer, contains('UniversalAccessibleList('));
+          }
+          continue;
+        }
+
 
         final usesSharedModel = source.contains('useSharedAccessibleViewModel') ||
             source.contains('UniversalAccessibleList(') ||

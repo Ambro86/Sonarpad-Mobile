@@ -10,12 +10,11 @@ class AppLocalizationsZh extends AppLocalizations {
   String get favoritesSortAlphabetically => "按字母顺序排序";
 
   @override
-  String get favoriteVideosLatest => 'Ultimi video';
+  String get favoriteVideosLatest => "最新视频";
   @override
-  String get favoriteVideosTitle => 'Ultimi video dai preferiti';
+  String get favoriteVideosTitle => "收藏中的最新视频";
   @override
-  String get favoriteVideosPartial =>
-      'Non è stato possibile caricare alcuni canali. Sono mostrati i video degli altri canali.';
+  String get favoriteVideosPartial => "部分频道无法加载。现显示其他频道的视频。";
 
   @override
   String get recordingNotAdvancing => "录制未收到新数据。请检查网络连接，必要时重新开始录制。";
@@ -5243,11 +5242,11 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
   String get favoritesSortAlphabetically => "按字母顺序排序";
 
   @override
-  String get favoriteVideosLatest => '最新视频';
+  String get favoriteVideosLatest => "最新视频";
   @override
-  String get favoriteVideosTitle => '收藏中的最新视频';
+  String get favoriteVideosTitle => "收藏中的最新视频";
   @override
-  String get favoriteVideosPartial => '部分频道无法加载。现显示其他频道的视频。';
+  String get favoriteVideosPartial => "部分频道无法加载。现显示其他频道的视频。";
 
   @override
   String get recordingNotAdvancing => "录制未收到新数据。请检查网络连接，必要时重新开始录制。";

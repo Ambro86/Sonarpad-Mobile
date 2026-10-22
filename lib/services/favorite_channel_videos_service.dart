@@ -42,7 +42,7 @@ class FavoriteChannelVideosService {
           final response = await client.get(Uri.https(
             'www.youtube.com', '/feeds/videos.xml', {'channel_id': id},
           )).timeout(const Duration(seconds: 20));
-          if (response.statusCode != 200) throw StateError('feed_http_${response.statusCode}');
+          if (response.statusCode != 200) throw StateError(response.statusCode.toString());
           final feed = XmlDocument.parse(response.body);
           if (feed.rootElement.name.local != 'feed') throw const FormatException('not_a_feed');
           for (final entry in feed.findAllElements('entry')) {
