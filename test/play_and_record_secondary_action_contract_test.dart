@@ -34,7 +34,7 @@ void main() {
     expect(radioResults, contains('autoStartRecording: true'));
     expect(radioFavorites, contains('autoStartRecording: true'));
     expect(tv, contains('autoStartRecording: true'));
-    expect(tvFavorites, contains('widget.onPlayAndRecord(channel)'));
+    expect(tvFavorites, contains('_openAndRestore(channel, widget.onPlayAndRecord)'));
   });
 
   test('visible Flutter play-and-record buttons stay excluded from screen reader semantics', () {
