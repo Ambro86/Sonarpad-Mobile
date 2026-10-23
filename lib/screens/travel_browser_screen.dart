@@ -200,18 +200,41 @@ class _TravelBrowserScreenState extends State<TravelBrowserScreen> {
     var protectionConfirmed = !_noProtection;
     try {
       if (_noProtection) {
-        await _controller!.runJavaScriptReturningResult(
+        final result = await _controller!.runJavaScriptReturningResult(
           travelNoProtectionScript(),
+        );
+        final status = result.toString().replaceAll('"', '');
+        const known = {
+          'selected',
+          'unconfirmed',
+          'not-found',
+          'ambiguous',
+          'blocked',
+          'unavailable',
+        };
+        unawaited(
+          _log(
+            '[Travel] no_protection_action status=${known.contains(status) ? status : 'unknown'}',
+          ),
         );
       }
       final data = await _paymentScript(select: method);
       confirmed = data['status'] == 'selected';
       if (_noProtection) {
-        final result = await _controller!.runJavaScriptReturningResult(
-          travelNoProtectionScript(verifyOnly: true),
-        );
-        protectionConfirmed =
-            result.toString().replaceAll('"', '') == 'selected';
+        // Framework state may update asynchronously or replace the element.
+        // Re-read the live DOM; never click again during verification.
+        for (var attempt = 0; attempt < 4; attempt++) {
+          if (attempt > 0) {
+            await Future<void>.delayed(const Duration(milliseconds: 350));
+          }
+          if (!mounted) return;
+          final result = await _controller!.runJavaScriptReturningResult(
+            travelNoProtectionScript(verifyOnly: true),
+          );
+          final status = result.toString().replaceAll('"', '');
+          protectionConfirmed = status == 'selected';
+          if (protectionConfirmed) break;
+        }
       }
     } catch (_) {
       // The original page remains available even after a provider change.

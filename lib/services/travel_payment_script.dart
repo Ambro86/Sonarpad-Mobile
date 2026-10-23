@@ -18,7 +18,7 @@ const _noProtection = r'''
     'i want to travel without protection', 'travel without protection']);
   const normalize = text => (text || '').toLowerCase().replace(/\s+/g, ' ').trim();
   const matches = [];
-  for (const el of document.querySelectorAll('input[type="radio"], input[type="checkbox"], [role="radio"], [role="checkbox"], [role="switch"]')) {
+  for (const el of document.querySelectorAll('input[type="radio"], input[type="checkbox"], [role="radio"], [role="checkbox"], [role="switch"], button[aria-pressed], [role="button"][aria-pressed]')) {
     if (el.disabled || el.getAttribute('aria-disabled') === 'true' ||
         (el.tagName === 'BUTTON' && el.type !== 'button')) continue;
     const labels = [...(el.labels || [])];
@@ -29,9 +29,11 @@ const _noProtection = r'''
       refs.map(x => x.textContent).join(' '), ...labels.map(x => x.textContent)];
     if (texts.some(t => names.has(normalize(t)))) matches.push(el);
   }
-  if (matches.length !== 1) return 'unavailable';
+  if (matches.length === 0) return 'not-found';
+  if (matches.length !== 1) return 'ambiguous';
   const el = matches[0];
-  const checked = () => el.checked === true || el.getAttribute('aria-checked') === 'true';
+  const checked = () => el.checked === true || el.getAttribute('aria-checked') === 'true' ||
+    el.getAttribute('aria-pressed') === 'true';
   if (!__VERIFY__ && !checked()) el.click();
   return checked() ? 'selected' : 'unconfirmed';
 })()

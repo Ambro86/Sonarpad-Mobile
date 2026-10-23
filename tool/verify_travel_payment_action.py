@@ -51,15 +51,27 @@ with sync_playwright() as p:
     assert protect(True) == "selected"
     assert page.evaluate("window.paid") == 0
     fixture('<button>Voglio viaggiare senza protezione</button>')
-    assert protect() == "unavailable"
+    assert protect() == "not-found"
     fixture('<label><input type="radio">Aggiungi una Protezione completa di viaggio</label>')
-    assert protect() == "unavailable"
+    assert protect() == "not-found"
     assert not page.locator('input').is_checked()
     fixture('<label><input type="checkbox">Voglio viaggiare senza protezione</label>' * 2)
-    assert protect() == "unavailable"
+    assert protect() == "ambiguous"
     assert page.locator('input:checked').count() == 0
     page.goto("https://example.org/app/booking/test/checkout")
     fixture('<label><input type="checkbox">Voglio viaggiare senza protezione</label>')
     assert protect() == "unavailable"
+    page.goto("https://www.omio.com/app/booking/test/checkout")
+    fixture('<form><button type="button" aria-pressed="false" onclick="this.setAttribute(\'aria-pressed\',\'true\')">Voglio viaggiare senza protezione</button><button>Paga</button></form>')
+    assert protect() == "selected"
+    assert protect(True) == "selected"
+    assert page.evaluate("window.paid") == 0
+    fixture('<form><button aria-pressed="false">Voglio viaggiare senza protezione</button></form>')
+    assert protect() == "not-found"  # Default submit button must never be clicked.
+    assert page.evaluate("window.paid") == 0
+    fixture('<div role="button" aria-pressed="false" onclick="setTimeout(()=>this.setAttribute(\'aria-pressed\',\'true\'),100)">Voglio viaggiare senza protezione</div>')
+    assert protect() == "unconfirmed"
+    page.wait_for_timeout(200)
+    assert protect(True) == "selected"
     browser.close()
 print("Payment and protection selection checks passed; no payment submissions")
