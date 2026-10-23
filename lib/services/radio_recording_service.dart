@@ -18,6 +18,8 @@ class RadioRecordingService extends ChangeNotifier with WidgetsBindingObserver {
 
   final String directoryName;
   final bool includeVideo;
+  final Duration stopRetryInterval;
+  Future<File?>? _stopOperation;
 
   FFmpegSession? _session;
   File? _outputFile;
@@ -109,6 +111,7 @@ class RadioRecordingService extends ChangeNotifier with WidgetsBindingObserver {
   RadioRecordingService({
     this.directoryName = 'Radio Registrazioni',
     this.includeVideo = false,
+    this.stopRetryInterval = const Duration(seconds: 10),
   });
 
   bool get isRecording => _session != null || _paused || isTransitioning;
@@ -352,7 +355,12 @@ class RadioRecordingService extends ChangeNotifier with WidgetsBindingObserver {
     }
   }
 
-  Future<File?> stop() async {
+  Future<File?> stop() =>
+      _stopOperation ??= _stopAndFinalize().whenComplete(() {
+        _stopOperation = null;
+      });
+
+  Future<File?> _stopAndFinalize() async {
     await _transition?.future;
     final transition = Completer<void>();
     _transition = transition;
@@ -434,9 +442,25 @@ class RadioRecordingService extends ChangeNotifier with WidgetsBindingObserver {
     await AppLogger.log(
       'Radio recording: stop requested; awaiting finalization',
     );
-    await FFmpegKit.cancel(session.getSessionId());
-    // Cancellation is asynchronous: the file is not ready until FFmpeg closes it.
-    await _completion!.future.timeout(const Duration(seconds: 30));
+    final completion = _completion!;
+    // Reissue cancellation for this session only. Never clear the session or
+    // offer the file while the native writer may still be alive.
+    for (var attempt = 1; attempt <= 3 && !completion.isCompleted; attempt++) {
+      await AppLogger.log(
+        'Radio recording: cancel attempt=$attempt session=${session.getSessionId()}',
+      );
+      try {
+        await FFmpegKit.cancel(
+          session.getSessionId(),
+        ).timeout(stopRetryInterval);
+        await completion.future.timeout(stopRetryInterval);
+      } on TimeoutException {
+        await AppLogger.log(
+          'Radio recording: cancellation pending attempt=$attempt mediaMs=$_mediaMs',
+        );
+        if (attempt == 3 && !completion.isCompleted) rethrow;
+      }
+    }
     if (file == null || !await file.exists() || await file.length() == 0) {
       throw StateError('recording_output_missing');
     }
@@ -465,6 +489,7 @@ class RadioRecordingService extends ChangeNotifier with WidgetsBindingObserver {
       if (_isDashStream(streamUrl)) {
         return [
           '-y',
+          ..._networkInputOptions(streamUrl),
           '-user_agent',
           userAgent,
           '-i',
@@ -481,6 +506,7 @@ class RadioRecordingService extends ChangeNotifier with WidgetsBindingObserver {
       }
       return [
         '-y',
+        ..._networkInputOptions(streamUrl),
         '-user_agent',
         userAgent,
         '-i',
@@ -492,6 +518,7 @@ class RadioRecordingService extends ChangeNotifier with WidgetsBindingObserver {
     }
     return [
       '-y',
+      ..._networkInputOptions(streamUrl),
       '-user_agent',
       userAgent,
       '-i',
@@ -513,10 +540,12 @@ class RadioRecordingService extends ChangeNotifier with WidgetsBindingObserver {
   }) {
     return [
       '-y',
+      ..._networkInputOptions(videoUrl),
       '-user_agent',
       userAgent,
       '-i',
       videoUrl,
+      ..._networkInputOptions(audioUrl),
       '-user_agent',
       userAgent,
       '-i',
@@ -540,6 +569,21 @@ class RadioRecordingService extends ChangeNotifier with WidgetsBindingObserver {
     final path =
         Uri.tryParse(streamUrl)?.path.toLowerCase() ?? streamUrl.toLowerCase();
     return path.endsWith('.mpd');
+  }
+
+  List<String> _networkInputOptions(String url) {
+    final uri = Uri.tryParse(url);
+    if (uri == null || !['http', 'https'].contains(uri.scheme)) return const [];
+    return [
+      // Microseconds. Bound a blocked network read independently of UI timeouts.
+      '-rw_timeout', '5000000',
+      if (uri.path.toLowerCase().endsWith('.m3u8')) ...[
+        // HLS otherwise keeps skipping failed segments/reloading up to 1000
+        // times during one read. Healthy reads reset these counters.
+        '-max_reload', '3',
+        '-m3u8_hold_counters', '3',
+      ],
+    ];
   }
 
   String _effectiveUserAgent(String? httpUserAgent) {

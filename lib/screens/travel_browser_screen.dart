@@ -56,6 +56,7 @@ class _TravelBrowserScreenState extends State<TravelBrowserScreen> {
   bool _loading = true, _error = false, _canGoBack = false;
   bool _cookieVerificationPending = false;
   bool _showBrowser = false, _paymentBusy = false;
+  bool _noProtection = true;
   bool _paymentUnavailable = false;
   List<String> _paymentMethods = [];
   Timer? _paymentTimer;
@@ -196,9 +197,22 @@ class _TravelBrowserScreenState extends State<TravelBrowserScreen> {
     if (_paymentBusy) return;
     setState(() => _paymentBusy = true);
     var confirmed = false;
+    var protectionConfirmed = !_noProtection;
     try {
+      if (_noProtection) {
+        await _controller!.runJavaScriptReturningResult(
+          travelNoProtectionScript(),
+        );
+      }
       final data = await _paymentScript(select: method);
       confirmed = data['status'] == 'selected';
+      if (_noProtection) {
+        final result = await _controller!.runJavaScriptReturningResult(
+          travelNoProtectionScript(verifyOnly: true),
+        );
+        protectionConfirmed =
+            result.toString().replaceAll('"', '') == 'selected';
+      }
     } catch (_) {
       // The original page remains available even after a provider change.
     }
@@ -209,12 +223,26 @@ class _TravelBrowserScreenState extends State<TravelBrowserScreen> {
             : '[Travel] payment_method_selection_unconfirmed',
       ),
     );
+    if (_noProtection) {
+      unawaited(
+        _log(
+          protectionConfirmed
+              ? '[Travel] no_protection_selected'
+              : '[Travel] no_protection_unconfirmed',
+        ),
+      );
+    }
     if (!mounted) return;
     _revealBrowser();
     if (!confirmed) {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(t.t('paymentSelectOnSite'))));
+    }
+    if (!protectionConfirmed) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(t.t('noProtectionUnconfirmed'))));
     }
   }
 
@@ -389,6 +417,18 @@ class _TravelBrowserScreenState extends State<TravelBrowserScreen> {
                               title: t.t('paymentChoiceHelp'),
                               kind: 'text',
                               accessibilityButtonTrait: false,
+                            ),
+                            AccessibleListRow(
+                              id: 'payment-no-protection',
+                              title: t.t('noProtection'),
+                              kind: 'toggle',
+                              toggleValue: _noProtection,
+                              enabled: !_paymentBusy,
+                              onValueChanged: (value) {
+                                if (!_paymentBusy && value is bool) {
+                                  setState(() => _noProtection = value);
+                                }
+                              },
                             ),
                             if (_paymentMethods.isEmpty)
                               AccessibleListRow(

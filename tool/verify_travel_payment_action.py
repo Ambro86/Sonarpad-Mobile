@@ -39,5 +39,27 @@ with sync_playwright() as p:
     page.goto("https://www.omio.com.other.test/app/booking/test/checkout")
     fixture('<label><input type="radio">PayPal</label>')
     assert run("PayPal")["status"] == "unavailable"
+    protection = source.split("const _noProtection = r" + "'" * 3, 1)[1].split("'" * 3 + ";", 1)[0]
+    page.goto("https://www.omio.com/app/booking/test/checkout")
+    def protect(verify=False):
+        return page.evaluate(protection.replace("__VERIFY__", str(verify).lower()))
+    fixture('<form><label><input type="checkbox">Voglio viaggiare senza protezione</label><button>Paga</button></form>')
+    assert protect(True) == "unconfirmed"
+    assert not page.locator('input').is_checked()
+    assert protect() == "selected"
+    assert protect() == "selected"  # Already selected: never toggle it off.
+    assert protect(True) == "selected"
+    assert page.evaluate("window.paid") == 0
+    fixture('<button>Voglio viaggiare senza protezione</button>')
+    assert protect() == "unavailable"
+    fixture('<label><input type="radio">Aggiungi una Protezione completa di viaggio</label>')
+    assert protect() == "unavailable"
+    assert not page.locator('input').is_checked()
+    fixture('<label><input type="checkbox">Voglio viaggiare senza protezione</label>' * 2)
+    assert protect() == "unavailable"
+    assert page.locator('input:checked').count() == 0
+    page.goto("https://example.org/app/booking/test/checkout")
+    fixture('<label><input type="checkbox">Voglio viaggiare senza protezione</label>')
+    assert protect() == "unavailable"
     browser.close()
-print("9 payment selection scenarios passed; no payment submissions")
+print("Payment and protection selection checks passed; no payment submissions")

@@ -121,6 +121,9 @@ class TravelStrings {
     'statusRefresh': 'Controlla se il checkout è pronto',
     'openCheckout': 'Apri il checkout Omio',
     'paymentChoice': 'Scegli il metodo di pagamento',
+    'noProtection': 'Non aggiungere alcuna protezione per il viaggio',
+    'noProtectionUnconfirmed':
+        'Non ho potuto confermare la scelta senza protezione. Verifica le protezioni su Omio prima di pagare.',
     'paymentChoiceHelp':
         'Scegli un metodo disponibile su Omio. Si aprirà la pagina per verificare il totale, le protezioni e completare il pagamento. Nessun pagamento viene eseguito automaticamente.',
     'paymentCard': 'Carta di credito o debito',
@@ -252,6 +255,9 @@ class TravelStrings {
     'statusRefresh': 'Check whether checkout is ready',
     'openCheckout': 'Open Omio checkout',
     'paymentChoice': 'Choose a payment method',
+    'noProtection': 'Do not add any travel protection',
+    'noProtectionUnconfirmed':
+        'The choice to travel without protection could not be confirmed. Check protection options on Omio before paying.',
     'paymentChoiceHelp':
         'Choose a method available on Omio. The page will open to review the total and protection options and complete payment. No payment is made automatically.',
     'paymentCard': 'Credit or debit card',

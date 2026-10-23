@@ -501,6 +501,15 @@ class _WeatherForecastView extends StatelessWidget {
     if (useSharedAccessibleViewModel) {
       return Expanded(
         child: UniversalAccessibleList(
+          debugTag: 'weather',
+          // Today-only readings come and go without recreating the focused
+          // day slider or posting a focus-restoration announcement.
+          transientRowIds: const [
+            'situation',
+            'current_temp',
+            'humidity',
+            'air_quality',
+          ],
           sections: [
             AccessibleListSection(rows: [
               AccessibleListRow(

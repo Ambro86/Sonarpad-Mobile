@@ -12,7 +12,7 @@ import 'package:ffmpeg_kit_flutter_new/src/ffmpeg_kit_factory.dart';
 import 'package:ffmpeg_kit_flutter_platform_interface/ffmpeg_kit_flutter_platform_interface.dart';
 
 class RecordingFixture extends RadioRecordingService {
-  RecordingFixture(this.directory);
+  RecordingFixture(this.directory, {super.stopRetryInterval});
   final Directory directory;
   @override
   Future<Directory> recordingsDirectory() async => directory;
@@ -25,6 +25,8 @@ class NativeRecording extends FFmpegKitPlatform {
   late File file;
   bool cancelled = false;
   bool failJoin = false;
+  int cancelCalls = 0;
+  int? finishAfterCancel;
   List<String> arguments = [];
   @override
   Future<Map<dynamic, dynamic>?> abstractSessionCreateFFmpegSession(
@@ -70,7 +72,10 @@ class NativeRecording extends FFmpegKitPlatform {
   Future<int?> abstractSessionGetReturnCode(int? sessionId) async => code;
   @override
   Future<void> ffmpegKitCancelSession(int sessionId) async {
+    expect(sessionId, id);
     cancelled = true;
+    cancelCalls++;
+    if (cancelCalls == finishAfterCancel) finish(255);
   }
 
   void finish(int value) {
@@ -202,6 +207,8 @@ void main() {
   late Directory root;
   setUp(() async {
     native.failJoin = false;
+    native.cancelCalls = 0;
+    native.finishAfterCancel = null;
     root = await Directory.systemTemp.createTemp("recording's-lifecycle-");
     final messenger =
         TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
@@ -240,6 +247,52 @@ void main() {
     expect(service.stoppedUnexpectedly, isFalse);
     service.dispose();
   });
+  test(
+    'blocked HLS stop retries only the recording and coalesces repeated taps',
+    () async {
+      final service = RecordingFixture(
+        root,
+        stopRetryInterval: const Duration(milliseconds: 20),
+      );
+      await service.start(
+        stationName: 'TV',
+        streamUrl: 'https://example.org/live.m3u8?token=test',
+        videoStreamUrl: 'https://example.org/video.m3u8',
+        audioStreamUrl: 'https://example.org/audio.m3u8',
+      );
+      expect(native.arguments.where((a) => a == '-rw_timeout').length, 2);
+      expect(native.arguments.where((a) => a == '-max_reload').length, 2);
+      native.finishAfterCancel = 2;
+      final first = service.stop();
+      final second = service.stop();
+      expect(identical(first, second), isTrue);
+      final files = await Future.wait([first, second]);
+      expect(native.cancelCalls, 2);
+      expect(files.first!.path, files.last!.path);
+      expect(service.isRecording, isFalse);
+      service.dispose();
+    },
+  );
+  test(
+    'unresponsive native stop stays active instead of reporting a saved file',
+    () async {
+      final service = RecordingFixture(
+        root,
+        stopRetryInterval: const Duration(milliseconds: 10),
+      );
+      await service.start(
+        stationName: 'TV',
+        streamUrl: 'https://example.org/live.m3u8',
+      );
+      await expectLater(service.stop(), throwsA(isA<TimeoutException>()));
+      expect(native.cancelCalls, 3);
+      expect(service.isRecording, isTrue);
+      native.finish(255);
+      await Future<void>.delayed(const Duration(milliseconds: 20));
+      expect(service.isRecording, isFalse);
+      service.dispose();
+    },
+  );
   test(
     'Unexpected process exit clears recording state and notifies UI',
     () async {

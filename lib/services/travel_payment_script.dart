@@ -1,5 +1,42 @@
 import 'dart:convert';
 
+String travelNoProtectionScript({bool verifyOnly = false}) =>
+    _noProtection.replaceFirst('__VERIFY__', '$verifyOnly');
+
+const _noProtection = r'''
+(() => {
+  if (location.protocol !== 'https:' || (location.port && location.port !== '443') ||
+      !['omio.com', 'www.omio.com'].includes(location.hostname) ||
+      !/\/checkout\/?$/.test(location.pathname)) return 'unavailable';
+  const visible = el => {
+    const r = el.getBoundingClientRect(), s = getComputedStyle(el);
+    return r.width > 0 && r.height > 0 && s.visibility !== 'hidden' &&
+      s.display !== 'none' && !el.closest('[inert], [aria-hidden="true"]');
+  };
+  if ([...document.querySelectorAll('[aria-modal="true"], dialog[open]')].some(visible)) return 'blocked';
+  const names = new Set(['voglio viaggiare senza protezione',
+    'i want to travel without protection', 'travel without protection']);
+  const normalize = text => (text || '').toLowerCase().replace(/\s+/g, ' ').trim();
+  const matches = [];
+  for (const el of document.querySelectorAll('input[type="radio"], input[type="checkbox"], [role="radio"], [role="checkbox"], [role="switch"]')) {
+    if (el.disabled || el.getAttribute('aria-disabled') === 'true' ||
+        (el.tagName === 'BUTTON' && el.type !== 'button')) continue;
+    const labels = [...(el.labels || [])];
+    if (!visible(el) && !labels.some(visible)) continue;
+    const refs = (el.getAttribute('aria-labelledby') || '').split(/\s+/)
+      .map(id => document.getElementById(id)).filter(Boolean);
+    const texts = [el.getAttribute('aria-label'), el.textContent,
+      refs.map(x => x.textContent).join(' '), ...labels.map(x => x.textContent)];
+    if (texts.some(t => names.has(normalize(t)))) matches.push(el);
+  }
+  if (matches.length !== 1) return 'unavailable';
+  const el = matches[0];
+  const checked = () => el.checked === true || el.getAttribute('aria-checked') === 'true';
+  if (!__VERIFY__ && !checked()) el.click();
+  return checked() ? 'selected' : 'unconfirmed';
+})()
+''';
+
 /// Only radio selection is allowed. Never clicks buttons, submits forms or
 /// accesses provider frames. Labels are re-read on every invocation.
 String travelPaymentScript({String? select}) =>

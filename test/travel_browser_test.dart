@@ -5,7 +5,7 @@ import 'package:webview_flutter_platform_interface/webview_flutter_platform_inte
 import 'package:sonarpad_mobile_starter/screens/travel_browser_screen.dart';
 import 'package:sonarpad_mobile_starter/services/travel_cookie_script.dart';
 import 'package:sonarpad_mobile_starter/services/travel_payment_script.dart';
-import 'travel_screen_test.dart' show app;
+import 'travel_screen_test.dart' show app, row;
 
 class BrowserPlatform extends WebViewPlatform {
   @override
@@ -48,6 +48,9 @@ class BrowserController extends Fake implements WebViewController {
   @override
   Future<Object> runJavaScriptReturningResult(String script) async {
     scripts.add(script);
+    if (script == travelNoProtectionScript() ||
+        script == travelNoProtectionScript(verifyOnly: true))
+      return 'selected';
     if (script == travelPaymentScript()) return paymentStatus;
     if (script == travelPaymentScript(select: 'PayPal')) {
       return '{"status":"selected","methods":["PayPal","card"]}';
@@ -200,6 +203,8 @@ void main() {
           .first,
     );
     expect(hidden.opacity, 0);
+    expect(row(tester, 'payment-no-protection').toggleValue, isTrue);
+    expect(controller.scripts, isNot(contains(travelNoProtectionScript())));
     expect(
       controller.scripts,
       isNot(contains(travelPaymentScript(select: 'PayPal'))),
@@ -214,7 +219,44 @@ void main() {
       1,
     );
     expect(logs, contains('[Travel] payment_method_selected'));
+    expect(
+      controller.scripts,
+      containsAllInOrder([
+        travelNoProtectionScript(),
+        travelPaymentScript(select: 'PayPal'),
+        travelNoProtectionScript(verifyOnly: true),
+      ]),
+    );
     expect(logs.join(), isNot(contains(controller.current)));
+    await tester.pumpWidget(const SizedBox());
+  });
+  testWidgets('disabling no protection leaves Omio insurance unchanged', (
+    tester,
+  ) async {
+    final controller = BrowserController();
+    await tester.pumpWidget(
+      app(
+        TravelBrowserScreen(
+          url: controller.current,
+          controllerFactory: () => controller,
+          browserBuilder: (_) => const SizedBox(),
+          logger: (_) async {},
+        ),
+      ),
+    );
+    await tester.pump();
+    controller.delegate!.onPageFinished!(controller.current);
+    await tester.pumpAndSettle();
+    row(tester, 'payment-no-protection').onValueChanged!(false);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('PayPal'));
+    await tester.pumpAndSettle();
+    expect(controller.scripts, isNot(contains(travelNoProtectionScript())));
+    expect(
+      controller.scripts,
+      isNot(contains(travelNoProtectionScript(verifyOnly: true))),
+    );
+    expect(controller.scripts, contains(travelPaymentScript(select: 'PayPal')));
     await tester.pumpWidget(const SizedBox());
   });
 }
