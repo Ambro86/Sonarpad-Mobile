@@ -10,7 +10,7 @@ const travelCheckoutDiagnosticsScript = r'''
     ['voglio viaggiare senza protezione','no-protection'],
     ['i want to travel without protection','no-protection'],
     ['travel without protection','no-protection'],
-    ['paypal','paypal'], ['carta','card'], ['card','card'],
+    ['revpoints','revpoints'], ['paypal','paypal'], ['carta','card'], ['card','card'],
     ['carta di credito','card'], ['credit card','card'],
     ['apple pay','apple-pay'], ['google pay','google-pay'], ['revolut pay','revolut-pay']
   ]);
@@ -42,6 +42,8 @@ const travelCheckoutDiagnosticsScript = r'''
   const describe = el => {
     const box = el.getBoundingClientRect(), style = getComputedStyle(el);
     return {
+      bounds: [box.x,box.y,box.width,box.height].map(Math.round),
+      tabIndex: el.tabIndex,
       node: id(el), tag: el.tagName.toLowerCase(),
       role: attr(el,'role',['radio','checkbox','switch','button','radiogroup','group','dialog']),
       type: attr(el,'type',['radio','checkbox','button','submit','hidden']),
@@ -63,7 +65,7 @@ const travelCheckoutDiagnosticsScript = r'''
   };
   if (!state.listening) {
     state.listening = true;
-    for (const type of ['click','change','input']) {
+    for (const type of ['click','change','input','focusin','focusout']) {
       document.addEventListener(type, event => {
         if (performance.now() - state.lastPoll > 6000) return;
         let target = event.target instanceof Element ? event.target : null;
@@ -119,6 +121,7 @@ const travelCheckoutDiagnosticsScript = r'''
     const style = win.getComputedStyle(el), r = el.getBoundingClientRect();
     return {node:id(el), rendered:r.width>0 && r.height>0 && style.display!=='none' && style.visibility!=='hidden',
       hiddenAncestor:!!el.closest('[hidden],[inert],[aria-hidden="true"]'),
+      bounds:[r.x,r.y,r.width,r.height].map(Math.round),
       inViewport:r.bottom>0 && r.top<win.innerHeight && r.right>0 && r.left<win.innerWidth};
   };
   const provider = frame => {
@@ -155,9 +158,19 @@ const travelCheckoutDiagnosticsScript = r'''
     }
   };
   inspectDocument(document,'main',0);
+  const landmarks = [...document.querySelectorAll('button,a,[role],iframe')]
+    .filter(el => classify(el).some(x=>['revpoints','revolut-pay','paypal'].includes(x.match)) ||
+      (el.tagName==='IFRAME' && ['revolut.com','paypal.com'].includes(provider(el))))
+    .slice(0,20).map(el=>({...describe(el),matches:classify(el),
+      previous:el.previousElementSibling ? describe(el.previousElementSibling) : null,
+      next:el.nextElementSibling ? describe(el.nextElementSibling) : null,
+      parent:el.parentElement ? describe(el.parentElement) : null}));
+  const viewport = {scrollX:Math.round(scrollX),scrollY:Math.round(scrollY),
+    width:innerWidth,height:innerHeight,documentHeight:document.documentElement.scrollHeight};
+  const active = document.activeElement ? describe(document.activeElement) : null;
   const events = state.events.splice(0);
   return JSON.stringify({scope:'checkout',version:2,ready:document.readyState,
-    documents,frameDetails,
+    documents,frameDetails,landmarks,viewport,active,
     count,truncated:count>32,controls,events,
     frames:document.querySelectorAll('iframe').length,
     modalCount:[...document.querySelectorAll('[aria-modal="true"],dialog[open]')].filter(el=>describe(el).rendered).length});

@@ -85,5 +85,18 @@ with sync_playwright() as p:
     assert protect(True) == "selected"
     fixture('<div role="button" aria-pressed="true" aria-disabled="true">Voglio viaggiare senza protezione</div>')
     assert protect(True) == "selected"
+    position = source.split("const travelPayPalPositionScript = r" + "'" * 3, 1)[1].split("'" * 3 + ";", 1)[0]
+    fixture('<div style="height:2000px">Page</div><button onclick="window.paid++">PayPal</button>')
+    assert page.evaluate(position) == "paypal-area"
+    assert page.evaluate("window.scrollY") > 0
+    assert page.evaluate("document.activeElement.tagName") == "BUTTON"
+    assert page.evaluate("window.paid") == 0
+    fixture('<div style="height:2000px">Page</div>')
+    assert page.evaluate(position) == "bottom"
+    assert page.evaluate("window.scrollY") > 0
+    fixture('<div aria-modal="true">Cookies</div><button>PayPal</button>')
+    assert page.evaluate(position) == "blocked"
+    page.goto("https://www.paypal.com/checkout")
+    assert page.evaluate(position) == "unavailable"
     browser.close()
 print("Payment and protection selection checks passed; no payment submissions")

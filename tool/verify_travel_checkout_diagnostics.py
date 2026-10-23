@@ -31,7 +31,7 @@ with sync_playwright() as p:
     page.locator("button[aria-pressed]").evaluate("e => e.replaceWith(e.cloneNode(true))")
     third = read()
     assert not any(c["node"] == node for c in third["controls"])
-    assert third["events"] == []
+    assert all(e["event"] == "focusout" for e in third["events"])
     fields = first["documents"][0]["fields"]
     assert {x["category"] for x in fields} >= {"card-number", "card-security-code", "password"}
     assert all("value" not in x for x in fields)
@@ -49,6 +49,18 @@ with sync_playwright() as p:
     assert any(f["category"] == "card-expiry" for d in framed["documents"] for f in d["fields"])
     assert "12/30" not in json.dumps(framed)
     assert "secret-token" not in json.dumps(framed)
+    page.evaluate("""() => {
+      const b=document.createElement('button'); b.type='button'; b.textContent='RevPoints';
+      b.style.marginTop='2000px'; document.body.append(b); b.focus();
+    }""")
+    focused = read()
+    assert any(e['event']=='focusin' and any(m['match']=='revpoints' for m in e['matches']) for e in focused['events'])
+    landmark = next(x for x in focused['landmarks'] if any(m['match']=='revpoints' for m in x['matches']))
+    assert landmark['node'] == focused['active']['node']
+    assert len(landmark['bounds']) == 4
+    assert focused['viewport']['scrollY'] > 0
+    assert page.evaluate("window.paid") is None
+    assert 'private@example.org' not in json.dumps(focused)
     page.goto("https://example.org/app/booking/test/checkout")
     assert read() == {"scope": "outside-checkout"}
     browser.close()

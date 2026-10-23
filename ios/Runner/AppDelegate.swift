@@ -5,6 +5,71 @@ import AVFoundation
 import PhotosUI
 import MobileCoreServices
 
+// Read-only, short-lived focus trace. Never exports labels, values or identifiers.
+class SonarpadTravelFocusPlugin: NSObject, FlutterPlugin {
+  private var observer: NSObjectProtocol?
+  private var lastPoll = Date.distantPast
+  private var events: [[String: Any]] = []
+  private var sequence = 0
+
+  static func register(with registrar: FlutterPluginRegistrar) {
+    let instance = SonarpadTravelFocusPlugin()
+    let channel = FlutterMethodChannel(name: "sonarpad/travel_focus", binaryMessenger: registrar.messenger())
+    registrar.addMethodCallDelegate(instance, channel: channel)
+  }
+
+  private func describe(_ element: Any?) -> [String: Any] {
+    guard let object = element as? NSObject else { return ["present": false] }
+    let label = (object.accessibilityLabel ?? "").lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
+    // Only fixed categories leave native code; no arbitrary label fragments.
+    let category: String
+    if label == "revpoints" { category = "revpoints" }
+    else if label == "paypal" { category = "paypal" }
+    else if label == "revolut pay" { category = "revolut-pay" }
+    else { category = "other" }
+    let rect = object.accessibilityFrame
+    var result: [String: Any] = ["present": true, "category": category,
+      "button": object.accessibilityTraits.contains(.button),
+      "link": object.accessibilityTraits.contains(.link),
+      "selected": object.accessibilityTraits.contains(.selected),
+      "isView": element is UIView, "isAccessibilityElement": element is UIAccessibilityElement]
+    if !rect.isNull && !rect.isInfinite && rect.origin.x.isFinite && rect.origin.y.isFinite && rect.width.isFinite && rect.height.isFinite {
+      result["frame"] = [rect.origin.x, rect.origin.y, rect.width, rect.height].map { Double($0.rounded()) }
+    }
+    return result
+  }
+
+  func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+    if call.method == "stop" {
+      if let observer = observer { NotificationCenter.default.removeObserver(observer) }
+      observer = nil
+      events.removeAll()
+      lastPoll = .distantPast
+      result(nil)
+      return
+    }
+    guard call.method == "snapshot" else { result(FlutterMethodNotImplemented); return }
+    lastPoll = Date()
+    if observer == nil {
+      observer = NotificationCenter.default.addObserver(forName: UIAccessibility.elementFocusedNotification, object: nil, queue: .main) { [weak self] notification in
+        guard let self = self, Date().timeIntervalSince(self.lastPoll) < 6 else { return }
+        self.sequence += 1
+        var event = self.describe(notification.userInfo?[UIAccessibility.focusedElementUserInfoKey])
+        event["sequence"] = self.sequence
+        event["timeMs"] = Date().timeIntervalSince1970 * 1000
+        self.events.append(event)
+        self.events = Array(self.events.suffix(40))
+      }
+    }
+    let output: [String: Any] = ["voiceOver": UIAccessibility.isVoiceOverRunning,
+      "focused": describe(UIAccessibility.focusedElement(using: .notificationVoiceOver)), "events": events]
+    events.removeAll()
+    result(output)
+  }
+
+  deinit { if let observer = observer { NotificationCenter.default.removeObserver(observer) } }
+}
+
 class SonarpadTTSPlugin: NSObject, FlutterPlugin, FlutterStreamHandler {
   private var eventSink: FlutterEventSink?
 
@@ -330,6 +395,7 @@ class SonarpadPhotoLibraryImportPlugin: NSObject, FlutterPlugin, PHPickerViewCon
 
   func didInitializeImplicitFlutterEngine(_ engineBridge: FlutterImplicitEngineBridge) {
     GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
+    SonarpadTravelFocusPlugin.register(with: engineBridge.pluginRegistry.registrar(forPlugin: "SonarpadTravelFocusPlugin")!)
     SonarpadTTSPlugin.register(with: engineBridge.pluginRegistry.registrar(forPlugin: "SonarpadTTSPlugin")!)
     SonarpadRaiPlayerPlugin.register(with: engineBridge.pluginRegistry.registrar(forPlugin: "SonarpadRaiPlayerPlugin")!)
     SonarpadSharedMediaPlugin.register(with: engineBridge.pluginRegistry.registrar(forPlugin: "SonarpadSharedMediaPlugin")!)

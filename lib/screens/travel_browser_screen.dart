@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import '../l10n/app_localizations.dart';
@@ -96,6 +98,7 @@ class _TravelBrowserScreenState extends State<TravelBrowserScreen> {
             return NavigationDecision.prevent;
           },
           onPageStarted: (_) {
+            unawaited(_stopFocusTrace());
             _checkoutDiagnosticsTimer?.cancel();
             _lastCheckoutSnapshot = null;
             _paymentTimer?.cancel();
@@ -200,6 +203,29 @@ class _TravelBrowserScreenState extends State<TravelBrowserScreen> {
     }
   }
 
+  static const _focusChannel = MethodChannel('sonarpad/travel_focus');
+
+  Future<void> _stopFocusTrace() async {
+    if (defaultTargetPlatform != TargetPlatform.iOS) return;
+    try {
+      await _focusChannel.invokeMethod<void>('stop');
+    } catch (_) {}
+  }
+
+  Future<void> _captureFocusTrace(String stage) async {
+    if (defaultTargetPlatform != TargetPlatform.iOS) return;
+    try {
+      final data = await _focusChannel.invokeMethod<Object?>('snapshot');
+      if (mounted) {
+        await _log(
+          '[TravelCheckoutFocus] stage=$stage data=${jsonEncode(data)}',
+        );
+      }
+    } catch (_) {
+      if (mounted) await _log('[TravelCheckoutFocus] unavailable');
+    }
+  }
+
   Future<void> _captureCheckout(
     String stage, {
     bool onlyChanges = false,
@@ -216,6 +242,11 @@ class _TravelBrowserScreenState extends State<TravelBrowserScreen> {
       }
       if (!mounted || generation != _generation) return;
       if (data is! Map) throw const FormatException();
+      if (data['scope'] == 'checkout') {
+        await _captureFocusTrace(stage);
+      } else {
+        await _stopFocusTrace();
+      }
       final encoded = jsonEncode(data);
       if (onlyChanges && encoded == _lastCheckoutSnapshot) return;
       _lastCheckoutSnapshot = encoded;
@@ -270,6 +301,7 @@ class _TravelBrowserScreenState extends State<TravelBrowserScreen> {
     ) {
       if (!mounted || ++tick > 90) {
         timer.cancel();
+        unawaited(_stopFocusTrace());
         return;
       }
       unawaited(_captureCheckout('visible-${tick * 2}s', onlyChanges: true));
@@ -365,6 +397,25 @@ class _TravelBrowserScreenState extends State<TravelBrowserScreen> {
     }
     if (!mounted) return;
     _revealBrowser();
+    if (method == 'PayPal' && confirmed) {
+      final generation = _generation;
+      await WidgetsBinding.instance.endOfFrame;
+      if (!mounted || generation != _generation) return;
+      try {
+        final result = await _controller!.runJavaScriptReturningResult(
+          travelPayPalPositionScript,
+        );
+        final status = result.toString().replaceAll('"', '');
+        const known = {'paypal-area', 'bottom', 'blocked', 'unavailable'};
+        unawaited(
+          _log(
+            '[TravelCheckout] paypal_position status=${known.contains(status) ? status : 'unknown'}',
+          ),
+        );
+      } catch (_) {
+        unawaited(_log('[TravelCheckout] paypal_position_failed'));
+      }
+    }
     await _captureCheckout('browser-revealed');
     if (!mounted) return;
     _watchCheckout();
@@ -484,6 +535,7 @@ class _TravelBrowserScreenState extends State<TravelBrowserScreen> {
   @override
   void dispose() {
     _checkoutDiagnosticsTimer?.cancel();
+    unawaited(_stopFocusTrace());
     if (_cookieVerificationPending) {
       unawaited(_log('[Travel] cookie_verification_interrupted'));
     }
