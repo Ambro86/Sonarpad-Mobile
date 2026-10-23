@@ -206,7 +206,7 @@ class _TravelSearchScreenState extends State<TravelSearchScreen> {
   );
   List<AccessibleOption> _numbers(int first, int last) => [
     for (var n = first; n <= last; n++)
-      AccessibleOption(value: '$n', label: '$n'),
+      AccessibleOption(value: n.toString(), label: n.toString()),
   ];
   List<AccessibleListRow> _dateRows(
     String prefix,
