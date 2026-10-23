@@ -2,8 +2,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:html/parser.dart' as html;
 import 'package:intl/intl.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
+import 'package:sealed_countries/sealed_countries.dart';
 import '../l10n/app_localizations.dart';
 import '../l10n/travel_strings.dart';
 import '../services/travel_service.dart';
@@ -11,6 +11,9 @@ import '../utils/app_logger.dart';
 import '../utils/country_name_helper.dart';
 import '../utils/status_message.dart';
 import '../widgets/universal_accessible_view.dart';
+import 'travel_browser_screen.dart';
+
+part 'travel_passengers.dart';
 
 TravelStrings _strings(BuildContext context) =>
     TravelStrings(AppLocalizations.of(context).localeName);
@@ -75,6 +78,26 @@ String _money(dynamic value, String currency, TravelStrings t) {
       : t.t('priceUnavailable');
 }
 
+String _fareDetails(Map<String, dynamic> offer) {
+  final details = <String>{};
+  void add(Object? value) {
+    if (value is! String) return;
+    final text = _plain(value).trim();
+    if (text.isNotEmpty) details.add(text);
+  }
+
+  for (final amenity in offer['amenities'] as List? ?? []) {
+    if (amenity is Map) add(amenity['name']);
+  }
+  for (final fare in offer['fare'] as List? ?? []) {
+    if (fare is Map) {
+      add(fare['description']);
+      add(fare['cancellationDescription']);
+    }
+  }
+  return details.join('\n');
+}
+
 String _time(dynamic value, TravelStrings t) {
   // Preserve station-local wall time from the provider; do not convert to phone timezone.
   final raw = value?.toString() ?? '';
@@ -90,11 +113,70 @@ String _journey(Map<String, dynamic> item, String currency, TravelStrings t) =>
     '${item['carrierCode'] ?? ''}. ${_money(item['totalPrice'] ?? item['price'], item['currency']?.toString() ?? currency, t)}. '
     '${t.t('changes')}: ${item['stops'] ?? '?'}';
 
-class TravelScreen extends StatelessWidget {
+class TravelScreen extends StatefulWidget {
   const TravelScreen({super.key});
+  @override
+  State<TravelScreen> createState() => _TravelScreenState();
+}
+
+class _TravelScreenState extends State<TravelScreen> {
+  final _consent = TravelWelcomeConsent();
+  bool _accepted = false, _busy = true, _failed = false, _loaded = false;
+  @override
+  void initState() {
+    super.initState();
+    _loadConsent();
+  }
+
+  Future<void> _loadConsent() async {
+    try {
+      final accepted = await _consent.isAccepted();
+      if (mounted) setState(() => _accepted = accepted);
+    } catch (_) {
+      if (mounted) setState(() => _failed = true);
+    } finally {
+      if (mounted) {
+        setState(() {
+          _busy = false;
+          _loaded = true;
+        });
+      }
+    }
+  }
+
+  Future<void> _accept() async {
+    if (_busy) return;
+    setState(() {
+      _busy = true;
+      _failed = false;
+    });
+    try {
+      await _consent.accept();
+      if (mounted) setState(() => _accepted = true);
+    } catch (_) {
+      if (mounted) setState(() => _failed = true);
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final t = _strings(context);
+    if (!_loaded) {
+      return _page(t.t('title'), [_info('loading', t.t('working'))]);
+    }
+    if (!_accepted) {
+      return _page(t.t('welcomeTitle'), [
+        if (_busy) _info('loading', t.t('working')),
+        if (_failed) _info('error', t.t('welcomeSaveError')),
+        for (var i = 1; i <= 5; i++) _info('welcome-$i', t.t('welcome$i')),
+        _action('accept', t.t('accept'), _accept, enabled: !_busy),
+        _action('decline', t.t('decline'), () async {
+          await Navigator.of(context).maybePop();
+        }, enabled: !_busy),
+      ]);
+    }
     return _page(t.t('title'), [
       _action(
         'new',
@@ -192,18 +274,38 @@ class _TravelSearchScreenState extends State<TravelSearchScreen> {
     String value,
     List<AccessibleOption> options,
     void Function(String) change,
-  ) => AccessibleListRow(
-    id: id,
-    title: title,
-    kind: 'picker',
-    value: value,
-    valueLabel: options.where((o) => o.value == value).firstOrNull?.label,
-    options: options,
-    enabled: !_busy,
-    onValueChanged: (v) {
-      if (!_busy && v != null) setState(() => change(v.toString()));
-    },
-  );
+  ) {
+    final index = options
+        .indexWhere((o) => o.value == value)
+        .clamp(0, options.length - 1);
+    return AccessibleListRow(
+      id: id,
+      title: title,
+      kind: 'slider',
+      value: value,
+      valueLabel: options.where((o) => o.value == value).firstOrNull?.label,
+      options: options,
+      sliderValue: index.toDouble(),
+      sliderMin: 0,
+      sliderMax: (options.length - 1).toDouble(),
+      sliderStep: 1,
+      sliderIncreasedValueLabel:
+          options[(index + 1).clamp(0, options.length - 1)].label,
+      sliderDecreasedValueLabel:
+          options[(index - 1).clamp(0, options.length - 1)].label,
+      enabled: !_busy,
+      onValueChanged: (v) {
+        final position = v is num
+            ? v.toDouble()
+            : double.tryParse(v.toString());
+        if (!_busy && position != null && position.isFinite) {
+          final next = position.round().clamp(0, options.length - 1);
+          setState(() => change(options[next].value.toString()));
+        }
+      },
+    );
+  }
+
   List<AccessibleOption> _numbers(int first, int last) => [
     for (var n = first; n <= last; n++)
       AccessibleOption(value: n.toString(), label: n.toString()),
@@ -224,7 +326,7 @@ class _TravelSearchScreenState extends State<TravelSearchScreen> {
     ),
     _picker(
       '$prefix-month',
-      '${t.t(prefix)}: ${t.t('month')}',
+      t.t('month'),
       '${date.month}',
       [
         for (var m = 1; m <= 12; m++)
@@ -237,7 +339,7 @@ class _TravelSearchScreenState extends State<TravelSearchScreen> {
     ),
     _picker(
       '$prefix-year',
-      '${t.t(prefix)}: ${t.t('year')}',
+      t.t('year'),
       '${date.year}',
       _numbers(
         date.year < DateTime.now().year ? date.year : DateTime.now().year,
@@ -650,8 +752,22 @@ class _TravelFaresScreen extends StatefulWidget {
 class _TravelFaresScreenState extends State<_TravelFaresScreen> {
   final List<Map<String, dynamic>> _selected = [];
   String? _url, _message;
+  bool _onsite = false;
+  final _passengerDraft = TravelPassengerDraft();
   bool _busy = false, _attempted = false;
   final String _idempotencyKey = const Uuid().v4();
+  Future<void> _enterPassengers() async {
+    final screen = TravelPassengersScreen(
+      service: widget.service,
+      query: widget.query,
+      fallbackUrl: _url!,
+      draft: _passengerDraft,
+    );
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(maintainState: true, builder: (_) => screen),
+    );
+  }
+
   Future<void> _open() async {
     if (_url == null) return;
     try {
@@ -661,9 +777,7 @@ class _TravelFaresScreenState extends State<_TravelFaresScreen> {
           uri.userInfo.isNotEmpty) {
         throw const TravelException('link');
       }
-      if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
-        throw const TravelException('link');
-      }
+      await openTravelBrowser(context, uri.toString());
       unawaited(AppLogger.log('[Travel] checkout_open_requested'));
     } catch (_) {
       unawaited(AppLogger.log('[Travel] checkout_open_failed'));
@@ -693,8 +807,15 @@ class _TravelFaresScreenState extends State<_TravelFaresScreen> {
           booking['passenger_url'] ?? (urls?.length == 1 ? urls!.first : null);
       if (url is! String) throw const TravelException('link');
       if (!mounted) return;
-      setState(() => _url = url);
-      await _open();
+      setState(() {
+        _url = url;
+        _onsite = booking['status'] != 'external_provider';
+      });
+      if (_onsite) {
+        await _enterPassengers();
+      } else {
+        await _open();
+      }
     } catch (e) {
       if (mounted) {
         setState(() => _message = '${t.t('bookingError')} ${_error(t, e)}');
@@ -716,10 +837,7 @@ class _TravelFaresScreenState extends State<_TravelFaresScreen> {
             'offer-${offer['offer_choice']}',
             '${(offer['fare'] as List? ?? []).map((f) => _plain(f['title'] ?? '')).join(', ')}. ${_money(offer['price'], widget.query.currency, t)}',
             () => setState(() => _selected.add(offer)),
-            subtitle: (offer['fare'] as List? ?? [])
-                .map((f) => _plain(f['description'] ?? ''))
-                .where((s) => s.isNotEmpty)
-                .join('\n'),
+            subtitle: _fareDetails(offer),
           ),
         if (_selected.isNotEmpty)
           _action(
@@ -738,12 +856,17 @@ class _TravelFaresScreenState extends State<_TravelFaresScreen> {
       for (var i = 0; i < _selected.length; i++)
         _info(
           'fare-$i',
-          '${t.t('fare')} ${i + 1}: ${_money(_selected[i]['price'], widget.query.currency, t)}',
+          '${t.t('fare')} ${i + 1}: ${_money(_selected[i]['price'], widget.query.currency, t)}\n${_fareDetails(_selected[i])}'
+              .trim(),
         ),
       _info('notice', t.t('handoffInfo')),
       if (_message != null) _info('error', _message!),
       if (_url != null)
-        _action('open', t.t('open'), _open)
+        _action(
+          'open',
+          t.t(_onsite ? 'continue' : 'open'),
+          _onsite ? _enterPassengers : _open,
+        )
       else
         _action(
           'continue',

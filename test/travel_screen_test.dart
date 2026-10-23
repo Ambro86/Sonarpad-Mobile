@@ -27,6 +27,7 @@ class FakeTravel extends TravelService {
   String? selectedCity;
   Map<String, dynamic>? bookingBody;
   String? bookingKey;
+  bool bookingSucceeds = false;
   @override
   Future<void> start(String locale, String currency) async {}
   @override
@@ -85,7 +86,16 @@ class FakeTravel extends TravelService {
               {
                 'offer_choice': 'fare-1',
                 'fare': [
-                  {'title': 'Base', 'description': 'Condizioni<br>prova'},
+                  {
+                    'title': 'Base',
+                    'description': 'Condizioni<br>prova',
+                    'cancellationDescription': 'Non rimborsabile',
+                  },
+                ],
+                'amenities': [
+                  {'name': 'Valigia non inclusa'},
+                  {'name': '<b>Bagaglio a mano incluso</b>'},
+                  {'name': 'Valigia non inclusa'},
                 ],
                 'price': {'valueInCents': 1500, 'currency': 'EUR'},
               },
@@ -98,7 +108,28 @@ class FakeTravel extends TravelService {
       bookings++;
       bookingBody = body;
       bookingKey = idempotencyKey;
+      if (bookingSucceeds) {
+        return {
+          'status': 'created',
+          'passenger_url':
+              'https://www.omio.com/app/booking/test/passenger-details',
+        };
+      }
       throw const TravelException('timeout');
+    }
+    if (route == '/v1/booking/form') {
+      return {
+        'components': [
+          {
+            'name': '0.email-0',
+            'title': 'Email',
+            'component': 'Email',
+            'validation': [
+              {'type': 'required'},
+            ],
+          },
+        ],
+      };
     }
     throw StateError('Unexpected route');
   }
@@ -109,33 +140,132 @@ void main() {
   testWidgets('landing contains only new search and recent journeys', (
     tester,
   ) async {
+    await TravelWelcomeConsent().accept();
     await tester.pumpWidget(app(const TravelScreen()));
     await tester.pumpAndSettle();
     expect(rows(tester).map((r) => r.id), ['new', 'recent']);
     expect(find.text('Ricerca viaggi'), findsWidgets);
   });
+  testWidgets('welcome acceptance persists after reopening travel', (
+    tester,
+  ) async {
+    await tester.pumpWidget(app(const TravelScreen()));
+    await tester.pumpAndSettle();
+    expect(rows(tester).where((r) => r.id == 'new'), isEmpty);
+    expect(row(tester, 'welcome-2').title, contains('affiliazione'));
+    expect(await TravelWelcomeConsent().isAccepted(), isFalse);
+    await row(tester, 'accept').onActivate!();
+    await tester.pumpAndSettle();
+    expect(await TravelWelcomeConsent().isAccepted(), isTrue);
+    expect(rows(tester).map((r) => r.id), ['new', 'recent']);
+    await tester.pumpWidget(const SizedBox());
+    await tester.pumpAndSettle();
+    await tester.pumpWidget(app(const TravelScreen()));
+    await tester.pumpAndSettle();
+    expect(rows(tester).map((r) => r.id), ['new', 'recent']);
+  });
+  testWidgets('declining closes travel without saving acceptance', (
+    tester,
+  ) async {
+    await tester.pumpWidget(app(const SizedBox()));
+    final navigator = tester.state<NavigatorState>(find.byType(Navigator));
+    navigator.push(
+      MaterialPageRoute<void>(builder: (_) => const TravelScreen()),
+    );
+    await tester.pumpAndSettle();
+    row(tester, 'decline').onActivate!();
+    await tester.pumpAndSettle();
+    expect(find.byType(TravelScreen), findsNothing);
+    expect(await TravelWelcomeConsent().isAccepted(), isFalse);
+    navigator.push(
+      MaterialPageRoute<void>(builder: (_) => const TravelScreen()),
+    );
+    await tester.pumpAndSettle();
+    expect(row(tester, 'accept').enabled, isTrue);
+    expect(rows(tester).where((r) => r.id == 'new'), isEmpty);
+  });
   testWidgets(
-    'form uses pickers for all ages and reveals return date only on toggle',
+    'form uses accessible sliders and reveals return date only on toggle',
     (tester) async {
       await tester.pumpWidget(app(const TravelSearchScreen()));
       await tester.pumpAndSettle();
       expect(row(tester, 'currency').value, 'EUR');
       expect(row(tester, 'country').value, 'IT');
-      expect(row(tester, 'age-0').kind, 'picker');
+      for (final id in [
+        'currency',
+        'country',
+        'mode',
+        'outbound-day',
+        'outbound-month',
+        'outbound-year',
+        'passengers',
+        'age-0',
+      ]) {
+        expect(row(tester, id).kind, 'slider');
+        expect(row(tester, id).sliderStep, 1);
+        expect(row(tester, id).sliderIncreasedValueLabel, isNotEmpty);
+        expect(row(tester, id).sliderDecreasedValueLabel, isNotEmpty);
+      }
       expect(row(tester, 'age-0').options.length, 111);
+      final currency = row(tester, 'currency');
+      final nextCurrencyLabel = currency.sliderIncreasedValueLabel;
+      final currencySemantics = tester
+          .widgetList<Semantics>(find.byType(Semantics))
+          .firstWhere(
+            (widget) =>
+                widget.properties.label == currency.title &&
+                widget.properties.onIncrease != null,
+          );
+      currencySemantics.properties.onIncrease!();
+      await tester.pumpAndSettle();
+      expect(row(tester, 'currency').valueLabel, nextCurrencyLabel);
+      await row(tester, 'outbound-day').onValueChanged!(30.0);
+      await row(tester, 'outbound-month').onValueChanged!(0.0);
+      await tester.pumpAndSettle();
+      await row(tester, 'outbound-day').onValueChanged!(30.0);
+      await tester.pumpAndSettle();
+      expect(row(tester, 'outbound-day').value, '31');
+      await row(tester, 'outbound-month').onValueChanged!(1.0);
+      await tester.pumpAndSettle();
+      expect(
+        int.parse(row(tester, 'outbound-day').value!),
+        inInclusiveRange(28, 29),
+      );
       expect(rows(tester).where((r) => r.id.startsWith('return-')), isEmpty);
       await row(tester, 'roundtrip').onValueChanged!(true);
       await tester.pumpAndSettle();
       expect(rows(tester).where((r) => r.id.startsWith('return-')).length, 3);
-      await row(tester, 'passengers').onValueChanged!('3');
+      await row(tester, 'passengers').onValueChanged!(2.0);
       await tester.pumpAndSettle();
-      expect(row(tester, 'age-2').kind, 'picker');
+      expect(row(tester, 'age-2').kind, 'slider');
       await row(tester, 'age-2').onValueChanged!('4');
       await tester.pumpAndSettle();
       expect(row(tester, 'age-2').value, '4');
       await row(tester, 'roundtrip').onValueChanged!(false);
       await tester.pumpAndSettle();
       expect(rows(tester).where((r) => r.id.startsWith('return-')), isEmpty);
+    },
+  );
+  testWidgets(
+    'continue after fares opens the internal passenger form without launching Omio',
+    (tester) async {
+      final service = FakeTravel()..bookingSucceeds = true;
+      await tester.pumpWidget(
+        app(TravelResultsScreen(service: service, query: TravelQuery())),
+      );
+      await tester.pumpAndSettle();
+      row(tester, 'journey-choice-1').onActivate!();
+      await tester.pumpAndSettle();
+      await row(tester, 'offer-fare-1').onActivate!();
+      await tester.pumpAndSettle();
+      expect(row(tester, 'continue').title, 'Continua per inserire i dati');
+      row(tester, 'continue').onActivate!();
+      await tester.pumpAndSettle();
+      expect(find.byType(TravelPassengersScreen), findsOneWidget);
+      expect(row(tester, '0.email-0').kind, 'textField');
+      expect(service.bookings, 1);
+      await tester.pumpWidget(const SizedBox());
+      await tester.pumpAndSettle();
     },
   );
   testWidgets(
@@ -175,8 +305,14 @@ void main() {
       expect(row(tester, 'journey-choice-2').title, contains('20:30'));
       row(tester, 'journey-choice-2').onActivate!();
       await tester.pumpAndSettle();
+      expect(
+        row(tester, 'offer-fare-1').subtitle,
+        'Valigia non inclusa\nBagaglio a mano incluso\nCondizioni\nprova\nNon rimborsabile',
+      );
       await row(tester, 'offer-fare-1').onActivate!();
       await tester.pumpAndSettle();
+      expect(row(tester, 'fare-0').title, contains('Valigia non inclusa'));
+      expect(row(tester, 'fare-0').title, contains('Non rimborsabile'));
       expect(service.bookings, 0);
       await row(tester, 'continue').onActivate!();
       await tester.pumpAndSettle();

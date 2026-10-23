@@ -25,6 +25,21 @@ class TravelStrings {
             'IT';
   static const _it = {
     'title': 'Ricerca viaggi',
+    'welcomeTitle': 'Benvenuti nella ricerca viaggi',
+    'welcome1':
+        'Benvenuti nella ricerca viaggi di Sonarpad. Con questa funzione potete cercare viaggi in treno, aereo e pullman e proseguire con l’acquisto sul servizio a cui Sonarpad si appoggia, Omio.',
+    'welcome2':
+        'L’autore, coerentemente con lo spirito di servizio di Sonarpad, non percepisce commissioni sui vostri acquisti e non utilizza codici di affiliazione.',
+    'welcome3':
+        'Sonarpad mostra i prezzi restituiti dal servizio, senza aggiungere maggiorazioni. Prezzi e disponibilità possono cambiare: prima di pagare, controllate su Omio il totale definitivo, comprese eventuali commissioni e servizi aggiuntivi.',
+    'welcome4':
+        'Sonarpad è un facilitatore: presenta la ricerca e la compilazione dei dati nel modo più semplice e accessibile possibile. Non vende i biglietti e non gestisce gli acquisti. Per assistenza dopo l’acquisto, modifiche, cancellazioni o rimborsi, rivolgetevi al servizio o al vettore indicato nella conferma della prenotazione, secondo le condizioni della tariffa acquistata.',
+    'welcome5':
+        'Premendo Accetta confermate di aver letto queste informazioni. La scelta sarà ricordata su questo dispositivo. Premendo Rifiuta uscirete dalla funzione viaggi.',
+    'accept': 'Accetta',
+    'decline': 'Rifiuta',
+    'welcomeSaveError':
+        'Non è stato possibile leggere o salvare la scelta. Riprova con Accetta.',
     'new': 'Cerca un nuovo viaggio',
     'recent': 'Viaggi recenti',
     'currency': 'Valuta',
@@ -64,10 +79,46 @@ class TravelStrings {
     'fares': 'Scegli la tariffa',
     'group': 'Tratta',
     'fare': 'Tariffa',
-    'continue': 'Continua su Omio',
+    'continue': 'Continua per inserire i dati',
+    'passengerData': 'Dati dei passeggeri',
+    'chooseValue': 'Seleziona un valore',
+    'forgetPassenger': 'Cancella i dati passeggero ricordati',
+    'passengerForgotten':
+        'Dati passeggero ricordati cancellati dal dispositivo.',
+    'notProvided': 'Non compilato',
+    'passenger': 'Passeggero',
+    'nextField': 'Continua',
+    'optional': 'Facoltativo',
+    'required': 'Obbligatorio',
+    'skip': 'Salta questo campo',
+    'checkData':
+        'Controlla i dati prima di inviarli a Omio. Nessun pagamento automatico.',
+    'sendData': 'Conferma e invia i dati a Omio',
+    'editData': 'Modifica i dati',
+    'invalidField': 'Controlla il valore di questo campo.',
+    'ageMismatch':
+        'La data di nascita non coincide con l’età indicata nella ricerca.',
+    'unsupportedForm':
+        'Questo campo richiede il sito Omio. Puoi completare lì i dati.',
+    'phonePrefix': 'Prefisso internazionale, ad esempio +39',
+    'phoneNumber': 'Numero nazionale',
+    'phoneCountry': 'Paese del telefono',
+    'submitted': 'Dati inviati. Il pagamento va completato da te su Omio.',
+    'submitUncertain':
+        'Invio non confermato. Controlla su Omio senza inviare nuovamente i dati.',
+    'statusRefresh': 'Controlla se il checkout è pronto',
+    'openCheckout': 'Apri il checkout Omio',
+    'omioBrowser': 'Omio',
+    'browserLoading': 'Caricamento della pagina Omio',
+    'externalBrowser': 'Apri nel browser esterno',
+    'webBack': 'Pagina precedente',
+    'browserError':
+        'Impossibile aprire questa pagina. Se necessario, usa Apri nel browser esterno.',
+    'bookingUnavailable':
+        'Prenotazione scaduta o non disponibile. Avvia una nuova ricerca.',
     'handoff': 'Riepilogo del viaggio',
     'handoffInfo':
-        'Continua crea una prenotazione temporanea. Su Omio compilerai i dati dei passeggeri e controllerai il totale, comprese eventuali commissioni. Nessun pagamento automatico.',
+        'Continua crea una prenotazione temporanea e apre i dati dei passeggeri in Sonarpad. Controllerai il totale finale su Omio. Nessun pagamento automatico.',
     'open': 'Apri Omio',
     'bookingError':
         'Non è stato possibile confermare l’esito. Non ripetere la prenotazione: riprova l’apertura solo se il collegamento è disponibile.',
@@ -88,6 +139,21 @@ class TravelStrings {
   };
   static const _en = {
     'title': 'Travel search',
+    'welcomeTitle': 'Welcome to travel search',
+    'welcome1':
+        'Welcome to Sonarpad travel search. You can search for train, flight and bus journeys and proceed with your purchase through Omio, the service used by Sonarpad.',
+    'welcome2':
+        'In keeping with Sonarpad’s spirit of service, its author receives no commission on your purchases and uses no affiliate codes.',
+    'welcome3':
+        'Sonarpad displays prices returned by the service without adding a markup. Prices and availability may change: before paying, check the final total on Omio, including any fees and optional services.',
+    'welcome4':
+        'Sonarpad helps make searching and entering passenger details as simple and accessible as possible. It does not sell tickets or manage purchases. For assistance after purchase, changes, cancellations or refunds, contact the service or carrier identified in your booking confirmation, subject to the conditions of your fare.',
+    'welcome5':
+        'By selecting Accept, you confirm that you have read this information. Your choice will be remembered on this device. Selecting Decline closes travel search.',
+    'accept': 'Accept',
+    'decline': 'Decline',
+    'welcomeSaveError':
+        'Your choice could not be read or saved. Try Accept again.',
     'new': 'Search for a new journey',
     'recent': 'Recent journeys',
     'currency': 'Currency',
@@ -125,10 +191,43 @@ class TravelStrings {
     'fares': 'Choose fare',
     'group': 'Journey group',
     'fare': 'Fare',
-    'continue': 'Continue on Omio',
+    'continue': 'Continue to enter passenger details',
+    'passengerData': 'Passenger details',
+    'chooseValue': 'Choose a value',
+    'forgetPassenger': 'Forget saved passenger details',
+    'passengerForgotten': 'Saved passenger details removed from this device.',
+    'notProvided': 'Not provided',
+    'passenger': 'Passenger',
+    'nextField': 'Continue',
+    'optional': 'Optional',
+    'required': 'Required',
+    'skip': 'Skip this field',
+    'checkData':
+        'Check your details before sending them to Omio. No automatic payment.',
+    'sendData': 'Confirm and send details to Omio',
+    'editData': 'Edit details',
+    'invalidField': 'Check the value of this field.',
+    'ageMismatch': 'The birth date does not match the age used for the search.',
+    'unsupportedForm':
+        'This field requires the Omio website. Complete your details there.',
+    'phonePrefix': 'International dialling code, for example +39',
+    'phoneNumber': 'National phone number',
+    'phoneCountry': 'Phone country',
+    'submitted': 'Details sent. Complete payment yourself on Omio.',
+    'submitUncertain':
+        'Submission could not be confirmed. Check on Omio without sending details again.',
+    'statusRefresh': 'Check whether checkout is ready',
+    'openCheckout': 'Open Omio checkout',
+    'omioBrowser': 'Omio',
+    'browserLoading': 'Loading Omio page',
+    'externalBrowser': 'Open in external browser',
+    'webBack': 'Previous page',
+    'browserError':
+        'Unable to open this page. If needed, use Open in external browser.',
+    'bookingUnavailable': 'Booking expired or unavailable. Start a new search.',
     'handoff': 'Journey summary',
     'handoffInfo':
-        'Continue creates a temporary reservation. Complete passenger details and check the final total, including any fees, on Omio. No automatic payment.',
+        'Continue creates a temporary reservation and opens passenger details in Sonarpad. Check the final total on Omio. No automatic payment.',
     'open': 'Open Omio',
     'bookingError':
         'The outcome could not be confirmed. Do not repeat the reservation. Retry opening only if a link is available.',

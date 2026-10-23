@@ -71,6 +71,7 @@ dependency_overrides:
     path: third_party/rhttp_plus
 
 dev_dependencies:
+  webview_flutter_platform_interface: 2.15.1
   integration_test:
     sdk: flutter
   flutter_test:

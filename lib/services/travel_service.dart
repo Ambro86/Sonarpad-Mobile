@@ -307,3 +307,57 @@ class RecentTravelService {
   Future<void> clear() async =>
       (await SharedPreferences.getInstance()).remove(_key);
 }
+
+/// Remember acceptance of the travel introduction on this device.
+class TravelWelcomeConsent {
+  static const _key = 'sonarpad_travel_welcome_accepted_v1';
+  Future<bool> isAccepted() async =>
+      (await SharedPreferences.getInstance()).getBool(_key) ?? false;
+  Future<void> accept() async {
+    if (!await (await SharedPreferences.getInstance()).setBool(_key, true)) {
+      throw const TravelException('preference_save_failed');
+    }
+  }
+}
+
+/// Local passenger defaults, separate from journey history and diagnostic logs.
+class TravelPassengerMemory {
+  static const _legacyKey = 'sonarpad_travel_passenger_defaults_v1';
+  static String _key(int passenger) {
+    if (passenger < 0 || passenger > 8) throw RangeError.range(passenger, 0, 8);
+    return 'sonarpad_travel_passenger_defaults_v2_$passenger';
+  }
+
+  static const fields = {'email', 'firstName', 'lastName', 'dateOfBirth'};
+  Future<Map<String, String>> load({int passenger = 0}) async {
+    final prefs = await SharedPreferences.getInstance();
+    final raw =
+        prefs.getString(_key(passenger)) ??
+        (passenger == 0 ? prefs.getString(_legacyKey) : null);
+    if (raw == null) return {};
+    try {
+      return Map<String, String>.from(jsonDecode(raw) as Map)
+        ..removeWhere((key, value) => !fields.contains(key));
+    } catch (_) {
+      return {};
+    }
+  }
+
+  Future<void> save(String name, String value, {int passenger = 0}) async {
+    if (!fields.contains(name)) return;
+    final saved = await load(passenger: passenger);
+    saved[name] = value;
+    await (await SharedPreferences.getInstance()).setString(
+      _key(passenger),
+      jsonEncode(saved),
+    );
+  }
+
+  Future<void> clear() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_legacyKey);
+    for (var passenger = 0; passenger < 9; passenger++) {
+      await prefs.remove(_key(passenger));
+    }
+  }
+}
