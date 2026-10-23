@@ -166,6 +166,7 @@ class _HomeScreenState extends State<HomeScreen> {
       HomeItemIds.voiceDictionary => '/voice_dictionary',
       HomeItemIds.digitalLibrary => '/bdciechi',
       HomeItemIds.route => '/route',
+      HomeItemIds.travel => '/travel',
       HomeItemIds.openingHours => '/orari_apertura',
       HomeItemIds.directory => '/italiaonline',
       HomeItemIds.pharmacy => '/aifa',

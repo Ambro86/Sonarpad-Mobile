@@ -25,6 +25,7 @@ class HomeItemIds {
   static const voiceDictionary = 'voice_dictionary';
   static const digitalLibrary = 'bdciechi';
   static const route = 'route';
+  static const travel = 'travel';
   static const openingHours = 'orari_apertura';
   static const directory = 'italiaonline';
   static const pharmacy = 'aifa';
@@ -56,6 +57,7 @@ class HomeItemIds {
     voiceDictionary,
     digitalLibrary,
     route,
+    travel,
     openingHours,
     directory,
     pharmacy,
@@ -96,6 +98,7 @@ class HomeItemIds {
     voiceDictionary,
     weather,
     route,
+    travel,
     openingHours,
     directory,
     pharmacy,

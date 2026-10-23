@@ -1,4 +1,5 @@
 import '../l10n/app_localizations.dart';
+import '../l10n/travel_strings.dart';
 import '../services/home_customization_service.dart';
 
 Set<String> availableHomeItemIds({
@@ -24,6 +25,7 @@ Set<String> availableHomeItemIds({
     HomeItemIds.wikipedia,
     HomeItemIds.voiceDictionary,
     HomeItemIds.route,
+    HomeItemIds.travel,
     HomeItemIds.settings,
     HomeItemIds.info,
   };
@@ -103,6 +105,8 @@ String homeItemLabel(AppLocalizations l10n, String id) {
       return l10n.homeDigitalLibrary;
     case HomeItemIds.route:
       return l10n.routeTitle;
+    case HomeItemIds.travel:
+      return TravelStrings(l10n.localeName).t('title');
     case HomeItemIds.openingHours:
       return l10n.homeOpeningHours;
     case HomeItemIds.directory:
