@@ -358,7 +358,7 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
       var current = queue.indexWhere((i) => i.key == item.key);
       if (current < 0) { queue = [item]; current = 0; }
       final first = await _episode(item);
-      await _library.remember(item);
+      await _library.remember(item.withResolvedTitle(first.title));
       if (!mounted) return;
       final l10n = AppLocalizations.of(context);
       final prefs = AppSettingsService();
@@ -370,7 +370,7 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
         if (target < 0 || target >= queue.length) return null;
         final next = queue[target];
         final result = await _episode(next); // Never advance on a failed resolve.
-        await _library.remember(next);
+        await _library.remember(next.withResolvedTitle(result.title));
         current = target;
         return result;
       }

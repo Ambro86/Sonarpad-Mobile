@@ -19,8 +19,7 @@ const _noProtection = r'''
   const normalize = text => (text || '').toLowerCase().replace(/\s+/g, ' ').trim();
   const matches = [];
   for (const el of document.querySelectorAll('input[type="radio"], input[type="checkbox"], [role="radio"], [role="checkbox"], [role="switch"], button[aria-pressed], [role="button"][aria-pressed]')) {
-    if (el.disabled || el.getAttribute('aria-disabled') === 'true' ||
-        (el.tagName === 'BUTTON' && el.type !== 'button')) continue;
+    if (el.tagName === 'BUTTON' && el.type !== 'button') continue;
     const labels = [...(el.labels || [])];
     if (!visible(el) && !labels.some(visible)) continue;
     const refs = (el.getAttribute('aria-labelledby') || '').split(/\s+/)
@@ -34,7 +33,12 @@ const _noProtection = r'''
   const el = matches[0];
   const checked = () => el.checked === true || el.getAttribute('aria-checked') === 'true' ||
     el.getAttribute('aria-pressed') === 'true';
-  if (!__VERIFY__ && !checked()) el.click();
+  // Omio disables the selected option. It still confirms the selection;
+  // disabled controls must only be excluded from actions, not inspection.
+  if (!__VERIFY__ && !checked()) {
+    if (el.disabled || el.getAttribute('aria-disabled') === 'true') return 'disabled';
+    el.click();
+  }
   return checked() ? 'selected' : 'unconfirmed';
 })()
 ''';

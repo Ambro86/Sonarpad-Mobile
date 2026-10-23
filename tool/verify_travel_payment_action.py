@@ -73,5 +73,17 @@ with sync_playwright() as p:
     assert protect() == "unconfirmed"
     page.wait_for_timeout(200)
     assert protect(True) == "selected"
+    fixture('<button type="button" aria-pressed="true" disabled>Voglio viaggiare senza protezione</button>')
+    assert protect(True) == "selected"
+    assert protect() == "selected"
+    fixture('<button type="button" aria-pressed="false" disabled onclick="window.clicked=true">Voglio viaggiare senza protezione</button>')
+    assert protect(True) == "unconfirmed"
+    assert protect() == "disabled"
+    assert page.evaluate("window.clicked") is None
+    fixture('<button type="button" aria-pressed="false" onclick="this.setAttribute(\'aria-pressed\',\'true\');this.disabled=true">Voglio viaggiare senza protezione</button>')
+    assert protect() == "selected"
+    assert protect(True) == "selected"
+    fixture('<div role="button" aria-pressed="true" aria-disabled="true">Voglio viaggiare senza protezione</div>')
+    assert protect(True) == "selected"
     browser.close()
 print("Payment and protection selection checks passed; no payment submissions")

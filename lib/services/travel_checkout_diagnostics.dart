@@ -92,8 +92,72 @@ const travelCheckoutDiagnosticsScript = r'''
       nearby: [...(el.parentElement?.querySelectorAll('input[type="radio"],input[type="checkbox"],[role],button') || [])].slice(0,6).map(describe),
       children: [...el.querySelectorAll('input[type="radio"],input[type="checkbox"],[role],button')].slice(0,6).map(describe)});
   }
+  // Describe form structure without exporting values, names, IDs, arbitrary
+  // text, validation messages, action URLs or iframe URLs.
+  const fieldCategory = el => {
+    const text = normalize([
+      el.getAttribute('autocomplete'), el.getAttribute('name'), el.id,
+      el.getAttribute('aria-label'), el.getAttribute('placeholder'),
+      ...[...(el.labels || [])].map(x=>x.textContent)
+    ].join(' '));
+    if (/cc-csc|cvc|cvv|security.code|codice.di.sicurezza/.test(text)) return 'card-security-code';
+    if (/cc-exp|expir|scadenza/.test(text)) return 'card-expiry';
+    if (/cc-number|card.number|cardnumber|numero.*carta/.test(text)) return 'card-number';
+    if (/cc-name|cardholder|intestatario/.test(text)) return 'cardholder-name';
+    if (/password|passwd/.test(text) || el.type === 'password') return 'password';
+    if (/email|e-mail/.test(text) || el.type === 'email') return 'email';
+    if (/phone|tel|telefono/.test(text) || el.type === 'tel') return 'phone';
+    if (/postal|postcode|zip|\bcap\b/.test(text)) return 'postal-code';
+    if (/address|indirizzo/.test(text)) return 'address';
+    if (/first.name|last.name|given-name|family-name|cognome|\bnome\b/.test(text)) return 'name';
+    if (/country|paese/.test(text)) return 'country';
+    if (/city|citta|città/.test(text)) return 'city';
+    return 'other';
+  };
+  const layout = el => {
+    const win = el.ownerDocument.defaultView;
+    const style = win.getComputedStyle(el), r = el.getBoundingClientRect();
+    return {node:id(el), rendered:r.width>0 && r.height>0 && style.display!=='none' && style.visibility!=='hidden',
+      hiddenAncestor:!!el.closest('[hidden],[inert],[aria-hidden="true"]'),
+      inViewport:r.bottom>0 && r.top<win.innerHeight && r.right>0 && r.left<win.innerWidth};
+  };
+  const provider = frame => {
+    try {
+      const host = new URL(frame.getAttribute('src') || '', location.href).hostname;
+      for (const domain of ['paypal.com','paypalobjects.com','braintreegateway.com','braintree-api.com','adyen.com','stripe.com','revolut.com','google.com','apple.com','omio.com']) {
+        if (host===domain || host.endsWith('.'+domain)) return domain;
+      }
+    } catch (_) {}
+    return 'other';
+  };
+  const documents = [], frameDetails = [];
+  const inspectDocument = (doc, owner, depth) => {
+    const fields = [...doc.querySelectorAll('input:not([type="hidden"]),select,textarea')];
+    documents.push({owner,forms:doc.forms.length,fieldCount:fields.length,truncated:fields.length>60,
+      fields:fields.slice(0,60).map(el=>({...layout(el),tag:el.tagName.toLowerCase(),
+        category:fieldCategory(el),type:attr(el,'type',['text','email','tel','password','number','radio','checkbox','date','month','submit','button']),
+        form:el.form ? id(el.form) : null,required:!!el.required,disabled:!!el.disabled,readOnly:!!el.readOnly,
+        ariaInvalid:attr(el,'aria-invalid',['true','false','grammar','spelling']),
+        checked:['radio','checkbox'].includes(el.type) ? el.checked : null})),
+      // Error presence only: error text can echo private input.
+      alertCount:doc.querySelectorAll('[role="alert"],[aria-live="assertive"]').length});
+    for (const frame of [...doc.querySelectorAll('iframe')].slice(0,20)) {
+      if (frameDetails.length >= 30) break;
+      const detail = {...layout(frame),owner,provider:provider(frame),access:'unavailable'};
+      frameDetails.push(detail);
+      try {
+        const child = frame.contentDocument;
+        if (!child) { detail.access='cross-origin-or-not-loaded'; continue; }
+        if (depth>=2) { detail.access='depth-limit'; continue; }
+        detail.access='readable';
+        inspectDocument(child,id(frame),depth+1);
+      } catch (_) { detail.access='cross-origin'; }
+    }
+  };
+  inspectDocument(document,'main',0);
   const events = state.events.splice(0);
-  return JSON.stringify({scope:'checkout',version:1,ready:document.readyState,
+  return JSON.stringify({scope:'checkout',version:2,ready:document.readyState,
+    documents,frameDetails,
     count,truncated:count>32,controls,events,
     frames:document.querySelectorAll('iframe').length,
     modalCount:[...document.querySelectorAll('[aria-modal="true"],dialog[open]')].filter(el=>describe(el).rendered).length});

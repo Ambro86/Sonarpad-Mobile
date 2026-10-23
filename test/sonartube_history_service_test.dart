@@ -13,6 +13,20 @@ SonarTubeItem video(int index, {String? url}) => SonarTubeItem(
 );
 
 void main() {
+  test('resolved title replaces an URL placeholder without duplicating history', () async {
+    SharedPreferences.setMockInitialValues({});
+    final service = SonarTubeHistoryService();
+    final original = video(1).withResolvedTitle('Apri URL');
+    await service.addRecentVideo(original);
+    await service.addRecentVideo(original.withResolvedTitle('Titolo del video'));
+    final saved = (await service.loadRecentVideos()).single;
+    expect(saved.title, 'Titolo del video');
+    expect(saved.id, original.id);
+    expect(saved.url, original.url);
+    expect(saved.channel, original.channel);
+    expect(saved.duration, original.duration);
+    expect(saved.withResolvedTitle('  ').title, saved.title);
+  });
   test('recent SonarTube videos are newest first and duplicate opens move to the top', () async {
     SharedPreferences.setMockInitialValues({});
     final service = SonarTubeHistoryService();

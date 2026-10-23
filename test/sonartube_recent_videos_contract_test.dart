@@ -17,8 +17,8 @@ void main() {
   test('successful SonarTube playback records video history including next and previous navigation', () {
     final source = File('lib/screens/sonartube_screen.dart').readAsStringSync().replaceAll('\r\n', '\n');
 
-    expect(source, contains('await _historyService.addRecentVideo(item);'));
-    expect(source, contains('await _historyService.addRecentVideo(targetItem);'));
+    expect(source, contains('await _historyService.addRecentVideo(item.withResolvedTitle(episode.title));'));
+    expect(source, contains('await _historyService.addRecentVideo(targetItem.withResolvedTitle(resolved.title));'));
     expect(source, contains("name: '/sonartube/recent-videos'"));
   });
 

@@ -222,13 +222,33 @@ class _TravelBrowserScreenState extends State<TravelBrowserScreen> {
       final snapshot = ++_checkoutSnapshot;
       // Separate bounded control records keep diagnostics readable and avoid
       // truncating the entire snapshot when a report viewer limits line length.
-      final summary = Map<String, dynamic>.from(data)..remove('controls');
+      final summary = Map<String, dynamic>.from(data)
+        ..remove('controls')
+        ..remove('documents')
+        ..remove('frameDetails');
       await _log(
         '[TravelCheckout] snapshot=$snapshot stage=$stage generation=$generation summary=${jsonEncode(summary)}',
       );
       for (final control in (data['controls'] as List? ?? const [])) {
         await _log(
           '[TravelCheckout] snapshot=$snapshot control=${jsonEncode(control)}',
+        );
+      }
+      for (final document in (data['documents'] as List? ?? const [])) {
+        final metadata = Map<String, dynamic>.from(document as Map)
+          ..remove('fields');
+        await _log(
+          '[TravelCheckout] snapshot=$snapshot document=${jsonEncode(metadata)}',
+        );
+        for (final field in (document['fields'] as List? ?? const [])) {
+          await _log(
+            '[TravelCheckout] snapshot=$snapshot owner=${document['owner']} field=${jsonEncode(field)}',
+          );
+        }
+      }
+      for (final frame in (data['frameDetails'] as List? ?? const [])) {
+        await _log(
+          '[TravelCheckout] snapshot=$snapshot frame=${jsonEncode(frame)}',
         );
       }
     } catch (error) {
@@ -286,6 +306,7 @@ class _TravelBrowserScreenState extends State<TravelBrowserScreen> {
           'not-found',
           'ambiguous',
           'blocked',
+          'disabled',
           'unavailable',
         };
         unawaited(

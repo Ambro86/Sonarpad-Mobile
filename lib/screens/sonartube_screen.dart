@@ -191,7 +191,7 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
     final item = SonarTubeItem(
       kind: SonarTubeItemKind.video,
       id: videoId,
-      title: _openUrlLabel(l10n),
+      title: videoId,
       url: normalized,
     );
     await _openItem(item);
@@ -917,7 +917,7 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
         (candidate) => _sonarTubeItemKey(candidate) == _sonarTubeItemKey(item),
       );
       final episode = await _resolveEpisode(item);
-      await _historyService.addRecentVideo(item);
+      await _historyService.addRecentVideo(item.withResolvedTitle(episode.title));
       if (!mounted) return;
       final l10n = AppLocalizations.of(context);
       final settings = AppSettingsService();
@@ -1020,7 +1020,7 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
         }
         final targetItem = navigationItems[targetIndex];
         final resolved = await _resolveEpisode(targetItem);
-        await _historyService.addRecentVideo(targetItem);
+        await _historyService.addRecentVideo(targetItem.withResolvedTitle(resolved.title));
         navigationIndex = targetIndex;
         return resolved;
       }

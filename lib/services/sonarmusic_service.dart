@@ -83,6 +83,12 @@ class SonarMusicItem {
     url: url ?? 'https://music.youtube.com/watch?v=${videoId ?? id}',
     channel: artist, channelId: artistId, thumbnailUrl: thumbnail,
     duration: duration);
+
+  SonarMusicItem withResolvedTitle(String resolvedTitle) {
+    final updated = resolvedTitle.trim();
+    if (updated.isEmpty || updated == title) return this;
+    return SonarMusicItem.fromJson({...toJson(), 'title': updated});
+  }
 }
 
 class SonarMusicPage {

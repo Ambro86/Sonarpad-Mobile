@@ -11,6 +11,20 @@ const song = SonarMusicItem(kind: 'song', id: 'one', title: 'First song', videoI
 const video = SonarMusicItem(kind: 'video', id: 'one', title: 'First video', videoId: 'one');
 
 void main() {
+  test('resolved music title updates the same recent item and preserves metadata', () async {
+    SharedPreferences.setMockInitialValues({});
+    const original = SonarMusicItem(kind: 'song', id: 'url-video', videoId: 'url-video',
+      title: 'YouTube Music', artist: 'Artist', artistId: 'artist-id', album: 'Album',
+      albumId: 'album-id', duration: '3:00');
+    final library = SonarMusicLibraryService();
+    await library.remember(original);
+    await library.remember(original.withResolvedTitle('Real title'));
+    final saved = (await library.recent()).single;
+    expect(saved.title, 'Real title');
+    expect(saved.key, original.key);
+    expect(saved.toJson(), {...original.toJson(), 'title': 'Real title'});
+    expect(saved.withResolvedTitle('').title, 'Real title');
+  });
   setUp(() {
     SharedPreferences.setMockInitialValues({});
     configureAccessibleRendererRuntime(useFlutterOnIos: true);

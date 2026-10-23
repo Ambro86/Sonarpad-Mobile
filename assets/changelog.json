@@ -3,6 +3,9 @@
     "version": "0.5.2",
     "date": "2026-10-26",
     "it": [
+      "È arrivata su Sonarpad la ricerca viaggi! Da adesso potete cercare viaggi in treno, aereo e pullman tra le compagnie italiane e internazionali disponibili su Omio. La funzione vi accompagna con schermate accessibili dalla ricerca alla compilazione dei dati, fino al pagamento sul sito Omio. È disponibile in fase di prova, per il momento solo con l’interfaccia italiana: le vostre segnalazioni ci aiuteranno a migliorarla.",
+      "Sonarpad fa solo da facilitatore: rende più semplice e accessibile un percorso che può essere complicato per chi usa uno screen reader. Coerentemente con il suo spirito di servizio, l’autore non riceve alcun compenso dai vostri acquisti, nemmeno tramite link di affiliazione.",
+      "Dopo l’acquisto, per assistenza, modifiche, cancellazioni o rimborsi del biglietto, fate riferimento a Omio o al vettore indicato nella conferma della prenotazione, secondo le condizioni della tariffa acquistata. Sonarpad non vende i biglietti e non gestisce queste richieste.",
       "Corrette le date e gli orari delle notizie e alcuni indirizzi che mostravano articoli vecchi. Quando la data di pubblicazione non è disponibile, non viene più mostrata l’ora di aggiornamento. Aggiunte Türkiye Gazetesi, İHA e TGRT Haber alle testate turche.",
       "Migliorata la ricerca in SonarMusic, con risultati più completi per brani, album, artisti, playlist e video, un caricamento più affidabile dei risultati successivi e accesso agli elenchi completi di album e singoli degli artisti.",
       "In SonarTube sono ora disponibili Corsi e Podcast, sia nelle sezioni dei canali sia tra i filtri di ricerca.",

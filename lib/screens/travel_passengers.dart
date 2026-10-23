@@ -797,72 +797,97 @@ class _TravelPassengersScreenState extends State<TravelPassengersScreen> {
         _action('fallback', t.t('open'), () => _open(widget.fallbackUrl)),
       ]);
     }
-    return _page(t.t('passengerData'), [
-      if (_message != null) _info('error', _message!),
-      if (d.attempted) ...[
-        _info('submitted', t.t(d.submitted ? 'submitted' : 'submitUncertain')),
-        if (d.paymentUrl != null)
-          _action('checkout', t.t('openCheckout'), () => _open(d.paymentUrl!)),
-        if (d.submitted && d.paymentUrl == null)
-          _action('status', t.t('statusRefresh'), _status, enabled: !_busy),
-      ] else if (d.fields != null && fields.isEmpty) ...[
-        for (final index in _passengerIndices) ...[
-          _info('review-passenger-$index', '${t.t('passenger')} ${index + 1}'),
-          for (final item in _visibleFields.where(
-            (f) => (f['name'] as String).startsWith('$index.'),
-          ))
-            _info(
-              'review-${item['name']}',
-              '${_label(item, t)}: ${_display(item, t)}',
+    return _page(
+      t.t('passengerData'),
+      [
+        if (_message != null) _info('error', _message!),
+        if (d.attempted) ...[
+          _info(
+            'submitted',
+            t.t(d.submitted ? 'submitted' : 'submitUncertain'),
+          ),
+          if (d.paymentUrl != null)
+            _action(
+              'checkout',
+              t.t('openCheckout'),
+              () => _open(d.paymentUrl!),
             ),
-        ],
-        _info('consent', t.t('checkData')),
-        _action('submit-passengers', t.t('sendData'), _submit, enabled: !_busy),
-        _action('edit', t.t('editData'), () async {
-          setState(() {
-            d.position = 0;
-            _message = null;
-          });
-          await _prepare();
-        }, enabled: !_busy),
-      ] else if (fields.isNotEmpty) ...[
-        _info(
-          'passenger-heading',
-          '${t.t('passenger')} ${_passengerIndices[d.position] + 1}',
-        ),
-        _info('optional-hint', t.t('optionalHint')),
-        for (final field in fields) ..._inputs(field, t),
-        if (fields.every(_supported))
-          _action('next-field', t.t('nextField'), _next, enabled: !_busy),
-        if (d.position > 0)
-          _action('previous-field', t.t('previous'), () async {
+          if (d.submitted && d.paymentUrl == null)
+            _action('status', t.t('statusRefresh'), _status, enabled: !_busy),
+        ] else if (d.fields != null && fields.isEmpty) ...[
+          for (final index in _passengerIndices) ...[
+            _info(
+              'review-passenger-$index',
+              '${t.t('passenger')} ${index + 1}',
+            ),
+            for (final item in _visibleFields.where(
+              (f) => (f['name'] as String).startsWith('$index.'),
+            ))
+              _info(
+                'review-${item['name']}',
+                '${_label(item, t)}: ${_display(item, t)}',
+              ),
+          ],
+          _info('consent', t.t('checkData')),
+          _action(
+            'submit-passengers',
+            t.t('sendData'),
+            _submit,
+            enabled: !_busy,
+          ),
+          _action('edit', t.t('editData'), () async {
             setState(() {
-              d.position--;
+              d.position = 0;
               _message = null;
-              _busy = true;
             });
-            try {
-              await _prepare();
-            } catch (_) {
-              if (mounted) _message = t.t('unsupportedForm');
-            } finally {
-              if (mounted) setState(() => _busy = false);
-            }
+            await _prepare();
           }, enabled: !_busy),
+        ] else if (fields.isNotEmpty) ...[
+          _info(
+            'passenger-heading',
+            '${t.t('passenger')} ${_passengerIndices[d.position] + 1}',
+          ),
+          _info('optional-hint', t.t('optionalHint')),
+          for (final field in fields) ..._inputs(field, t),
+          if (fields.every(_supported))
+            _action('next-field', t.t('nextField'), _next, enabled: !_busy),
+          if (d.position > 0)
+            _action('previous-field', t.t('previous'), () async {
+              setState(() {
+                d.position--;
+                _message = null;
+                _busy = true;
+              });
+              try {
+                await _prepare();
+              } catch (_) {
+                if (mounted) _message = t.t('unsupportedForm');
+              } finally {
+                if (mounted) setState(() => _busy = false);
+              }
+            }, enabled: !_busy),
+        ],
+        _action(
+          'fallback',
+          t.t('open'),
+          () => _open(widget.fallbackUrl),
+          enabled: !_busy,
+        ),
+        _action('forget', t.t('forgetPassenger'), () async {
+          await _memory.clear();
+          if (context.mounted) {
+            showStatusMessage(context, t.t('passengerForgotten'));
+          }
+        }, enabled: !_busy),
       ],
-      _action(
-        'fallback',
-        t.t('open'),
-        () => _open(widget.fallbackUrl),
-        enabled: !_busy,
-      ),
-      _action('forget', t.t('forgetPassenger'), () async {
-        await _memory.clear();
-        if (context.mounted) {
-          showStatusMessage(context, t.t('passengerForgotten'));
-        }
-      }, enabled: !_busy),
-    ]);
+      initialFocusId: _message != null
+          ? 'error'
+          : d.attempted
+          ? (d.paymentUrl != null ? 'checkout' : 'submitted')
+          : fields.isEmpty
+          ? 'review-passenger-${_passengerIndices.first}'
+          : 'passenger-heading',
+    );
   }
 
   String _display(Map f, TravelStrings t) {

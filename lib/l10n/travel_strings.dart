@@ -25,6 +25,8 @@ class TravelStrings {
             'IT';
   static const _it = {
     'title': 'Ricerca viaggi',
+    'italianOnly':
+        'La ricerca viaggi è attualmente disponibile solo con l’interfaccia italiana.',
     'welcomeTitle': 'Benvenuti nella ricerca viaggi',
     'welcome1':
         'Benvenuti nella ricerca viaggi di Sonarpad. Con questa funzione potete cercare viaggi in treno, aereo e pullman e proseguire con l’acquisto sul servizio a cui Sonarpad si appoggia, Omio.',
@@ -162,6 +164,8 @@ class TravelStrings {
     'linkError': 'Impossibile aprire il collegamento Omio. Riprova.',
   };
   static const _en = {
+    'italianOnly':
+        'Travel search is currently available only with the Italian interface.',
     'title': 'Travel search',
     'welcomeTitle': 'Welcome to travel search',
     'welcome1':

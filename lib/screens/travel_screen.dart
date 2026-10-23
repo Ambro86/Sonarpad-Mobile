@@ -37,10 +37,15 @@ AccessibleListRow _info(String id, String text) => AccessibleListRow(
   kind: 'text',
   accessibilityButtonTrait: false,
 );
-Widget _page(String title, List<AccessibleListRow> rows) => Scaffold(
+Widget _page(
+  String title,
+  List<AccessibleListRow> rows, {
+  String? initialFocusId,
+}) => Scaffold(
   appBar: SonarpadAppBar(title: Text(title)),
   body: SafeArea(
     child: UniversalAccessibleList(
+      initialFocusId: initialFocusId,
       sections: [AccessibleListSection(rows: rows)],
       padding: const EdgeInsets.all(16),
     ),
@@ -163,6 +168,11 @@ class _TravelScreenState extends State<TravelScreen> {
   @override
   Widget build(BuildContext context) {
     final t = _strings(context);
+    if (t.language != 'it') {
+      return _page(t.t('title'), [
+        _info('unavailable-language', t.t('italianOnly')),
+      ]);
+    }
     if (!_loaded) {
       return _page(t.t('title'), [_info('loading', t.t('working'))]);
     }
@@ -831,7 +841,16 @@ class _TravelFaresScreenState extends State<_TravelFaresScreen> {
     if (_selected.length < widget.groups.length) {
       final group = widget.groups[_selected.length];
       final offers = (group['offers'] as List).cast<Map<String, dynamic>>();
-      return _page('${t.t('fares')} — ${t.t('group')} ${_selected.length + 1}', [
+      final heading =
+          '${t.t('fares')} — ${t.t('group')} ${_selected.length + 1}';
+      final focusId = 'fare-step-${_selected.length}';
+      return _page(heading, [
+        AccessibleListRow(
+          id: focusId,
+          title: heading,
+          kind: 'header',
+          accessibilityButtonTrait: false,
+        ),
         for (final offer in offers)
           _action(
             'offer-${offer['offer_choice']}',
@@ -845,9 +864,15 @@ class _TravelFaresScreenState extends State<_TravelFaresScreen> {
             t.t('previous'),
             () => setState(() => _selected.removeLast()),
           ),
-      ]);
+      ], initialFocusId: focusId);
     }
     return _page(t.t('handoff'), [
+      AccessibleListRow(
+        id: 'fare-review-heading',
+        title: t.t('handoff'),
+        kind: 'header',
+        accessibilityButtonTrait: false,
+      ),
       for (var i = 0; i < widget.journeys.length; i++)
         _info(
           'summary-$i',
@@ -874,7 +899,7 @@ class _TravelFaresScreenState extends State<_TravelFaresScreen> {
           _continue,
           enabled: !_busy && !_attempted && _selected.isNotEmpty,
         ),
-    ]);
+    ], initialFocusId: 'fare-review-heading');
   }
 }
 

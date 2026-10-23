@@ -25,13 +25,13 @@ Set<String> availableHomeItemIds({
     HomeItemIds.wikipedia,
     HomeItemIds.voiceDictionary,
     HomeItemIds.route,
-    HomeItemIds.travel,
     HomeItemIds.settings,
     HomeItemIds.info,
   };
 
   if (isItalian) {
     ids.addAll({
+      HomeItemIds.travel,
       HomeItemIds.treccani,
       HomeItemIds.digitalLibrary,
       HomeItemIds.openingHours,

@@ -62,6 +62,18 @@ class SonarTubeItem {
   final int? videoCount;
   final String? collectionType;
   final bool isLive;
+
+  SonarTubeItem withResolvedTitle(String resolvedTitle) {
+    final updated = resolvedTitle.trim();
+    if (updated.isEmpty || updated == title) return this;
+    return SonarTubeItem(
+      kind: kind, id: id, title: updated, url: url,
+      channel: channel, channelId: channelId, thumbnailUrl: thumbnailUrl,
+      duration: duration, published: published, views: views,
+      subscribers: subscribers, handle: handle, description: description,
+      videoCount: videoCount, collectionType: collectionType, isLive: isLive,
+    );
+  }
 }
 
 class SonarTubePage {
