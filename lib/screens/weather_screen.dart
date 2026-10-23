@@ -499,10 +499,6 @@ class _WeatherForecastView extends StatelessWidget {
     final day = selectedDay.clamp(0, availableDays - 1);
 
     if (useSharedAccessibleViewModel) {
-      final dayOptions = [
-        for (var i = 0; i < availableDays; i++)
-          AccessibleOption(value: i, label: _dayLabel(l10n, i)),
-      ];
       return Expanded(
         child: UniversalAccessibleList(
           sections: [
@@ -510,10 +506,18 @@ class _WeatherForecastView extends StatelessWidget {
               AccessibleListRow(
                 id: 'day',
                 title: l10n.weatherChooseDay,
-                kind: 'picker',
+                kind: 'slider',
                 value: day.toString(),
                 valueLabel: _dayLabel(l10n, day),
-                options: dayOptions,
+                enabled: availableDays > 1,
+                sliderValue: day.toDouble(),
+                sliderMin: 0,
+                sliderMax: (availableDays - 1).toDouble(),
+                sliderStep: 1,
+                sliderIncreasedValueLabel:
+                    _dayLabel(l10n, (day + 1).clamp(0, availableDays - 1)),
+                sliderDecreasedValueLabel:
+                    _dayLabel(l10n, (day - 1).clamp(0, availableDays - 1)),
               ),
               AccessibleListRow(id: 'day_title', kind: 'header', title: _dayLabel(l10n, day)),
               if (day == 0)
@@ -541,10 +545,14 @@ class _WeatherForecastView extends StatelessWidget {
             ]),
           ],
           onEvent: (event) {
-            if (event.id == 'day' && event.type == 'picker') {
+            if (event.id == 'day' && event.type == 'slider') {
               final value = event.value;
-              final i = value is num ? value.toInt() : int.tryParse(value?.toString() ?? '');
-              if (i != null) onDayChanged(i);
+              final n = value is num
+                  ? value.toDouble()
+                  : double.tryParse(value?.toString() ?? '');
+              if (n != null && n.isFinite) {
+                onDayChanged(n.round().clamp(0, availableDays - 1));
+              }
             }
           },
         ),
@@ -555,22 +563,18 @@ class _WeatherForecastView extends StatelessWidget {
       child: ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
-          DropdownButtonFormField<int>(
-            initialValue: day,
-            decoration: InputDecoration(
-              labelText: l10n.weatherChooseDay,
-              border: const OutlineInputBorder(),
-            ),
-            items: [
-              for (var i = 0; i < availableDays; i++)
-                DropdownMenuItem(
-                  value: i,
-                  child: Text(_dayLabel(l10n, i)),
-                ),
-            ],
-            onChanged: (value) {
-              if (value != null) onDayChanged(value);
-            },
+          Text('${l10n.weatherChooseDay}: ${_dayLabel(l10n, day)}'),
+          Slider(
+            value: day.toDouble(),
+            min: 0,
+            max: (availableDays - 1).toDouble(),
+            divisions: availableDays > 1 ? availableDays - 1 : null,
+            label: _dayLabel(l10n, day),
+            semanticFormatterCallback: (value) =>
+                _dayLabel(l10n, value.round().clamp(0, availableDays - 1)),
+            onChanged: availableDays > 1
+                ? (value) => onDayChanged(value.round().clamp(0, availableDays - 1))
+                : null,
           ),
           const SizedBox(height: 16),
           Text(

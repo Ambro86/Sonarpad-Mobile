@@ -174,7 +174,7 @@ class _TravelPassengersScreenState extends State<TravelPassengersScreen> {
     (r) => r is Map && r['type'] == 'required',
   );
   String _label(Map f, TravelStrings t) =>
-      '${t.t('passenger')} ${int.parse((f['name'] as String).split('.').first) + 1}: ${_plain(f['title'] ?? (f['name'] as String).split('.').last)}';
+      _plain(f['title'] ?? (f['name'] as String).split('.').last);
   String _component(Map f) => f['component']?.toString() ?? 'Text';
   bool _supported(Map f) =>
       _options(f['options']).isNotEmpty ||
@@ -806,11 +806,16 @@ class _TravelPassengersScreenState extends State<TravelPassengersScreen> {
         if (d.submitted && d.paymentUrl == null)
           _action('status', t.t('statusRefresh'), _status, enabled: !_busy),
       ] else if (d.fields != null && fields.isEmpty) ...[
-        for (final item in _visibleFields)
-          _info(
-            'review-${item['name']}',
-            '${_label(item, t)}: ${_display(item, t)}',
-          ),
+        for (final index in _passengerIndices) ...[
+          _info('review-passenger-$index', '${t.t('passenger')} ${index + 1}'),
+          for (final item in _visibleFields.where(
+            (f) => (f['name'] as String).startsWith('$index.'),
+          ))
+            _info(
+              'review-${item['name']}',
+              '${_label(item, t)}: ${_display(item, t)}',
+            ),
+        ],
         _info('consent', t.t('checkData')),
         _action('submit-passengers', t.t('sendData'), _submit, enabled: !_busy),
         _action('edit', t.t('editData'), () async {
