@@ -563,7 +563,7 @@ class _WeatherForecastView extends StatelessWidget {
       child: ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
-          Text('${l10n.weatherChooseDay}: ${_dayLabel(l10n, day)}'),
+          Text(l10n.weatherChooseDay),
           Slider(
             value: day.toDouble(),
             min: 0,
