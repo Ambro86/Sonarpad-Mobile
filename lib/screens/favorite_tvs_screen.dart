@@ -1,3 +1,5 @@
+import 'dart:async';
+import '../utils/tv_return_focus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 
@@ -21,9 +23,9 @@ class FavoriteTvsScreen extends StatefulWidget {
 
   final List<TvChannel> channels;
   final Map<String, TvProgram> currentPrograms;
-  final ValueChanged<TvChannel> onOpenChannel;
-  final ValueChanged<TvChannel> onPlayLive;
-  final ValueChanged<TvChannel> onPlayAndRecord;
+  final FutureOr<void> Function(TvChannel) onOpenChannel;
+  final FutureOr<void> Function(TvChannel) onPlayLive;
+  final FutureOr<void> Function(TvChannel) onPlayAndRecord;
   final bool recordingFeatureUnlocked;
 
   @override
@@ -31,6 +33,19 @@ class FavoriteTvsScreen extends StatefulWidget {
 }
 
 class _FavoriteTvsScreenState extends State<FavoriteTvsScreen> {
+  final _returnFocus = AccessibleListController(debugName: 'tv-channel-return');
+  bool _openingChannel = false;
+
+  Future<void> _openAndRestore(TvChannel channel, FutureOr<void> Function(TvChannel) action) async {
+    if (_openingChannel) return;
+    _openingChannel = true;
+    try {
+      await restoreTvRowAfterAction(context, _returnFocus, channel.name, () => action(channel));
+    } finally {
+      _openingChannel = false;
+    }
+  }
+
   final _service = TvService();
   List<TvChannel> _favorites = [];
   bool _loading = true;
@@ -94,6 +109,7 @@ class _FavoriteTvsScreenState extends State<FavoriteTvsScreen> {
                 )
               : useSharedAccessibleViewModel
                   ? UniversalAccessibleList(
+                      controller: _returnFocus,
                       key: ValueKey('shared-favorite-tvs-${_favorites.length}'),
                       sections: [
                         AccessibleListSection(
@@ -156,16 +172,16 @@ class _FavoriteTvsScreenState extends State<FavoriteTvsScreen> {
                         if (index < 0) return;
                         final channel = _favorites[index];
                         if (event.type == 'activate') {
-                          widget.onOpenChannel(channel);
+                          await _openAndRestore(channel, widget.onOpenChannel);
                         } else if (event.type == 'customAction' &&
                             event.action == 'play_live') {
-                          widget.onPlayLive(channel);
+                          await _openAndRestore(channel, widget.onPlayLive);
                         } else if (event.type == 'customAction' && event.action == 'remove') {
                           await _removeFromFavorites(channel);
                         } else if (event.type == 'customAction' &&
                             event.action == 'play_record' &&
                             widget.recordingFeatureUnlocked) {
-                          widget.onPlayAndRecord(channel);
+                          await _openAndRestore(channel, widget.onPlayAndRecord);
                         } else if (event.type == 'customAction' &&
                             event.action == 'schedule_recording' &&
                             widget.recordingFeatureUnlocked) {
@@ -196,18 +212,18 @@ class _FavoriteTvsScreenState extends State<FavoriteTvsScreen> {
                           enabled: true,
                           label: semanticsLabel,
                           hint: 'Tocca per aprire il canale TV',
-                          onTap: () => widget.onOpenChannel(channel),
+                          onTap: () => _openAndRestore(channel, widget.onOpenChannel),
                           customSemanticsActions: {
                             CustomSemanticsAction(
                               label: l10n.tvPlayLive,
-                            ): () => widget.onPlayLive(channel),
+                            ): () => _openAndRestore(channel, widget.onPlayLive),
                             const CustomSemanticsAction(
                                     label: 'Rimuovi dai preferiti'):
                                 () => _removeFromFavorites(channel),
                             if (widget.recordingFeatureUnlocked)
                               CustomSemanticsAction(
                                 label: l10n.playAndRecord,
-                              ): () => widget.onPlayAndRecord(channel),
+                              ): () => _openAndRestore(channel, widget.onPlayAndRecord),
                             if (widget.recordingFeatureUnlocked)
                               CustomSemanticsAction(
                                 label: l10n.radioScheduleDialogTitle,
@@ -227,7 +243,7 @@ class _FavoriteTvsScreenState extends State<FavoriteTvsScreen> {
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 16, vertical: 8),
                                     ),
-                                    onPressed: () => widget.onOpenChannel(channel),
+                                    onPressed: () => _openAndRestore(channel, widget.onOpenChannel),
                                     child: Row(
                                       children: [
                                         const Icon(Icons.tv),
@@ -271,7 +287,7 @@ class _FavoriteTvsScreenState extends State<FavoriteTvsScreen> {
                                   ),
                                   tooltip: l10n.tvPlayLive,
                                   icon: const Icon(Icons.play_arrow),
-                                  onPressed: () => widget.onPlayLive(channel),
+                                  onPressed: () => _openAndRestore(channel, widget.onPlayLive),
                                 ),
                                 if (widget.recordingFeatureUnlocked)
                                   IconButton(
@@ -281,7 +297,7 @@ class _FavoriteTvsScreenState extends State<FavoriteTvsScreen> {
                                     tooltip: l10n.playAndRecord,
                                     icon: const Icon(Icons.fiber_manual_record),
                                     onPressed: () =>
-                                        widget.onPlayAndRecord(channel),
+                                        _openAndRestore(channel, widget.onPlayAndRecord),
                                   ),
                                 if (widget.recordingFeatureUnlocked)
                                   IconButton(

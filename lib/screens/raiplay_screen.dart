@@ -1,3 +1,6 @@
+import '../services/raiplay_media_export_adapter.dart';
+import '../services/sonartube_service.dart';
+import '../widgets/sonartube_save_media_dialog.dart';
 import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
@@ -137,6 +140,45 @@ class _RaiPlayScreenState extends State<RaiPlayScreen> {
   bool _canCreateAiAudiodescription(RaiPlayItem item) =>
       _aiAudiodescriptionUnlocked && item.kind == RaiPlayItemKind.media;
 
+  bool _canSaveContent(RaiPlayItem item) =>
+      _aiAudiodescriptionUnlocked && item.kind == RaiPlayItemKind.media;
+
+  Future<void> _saveContent(RaiPlayItem item) async {
+    if (!mounted || !_canSaveContent(item)) return;
+    final code = await _settings.getTvSecretCode();
+    final language = await _settings.loadAppLanguage();
+    if (!mounted || language != 'it' || !RecordingFeatureAccess.isCodeValid(code)) return;
+    BuildContext? waitingContext;
+    final waiting = showDialog<void>(context: context, barrierDismissible: false,
+      builder: (c) { waitingContext = c; return PopScope(canPop:false,
+        child: AlertDialog(content: Row(children: [
+          const CircularProgressIndicator(), const SizedBox(width:16),
+          Expanded(child:Text(AppLocalizations.of(c).loading)),
+        ]))); });
+    RaiPlayResolvedMedia? resolved;
+    try {
+      resolved = await _service.resolvePlaybackUrls(item.mediaUrl).timeout(const Duration(seconds:45));
+    } catch (error) {
+      await AppLogger.log('RaiPlay save: resolution failed $error');
+    } finally {
+      await WidgetsBinding.instance.endOfFrame;
+      if (waitingContext?.mounted == true) Navigator.pop(waitingContext!);
+      await waiting;
+    }
+    if (!mounted) return;
+    if (resolved == null) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text(AppLocalizations.of(context).technicalErrorGeneric)));
+      return;
+    }
+    await saveSonarTubeMediaWithDestination(context,
+      service: RaiPlayMediaExportAdapter(resolved, preferDescription:false),
+      mp3Service: RaiPlayMediaExportAdapter(resolved),
+      describedService: resolved.hasDescribedAudio ? RaiPlayMediaExportAdapter(resolved) : null,
+      item: SonarTubeItem(kind:SonarTubeItemKind.video,id:item.id,title:item.title,url:item.mediaUrl),
+      requestHeaders: RaiPlayMediaExportAdapter.headers,
+    );
+  }
+
   Future<void> _createAiAudiodescription(RaiPlayItem item) async {
     if (!mounted || !_canCreateAiAudiodescription(item)) return;
     try {
@@ -268,7 +310,8 @@ class _RaiPlayScreenState extends State<RaiPlayScreen> {
           title: items[i].title,
           subtitle: items[i].description.isNotEmpty ? items[i].description : null,
           actions: _canCreateAiAudiodescription(items[i])
-              ? const <AccessibleCustomAction>[
+              ? <AccessibleCustomAction>[
+                  if (_canSaveContent(items[i])) AccessibleCustomAction(id: 'save_content', label: AppLocalizations.of(context).saveMediaContent),
                   AccessibleCustomAction(
                     id: 'create_ai_audiodescription',
                     label: onlineCreateAiAudiodescriptionLabel,
@@ -276,7 +319,8 @@ class _RaiPlayScreenState extends State<RaiPlayScreen> {
                 ]
               : const <AccessibleCustomAction>[],
           visualActions: _canCreateAiAudiodescription(items[i])
-              ? const <AccessibleVisualAction>[
+              ? <AccessibleVisualAction>[
+                  if (_canSaveContent(items[i])) AccessibleVisualAction(id: 'save_content', label: AppLocalizations.of(context).saveMediaContent, icon: 'save'),
                   AccessibleVisualAction(
                     id: 'create_ai_audiodescription',
                     label: onlineCreateAiAudiodescriptionLabel,
@@ -295,6 +339,9 @@ class _RaiPlayScreenState extends State<RaiPlayScreen> {
           await _search();
         } else if (event.id == 'recent' && event.type == 'activate') {
           await _openRecentSearches();
+        } else if (event.type == 'customAction' && event.action == 'save_content' && event.id?.startsWith('item_') == true) {
+          final i = int.tryParse(event.id!.substring(5));
+          if (i != null && i >= 0 && i < items.length) await _saveContent(items[i]);
         } else if (event.type == 'customAction' &&
             event.action == 'create_ai_audiodescription' &&
             event.id?.startsWith('item_') == true) {
@@ -378,6 +425,7 @@ class _RaiPlayScreenState extends State<RaiPlayScreen> {
                             customSemanticsActions:
                                 _canCreateAiAudiodescription(item)
                                     ? <CustomSemanticsAction, VoidCallback>{
+                                        if (_canSaveContent(item)) CustomSemanticsAction(label: AppLocalizations.of(context).saveMediaContent): () => _saveContent(item),
                                         const CustomSemanticsAction(
                                           label: onlineCreateAiAudiodescriptionLabel,
                                         ): () => _createAiAudiodescription(item),
@@ -398,12 +446,17 @@ class _RaiPlayScreenState extends State<RaiPlayScreen> {
                                   : null,
                               trailing: _canCreateAiAudiodescription(item)
                                   ? ExcludeSemantics(
-                                      child: IconButton(
+                                      child: Row(mainAxisSize: MainAxisSize.min, children: [
+                                        if (_canSaveContent(item)) IconButton(
+                                          tooltip: AppLocalizations.of(context).saveMediaContent,
+                                          icon: const Icon(Icons.save_alt), onPressed: () => _saveContent(item)),
+                                        IconButton(
                                         tooltip: onlineCreateAiAudiodescriptionLabel,
                                         icon: const Icon(Icons.auto_awesome),
                                         onPressed: () =>
                                             _createAiAudiodescription(item),
                                       ),
+                                      ]),
                                     )
                                   : null,
                                 onTap: () => _openItem(item),

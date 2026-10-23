@@ -7,6 +7,12 @@ import 'app_localizations.dart';
 /// The translations for Ukrainian (`uk`).
 class AppLocalizationsUk extends AppLocalizations {
   @override
+  String get saveMp4WithAudiodescription => "MP4 з аудіоописом";
+
+  @override
+  String get saveMediaContent => "Зберегти вміст";
+
+  @override
   String get favoritesSortAlphabetically => "Сортувати за абеткою";
 
   @override

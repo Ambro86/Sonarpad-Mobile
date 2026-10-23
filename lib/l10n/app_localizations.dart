@@ -72,6 +72,8 @@ import 'app_localizations_zh.dart';
 /// be consistent with the languages listed in the AppLocalizations.supportedLocales
 /// property.
 abstract class AppLocalizations {
+  String get saveMp4WithAudiodescription;
+  String get saveMediaContent;
   String get favoritesSortAlphabetically;
   String get favoriteVideosLatest;
   String get favoriteVideosTitle;

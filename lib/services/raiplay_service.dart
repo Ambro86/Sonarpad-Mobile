@@ -40,12 +40,14 @@ class RaiPlayResolvedMedia {
   final String videoUrl;
   final String? audioLanguage;
   final String? audioName;
+  final String? standardAudioUrl;
 
   const RaiPlayResolvedMedia({
     required this.audioUrl,
     required this.videoUrl,
     this.audioLanguage,
     this.audioName,
+    this.standardAudioUrl,
   });
 
   bool get hasDescribedAudio {
@@ -724,8 +726,8 @@ class RaiPlayService {
   }) {
     String? adUrl;
     String? itaUrl;
-    String? audioLanguage;
-    String? audioName;
+    String? adLanguage, adName, itaLanguage, itaName;
+    String? regularUrl;
 
     final lines = playlist.split('\n');
     for (var line in lines) {
@@ -741,15 +743,18 @@ class RaiPlayService {
           final name = nameMatch?.group(1)?.toLowerCase();
 
           if (lang == 'des' || name == 'audiodescrizione') {
-            adUrl = _resolveHlsChildUrl(masterUrl, uri, log: logChildUrls);
-            audioLanguage = lang;
-            audioName = name;
-            break;
-          }
-          if (lang == 'ita' && itaUrl == null) {
-            itaUrl = _resolveHlsChildUrl(masterUrl, uri, log: logChildUrls);
-            audioLanguage = lang;
-            audioName = name;
+            if (adUrl == null) {
+              adUrl = _resolveHlsChildUrl(masterUrl, uri, log: logChildUrls);
+              adLanguage = lang;
+              adName = name;
+            }
+          } else {
+            regularUrl ??= _resolveHlsChildUrl(masterUrl, uri, log: logChildUrls);
+            if (lang == 'ita' && itaUrl == null) {
+              itaUrl = _resolveHlsChildUrl(masterUrl, uri, log: logChildUrls);
+              itaLanguage = lang;
+              itaName = name;
+            }
           }
         }
       }
@@ -758,8 +763,9 @@ class RaiPlayService {
     return RaiPlayResolvedMedia(
       audioUrl: adUrl ?? itaUrl ?? fallbackAudioUrl ?? masterUrl,
       videoUrl: masterUrl,
-      audioLanguage: audioLanguage,
-      audioName: audioName,
+      audioLanguage: adUrl != null ? adLanguage : itaLanguage,
+      audioName: adUrl != null ? adName : itaName,
+      standardAudioUrl: itaUrl ?? regularUrl,
     );
   }
 

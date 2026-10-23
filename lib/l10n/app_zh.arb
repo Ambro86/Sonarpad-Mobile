@@ -4846,5 +4846,7 @@
   "favoriteVideosLatest": "最新视频",
   "favoriteVideosTitle": "收藏中的最新视频",
   "favoriteVideosPartial": "部分频道无法加载。现显示其他频道的视频。",
-  "favoritesSortAlphabetically": "按字母顺序排序"
+  "favoritesSortAlphabetically": "按字母顺序排序",
+  "saveMediaContent": "保存内容",
+  "saveMp4WithAudiodescription": "带音频描述的 MP4"
 }

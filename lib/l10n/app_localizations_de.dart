@@ -7,6 +7,12 @@ import 'app_localizations.dart';
 /// The translations for German (`de`).
 class AppLocalizationsDe extends AppLocalizations {
   @override
+  String get saveMp4WithAudiodescription => "MP4 mit Audiodeskription";
+
+  @override
+  String get saveMediaContent => "Inhalt speichern";
+
+  @override
   String get favoritesSortAlphabetically => "Alphabetisch sortieren";
 
   @override

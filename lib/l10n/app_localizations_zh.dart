@@ -7,6 +7,12 @@ import 'app_localizations.dart';
 /// The translations for Chinese (`zh`).
 class AppLocalizationsZh extends AppLocalizations {
   @override
+  String get saveMp4WithAudiodescription => "带音频描述的 MP4";
+
+  @override
+  String get saveMediaContent => "保存内容";
+
+  @override
   String get favoritesSortAlphabetically => "按字母顺序排序";
 
   @override
@@ -5238,6 +5244,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
 /// The translations for Chinese, as used in China (`zh_CN`).
 class AppLocalizationsZhCn extends AppLocalizationsZh {
+  @override
+  String get saveMp4WithAudiodescription => "带音频描述的 MP4";
+
+  @override
+  String get saveMediaContent => "保存内容";
+
   @override
   String get favoritesSortAlphabetically => "按字母顺序排序";
 

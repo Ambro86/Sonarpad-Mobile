@@ -49,6 +49,20 @@ class SonarTubeMediaExportController {
 /// [exportMp4] and [exportMp3] guarantee the format explicitly chosen by the
 /// user in the Save media flow.
 class SonarTubeMediaExportService {
+  SonarTubeMediaExportService({this.requestHeaders = const {}});
+  final Map<String, String> requestHeaders;
+
+  static List<String> withInputHeaders(List<String> args, Map<String, String> headers) {
+    if (headers.isEmpty) return args;
+    final block = headers.entries.map((e) => '${e.key}: ${e.value}\r\n').join();
+    return [for (var i = 0; i < args.length; i++) ...[
+      if (args[i] == '-i' && i + 1 < args.length &&
+          (args[i + 1].startsWith('https://') || args[i + 1].startsWith('http://')))
+        ...['-headers', block],
+      args[i],
+    ]];
+  }
+
   Future<String> export({
     required SonarTubeService service,
     required SonarTubeItem item,
@@ -373,7 +387,7 @@ class SonarTubeMediaExportService {
     final completed = Completer<FFmpegSession>();
     var lastPercent = -1;
     final session = await FFmpegKit.executeWithArgumentsAsync(
-      args,
+      withInputHeaders(args, requestHeaders),
       (result) {
         if (!completed.isCompleted) completed.complete(result);
       },

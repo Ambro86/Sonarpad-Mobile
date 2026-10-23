@@ -12,13 +12,13 @@ void main() {
 
     expect(tv, contains("id: 'play_live'"));
     expect(tv, contains("event.action == 'play_live'"));
-    expect(tv, contains('onPlayLive: () => widget.onPlayLive(channel)'));
+    expect(tv, contains('onPlayLive: () => _openAndRestore(channel, widget.onPlayLive)'));
     expect(tv, contains("icon: 'play'"));
     expect(tv, contains('icon: const Icon(Icons.play_arrow)'));
 
     expect(favorites, contains("id: 'play_live'"));
     expect(favorites, contains("event.action == 'play_live'"));
-    expect(favorites, contains('widget.onPlayLive(channel)'));
+    expect(favorites, contains('_openAndRestore(channel, widget.onPlayLive)'));
     expect(favorites, contains("icon: 'play'"));
     expect(favorites, contains('icon: const Icon(Icons.play_arrow)'));
   });

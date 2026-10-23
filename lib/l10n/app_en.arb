@@ -4846,5 +4846,7 @@
   "favoriteVideosLatest": "Latest videos",
   "favoriteVideosTitle": "Latest videos from favorites",
   "favoriteVideosPartial": "Some channels could not be loaded. Videos from the other channels are shown.",
-  "favoritesSortAlphabetically": "Sort alphabetically"
+  "favoritesSortAlphabetically": "Sort alphabetically",
+  "saveMediaContent": "Save content",
+  "saveMp4WithAudiodescription": "MP4 with audio description"
 }

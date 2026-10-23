@@ -162,8 +162,20 @@ class AudioDescriptionFallbacks {
     double epsilonSec = 0.500,
   }) => anchorEndSec < mediaDurationSec - epsilonSec;
 
+  // Pronunciation only, at the existing underscore-normalization boundary.
+  // Match whole Unicode-alphanumeric tokens, as on Windows and Mac.
+  static final _pronunciationAbbreviations =
+      RegExp(r'[\p{Alphabetic}\p{Number}]+\.', unicode: true);
+
   static String normalizePronunciationText(String value) =>
-      value.replaceAll('_', ' ');
+      value.replaceAll('_', ' ').replaceAllMapped(
+        _pronunciationAbbreviations,
+        (match) => switch (match[0]!.toLowerCase()) {
+          'dr.' => 'dr',
+          'mr.' => 'mr',
+          _ => match[0]!,
+        },
+      );
 
   /// Brief regeneration and the final dialogue-overlap fallback are allowed
   /// only when the previous TTS pass succeeded and every exclusion is purely

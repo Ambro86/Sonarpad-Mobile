@@ -7,6 +7,12 @@ import 'app_localizations.dart';
 /// The translations for Portuguese (`pt`).
 class AppLocalizationsPt extends AppLocalizations {
   @override
+  String get saveMp4WithAudiodescription => "MP4 com audiodescrição";
+
+  @override
+  String get saveMediaContent => "Guardar conteúdo";
+
+  @override
   String get favoritesSortAlphabetically => "Ordenar alfabeticamente";
 
   @override
@@ -5434,6 +5440,12 @@ class AppLocalizationsPt extends AppLocalizations {
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
 class AppLocalizationsPtBr extends AppLocalizationsPt {
+  @override
+  String get saveMp4WithAudiodescription => "MP4 com audiodescrição";
+
+  @override
+  String get saveMediaContent => "Salvar conteúdo";
+
   @override
   String get favoritesSortAlphabetically => "Ordenar alfabeticamente";
 

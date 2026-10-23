@@ -4852,5 +4852,7 @@
   "favoriteVideosLatest": "Vídeos mais recentes",
   "favoriteVideosTitle": "Vídeos mais recentes dos favoritos",
   "favoriteVideosPartial": "Não foi possível carregar alguns canais. São apresentados os vídeos dos outros canais.",
-  "favoritesSortAlphabetically": "Ordenar alfabeticamente"
+  "favoritesSortAlphabetically": "Ordenar alfabeticamente",
+  "saveMediaContent": "Guardar conteúdo",
+  "saveMp4WithAudiodescription": "MP4 com audiodescrição"
 }

@@ -7,6 +7,12 @@ import 'app_localizations.dart';
 /// The translations for Italian (`it`).
 class AppLocalizationsIt extends AppLocalizations {
   @override
+  String get saveMp4WithAudiodescription => "MP4 con audiodescrizione";
+
+  @override
+  String get saveMediaContent => "Salva contenuto";
+
+  @override
   String get favoritesSortAlphabetically => "Ordina alfabeticamente";
 
   @override

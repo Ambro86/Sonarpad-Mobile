@@ -2,6 +2,25 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:sonarpad_mobile_starter/services/audio_description_fallbacks.dart';
 
 void main() {
+  group('audio description pronunciation matches Windows and Mac', () {
+    final cases = <String, String>{
+      'Dr._Arinsu e Mr._Rossi.': 'dr Arinsu e mr Rossi.',
+      'DR. Dr. dr. dR. MR. Mr. mr. mR.': 'dr dr dr dr mr mr mr mr',
+      'Dr.Dr._Mr.Mr.': 'drdr mrmr',
+      '(Dr. Arinsu), «Mr. Rossi»!': '(dr Arinsu), «mr Rossi»!',
+      'Mrs. Ms. Prof. dr mr': 'Mrs. Ms. Prof. dr mr',
+      'adr. amr. 2dr. édr. 中mr.': 'adr. amr. 2dr. édr. 中mr.',
+      '  Dr.\nArinsu\tMr. Rossi  ': '  dr\nArinsu\tmr Rossi  ',
+      'Jon_Snow entra. 3.14, fine!': 'Jon Snow entra. 3.14, fine!',
+      '': '',
+    };
+    for (final entry in cases.entries) {
+      test(entry.key.isEmpty ? 'empty text' : entry.key, () {
+        expect(AudioDescriptionFallbacks.normalizePronunciationText(entry.key), entry.value);
+      });
+    }
+  });
+
   group('HTTP and transport classification', () {
     test('400 INVALID_ARGUMENT is permanent', () {
       expect(

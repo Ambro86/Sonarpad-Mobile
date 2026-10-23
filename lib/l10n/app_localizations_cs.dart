@@ -7,6 +7,12 @@ import 'app_localizations.dart';
 /// The translations for Czech (`cs`).
 class AppLocalizationsCs extends AppLocalizations {
   @override
+  String get saveMp4WithAudiodescription => "MP4 s audiopopisem";
+
+  @override
+  String get saveMediaContent => "Uložit obsah";
+
+  @override
   String get favoritesSortAlphabetically => "Seřadit abecedně";
 
   @override

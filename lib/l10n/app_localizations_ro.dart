@@ -8,6 +8,12 @@ import 'app_localizations.dart';
 /// Remaining untranslated messages temporarily keep their English text until the next phase.
 class AppLocalizationsRo extends AppLocalizations {
   @override
+  String get saveMp4WithAudiodescription => "MP4 cu audiodescriere";
+
+  @override
+  String get saveMediaContent => "Salvează conținutul";
+
+  @override
   String get favoritesSortAlphabetically => "Sortează alfabetic";
 
   @override

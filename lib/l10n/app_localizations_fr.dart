@@ -7,6 +7,12 @@ import 'app_localizations.dart';
 /// The translations for French (`fr`).
 class AppLocalizationsFr extends AppLocalizations {
   @override
+  String get saveMp4WithAudiodescription => "MP4 avec audiodescription";
+
+  @override
+  String get saveMediaContent => "Enregistrer le contenu";
+
+  @override
   String get favoritesSortAlphabetically => "Trier par ordre alphabétique";
 
   @override

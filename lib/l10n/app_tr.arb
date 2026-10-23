@@ -4846,5 +4846,7 @@
   "favoriteVideosLatest": "Son videolar",
   "favoriteVideosTitle": "Favorilerden son videolar",
   "favoriteVideosPartial": "Bazı kanallar yüklenemedi. Diğer kanalların videoları gösteriliyor.",
-  "favoritesSortAlphabetically": "Alfabetik sırala"
+  "favoritesSortAlphabetically": "Alfabetik sırala",
+  "saveMediaContent": "İçeriği kaydet",
+  "saveMp4WithAudiodescription": "Sesli betimlemeli MP4"
 }

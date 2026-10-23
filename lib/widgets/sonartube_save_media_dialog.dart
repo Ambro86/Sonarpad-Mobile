@@ -15,7 +15,7 @@ const String sonarTubeSaveMediaLabel = 'Salva media';
 
 enum _SonarTubeDoneAction { saveDocuments, share }
 
-enum _SonarTubeSaveFormat { mp4, mp3 }
+enum _SonarTubeSaveFormat { mp4, mp3, mp4Described }
 
 /// Saves one SonarTube video to a temporary local export and then presents the
 /// same destination choice used by Media Cutter and AI audio descriptions.
@@ -23,6 +23,9 @@ Future<void> saveSonarTubeMediaWithDestination(
   BuildContext context, {
   required SonarTubeService service,
   required SonarTubeItem item,
+  Map<String, String> requestHeaders = const {},
+  SonarTubeService? mp3Service,
+  SonarTubeService? describedService,
 }) async {
   if (item.kind != SonarTubeItemKind.video || item.isLive) return;
 
@@ -49,13 +52,17 @@ Future<void> saveSonarTubeMediaWithDestination(
             ),
             child: Text(l10n.sonarTubeSaveAsMp4),
           ),
+          if (describedService != null) TextButton(
+            onPressed: () => Navigator.pop(dialogContext, _SonarTubeSaveFormat.mp4Described),
+            child: Text(l10n.saveMp4WithAudiodescription),
+          ),
         ],
       ),
     ),
   );
   if (!context.mounted || format == null) return;
 
-  final exporter = SonarTubeMediaExportService();
+  final exporter = SonarTubeMediaExportService(requestHeaders: requestHeaders);
   final exportController = SonarTubeMediaExportController();
   final progress = ValueNotifier<double>(0.0);
   final cancelling = ValueNotifier<bool>(false);
@@ -120,8 +127,8 @@ Future<void> saveSonarTubeMediaWithDestination(
   String? filePath;
   try {
     filePath = switch (format) {
-      _SonarTubeSaveFormat.mp4 => await exporter.exportMp4(
-          service: service,
+      _SonarTubeSaveFormat.mp4 || _SonarTubeSaveFormat.mp4Described => await exporter.exportMp4(
+          service: format == _SonarTubeSaveFormat.mp4Described ? describedService! : service,
           item: item,
           controller: exportController,
           onProgress: (fraction) {
@@ -129,7 +136,7 @@ Future<void> saveSonarTubeMediaWithDestination(
           },
         ),
       _SonarTubeSaveFormat.mp3 => await exporter.exportMp3(
-          service: service,
+          service: mp3Service ?? service,
           item: item,
           controller: exportController,
           onProgress: (fraction) {

@@ -7,6 +7,12 @@ import 'app_localizations.dart';
 /// The translations for Polish (`pl`).
 class AppLocalizationsPl extends AppLocalizations {
   @override
+  String get saveMp4WithAudiodescription => "MP4 z audiodeskrypcją";
+
+  @override
+  String get saveMediaContent => "Zapisz zawartość";
+
+  @override
   String get favoritesSortAlphabetically => "Sortuj alfabetycznie";
 
   @override

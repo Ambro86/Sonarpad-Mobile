@@ -6424,5 +6424,7 @@
   "favoriteVideosLatest": "Найновіші відео",
   "favoriteVideosTitle": "Найновіші відео з обраного",
   "favoriteVideosPartial": "Не вдалося завантажити деякі канали. Показано відео з інших каналів.",
-  "favoritesSortAlphabetically": "Сортувати за абеткою"
+  "favoritesSortAlphabetically": "Сортувати за абеткою",
+  "saveMediaContent": "Зберегти вміст",
+  "saveMp4WithAudiodescription": "MP4 з аудіоописом"
 }

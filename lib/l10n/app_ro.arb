@@ -4846,5 +4846,7 @@
   "favoriteVideosLatest": "Cele mai noi videoclipuri",
   "favoriteVideosTitle": "Cele mai noi videoclipuri din favorite",
   "favoriteVideosPartial": "Unele canale nu au putut fi încărcate. Sunt afișate videoclipurile celorlalte canale.",
-  "favoritesSortAlphabetically": "Sortează alfabetic"
+  "favoritesSortAlphabetically": "Sortează alfabetic",
+  "saveMediaContent": "Salvează conținutul",
+  "saveMp4WithAudiodescription": "MP4 cu audiodescriere"
 }

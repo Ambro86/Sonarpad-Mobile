@@ -4849,5 +4849,7 @@
   "favoriteVideosLatest": "Nejnovější videa",
   "favoriteVideosTitle": "Nejnovější videa z oblíbených",
   "favoriteVideosPartial": "Některé kanály se nepodařilo načíst. Zobrazují se videa z ostatních kanálů.",
-  "favoritesSortAlphabetically": "Seřadit abecedně"
+  "favoritesSortAlphabetically": "Seřadit abecedně",
+  "saveMediaContent": "Uložit obsah",
+  "saveMp4WithAudiodescription": "MP4 s audiopopisem"
 }

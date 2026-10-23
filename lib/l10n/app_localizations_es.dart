@@ -7,6 +7,12 @@ import 'app_localizations.dart';
 /// The translations for Spanish Castilian (`es`).
 class AppLocalizationsEs extends AppLocalizations {
   @override
+  String get saveMp4WithAudiodescription => "MP4 con audiodescripción";
+
+  @override
+  String get saveMediaContent => "Guardar contenido";
+
+  @override
   String get favoritesSortAlphabetically => "Ordenar alfabéticamente";
 
   @override

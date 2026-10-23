@@ -1,3 +1,5 @@
+import 'dart:async';
+import '../utils/tv_return_focus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 
@@ -96,7 +98,7 @@ class _TvScreenState extends State<TvScreen> {
     bool autoPlay = false,
     bool autoStartRecording = false,
   }) async {
-    Navigator.push(
+    await Navigator.push(
       context,
       MaterialPageRoute(
         settings: const RouteSettings(name: '/tv/channel'),
@@ -205,9 +207,10 @@ class _TvScreenState extends State<TvScreen> {
             .where((channel) => _matchesTvSearch(channel, normalizedQuery))
             .toList();
 
-    final selectedChannel = await showDialog<TvChannel>(
+    await showDialog<void>(
       context: context,
       builder: (_) => _TvSearchResultsDialog(
+        onOpenChannel: _openChannel,
         query: query,
         channels: results,
         currentPrograms: _currentPrograms,
@@ -221,8 +224,7 @@ class _TvScreenState extends State<TvScreen> {
       ),
     );
 
-    if (!mounted || selectedChannel == null) return;
-    await _openChannel(selectedChannel);
+
   }
 
   bool _matchesTvSearch(TvChannel channel, String normalizedQuery) {
@@ -526,9 +528,9 @@ class _TvRegionalScreen extends StatelessWidget {
 
   final Map<String, List<TvChannel>> regions;
   final Map<String, TvProgram> currentPrograms;
-  final ValueChanged<TvChannel> onOpenChannel;
-  final ValueChanged<TvChannel> onPlayLive;
-  final ValueChanged<TvChannel> onPlayAndRecord;
+  final FutureOr<void> Function(TvChannel) onOpenChannel;
+  final FutureOr<void> Function(TvChannel) onPlayLive;
+  final FutureOr<void> Function(TvChannel) onPlayAndRecord;
   final bool recordingFeatureUnlocked;
 
   void _openRegion(BuildContext context, String region) {
@@ -615,9 +617,9 @@ class _TvCategoryScreen extends StatefulWidget {
   final String category;
   final List<TvChannel> channels;
   final Map<String, TvProgram> currentPrograms;
-  final ValueChanged<TvChannel> onOpenChannel;
-  final ValueChanged<TvChannel> onPlayLive;
-  final ValueChanged<TvChannel> onPlayAndRecord;
+  final FutureOr<void> Function(TvChannel) onOpenChannel;
+  final FutureOr<void> Function(TvChannel) onPlayLive;
+  final FutureOr<void> Function(TvChannel) onPlayAndRecord;
   final bool recordingFeatureUnlocked;
 
   @override
@@ -625,6 +627,19 @@ class _TvCategoryScreen extends StatefulWidget {
 }
 
 class _TvCategoryScreenState extends State<_TvCategoryScreen> {
+  final _returnFocus = AccessibleListController(debugName: 'tv-channel-return');
+  bool _openingChannel = false;
+
+  Future<void> _openAndRestore(TvChannel channel, FutureOr<void> Function(TvChannel) action) async {
+    if (_openingChannel) return;
+    _openingChannel = true;
+    try {
+      await restoreTvRowAfterAction(context, _returnFocus, channel.name, () => action(channel));
+    } finally {
+      _openingChannel = false;
+    }
+  }
+
   final _service = TvService();
   List<TvChannel> _favorites = [];
 
@@ -673,6 +688,7 @@ class _TvCategoryScreenState extends State<_TvCategoryScreen> {
       appBar: SonarpadAppBar(title: Text(widget.category)),
       body: useSharedAccessibleViewModel
           ? UniversalAccessibleList(
+                      controller: _returnFocus,
               key: ValueKey('shared-tv-category-${widget.category}-${widget.channels.length}'),
               sections: [
                 AccessibleListSection(
@@ -737,16 +753,16 @@ class _TvCategoryScreenState extends State<_TvCategoryScreen> {
                 if (index < 0) return;
                 final channel = widget.channels[index];
                 if (event.type == 'activate') {
-                  widget.onOpenChannel(channel);
+                  await _openAndRestore(channel, widget.onOpenChannel);
                 } else if (event.type == 'customAction' &&
                     event.action == 'play_live') {
-                  widget.onPlayLive(channel);
+                  await _openAndRestore(channel, widget.onPlayLive);
                 } else if (event.type == 'customAction' && event.action == 'favorite') {
                   await _toggleFavorite(channel);
                 } else if (event.type == 'customAction' &&
                     event.action == 'play_record' &&
                     widget.recordingFeatureUnlocked) {
-                  widget.onPlayAndRecord(channel);
+                  await _openAndRestore(channel, widget.onPlayAndRecord);
                 } else if (event.type == 'customAction' &&
                     event.action == 'schedule_recording' &&
                     widget.recordingFeatureUnlocked) {
@@ -764,11 +780,11 @@ class _TvCategoryScreenState extends State<_TvCategoryScreen> {
             channel: channel,
             currentProgram: _currentProgramFor(channel),
             isFavorite: _isFavorite(channel),
-            onOpen: () => widget.onOpenChannel(channel),
-            onPlayLive: () => widget.onPlayLive(channel),
+            onOpen: () => _openAndRestore(channel, widget.onOpenChannel),
+            onPlayLive: () => _openAndRestore(channel, widget.onPlayLive),
             onToggleFavorite: () => _toggleFavorite(channel),
             onPlayAndRecord: widget.recordingFeatureUnlocked
-                ? () => widget.onPlayAndRecord(channel)
+                ? () => _openAndRestore(channel, widget.onPlayAndRecord)
                 : null,
             onScheduleRecording: widget.recordingFeatureUnlocked
                 ? () => showTvScheduleRecordingAction(context, channel)
@@ -785,6 +801,7 @@ class _TvSearchResultsDialog extends StatefulWidget {
     required this.query,
     required this.channels,
     required this.currentPrograms,
+    required this.onOpenChannel,
     required this.onPlayLive,
     required this.onPlayAndRecord,
     required this.recordingFeatureUnlocked,
@@ -793,8 +810,9 @@ class _TvSearchResultsDialog extends StatefulWidget {
   final String query;
   final List<TvChannel> channels;
   final Map<String, TvProgram> currentPrograms;
-  final ValueChanged<TvChannel> onPlayLive;
-  final ValueChanged<TvChannel> onPlayAndRecord;
+  final FutureOr<void> Function(TvChannel) onOpenChannel;
+  final FutureOr<void> Function(TvChannel) onPlayLive;
+  final FutureOr<void> Function(TvChannel) onPlayAndRecord;
   final bool recordingFeatureUnlocked;
 
   @override
@@ -802,6 +820,19 @@ class _TvSearchResultsDialog extends StatefulWidget {
 }
 
 class _TvSearchResultsDialogState extends State<_TvSearchResultsDialog> {
+  final _returnFocus = AccessibleListController(debugName: 'tv-channel-return');
+  bool _openingChannel = false;
+
+  Future<void> _openAndRestore(TvChannel channel, FutureOr<void> Function(TvChannel) action) async {
+    if (_openingChannel) return;
+    _openingChannel = true;
+    try {
+      await restoreTvRowAfterAction(context, _returnFocus, channel.name, () => action(channel));
+    } finally {
+      _openingChannel = false;
+    }
+  }
+
   final _service = TvService();
   List<TvChannel> _favorites = [];
 
@@ -866,6 +897,7 @@ class _TvSearchResultsDialogState extends State<_TvSearchResultsDialog> {
       height: 420,
       child: useSharedAccessibleViewModel
           ? UniversalAccessibleList(
+                      controller: _returnFocus,
               key: ValueKey('shared-tv-search-${widget.channels.length}'),
               sections: [
                 AccessibleListSection(
@@ -924,18 +956,16 @@ class _TvSearchResultsDialogState extends State<_TvSearchResultsDialog> {
                 if (index < 0) return;
                 final channel = widget.channels[index];
                 if (event.type == 'activate') {
-                  Navigator.of(context).pop(channel);
+                  await _openAndRestore(channel, widget.onOpenChannel);
                 } else if (event.type == 'customAction' &&
                     event.action == 'play_live') {
-                  Navigator.of(context).pop();
-                  widget.onPlayLive(channel);
+                  await _openAndRestore(channel, widget.onPlayLive);
                 } else if (event.type == 'customAction' && event.action == 'favorite') {
                   await _toggleFavorite(channel);
                 } else if (event.type == 'customAction' &&
                     event.action == 'play_record' &&
                     widget.recordingFeatureUnlocked) {
-                  Navigator.of(context).pop();
-                  widget.onPlayAndRecord(channel);
+                  await _openAndRestore(channel, widget.onPlayAndRecord);
                 } else if (event.type == 'customAction' &&
                     event.action == 'schedule_recording' &&
                     widget.recordingFeatureUnlocked) {
@@ -953,16 +983,14 @@ class _TvSearchResultsDialogState extends State<_TvSearchResultsDialog> {
             channel: channel,
             currentProgram: _currentProgramFor(channel),
             isFavorite: _isFavorite(channel),
-            onOpen: () => Navigator.of(context).pop(channel),
-            onPlayLive: () {
-              Navigator.of(context).pop();
-              widget.onPlayLive(channel);
+            onOpen: () => _openAndRestore(channel, widget.onOpenChannel),
+            onPlayLive: () async {
+              await _openAndRestore(channel, widget.onPlayLive);
             },
             onToggleFavorite: () => _toggleFavorite(channel),
             onPlayAndRecord: widget.recordingFeatureUnlocked
-                ? () {
-                    Navigator.of(context).pop();
-                    widget.onPlayAndRecord(channel);
+                ? () async {
+                      await _openAndRestore(channel, widget.onPlayAndRecord);
                   }
                 : null,
             onScheduleRecording: widget.recordingFeatureUnlocked

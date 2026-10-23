@@ -7,6 +7,12 @@ import 'app_localizations.dart';
 /// The translations for Turkish (`tr`).
 class AppLocalizationsTr extends AppLocalizations {
   @override
+  String get saveMp4WithAudiodescription => "Sesli betimlemeli MP4";
+
+  @override
+  String get saveMediaContent => "İçeriği kaydet";
+
+  @override
   String get favoritesSortAlphabetically => "Alfabetik sırala";
 
   @override
