@@ -373,42 +373,51 @@ class _TravelBrowserScreenState extends State<TravelBrowserScreen> {
                     ),
                   ),
                   if (!_showBrowser)
-                    ListView(
+                    UniversalAccessibleList(
                       padding: const EdgeInsets.all(20),
-                      children: [
-                        Semantics(
-                          header: true,
-                          child: Text(
-                            t.t('paymentChoice'),
-                            style: Theme.of(context).textTheme.headlineSmall,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        Text(t.t('paymentChoiceHelp')),
-                        const SizedBox(height: 16),
-                        if (_paymentMethods.isEmpty)
-                          Text(
-                            t.t(
-                              _paymentUnavailable || _error
-                                  ? 'paymentUnavailable'
-                                  : 'browserLoading',
+                      sections: [
+                        AccessibleListSection(
+                          rows: [
+                            AccessibleListRow(
+                              id: 'payment-title',
+                              title: t.t('paymentChoice'),
+                              kind: 'text',
+                              accessibilityButtonTrait: false,
                             ),
-                          ),
-                        for (final method in _paymentMethods)
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 12),
-                            child: FilledButton(
-                              onPressed: _paymentBusy
-                                  ? null
-                                  : () => _selectPayment(method),
-                              child: Text(
-                                method == 'card' ? t.t('paymentCard') : method,
+                            AccessibleListRow(
+                              id: 'payment-help',
+                              title: t.t('paymentChoiceHelp'),
+                              kind: 'text',
+                              accessibilityButtonTrait: false,
+                            ),
+                            if (_paymentMethods.isEmpty)
+                              AccessibleListRow(
+                                id: 'payment-status',
+                                title: t.t(
+                                  _paymentUnavailable || _error
+                                      ? 'paymentUnavailable'
+                                      : 'browserLoading',
+                                ),
+                                kind: 'text',
+                                accessibilityButtonTrait: false,
                               ),
+                            for (final method in _paymentMethods)
+                              AccessibleListRow(
+                                id: 'payment-$method',
+                                title: method == 'card'
+                                    ? t.t('paymentCard')
+                                    : method,
+                                kind: 'button',
+                                enabled: !_paymentBusy,
+                                onActivate: () => _selectPayment(method),
+                              ),
+                            AccessibleListRow(
+                              id: 'payment-open-site',
+                              title: t.t('paymentOpenSite'),
+                              kind: 'button',
+                              onActivate: _revealBrowser,
                             ),
-                          ),
-                        TextButton(
-                          onPressed: _revealBrowser,
-                          child: Text(t.t('paymentOpenSite')),
+                          ],
                         ),
                       ],
                     ),
