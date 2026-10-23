@@ -7,6 +7,7 @@ import '../l10n/app_localizations.dart';
 import '../l10n/travel_strings.dart';
 import '../services/travel_cookie_script.dart';
 import '../services/travel_payment_script.dart';
+import '../services/travel_checkout_diagnostics.dart';
 import '../utils/app_logger.dart';
 import '../widgets/universal_accessible_view.dart';
 
@@ -60,6 +61,10 @@ class _TravelBrowserScreenState extends State<TravelBrowserScreen> {
   bool _paymentUnavailable = false;
   List<String> _paymentMethods = [];
   Timer? _paymentTimer;
+  Timer? _checkoutDiagnosticsTimer;
+  bool _checkoutDiagnosticsBusy = false;
+  int _checkoutSnapshot = 0;
+  String? _lastCheckoutSnapshot;
   TravelStrings get t => TravelStrings(AppLocalizations.of(context).localeName);
 
   @override
@@ -91,6 +96,8 @@ class _TravelBrowserScreenState extends State<TravelBrowserScreen> {
             return NavigationDecision.prevent;
           },
           onPageStarted: (_) {
+            _checkoutDiagnosticsTimer?.cancel();
+            _lastCheckoutSnapshot = null;
             _paymentTimer?.cancel();
             _paymentMethods = [];
             if (_cookieVerificationPending) {
@@ -193,12 +200,81 @@ class _TravelBrowserScreenState extends State<TravelBrowserScreen> {
     }
   }
 
+  Future<void> _captureCheckout(
+    String stage, {
+    bool onlyChanges = false,
+  }) async {
+    if (!mounted || _controller == null || _checkoutDiagnosticsBusy) return;
+    final generation = _generation;
+    _checkoutDiagnosticsBusy = true;
+    try {
+      dynamic data = await _controller!
+          .runJavaScriptReturningResult(travelCheckoutDiagnosticsScript)
+          .timeout(const Duration(seconds: 2));
+      for (var i = 0; i < 2 && data is String; i++) {
+        data = jsonDecode(data);
+      }
+      if (!mounted || generation != _generation) return;
+      if (data is! Map) throw const FormatException();
+      final encoded = jsonEncode(data);
+      if (onlyChanges && encoded == _lastCheckoutSnapshot) return;
+      _lastCheckoutSnapshot = encoded;
+      final snapshot = ++_checkoutSnapshot;
+      // Separate bounded control records keep diagnostics readable and avoid
+      // truncating the entire snapshot when a report viewer limits line length.
+      final summary = Map<String, dynamic>.from(data)..remove('controls');
+      await _log(
+        '[TravelCheckout] snapshot=$snapshot stage=$stage generation=$generation summary=${jsonEncode(summary)}',
+      );
+      for (final control in (data['controls'] as List? ?? const [])) {
+        await _log(
+          '[TravelCheckout] snapshot=$snapshot control=${jsonEncode(control)}',
+        );
+      }
+    } catch (error) {
+      if (mounted) {
+        await _log(
+          '[TravelCheckout] stage=$stage capture_failed=${error.runtimeType}',
+        );
+      }
+    } finally {
+      _checkoutDiagnosticsBusy = false;
+    }
+  }
+
+  void _watchCheckout() {
+    _checkoutDiagnosticsTimer?.cancel();
+    var tick = 0;
+    _checkoutDiagnosticsTimer = Timer.periodic(const Duration(seconds: 2), (
+      timer,
+    ) {
+      if (!mounted || ++tick > 90) {
+        timer.cancel();
+        return;
+      }
+      unawaited(_captureCheckout('visible-${tick * 2}s', onlyChanges: true));
+    });
+  }
+
   Future<void> _selectPayment(String method) async {
     if (_paymentBusy) return;
     setState(() => _paymentBusy = true);
     var confirmed = false;
     var protectionConfirmed = !_noProtection;
     try {
+      const methods = {
+        'PayPal',
+        'card',
+        'Apple Pay',
+        'Google Pay',
+        'Revolut Pay',
+      };
+      unawaited(
+        _log(
+          '[TravelCheckout] selection method=${methods.contains(method) ? method : 'other'} no_protection=$_noProtection',
+        ),
+      );
+      await _captureCheckout('before-selection');
       if (_noProtection) {
         final result = await _controller!.runJavaScriptReturningResult(
           travelNoProtectionScript(),
@@ -217,9 +293,11 @@ class _TravelBrowserScreenState extends State<TravelBrowserScreen> {
             '[Travel] no_protection_action status=${known.contains(status) ? status : 'unknown'}',
           ),
         );
+        await _captureCheckout('after-protection-click');
       }
       final data = await _paymentScript(select: method);
       confirmed = data['status'] == 'selected';
+      await _captureCheckout('after-payment-click');
       if (_noProtection) {
         // Framework state may update asynchronously or replace the element.
         // Re-read the live DOM; never click again during verification.
@@ -233,11 +311,20 @@ class _TravelBrowserScreenState extends State<TravelBrowserScreen> {
           );
           final status = result.toString().replaceAll('"', '');
           protectionConfirmed = status == 'selected';
+          unawaited(
+            _log(
+              '[TravelCheckout] protection_verification attempt=$attempt selected=$protectionConfirmed',
+            ),
+          );
+          await _captureCheckout('protection-check-$attempt');
           if (protectionConfirmed) break;
         }
       }
-    } catch (_) {
+    } catch (error) {
       // The original page remains available even after a provider change.
+      unawaited(
+        _log('[TravelCheckout] selection_exception=${error.runtimeType}'),
+      );
     }
     unawaited(
       _log(
@@ -257,6 +344,9 @@ class _TravelBrowserScreenState extends State<TravelBrowserScreen> {
     }
     if (!mounted) return;
     _revealBrowser();
+    await _captureCheckout('browser-revealed');
+    if (!mounted) return;
+    _watchCheckout();
     if (!confirmed) {
       ScaffoldMessenger.of(
         context,
@@ -372,6 +462,7 @@ class _TravelBrowserScreenState extends State<TravelBrowserScreen> {
 
   @override
   void dispose() {
+    _checkoutDiagnosticsTimer?.cancel();
     if (_cookieVerificationPending) {
       unawaited(_log('[Travel] cookie_verification_interrupted'));
     }

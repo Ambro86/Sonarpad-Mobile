@@ -5,6 +5,7 @@ import 'package:webview_flutter_platform_interface/webview_flutter_platform_inte
 import 'package:sonarpad_mobile_starter/screens/travel_browser_screen.dart';
 import 'package:sonarpad_mobile_starter/services/travel_cookie_script.dart';
 import 'package:sonarpad_mobile_starter/services/travel_payment_script.dart';
+import 'package:sonarpad_mobile_starter/services/travel_checkout_diagnostics.dart';
 import 'travel_screen_test.dart' show app, row;
 
 class BrowserPlatform extends WebViewPlatform {
@@ -48,6 +49,9 @@ class BrowserController extends Fake implements WebViewController {
   @override
   Future<Object> runJavaScriptReturningResult(String script) async {
     scripts.add(script);
+    if (script == travelCheckoutDiagnosticsScript) {
+      return '{"scope":"checkout","controls":[],"events":[]}';
+    }
     if (script == travelNoProtectionScript() ||
         script == travelNoProtectionScript(verifyOnly: true))
       return 'selected';
@@ -219,6 +223,10 @@ void main() {
       1,
     );
     expect(logs, contains('[Travel] payment_method_selected'));
+    expect(logs.any((s) => s.contains('stage=before-selection')), isTrue);
+    expect(logs.any((s) => s.contains('stage=after-protection-click')), isTrue);
+    expect(logs.any((s) => s.contains('stage=after-payment-click')), isTrue);
+    expect(logs.any((s) => s.contains('stage=browser-revealed')), isTrue);
     expect(
       controller.scripts,
       containsAllInOrder([
