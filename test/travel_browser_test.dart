@@ -4,6 +4,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 import 'package:sonarpad_mobile_starter/screens/travel_browser_screen.dart';
 import 'package:sonarpad_mobile_starter/services/travel_cookie_script.dart';
+import 'package:sonarpad_mobile_starter/services/travel_payment_script.dart';
 import 'travel_screen_test.dart' show app;
 
 class BrowserPlatform extends WebViewPlatform {
@@ -31,6 +32,7 @@ class BrowserController extends Fake implements WebViewController {
   NavigationDelegate? delegate;
   final scripts = <String>[];
   String bannerStatus = 'banner-closed';
+  String paymentStatus = '{"status":"ready","methods":["PayPal","card"]}';
   String current = 'https://www.omio.com/app/booking/test/checkout';
   @override
   Future<void> setJavaScriptMode(JavaScriptMode mode) async {}
@@ -46,6 +48,10 @@ class BrowserController extends Fake implements WebViewController {
   @override
   Future<Object> runJavaScriptReturningResult(String script) async {
     scripts.add(script);
+    if (script == travelPaymentScript()) return paymentStatus;
+    if (script == travelPaymentScript(select: 'PayPal')) {
+      return '{"status":"selected","methods":["PayPal","card"]}';
+    }
     return script == travelCookieBannerStatusScript
         ? bannerStatus
         : 'selected-necessary';
@@ -137,7 +143,10 @@ void main() {
     expect(find.byKey(const Key('embedded-browser')), findsOneWidget);
     controller.delegate!.onPageFinished!(controller.current);
     await tester.pumpAndSettle();
-    expect(controller.scripts, [travelNecessaryCookiesScript]);
+    expect(
+      controller.scripts,
+      unorderedEquals([travelNecessaryCookiesScript, travelPaymentScript()]),
+    );
     expect(
       await controller.delegate!.onNavigationRequest!(
         NavigationRequest(
@@ -151,7 +160,7 @@ void main() {
     controller.delegate!.onPageStarted!(controller.current);
     controller.delegate!.onPageFinished!(controller.current);
     await tester.pumpAndSettle();
-    expect(controller.scripts.length, 1);
+    expect(controller.scripts.length, 2);
     expect(
       await controller.delegate!.onNavigationRequest!(
         NavigationRequest(url: 'javascript:alert(1)', isMainFrame: true),
@@ -159,6 +168,53 @@ void main() {
       NavigationDecision.prevent,
     );
     await tester.pumpAndSettle();
+    await tester.pumpWidget(const SizedBox());
+  });
+  testWidgets('native payment choice hides browser until explicit selection', (
+    tester,
+  ) async {
+    final controller = BrowserController();
+    final logs = <String>[];
+    await tester.pumpWidget(
+      app(
+        TravelBrowserScreen(
+          url: controller.current,
+          controllerFactory: () => controller,
+          browserBuilder: (_) => const Text('Provider page'),
+          logger: (line) async {
+            logs.add(line);
+          },
+        ),
+      ),
+    );
+    await tester.pump();
+    controller.delegate!.onPageFinished!(controller.current);
+    await tester.pumpAndSettle();
+    expect(find.text('PayPal'), findsOneWidget);
+    final hidden = tester.widget<Opacity>(
+      find
+          .ancestor(
+            of: find.text('Provider page'),
+            matching: find.byType(Opacity),
+          )
+          .first,
+    );
+    expect(hidden.opacity, 0);
+    expect(
+      controller.scripts,
+      isNot(contains(travelPaymentScript(select: 'PayPal'))),
+    );
+    await tester.tap(find.text('PayPal'));
+    await tester.pumpAndSettle();
+    expect(find.text('PayPal'), findsNothing);
+    expect(
+      controller.scripts
+          .where((s) => s == travelPaymentScript(select: 'PayPal'))
+          .length,
+      1,
+    );
+    expect(logs, contains('[Travel] payment_method_selected'));
+    expect(logs.join(), isNot(contains(controller.current)));
     await tester.pumpWidget(const SizedBox());
   });
 }

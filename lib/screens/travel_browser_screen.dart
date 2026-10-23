@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import '../l10n/app_localizations.dart';
 import '../l10n/travel_strings.dart';
 import '../services/travel_cookie_script.dart';
+import '../services/travel_payment_script.dart';
 import '../utils/app_logger.dart';
 import '../widgets/universal_accessible_view.dart';
 
@@ -53,11 +55,16 @@ class _TravelBrowserScreenState extends State<TravelBrowserScreen> {
   int? _cookieRunGeneration, _cookieSelectedGeneration;
   bool _loading = true, _error = false, _canGoBack = false;
   bool _cookieVerificationPending = false;
+  bool _showBrowser = false, _paymentBusy = false;
+  bool _paymentUnavailable = false;
+  List<String> _paymentMethods = [];
+  Timer? _paymentTimer;
   TravelStrings get t => TravelStrings(AppLocalizations.of(context).localeName);
 
   @override
   void initState() {
     super.initState();
+    _showBrowser = !Uri.parse(widget.url).path.endsWith('/checkout');
     unawaited(_start());
   }
 
@@ -83,6 +90,8 @@ class _TravelBrowserScreenState extends State<TravelBrowserScreen> {
             return NavigationDecision.prevent;
           },
           onPageStarted: (_) {
+            _paymentTimer?.cancel();
+            _paymentMethods = [];
             if (_cookieVerificationPending) {
               unawaited(_log('[Travel] cookie_verification_interrupted'));
               _cookieVerificationPending = false;
@@ -102,6 +111,11 @@ class _TravelBrowserScreenState extends State<TravelBrowserScreen> {
             unawaited(_updateBack());
             if (isTravelOmioUrl(url)) {
               unawaited(_necessaryCookies(_generation, 0));
+            }
+            if (!_showBrowser && isTravelOmioUrl(url)) {
+              unawaited(_readPaymentMethods(_generation, 0));
+            } else if (!_showBrowser) {
+              _revealBrowser();
             }
             unawaited(_log('[Travel] browser_page_loaded'));
           },
@@ -137,6 +151,79 @@ class _TravelBrowserScreenState extends State<TravelBrowserScreen> {
     } catch (_) {
       /* Navigation controls remain usable via the page. */
     }
+  }
+
+  Future<Map<String, dynamic>> _paymentScript({String? select}) async {
+    dynamic value = await _controller!.runJavaScriptReturningResult(
+      travelPaymentScript(select: select),
+    );
+    // Android may return a JSON-encoded string; iOS returns the string itself.
+    for (var i = 0; i < 2 && value is String; i++) {
+      value = jsonDecode(value);
+    }
+    return Map<String, dynamic>.from(value as Map);
+  }
+
+  Future<void> _readPaymentMethods(int generation, int attempt) async {
+    if (!mounted || _showBrowser || generation != _generation) return;
+    try {
+      final data = await _paymentScript();
+      if (!mounted || _showBrowser || generation != _generation) return;
+      final methods = List<String>.from(data['methods'] as List);
+      if (methods.isNotEmpty) {
+        setState(() => _paymentMethods = methods);
+        unawaited(
+          _log('[Travel] payment_methods_available count=${methods.length}'),
+        );
+        return;
+      }
+    } catch (_) {
+      // No speculative controls if the provider markup is unrecognized.
+    }
+    if (!mounted || _showBrowser || generation != _generation) return;
+    if (attempt < 14) {
+      _paymentTimer = Timer(
+        const Duration(seconds: 1),
+        () => unawaited(_readPaymentMethods(generation, attempt + 1)),
+      );
+    } else {
+      setState(() => _paymentUnavailable = true);
+      unawaited(_log('[Travel] payment_methods_unavailable'));
+    }
+  }
+
+  Future<void> _selectPayment(String method) async {
+    if (_paymentBusy) return;
+    setState(() => _paymentBusy = true);
+    var confirmed = false;
+    try {
+      final data = await _paymentScript(select: method);
+      confirmed = data['status'] == 'selected';
+    } catch (_) {
+      // The original page remains available even after a provider change.
+    }
+    unawaited(
+      _log(
+        confirmed
+            ? '[Travel] payment_method_selected'
+            : '[Travel] payment_method_selection_unconfirmed',
+      ),
+    );
+    if (!mounted) return;
+    _revealBrowser();
+    if (!confirmed) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(t.t('paymentSelectOnSite'))));
+    }
+  }
+
+  void _revealBrowser() {
+    _paymentTimer?.cancel();
+    setState(() {
+      _paymentBusy = false;
+      _showBrowser = true;
+    });
   }
 
   Future<void> _necessaryCookies(int generation, int attempt) async {
@@ -238,6 +325,7 @@ class _TravelBrowserScreenState extends State<TravelBrowserScreen> {
       unawaited(_log('[Travel] cookie_verification_interrupted'));
     }
     _generation++;
+    _paymentTimer?.cancel();
     _cookieTimer?.cancel();
     super.dispose();
   }
@@ -266,14 +354,71 @@ class _TravelBrowserScreenState extends State<TravelBrowserScreen> {
             ),
           if (_controller != null)
             Expanded(
-              child:
-                  widget.browserBuilder?.call(_controller!) ??
-                  WebViewWidget(controller: _controller!),
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  ExcludeSemantics(
+                    excluding: !_showBrowser,
+                    child: ExcludeFocus(
+                      excluding: !_showBrowser,
+                      child: IgnorePointer(
+                        ignoring: !_showBrowser,
+                        child: Opacity(
+                          opacity: _showBrowser ? 1 : 0,
+                          child:
+                              widget.browserBuilder?.call(_controller!) ??
+                              WebViewWidget(controller: _controller!),
+                        ),
+                      ),
+                    ),
+                  ),
+                  if (!_showBrowser)
+                    ListView(
+                      padding: const EdgeInsets.all(20),
+                      children: [
+                        Semantics(
+                          header: true,
+                          child: Text(
+                            t.t('paymentChoice'),
+                            style: Theme.of(context).textTheme.headlineSmall,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        Text(t.t('paymentChoiceHelp')),
+                        const SizedBox(height: 16),
+                        if (_paymentMethods.isEmpty)
+                          Text(
+                            t.t(
+                              _paymentUnavailable || _error
+                                  ? 'paymentUnavailable'
+                                  : 'browserLoading',
+                            ),
+                          ),
+                        for (final method in _paymentMethods)
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: FilledButton(
+                              onPressed: _paymentBusy
+                                  ? null
+                                  : () => _selectPayment(method),
+                              child: Text(
+                                method == 'card' ? t.t('paymentCard') : method,
+                              ),
+                            ),
+                          ),
+                        TextButton(
+                          onPressed: _revealBrowser,
+                          child: Text(t.t('paymentOpenSite')),
+                        ),
+                      ],
+                    ),
+                ],
+              ),
             ),
         ],
       ),
     ),
-    bottomNavigationBar: _canGoBack
+    bottomNavigationBar: _showBrowser && _canGoBack
         ? SafeArea(
             child: TextButton.icon(
               onPressed: () async {

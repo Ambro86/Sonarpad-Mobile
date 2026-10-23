@@ -33,10 +33,21 @@ class _TravelPassengersScreenState extends State<TravelPassengersScreen> {
   String? _message;
   final Map<String, List<AccessibleOption>> _stateOptions = {};
   List<AccessibleOption>? _countries;
+  bool _started = false;
+  final Map<String, String> _choiceFilters = {};
+  Timer? _filterAnnouncement;
 
   @override
-  void initState() {
-    super.initState();
+  void dispose() {
+    _filterAnnouncement?.cancel();
+    super.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_started) return;
+    _started = true;
     _load();
   }
 
@@ -87,9 +98,41 @@ class _TravelPassengersScreenState extends State<TravelPassengersScreen> {
           }
         }
       }
+      if (!mounted) return;
+      final country = _strings(context).defaultCountry;
+      for (final f in d.fields!) {
+        final name = f['name'] as String;
+        if (['Country', 'CountryOfResidence'].contains(_component(f))) {
+          final options = _options(f['options']);
+          if (options.isEmpty || options.any((o) => o.value == country)) {
+            d.values.putIfAbsent(name, () => country);
+          }
+        } else if (_component(f) == 'PhoneNumber') {
+          d.values.putIfAbsent(
+            name,
+            () => <String, dynamic>{
+              'countryDiallingCode': country == 'IT' ? '+39' : '+',
+              'nationalNumber': '',
+              'countryIsoCode': country,
+            },
+          );
+        } else if (_component(f) == 'Date' &&
+            name.endsWith('.dateOfBirth-0') &&
+            !d.values.containsKey(name)) {
+          d.values.putIfAbsent(
+            '$name:parts',
+            () => <String, int>{'year': 1960},
+          );
+        }
+      }
+      setState(() {});
       await _prepare();
-    } catch (_) {
-      if (mounted) _message = _strings(context).t('unsupportedForm');
+    } catch (e) {
+      if (mounted) {
+        _message = e is TravelException && e.code != 'form'
+            ? _error(_strings(context), e)
+            : _strings(context).t('unsupportedForm');
+      }
       unawaited(AppLogger.log('[Travel] passenger_form_load_failed'));
     } finally {
       if (mounted) setState(() => _busy = false);
@@ -111,9 +154,20 @@ class _TravelPassengersScreenState extends State<TravelPassengersScreen> {
 
   List<Map<String, dynamic>> get _visibleFields =>
       (d.fields ?? []).where(_visible).toList();
-  Map<String, dynamic>? get _field {
-    final fields = _visibleFields;
-    return d.position < fields.length ? fields[d.position] : null;
+  List<int> get _passengerIndices =>
+      (d.fields ?? [])
+          .map((f) => int.parse((f['name'] as String).split('.').first))
+          .toSet()
+          .toList()
+        ..sort();
+  List<Map<String, dynamic>> get _currentFields {
+    final indices = _passengerIndices;
+    if (d.position >= indices.length) return [];
+    return _visibleFields
+        .where(
+          (f) => (f['name'] as String).startsWith('${indices[d.position]}.'),
+        )
+        .toList();
   }
 
   bool _required(Map f) => (f['validation'] as List? ?? []).any(
@@ -159,26 +213,60 @@ class _TravelPassengersScreenState extends State<TravelPassengersScreen> {
   }
 
   Future<void> _prepare() async {
-    final f = _field;
-    if (f == null) return;
-    if (_component(f) == 'CountryState') {
-      final index = (f['name'] as String).split('.').first;
-      final country = d.values['$index.addressCountry-0'];
-      if (country is! String || country.isEmpty) {
-        throw const TravelException('form');
+    for (final f in _currentFields) {
+      if (_component(f) == 'CountryState') {
+        final index = (f['name'] as String).split('.').first;
+        final country = d.values['$index.addressCountry-0'];
+        if (country is! String || country.isEmpty) {
+          f['options'] = <dynamic>[];
+          continue;
+        }
+        if (!_stateOptions.containsKey(country)) {
+          _stateOptions[country] = _options(
+            await widget.service.request(
+              '/v1/country-states',
+              query: {'country': country},
+            ),
+          );
+        }
+        f['options'] = _stateOptions[country]!
+            .map((o) => {'value': o.value, 'label': o.label})
+            .toList();
+        if ((f['options'] as List).isEmpty) {
+          unawaited(AppLogger.log('[Travel] passenger_state_options_empty'));
+          throw const TravelException('form');
+        }
       }
-      if (!_stateOptions.containsKey(country)) {
-        _stateOptions[country] = _options(
-          await widget.service.request(
-            '/v1/country-states',
-            query: {'country': country},
-          ),
-        );
-      }
-      f['options'] = _stateOptions[country]!
-          .map((o) => {'value': o.value, 'label': o.label})
-          .toList();
-      if ((f['options'] as List).isEmpty) throw const TravelException('form');
+    }
+  }
+
+  void _changed(Map f, String value) {
+    final name = f['name'] as String;
+    d.values[name] = value;
+    if (!name.endsWith('.addressCountry-0')) return;
+    final prefix = '${name.split('.').first}.';
+    for (final dependent in d.fields!.where(
+      (f) =>
+          (f['name'] as String).startsWith(prefix) &&
+          _component(f) == 'CountryState',
+    )) {
+      dependent['options'] = <dynamic>[];
+      d.values.remove(dependent['name']);
+    }
+    unawaited(_refreshStates());
+  }
+
+  Future<void> _refreshStates() async {
+    setState(() {
+      _busy = true;
+      _message = null;
+    });
+    try {
+      await _prepare();
+    } catch (e) {
+      if (mounted) _message = _error(_strings(context), e);
+    } finally {
+      if (mounted) setState(() => _busy = false);
     }
   }
 
@@ -241,11 +329,13 @@ class _TravelPassengersScreenState extends State<TravelPassengersScreen> {
     String id,
     String title,
     String value,
-    void Function(String) update,
-  ) => AccessibleListRow(
+    void Function(String) update, {
+    String? keyboardType,
+  }) => AccessibleListRow(
     id: id,
     title: title,
     kind: 'textField',
+    keyboardType: keyboardType,
     value: value,
     enabled: !_busy && !d.attempted,
     onValueChanged: (v) {
@@ -253,33 +343,76 @@ class _TravelPassengersScreenState extends State<TravelPassengersScreen> {
     },
   );
 
+  List<AccessibleListRow> _filteredChoice(
+    String id,
+    String title,
+    String value,
+    List<AccessibleOption> choices,
+    void Function(String) update,
+  ) {
+    final t = _strings(context);
+    final filter = _choiceFilters[id] ?? '';
+    if (choices.length < 10 && filter.isEmpty) {
+      return [_choice(id, title, value, choices, update)];
+    }
+    List<AccessibleOption> matching(String query) {
+      final prefix = query.trim().toLowerCase();
+      return choices
+          .where((o) => o.label.trim().toLowerCase().startsWith(prefix))
+          .toList();
+    }
+
+    String countLabel(int count) => count == 0
+        ? t.t('filterNoResults')
+        : t.t('filterResults').replaceAll('{count}', '$count');
+    final filtered = matching(filter);
+    final previous = choices.where((o) => o.value == value);
+    return [
+      _text('$id:filter', '${t.t('filterList')}: $title', filter, (query) {
+        setState(() => _choiceFilters[id] = query);
+        _filterAnnouncement?.cancel();
+        _filterAnnouncement = Timer(const Duration(milliseconds: 500), () {
+          if (mounted) {
+            announceStatusMessage(context, countLabel(matching(query).length));
+          }
+        });
+      }),
+      if (filter.trim().isNotEmpty) ...[
+        _info('$id:filter-count', countLabel(filtered.length)),
+        if (previous.isNotEmpty && !filtered.any((o) => o.value == value))
+          _info(
+            '$id:retained-choice',
+            '${t.t('filterRetained')}: ${previous.first.label}',
+          ),
+      ],
+      if (filtered.isNotEmpty) _choice(id, title, value, filtered, update),
+    ];
+  }
+
   List<AccessibleListRow> _inputs(Map<String, dynamic> f, TravelStrings t) {
     final name = f['name'] as String,
         component = _component(f),
-        label = _label(f, t);
+        label =
+            '${_label(f, t)}. ${t.t(_required(f) ? 'required' : 'optional')}';
     final value = d.values[name];
     final options = _options(f['options']);
     if (options.isNotEmpty) {
-      return [
-        _choice(
-          name,
-          label,
-          value?.toString() ?? '',
-          options,
-          (v) => d.values[name] = v,
-        ),
-      ];
+      return _filteredChoice(
+        name,
+        label,
+        value?.toString() ?? '',
+        options,
+        (v) => _changed(f, v),
+      );
     }
     if (component == 'Country' || component == 'CountryOfResidence') {
-      return [
-        _choice(
-          name,
-          label,
-          value?.toString() ?? '',
-          _countryOptions(t),
-          (v) => d.values[name] = v,
-        ),
-      ];
+      return _filteredChoice(
+        name,
+        label,
+        value?.toString() ?? '',
+        _countryOptions(t),
+        (v) => _changed(f, v),
+      );
     }
     if (component == 'Date') {
       // A blank date stays blank until the user actually changes a slider.
@@ -341,9 +474,21 @@ class _TravelPassengersScreenState extends State<TravelPassengersScreen> {
           ),
       ];
     }
+    if (component == 'CountryState') {
+      return [
+        _info(
+          '$name:state-status',
+          t.t(_busy ? 'working' : 'stateChooseCountry'),
+        ),
+      ];
+    }
     if (component == 'PhoneNumber') {
       final phone = Map<String, dynamic>.from(value is Map ? value : {});
       void change(String key, String v) {
+        if (key == 'countryDiallingCode') {
+          v = '+${v.replaceAll(RegExp(r'[^0-9]'), '')}';
+        }
+        if (key == 'nationalNumber') v = v.replaceAll(RegExp(r'[\s()-]'), '');
         phone[key] = v;
         d.values[name] = phone;
       }
@@ -352,16 +497,18 @@ class _TravelPassengersScreenState extends State<TravelPassengersScreen> {
         _text(
           '$name:prefix',
           t.t('phonePrefix'),
-          phone['countryDiallingCode'] ?? '',
+          phone['countryDiallingCode'] ?? '+',
           (v) => change('countryDiallingCode', v),
+          keyboardType: 'phone',
         ),
         _text(
           '$name:number',
           t.t('phoneNumber'),
           phone['nationalNumber'] ?? '',
           (v) => change('nationalNumber', v),
+          keyboardType: 'number',
         ),
-        _choice(
+        ..._filteredChoice(
           '$name:country',
           t.t('phoneCountry'),
           phone['countryIsoCode'] ?? '',
@@ -378,16 +525,30 @@ class _TravelPassengersScreenState extends State<TravelPassengersScreen> {
       'DiscountCard',
     ].contains(component)) {
       return [
-        _text(name, label, value?.toString() ?? '', (v) => d.values[name] = v),
+        _text(
+          name,
+          label,
+          value?.toString() ?? '',
+          (v) => d.values[name] = v,
+          keyboardType: component == 'Email'
+              ? 'email'
+              : (RegExp(
+                      r'postal|postcode|zipcode|zip-\d|\.cap-\d',
+                      caseSensitive: false,
+                    ).hasMatch(name)
+                    ? 'number'
+                    : null),
+        ),
       ];
     }
-    return [_info('unsupported', t.t('unsupportedForm'))];
+    if (_busy) return [];
+    return [_info('unsupported-$name', t.t('unsupportedForm'))];
   }
 
   String? _validate(Map<String, dynamic> f) {
     final t = _strings(context), name = f['name'] as String;
     if (!_supported(f)) return t.t('unsupportedForm');
-    final value = d.values[name];
+    final value = _answer(f);
     if (value == null || value == '') {
       return _required(f) ? t.t('invalidField') : null;
     }
@@ -453,32 +614,48 @@ class _TravelPassengersScreenState extends State<TravelPassengersScreen> {
     return null;
   }
 
-  Future<void> _next({bool skip = false}) async {
+  dynamic _answer(Map f) {
+    final value = d.values[f['name']];
+    if (_component(f) == 'PhoneNumber' &&
+        !_required(f) &&
+        value is Map &&
+        (value['nationalNumber']?.toString().trim().isEmpty ?? true)) {
+      return '';
+    }
+    return value;
+  }
+
+  Future<void> _next() async {
     if (_busy || d.attempted) return;
-    final f = _field!;
-    if (skip) d.values.remove(f['name']);
-    final error = _validate(f);
-    if (error != null) {
-      setState(() => _message = error);
-      return;
+    final fields = _currentFields;
+    for (final f in fields) {
+      final error = _validate(f);
+      if (error != null) {
+        setState(() => _message = '${_label(f, _strings(context))}: $error');
+        return;
+      }
     }
     setState(() {
       _busy = true;
       _message = null;
     });
     try {
-      final name = f['name'] as String;
-      if (d.values[name] is String) {
-        await _memory.save(
-          name.split('.')[1].replaceFirst(RegExp(r'-\d+$'), ''),
-          d.values[name],
-          passenger: int.parse(name.split('.').first),
-        );
+      for (final f in fields) {
+        final name = f['name'] as String;
+        if (d.values[name] == null ||
+            d.values[name] is String ||
+            d.values[name] is Map) {
+          await _memory.save(
+            name.split('.')[1].replaceFirst(RegExp(r'-\d+$'), ''),
+            d.values[name] ?? '',
+            passenger: int.parse(name.split('.').first),
+          );
+        }
       }
       d.position++;
       await _prepare();
-    } catch (_) {
-      if (mounted) _message = _strings(context).t('unsupportedForm');
+    } catch (e) {
+      if (mounted) _message = _error(_strings(context), e);
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -539,11 +716,13 @@ class _TravelPassengersScreenState extends State<TravelPassengersScreen> {
       if (error != null) {
         setState(() {
           _message = error;
-          d.position = _visibleFields.indexOf(f);
+          d.position = _passengerIndices.indexOf(
+            int.parse((f['name'] as String).split('.').first),
+          );
         });
         return;
       }
-      final value = d.values[f['name']];
+      final value = _answer(f);
       if (value != null && value != '') {
         answers[parts[0]]![parts.sublist(1).join('.')] = value;
       }
@@ -576,18 +755,49 @@ class _TravelPassengersScreenState extends State<TravelPassengersScreen> {
   @override
   Widget build(BuildContext context) {
     final t = _strings(context);
-    Map<String, dynamic>? f;
+    if (_busy) {
+      return Scaffold(
+        appBar: SonarpadAppBar(title: Text(t.t('passengerData'))),
+        body: SafeArea(
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const ExcludeSemantics(child: LinearProgressIndicator()),
+                  const SizedBox(height: 24),
+                  Semantics(
+                    liveRegion: true,
+                    child: Text(t.t('passengerLoading')),
+                  ),
+                  const SizedBox(height: 24),
+                  FilledButton(
+                    key: const Key('cancel-passenger-loading'),
+                    onPressed: () => Navigator.of(context).maybePop(),
+                    child: Text(t.t('cancelLoading')),
+                  ),
+                  if (d.attempted) ...[
+                    const SizedBox(height: 16),
+                    Text(t.t('cancelLoadingHelp')),
+                  ],
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+    List<Map<String, dynamic>> fields;
     try {
-      f = _field;
+      fields = _currentFields;
     } catch (_) {
       return _page(t.t('passengerData'), [
         _info('error', t.t('unsupportedForm')),
         _action('fallback', t.t('open'), () => _open(widget.fallbackUrl)),
       ]);
     }
-    final field = f;
     return _page(t.t('passengerData'), [
-      if (_busy) _info('working', t.t('working')),
       if (_message != null) _info('error', _message!),
       if (d.attempted) ...[
         _info('submitted', t.t(d.submitted ? 'submitted' : 'submitUncertain')),
@@ -595,7 +805,7 @@ class _TravelPassengersScreenState extends State<TravelPassengersScreen> {
           _action('checkout', t.t('openCheckout'), () => _open(d.paymentUrl!)),
         if (d.submitted && d.paymentUrl == null)
           _action('status', t.t('statusRefresh'), _status, enabled: !_busy),
-      ] else if (d.fields != null && field == null) ...[
+      ] else if (d.fields != null && fields.isEmpty) ...[
         for (final item in _visibleFields)
           _info(
             'review-${item['name']}',
@@ -610,26 +820,15 @@ class _TravelPassengersScreenState extends State<TravelPassengersScreen> {
           });
           await _prepare();
         }, enabled: !_busy),
-      ] else if (field != null) ...[
+      ] else if (fields.isNotEmpty) ...[
         _info(
-          'field-title',
-          '${_label(field, t)}. ${t.t(_required(field) ? 'required' : 'optional')}',
+          'passenger-heading',
+          '${t.t('passenger')} ${_passengerIndices[d.position] + 1}',
         ),
-        ..._inputs(field, t),
-        if (_supported(field))
-          _action(
-            'next-field',
-            t.t('nextField'),
-            () => _next(),
-            enabled: !_busy,
-          ),
-        if (!_required(field))
-          _action(
-            'skip-field',
-            t.t('skip'),
-            () => _next(skip: true),
-            enabled: !_busy,
-          ),
+        _info('optional-hint', t.t('optionalHint')),
+        for (final field in fields) ..._inputs(field, t),
+        if (fields.every(_supported))
+          _action('next-field', t.t('nextField'), _next, enabled: !_busy),
         if (d.position > 0)
           _action('previous-field', t.t('previous'), () async {
             setState(() {
@@ -662,7 +861,7 @@ class _TravelPassengersScreenState extends State<TravelPassengersScreen> {
   }
 
   String _display(Map f, TravelStrings t) {
-    final value = d.values[f['name']];
+    final value = _answer(f);
     if (value == null || value == '') return t.t('notProvided');
     if (value is Map) return value.values.join(' ');
     if (_component(f) == 'Date') {

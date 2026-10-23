@@ -874,12 +874,6 @@ class _TravelFaresScreenState extends State<_TravelFaresScreen> {
           _continue,
           enabled: !_busy && !_attempted && _selected.isNotEmpty,
         ),
-      if (!_attempted && _selected.isNotEmpty)
-        _action(
-          'change-fare',
-          t.t('fares'),
-          () => setState(() => _selected.removeLast()),
-        ),
     ]);
   }
 }

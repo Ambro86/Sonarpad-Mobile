@@ -60,6 +60,14 @@ class TravelStrings {
     'age': 'Età alla partenza del passeggero',
     'search': 'Avvia ricerca',
     'working': 'Ricerca in corso…',
+    'passengerLoading': 'Caricamento in corso…',
+    'cancelLoading': 'Annulla',
+    'filterList': 'Filtra l’elenco per iniziale',
+    'filterNoResults': 'Nessun risultato',
+    'filterResults': '{count} risultati disponibili',
+    'filterRetained': 'Scelta conservata',
+    'cancelLoadingHelp':
+        'Annulla interrompe l’attesa. I dati già inviati a Omio non vengono ritirati.',
     'chooseFrom': 'Scegli la città di partenza',
     'chooseTo': 'Scegli la città di arrivo',
     'noCity': 'Nessuna città trovata. Modifica il nome e riprova.',
@@ -89,6 +97,10 @@ class TravelStrings {
     'passenger': 'Passeggero',
     'nextField': 'Continua',
     'optional': 'Facoltativo',
+    'optionalHint':
+        'Compila i dati di questo passeggero. Puoi lasciare vuoti i campi facoltativi.',
+    'stateChooseCountry':
+        'Seleziona prima il paese per caricare le province o gli stati.',
     'required': 'Obbligatorio',
     'skip': 'Salta questo campo',
     'checkData':
@@ -108,6 +120,15 @@ class TravelStrings {
         'Invio non confermato. Controlla su Omio senza inviare nuovamente i dati.',
     'statusRefresh': 'Controlla se il checkout è pronto',
     'openCheckout': 'Apri il checkout Omio',
+    'paymentChoice': 'Scegli il metodo di pagamento',
+    'paymentChoiceHelp':
+        'Scegli un metodo disponibile su Omio. Si aprirà la pagina per verificare il totale, le protezioni e completare il pagamento. Nessun pagamento viene eseguito automaticamente.',
+    'paymentCard': 'Carta di credito o debito',
+    'paymentUnavailable':
+        'Non riesco a leggere i metodi disponibili. Puoi proseguire sulla pagina Omio.',
+    'paymentSelectOnSite':
+        'Selezione non confermata: verifica il metodo sulla pagina Omio.',
+    'paymentOpenSite': 'Apri la pagina Omio completa',
     'omioBrowser': 'Omio',
     'browserLoading': 'Caricamento della pagina Omio',
     'externalBrowser': 'Apri nel browser esterno',
@@ -174,6 +195,14 @@ class TravelStrings {
     'age': 'Age at departure for passenger',
     'search': 'Search',
     'working': 'Searching…',
+    'passengerLoading': 'Loading…',
+    'cancelLoading': 'Cancel',
+    'filterList': 'Filter list by first letters',
+    'filterNoResults': 'No results',
+    'filterResults': '{count} results available',
+    'filterRetained': 'Saved selection',
+    'cancelLoadingHelp':
+        'Cancel stops waiting. Data already sent to Omio is not withdrawn.',
     'chooseFrom': 'Choose departure city',
     'chooseTo': 'Choose arrival city',
     'noCity': 'No city found. Edit the name and try again.',
@@ -200,6 +229,10 @@ class TravelStrings {
     'passenger': 'Passenger',
     'nextField': 'Continue',
     'optional': 'Optional',
+    'optionalHint':
+        'Complete this passenger’s details. Optional fields may be left blank.',
+    'stateChooseCountry':
+        'Select a country first to load its states or provinces.',
     'required': 'Required',
     'skip': 'Skip this field',
     'checkData':
@@ -218,6 +251,15 @@ class TravelStrings {
         'Submission could not be confirmed. Check on Omio without sending details again.',
     'statusRefresh': 'Check whether checkout is ready',
     'openCheckout': 'Open Omio checkout',
+    'paymentChoice': 'Choose a payment method',
+    'paymentChoiceHelp':
+        'Choose a method available on Omio. The page will open to review the total and protection options and complete payment. No payment is made automatically.',
+    'paymentCard': 'Credit or debit card',
+    'paymentUnavailable':
+        'Payment methods could not be read. You can continue on the Omio page.',
+    'paymentSelectOnSite':
+        'Selection not confirmed: check the method on the Omio page.',
+    'paymentOpenSite': 'Open the full Omio page',
     'omioBrowser': 'Omio',
     'browserLoading': 'Loading Omio page',
     'externalBrowser': 'Open in external browser',

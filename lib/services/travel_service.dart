@@ -5,10 +5,16 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../utils/app_logger.dart';
 
 class TravelException implements Exception {
-  const TravelException(this.code, {this.status, this.reference});
+  const TravelException(
+    this.code, {
+    this.status,
+    this.reference,
+    this.retryable = true,
+  });
   final String code;
   final int? status;
   final String? reference;
+  final bool retryable;
 }
 
 class TravelCity {
@@ -102,17 +108,20 @@ class TravelService {
     http.Client? client,
     String? clientToken,
     Future<void> Function(String)? logger,
+    Future<void> Function(Duration)? retryDelay,
   }) : _client = client ?? http.Client(),
        _clientToken =
            clientToken ??
            const String.fromEnvironment('SONARPAD_ROUTE_CLIENT_TOKEN'),
-       _logger = logger ?? AppLogger.log;
+       _logger = logger ?? AppLogger.log,
+       _retryDelay = retryDelay ?? Future<void>.delayed;
   static final _base = Uri.parse(
     'https://sonarpad.com/api/test_omio_sessione.php',
   );
   final http.Client _client;
   final String _clientToken;
   final Future<void> Function(String) _logger;
+  final Future<void> Function(Duration) _retryDelay;
   String? _session;
   bool _closed = false;
   static String? _safeReference(dynamic value) {
@@ -121,6 +130,54 @@ class TravelService {
   }
 
   Future<Map<String, dynamic>> request(
+    String route, {
+    Map<String, String> query = const {},
+    Map<String, dynamic>? body,
+    String? method,
+    String? idempotencyKey,
+  }) async {
+    final verb = method ?? (body == null ? 'GET' : 'POST');
+    final canRetry =
+        verb == 'GET' ||
+        (verb == 'POST' &&
+            const [
+              '/v1/sessions',
+              '/v1/search',
+              '/v1/search/selection',
+            ].contains(route));
+    for (var attempt = 1; ; attempt++) {
+      try {
+        return await _requestOnce(
+          route,
+          query: query,
+          body: body,
+          method: method,
+          idempotencyKey: idempotencyKey,
+        );
+      } on TravelException catch (e) {
+        // A previous search request may have completed after its response was lost.
+        if (route == '/v1/search' && attempt > 1 && e.status == 409) {
+          await request('/v1/search/results');
+          return {};
+        }
+        final transient =
+            e.code == 'timeout' ||
+            e.code == 'network' ||
+            const [408, 500, 502, 503, 504].contains(e.status);
+        if (!canRetry ||
+            !e.retryable ||
+            !transient ||
+            attempt >= 3 ||
+            _closed) {
+          rethrow;
+        }
+        await _logger('[Travel] retry $verb $route attempt=${attempt + 1}/3');
+        await _retryDelay(Duration(seconds: attempt));
+      }
+    }
+  }
+
+  Future<Map<String, dynamic>> _requestOnce(
     String route, {
     Map<String, String> query = const {},
     Map<String, dynamic>? body,
@@ -181,6 +238,8 @@ class TravelService {
           'http',
           status: response.statusCode,
           reference: reference,
+          retryable:
+              diagnostic is! Map || diagnostic['challenge_detected'] != true,
         );
       }
       if (data == null) throw const TravelException('response');
@@ -328,23 +387,64 @@ class TravelPassengerMemory {
     return 'sonarpad_travel_passenger_defaults_v2_$passenger';
   }
 
-  static const fields = {'email', 'firstName', 'lastName', 'dateOfBirth'};
-  Future<Map<String, String>> load({int passenger = 0}) async {
+  static const fields = {
+    'email',
+    'emailAddress',
+    'firstName',
+    'lastName',
+    'dateOfBirth',
+    'phone',
+    'phoneNumber',
+    'mobileNumber',
+    'country',
+    'countryOfResidence',
+    'residenceCountry',
+    'postalCode',
+    'postcode',
+    'postCode',
+    'zipCode',
+    'zip',
+    'city',
+    'region',
+    'state',
+    'province',
+    'street',
+    'streetName',
+    'houseNumber',
+    'residenceCity',
+    'residenceAddress',
+    'residencePostalCode',
+    'title',
+  };
+  static bool _remember(String name) =>
+      fields.contains(name) || RegExp(r'^address[A-Za-z]*$').hasMatch(name);
+  static bool _validValue(dynamic value) =>
+      value is String && value.length <= 500 ||
+      value is Map &&
+          value.keys.every(
+            (k) => const {
+              'countryDiallingCode',
+              'nationalNumber',
+              'countryIsoCode',
+            }.contains(k),
+          ) &&
+          value.values.every((v) => v is String && v.length <= 32);
+  Future<Map<String, dynamic>> load({int passenger = 0}) async {
     final prefs = await SharedPreferences.getInstance();
     final raw =
         prefs.getString(_key(passenger)) ??
         (passenger == 0 ? prefs.getString(_legacyKey) : null);
     if (raw == null) return {};
     try {
-      return Map<String, String>.from(jsonDecode(raw) as Map)
-        ..removeWhere((key, value) => !fields.contains(key));
+      return Map<String, dynamic>.from(jsonDecode(raw) as Map)
+        ..removeWhere((key, value) => !_remember(key) || !_validValue(value));
     } catch (_) {
       return {};
     }
   }
 
-  Future<void> save(String name, String value, {int passenger = 0}) async {
-    if (!fields.contains(name)) return;
+  Future<void> save(String name, dynamic value, {int passenger = 0}) async {
+    if (!_remember(name) || !_validValue(value)) return;
     final saved = await load(passenger: passenger);
     saved[name] = value;
     await (await SharedPreferences.getInstance()).setString(

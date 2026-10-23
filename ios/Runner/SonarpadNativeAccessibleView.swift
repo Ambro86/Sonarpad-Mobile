@@ -43,6 +43,7 @@ private struct SonarpadNativeRow {
   var placeholder: String?
   var submitOnReturn: Bool
   var textInputAction: String?
+  var keyboardType: String?
   var clearAsSearch: Bool
   var stabilizeTextFieldFocusOnBegin: Bool
   var options: [SonarpadNativeOption]
@@ -88,6 +89,7 @@ private struct SonarpadNativeRow {
     placeholder = map["placeholder"] as? String
     submitOnReturn = map["submitOnReturn"] as? Bool ?? false
     textInputAction = map["textInputAction"] as? String
+    keyboardType = map["keyboardType"] as? String
     clearAsSearch = map["clearAsSearch"] as? Bool ?? (textInputAction == "search")
     stabilizeTextFieldFocusOnBegin =
       map["stabilizeNativeTextFieldFocusOnBegin"] as? Bool ?? false
@@ -153,6 +155,7 @@ private func sonarpadRowsEqual(_ lhs: SonarpadNativeRow, _ rhs: SonarpadNativeRo
         lhs.placeholder == rhs.placeholder,
         lhs.submitOnReturn == rhs.submitOnReturn,
         lhs.textInputAction == rhs.textInputAction,
+        lhs.keyboardType == rhs.keyboardType,
         lhs.clearAsSearch == rhs.clearAsSearch,
         lhs.stabilizeTextFieldFocusOnBegin == rhs.stabilizeTextFieldFocusOnBegin,
         lhs.options.count == rhs.options.count,
@@ -1320,6 +1323,12 @@ final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITableViewDa
       if cell.field.isSecureTextEntry != row.secure { cell.field.isSecureTextEntry = row.secure }
       cell.field.textContentType = row.id == "tv_secret_code" ? .oneTimeCode : nil
       cell.field.isEnabled = row.enabled
+      switch row.keyboardType {
+      case "phone": cell.field.keyboardType = .phonePad
+      case "number": cell.field.keyboardType = .numberPad
+      case "email": cell.field.keyboardType = .emailAddress
+      default: cell.field.keyboardType = .default
+      }
       cell.configureClearButton(label: row.clearAsSearch ? clearSearchLabel : clearTextLabel)
       cell.submitOnReturn = row.submitOnReturn
       cell.stabilizeFocusOnBegin = row.stabilizeTextFieldFocusOnBegin
@@ -2035,6 +2044,12 @@ final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITableViewDa
         if cell.field.isSecureTextEntry != row.secure { cell.field.isSecureTextEntry = row.secure }
         cell.field.textContentType = row.id == "tv_secret_code" ? .oneTimeCode : nil
         cell.field.isEnabled = row.enabled
+        switch row.keyboardType {
+        case "phone": cell.field.keyboardType = .phonePad
+        case "number": cell.field.keyboardType = .numberPad
+        case "email": cell.field.keyboardType = .emailAddress
+        default: cell.field.keyboardType = .default
+        }
         cell.configureClearButton(label: row.clearAsSearch ? clearSearchLabel : clearTextLabel)
         cell.submitOnReturn = row.submitOnReturn
         cell.stabilizeFocusOnBegin = row.stabilizeTextFieldFocusOnBegin

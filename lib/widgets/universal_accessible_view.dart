@@ -442,6 +442,7 @@ class AccessibleListRow {
     this.onAccessibilityFocus,
     this.onSubmitted,
     this.textInputAction,
+    this.keyboardType,
     this.clearAsSearch = false,
     this.stabilizeNativeTextFieldFocusOnBegin = false,
     this.flutterChild,
@@ -512,6 +513,8 @@ class AccessibleListRow {
   /// Supported values are `search`, `done` and `next`. When [onSubmitted]
   /// is provided, UIKit sends the same logical submit event that Flutter does.
   final String? textInputAction;
+  /// Optional keyboard layout; null preserves existing text fields.
+  final String? keyboardType;
 
   /// Uses the search-specific clear-button label even when this field does not
   /// use a search return key. Fields with [textInputAction] == `search` are
@@ -557,6 +560,7 @@ class AccessibleListRow {
         if (placeholder != null) 'placeholder': placeholder,
         'submitOnReturn': onSubmitted != null,
         if (textInputAction != null) 'textInputAction': textInputAction,
+        if (keyboardType != null) 'keyboardType': keyboardType,
         'clearAsSearch': usesSearchClearLabel,
         'stabilizeNativeTextFieldFocusOnBegin':
             stabilizeNativeTextFieldFocusOnBegin,
@@ -2049,6 +2053,12 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
                           controller: controller,
                           focusNode: focusNode,
                           obscureText: row.secure,
+                          keyboardType: switch (row.keyboardType) {
+                            'phone' => TextInputType.phone,
+                            'number' => TextInputType.number,
+                            'email' => TextInputType.emailAddress,
+                            _ => null,
+                          },
                           enabled: enabled,
                           decoration: InputDecoration(
                             labelText: row.title,
