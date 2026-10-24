@@ -3,6 +3,19 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  test('Missing AD fallback uses current player without changing saved preferences', () {
+    final source = File('lib/screens/radio_player_screen.dart').readAsStringSync();
+    final start = source.indexOf('  Future<void> _fallbackUnavailableRaiNativeAudioDescription()');
+    final end = source.indexOf('  Future<void> _recoverRaiNative(', start);
+    final fallback = source.substring(start, end);
+    expect(fallback, contains('generation != _raiNativeGeneration'));
+    expect(fallback, contains('_raiNativeAdCheckedGeneration == generation'));
+    expect(fallback, contains('setPreferAudioDescription(false)'));
+    expect(fallback, isNot(contains('_settings.')));
+    expect(fallback, isNot(contains('_raiNativePlayer.open(')));
+    expect(source, contains('Platform.isIOS && _requiresRaiAudioDescriptionMediaKitPlayback &&'));
+  });
+
   test('iOS Rai channels prefer native AVPlayer master HLS before MediaKit', () {
     final source =
         File('lib/screens/radio_player_screen.dart').readAsStringSync();

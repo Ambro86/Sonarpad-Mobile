@@ -1069,8 +1069,9 @@ class TvService {
   Future<RaiAudioDescriptionStreams> resolveAudioDescriptionStreams(
     TvChannel channel, {
     StreamDiagnosticsSession? diagnostics,
+    String? resolvedMasterUrl,
   }) async {
-    final masterUrl = await resolveStreamUrl(channel, diagnostics: diagnostics);
+    final masterUrl = resolvedMasterUrl ?? await resolveStreamUrl(channel, diagnostics: diagnostics);
     await AppLogger.log('Cerco traccia AD nel master URL: ${StreamDiagnosticsSession.safeUrl(masterUrl)}');
 
     try {
@@ -1172,6 +1173,28 @@ class TvService {
         normalAudioUrl: masterUrl,
         hasAudioDescription: false,
       );
+    }
+  }
+
+  /// Only confirmed missing AD playlists trigger a native track switch.
+  /// Network/authentication errors must not disable a working native AD track.
+  Future<bool> isRaiAudioDescriptionUnavailable(
+    TvChannel channel, {
+    required String masterUrl,
+    StreamDiagnosticsSession? diagnostics,
+  }) async {
+    try {
+      final streams = await resolveAudioDescriptionStreams(channel,
+          resolvedMasterUrl: masterUrl, diagnostics: diagnostics);
+      if (!streams.hasAudioDescription) return false;
+      final response = await _getRaiWithDiagnostics(
+        Uri.parse(streams.audioUrl),
+        headers: {'User-Agent': channel.playbackUserAgent, ...channel.playbackHeaders},
+        stage: 'ad_availability', diagnostics: diagnostics,
+      );
+      return response.statusCode == 404 || response.statusCode == 410;
+    } catch (_) {
+      return false;
     }
   }
 

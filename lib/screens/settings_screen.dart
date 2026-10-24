@@ -40,6 +40,7 @@ class SettingsScreen extends StatefulWidget {
 enum _SettingsLeaveAction { save, discard, cancel }
 
 class _SettingsScreenState extends State<SettingsScreen> {
+  bool _confirmingExit = false;
   final _settings = AppSettingsService();
   final _podcastCache = PodcastCacheService();
   final _flutterTts = FlutterTts();
@@ -658,6 +659,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<bool> _confirmLeaveSettings() async {
+    unawaited(AppLogger.log('Settings: leave check unsaved=$_hasUnsavedChanges '
+        'loading=$_loading saving=$_isSaving '
+        'raiAD=$_preferRaiAudioDescription savedRaiAD=$_savedPreferRaiAudioDescription'));
     if (!_hasUnsavedChanges || _isSaving) return true;
     final l10n = AppLocalizations.of(context);
     final result = await showDialog<_SettingsLeaveAction>(
@@ -1534,6 +1538,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
           }
         } else if (event.type == 'toggle') {
           final value = event.value == true;
+          if (id == 'prefer_rai_audio_description') {
+            unawaited(AppLogger.log('Settings: RAI AD toggle '
+                'old=$_preferRaiAudioDescription new=$value saved=$_savedPreferRaiAudioDescription'));
+          }
           if (id == 'developer_flutter_renderer') {
             await _settings.setFlutterAccessibleRendererOnIos(value);
             if (!mounted) return;
@@ -1755,6 +1763,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
     Navigator.of(context).pop(_appLanguage);
   }
 
+  Future<void> _requestLeaveSettings() async {
+    if (_confirmingExit || _loading || _isSaving) return;
+    _confirmingExit = true;
+    try {
+      if (!await _confirmLeaveSettings() || !mounted) return;
+      // Keep VoiceOver focus intact until the previous route is restored.
+      await Future<void>.delayed(Duration.zero);
+      if (mounted) Navigator.of(context).pop(_appLanguage);
+    } finally {
+      _confirmingExit = false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -1764,18 +1785,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
       canPop: false,
       onPopInvokedWithResult: (didPop, result) async {
         if (didPop) return;
-        final shouldLeave = await _confirmLeaveSettings();
-        if (!context.mounted || !shouldLeave) return;
-        // Non forziamo unfocus prima di uscire: su iOS/VoiceOver può
-        // contribuire a lasciare momentaneamente l'app senza un nodo
-        // semantico agganciato nella schermata precedente.
-        await Future<void>.delayed(Duration.zero);
-        if (!context.mounted) return;
-        Navigator.of(context).pop(_appLanguage);
+        await _requestLeaveSettings();
       },
       child: Scaffold(
         appBar: SonarpadAppBar(
           title: Text(l10n.settings),
+          leading: SonarpadBackButton(onPressed: _requestLeaveSettings),
           actions: [
             Semantics(
               button: true,

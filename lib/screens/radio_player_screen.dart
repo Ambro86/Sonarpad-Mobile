@@ -131,6 +131,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   bool _raiNativeBuffering = false;
   bool _raiNativeFallbackInProgress = false;
   int _raiNativeGeneration = 0;
+  int _raiNativeAdCheckedGeneration = -1;
   int _raiNativeRestartCount = 0;
   Timer? _raiNativeStallTimer;
   bool _isVideoEnabled = false;
@@ -654,6 +655,10 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         'selectedLocale': event['selectedLocale'],
         'selectedAD': event['selectedIsAudioDescription'],
       });
+      if (Platform.isIOS && _requiresRaiAudioDescriptionMediaKitPlayback &&
+          _preferRaiAudioDescription && event['selectedIsAudioDescription'] == true) {
+        unawaited(_fallbackUnavailableRaiNativeAudioDescription());
+      }
       return;
     }
 
@@ -707,6 +712,26 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         'RadioPlayer: native TV player ${event['category']}: '
         '${StreamDiagnosticsSession.redact(event['message']?.toString() ?? '')}',
       ));
+    }
+  }
+
+  Future<void> _fallbackUnavailableRaiNativeAudioDescription() async {
+    final generation = _raiNativeGeneration;
+    final masterUrl = _mediaKitPlaybackUrl;
+    final channel = widget.tvChannel;
+    if (_raiNativeAdCheckedGeneration == generation || masterUrl == null || channel == null) return;
+    _raiNativeAdCheckedGeneration = generation;
+    final unavailable = await TvService().isRaiAudioDescriptionUnavailable(
+      channel, masterUrl: masterUrl, diagnostics: _streamDiagnostics);
+    if (!unavailable || !mounted || !_raiNativeActive || generation != _raiNativeGeneration) return;
+    try {
+      await AppLogger.log('RadioPlayer: RAI AD playlist unavailable (404/410); '
+          'selecting Italian audio on the existing native player');
+      if (!mounted || !_raiNativeActive || generation != _raiNativeGeneration) return;
+      await _raiNativePlayer.setPreferAudioDescription(false);
+      // The saved preference stays unchanged for the next channel/open.
+    } catch (error) {
+      await AppLogger.log('RadioPlayer: RAI Italian audio fallback failed: ${error.runtimeType}');
     }
   }
 
