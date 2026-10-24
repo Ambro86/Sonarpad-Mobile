@@ -9,6 +9,7 @@ import '../l10n/app_localizations.dart';
 import '../l10n/travel_strings.dart';
 import '../services/travel_cookie_script.dart';
 import '../services/travel_payment_script.dart';
+import '../services/travel_checkout_accessibility.dart';
 import '../services/travel_checkout_diagnostics.dart';
 import '../utils/app_logger.dart';
 import '../widgets/universal_accessible_view.dart';
@@ -234,6 +235,14 @@ class _TravelBrowserScreenState extends State<TravelBrowserScreen> {
     final generation = _generation;
     _checkoutDiagnosticsBusy = true;
     try {
+      if (_showBrowser) {
+        final result = await _controller!
+            .runJavaScriptReturningResult(travelCheckoutAccessibilityScript)
+            .timeout(const Duration(seconds: 2));
+        if (mounted && generation == _generation) {
+          await _log('[TravelCheckoutAccessibility] result=$result');
+        }
+      }
       dynamic data = await _controller!
           .runJavaScriptReturningResult(travelCheckoutDiagnosticsScript)
           .timeout(const Duration(seconds: 2));
@@ -256,10 +265,20 @@ class _TravelBrowserScreenState extends State<TravelBrowserScreen> {
       final summary = Map<String, dynamic>.from(data)
         ..remove('controls')
         ..remove('documents')
-        ..remove('frameDetails');
+        ..remove('frameDetails')
+        ..remove('events')
+        ..remove('landmarks')
+        ..remove('inventoryChanges');
       await _log(
         '[TravelCheckout] snapshot=$snapshot stage=$stage generation=$generation summary=${jsonEncode(summary)}',
       );
+      for (final kind in ['events', 'landmarks', 'inventoryChanges']) {
+        for (final record in (data[kind] as List? ?? const [])) {
+          await _log(
+            '[TravelCheckout] snapshot=$snapshot $kind=${jsonEncode(record)}',
+          );
+        }
+      }
       for (final control in (data['controls'] as List? ?? const [])) {
         await _log(
           '[TravelCheckout] snapshot=$snapshot control=${jsonEncode(control)}',
@@ -397,25 +416,6 @@ class _TravelBrowserScreenState extends State<TravelBrowserScreen> {
     }
     if (!mounted) return;
     _revealBrowser();
-    if (method == 'PayPal' && confirmed) {
-      final generation = _generation;
-      await WidgetsBinding.instance.endOfFrame;
-      if (!mounted || generation != _generation) return;
-      try {
-        final result = await _controller!.runJavaScriptReturningResult(
-          travelPayPalPositionScript,
-        );
-        final status = result.toString().replaceAll('"', '');
-        const known = {'paypal-area', 'bottom', 'blocked', 'unavailable'};
-        unawaited(
-          _log(
-            '[TravelCheckout] paypal_position status=${known.contains(status) ? status : 'unknown'}',
-          ),
-        );
-      } catch (_) {
-        unawaited(_log('[TravelCheckout] paypal_position_failed'));
-      }
-    }
     await _captureCheckout('browser-revealed');
     if (!mounted) return;
     _watchCheckout();
@@ -437,6 +437,7 @@ class _TravelBrowserScreenState extends State<TravelBrowserScreen> {
       _paymentBusy = false;
       _showBrowser = true;
     });
+    _watchCheckout();
   }
 
   Future<void> _necessaryCookies(int generation, int attempt) async {

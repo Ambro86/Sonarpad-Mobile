@@ -23,7 +23,7 @@ class SonarpadTravelFocusPlugin: NSObject, FlutterPlugin {
     let label = (object.accessibilityLabel ?? "").lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
     // Only fixed categories leave native code; no arbitrary label fragments.
     let category: String
-    if label == "revpoints" { category = "revpoints" }
+    if label.range(of: #"\brev[\s-]*points\b"#, options: .regularExpression) != nil { category = "revpoints" }
     else if label == "paypal" { category = "paypal" }
     else if label == "revolut pay" { category = "revolut-pay" }
     else { category = "other" }

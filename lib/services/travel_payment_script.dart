@@ -1,41 +1,5 @@
 import 'dart:convert';
 
-/// Scroll/focus only. Never activate a payment button or enter provider frames.
-const travelPayPalPositionScript = r'''
-(() => {
-  if (location.protocol !== 'https:' || (location.port && location.port !== '443') ||
-      !['omio.com', 'www.omio.com'].includes(location.hostname) ||
-      !/\/checkout\/?$/.test(location.pathname)) return 'unavailable';
-  const visible = el => {
-    const r = el.getBoundingClientRect(), s = getComputedStyle(el);
-    return r.width>0 && r.height>0 && s.display!=='none' && s.visibility!=='hidden' &&
-      !el.closest('[hidden],[inert],[aria-hidden="true"]');
-  };
-  if ([...document.querySelectorAll('[aria-modal="true"],dialog[open]')].some(visible)) return 'blocked';
-  const root = document.scrollingElement || document.documentElement;
-  const candidates = [...document.querySelectorAll('button,a[href],iframe')].filter(el => {
-    if (!visible(el) || el.disabled || el.getAttribute('aria-disabled')==='true' ||
-        el.closest('[role="radiogroup"],[role="radio"],label')) return false;
-    if (el.tagName==='IFRAME') {
-      try {
-        const host = new URL(el.getAttribute('src'), location.href).hostname;
-        return host==='paypal.com' || host.endsWith('.paypal.com');
-      } catch (_) { return false; }
-    }
-    if (['radio','checkbox','switch'].includes(el.getAttribute('role'))) return false;
-    return /paypal/i.test(el.getAttribute('aria-label') || el.textContent || '');
-  });
-  candidates.sort((a,b)=>a.getBoundingClientRect().top-b.getBoundingClientRect().top);
-  const target = candidates.at(-1);
-  // Position once, never keep dragging the page while the user navigates it.
-  root.scrollTo({top:root.scrollHeight,behavior:'instant'});
-  if (!target) return 'bottom';
-  target.scrollIntoView({block:'center',behavior:'instant'});
-  target.focus({preventScroll:true});
-  return 'paypal-area';
-})()
-''';
-
 String travelNoProtectionScript({bool verifyOnly = false}) =>
     _noProtection.replaceFirst('__VERIFY__', '$verifyOnly');
 

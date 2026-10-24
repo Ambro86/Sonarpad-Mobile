@@ -61,6 +61,52 @@ with sync_playwright() as p:
     assert focused['viewport']['scrollY'] > 0
     assert page.evaluate("window.paid") is None
     assert 'private@example.org' not in json.dumps(focused)
+    page.evaluate("""() => {
+      const b=document.createElement('div'); b.setAttribute('role','button'); b.tabIndex=0;
+      b.setAttribute('aria-label','Usa i tuoi Rev Points private@example.org');
+      b.innerHTML='<span>Promozione</span>'; document.body.append(b); b.focus();
+    }""")
+    variant = read()
+    assert any(h['category']=='revpoints' for h in variant['active']['hints'])
+    assert any(h['source']=='aria-label' and h['category']=='revpoints'
+               for x in variant['landmarks'] for h in x['hints'])
+    assert any(e['event']=='focusin' and e['target']['hints'] for e in variant['events'])
+    assert variant['active']['interactiveDescendants'] == 0
+    page.evaluate("""() => {
+      const b=document.createElement('button'); b.type='button'; b.textContent='Unknown private-person';
+      document.body.append(b); b.focus();
+      document.querySelector('iframe').title='Use RevPoints private-token';
+    }""")
+    unknown = read()
+    assert any(e['event']=='focusin' and e['target']['tag']=='button' and e['matches']==[] for e in unknown['events'])
+    assert any(h['category']=='revpoints' for f in unknown['frameDetails'] for h in f['hints'])
+    for data in [variant,unknown]:
+        for secret in ['private-person','private@example.org','private-token','4111111111111111','private-password']:
+            assert secret not in json.dumps(data)
+    assert page.evaluate("window.paid") is None
+    page.evaluate("""() => {
+      const host=document.createElement('div'); document.body.append(host);
+      host.attachShadow({mode:'open'}).innerHTML='<label id="private-shadow-label">Private Name</label><button aria-labelledby="private-shadow-label">Other control</button>';
+    }""")
+    mapped=read()
+    assert mapped['inventorySummary']['shadowRoots']==1
+    shadow_button=next(x for x in mapped['inventoryChanges'] if x['shadowHost'] and x['tag']=='button')
+    assert len(shadow_button['labelledBy'])==1
+    assert any(x['tag']=='iframe' for x in first['inventoryChanges']) is False
+    assert any(x['fieldCategory']=='card-number' for x in first['inventoryChanges'])
+    assert not mapped['inventorySummary']['truncated']
+    assert read()['inventoryChanges']==[]
+    page.locator('input[autocomplete="cc-number"]').evaluate("el => el.remove()")
+    removed=read()
+    card_node=next(x['node'] for x in first['inventoryChanges'] if x['fieldCategory']=='card-number')
+    assert card_node in removed['inventorySummary']['removed']
+    for secret in ['Private Name','private-shadow-label','private@example.org','4111111111111111']:
+        assert secret not in json.dumps(mapped)
+    page.evaluate("""() => {for(let i=0;i<650;i++){const b=document.createElement('button');b.textContent='x';document.body.append(b)}}""")
+    capped=read()
+    assert capped['inventorySummary']['truncated']
+    assert capped['inventorySummary']['recorded']<=600
+    assert capped['inventorySummary']['removed']==[]
     page.goto("https://example.org/app/booking/test/checkout")
     assert read() == {"scope": "outside-checkout"}
     browser.close()
