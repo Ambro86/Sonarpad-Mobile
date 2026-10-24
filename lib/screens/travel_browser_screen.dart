@@ -268,11 +268,17 @@ class _TravelBrowserScreenState extends State<TravelBrowserScreen> {
         ..remove('frameDetails')
         ..remove('events')
         ..remove('landmarks')
-        ..remove('inventoryChanges');
+        ..remove('inventoryChanges')
+        ..remove('mutations');
       await _log(
         '[TravelCheckout] snapshot=$snapshot stage=$stage generation=$generation summary=${jsonEncode(summary)}',
       );
-      for (final kind in ['events', 'landmarks', 'inventoryChanges']) {
+      for (final kind in [
+        'events',
+        'landmarks',
+        'inventoryChanges',
+        'mutations',
+      ]) {
         for (final record in (data[kind] as List? ?? const [])) {
           await _log(
             '[TravelCheckout] snapshot=$snapshot $kind=${jsonEncode(record)}',

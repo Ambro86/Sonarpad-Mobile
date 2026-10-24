@@ -107,6 +107,26 @@ with sync_playwright() as p:
     assert capped['inventorySummary']['truncated']
     assert capped['inventorySummary']['recorded']<=600
     assert capped['inventorySummary']['removed']==[]
+    page.evaluate("""() => {
+      const box=document.createElement('div');box.innerHTML='<button type="button">Guadagna 2 volte i RevPoints private-transient</button>';
+      document.body.append(box);box.remove();
+      const frame=document.createElement('iframe');frame.src='https://revolut.com/private-frame-token';
+      document.body.append(frame);frame.remove();
+    }""")
+    transient=read()
+    assert any(m['event']=='added' and any(h['category']=='revpoints' for h in m['target']['hints']) for m in transient['mutations'])
+    assert any(m['event']=='removed' and any(h['category']=='revpoints' for h in m['target']['hints']) for m in transient['mutations'])
+    assert any(m['event']=='removed' and m.get('provider')=='revolut.com' for m in transient['mutations'])
+    assert 'private-transient' not in json.dumps(transient)
+    assert 'private-frame-token' not in json.dumps(transient)
+    page.evaluate("""() => {
+      const box=document.createElement('div');box.id='visibility-fixture';box.innerHTML='<button type="button">RevPoints</button>';
+      document.body.append(box);
+    }""")
+    read()
+    page.evaluate("document.getElementById('visibility-fixture').hidden=true")
+    hidden=read()
+    assert any(m['event']=='ancestor-attribute' and m['target']['hiddenAncestor'] for m in hidden['mutations'])
     page.goto("https://example.org/app/booking/test/checkout")
     assert read() == {"scope": "outside-checkout"}
     browser.close()

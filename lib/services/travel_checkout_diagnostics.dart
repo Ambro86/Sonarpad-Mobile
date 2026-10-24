@@ -169,6 +169,58 @@ const travelCheckoutDiagnosticsScript = r'''
     } catch (_) {}
     return 'other';
   };
+  // Capture short-lived changes between the two-second snapshots. This queue
+  // stores structure/categories only, never attribute values or text content.
+  state.mutations ||= [];
+  state.mutationDropped ||= 0;
+  if(!state.mutationObserver) {
+    state.mutationObserver=new MutationObserver(records=>{
+      if(performance.now()-state.lastPoll>6000 || !/\/checkout\/?$/.test(location.pathname)) return;
+      let inspected=0;
+      const capture=(el,kind,attribute=null) => {
+        if(!el || el.nodeType!==1) return;
+        if(++inspected>300) {state.mutationDropped++;return;}
+        if(!el.matches('iframe,button,a,input,[role],[tabindex]') && !hints(el).length) return;
+        const item={event:kind,attribute,ms:Math.round(performance.now()-state.started),
+          target:describe(el),parent:el.parentElement?id(el.parentElement):null};
+        if(el.tagName==='IFRAME') item.provider=provider(el);
+        if(state.mutations.length>=80) {state.mutations.shift();state.mutationDropped++;}
+        state.mutations.push(item);
+      };
+      for(const record of records) {
+        if(record.type==='attributes') {
+          capture(record.target,'attribute',record.attributeName);
+          if(['class','style','hidden','inert','aria-hidden'].includes(record.attributeName)) {
+            const walker=document.createTreeWalker(record.target,1);let child;
+            while(inspected<300 && (child=walker.nextNode())) capture(child,'ancestor-attribute',record.attributeName);
+          }
+        }
+        else if(record.type==='characterData') capture(record.target.parentElement,'text-changed');
+        else {
+          for(const [kind,nodes] of [['added',record.addedNodes],['removed',record.removedNodes]]) {
+            for(const node of nodes) {
+              if(node.nodeType===3) {capture(record.target,'text-changed');continue;}
+              if(node.nodeType!==1) continue;
+              capture(node,kind);
+              const walker=document.createTreeWalker(node,1);
+              let child;
+              while(inspected<300 && (child=walker.nextNode())) capture(child,kind);
+            }
+          }
+        }
+      }
+    });
+    state.mutationObserver.observe(document.documentElement,{subtree:true,childList:true,characterData:true,
+      attributes:true,attributeFilter:['class','style','hidden','inert','aria-hidden','aria-label','title','role','tabindex','aria-expanded']});
+  }
+  clearTimeout(state.mutationStopTimer);
+  state.mutationStopTimer=setTimeout(()=>{
+    state.mutationObserver?.disconnect();state.mutationObserver=null;
+  },6500);
+  const mutations=state.mutations.splice(0);
+  const mutationSummary={scope:'main-document-and-frame-elements',count:mutations.length,
+    dropped:state.mutationDropped,limit:80,externalFrameContents:'not-observed'};
+  state.mutationDropped=0;
   const documents = [], frameDetails = [], readableDocuments = [];
   const inspectDocument = (doc, owner, depth) => {
     readableDocuments.push({doc,owner});
@@ -277,7 +329,7 @@ const travelCheckoutDiagnosticsScript = r'''
     children:[...focused.children].slice(0,6).map(describe)} : null;
   const events = state.events.splice(0);
   return JSON.stringify({scope:'checkout',version:4,ready:document.readyState,
-    documents,frameDetails,landmarks,viewport,active,inventorySummary,inventoryChanges,
+    documents,frameDetails,landmarks,viewport,active,inventorySummary,inventoryChanges,mutations,mutationSummary,
     count,truncated:count>32,controls,events,
     frames:document.querySelectorAll('iframe').length,
     modalCount:[...document.querySelectorAll('[aria-modal="true"],dialog[open]')].filter(el=>describe(el).rendered).length});

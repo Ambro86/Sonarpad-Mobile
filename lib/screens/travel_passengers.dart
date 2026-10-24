@@ -880,6 +880,9 @@ class _TravelPassengersScreenState extends State<TravelPassengersScreen> {
           }
         }, enabled: !_busy),
       ],
+      listKey: !d.attempted && d.fields != null && fields.isEmpty
+          ? const ValueKey('passenger-review')
+          : null,
       initialFocusId: _message != null
           ? 'error'
           : d.attempted

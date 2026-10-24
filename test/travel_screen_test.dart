@@ -256,8 +256,26 @@ void main() {
       await tester.pumpAndSettle();
       row(tester, 'journey-choice-1').onActivate!();
       await tester.pumpAndSettle();
+      final fareList = tester.element(
+        find.byType(UniversalAccessibleList).last,
+      );
       await row(tester, 'offer-fare-1').onActivate!();
       await tester.pumpAndSettle();
+      expect(
+        identical(
+          fareList,
+          tester.element(find.byType(UniversalAccessibleList).last),
+        ),
+        isFalse,
+      );
+      expect(
+        tester
+            .widget<UniversalAccessibleList>(
+              find.byType(UniversalAccessibleList).last,
+            )
+            .initialFocusId,
+        'fare-review-heading',
+      );
       expect(row(tester, 'continue').title, 'Continua per inserire i dati');
       row(tester, 'continue').onActivate!();
       await tester.pumpAndSettle();

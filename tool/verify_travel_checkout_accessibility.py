@@ -39,6 +39,51 @@ with sync_playwright() as p:
     page.locator('#card').check()
     page.evaluate(script)
     assert page.locator('#card').is_checked()
+    # Structure from diagnostic 23: link > radio + separate label/heading + logos.
+    page.set_content('''<form onsubmit="window.paid=true;return false">
+      <a id="card-row" href="#card"><div><input id="c" type="radio" name="method"></div>
+        <div><label for="c"><div><h6><span>Carta</span></h6></div></label></div>
+        <div><img alt="Visa"><img alt="MasterCard"><img alt="Maestro"></div></a>
+      <a id="pp-row" href="#paypal"><input id="p" type="radio" name="method" checked>
+        <label for="p"><h6>PayPal</h6></label><img alt="PayPal"></a>
+      <a id="rev-row" href="#revolut"><input id="r" type="radio" name="method">
+        <label for="r"><h6>Revolut Pay</h6></label>
+        <iframe id="small" src="https://revolut.com/icon" style="width:22px;height:16px;border:0"></iframe></a>
+      <iframe id="large" src="https://revolut.com/payment" style="width:363px;height:91px"></iframe>
+      <label>Numero carta<input autocomplete="cc-number"></label><button>PayPal</button>
+      </form>''')
+    result=json.loads(page.evaluate(script))
+    assert result['wrappers']==3 and result['frames']==0
+    tree=page.locator('body').aria_snapshot()
+    assert 'link "Carta' not in tree and 'link "PayPal' not in tree
+    assert 'heading "Carta' not in tree and 'img "PayPal' not in tree
+    assert 'radio "Carta"' in tree and 'radio "PayPal" [checked]' in tree
+    assert 'textbox "Numero carta"' in tree and 'button "PayPal"' in tree
+    assert page.locator('#small').get_attribute('aria-hidden') is None
+    assert page.locator('#large').get_attribute('aria-hidden') is None
+    page.locator('#c').check()
+    page.evaluate(script)
+    assert page.locator('#c').is_checked()
+    assert page.locator('#card-row').get_attribute('href')=='#card'
+    page.locator('#small').evaluate("el=>el.style.width='350px'")
+    page.evaluate(script)
+    assert page.locator('#small').get_attribute('aria-hidden') is None
+    assert page.locator('#small').get_attribute('tabindex') is None
+    assert page.evaluate('window.paid') is None
+    page.evaluate("""() => document.body.insertAdjacentHTML('beforeend',
+      '<p id="terms">Accetto i termini di uso di Omio</p>'+
+      '<div id="points"><a href="#promotion"><span>Guadagna 2 volte i RevPoints</span></a></div>'+
+      '<iframe id="named-promo" title="Guadagna 2x RevPoints" src="https://revolut.com/promo"></iframe>'+
+      '<button id="submit-points">Guadagna 2 volte i RevPoints</button>')""")
+    result=json.loads(page.evaluate(script))
+    assert result['promotions']>=2
+    assert page.locator('#points').get_attribute('aria-hidden')=='true'
+    assert page.locator('#named-promo').get_attribute('aria-hidden')=='true'
+    assert page.locator('#terms').get_attribute('aria-hidden') is None
+    assert page.locator('#submit-points').get_attribute('aria-hidden') is None
+    assert page.locator('#large').get_attribute('aria-hidden') is None
+    assert page.locator('#points a').get_attribute('tabindex')=='-1'
+    assert page.evaluate('window.paid') is None
     page.evaluate("document.body.insertAdjacentHTML('beforeend','<div aria-modal=\"true\">Modal</div>')")
     assert json.loads(page.evaluate(script))['status'] == 'modal'
     page.goto('https://www.paypal.com/checkout')

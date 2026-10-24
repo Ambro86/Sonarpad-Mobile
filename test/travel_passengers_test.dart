@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:sonarpad_mobile_starter/widgets/universal_accessible_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -230,7 +231,25 @@ void main() {
       expect(draft.values['0.dateOfBirth-0'], '1986-06-07');
       expect(row(tester, '0.countryOfResidence-0').kind, 'slider');
       draft.values['0.countryOfResidence-0'] = 'IT';
+      final inputList = tester.element(
+        find.byType(UniversalAccessibleList).last,
+      );
       await next(tester);
+      expect(
+        identical(
+          inputList,
+          tester.element(find.byType(UniversalAccessibleList).last),
+        ),
+        isFalse,
+      );
+      expect(
+        tester
+            .widget<UniversalAccessibleList>(
+              find.byType(UniversalAccessibleList).last,
+            )
+            .initialFocusId,
+        'review-passenger-0',
+      );
       expect(service.submitted, isNull);
       expect(
         row(tester, 'review-0.email-0').title,

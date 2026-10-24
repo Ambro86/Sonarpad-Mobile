@@ -41,10 +41,12 @@ Widget _page(
   String title,
   List<AccessibleListRow> rows, {
   String? initialFocusId,
+  Key? listKey,
 }) => Scaffold(
   appBar: SonarpadAppBar(title: Text(title)),
   body: SafeArea(
     child: UniversalAccessibleList(
+      key: listKey,
       initialFocusId: initialFocusId,
       sections: [AccessibleListSection(rows: rows)],
       padding: const EdgeInsets.all(16),
@@ -844,62 +846,72 @@ class _TravelFaresScreenState extends State<_TravelFaresScreen> {
       final heading =
           '${t.t('fares')} — ${t.t('group')} ${_selected.length + 1}';
       final focusId = 'fare-step-${_selected.length}';
-      return _page(heading, [
+      return _page(
+        heading,
+        [
+          AccessibleListRow(
+            id: focusId,
+            title: heading,
+            kind: 'header',
+            accessibilityButtonTrait: false,
+          ),
+          for (final offer in offers)
+            _action(
+              'offer-${offer['offer_choice']}',
+              '${(offer['fare'] as List? ?? []).map((f) => _plain(f['title'] ?? '')).join(', ')}. ${_money(offer['price'], widget.query.currency, t)}',
+              () => setState(() => _selected.add(offer)),
+              subtitle: _fareDetails(offer),
+            ),
+          if (_selected.isNotEmpty)
+            _action(
+              'previous',
+              t.t('previous'),
+              () => setState(() => _selected.removeLast()),
+            ),
+        ],
+        initialFocusId: focusId,
+        listKey: ValueKey(focusId),
+      );
+    }
+    return _page(
+      t.t('handoff'),
+      [
         AccessibleListRow(
-          id: focusId,
-          title: heading,
+          id: 'fare-review-heading',
+          title: t.t('handoff'),
           kind: 'header',
           accessibilityButtonTrait: false,
         ),
-        for (final offer in offers)
-          _action(
-            'offer-${offer['offer_choice']}',
-            '${(offer['fare'] as List? ?? []).map((f) => _plain(f['title'] ?? '')).join(', ')}. ${_money(offer['price'], widget.query.currency, t)}',
-            () => setState(() => _selected.add(offer)),
-            subtitle: _fareDetails(offer),
+        for (var i = 0; i < widget.journeys.length; i++)
+          _info(
+            'summary-$i',
+            _journey(widget.journeys[i], widget.query.currency, t),
           ),
-        if (_selected.isNotEmpty)
-          _action(
-            'previous',
-            t.t('previous'),
-            () => setState(() => _selected.removeLast()),
+        for (var i = 0; i < _selected.length; i++)
+          _info(
+            'fare-$i',
+            '${t.t('fare')} ${i + 1}: ${_money(_selected[i]['price'], widget.query.currency, t)}\n${_fareDetails(_selected[i])}'
+                .trim(),
           ),
-      ], initialFocusId: focusId);
-    }
-    return _page(t.t('handoff'), [
-      AccessibleListRow(
-        id: 'fare-review-heading',
-        title: t.t('handoff'),
-        kind: 'header',
-        accessibilityButtonTrait: false,
-      ),
-      for (var i = 0; i < widget.journeys.length; i++)
-        _info(
-          'summary-$i',
-          _journey(widget.journeys[i], widget.query.currency, t),
-        ),
-      for (var i = 0; i < _selected.length; i++)
-        _info(
-          'fare-$i',
-          '${t.t('fare')} ${i + 1}: ${_money(_selected[i]['price'], widget.query.currency, t)}\n${_fareDetails(_selected[i])}'
-              .trim(),
-        ),
-      _info('notice', t.t('handoffInfo')),
-      if (_message != null) _info('error', _message!),
-      if (_url != null)
-        _action(
-          'open',
-          t.t(_onsite ? 'continue' : 'open'),
-          _onsite ? _enterPassengers : _open,
-        )
-      else
-        _action(
-          'continue',
-          t.t(_busy ? 'working' : 'continue'),
-          _continue,
-          enabled: !_busy && !_attempted && _selected.isNotEmpty,
-        ),
-    ], initialFocusId: 'fare-review-heading');
+        _info('notice', t.t('handoffInfo')),
+        if (_message != null) _info('error', _message!),
+        if (_url != null)
+          _action(
+            'open',
+            t.t(_onsite ? 'continue' : 'open'),
+            _onsite ? _enterPassengers : _open,
+          )
+        else
+          _action(
+            'continue',
+            t.t(_busy ? 'working' : 'continue'),
+            _continue,
+            enabled: !_busy && !_attempted && _selected.isNotEmpty,
+          ),
+      ],
+      initialFocusId: 'fare-review-heading',
+      listKey: const ValueKey('fare-review'),
+    );
   }
 }
 
