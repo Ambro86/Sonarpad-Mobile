@@ -6,6 +6,34 @@ import 'dart:math' as math;
 /// This file deliberately contains only deterministic logic so every recovery
 /// path can be unit-tested without FFmpeg, Gemini, ONNX Runtime or a device.
 class AudioDescriptionFallbacks {
+  /// Only called for rejected cues, after normal placements have been reserved.
+  /// One native synthesis attempt; the estimate never replaces the real check.
+  static Future<({double speed, double duration, double start})?> recoverNativeTts({
+    required double baseSpeed,
+    required double originalDuration,
+    required double? Function(double duration) chooseStart,
+    required Future<double> Function(double speed) synthesize,
+  }) async {
+    if (!baseSpeed.isFinite || baseSpeed <= 0 ||
+        !originalDuration.isFinite || originalDuration <= 0) {
+      return null;
+    }
+    for (final factor in [1.10, 1.15]) {
+      // Match Edge's integer percentage and the existing native speed limits.
+      final speed = ((baseSpeed * factor * 100 + 1e-9).floor() / 100)
+          .clamp(0.5, 2.0).toDouble();
+      if (speed <= baseSpeed ||
+          chooseStart(originalDuration / (speed / baseSpeed)) == null) {
+        continue;
+      }
+      final duration = await synthesize(speed);
+      if (!duration.isFinite || duration <= 0) return null;
+      final start = chooseStart(duration);
+      return start == null ? null : (speed: speed, duration: duration, start: start);
+    }
+    return null;
+  }
+
   AudioDescriptionFallbacks._();
 
   static const int transientRetryDelaySeconds = 5;

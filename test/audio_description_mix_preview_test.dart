@@ -108,6 +108,30 @@ void main() {
     if (await root.exists()) await root.delete(recursive: true);
   });
 
+  test('saved native speed reaches preview and export, then resets for next cue', () async {
+    final source = await _video(root, 'native-speed', duration: 16);
+    final first = _project(root, source.path, sourceDuration: 16, cue: 2);
+    final second = _project(root, source.path, sourceDuration: 16, cue: 8);
+    final data = first.toJson();
+    final entries = data['descriptions'] as List;
+    (entries.first as Map)['mobile_tts_speed_override'] = 1.1;
+    final next = Map<String, Object?>.from(second.descriptions.first.toJson());
+    next['id'] = 2;
+    entries.add(next);
+    await File(first.projectPath).writeAsString(jsonEncode(data));
+    final project = await service.loadEditableProject(first.projectPath);
+    await service.previewProjectDescription(project: project, index: 0, text: _phrase);
+    expect(ttsCalls.where((c) => c.method == 'setSpeechRate').single.arguments, 0.55);
+    ttsCalls.clear();
+    final exported = await service.reexportEditableProject(project: project);
+    expect(ttsCalls.where((c) => c.method == 'setSpeechRate').map((c) => c.arguments),
+        [0.5, 0.55, 0.5]);
+    expect(await File(exported.mp3Path).length(), greaterThan(0));
+    final restored = await service.loadEditableProject(first.projectPath);
+    expect(restored.descriptions.first.ttsSpeedOverride, 1.1);
+    expect(restored.descriptions.last.ttsSpeedOverride, isNull);
+  }, skip: skip);
+
   test('real preview and reexport share film gain, narration level and ducking', () async {
     final source = await _video(root, 'film', duration: 36);
     final filmReference = await _encodedTone(root, 440, 0.2, 192);

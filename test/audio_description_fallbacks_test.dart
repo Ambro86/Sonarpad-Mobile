@@ -2,6 +2,61 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:sonarpad_mobile_starter/services/audio_description_fallbacks.dart';
 
 void main() {
+  group('native TTS speed recovery', () {
+    for (final c in <(double, double, double?, bool)>[
+      (3.2, 2.9, 1.1, true), (3.4, 2.95, 1.15, true),
+      (3.5, 2.9, null, false), (3.2, 3.1, 1.1, false),
+      (3.2, 0, 1.1, false), (3.2, double.nan, 1.1, false),
+    ]) {
+      test('original=${c.$1} actual=${c.$2}', () async {
+        final calls = <double>[];
+        final recovered = await AudioDescriptionFallbacks.recoverNativeTts(
+          baseSpeed: 1, originalDuration: c.$1,
+          chooseStart: (duration) => duration <= 3 ? 1 : null,
+          synthesize: (speed) async { calls.add(speed); return c.$2; },
+        );
+        expect(calls, c.$3 == null ? isEmpty : [c.$3]);
+        expect(recovered != null, c.$4);
+        if (recovered != null) {
+          expect(recovered.speed, c.$3);
+          expect(recovered.duration, c.$2);
+          expect(recovered.start, 1);
+        }
+      });
+    }
+    test('maximum native speed avoids a useless retry', () async {
+      expect(await AudioDescriptionFallbacks.recoverNativeTts(
+        baseSpeed: 2, originalDuration: 3.2,
+        chooseStart: (duration) => duration <= 3 ? 1 : null,
+        synthesize: (_) async => throw StateError('already at maximum speed'),
+      ), isNull);
+    });
+    test('reserved space does not trigger synthesis', () async {
+      expect(await AudioDescriptionFallbacks.recoverNativeTts(
+        baseSpeed: 1, originalDuration: 3.2,
+        chooseStart: (_) => null,
+        synthesize: (_) async => throw StateError('must not synthesize'),
+      ), isNull);
+    });
+    test('speed is relative to current setting', () async {
+      final recovered = await AudioDescriptionFallbacks.recoverNativeTts(
+        baseSpeed: 1.2, originalDuration: 3.2,
+        chooseStart: (duration) => duration <= 3 ? 1 : null,
+        synthesize: (speed) async { expect(speed, closeTo(1.32, 0.00001)); return 2.9; },
+      );
+      expect(recovered, isNotNull);
+    });
+    test('synthesis errors propagate without another speed attempt', () async {
+      var calls = 0;
+      await expectLater(AudioDescriptionFallbacks.recoverNativeTts(
+        baseSpeed: 1, originalDuration: 3.2,
+        chooseStart: (duration) => duration <= 3 ? 1 : null,
+        synthesize: (_) async { calls++; throw StateError('cancelled'); },
+      ), throwsStateError);
+      expect(calls, 1);
+    });
+  });
+
   group('narration restarts reuse interval fallback', () {
     List<List<double>> ranges(List<AdTimeRange> pauses, {double start = 0, double end = 180}) =>
         AudioDescriptionFallbacks.narrationRestartRanges(pauses, start, end)

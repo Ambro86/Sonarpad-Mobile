@@ -3,6 +3,7 @@
     "version": "0.5.2",
     "date": "2026-10-26",
     "it": [
+      "Audiodescrizioni: se una frase non entra nello spazio disponibile, Sonarpad prova a rigenerarla con la velocità della sintesi aumentata del 10% o, se necessario, del 15%, verificando la durata reale. La velocità viene salvata solo per quella descrizione e mantenuta nelle modifiche, nelle anteprime e nelle esportazioni successive; le altre frasi restano invariate.",
       "Migliorate le audiodescrizioni: attivando la lettura dei testi sullo schermo, vengono letti anche i titoli di coda che Gemini riesce a identificare.",
       "Migliorata la sincronizzazione delle audiodescrizioni: corretto un problema per cui, dopo lunghi tratti senza spazio per la narrazione, Gemini poteva continuare a descrivere scene precedenti anziché seguire quella attuale.",
       "È arrivata su Sonarpad la ricerca viaggi! Da adesso potete cercare viaggi in treno, aereo e pullman tra le compagnie italiane e internazionali disponibili su Omio. La funzione vi accompagna con schermate accessibili dalla ricerca alla compilazione dei dati, fino al pagamento sul sito Omio. È disponibile in fase di prova, per il momento solo con l’interfaccia italiana: le vostre segnalazioni ci aiuteranno a migliorarla.",
@@ -30,6 +31,7 @@
       "Nei Preferiti di SonarTube e SonarMusic puoi spostare le voci in alto, in basso o a una posizione scelta indicando prima di quale preferito inserirle, e ordinarle alfabeticamente. I comandi sono disponibili come azioni secondarie e pulsanti visivi esclusi dalla navigazione dello screen reader. L’ordine viene salvato."
     ],
     "en": [
+      "Audio descriptions: if a sentence does not fit the available gap, Sonarpad tries regenerating it with the speech engine at 10% or, if needed, 15% higher speed, checking its actual duration. The speed is saved only for that description and retained for edits, previews and later exports; other sentences remain unchanged.",
       "Improved audio descriptions: enabling on-screen text reading now also reads end credits that Gemini can identify.",
       "Improved audio description timing: fixed an issue where, after long stretches without room for narration, Gemini could keep describing earlier scenes instead of following the current scene.",
       "Fixed news dates and times and some feed addresses that showed old articles. When the publication date is unavailable, the refresh time is no longer shown instead. Added Türkiye Gazetesi, İHA and TGRT Haber to the Turkish news sources.",
@@ -54,6 +56,7 @@
       "SonarTube and SonarMusic favorites can be moved up, down or to a chosen position before another favorite, and sorted alphabetically. Commands are available as secondary actions and visual buttons excluded from screen reader navigation. The order is saved."
     ],
     "fr": [
+      "Audiodescriptions : si une phrase ne tient pas dans le créneau disponible, Sonarpad tente de la régénérer avec une vitesse de synthèse augmentée de 10 % ou, si nécessaire, de 15 %, puis vérifie sa durée réelle. Cette vitesse est enregistrée uniquement pour cette description et conservée lors des modifications, des aperçus et des exportations ultérieures ; les autres phrases restent inchangées.",
       "Amélioration des audiodescriptions : lorsque la lecture des textes à l’écran est activée, les textes du générique de fin que Gemini parvient à identifier sont également lus.",
       "Amélioration de la synchronisation des audiodescriptions : correction d’un problème qui pouvait amener Gemini, après de longs passages sans place pour la narration, à continuer de décrire des scènes précédentes au lieu de suivre la scène actuelle.",
       "Correction des dates et heures des actualités et de certaines adresses affichant des articles anciens. Lorsque la date de publication est indisponible, l’heure d’actualisation ne la remplace plus. Ajout de Türkiye Gazetesi, İHA et TGRT Haber aux sources turques.",
@@ -78,6 +81,7 @@
       "Les favoris de SonarTube et SonarMusic peuvent être déplacés vers le haut, vers le bas ou avant un favori choisi, et triés par ordre alphabétique. Les commandes sont disponibles comme actions secondaires et boutons visuels exclus de la navigation du lecteur d’écran. L’ordre est enregistré."
     ],
     "es": [
+      "Audiodescripciones: si una frase no cabe en el intervalo disponible, Sonarpad intenta regenerarla con la velocidad de síntesis aumentada un 10 % o, si es necesario, un 15 %, comprobando su duración real. La velocidad se guarda solo para esa descripción y se conserva al editarla, previsualizarla y exportarla de nuevo; las demás frases no cambian.",
       "Mejoradas las audiodescripciones: al activar la lectura de textos en pantalla, también se leen los créditos finales que Gemini puede identificar.",
       "Mejorada la sincronización de las audiodescripciones: corregido un problema por el que, tras largos tramos sin espacio para la narración, Gemini podía seguir describiendo escenas anteriores en lugar de la escena actual.",
       "Corregidas las fechas y horas de las noticias y algunas direcciones que mostraban artículos antiguos. Si no hay fecha de publicación, ya no se muestra en su lugar la hora de actualización. Añadidas Türkiye Gazetesi, İHA y TGRT Haber a las fuentes turcas.",
@@ -102,6 +106,7 @@
       "Los favoritos de SonarTube y SonarMusic se pueden mover arriba, abajo o antes de otro favorito elegido, y ordenar alfabéticamente. Los comandos están disponibles como acciones secundarias y botones visuales excluidos de la navegación del lector de pantalla. El orden se guarda."
     ],
     "pt": [
+      "Audiodescrições: se uma frase não couber no intervalo disponível, o Sonarpad tenta gerá-la novamente com a velocidade da síntese aumentada em 10% ou, se necessário, 15%, verificando a duração real. A velocidade é guardada apenas para essa descrição e mantida nas alterações, pré-visualizações e exportações seguintes; as outras frases permanecem inalteradas.",
       "Melhoradas as audiodescrições: ao ativar a leitura de textos no ecrã, passam também a ser lidos os créditos finais que o Gemini consegue identificar.",
       "Melhorada a sincronização das audiodescrições: corrigido um problema em que, após longos trechos sem espaço para a narração, o Gemini podia continuar a descrever cenas anteriores em vez da cena atual.",
       "Corrigidas as datas e horas das notícias e alguns endereços que mostravam artigos antigos. Quando a data de publicação não está disponível, a hora de atualização deixa de ser apresentada em seu lugar. Adicionadas Türkiye Gazetesi, İHA e TGRT Haber às fontes turcas.",
@@ -126,6 +131,7 @@
       "Os favoritos do SonarTube e do SonarMusic podem ser movidos para cima, para baixo ou antes de outro favorito escolhido, e ordenados alfabeticamente. Os comandos estão disponíveis como ações secundárias e botões visuais excluídos da navegação do leitor de ecrã. A ordem é guardada."
     ],
     "pt_BR": [
+      "Audiodescrições: se uma frase não couber no intervalo disponível, o Sonarpad tenta gerá-la novamente com a velocidade da síntese aumentada em 10% ou, se necessário, 15%, verificando a duração real. A velocidade é salva apenas para essa descrição e mantida nas edições, prévias e exportações seguintes; as outras frases permanecem inalteradas.",
       "Audiodescrições aprimoradas: ao ativar a leitura dos textos na tela, também são lidos os créditos finais que o Gemini consegue identificar.",
       "Melhorada a sincronização das audiodescrições: corrigido um problema em que, após longos trechos sem espaço para a narração, o Gemini podia continuar descrevendo cenas anteriores em vez da cena atual.",
       "Corrigidas as datas e os horários das notícias e alguns endereços que mostravam artigos antigos. Quando a data de publicação não está disponível, o horário de atualização não é mais exibido em seu lugar. Adicionadas Türkiye Gazetesi, İHA e TGRT Haber às fontes turcas.",
@@ -150,6 +156,7 @@
       "Os favoritos do SonarTube e do SonarMusic podem ser movidos para cima, para baixo ou antes de outro favorito escolhido, e ordenados alfabeticamente. Os comandos estão disponíveis como ações secundárias e botões visuais excluídos da navegação do leitor de tela. A ordem é salva."
     ],
     "pl": [
+      "Audiodeskrypcja: jeśli zdanie nie mieści się w dostępnej przerwie, Sonarpad próbuje wygenerować je ponownie z prędkością syntezy zwiększoną o 10% lub, w razie potrzeby, o 15%, sprawdzając rzeczywisty czas trwania. Prędkość jest zapisywana tylko dla tego opisu i zachowywana przy edycji, odsłuchu i kolejnych eksportach; pozostałe zdania pozostają bez zmian.",
       "Ulepszono audiodeskrypcję: po włączeniu odczytywania tekstu na ekranie odczytywane są również napisy końcowe, które Gemini potrafi rozpoznać.",
       "Poprawiono synchronizację audiodeskrypcji: usunięto problem, przez który po dłuższych fragmentach bez miejsca na narrację Gemini mógł nadal opisywać wcześniejsze sceny zamiast bieżącej.",
       "Poprawiono daty i godziny wiadomości oraz niektóre adresy wyświetlające stare artykuły. Gdy data publikacji jest niedostępna, czas odświeżenia nie jest już pokazywany zamiast niej. Dodano Türkiye Gazetesi, İHA i TGRT Haber do tureckich źródeł wiadomości.",
@@ -174,6 +181,7 @@
       "Ulubione w SonarTube i SonarMusic można przesuwać w górę, w dół lub przed wybraną pozycję oraz sortować alfabetycznie. Polecenia są dostępne jako dodatkowe czynności i przyciski wizualne pomijane przez czytnik ekranu. Kolejność jest zapisywana."
     ],
     "cs": [
+      "Zvukové popisy: pokud se věta nevejde do dostupné mezery, Sonarpad ji zkusí znovu vytvořit hlasovou syntézou s rychlostí vyšší o 10 %, případně o 15 %, a ověří skutečnou délku. Rychlost se ukládá pouze pro tento popis a zachová se při úpravách, náhledech i dalších exportech; ostatní věty zůstávají beze změny.",
       "Vylepšen zvukový popis: při zapnutém čtení textu na obrazovce se nyní čtou také závěrečné titulky, které Gemini dokáže rozpoznat.",
       "Vylepšeno časování audiopopisu: opraven problém, kdy Gemini po delších úsecích bez prostoru pro komentář mohl nadále popisovat předchozí scény místo aktuální scény.",
       "Opraveny datumy a časy zpráv a některé adresy zobrazující staré články. Pokud datum publikace není dostupné, již se místo něj nezobrazuje čas aktualizace. Mezi turecké zdroje byly přidány Türkiye Gazetesi, İHA a TGRT Haber.",
@@ -198,6 +206,7 @@
       "Oblíbené položky v SonarTube a SonarMusic lze přesunout nahoru, dolů nebo před vybranou položku a seřadit abecedně. Příkazy jsou dostupné jako vedlejší akce a vizuální tlačítka vynechaná z navigace čtečky obrazovky. Pořadí se ukládá."
     ],
     "de": [
+      "Audiodeskriptionen: Passt ein Satz nicht in die verfügbare Lücke, versucht Sonarpad, ihn mit der Sprachsynthese bei 10 % oder nötigenfalls 15 % höherer Geschwindigkeit neu zu erzeugen, und prüft die tatsächliche Dauer. Die Geschwindigkeit wird nur für diese Beschreibung gespeichert und bei Änderungen, Vorschauen und späteren Exporten beibehalten; andere Sätze bleiben unverändert.",
       "Audiodeskriptionen verbessert: Bei aktivierter Vorlesefunktion für Bildschirmtexte werden nun auch die Abspanntexte vorgelesen, die Gemini erkennen kann.",
       "Die zeitliche Zuordnung von Audiodeskriptionen wurde verbessert: Ein Problem wurde behoben, bei dem Gemini nach längeren Passagen ohne Platz für die Beschreibung weiterhin frühere Szenen statt der aktuellen Szene beschreiben konnte.",
       "Datum und Uhrzeit von Nachrichten sowie einige Adressen mit veralteten Artikeln korrigiert. Bei fehlendem Veröffentlichungsdatum wird nicht mehr die Aktualisierungszeit angezeigt. Türkiye Gazetesi, İHA und TGRT Haber zu den türkischen Nachrichtenquellen hinzugefügt.",
@@ -222,6 +231,7 @@
       "Favoriten in SonarTube und SonarMusic können nach oben, nach unten oder vor einen ausgewählten Favoriten verschoben und alphabetisch sortiert werden. Die Befehle stehen als zusätzliche Aktionen und als visuelle, von der Screenreader-Navigation ausgeschlossene Schaltflächen zur Verfügung. Die Reihenfolge wird gespeichert."
     ],
     "zh_CN": [
+      "音频描述：如果一句描述无法放入可用的时间间隙，Sonarpad 会尝试以提高 10% 或必要时提高 15% 的语音合成速度重新生成，并检查实际时长。此速度仅保存于该条描述，在编辑、试听和后续导出时继续使用；其他句子保持不变。",
       "改进音频描述：启用屏幕文字朗读后，现在也会朗读 Gemini 能够识别的片尾字幕。",
       "改进了音频描述的时间同步：修复了在长时间没有旁白空间后，Gemini 可能继续描述先前场景而非当前场景的问题。",
       "修正了新闻日期、时间及部分显示旧文章的订阅地址。没有发布日期时，不再用刷新时间代替。土耳其新闻来源新增 Türkiye Gazetesi、İHA 和 TGRT Haber。",
@@ -246,6 +256,7 @@
       "SonarTube 和 SonarMusic 的收藏可向上、向下移动，移至指定收藏之前，或按字母顺序排序。这些命令提供次要操作和不参与屏幕阅读器导航的可视按钮，排序会被保存。"
     ],
     "uk": [
+      "Аудіоописи: якщо фраза не вміщується в доступний проміжок, Sonarpad пробує синтезувати її знову зі швидкістю, збільшеною на 10% або, за потреби, на 15%, перевіряючи фактичну тривалість. Швидкість зберігається лише для цього опису й використовується під час редагування, прослуховування та подальшого експорту; інші фрази не змінюються.",
       "Покращено аудіоопис: якщо ввімкнено читання тексту на екрані, тепер також озвучуються фінальні титри, які Gemini може розпізнати.",
       "Покращено синхронізацію аудіодескрипції: виправлено проблему, через яку після тривалих фрагментів без місця для опису Gemini міг продовжувати описувати попередні сцени замість поточної.",
       "Виправлено дати й час новин та деякі адреси, що показували старі статті. Якщо дата публікації недоступна, час оновлення більше не відображається замість неї. До турецьких джерел додано Türkiye Gazetesi, İHA та TGRT Haber.",
@@ -270,6 +281,7 @@
       "Обрані елементи SonarTube і SonarMusic можна переміщувати вгору, вниз або перед вибраним елементом і сортувати за абеткою. Команди доступні як додаткові дії та візуальні кнопки, виключені з навігації читача екрана. Порядок зберігається."
     ],
     "ro": [
+      "Descrieri audio: dacă o propoziție nu încape în intervalul disponibil, Sonarpad încearcă să o genereze din nou cu viteza sintezei vocale mărită cu 10% sau, dacă este necesar, cu 15%, verificând durata reală. Viteza este salvată doar pentru acea descriere și păstrată la editare, previzualizare și exporturile ulterioare; celelalte propoziții rămân neschimbate.",
       "Audiodescrieri îmbunătățite: când este activată citirea textelor de pe ecran, sunt citite și genericele de final pe care Gemini le poate identifica.",
       "Sincronizarea audiodescrierilor a fost îmbunătățită: s-a corectat o problemă din cauza căreia, după secvențe lungi fără loc pentru narațiune, Gemini putea continua să descrie scene anterioare în locul celei curente.",
       "Corectate datele și orele știrilor și unele adrese care afișau articole vechi. Când data publicării nu este disponibilă, ora actualizării nu mai este afișată în locul ei. Adăugate Türkiye Gazetesi, İHA și TGRT Haber la sursele turcești.",
@@ -294,6 +306,7 @@
       "Favoritele din SonarTube și SonarMusic pot fi mutate în sus, în jos sau înaintea unui favorit ales și sortate alfabetic. Comenzile sunt disponibile ca acțiuni secundare și butoane vizuale excluse din navigarea cititorului de ecran. Ordinea este salvată."
     ],
     "tr": [
+      "Sesli betimleme: Bir cümle kullanılabilir aralığa sığmazsa Sonarpad, konuşma sentezi hızını %10 veya gerekirse %15 artırarak cümleyi yeniden oluşturmayı dener ve gerçek süresini kontrol eder. Hız yalnızca o betimleme için kaydedilir; düzenleme, önizleme ve sonraki dışa aktarmalarda korunur. Diğer cümleler değişmez.",
       "Sesli betimlemeler iyileştirildi: ekrandaki metinleri okuma seçeneği etkinleştirildiğinde Gemini'nin tanıyabildiği kapanış jeneriği de okunur.",
       "Sesli betimlemelerin zamanlaması iyileştirildi: anlatım için yer olmayan uzun bölümlerden sonra Gemini'nin mevcut sahne yerine önceki sahneleri anlatmaya devam etmesine yol açabilen bir sorun giderildi.",
       "Haberlerin tarih ve saatleri ile eski yazıları gösteren bazı kaynak adresleri düzeltildi. Yayın tarihi bulunamadığında artık bunun yerine yenileme saati gösterilmiyor. Türkçe haber kaynaklarına Türkiye Gazetesi, İHA ve TGRT Haber eklendi.",

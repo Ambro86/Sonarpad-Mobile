@@ -259,7 +259,14 @@ void main() {
       final fareList = tester.element(
         find.byType(UniversalAccessibleList).last,
       );
-      await row(tester, 'offer-fare-1').onActivate!();
+      final selectFare = row(tester, 'offer-fare-1').onActivate!;
+      await selectFare();
+      await selectFare(); // Ignore duplicate activation during the transition.
+      await tester.pump();
+      expect(find.text('Caricamento in corso…'), findsOneWidget);
+      expect(find.byType(LinearProgressIndicator), findsOneWidget);
+      expect(find.byType(UniversalAccessibleList), findsNothing);
+
       await tester.pumpAndSettle();
       expect(
         identical(

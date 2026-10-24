@@ -762,6 +762,27 @@ class _TravelFaresScreen extends StatefulWidget {
 }
 
 class _TravelFaresScreenState extends State<_TravelFaresScreen> {
+  Timer? _fareTransition;
+  bool _changingFare = false;
+
+  void _selectFare(Map<String, dynamic> offer) {
+    if (_changingFare) return;
+    setState(() => _changingFare = true);
+    _fareTransition = Timer(const Duration(milliseconds: 700), () {
+      if (!mounted) return;
+      setState(() {
+        _selected.add(offer);
+        _changingFare = false;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _fareTransition?.cancel();
+    super.dispose();
+  }
+
   final List<Map<String, dynamic>> _selected = [];
   String? _url, _message;
   bool _onsite = false;
@@ -840,6 +861,29 @@ class _TravelFaresScreenState extends State<_TravelFaresScreen> {
   @override
   Widget build(BuildContext context) {
     final t = _strings(context);
+    if (_changingFare) {
+      return Scaffold(
+        appBar: SonarpadAppBar(title: Text(t.t('fares'))),
+        body: SafeArea(
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const ExcludeSemantics(child: LinearProgressIndicator()),
+                  const SizedBox(height: 24),
+                  Semantics(
+                    liveRegion: true,
+                    child: Text(t.t('passengerLoading')),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
     if (_selected.length < widget.groups.length) {
       final group = widget.groups[_selected.length];
       final offers = (group['offers'] as List).cast<Map<String, dynamic>>();
@@ -859,7 +903,7 @@ class _TravelFaresScreenState extends State<_TravelFaresScreen> {
             _action(
               'offer-${offer['offer_choice']}',
               '${(offer['fare'] as List? ?? []).map((f) => _plain(f['title'] ?? '')).join(', ')}. ${_money(offer['price'], widget.query.currency, t)}',
-              () => setState(() => _selected.add(offer)),
+              () => _selectFare(offer),
               subtitle: _fareDetails(offer),
             ),
           if (_selected.isNotEmpty)

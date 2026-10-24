@@ -174,6 +174,7 @@ class AudioDescriptionProjectInterval {
 
 class AudioDescriptionProjectItem {
   const AudioDescriptionProjectItem({
+    this.ttsSpeedOverride,
     required this.id,
     required this.text,
     required this.originalText,
@@ -191,6 +192,7 @@ class AudioDescriptionProjectItem {
     required this.duckEndSec,
   });
 
+  final double? ttsSpeedOverride;
   final int id;
   final String text;
   final String originalText;
@@ -208,6 +210,7 @@ class AudioDescriptionProjectItem {
   final double? duckEndSec;
 
   AudioDescriptionProjectItem copyWith({
+    bool clearTtsSpeedOverride = false,
     String? text,
     String? renderedText,
     bool? modified,
@@ -220,6 +223,7 @@ class AudioDescriptionProjectItem {
     bool clearDuck = false,
   }) =>
       AudioDescriptionProjectItem(
+        ttsSpeedOverride: clearTtsSpeedOverride ? null : ttsSpeedOverride,
         id: id,
         text: text ?? this.text,
         originalText: originalText,
@@ -239,6 +243,7 @@ class AudioDescriptionProjectItem {
       );
 
   Map<String, Object?> toJson() => <String, Object?>{
+        if (ttsSpeedOverride != null) 'mobile_tts_speed_override': ttsSpeedOverride,
         'id': id,
         'text': text,
         'original_text': originalText,
@@ -4734,7 +4739,7 @@ $nonverbalInstruction''';
           }
         }
 
-        result.add(_Placement.excluded(item, 'no_safe_space_after_exact_tts'));
+        result.add(_Placement.excluded(item, 'no_safe_space_after_exact_tts', duration));
         try {
           await target.delete();
         } catch (_) {}
@@ -4747,6 +4752,63 @@ $nonverbalInstruction''';
           'Audio description mobile: TTS failed slot=${item.slotId} error=$error',
         );
         result.add(_Placement.excluded(item, 'tts_error'));
+      }
+    }
+    if (!allowDialogueOverlap) {
+      // Preserve all normal placements, including anchors of extended pauses.
+      final retryReserved = <(double, double)>[
+        ...reservedRanges,
+        for (final slot in fallbackSlots)
+          if (usedExtendedAnchorIds.contains(slot.id)) (slot.start, slot.end),
+      ];
+      for (var i = 0; i < result.length; i++) {
+        final rejected = result[i];
+        if (rejected.reason != 'no_safe_space_after_exact_tts') continue;
+        _checkCancel();
+        final item = rejected.description;
+        final ext = settings.ttsEngine == 'system'
+            ? (Platform.isIOS ? 'caf' : 'wav') : 'mp3';
+        final target = File(p.join(ttsDir.path, 'retry_$i.$ext'));
+        try {
+          final recovery = await AudioDescriptionFallbacks.recoverNativeTts(
+            baseSpeed: speed,
+            originalDuration: rejected.ttsDuration,
+            chooseStart: (duration) => _chooseWindowsStylePlacement(
+              slots: fallbackSlots, reserved: retryReserved,
+              preferredSlotId: item.slotId, desiredStart: item.requestedStart,
+              requiredDuration: duration,
+            ),
+            synthesize: (retrySpeed) async {
+              if (settings.ttsEngine == 'system') {
+                await flutterTts.setSpeechRate(retrySpeed * 0.5);
+              }
+              await _synthesizeTtsWithFallback(
+                settings: settings, flutterTts: flutterTts,
+                text: AudioDescriptionFallbacks.normalizePronunciationText(
+                  voiceDictionary.applyToText(item.text, dictionaryEntries)),
+                target: target, speed: retrySpeed, pitch: pitch,
+              );
+              return _audioDuration(target.path);
+            },
+          );
+          if (recovery != null) {
+            result[i] = _Placement.included(
+              description: item, ttsPath: target.path,
+              ttsDuration: recovery.duration, originalStart: recovery.start,
+              extraPause: 0, ttsSpeedOverride: recovery.speed,
+            );
+            retryReserved.add((recovery.start, recovery.start + recovery.duration + 0.001));
+          } else if (await target.exists()) {
+            await target.delete();
+          }
+          await AppLogger.log('Audio description mobile: native-speed fallback '
+              'slot=${item.slotId} accepted=${recovery != null} '
+              'speed=${recovery?.speed} duration=${recovery?.duration}');
+        } catch (error) {
+          _checkCancel();
+          await AppLogger.log('Audio description mobile: native-speed fallback failed '
+              'slot=${item.slotId} error=$error');
+        }
       }
     }
     return result;
@@ -5294,6 +5356,7 @@ $nonverbalInstruction''';
       final placement = inserted[index];
       final item = placement.description;
       descriptions.add(AudioDescriptionProjectItem(
+        ttsSpeedOverride: placement.ttsSpeedOverride,
         id: index,
         text: item.text,
         originalText: item.text,
@@ -5472,6 +5535,9 @@ $nonverbalInstruction''';
             ? boolean(item['extended_pause'])
             : extendedAmount > 0.0001;
         descriptions.add(AudioDescriptionProjectItem(
+          ttsSpeedOverride: (item['mobile_tts_speed_override'] as num?)?.toDouble() ??
+              ((item['tts_rate_override'] as num?) == null ? null :
+                  1.0 + (item['tts_rate_override'] as num).toDouble() / 100.0),
           id: (item['id'] as num?)?.toInt() ?? index,
           text: text,
           originalText: string(item['original_text'], text),
@@ -6030,7 +6096,7 @@ $nonverbalInstruction''';
     try {
       if (project.ttsEngine == 'system') {
         await flutterTts.awaitSpeakCompletion(true);
-        await flutterTts.setSpeechRate(project.ttsSpeed * 0.5);
+        await flutterTts.setSpeechRate((project.descriptions[index].ttsSpeedOverride ?? project.ttsSpeed) * 0.5);
         await flutterTts.setPitch(project.ttsPitch);
         await flutterTts.setVolume(1.0);
         if (project.systemVoice != null && project.systemVoice!.trim().isNotEmpty) {
@@ -6051,7 +6117,7 @@ $nonverbalInstruction''';
         flutterTts: flutterTts,
         text: spoken,
         target: target,
-        speed: project.ttsSpeed,
+        speed: (project.descriptions[index].ttsSpeedOverride ?? project.ttsSpeed),
         pitch: project.ttsPitch,
       );
       final duration = await _audioDuration(target.path);
@@ -6130,6 +6196,7 @@ $nonverbalInstruction''';
     _resetCancellation();
     final voice = ttsEngine == 'edge' ? edgeVoice : (systemVoice ?? '');
     final candidate = project.copyWith(
+      descriptions: project.descriptions.map((item) => item.copyWith(clearTtsSpeedOverride: true)).toList(),
       ttsEngine: ttsEngine,
       ttsVoice: voice,
       edgeLanguage: edgeLanguage,
@@ -6197,6 +6264,7 @@ $nonverbalInstruction''';
     }
     final placements = <_Placement>[];
     final updatedItems = <AudioDescriptionProjectItem>[];
+    var currentSystemSpeed = project.ttsSpeed;
     try {
       final dictionary = await VoiceDictionaryService().loadEntries();
       for (var i = 0; i < project.descriptions.length; i++) {
@@ -6216,12 +6284,17 @@ $nonverbalInstruction''';
         final spoken = AudioDescriptionFallbacks.normalizePronunciationText(
           VoiceDictionaryService().applyToText(item.text, dictionary),
         );
+        final itemSpeed = item.ttsSpeedOverride ?? project.ttsSpeed;
+        if (project.ttsEngine == 'system' && itemSpeed != currentSystemSpeed) {
+          await flutterTts.setSpeechRate(itemSpeed * 0.5);
+          currentSystemSpeed = itemSpeed;
+        }
         await _synthesizeTtsWithFallback(
           settings: _projectTtsSettings(project),
           flutterTts: flutterTts,
           text: spoken,
           target: target,
-          speed: project.ttsSpeed,
+          speed: item.ttsSpeedOverride ?? project.ttsSpeed,
           pitch: project.ttsPitch,
         );
         final duration = await _audioDuration(target.path);
@@ -7885,6 +7958,7 @@ class _GeneratedDescription {
 
 class _Placement {
   _Placement.included({
+    this.ttsSpeedOverride,
     required this.description,
     required this.ttsPath,
     required this.ttsDuration,
@@ -7895,15 +7969,17 @@ class _Placement {
         finalStart = 0,
         finalEnd = 0;
 
-  _Placement.excluded(this.description, this.reason)
-      : included = false,
+  _Placement.excluded(this.description, this.reason, [double duration = 0])
+      : ttsSpeedOverride = null,
+        included = false,
         ttsPath = null,
-        ttsDuration = 0,
+        ttsDuration = duration,
         originalStart = description.slotStart,
         extraPause = 0,
         finalStart = 0,
         finalEnd = 0;
 
+  final double? ttsSpeedOverride;
   final _GeneratedDescription description;
   final bool included;
   final String? reason;

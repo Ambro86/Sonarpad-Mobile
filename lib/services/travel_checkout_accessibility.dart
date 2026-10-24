@@ -18,6 +18,24 @@ const travelCheckoutAccessibilityScript = r'''
   let radios=0,decorations=0,promotions=0,frames=0,wrappers=0;
   const set = (el,key,value) => {if(el.getAttribute(key)!==value) el.setAttribute(key,value);};
   const hide = el => {set(el,'aria-hidden','true');set(el,'tabindex','-1');};
+  const selectionState=window.__sonarpadPaymentSelection ||= {radios:new WeakSet(),listening:false,pending:false};
+  const syncSelection=()=>{
+    if(!['omio.com','www.omio.com'].includes(location.hostname) || !/\/checkout\/?$/.test(location.pathname)) return;
+    for(const radio of document.querySelectorAll('input[type="radio"]')) {
+      if(selectionState.radios.has(radio)) set(radio,'aria-checked',String(radio.checked));
+    }
+  };
+  if(!selectionState.listening) {
+    selectionState.listening=true;
+    // Read after Omio's focus/change handlers, including their microtasks.
+    // Never change checked, dispatch an event or trigger payment.
+    for(const event of ['focusin','input','change','click']) document.addEventListener(event,()=>{
+      if(selectionState.pending) return;
+      selectionState.pending=true;
+      requestAnimationFrame(()=>{selectionState.pending=false;syncSelection();});
+    },true);
+  }
+
   for (const radio of document.querySelectorAll('input[type="radio"]')) {
     const labels=[...(radio.labels || [])];
     const names=[radio.getAttribute('aria-label'),...labels.map(x=>x.textContent)]
@@ -27,6 +45,8 @@ const travelCheckoutAccessibilityScript = r'''
     const name=unique[0];
     // The live input retains native checked/disabled semantics and its handler.
     set(radio,'aria-label',known.get(name));
+    selectionState.radios.add(radio);
+    set(radio,'aria-checked',String(radio.checked));
     radios++;
     // Omio nests a native radio, separate label/title and logos in a link.
     // Keep the native input as the single payment selection control.

@@ -39,6 +39,7 @@ with sync_playwright() as p:
     page.locator('#card').check()
     page.evaluate(script)
     assert page.locator('#card').is_checked()
+    page.reload()
     # Structure from diagnostic 23: link > radio + separate label/heading + logos.
     page.set_content('''<form onsubmit="window.paid=true;return false">
       <a id="card-row" href="#card"><div><input id="c" type="radio" name="method"></div>
@@ -65,6 +66,18 @@ with sync_playwright() as p:
     page.evaluate(script)
     assert page.locator('#c').is_checked()
     assert page.locator('#card-row').get_attribute('href')=='#card'
+    # Omio can update selection after focus arrives. Sync the accessible state
+    # after that handler without rerunning the simplification script.
+    page.locator('#p').evaluate("el=>el.addEventListener('focus',()=>queueMicrotask(()=>{el.checked=true}))")
+    page.locator('#p').focus()
+    page.wait_for_function("document.getElementById('p').getAttribute('aria-checked')==='true' && document.getElementById('c').getAttribute('aria-checked')==='false'")
+    assert page.locator('#p').is_checked()
+    assert 'radio "PayPal" [checked]' in page.locator('body').aria_snapshot()
+    page.locator('#c').check()
+    page.wait_for_function("document.getElementById('p').getAttribute('aria-checked')==='false' && document.getElementById('c').getAttribute('aria-checked')==='true'")
+    assert not page.locator('#p').is_checked()
+    assert page.evaluate('window.paid') is None
+
     page.locator('#small').evaluate("el=>el.style.width='350px'")
     page.evaluate(script)
     assert page.locator('#small').get_attribute('aria-hidden') is None

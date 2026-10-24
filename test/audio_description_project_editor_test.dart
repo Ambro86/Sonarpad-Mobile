@@ -73,6 +73,30 @@ AudioDescriptionEditableProject sampleProject(String path) =>
     );
 
 void main() {
+  test('per-description native speed survives save, edit and reload', () async {
+    final dir = await Directory.systemTemp.createTemp('ad_native_speed_');
+    try {
+      final path = '${dir.path}/project.sonarpad-ad.json';
+      final map = sampleProject(path).toJson();
+      final items = map['descriptions'] as List;
+      (items.first as Map)['mobile_tts_speed_override'] = 1.1;
+      await File(path).writeAsString(jsonEncode(map));
+      final service = AiAudioDescriptionService();
+      final project = await service.loadEditableProject(path);
+      expect(project.descriptions.first.ttsSpeedOverride, 1.1);
+      expect(project.descriptions.last.ttsSpeedOverride, isNull);
+      final edited = project.descriptions.first.copyWith(text: 'Testo modificato');
+      expect(edited.ttsSpeedOverride, 1.1);
+      expect(edited.copyWith(clearTtsSpeedOverride: true).ttsSpeedOverride, isNull);
+      await service.saveEditableProject(project.copyWith(descriptions: [edited]));
+      final restored = await service.loadEditableProject(path);
+      expect(restored.descriptions.first.ttsSpeedOverride, 1.1);
+      expect(restored.descriptions.first.text, 'Testo modificato');
+    } finally {
+      await dir.delete(recursive: true);
+    }
+  });
+
   group('Windows-compatible project format', () {
     test('serializes format/version and Windows field names', () {
       final map = sampleProject('x.sonarpad-ad.json').toJson();
