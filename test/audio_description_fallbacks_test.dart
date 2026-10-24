@@ -196,6 +196,11 @@ void main() {
       '504 DEADLINE_EXCEEDED',
       '429 rate limit',
       'connection reset by peer',
+      'ClientException: Connection closed before full header was received, uri=https://sonarpad.com/sonarpad-ai/v1/generate',
+      'ClientException: Connection closed while receiving data',
+      'ClientException: Connection closed before full body was received',
+      'ClientException: peer closed connection without sending complete message body (incomplete chunked read)',
+      'DEADLINE EXPIRED',
       'connection refused',
       'network is unreachable',
       'temporary failure in name resolution',
@@ -222,6 +227,18 @@ void main() {
         isFalse,
       );
     });
+    for (final message in <String>[
+      'ClientException: HTTP request failed. Client is already closed.',
+      'HandshakeException: CERTIFICATE_VERIFY_FAILED',
+      'FormatException: Invalid JSON',
+      '400 INVALID_ARGUMENT invalid value: deadline expired',
+      '400 INVALID_ARGUMENT cannot find field: connection closed while receiving data',
+      'prepayment credits are depleted: deadline expired',
+    ]) {
+      test('permanent or local error is not retried: $message', () {
+        expect(AudioDescriptionFallbacks.isRetryableExceptionText(message), isFalse);
+      });
+    }
   });
 
   group('Gemini blocked and malformed response fallbacks', () {
