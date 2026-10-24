@@ -2,6 +2,39 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:sonarpad_mobile_starter/services/audio_description_fallbacks.dart';
 
 void main() {
+  group('narration restarts reuse interval fallback', () {
+    List<List<double>> ranges(List<AdTimeRange> pauses, {double start = 0, double end = 180}) =>
+        AudioDescriptionFallbacks.narrationRestartRanges(pauses, start, end)
+            .map((r) => <double>[r.start, r.end]).toList();
+
+    test('45 seconds without usable narration space', () {
+      expect(ranges(const [AdTimeRange(0, 10), AdTimeRange(55, 180)]),
+          [[0, 55], [55, 180]]);
+      expect(ranges(const [AdTimeRange(0, 10), AdTimeRange(54.99, 180)]), isEmpty);
+    });
+    test('short pauses do not reset the gap', () {
+      expect(ranges(const [AdTimeRange(0,10), AdTimeRange(30,31),
+        AdTimeRange(50,52), AdTimeRange(65,180)]), [[0,65],[65,180]]);
+    });
+    test('usable pauses and partitioned long pauses reset the gap', () {
+      expect(ranges(const [AdTimeRange(0,10), AdTimeRange(30,34),
+        AdTimeRange(65,180)]), isEmpty);
+      expect(ranges(const [AdTimeRange(0,60), AdTimeRange(60,120),
+        AdTimeRange(120,180)]), isEmpty);
+    });
+    test('existing boundaries and tiny tails are left alone', () {
+      const pauses = [AdTimeRange(0,10), AdTimeRange(55,180)];
+      expect(ranges(pauses,start:55), isEmpty);
+      expect(ranges(pauses,start:40), isEmpty);
+      expect(ranges(pauses,end:57), isEmpty);
+      expect(ranges(const []), isEmpty);
+    });
+    test('actual problematic cartoon interval', () {
+      expect(ranges(const [AdTimeRange(400,410), AdTimeRange(425,431.800625), AdTimeRange(484.7256875,489.9)],
+        start:360.65,end:541.983), [[360.65,484.7256875],[484.7256875,541.983]]);
+    });
+  });
+
   group('audio description pronunciation matches Windows and Mac', () {
     final cases = <String, String>{
       'Dr._Arinsu e Mr._Rossi.': 'dr Arinsu e mr Rossi.',

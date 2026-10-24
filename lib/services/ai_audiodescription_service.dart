@@ -1759,6 +1759,11 @@ class AiAudioDescriptionService {
             detail: '${chunkIndex + 1}/$chunkCount',
           );
           final processed = await _processChunkWithFallbacks(
+            restartRanges: AudioDescriptionFallbacks.narrationRestartRanges(
+              slots.where((slot) => slot.mandatory)
+                  .map((slot) => AdTimeRange(slot.start, slot.end)),
+              chunkStart, chunkEnd,
+            ),
             sourcePath: sourcePath,
             chunksDir: chunksDir,
             chunkIndex: chunkIndex,
@@ -2156,6 +2161,7 @@ class AiAudioDescriptionService {
     required double durationSec,
     required bool hasAudio,
     AdMediaFallbackStage stage = AdMediaFallbackStage.normal,
+    bool allowOriginalReuse = true,
   }) async {
     _checkCancel();
 
@@ -2165,7 +2171,7 @@ class AiAudioDescriptionService {
     // the compatibility ladder intact: if the provider rejects this original
     // MP4, _processChunkWithFallbacks will move to compact/compatibility and
     // perform the normal transcode.
-    if (stage == AdMediaFallbackStage.normal) {
+    if (allowOriginalReuse && stage == AdMediaFallbackStage.normal) {
       final source = File(sourcePath);
       final sourceBytes = await source.length();
       if (AudioDescriptionFallbacks.canReuseOriginalShortMp4(
@@ -2643,7 +2649,7 @@ $groundingDirective
     visible words in their original language), "visual_evidence_time_seconds" (the exact visible
     instant, using the same local/absolute timeline requested for descriptions), and
     "narratively_relevant" (a JSON boolean). Exclude decorative text, persistent watermarks,
-    routine credits, and subtitles that only repeat speech. Never guess unreadable words.
+    unselected routine credits, and subtitles that only repeat speech. Never guess unreadable words.
     Return [] if no qualifying text is legible. This array is evidence metadata, not narration.
     For each relevant entry, include its readable content in audio_descriptions when it is
     visible inside an authorized dialogue-free window and fits that window's word budget.
@@ -2658,11 +2664,28 @@ $groundingDirective
     to understanding the scene. Render the meaning naturally in the target language when useful.
     When describing important, legible text, include what it says rather than merely saying
     that a title, sign, or message is visible. Never guess words that you cannot read.
-    Do NOT read decorative text, persistent channel logos/watermarks, routine credits, or subtitles/
+    Do NOT read decorative text, persistent channel logos/watermarks, unselected routine credits, or subtitles/
     closed captions that merely repeat audible dialogue. This rule NEVER overrides dialogue
     protection: the resulting description must still fit completely inside an authorized
     dialogue-free window, and if no such window is available, omit the text rather than speaking
     over dialogue. The text must be visible at the reported `visual_evidence_time_seconds`.
+11. **READ SELECTED END CREDITS:** During visible end credits, include a useful selection of
+    legible roles and names in audio_descriptions, not just in on_screen_text or a generic
+    "credits roll" description. This is an exception to the plot-critical selection rule:
+    prioritize direction, writing/source, cast (with roles when printed), music and production.
+    Translate role labels naturally; preserve the printed names. Reading printed credits is
+    allowed even without a character glossary: it does not identify characters in the story.
+    Never infer missing credits from knowledge of the film, the soundtrack or earlier scenes.
+    Select complete role/name pairs that fit naturally at two words per second while visible;
+    use separate short entries for successive cards or scrolling groups. Continue inspecting
+    the credits through the end of the clip: do not stop after the first production credit
+    when further legible cast or creative credits can fit. Do not rush through
+    every crew member, repeat credits, or read legal boilerplate and technical company lists.
+    Include selected credits in on_screen_text as relevant. Instrumental music alone is not
+    dialogue. All dialogue protection, authorized-window, word-budget and visual-grounding
+    rules still apply. Do not move a credit into a later silence or extend its visible range.
+    Report the actual evidence instant in seconds, not MMSS digits (01:36 means 96 seconds,
+    not 136). If no complete credit can fit safely, omit it rather than guessing or rushing.
 ''';
     }
 
@@ -2713,6 +2736,8 @@ $nonverbalInstruction''';
           '${enableGlossary ? 'the character glossary and ' : ''}'
           'the timed audio descriptions. '
           '${enableGlossary ? 'Follow all instructions.' : 'Set character_glossary to an empty array and do not use character names.'}',
+      if (settings.recognizeScreenText)
+        'Printed end-credit names may still be read under the selected-credits rule.',
       '\n**Current Task Specifications:**',
       '*   **Target language for every natural-language output field (`description_text` and `character_glossary[].description`):** $targetLanguageName. Names and JSON keys must remain unchanged.',
       '*   **Verbosity Level:** $verbosityInstruction',
@@ -3064,6 +3089,7 @@ $nonverbalInstruction''';
   }
 
   Future<_ChunkProcessResult> _processChunkWithFallbacks({
+    List<AdTimeRange> restartRanges = const <AdTimeRange>[],
     required String sourcePath,
     required Directory chunksDir,
     required int chunkIndex,
@@ -3080,6 +3106,30 @@ $nonverbalInstruction''';
     AiAudioDescriptionHighDemandCallback? onHighDemand,
     AiAudioDescriptionQuotaCallback? onQuota,
   }) async {
+    if (restartRanges.isNotEmpty) {
+      await AppLogger.log(
+        'Audio description mobile: chunk ${chunkIndex + 1} uses existing '
+        'interval fallback after a long narration gap',
+      );
+      return _blockedChunkMinuteFallback(
+        sourcePath: sourcePath,
+        chunksDir: chunksDir,
+        parentChunkIndex: chunkIndex,
+        chunkStart: chunkStart,
+        chunkEnd: chunkEnd,
+        hasAudio: hasAudio,
+        settings: settings,
+        sonarpadToken: sonarpadToken,
+        activeGeminiModel: activeGeminiModel,
+        chunkSlots: chunkSlots,
+        glossary: glossary,
+        priorDescriptions: recentDescriptions,
+        clipRanges: restartRanges,
+        nonverbalCandidates: nonverbalCandidates,
+        onHighDemand: onHighDemand,
+        onQuota: onQuota,
+      );
+    }
     var stage = AdMediaFallbackStage.normal;
     _AdProviderException? lastMediaError;
     while (stage != AdMediaFallbackStage.none) {
@@ -3672,6 +3722,8 @@ $nonverbalInstruction''';
   }
 
   Future<_ChunkProcessResult> _blockedChunkMinuteFallback({
+    List<AdTimeRange>? clipRanges,
+    List<PyannoteNonverbalCandidate> nonverbalCandidates = const <PyannoteNonverbalCandidate>[],
     required String sourcePath,
     required Directory chunksDir,
     required int parentChunkIndex,
@@ -3689,8 +3741,9 @@ $nonverbalInstruction''';
   }) async {
     final allDescriptions = <_GeneratedDescription>[];
     final allGlossary = <Map<String, Object?>>[];
+    final verifiedIds = <String>{};
     var model = activeGeminiModel;
-    final minutes = AudioDescriptionFallbacks.blockedMinuteRanges(chunkStart, chunkEnd);
+    final minutes = clipRanges ?? AudioDescriptionFallbacks.blockedMinuteRanges(chunkStart, chunkEnd);
     for (var minuteIndex = 0; minuteIndex < minutes.length; minuteIndex++) {
       _checkCancel();
       final minute = minutes[minuteIndex];
@@ -3698,7 +3751,10 @@ $nonverbalInstruction''';
         final midpoint = (slot.start + slot.end) / 2.0;
         return midpoint >= minute.start && midpoint < minute.end;
       }).toList();
-      if (minuteSlots.isEmpty) continue;
+      final minuteNonverbal = nonverbalCandidates.where(
+        (candidate) => candidate.start >= minute.start && candidate.end <= minute.end,
+      ).toList();
+      if (minuteSlots.isEmpty && minuteNonverbal.isEmpty) continue;
       final path = p.join(
         chunksDir.path,
         'blocked_${parentChunkIndex.toString().padLeft(4, '0')}_${minuteIndex.toString().padLeft(2, '0')}.mp4',
@@ -3709,6 +3765,8 @@ $nonverbalInstruction''';
           outputPath: path,
           startSec: minute.start,
           durationSec: minute.duration,
+          // A requested subrange must not reuse the entire short source file.
+          allowOriginalReuse: false,
           hasAudio: hasAudio,
         );
         final generated = await _generatePreparedChunk(
@@ -3721,6 +3779,7 @@ $nonverbalInstruction''';
             chunkStart: minute.start,
             chunkEnd: minute.end,
             slots: minuteSlots,
+            nonverbalCandidates: minuteNonverbal,
             glossary: <Map<String, Object?>>[...glossary, ...allGlossary],
             recentDescriptions: <_GeneratedDescription>[
               ...priorDescriptions,
@@ -3743,6 +3802,7 @@ $nonverbalInstruction''';
           chunkStart: minute.start,
           chunkEnd: minute.end,
           slots: minuteSlots,
+          nonverbalCandidates: minuteNonverbal,
           blockedParentChunkStart: chunkStart,
           onHighDemand: onHighDemand,
           onQuota: onQuota,
@@ -3756,6 +3816,7 @@ $nonverbalInstruction''';
           onQuota: onQuota,
         );
         allDescriptions.addAll(parsed.descriptions);
+        verifiedIds.addAll(parsed.verifiedNonverbalIds);
         if (settings.recognizeCharacters) {
           _mergeGlossary(allGlossary, parsed.glossary);
         }
@@ -3776,7 +3837,7 @@ $nonverbalInstruction''';
       }
     }
     return _ChunkProcessResult(
-      parsed: _ParsedGemini(descriptions: allDescriptions, glossary: allGlossary),
+      parsed: _ParsedGemini(descriptions: allDescriptions, glossary: allGlossary, verifiedNonverbalIds: verifiedIds),
       model: model,
     );
   }

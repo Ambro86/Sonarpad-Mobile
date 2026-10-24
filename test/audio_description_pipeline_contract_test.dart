@@ -14,6 +14,28 @@ void main() {
       .readAsStringSync();
 
   group('production pipeline is wired to Windows-derived fallbacks', () {
+    test('long narration gaps use existing interval fallback before preparing full chunk', () {
+      final start = service.indexOf('Future<_ChunkProcessResult> _processChunkWithFallbacks');
+      final end = service.indexOf('bool _isMediaCompatibilityFailure', start);
+      final body = service.substring(start, end);
+      expect(body.indexOf('if (restartRanges.isNotEmpty)'), lessThan(body.indexOf('await _prepareVisualChunk(')));
+      expect(body, contains('clipRanges: restartRanges'));
+      final fallbackStart = service.indexOf('Future<_ChunkProcessResult> _blockedChunkMinuteFallback');
+      final fallbackEnd = service.indexOf('Future<_ParsedGemini> _correctGeneratedLanguageBestEffort', fallbackStart);
+      expect(service.substring(fallbackStart, fallbackEnd), contains('allowOriginalReuse: false'));
+
+      expect(service, contains('AudioDescriptionFallbacks.narrationRestartRanges('));
+      expect(service, contains('clipRanges ?? AudioDescriptionFallbacks.blockedMinuteRanges'));
+    });
+    test('end credits stay inside screen text option', () {
+      final start = service.indexOf('if (settings.recognizeScreenText)', service.indexOf('var screenTextSchema'));
+      // Use the enclosing screen-text block; no extra generation stage is added.
+      final credits = service.indexOf('READ SELECTED END CREDITS');
+      expect(credits, greaterThan(start));
+      expect(service.substring(credits), contains('Never infer missing credits'));
+      expect(service.replaceAll("\r\n", "\n"), contains("if (settings.recognizeScreenText)\n        'Printed end-credit names"));
+    });
+
     test('shared fallback layer is imported by production service', () {
       expect(service, contains("import 'audio_description_fallbacks.dart';"));
     });

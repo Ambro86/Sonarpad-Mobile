@@ -346,6 +346,30 @@ class AudioDescriptionFallbacks {
     return null;
   }
 
+  /// Same 45-second trigger as desktop; the existing interval fallback does the work.
+  static List<AdTimeRange> narrationRestartRanges(
+    Iterable<AdTimeRange> usablePauses,
+    double chunkStart,
+    double chunkEnd,
+  ) {
+    final cuts = <double>[];
+    var previousEnd = 0.0;
+    for (final pause in usablePauses) {
+      if (pause.duration < 3.0) continue;
+      if (pause.start - previousEnd >= 45.0 &&
+          pause.start - chunkStart >= 45.0 &&
+          chunkEnd - pause.start >= 3.0) {
+        cuts.add(pause.start);
+      }
+      previousEnd = pause.end;
+    }
+    if (cuts.isEmpty) return const <AdTimeRange>[];
+    final bounds = <double>[chunkStart, ...cuts, chunkEnd];
+    return List<AdTimeRange>.generate(
+      bounds.length - 1, (i) => AdTimeRange(bounds[i], bounds[i + 1]),
+    );
+  }
+
   static List<AdTimeRange> blockedMinuteRanges(double start, double end) {
     final result = <AdTimeRange>[];
     var cursor = start;

@@ -3,6 +3,8 @@
     "version": "0.5.2",
     "date": "2026-10-26",
     "it": [
+      "Migliorate le audiodescrizioni: attivando la lettura dei testi sullo schermo, vengono letti anche i titoli di coda che Gemini riesce a identificare.",
+      "Migliorata la sincronizzazione delle audiodescrizioni: corretto un problema per cui, dopo lunghi tratti senza spazio per la narrazione, Gemini poteva continuare a descrivere scene precedenti anziché seguire quella attuale.",
       "È arrivata su Sonarpad la ricerca viaggi! Da adesso potete cercare viaggi in treno, aereo e pullman tra le compagnie italiane e internazionali disponibili su Omio. La funzione vi accompagna con schermate accessibili dalla ricerca alla compilazione dei dati, fino al pagamento sul sito Omio. È disponibile in fase di prova, per il momento solo con l’interfaccia italiana: le vostre segnalazioni ci aiuteranno a migliorarla.",
       "Sonarpad fa solo da facilitatore: rende più semplice e accessibile un percorso che può essere complicato per chi usa uno screen reader. Coerentemente con il suo spirito di servizio, l’autore non riceve alcun compenso dai vostri acquisti, nemmeno tramite link di affiliazione.",
       "Dopo l’acquisto, per assistenza, modifiche, cancellazioni o rimborsi del biglietto, fate riferimento a Omio o al vettore indicato nella conferma della prenotazione, secondo le condizioni della tariffa acquistata. Sonarpad non vende i biglietti e non gestisce queste richieste.",
@@ -28,6 +30,8 @@
       "Nei Preferiti di SonarTube e SonarMusic puoi spostare le voci in alto, in basso o a una posizione scelta indicando prima di quale preferito inserirle, e ordinarle alfabeticamente. I comandi sono disponibili come azioni secondarie e pulsanti visivi esclusi dalla navigazione dello screen reader. L’ordine viene salvato."
     ],
     "en": [
+      "Improved audio descriptions: enabling on-screen text reading now also reads end credits that Gemini can identify.",
+      "Improved audio description timing: fixed an issue where, after long stretches without room for narration, Gemini could keep describing earlier scenes instead of following the current scene.",
       "Fixed news dates and times and some feed addresses that showed old articles. When the publication date is unavailable, the refresh time is no longer shown instead. Added Türkiye Gazetesi, İHA and TGRT Haber to the Turkish news sources.",
       "Improved SonarMusic search with more complete results for songs, albums, artists, playlists and videos, more reliable loading of further results, and access to full artist album and singles lists.",
       "Courses and Podcasts are now available in SonarTube, both in channel sections and in search filters.",
@@ -50,6 +54,8 @@
       "SonarTube and SonarMusic favorites can be moved up, down or to a chosen position before another favorite, and sorted alphabetically. Commands are available as secondary actions and visual buttons excluded from screen reader navigation. The order is saved."
     ],
     "fr": [
+      "Amélioration des audiodescriptions : lorsque la lecture des textes à l’écran est activée, les textes du générique de fin que Gemini parvient à identifier sont également lus.",
+      "Amélioration de la synchronisation des audiodescriptions : correction d’un problème qui pouvait amener Gemini, après de longs passages sans place pour la narration, à continuer de décrire des scènes précédentes au lieu de suivre la scène actuelle.",
       "Correction des dates et heures des actualités et de certaines adresses affichant des articles anciens. Lorsque la date de publication est indisponible, l’heure d’actualisation ne la remplace plus. Ajout de Türkiye Gazetesi, İHA et TGRT Haber aux sources turques.",
       "Recherche SonarMusic améliorée : résultats plus complets pour les titres, albums, artistes, playlists et vidéos, chargement plus fiable des résultats suivants et accès aux listes complètes des albums et singles des artistes.",
       "Les cours et les podcasts sont désormais disponibles dans SonarTube, dans les rubriques des chaînes et les filtres de recherche.",
@@ -72,6 +78,8 @@
       "Les favoris de SonarTube et SonarMusic peuvent être déplacés vers le haut, vers le bas ou avant un favori choisi, et triés par ordre alphabétique. Les commandes sont disponibles comme actions secondaires et boutons visuels exclus de la navigation du lecteur d’écran. L’ordre est enregistré."
     ],
     "es": [
+      "Mejoradas las audiodescripciones: al activar la lectura de textos en pantalla, también se leen los créditos finales que Gemini puede identificar.",
+      "Mejorada la sincronización de las audiodescripciones: corregido un problema por el que, tras largos tramos sin espacio para la narración, Gemini podía seguir describiendo escenas anteriores en lugar de la escena actual.",
       "Corregidas las fechas y horas de las noticias y algunas direcciones que mostraban artículos antiguos. Si no hay fecha de publicación, ya no se muestra en su lugar la hora de actualización. Añadidas Türkiye Gazetesi, İHA y TGRT Haber a las fuentes turcas.",
       "Mejorada la búsqueda en SonarMusic, con resultados más completos de canciones, álbumes, artistas, listas y vídeos, una carga más fiable de los resultados siguientes y acceso a las listas completas de álbumes y sencillos de los artistas.",
       "SonarTube ahora incluye Cursos y Pódcasts, tanto en las secciones de los canales como en los filtros de búsqueda.",
@@ -94,6 +102,8 @@
       "Los favoritos de SonarTube y SonarMusic se pueden mover arriba, abajo o antes de otro favorito elegido, y ordenar alfabéticamente. Los comandos están disponibles como acciones secundarias y botones visuales excluidos de la navegación del lector de pantalla. El orden se guarda."
     ],
     "pt": [
+      "Melhoradas as audiodescrições: ao ativar a leitura de textos no ecrã, passam também a ser lidos os créditos finais que o Gemini consegue identificar.",
+      "Melhorada a sincronização das audiodescrições: corrigido um problema em que, após longos trechos sem espaço para a narração, o Gemini podia continuar a descrever cenas anteriores em vez da cena atual.",
       "Corrigidas as datas e horas das notícias e alguns endereços que mostravam artigos antigos. Quando a data de publicação não está disponível, a hora de atualização deixa de ser apresentada em seu lugar. Adicionadas Türkiye Gazetesi, İHA e TGRT Haber às fontes turcas.",
       "Pesquisa do SonarMusic melhorada, com resultados mais completos para músicas, álbuns, artistas, listas de reprodução e vídeos, carregamento mais fiável dos resultados seguintes e acesso às listas completas de álbuns e singles dos artistas.",
       "O SonarTube inclui agora Cursos e Podcasts, tanto nas secções dos canais como nos filtros de pesquisa.",
@@ -116,6 +126,8 @@
       "Os favoritos do SonarTube e do SonarMusic podem ser movidos para cima, para baixo ou antes de outro favorito escolhido, e ordenados alfabeticamente. Os comandos estão disponíveis como ações secundárias e botões visuais excluídos da navegação do leitor de ecrã. A ordem é guardada."
     ],
     "pt_BR": [
+      "Audiodescrições aprimoradas: ao ativar a leitura dos textos na tela, também são lidos os créditos finais que o Gemini consegue identificar.",
+      "Melhorada a sincronização das audiodescrições: corrigido um problema em que, após longos trechos sem espaço para a narração, o Gemini podia continuar descrevendo cenas anteriores em vez da cena atual.",
       "Corrigidas as datas e os horários das notícias e alguns endereços que mostravam artigos antigos. Quando a data de publicação não está disponível, o horário de atualização não é mais exibido em seu lugar. Adicionadas Türkiye Gazetesi, İHA e TGRT Haber às fontes turcas.",
       "Busca do SonarMusic aprimorada, com resultados mais completos para músicas, álbuns, artistas, playlists e vídeos, carregamento mais confiável dos próximos resultados e acesso às listas completas de álbuns e singles dos artistas.",
       "O SonarTube agora inclui Cursos e Podcasts, tanto nas seções dos canais quanto nos filtros de pesquisa.",
@@ -138,6 +150,8 @@
       "Os favoritos do SonarTube e do SonarMusic podem ser movidos para cima, para baixo ou antes de outro favorito escolhido, e ordenados alfabeticamente. Os comandos estão disponíveis como ações secundárias e botões visuais excluídos da navegação do leitor de tela. A ordem é salva."
     ],
     "pl": [
+      "Ulepszono audiodeskrypcję: po włączeniu odczytywania tekstu na ekranie odczytywane są również napisy końcowe, które Gemini potrafi rozpoznać.",
+      "Poprawiono synchronizację audiodeskrypcji: usunięto problem, przez który po dłuższych fragmentach bez miejsca na narrację Gemini mógł nadal opisywać wcześniejsze sceny zamiast bieżącej.",
       "Poprawiono daty i godziny wiadomości oraz niektóre adresy wyświetlające stare artykuły. Gdy data publikacji jest niedostępna, czas odświeżenia nie jest już pokazywany zamiast niej. Dodano Türkiye Gazetesi, İHA i TGRT Haber do tureckich źródeł wiadomości.",
       "Ulepszono wyszukiwanie w SonarMusic: pełniejsze wyniki dla utworów, albumów, wykonawców, playlist i filmów, bardziej niezawodne wczytywanie kolejnych wyników oraz dostęp do pełnych list albumów i singli wykonawców.",
       "W SonarTube są teraz dostępne kursy i podcasty, zarówno w sekcjach kanałów, jak i w filtrach wyszukiwania.",
@@ -160,6 +174,8 @@
       "Ulubione w SonarTube i SonarMusic można przesuwać w górę, w dół lub przed wybraną pozycję oraz sortować alfabetycznie. Polecenia są dostępne jako dodatkowe czynności i przyciski wizualne pomijane przez czytnik ekranu. Kolejność jest zapisywana."
     ],
     "cs": [
+      "Vylepšen zvukový popis: při zapnutém čtení textu na obrazovce se nyní čtou také závěrečné titulky, které Gemini dokáže rozpoznat.",
+      "Vylepšeno časování audiopopisu: opraven problém, kdy Gemini po delších úsecích bez prostoru pro komentář mohl nadále popisovat předchozí scény místo aktuální scény.",
       "Opraveny datumy a časy zpráv a některé adresy zobrazující staré články. Pokud datum publikace není dostupné, již se místo něj nezobrazuje čas aktualizace. Mezi turecké zdroje byly přidány Türkiye Gazetesi, İHA a TGRT Haber.",
       "Vylepšené vyhledávání v SonarMusic nabízí úplnější výsledky pro skladby, alba, interprety, playlisty a videa, spolehlivější načítání dalších výsledků a přístup k úplným seznamům alb a singlů interpretů.",
       "V SonarTube jsou nyní dostupné kurzy a podcasty, a to v sekcích kanálů i ve filtrech vyhledávání.",
@@ -182,6 +198,8 @@
       "Oblíbené položky v SonarTube a SonarMusic lze přesunout nahoru, dolů nebo před vybranou položku a seřadit abecedně. Příkazy jsou dostupné jako vedlejší akce a vizuální tlačítka vynechaná z navigace čtečky obrazovky. Pořadí se ukládá."
     ],
     "de": [
+      "Audiodeskriptionen verbessert: Bei aktivierter Vorlesefunktion für Bildschirmtexte werden nun auch die Abspanntexte vorgelesen, die Gemini erkennen kann.",
+      "Die zeitliche Zuordnung von Audiodeskriptionen wurde verbessert: Ein Problem wurde behoben, bei dem Gemini nach längeren Passagen ohne Platz für die Beschreibung weiterhin frühere Szenen statt der aktuellen Szene beschreiben konnte.",
       "Datum und Uhrzeit von Nachrichten sowie einige Adressen mit veralteten Artikeln korrigiert. Bei fehlendem Veröffentlichungsdatum wird nicht mehr die Aktualisierungszeit angezeigt. Türkiye Gazetesi, İHA und TGRT Haber zu den türkischen Nachrichtenquellen hinzugefügt.",
       "Verbesserte SonarMusic-Suche mit vollständigeren Ergebnissen für Titel, Alben, Künstler, Playlists und Videos, zuverlässigerem Laden weiterer Ergebnisse und Zugriff auf vollständige Album- und Single-Listen der Künstler.",
       "In SonarTube sind jetzt Kurse und Podcasts verfügbar, sowohl in den Kanalbereichen als auch in den Suchfiltern.",
@@ -204,6 +222,8 @@
       "Favoriten in SonarTube und SonarMusic können nach oben, nach unten oder vor einen ausgewählten Favoriten verschoben und alphabetisch sortiert werden. Die Befehle stehen als zusätzliche Aktionen und als visuelle, von der Screenreader-Navigation ausgeschlossene Schaltflächen zur Verfügung. Die Reihenfolge wird gespeichert."
     ],
     "zh_CN": [
+      "改进音频描述：启用屏幕文字朗读后，现在也会朗读 Gemini 能够识别的片尾字幕。",
+      "改进了音频描述的时间同步：修复了在长时间没有旁白空间后，Gemini 可能继续描述先前场景而非当前场景的问题。",
       "修正了新闻日期、时间及部分显示旧文章的订阅地址。没有发布日期时，不再用刷新时间代替。土耳其新闻来源新增 Türkiye Gazetesi、İHA 和 TGRT Haber。",
       "改进了 SonarMusic 搜索：歌曲、专辑、艺人、播放列表和视频的结果更完整，后续结果加载更可靠，并可访问艺人的完整专辑和单曲列表。",
       "SonarTube 现已支持课程和播客，可在频道栏目和搜索筛选条件中找到。",
@@ -226,6 +246,8 @@
       "SonarTube 和 SonarMusic 的收藏可向上、向下移动，移至指定收藏之前，或按字母顺序排序。这些命令提供次要操作和不参与屏幕阅读器导航的可视按钮，排序会被保存。"
     ],
     "uk": [
+      "Покращено аудіоопис: якщо ввімкнено читання тексту на екрані, тепер також озвучуються фінальні титри, які Gemini може розпізнати.",
+      "Покращено синхронізацію аудіодескрипції: виправлено проблему, через яку після тривалих фрагментів без місця для опису Gemini міг продовжувати описувати попередні сцени замість поточної.",
       "Виправлено дати й час новин та деякі адреси, що показували старі статті. Якщо дата публікації недоступна, час оновлення більше не відображається замість неї. До турецьких джерел додано Türkiye Gazetesi, İHA та TGRT Haber.",
       "Покращено пошук у SonarMusic: повніші результати для пісень, альбомів, виконавців, списків відтворення та відео, надійніше завантаження наступних результатів і доступ до повних списків альбомів та синглів виконавців.",
       "У SonarTube тепер доступні курси та подкасти — як у розділах каналів, так і серед фільтрів пошуку.",
@@ -248,6 +270,8 @@
       "Обрані елементи SonarTube і SonarMusic можна переміщувати вгору, вниз або перед вибраним елементом і сортувати за абеткою. Команди доступні як додаткові дії та візуальні кнопки, виключені з навігації читача екрана. Порядок зберігається."
     ],
     "ro": [
+      "Audiodescrieri îmbunătățite: când este activată citirea textelor de pe ecran, sunt citite și genericele de final pe care Gemini le poate identifica.",
+      "Sincronizarea audiodescrierilor a fost îmbunătățită: s-a corectat o problemă din cauza căreia, după secvențe lungi fără loc pentru narațiune, Gemini putea continua să descrie scene anterioare în locul celei curente.",
       "Corectate datele și orele știrilor și unele adrese care afișau articole vechi. Când data publicării nu este disponibilă, ora actualizării nu mai este afișată în locul ei. Adăugate Türkiye Gazetesi, İHA și TGRT Haber la sursele turcești.",
       "Căutare îmbunătățită în SonarMusic, cu rezultate mai complete pentru melodii, albume, artiști, liste de redare și videoclipuri, încărcare mai fiabilă a rezultatelor următoare și acces la listele complete de albume și single-uri ale artiștilor.",
       "În SonarTube sunt acum disponibile cursuri și podcasturi, atât în secțiunile canalelor, cât și în filtrele de căutare.",
@@ -270,6 +294,8 @@
       "Favoritele din SonarTube și SonarMusic pot fi mutate în sus, în jos sau înaintea unui favorit ales și sortate alfabetic. Comenzile sunt disponibile ca acțiuni secundare și butoane vizuale excluse din navigarea cititorului de ecran. Ordinea este salvată."
     ],
     "tr": [
+      "Sesli betimlemeler iyileştirildi: ekrandaki metinleri okuma seçeneği etkinleştirildiğinde Gemini'nin tanıyabildiği kapanış jeneriği de okunur.",
+      "Sesli betimlemelerin zamanlaması iyileştirildi: anlatım için yer olmayan uzun bölümlerden sonra Gemini'nin mevcut sahne yerine önceki sahneleri anlatmaya devam etmesine yol açabilen bir sorun giderildi.",
       "Haberlerin tarih ve saatleri ile eski yazıları gösteren bazı kaynak adresleri düzeltildi. Yayın tarihi bulunamadığında artık bunun yerine yenileme saati gösterilmiyor. Türkçe haber kaynaklarına Türkiye Gazetesi, İHA ve TGRT Haber eklendi.",
       "SonarMusic araması iyileştirildi: şarkılar, albümler, sanatçılar, çalma listeleri ve videolar için daha kapsamlı sonuçlar, sonraki sonuçların daha güvenilir yüklenmesi ve sanatçıların tüm albüm ve single listelerine erişim.",
       "SonarTube artık hem kanal bölümlerinde hem de arama filtrelerinde Kurslar ve Podcastler seçeneklerini sunuyor.",
