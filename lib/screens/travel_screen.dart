@@ -23,6 +23,7 @@ AccessibleListRow _action(
   FutureOr<void> Function() action, {
   bool enabled = true,
   String? subtitle,
+  bool finishEditingOnActivate = false,
 }) => AccessibleListRow(
   id: id,
   title: title,
@@ -30,6 +31,7 @@ AccessibleListRow _action(
   kind: 'button',
   enabled: enabled,
   onActivate: action,
+  finishEditingOnActivate: finishEditingOnActivate,
 );
 AccessibleListRow _info(String id, String text) => AccessibleListRow(
   id: id,
@@ -42,11 +44,13 @@ Widget _page(
   List<AccessibleListRow> rows, {
   String? initialFocusId,
   Key? listKey,
+  AccessibleListController? controller,
 }) => Scaffold(
   appBar: SonarpadAppBar(title: Text(title)),
   body: SafeArea(
     child: UniversalAccessibleList(
       key: listKey,
+      controller: controller,
       initialFocusId: initialFocusId,
       sections: [AccessibleListSection(rows: rows)],
       padding: const EdgeInsets.all(16),

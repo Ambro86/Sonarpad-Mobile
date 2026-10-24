@@ -42,6 +42,7 @@ private struct SonarpadNativeRow {
   var secure: Bool
   var placeholder: String?
   var submitOnReturn: Bool
+  var finishEditingOnActivate: Bool
   var textInputAction: String?
   var keyboardType: String?
   var clearAsSearch: Bool
@@ -88,6 +89,7 @@ private struct SonarpadNativeRow {
     secure = map["secure"] as? Bool ?? false
     placeholder = map["placeholder"] as? String
     submitOnReturn = map["submitOnReturn"] as? Bool ?? false
+    finishEditingOnActivate = map["finishEditingOnActivate"] as? Bool ?? false
     textInputAction = map["textInputAction"] as? String
     keyboardType = map["keyboardType"] as? String
     clearAsSearch = map["clearAsSearch"] as? Bool ?? (textInputAction == "search")
@@ -154,6 +156,7 @@ private func sonarpadRowsEqual(_ lhs: SonarpadNativeRow, _ rhs: SonarpadNativeRo
         lhs.textRevision == rhs.textRevision,
         lhs.placeholder == rhs.placeholder,
         lhs.submitOnReturn == rhs.submitOnReturn,
+        lhs.finishEditingOnActivate == rhs.finishEditingOnActivate,
         lhs.textInputAction == rhs.textInputAction,
         lhs.keyboardType == rhs.keyboardType,
         lhs.clearAsSearch == rhs.clearAsSearch,
@@ -1712,6 +1715,12 @@ final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITableViewDa
 
   private func sendActivation(at indexPath: IndexPath) {
     let row = sections[indexPath.section].rows[indexPath.row]
+    if row.finishEditingOnActivate {
+      for case let cell as SonarpadTextFieldCell in tableView.visibleCells where cell.field.isFirstResponder {
+        cell.field.sendActions(for: .editingChanged)
+      }
+      tableView.endEditing(true)
+    }
     channel.invokeMethod("event", arguments: ["type": "activate", "id": row.id])
   }
 

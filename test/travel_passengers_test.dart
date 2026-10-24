@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:sonarpad_mobile_starter/widgets/universal_accessible_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -130,6 +131,47 @@ void main() {
       await tester.pump(const Duration(milliseconds: 100));
     }
   }
+
+  testWidgets('Missing postcode focuses its field instead of the error text', (tester) async {
+    final service = PassengerService();
+    service.fields
+      ..clear()
+      ..addAll([
+        {'name': '0.firstName-0', 'title': 'Nome', 'component': 'Text',
+          'validation': [{'type': 'required'}]},
+        {'name': '0.postalCode-0', 'title': 'CAP', 'component': 'Text',
+          'validation': [{'type': 'required'}]},
+      ]);
+    final draft = TravelPassengerDraft();
+    await mount(tester, service, draft);
+    await row(tester, '0.firstName-0').onValueChanged!('Mario');
+    await next(tester);
+    final list = tester.widget<UniversalAccessibleList>(find.byType(UniversalAccessibleList));
+    expect(list.initialFocusId, '0.postalCode-0');
+    expect(row(tester, 'error').title, contains('CAP'));
+    expect(draft.position, 0);
+    expect(row(tester, 'next-field').finishEditingOnActivate, isTrue);
+    await tester.enterText(find.byType(TextField).last, '00100');
+    expect(tester.testTextInput.isVisible, isTrue);
+    final nextButton = find.text(row(tester, 'next-field').title);
+    await tester.ensureVisible(nextButton);
+    await tester.tap(nextButton);
+    await tester.pumpAndSettle();
+    expect(draft.position, 1);
+    expect(draft.values['0.postalCode-0'], '00100');
+    expect(tester.testTextInput.isVisible, isFalse);
+    expect(row(tester, 'submit-passengers').enabled, isTrue);
+  });
+
+  test('iOS opted-in form action commits editing before activating Continue', () {
+    final swift = File('ios/Runner/SonarpadNativeAccessibleView.swift').readAsStringSync();
+    final start = swift.indexOf('  private func sendActivation(at indexPath: IndexPath)');
+    final end = swift.indexOf('  @objc private func toggleControlChanged', start);
+    final action = swift.substring(start, end);
+    expect(action, contains('if row.finishEditingOnActivate'));
+    expect(action.indexOf('sendActions(for: .editingChanged)'), lessThan(action.indexOf('tableView.endEditing(true)')));
+    expect(action.indexOf('tableView.endEditing(true)'), lessThan(action.indexOf('channel.invokeMethod')));
+  });
 
   testWidgets(
     'three travellers remain in order when later journeys use two then three',

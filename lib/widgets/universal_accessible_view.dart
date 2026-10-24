@@ -437,6 +437,7 @@ class AccessibleListRow {
     this.visualActionId,
     this.visualActionIcon,
     this.onActivate,
+    this.finishEditingOnActivate = false,
     this.onValueChanged,
     this.onCustomAction,
     this.onAccessibilityFocus,
@@ -513,6 +514,8 @@ class AccessibleListRow {
   /// Supported values are `search`, `done` and `next`. When [onSubmitted]
   /// is provided, UIKit sends the same logical submit event that Flutter does.
   final String? textInputAction;
+  /// Commit and dismiss the editor before an explicitly opted-in form action.
+  final bool finishEditingOnActivate;
   /// Optional keyboard layout; null preserves existing text fields.
   final String? keyboardType;
 
@@ -559,6 +562,7 @@ class AccessibleListRow {
         'textRevision': textRevision,
         if (placeholder != null) 'placeholder': placeholder,
         'submitOnReturn': onSubmitted != null,
+        'finishEditingOnActivate': finishEditingOnActivate,
         if (textInputAction != null) 'textInputAction': textInputAction,
         if (keyboardType != null) 'keyboardType': keyboardType,
         'clearAsSearch': usesSearchClearLabel,
@@ -932,6 +936,9 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
     if (row != null) {
       switch (event.type) {
         case 'activate':
+          if (row.finishEditingOnActivate) {
+            FocusManager.instance.primaryFocus?.unfocus();
+          }
           if (row.onActivate != null) {
             handledByRow = true;
             await row.onActivate!.call();

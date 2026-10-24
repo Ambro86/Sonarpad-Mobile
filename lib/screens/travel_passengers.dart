@@ -29,6 +29,8 @@ class TravelPassengersScreen extends StatefulWidget {
 class _TravelPassengersScreenState extends State<TravelPassengersScreen> {
   TravelPassengerDraft get d => widget.draft;
   final _memory = TravelPassengerMemory();
+  final _fieldsController = AccessibleListController();
+  String? _invalidFieldId;
   bool _busy = true;
   String? _message;
   final Map<String, List<AccessibleOption>> _stateOptions = {};
@@ -625,19 +627,36 @@ class _TravelPassengersScreenState extends State<TravelPassengersScreen> {
     return value;
   }
 
+  void _showFieldError(Map<String, dynamic> field, String error) {
+    final name = field['name'] as String;
+    final inputs = _inputs(field, _strings(context));
+    final target = inputs.where((row) => row.kind != 'text' && !row.id.endsWith(':filter'));
+    final id = target.isEmpty ? name : target.first.id;
+    setState(() {
+      _message = '${_label(field, _strings(context))}: $error';
+      _invalidFieldId = id;
+      d.position = _passengerIndices.indexOf(int.parse(name.split('.').first));
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || _invalidFieldId != id) return;
+      unawaited(_fieldsController.focusAccessibleRow(id));
+    });
+  }
+
   Future<void> _next() async {
     if (_busy || d.attempted) return;
     final fields = _currentFields;
     for (final f in fields) {
       final error = _validate(f);
       if (error != null) {
-        setState(() => _message = '${_label(f, _strings(context))}: $error');
+        _showFieldError(f, error);
         return;
       }
     }
     setState(() {
       _busy = true;
       _message = null;
+      _invalidFieldId = null;
     });
     try {
       for (final f in fields) {
@@ -714,12 +733,7 @@ class _TravelPassengersScreenState extends State<TravelPassengersScreen> {
       if (!_visible(f)) continue;
       final error = _validate(f);
       if (error != null) {
-        setState(() {
-          _message = error;
-          d.position = _passengerIndices.indexOf(
-            int.parse((f['name'] as String).split('.').first),
-          );
-        });
+        _showFieldError(f, error);
         return;
       }
       final value = _answer(f);
@@ -834,6 +848,7 @@ class _TravelPassengersScreenState extends State<TravelPassengersScreen> {
             t.t('sendData'),
             _submit,
             enabled: !_busy,
+            finishEditingOnActivate: true,
           ),
           _action('edit', t.t('editData'), () async {
             setState(() {
@@ -850,7 +865,8 @@ class _TravelPassengersScreenState extends State<TravelPassengersScreen> {
           _info('optional-hint', t.t('optionalHint')),
           for (final field in fields) ..._inputs(field, t),
           if (fields.every(_supported))
-            _action('next-field', t.t('nextField'), _next, enabled: !_busy),
+            _action('next-field', t.t('nextField'), _next, enabled: !_busy,
+                finishEditingOnActivate: true),
           if (d.position > 0)
             _action('previous-field', t.t('previous'), () async {
               setState(() {
@@ -883,13 +899,14 @@ class _TravelPassengersScreenState extends State<TravelPassengersScreen> {
       listKey: !d.attempted && d.fields != null && fields.isEmpty
           ? const ValueKey('passenger-review')
           : null,
-      initialFocusId: _message != null
+      controller: _fieldsController,
+      initialFocusId: _invalidFieldId ?? (_message != null
           ? 'error'
           : d.attempted
           ? (d.paymentUrl != null ? 'checkout' : 'submitted')
           : fields.isEmpty
           ? 'review-passenger-${_passengerIndices.first}'
-          : 'passenger-heading',
+          : 'passenger-heading'),
     );
   }
 
