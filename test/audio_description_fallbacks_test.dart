@@ -325,11 +325,16 @@ void main() {
     test('short safe gap is optional anchor', () {
       final slots = AudioDescriptionFallbacks.splitSafeInterval(
         start: 2,
-        end: 4,
+        end: 3.49,
         baseIndex: 7,
       );
       expect(slots.single.mandatory, isFalse);
       expect(slots.single.id, 'E0007');
+    });
+    test('1.5 second gap becomes mandatory', () {
+      final slot = AudioDescriptionFallbacks.splitSafeInterval(start: 0, end: 1.5, baseIndex: 1).single;
+      expect(slot.mandatory, isTrue);
+      expect(slot.maxWords, 3);
     });
     test('three second gap becomes mandatory', () {
       final slot = AudioDescriptionFallbacks.splitSafeInterval(

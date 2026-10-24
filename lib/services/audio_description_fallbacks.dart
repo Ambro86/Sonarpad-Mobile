@@ -50,7 +50,7 @@ class AudioDescriptionFallbacks {
   static const double maxPlacementShiftSeconds = 5.0;
   static const double maxMandatorySlotSeconds = 15.0;
   static const double minSafeSlotSeconds = 0.5;
-  static const double minMandatorySlotSeconds = 3.0;
+  static const double minMandatorySlotSeconds = 1.5;
   static const int inlineVideoMaxBytes = 48 * 1024 * 1024;
   static const int inlineFallbackMaxBytes = 50 * 1024 * 1024;
   static const int preferredPreparedChunkBytes = 40 * 1024 * 1024;

@@ -281,9 +281,12 @@ class _ChromecastScreenState extends State<ChromecastScreen>
       _statusSubscription = session.updates.listen((status) {
         if (!mounted || _leaving) return;
         if (status.completed && !_live && !_completionHandled && !_busy) {
+          AppLogger.log('Cast: completion state=${status.state} '
+              'positionMs=${status.position.inMilliseconds} '
+              'durationMs=${status.duration.inMilliseconds}');
           unawaited(_advanceAfterCompletion());
         }
-        if (status.state != 'IDLE' && !status.disconnected) {
+        if (!status.completed && status.state != 'IDLE' && !status.disconnected) {
           _lastPosition = status.position;
           if (!_live &&
               (status.position.inSeconds - _savedSecond).abs() >= 5) {

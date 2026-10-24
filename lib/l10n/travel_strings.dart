@@ -133,6 +133,8 @@ class TravelStrings {
         'Non riesco a leggere i metodi disponibili. Puoi proseguire sulla pagina Omio.',
     'paymentSelectOnSite':
         'Selezione non confermata: verifica il metodo sulla pagina Omio.',
+    'paypalSelectedHint':
+        'PayPal selezionato. Per proseguire con il pagamento, raggiungi il pulsante PayPal in fondo alla pagina.',
     'paymentOpenSite': 'Apri la pagina Omio completa',
     'omioBrowser': 'Omio',
     'browserLoading': 'Caricamento della pagina Omio',
@@ -269,6 +271,8 @@ class TravelStrings {
         'Payment methods could not be read. You can continue on the Omio page.',
     'paymentSelectOnSite':
         'Selection not confirmed: check the method on the Omio page.',
+    'paypalSelectedHint':
+        'PayPal selected. To continue with payment, find the PayPal button at the bottom of the page.',
     'paymentOpenSite': 'Open the full Omio page',
     'omioBrowser': 'Omio',
     'browserLoading': 'Loading Omio page',

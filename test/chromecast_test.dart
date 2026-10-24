@@ -317,8 +317,12 @@ void main() {
     });
   }
 
-  for (final mode in ['next', 'disabled', 'end', 'cancel', 'error']) {
-    testWidgets('Cast autoplay completion: $mode', (tester) async {
+  for (final (mode, pausedAtEnd) in [
+    for (final pausedAtEnd in [false, true])
+      for (final mode in ['next', 'disabled', 'end', 'cancel', 'error'])
+        (mode, pausedAtEnd),
+  ]) {
+    testWidgets('Cast autoplay completion: $mode pausedAtEnd=$pausedAtEnd', (tester) async {
       final session = FakeSession();
       final gate = Completer<ChromecastQueueItem?>();
       final navigator = GlobalKey<NavigatorState>();
@@ -361,7 +365,11 @@ void main() {
         await tester.pumpAndSettle();
         expect(requests, 0);
       }
-      const finished = ChromecastStatus(state: 'IDLE', idleReason: 'FINISHED', sessionId: 1);
+      final finished = pausedAtEnd
+          ? const ChromecastStatus(state: 'PAUSED', sessionId: 1,
+              position: Duration(milliseconds: 132591),
+              duration: Duration(milliseconds: 132632))
+          : const ChromecastStatus(state: 'IDLE', idleReason: 'FINISHED', sessionId: 1);
       session.events.add(finished);
       session.events.add(finished);
       await tester.pumpAndSettle();
@@ -386,6 +394,7 @@ void main() {
         expect(session.closes, 0);
       }
       expect(saved, contains(Duration.zero));
+      expect(saved.last, Duration.zero, reason: 'Do not restore the finished bookmark');
       await tester.pumpWidget(const SizedBox.shrink());
       await session.events.close();
     });

@@ -215,6 +215,7 @@ void main() {
     );
     await tester.tap(find.text('PayPal'));
     await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 300));
     expect(find.text('PayPal'), findsNothing);
     expect(
       controller.scripts
@@ -259,6 +260,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('PayPal'));
     await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 300));
     expect(controller.scripts, isNot(contains(travelNoProtectionScript())));
     expect(
       controller.scripts,

@@ -30,7 +30,18 @@ class ChromecastStatus {
   });
   final String state;
   final String? idleReason;
-  bool get completed => !disconnected && state == 'IDLE' && idleReason == 'FINISHED';
+  bool get completed {
+    if (disconnected) return false;
+    if (state == 'IDLE') return idleReason == 'FINISHED';
+    // Some receivers end in PAUSED, a few milliseconds before the duration,
+    // without ever sending IDLE/FINISHED (132591 / 132632 ms in diagnostics).
+    return state == 'PAUSED' &&
+        idleReason == null &&
+        sessionId != null &&
+        duration > Duration.zero &&
+        position > Duration.zero &&
+        (duration - position).abs() <= const Duration(milliseconds: 100);
+  }
   final Duration position, duration;
   final double volume, playbackRate;
   final int supportedMediaCommands;

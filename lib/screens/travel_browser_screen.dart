@@ -12,6 +12,7 @@ import '../services/travel_payment_script.dart';
 import '../services/travel_checkout_accessibility.dart';
 import '../services/travel_checkout_diagnostics.dart';
 import '../utils/app_logger.dart';
+import '../utils/status_message.dart';
 import '../widgets/universal_accessible_view.dart';
 
 bool isTravelOmioUrl(String url) {
@@ -425,6 +426,13 @@ class _TravelBrowserScreenState extends State<TravelBrowserScreen> {
     await _captureCheckout('browser-revealed');
     if (!mounted) return;
     _watchCheckout();
+    if (confirmed && method == 'PayPal') {
+      announceStatusMessage(
+        context,
+        t.t('paypalSelectedHint'),
+        announcementDelay: const Duration(milliseconds: 300),
+      );
+    }
     if (!confirmed) {
       ScaffoldMessenger.of(
         context,

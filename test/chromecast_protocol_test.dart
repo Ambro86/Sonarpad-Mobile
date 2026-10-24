@@ -158,7 +158,24 @@ void main() {
     expect(session.status.position, const Duration(seconds: 35));
     expect(session.positionRestoreFailed, isFalse);
   });
-  test('Only receiver FINISHED status marks natural completion', () async {
+  test('Paused-at-end completion excludes ordinary pause, loading and disconnect', () {
+    ChromecastStatus status({String state = 'PAUSED', int position = 132591,
+        int duration = 132632, bool disconnected = false, String? reason}) =>
+        ChromecastStatus(state: state, sessionId: 1, idleReason: reason,
+          position: Duration(milliseconds: position),
+          duration: Duration(milliseconds: duration), disconnected: disconnected);
+    expect(status().completed, isTrue);
+    expect(status(position: 132632).completed, isTrue);
+    expect(status(position: 120000).completed, isFalse);
+    expect(status(position: 132000).completed, isFalse);
+    expect(status(duration: 0).completed, isFalse);
+    expect(status(position: 0, duration: 0).completed, isFalse);
+    expect(status(state: 'PLAYING').completed, isFalse);
+    expect(status(state: 'BUFFERING').completed, isFalse);
+    expect(status(disconnected: true).completed, isFalse);
+    expect(status(reason: 'ERROR').completed, isFalse);
+  });
+  test('Only IDLE FINISHED status marks natural idle completion', () async {
     final receiver = ReceiverSocket();
     final session = ChromecastSession(socketFactory: (_) async => receiver);
     addTearDown(session.close);
