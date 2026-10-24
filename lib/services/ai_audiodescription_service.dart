@@ -3748,7 +3748,7 @@ $nonverbalInstruction''';
     final allGlossary = <Map<String, Object?>>[];
     final verifiedIds = <String>{};
     var model = activeGeminiModel;
-    final minutes = clipRanges ?? AudioDescriptionFallbacks.blockedMinuteRanges(chunkStart, chunkEnd);
+    final minutes = List<AdTimeRange>.of(clipRanges ?? AudioDescriptionFallbacks.blockedMinuteRanges(chunkStart, chunkEnd));
     for (var minuteIndex = 0; minuteIndex < minutes.length; minuteIndex++) {
       _checkCancel();
       final minute = minutes[minuteIndex];
@@ -3827,6 +3827,15 @@ $nonverbalInstruction''';
         }
       } on _AdProviderException catch (error) {
         if (error.kind == AdFailureKind.prohibitedContent) {
+          if (clipRanges != null && minute.duration > AudioDescriptionFallbacks.blockedMinuteSeconds) {
+            final subranges = AudioDescriptionFallbacks.blockedMinuteRanges(minute.start, minute.end);
+            minutes.insertAll(minuteIndex + 1, subranges);
+            await AppLogger.log(
+              'Audio description mobile: custom segment ${minute.start}-${minute.end} '
+              'prohibited; retrying only this segment in ${subranges.length} one-minute clips',
+            );
+            continue;
+          }
           await AppLogger.log(
             'Audio description mobile: blocked minute ${minuteIndex + 1}/${minutes.length} '
             'still prohibited; preserving original audio for '
