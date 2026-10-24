@@ -69,7 +69,7 @@ void main() {
     });
     test('short pauses do not reset the gap', () {
       expect(ranges(const [AdTimeRange(0,10), AdTimeRange(30,31),
-        AdTimeRange(50,52), AdTimeRange(65,180)]), [[0,65],[65,180]]);
+        AdTimeRange(50,51.4), AdTimeRange(65,180)]), [[0,65],[65,180]]);
     });
     test('usable pauses and partitioned long pauses reset the gap', () {
       expect(ranges(const [AdTimeRange(0,10), AdTimeRange(30,34),
@@ -81,12 +81,24 @@ void main() {
       const pauses = [AdTimeRange(0,10), AdTimeRange(55,180)];
       expect(ranges(pauses,start:55), isEmpty);
       expect(ranges(pauses,start:40), isEmpty);
-      expect(ranges(pauses,end:57), isEmpty);
+      expect(ranges(pauses,end:56), isEmpty);
       expect(ranges(const []), isEmpty);
     });
     test('actual problematic cartoon interval', () {
       expect(ranges(const [AdTimeRange(400,410), AdTimeRange(425,431.800625), AdTimeRange(484.7256875,489.9)],
         start:360.65,end:541.983), [[360.65,484.7256875],[484.7256875,541.983]]);
+    });
+    test('short laughter pauses restart after the long dialogue', () {
+      expect(ranges(const [AdTimeRange(183.56,225.335),
+        AdTimeRange(311.656,313.996), AdTimeRange(315.284,317.692),
+        AdTimeRange(318.524,323.446)], start:183.56, end:360.996),
+        [[183.56,311.656],[311.656,360.996]]);
+    });
+    test('restart uses the same minimum duration as description slots', () {
+      const minimum = AudioDescriptionFallbacks.minMandatorySlotSeconds;
+      expect(ranges([const AdTimeRange(0,10), AdTimeRange(55,55+minimum)]),
+        [[0,55],[55,180]]);
+      expect(ranges([const AdTimeRange(0,10), AdTimeRange(55,55+minimum-0.01)]), isEmpty);
     });
   });
 

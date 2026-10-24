@@ -388,10 +388,10 @@ class AudioDescriptionFallbacks {
     final cuts = <double>[];
     var previousEnd = 0.0;
     for (final pause in usablePauses) {
-      if (pause.duration < 3.0) continue;
+      if (pause.duration < minMandatorySlotSeconds) continue;
       if (pause.start - previousEnd >= 45.0 &&
           pause.start - chunkStart >= 45.0 &&
-          chunkEnd - pause.start >= 3.0) {
+          chunkEnd - pause.start >= minMandatorySlotSeconds) {
         cuts.add(pause.start);
       }
       previousEnd = pause.end;
