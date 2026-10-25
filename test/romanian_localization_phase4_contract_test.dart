@@ -71,6 +71,8 @@ void main() {
       'audioDescriptionDetailNormal',
       'audioDescriptionAudioNormal',
       'audioDescriptionProjectEditorDescriptionOption',
+      // Numeric index and timestamps only; no words to translate.
+      'audioDescriptionProjectEditorSegmentOption',
       'audioDescriptionLanguageCountry',
       'homeTv',
       'homeRaiPlay',

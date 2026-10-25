@@ -6430,5 +6430,20 @@
   "audioDescriptionProjectSegment": "Neu zu analysierendes Segment",
   "audioDescriptionProjectReanalyze": "Segment neu analysieren",
   "audioDescriptionProjectReanalyzeConfirm": "Ausgewähltes Segment neu analysieren? Neue Texte ersetzen passende Beschreibungen; gespeicherte Zeitpunkte bleiben erhalten. Zusätzliche Beschreibungen werden nur in freie Lücken eingefügt. Die audiodeskribierte Datei muss erneut exportiert werden.",
-  "convertMediaDocumentAudiobookHint": "Um ein Dokument in ein Hörbuch umzuwandeln, öffne Dokumente → Aus Dateien importieren. Wähle nach dem Import Dokument exportieren → MP3-Hörbuch (.mp3)."
+  "convertMediaDocumentAudiobookHint": "Um ein Dokument in ein Hörbuch umzuwandeln, öffne Dokumente → Aus Dateien importieren. Wähle nach dem Import Dokument exportieren → MP3-Hörbuch (.mp3).",
+  "audioDescriptionProjectEditorSegmentOption": "{index}: {start} – {end}",
+  "@audioDescriptionProjectEditorSegmentOption": {
+    "description": "Segment number and start/end timestamps in the audio description project selector.",
+    "placeholders": {
+      "index": {
+        "type": "int"
+      },
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  }
 }

@@ -6433,5 +6433,20 @@
   "audioDescriptionProjectSegment": "Segment do ponownej analizy",
   "audioDescriptionProjectReanalyze": "Przeanalizuj segment ponownie",
   "audioDescriptionProjectReanalyzeConfirm": "Ponownie przeanalizować wybrany segment? Nowe teksty zastąpią odpowiadające im opisy z zachowaniem zapisanych czasów. Dodatkowe opisy zostaną dodane tylko w wolnych miejscach. Plik z audiodeskrypcją trzeba będzie ponownie wyeksportować.",
-  "convertMediaDocumentAudiobookHint": "Aby przekształcić dokument w audiobook, przejdź do Dokumenty → Importuj z Plików. Po zaimportowaniu wybierz Eksportuj dokument → Audiobook MP3 (.mp3)."
+  "convertMediaDocumentAudiobookHint": "Aby przekształcić dokument w audiobook, przejdź do Dokumenty → Importuj z Plików. Po zaimportowaniu wybierz Eksportuj dokument → Audiobook MP3 (.mp3).",
+  "audioDescriptionProjectEditorSegmentOption": "{index}: {start} – {end}",
+  "@audioDescriptionProjectEditorSegmentOption": {
+    "description": "Segment number and start/end timestamps in the audio description project selector.",
+    "placeholders": {
+      "index": {
+        "type": "int"
+      },
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  }
 }

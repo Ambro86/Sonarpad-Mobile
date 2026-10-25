@@ -7,6 +7,9 @@ import 'app_localizations.dart';
 /// The translations for Spanish Castilian (`es`).
 class AppLocalizationsEs extends AppLocalizations {
   @override
+  String audioDescriptionProjectEditorSegmentOption(int index, String start, String end) => '$index: $start – $end';
+
+  @override
   String get convertMediaDocumentAudiobookHint => 'Para convertir un documento en audiolibro, ve a Documentos → Importar desde Archivos. Después de importarlo, elige Exportar documento → Audiolibro MP3 (.mp3).';
 
   @override

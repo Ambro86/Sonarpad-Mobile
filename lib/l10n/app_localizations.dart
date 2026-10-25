@@ -72,6 +72,9 @@ import 'app_localizations_zh.dart';
 /// be consistent with the languages listed in the AppLocalizations.supportedLocales
 /// property.
 abstract class AppLocalizations {
+  /// Segment number and start/end timestamps in the project selector.
+  String audioDescriptionProjectEditorSegmentOption(int index, String start, String end);
+
   String get saveMp4WithAudiodescription;
   String get saveMediaContent;
   String get favoritesSortAlphabetically;

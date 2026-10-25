@@ -7,6 +7,9 @@ import 'app_localizations.dart';
 /// The translations for French (`fr`).
 class AppLocalizationsFr extends AppLocalizations {
   @override
+  String audioDescriptionProjectEditorSegmentOption(int index, String start, String end) => '$index: $start – $end';
+
+  @override
   String get convertMediaDocumentAudiobookHint => 'Pour transformer un document en livre audio, allez dans Documents → Importer depuis Fichiers. Après l’importation, choisissez Exporter le document → Livre audio MP3 (.mp3).';
 
   @override

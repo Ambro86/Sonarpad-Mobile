@@ -520,7 +520,7 @@ class _AudioDescriptionProjectEditorScreenState
     }
     return List.generate(AiAudioDescriptionService.projectSegmentCount(project), (index) {
       final (start, end) = AiAudioDescriptionService.projectSegmentRange(project, index);
-      return AccessibleOption(value: '$index', label: '${index + 1}: ${time(start)} – ${time(end)}');
+      return AccessibleOption(value: '$index', label: AppLocalizations.of(context).audioDescriptionProjectEditorSegmentOption(index + 1, time(start), time(end)));
     });
   }
 

@@ -4855,5 +4855,20 @@
   "audioDescriptionProjectSegment": "Úsek k nové analýze",
   "audioDescriptionProjectReanalyze": "Znovu analyzovat úsek",
   "audioDescriptionProjectReanalyzeConfirm": "Znovu analyzovat vybraný úsek? Nové texty nahradí odpovídající popisy při zachování uložených časů. Další popisy budou přidány pouze do volných mezer. Soubor s audiopopisem bude nutné znovu exportovat.",
-  "convertMediaDocumentAudiobookHint": "Chcete-li převést dokument na audioknihu, přejděte do Dokumenty → Importovat ze Souborů. Po importu zvolte Exportovat dokument → Audiokniha MP3 (.mp3)."
+  "convertMediaDocumentAudiobookHint": "Chcete-li převést dokument na audioknihu, přejděte do Dokumenty → Importovat ze Souborů. Po importu zvolte Exportovat dokument → Audiokniha MP3 (.mp3).",
+  "audioDescriptionProjectEditorSegmentOption": "{index}: {start} – {end}",
+  "@audioDescriptionProjectEditorSegmentOption": {
+    "description": "Segment number and start/end timestamps in the audio description project selector.",
+    "placeholders": {
+      "index": {
+        "type": "int"
+      },
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  }
 }

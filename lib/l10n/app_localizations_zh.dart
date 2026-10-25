@@ -7,6 +7,9 @@ import 'app_localizations.dart';
 /// The translations for Chinese (`zh`).
 class AppLocalizationsZh extends AppLocalizations {
   @override
+  String audioDescriptionProjectEditorSegmentOption(int index, String start, String end) => '$index: $start – $end';
+
+  @override
   String get convertMediaDocumentAudiobookHint => '要将文档转换为有声书，请前往“文档”→“从文件导入”。导入后，选择“导出文档”→“MP3 有声书 (.mp3)”。';
 
   @override
@@ -5257,6 +5260,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
 /// The translations for Chinese, as used in China (`zh_CN`).
 class AppLocalizationsZhCn extends AppLocalizationsZh {
+  @override
+  String audioDescriptionProjectEditorSegmentOption(int index, String start, String end) => '$index: $start – $end';
+
   @override
   String get convertMediaDocumentAudiobookHint => '要将文档转换为有声书，请前往“文档”→“从文件导入”。导入后，选择“导出文档”→“MP3 有声书 (.mp3)”。';
 

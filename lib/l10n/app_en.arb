@@ -4852,5 +4852,20 @@
   "audioDescriptionProjectSegment": "Segment to reanalyze",
   "audioDescriptionProjectReanalyze": "Reanalyze segment",
   "audioDescriptionProjectReanalyzeConfirm": "Reanalyze the selected segment? Updated texts will replace matching descriptions while preserving saved timings. New descriptions will only be added in available gaps. The audio-described file will need to be exported again.",
-  "convertMediaDocumentAudiobookHint": "To turn a document into an audiobook, go to Documents → Import from Files. After importing it, choose Export document → MP3 audiobook (.mp3)."
+  "convertMediaDocumentAudiobookHint": "To turn a document into an audiobook, go to Documents → Import from Files. After importing it, choose Export document → MP3 audiobook (.mp3).",
+  "audioDescriptionProjectEditorSegmentOption": "{index}: {start} – {end}",
+  "@audioDescriptionProjectEditorSegmentOption": {
+    "description": "Segment number and start/end timestamps in the audio description project selector.",
+    "placeholders": {
+      "index": {
+        "type": "int"
+      },
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  }
 }

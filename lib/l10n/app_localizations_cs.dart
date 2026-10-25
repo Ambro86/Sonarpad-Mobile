@@ -7,6 +7,9 @@ import 'app_localizations.dart';
 /// The translations for Czech (`cs`).
 class AppLocalizationsCs extends AppLocalizations {
   @override
+  String audioDescriptionProjectEditorSegmentOption(int index, String start, String end) => '$index: $start – $end';
+
+  @override
   String get convertMediaDocumentAudiobookHint => 'Chcete-li převést dokument na audioknihu, přejděte do Dokumenty → Importovat ze Souborů. Po importu zvolte Exportovat dokument → Audiokniha MP3 (.mp3).';
 
   @override

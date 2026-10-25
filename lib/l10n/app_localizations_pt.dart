@@ -7,6 +7,9 @@ import 'app_localizations.dart';
 /// The translations for Portuguese (`pt`).
 class AppLocalizationsPt extends AppLocalizations {
   @override
+  String audioDescriptionProjectEditorSegmentOption(int index, String start, String end) => '$index: $start – $end';
+
+  @override
   String get convertMediaDocumentAudiobookHint => 'Para transformar um documento num audiolivro, vá a Documentos → Importar de Ficheiros. Após a importação, escolha Exportar documento → Audiolivro MP3 (.mp3).';
 
   @override
@@ -5454,6 +5457,9 @@ class AppLocalizationsPt extends AppLocalizations {
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
 class AppLocalizationsPtBr extends AppLocalizationsPt {
+  @override
+  String audioDescriptionProjectEditorSegmentOption(int index, String start, String end) => '$index: $start – $end';
+
   @override
   String get convertMediaDocumentAudiobookHint => 'Para transformar um documento em audiolivro, vá a Documentos → Importar de Arquivos. Após a importação, escolha Exportar documento → Audiolivro MP3 (.mp3).';
 
