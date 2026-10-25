@@ -7,6 +7,19 @@ import 'app_localizations.dart';
 /// The translations for Turkish (`tr`).
 class AppLocalizationsTr extends AppLocalizations {
   @override
+  String get convertMediaDocumentAudiobookHint => 'Bir belgeyi sesli kitaba dönüştürmek için Belgeler → Dosyalardan içe aktar yolunu izleyin. İçe aktardıktan sonra Belgeyi dışa aktar → MP3 sesli kitap (.mp3) seçeneğini seçin.';
+
+  @override
+  String get audioDescriptionProjectSegment => 'Yeniden analiz edilecek bölüm';
+
+  @override
+  String get audioDescriptionProjectReanalyze => 'Bölümü yeniden analiz et';
+
+  @override
+  String get audioDescriptionProjectReanalyzeConfirm =>
+      'Seçilen bölüm yeniden analiz edilsin mi? Güncellenen metinler, kayıtlı zamanlamalar korunarak ilgili betimlemelerin yerini alır. Yeni betimlemeler yalnızca uygun boşluklara eklenir. Sesli betimlemeli dosyanın yeniden dışa aktarılması gerekir.';
+
+  @override
   String get saveMp4WithAudiodescription => "Sesli betimlemeli MP4";
 
   @override

@@ -4848,5 +4848,9 @@
   "favoriteVideosPartial": "Bazı kanallar yüklenemedi. Diğer kanalların videoları gösteriliyor.",
   "favoritesSortAlphabetically": "Alfabetik sırala",
   "saveMediaContent": "İçeriği kaydet",
-  "saveMp4WithAudiodescription": "Sesli betimlemeli MP4"
+  "saveMp4WithAudiodescription": "Sesli betimlemeli MP4",
+  "audioDescriptionProjectSegment": "Yeniden analiz edilecek bölüm",
+  "audioDescriptionProjectReanalyze": "Bölümü yeniden analiz et",
+  "audioDescriptionProjectReanalyzeConfirm": "Seçilen bölüm yeniden analiz edilsin mi? Güncellenen metinler, kayıtlı zamanlamalar korunarak ilgili betimlemelerin yerini alır. Yeni betimlemeler yalnızca uygun boşluklara eklenir. Sesli betimlemeli dosyanın yeniden dışa aktarılması gerekir.",
+  "convertMediaDocumentAudiobookHint": "Bir belgeyi sesli kitaba dönüştürmek için Belgeler → Dosyalardan içe aktar yolunu izleyin. İçe aktardıktan sonra Belgeyi dışa aktar → MP3 sesli kitap (.mp3) seçeneğini seçin."
 }

@@ -140,7 +140,7 @@ final class SonarpadCloudFilePicker: NSObject, FlutterPlugin, FlutterStreamHandl
           if self.isCancelled() { throw CloudCopyError.cancelled }
           let fileName = source.lastPathComponent
           if !selectedExtensions.isEmpty && !selectedExtensions.contains(source.pathExtension.lowercased()) {
-            throw CloudCopyError.unsupported
+            throw CloudCopyError.unsupported(source.pathExtension.lowercased())
           }
           let safeName = fileName.replacingOccurrences(of: "/", with: "_")
           let itemDirectory = destination.appendingPathComponent(UUID().uuidString, isDirectory: true)
@@ -160,6 +160,9 @@ final class SonarpadCloudFilePicker: NSObject, FlutterPlugin, FlutterStreamHandl
         for directory in copiedDirectories { try? FileManager.default.removeItem(at: directory) }
         DispatchQueue.main.async {
           if self.isCancelled() { self.finish(nil, requestId: requestId) }
+          else if case CloudCopyError.unsupported(let ext) = error {
+            self.finish(FlutterError(code: "unsupported_file_type", message: error.localizedDescription, details: ext), requestId: requestId)
+          }
           else { self.finish(FlutterError(code: "cloud_file_error", message: error.localizedDescription, details: nil), requestId: requestId) }
         }
       }
@@ -257,7 +260,8 @@ final class SonarpadCloudFilePicker: NSObject, FlutterPlugin, FlutterStreamHandl
 }
 
 private enum CloudCopyError: LocalizedError {
-  case cancelled, unsupported, incomplete
+  case cancelled, incomplete
+  case unsupported(String)
   var errorDescription: String? {
     switch self {
     case .cancelled: return "Copy cancelled"

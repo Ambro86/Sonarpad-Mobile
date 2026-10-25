@@ -8763,6 +8763,14 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Inserisci un indirizzo email valido oppure lascia il campo vuoto.'**
   String get developerReportEmailInvalid;
+  String get audioDescriptionProjectSegment;
+
+  String get audioDescriptionProjectReanalyze;
+
+  String get audioDescriptionProjectReanalyzeConfirm;
+
+  String get convertMediaDocumentAudiobookHint;
+
 }
 
 class _AppLocalizationsDelegate

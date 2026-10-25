@@ -7,6 +7,21 @@ import 'app_localizations.dart';
 /// The translations for Spanish Castilian (`es`).
 class AppLocalizationsEs extends AppLocalizations {
   @override
+  String get convertMediaDocumentAudiobookHint => 'Para convertir un documento en audiolibro, ve a Documentos → Importar desde Archivos. Después de importarlo, elige Exportar documento → Audiolibro MP3 (.mp3).';
+
+  @override
+  String get audioDescriptionProjectSegment =>
+      'Segmento que se volverá a analizar';
+
+  @override
+  String get audioDescriptionProjectReanalyze =>
+      'Volver a analizar el segmento';
+
+  @override
+  String get audioDescriptionProjectReanalyzeConfirm =>
+      '¿Volver a analizar el segmento seleccionado? Los textos actualizados sustituirán las descripciones correspondientes, conservando los tiempos guardados. Solo se añadirán nuevas descripciones en los espacios disponibles. Será necesario volver a exportar el archivo audiodescrito.';
+
+  @override
   String get saveMp4WithAudiodescription => "MP4 con audiodescripción";
 
   @override

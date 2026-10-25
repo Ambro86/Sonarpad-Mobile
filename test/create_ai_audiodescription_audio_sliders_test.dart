@@ -44,6 +44,13 @@ class _Paths extends PathProviderPlatform {
   }
 }
 
+class _SourceTrackService extends AiAudioDescriptionService {
+  _SourceTrackService([this.tracks = const []]);
+  final List<AudioDescriptionSourceTrack> tracks;
+  @override
+  Future<List<AudioDescriptionSourceTrack>> sourceAudioTracks(String path) async => tracks;
+}
+
 class _NoMixPreview extends AudioDescriptionMixPreviewController {
   @override
   void schedule(AudioDescriptionMixPreviewRenderer render) {}
@@ -211,6 +218,7 @@ Future<void> _mountScreen(
   WidgetTester tester, {
   String? sourcePath,
   AudioDescriptionMixPreviewController Function()? previewFactory,
+  AiAudioDescriptionService Function()? serviceFactory,
 }) async {
   await tester.runAsync(() async {
     await tester.pumpWidget(
@@ -220,6 +228,7 @@ Future<void> _mountScreen(
         supportedLocales: AppLocalizations.supportedLocales,
         home: CreateAiAudiodescriptionScreen(
           initialSourcePath: sourcePath,
+          audioDescriptionServiceFactory: serviceFactory ?? _SourceTrackService.new,
           mixPreviewControllerFactory: previewFactory ?? _NoMixPreview.new,
         ),
       ),
@@ -384,6 +393,44 @@ void main() {
     );
     PathProviderPlatform.instance = originalPaths;
     await temporary.delete(recursive: true);
+  });
+
+  testWidgets('multi-track source asks which track and stores the selected row', (tester) async {
+    try {
+      await _mountScreen(tester, sourcePath: '/test/two-tracks.mkv', serviceFactory: () => _SourceTrackService([
+        const AudioDescriptionSourceTrack(1, 'Italiano'),
+        const AudioDescriptionSourceTrack(3, 'English'),
+      ]));
+      expect(find.byType(SimpleDialog), findsOneWidget);
+      expect(find.text('Italiano'), findsOneWidget);
+      expect(find.text('English'), findsOneWidget);
+      await tester.tap(find.text('English'));
+      await _waitUntil(tester, () => _row(tester, 'source_audio_track').value == 'English');
+      await tester.pumpAndSettle();
+      expect(find.byType(SimpleDialog), findsNothing);
+      expect(_row(tester, 'source_audio_track').value, 'English');
+      await tester.runAsync(() async {
+        _row(tester, 'source_audio_track').onActivate!();
+        await Future<void>.delayed(Duration.zero);
+      });
+      await _waitForWidget(tester, find.byType(SimpleDialog));
+      await tester.pumpAndSettle();
+      expect(find.byType(SimpleDialog), findsOneWidget);
+      await tester.tap(find.text('Italiano'));
+      await _waitUntil(tester, () => _row(tester, 'source_audio_track').value == 'Italiano');
+      await tester.pumpAndSettle();
+      expect(_row(tester, 'source_audio_track').value, 'Italiano');
+    } finally { await _unmountScreen(tester); }
+  });
+
+  testWidgets('single audio track does not ask or add a track control', (tester) async {
+    try {
+      await _mountScreen(tester, sourcePath: '/test/single.mkv', serviceFactory: () => _SourceTrackService([
+        const AudioDescriptionSourceTrack(1, 'Italiano'),
+      ]));
+      expect(find.byType(SimpleDialog), findsNothing);
+      expect(_form(tester).sections.expand((section) => section.rows).where((row) => row.id == 'source_audio_track'), isEmpty);
+    } finally { await _unmountScreen(tester); }
   });
 
   testWidgets(

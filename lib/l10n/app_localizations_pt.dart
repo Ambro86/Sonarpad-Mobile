@@ -7,6 +7,20 @@ import 'app_localizations.dart';
 /// The translations for Portuguese (`pt`).
 class AppLocalizationsPt extends AppLocalizations {
   @override
+  String get convertMediaDocumentAudiobookHint => 'Para transformar um documento num audiolivro, vá a Documentos → Importar de Ficheiros. Após a importação, escolha Exportar documento → Audiolivro MP3 (.mp3).';
+
+  @override
+  String get audioDescriptionProjectSegment => 'Segmento a analisar novamente';
+
+  @override
+  String get audioDescriptionProjectReanalyze =>
+      'Analisar novamente o segmento';
+
+  @override
+  String get audioDescriptionProjectReanalyzeConfirm =>
+      'Analisar novamente o segmento selecionado? Os textos atualizados substituirão as descrições correspondentes, mantendo os tempos guardados. Novas descrições serão adicionadas apenas nos espaços disponíveis. Será necessário voltar a exportar o ficheiro com audiodescrição.';
+
+  @override
   String get saveMp4WithAudiodescription => "MP4 com audiodescrição";
 
   @override
@@ -5440,6 +5454,20 @@ class AppLocalizationsPt extends AppLocalizations {
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
 class AppLocalizationsPtBr extends AppLocalizationsPt {
+  @override
+  String get convertMediaDocumentAudiobookHint => 'Para transformar um documento em audiolivro, vá a Documentos → Importar de Arquivos. Após a importação, escolha Exportar documento → Audiolivro MP3 (.mp3).';
+
+  @override
+  String get audioDescriptionProjectSegment => 'Segmento a analisar novamente';
+
+  @override
+  String get audioDescriptionProjectReanalyze =>
+      'Analisar novamente o segmento';
+
+  @override
+  String get audioDescriptionProjectReanalyzeConfirm =>
+      'Analisar novamente o segmento selecionado? Os textos atualizados substituirão as descrições correspondentes, mantendo os tempos salvos. Novas descrições serão adicionadas apenas nos espaços disponíveis. Será necessário exportar novamente o arquivo com audiodescrição.';
+
   @override
   String get saveMp4WithAudiodescription => "MP4 com audiodescrição";
 

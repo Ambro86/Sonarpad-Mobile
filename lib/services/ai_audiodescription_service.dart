@@ -27,6 +27,14 @@ import 'media_export_destination_service.dart';
 import 'pyannote_mobile_service.dart';
 import 'voice_dictionary_service.dart';
 
+/// Absolute stream indices, matching FFprobe and desktop AD projects.
+class AudioDescriptionSourceTrack {
+  const AudioDescriptionSourceTrack(this.index, this.label, {this.isDefault = false});
+  final int index;
+  final String label;
+  final bool isDefault;
+}
+
 class AiAudioDescriptionSettings {
   const AiAudioDescriptionSettings({
     required this.provider,
@@ -43,6 +51,7 @@ class AiAudioDescriptionSettings {
     required this.characterCatalogName,
     required this.saveProject,
     this.createVideoOutput = false,
+    this.audioStreamIndex,
     int bitrateKbps = audioDescriptionDefaultBitrateKbps,
     double sourceVolume = audioDescriptionDefaultSourceVolume,
     required this.ttsEngine,
@@ -68,6 +77,7 @@ class AiAudioDescriptionSettings {
   final String? characterCatalogName;
   final bool saveProject;
   final bool createVideoOutput;
+  final int? audioStreamIndex;
   final int _bitrateKbps;
   final double _sourceVolume;
   int get bitrateKbps => normalizeAudioDescriptionBitrate(_bitrateKbps);
@@ -82,6 +92,10 @@ class AiAudioDescriptionSettings {
   final double? ttsPitch;
 
   AiAudioDescriptionSettings copyWith({
+    String? provider,
+    String? geminiApiKey,
+    String? sonarpadCode,
+    int? audioStreamIndex,
     String? verbosity,
     String? geminiModel,
     bool? keepCharacterCatalog,
@@ -91,9 +105,9 @@ class AiAudioDescriptionSettings {
     double? ttsPitch,
   }) =>
       AiAudioDescriptionSettings(
-        provider: provider,
-        geminiApiKey: geminiApiKey,
-        sonarpadCode: sonarpadCode,
+        provider: provider ?? this.provider,
+        geminiApiKey: geminiApiKey ?? this.geminiApiKey,
+        sonarpadCode: sonarpadCode ?? this.sonarpadCode,
         geminiModel: geminiModel ?? this.geminiModel,
         languageCode: languageCode,
         verbosity: verbosity ?? this.verbosity,
@@ -105,6 +119,7 @@ class AiAudioDescriptionSettings {
         characterCatalogName: characterCatalogName ?? this.characterCatalogName,
         saveProject: saveProject,
         createVideoOutput: createVideoOutput,
+        audioStreamIndex: audioStreamIndex ?? this.audioStreamIndex,
         bitrateKbps: bitrateKbps ?? this.bitrateKbps,
         sourceVolume: sourceVolume ?? this.sourceVolume,
         ttsEngine: ttsEngine,
@@ -211,6 +226,7 @@ class AudioDescriptionProjectItem {
 
   AudioDescriptionProjectItem copyWith({
     bool clearTtsSpeedOverride = false,
+    double? ttsSpeedOverride,
     String? text,
     String? renderedText,
     bool? modified,
@@ -223,7 +239,7 @@ class AudioDescriptionProjectItem {
     bool clearDuck = false,
   }) =>
       AudioDescriptionProjectItem(
-        ttsSpeedOverride: clearTtsSpeedOverride ? null : ttsSpeedOverride,
+        ttsSpeedOverride: clearTtsSpeedOverride ? null : (ttsSpeedOverride ?? this.ttsSpeedOverride),
         id: id,
         text: text ?? this.text,
         originalText: originalText,
@@ -271,6 +287,7 @@ class AudioDescriptionEditableProject {
     required this.sourcePath,
     required this.outputMp3Path,
     this.outputIsVideo = false,
+    this.audioStreamIndex,
     required this.sourceDurationSec,
     required this.outputDurationSec,
     required this.languageCode,
@@ -294,6 +311,7 @@ class AudioDescriptionEditableProject {
     required this.protectedIntervals,
     required this.descriptions,
     required this.excludedDescriptions,
+    this.characterGlossary = const [],
   }) : _bitrateKbps = bitrateKbps,
        _sourceVolume = sourceVolume;
 
@@ -303,6 +321,7 @@ class AudioDescriptionEditableProject {
   final String sourcePath;
   final String outputMp3Path;
   final bool outputIsVideo;
+  final int? audioStreamIndex;
   final double sourceDurationSec;
   final double outputDurationSec;
   final String languageCode;
@@ -328,6 +347,7 @@ class AudioDescriptionEditableProject {
   final List<AudioDescriptionProjectInterval> protectedIntervals;
   final List<AudioDescriptionProjectItem> descriptions;
   final List<Map<String, Object?>> excludedDescriptions;
+  final List<Map<String, Object?>> characterGlossary;
 
   AudioDescriptionEditableProject copyWith({
     String? projectPath,
@@ -358,6 +378,7 @@ class AudioDescriptionEditableProject {
         sourcePath: sourcePath ?? this.sourcePath,
         outputMp3Path: outputMp3Path ?? this.outputMp3Path,
         outputIsVideo: outputIsVideo ?? this.outputIsVideo,
+        audioStreamIndex: audioStreamIndex,
         sourceDurationSec: sourceDurationSec,
         outputDurationSec: outputDurationSec ?? this.outputDurationSec,
         languageCode: languageCode,
@@ -382,6 +403,7 @@ class AudioDescriptionEditableProject {
         protectedIntervals: protectedIntervals,
         descriptions: descriptions ?? this.descriptions,
         excludedDescriptions: excludedDescriptions ?? this.excludedDescriptions,
+        characterGlossary: characterGlossary,
       );
 
   String get windowsLanguageCode {
@@ -406,7 +428,7 @@ class AudioDescriptionEditableProject {
       'source_path': sourcePath,
       'output_mp3_path': outputMp3Path,
       'output_is_video': outputIsVideo,
-      'audio_stream_index': null,
+      'audio_stream_index': audioStreamIndex,
       'source_duration_sec': sourceDurationSec,
       'output_duration_sec': outputDurationSec,
       'language': windowsLanguageCode,
@@ -430,6 +452,7 @@ class AudioDescriptionEditableProject {
       'protected_intervals': protectedIntervals.map((e) => e.toJson()).toList(),
       'descriptions': descriptions.map((e) => e.toJson()).toList(),
       'excluded_descriptions': excludedDescriptions,
+      'character_glossary': characterGlossary,
       // Mobile-only metadata. Serde on Windows ignores unknown fields, while
       // keeping system voices fully reconstructable on iOS/Android.
       'mobile_tts_engine': ttsEngine,
@@ -1611,13 +1634,14 @@ class AiAudioDescriptionService {
 
     try {
       _emit(onProgress, 'preparing', 0.01);
-      final probe = await _probe(sourcePath);
+      final probe = await _probe(sourcePath, audioStreamIndex: settings.audioStreamIndex);
       _checkCancel();
       await _prepareCanonicalWav(
         sourcePath: sourcePath,
         outputPath: canonicalWav,
         durationSec: probe.durationSec,
         hasAudio: probe.hasAudio,
+        audioStreamIndex: settings.audioStreamIndex,
       );
 
       _emit(onProgress, 'pyannote', 0.06);
@@ -1678,6 +1702,7 @@ class AiAudioDescriptionService {
 
       final checkpoint = await _loadCheckpoint(
         sourcePath: sourcePath,
+        audioStreamIndex: settings.audioStreamIndex,
         durationSec: pyannote.durationSec,
         chunkCount: chunkCount,
         allowNonverbalVocals: settings.allowNonverbalVocals,
@@ -1814,6 +1839,7 @@ class AiAudioDescriptionService {
         // later failures therefore resume from the last known-good boundary.
         await _saveCheckpoint(
           sourcePath: sourcePath,
+          audioStreamIndex: settings.audioStreamIndex,
           durationSec: pyannote.durationSec,
           chunkCount: chunkCount,
           completedChunks: chunkIndex + 1,
@@ -1983,6 +2009,7 @@ class AiAudioDescriptionService {
           p.join(operationDir.path, '${cleanBase}_audiodescritto.mp3');
       await _renderFinalMp3(
         sourcePath: sourcePath,
+        audioStreamIndex: settings.audioStreamIndex,
         outputPath: mixedMp3Path,
         sourceDurationSec: probe.durationSec,
         hasAudio: probe.hasAudio,
@@ -2109,7 +2136,31 @@ class AiAudioDescriptionService {
     }
   }
 
-  Future<_ProbeInfo> _probe(String path) async {
+  Future<List<AudioDescriptionSourceTrack>> sourceAudioTracks(String path) async {
+    final session = await FFprobeKit.getMediaInformation(path);
+    final info = session.getMediaInformation();
+    if (!ReturnCode.isSuccess(await session.getReturnCode()) || info == null) {
+      throw StateError('AUDIO_DESCRIPTION_PROBE_FAILED');
+    }
+    return [
+      for (final stream in info.getStreams())
+        if (stream.getType() == 'audio' && stream.getIndex() != null)
+          sourceAudioTrackFromProperties(stream.getAllProperties() ?? {}),
+    ];
+  }
+
+  static AudioDescriptionSourceTrack sourceAudioTrackFromProperties(Map<dynamic, dynamic> data) {
+    final tags = data['tags'] is Map ? data['tags'] as Map : const {};
+    final disposition = data['disposition'] is Map ? data['disposition'] as Map : const {};
+    final index = (data['index'] as num).toInt();
+    final details = [tags['language'], tags['title'], data['codec_name'], data['channel_layout']]
+        .where((value) => value != null && value.toString().trim().isNotEmpty)
+        .map((value) => value.toString()).join(' · ');
+    return AudioDescriptionSourceTrack(index, '${index + 1}${details.isEmpty ? '' : ' · $details'}',
+        isDefault: disposition['default'] == 1);
+  }
+
+  Future<_ProbeInfo> _probe(String path, {int? audioStreamIndex}) async {
     _checkCancel();
     final session = await FFprobeKit.getMediaInformation(path);
     _checkCancel();
@@ -2133,6 +2184,10 @@ class AiAudioDescriptionService {
         'measured=$measuredDuration start=$formatStart local=$duration',
       );
     }
+    if (audioStreamIndex != null && !info.getStreams().any((stream) =>
+        stream.getType() == 'audio' && stream.getIndex() == audioStreamIndex)) {
+      throw StateError('AUDIO_DESCRIPTION_AUDIO_TRACK_MISSING');
+    }
     final hasAudio = info.getStreams().any((stream) => stream.getType() == 'audio');
     final hasVideo = info.getStreams().any((stream) => stream.getType() == 'video');
     if (!hasVideo) throw StateError('AUDIO_DESCRIPTION_VIDEO_REQUIRED');
@@ -2144,10 +2199,12 @@ class AiAudioDescriptionService {
     required String outputPath,
     required double durationSec,
     required bool hasAudio,
+    int? audioStreamIndex,
   }) async {
     final args = hasAudio
         ? <String>[
             '-y', '-hide_banner', '-loglevel', 'error', '-i', sourcePath,
+            if (audioStreamIndex != null) ...['-map', '0:$audioStreamIndex'],
             '-vn', '-map_metadata', '-1', '-ac', '1', '-ar', '16000',
             '-c:a', 'pcm_s16le', '-f', 'wav', outputPath,
           ]
@@ -2165,6 +2222,7 @@ class AiAudioDescriptionService {
     required double startSec,
     required double durationSec,
     required bool hasAudio,
+    int? audioStreamIndex,
     AdMediaFallbackStage stage = AdMediaFallbackStage.normal,
     bool allowOriginalReuse = true,
   }) async {
@@ -2176,7 +2234,7 @@ class AiAudioDescriptionService {
     // the compatibility ladder intact: if the provider rejects this original
     // MP4, _processChunkWithFallbacks will move to compact/compatibility and
     // perform the normal transcode.
-    if (allowOriginalReuse && stage == AdMediaFallbackStage.normal) {
+    if (allowOriginalReuse && audioStreamIndex == null && stage == AdMediaFallbackStage.normal) {
       final source = File(sourcePath);
       final sourceBytes = await source.length();
       if (AudioDescriptionFallbacks.canReuseOriginalShortMp4(
@@ -2215,7 +2273,7 @@ class AiAudioDescriptionService {
       '-ss', startSec.toStringAsFixed(3), '-i', sourcePath,
       '-t', durationSec.toStringAsFixed(3),
       '-map', '0:v:0',
-      if (audio) ...['-map', '0:a:0?'],
+      if (audio) ...['-map', audioStreamIndex == null ? '0:a:0?' : '0:$audioStreamIndex'],
       '-vf', scale,
       '-c:v', 'mpeg4', '-b:v', videoBitrate,
       '-maxrate', maxrate, '-bufsize', bufsize,
@@ -2369,6 +2427,7 @@ class AiAudioDescriptionService {
     required double durationSec,
     required int chunkCount,
     bool allowNonverbalVocals = false,
+    int? audioStreamIndex,
   }) async {
     final file = await _checkpointFile(sourcePath);
     if (!await file.exists()) return null;
@@ -2383,6 +2442,7 @@ class AiAudioDescriptionService {
         await AppLogger.log('Audio description mobile: checkpoint mode mismatch; ignoring');
         return null;
       }
+      if (decoded['audio_stream_index'] != audioStreamIndex) return null;
       final savedDuration = _asDouble(decoded['duration_sec']) ?? -1;
       final savedChunkCount = (decoded['chunk_count'] as num?)?.toInt() ?? -1;
       if (!AudioDescriptionFallbacks.checkpointCompatible(
@@ -2450,6 +2510,7 @@ class AiAudioDescriptionService {
     required List<_GeneratedDescription> descriptions,
     required List<Map<String, Object?>> glossary,
     bool allowNonverbalVocals = false,
+    int? audioStreamIndex,
     Set<String> approvedNonverbalIds = const <String>{},
   }) async {
     final file = await _checkpointFile(sourcePath);
@@ -2457,6 +2518,7 @@ class AiAudioDescriptionService {
     await temp.writeAsString(
       const JsonEncoder.withIndent('  ').convert(<String, Object?>{
         'schema': 'sonarpad-mobile-ad-checkpoint-v1',
+        'audio_stream_index': audioStreamIndex,
         'updated_at_utc': DateTime.now().toUtc().toIso8601String(),
         'source_file': p.basename(sourcePath),
         'duration_sec': durationSec,
@@ -3094,6 +3156,7 @@ $nonverbalInstruction''';
   }
 
   Future<_ChunkProcessResult> _processChunkWithFallbacks({
+    bool allowOriginalReuse = true,
     List<AdTimeRange> restartRanges = const <AdTimeRange>[],
     required String sourcePath,
     required Directory chunksDir,
@@ -3151,7 +3214,9 @@ $nonverbalInstruction''';
           startSec: chunkStart,
           durationSec: chunkEnd - chunkStart,
           hasAudio: hasAudio,
+          audioStreamIndex: settings.audioStreamIndex,
           stage: stage,
+          allowOriginalReuse: allowOriginalReuse,
         );
         final prompt = _buildPrompt(
           settings: settings,
@@ -3773,6 +3838,7 @@ $nonverbalInstruction''';
           // A requested subrange must not reuse the entire short source file.
           allowOriginalReuse: false,
           hasAudio: hasAudio,
+          audioStreamIndex: settings.audioStreamIndex,
         );
         final generated = await _generatePreparedChunk(
           chunkPath: path,
@@ -4590,6 +4656,7 @@ $nonverbalInstruction''';
     required double mediaDurationSec,
     required void Function(AiAudioDescriptionProgress progress) onProgress,
     bool allowDialogueOverlap = false,
+    double? ttsSpeed,
   }) async {
     final result = <_Placement>[];
     final ordered = List<_GeneratedDescription>.of(descriptions)
@@ -4618,7 +4685,7 @@ $nonverbalInstruction''';
     final appSettings = AppSettingsService();
     final voiceDictionary = VoiceDictionaryService();
     final dictionaryEntries = await voiceDictionary.loadEntries();
-    final speed = await appSettings.loadTtsSpeed();
+    final speed = ttsSpeed ?? await appSettings.loadTtsSpeed();
     final pitch = settings.ttsPitch ?? await appSettings.loadTtsPitch();
     if (settings.ttsEngine == 'system') {
       await flutterTts.awaitSpeakCompletion(true);
@@ -5017,6 +5084,7 @@ $nonverbalInstruction''';
 
   Future<void> _renderFinalMp3({
     required String sourcePath,
+    int? audioStreamIndex,
     required String outputPath,
     required double sourceDurationSec,
     required bool hasAudio,
@@ -5034,10 +5102,11 @@ $nonverbalInstruction''';
       args.addAll(<String>['-i', placement.ttsPath!]);
     }
 
+    final sourceAudio = audioStreamIndex == null ? '0:a' : '0:$audioStreamIndex';
     final filter = StringBuffer();
     if (extensions.isEmpty) {
       if (hasAudio) {
-        filter.write('[0:a]aresample=48000,aformat=channel_layouts=stereo[base0];');
+        filter.write('[$sourceAudio]aresample=48000,aformat=channel_layouts=stereo[base0];');
       } else {
         filter.write('anullsrc=r=48000:cl=stereo,atrim=duration=${sourceDurationSec.toStringAsFixed(6)}[base0];');
       }
@@ -5050,7 +5119,7 @@ $nonverbalInstruction''';
         if (point > previous + 0.0001) {
           final label = 'seg$part';
           if (hasAudio) {
-            filter.write('[0:a]atrim=start=${previous.toStringAsFixed(6)}:end=${point.toStringAsFixed(6)},asetpts=PTS-STARTPTS,aresample=48000,aformat=channel_layouts=stereo[$label];');
+            filter.write('[$sourceAudio]atrim=start=${previous.toStringAsFixed(6)}:end=${point.toStringAsFixed(6)},asetpts=PTS-STARTPTS,aresample=48000,aformat=channel_layouts=stereo[$label];');
           } else {
             filter.write('anullsrc=r=48000:cl=stereo,atrim=duration=${(point - previous).toStringAsFixed(6)}[$label];');
           }
@@ -5066,7 +5135,7 @@ $nonverbalInstruction''';
       if (sourceDurationSec > previous + 0.0001) {
         final label = 'seg$part';
         if (hasAudio) {
-          filter.write('[0:a]atrim=start=${previous.toStringAsFixed(6)}:end=${sourceDurationSec.toStringAsFixed(6)},asetpts=PTS-STARTPTS,aresample=48000,aformat=channel_layouts=stereo[$label];');
+          filter.write('[$sourceAudio]atrim=start=${previous.toStringAsFixed(6)}:end=${sourceDurationSec.toStringAsFixed(6)},asetpts=PTS-STARTPTS,aresample=48000,aformat=channel_layouts=stereo[$label];');
         } else {
           filter.write('anullsrc=r=48000:cl=stereo,atrim=duration=${(sourceDurationSec - previous).toStringAsFixed(6)}[$label];');
         }
@@ -5422,6 +5491,7 @@ $nonverbalInstruction''';
       sourcePath: sourcePath,
       outputMp3Path: outputMp3Path,
       outputIsVideo: outputIsVideo,
+      audioStreamIndex: settings.audioStreamIndex,
       sourceDurationSec: pyannote.durationSec,
       outputDurationSec: pyannote.durationSec + inserted.fold<double>(
         0.0,
@@ -5449,6 +5519,7 @@ $nonverbalInstruction''';
       protectedIntervals: intervals,
       descriptions: descriptions,
       excludedDescriptions: excluded,
+      characterGlossary: glossary,
     );
     final payload = project.toJson();
     payload['character_glossary'] = glossary;
@@ -5647,6 +5718,7 @@ $nonverbalInstruction''';
       sourcePath: sourcePath,
       outputMp3Path: outputPath,
       outputIsVideo: boolean(map['output_is_video'], false),
+      audioStreamIndex: (map['audio_stream_index'] as num?)?.toInt(),
       sourceDurationSec: sourceDuration,
       outputDurationSec: outputDuration,
       languageCode: language,
@@ -5670,6 +5742,10 @@ $nonverbalInstruction''';
       protectedIntervals: protected,
       descriptions: descriptions,
       excludedDescriptions: excluded,
+      characterGlossary: [
+        for (final item in (map['character_glossary'] as List? ?? const []))
+          if (item is Map) Map<String, Object?>.from(item),
+      ],
     );
   }
 
@@ -5803,6 +5879,7 @@ $nonverbalInstruction''';
         speed,
         pitch,
         preferredStart,
+        settings.audioStreamIndex,
       ]);
       var cache = _mixPreviewCache;
       if (cache != null &&
@@ -5929,7 +6006,7 @@ $nonverbalInstruction''';
     required double pitch,
     required double? preferredSourceTimeSec,
   }) async {
-    final probe = await _probe(sourcePath);
+    final probe = await _probe(sourcePath, audioStreamIndex: settings.audioStreamIndex);
     final root = await AppCacheService.directory(
       'audio_description_mix_preview',
     );
@@ -5989,7 +6066,7 @@ $nonverbalInstruction''';
           '-i',
           sourcePath,
           '-map',
-          '0:a:0',
+          settings.audioStreamIndex == null ? '0:a:0' : '0:${settings.audioStreamIndex}',
           '-vn',
           if (probe.durationSec - sourceStart < duration) ...<String>[
             '-af',
@@ -6056,9 +6133,11 @@ $nonverbalInstruction''';
         geminiApiKey: '',
         sonarpadCode: '',
         geminiModel: project.geminiModel,
+        audioStreamIndex: project.audioStreamIndex,
         languageCode: project.languageCode,
         verbosity: project.verbosity,
         allowExtendedPauses: project.allowExtendedPauses,
+        allowNonverbalVocals: project.allowNonverbalVocals,
         recognizeCharacters: project.recognizeCharacters,
         recognizeScreenText: project.recognizeScreenText,
         keepCharacterCatalog: false,
@@ -6145,6 +6224,198 @@ $nonverbalInstruction''';
       );
     } finally {
       await flutterTts.stop();
+    }
+  }
+
+  /// Same ordered matching as the desktop editor: unmatched saved cues stay put.
+  AudioDescriptionEditableProject mergeReanalyzedSegment({
+    required AudioDescriptionEditableProject project,
+    required List<AudioDescriptionProjectItem> fresh,
+    required double startSec,
+    required double endSec,
+  }) {
+    final old = [for (var i = 0; i < project.descriptions.length; i++)
+      if (project.descriptions[i].sourceStartSec >= startSec &&
+          project.descriptions[i].sourceStartSec < endSec) i]
+      ..sort((a, b) => project.descriptions[a].sourceStartSec.compareTo(project.descriptions[b].sourceStartSec));
+    final incoming = fresh.where((item) => item.text.trim().isNotEmpty &&
+        item.sourceStartSec.isFinite && item.ttsDurationSec.isFinite &&
+        item.ttsDurationSec > 0 && item.sourceStartSec >= startSec &&
+        item.sourceStartSec < endSec).toList()
+      ..sort((a, b) => a.sourceStartSec.compareTo(b.sourceStartSec));
+    final cost = List.generate(old.length + 1,
+        (_) => List.filled(incoming.length + 1, double.infinity));
+    final step = List.generate(old.length + 1,
+        (_) => List.filled(incoming.length + 1, 0));
+    cost[0][0] = 0;
+    void update(int i, int j, double value, int action) {
+      if (value < cost[i][j]) { cost[i][j] = value; step[i][j] = action; }
+    }
+    for (var i = 0; i <= old.length; i++) {
+      for (var j = 0; j <= incoming.length; j++) {
+        if (i < old.length) update(i + 1, j, cost[i][j] + 4, 1);
+        if (j < incoming.length) update(i, j + 1, cost[i][j] + 4, 2);
+        if (i < old.length && j < incoming.length) {
+          final distance = (project.descriptions[old[i]].sourceStartSec - incoming[j].sourceStartSec).abs();
+          if (distance <= 12) update(i + 1, j + 1, cost[i][j] + distance, 3);
+        }
+      }
+    }
+    final matches = <(int, int)>[];
+    var i = old.length;
+    var j = incoming.length;
+    while (i > 0 || j > 0) {
+      switch (step[i][j]) {
+        case 3: matches.add((old[--i], --j)); break;
+        case 1: i--; break;
+        case 2: j--; break;
+        default: if (i > 0) { i--; } else { j--; }
+      }
+    }
+    final items = List<AudioDescriptionProjectItem>.of(project.descriptions);
+    final used = <int>{};
+    for (final (index, incomingIndex) in matches.reversed) {
+      used.add(incomingIndex);
+      final item = incoming[incomingIndex];
+      final available = audioDescriptionProjectAvailableDuration(project, index);
+      if (available != null && item.ttsDurationSec > available + 0.010) continue;
+      final saved = items[index];
+      items[index] = saved.copyWith(
+        text: item.text, renderedText: item.renderedText,
+        modified: item.text != saved.originalText,
+        ttsDurationSec: item.ttsDurationSec,
+        ttsSpeedOverride: item.ttsSpeedOverride,
+        clearTtsSpeedOverride: item.ttsSpeedOverride == null,
+      );
+    }
+    var nextId = 0;
+    for (final item in items) { nextId = math.max(nextId, item.id); }
+    for (final item in project.excludedDescriptions) {
+      nextId = math.max(nextId, (item['id'] as num?)?.toInt() ?? 0);
+    }
+    for (var index = 0; index < incoming.length; index++) {
+      final item = incoming[index];
+      if (used.contains(index) || item.extendedPause) continue;
+      final start = item.sourceStartSec;
+      final end = start + item.ttsDurationSec;
+      if (end > endSec || end > project.sourceDurationSec ||
+          project.protectedIntervals.any((interval) => start < interval.endSec && end > interval.startSec) ||
+          items.any((saved) => start < saved.sourceStartSec +
+              (saved.extendedPause ? 1.0 : saved.ttsDurationSec) && end > saved.sourceStartSec)) {
+        continue;
+      }
+      final precedingPause = items.where((saved) => saved.extendedPause && saved.sourceStartSec <= start)
+          .fold<double>(0, (sum, saved) => sum + saved.extendedPauseDurationSec);
+      final outputStart = start + precedingPause;
+      items.add(AudioDescriptionProjectItem(
+        id: ++nextId, text: item.text, originalText: item.originalText,
+        renderedText: item.renderedText, modified: false,
+        ttsSpeedOverride: item.ttsSpeedOverride,
+        geminiStartSec: item.geminiStartSec, visualEvidenceTimeSec: item.visualEvidenceTimeSec,
+        sourceStartSec: start, outputStartSec: outputStart,
+        outputEndSec: outputStart + item.ttsDurationSec, ttsDurationSec: item.ttsDurationSec,
+        extendedPause: false, extendedPauseDurationSec: 0,
+        duckStartSec: math.max(0, outputStart - _duckAttackSec - _duckPreDuckSec),
+        duckEndSec: outputStart + item.ttsDurationSec + _duckReleaseSec,
+      ));
+    }
+    items.sort((a, b) => a.sourceStartSec.compareTo(b.sourceStartSec));
+    return project.copyWith(descriptions: items,
+        updatedAtUtc: DateTime.now().toUtc().toIso8601String());
+  }
+
+  static int projectSegmentCount(AudioDescriptionEditableProject project) =>
+      math.max(1, (project.sourceDurationSec / _visualChunkSeconds).ceil());
+
+  static (double, double) projectSegmentRange(AudioDescriptionEditableProject project, int index) {
+    if (index < 0 || index >= projectSegmentCount(project)) throw RangeError.value(index);
+    return (index * _visualChunkSeconds,
+        math.min(project.sourceDurationSec, (index + 1) * _visualChunkSeconds));
+  }
+
+  Future<AudioDescriptionEditableProject> reanalyzeProjectSegment({
+    required AudioDescriptionEditableProject project,
+    required int segmentIndex,
+    String? sourcePathOverride,
+    required void Function(AiAudioDescriptionProgress) onProgress,
+  }) async {
+    _resetCancellation();
+    if (project.ttsEngine != 'edge' && project.ttsEngine != 'system') {
+      throw StateError('AUDIO_DESCRIPTION_PROJECT_UNSUPPORTED_TTS_ENGINE');
+    }
+    final (start, end) = projectSegmentRange(project, segmentIndex);
+    final sourcePath = sourcePathOverride ?? project.sourcePath;
+    final probe = await _probe(sourcePath, audioStreamIndex: project.audioStreamIndex);
+    if ((probe.durationSec - project.sourceDurationSec).abs() >
+        math.max(2.0, project.sourceDurationSec * 0.002)) {
+      throw StateError('AUDIO_DESCRIPTION_PROJECT_SOURCE_DURATION_MISMATCH');
+    }
+    final preferences = await AiAudioDescriptionPreferences.load(defaultLanguage: project.languageCode);
+    final settings = _projectTtsSettings(project).copyWith(
+      provider: preferences['provider'] as String,
+      geminiApiKey: preferences['apiKey'] as String,
+      sonarpadCode: preferences['sonarpadCode'] as String,
+      geminiModel: preferences['model'] as String,
+    );
+    final token = settings.provider == 'sonarpad'
+        ? await _ensureSonarpadToken(settings.sonarpadCode) : null;
+    if (settings.provider == 'gemini' && settings.geminiApiKey.trim().isEmpty) {
+      throw StateError('AUDIO_DESCRIPTION_API_KEY_REQUIRED');
+    }
+    // Saved Pyannote intervals already include verified nonverbal windows.
+    // Bound the existing slot builder to the selected segment; no second audio analysis.
+    final protected = [
+      if (start > 0) PyannoteInterval(0, start),
+      ...project.protectedIntervals.map((item) => PyannoteInterval(item.startSec, item.endSec)),
+      if (end < project.sourceDurationSec) PyannoteInterval(end, project.sourceDurationSec),
+    ];
+    final slots = _safeSlots(project.sourceDurationSec, protected);
+    if (slots.isEmpty) throw StateError('AUDIO_DESCRIPTION_NO_DESCRIPTIONS');
+    final directory = await _createOperationDirectory();
+    try {
+      _emit(onProgress, 'gemini', 0.1);
+      final result = await _processChunkWithFallbacks(
+        allowOriginalReuse: false,
+        restartRanges: AudioDescriptionFallbacks.narrationRestartRanges(
+          slots.where((slot) => slot.mandatory).map((slot) => AdTimeRange(slot.start, slot.end)), start, end),
+        sourcePath: sourcePath, chunksDir: directory, chunkIndex: segmentIndex,
+        chunkStart: start, chunkEnd: end, hasAudio: probe.hasAudio,
+        settings: settings, sonarpadToken: token, activeGeminiModel: settings.geminiModel,
+        chunkSlots: slots, glossary: project.characterGlossary,
+      );
+      _checkCancel();
+      final placements = await _synthesizeAndPlace(
+        settings: settings, descriptions: _dedupeDescriptions(result.parsed.descriptions),
+        slots: slots, ttsDir: directory, mediaDurationSec: project.sourceDurationSec,
+        ttsSpeed: project.ttsSpeed, onProgress: onProgress,
+      );
+      final fresh = <AudioDescriptionProjectItem>[
+        for (final placed in placements)
+          if (placed.included)
+            AudioDescriptionProjectItem(
+              id: 0, text: placed.description.text, originalText: placed.description.text,
+              renderedText: placed.description.text, modified: false,
+              geminiStartSec: placed.description.requestedStart,
+              visualEvidenceTimeSec: placed.description.evidenceTime,
+              sourceStartSec: placed.originalStart, outputStartSec: placed.originalStart,
+              outputEndSec: placed.originalStart + placed.ttsDuration,
+              ttsDurationSec: placed.ttsDuration, ttsSpeedOverride: placed.ttsSpeedOverride,
+              extendedPause: placed.extraPause > 0, extendedPauseDurationSec: placed.extraPause,
+              duckStartSec: null, duckEndSec: null,
+            ),
+      ];
+      if (fresh.isEmpty) throw StateError('AUDIO_DESCRIPTION_NO_DESCRIPTIONS');
+      final candidate = mergeReanalyzedSegment(project: project, fresh: fresh, startSec: start, endSec: end);
+      _checkCancel();
+      if (jsonEncode(candidate.descriptions.map((item) => item.toJson()).toList()) ==
+          jsonEncode(project.descriptions.map((item) => item.toJson()).toList())) {
+        throw StateError('AUDIO_DESCRIPTION_NO_DESCRIPTIONS');
+      }
+      await saveEditableProject(candidate);
+      _emit(onProgress, 'completed', 1);
+      return candidate;
+    } finally {
+      if (await directory.exists()) await directory.delete(recursive: true);
     }
   }
 
@@ -6245,7 +6516,7 @@ $nonverbalInstruction''';
     if (project.ttsEngine != 'edge' && project.ttsEngine != 'system') {
       throw StateError('AUDIO_DESCRIPTION_PROJECT_UNSUPPORTED_TTS_ENGINE');
     }
-    final probe = await _probe(sourcePath);
+    final probe = await _probe(sourcePath, audioStreamIndex: project.audioStreamIndex);
     if (project.sourceDurationSec > 0) {
       final tolerance = math.max(2.0, project.sourceDurationSec * 0.002);
       if ((probe.durationSec - project.sourceDurationSec).abs() > tolerance) {
@@ -6342,6 +6613,7 @@ $nonverbalInstruction''';
       final mp3Path = p.join(dir.path, '${base.isEmpty ? 'audiodescritto' : base}_modificato.mp3');
       await _renderFinalMp3(
         sourcePath: sourcePath,
+        audioStreamIndex: project.audioStreamIndex,
         outputPath: mp3Path,
         sourceDurationSec: probe.durationSec,
         hasAudio: probe.hasAudio,

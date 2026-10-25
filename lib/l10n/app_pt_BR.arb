@@ -4854,5 +4854,9 @@
   "favoriteVideosPartial": "Não foi possível carregar alguns canais. Os vídeos dos outros canais são exibidos.",
   "favoritesSortAlphabetically": "Ordenar alfabeticamente",
   "saveMediaContent": "Salvar conteúdo",
-  "saveMp4WithAudiodescription": "MP4 com audiodescrição"
+  "saveMp4WithAudiodescription": "MP4 com audiodescrição",
+  "audioDescriptionProjectSegment": "Segmento a analisar novamente",
+  "audioDescriptionProjectReanalyze": "Analisar novamente o segmento",
+  "audioDescriptionProjectReanalyzeConfirm": "Analisar novamente o segmento selecionado? Os textos atualizados substituirão as descrições correspondentes, mantendo os tempos salvos. Novas descrições serão adicionadas apenas nos espaços disponíveis. Será necessário exportar novamente o arquivo com audiodescrição.",
+  "convertMediaDocumentAudiobookHint": "Para transformar um documento em audiolivro, vá a Documentos → Importar de Arquivos. Após a importação, escolha Exportar documento → Audiolivro MP3 (.mp3)."
 }

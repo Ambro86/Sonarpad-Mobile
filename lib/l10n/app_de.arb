@@ -6426,5 +6426,9 @@
   "favoriteVideosPartial": "Einige Kanäle konnten nicht geladen werden. Videos der anderen Kanäle werden angezeigt.",
   "favoritesSortAlphabetically": "Alphabetisch sortieren",
   "saveMediaContent": "Inhalt speichern",
-  "saveMp4WithAudiodescription": "MP4 mit Audiodeskription"
+  "saveMp4WithAudiodescription": "MP4 mit Audiodeskription",
+  "audioDescriptionProjectSegment": "Neu zu analysierendes Segment",
+  "audioDescriptionProjectReanalyze": "Segment neu analysieren",
+  "audioDescriptionProjectReanalyzeConfirm": "Ausgewähltes Segment neu analysieren? Neue Texte ersetzen passende Beschreibungen; gespeicherte Zeitpunkte bleiben erhalten. Zusätzliche Beschreibungen werden nur in freie Lücken eingefügt. Die audiodeskribierte Datei muss erneut exportiert werden.",
+  "convertMediaDocumentAudiobookHint": "Um ein Dokument in ein Hörbuch umzuwandeln, öffne Dokumente → Aus Dateien importieren. Wähle nach dem Import Dokument exportieren → MP3-Hörbuch (.mp3)."
 }

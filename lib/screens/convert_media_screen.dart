@@ -189,6 +189,11 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
     final result = await CloudFilePicker.pickFiles(context: context, 
       type: FileType.custom,
       allowedExtensions: _mediaExtensions,
+      unsupportedFileMessage: (extension) => const {
+        'doc', 'docx', 'pdf', 'epub', 'txt', 'rtf', 'odt', 'md', 'html', 'htm',
+      }.contains(extension)
+          ? AppLocalizations.of(context).convertMediaDocumentAudiobookHint
+          : null,
     );
     final path =
         result == null || result.files.isEmpty ? null : result.files.first.path;

@@ -7,6 +7,19 @@ import 'app_localizations.dart';
 /// The translations for Czech (`cs`).
 class AppLocalizationsCs extends AppLocalizations {
   @override
+  String get convertMediaDocumentAudiobookHint => 'Chcete-li převést dokument na audioknihu, přejděte do Dokumenty → Importovat ze Souborů. Po importu zvolte Exportovat dokument → Audiokniha MP3 (.mp3).';
+
+  @override
+  String get audioDescriptionProjectSegment => 'Úsek k nové analýze';
+
+  @override
+  String get audioDescriptionProjectReanalyze => 'Znovu analyzovat úsek';
+
+  @override
+  String get audioDescriptionProjectReanalyzeConfirm =>
+      'Znovu analyzovat vybraný úsek? Nové texty nahradí odpovídající popisy při zachování uložených časů. Další popisy budou přidány pouze do volných mezer. Soubor s audiopopisem bude nutné znovu exportovat.';
+
+  @override
   String get saveMp4WithAudiodescription => "MP4 s audiopopisem";
 
   @override

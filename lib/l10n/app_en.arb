@@ -4848,5 +4848,9 @@
   "favoriteVideosPartial": "Some channels could not be loaded. Videos from the other channels are shown.",
   "favoritesSortAlphabetically": "Sort alphabetically",
   "saveMediaContent": "Save content",
-  "saveMp4WithAudiodescription": "MP4 with audio description"
+  "saveMp4WithAudiodescription": "MP4 with audio description",
+  "audioDescriptionProjectSegment": "Segment to reanalyze",
+  "audioDescriptionProjectReanalyze": "Reanalyze segment",
+  "audioDescriptionProjectReanalyzeConfirm": "Reanalyze the selected segment? Updated texts will replace matching descriptions while preserving saved timings. New descriptions will only be added in available gaps. The audio-described file will need to be exported again.",
+  "convertMediaDocumentAudiobookHint": "To turn a document into an audiobook, go to Documents → Import from Files. After importing it, choose Export document → MP3 audiobook (.mp3)."
 }

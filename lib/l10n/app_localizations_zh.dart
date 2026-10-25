@@ -7,6 +7,19 @@ import 'app_localizations.dart';
 /// The translations for Chinese (`zh`).
 class AppLocalizationsZh extends AppLocalizations {
   @override
+  String get convertMediaDocumentAudiobookHint => '要将文档转换为有声书，请前往“文档”→“从文件导入”。导入后，选择“导出文档”→“MP3 有声书 (.mp3)”。';
+
+  @override
+  String get audioDescriptionProjectSegment => '重新分析的片段';
+
+  @override
+  String get audioDescriptionProjectReanalyze => '重新分析片段';
+
+  @override
+  String get audioDescriptionProjectReanalyzeConfirm =>
+      '重新分析所选片段？更新的文本将替换对应描述，并保留已保存的时间。新描述只会添加到可用的空隙中。需要重新导出带有音频描述的文件。';
+
+  @override
   String get saveMp4WithAudiodescription => "带音频描述的 MP4";
 
   @override
@@ -5244,6 +5257,19 @@ class AppLocalizationsZh extends AppLocalizations {
 
 /// The translations for Chinese, as used in China (`zh_CN`).
 class AppLocalizationsZhCn extends AppLocalizationsZh {
+  @override
+  String get convertMediaDocumentAudiobookHint => '要将文档转换为有声书，请前往“文档”→“从文件导入”。导入后，选择“导出文档”→“MP3 有声书 (.mp3)”。';
+
+  @override
+  String get audioDescriptionProjectSegment => '重新分析的片段';
+
+  @override
+  String get audioDescriptionProjectReanalyze => '重新分析片段';
+
+  @override
+  String get audioDescriptionProjectReanalyzeConfirm =>
+      '重新分析所选片段？更新的文本将替换对应描述，并保留已保存的时间。新描述只会添加到可用的空隙中。需要重新导出带有音频描述的文件。';
+
   @override
   String get saveMp4WithAudiodescription => "带音频描述的 MP4";
 

@@ -3,6 +3,7 @@
     "version": "0.5.2",
     "date": "2026-10-26",
     "it": [
+      "Audiodescrizioni: puoi scegliere la traccia audio dei video che ne contengono più di una e rianalizzare un singolo segmento dall’editor del progetto, mantenendo i tempi salvati e aggiungendo nuove descrizioni solo negli spazi disponibili.",
       "Audiodescrizioni: ridotta a 1,5 secondi la pausa minima richiesta. Sonarpad può così produrre più descrizioni, anche nelle pause brevi che prima non venivano utilizzate.",
       "Audiodescrizioni: se una frase non entra nello spazio disponibile, Sonarpad prova a rigenerarla con la velocità della sintesi aumentata del 10% o, se necessario, del 15%, verificando la durata reale. La velocità viene salvata solo per quella descrizione e mantenuta nelle modifiche, nelle anteprime e nelle esportazioni successive; le altre frasi restano invariate.",
       "Migliorate le audiodescrizioni: attivando la lettura dei testi sullo schermo, vengono letti anche i titoli di coda che Gemini riesce a identificare.",
@@ -32,6 +33,7 @@
       "Nei Preferiti di SonarTube e SonarMusic puoi spostare le voci in alto, in basso o a una posizione scelta indicando prima di quale preferito inserirle, e ordinarle alfabeticamente. I comandi sono disponibili come azioni secondarie e pulsanti visivi esclusi dalla navigazione dello screen reader. L’ordine viene salvato."
     ],
     "en": [
+      "Audio descriptions: choose the audio track in videos with multiple tracks and reanalyze an individual segment from the project editor, preserving saved timings and adding new descriptions only in available gaps.",
       "Audio descriptions: reduced the minimum required pause to 1.5 seconds. Sonarpad can now produce more descriptions, including in short pauses that were previously left unused.",
       "Audio descriptions: if a sentence does not fit the available gap, Sonarpad tries regenerating it with the speech engine at 10% or, if needed, 15% higher speed, checking its actual duration. The speed is saved only for that description and retained for edits, previews and later exports; other sentences remain unchanged.",
       "Improved audio descriptions: enabling on-screen text reading now also reads end credits that Gemini can identify.",
@@ -58,6 +60,7 @@
       "SonarTube and SonarMusic favorites can be moved up, down or to a chosen position before another favorite, and sorted alphabetically. Commands are available as secondary actions and visual buttons excluded from screen reader navigation. The order is saved."
     ],
     "fr": [
+      "Audiodescriptions : choisissez la piste audio des vidéos qui en contiennent plusieurs et réanalysez un segment depuis l’éditeur du projet, en conservant les horaires enregistrés et en ajoutant de nouvelles descriptions uniquement dans les espaces disponibles.",
       "Audiodescriptions : la pause minimale requise passe à 1,5 seconde. Sonarpad peut ainsi produire davantage de descriptions, y compris dans les courtes pauses qui n’étaient pas utilisées auparavant.",
       "Audiodescriptions : si une phrase ne tient pas dans le créneau disponible, Sonarpad tente de la régénérer avec une vitesse de synthèse augmentée de 10 % ou, si nécessaire, de 15 %, puis vérifie sa durée réelle. Cette vitesse est enregistrée uniquement pour cette description et conservée lors des modifications, des aperçus et des exportations ultérieures ; les autres phrases restent inchangées.",
       "Amélioration des audiodescriptions : lorsque la lecture des textes à l’écran est activée, les textes du générique de fin que Gemini parvient à identifier sont également lus.",
@@ -84,6 +87,7 @@
       "Les favoris de SonarTube et SonarMusic peuvent être déplacés vers le haut, vers le bas ou avant un favori choisi, et triés par ordre alphabétique. Les commandes sont disponibles comme actions secondaires et boutons visuels exclus de la navigation du lecteur d’écran. L’ordre est enregistré."
     ],
     "es": [
+      "Audiodescripciones: puedes elegir la pista de audio de los vídeos con varias pistas y volver a analizar un segmento desde el editor del proyecto, conservando los tiempos guardados y añadiendo nuevas descripciones solo en los espacios disponibles.",
       "Audiodescripciones: la pausa mínima necesaria se reduce a 1,5 segundos. Sonarpad puede generar más descripciones, también en las pausas breves que antes no se aprovechaban.",
       "Audiodescripciones: si una frase no cabe en el intervalo disponible, Sonarpad intenta regenerarla con la velocidad de síntesis aumentada un 10 % o, si es necesario, un 15 %, comprobando su duración real. La velocidad se guarda solo para esa descripción y se conserva al editarla, previsualizarla y exportarla de nuevo; las demás frases no cambian.",
       "Mejoradas las audiodescripciones: al activar la lectura de textos en pantalla, también se leen los créditos finales que Gemini puede identificar.",
@@ -110,6 +114,7 @@
       "Los favoritos de SonarTube y SonarMusic se pueden mover arriba, abajo o antes de otro favorito elegido, y ordenar alfabéticamente. Los comandos están disponibles como acciones secundarias y botones visuales excluidos de la navegación del lector de pantalla. El orden se guarda."
     ],
     "pt": [
+      "Audiodescrições: pode escolher a faixa de áudio dos vídeos com várias faixas e analisar novamente um segmento no editor do projeto, mantendo os tempos guardados e adicionando novas descrições apenas nos espaços disponíveis.",
       "Audiodescrições: a pausa mínima necessária foi reduzida para 1,5 segundos. O Sonarpad pode assim produzir mais descrições, incluindo nas pausas curtas que antes não eram aproveitadas.",
       "Audiodescrições: se uma frase não couber no intervalo disponível, o Sonarpad tenta gerá-la novamente com a velocidade da síntese aumentada em 10% ou, se necessário, 15%, verificando a duração real. A velocidade é guardada apenas para essa descrição e mantida nas alterações, pré-visualizações e exportações seguintes; as outras frases permanecem inalteradas.",
       "Melhoradas as audiodescrições: ao ativar a leitura de textos no ecrã, passam também a ser lidos os créditos finais que o Gemini consegue identificar.",
@@ -136,6 +141,7 @@
       "Os favoritos do SonarTube e do SonarMusic podem ser movidos para cima, para baixo ou antes de outro favorito escolhido, e ordenados alfabeticamente. Os comandos estão disponíveis como ações secundárias e botões visuais excluídos da navegação do leitor de ecrã. A ordem é guardada."
     ],
     "pt_BR": [
+      "Audiodescrições: escolha a faixa de áudio dos vídeos com várias faixas e analise novamente um segmento no editor do projeto, mantendo os tempos salvos e adicionando novas descrições apenas nos espaços disponíveis.",
       "Audiodescrições: a pausa mínima necessária foi reduzida para 1,5 segundo. Assim, o Sonarpad pode produzir mais descrições, inclusive nas pausas curtas que antes não eram aproveitadas.",
       "Audiodescrições: se uma frase não couber no intervalo disponível, o Sonarpad tenta gerá-la novamente com a velocidade da síntese aumentada em 10% ou, se necessário, 15%, verificando a duração real. A velocidade é salva apenas para essa descrição e mantida nas edições, prévias e exportações seguintes; as outras frases permanecem inalteradas.",
       "Audiodescrições aprimoradas: ao ativar a leitura dos textos na tela, também são lidos os créditos finais que o Gemini consegue identificar.",
@@ -162,6 +168,7 @@
       "Os favoritos do SonarTube e do SonarMusic podem ser movidos para cima, para baixo ou antes de outro favorito escolhido, e ordenados alfabeticamente. Os comandos estão disponíveis como ações secundárias e botões visuais excluídos da navegação do leitor de tela. A ordem é salva."
     ],
     "pl": [
+      "Audiodeskrypcja: można wybrać ścieżkę dźwiękową filmu z wieloma ścieżkami i ponownie przeanalizować pojedynczy segment w edytorze projektu. Zapisane czasy zostają zachowane, a nowe opisy są dodawane tylko w wolnych miejscach.",
       "Audiodeskrypcja: minimalna wymagana przerwa została skrócona do 1,5 sekundy. Sonarpad może dzięki temu tworzyć więcej opisów, również w krótkich przerwach, które wcześniej pozostawały niewykorzystane.",
       "Audiodeskrypcja: jeśli zdanie nie mieści się w dostępnej przerwie, Sonarpad próbuje wygenerować je ponownie z prędkością syntezy zwiększoną o 10% lub, w razie potrzeby, o 15%, sprawdzając rzeczywisty czas trwania. Prędkość jest zapisywana tylko dla tego opisu i zachowywana przy edycji, odsłuchu i kolejnych eksportach; pozostałe zdania pozostają bez zmian.",
       "Ulepszono audiodeskrypcję: po włączeniu odczytywania tekstu na ekranie odczytywane są również napisy końcowe, które Gemini potrafi rozpoznać.",
@@ -188,6 +195,7 @@
       "Ulubione w SonarTube i SonarMusic można przesuwać w górę, w dół lub przed wybraną pozycję oraz sortować alfabetycznie. Polecenia są dostępne jako dodatkowe czynności i przyciski wizualne pomijane przez czytnik ekranu. Kolejność jest zapisywana."
     ],
     "cs": [
+      "Audiopopis: u videí s více zvukovými stopami lze vybrat stopu a v editoru projektu znovu analyzovat jednotlivý úsek. Uložené časy zůstávají zachovány a nové popisy se přidávají pouze do volných mezer.",
       "Audiopopis: minimální požadovaná pauza byla zkrácena na 1,5 sekundy. Sonarpad tak může vytvářet více popisů, a to i v krátkých pauzách, které dříve zůstávaly nevyužité.",
       "Zvukové popisy: pokud se věta nevejde do dostupné mezery, Sonarpad ji zkusí znovu vytvořit hlasovou syntézou s rychlostí vyšší o 10 %, případně o 15 %, a ověří skutečnou délku. Rychlost se ukládá pouze pro tento popis a zachová se při úpravách, náhledech i dalších exportech; ostatní věty zůstávají beze změny.",
       "Vylepšen zvukový popis: při zapnutém čtení textu na obrazovce se nyní čtou také závěrečné titulky, které Gemini dokáže rozpoznat.",
@@ -214,6 +222,7 @@
       "Oblíbené položky v SonarTube a SonarMusic lze přesunout nahoru, dolů nebo před vybranou položku a seřadit abecedně. Příkazy jsou dostupné jako vedlejší akce a vizuální tlačítka vynechaná z navigace čtečky obrazovky. Pořadí se ukládá."
     ],
     "de": [
+      "Audiodeskriptionen: Bei Videos mit mehreren Tonspuren kannst du die Audiospur wählen und im Projekteditor einzelne Segmente neu analysieren. Gespeicherte Zeitpunkte bleiben erhalten; neue Beschreibungen werden nur in freie Lücken eingefügt.",
       "Audiodeskriptionen: Die erforderliche Mindestpause wurde auf 1,5 Sekunden verkürzt. Dadurch kann Sonarpad mehr Beschreibungen erzeugen, auch in kurzen Pausen, die zuvor ungenutzt blieben.",
       "Audiodeskriptionen: Passt ein Satz nicht in die verfügbare Lücke, versucht Sonarpad, ihn mit der Sprachsynthese bei 10 % oder nötigenfalls 15 % höherer Geschwindigkeit neu zu erzeugen, und prüft die tatsächliche Dauer. Die Geschwindigkeit wird nur für diese Beschreibung gespeichert und bei Änderungen, Vorschauen und späteren Exporten beibehalten; andere Sätze bleiben unverändert.",
       "Audiodeskriptionen verbessert: Bei aktivierter Vorlesefunktion für Bildschirmtexte werden nun auch die Abspanntexte vorgelesen, die Gemini erkennen kann.",
@@ -240,6 +249,7 @@
       "Favoriten in SonarTube und SonarMusic können nach oben, nach unten oder vor einen ausgewählten Favoriten verschoben und alphabetisch sortiert werden. Die Befehle stehen als zusätzliche Aktionen und als visuelle, von der Screenreader-Navigation ausgeschlossene Schaltflächen zur Verfügung. Die Reihenfolge wird gespeichert."
     ],
     "zh_CN": [
+      "音频描述：可以为具有多条音轨的视频选择音轨，并在项目编辑器中重新分析单个片段。保留已保存的时间，新描述只会添加到可用的空隙中。",
       "音频描述：所需的最短停顿已缩短至1.5秒。Sonarpad因此可以生成更多描述，包括利用以前未使用的短暂停顿。",
       "音频描述：如果一句描述无法放入可用的时间间隙，Sonarpad 会尝试以提高 10% 或必要时提高 15% 的语音合成速度重新生成，并检查实际时长。此速度仅保存于该条描述，在编辑、试听和后续导出时继续使用；其他句子保持不变。",
       "改进音频描述：启用屏幕文字朗读后，现在也会朗读 Gemini 能够识别的片尾字幕。",
@@ -266,6 +276,7 @@
       "SonarTube 和 SonarMusic 的收藏可向上、向下移动，移至指定收藏之前，或按字母顺序排序。这些命令提供次要操作和不参与屏幕阅读器导航的可视按钮，排序会被保存。"
     ],
     "uk": [
+      "Аудіоописи: можна вибрати звукову доріжку відео з кількома доріжками та повторно проаналізувати окремий сегмент у редакторі проєкту. Збережені часові позначки залишаються незмінними, а нові описи додаються лише у вільні проміжки.",
       "Аудіоописи: мінімальну необхідну паузу скорочено до 1,5 секунди. Тепер Sonarpad може створювати більше описів, зокрема в коротких паузах, які раніше не використовувалися.",
       "Аудіоописи: якщо фраза не вміщується в доступний проміжок, Sonarpad пробує синтезувати її знову зі швидкістю, збільшеною на 10% або, за потреби, на 15%, перевіряючи фактичну тривалість. Швидкість зберігається лише для цього опису й використовується під час редагування, прослуховування та подальшого експорту; інші фрази не змінюються.",
       "Покращено аудіоопис: якщо ввімкнено читання тексту на екрані, тепер також озвучуються фінальні титри, які Gemini може розпізнати.",
@@ -292,6 +303,7 @@
       "Обрані елементи SonarTube і SonarMusic можна переміщувати вгору, вниз або перед вибраним елементом і сортувати за абеткою. Команди доступні як додаткові дії та візуальні кнопки, виключені з навігації читача екрана. Порядок зберігається."
     ],
     "ro": [
+      "Audiodescrieri: puteți alege pista audio pentru videoclipurile cu mai multe piste și reanaliza un segment din editorul proiectului, păstrând timpii salvați și adăugând descrieri noi numai în spațiile disponibile.",
       "Descrieri audio: pauza minimă necesară a fost redusă la 1,5 secunde. Sonarpad poate astfel genera mai multe descrieri, inclusiv în pauzele scurte care anterior nu erau folosite.",
       "Descrieri audio: dacă o propoziție nu încape în intervalul disponibil, Sonarpad încearcă să o genereze din nou cu viteza sintezei vocale mărită cu 10% sau, dacă este necesar, cu 15%, verificând durata reală. Viteza este salvată doar pentru acea descriere și păstrată la editare, previzualizare și exporturile ulterioare; celelalte propoziții rămân neschimbate.",
       "Audiodescrieri îmbunătățite: când este activată citirea textelor de pe ecran, sunt citite și genericele de final pe care Gemini le poate identifica.",
@@ -318,6 +330,7 @@
       "Favoritele din SonarTube și SonarMusic pot fi mutate în sus, în jos sau înaintea unui favorit ales și sortate alfabetic. Comenzile sunt disponibile ca acțiuni secundare și butoane vizuale excluse din navigarea cititorului de ecran. Ordinea este salvată."
     ],
     "tr": [
+      "Sesli betimleme: birden fazla ses parçası içeren videolarda ses parçasını seçebilir ve proje düzenleyicisinden tek bir bölümü yeniden analiz edebilirsiniz. Kayıtlı zamanlamalar korunur ve yeni betimlemeler yalnızca uygun boşluklara eklenir.",
       "Sesli betimlemeler: gereken en kısa duraklama 1,5 saniyeye indirildi. Böylece Sonarpad, daha önce kullanılmayan kısa duraklamalar da dahil olmak üzere daha fazla betimleme üretebilir.",
       "Sesli betimleme: Bir cümle kullanılabilir aralığa sığmazsa Sonarpad, konuşma sentezi hızını %10 veya gerekirse %15 artırarak cümleyi yeniden oluşturmayı dener ve gerçek süresini kontrol eder. Hız yalnızca o betimleme için kaydedilir; düzenleme, önizleme ve sonraki dışa aktarmalarda korunur. Diğer cümleler değişmez.",
       "Sesli betimlemeler iyileştirildi: ekrandaki metinleri okuma seçeneği etkinleştirildiğinde Gemini'nin tanıyabildiği kapanış jeneriği de okunur.",

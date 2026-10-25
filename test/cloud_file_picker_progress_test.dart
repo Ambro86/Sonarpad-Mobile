@@ -21,7 +21,7 @@ class _Session {
   String? requestId;
   int cancels = 0;
 
-  Future<void> start(WidgetTester tester) async {
+  Future<void> start(WidgetTester tester, {String? Function(String)? unsupportedFileMessage}) async {
     final messenger = tester.binding.defaultBinaryMessenger;
     messenger.setMockMethodCallHandler(_eventChannel, (_) async => null);
     messenger.setMockMethodCallHandler(_commands, (call) async {
@@ -45,7 +45,14 @@ class _Session {
         return const Scaffold(body: Text('Host'));
       }),
     ));
-    result = CloudFilePicker.pickFiles(context: context);
+    if (unsupportedFileMessage != null) {
+      await tester.runAsync(() async {
+        result = CloudFilePicker.pickFiles(context: context, unsupportedFileMessage: unsupportedFileMessage);
+        await Future<void>.delayed(Duration.zero);
+      });
+    } else {
+      result = CloudFilePicker.pickFiles(context: context);
+    }
     await tester.pump();
     expect(requestId, isNotNull);
     addTearDown(() {
@@ -111,6 +118,41 @@ void main() {
     final messenger = TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
     messenger.setMockMethodCallHandler(_commands, null);
     messenger.setMockMethodCallHandler(_eventChannel, null);
+  });
+
+  for (final extension in ['docx', 'DOC', 'exe']) {
+    testWidgets('unsupported $extension receives only the appropriate message', (tester) async {
+      final session = _Session();
+      final seen = <String>[];
+      await session.start(tester, unsupportedFileMessage: (extension) {
+        seen.add(extension);
+        return {'doc', 'docx'}.contains(extension)
+            ? AppLocalizations.of(session.context).convertMediaDocumentAudiobookHint : null;
+      });
+      session.response.completeError(PlatformException(
+        code: 'unsupported_file_type', message: 'Selected file type is not supported', details: extension));
+      expect(await session.finish(tester), isNull);
+      await tester.pump();
+      final l10n = AppLocalizations.of(session.context);
+      expect(seen, [extension.toLowerCase()]);
+      expect(find.text(extension == 'exe'
+          ? l10n.fileOpenError(l10n.technicalErrorGeneric)
+          : l10n.convertMediaDocumentAudiobookHint), findsOneWidget);
+      await tester.pumpWidget(const SizedBox());
+      await tester.pumpAndSettle();
+    });
+  }
+
+  testWidgets('ordinary read errors retain the existing message', (tester) async {
+    final session = _Session();
+    await session.start(tester, unsupportedFileMessage: (_) => throw StateError('Not a type error'));
+    session.response.completeError(PlatformException(code: 'cloud_file_error', message: 'Read failed'));
+    expect(await session.finish(tester), isNull);
+    await tester.pump();
+    final l10n = AppLocalizations.of(session.context);
+    expect(find.text(l10n.fileOpenError(l10n.technicalErrorGeneric)), findsOneWidget);
+    await tester.pumpWidget(const SizedBox());
+    await tester.pumpAndSettle();
   });
 
   testWidgets('system picker waiting is not represented as download progress', (tester) async {

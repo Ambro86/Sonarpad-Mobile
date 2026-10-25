@@ -7,6 +7,19 @@ import 'app_localizations.dart';
 /// The translations for English (`en`).
 class AppLocalizationsEn extends AppLocalizations {
   @override
+  String get convertMediaDocumentAudiobookHint => 'To turn a document into an audiobook, go to Documents → Import from Files. After importing it, choose Export document → MP3 audiobook (.mp3).';
+
+  @override
+  String get audioDescriptionProjectSegment => 'Segment to reanalyze';
+
+  @override
+  String get audioDescriptionProjectReanalyze => 'Reanalyze segment';
+
+  @override
+  String get audioDescriptionProjectReanalyzeConfirm =>
+      'Reanalyze the selected segment? Updated texts will replace matching descriptions while preserving saved timings. New descriptions will only be added in available gaps. The audio-described file will need to be exported again.';
+
+  @override
   String get saveMp4WithAudiodescription => "MP4 with audio description";
 
   @override

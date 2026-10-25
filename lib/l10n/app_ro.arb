@@ -4848,5 +4848,9 @@
   "favoriteVideosPartial": "Unele canale nu au putut fi încărcate. Sunt afișate videoclipurile celorlalte canale.",
   "favoritesSortAlphabetically": "Sortează alfabetic",
   "saveMediaContent": "Salvează conținutul",
-  "saveMp4WithAudiodescription": "MP4 cu audiodescriere"
+  "saveMp4WithAudiodescription": "MP4 cu audiodescriere",
+  "audioDescriptionProjectSegment": "Segment de reanalizat",
+  "audioDescriptionProjectReanalyze": "Reanalizează segmentul",
+  "audioDescriptionProjectReanalyzeConfirm": "Reanalizați segmentul selectat? Textele actualizate vor înlocui descrierile corespunzătoare, păstrând timpii salvați. Descrieri noi vor fi adăugate numai în spațiile disponibile. Fișierul cu audiodescriere va trebui exportat din nou.",
+  "convertMediaDocumentAudiobookHint": "Pentru a transforma un document în carte audio, accesați Documente → Importă din Fișiere. După import, alegeți Exportă documentul → Carte audio MP3 (.mp3)."
 }

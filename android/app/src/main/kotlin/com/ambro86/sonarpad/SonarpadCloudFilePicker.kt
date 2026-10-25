@@ -111,7 +111,7 @@ class SonarpadCloudFilePicker(private val activity: AudioServiceActivity) {
                     val name = rawName.replace(Regex("[\\\\/:*?\"<>|]"), "_")
                     val ext = name.substringAfterLast('.', "").lowercase()
                     if (allowedExtensions.isNotEmpty() && ext !in allowedExtensions) {
-                        throw IllegalArgumentException("Selected file type is not supported")
+                        throw UnsupportedFileType(ext)
                     }
                     val itemDirectory = File(dir, UUID.randomUUID().toString())
                     tempDirectories.add(itemDirectory)
@@ -155,6 +155,7 @@ class SonarpadCloudFilePicker(private val activity: AudioServiceActivity) {
                 tempDirectories.forEach { it.deleteRecursively() }
                 activity.runOnUiThread {
                     if (cancelled.get()) complete(null)
+                    else if (error is UnsupportedFileType) completeError("unsupported_file_type", error.message ?: "Unsupported file", error.extension)
                     else completeError("cloud_file_error", error.message ?: "Could not copy file")
                 }
             }
@@ -193,10 +194,13 @@ class SonarpadCloudFilePicker(private val activity: AudioServiceActivity) {
         callback?.success(value)
     }
 
-    private fun completeError(code: String, message: String) {
+    private class UnsupportedFileType(val extension: String) :
+        IllegalArgumentException("Selected file type is not supported")
+
+    private fun completeError(code: String, message: String, details: Any? = null) {
         val callback = pendingResult
         pendingResult = null
         worker = null
-        callback?.error(code, message, null)
+        callback?.error(code, message, details)
     }
 }

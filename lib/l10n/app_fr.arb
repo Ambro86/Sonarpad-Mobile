@@ -4854,5 +4854,9 @@
   "favoriteVideosPartial": "Certains canaux n’ont pas pu être chargés. Les vidéos des autres canaux sont affichées.",
   "favoritesSortAlphabetically": "Trier par ordre alphabétique",
   "saveMediaContent": "Enregistrer le contenu",
-  "saveMp4WithAudiodescription": "MP4 avec audiodescription"
+  "saveMp4WithAudiodescription": "MP4 avec audiodescription",
+  "audioDescriptionProjectSegment": "Segment à réanalyser",
+  "audioDescriptionProjectReanalyze": "Réanalyser le segment",
+  "audioDescriptionProjectReanalyzeConfirm": "Réanalyser le segment sélectionné ? Les nouveaux textes remplaceront les descriptions correspondantes en conservant les horaires enregistrés. De nouvelles descriptions seront ajoutées uniquement dans les espaces disponibles. Il faudra exporter à nouveau le fichier audiodécrit.",
+  "convertMediaDocumentAudiobookHint": "Pour transformer un document en livre audio, allez dans Documents → Importer depuis Fichiers. Après l’importation, choisissez Exporter le document → Livre audio MP3 (.mp3)."
 }

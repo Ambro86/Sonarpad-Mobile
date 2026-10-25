@@ -59,6 +59,7 @@ class _AudioDescriptionProjectEditorScreenState
   AudioDescriptionEditableProject? _project;
   String? _sourceOverride;
   int _selectedIndex = 0;
+  int _segmentIndex = 0;
   String _editText = '';
   bool _dirty = false;
   bool _running = false;
@@ -317,6 +318,7 @@ class _AudioDescriptionProjectEditorScreenState
         _project = project;
         _sourceOverride = sourceExists ? project.sourcePath : null;
         _selectedIndex = 0;
+        _segmentIndex = 0;
         _editText = project.descriptions.first.text;
         _dirty = false;
         _status = s.ready;
@@ -504,6 +506,82 @@ class _AudioDescriptionProjectEditorScreenState
         _technicalError = error.toString();
         _status = error.toString();
       });
+    } finally {
+      if (mounted) setState(() => _running = false);
+    }
+  }
+
+  List<AccessibleOption> _segmentOptions() {
+    final project = _project;
+    if (project == null) return const [];
+    String time(double seconds) {
+      final duration = Duration(seconds: seconds.floor());
+      return '${duration.inHours.toString().padLeft(2, '0')}:${(duration.inMinutes % 60).toString().padLeft(2, '0')}:${(duration.inSeconds % 60).toString().padLeft(2, '0')}';
+    }
+    return List.generate(AiAudioDescriptionService.projectSegmentCount(project), (index) {
+      final (start, end) = AiAudioDescriptionService.projectSegmentRange(project, index);
+      return AccessibleOption(value: '$index', label: '${index + 1}: ${time(start)} – ${time(end)}');
+    });
+  }
+
+  Future<void> _reanalyzeSegment() async {
+    final project = _project;
+    if (project == null || _running) return;
+    final strings = AudioDescriptionProjectStrings.of(context);
+    final l10n = AppLocalizations.of(context);
+    if (_dirty) { setState(() => _status = strings.unsaved); return; }
+    var source = _sourceOverride;
+    if (source == null || !await File(source).exists()) {
+      if (!mounted) return;
+      await _chooseSource();
+      source = _sourceOverride;
+      if (source == null) return;
+    }
+    if (!mounted || _running) return;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.audioDescriptionProjectReanalyze),
+        content: Text(l10n.audioDescriptionProjectReanalyzeConfirm),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text(strings.cancel)),
+          FilledButton(onPressed: () => Navigator.pop(dialogContext, true), child: Text(l10n.audioDescriptionProjectReanalyze)),
+        ],
+      ),
+    );
+    if (!mounted || confirmed != true || _running || _project != project) return;
+    final operation = ++_operationRevision;
+    setState(() { _running = true; _progress = 0; _status = strings.working; _technicalError = null; });
+    try {
+      await _stopPlayback();
+      _checkOperation(operation);
+      final updated = await _queueProjectOperation(() => _withWakelock(operation,
+        () => _service.reanalyzeProjectSegment(
+          project: project, segmentIndex: _segmentIndex, sourcePathOverride: source,
+          onProgress: (progress) {
+            if (!mounted || operation != _operationRevision) return;
+            setState(() {
+              _progress = progress.value;
+              _status = progress.stage == 'gemini' ? l10n.audioDescriptionStageGemini :
+                  progress.stage == 'tts' ? l10n.audioDescriptionStageTts : strings.working;
+            });
+          },
+        ),
+      ));
+      if (!mounted) return;
+      final (start, end) = AiAudioDescriptionService.projectSegmentRange(updated, _segmentIndex);
+      var index = updated.descriptions.indexWhere((item) => item.sourceStartSec >= start && item.sourceStartSec < end);
+      if (index < 0) index = 0;
+      setState(() {
+        _project = updated; _selectedIndex = index;
+        _editText = updated.descriptions[index].text; _dirty = false;
+        _progress = 1; _status = strings.applied;
+      });
+    } on _EditorOperationCancelled {
+      // The saved project remains untouched when the operation is cancelled.
+    } catch (error, stackTrace) {
+      await AppLogger.log('Audio description segment reanalysis failed $error\n$stackTrace');
+      if (mounted) setState(() { _technicalError = error.toString(); _status = l10n.technicalErrorGeneric; });
     } finally {
       if (mounted) setState(() => _running = false);
     }
@@ -972,6 +1050,19 @@ class _AudioDescriptionProjectEditorScreenState
                 if (project != null)
                   AccessibleListSection(rows: [
                     AccessibleListRow(
+                      id: 'reanalyze_segment_selection',
+                      title: l10n.audioDescriptionProjectSegment, kind: 'picker',
+                      value: '$_segmentIndex', valueLabel: _segmentOptions()[_segmentIndex].label,
+                      options: _segmentOptions(), enabled: !_running,
+                    ),
+                    AccessibleListRow(
+                      id: 'reanalyze_segment', title: l10n.audioDescriptionProjectReanalyze,
+                      enabled: !_running,
+                    ),
+                  ]),
+                if (project != null)
+                  AccessibleListSection(rows: [
+                    AccessibleListRow(
                       id: 'tts_engine',
                       title: strings.engine,
                       kind: 'picker',
@@ -1165,6 +1256,9 @@ class _AudioDescriptionProjectEditorScreenState
                         _editText = _project!.descriptions[_selectedIndex].text;
                         _dirty = false;
                         break;
+                      case 'reanalyze_segment_selection':
+                        _segmentIndex = int.tryParse(value) ?? 0;
+                        break;
                       case 'tts_engine':
                         _ttsEngine = value;
                         break;
@@ -1216,6 +1310,9 @@ class _AudioDescriptionProjectEditorScreenState
                       break;
                     case 'delete':
                       await _deleteDescription();
+                      break;
+                    case 'reanalyze_segment':
+                      await _reanalyzeSegment();
                       break;
                     case 'change_voice':
                       await _changeVoice();

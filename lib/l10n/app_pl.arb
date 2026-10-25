@@ -6429,5 +6429,9 @@
   "favoriteVideosPartial": "Nie udało się wczytać niektórych kanałów. Wyświetlane są filmy z pozostałych kanałów.",
   "favoritesSortAlphabetically": "Sortuj alfabetycznie",
   "saveMediaContent": "Zapisz zawartość",
-  "saveMp4WithAudiodescription": "MP4 z audiodeskrypcją"
+  "saveMp4WithAudiodescription": "MP4 z audiodeskrypcją",
+  "audioDescriptionProjectSegment": "Segment do ponownej analizy",
+  "audioDescriptionProjectReanalyze": "Przeanalizuj segment ponownie",
+  "audioDescriptionProjectReanalyzeConfirm": "Ponownie przeanalizować wybrany segment? Nowe teksty zastąpią odpowiadające im opisy z zachowaniem zapisanych czasów. Dodatkowe opisy zostaną dodane tylko w wolnych miejscach. Plik z audiodeskrypcją trzeba będzie ponownie wyeksportować.",
+  "convertMediaDocumentAudiobookHint": "Aby przekształcić dokument w audiobook, przejdź do Dokumenty → Importuj z Plików. Po zaimportowaniu wybierz Eksportuj dokument → Audiobook MP3 (.mp3)."
 }

@@ -8,6 +8,19 @@ import 'app_localizations.dart';
 /// Remaining untranslated messages temporarily keep their English text until the next phase.
 class AppLocalizationsRo extends AppLocalizations {
   @override
+  String get convertMediaDocumentAudiobookHint => 'Pentru a transforma un document în carte audio, accesați Documente → Importă din Fișiere. După import, alegeți Exportă documentul → Carte audio MP3 (.mp3).';
+
+  @override
+  String get audioDescriptionProjectSegment => 'Segment de reanalizat';
+
+  @override
+  String get audioDescriptionProjectReanalyze => 'Reanalizează segmentul';
+
+  @override
+  String get audioDescriptionProjectReanalyzeConfirm =>
+      'Reanalizați segmentul selectat? Textele actualizate vor înlocui descrierile corespunzătoare, păstrând timpii salvați. Descrieri noi vor fi adăugate numai în spațiile disponibile. Fișierul cu audiodescriere va trebui exportat din nou.';
+
+  @override
   String get saveMp4WithAudiodescription => "MP4 cu audiodescriere";
 
   @override

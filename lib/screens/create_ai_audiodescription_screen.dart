@@ -35,8 +35,10 @@ class CreateAiAudiodescriptionScreen extends StatefulWidget {
     this.initialSourcePath,
     this.includeSourceVideoWithProjectOutput = false,
     this.mixPreviewControllerFactory,
+    this.audioDescriptionServiceFactory,
   });
 
+  final AiAudioDescriptionService Function()? audioDescriptionServiceFactory;
   final String? initialSourcePath;
   final bool includeSourceVideoWithProjectOutput;
   final AudioDescriptionMixPreviewController Function()? mixPreviewControllerFactory;
@@ -48,7 +50,7 @@ class CreateAiAudiodescriptionScreen extends StatefulWidget {
 
 class _CreateAiAudiodescriptionScreenState
     extends State<CreateAiAudiodescriptionScreen> with WidgetsBindingObserver {
-  final _service = AiAudioDescriptionService();
+  late final AiAudioDescriptionService _service;
   final _settings = AppSettingsService();
   final _flutterTts = FlutterTts();
   final _audio = AudioPlayerService();
@@ -75,6 +77,10 @@ class _CreateAiAudiodescriptionScreenState
   double _progress = 0;
   String _stage = '';
   String? _sourcePath;
+  int? _audioStreamIndex;
+  String? _audioTrackSource;
+  List<AudioDescriptionSourceTrack> _audioTracks = const [];
+  bool _choosingAudioTrack = false;
   String? _technicalError;
 
   String _provider = 'gemini';
@@ -111,6 +117,7 @@ class _CreateAiAudiodescriptionScreenState
   @override
   void initState() {
     super.initState();
+    _service = widget.audioDescriptionServiceFactory?.call() ?? AiAudioDescriptionService();
     WidgetsBinding.instance.addObserver(this);
     _mixPreview = widget.mixPreviewControllerFactory?.call() ??
         AudioDescriptionMixPreviewController();
@@ -184,9 +191,11 @@ class _CreateAiAudiodescriptionScreenState
     await _stopVoicePreview();
   }
 
-  void _requestMixPreview({required bool immediately}) {
+  void _requestMixPreview({required bool immediately}) async {
     final sourcePath = _sourcePath;
     if (_running || _choosingVideo || sourcePath == null || sourcePath.isEmpty) return;
+    if (_audioTrackSource != sourcePath && !await _ensureAudioTrackSelected()) return;
+    if (!mounted) return;
     // Keep a snapshot of every audible choice; later adjustments replace this
     // request instead of changing a render while it is running.
     final settings = _currentSettings();
@@ -322,6 +331,7 @@ class _CreateAiAudiodescriptionScreenState
             : null;
         _loading = false;
       });
+      if (_sourcePath != null) unawaited(_ensureAudioTrackSelected());
       if (_provider == 'sonarpad') {
         unawaited(_refreshSonarpadBalance());
       }
@@ -437,14 +447,14 @@ class _CreateAiAudiodescriptionScreenState
       ],
     );
     final path = result?.files.single.path;
-    _setSelectedSourcePath(path);
+    await _setSelectedSourcePath(path);
   }
 
   Future<void> _chooseVideoFromPhotos() async {
     try {
       final paths = await _photoImport.pickVideos(allowMultiple: false);
       if (paths.isEmpty) return;
-      _setSelectedSourcePath(paths.first);
+      await _setSelectedSourcePath(paths.first);
       await AppLogger.log(
         'Audio description UI: source imported from photo library file=${importedFileDisplayName(paths.first)}',
       );
@@ -463,12 +473,63 @@ class _CreateAiAudiodescriptionScreenState
     }
   }
 
-  void _setSelectedSourcePath(String? path) {
+  Future<void> _setSelectedSourcePath(String? path) async {
     if (path == null || path.trim().isEmpty || !mounted) return;
     setState(() {
       _sourcePath = path;
+      _audioStreamIndex = null;
+      _audioTrackSource = null;
+      _audioTracks = const [];
       _technicalError = null;
     });
+    await _ensureAudioTrackSelected();
+  }
+
+  Future<bool> _ensureAudioTrackSelected({bool chooseAgain = false}) async {
+    final source = _sourcePath;
+    if (source == null || _running || _choosingAudioTrack) return false;
+    if (!chooseAgain && _audioTrackSource == source) return true;
+    _choosingAudioTrack = true;
+    try {
+      final tracks = await _service.sourceAudioTracks(source);
+      if (!mounted || _sourcePath != source) return false;
+      setState(() => _audioTracks = tracks);
+      int? selected;
+      if (tracks.length > 1) {
+        await _stopPreviews();
+        if (!mounted) return false;
+        final l10n = AppLocalizations.of(context);
+        selected = await showDialog<int>(
+          context: context,
+          builder: (dialogContext) => SimpleDialog(
+            title: Text(l10n.selectAudioTrack),
+            children: [
+              for (final track in tracks)
+                SimpleDialogOption(
+                  onPressed: () => Navigator.pop(dialogContext, track.index),
+                  child: Text(track.label),
+                ),
+              SimpleDialogOption(
+                onPressed: () => Navigator.pop(dialogContext),
+                child: Text(l10n.cancel),
+              ),
+            ],
+          ),
+        );
+        if (!mounted || _sourcePath != source || selected == null) return false;
+      }
+      setState(() {
+        _audioStreamIndex = selected;
+        _audioTrackSource = source;
+      });
+      return true;
+    } catch (error, stackTrace) {
+      await AppLogger.log('Audio description track selection failed $error\n$stackTrace');
+      if (mounted) setState(() => _technicalError = error.toString());
+      return false;
+    } finally {
+      _choosingAudioTrack = false;
+    }
   }
 
   Future<void> _openGeminiApiKeyPage() async {
@@ -704,6 +765,7 @@ class _CreateAiAudiodescriptionScreenState
 
   AiAudioDescriptionSettings _currentSettings() => AiAudioDescriptionSettings(
         provider: _provider,
+        audioStreamIndex: _audioStreamIndex,
         geminiApiKey: _apiKey,
         sonarpadCode: _sonarpadCode,
         geminiModel: _model,
@@ -887,6 +949,7 @@ class _CreateAiAudiodescriptionScreenState
       showStatusMessage(context, l10n.audioDescriptionChooseVideoFirst);
       return;
     }
+    if (!await _ensureAudioTrackSelected() || !mounted) return;
     if (resumeOnly && !await _service.hasResumeCheckpoint(sourcePath)) {
       if (mounted) showStatusMessage(context, l10n.audioDescriptionNoCheckpoint);
       return;
@@ -1573,6 +1636,15 @@ class _CreateAiAudiodescriptionScreenState
                       value: _sourcePath == null ? null : importedFileDisplayName(_sourcePath!),
                       enabled: !_running,
                     ),
+                    if (_audioTracks.length > 1)
+                      AccessibleListRow(
+                        id: 'source_audio_track',
+                        title: l10n.selectAudioTrack,
+                        value: _audioTracks.where((track) => track.index == _audioStreamIndex)
+                            .map((track) => track.label).firstOrNull,
+                        enabled: !_running,
+                        onActivate: () async { await _ensureAudioTrackSelected(chooseAgain: true); },
+                      ),
                     AccessibleListRow(
                       id: 'provider',
                       title: l10n.audioDescriptionAiService,

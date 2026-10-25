@@ -5,6 +5,8 @@ import 'dart:math' as math;
 import 'dart:typed_data';
 
 import 'package:path/path.dart' as p;
+import 'package:http/http.dart' as http;
+import 'package:http/testing.dart';
 
 import 'package:ffmpeg_kit_flutter_new/ffmpeg_kit.dart';
 import 'package:ffmpeg_kit_flutter_new/ffmpeg_session.dart';
@@ -107,6 +109,103 @@ void main() {
     await native.drain();
     if (await root.exists()) await root.delete(recursive: true);
   });
+
+  test('multiple real audio tracks: chosen track reaches preview and project export', () async {
+    final source = await _twoTrackVideo(root);
+    final tracks = await service.sourceAudioTracks(source.path);
+    expect(tracks.map((track) => track.index), [1, 2]);
+    expect(tracks[0].label, contains('ita'));
+    expect(tracks[1].label, contains('eng'));
+    for (final track in tracks) {
+      final preview = await service.previewMix(sourcePath: source.path,
+        settings: _settings.copyWith(audioStreamIndex: track.index), text: _phrase);
+      final samples = await _samples(preview.path);
+      final wanted = track.index == 1 ? 440 : 880;
+      final unwanted = track.index == 1 ? 880 : 440;
+      expect(_tone(samples, wanted, 0.8), greaterThan(0.05));
+      expect(_tone(samples, unwanted, 0.8), lessThan(0.002));
+      final original = _project(root, source.path, sourceDuration: 16, cue: 2);
+      final data = original.toJson()..['audio_stream_index'] = track.index;
+      await File(original.projectPath).writeAsString(jsonEncode(data));
+      final project = await service.loadEditableProject(original.projectPath);
+      final result = await service.reexportEditableProject(project: project);
+      final exported = await _samples(result.mp3Path);
+      expect(_tone(exported, wanted, 0.8), greaterThan(0.05));
+      expect(_tone(exported, unwanted, 0.8), lessThan(0.002));
+      final reloaded = await service.loadEditableProject(original.projectPath);
+      expect(reloaded.audioStreamIndex, track.index);
+    }
+    expect(native.sourceExtractions, hasLength(2), reason: 'Changing track invalidates the preview cache');
+  }, skip: skip);
+
+  test('missing selected audio track fails rather than using another language', () async {
+    final source = await _twoTrackVideo(root);
+    await expectLater(service.previewMix(sourcePath: source.path,
+        settings: _settings.copyWith(audioStreamIndex: 99), text: _phrase),
+      throwsA(predicate((error) => '$error'.contains('AUDIO_TRACK_MISSING'))));
+    expect(native.sourceExtractions, isEmpty);
+  }, skip: skip);
+
+  for (final segment in [0, 1]) {
+  test('reanalyzes only saved segment $segment through real preparation synthesis and merge', () async {
+    final offset = segment * 180.0;
+    final source = await _twoTrackVideo(root, duration: offset + 16);
+    SharedPreferences.setMockInitialValues({'ad_mobile_gemini_api_key': 'test-only-not-a-key'});
+    final original = _project(root, source.path, sourceDuration: offset + 16, cue: 2);
+    final data = original.toJson()
+      ..['audio_stream_index'] = 2
+      ..['protected_intervals'] = [
+        {'start_sec': 0, 'end_sec': 2},
+        if (offset > 0) {'start_sec': 5, 'end_sec': offset + 2},
+        {'start_sec': offset + 5, 'end_sec': offset + 8}, {'start_sec': offset + 12, 'end_sec': offset + 16},
+      ];
+    await File(original.projectPath).writeAsString(jsonEncode(data));
+    final saved = await service.loadEditableProject(original.projectPath);
+    var generationCalls = 0;
+    final analyzer = AiAudioDescriptionService(httpClient: MockClient((request) async {
+      if (request.method == 'GET') {
+        return http.Response(jsonEncode({'supportedGenerationMethods': ['generateContent']}), 200);
+      }
+      generationCalls++;
+      return http.Response(jsonEncode({'candidates': [{'finishReason': 'STOP', 'content': {'parts': [{'text': jsonEncode({
+        'audio_descriptions': [
+          {'start_time_mmss': '00:02.000', 'end_time_mmss': '00:04.000', 'visual_evidence_time_seconds': 2.5, 'description_text': 'La ragazza apre la porta.'},
+          {'start_time_mmss': '00:08.000', 'end_time_mmss': '00:10.000', 'visual_evidence_time_seconds': 8.5, 'description_text': 'Il ragazzo chiude la finestra.'},
+        ],
+      })}]}}]}), 200);
+    }));
+    addTearDown(analyzer.dispose);
+    final result = await analyzer.reanalyzeProjectSegment(project: saved, segmentIndex: segment, onProgress: (_) {});
+    expect(generationCalls, greaterThan(0));
+    expect(result.descriptions, hasLength(segment == 0 ? 2 : 3));
+    expect(result.descriptions.first.sourceStartSec, 2);
+    expect(result.descriptions[segment].text, 'La ragazza apre la porta.');
+    expect(result.descriptions.last.sourceStartSec, offset + 8);
+    if (segment == 1) expect(result.descriptions.first.toJson(), saved.descriptions.first.toJson());
+    expect(result.audioStreamIndex, 2);
+    final visual = native.commands.where((args) => args.contains('mpeg4')).toList();
+    expect(visual, hasLength(1));
+    expect(visual.single, contains('0:2'));
+    expect(visual.single[visual.single.indexOf('-ss') + 1], offset.toStringAsFixed(3));
+    expect(visual.single[visual.single.indexOf('-t') + 1], '16.000');
+    expect(native.commands.any((args) => args.last.endsWith('analysis.wav')), isFalse);
+    final restored = await service.loadEditableProject(original.projectPath);
+    expect(restored.descriptions, hasLength(segment == 0 ? 2 : 3));
+    final exported = await service.reexportEditableProject(project: restored);
+    expect(await File(exported.mp3Path).length(), greaterThan(0));
+  }, skip: skip);
+
+  }
+
+  test('reanalyzing with unavailable credentials preserves original project bytes', () async {
+    final source = await _twoTrackVideo(root);
+    final project = _project(root, source.path, sourceDuration: 16, cue: 2);
+    await service.saveEditableProject(project);
+    final before = await File(project.projectPath).readAsBytes();
+    await expectLater(service.reanalyzeProjectSegment(project: project, segmentIndex: 0, onProgress: (_) {}),
+        throwsA(predicate((error) => '$error'.contains('API_KEY_REQUIRED'))));
+    expect(await File(project.projectPath).readAsBytes(), before);
+  }, skip: skip);
 
   test('saved native speed reaches preview and export, then resets for next cue', () async {
     final source = await _video(root, 'native-speed', duration: 16);
@@ -508,6 +607,19 @@ AudioDescriptionEditableProject _project(
 Future<void> _ffmpeg(List<String> args) async {
   final result = await Process.run('ffmpeg', ['-y', '-v', 'error', ...args]);
   expect(result.exitCode, 0, reason: '${result.stderr}');
+}
+
+Future<File> _twoTrackVideo(Directory root, {double duration = 16}) async {
+  final file = File('${root.path}/two-tracks.mkv');
+  await _ffmpeg([
+    '-f', 'lavfi', '-i', 'color=c=black:s=32x32:r=1:d=$duration',
+    '-f', 'lavfi', '-i', 'aevalsrc=0.2*sin(2*PI*440*t):s=48000:d=$duration',
+    '-f', 'lavfi', '-i', 'aevalsrc=0.2*sin(2*PI*880*t):s=48000:d=$duration',
+    '-map', '0:v', '-map', '1:a', '-map', '2:a',
+    '-metadata:s:a:0', 'language=ita', '-metadata:s:a:1', 'language=eng',
+    '-c:v', 'ffv1', '-c:a', 'pcm_f32le', file.path,
+  ]);
+  return file;
 }
 
 Future<File> _video(

@@ -33,6 +33,7 @@ class CloudFilePicker {
     List<String>? allowedExtensions,
     bool allowMultiple = false,
     bool withData = false,
+    String? Function(String extension)? unsupportedFileMessage,
   }) async {
     var useNativePicker = Platform.isAndroid || Platform.isIOS;
     assert(() {
@@ -247,7 +248,10 @@ class CloudFilePicker {
       }
       await AppLogger.log('Cloud file picker: ${error.code}: ${error.message}\n$stack');
       if (context.mounted) {
-        _showPickerError(context);
+        final message = error.code == 'unsupported_file_type' && error.details is String
+            ? unsupportedFileMessage?.call((error.details as String).toLowerCase())
+            : null;
+        _showPickerError(context, message: message);
       }
       return null;
     } catch (error, stack) {
@@ -278,13 +282,14 @@ class CloudFilePicker {
       _busy = false;
     }
   }
-  static void _showPickerError(BuildContext context) {
+  static void _showPickerError(BuildContext context, {String? message}) {
     if (!context.mounted) {
       return;
     }
     final l10n = AppLocalizations.of(context);
     ScaffoldMessenger.maybeOf(context)?.showSnackBar(SnackBar(
-      content: Text(l10n.fileOpenError(l10n.technicalErrorGeneric)),
+      duration: Duration(seconds: message == null ? 4 : 15),
+      content: Text(message ?? l10n.fileOpenError(l10n.technicalErrorGeneric)),
     ));
   }
 }

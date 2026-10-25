@@ -7,6 +7,20 @@ import 'app_localizations.dart';
 /// The translations for Ukrainian (`uk`).
 class AppLocalizationsUk extends AppLocalizations {
   @override
+  String get convertMediaDocumentAudiobookHint => 'Щоб перетворити документ на аудіокнигу, відкрийте Документи → Імпортувати з Файлів. Після імпорту виберіть Експортувати документ → Аудіокнига MP3 (.mp3).';
+
+  @override
+  String get audioDescriptionProjectSegment => 'Сегмент для повторного аналізу';
+
+  @override
+  String get audioDescriptionProjectReanalyze =>
+      'Повторно проаналізувати сегмент';
+
+  @override
+  String get audioDescriptionProjectReanalyzeConfirm =>
+      'Повторно проаналізувати вибраний сегмент? Нові тексти замінять відповідні описи зі збереженням записаних часових позначок. Додаткові описи буде додано лише у вільні проміжки. Файл з аудіоописом потрібно буде експортувати знову.';
+
+  @override
   String get saveMp4WithAudiodescription => "MP4 з аудіоописом";
 
   @override
