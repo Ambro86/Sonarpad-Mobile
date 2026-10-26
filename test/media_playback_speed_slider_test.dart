@@ -168,6 +168,13 @@ void main() {
           const MethodChannel('com.ryanheise.audio_session'),
           (_) async => null,
         );
+    // Player initialization may subscribe to FFmpeg events asynchronously.
+    // Match the native-channel mock used by the other player widget tests.
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(
+          const MethodChannel('flutter.arthenica.com/ffmpeg_kit_event'),
+          (_) async => null,
+        );
     configureAccessibleRendererRuntime(useFlutterOnIos: true);
     originalPlatform = VideoPlayerPlatform.instance;
     backend = _VideoBackend();
