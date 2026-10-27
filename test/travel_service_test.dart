@@ -7,6 +7,30 @@ import 'package:sonarpad_mobile_starter/services/travel_service.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  test('booking diagnostics expose safe states and reference without passenger data or URLs', () async {
+    final logs = <String>[];
+    final service = TravelService(
+      clientToken: 'private-token',
+      logger: (s) async => logs.add(s),
+      client: MockClient((r) async => http.Response(jsonEncode({
+        'status': 'RESERVED', 'checkout_state': 'ready',
+        'payment_url': 'https://www.omio.com/private-booking',
+        'passenger': 'private-person@example.com',
+        'booking_diagnostic': {'trace': [{'stage': 'passengers',
+          'response': {'entries': [
+            {'path': r'$.errors[].code', 'value': 'INVALID_INPUT'},
+            {'path': r'$.errors[].message', 'value': 'private-person@example.com'},
+          ]}, 'secret': 'private-token'}]},
+      }), 200, headers: {'x-request-id': 'abcdef1234567890'})),
+    );
+    await service.request('/v1/booking/status');
+    final text = logs.join(' ');
+    expect(text, contains('status=RESERVED phase=ready payment_url_present=true'));
+    expect(text, contains('request_id=abcdef1234567890'));
+    expect(text, contains('INVALID_INPUT'));
+    expect(text, contains('[TravelBookingDiagnostic]'));
+    expect(text, isNot(contains('private-')));
+  });
   test(
     'authenticated flow preserves session, locale, currency, ages and dates',
     () async {

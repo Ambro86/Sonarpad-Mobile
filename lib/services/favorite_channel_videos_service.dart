@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'package:xml/xml.dart';
+import '../utils/app_logger.dart';
 import 'sonartube_service.dart';
 
 class FavoriteChannelVideosResult {
@@ -15,6 +17,27 @@ class FavoriteChannelVideosService {
       : _client = client, _tube = tube ?? SonarTubeService();
   final http.Client? _client;
   final SonarTubeService _tube;
+
+  Future<http.Response> _loadFeed(http.Client client, String id) async {
+    final uri = Uri.https('www.youtube.com', '/feeds/videos.xml', {'channel_id': id});
+    for (var attempt = 1; ; attempt++) {
+      try {
+        final response = await client.get(uri).timeout(const Duration(seconds: 20));
+        final status = response.statusCode;
+        if (status == 200) return response;
+        final retryable = status == 404 || status == 408 || status == 429 || status >= 500;
+        await AppLogger.log('FavoriteChannelVideos: feed channel=$id attempt=$attempt status=$status');
+        if (!retryable || attempt >= 3) throw StateError('feed_http_$status');
+      } on http.ClientException catch (error) {
+        await AppLogger.log('FavoriteChannelVideos: feed channel=$id attempt=$attempt network=$error');
+        if (attempt >= 3) rethrow;
+      } on TimeoutException {
+        await AppLogger.log('FavoriteChannelVideos: feed channel=$id attempt=$attempt timeout');
+        if (attempt >= 3) rethrow;
+      }
+      await Future<void>.delayed(Duration(milliseconds: 400 * attempt));
+    }
+  }
 
   Future<FavoriteChannelVideosResult> load(List<SonarTubeItem> favorites) async {
     final channels = <String, SonarTubeItem>{
@@ -39,10 +62,7 @@ class FavoriteChannelVideosService {
           if (!RegExp(r'^UC[\w-]{22}$').hasMatch(id)) {
             throw const FormatException('channel_id_unavailable');
           }
-          final response = await client.get(Uri.https(
-            'www.youtube.com', '/feeds/videos.xml', {'channel_id': id},
-          )).timeout(const Duration(seconds: 20));
-          if (response.statusCode != 200) throw StateError(response.statusCode.toString());
+          final response = await _loadFeed(client, id);
           final feed = XmlDocument.parse(response.body);
           if (feed.rootElement.name.local != 'feed') throw const FormatException('not_a_feed');
           for (final entry in feed.findAllElements('entry')) {
@@ -58,13 +78,15 @@ class FavoriteChannelVideosService {
               published: published.toUtc().toIso8601String(),
             );
           }
-        } catch (_) {
+        } catch (error, stack) {
           failed++;
+          await AppLogger.log('FavoriteChannelVideos: failed channel=${channel.id} error=$error\n$stack');
         }
       }
     }
     try {
       await Future.wait(List.generate(channels.length.clamp(0, 4), (_) => worker()));
+      await AppLogger.log('FavoriteChannelVideos: channels=${channels.length} videos=${videos.length} failed=$failed');
       if (channels.isNotEmpty && failed == channels.length) {
         throw StateError('all_channel_feeds_failed');
       }

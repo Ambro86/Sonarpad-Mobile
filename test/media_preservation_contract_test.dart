@@ -8,6 +8,18 @@ Map<String, dynamic> _arb(String name) =>
         as Map<String, dynamic>;
 
 void main() {
+  test('podcast import opens the saved local file using the existing cutter loader', () {
+    final podcast = File('lib/screens/podcast_episodes_screen.dart').readAsStringSync().replaceAll('\r\n', '\n');
+    final dialog = File('lib/widgets/media_preservation_progress_dialog.dart').readAsStringSync();
+    final cutter = File('lib/screens/media_cutter_screen.dart').readAsStringSync();
+    expect(podcast, contains('savedActionLabel: AppLocalizations.of(context).podcastImportIntoMediaCutter'));
+    expect(podcast, contains('builder: (_) => MediaCutterScreen(initialPath: path)'));
+    expect(podcast.substring(podcast.indexOf('onSavedAction:')), startsWith(
+      'onSavedAction: (path) async {\n        if (!await RecordingFeatureAccess.isUnlocked() || !mounted) return;'));
+    expect(dialog, contains('savedPath != null && onSavedAction != null && savedActionLabel != null'));
+    expect(dialog, contains('await onSavedAction!(savedPath!)'));
+    expect(cutter, contains('if (mounted) unawaited(_loadMedia(initialPath))'));
+  });
   test('podcast preservation requires unlocked access and covers played episodes', () {
     final source = File('lib/screens/podcast_episodes_screen.dart').readAsStringSync();
     expect(source, contains('RecordingFeatureAccess.isUnlocked()'));
@@ -90,6 +102,7 @@ void main() {
       'app_zh_CN.arb',
     ];
     const keys = [
+      'podcastImportIntoMediaCutter',
       'preserveMedia',
       'preserveMediaSaving',
       'preserveMediaSaved',

@@ -24,12 +24,14 @@ class _PreserveDialogState {
 /// thread. The Cancel button aborts the active HTTP transfer and the service
 /// removes any partial temporary file. After a successful save, the same
 /// dialog becomes a non-dismissible confirmation and remains on screen until
-/// the user explicitly presses OK.
+/// the user explicitly presses OK or the optional saved-file action.
 Future<MediaPreservationResult?> preserveMediaWithProgress(
   BuildContext context, {
   required String title,
   required Future<String> Function() resolveUrl,
   String? fileName,
+  String? savedActionLabel,
+  Future<void> Function(String path)? onSavedAction,
 }) async {
   final l10n = AppLocalizations.of(context);
   final token = MediaPreservationCancellationToken();
@@ -42,8 +44,9 @@ Future<MediaPreservationResult?> preserveMediaWithProgress(
   );
   BuildContext? dialogContext;
   var lastPercent = -1;
+  String? savedPath;
 
-  final dialogFuture = showDialog<void>(
+  final dialogFuture = showDialog<bool>(
       context: context,
       barrierDismissible: false,
       builder: (ctx) {
@@ -104,9 +107,18 @@ Future<MediaPreservationResult?> preserveMediaWithProgress(
                 valueListenable: state,
                 builder: (context, value, _) {
                   if (value.completed) {
-                    return TextButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      child: Text(l10n.ok),
+                    return Wrap(
+                      children: [
+                        if (savedPath != null && onSavedAction != null && savedActionLabel != null)
+                          TextButton(
+                            onPressed: () => Navigator.of(context).pop(true),
+                            child: Text(savedActionLabel),
+                          ),
+                        TextButton(
+                          onPressed: () => Navigator.of(context).pop(false),
+                          child: Text(l10n.ok),
+                        ),
+                      ],
                     );
                   }
                   return TextButton(
@@ -142,6 +154,7 @@ Future<MediaPreservationResult?> preserveMediaWithProgress(
       url: url,
       title: title,
       fileName: fileName,
+      onSaved: onSavedAction == null ? null : (path) => savedPath = path,
       cancellationToken: token,
       onProgress: (progress) {
         final fraction = progress.fraction;
@@ -177,10 +190,13 @@ Future<MediaPreservationResult?> preserveMediaWithProgress(
         completed: true,
       );
       // The success confirmation intentionally remains modal until the user
-      // presses OK. barrierDismissible and PopScope already prevent every
+      // chooses OK or the saved-file action. PopScope prevents every
       // other dismissal path.
-      await dialogFuture;
+      final openSaved = await dialogFuture;
       dialogContext = null;
+      if (openSaved == true && context.mounted && savedPath != null) {
+        await onSavedAction!(savedPath!);
+      }
     }
     return result;
   } on MediaPreservationCancelled {

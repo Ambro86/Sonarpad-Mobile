@@ -5,12 +5,14 @@ class MediaAudioTrack {
     required this.label,
     required this.url,
     this.isDefault = false,
+    this.fallbackUrls = const [],
   });
 
   final String id;
   final String label;
   final String url;
   final bool isDefault;
+  final List<String> fallbackUrls;
 
   static bool _playable(String url) {
     final uri = Uri.tryParse(url);
@@ -77,6 +79,16 @@ class MediaAudioTrack {
             label: label.isEmpty ? entry.key : label,
             url: entry.value['url'] as String,
             isDefault: track['audioIsDefault'] == true,
+            // Keep compatible encodings of this same language/variant. Some
+            // YouTube CDN encodings fail even though the track is available.
+            fallbackUrls: (formats.whereType<Map>().where((format) =>
+              format['audioTrack'] is Map &&
+              (format['audioTrack'] as Map)['id'] == entry.key &&
+              format['mimeType']?.toString().startsWith('audio/mp4') == true &&
+              format['url'] is String && _playable(format['url'] as String) &&
+              format['url'] != entry.value['url']).toList()
+                ..sort((a, b) => bitrate(b).compareTo(bitrate(a))))
+                .map((format) => format['url'] as String).toSet().toList(),
           );
         })
         .toList(growable: false);

@@ -3786,6 +3786,9 @@ class AppLocalizationsUk extends AppLocalizations {
   String get mediaCutterMixingAddedTrack => 'Змішування нової доріжки';
 
   @override
+  String get podcastImportIntoMediaCutter => "Імпортувати в обрізання медіафайлу";
+
+  @override
   String get preserveMedia => 'Зберегти вміст';
 
   @override

@@ -165,6 +165,8 @@ Future<void> disposeTestPlayer(WidgetTester tester) async {
 class PlayerTestAudioPlatform extends JustAudioPlatform {
   PlayerTestAudioBackend? latest;
   bool rejectLoad = false;
+  bool rejectPrimary = false;
+  final requestedUrls = <String>[];
   @override
   Future<AudioPlayerPlatform> init(InitRequest request) async =>
       latest = PlayerTestAudioBackend(request.id, this);
@@ -206,10 +208,13 @@ class PlayerTestAudioBackend extends AudioPlayerPlatform {
   );
   @override
   Future<LoadResponse> load(LoadRequest request) async {
-    if (owner.rejectLoad) throw PlatformException(code: 'unavailable');
     final playlist =
         request.audioSourceMessage as ConcatenatingAudioSourceMessage;
     url = (playlist.children.first as UriAudioSourceMessage).uri;
+    owner.requestedUrls.add(url!);
+    if (owner.rejectLoad || (owner.rejectPrimary && url == 'https://example.org/pl')) {
+      throw PlatformException(code: 'unavailable');
+    }
     position = request.initialPosition ?? Duration.zero;
     notify();
     return LoadResponse(duration: const Duration(minutes: 10));
@@ -298,7 +303,8 @@ void main() {
   late JustAudioPlatform originalAudio;
   const tracks = [
     MediaAudioTrack(id: 'it', label: 'Italiano', url: 'https://example.org/it'),
-    MediaAudioTrack(id: 'pl', label: 'Polski', url: 'https://example.org/pl'),
+    MediaAudioTrack(id: 'pl', label: 'Polski', url: 'https://example.org/pl',
+      fallbackUrls: ['https://example.org/pl-compatible']),
   ];
   setUp(() {
     PathProviderPlatform.instance = PlayerTestNoLogFiles();
@@ -340,8 +346,11 @@ void main() {
       for (final platform in [TargetPlatform.android, TargetPlatform.iOS]) {
         debugDefaultTargetPlatformOverride = platform;
         for (final paused in [false, true]) {
-          for (final rejected in [false, true]) {
+          for (final mode in [0, 1, 2]) {
+            final rejected = mode == 1;
             audio.rejectLoad = rejected;
+            audio.rejectPrimary = mode == 2;
+            audio.requestedUrls.clear();
             await pumpTestPlayer(tester, tracks: tracks);
             await form(tester).onEvent!(
               const AccessibleListEvent(
@@ -372,7 +381,11 @@ void main() {
             }
             expect(completed, isTrue, reason: 'track selection completed');
             if (!rejected) {
-              expect(audio.latest?.url, 'https://example.org/pl');
+              expect(audio.latest?.url, mode == 2
+                  ? 'https://example.org/pl-compatible' : 'https://example.org/pl');
+              expect(audio.requestedUrls, mode == 2
+                  ? ['https://example.org/pl', 'https://example.org/pl-compatible']
+                  : ['https://example.org/pl']);
               expect(audio.latest?.position.inSeconds, 123);
               expect(audio.latest?.playing, !paused);
             }

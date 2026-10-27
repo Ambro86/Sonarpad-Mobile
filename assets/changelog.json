@@ -3,55 +3,68 @@
     "version": "0.5.3",
     "date": "2026-10-27",
     "it": [
+      "Corretta la condivisione dei collegamenti in SonarTube e SonarMusic: ora viene condiviso solo l’URL, facile da copiare e incollare senza dover rimuovere il titolo.",
       "SonarTube e SonarMusic ricordano il tipo di ricerca selezionato: per esempio, scegliendo Artisti in SonarMusic, alla riapertura ritroverai Artisti. La scelta è salvata separatamente per ciascun modulo, anche dopo la chiusura dell’app.",
       "Ricerca viaggi: puoi filtrare l’orario di partenza scegliendo Tutto il giorno, Mattina, Pomeriggio, Sera o Notte con uno slider accessibile. Andata e ritorno hanno filtri separati, modificabili anche nei risultati senza ripetere la ricerca. Il filtro considera l’ora locale di partenza e tutte le pagine dei risultati.",
       "Podcast: aggiunta Iscrizione rapida per iscriversi senza uscire dai risultati di ricerca né aprire gli episodi. Disponibile come azione accessibile e pulsante visibile escluso dalla navigazione di VoiceOver, senza ricaricare l’elenco né spostare il focus."
     ],
     "en": [
+      "Fixed link sharing in SonarTube and SonarMusic: only the URL is now shared, making it easy to copy and paste without removing the title.",
       "SonarTube and SonarMusic now remember the selected search type. For example, if you choose Artists in SonarMusic, Artists will still be selected when you reopen it. Each module saves its choice separately, even after you close the app.",
       "Podcasts: added Quick subscribe to subscribe without leaving search results or opening episodes. Available as an accessibility action and a visible button excluded from VoiceOver navigation, without reloading the list or moving focus."
     ],
     "fr": [
+      "Partage des liens corrigé dans SonarTube et SonarMusic : seule l’URL est désormais partagée, pour la copier et la coller sans devoir supprimer le titre.",
       "SonarTube et SonarMusic mémorisent désormais le type de recherche sélectionné. Par exemple, si vous choisissez Artistes dans SonarMusic, ce choix sera conservé à la réouverture. Chaque module enregistre son choix séparément, même après la fermeture de l’application.",
       "Podcasts : ajout de l’abonnement rapide pour s’abonner sans quitter les résultats de recherche ni ouvrir les épisodes. Disponible comme action d’accessibilité et bouton visible exclu de la navigation VoiceOver, sans recharger la liste ni déplacer le focus."
     ],
     "es": [
+      "Corregido el uso compartido de enlaces en SonarTube y SonarMusic: ahora se comparte solo la URL, para copiarla y pegarla sin tener que eliminar el título.",
       "SonarTube y SonarMusic ahora recuerdan el tipo de búsqueda seleccionado. Por ejemplo, si eliges Artistas en SonarMusic, seguirá seleccionado al volver a abrirlo. Cada módulo guarda su elección por separado, incluso después de cerrar la aplicación.",
       "Podcasts: añadida la suscripción rápida para suscribirse sin salir de los resultados de búsqueda ni abrir los episodios. Disponible como acción de accesibilidad y botón visible excluido de la navegación de VoiceOver, sin recargar la lista ni desplazar el foco."
     ],
     "pt": [
+      "Corrigida a partilha de ligações no SonarTube e SonarMusic: agora é partilhado apenas o URL, para copiar e colar sem remover o título.",
       "O SonarTube e o SonarMusic passam a memorizar o tipo de pesquisa selecionado. Por exemplo, se escolher Artistas no SonarMusic, essa opção continuará selecionada quando o voltar a abrir. Cada módulo guarda a sua escolha separadamente, mesmo depois de fechar a aplicação.",
       "Podcasts: adicionada a subscrição rápida para subscrever sem sair dos resultados da pesquisa nem abrir os episódios. Disponível como ação de acessibilidade e botão visível excluído da navegação do VoiceOver, sem recarregar a lista nem deslocar o foco."
     ],
     "pt_BR": [
+      "Corrigido o compartilhamento de links no SonarTube e SonarMusic: agora apenas a URL é compartilhada, para copiar e colar sem remover o título.",
       "O SonarTube e o SonarMusic agora lembram o tipo de pesquisa selecionado. Por exemplo, se você escolher Artistas no SonarMusic, essa opção continuará selecionada ao reabri-lo. Cada módulo salva sua escolha separadamente, mesmo depois de fechar o aplicativo.",
       "Podcasts: adicionada a inscrição rápida para se inscrever sem sair dos resultados da busca nem abrir os episódios. Disponível como ação de acessibilidade e botão visível excluído da navegação do VoiceOver, sem recarregar a lista nem mover o foco."
     ],
     "pl": [
+      "Poprawiono udostępnianie linków w SonarTube i SonarMusic: udostępniany jest teraz tylko adres URL, który można kopiować i wklejać bez usuwania tytułu.",
       "SonarTube i SonarMusic zapamiętują teraz wybrany typ wyszukiwania. Na przykład po wybraniu wykonawców w SonarMusic ta opcja pozostanie zaznaczona po ponownym otwarciu. Każdy moduł zapisuje wybór osobno, również po zamknięciu aplikacji.",
       "Podcasty: dodano szybką subskrypcję bez opuszczania wyników wyszukiwania i otwierania odcinków. Funkcja jest dostępna jako czynność dostępności oraz widoczny przycisk pomijany podczas nawigacji VoiceOver, bez ponownego ładowania listy i przenoszenia fokusu."
     ],
     "cs": [
+      "Opraveno sdílení odkazů v SonarTube a SonarMusic: nyní se sdílí pouze URL, které lze snadno kopírovat a vložit bez odstraňování názvu.",
       "SonarTube a SonarMusic si nyní pamatují vybraný typ vyhledávání. Pokud například v SonarMusic vyberete interprety, tato volba zůstane vybraná i při příštím otevření. Každý modul ukládá svou volbu samostatně, a to i po zavření aplikace.",
       "Podcasty: přidán rychlý odběr bez opuštění výsledků vyhledávání a otevření epizod. Je dostupný jako akce zpřístupnění a viditelné tlačítko vynechané při navigaci VoiceOver, bez opětovného načítání seznamu nebo přesouvání fokusu."
     ],
     "de": [
+      "Linkfreigabe in SonarTube und SonarMusic korrigiert: Jetzt wird nur die URL geteilt, damit sie ohne Entfernen des Titels kopiert und eingefügt werden kann.",
       "SonarTube und SonarMusic merken sich jetzt den ausgewählten Suchtyp. Wenn Sie beispielsweise in SonarMusic Künstler auswählen, bleibt diese Auswahl beim erneuten Öffnen erhalten. Jedes Modul speichert seine Auswahl separat, auch nach dem Schließen der App.",
       "Podcasts: Schnell abonnieren ermöglicht das Abonnieren, ohne die Suchergebnisse zu verlassen oder die Episoden zu öffnen. Verfügbar als Bedienungshilfenaktion und sichtbare Schaltfläche, die bei der VoiceOver-Navigation übersprungen wird, ohne die Liste neu zu laden oder den Fokus zu verschieben."
     ],
     "zh_CN": [
+      "修复了 SonarTube 和 SonarMusic 的链接分享：现在仅分享 URL，可直接复制粘贴，无需删除标题。",
       "SonarTube 和 SonarMusic 现在会记住所选的搜索类型。例如，在 SonarMusic 中选择“艺人”后，再次打开时仍会选中“艺人”。每个模块分别保存自己的选择，即使关闭应用后也会保留。",
       "播客：新增快速订阅，无需离开搜索结果或打开单集即可订阅。可通过辅助功能操作或可见按钮使用，该按钮不参与 VoiceOver 导航，订阅时不会重新加载列表或移动焦点。"
     ],
     "uk": [
+      "Виправлено поширення посилань у SonarTube та SonarMusic: тепер поширюється лише URL, який можна копіювати й вставляти без видалення назви.",
       "SonarTube і SonarMusic тепер запам’ятовують вибраний тип пошуку. Наприклад, якщо вибрати виконавців у SonarMusic, цей варіант залишиться вибраним після повторного відкриття. Кожен модуль зберігає свій вибір окремо, навіть після закриття застосунку.",
       "Подкасти: додано швидку підписку без виходу з результатів пошуку та відкриття епізодів. Доступна як дія спеціальних можливостей і видима кнопка, яку пропускає навігація VoiceOver, без перезавантаження списку та переміщення фокуса."
     ],
     "ro": [
+      "S-a corectat distribuirea linkurilor în SonarTube și SonarMusic: acum se distribuie doar adresa URL, ușor de copiat și lipit fără a elimina titlul.",
       "SonarTube și SonarMusic rețin acum tipul de căutare selectat. De exemplu, dacă alegi Artiști în SonarMusic, această opțiune va rămâne selectată la redeschidere. Fiecare modul își salvează alegerea separat, chiar și după închiderea aplicației.",
       "Podcasturi: a fost adăugată abonarea rapidă, fără a părăsi rezultatele căutării sau a deschide episoadele. Este disponibilă ca acțiune de accesibilitate și buton vizibil exclus din navigarea VoiceOver, fără reîncărcarea listei sau mutarea focalizării."
     ],
     "tr": [
+      "SonarTube ve SonarMusic’te bağlantı paylaşımı düzeltildi: artık yalnızca URL paylaşılır; başlığı silmeden kolayca kopyalayıp yapıştırabilirsiniz.",
       "SonarTube ve SonarMusic artık seçilen arama türünü hatırlar. Örneğin SonarMusic’te Sanatçılar seçeneğini seçerseniz, yeniden açtığınızda bu seçenek seçili kalır. Her modül seçiminizi ayrı olarak kaydeder; uygulamayı kapattıktan sonra da seçim korunur.",
       "Podcastler: arama sonuçlarından ayrılmadan veya bölümleri açmadan abone olmak için hızlı abonelik eklendi. Listeyi yeniden yüklemeden veya odağı taşımadan, erişilebilirlik eylemi ve VoiceOver gezinmesine dahil edilmeyen görünür bir düğme olarak kullanılabilir."
     ]

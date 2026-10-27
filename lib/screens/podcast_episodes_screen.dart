@@ -14,6 +14,7 @@ import '../utils/app_logger.dart';
 import '../utils/list_timestamp_formatter.dart';
 import '../utils/media_open_guard.dart';
 import 'podcast_episode_player_screen.dart';
+import 'media_cutter_screen.dart';
 import '../widgets/universal_accessible_view.dart';
 
 mixin _PodcastPreservation<T extends StatefulWidget> on State<T> {
@@ -43,6 +44,13 @@ mixin _PodcastPreservation<T extends StatefulWidget> on State<T> {
       title: episode.title,
       fileName: '${episode.title}.$extension',
       resolveUrl: () async => episode.audioUrl,
+      savedActionLabel: AppLocalizations.of(context).podcastImportIntoMediaCutter,
+      onSavedAction: (path) async {
+        if (!await RecordingFeatureAccess.isUnlocked() || !mounted) return;
+        await Navigator.push(context, MaterialPageRoute<void>(
+          builder: (_) => MediaCutterScreen(initialPath: path),
+        ));
+      },
     );
   }
 

@@ -326,7 +326,9 @@ class _MediaPart {
 }
 
 class MediaCutterScreen extends StatefulWidget {
-  const MediaCutterScreen({super.key});
+  const MediaCutterScreen({super.key, this.initialPath});
+
+  final String? initialPath;
 
   @override
   State<MediaCutterScreen> createState() => _MediaCutterScreenState();
@@ -484,6 +486,12 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
   void initState() {
     super.initState();
     unawaited(_restoreMediaSeekStep());
+    final initialPath = widget.initialPath;
+    if (initialPath != null && initialPath.isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) unawaited(_loadMedia(initialPath));
+      });
+    }
     if (Platform.isIOS) {
       _mediaEventsSubscription =
           _mediaEvents.receiveBroadcastStream().listen((event) {

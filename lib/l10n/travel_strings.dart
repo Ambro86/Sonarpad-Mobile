@@ -24,6 +24,9 @@ class TravelStrings {
             }[language] ??
             'IT';
   static const _it = {
+    'bookingPreparing': 'Omio sta preparando la prenotazione. Controllo se il checkout è pronto senza reinviare i dati.',
+    'bookingStillWaiting': 'Omio non ha ancora confermato che il checkout è pronto. Puoi ricontrollare oppure continuare con la stessa prenotazione su Omio. Non reinviare i dati.',
+    'openSameBooking': 'Continua con la stessa prenotazione su Omio',
     'useDiscountCards': 'Usa carte sconto o fedeltà',
     'discountCards': 'Carte sconto e fedeltà dei passeggeri',
     'noDiscountCard': 'Nessuna carta',
@@ -183,6 +186,9 @@ class TravelStrings {
     'linkError': 'Impossibile aprire il collegamento Omio. Riprova.',
   };
   static const _en = {
+    'bookingPreparing': 'Omio is preparing your booking. Checking whether checkout is ready without resubmitting your details.',
+    'bookingStillWaiting': 'Omio has not yet confirmed that checkout is ready. Check again or continue with the same booking on Omio. Do not resubmit your details.',
+    'openSameBooking': 'Continue with the same booking on Omio',
     'useDiscountCards': 'Use discount or loyalty cards',
     'discountCards': 'Passenger discount and loyalty cards',
     'noDiscountCard': 'No card',

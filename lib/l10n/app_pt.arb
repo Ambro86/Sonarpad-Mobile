@@ -2896,6 +2896,7 @@
   "@mediaCutterMixingAddedTrack": {
     "description": "Localized text for mediaCutterMixingAddedTrack."
   },
+  "podcastImportIntoMediaCutter": "Importar para Cortar ficheiro multimédia",
   "preserveMedia": "Conservar conteúdo",
   "@preserveMedia": {
     "description": "Secondary action that downloads and preserves a playable MP3."

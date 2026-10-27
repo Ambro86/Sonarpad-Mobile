@@ -58,6 +58,8 @@ void main() {
     expect(tracks.map((track) => track.id), ['it.3', 'pl.3']);
     expect(tracks.first.url, 'https://example.org/it.3/mp4/128000');
     expect(tracks.first.isDefault, isTrue);
+    expect(tracks.first.fallbackUrls, ['https://example.org/it.3/mp4/64000']);
+    expect(tracks.last.fallbackUrls, isEmpty);
   });
 
   test(
@@ -291,4 +293,32 @@ void main() {
     skip: !const bool.fromEnvironment('RUN_LIVE_SONARTUBE_AUDIO'),
     timeout: const Timeout(Duration(minutes: 2)),
   );
+  test('live Apple descriptive track can be loaded completely', () async {
+    final service = SonarTubeService(endpoint: Uri.parse('http://127.0.0.1:9'));
+    final media = await service.resolveUrl('x5h1JykMcFU', fallbackTitle: 'Apple');
+    final track = media.audioTracks.singleWhere((track) => track.id == 'en.2');
+    final attempts = <String>[];
+    var loaded = false;
+    for (final url in [track.url, ...track.fallbackUrls]) {
+      final uri = Uri.parse(url);
+      try {
+        final response = await http.get(uri, headers: {'Range': 'bytes=0-'})
+            .timeout(const Duration(seconds: 20));
+        attempts.add('itag=${uri.queryParameters['itag']} HTTP ${response.statusCode}');
+        if (response.statusCode != 200 && response.statusCode != 206) continue;
+        expect(response.bodyBytes.length, int.parse(uri.queryParameters['clen']!));
+        expect(ascii.decode(response.bodyBytes.sublist(4, 8)), 'ftyp');
+        loaded = true;
+        break;
+      } catch (error) {
+        attempts.add('itag=${uri.queryParameters['itag']} ${error.runtimeType}');
+      }
+    }
+    // Report only format IDs/statuses, not signed URLs.
+    // ignore: avoid_print
+    print(attempts.join('; '));
+    expect(loaded, isTrue, reason: 'Complete descriptive AAC, not just its header');
+  }, skip: !const bool.fromEnvironment('RUN_LIVE_APPLE_AUDIO'),
+    timeout: const Timeout(Duration(minutes: 2)));
+
 }

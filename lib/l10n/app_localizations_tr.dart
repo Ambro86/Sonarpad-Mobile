@@ -3717,6 +3717,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get mediaCutterMixingAddedTrack => "Yeni ses izi miksleniyor";
 
   @override
+  String get podcastImportIntoMediaCutter => "Medya dosyasını kes bölümüne aktar";
+
+  @override
   String get preserveMedia => "İçeriği sakla";
 
   @override

@@ -3689,6 +3689,9 @@ class AppLocalizationsRo extends AppLocalizations {
   String get mediaCutterMixingAddedTrack => 'Se mixează pista nouă';
 
   @override
+  String get podcastImportIntoMediaCutter => "Importă în Decupare fișier media";
+
+  @override
   String get preserveMedia => 'Păstrează conținutul';
 
   @override

@@ -10,6 +10,41 @@ SonarTubeItem channel(String id) => SonarTubeItem(kind: SonarTubeItemKind.channe
 String entry(String id, String date) => '<entry><yt:videoId>$id</yt:videoId><title>Title &amp; more</title><published>$date</published><author><name>Artist</name></author></entry>';
 String feed(String entries) => '<feed xmlns="http://www.w3.org/2005/Atom" xmlns:yt="http://www.youtube.com/xml/schemas/2015">$entries</feed>';
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  for (final status in [404, 429, 503]) {
+    test('recovers from temporary feed HTTP $status without losing videos', () async {
+      var calls = 0;
+      final service = FavoriteChannelVideosService(client: MockClient((_) async {
+        calls++;
+        if (calls < 3) return http.Response('Unavailable', status);
+        return http.Response(feed(entry('recovered', '2026-10-22T12:00:00Z')), 200);
+      }));
+      final result = await service.load([channel(a)]);
+      expect(calls, 3);
+      expect(result.failedChannels, 0);
+      expect(result.items.single.id, 'recovered');
+    });
+  }
+  test('recovers from a dropped connection', () async {
+    var calls = 0;
+    final service = FavoriteChannelVideosService(client: MockClient((_) async {
+      if (++calls == 1) throw http.ClientException('Connection closed');
+      return http.Response(feed(entry('recovered', '2026-10-22T12:00:00Z')), 200);
+    }));
+    final result = await service.load([channel(a)]);
+    expect(calls, 2);
+    expect(result.failedChannels, 0);
+    expect(result.items.single.id, 'recovered');
+  });
+  test('does not retry permanent access errors', () async {
+    var calls = 0;
+    final service = FavoriteChannelVideosService(client: MockClient((_) async {
+      calls++;
+      return http.Response('Forbidden', 403);
+    }));
+    await expectLater(service.load([channel(a)]), throwsStateError);
+    expect(calls, 1);
+  });
   test('merges feeds using absolute dates, newest first, preserving channel metadata', () async {
     final service = FavoriteChannelVideosService(client: MockClient((request) async => http.Response(feed(
       request.url.queryParameters['channel_id'] == a

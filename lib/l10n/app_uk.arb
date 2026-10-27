@@ -4468,6 +4468,7 @@
   "@mediaCutterMixingAddedTrack": {
     "description": "Localized text for mediaCutterMixingAddedTrack."
   },
+  "podcastImportIntoMediaCutter": "Імпортувати в обрізання медіафайлу",
   "preserveMedia": "Зберегти вміст",
   "@preserveMedia": {
     "description": "Secondary action that downloads and preserves a playable MP3."

@@ -2890,6 +2890,7 @@
   "@mediaCutterMixingAddedTrack": {
     "description": "Localized text for mediaCutterMixingAddedTrack."
   },
+  "podcastImportIntoMediaCutter": "Medya dosyasını kes bölümüne aktar",
   "preserveMedia": "İçeriği sakla",
   "@preserveMedia": {
     "description": "Secondary action that downloads and preserves a playable MP3."

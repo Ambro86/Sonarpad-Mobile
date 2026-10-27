@@ -2890,6 +2890,7 @@
   "@mediaCutterMixingAddedTrack": {
     "description": "Localized text for mediaCutterMixingAddedTrack."
   },
+  "podcastImportIntoMediaCutter": "Importă în Decupare fișier media",
   "preserveMedia": "Păstrează conținutul",
   "@preserveMedia": {
     "description": "Secondary action that downloads and preserves a playable MP3."

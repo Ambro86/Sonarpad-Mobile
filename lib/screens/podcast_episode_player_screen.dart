@@ -327,11 +327,7 @@ class _PodcastEpisodePlayerScreenState
         _lastConfirmedVideoSpeed = 1.0;
         if (useExternalAudio) {
           await _videoController!.setVolume(0);
-          await _audio.setUrl(
-            _episode.audioUrl,
-            title: l10n.nowPlayingTitle(_episode.title),
-            mediaId: _getStableId(),
-          );
+          await _loadEpisodeAudio(l10n);
           _loaded = true;
           AppLogger.log(
             'PodcastPlayer: external audio setUrl completed for video, '
@@ -448,11 +444,7 @@ class _PodcastEpisodePlayerScreenState
 
         if (!_loaded) {
           AppLogger.log('PodcastPlayer: audio setUrl start, $_logSubject');
-          await _audio.setUrl(
-            _episode.audioUrl,
-            title: l10n.nowPlayingTitle(_episode.title),
-            mediaId: _getStableId(),
-          );
+          await _loadEpisodeAudio(l10n);
           _loaded = true;
           AppLogger.log(
             'PodcastPlayer: audio setUrl completed loaded=$_loaded, '
@@ -612,6 +604,32 @@ class _PodcastEpisodePlayerScreenState
     icon: const Icon(Icons.language),
     label: Text(l10n.selectAudioTrack),
   );
+
+  Future<void> _loadEpisodeAudio(AppLocalizations l10n) async {
+    final episode = _episode;
+    final tracks = episode.audioTracks.where(
+      (track) => track.id == episode.selectedAudioTrackId,
+    );
+    final urls = <String>{episode.audioUrl,
+      if (tracks.isNotEmpty && episode.audioUrl != episode.videoUrl)
+        ...tracks.first.fallbackUrls,
+    }.toList();
+    for (var index = 0; index < urls.length; index++) {
+      try {
+        await _audio.setUrl(urls[index],
+          title: l10n.nowPlayingTitle(episode.title), mediaId: _getStableId());
+        if (index > 0 && mounted) {
+          _refreshedEpisode = episode.withAudioTrack(
+            episode.selectedAudioTrackId!, playbackUrl: urls[index]);
+        }
+        return;
+      } catch (error) {
+        if (!mounted || index == urls.length - 1) rethrow;
+        await AppLogger.log('Player: audio track=${episode.selectedAudioTrackId} '
+            'encoding failed: $error; trying alternate encoding ${index + 1}');
+      }
+    }
+  }
 
   Future<void> _selectAudioTrack() async {
     if (!_canSelectAudioTrack || _choosingAudioTrack) return;

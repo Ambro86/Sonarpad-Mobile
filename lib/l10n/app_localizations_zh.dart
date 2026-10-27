@@ -3672,6 +3672,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get mediaCutterMixingAddedTrack => '正在混合新音轨';
 
   @override
+  String get podcastImportIntoMediaCutter => "导入到剪切媒体文件";
+
+  @override
   String get preserveMedia => '保存内容';
 
   @override

@@ -586,7 +586,8 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
         _nextToken = result.nextToken;
         _page = result.page;
       });
-    } catch (error) {
+    } catch (error, stack) {
+      if (widget.latestChannels != null) await AppLogger.log('SonarTube latest videos failed: $error\n$stack');
       if (mounted) setState(() => _error = error);
     } finally {
       if (mounted) setState(() => _loading = false);
@@ -801,7 +802,7 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
     final url = _shareableItemUrl(item);
     await SharePlus.instance.share(
       ShareParams(
-        text: '${item.title}\n$url',
+        text: url.trim(),
         subject: item.title,
       ),
     );

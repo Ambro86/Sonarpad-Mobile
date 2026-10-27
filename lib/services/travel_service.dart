@@ -165,9 +165,43 @@ class TravelService {
   final Future<void> Function(Duration) _retryDelay;
   String? _session;
   bool _closed = false;
+  Future<void> logCheckoutPoll(int attempt, int elapsedSeconds) => _logger(
+    '[Travel] checkout poll=$attempt elapsed_s=$elapsedSeconds',
+  );
   static String? _safeReference(dynamic value) {
     final s = value?.toString() ?? '';
     return RegExp(r'^[a-fA-F0-9]{8,64}$').hasMatch(s) ? s : null;
+  }
+
+  // Independently filter server diagnostics; never log arbitrary response text.
+  static dynamic _safeBookingDiagnostic(dynamic value, [int depth = 0]) {
+    if (depth > 14) return null;
+    if (value == null || value is bool || value is num) return value;
+    if (value is List) {
+      return value.take(160).map((v) => _safeBookingDiagnostic(v, depth + 1)).toList();
+    }
+    if (value is Map) {
+      const keys = {'trace', 'last_write', 'pending_operation', 'stage', 'http',
+        'time', 'profile', 'response', 'transport', 'entries', 'truncated',
+        'structure_fingerprint', 'path', 'kind', 'fields', 'omitted_fields',
+        'count', 'value', 'length', 'unrecognized', 'signals', 'present',
+        'invalid_json', 'response_bytes', 'method', 'elapsed_ms',
+        'upstream_status', 'content_type', 'challenge_detected', 'cookies_before',
+        'cookies_after', 'error_type', 'retry_handled', 'attempts'};
+      return {for (final e in value.entries)
+        if (keys.contains(e.key)) e.key: _safeBookingDiagnostic(e.value, depth + 1)};
+    }
+    if (value is String) {
+      const words = 'INITIALISED CREATED PENDING PROCESSING RESERVING RESERVED TIMEOUT FAILED CANCELLED EXPIRED ERROR SUCCESS INVALID MISSING REQUIRED VALIDATION_ERROR INVALID_INPUT PRICE_CHANGED SOLD_OUT UNAVAILABLE RESERVATION_FAILED PAYMENT_REQUIRED REDIRECT NONE create status passengers booking chrome131 safari17_2_ios dict list str int float bool NoneType required missing invalid expired unavailable price timeout retry validation reservation pending captcha authentication payment passenger GET PUT POST http_response network_error Timeout ConnectTimeout ReadTimeout application/json text/html text/plain other';
+      if (words.split(' ').contains(value) || value == 'sold out') return value;
+      if (RegExp(r'^[a-f0-9]{16}$').hasMatch(value)) return value;
+      if (value.startsWith(r'$') && value.length < 300) {
+        const fields = 'bookingTransaction status state code errorCode type reason errors error message description validationErrors violations field path actions nextAction nextStep requiredFields passengers components bookings reservations offers segments success valid required retryable reservationValidUntil';
+        final parts = value.replaceAll('[]', '').split('.');
+        if (parts.first == r'$' && parts.skip(1).every(fields.split(' ').contains)) return value;
+      }
+    }
+    return '[redacted]';
   }
 
   Future<Map<String, dynamic>> request(
@@ -256,12 +290,18 @@ class TravelService {
       } catch (_) {
         /* handled below */
       }
-      final reference = _safeReference(data?['request_id']);
+      final reference = _safeReference(
+        data?['request_id'] ?? response.headers['x-request-id'],
+      );
       await _logger(
         '[Travel] $verb $route http=${response.statusCode} elapsed_ms=${watch.elapsedMilliseconds}'
         '${reference == null ? '' : ' request_id=$reference'}',
       );
       final diagnostic = data?['diagnostic'];
+      if (route.startsWith('/v1/booking') && data?['booking_diagnostic'] is Map) {
+        await _logger('[TravelBookingDiagnostic] request_id=${reference ?? 'unavailable'} '
+          '${jsonEncode(_safeBookingDiagnostic(data!['booking_diagnostic']))}');
+      }
       if (diagnostic is Map) {
         // Strict allowlist: never serialize the provider's raw error or body.
         final profile = diagnostic['profile'];
@@ -284,6 +324,17 @@ class TravelService {
         );
       }
       if (data == null) throw const TravelException('response');
+      if (route == '/v1/booking/status') {
+        const states = ['INITIALISED', 'CREATED', 'RESERVING', 'PENDING',
+          'PROCESSING', 'RESERVED', 'TIMEOUT', 'FAILED', 'CANCELLED', 'EXPIRED'];
+        const phases = ['waiting', 'ready', 'unavailable', 'manual'];
+        await _logger(
+          '[Travel] booking status=${states.contains(data['status']) ? data['status'] : 'UNKNOWN'}'
+          ' phase=${phases.contains(data['checkout_state']) ? data['checkout_state'] : 'legacy-or-unknown'}'
+          ' payment_url_present=${data['payment_url'] is String}'
+          '${reference == null ? '' : ' request_id=$reference'}',
+        );
+      }
       return data;
     } on TravelException {
       rethrow;

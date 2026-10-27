@@ -13,6 +13,7 @@ class PassengerService extends TravelService {
   final calls = <String>[];
   Map<String, dynamic>? submitted;
   bool failSubmit = false;
+  final statusResponses = <Map<String, dynamic>>[];
   Completer<Map<String, dynamic>>? stateResponse;
   Completer<Map<String, dynamic>>? submitResponse;
   final fields = <Map<String, dynamic>>[
@@ -87,6 +88,7 @@ class PassengerService extends TravelService {
       return {'status': 'submitted'};
     }
     if (route == '/v1/booking/status') {
+      if (statusResponses.isNotEmpty) return statusResponses.removeAt(0);
       return {
         'status': 'RESERVED',
         'payment_url': 'https://www.omio.com/app/booking/test/checkout',
@@ -654,4 +656,48 @@ void main() {
       expect(draft.attempted, isTrue);
     },
   );
+  testWidgets('pending booking recovers without resubmitting passengers', (tester) async {
+    final service = PassengerService()..statusResponses.addAll([
+      {'status': 'PROCESSING', 'checkout_state': 'waiting',
+       'recovery': {'retry_after_seconds': 2}},
+      {'status': 'RESERVED', 'checkout_state': 'ready',
+       'payment_url': 'https://www.omio.com/app/booking/test/checkout'},
+    ]);
+    final draft = TravelPassengerDraft()..attempted = true..submitted = true;
+    await mount(tester, service, draft);
+    row(tester, 'status').onActivate!();
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 2));
+    await tester.pumpAndSettle();
+    expect(draft.paymentUrl, contains('/checkout'));
+    expect(row(tester, 'checkout').enabled, isTrue);
+    expect(service.calls.where((c) => c == '/v1/booking/status').length, 2);
+    expect(service.calls, isNot(contains('/v1/booking/passengers')));
+  });
+
+  testWidgets('exhausted recovery explains delay and preserves same booking fallback', (tester) async {
+    final service = PassengerService()..statusResponses.add(
+      {'status': 'PROCESSING', 'checkout_state': 'manual'},
+    );
+    final draft = TravelPassengerDraft()..attempted = true..submitted = true;
+    await mount(tester, service, draft);
+    row(tester, 'status').onActivate!();
+    await tester.pumpAndSettle();
+    expect(row(tester, 'error').title, contains('non ha ancora'));
+    expect(row(tester, 'fallback').title, contains('stessa prenotazione'));
+    expect(row(tester, 'status').enabled, isTrue);
+    expect(draft.paymentUrl, isNull);
+    expect(service.calls, isNot(contains('/v1/booking/passengers')));
+  });
+
+  testWidgets('uncertain submission can check status without sending again', (tester) async {
+    final service = PassengerService();
+    final draft = TravelPassengerDraft()..attempted = true;
+    await mount(tester, service, draft);
+    row(tester, 'status').onActivate!();
+    await tester.pumpAndSettle();
+    expect(draft.paymentUrl, isNotNull);
+    expect(service.calls, isNot(contains('/v1/booking/passengers')));
+  });
+
 }

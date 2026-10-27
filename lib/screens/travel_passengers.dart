@@ -696,12 +696,20 @@ class _TravelPassengersScreenState extends State<TravelPassengersScreen> {
 
   Future<void> _status() async {
     if (_busy) return;
-    setState(() => _busy = true);
+    setState(() {
+      _busy = true;
+      _message = null;
+    });
+    final started = DateTime.now();
     try {
-      for (var n = 0; n < 20; n++) {
+      for (var n = 0; n < 60; n++) {
+        if (!mounted) return;
         final result = await widget.service.request('/v1/booking/status');
         if (!mounted) return;
-        if (result['payment_url'] is String) {
+        await widget.service.logCheckoutPoll(n + 1, DateTime.now().difference(started).inSeconds);
+        if (!mounted) return;
+        if (result['payment_url'] is String &&
+            (result['payment_url'] as String).isNotEmpty) {
           d.paymentUrl = result['payment_url'];
           break;
         }
@@ -710,11 +718,19 @@ class _TravelPassengersScreenState extends State<TravelPassengersScreen> {
           'FAILED',
           'CANCELLED',
           'EXPIRED',
-        ].contains(result['status'])) {
+        ].contains(result['status']) || result['checkout_state'] == 'unavailable') {
           _message = _strings(context).t('bookingUnavailable');
           break;
         }
-        if (n < 19) await Future<void>.delayed(const Duration(seconds: 2));
+        if (result['checkout_state'] == 'manual' || n == 59 ||
+            DateTime.now().difference(started) >= const Duration(minutes: 3)) {
+          _message = _strings(context).t('bookingStillWaiting');
+          break;
+        }
+        final recovery = result['recovery'];
+        final suggested = recovery is Map ? recovery['retry_after_seconds'] : null;
+        final seconds = suggested is int ? suggested.clamp(2, 8) : (2 + n ~/ 5).clamp(2, 8);
+        await Future<void>.delayed(Duration(seconds: seconds));
         if (!mounted) return;
       }
     } catch (e) {
@@ -783,7 +799,7 @@ class _TravelPassengersScreenState extends State<TravelPassengersScreen> {
                   const SizedBox(height: 24),
                   Semantics(
                     liveRegion: true,
-                    child: Text(t.t('passengerLoading')),
+                    child: Text(t.t(d.attempted ? 'bookingPreparing' : 'passengerLoading')),
                   ),
                   const SizedBox(height: 24),
                   FilledButton(
@@ -826,7 +842,7 @@ class _TravelPassengersScreenState extends State<TravelPassengersScreen> {
               t.t('openCheckout'),
               () => _open(d.paymentUrl!),
             ),
-          if (d.submitted && d.paymentUrl == null)
+          if (d.paymentUrl == null)
             _action('status', t.t('statusRefresh'), _status, enabled: !_busy),
         ] else if (d.fields != null && fields.isEmpty) ...[
           for (final index in _passengerIndices) ...[
@@ -885,7 +901,7 @@ class _TravelPassengersScreenState extends State<TravelPassengersScreen> {
         ],
         _action(
           'fallback',
-          t.t('open'),
+          t.t(d.attempted ? 'openSameBooking' : 'open'),
           () => _open(widget.fallbackUrl),
           enabled: !_busy,
         ),

@@ -206,7 +206,8 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
         _description = result.description;
         _page = page;
       });
-    } catch (e) {
+    } catch (e, stack) {
+      if (widget.libraryType == 'latest') await AppLogger.log('SonarMusic latest videos failed: $e\n$stack');
       if (mounted) setState(() => _error = e);
     } finally {
       if (mounted) setState(() { _loading = false; _loadingMore = false; });
@@ -325,7 +326,7 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
     final uri = item.url ?? (item.playable
       ? 'https://music.youtube.com/watch?v=${item.videoId}'
       : 'https://music.youtube.com/browse/${item.browseId ?? item.id}');
-    await SharePlus.instance.share(ShareParams(text: '${item.title}\n$uri'));
+    await SharePlus.instance.share(ShareParams(text: uri.trim(), subject: item.title));
   }
   bool _canSave(SonarMusicItem item) =>
       _unlocked &&

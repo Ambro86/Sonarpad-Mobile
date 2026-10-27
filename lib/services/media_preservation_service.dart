@@ -99,6 +99,7 @@ class MediaPreservationService {
     required String url,
     required String title,
     String? fileName,
+    void Function(String path)? onSaved,
     void Function(MediaPreservationProgress progress)? onProgress,
     MediaPreservationCancellationToken? cancellationToken,
   }) async {
@@ -221,6 +222,9 @@ class MediaPreservationService {
         await AppLogger.log(
           'Media preserve: saved in Sonarpad Documents name="${document.name}" path="${document.path}"',
         );
+        if (onSaved != null) {
+          onSaved(await _library.resolveFilePath(document));
+        }
         return MediaPreservationResult.savedInSonarpad;
       } on MediaPreservationCancelled {
         rethrow;

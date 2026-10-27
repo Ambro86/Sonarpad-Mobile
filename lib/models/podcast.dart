@@ -234,12 +234,12 @@ class PodcastEpisode {
     this.selectedAudioTrackId,
   });
 
-  PodcastEpisode withAudioTrack(String trackId) {
+  PodcastEpisode withAudioTrack(String trackId, {String? playbackUrl}) {
     final matches = audioTracks.where((track) => track.id == trackId);
     if (matches.isEmpty) return this;
     return PodcastEpisode(
       title: title, description: description, id: id,
-      audioUrl: matches.first.url, videoUrl: videoUrl ?? audioUrl,
+      audioUrl: playbackUrl ?? matches.first.url, videoUrl: videoUrl ?? audioUrl,
       publishedAt: publishedAt, chaptersUrl: chaptersUrl,
       chaptersType: chaptersType, isLive: isLive,
       audioTracks: audioTracks, selectedAudioTrackId: trackId,

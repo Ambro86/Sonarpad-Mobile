@@ -15,7 +15,9 @@ permissions:
 jobs:
   build:
     name: Build Sonarpad Android APK
-    runs-on: ubuntu-latest
+    # Keep the validated native rhttp_plus/boring2 build environment.
+    # ubuntu-26.04 produces incomplete bindgen structs for Android ARMv7.
+    runs-on: ubuntu-24.04
 
     env:
       RUN_EMULATOR: 'false'

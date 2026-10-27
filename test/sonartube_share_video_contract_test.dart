@@ -15,7 +15,8 @@ void main() {
     expect(source, contains("event.action?.startsWith('share_') == true"));
     expect(source, contains('CustomSemanticsAction('));
     expect(source, contains('SharePlus.instance.share('));
-    expect(source, contains("text: '\${item.title}\\n\$url'"));
+    expect(source, contains('text: url.trim()'));
+    expect(source, contains('subject: item.title'));
   });
 
   test('video, channel and playlist keep favorite and share actions together', () {

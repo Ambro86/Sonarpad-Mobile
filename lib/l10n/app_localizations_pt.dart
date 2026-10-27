@@ -3801,6 +3801,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get mediaCutterMixingAddedTrack => 'A misturar a nova faixa';
 
   @override
+  String get podcastImportIntoMediaCutter => "Importar para Cortar ficheiro multimédia";
+
+  @override
   String get preserveMedia => 'Conservar conteúdo';
 
   @override
@@ -5460,6 +5463,9 @@ class AppLocalizationsPt extends AppLocalizations {
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
 class AppLocalizationsPtBr extends AppLocalizationsPt {
+  @override
+  String get podcastImportIntoMediaCutter => 'Importar para Cortar arquivo de mídia';
+
   @override
   String audioDescriptionProjectEditorSegmentOption(int index, String start, String end) => '$index: $start – $end';
 

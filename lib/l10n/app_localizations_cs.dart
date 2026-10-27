@@ -3787,6 +3787,9 @@ class AppLocalizationsCs extends AppLocalizations {
   String get mediaCutterMixingAddedTrack => 'Míchání nové stopy';
 
   @override
+  String get podcastImportIntoMediaCutter => "Importovat do Střihu mediálních souborů";
+
+  @override
   String get preserveMedia => 'Uchovat obsah';
 
   @override

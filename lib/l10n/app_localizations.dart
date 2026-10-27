@@ -6787,6 +6787,8 @@ abstract class AppLocalizations {
   /// **'Conserva contenuto'**
   String get preserveMedia;
 
+  String get podcastImportIntoMediaCutter;
+
   /// Status shown while a media file is being downloaded and preserved.
   ///
   /// In it, this message translates to:

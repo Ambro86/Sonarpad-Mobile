@@ -3816,6 +3816,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get mediaCutterMixingAddedTrack => 'Mixage de la nouvelle piste';
 
   @override
+  String get podcastImportIntoMediaCutter => "Importer dans Découper un fichier multimédia";
+
+  @override
   String get preserveMedia => 'Conserver le contenu';
 
   @override

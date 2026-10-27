@@ -3791,6 +3791,9 @@ class AppLocalizationsPl extends AppLocalizations {
   String get mediaCutterMixingAddedTrack => 'Miksowanie nowej ścieżki';
 
   @override
+  String get podcastImportIntoMediaCutter => "Importuj do Przycinania plików multimedialnych";
+
+  @override
   String get preserveMedia => 'Zachowaj zawartość';
 
   @override
