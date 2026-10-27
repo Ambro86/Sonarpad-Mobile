@@ -34,6 +34,35 @@ class TravelCity {
   );
 }
 
+enum TravelTimeBand {
+  all,
+  morning,
+  afternoon,
+  evening,
+  night;
+
+  bool matches(Object? departure) {
+    if (this == all) return true;
+    // Station-local wall time, not the timezone of the phone.
+    final match = RegExp(
+      r'^\d{4}-\d{2}-\d{2}T(\d{2}):(\d{2})',
+    ).firstMatch('$departure');
+    if (match == null) return false;
+    final hour = int.parse(match[1]!);
+    if (hour > 23 || int.parse(match[2]!) > 59) return false;
+    return switch (this) {
+      morning => hour >= 6 && hour < 12,
+      afternoon => hour >= 12 && hour < 18,
+      evening => hour >= 18,
+      night => hour < 6,
+      all => true,
+    };
+  }
+
+  static TravelTimeBand parse(Object? value) =>
+      values.where((band) => band.name == value).firstOrNull ?? all;
+}
+
 class TravelQuery {
   TravelQuery({
     this.from = '',
@@ -41,6 +70,8 @@ class TravelQuery {
     this.country = 'IT',
     this.currency = 'EUR',
     this.mode = 'train',
+    this.outboundTime = TravelTimeBand.all,
+    this.inboundTime = TravelTimeBand.all,
     DateTime? departure,
     this.returnDate,
     this.departureCity,
@@ -49,6 +80,7 @@ class TravelQuery {
   }) : departure = departure ?? DateUtilsTravel.today(),
        ages = ages ?? [40];
   String from, to, country, currency, mode;
+  TravelTimeBand outboundTime, inboundTime;
   DateTime departure;
   DateTime? returnDate;
   List<int> ages;
@@ -59,6 +91,8 @@ class TravelQuery {
     'country': country,
     'currency': currency,
     'mode': mode,
+    'outboundTime': outboundTime.name,
+    'inboundTime': inboundTime.name,
     'departure': DateUtilsTravel.iso(departure),
     'returnDate': returnDate == null ? null : DateUtilsTravel.iso(returnDate!),
     'ages': ages,
@@ -71,6 +105,8 @@ class TravelQuery {
     country: j['country'] as String,
     currency: j['currency'] as String,
     mode: j['mode'] as String,
+    outboundTime: TravelTimeBand.parse(j['outboundTime']),
+    inboundTime: TravelTimeBand.parse(j['inboundTime']),
     departure: DateTime.parse(j['departure'] as String),
     returnDate: j['returnDate'] == null
         ? null

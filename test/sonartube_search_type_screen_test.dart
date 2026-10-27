@@ -20,6 +20,23 @@ void main() {
     configureAccessibleRendererRuntime(useFlutterOnIos: false);
   });
 
+  testWidgets('search type survives closing and reopening the screen', (tester) async {
+    final service = SonarTubeService(enableDirectNavigation: false, client: MockClient((_) async => throw StateError('No search expected')));
+    AccessibleListRow choice() => tester.widget<UniversalAccessibleList>(find.byType(UniversalAccessibleList)).sections.expand((s) => s.rows).singleWhere((r) => r.id == 'search_type');
+    await tester.pumpWidget(_app(SonarTubeScreen(service: service)));
+    await tester.pumpAndSettle();
+    tester.widget<Slider>(find.byType(Slider)).onChanged!(2.0);
+    await tester.pumpAndSettle();
+    expect(choice().valueLabel, 'Canali');
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pumpAndSettle();
+    await tester.pumpWidget(_app(SonarTubeScreen(service: service)));
+    await tester.pumpAndSettle();
+    expect(choice().valueLabel, 'Canali');
+    final prefs = await SharedPreferences.getInstance();
+    expect(prefs.getString('sonarpad_sonartube_search_type'), 'channels');
+  });
+
   testWidgets(
     'search selector keeps one adjustable node query and filter across rebuilds',
     (tester) async {

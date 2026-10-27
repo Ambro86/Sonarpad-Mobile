@@ -53,6 +53,23 @@ void main() {
     configureAccessibleRendererRuntime(useFlutterOnIos: false);
   });
 
+  testWidgets('search type survives closing and reopening the screen', (tester) async {
+    final service = SonarMusicService(directCatalog: false, client: MockClient((_) async => throw StateError('No search expected')));
+    AccessibleListRow choice() => tester.widget<UniversalAccessibleList>(find.byType(UniversalAccessibleList)).sections.expand((s) => s.rows).singleWhere((r) => r.id == 'search_type');
+    await tester.pumpWidget(_app(service));
+    await tester.pumpAndSettle();
+    choice().onValueChanged!(3.0);
+    await tester.pumpAndSettle();
+    expect(choice().valueLabel, 'Artisti');
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pumpAndSettle();
+    await tester.pumpWidget(_app(service));
+    await tester.pumpAndSettle();
+    expect(choice().valueLabel, 'Artisti');
+    final prefs = await SharedPreferences.getInstance();
+    expect(prefs.getString('sonarpad_sonarmusic_search_type'), 'artist');
+  });
+
   testWidgets('suggestions appear only for text and preserve the search field', (tester) async {
     final service = SonarMusicService(
       directCatalog: false,

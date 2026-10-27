@@ -933,6 +933,16 @@ class AppSettingsService {
   static const _mediaSpeedControlKey = 'sonarpad_media_speed_control';
   static const _mediaPlaybackSpeedPrefix = 'sonarpad_media_playback_speed_';
 
+  Future<String?> loadSonarSearchType({required bool music}) async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(music ? 'sonarpad_sonarmusic_search_type' : 'sonarpad_sonartube_search_type');
+  }
+
+  Future<void> saveSonarSearchType(String type, {required bool music}) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(music ? 'sonarpad_sonarmusic_search_type' : 'sonarpad_sonartube_search_type', type);
+  }
+
   Future<bool> isCalendarSaintsHidden() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool('sonarpad_calendar_hide_saints') ?? false;

@@ -81,6 +81,7 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
   Set<String> _favoriteKeys = const {};
   String? _query;
   late SonarTubeSearchType _searchType = widget.searchType;
+  bool _searchTypeChanged = false;
   String? _nextToken;
   int _page = 1;
   SonarTubeChannelSort _channelSort = SonarTubeChannelSort.newest;
@@ -131,11 +132,33 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
       (!widget.showChannelPlaylists && !widget.showChannelShorts && !widget.showChannelCourses && !widget.showChannelPodcasts) ||
           widget.collection?.kind == SonarTubeItemKind.channel,
     );
+    _restoreSearchType();
     _loadFavoriteKeys();
     _loadSaveMediaAccess();
     WidgetsBinding.instance.addPostFrameCallback((_) => _initializeInitialContent());
   }
 
+
+  Future<void> _restoreSearchType() async {
+    if (_isCollection || _isSearchResults) return;
+    try {
+      final saved = await AppSettingsService().loadSonarSearchType(music: false);
+      final selected = SonarTubeSearchType.values.where((type) => type.name == saved).firstOrNull;
+      if (mounted && !_searchTypeChanged && selected != null) {
+        setState(() => _searchType = selected);
+      }
+    } catch (e) {
+      AppLogger.log('[sonartube] search_type_restore_failed type=${e.runtimeType}');
+    }
+  }
+
+  Future<void> _rememberSearchType(String type) async {
+    try {
+      await AppSettingsService().saveSonarSearchType(type, music: false);
+    } catch (e) {
+      AppLogger.log('[sonartube] search_type_save_failed type=${e.runtimeType}');
+    }
+  }
 
   Future<void> _restoreRememberedChoices() async {
     final savedSort = await AppSettingsService().loadSonarTubeChannelSort();
@@ -1446,7 +1469,9 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
     if (selected == _searchType) return;
     // Keep the same adjustable row and the entered query while the user
     // chooses a filter. Searching is still an explicit separate action.
+    _searchTypeChanged = true;
     setState(() => _searchType = selected);
+    _rememberSearchType(selected.name);
   }
 
   Widget _buildSearchTypeSlider(AppLocalizations l10n) {

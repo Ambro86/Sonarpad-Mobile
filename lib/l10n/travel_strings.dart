@@ -24,6 +24,15 @@ class TravelStrings {
             }[language] ??
             'IT';
   static const _it = {
+    'departureTimeFilter': 'Orario di partenza',
+    'time_all': 'Tutto il giorno',
+    'time_morning': 'Mattina, 06:00–11:59',
+    'time_afternoon': 'Pomeriggio, 12:00–17:59',
+    'time_evening': 'Sera, 18:00–23:59',
+    'time_night': 'Notte, 00:00–05:59',
+    'timeEmpty': 'Nessun viaggio in questa fascia oraria.',
+    'showAllDay': 'Mostra tutto il giorno',
+
     'title': 'Ricerca viaggi',
     'italianOnly':
         'La ricerca viaggi è attualmente disponibile solo con l’interfaccia italiana.',
@@ -166,6 +175,15 @@ class TravelStrings {
     'linkError': 'Impossibile aprire il collegamento Omio. Riprova.',
   };
   static const _en = {
+    'departureTimeFilter': 'Departure time',
+    'time_all': 'All day',
+    'time_morning': 'Morning, 06:00–11:59',
+    'time_afternoon': 'Afternoon, 12:00–17:59',
+    'time_evening': 'Evening, 18:00–23:59',
+    'time_night': 'Night, 00:00–05:59',
+    'timeEmpty': 'No journeys in this time range.',
+    'showAllDay': 'Show all day',
+
     'italianOnly':
         'Travel search is currently available only with the Italian interface.',
     'title': 'Travel search',

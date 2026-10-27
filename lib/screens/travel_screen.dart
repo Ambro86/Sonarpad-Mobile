@@ -124,6 +124,46 @@ String _journey(Map<String, dynamic> item, String currency, TravelStrings t) =>
     '${item['carrierCode'] ?? ''}. ${_money(item['totalPrice'] ?? item['price'], item['currency']?.toString() ?? currency, t)}. '
     '${t.t('changes')}: ${item['stops'] ?? '?'}';
 
+AccessibleListRow _timeBandRow(
+  String id,
+  String title,
+  TravelTimeBand band,
+  TravelStrings t,
+  void Function(TravelTimeBand) change, {
+  bool enabled = true,
+}) {
+  final options = TravelTimeBand.values;
+  String label(int index) => t.t('time_${options[index].name}');
+  return AccessibleListRow(
+    id: id,
+    title: title,
+    kind: 'slider',
+    enabled: enabled,
+    value: band.name,
+    valueLabel: label(band.index),
+    options: [
+      for (final option in options)
+        AccessibleOption(value: option.name, label: label(option.index)),
+    ],
+    sliderValue: band.index.toDouble(),
+    sliderMin: 0,
+    sliderMax: (options.length - 1).toDouble(),
+    sliderStep: 1,
+    sliderIncreasedValueLabel: label(
+      (band.index + 1).clamp(0, options.length - 1),
+    ),
+    sliderDecreasedValueLabel: label(
+      (band.index - 1).clamp(0, options.length - 1),
+    ),
+    onValueChanged: (value) {
+      final index = double.tryParse('$value');
+      if (enabled && index != null && index.isFinite) {
+        change(options[index.round().clamp(0, options.length - 1)]);
+      }
+    },
+  );
+}
+
 class TravelScreen extends StatefulWidget {
   const TravelScreen({super.key});
   @override
@@ -584,6 +624,23 @@ class _TravelSearchScreenState extends State<TravelSearchScreen> {
           _numbers(0, 110),
           (v) => q.ages[i] = int.parse(v),
         ),
+      _timeBandRow(
+        'outbound-time',
+        t.t('departureTimeFilter'),
+        q.outboundTime,
+        t,
+        (v) => setState(() => q.outboundTime = v),
+        enabled: !_busy,
+      ),
+      if (q.returnDate != null)
+        _timeBandRow(
+          'inbound-time',
+          '${t.t('departureTimeFilter')} — ${t.t('return')}',
+          q.inboundTime,
+          t,
+          (v) => setState(() => q.inboundTime = v),
+          enabled: !_busy,
+        ),
       if (_message != null) _info('error', _message!),
       _action(
         'search',
@@ -614,6 +671,32 @@ class _TravelResultsScreenState extends State<TravelResultsScreen> {
   String? _errorText;
   bool _busy = false;
   int _pageNumber = 1;
+  List<Map<String, dynamic>>? _allItems;
+  TravelTimeBand get _band => widget.outbound == null
+      ? widget.query.outboundTime
+      : widget.query.inboundTime;
+
+  Future<void> _changeTime(TravelTimeBand band) async {
+    if (_busy) return;
+    setState(() {
+      if (widget.outbound == null) {
+        widget.query.outboundTime = band;
+      } else {
+        widget.query.inboundTime = band;
+      }
+      _pageNumber = 1;
+    });
+    if (_allItems == null) await _load(1, poll: true);
+  }
+
+  void _goPage(int page) {
+    if (_allItems != null) {
+      setState(() => _pageNumber = page);
+    } else {
+      unawaited(_load(page));
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -648,6 +731,31 @@ class _TravelResultsScreenState extends State<TravelResultsScreen> {
           await Future<void>.delayed(const Duration(seconds: 2));
         }
         if (!mounted) return;
+      }
+      if (_band != TravelTimeBand.all || _allItems != null) {
+        // Collect provider pages before local pagination; never filter only page 1.
+        final collected = <String, Map<String, dynamic>>{};
+        var data = _data!;
+        var nextPage = 1;
+        var complete = data['status'] == 'complete';
+        while (true) {
+          for (final item
+              in (data['items'] as List).cast<Map<String, dynamic>>()) {
+            collected[item['choice_id'].toString()] = item;
+          }
+          if (data['has_next'] != true) break;
+          data = await widget.service.results(
+            page: ++nextPage,
+            outbound: widget.outbound?['choice_id'] as String?,
+          );
+          if (!mounted) return;
+          complete = complete && data['status'] == 'complete';
+        }
+        setState(() {
+          _allItems = collected.values.toList();
+          _pageNumber = 1;
+          _data = {..._data!, 'status': complete ? 'complete' : 'polling'};
+        });
       }
     } catch (e) {
       if (mounted) setState(() => _errorText = _error(t, e));
@@ -704,20 +812,53 @@ class _TravelResultsScreenState extends State<TravelResultsScreen> {
   @override
   Widget build(BuildContext context) {
     final t = _strings(context), data = _data;
-    final items = (data?['items'] as List? ?? []).cast<Map<String, dynamic>>();
+    final available =
+        _allItems ??
+        (data?['items'] as List? ?? []).cast<Map<String, dynamic>>();
+    final filtered = available
+        .where((item) => _band.matches(item['departureTime']))
+        .toList();
+    final items = _allItems == null
+        ? filtered
+        : filtered.skip((_pageNumber - 1) * 10).take(10).toList();
+    final count = _allItems == null ? (data?['count']) : filtered.length;
+    final hasNext = _allItems == null
+        ? (data?['has_next'] == true)
+        : _pageNumber * 10 < filtered.length;
     return _page(
       '${t.t('results')} — ${t.t(widget.outbound == null ? 'outbound' : 'return')}',
       [
+        _timeBandRow(
+          'departure-time',
+          t.t('departureTimeFilter'),
+          _band,
+          t,
+          (v) => unawaited(_changeTime(v)),
+          enabled: !_busy,
+        ),
         if (_busy) _info('working', t.t('working')),
         if (_errorText != null) _info('error', _errorText!),
         if (data != null && data['status'] != 'complete')
           _info('partial', t.t(items.isEmpty ? 'waiting' : 'partial')),
-        if (data?['status'] == 'complete' && items.isEmpty)
-          _info('empty', t.t('empty')),
+        if (!_busy &&
+            _errorText == null &&
+            data?['status'] == 'complete' &&
+            items.isEmpty)
+          _info(
+            'empty',
+            t.t(_band == TravelTimeBand.all ? 'empty' : 'timeEmpty'),
+          ),
+        if (_band != TravelTimeBand.all)
+          _action(
+            'show-all-day',
+            t.t('showAllDay'),
+            () => _changeTime(TravelTimeBand.all),
+            enabled: !_busy,
+          ),
         if (items.isNotEmpty)
           _info(
             'page',
-            '${t.t('page')} $_pageNumber — ${data!['count']} ${t.t('results').toLowerCase()}',
+            '${t.t('page')} $_pageNumber — $count ${t.t('results').toLowerCase()}',
           ),
         for (final item in items)
           _action(
@@ -730,14 +871,14 @@ class _TravelResultsScreenState extends State<TravelResultsScreen> {
           _action(
             'previous',
             t.t('previous'),
-            () => _load(_pageNumber - 1),
+            () => _goPage(_pageNumber - 1),
             enabled: !_busy,
           ),
-        if (data?['has_next'] == true)
+        if (hasNext)
           _action(
             'next',
             t.t('next'),
-            () => _load(_pageNumber + 1),
+            () => _goPage(_pageNumber + 1),
             enabled: !_busy,
           ),
         _action(

@@ -1,5 +1,49 @@
 [
   {
+    "version": "0.5.3",
+    "date": "2026-10-27",
+    "it": [
+      "SonarTube e SonarMusic ricordano il tipo di ricerca selezionato: per esempio, scegliendo Artisti in SonarMusic, alla riapertura ritroverai Artisti. La scelta è salvata separatamente per ciascun modulo, anche dopo la chiusura dell’app.",
+      "Ricerca viaggi: puoi filtrare l’orario di partenza scegliendo Tutto il giorno, Mattina, Pomeriggio, Sera o Notte con uno slider accessibile. Andata e ritorno hanno filtri separati, modificabili anche nei risultati senza ripetere la ricerca. Il filtro considera l’ora locale di partenza e tutte le pagine dei risultati."
+    ],
+    "en": [
+      "SonarTube and SonarMusic now remember the selected search type. For example, if you choose Artists in SonarMusic, Artists will still be selected when you reopen it. Each module saves its choice separately, even after you close the app."
+    ],
+    "fr": [
+      "SonarTube et SonarMusic mémorisent désormais le type de recherche sélectionné. Par exemple, si vous choisissez Artistes dans SonarMusic, ce choix sera conservé à la réouverture. Chaque module enregistre son choix séparément, même après la fermeture de l’application."
+    ],
+    "es": [
+      "SonarTube y SonarMusic ahora recuerdan el tipo de búsqueda seleccionado. Por ejemplo, si eliges Artistas en SonarMusic, seguirá seleccionado al volver a abrirlo. Cada módulo guarda su elección por separado, incluso después de cerrar la aplicación."
+    ],
+    "pt": [
+      "O SonarTube e o SonarMusic passam a memorizar o tipo de pesquisa selecionado. Por exemplo, se escolher Artistas no SonarMusic, essa opção continuará selecionada quando o voltar a abrir. Cada módulo guarda a sua escolha separadamente, mesmo depois de fechar a aplicação."
+    ],
+    "pt_BR": [
+      "O SonarTube e o SonarMusic agora lembram o tipo de pesquisa selecionado. Por exemplo, se você escolher Artistas no SonarMusic, essa opção continuará selecionada ao reabri-lo. Cada módulo salva sua escolha separadamente, mesmo depois de fechar o aplicativo."
+    ],
+    "pl": [
+      "SonarTube i SonarMusic zapamiętują teraz wybrany typ wyszukiwania. Na przykład po wybraniu wykonawców w SonarMusic ta opcja pozostanie zaznaczona po ponownym otwarciu. Każdy moduł zapisuje wybór osobno, również po zamknięciu aplikacji."
+    ],
+    "cs": [
+      "SonarTube a SonarMusic si nyní pamatují vybraný typ vyhledávání. Pokud například v SonarMusic vyberete interprety, tato volba zůstane vybraná i při příštím otevření. Každý modul ukládá svou volbu samostatně, a to i po zavření aplikace."
+    ],
+    "de": [
+      "SonarTube und SonarMusic merken sich jetzt den ausgewählten Suchtyp. Wenn Sie beispielsweise in SonarMusic Künstler auswählen, bleibt diese Auswahl beim erneuten Öffnen erhalten. Jedes Modul speichert seine Auswahl separat, auch nach dem Schließen der App."
+    ],
+    "zh_CN": [
+      "SonarTube 和 SonarMusic 现在会记住所选的搜索类型。例如，在 SonarMusic 中选择“艺人”后，再次打开时仍会选中“艺人”。每个模块分别保存自己的选择，即使关闭应用后也会保留。"
+    ],
+    "uk": [
+      "SonarTube і SonarMusic тепер запам’ятовують вибраний тип пошуку. Наприклад, якщо вибрати виконавців у SonarMusic, цей варіант залишиться вибраним після повторного відкриття. Кожен модуль зберігає свій вибір окремо, навіть після закриття застосунку."
+    ],
+    "ro": [
+      "SonarTube și SonarMusic rețin acum tipul de căutare selectat. De exemplu, dacă alegi Artiști în SonarMusic, această opțiune va rămâne selectată la redeschidere. Fiecare modul își salvează alegerea separat, chiar și după închiderea aplicației."
+    ],
+    "tr": [
+      "SonarTube ve SonarMusic artık seçilen arama türünü hatırlar. Örneğin SonarMusic’te Sanatçılar seçeneğini seçerseniz, yeniden açtığınızda bu seçenek seçili kalır. Her modül seçiminizi ayrı olarak kaydeder; uygulamayı kapattıktan sonra da seçim korunur."
+    ]
+  },
+  {
     "version": "0.5.2",
     "date": "2026-10-26",
     "it": [

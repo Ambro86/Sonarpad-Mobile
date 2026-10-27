@@ -53,6 +53,7 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
   Set<String> _favorites = {};
   String? _nextToken, _title, _description;
   String _type = 'all';
+  bool _searchTypeChanged = false;
   int _page = 1;
   bool _loading = false, _loadingMore = false, _unlocked = false;
   bool _showSuggestions = false;
@@ -104,6 +105,7 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
     _searchController.text = widget.searchQuery ?? '';
     _showSuggestions = _searchController.text.trim().isNotEmpty;
     _searchController.addListener(_updateSuggestionsVisibility);
+    _restoreSearchType();
     _init();
   }
   @override
@@ -118,6 +120,27 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
     setState(() { _favorites = favoriteItems.map((e) => e.key).toSet(); _unlocked = unlocked; });
     if (!_home) await _load();
   }
+  Future<void> _restoreSearchType() async {
+    if (!_home) return;
+    try {
+      final saved = await AppSettingsService().loadSonarSearchType(music: true);
+      final selected = _searchTypes.contains(saved) ? saved : null;
+      if (mounted && !_searchTypeChanged && selected != null) {
+        setState(() => _type = selected);
+      }
+    } catch (e) {
+      AppLogger.log('[sonarmusic] search_type_restore_failed type=${e.runtimeType}');
+    }
+  }
+
+  Future<void> _rememberSearchType(String type) async {
+    try {
+      await AppSettingsService().saveSonarSearchType(type, music: true);
+    } catch (e) {
+      AppLogger.log('[sonarmusic] search_type_save_failed type=${e.runtimeType}');
+    }
+  }
+
   @override
   void dispose() {
     _searchController.dispose(); _searchFocus.dispose(); super.dispose();
@@ -293,7 +316,9 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
     final index = numeric.round().clamp(0, _searchTypes.length - 1).toInt();
     final type = _searchTypes[index];
     if (_type == type) return;
+    _searchTypeChanged = true;
     setState(() => _type = type);
+    _rememberSearchType(type);
   }
 
   Future<void> _shareItem(SonarMusicItem item) async {

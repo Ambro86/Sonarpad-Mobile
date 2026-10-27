@@ -16,6 +16,7 @@ import '../utils/app_logger.dart';
 import 'news_sources/english_news_sources.dart';
 import 'news_sources/italian_news_sources.dart';
 import 'news_sources/news_rss_source.dart';
+import 'news_sources/google_news_feed.dart';
 
 import 'html_reader_service.dart';
 import 'news_sources/french_news_sources.dart';
@@ -2301,6 +2302,7 @@ class NewsService {
   }
 
   Uri _normalizedRssUri(Uri uri) {
+    uri = normalizeGoogleNewsCategoryUri(uri);
     final host = uri.host.toLowerCase().replaceFirst(RegExp(r'^www\.'), '');
     final path = uri.path.replaceFirst(RegExp(r'/+$'), '');
     if ((host == 'iha.com.tr' && const ['', '/rss'].contains(path)) ||
