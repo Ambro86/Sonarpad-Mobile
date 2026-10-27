@@ -5,7 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   test('Media Cutter keeps effect actions on the focused Flutter semantics node', () {
     final source =
-        File('lib/screens/media_cutter_screen.dart').readAsStringSync();
+        File('lib/screens/media_cutter_screen.dart').readAsStringSync().replaceAll('\r\n', '\n');
     final renderer =
         File('lib/widgets/universal_accessible_view.dart').readAsStringSync();
 

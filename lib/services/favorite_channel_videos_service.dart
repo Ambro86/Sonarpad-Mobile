@@ -4,6 +4,14 @@ import 'package:xml/xml.dart';
 import '../utils/app_logger.dart';
 import 'sonartube_service.dart';
 
+class _FeedHttpFailure implements Exception {
+  const _FeedHttpFailure(this.statusCode);
+  final int statusCode;
+
+  @override
+  String toString() => statusCode.toString();
+}
+
 class FavoriteChannelVideosResult {
   const FavoriteChannelVideosResult(this.items, this.failedChannels);
   final List<SonarTubeItem> items;
@@ -27,7 +35,7 @@ class FavoriteChannelVideosService {
         if (status == 200) return response;
         final retryable = status == 404 || status == 408 || status == 429 || status >= 500;
         await AppLogger.log('FavoriteChannelVideos: feed channel=$id attempt=$attempt status=$status');
-        if (!retryable || attempt >= 3) throw StateError('feed_http_$status');
+        if (!retryable || attempt >= 3) throw _FeedHttpFailure(status);
       } on http.ClientException catch (error) {
         await AppLogger.log('FavoriteChannelVideos: feed channel=$id attempt=$attempt network=$error');
         if (attempt >= 3) rethrow;

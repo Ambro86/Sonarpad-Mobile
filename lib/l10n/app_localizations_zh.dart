@@ -5267,6 +5267,9 @@ class AppLocalizationsZh extends AppLocalizations {
 /// The translations for Chinese, as used in China (`zh_CN`).
 class AppLocalizationsZhCn extends AppLocalizationsZh {
   @override
+  String get podcastImportIntoMediaCutter => '导入到剪切媒体文件';
+
+  @override
   String audioDescriptionProjectEditorSegmentOption(int index, String start, String end) => '$index: $start – $end';
 
   @override
