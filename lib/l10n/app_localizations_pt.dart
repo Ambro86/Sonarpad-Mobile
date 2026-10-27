@@ -744,6 +744,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get podcastInfo => 'Informações do podcast';
 
   @override
+  String get podcastQuickSubscribe => 'Subscrição rápida';
+
+  @override
   String get subscribe => 'Subscrever';
 
   @override
@@ -6194,6 +6197,9 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get podcastInfo => 'Informações do podcast';
+
+  @override
+  String get podcastQuickSubscribe => 'Inscrição rápida';
 
   @override
   String get subscribe => 'Assinar';

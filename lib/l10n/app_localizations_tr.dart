@@ -792,6 +792,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get podcastInfo => "Podcast bilgileri";
 
   @override
+  String get podcastQuickSubscribe => 'Hızlı abone ol';
+
+  @override
   String get subscribe => "Abone ol";
 
   @override

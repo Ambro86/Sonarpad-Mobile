@@ -231,6 +231,7 @@
   "podcastSubscriptionError": "Chyba odběru podcastu: {error}",
   "searchResults": "Výsledky hledání",
   "podcastInfo": "Informace o podcastu",
+  "podcastQuickSubscribe": "Rychlý odběr",
   "subscribe": "Odebírat",
   "openPodcast": "Otevřít podcast",
   "viewEpisodes": "Zobrazit epizody",

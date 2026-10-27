@@ -1442,6 +1442,9 @@ abstract class AppLocalizations {
   ///
   /// In it, this message translates to:
   /// **'Iscriviti'**
+  /// Subscribe to a podcast without leaving the search results.
+  String get podcastQuickSubscribe;
+
   String get subscribe;
 
   /// Localized text for openPodcast.

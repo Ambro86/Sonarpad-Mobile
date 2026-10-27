@@ -234,6 +234,7 @@
   "podcastSubscriptionError": "Podcast abonelik hatası: {error}",
   "searchResults": "Arama sonuçları",
   "podcastInfo": "Podcast bilgileri",
+  "podcastQuickSubscribe": "Hızlı abone ol",
   "subscribe": "Abone ol",
   "openPodcast": "Podcasti aç",
   "viewEpisodes": "Bölümleri görüntüle",

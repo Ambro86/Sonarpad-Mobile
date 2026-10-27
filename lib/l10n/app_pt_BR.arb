@@ -234,6 +234,7 @@
   "podcastSubscriptionError": "Erro ao assinar o podcast: {error}",
   "searchResults": "Resultados da pesquisa",
   "podcastInfo": "Informações do podcast",
+  "podcastQuickSubscribe": "Inscrição rápida",
   "subscribe": "Assinar",
   "openPodcast": "Abrir podcast",
   "viewEpisodes": "Ver episódios",

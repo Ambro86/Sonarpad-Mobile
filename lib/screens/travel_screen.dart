@@ -471,6 +471,25 @@ class _TravelSearchScreenState extends State<TravelSearchScreen> {
         setState(() => _message = t.t('sameCity'));
         return;
       }
+      q.discountCards = [];
+      if (['train', 'bus'].contains(q.mode) && q.useDiscountCards) {
+        final data = await _service!.request(
+          '/v1/discount-cards',
+          query: {'departure_id': from.id, 'arrival_id': to.id, 'mode': q.mode},
+        );
+        if (!mounted) return;
+        final cards = (data['items'] as List)
+            .map((c) => Map<String, dynamic>.from(c as Map))
+            .toList();
+        final selected = await Navigator.of(context)
+            .push<List<Map<String, dynamic>>>(
+              MaterialPageRoute(
+                builder: (_) => _TravelCardsScreen(cards: cards, ages: q.ages),
+              ),
+            );
+        if (selected == null || !mounted) return;
+        q.discountCards = selected;
+      }
       await _service!.search(q, from, to);
       if (!mounted) return;
       final saved = q.copy()
@@ -624,6 +643,17 @@ class _TravelSearchScreenState extends State<TravelSearchScreen> {
           _numbers(0, 110),
           (v) => q.ages[i] = int.parse(v),
         ),
+      if (['train', 'bus'].contains(q.mode))
+        AccessibleListRow(
+          id: 'discount-cards',
+          title: t.t('useDiscountCards'),
+          kind: 'toggle',
+          toggleValue: q.useDiscountCards,
+          enabled: !_busy,
+          onValueChanged: (v) {
+            if (!_busy) setState(() => q.useDiscountCards = v == true);
+          },
+        ),
       _timeBandRow(
         'outbound-time',
         t.t('departureTimeFilter'),
@@ -648,6 +678,97 @@ class _TravelSearchScreenState extends State<TravelSearchScreen> {
         _search,
         enabled: !_busy,
       ),
+    ]);
+  }
+}
+
+class _TravelCardsScreen extends StatefulWidget {
+  const _TravelCardsScreen({required this.cards, required this.ages});
+  final List<Map<String, dynamic>> cards;
+  final List<int> ages;
+
+  @override
+  State<_TravelCardsScreen> createState() => _TravelCardsScreenState();
+}
+
+class _TravelCardsScreenState extends State<_TravelCardsScreen> {
+  late final _selected = List.filled(widget.ages.length, 0);
+  late final _cards = [
+    for (final age in widget.ages)
+      widget.cards
+          .where(
+            (c) =>
+                age >= (c['min_age'] as int? ?? 0) &&
+                age <= (c['max_age'] as int? ?? 110),
+          )
+          .toList(),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final t = _strings(context);
+    final options = [
+      for (final cards in _cards)
+        [
+          AccessibleOption(value: '0', label: t.t('noDiscountCard')),
+          for (var i = 0; i < cards.length; i++)
+            AccessibleOption(
+              value: '${i + 1}',
+              label: [
+                cards[i]['operator'],
+                cards[i]['name'],
+              ].whereType<String>().join(' — '),
+            ),
+        ],
+    ];
+    final empty = _cards.every((cards) => cards.isEmpty);
+    return _page(t.t('discountCards'), [
+      _info('notice', t.t(empty ? 'noVerifiedCards' : 'discountCardNotice')),
+      if (!empty)
+        for (var i = 0; i < widget.ages.length; i++)
+          if (_cards[i].isEmpty)
+            _info(
+              'card-$i',
+              '${t.t('passenger')} ${i + 1}: ${t.t('noDiscountCard')}',
+            )
+          else
+            AccessibleListRow(
+              id: 'card-$i',
+              title: '${t.t('passenger')} ${i + 1}',
+              kind: 'slider',
+              value: '${_selected[i]}',
+              valueLabel: options[i][_selected[i]].label,
+              options: options[i],
+              sliderValue: _selected[i].toDouble(),
+              sliderMin: 0,
+              sliderMax: _cards[i].length.toDouble(),
+              sliderStep: 1,
+              sliderIncreasedValueLabel:
+                  options[i][(_selected[i] + 1).clamp(0, _cards[i].length)]
+                      .label,
+              sliderDecreasedValueLabel:
+                  options[i][(_selected[i] - 1).clamp(0, _cards[i].length)]
+                      .label,
+              onValueChanged: (value) {
+                final n = double.tryParse('$value');
+                if (n != null && n.isFinite) {
+                  setState(
+                    () => _selected[i] = n.round().clamp(0, _cards[i].length),
+                  );
+                }
+              },
+            ),
+      _action('continue', t.t(empty ? 'searchWithoutCards' : 'search'), () {
+        Navigator.of(context).pop([
+          for (var i = 0; i < _selected.length; i++)
+            if (_selected[i] > 0)
+              <String, dynamic>{
+                'passenger_index': i,
+                'provider': _cards[i][_selected[i] - 1]['provider'],
+                'code': _cards[i][_selected[i] - 1]['code'],
+              },
+        ]);
+      }),
     ]);
   }
 }

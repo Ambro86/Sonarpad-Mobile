@@ -731,6 +731,9 @@ class AppLocalizationsRo extends AppLocalizations {
   String get podcastInfo => 'Informații despre podcast';
 
   @override
+  String get podcastQuickSubscribe => 'Abonare rapidă';
+
+  @override
   String get subscribe => 'Abonează-te';
 
   @override

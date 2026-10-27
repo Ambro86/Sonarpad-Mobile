@@ -725,6 +725,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get podcastInfo => '播客信息';
 
   @override
+  String get podcastQuickSubscribe => '快速订阅';
+
+  @override
   String get subscribe => '订阅';
 
   @override
@@ -5977,6 +5980,9 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get podcastInfo => '播客信息';
+
+  @override
+  String get podcastQuickSubscribe => '快速订阅';
 
   @override
   String get subscribe => '订阅';

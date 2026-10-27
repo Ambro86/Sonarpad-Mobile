@@ -741,6 +741,9 @@ class AppLocalizationsCs extends AppLocalizations {
   String get podcastInfo => 'Informace o podcastu';
 
   @override
+  String get podcastQuickSubscribe => 'Rychlý odběr';
+
+  @override
   String get subscribe => 'Odebírat';
 
   @override

@@ -24,6 +24,14 @@ class TravelStrings {
             }[language] ??
             'IT';
   static const _it = {
+    'useDiscountCards': 'Usa carte sconto o fedeltà',
+    'discountCards': 'Carte sconto e fedeltà dei passeggeri',
+    'noDiscountCard': 'Nessuna carta',
+    'noVerifiedCards':
+        'Omio non propone carte per questo mezzo e per queste età.',
+    'discountCardNotice':
+        'Seleziona soltanto carte possedute e valide per il passeggero e la compagnia indicata. Rispetta le condizioni della carta, anche per accompagnatori e gruppi. Le carte fedeltà non garantiscono uno sconto.',
+    'searchWithoutCards': 'Cerca senza carte sconto',
     'departureTimeFilter': 'Orario di partenza',
     'time_all': 'Tutto il giorno',
     'time_morning': 'Mattina, 06:00–11:59',
@@ -175,6 +183,14 @@ class TravelStrings {
     'linkError': 'Impossibile aprire il collegamento Omio. Riprova.',
   };
   static const _en = {
+    'useDiscountCards': 'Use discount or loyalty cards',
+    'discountCards': 'Passenger discount and loyalty cards',
+    'noDiscountCard': 'No card',
+    'noVerifiedCards':
+        'Omio lists no cards for this transport mode and these passenger ages.',
+    'discountCardNotice':
+        'Select only cards held by and valid for the passenger and the named operator. Follow card conditions, including companion and group requirements. Loyalty cards do not guarantee a discount.',
+    'searchWithoutCards': 'Search without discount cards',
     'departureTimeFilter': 'Departure time',
     'time_all': 'All day',
     'time_morning': 'Morning, 06:00–11:59',

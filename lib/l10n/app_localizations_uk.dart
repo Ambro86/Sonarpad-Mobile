@@ -745,6 +745,9 @@ class AppLocalizationsUk extends AppLocalizations {
   String get podcastInfo => 'Інформація про подкаст';
 
   @override
+  String get podcastQuickSubscribe => 'Швидка підписка';
+
+  @override
   String get subscribe => 'Підписатися';
 
   @override

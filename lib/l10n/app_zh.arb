@@ -234,6 +234,7 @@
   "podcastSubscriptionError": "播客订阅错误：{error}",
   "searchResults": "搜索结果",
   "podcastInfo": "播客信息",
+  "podcastQuickSubscribe": "快速订阅",
   "subscribe": "订阅",
   "openPodcast": "打开播客",
   "viewEpisodes": "查看单集",

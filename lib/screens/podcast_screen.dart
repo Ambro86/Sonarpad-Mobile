@@ -178,8 +178,9 @@ class _PodcastScreenState extends State<PodcastScreen> {
         ),
       ),
     );
-    if (!mounted || feedUrl == null) return;
+    if (!mounted) return;
     await _load();
+    if (!mounted || feedUrl == null) return;
     try {
       final sub = _subscriptions.firstWhere((s) => s.feedUrl == feedUrl);
       _openSubscription(sub);
@@ -893,6 +894,7 @@ class _PodcastSearchResultsScreenState
     extends State<_PodcastSearchResultsScreen> {
   final _service = PodcastService();
   final Set<String> _subscribedFeedUrls = <String>{};
+  bool _subscriptionPending = false;
   late final Future<List<PodcastSearchResult>> _results;
 
   @override
@@ -912,10 +914,8 @@ class _PodcastSearchResultsScreenState
     final subscriptions = await _service.loadSubscriptions();
     if (!mounted) return;
     setState(() {
-      _subscribedFeedUrls
-        ..clear()
-        ..addAll(subscriptions.map((subscription) =>
-            _feedKey(subscription.feedUrl)));
+      _subscribedFeedUrls.addAll(subscriptions.map((subscription) =>
+          _feedKey(subscription.feedUrl)));
     });
   }
 
@@ -923,17 +923,22 @@ class _PodcastSearchResultsScreenState
     return _subscribedFeedUrls.contains(_feedKey(result.feedUrl));
   }
 
-  Future<void> _subscribeFromResult(PodcastSearchResult result) async {
+  Future<void> _subscribeFromResult(PodcastSearchResult result,
+      {bool openEpisodes = true}) async {
+    if (_subscriptionPending) return;
+    _subscriptionPending = true;
     final l10n = AppLocalizations.of(context);
     try {
       await _service.addSearchResult(result);
       if (!mounted) return;
       setState(() => _subscribedFeedUrls.add(_feedKey(result.feedUrl)));
             showStatusMessage(context, l10n.subscribedTo(result.title));
-      Navigator.pop(context, result.feedUrl);
+      if (openEpisodes) Navigator.pop(context, result.feedUrl);
     } catch (e) {
       if (!mounted) return;
             showStatusMessage(context, l10n.subscriptionError(l10n.technicalErrorGeneric));
+    } finally {
+      _subscriptionPending = false;
     }
   }
 
@@ -991,6 +996,19 @@ class _PodcastSearchResultsScreenState
                     id: 'secondary',
                     label: secondaryActionLabel,
                   ),
+                  if (!isSubscribed)
+                    AccessibleCustomAction(
+                      id: 'quick_subscribe',
+                      label: l10n.podcastQuickSubscribe,
+                    ),
+                ],
+                visualActions: [
+                  if (!isSubscribed)
+                    AccessibleVisualAction(
+                      id: 'quick_subscribe',
+                      label: l10n.podcastQuickSubscribe,
+                      icon: 'podcast_add',
+                    ),
                 ],
               );
             }).toList();
@@ -1005,6 +1023,9 @@ class _PodcastSearchResultsScreenState
                 final result = results[index];
                 if (event.type == 'activate') {
                   await _openResult(result);
+                } else if (event.type == 'customAction' &&
+                    event.action == 'quick_subscribe') {
+                  await _subscribeFromResult(result, openEpisodes: false);
                 } else if (event.type == 'customAction' &&
                     event.action == 'secondary') {
                   if (_isSubscribed(result)) {
@@ -1028,6 +1049,10 @@ class _PodcastSearchResultsScreenState
                 key: ValueKey('podcast_search_result_semantics_${result.feedUrl}'),
                 container: true,
                 customSemanticsActions: {
+                  if (!isSubscribed)
+                    CustomSemanticsAction(label: l10n.podcastQuickSubscribe): () {
+                      _subscribeFromResult(result, openEpisodes: false);
+                    },
                   CustomSemanticsAction(label: secondaryActionLabel): () {
                     if (isSubscribed) {
                       _openSubscribedResult(result);
@@ -1051,7 +1076,21 @@ class _PodcastSearchResultsScreenState
                   subtitle: Text(
                     result.author.isEmpty ? result.feedUrl : result.author,
                   ),
-                  trailing: const Icon(Icons.chevron_right),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (!isSubscribed)
+                        ExcludeSemantics(
+                          child: IconButton(
+                            tooltip: l10n.podcastQuickSubscribe,
+                            icon: const Icon(Icons.podcasts),
+                            onPressed: () => _subscribeFromResult(result,
+                                openEpisodes: false),
+                          ),
+                        ),
+                      const Icon(Icons.chevron_right),
+                    ],
+                  ),
                   onTap: () => _openResult(result),
                 ),
               );

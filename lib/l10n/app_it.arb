@@ -802,6 +802,7 @@
   "@podcastInfo": {
     "description": "Localized text for podcastInfo."
   },
+  "podcastQuickSubscribe": "Iscrizione rapida",
   "subscribe": "Iscriviti",
   "@subscribe": {
     "description": "Localized text for subscribe."

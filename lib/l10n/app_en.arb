@@ -234,6 +234,7 @@
   "podcastSubscriptionError": "Podcast subscription error: {error}",
   "searchResults": "Search results",
   "podcastInfo": "Podcast information",
+  "podcastQuickSubscribe": "Quick subscribe",
   "subscribe": "Subscribe",
   "openPodcast": "Open podcast",
   "viewEpisodes": "View episodes",

@@ -72,6 +72,7 @@ class TravelQuery {
     this.mode = 'train',
     this.outboundTime = TravelTimeBand.all,
     this.inboundTime = TravelTimeBand.all,
+    this.useDiscountCards = false,
     DateTime? departure,
     this.returnDate,
     this.departureCity,
@@ -84,6 +85,8 @@ class TravelQuery {
   DateTime departure;
   DateTime? returnDate;
   List<int> ages;
+  bool useDiscountCards;
+  List<Map<String, dynamic>> discountCards = [];
   TravelCity? departureCity, arrivalCity;
   Map<String, dynamic> toJson() => {
     'from': from,
@@ -96,6 +99,7 @@ class TravelQuery {
     'departure': DateUtilsTravel.iso(departure),
     'returnDate': returnDate == null ? null : DateUtilsTravel.iso(returnDate!),
     'ages': ages,
+    'useDiscountCards': useDiscountCards,
     'departureCity': departureCity?.toJson(),
     'arrivalCity': arrivalCity?.toJson(),
   };
@@ -112,6 +116,7 @@ class TravelQuery {
         ? null
         : DateTime.parse(j['returnDate'] as String),
     ages: (j['ages'] as List).cast<int>().toList(),
+    useDiscountCards: j['useDiscountCards'] == true,
     departureCity: j['departureCity'] == null
         ? null
         : TravelCity.fromJson(
@@ -331,6 +336,10 @@ class TravelService {
             : DateUtilsTravel.iso(q.returnDate!),
         'mode': q.mode,
         'ages': q.ages,
+        if (['train', 'bus'].contains(q.mode) &&
+            q.useDiscountCards &&
+            q.discountCards.isNotEmpty)
+          'discount_cards': q.discountCards,
       },
     );
   }

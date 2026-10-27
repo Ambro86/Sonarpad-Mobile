@@ -234,6 +234,7 @@
   "podcastSubscriptionError": "Eroare la urmărirea podcastului: {error}",
   "searchResults": "Rezultatele căutării",
   "podcastInfo": "Informații despre podcast",
+  "podcastQuickSubscribe": "Abonare rapidă",
   "subscribe": "Abonează-te",
   "openPodcast": "Deschide podcastul",
   "viewEpisodes": "Vezi episoadele",

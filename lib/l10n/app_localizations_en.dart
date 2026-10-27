@@ -739,6 +739,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get podcastInfo => 'Podcast information';
 
   @override
+  String get podcastQuickSubscribe => 'Quick subscribe';
+
+  @override
   String get subscribe => 'Subscribe';
 
   @override
