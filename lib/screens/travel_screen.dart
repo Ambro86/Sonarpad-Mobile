@@ -722,6 +722,10 @@ class _TravelCardsScreenState extends State<_TravelCardsScreen> {
         ],
     ];
     final empty = _cards.every((cards) => cards.isEmpty);
+    final passengerLabels = [
+      for (var i = 0; i < widget.ages.length; i++)
+        '${t.t('passenger')} ${i + 1}',
+    ];
     return _page(t.t('discountCards'), [
       _info('notice', t.t(empty ? 'noVerifiedCards' : 'discountCardNotice')),
       if (!empty)
@@ -729,12 +733,12 @@ class _TravelCardsScreenState extends State<_TravelCardsScreen> {
           if (_cards[i].isEmpty)
             _info(
               'card-$i',
-              '${t.t('passenger')} ${i + 1}: ${t.t('noDiscountCard')}',
+              '${passengerLabels[i]}: ${t.t('noDiscountCard')}',
             )
           else
             AccessibleListRow(
               id: 'card-$i',
-              title: '${t.t('passenger')} ${i + 1}',
+              title: passengerLabels[i],
               kind: 'slider',
               value: '${_selected[i]}',
               valueLabel: options[i][_selected[i]].label,
