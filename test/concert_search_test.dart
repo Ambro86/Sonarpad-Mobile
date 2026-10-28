@@ -79,6 +79,85 @@ void main() {
       service.close();
     },
   );
+  test(
+    'Safari is used from the first request and retained for subsequent pages',
+    () async {
+      var regularCalls = 0, browserCalls = 0, creations = 0;
+      final logs = <String>[];
+      final service = ConcertSearchService(
+        logger: (line) async {
+          logs.add(line);
+        },
+        client: MockClient((_) async {
+          regularCalls++;
+          return http.Response('Access Denied', 403);
+        }),
+        browserClientFactory: () async {
+          creations++;
+          return MockClient((request) async {
+            browserCalls++;
+            expect(request.url.queryParameters['city_names'], 'Torino');
+            return http.Response(
+              jsonEncode({
+                'products': [],
+                'page': int.parse(request.url.queryParameters['page']!),
+                'totalPages': 2,
+                'totalResults': 21,
+              }),
+              200,
+              headers: {'content-type': 'application/json'},
+            );
+          });
+        },
+      );
+      try {
+        await service.search(ConcertMarket.all.first, city: 'Torino');
+        await service.search(ConcertMarket.all.first, city: 'Torino', page: 2);
+        expect(regularCalls, 0);
+        expect(browserCalls, 2);
+        expect(creations, 1);
+        expect(
+          logs.any((s) => s.contains('profile=safariIos1811 http=200')),
+          isTrue,
+        );
+      } finally {
+        service.close();
+      }
+    },
+  );
+  test(
+    'Safari denial stops; authentication and rate limits do not switch clients',
+    () async {
+      for (final status in [401, 403, 429]) {
+        var browserCalls = 0;
+        final service = ConcertSearchService(
+          logger: (_) async {},
+          client: MockClient(
+            (_) async => throw StateError('Dart client must not be used'),
+          ),
+          browserClientFactory: () async => MockClient((_) async {
+            browserCalls++;
+            return http.Response('Access Denied', status);
+          }),
+        );
+        try {
+          await expectLater(
+            service.search(ConcertMarket.all.first),
+            throwsA(
+              isA<ConcertSearchException>().having(
+                (e) => e.code,
+                'code',
+                'access',
+              ),
+            ),
+          );
+          expect(browserCalls, 1);
+        } finally {
+          service.close();
+        }
+      }
+    },
+  );
   testWidgets(
     'accessible date sliders, clean city choice and results; chosen city remembered',
     (tester) async {

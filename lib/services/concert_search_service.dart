@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:rhttp_plus/rhttp_plus.dart' as rhttp;
 import '../utils/app_logger.dart';
 
 class ConcertMarket {
@@ -136,14 +138,49 @@ class ConcertSearchService {
   ConcertSearchService({
     http.Client? client,
     Future<void> Function(String)? logger,
+    Future<http.Client> Function()? browserClientFactory,
   }) : _client = client ?? http.Client(),
-       _logger = logger ?? AppLogger.log;
+       _logger = logger ?? AppLogger.log,
+       _browserClientFactory =
+           browserClientFactory ??
+           (client == null && (Platform.isIOS || Platform.isAndroid)
+               ? _createBrowserClient
+               : null);
   final http.Client _client;
+  final Future<http.Client> Function()? _browserClientFactory;
+  Future<http.Client>? _browserClient;
+  bool get _useBrowser => _browserClientFactory != null;
   bool _closed = false;
   final Future<void> Function(String) _logger;
+  static Future<http.Client> _createBrowserClient() =>
+      rhttp.RhttpCompatibleClient.create(
+        settings: const rhttp.ClientSettings(
+          emulator: rhttp.Emulation.safariIos1811,
+          timeoutSettings: rhttp.TimeoutSettings(
+            timeout: Duration(seconds: 30),
+            connectTimeout: Duration(seconds: 10),
+          ),
+        ),
+      );
+
+  Future<http.Client> _browser() => _browserClient ??= () async {
+    final client = await _browserClientFactory!();
+    if (_closed) {
+      client.close();
+      throw const ConcertSearchException('closed');
+    }
+    return client;
+  }();
+
   void close() {
     _closed = true;
     _client.close();
+    final browser = _browserClient;
+    if (browser != null) {
+      unawaited(
+        browser.then((client) => client.close(), onError: (Object _) {}),
+      );
+    }
   }
 
   Future<ConcertPage> _get(
@@ -166,11 +203,14 @@ class ConcertSearchService {
     for (var attempt = 1; attempt <= 2; attempt++) {
       final watch = Stopwatch()..start();
       try {
-        final response = await _client
+        if (_closed) throw const ConcertSearchException('closed');
+        final profile = _useBrowser ? 'safariIos1811' : 'dart';
+        final client = _useBrowser ? await _browser() : _client;
+        final response = await client
             .get(uri)
             .timeout(const Duration(seconds: 30));
         await _logger(
-          '[Concerts] endpoint=$endpoint market=${market.country} page=${params['page']} http=${response.statusCode} attempt=$attempt elapsed_ms=${watch.elapsedMilliseconds}',
+          '[Concerts] endpoint=$endpoint market=${market.country} page=${params['page']} profile=$profile http=${response.statusCode} content_type=${response.headers['content-type']?.split(';').first} bytes=${response.bodyBytes.length} access_denied=${response.statusCode == 403 && response.body.contains('Access Denied')} attempt=$attempt elapsed_ms=${watch.elapsedMilliseconds}',
         );
         if ([401, 403, 429].contains(response.statusCode)) {
           throw const ConcertSearchException('access');
@@ -199,11 +239,14 @@ class ConcertSearchService {
           data['totalPages'] as int,
           data['totalResults'] as int,
         );
-      } on ConcertSearchException {
-        rethrow;
-      } catch (_) {
+      } on ConcertSearchException catch (error) {
         await _logger(
-          '[Concerts] endpoint=$endpoint market=${market.country} attempt=$attempt transport_or_format_error elapsed_ms=${watch.elapsedMilliseconds}',
+          '[Concerts] endpoint=$endpoint market=${market.country} error=${error.code}',
+        );
+        rethrow;
+      } catch (error) {
+        await _logger(
+          '[Concerts] endpoint=$endpoint market=${market.country} profile=${_useBrowser ? 'safariIos1811' : 'dart'} attempt=$attempt error_type=${error.runtimeType} transport_or_format_error elapsed_ms=${watch.elapsedMilliseconds}',
         );
         if (attempt == 2 || _closed) {
           throw const ConcertSearchException('network');
