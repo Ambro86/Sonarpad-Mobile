@@ -26,6 +26,7 @@ class HomeItemIds {
   static const digitalLibrary = 'bdciechi';
   static const route = 'route';
   static const travel = 'travel';
+  static const concerts = 'concerts';
   static const openingHours = 'orari_apertura';
   static const directory = 'italiaonline';
   static const pharmacy = 'aifa';
@@ -58,6 +59,7 @@ class HomeItemIds {
     digitalLibrary,
     route,
     travel,
+    concerts,
     openingHours,
     directory,
     pharmacy,
@@ -99,6 +101,7 @@ class HomeItemIds {
     weather,
     route,
     travel,
+    concerts,
     openingHours,
     directory,
     pharmacy,

@@ -2530,7 +2530,31 @@ class AppLocalizationsZh extends AppLocalizations {
   String get cinemaOpenTrailer => '打开预告片';
 
   @override
-  String get concertsTitle => '音乐会与活动';
+  String get concertsArtist => '艺人或演唱会';
+
+  @override
+  String get concertsAllCities => '留空以搜索目录中的所有城市';
+
+  @override
+  String get concertsDates => '按日期筛选';
+
+  @override
+  String get concertsFrom => '开始日期';
+
+  @override
+  String get concertsTo => '结束日期';
+
+  @override
+  String get concertsDay => '日';
+
+  @override
+  String get concertsMonth => '月';
+
+  @override
+  String get concertsYear => '年';
+
+  @override
+  String get concertsTitle => '搜索演唱会';
 
   @override
   String get concertsSearchHint => '输入城市（例如北京、上海）';
@@ -2542,16 +2566,17 @@ class AppLocalizationsZh extends AppLocalizations {
   String get concertsSearchTooltip => '搜索';
 
   @override
-  String get concertsInitialText => '在上方输入你的城市名称，以查看即将举行的音乐会。';
+  String get concertsInitialText =>
+      '国家选择当地的 Eventim/TicketOne 目录，其中可能包含国外活动。购买请前往售票网站，可能需要账户。';
 
   @override
-  String get concertsEmpty => '此城市未找到音乐会。';
+  String get concertsEmpty => '没有符合筛选条件的演唱会。';
 
   @override
   String get concertsVenue => '演出地点：';
 
   @override
-  String get concertsBuyTickets => '在 Ticketmaster 购票或查看详情';
+  String get concertsBuyTickets => '打开售票网站';
 
   @override
   String get podcastPlayedEpisodes => '已播放单集';
@@ -7796,7 +7821,31 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
   String get cinemaOpenTrailer => '打开预告片';
 
   @override
-  String get concertsTitle => '音乐会与活动';
+  String get concertsArtist => '艺人或演唱会';
+
+  @override
+  String get concertsAllCities => '留空以搜索目录中的所有城市';
+
+  @override
+  String get concertsDates => '按日期筛选';
+
+  @override
+  String get concertsFrom => '开始日期';
+
+  @override
+  String get concertsTo => '结束日期';
+
+  @override
+  String get concertsDay => '日';
+
+  @override
+  String get concertsMonth => '月';
+
+  @override
+  String get concertsYear => '年';
+
+  @override
+  String get concertsTitle => '搜索演唱会';
 
   @override
   String get concertsSearchHint => '输入城市（例如北京、上海）';
@@ -7808,16 +7857,17 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
   String get concertsSearchTooltip => '搜索';
 
   @override
-  String get concertsInitialText => '在上方输入你的城市名称，以查看即将举行的音乐会。';
+  String get concertsInitialText =>
+      '国家选择当地的 Eventim/TicketOne 目录，其中可能包含国外活动。购买请前往售票网站，可能需要账户。';
 
   @override
-  String get concertsEmpty => '此城市未找到音乐会。';
+  String get concertsEmpty => '没有符合筛选条件的演唱会。';
 
   @override
   String get concertsVenue => '演出地点：';
 
   @override
-  String get concertsBuyTickets => '在 Ticketmaster 购票或查看详情';
+  String get concertsBuyTickets => '打开售票网站';
 
   @override
   String get podcastPlayedEpisodes => '已播放单集';

@@ -2548,7 +2548,31 @@ class AppLocalizationsRo extends AppLocalizations {
   String get cinemaOpenTrailer => 'Deschide trailerul';
 
   @override
-  String get concertsTitle => 'Concerte și evenimente';
+  String get concertsArtist => 'Artist sau concert';
+
+  @override
+  String get concertsAllCities => 'Lasă gol pentru toate orașele din catalog';
+
+  @override
+  String get concertsDates => 'Filtrează după date';
+
+  @override
+  String get concertsFrom => 'De la';
+
+  @override
+  String get concertsTo => 'Până la';
+
+  @override
+  String get concertsDay => 'Zi';
+
+  @override
+  String get concertsMonth => 'Lună';
+
+  @override
+  String get concertsYear => 'An';
+
+  @override
+  String get concertsTitle => 'Căutare concerte';
 
   @override
   String get concertsSearchHint => 'Introdu un oraș (de ex. București, Londra)';
@@ -2560,16 +2584,17 @@ class AppLocalizationsRo extends AppLocalizations {
   String get concertsSearchTooltip => 'Caută';
 
   @override
-  String get concertsInitialText => 'Introdu mai sus numele orașului pentru a vedea concertele muzicale viitoare.';
+  String get concertsInitialText =>
+      'Țara selectează catalogul local Eventim/TicketOne, care poate include evenimente din străinătate. Cumpărarea continuă pe site-ul vânzătorului; poate fi necesar un cont.';
 
   @override
-  String get concertsEmpty => 'Nu s-au găsit concerte în acest oraș.';
+  String get concertsEmpty => 'Niciun concert pentru aceste filtre.';
 
   @override
   String get concertsVenue => 'Locul concertului:';
 
   @override
-  String get concertsBuyTickets => 'Cumpără bilete sau vezi detalii pe Ticketmaster';
+  String get concertsBuyTickets => 'Deschide site-ul vânzătorului';
 
   @override
   String get podcastPlayedEpisodes => 'Episoade redate';

@@ -2590,7 +2590,31 @@ class AppLocalizationsUk extends AppLocalizations {
   String get cinemaOpenTrailer => 'Відкрити трейлер';
 
   @override
-  String get concertsTitle => 'Концерти та події';
+  String get concertsArtist => 'Виконавець або концерт';
+
+  @override
+  String get concertsAllCities => 'Залиште порожнім для всіх міст каталогу';
+
+  @override
+  String get concertsDates => 'Фільтрувати за датами';
+
+  @override
+  String get concertsFrom => 'Від';
+
+  @override
+  String get concertsTo => 'До';
+
+  @override
+  String get concertsDay => 'День';
+
+  @override
+  String get concertsMonth => 'Місяць';
+
+  @override
+  String get concertsYear => 'Рік';
+
+  @override
+  String get concertsTitle => 'Пошук концертів';
 
   @override
   String get concertsSearchHint => 'Введіть місто (наприклад, Київ, Львів)';
@@ -2603,17 +2627,16 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get concertsInitialText =>
-      'Введіть угорі назву свого міста, щоб переглянути заплановані музичні концерти.';
+      'Країна вибирає місцевий каталог Eventim/TicketOne, який може містити події за кордоном. Купівля продовжується на сайті продавця; може знадобитися обліковий запис.';
 
   @override
-  String get concertsEmpty => 'У цьому місті концертів не знайдено.';
+  String get concertsEmpty => 'Концертів за цими фільтрами немає.';
 
   @override
   String get concertsVenue => 'Місце проведення:';
 
   @override
-  String get concertsBuyTickets =>
-      'Придбати квитки або переглянути подробиці на Ticketmaster';
+  String get concertsBuyTickets => 'Відкрити сайт продавця';
 
   @override
   String get podcastPlayedEpisodes => 'Прослухані епізоди';

@@ -2591,7 +2591,32 @@ class AppLocalizationsCs extends AppLocalizations {
   String get cinemaOpenTrailer => 'Otevřít trailer';
 
   @override
-  String get concertsTitle => 'Koncerty a události';
+  String get concertsArtist => 'Interpret nebo koncert';
+
+  @override
+  String get concertsAllCities =>
+      'Prázdné pole znamená všechna města v katalogu';
+
+  @override
+  String get concertsDates => 'Filtrovat podle data';
+
+  @override
+  String get concertsFrom => 'Od';
+
+  @override
+  String get concertsTo => 'Do';
+
+  @override
+  String get concertsDay => 'Den';
+
+  @override
+  String get concertsMonth => 'Měsíc';
+
+  @override
+  String get concertsYear => 'Rok';
+
+  @override
+  String get concertsTitle => 'Hledání koncertů';
 
   @override
   String get concertsSearchHint => 'Zadejte město (např. Praha, Brno)';
@@ -2604,17 +2629,16 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get concertsInitialText =>
-      'Zadejte nahoře název města, abyste viděli nadcházející hudební koncerty.';
+      'Země vybírá místní katalog Eventim/TicketOne, který může zahrnovat akce v zahraničí. Nákup pokračuje na webu prodejce; může být vyžadován účet.';
 
   @override
-  String get concertsEmpty => 'V tomto městě nebyly nalezeny žádné koncerty.';
+  String get concertsEmpty => 'Žádné koncerty pro tyto filtry.';
 
   @override
   String get concertsVenue => 'Místo koncertu:';
 
   @override
-  String get concertsBuyTickets =>
-      'Koupit nebo zobrazit podrobnosti na Ticketmasteru';
+  String get concertsBuyTickets => 'Otevřít web prodejce';
 
   @override
   String get podcastPlayedEpisodes => 'Přehrané epizody';

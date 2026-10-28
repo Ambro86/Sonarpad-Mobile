@@ -2593,7 +2593,31 @@ class AppLocalizationsTr extends AppLocalizations {
   String get cinemaOpenTrailer => "Fragmanı aç";
 
   @override
-  String get concertsTitle => "Konserler ve etkinlikler";
+  String get concertsArtist => 'Sanatçı veya konser';
+
+  @override
+  String get concertsAllCities => 'Katalogdaki tüm şehirler için boş bırakın';
+
+  @override
+  String get concertsDates => 'Tarihe göre filtrele';
+
+  @override
+  String get concertsFrom => 'Başlangıç';
+
+  @override
+  String get concertsTo => 'Bitiş';
+
+  @override
+  String get concertsDay => 'Gün';
+
+  @override
+  String get concertsMonth => 'Ay';
+
+  @override
+  String get concertsYear => 'Yıl';
+
+  @override
+  String get concertsTitle => 'Konser arama';
 
   @override
   String get concertsSearchHint => "Bir şehir girin (ör. İstanbul, Ankara)";
@@ -2605,16 +2629,17 @@ class AppLocalizationsTr extends AppLocalizations {
   String get concertsSearchTooltip => "Ara";
 
   @override
-  String get concertsInitialText => "Yaklaşan konserleri görmek için yukarıya şehrinizin adını yazın.";
+  String get concertsInitialText =>
+      'Ülke, yurt dışındaki etkinlikleri de içerebilen yerel Eventim/TicketOne kataloğunu seçer. Satın alma satıcının sitesinde devam eder; hesap gerekebilir.';
 
   @override
-  String get concertsEmpty => "Bu şehirde konser bulunamadı.";
+  String get concertsEmpty => 'Bu filtrelere uygun konser bulunamadı.';
 
   @override
   String get concertsVenue => "Konser mekânı:";
 
   @override
-  String get concertsBuyTickets => "Ticketmaster’da bilet al veya ayrıntıları gör";
+  String get concertsBuyTickets => 'Satıcının sitesini aç';
 
   @override
   String get podcastPlayedEpisodes => "Dinlenen bölümler";

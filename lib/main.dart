@@ -55,6 +55,7 @@ import 'screens/weather_screen.dart';
 import 'screens/bdciechi_login_screen.dart';
 import 'screens/route_screen.dart';
 import 'screens/travel_screen.dart';
+import 'screens/concert_search_screen.dart';
 import 'screens/audiodescription_recent_screen.dart';
 import 'screens/sonarpad_audiodescriptions_screen.dart';
 import 'screens/orari_apertura_search_screen.dart';
@@ -549,6 +550,7 @@ class _SonarpadAppState extends State<SonarpadApp> {
             italianOnlyRoute(context, const ItaliaOnlineScreen()),
         '/route': (_) => const RouteScreen(),
         '/travel': (_) => const TravelScreen(),
+        '/concerts': (_) => const ConcertSearchScreen(),
         '/audiodescriptions': (context) =>
             italianOnlyRoute(context, const AudiodescriptionRecentScreen()),
         '/sonarpad_audiodescriptions': (context) => italianOnlyRoute(

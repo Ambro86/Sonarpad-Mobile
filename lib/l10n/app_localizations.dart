@@ -4743,6 +4743,22 @@ abstract class AppLocalizations {
   ///
   /// In it, this message translates to:
   /// **'Concerti ed eventi'**
+  String get concertsArtist;
+
+  String get concertsAllCities;
+
+  String get concertsDates;
+
+  String get concertsFrom;
+
+  String get concertsTo;
+
+  String get concertsDay;
+
+  String get concertsMonth;
+
+  String get concertsYear;
+
   String get concertsTitle;
 
   /// No description provided for @concertsSearchHint.

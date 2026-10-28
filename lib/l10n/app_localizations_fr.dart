@@ -2609,7 +2609,32 @@ class AppLocalizationsFr extends AppLocalizations {
   String get cinemaOpenTrailer => 'Ouvrir la bande-annonce';
 
   @override
-  String get concertsTitle => 'Concerts et événements';
+  String get concertsArtist => 'Artiste ou concert';
+
+  @override
+  String get concertsAllCities =>
+      'Laisser vide pour toutes les villes du catalogue';
+
+  @override
+  String get concertsDates => 'Filtrer par dates';
+
+  @override
+  String get concertsFrom => 'Du';
+
+  @override
+  String get concertsTo => 'Au';
+
+  @override
+  String get concertsDay => 'Jour';
+
+  @override
+  String get concertsMonth => 'Mois';
+
+  @override
+  String get concertsYear => 'Année';
+
+  @override
+  String get concertsTitle => 'Recherche de concerts';
 
   @override
   String get concertsSearchHint => 'Entrez une ville (ex. Paris, Lyon)';
@@ -2622,17 +2647,16 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get concertsInitialText =>
-      'Entrez le nom de votre ville ci-dessus pour voir les prochains concerts de musique.';
+      'Le pays sélectionne le catalogue local Eventim/TicketOne, qui peut inclure des événements à l’étranger. L’achat se poursuit sur le site du vendeur ; un compte peut être nécessaire.';
 
   @override
-  String get concertsEmpty => 'Aucun concert trouvé dans cette ville.';
+  String get concertsEmpty => 'Aucun concert ne correspond à ces filtres.';
 
   @override
   String get concertsVenue => 'Lieu du concert :';
 
   @override
-  String get concertsBuyTickets =>
-      'Acheter ou voir les détails sur Ticketmaster';
+  String get concertsBuyTickets => 'Ouvrir le site du vendeur';
 
   @override
   String get podcastPlayedEpisodes => 'Épisodes écoutés';
