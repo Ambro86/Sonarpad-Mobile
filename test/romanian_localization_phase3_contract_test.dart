@@ -21,7 +21,7 @@ void main() {
     expect(ro['convertMediaTitle'], 'Convertește media');
     expect(ro['cinemaTitle'], 'Filme la cinema');
     expect(ro['voiceDictionaryTitle'], 'Dicționar de pronunție');
-    expect(ro['concertsTitle'], 'Concerte și evenimente');
+    expect(ro['concertsTitle'], 'Căutare concerte');
   });
 
   test('Romanian keeps Italian-only home services hidden', () {
