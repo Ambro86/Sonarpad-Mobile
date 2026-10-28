@@ -7,6 +7,9 @@ import 'app_localizations.dart';
 /// The translations for Spanish Castilian (`es`).
 class AppLocalizationsEs extends AppLocalizations {
   @override
+  String get raiPlayMediaUnavailable => "RaiPlay no ha devuelto una dirección reproducible tras varios intentos. Es posible que el contenido no esté disponible temporalmente. Inténtalo de nuevo más tarde.";
+
+  @override
   String audioDescriptionProjectEditorSegmentOption(int index, String start, String end) => '$index: $start – $end';
 
   @override

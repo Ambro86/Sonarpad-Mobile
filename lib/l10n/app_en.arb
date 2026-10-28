@@ -4869,5 +4869,6 @@
         "type": "String"
       }
     }
-  }
+  },
+  "raiPlayMediaUnavailable": "RaiPlay did not return a playable address after several attempts. The content may be temporarily unavailable. Please try again later."
 }

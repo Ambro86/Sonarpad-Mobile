@@ -7,6 +7,9 @@ import 'app_localizations.dart';
 /// The translations for Czech (`cs`).
 class AppLocalizationsCs extends AppLocalizations {
   @override
+  String get raiPlayMediaUnavailable => "RaiPlay ani po několika pokusech nevrátil adresu pro přehrávání. Obsah může být dočasně nedostupný. Zkuste to znovu později.";
+
+  @override
   String audioDescriptionProjectEditorSegmentOption(int index, String start, String end) => '$index: $start – $end';
 
   @override

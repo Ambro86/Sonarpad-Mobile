@@ -4869,5 +4869,6 @@
         "type": "String"
       }
     }
-  }
+  },
+  "raiPlayMediaUnavailable": "RaiPlay nu a returnat o adresă care poate fi redată după mai multe încercări. Conținutul poate fi temporar indisponibil. Încercați din nou mai târziu."
 }

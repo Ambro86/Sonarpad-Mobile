@@ -7,6 +7,9 @@ import 'app_localizations.dart';
 /// The translations for Turkish (`tr`).
 class AppLocalizationsTr extends AppLocalizations {
   @override
+  String get raiPlayMediaUnavailable => "RaiPlay birkaç denemeden sonra oynatılabilir bir adres döndürmedi. İçerik geçici olarak kullanılamıyor olabilir. Lütfen daha sonra tekrar deneyin.";
+
+  @override
   String audioDescriptionProjectEditorSegmentOption(int index, String start, String end) => '$index: $start – $end';
 
   @override

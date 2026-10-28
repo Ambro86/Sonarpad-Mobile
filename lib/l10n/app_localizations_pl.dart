@@ -7,6 +7,9 @@ import 'app_localizations.dart';
 /// The translations for Polish (`pl`).
 class AppLocalizationsPl extends AppLocalizations {
   @override
+  String get raiPlayMediaUnavailable => "RaiPlay nie zwrócił adresu umożliwiającego odtwarzanie po kilku próbach. Treść może być tymczasowo niedostępna. Spróbuj ponownie później.";
+
+  @override
   String audioDescriptionProjectEditorSegmentOption(int index, String start, String end) => '$index: $start – $end';
 
   @override

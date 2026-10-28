@@ -6789,6 +6789,8 @@ abstract class AppLocalizations {
 
   String get podcastImportIntoMediaCutter;
 
+  String get raiPlayMediaUnavailable;
+
   /// Status shown while a media file is being downloaded and preserved.
   ///
   /// In it, this message translates to:

@@ -7,6 +7,9 @@ import 'app_localizations.dart';
 /// The translations for Portuguese (`pt`).
 class AppLocalizationsPt extends AppLocalizations {
   @override
+  String get raiPlayMediaUnavailable => "O RaiPlay não devolveu um endereço reproduzível após várias tentativas. O conteúdo pode estar temporariamente indisponível. Tente novamente mais tarde.";
+
+  @override
   String audioDescriptionProjectEditorSegmentOption(int index, String start, String end) => '$index: $start – $end';
 
   @override
@@ -5463,6 +5466,9 @@ class AppLocalizationsPt extends AppLocalizations {
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
 class AppLocalizationsPtBr extends AppLocalizationsPt {
+  @override
+  String get raiPlayMediaUnavailable => "O RaiPlay não retornou um endereço reproduzível após várias tentativas. O conteúdo pode estar temporariamente indisponível. Tente novamente mais tarde.";
+
   @override
   String get podcastImportIntoMediaCutter => 'Importar para Cortar arquivo de mídia';
 

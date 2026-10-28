@@ -8,6 +8,9 @@ import 'app_localizations.dart';
 /// Remaining untranslated messages temporarily keep their English text until the next phase.
 class AppLocalizationsRo extends AppLocalizations {
   @override
+  String get raiPlayMediaUnavailable => "RaiPlay nu a returnat o adresă care poate fi redată după mai multe încercări. Conținutul poate fi temporar indisponibil. Încercați din nou mai târziu.";
+
+  @override
   String audioDescriptionProjectEditorSegmentOption(int index, String start, String end) => '$index: $start – $end';
 
   @override

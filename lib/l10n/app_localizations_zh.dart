@@ -7,6 +7,9 @@ import 'app_localizations.dart';
 /// The translations for Chinese (`zh`).
 class AppLocalizationsZh extends AppLocalizations {
   @override
+  String get raiPlayMediaUnavailable => "多次尝试后，RaiPlay 仍未返回可播放的地址。内容可能暂时不可用，请稍后重试。";
+
+  @override
   String audioDescriptionProjectEditorSegmentOption(int index, String start, String end) => '$index: $start – $end';
 
   @override
@@ -5266,6 +5269,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
 /// The translations for Chinese, as used in China (`zh_CN`).
 class AppLocalizationsZhCn extends AppLocalizationsZh {
+  @override
+  String get raiPlayMediaUnavailable => "多次尝试后，RaiPlay 仍未返回可播放的地址。内容可能暂时不可用，请稍后重试。";
+
   @override
   String get podcastImportIntoMediaCutter => '导入到剪切媒体文件';
 

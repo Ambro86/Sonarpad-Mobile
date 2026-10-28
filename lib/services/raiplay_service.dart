@@ -1,7 +1,12 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import '../utils/app_logger.dart';
+
+class RaiPlayMediaUnavailable implements Exception {
+  const RaiPlayMediaUnavailable();
+}
 
 enum RaiPlayItemKind { media, page }
 
@@ -637,33 +642,45 @@ class RaiPlayService {
       final sep = url.contains('?') ? '&' : '?';
       final xmlUrl = '$url${sep}output=45&pl=native';
       await AppLogger.log('RaiPlayService: Interrogo il relinker XML: $xmlUrl');
-      try {
-        final resp = await http.get(Uri.parse(xmlUrl), headers: {
-          'Origin': 'https://www.raiplay.it',
-          'Referer': 'https://www.raiplay.it/',
-        });
-        if (resp.statusCode == 200) {
-          final body = resp.body;
-          final match = RegExp(r'<url[^>]*type="content"[^>]*>([^<]+)</url>')
-              .firstMatch(body);
-          if (match != null) {
-            resolvedUrl = match.group(1)!;
-          } else {
-            // Se fallisce con type="content", proviamo qualsiasi <url> o <url type="...">
-            final matchAny =
+      for (var attempt = 1; attempt <= 3; attempt++) {
+        try {
+          final resp = await http.get(Uri.parse(xmlUrl), headers: {
+            'Origin': 'https://www.raiplay.it',
+            'Referer': 'https://www.raiplay.it/',
+          }).timeout(const Duration(seconds: 10));
+          if (resp.statusCode == 200) {
+            final body = resp.body;
+            final match = RegExp(r'<url[^>]*type="content"[^>]*>([^<]+)</url>')
+                .firstMatch(body) ??
                 RegExp(r'<url[^>]*>([^<]+)</url>').firstMatch(body);
-            if (matchAny != null) {
-              resolvedUrl = matchAny.group(1)!;
+            final candidate = match?.group(1)?.trim();
+            final uri = candidate == null ? null : Uri.tryParse(candidate);
+            if (uri != null &&
+                (uri.scheme == 'https' || uri.scheme == 'http') &&
+                uri.host.isNotEmpty &&
+                !uri.path.contains('/relinker/relinkerServlet')) {
+              resolvedUrl = candidate!;
+              await AppLogger.log(
+                  'RaiPlayService: Relinker risolto in: $resolvedUrl');
+              break;
+            }
+            await AppLogger.log(
+                'RaiPlayService: relinker missing playable URL attempt=$attempt');
+          } else {
+            await AppLogger.log(
+                'RaiPlayService: Errore relinker HTTP ${resp.statusCode} attempt=$attempt');
+            if (resp.statusCode != 408 && resp.statusCode != 429 &&
+                resp.statusCode < 500) {
+              throw const RaiPlayMediaUnavailable();
             }
           }
-          await AppLogger.log(
-              'RaiPlayService: Relinker risolto in: $resolvedUrl');
-        } else {
-          await AppLogger.log(
-              'RaiPlayService: Errore relinker HTTP ${resp.statusCode}');
+        } on http.ClientException catch (error) {
+          await AppLogger.log('RaiPlayService: relinker network attempt=$attempt error=$error');
+        } on TimeoutException {
+          await AppLogger.log('RaiPlayService: relinker timeout attempt=$attempt');
         }
-      } catch (e) {
-        await AppLogger.log('RaiPlayService: Eccezione relinker: $e');
+        if (attempt == 3) throw const RaiPlayMediaUnavailable();
+        await Future<void>.delayed(Duration(milliseconds: 500 * attempt));
       }
     }
 

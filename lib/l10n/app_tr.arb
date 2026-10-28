@@ -4869,5 +4869,6 @@
         "type": "String"
       }
     }
-  }
+  },
+  "raiPlayMediaUnavailable": "RaiPlay birkaç denemeden sonra oynatılabilir bir adres döndürmedi. İçerik geçici olarak kullanılamıyor olabilir. Lütfen daha sonra tekrar deneyin."
 }

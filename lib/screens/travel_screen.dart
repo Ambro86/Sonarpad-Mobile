@@ -376,7 +376,15 @@ class _TravelSearchScreenState extends State<TravelSearchScreen> {
       '$prefix-day',
       '${t.t(prefix)}: ${t.t('day')}',
       '${date.day}',
-      _numbers(1, DateTime(date.year, date.month + 1, 0).day),
+      [
+        for (var day = 1; day <= DateTime(date.year, date.month + 1, 0).day; day++)
+          AccessibleOption(
+            value: '$day',
+            label: DateFormat.MMMMEEEEd(t.locale).format(
+              DateTime(date.year, date.month, day),
+            ),
+          ),
+      ],
       (v) =>
           setDate(DateUtilsTravel.clamp(date.year, date.month, int.parse(v))),
     ),

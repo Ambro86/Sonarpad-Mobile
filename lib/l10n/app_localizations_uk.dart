@@ -7,6 +7,9 @@ import 'app_localizations.dart';
 /// The translations for Ukrainian (`uk`).
 class AppLocalizationsUk extends AppLocalizations {
   @override
+  String get raiPlayMediaUnavailable => "RaiPlay не повернув адресу для відтворення після кількох спроб. Вміст може бути тимчасово недоступним. Спробуйте пізніше.";
+
+  @override
   String audioDescriptionProjectEditorSegmentOption(int index, String start, String end) => '$index: $start – $end';
 
   @override

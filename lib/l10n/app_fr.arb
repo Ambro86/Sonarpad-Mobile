@@ -4875,5 +4875,6 @@
         "type": "String"
       }
     }
-  }
+  },
+  "raiPlayMediaUnavailable": "RaiPlay n’a pas fourni d’adresse lisible après plusieurs tentatives. Le contenu est peut-être temporairement indisponible. Réessayez plus tard."
 }

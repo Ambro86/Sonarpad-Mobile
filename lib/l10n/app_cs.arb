@@ -4872,5 +4872,6 @@
         "type": "String"
       }
     }
-  }
+  },
+  "raiPlayMediaUnavailable": "RaiPlay ani po několika pokusech nevrátil adresu pro přehrávání. Obsah může být dočasně nedostupný. Zkuste to znovu později."
 }

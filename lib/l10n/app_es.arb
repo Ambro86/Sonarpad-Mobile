@@ -4875,5 +4875,6 @@
         "type": "String"
       }
     }
-  }
+  },
+  "raiPlayMediaUnavailable": "RaiPlay no ha devuelto una dirección reproducible tras varios intentos. Es posible que el contenido no esté disponible temporalmente. Inténtalo de nuevo más tarde."
 }

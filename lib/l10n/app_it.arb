@@ -6447,5 +6447,6 @@
         "type": "String"
       }
     }
-  }
+  },
+  "raiPlayMediaUnavailable": "RaiPlay non ha restituito un indirizzo riproducibile dopo più tentativi. Il contenuto potrebbe essere temporaneamente non disponibile. Riprova più tardi."
 }

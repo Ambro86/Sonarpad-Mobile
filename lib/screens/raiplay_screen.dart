@@ -4,6 +4,7 @@ import '../widgets/sonartube_save_media_dialog.dart';
 import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
+import '../utils/status_message.dart';
 import 'package:flutter/semantics.dart';
 
 import '../models/podcast.dart';
@@ -240,7 +241,10 @@ class _RaiPlayScreenState extends State<RaiPlayScreen> {
 
       try {
         if (!mounted) return;
-        setState(() => _loading = true);
+        setState(() {
+          _loading = true;
+          _error = null;
+        });
 
         final mediaUrl = item.mediaUrl;
         final resolvedMedia = await _service.resolvePlaybackUrls(mediaUrl);
@@ -290,8 +294,18 @@ class _RaiPlayScreenState extends State<RaiPlayScreen> {
         } else {
           await Navigator.push(context, route);
         }
+      } catch (error, stack) {
+        await AppLogger.log('RaiPlay: media open failed error=$error\n$stack');
+        if (!mounted) return;
+        final message = error is RaiPlayMediaUnavailable
+            ? AppLocalizations.of(context).raiPlayMediaUnavailable
+            : AppLocalizations.of(context).technicalErrorGeneric;
+        setState(() => _error = message);
+        announceStatusMessage(context, message,
+            announcementDelay: const Duration(milliseconds: 300));
       } finally {
         _mediaOpenGuard.release(itemKey);
+        if (mounted) setState(() => _loading = false);
       }
     }
   }

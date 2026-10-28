@@ -4869,5 +4869,6 @@
         "type": "String"
       }
     }
-  }
+  },
+  "raiPlayMediaUnavailable": "多次尝试后，RaiPlay 仍未返回可播放的地址。内容可能暂时不可用，请稍后重试。"
 }
