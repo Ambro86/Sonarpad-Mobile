@@ -8,9 +8,11 @@ import 'package:sonarpad_mobile_starter/services/favorite_channel_videos_service
 import 'package:sonarpad_mobile_starter/services/sonartube_service.dart';
 import 'package:sonarpad_mobile_starter/widgets/universal_accessible_view.dart';
 class FakeLatest extends FavoriteChannelVideosService {
+  FakeLatest({this.published = '2026-10-22T12:00:00Z'});
+  final String? published;
   @override
-  Future<FavoriteChannelVideosResult> load(List<SonarTubeItem> favorites) async => const FavoriteChannelVideosResult([
-    SonarTubeItem(kind: SonarTubeItemKind.video, id: 'latest',title:'Latest upload',url:'https://www.youtube.com/watch?v=latest',channel:'Artist',channelId:'UCaaaaaaaaaaaaaaaaaaaaaa',published:'2026-10-22T12:00:00Z'),
+  Future<FavoriteChannelVideosResult> load(List<SonarTubeItem> favorites) async => FavoriteChannelVideosResult([
+    SonarTubeItem(kind: SonarTubeItemKind.video, id: 'latest',title:'Latest upload',url:'https://www.youtube.com/watch?v=latest',channel:'Artist',channelId:'UCaaaaaaaaaaaaaaaaaaaaaa',published:published),
   ],0);
 }
 void main() {
@@ -31,6 +33,18 @@ void main() {
       expect(find.text('Ultimi video dai preferiti'), findsOneWidget);
       expect(row.subtitle,contains('Artist'));
       expect(row.subtitle,isNot(contains('T12:00')));
+    });
+  }
+  for (final published in <String?>['2 days ago', null]) {
+    testWidgets('music latest keeps videos without an absolute date: $published', (tester) async {
+      await tester.pumpWidget(MaterialApp(locale: const Locale('it'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: SonarMusicScreen(libraryType:'latest', latestVideosService:FakeLatest(published:published))));
+      await tester.pumpAndSettle();
+      final list=tester.widget<UniversalAccessibleList>(find.byType(UniversalAccessibleList));
+      expect(list.sections.expand((s)=>s.rows).any((r)=>r.title=='Latest upload'),isTrue);
+      expect(tester.takeException(),isNull);
     });
   }
   testWidgets('music favorites expose latest videos button', (tester) async {

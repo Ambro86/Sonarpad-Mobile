@@ -7,79 +7,92 @@
       "Corretta la condivisione dei collegamenti in SonarTube e SonarMusic: ora viene condiviso solo l’URL, facile da copiare e incollare senza dover rimuovere il titolo.",
       "SonarTube e SonarMusic ricordano il tipo di ricerca selezionato: per esempio, scegliendo Artisti in SonarMusic, alla riapertura ritroverai Artisti. La scelta è salvata separatamente per ciascun modulo, anche dopo la chiusura dell’app.",
       "Ricerca viaggi: puoi filtrare l’orario di partenza scegliendo Tutto il giorno, Mattina, Pomeriggio, Sera o Notte con uno slider accessibile. Andata e ritorno hanno filtri separati, modificabili anche nei risultati senza ripetere la ricerca. Il filtro considera l’ora locale di partenza e tutte le pagine dei risultati.",
-      "Podcast: aggiunta Iscrizione rapida per iscriversi senza uscire dai risultati di ricerca né aprire gli episodi. Disponibile come azione accessibile e pulsante visibile escluso dalla navigazione di VoiceOver, senza ricaricare l’elenco né spostare il focus."
+      "Podcast: aggiunta Iscrizione rapida per iscriversi senza uscire dai risultati di ricerca né aprire gli episodi. Disponibile come azione accessibile e pulsante visibile escluso dalla navigazione di VoiceOver, senza ricaricare l’elenco né spostare il focus.",
+      "Audiodescrizioni: recupero delle frasi escluse per mancanza di spazio verificando la durata reale della sintesi e, se necessario, aumentando la velocità della voce del 10% o al massimo del 15%. Le descrizioni già inserite e i dialoghi restano protetti; la velocità viene conservata nel progetto per la singola frase."
     ],
     "en": [
       "Added concert search: search by date and by entering the name of your city.",
       "Fixed link sharing in SonarTube and SonarMusic: only the URL is now shared, making it easy to copy and paste without removing the title.",
       "SonarTube and SonarMusic now remember the selected search type. For example, if you choose Artists in SonarMusic, Artists will still be selected when you reopen it. Each module saves its choice separately, even after you close the app.",
-      "Podcasts: added Quick subscribe to subscribe without leaving search results or opening episodes. Available as an accessibility action and a visible button excluded from VoiceOver navigation, without reloading the list or moving focus."
+      "Podcasts: added Quick subscribe to subscribe without leaving search results or opening episodes. Available as an accessibility action and a visible button excluded from VoiceOver navigation, without reloading the list or moving focus.",
+      "Audio descriptions: recovery of phrases excluded for lack of space by checking the actual synthesized duration and, if needed, increasing the voice speed by 10% or at most 15%. Previously inserted descriptions and dialogue remain protected; the speed is saved in the project for each recovered phrase."
     ],
     "fr": [
       "Ajout de la recherche de concerts : recherchez par date et en saisissant le nom de votre ville.",
       "Partage des liens corrigé dans SonarTube et SonarMusic : seule l’URL est désormais partagée, pour la copier et la coller sans devoir supprimer le titre.",
       "SonarTube et SonarMusic mémorisent désormais le type de recherche sélectionné. Par exemple, si vous choisissez Artistes dans SonarMusic, ce choix sera conservé à la réouverture. Chaque module enregistre son choix séparément, même après la fermeture de l’application.",
-      "Podcasts : ajout de l’abonnement rapide pour s’abonner sans quitter les résultats de recherche ni ouvrir les épisodes. Disponible comme action d’accessibilité et bouton visible exclu de la navigation VoiceOver, sans recharger la liste ni déplacer le focus."
+      "Podcasts : ajout de l’abonnement rapide pour s’abonner sans quitter les résultats de recherche ni ouvrir les épisodes. Disponible comme action d’accessibilité et bouton visible exclu de la navigation VoiceOver, sans recharger la liste ni déplacer le focus.",
+      "Audiodescriptions : récupération des phrases exclues faute de place en vérifiant la durée réelle de la synthèse et, si nécessaire, en augmentant la vitesse de la voix de 10 % ou de 15 % au maximum. Les descriptions déjà insérées et les dialogues restent protégés ; la vitesse est enregistrée dans le projet pour chaque phrase récupérée."
     ],
     "es": [
       "Añadida la búsqueda de conciertos: busca por fecha e introduciendo el nombre de tu ciudad.",
       "Corregido el uso compartido de enlaces en SonarTube y SonarMusic: ahora se comparte solo la URL, para copiarla y pegarla sin tener que eliminar el título.",
       "SonarTube y SonarMusic ahora recuerdan el tipo de búsqueda seleccionado. Por ejemplo, si eliges Artistas en SonarMusic, seguirá seleccionado al volver a abrirlo. Cada módulo guarda su elección por separado, incluso después de cerrar la aplicación.",
-      "Podcasts: añadida la suscripción rápida para suscribirse sin salir de los resultados de búsqueda ni abrir los episodios. Disponible como acción de accesibilidad y botón visible excluido de la navegación de VoiceOver, sin recargar la lista ni desplazar el foco."
+      "Podcasts: añadida la suscripción rápida para suscribirse sin salir de los resultados de búsqueda ni abrir los episodios. Disponible como acción de accesibilidad y botón visible excluido de la navegación de VoiceOver, sin recargar la lista ni desplazar el foco.",
+      "Audiodescripciones: recuperación de frases excluidas por falta de espacio comprobando la duración real de la síntesis y, si es necesario, aumentando la velocidad de la voz un 10 % o como máximo un 15 %. Las descripciones ya insertadas y los diálogos siguen protegidos; la velocidad se guarda en el proyecto para cada frase recuperada."
     ],
     "pt": [
       "Adicionada a pesquisa de concertos: pesquise por data e escrevendo o nome da sua cidade.",
       "Corrigida a partilha de ligações no SonarTube e SonarMusic: agora é partilhado apenas o URL, para copiar e colar sem remover o título.",
       "O SonarTube e o SonarMusic passam a memorizar o tipo de pesquisa selecionado. Por exemplo, se escolher Artistas no SonarMusic, essa opção continuará selecionada quando o voltar a abrir. Cada módulo guarda a sua escolha separadamente, mesmo depois de fechar a aplicação.",
-      "Podcasts: adicionada a subscrição rápida para subscrever sem sair dos resultados da pesquisa nem abrir os episódios. Disponível como ação de acessibilidade e botão visível excluído da navegação do VoiceOver, sem recarregar a lista nem deslocar o foco."
+      "Podcasts: adicionada a subscrição rápida para subscrever sem sair dos resultados da pesquisa nem abrir os episódios. Disponível como ação de acessibilidade e botão visível excluído da navegação do VoiceOver, sem recarregar a lista nem deslocar o foco.",
+      "Audiodescrições: recuperação de frases excluídas por falta de espaço, verificando a duração real da síntese e, se necessário, aumentando a velocidade da voz em 10% ou, no máximo, 15%. As descrições já inseridas e os diálogos continuam protegidos; a velocidade é guardada no projeto para cada frase recuperada."
     ],
     "pt_BR": [
       "Adicionada a busca de shows: pesquise por data e digitando o nome da sua cidade.",
       "Corrigido o compartilhamento de links no SonarTube e SonarMusic: agora apenas a URL é compartilhada, para copiar e colar sem remover o título.",
       "O SonarTube e o SonarMusic agora lembram o tipo de pesquisa selecionado. Por exemplo, se você escolher Artistas no SonarMusic, essa opção continuará selecionada ao reabri-lo. Cada módulo salva sua escolha separadamente, mesmo depois de fechar o aplicativo.",
-      "Podcasts: adicionada a inscrição rápida para se inscrever sem sair dos resultados da busca nem abrir os episódios. Disponível como ação de acessibilidade e botão visível excluído da navegação do VoiceOver, sem recarregar a lista nem mover o foco."
+      "Podcasts: adicionada a inscrição rápida para se inscrever sem sair dos resultados da busca nem abrir os episódios. Disponível como ação de acessibilidade e botão visível excluído da navegação do VoiceOver, sem recarregar a lista nem mover o foco.",
+      "Audiodescrições: recuperação de frases excluídas por falta de espaço, verificando a duração real da síntese e, se necessário, aumentando a velocidade da voz em 10% ou, no máximo, 15%. As descrições já inseridas e os diálogos continuam protegidos; a velocidade é salva no projeto para cada frase recuperada."
     ],
     "pl": [
       "Dodano wyszukiwanie koncertów według daty i wpisanej nazwy miasta.",
       "Poprawiono udostępnianie linków w SonarTube i SonarMusic: udostępniany jest teraz tylko adres URL, który można kopiować i wklejać bez usuwania tytułu.",
       "SonarTube i SonarMusic zapamiętują teraz wybrany typ wyszukiwania. Na przykład po wybraniu wykonawców w SonarMusic ta opcja pozostanie zaznaczona po ponownym otwarciu. Każdy moduł zapisuje wybór osobno, również po zamknięciu aplikacji.",
-      "Podcasty: dodano szybką subskrypcję bez opuszczania wyników wyszukiwania i otwierania odcinków. Funkcja jest dostępna jako czynność dostępności oraz widoczny przycisk pomijany podczas nawigacji VoiceOver, bez ponownego ładowania listy i przenoszenia fokusu."
+      "Podcasty: dodano szybką subskrypcję bez opuszczania wyników wyszukiwania i otwierania odcinków. Funkcja jest dostępna jako czynność dostępności oraz widoczny przycisk pomijany podczas nawigacji VoiceOver, bez ponownego ładowania listy i przenoszenia fokusu.",
+      "Audiodeskrypcja: odzyskiwanie zdań pominiętych z powodu braku miejsca przez sprawdzenie rzeczywistego czasu syntezy i, w razie potrzeby, zwiększenie prędkości głosu o 10% lub maksymalnie 15%. Wcześniej dodane opisy i dialogi pozostają chronione; prędkość jest zapisywana w projekcie dla każdego odzyskanego zdania."
     ],
     "cs": [
       "Přidáno vyhledávání koncertů podle data a zadaného názvu města.",
       "Opraveno sdílení odkazů v SonarTube a SonarMusic: nyní se sdílí pouze URL, které lze snadno kopírovat a vložit bez odstraňování názvu.",
       "SonarTube a SonarMusic si nyní pamatují vybraný typ vyhledávání. Pokud například v SonarMusic vyberete interprety, tato volba zůstane vybraná i při příštím otevření. Každý modul ukládá svou volbu samostatně, a to i po zavření aplikace.",
-      "Podcasty: přidán rychlý odběr bez opuštění výsledků vyhledávání a otevření epizod. Je dostupný jako akce zpřístupnění a viditelné tlačítko vynechané při navigaci VoiceOver, bez opětovného načítání seznamu nebo přesouvání fokusu."
+      "Podcasty: přidán rychlý odběr bez opuštění výsledků vyhledávání a otevření epizod. Je dostupný jako akce zpřístupnění a viditelné tlačítko vynechané při navigaci VoiceOver, bez opětovného načítání seznamu nebo přesouvání fokusu.",
+      "Audiopopisy: obnovení vět vynechaných kvůli nedostatku místa ověřením skutečné délky syntézy a případným zvýšením rychlosti hlasu o 10 %, nejvýše o 15 %. Již vložené popisy a dialogy zůstávají chráněné; rychlost se v projektu ukládá pro každou obnovenou větu."
     ],
     "de": [
       "Konzertsuche hinzugefügt: Suchen Sie nach Datum und durch Eingabe des Namens Ihrer Stadt.",
       "Linkfreigabe in SonarTube und SonarMusic korrigiert: Jetzt wird nur die URL geteilt, damit sie ohne Entfernen des Titels kopiert und eingefügt werden kann.",
       "SonarTube und SonarMusic merken sich jetzt den ausgewählten Suchtyp. Wenn Sie beispielsweise in SonarMusic Künstler auswählen, bleibt diese Auswahl beim erneuten Öffnen erhalten. Jedes Modul speichert seine Auswahl separat, auch nach dem Schließen der App.",
-      "Podcasts: Schnell abonnieren ermöglicht das Abonnieren, ohne die Suchergebnisse zu verlassen oder die Episoden zu öffnen. Verfügbar als Bedienungshilfenaktion und sichtbare Schaltfläche, die bei der VoiceOver-Navigation übersprungen wird, ohne die Liste neu zu laden oder den Fokus zu verschieben."
+      "Podcasts: Schnell abonnieren ermöglicht das Abonnieren, ohne die Suchergebnisse zu verlassen oder die Episoden zu öffnen. Verfügbar als Bedienungshilfenaktion und sichtbare Schaltfläche, die bei der VoiceOver-Navigation übersprungen wird, ohne die Liste neu zu laden oder den Fokus zu verschieben.",
+      "Audiodeskription: Wegen Platzmangels ausgeschlossene Sätze werden anhand der tatsächlichen Sprachausgabe überprüft und bei Bedarf mit einer um 10 % oder höchstens 15 % erhöhten Sprechgeschwindigkeit wiederhergestellt. Bereits eingefügte Beschreibungen und Dialoge bleiben geschützt; die Geschwindigkeit wird für jeden wiederhergestellten Satz im Projekt gespeichert."
     ],
     "zh_CN": [
       "新增演唱会搜索：可按日期搜索，并输入您所在城市的名称。",
       "修复了 SonarTube 和 SonarMusic 的链接分享：现在仅分享 URL，可直接复制粘贴，无需删除标题。",
       "SonarTube 和 SonarMusic 现在会记住所选的搜索类型。例如，在 SonarMusic 中选择“艺人”后，再次打开时仍会选中“艺人”。每个模块分别保存自己的选择，即使关闭应用后也会保留。",
-      "播客：新增快速订阅，无需离开搜索结果或打开单集即可订阅。可通过辅助功能操作或可见按钮使用，该按钮不参与 VoiceOver 导航，订阅时不会重新加载列表或移动焦点。"
+      "播客：新增快速订阅，无需离开搜索结果或打开单集即可订阅。可通过辅助功能操作或可见按钮使用，该按钮不参与 VoiceOver 导航，订阅时不会重新加载列表或移动焦点。",
+      "音频描述：通过检查语音合成的实际时长，恢复因时间不足而被排除的句子；必要时将语速提高 10%，最多提高 15%。已插入的描述和对白不会受到影响；每个恢复句子的语速都会保存在项目中。"
     ],
     "uk": [
       "Додано пошук концертів за датою та введеною назвою міста.",
       "Виправлено поширення посилань у SonarTube та SonarMusic: тепер поширюється лише URL, який можна копіювати й вставляти без видалення назви.",
       "SonarTube і SonarMusic тепер запам’ятовують вибраний тип пошуку. Наприклад, якщо вибрати виконавців у SonarMusic, цей варіант залишиться вибраним після повторного відкриття. Кожен модуль зберігає свій вибір окремо, навіть після закриття застосунку.",
-      "Подкасти: додано швидку підписку без виходу з результатів пошуку та відкриття епізодів. Доступна як дія спеціальних можливостей і видима кнопка, яку пропускає навігація VoiceOver, без перезавантаження списку та переміщення фокуса."
+      "Подкасти: додано швидку підписку без виходу з результатів пошуку та відкриття епізодів. Доступна як дія спеціальних можливостей і видима кнопка, яку пропускає навігація VoiceOver, без перезавантаження списку та переміщення фокуса.",
+      "Аудіоопис: відновлення фраз, пропущених через брак часу, шляхом перевірки фактичної тривалості синтезу та, за потреби, збільшення швидкості голосу на 10% або щонайбільше на 15%. Уже вставлені описи й діалоги залишаються захищеними; швидкість зберігається в проєкті для кожної відновленої фрази."
     ],
     "ro": [
       "A fost adăugată căutarea concertelor: caută după dată și introducând numele orașului tău.",
       "S-a corectat distribuirea linkurilor în SonarTube și SonarMusic: acum se distribuie doar adresa URL, ușor de copiat și lipit fără a elimina titlul.",
       "SonarTube și SonarMusic rețin acum tipul de căutare selectat. De exemplu, dacă alegi Artiști în SonarMusic, această opțiune va rămâne selectată la redeschidere. Fiecare modul își salvează alegerea separat, chiar și după închiderea aplicației.",
-      "Podcasturi: a fost adăugată abonarea rapidă, fără a părăsi rezultatele căutării sau a deschide episoadele. Este disponibilă ca acțiune de accesibilitate și buton vizibil exclus din navigarea VoiceOver, fără reîncărcarea listei sau mutarea focalizării."
+      "Podcasturi: a fost adăugată abonarea rapidă, fără a părăsi rezultatele căutării sau a deschide episoadele. Este disponibilă ca acțiune de accesibilitate și buton vizibil exclus din navigarea VoiceOver, fără reîncărcarea listei sau mutarea focalizării.",
+      "Descrieri audio: recuperarea frazelor excluse din lipsă de spațiu prin verificarea duratei reale a sintezei și, dacă este necesar, creșterea vitezei vocii cu 10% sau cel mult 15%. Descrierile deja inserate și dialogurile rămân protejate; viteza este salvată în proiect pentru fiecare frază recuperată."
     ],
     "tr": [
       "Konser araması eklendi: tarihe göre ve şehrinizin adını yazarak arama yapabilirsiniz.",
       "SonarTube ve SonarMusic’te bağlantı paylaşımı düzeltildi: artık yalnızca URL paylaşılır; başlığı silmeden kolayca kopyalayıp yapıştırabilirsiniz.",
       "SonarTube ve SonarMusic artık seçilen arama türünü hatırlar. Örneğin SonarMusic’te Sanatçılar seçeneğini seçerseniz, yeniden açtığınızda bu seçenek seçili kalır. Her modül seçiminizi ayrı olarak kaydeder; uygulamayı kapattıktan sonra da seçim korunur.",
-      "Podcastler: arama sonuçlarından ayrılmadan veya bölümleri açmadan abone olmak için hızlı abonelik eklendi. Listeyi yeniden yüklemeden veya odağı taşımadan, erişilebilirlik eylemi ve VoiceOver gezinmesine dahil edilmeyen görünür bir düğme olarak kullanılabilir."
+      "Podcastler: arama sonuçlarından ayrılmadan veya bölümleri açmadan abone olmak için hızlı abonelik eklendi. Listeyi yeniden yüklemeden veya odağı taşımadan, erişilebilirlik eylemi ve VoiceOver gezinmesine dahil edilmeyen görünür bir düğme olarak kullanılabilir.",
+      "Sesli betimleme: Yer olmadığı için dışlanan cümleler, sentezlenen sesin gerçek süresi kontrol edilerek ve gerekirse ses hızı %10 veya en fazla %15 artırılarak kurtarılır. Önceden eklenen betimlemeler ve diyaloglar korunur; hız, kurtarılan her cümle için projeye kaydedilir."
     ]
   },
   {

@@ -18,8 +18,7 @@ class FavoriteChannelVideosResult {
   final int failedChannels;
 }
 
-/// YouTube feeds contain a bounded window of recent uploads per channel,
-/// with absolute publication dates suitable for merging across channels.
+/// Reuse the channel Videos tab; feeds supply dates only, never extra items.
 class FavoriteChannelVideosService {
   FavoriteChannelVideosService({http.Client? client, SonarTubeService? tube})
       : _client = client, _tube = tube ?? SonarTubeService();
@@ -54,36 +53,59 @@ class FavoriteChannelVideosService {
     }.values.toList();
     final client = _client ?? http.Client();
     final videos = <String, SonarTubeItem>{};
+    final ranks = <String, int>{};
     var failed = 0;
     var next = 0;
     Future<void> worker() async {
       while (next < channels.length) {
-        final channel = channels[next++];
+        final channelIndex = next++;
+        final channel = channels[channelIndex];
         try {
-          var id = channel.channelId ?? channel.id;
-          if (!RegExp(r'^UC[\w-]{22}$').hasMatch(id)) {
-            final page = await _tube.browse(channel).timeout(const Duration(seconds: 25));
-            if (page.items.isEmpty) continue;
-            id = (await _tube.channelForVideo(page.items.first)
-                .timeout(const Duration(seconds: 20))).id;
+          final page = await _tube.browse(
+            channel, channelSort: SonarTubeChannelSort.newest,
+          ).timeout(const Duration(seconds: 25));
+          final items = page.items
+              .where((item) => item.kind == SonarTubeItemKind.video && !item.isLive)
+              .take(15).toList();
+          if (items.isEmpty) continue;
+          // RSS also includes Shorts. Use it only to date videos already
+          // returned by the same Videos tab used when opening this channel.
+          final dates = <String, String>{};
+          try {
+            var id = channel.channelId ?? channel.id;
+            if (!RegExp(r'^UC[\w-]{22}$').hasMatch(id)) {
+              id = items.first.channelId ?? '';
+            }
+            if (!RegExp(r'^UC[\w-]{22}$').hasMatch(id)) {
+              id = (await _tube.channelForVideo(items.first)
+                  .timeout(const Duration(seconds: 20))).id;
+            }
+            final response = await _loadFeed(client, id);
+            final feed = XmlDocument.parse(response.body);
+            for (final entry in feed.findAllElements('entry')) {
+              String text(String name) => entry.descendants.whereType<XmlElement>()
+                  .where((node) => node.name.local == name)
+                  .map((node) => node.innerText).firstOrNull ?? '';
+              final published = DateTime.tryParse(text('published'));
+              if (published != null) {
+                dates[text('videoId')] = published.toUtc().toIso8601String();
+              }
+            }
+          } catch (error) {
+            await AppLogger.log('FavoriteChannelVideos: dates unavailable channel=${channel.id} error=$error; keeping channel videos');
           }
-          if (!RegExp(r'^UC[\w-]{22}$').hasMatch(id)) {
-            throw const FormatException('channel_id_unavailable');
-          }
-          final response = await _loadFeed(client, id);
-          final feed = XmlDocument.parse(response.body);
-          if (feed.rootElement.name.local != 'feed') throw const FormatException('not_a_feed');
-          for (final entry in feed.findAllElements('entry')) {
-            String text(String name) => entry.descendants.whereType<XmlElement>()
-                .where((node) => node.name.local == name).map((node) => node.innerText).firstOrNull ?? '';
-            final videoId = text('videoId');
-            final published = DateTime.tryParse(text('published'));
-            if (videoId.isEmpty || published == null) continue;
-            videos[videoId] = SonarTubeItem(
-              kind: SonarTubeItemKind.video, id: videoId, title: text('title'),
-              url: 'https://www.youtube.com/watch?v=$videoId',
-              channelId: id, channel: text('name').isEmpty ? channel.title : text('name'),
-              published: published.toUtc().toIso8601String(),
+          for (var index = 0; index < items.length; index++) {
+            final item = items[index];
+            final rank = channelIndex * 15 + index;
+            if (ranks.containsKey(item.id) && ranks[item.id]! <= rank) continue;
+            ranks[item.id] = rank;
+            videos[item.id] = SonarTubeItem(
+              kind: item.kind, id: item.id, title: item.title, url: item.url,
+              channelId: item.channelId ?? channel.channelId ?? channel.id,
+              channel: item.channel ?? channel.title,
+              thumbnailUrl: item.thumbnailUrl, duration: item.duration,
+              views: item.views, published: dates[item.id] ?? item.published,
+              description: item.description, isLive: item.isLive,
             );
           }
         } catch (error, stack) {
@@ -96,11 +118,18 @@ class FavoriteChannelVideosService {
       await Future.wait(List.generate(channels.length.clamp(0, 4), (_) => worker()));
       await AppLogger.log('FavoriteChannelVideos: channels=${channels.length} videos=${videos.length} failed=$failed');
       if (channels.isNotEmpty && failed == channels.length) {
-        throw StateError('all_channel_feeds_failed');
+        throw StateError('all_channel_videos_failed');
       }
       final items = videos.values.toList()..sort((a, b) {
-        final order = DateTime.parse(b.published!).compareTo(DateTime.parse(a.published!));
-        return order != 0 ? order : a.id.compareTo(b.id);
+        final dateA = DateTime.tryParse(a.published ?? '');
+        final dateB = DateTime.tryParse(b.published ?? '');
+        if (dateA != null && dateB != null) {
+          final order = dateB.compareTo(dateA);
+          if (order != 0) return order;
+        } else if (dateA != null || dateB != null) {
+          return dateA != null ? -1 : 1;
+        }
+        return ranks[a.id]!.compareTo(ranks[b.id]!);
       });
       return FavoriteChannelVideosResult(items, failed);
     } finally {

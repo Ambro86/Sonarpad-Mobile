@@ -17,6 +17,28 @@ void main() {
       File('lib/screens/audio_description_project_editor_screen.dart')
           .readAsStringSync();
 
+  test('all parsed cues reach exact TTS before recovery, with normal cues reserved', () {
+    final start = service.indexOf('Future<List<_Placement>> _synthesizeAndPlace(');
+    final end = service.indexOf('Future<void> _synthesizeTtsWithFallback(', start);
+    final placement = service.substring(start, end);
+    final loop = placement.indexOf('for (var i = 0; i < ordered.length; i++)');
+    final synthesis = placement.indexOf('await _synthesizeTtsWithFallback(', loop);
+    final duration = placement.indexOf('await _audioDuration(target.path)', synthesis);
+    final scheduling = placement.indexOf('final selectedStart =', duration);
+    expect(loop, greaterThanOrEqualTo(0));
+    expect(synthesis, greaterThan(loop));
+    expect(duration, greaterThan(synthesis));
+    expect(scheduling, greaterThan(duration));
+    expect(placement.substring(loop, synthesis), isNot(contains('continue;')));
+    final recovery = placement.substring(placement.indexOf('final retryReserved ='));
+    expect(recovery, contains('...reservedRanges'));
+    expect(recovery, contains('usedExtendedAnchorIds.contains(slot.id)'));
+    expect(recovery, contains("if (rejected.reason != 'no_safe_space_after_exact_tts') continue;"));
+    expect(recovery, contains('requiredDuration: duration'));
+    expect(recovery, contains('ttsSpeedOverride: recovery.speed'));
+    expect(recovery, contains('retryReserved.add('));
+  });
+
   test('Windows-parity AI options have the requested defaults', () {
     expect(screen, contains('bool _extendedPauses = false;'));
     expect(service, contains("static const _extendedKey = 'ad_mobile_extended_v2';"));

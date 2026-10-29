@@ -176,7 +176,10 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
         result = SonarMusicPage(items: latest.items.map((item) => SonarMusicItem(
           kind: 'video', id: item.id, videoId: item.id, title: item.title,
           url: item.url, artist: item.channel, artistId: item.channelId,
-          subtitle: DateFormat.yMMMd(l10n.localeName).format(DateTime.parse(item.published!).toLocal()),
+          duration: item.duration,
+          subtitle: DateTime.tryParse(item.published ?? '') != null
+              ? DateFormat.yMMMd(l10n.localeName).format(DateTime.parse(item.published!).toLocal())
+              : item.published,
         )).toList());
       } else if (widget.libraryType == 'recent') {
         result = SonarMusicPage(items: await _library.recent());

@@ -4731,6 +4731,9 @@ $nonverbalInstruction''';
           speed: speed,
           pitch: pitch,
         );
+        // Unlike the desktop bridge, Mobile has no estimated-duration filter:
+        // every parsed cue reaches real TTS before placement. Keep this order
+        // so brief cues are not lost before the native-speed fallback below.
         final duration = await _audioDuration(target.path);
         if (duration <= 0) throw StateError('TTS_DURATION_INVALID');
 
