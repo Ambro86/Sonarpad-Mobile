@@ -41,6 +41,7 @@ class _TicketOneNativePageState extends State<TicketOneNativePage> {
   String? _message, _pending;
   bool _busy = true;
   int _serial = 0, _attempt = 0;
+  int _otpRevision = 0;
   String? _lastDiagnostic;
   TicketOneStrings get t =>
       TicketOneStrings(AppLocalizations.of(context).localeName);
@@ -48,6 +49,47 @@ class _TicketOneNativePageState extends State<TicketOneNativePage> {
       (_page?['fields'] as List? ?? []).cast<Map<String, dynamic>>();
   List<Map<String, dynamic>> get _actions =>
       (_page?['actions'] as List? ?? []).cast<Map<String, dynamic>>();
+  List<Map<String, dynamic>> get _otpFields =>
+      _fields
+          .where(
+            (f) =>
+                f['secret'] == true &&
+                TicketOneStrings.otpDigitIndex(f['label'] as String) != null,
+          )
+          .toList()
+        ..sort(
+          (a, b) => TicketOneStrings.otpDigitIndex(
+            a['label'],
+          )!.compareTo(TicketOneStrings.otpDigitIndex(b['label'])!),
+        );
+
+  void _changeOtp(String id, String text) {
+    final fields = _otpFields;
+    final index = fields.indexWhere((f) => f['id'] == id);
+    if (fields.length != 6 || index < 0) return;
+    var digits = text.replaceAll(RegExp(r'[^0-9]'), '');
+    final previous = '${_draft[id] ?? fields[index]['value'] ?? ''}';
+    // UIKit may insert into the existing digit rather than replace it.
+    if (previous.length == 1 && (digits.length == 2 || digits.length == 7)) {
+      if (digits.startsWith(previous)) {
+        digits = digits.substring(1);
+      } else if (digits.endsWith(previous)) {
+        digits = digits.substring(0, digits.length - 1);
+      }
+    }
+    setState(() {
+      _otpRevision++; // Replace the active UIKit editor too, preserving focus.
+      if (digits.length > 6) return;
+      if (digits.isEmpty) {
+        _draft[id] = '';
+        return;
+      }
+      final start = digits.length == 6 ? 0 : index;
+      for (var i = 0; i < digits.length && start + i < 6; i++) {
+        _draft[fields[start + i]['id'] as String] = digits[i];
+      }
+    });
+  }
 
   @override
   void initState() {
@@ -103,7 +145,12 @@ class _TicketOneNativePageState extends State<TicketOneNativePage> {
     if (!mounted || widget.loading) return;
     final serial = ++_serial;
     try {
-      final current = Uri.tryParse(await widget.controller.currentUrl() ?? '');
+      final current = Uri.tryParse(
+        await widget.controller.currentUrl().timeout(
+              const Duration(seconds: 8),
+            ) ??
+            '',
+      );
       if (!mounted || serial != _serial) return;
       if (current == null ||
           current.scheme != 'https' ||
@@ -113,9 +160,9 @@ class _TicketOneNativePageState extends State<TicketOneNativePage> {
         _unavailable('foreign');
         return;
       }
-      dynamic value = await widget.controller.runJavaScriptReturningResult(
-        ticketOneUiSnapshotScript,
-      );
+      dynamic value = await widget.controller
+          .runJavaScriptReturningResult(ticketOneUiSnapshotScript)
+          .timeout(const Duration(seconds: 8));
       for (var i = 0; i < 2 && value is String; i++) {
         value = jsonDecode(value);
       }
@@ -239,8 +286,10 @@ class _TicketOneNativePageState extends State<TicketOneNativePage> {
         _busy = false;
       });
       widget.log(
-        'native_page_${value['stage']} fields=${fields.length} actions=${actions.length}',
+        'native_page_${value['stage']} fields=${fields.length} actions=${actions.length} errors=${(value['errors'] as List? ?? []).length}',
       );
+    } on TimeoutException {
+      if (mounted && serial == _serial) _unavailable('read_timeout');
     } catch (_) {
       if (mounted && serial == _serial) _unavailable('read_failed');
     }
@@ -399,6 +448,9 @@ class _TicketOneNativePageState extends State<TicketOneNativePage> {
     final id = f['id'] as String, label = t.fieldLabel(f['label'] as String);
     final value = _draft[id] ?? f['value'];
     final enabled = f['enabled'] == true;
+    final otp =
+        _otpFields.length == 6 &&
+        TicketOneStrings.otpDigitIndex(f['label'] as String) != null;
     if (!enabled && f['kind'] == 'text') {
       return _text(id, '$label: ${value ?? ''}');
     }
@@ -452,6 +504,7 @@ class _TicketOneNativePageState extends State<TicketOneNativePage> {
       title: label,
       kind: 'textField',
       value: '${value ?? ''}',
+      textRevision: otp ? _otpRevision : 0,
       enabled: enabled,
       secure: f['type'] == 'password',
       keyboardType: f['keyboard'] is String
@@ -465,6 +518,10 @@ class _TicketOneNativePageState extends State<TicketOneNativePage> {
           ? 'number'
           : null,
       onValueChanged: (v) {
+        if (otp) {
+          _changeOtp(id, v?.toString() ?? '');
+          return;
+        }
         setState(() => _draft[id] = v?.toString() ?? '');
       },
     );
@@ -490,6 +547,7 @@ class _TicketOneNativePageState extends State<TicketOneNativePage> {
         if (_message != null) _text('message', _message!),
         if (_page != null) ...[
           _text('heading', '${_page!['title']}'),
+          if (_otpFields.length == 6) _text('otp-heading', t.t('otpHeading')),
           if (_page!['stage'] == 'event' && qty is Map)
             _text('best-seat-help', t.t('bestSeatHelp')),
           for (final item in (_page!['summary'] as List? ?? []))
@@ -571,6 +629,8 @@ class _TicketOneNativePageState extends State<TicketOneNativePage> {
           ? 'message'
           : _page == null
           ? 'refresh'
+          : _otpFields.length == 6
+          ? 'otp-heading'
           : _fields.isNotEmpty
           ? _fields.first['id'] as String
           : 'heading',

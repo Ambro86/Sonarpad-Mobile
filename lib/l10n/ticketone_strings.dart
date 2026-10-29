@@ -4,20 +4,27 @@ class TicketOneStrings {
   final String locale;
   String t(String key) =>
       (locale.split(RegExp('[-_]')).first == 'it' ? _it[key] : _en[key])!;
-  String fieldLabel(String label) {
+  static int? otpDigitIndex(String label) {
     const digits = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth'];
     final match = RegExp(
       r'^(first|second|third|fourth|fifth|sixth) digit$',
       caseSensitive: false,
     ).firstMatch(label.trim());
-    if (match == null) return label;
-    final number = digits.indexOf(match[1]!.toLowerCase()) + 1;
+    if (match == null) return null;
+    return digits.indexOf(match[1]!.toLowerCase());
+  }
+
+  String fieldLabel(String label) {
+    final index = otpDigitIndex(label);
+    if (index == null) return label;
+    final number = index + 1;
     return locale.split(RegExp('[-_]')).first == 'it'
-        ? 'Codice monouso, cifra $number di 6'
-        : 'One-time code, digit $number of 6';
+        ? 'Cifra $number'
+        : 'Digit $number';
   }
 
   static const _it = {
+    'otpHeading': 'Codice monouso',
     'websiteTitle': 'Pagina TicketOne',
     'accessDenied':
         'Il server TicketOne ha rifiutato questa richiesta. Non posso confermare che l’operazione sia riuscita. Non invio nuovamente i dati: puoi aprire la pagina TicketOne per verificare.',
@@ -52,6 +59,7 @@ class TicketOneStrings {
     'empty': 'Il carrello è vuoto.',
   };
   static const _en = {
+    'otpHeading': 'One-time code',
     'websiteTitle': 'TicketOne page',
     'accessDenied':
         'The TicketOne server denied this request. The operation cannot be confirmed. Your data will not be sent again: open the TicketOne page to check.',

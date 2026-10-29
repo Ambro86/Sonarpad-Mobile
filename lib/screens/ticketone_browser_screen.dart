@@ -39,7 +39,7 @@ class _TicketOneBrowserScreenState extends State<TicketOneBrowserScreen> {
   WebViewController? _controller;
   final _uiMessages = ValueNotifier<String?>(null);
   final _websiteFocusKey = GlobalKey(debugLabel: 'ticketone-website-focus');
-  Timer? _poll, _timeout;
+  Timer? _poll, _timeout, _loadWatchdog;
   String? _requestId;
   TicketOneCart? _cart;
   bool _loading = true, _error = false, _checking = false;
@@ -124,9 +124,12 @@ class _TicketOneBrowserScreenState extends State<TicketOneBrowserScreen> {
                 _cart = null;
               });
             }
+            _log('navigation_started generation=$_generation');
+            _watchLoading();
           },
           onPageFinished: (url) async {
             if (!mounted) return;
+            _loadWatchdog?.cancel();
             setState(() => _loading = false);
             unawaited(_removeAds());
             if (_webOnly && !_panel) _scheduleWebsiteFocus();
@@ -145,6 +148,7 @@ class _TicketOneBrowserScreenState extends State<TicketOneBrowserScreen> {
           },
           onWebResourceError: (error) {
             if (error.isForMainFrame == true && mounted) {
+              _loadWatchdog?.cancel();
               _invalidateProbe();
               setState(() {
                 _loading = false;
@@ -157,6 +161,7 @@ class _TicketOneBrowserScreenState extends State<TicketOneBrowserScreen> {
       );
       if (!mounted) return;
       setState(() {});
+      _watchLoading();
       await controller.loadRequest(
         widget.accountPath == null || _resumePending
             ? widget.eventUrl
@@ -180,6 +185,51 @@ class _TicketOneBrowserScreenState extends State<TicketOneBrowserScreen> {
     _timeout?.cancel();
     _requestId = null;
     _checking = false;
+  }
+
+  void _watchLoading() {
+    _loadWatchdog?.cancel();
+    final generation = _generation;
+    _loadWatchdog = Timer(const Duration(seconds: 12), () async {
+      if (!mounted || !_loading || generation != _generation) return;
+      try {
+        final url = await _controller!.currentUrl().timeout(
+          const Duration(seconds: 5),
+        );
+        final uri = Uri.tryParse(url ?? '');
+        final trusted =
+            uri != null &&
+            uri.scheme == 'https' &&
+            uri.userInfo.isEmpty &&
+            (!uri.hasPort || uri.port == 443) &&
+            ['www.ticketone.it', 'auth.ticketone.it'].contains(uri.host);
+        final ready = trusted
+            ? await _controller!
+                  .runJavaScriptReturningResult('document.readyState')
+                  .timeout(const Duration(seconds: 5))
+            : null;
+        if (!mounted || !_loading || generation != _generation) return;
+        final state = '$ready'.replaceAll('"', '');
+        if (state == 'interactive' || state == 'complete') {
+          setState(() => _loading = false);
+          _log('navigation_recovered generation=$generation ready=$state');
+          if (_waitingForLogin && isTicketOneOrigin(url)) await _check();
+        } else {
+          setState(() {
+            _loading = false;
+            _error = true;
+          });
+          _log('navigation_timeout generation=$generation');
+        }
+      } catch (_) {
+        if (!mounted || !_loading || generation != _generation) return;
+        setState(() {
+          _loading = false;
+          _error = true;
+        });
+        _log('navigation_probe_failed generation=$generation');
+      }
+    });
   }
 
   Future<void> _check({bool show = false}) async {
@@ -301,6 +351,7 @@ class _TicketOneBrowserScreenState extends State<TicketOneBrowserScreen> {
       _cart = null;
       _error = false;
     });
+    _watchLoading();
     try {
       await _controller?.loadRequest(url);
     } catch (_) {
@@ -328,13 +379,15 @@ class _TicketOneBrowserScreenState extends State<TicketOneBrowserScreen> {
       if (!mounted || !_webOnly || _panel || generation != _generation) return;
       try {
         await _removeAds();
-        if (!mounted || !_webOnly || _panel || generation != _generation) return;
+        if (!mounted || !_webOnly || _panel || generation != _generation) {
+          return;
+        }
         FocusScope.of(context).unfocus();
         // Hand accessibility to the platform-view container first. DOM focus
         // alone does not move TalkBack away from Flutter's navigation bar.
-        _websiteFocusKey.currentContext
-            ?.findRenderObject()
-            ?.sendSemanticsEvent(const FocusSemanticEvent());
+        _websiteFocusKey.currentContext?.findRenderObject()?.sendSemanticsEvent(
+          const FocusSemanticEvent(),
+        );
         await _controller?.runJavaScript(ticketOneWebsiteFocusScript);
         _log('native_website_focus_requested');
       } catch (_) {
@@ -362,6 +415,7 @@ class _TicketOneBrowserScreenState extends State<TicketOneBrowserScreen> {
 
   @override
   void dispose() {
+    _loadWatchdog?.cancel();
     _generation++;
     _invalidateProbe();
     _uiMessages.dispose();

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -50,6 +51,7 @@ class NativeController extends Fake implements WebViewController {
   final scripts = <String>[];
   void Function(JavaScriptMessage)? receive;
   final channels = <String>{};
+  Completer<Object>? pendingSnapshot;
   @override
   Future<void> removeJavaScriptChannel(String name) async {
     channels.remove(name);
@@ -68,7 +70,9 @@ class NativeController extends Fake implements WebViewController {
   Future<String?> currentUrl() async => url;
   @override
   Future<Object> runJavaScriptReturningResult(String script) async =>
-      jsonEncode(page);
+      pendingSnapshot == null
+      ? jsonEncode(page)
+      : await pendingSnapshot!.future;
   @override
   Future<void> runJavaScript(String script) async {
     scripts.add(script);
@@ -122,6 +126,23 @@ void main() {
     expect(c.scripts, isEmpty);
   });
 
+  testWidgets('unanswered snapshot exits loading without submitting anything', (
+    tester,
+  ) async {
+    final c = NativeController()..pendingSnapshot = Completer<Object>();
+    final logs = <String>[];
+    await start(tester, c, logs);
+    await tester.pump(const Duration(seconds: 8));
+    await tester.pump();
+    expect(logs, contains('native_read_timeout'));
+    expect(rows(tester).any((r) => r.id == 'loading'), isFalse);
+    expect(row(tester, 'refresh').title, isNotEmpty);
+    expect(c.scripts, isEmpty);
+    c.pendingSnapshot!.complete(jsonEncode(c.page));
+    await tester.pump();
+    expect(rows(tester).any((r) => r.id == 'loading'), isFalse);
+  });
+
   testWidgets('OTP digits have Italian labels', (tester) async {
     final c = NativeController();
     c.page = snapshot(
@@ -139,8 +160,35 @@ void main() {
       [action('a0', 'Accedi')],
     );
     await start(tester, c, []);
-    expect(row(tester, 'First').title, 'Codice monouso, cifra 1 di 6');
-    expect(row(tester, 'Sixth').title, 'Codice monouso, cifra 6 di 6');
+    expect(row(tester, 'otp-heading').title, 'Codice monouso');
+    expect(row(tester, 'First').title, 'Cifra 1');
+    expect(row(tester, 'Sixth').title, 'Cifra 6');
+    await row(tester, 'First').onValueChanged!('123 456');
+    await tester.pump();
+    final ids = ['First', 'Second', 'Third', 'Fourth', 'Fifth', 'Sixth'];
+    for (var i = 0; i < 6; i++) {
+      expect(row(tester, ids[i]).value, '${i + 1}');
+      expect(row(tester, ids[i]).textRevision, 1);
+    }
+    expect(
+      c.scripts,
+      isEmpty,
+    ); // Pasting never submits the login automatically.
+    await row(tester, 'Third').onValueChanged!('654321');
+    await tester.pump();
+    expect(row(tester, 'First').value, '6');
+    expect(row(tester, 'Sixth').value, '1');
+    await row(tester, 'Third').onValueChanged!('');
+    await tester.pump();
+    expect(row(tester, 'Third').value, '');
+    expect(row(tester, 'Fourth').value, '3');
+    await row(tester, 'Third').onValueChanged!('9');
+    await tester.pump();
+    await row(tester, 'a0').onActivate!();
+    expect(c.scripts.last, contains('"Third":"9"'));
+    expect(c.scripts.last, isNot(contains('654321')));
+    c.reply('submitted');
+    await tester.pump(const Duration(milliseconds: 500));
   });
 
   testWidgets('security check stops the ticket form without submitting again', (

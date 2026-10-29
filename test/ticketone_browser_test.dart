@@ -13,6 +13,7 @@ class TicketController extends BrowserController {
   void Function(JavaScriptMessage)? channel;
   final loads = <Uri>[];
   final channels = <String>{};
+  String readyState = 'complete';
   @override
   Future<void> removeJavaScriptChannel(String name) async {
     channels.remove(name);
@@ -29,6 +30,7 @@ class TicketController extends BrowserController {
 
   @override
   Future<Object> runJavaScriptReturningResult(String script) async {
+    if (script == 'document.readyState') return readyState;
     if (script == ticketOneUiSnapshotScript) return '{"status":"unsupported"}';
     return super.runJavaScriptReturningResult(script);
   }
@@ -148,6 +150,48 @@ void main() {
       await tester.pumpWidget(const SizedBox());
     });
   }
+
+  testWidgets(
+    'missing finish after login probes the existing page and resumes the event',
+    (tester) async {
+      final c = TicketController(), logs = <String>[];
+      await start(tester, c, logs, accountPath: '/dashboard/login/register');
+      c.current = 'https://www.ticketone.it/dashboard/';
+      c.delegate!.onPageStarted!(c.current);
+      await tester.pump();
+      final loads = c.loads.length;
+      await tester.pump(const Duration(seconds: 12));
+      await tester.pump();
+      expect(
+        c.loads.length,
+        loads,
+      ); // Watchdog only reads; never resubmits login.
+      expect(logs.any((l) => l.contains('navigation_recovered')), isTrue);
+      c.reply();
+      await tester.pump();
+      expect(c.loads.last, event);
+      expect(logs, contains('[TicketOne] session_continue_event'));
+      c.delegate!.onPageFinished!(c.current);
+      await tester.pumpWidget(const SizedBox());
+    },
+  );
+
+  testWidgets(
+    'unfinished document stops the spinner without replaying navigation',
+    (tester) async {
+      final c = TicketController(), logs = <String>[];
+      await start(tester, c, logs);
+      c.readyState = 'loading';
+      c.delegate!.onPageStarted!(c.current);
+      await tester.pump();
+      final loads = c.loads.length;
+      await tester.pump(const Duration(seconds: 12));
+      await tester.pump();
+      expect(c.loads.length, loads);
+      expect(logs.any((l) => l.contains('navigation_timeout')), isTrue);
+      await tester.pumpWidget(const SizedBox());
+    },
+  );
 
   testWidgets('revealing website moves focus into it without navigating back', (
     tester,
