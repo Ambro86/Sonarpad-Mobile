@@ -5461,4 +5461,10 @@ class AppLocalizationsCs extends AppLocalizations {
   @override
   String get developerReportEmailInvalid =>
       'Zadejte platnou e-mailovou adresu nebo ponechte pole prázdné.';
+
+  @override
+  String get concertsTicketOneLogin => 'Přihlásit se k účtu TicketOne';
+
+  @override
+  String get concertsTicketOneRegister => 'Vytvořit nový účet TicketOne';
 }

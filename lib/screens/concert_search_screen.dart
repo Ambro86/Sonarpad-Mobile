@@ -8,6 +8,7 @@ import '../l10n/app_localizations.dart';
 import '../services/concert_search_service.dart';
 import '../utils/country_name_helper.dart';
 import '../widgets/universal_accessible_view.dart';
+import 'ticketone_browser_screen.dart';
 
 AccessibleListRow _text(String id, String text) => AccessibleListRow(
   id: id,
@@ -472,6 +473,33 @@ class _ConcertDetails extends StatelessWidget {
   final Map<String, dynamic> event;
   final ConcertMarket market;
   final String label, title;
+  Future<void> _open(BuildContext context, Uri url) async {
+    final l = AppLocalizations.of(context);
+    try {
+      if (market.host == 'www.ticketone.it') {
+        final eventUrl = ConcertSearchService.eventUrl(market, event['link']);
+        await Navigator.of(context).push(
+          MaterialPageRoute<void>(
+            builder: (_) => TicketOneBrowserScreen(
+              eventUrl: eventUrl,
+              accountPath: url.path.startsWith('/dashboard/') ? url.path : null,
+            ),
+          ),
+        );
+        return;
+      }
+      if (!await launchUrl(url, mode: LaunchMode.inAppBrowserView)) {
+        throw const ConcertSearchException('link');
+      }
+    } catch (_) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.errorOpening)));
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
@@ -482,12 +510,26 @@ class _ConcertDetails extends StatelessWidget {
         html.parseFragment(event['description']?.toString() ?? '').text ?? '',
       ),
       _text('notice', l.concertsInitialText),
+      if (market.host == 'www.ticketone.it') ...[
+        _button(
+          'ticketone-login',
+          l.concertsTicketOneLogin,
+          () =>
+              _open(context, Uri.https('www.ticketone.it', '/dashboard/login')),
+        ),
+        _button(
+          'ticketone-register',
+          l.concertsTicketOneRegister,
+          () => _open(
+            context,
+            Uri.https('www.ticketone.it', '/dashboard/login/register'),
+          ),
+        ),
+      ],
       _button('open', l.concertsBuyTickets, () async {
         try {
           final url = ConcertSearchService.eventUrl(market, event['link']);
-          if (!await launchUrl(url, mode: LaunchMode.inAppBrowserView)) {
-            throw const ConcertSearchException('link');
-          }
+          await _open(context, url);
         } catch (_) {
           if (context.mounted) {
             ScaffoldMessenger.of(

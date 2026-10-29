@@ -269,6 +269,20 @@ void main() {
       );
       row(tester, 'previous').onActivate!();
       await tester.pumpAndSettle();
+      row(tester, 'item-0').onActivate!();
+      await tester.pumpAndSettle();
+      expect(
+        row(tester, 'ticketone-login').title,
+        'Accedi con il tuo account TicketOne',
+      );
+      expect(
+        row(tester, 'ticketone-register').title,
+        'Registra un nuovo account TicketOne',
+      );
+      Navigator.of(
+        tester.element(find.byType(UniversalAccessibleList).last),
+      ).pop();
+      await tester.pumpAndSettle();
       Navigator.of(
         tester.element(find.byType(UniversalAccessibleList).last),
       ).pop();

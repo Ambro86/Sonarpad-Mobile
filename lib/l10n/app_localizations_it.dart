@@ -5481,4 +5481,10 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get developerReportEmailInvalid =>
       'Inserisci un indirizzo email valido oppure lascia il campo vuoto.';
+
+  @override
+  String get concertsTicketOneLogin => 'Accedi con il tuo account TicketOne';
+
+  @override
+  String get concertsTicketOneRegister => 'Registra un nuovo account TicketOne';
 }

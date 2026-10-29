@@ -5251,4 +5251,10 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get developerReportEmailInvalid =>
       'Geçerli bir e-posta adresi girin veya alanı boş bırakın.';
+
+  @override
+  String get concertsTicketOneLogin => 'TicketOne hesabınızla giriş yapın';
+
+  @override
+  String get concertsTicketOneRegister => 'Yeni TicketOne hesabı oluşturun';
 }

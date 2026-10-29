@@ -5320,4 +5320,10 @@ class AppLocalizationsRo extends AppLocalizations {
   @override
   String get developerReportEmailInvalid =>
       'Introdu o adresă de email validă sau lasă câmpul gol.';
+
+  @override
+  String get concertsTicketOneLogin => 'Conectează-te la contul TicketOne';
+
+  @override
+  String get concertsTicketOneRegister => 'Creează un cont TicketOne nou';
 }

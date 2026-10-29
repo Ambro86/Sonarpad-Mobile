@@ -4884,5 +4884,7 @@
       }
     }
   },
-  "raiPlayMediaUnavailable": "RaiPlay n’a pas fourni d’adresse lisible après plusieurs tentatives. Le contenu est peut-être temporairement indisponible. Réessayez plus tard."
+  "raiPlayMediaUnavailable": "RaiPlay n’a pas fourni d’adresse lisible après plusieurs tentatives. Le contenu est peut-être temporairement indisponible. Réessayez plus tard.",
+  "concertsTicketOneLogin": "Se connecter à votre compte TicketOne",
+  "concertsTicketOneRegister": "Créer un compte TicketOne"
 }

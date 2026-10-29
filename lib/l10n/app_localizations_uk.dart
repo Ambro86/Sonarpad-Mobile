@@ -5457,4 +5457,11 @@ class AppLocalizationsUk extends AppLocalizations {
   @override
   String get developerReportEmailInvalid =>
       'Введіть коректну адресу електронної пошти або залиште поле порожнім.';
+
+  @override
+  String get concertsTicketOneLogin => 'Увійти до облікового запису TicketOne';
+
+  @override
+  String get concertsTicketOneRegister =>
+      'Створити новий обліковий запис TicketOne';
 }

@@ -4803,6 +4803,10 @@ abstract class AppLocalizations {
   /// **'Acquista o vedi dettagli su Ticketmaster'**
   String get concertsBuyTickets;
 
+  String get concertsTicketOneLogin;
+
+  String get concertsTicketOneRegister;
+
   /// No description provided for @podcastPlayedEpisodes.
   ///
   /// In it, this message translates to:

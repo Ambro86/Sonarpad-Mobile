@@ -5470,4 +5470,10 @@ class AppLocalizationsPl extends AppLocalizations {
   @override
   String get developerReportEmailInvalid =>
       'Wpisz prawidłowy adres e-mail lub pozostaw pole puste.';
+
+  @override
+  String get concertsTicketOneLogin => 'Zaloguj się na konto TicketOne';
+
+  @override
+  String get concertsTicketOneRegister => 'Utwórz nowe konto TicketOne';
 }

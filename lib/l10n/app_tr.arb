@@ -4878,5 +4878,7 @@
       }
     }
   },
-  "raiPlayMediaUnavailable": "RaiPlay birkaç denemeden sonra oynatılabilir bir adres döndürmedi. İçerik geçici olarak kullanılamıyor olabilir. Lütfen daha sonra tekrar deneyin."
+  "raiPlayMediaUnavailable": "RaiPlay birkaç denemeden sonra oynatılabilir bir adres döndürmedi. İçerik geçici olarak kullanılamıyor olabilir. Lütfen daha sonra tekrar deneyin.",
+  "concertsTicketOneLogin": "TicketOne hesabınızla giriş yapın",
+  "concertsTicketOneRegister": "Yeni TicketOne hesabı oluşturun"
 }

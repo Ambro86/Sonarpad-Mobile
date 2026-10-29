@@ -5487,6 +5487,12 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get developerReportEmailInvalid =>
       'Introduza um email válido ou deixe o campo vazio.';
+
+  @override
+  String get concertsTicketOneLogin => 'Iniciar sessão na sua conta TicketOne';
+
+  @override
+  String get concertsTicketOneRegister => 'Criar uma nova conta TicketOne';
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
@@ -10958,4 +10964,10 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   @override
   String get developerReportEmailInvalid =>
       'Digite um email válido ou deixe o campo vazio.';
+
+  @override
+  String get concertsTicketOneLogin => 'Entrar com sua conta TicketOne';
+
+  @override
+  String get concertsTicketOneRegister => 'Criar uma nova conta TicketOne';
 }

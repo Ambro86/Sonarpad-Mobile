@@ -5505,4 +5505,10 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get developerReportEmailInvalid =>
       'Saisissez une adresse e-mail valide ou laissez le champ vide.';
+
+  @override
+  String get concertsTicketOneLogin => 'Se connecter à votre compte TicketOne';
+
+  @override
+  String get concertsTicketOneRegister => 'Créer un compte TicketOne';
 }

@@ -5290,6 +5290,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get developerReportEmailInvalid => '请输入有效的电子邮件地址，或将此字段留空。';
+
+  @override
+  String get concertsTicketOneLogin => '登录 TicketOne 账户';
+
+  @override
+  String get concertsTicketOneRegister => '注册新的 TicketOne 账户';
 }
 
 /// The translations for Chinese, as used in China (`zh_CN`).
@@ -10578,4 +10584,10 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get selectAudioTrack => "选择音轨";
+
+  @override
+  String get concertsTicketOneLogin => '登录 TicketOne 账户';
+
+  @override
+  String get concertsTicketOneRegister => '注册新的 TicketOne 账户';
 }

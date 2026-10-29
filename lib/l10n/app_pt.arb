@@ -4884,5 +4884,7 @@
       }
     }
   },
-  "raiPlayMediaUnavailable": "O RaiPlay não devolveu um endereço reproduzível após várias tentativas. O conteúdo pode estar temporariamente indisponível. Tente novamente mais tarde."
+  "raiPlayMediaUnavailable": "O RaiPlay não devolveu um endereço reproduzível após várias tentativas. O conteúdo pode estar temporariamente indisponível. Tente novamente mais tarde.",
+  "concertsTicketOneLogin": "Iniciar sessão na sua conta TicketOne",
+  "concertsTicketOneRegister": "Criar uma nova conta TicketOne"
 }
