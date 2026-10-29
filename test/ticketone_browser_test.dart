@@ -5,6 +5,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 import 'package:sonarpad_mobile_starter/screens/ticketone_browser_screen.dart';
 import 'package:sonarpad_mobile_starter/services/ticketone_session.dart';
+import 'package:sonarpad_mobile_starter/services/ticketone_accessible_script.dart';
 import 'travel_browser_test.dart' show BrowserPlatform, BrowserController;
 import 'travel_screen_test.dart' show app, row, rows;
 
@@ -16,8 +17,13 @@ class TicketController extends BrowserController {
     String name, {
     required void Function(JavaScriptMessage) onMessageReceived,
   }) async {
-    expect(name, 'TicketOneSession');
-    channel = onMessageReceived;
+    if (name == 'TicketOneSession') channel = onMessageReceived;
+  }
+
+  @override
+  Future<Object> runJavaScriptReturningResult(String script) async {
+    if (script == ticketOneUiSnapshotScript) return '{"status":"unsupported"}';
+    return super.runJavaScriptReturningResult(script);
   }
 
   @override
@@ -27,7 +33,7 @@ class TicketController extends BrowserController {
     Map<String, String> headers = const {},
     Object? body,
   }) async {
-    expect(method, LoadRequestMethod.get);
+    expectSync(method, LoadRequestMethod.get);
     current = uri.toString();
     loads.add(uri);
   }
@@ -101,7 +107,10 @@ void main() {
     ) async {
       final controller = TicketController(), logs = <String>[];
       await start(tester, controller, logs, accountPath: path);
-      expect(controller.loads.single.path, path);
+      expect(
+        controller.loads.single.path,
+        path == '/dashboard/login' ? event.path : path,
+      );
       controller.reply();
       await tester.pumpAndSettle();
       expect(row(tester, 'status').title, 'Accesso a TicketOne confermato');
@@ -129,8 +138,17 @@ void main() {
   testWidgets('anonymous SPA login is detected later without a new browser', (
     tester,
   ) async {
-    final controller = TicketController();
-    await start(tester, controller, []);
+    final controller = TicketController(), logs = <String>[];
+    await start(tester, controller, logs);
+    controller.reply(authenticated: false);
+    await tester.pumpAndSettle();
+    expect(
+      controller.loads.last.path,
+      '/dashboard/login',
+      reason: logs.join(';'),
+    );
+    controller.delegate!.onPageFinished!(controller.current);
+    await tester.pump();
     controller.reply(authenticated: false);
     await tester.pump();
     expect(find.text('Website'), findsOneWidget);
@@ -138,8 +156,26 @@ void main() {
     controller.reply();
     await tester.pumpAndSettle();
     expect(row(tester, 'status').title, 'Accesso a TicketOne confermato');
-    expect(controller.loads.length, 1);
+    expect(controller.loads.length, 2);
     await tester.pumpWidget(const SizedBox());
+  });
+
+  testWidgets('reopening validates stored session without opening login', (
+    tester,
+  ) async {
+    final logs = <String>[];
+    for (var visit = 0; visit < 2; visit++) {
+      final controller = TicketController();
+      await start(tester, controller, logs);
+      expect(controller.loads.single, event);
+      expect(controller.scripts.single, contains("credentials: 'same-origin'"));
+      controller.reply();
+      await tester.pumpAndSettle();
+      expect(row(tester, 'status').title, 'Accesso a TicketOne confermato');
+      expect(controller.loads.any((u) => u.path.contains('/login')), isFalse);
+      await tester.pumpWidget(const SizedBox());
+    }
+    expect(logs.where((s) => s == '[TicketOne] session_resumed').length, 2);
   });
 
   testWidgets('403 and timeout stop polling and allow explicit retry', (
@@ -242,4 +278,35 @@ void main() {
       isNull,
     );
   });
+
+  testWidgets(
+    'utility blank frames work but top-level unsafe navigation is blocked',
+    (tester) async {
+      final c = TicketController();
+      await start(tester, c, []);
+      final navigate = c.delegate!.onNavigationRequest!;
+      expect(
+        await navigate(
+          const NavigationRequest(url: 'about:blank', isMainFrame: false),
+        ),
+        NavigationDecision.navigate,
+      );
+      expect(
+        await navigate(
+          const NavigationRequest(url: 'about:blank', isMainFrame: true),
+        ),
+        NavigationDecision.prevent,
+      );
+      expect(
+        await navigate(
+          const NavigationRequest(
+            url: 'javascript:alert(1)',
+            isMainFrame: true,
+          ),
+        ),
+        NavigationDecision.prevent,
+      );
+      await tester.pumpWidget(const SizedBox());
+    },
+  );
 }

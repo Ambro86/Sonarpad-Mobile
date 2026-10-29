@@ -9,6 +9,7 @@ import '../l10n/ticketone_strings.dart';
 import '../services/ticketone_session.dart';
 import '../utils/app_logger.dart';
 import '../widgets/universal_accessible_view.dart';
+import 'ticketone_native_page.dart';
 
 /// One controller owns sign-in, event selection, cart and checkout. Never copy
 /// browser cookies to a separate HTTP client or infer sign-in from a URL alone.
@@ -38,7 +39,9 @@ class _TicketOneBrowserScreenState extends State<TicketOneBrowserScreen> {
   TicketOneCart? _cart;
   bool _loading = true, _error = false, _checking = false;
   bool _panel = false, _canGoBack = false;
+  bool _webOnly = false;
   late bool _waitingForLogin = widget.accountPath != null;
+  late bool _resumePending = widget.accountPath == '/dashboard/login';
   int _generation = 0;
   TicketOneStrings get t =>
       TicketOneStrings(AppLocalizations.of(context).localeName);
@@ -65,6 +68,9 @@ class _TicketOneBrowserScreenState extends State<TicketOneBrowserScreen> {
               ].contains(widget.accountPath))) {
         throw const FormatException('Invalid TicketOne destination');
       }
+      // Use the platform's shared persistent WebView store. Do not copy cookies
+      // or save an authenticated flag: the server must validate each reopening.
+      _panel = _resumePending;
       final controller =
           widget.controllerFactory?.call() ?? WebViewController();
       _controller = controller;
@@ -82,7 +88,13 @@ class _TicketOneBrowserScreenState extends State<TicketOneBrowserScreen> {
             if (uri != null && uri.scheme == 'https' && uri.userInfo.isEmpty) {
               return NavigationDecision.navigate;
             }
-            _log('navigation_blocked');
+            if (!request.isMainFrame &&
+                ['about:blank', 'about:srcdoc'].contains(request.url)) {
+              return NavigationDecision.navigate;
+            }
+            _log(
+              'navigation_blocked main=${request.isMainFrame} scheme=${uri?.scheme ?? 'unknown'}',
+            );
             return NavigationDecision.prevent;
           },
           onPageStarted: (_) {
@@ -127,11 +139,12 @@ class _TicketOneBrowserScreenState extends State<TicketOneBrowserScreen> {
       if (!mounted) return;
       setState(() {});
       await controller.loadRequest(
-        widget.accountPath == null
+        widget.accountPath == null || _resumePending
             ? widget.eventUrl
             : Uri.https('www.ticketone.it', widget.accountPath!),
       );
       _log('browser_started');
+      if (_resumePending) _log('session_resume_started');
     } catch (_) {
       if (mounted) {
         setState(() {
@@ -224,6 +237,15 @@ class _TicketOneBrowserScreenState extends State<TicketOneBrowserScreen> {
         return;
       }
       _invalidateProbe();
+      if (_resumePending) {
+        _resumePending = false;
+        if (!cart.authenticated) {
+          _log('session_resume_login_required');
+          await _navigate(Uri.https('www.ticketone.it', '/dashboard/login'));
+          return;
+        }
+        _log('session_resumed');
+      }
       setState(() {
         _cart = cart;
         _error = false;
@@ -246,6 +268,7 @@ class _TicketOneBrowserScreenState extends State<TicketOneBrowserScreen> {
     _invalidateProbe();
     setState(() {
       _panel = false;
+      _webOnly = false;
       _cart = null;
       _error = false;
     });
@@ -254,6 +277,29 @@ class _TicketOneBrowserScreenState extends State<TicketOneBrowserScreen> {
     } catch (_) {
       if (mounted) setState(() => _error = true);
     }
+  }
+
+  void _showWebsite() {
+    setState(() => _webOnly = true);
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted || !_webOnly) return;
+      try {
+        await _controller?.runJavaScript(r'''
+(() => {
+  if (location.origin !== 'https://www.ticketone.it' ||
+      !document.querySelector('[data-qa="summary-page"]')) return;
+  const target = document.querySelector('iframe[title="PayPal-paypal"]');
+  if (!target) return;
+  target.setAttribute('aria-label', 'PayPal');
+  target.scrollIntoView({block:'center'});
+  target.focus();
+})();
+''');
+        _log('native_website_revealed');
+      } catch (_) {
+        _log('native_website_focus_unavailable');
+      }
+    });
   }
 
   AccessibleListRow _text(String id, String title) => AccessibleListRow(
@@ -287,6 +333,12 @@ class _TicketOneBrowserScreenState extends State<TicketOneBrowserScreen> {
       appBar: SonarpadAppBar(
         title: const Text('TicketOne'),
         actions: [
+          if (_webOnly)
+            IconButton(
+              tooltip: t.t('nativeMode'),
+              icon: const Icon(Icons.accessibility_new),
+              onPressed: () => setState(() => _webOnly = false),
+            ),
           IconButton(
             tooltip: t.t('check'),
             onPressed: _checking ? null : () => _check(show: true),
@@ -302,7 +354,7 @@ class _TicketOneBrowserScreenState extends State<TicketOneBrowserScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            if (_loading && !_panel)
+            if (_loading && !_panel && _webOnly)
               LinearProgressIndicator(semanticsLabel: l.loading),
             if (_error && !_panel)
               Padding(
@@ -315,13 +367,13 @@ class _TicketOneBrowserScreenState extends State<TicketOneBrowserScreen> {
                   fit: StackFit.expand,
                   children: [
                     ExcludeSemantics(
-                      excluding: _panel,
+                      excluding: _panel || !_webOnly,
                       child: ExcludeFocus(
-                        excluding: _panel,
+                        excluding: _panel || !_webOnly,
                         child: IgnorePointer(
-                          ignoring: _panel,
+                          ignoring: _panel || !_webOnly,
                           child: Opacity(
-                            opacity: _panel ? 0 : 1,
+                            opacity: _panel || !_webOnly ? 0 : 1,
                             child:
                                 widget.browserBuilder?.call(_controller!) ??
                                 WebViewWidget(controller: _controller!),
@@ -329,6 +381,14 @@ class _TicketOneBrowserScreenState extends State<TicketOneBrowserScreen> {
                         ),
                       ),
                     ),
+                    if (!_panel && !_webOnly)
+                      TicketOneNativePage(
+                        controller: _controller!,
+                        generation: _generation,
+                        loading: _loading,
+                        log: _log,
+                        showWebsite: _showWebsite,
+                      ),
                     if (_panel)
                       UniversalAccessibleList(
                         key: ValueKey(
@@ -341,7 +401,7 @@ class _TicketOneBrowserScreenState extends State<TicketOneBrowserScreen> {
                             rows: [
                               _text(
                                 'status',
-                                _checking
+                                _checking || _loading
                                     ? l.loading
                                     : _error
                                     ? t.t('unavailable')

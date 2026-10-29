@@ -5,6 +5,19 @@ class TicketOneStrings {
   String t(String key) =>
       (locale.split(RegExp('[-_]')).first == 'it' ? _it[key] : _en[key])!;
   static const _it = {
+    'bestSeatHelp':
+        'Assegnazione automatica: scegli categoria e quantità. Per i posti numerati, TicketOne assegna i posti disponibili e mostra settore, fila e posto nel carrello, prima del pagamento.',
+    'actionUncertain':
+        'TicketOne non ha confermato l’esito. Non reinvio i dati: aggiorna la lettura della pagina o apri TicketOne per verificare cosa è successo.',
+    'paypalContinue': 'Apri il pulsante PayPal per completare il pagamento',
+    'nativeMode': 'Modalità accessibile Sonarpad',
+    'nativeUnavailable':
+        'Questa parte della pagina non è ancora disponibile in modalità accessibile. Puoi aggiornare la lettura o aprire la pagina TicketOne.',
+    'invalidField': 'Controlla il campo:',
+    'cookiesFailed':
+        'Non è stato possibile chiudere il banner dei cookie. Nessun modulo inviato. Puoi riprovare o aprire TicketOne.',
+    'cookieConsent':
+        'Premendo un pulsante di invio o continua, Sonarpad accetta tutti i cookie della pagina e invia i dati a TicketOne.',
     'check': 'Verifica accesso TicketOne',
     'signedIn': 'Accesso a TicketOne confermato',
     'signedOut': 'Accedi o completa la registrazione sul sito TicketOne.',
@@ -17,10 +30,23 @@ class TicketOneStrings {
     'unavailable':
         'Non riesco a verificare la sessione. Puoi riprovare o continuare sul sito TicketOne.',
     'help':
-        'La sessione rimane nel browser di Sonarpad. Posti, dati e pagamento si completano sul sito TicketOne. Nessun pagamento automatico.',
+        'La sessione rimane nel browser di Sonarpad. I controlli riconosciuti vengono presentati in modalità accessibile; per mappe dei posti e pagamenti può servire la pagina TicketOne. Nessun pagamento automatico.',
     'empty': 'Il carrello è vuoto.',
   };
   static const _en = {
+    'bestSeatHelp':
+        'Automatic allocation: choose a category and quantity. For numbered seating, TicketOne assigns available seats and shows the section, row and seat in the cart before payment.',
+    'actionUncertain':
+        'TicketOne has not confirmed the result. The data will not be resent: refresh the page controls or open TicketOne to check what happened.',
+    'paypalContinue': 'Open the PayPal button to complete payment',
+    'nativeMode': 'Sonarpad accessible mode',
+    'nativeUnavailable':
+        'This part of the page is not yet available in accessible mode. Refresh the controls or open the TicketOne page.',
+    'invalidField': 'Check this field:',
+    'cookiesFailed':
+        'Unable to close the cookie banner. No form was submitted. Retry or open TicketOne.',
+    'cookieConsent':
+        'Pressing a submit or continue button accepts all cookies on the page and sends the data to TicketOne.',
     'check': 'Check TicketOne sign-in',
     'signedIn': 'Signed in to TicketOne',
     'signedOut': 'Sign in or complete registration on the TicketOne website.',
@@ -33,7 +59,7 @@ class TicketOneStrings {
     'unavailable':
         'Unable to verify the session. Retry or continue on TicketOne.',
     'help':
-        'Your session stays in Sonarpad’s browser. Complete seats, details and payment on TicketOne. No automatic payment.',
+        'Your session stays in Sonarpad’s browser. Recognized controls are shown in accessible mode; seat maps and payment may require the TicketOne page. No automatic payment.',
     'empty': 'Your cart is empty.',
   };
 }
