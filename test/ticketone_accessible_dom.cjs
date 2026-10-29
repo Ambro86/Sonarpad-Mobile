@@ -5,7 +5,9 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { JSDOM } = require(process.argv[2] || 'jsdom');
 const source = fs.readFileSync(path.join(__dirname, '../lib/services/ticketone_accessible_script.dart'), 'utf8');
-const script = source.split("r'''")[1].split("''';")[0];
+const script = source.split("const ticketOneUiSnapshotScript = r'''")[1].split("''';")[0];
+const focusScript = source.split("const ticketOneWebsiteFocusScript = r'''")[1].split("''';")[0];
+const adsScript = source.split("const ticketOneRemoveAdsScript = r'''")[1].split("''';")[0];
 let passed = 0;
 function fixture(html, url = 'https://auth.ticketone.it/identity/auth/') {
   const dom = new JSDOM(html, { url, runScripts: 'outside-only' });
@@ -22,6 +24,69 @@ function fixture(html, url = 'https://auth.ticketone.it/identity/auth/') {
 }
 async function test(name, run) { await run(); console.log('PASS ' + name); passed++; }
 (async () => {
+  await test('remove only advertisements, including late frames; keep security and payments', async () => {
+    const f = fixture(`<iframe id="ad" title="Contenuto dell'annuncio di terze parti"></iframe><iframe id="security" title="reCAPTCHA" src="https://www.google.com/recaptcha/api2/anchor"></iframe><iframe id="payment" title="PayPal-paypal" src="https://www.paypal.com"></iframe><iframe id="unknown" title="Biglietti"></iframe>`, 'https://www.ticketone.it/event/test');
+    f.w.eval(adsScript);
+    assert.equal(f.doc.querySelector('#ad').style.display, 'none');
+    for (const id of ['security','payment','unknown']) {
+      assert.equal(f.doc.getElementById(id).getAttribute('aria-hidden'), null);
+      assert.equal(f.doc.getElementById(id).style.display, '');
+    }
+    const late = f.doc.createElement('iframe'); late.src='https://example.safeframe.googlesyndication.com/ad';
+    f.doc.body.append(late);
+    await new Promise(r => setTimeout(r, 250));
+    assert.equal(late.getAttribute('aria-hidden'), 'true');
+    assert.equal(late.tabIndex, -1); assert.equal(late.style.display, 'none');
+    f.w.eval(adsScript); assert.equal(f.doc.querySelectorAll('iframe').length, 5);
+    f.close();
+  });
+  await test('revealing the website focuses the visible dialog without clicking', async () => {
+    const f = fixture('<h1>Pagina</h1><div role="dialog" hidden><h2>Nascosto</h2></div><div role="dialog"><h2 id="target">Controllo di sicurezza</h2><button>Continua</button></div>');
+    let clicks = 0;
+    f.w.HTMLElement.prototype.scrollIntoView = function() {};
+    f.doc.querySelector('button').onclick = () => clicks++;
+    f.w.eval(focusScript);
+    assert.equal(f.doc.activeElement.id, 'target');
+    assert.equal(clicks, 0); f.close();
+  });
+  await test('normal page focus and existing PayPal focus remain non-submitting', async () => {
+    const f = fixture('<h1 id="title">Accesso</h1>');
+    f.w.HTMLElement.prototype.scrollIntoView = function() {};
+    f.w.eval(focusScript); assert.equal(f.doc.activeElement.id, 'title'); f.close();
+    const p = fixture('<div data-qa="summary-page"><h1>Riepilogo</h1><iframe title="PayPal-paypal"></iframe></div>', 'https://www.ticketone.it/checkout.html');
+    p.w.HTMLElement.prototype.scrollIntoView = function() {};
+    p.w.eval(focusScript); assert.equal(p.doc.activeElement.tagName, 'IFRAME');
+    assert.equal(p.doc.activeElement.getAttribute('aria-label'), 'PayPal'); p.close();
+  });
+  await test('identity server denial stops waiting and never exposes a stale action', async () => {
+    const f = fixture('<title>Access Denied</title><h1>Access Denied</h1>');
+    const p = f.read(); assert.equal(p.status, 'access-denied');
+    assert.equal(p.diagnostics.reason, 'access_denied');
+    assert.equal(f.w.__sonarpadTicketOneUi, null); f.close();
+  });
+  await test('visible security check hides event controls without retrying the cart', async () => {
+    const f = fixture('<form class="js-ticket-selection-with-limits"><button data-qa="AddToShoppingCart">Metti nel carrello</button></form><div role="dialog" class="js-cc-layer">Controllo di sicurezza</div>', 'https://www.ticketone.it/event/test');
+    const p = f.read();
+    assert.equal(p.status, 'security-check');
+    assert.equal(p.diagnostics.reason, 'security_check');
+    assert.equal(f.w.__sonarpadTicketOneUi, null);
+    f.doc.querySelector('.js-cc-layer').hidden = true;
+    assert.equal(f.read().status, 'ready'); f.close();
+  });
+  await test('all six OTP digit values are redacted even without autocomplete', async () => {
+    const f = fixture('<form>' + ['First','Second','Third','Fourth','Fifth','Sixth'].map(n => `<input aria-label="${n} Digit" value="9" inputmode="numeric">`).join('') + '<button>Accedi</button></form>');
+    const p = f.read(); assert.equal(p.fields.length, 6);
+    assert.ok(p.fields.every(x => x.secret && x.value === '')); f.close();
+  });
+  await test('missing root diagnostics contain no page or form secrets', async () => {
+    const f = fixture('<h1>PRIVATE</h1><input value="SECRET"><iframe></iframe>', 'https://www.ticketone.it/event/test?token=SECRET');
+    const p = f.read();
+    assert.equal(p.status, 'waiting'); assert.equal(p.diagnostics.reason, 'root_missing');
+    assert.equal(p.diagnostics.frames, 1); assert.equal(p.diagnostics.page, 'event');
+    assert.equal(JSON.stringify(p).includes('SECRET'), false);
+    assert.equal(JSON.stringify(p).includes('PRIVATE'), false); f.close();
+  });
+
   await test('email: accept cookies first, dispatch input events, submit once', async () => {
     const f = fixture(`<main id="mainContainer"><form id="kc-form-login"><label for="email">Indirizzo Email</label><input type="email" id="email" required><input class="hidden" id="username"><input type="submit" value="Continua"></form></main><div id="cmpbox"><button>Accetta tutti i Cookie</button></div>`);
     let submits = 0, input = 0;
@@ -98,6 +163,14 @@ async function test(name, run) { await run(); console.log('PASS ' + name); passe
     assert.equal((await f.act(p, 'a0', { f0: 'person@example.test', f1: 'Synthetic-test-password', f2: 'Persona' })).status, 'submitted');
     assert.equal(submits, 1); assert.equal(f.doc.querySelector('#marketing').checked, false);
     assert.equal(f.read().fields[1].value, ''); f.close();
+  });
+  await test('passwordless registration profile projects only the save action and validates required fields', async () => {
+    const f = fixture(`<app-external-customer-data-form><form><h1>Completa il tuo profilo cliente</h1><label for="name">Nome</label><input id="name" required></form><button data-qa="save-data-button">Salva dati</button><button data-qa="abort-button">Annulla</button></app-external-customer-data-form>`, 'https://www.ticketone.it/external-customer-data/');
+    let submits = 0; f.doc.querySelector('[data-qa="save-data-button"]').onclick = () => { submits++; };
+    const p = f.read(); assert.equal(p.stage, 'registration'); assert.equal(p.actions.length, 1);
+    assert.equal(p.actions[0].label, 'Salva dati'); assert.equal(submits, 0);
+    await f.act(p, 'a0'); assert.equal(submits, 0);
+    await f.act(p, 'a0', { f0: 'Persona' }); assert.equal(submits, 1); f.close();
   });
   await test('registration server validation errors remain visible and no automatic resubmit occurs', async () => {
     const f = fixture(`<ev-registration-page><form novalidate><label for="name">Nome</label><input id="name" required><button data-qa="registration-button">Registrati</button><ev-forms-field-error>Inserisci il nome</ev-forms-field-error></form></ev-registration-page>`, 'https://www.ticketone.it/dashboard/login#/register');

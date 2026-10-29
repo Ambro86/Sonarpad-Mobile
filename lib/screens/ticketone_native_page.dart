@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import '../l10n/app_localizations.dart';
 import '../l10n/ticketone_strings.dart';
@@ -18,8 +19,10 @@ class TicketOneNativePage extends StatefulWidget {
     required this.loading,
     required this.showWebsite,
     required this.log,
+    this.messages,
   });
   final WebViewController controller;
+  final ValueListenable<String?>? messages;
   final int generation;
   final bool loading;
   final VoidCallback showWebsite;
@@ -29,6 +32,8 @@ class TicketOneNativePage extends StatefulWidget {
 }
 
 class _TicketOneNativePageState extends State<TicketOneNativePage> {
+  static int _nextInstance = 0;
+  final int _instance = ++_nextInstance;
   final _focus = AccessibleListController(debugName: 'ticketone-form');
   final Map<String, dynamic> _draft = {};
   Map<String, dynamic>? _page;
@@ -36,6 +41,7 @@ class _TicketOneNativePageState extends State<TicketOneNativePage> {
   String? _message, _pending;
   bool _busy = true;
   int _serial = 0, _attempt = 0;
+  String? _lastDiagnostic;
   TicketOneStrings get t =>
       TicketOneStrings(AppLocalizations.of(context).localeName);
   List<Map<String, dynamic>> get _fields =>
@@ -53,6 +59,11 @@ class _TicketOneNativePageState extends State<TicketOneNativePage> {
     try {
       // The WebView survives the account panel and website/native switches.
       // iOS rejects registering the same channel again on that controller.
+      if (widget.messages != null) {
+        widget.messages!.addListener(_receiveSharedMessage);
+        if (!widget.loading) await _read();
+        return;
+      }
       await widget.controller.removeJavaScriptChannel('TicketOneUi');
       if (!mounted) return;
       await widget.controller.addJavaScriptChannel(
@@ -63,6 +74,11 @@ class _TicketOneNativePageState extends State<TicketOneNativePage> {
     } catch (_) {
       if (mounted) _unavailable('channel_failed');
     }
+  }
+
+  void _receiveSharedMessage() {
+    final message = widget.messages?.value;
+    if (message != null) unawaited(_receive(message));
   }
 
   @override
@@ -78,6 +94,7 @@ class _TicketOneNativePageState extends State<TicketOneNativePage> {
       _message = null;
       _busy = true;
       _attempt = 0;
+      _lastDiagnostic = null;
       if (!widget.loading) unawaited(_read());
     }
   }
@@ -103,7 +120,70 @@ class _TicketOneNativePageState extends State<TicketOneNativePage> {
         value = jsonDecode(value);
       }
       if (!mounted || serial != _serial) return;
+      if (value is Map) {
+        final d = value['diagnostics'];
+        if (d is Map) {
+          // Accept only fixed enums and bounded counts; page content is untrusted.
+          final safe = <String, Object>{};
+          const enums = {
+            'reason': [
+              'root_missing',
+              'control_limit',
+              'custom_control',
+              'payment_fields',
+              'missing_label',
+              'label_limit',
+              'controls_missing',
+              'security_check',
+              'access_denied',
+            ],
+            'page': [
+              'login',
+              'registration',
+              'event',
+              'checkout',
+              'account',
+              'other',
+            ],
+            'ready': ['loading', 'interactive', 'complete'],
+          };
+          for (final entry in enums.entries) {
+            if (entry.value.contains(d[entry.key])) {
+              safe[entry.key] = d[entry.key] as String;
+            }
+          }
+          if (d['root'] is bool) safe['root'] = d['root'] as bool;
+          for (final key in [
+            'forms',
+            'frames',
+            'controls',
+            'dialogs',
+            'customCombos',
+            'cookies',
+          ]) {
+            final count = d[key];
+            if (count is int && count >= 0 && count <= 100000) {
+              safe[key] = count;
+            }
+          }
+          final diagnostic = jsonEncode(safe);
+          if (diagnostic != _lastDiagnostic || _attempt == 12) {
+            widget.log(
+              'native_snapshot generation=${widget.generation} attempt=$_attempt $diagnostic',
+            );
+            _lastDiagnostic = diagnostic;
+          }
+        }
+      }
       if (value is! Map<String, dynamic> || value['status'] != 'ready') {
+        if (value is Map && value['status'] == 'access-denied') {
+          _unavailable('access_denied');
+          return;
+        }
+        if (value is Map && value['status'] == 'security-check') {
+          _unavailable('security_check');
+          return;
+        }
         if (value is Map && value['status'] == 'waiting' && _attempt++ < 12) {
           _timer = Timer(const Duration(seconds: 1), () => unawaited(_read()));
           return;
@@ -117,7 +197,13 @@ class _TicketOneNativePageState extends State<TicketOneNativePage> {
           fields.length > 60 ||
           actions.length > 30 ||
           value['revision'] is! String ||
-          !['login', 'event', 'checkout', 'review'].contains(value['stage'])) {
+          ![
+            'login',
+            'registration',
+            'event',
+            'checkout',
+            'review',
+          ].contains(value['stage'])) {
         _unavailable('schema');
         return;
       }
@@ -167,6 +253,10 @@ class _TicketOneNativePageState extends State<TicketOneNativePage> {
       _message = t.t(
         reason == 'action_timeout_no_retry'
             ? 'actionUncertain'
+            : reason == 'security_check'
+            ? 'securityCheck'
+            : reason == 'access_denied'
+            ? 'accessDenied'
             : 'nativeUnavailable',
       );
     });
@@ -176,7 +266,7 @@ class _TicketOneNativePageState extends State<TicketOneNativePage> {
   Future<void> _act(String action, {int? quantity, bool submit = false}) async {
     if (_busy || _page == null) return;
     final revision = _page!['revision'];
-    final id = '${widget.generation}-${++_serial}';
+    final id = '$_instance-${widget.generation}-${++_serial}';
     _pending = id;
     _timer?.cancel();
     final values = Map<String, dynamic>.from(_draft);
@@ -236,6 +326,7 @@ class _TicketOneNativePageState extends State<TicketOneNativePage> {
         // Navigation may destroy the JS callback. Never submit twice to recover it.
         _draft.clear();
         _attempt = 0;
+        _lastDiagnostic = null;
         _timer = Timer(
           const Duration(milliseconds: 500),
           () => unawaited(_read()),
@@ -250,7 +341,8 @@ class _TicketOneNativePageState extends State<TicketOneNativePage> {
         final field = _fields.where((f) => f['id'] == id).firstOrNull;
         setState(() {
           _busy = false;
-          _message = '${t.t('invalidField')} ${field?['label'] ?? ''}';
+          _message =
+              '${t.t('invalidField')} ${t.fieldLabel(field?['label'] as String? ?? '')}';
         });
         announceStatusMessage(context, _message!);
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -304,7 +396,7 @@ class _TicketOneNativePageState extends State<TicketOneNativePage> {
     finishEditingOnActivate: true,
   );
   AccessibleListRow _field(Map<String, dynamic> f) {
-    final id = f['id'] as String, label = f['label'] as String;
+    final id = f['id'] as String, label = t.fieldLabel(f['label'] as String);
     final value = _draft[id] ?? f['value'];
     final enabled = f['enabled'] == true;
     if (!enabled && f['kind'] == 'text') {
@@ -372,7 +464,9 @@ class _TicketOneNativePageState extends State<TicketOneNativePage> {
                 f['secret'] == true && f['type'] != 'password'
           ? 'number'
           : null,
-      onValueChanged: (v) => _draft[id] = v?.toString() ?? '',
+      onValueChanged: (v) {
+        setState(() => _draft[id] = v?.toString() ?? '');
+      },
     );
   }
 
@@ -381,6 +475,7 @@ class _TicketOneNativePageState extends State<TicketOneNativePage> {
     _serial++;
     _timer?.cancel();
     _draft.clear();
+    widget.messages?.removeListener(_receiveSharedMessage);
     super.dispose();
   }
 
@@ -455,6 +550,7 @@ class _TicketOneNativePageState extends State<TicketOneNativePage> {
             });
             _draft.clear();
             _attempt = 0;
+            _lastDiagnostic = null;
             return _read();
           }),
       ],

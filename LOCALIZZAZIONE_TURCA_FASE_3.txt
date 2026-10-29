@@ -1,0 +1,56 @@
+SONARPAD MOBILE 0.5.1 — LOCALIZZAZIONE TURCA, FASE 3
+
+Consegna parziale della localizzazione. Versione dell’app invariata: 0.5.1+11.
+Base: sonarpad_mobile_0.5.1_turco_fase2_parziale.zip.
+
+CONTENUTO DI QUESTA FASE
+
+Questa fase aggiunge 223 voci agli ARB e porta il catalogo a 1.562 messaggi. Tutti i messaggi attualmente presenti in app_tr.arb sono tradotti o revisionati in turco. Le 1.339 voci delle fasi precedenti e i relativi metadati sono conservati. Le nuove voci sono presenti anche negli ARB delle altre lingue, con le traduzioni già esistenti recuperate dalle vecchie tabelle. I file Dart di localizzazione inclusi espongono le nuove API.
+
+PODCAST E METEO
+
+Tutte le 111 categorie dei podcast sono ora tradotte in turco e lette dagli ARB. Gli identificativi dei generi e il loro ordine rimangono gli stessi. Sono conservati anche i 1.221 valori delle traduzioni preesistenti nelle altre lingue. La scelta del Paese Türkiye della fase 1 resta disponibile.
+
+Sono tradotte le 28 descrizioni delle condizioni meteo utilizzate dal progetto, compresi pioggia gelata, neve, nebbia e temporali con grandine. Le 280 traduzioni già presenti nelle altre lingue sono conservate. La ricerca delle località può richiedere i nomi in turco. Non sono cambiate le elaborazioni dei dati meteo.
+
+PROGETTI DI AUDIODESCRIZIONE
+
+Sono stati trasferiti negli ARB 40 messaggi dell’editor del progetto e le due etichette per scegliere il video da File o importarlo da Foto. Le 41 chiavi della vecchia tabella restano compatibili: menu e titolo condividono lo stesso messaggio. I messaggi sulla durata e sui tempi delle scene usano parametri tipizzati, mantenendo i valori forniti dall’editor. Il turco copre apertura, modifica, anteprima, applicazione del testo, voce, eliminazione, salvataggio, esportazione e relativi avvisi.
+
+Per il cinese, le due etichette di importazione dell’alias zh sono ora uguali a zh_CN, come richiesto dalla struttura ARB già presente nel progetto; prima il solo alias ricadeva sull’italiano. Le altre traduzioni effettive dell’editor sono conservate.
+
+SERVIZI E MESSAGGI CONDIVISI
+
+Il turco è stato collegato a Notizie, Wikipedia e Gutenberg. Notizie include la scelta della lingua, l’edizione turca di Google News, le etichette delle categorie, la lettura vocale e i codici della lingua e del Paese. Wikipedia e Gutenberg passano tr alle rispettive ricerche; i loro errori locali sono presentati nella lingua dell’app, anche quando si cerca un contenuto in un’altra lingua.
+
+La lettura delle notizie turche usa una voce turca anche con l’interfaccia in un’altra lingua, quando non è stata salvata una preferenza di voce o lingua per quel motore. Le preferenze vocali salvate mantengono la priorità. Questa regola riguarda entrambi i lettori delle notizie e i due motori Edge e di sistema; i comportamenti predefiniti degli altri servizi restano gli stessi.
+
+SonarTube usa lingua tr e Paese TR con l’app in turco. Il servizio cinema richiede i metadati con tr-TR. I messaggi locali dei percorsi e di SonarTube, le etichette relative alle date di pubblicazione e i titoli/autori di ripiego del lettore sono ora negli ARB. Le date numeriche turche degli elenchi usano giorno.mese.anno e orario a 24 ore. Anche i nomi di lingua e Paese della Romania nei selettori comuni sono localizzati.
+
+Per le nuove voci inglesi di SonarTube e Gutenberg sono state inserite traduzioni inglesi al posto dei precedenti ripieghi in italiano. Si tratta di un miglioramento dei messaggi appena trasferiti negli ARB; nessun valore ARB delle 1.339 voci precedenti è stato cambiato.
+
+Le traduzioni dell’interfaccia non traducono automaticamente i contenuti forniti da radio, podcast, notizie, libri o altri cataloghi esterni. La disponibilità dei contenuti turchi dipende dal servizio consultato.
+
+CALENDARIO, CHANGELOG E LAVORO PRECEDENTE
+
+Il calendario conserva integralmente le 128 citazioni e le 365 voci dei santi in turco delle fasi precedenti. Il controllo del generatore conferma che i dati sono sincronizzati. Il dataset turco non aggiunge un calendario delle festività nazionali: la sezione festività rimane vuota come nella base inglese usata nella fase 1.
+
+Il changelog 0.5.1 contiene una nota della fase 3 in tutte le 13 lingue, senza asterischi Markdown. Tutte le note precedenti, comprese quelle storiche in turco e le sezioni specifiche per piattaforma, sono conservate. La versione non è stata aumentata.
+
+Il pulsante unico Pausa/Riprendi per l’anteprima, l’avvio già esistente quando si regolano gli slider, il controller dell’anteprima, il servizio del player e la pipeline di generazione delle audiodescrizioni sono conservati. Questa fase non cambia la sintesi Edge o l’elaborazione dell’audio.
+
+CONTROLLI E LIMITI
+
+Sono stati controllati JSON, completezza delle chiavi, segnaposto, firme delle nuove API e corrispondenza dei valori fra ARB e file Dart. Le vecchie implementazioni generate, comprese le forme plurali, sono mantenute. Sono stati aggiunti cinque file di test mirati e aggiornati quattro contract test che cercavano ancora le vecchie tabelle nel codice. I nuovi casi includono la scelta della voce turca senza preferenze salvate e la conservazione delle scelte personali dei due motori vocali.
+
+Flutter e Dart non sono installati in questo ambiente: flutter gen-l10n, flutter analyze e flutter test non sono stati eseguiti. I controlli disponibili sono statici e non equivalgono a una compilazione o a una prova su VoiceOver/TalkBack.
+
+Il feed pubblico dell’edizione turca di Google News è costruito secondo la struttura delle edizioni già presenti. Il tentativo di accesso con lo strumento web non ha consentito di verificarne il funzionamento. I test delle richieste usano risposte simulate. Rimane necessaria la prova dei cataloghi reali sul dispositivo.
+
+L’archivio di partenza non conteneva le dipendenze locali packages/sonarpad_audio_dsp, third_party/epubx e third_party/rhttp_plus. Mancavano anche contenuti di tool/ e scripts/, fra cui tool/check_user_facing_strings.py. La fase 1 ha ripristinato solo il generatore del calendario. Queste assenze preesistenti restano da risolvere nel checkout completo prima delle verifiche Flutter; non sono file eliminati da questa fase.
+
+PROSEGUIMENTO
+
+Questa consegna contiene tutti i file della fase 2 e le modifiche della fase 3. È parziale perché restano la verifica finale degli altri percorsi di importazione/esportazione e dei messaggi dinamici, la prova dei cataloghi turchi reali e i controlli di pronuncia, focus e formattazione su iOS e Android. I servizi riservati alla lingua italiana mantengono le regole di visibilità già previste dal progetto.
+
+Lo stato aggiornato e l’elenco delle chiavi lavorate sono in tool/turkish_localization_progress.json. Per proseguire, partire da questo ZIP senza riapplicare gli archivi delle fasi precedenti.

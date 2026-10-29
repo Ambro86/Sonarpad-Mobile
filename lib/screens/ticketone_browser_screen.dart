@@ -2,11 +2,14 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:intl/intl.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:webview_flutter_android/webview_flutter_android.dart';
 import '../l10n/app_localizations.dart';
 import '../l10n/ticketone_strings.dart';
 import '../services/ticketone_session.dart';
+import '../services/ticketone_accessible_script.dart';
 import '../utils/app_logger.dart';
 import '../widgets/universal_accessible_view.dart';
 import 'ticketone_native_page.dart';
@@ -34,6 +37,8 @@ class TicketOneBrowserScreen extends StatefulWidget {
 
 class _TicketOneBrowserScreenState extends State<TicketOneBrowserScreen> {
   WebViewController? _controller;
+  final _uiMessages = ValueNotifier<String?>(null);
+  final _websiteFocusKey = GlobalKey(debugLabel: 'ticketone-website-focus');
   Timer? _poll, _timeout;
   String? _requestId;
   TicketOneCart? _cart;
@@ -79,6 +84,18 @@ class _TicketOneBrowserScreenState extends State<TicketOneBrowserScreen> {
         'TicketOneSession',
         onMessageReceived: (message) => unawaited(_receive(message.message)),
       );
+      // Android injects JavaScript interfaces on the next navigation only.
+      // Register once before loading, including when resuming an existing login.
+      await controller.addJavaScriptChannel(
+        'TicketOneUi',
+        onMessageReceived: (message) {
+          if (mounted) {
+            // Every acknowledgement is an event, including identical payloads.
+            _uiMessages.value = null;
+            _uiMessages.value = message.message;
+          }
+        },
+      );
       await controller.setNavigationDelegate(
         NavigationDelegate(
           onNavigationRequest: (request) {
@@ -111,6 +128,8 @@ class _TicketOneBrowserScreenState extends State<TicketOneBrowserScreen> {
           onPageFinished: (url) async {
             if (!mounted) return;
             setState(() => _loading = false);
+            unawaited(_removeAds());
+            if (_webOnly && !_panel) _scheduleWebsiteFocus();
             _log(
               isTicketOneOrigin(url)
                   ? 'page_loaded_ticketone'
@@ -246,15 +265,24 @@ class _TicketOneBrowserScreenState extends State<TicketOneBrowserScreen> {
         }
         _log('session_resumed');
       }
+      final continueEvent = _waitingForLogin && cart.authenticated;
       setState(() {
         _cart = cart;
         _error = false;
-        if (_waitingForLogin && cart.authenticated) {
+        if (continueEvent) {
           _waitingForLogin = false;
-          _panel = true;
+          _panel = false;
         }
       });
       _log(cart.authenticated ? 'session_authenticated' : 'session_anonymous');
+      if (continueEvent) {
+        _log('session_continue_event');
+        final uri = Uri.tryParse(current ?? '');
+        if (uri?.path != widget.eventUrl.path) {
+          await _navigate(widget.eventUrl);
+        }
+        return;
+      }
       if (_waitingForLogin && !_panel) {
         // Login is a SPA: onPageFinished alone does not report every transition.
         _poll = Timer(const Duration(seconds: 5), () => unawaited(_check()));
@@ -268,6 +296,7 @@ class _TicketOneBrowserScreenState extends State<TicketOneBrowserScreen> {
     _invalidateProbe();
     setState(() {
       _panel = false;
+      _loading = true;
       _webOnly = false;
       _cart = null;
       _error = false;
@@ -281,21 +310,33 @@ class _TicketOneBrowserScreenState extends State<TicketOneBrowserScreen> {
 
   void _showWebsite() {
     setState(() => _webOnly = true);
+    _scheduleWebsiteFocus();
+    _log('native_website_revealed');
+  }
+
+  Future<void> _removeAds() async {
+    try {
+      await _controller?.runJavaScript(ticketOneRemoveAdsScript);
+    } catch (_) {
+      _log('website_ad_cleanup_unavailable');
+    }
+  }
+
+  void _scheduleWebsiteFocus() {
+    final generation = _generation;
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if (!mounted || !_webOnly) return;
+      if (!mounted || !_webOnly || _panel || generation != _generation) return;
       try {
-        await _controller?.runJavaScript(r'''
-(() => {
-  if (location.origin !== 'https://www.ticketone.it' ||
-      !document.querySelector('[data-qa="summary-page"]')) return;
-  const target = document.querySelector('iframe[title="PayPal-paypal"]');
-  if (!target) return;
-  target.setAttribute('aria-label', 'PayPal');
-  target.scrollIntoView({block:'center'});
-  target.focus();
-})();
-''');
-        _log('native_website_revealed');
+        await _removeAds();
+        if (!mounted || !_webOnly || _panel || generation != _generation) return;
+        FocusScope.of(context).unfocus();
+        // Hand accessibility to the platform-view container first. DOM focus
+        // alone does not move TalkBack away from Flutter's navigation bar.
+        _websiteFocusKey.currentContext
+            ?.findRenderObject()
+            ?.sendSemanticsEvent(const FocusSemanticEvent());
+        await _controller?.runJavaScript(ticketOneWebsiteFocusScript);
+        _log('native_website_focus_requested');
       } catch (_) {
         _log('native_website_focus_unavailable');
       }
@@ -323,7 +364,26 @@ class _TicketOneBrowserScreenState extends State<TicketOneBrowserScreen> {
   void dispose() {
     _generation++;
     _invalidateProbe();
+    _uiMessages.dispose();
     super.dispose();
+  }
+
+  Widget _browser() {
+    final controller = _controller!;
+    if (widget.browserBuilder != null) {
+      return widget.browserBuilder!(controller);
+    }
+    // The emulator's TalkBack keeps Flutter's Back focus with texture composition
+    // even when DOM focus changes. Hybrid composition delivers that focus event.
+    if (controller.platform is AndroidWebViewController) {
+      return WebViewWidget.fromPlatformCreationParams(
+        params: AndroidWebViewWidgetCreationParams(
+          controller: controller.platform,
+          displayWithHybridComposition: true,
+        ),
+      );
+    }
+    return WebViewWidget(controller: controller);
   }
 
   @override
@@ -372,92 +432,104 @@ class _TicketOneBrowserScreenState extends State<TicketOneBrowserScreen> {
                         excluding: _panel || !_webOnly,
                         child: IgnorePointer(
                           ignoring: _panel || !_webOnly,
-                          child: Opacity(
-                            opacity: _panel || !_webOnly ? 0 : 1,
-                            child:
-                                widget.browserBuilder?.call(_controller!) ??
-                                WebViewWidget(controller: _controller!),
+                          // Keep the Android platform surface laid out and painted.
+                          // The opaque native panel above covers it; Offstage can
+                          // leave its accessibility surface with stale geometry.
+                          child: Semantics(
+                            key: _websiteFocusKey,
+                            container: true,
+                            explicitChildNodes: true,
+                            label: t.t('websiteTitle'),
+                            child: _browser(),
                           ),
                         ),
                       ),
                     ),
                     if (!_panel && !_webOnly)
-                      TicketOneNativePage(
-                        controller: _controller!,
-                        generation: _generation,
-                        loading: _loading,
-                        log: _log,
-                        showWebsite: _showWebsite,
+                      ColoredBox(
+                        color: Theme.of(context).scaffoldBackgroundColor,
+                        child: TicketOneNativePage(
+                          controller: _controller!,
+                          messages: _uiMessages,
+                          generation: _generation,
+                          loading: _loading,
+                          log: _log,
+                          showWebsite: _showWebsite,
+                        ),
                       ),
                     if (_panel)
-                      UniversalAccessibleList(
-                        key: ValueKey(
-                          'ticketone-${_checking ? 'checking' : cart?.authenticated ?? false}-$_error',
-                        ),
-                        initialFocusId: 'status',
-                        padding: const EdgeInsets.all(16),
-                        sections: [
-                          AccessibleListSection(
-                            rows: [
-                              _text(
-                                'status',
-                                _checking || _loading
-                                    ? l.loading
-                                    : _error
-                                    ? t.t('unavailable')
-                                    : cart?.authenticated == true
-                                    ? t.t('signedIn')
-                                    : t.t('signedOut'),
-                              ),
-                              if (!_checking) ...[
-                                if (cart != null) ...[
-                                  _text(
-                                    'count',
-                                    cart.count == 0
-                                        ? t.t('empty')
-                                        : '${t.t('tickets')}: ${cart.count}',
-                                  ),
-                                  if (cart.count > 0)
-                                    _text(
-                                      'total',
-                                      '${t.t('total')}: ${NumberFormat.currency(locale: l.localeName, name: 'EUR').format(cart.amountMilli / 1000)}',
-                                    ),
-                                ],
-                                _text('help', t.t('help')),
-                                if (cart?.authenticated == true)
-                                  _button(
-                                    'event',
-                                    t.t('continue'),
-                                    () => _navigate(widget.eventUrl),
-                                  ),
-                                if ((cart?.count ?? 0) > 0)
-                                  _button(
-                                    'checkout',
-                                    t.t('checkout'),
-                                    () => _navigate(
-                                      Uri.https(
-                                        'www.ticketone.it',
-                                        '/checkout.html',
-                                        {
-                                          'affiliate': 'ITT',
-                                          'doc': 'cart',
-                                          'language': 'it',
-                                        },
-                                      ),
-                                    ),
-                                  ),
-                                _button(
-                                  'retry',
-                                  l.retry,
-                                  () => _check(show: true),
-                                ),
-                              ],
-                              _button('site', t.t('site'), () {
-                                setState(() => _panel = false);
-                              }),
-                            ],
+                      ColoredBox(
+                        color: Theme.of(context).scaffoldBackgroundColor,
+                        child: UniversalAccessibleList(
+                          key: ValueKey(
+                            'ticketone-${_checking ? 'checking' : cart?.authenticated ?? false}-$_error',
                           ),
-                        ],
+                          initialFocusId: 'status',
+                          padding: const EdgeInsets.all(16),
+                          sections: [
+                            AccessibleListSection(
+                              rows: [
+                                _text(
+                                  'status',
+                                  _checking || _loading
+                                      ? l.loading
+                                      : _error
+                                      ? t.t('unavailable')
+                                      : cart?.authenticated == true
+                                      ? t.t('signedIn')
+                                      : t.t('signedOut'),
+                                ),
+                                if (!_checking && !_loading) ...[
+                                  if (cart != null) ...[
+                                    _text(
+                                      'count',
+                                      cart.count == 0
+                                          ? t.t('empty')
+                                          : '${t.t('tickets')}: ${cart.count}',
+                                    ),
+                                    if (cart.count > 0)
+                                      _text(
+                                        'total',
+                                        '${t.t('total')}: ${NumberFormat.currency(locale: l.localeName, name: 'EUR').format(cart.amountMilli / 1000)}',
+                                      ),
+                                  ],
+                                  _text('help', t.t('help')),
+                                  if (cart?.authenticated == true)
+                                    _button(
+                                      'event',
+                                      t.t('continue'),
+                                      () => _navigate(widget.eventUrl),
+                                    ),
+                                  if ((cart?.count ?? 0) > 0)
+                                    _button(
+                                      'checkout',
+                                      t.t('checkout'),
+                                      () =>
+                                          _navigate(
+                                            Uri.https(
+                                              'www.ticketone.it',
+                                              '/checkout.html',
+                                              {
+                                                'affiliate': 'ITT',
+                                                'doc': 'cart',
+                                                'language': 'it',
+                                              },
+                                            ),
+                                          ),
+                                    ),
+                                  _button(
+                                    'retry',
+                                    l.retry,
+                                    () => _check(show: true),
+                                  ),
+                                ],
+                                _button('site', t.t('site'), () {
+                                  setState(() => _panel = false);
+                                }),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                   ],
                 ),

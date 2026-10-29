@@ -1,0 +1,64 @@
+SONARPAD MOBILE 0.5.1 — LOCALIZZAZIONE TURCA, FASE 4
+
+Consegna dei sorgenti aggiornati. Versione invariata: 0.5.1+11.
+L’archivio include il lavoro delle fasi precedenti e questa fase 4. La dicitura «parziale» mantiene la convenzione delle consegne: le modifiche descritte sono implementate nei sorgenti, mentre compilazione Flutter, prova sui dispositivi e distribuzione dei file server richiedono l’ambiente completo dello sviluppatore.
+
+NOTIZIE TURCHE
+
+Google News usa l’edizione turca: hl=tr, gl=TR, ceid=TR:tr. Sono presenti le categorie Türkiye, Mondo, Economia, Tecnologia, Intrattenimento, Sport, Salute e La mia città, con etichette lette dagli ARB nella lingua dell’interfaccia. La ricerca locale conserva la città scelta e l’edizione turca.
+
+Sono aggiunte dieci testate con il proprio feed ufficiale: Anadolu Ajansı, TRT Haber, NTV, Habertürk, Hürriyet, Cumhuriyet, Sözcü, Sabah, BirGün ed Ensonhaber. Il catalogo turco comprende quindi undici fonti con Google News. TRT Haber, NTV e Habertürk includono anche dieci categorie tematiche complessive già verificate e associate alle etichette ARB appropriate.
+
+I dieci feed principali degli editori e quello di Google News hanno restituito HTTP 200 e XML con articoli. Sono stati verificati anche i sette topic di Google, un esempio locale per Ankara e le dieci categorie degli editori: 29 richieste riuscite, di cui 24 RSS e 5 Atom. NTV usa Atom anche se gli URL terminano in .rss; il parser esistente lo supporta. Le verifiche sono puntuali del 13 ottobre 2026, non una garanzia di disponibilità futura o una prova del lettore completo sul telefono.
+
+Gli URL, le fonti ufficiali, le date e i risultati delle verifiche sono in tool/turkish_news_feed_verification.json. I marchi, gli articoli originali, le fonti personali, l’ordine salvato e le fonti nascoste mantengono il loro significato. Il nome Google News resta invariato per conservare le preferenze già salvate.
+
+TESTATE DELLA COMUNITÀ — APP E SERVER
+
+Il modulo per aggiungere una testata eredita la lingua delle notizie aperte, ma ora permette di cambiarla direttamente, compreso Türkçe. La scelta è presente sia nella vista Flutter sia nel modello accessibile condiviso; i campi e gli invii sono protetti durante l’invio. Nome e URL restano quelli inseriti dall’utente quando si cambia lingua.
+
+Il client invia separatamente la lingua della fonte e la lingua dell’interfaccia. I due servizi PHP inclusi sono stati aggiornati: riconoscono il turco e i suoi codici regionali, e le risposte del modulo sono tradotte in turco. La lista delle lingue accettate è allineata alle tredici lingue delle notizie già presenti nell’app.
+
+Per attivare questa parte sul sito bisogna distribuire server/add_community_news_source.php e server/get_community_news_sources.php nella corrispondente cartella api del server Sonarpad. La cartella data_private esistente va conservata. Aggiornare soltanto l’app non aggiorna i servizi PHP online. Questa consegna non ha pubblicato i file sul server e non ha aggiunto alcuna testata alla comunità reale.
+
+TRADUZIONI COMPLETATE NELLA FASE 4
+
+Sono aggiunti 38 messaggi in ognuna delle 14 varianti ARB, portando a 1.600 le voci dell’interfaccia turca revisionate. Le 1.562 voci precedenti e i relativi metadati restano invariati. I file Dart di localizzazione inclusi espongono le nuove API; il workflow normale del progetto resta flutter gen-l10n.
+
+SonarMusic: 23 etichette prima contenute in una tabella nel codice sono ora negli ARB. Ricerche, categorie, brani, album, artisti, playlist, preferiti, URL e comandi comuni sono disponibili in turco. Anche i tipi podcast ed episodio usano etichette ARB esistenti. La lingua tr e il Paese TR vengono richiesti sia dal catalogo diretto sia dal ripiego sul servizio PHP, riconoscendo tr, tr-TR e tr_TR.
+
+Importazione: sono localizzate le azioni File/Foto dei Documenti, le etichette Apri URL e incolla URL di SonarTube e i messaggi di preparazione, caricamento e annullamento dei file dal cloud. I messaggi del cloud riusano Annulla già presente negli ARB. La copia in streaming e la gestione dell’annullamento mantengono la stessa logica.
+
+Cataloghi condivisi: LibriVox, Internet Archive e PoetryDB usano testi ARB per metadati mancanti ed errori locali. Titoli, autori, poesie e audio originali ricevuti dai servizi sono conservati. La traduzione dell’interfaccia non traduce automaticamente i contenuti esterni. Anche una stringa originale che coincide con un vecchio testo di ripiego rimane un contenuto originale.
+
+L’audit dei percorsi comuni di importazione ed esportazione ha confermato che l’avanzamento degli audiolibri e i messaggi generici degli errori sono già presentati con gli ARB. I metadati di lingua dei documenti EPUB/DOCX mantengono il comportamento precedente, perché la lingua del contenuto non si può dedurre dalla lingua dell’interfaccia.
+
+CALENDARIO E LAVORO PRECEDENTE
+
+Sono conservate tutte le 128 citazioni turche e le 365 voci dei santi, con ordine e attribuzioni dei testi mantenuti. I dati del calendario e il relativo file Dart generato restano identici alla fase 3. Il calendario delle festività nazionali non è stato esteso in questa fase.
+
+Restano il turco nei selettori di radio, podcast, percorsi, audiodescrizioni, Wikipedia e Gutenberg, le traduzioni dei podcast e del meteo, le impostazioni vocali e i permessi iOS aggiunti nelle fasi precedenti. La pipeline delle audiodescrizioni, il motore Edge e il singolo comando Pausa/Riprendi dell’anteprima non vengono modificati da questa fase.
+
+È aggiunta una nota della fase 4 al changelog 0.5.1 nelle tredici lingue, senza asterischi Markdown. Tutte le note e versioni precedenti sono conservate, comprese le note storiche turche e quelle specifiche delle piattaforme.
+
+VERIFICHE E AMBIENTE DI COMPILAZIONE
+
+Sono controllati JSON e assenza di chiavi duplicate, completezza delle 1.600 chiavi, segnaposto, parità zh/zh_CN e corrispondenza dei 532 nuovi valori nei runtime Dart. Le vecchie implementazioni e le forme plurali sono preservate. I test mirati inclusi coprono catalogo, Atom, preferenze, modulo comunità, metadati mancanti, importazione e richiesta della lingua turca di SonarMusic.
+
+I due servizi della comunità hanno superato il controllo sintattico con PHP 8.5.10 CLI eseguito in WebAssembly. Il test test/turkish_community_news_php_test.php ha superato 132 controlli isolati su lingue, alias anche con maiuscole Unicode, messaggi turchi, edizione Google e filtro delle fonti. Ulteriori 204 confronti statici confermano la conservazione degli alias, dei messaggi e delle etichette precedenti. Il test non effettua richieste di rete né invii alla comunità e verifica che i dati della propria fixture non vengano riscritti. Su un PC con PHP può essere eseguito dalla radice del progetto con:
+
+php test/turkish_community_news_php_test.php
+
+Flutter e Dart non sono disponibili in questo ambiente: flutter gen-l10n, flutter analyze e flutter test non sono stati eseguiti. Il progetto originale fornito non conteneva le dipendenze locali packages/sonarpad_audio_dsp, third_party/epubx e third_party/rhttp_plus, né alcuni script di verifica. Per la compilazione usare il checkout completo dello sviluppatore con tali dipendenze ripristinate, poi eseguire:
+
+flutter gen-l10n
+flutter analyze
+flutter test
+
+Sul dispositivo verificare VoiceOver e TalkBack, la scelta della voce turca e i flussi reali dei servizi. Le verifiche dei feed effettuate qui non sostituiscono le prove di lettura integrale degli articoli né un invio effettivo alla comunità dopo la distribuzione dei PHP.
+
+CONTINUITÀ DEL PROGETTO
+
+La copia temporanea dello ZIP della fase 3 era incompleta. Sono stati recuperati tutti gli 839 file dei sorgenti della fase 3 e confrontati con l’elenco delle modifiche già verificato; questo archivio è ricostruito dai sorgenti completi. Per continuare il lavoro partire dalla fase 4, senza riapplicare gli ZIP delle fasi precedenti.
+
+Lo stato delle traduzioni e il riepilogo della fase sono in tool/turkish_localization_progress.json.

@@ -108,6 +108,183 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  testWidgets('identity denial is immediate and never resubmits', (
+    tester,
+  ) async {
+    final c = NativeController();
+    c.page = {'status': 'access-denied'};
+    await start(tester, c, []);
+    expect(
+      row(tester, 'message').title,
+      contains('server TicketOne ha rifiutato'),
+    );
+    expect(rows(tester).any((r) => r.id == 'loading'), isFalse);
+    expect(c.scripts, isEmpty);
+  });
+
+  testWidgets('OTP digits have Italian labels', (tester) async {
+    final c = NativeController();
+    c.page = snapshot(
+      [
+        for (final name in [
+          'First',
+          'Second',
+          'Third',
+          'Fourth',
+          'Fifth',
+          'Sixth',
+        ])
+          field(name, '$name Digit', type: 'text', secret: true),
+      ],
+      [action('a0', 'Accedi')],
+    );
+    await start(tester, c, []);
+    expect(row(tester, 'First').title, 'Codice monouso, cifra 1 di 6');
+    expect(row(tester, 'Sixth').title, 'Codice monouso, cifra 6 di 6');
+  });
+
+  testWidgets('security check stops the ticket form without submitting again', (
+    tester,
+  ) async {
+    final c = NativeController();
+    c.page = {
+      'status': 'security-check',
+      'diagnostics': {'reason': 'security_check'},
+    };
+    final logs = <String>[];
+    await start(tester, c, logs);
+    expect(row(tester, 'message').title, contains('controllo di sicurezza'));
+    expect(row(tester, 'website').title, 'Torna alla pagina TicketOne');
+    expect(c.scripts, isEmpty);
+    expect(logs, contains('native_security_check'));
+  });
+
+  testWidgets('persistent host channel works after native page recreation', (
+    tester,
+  ) async {
+    final c = NativeController(), messages = ValueNotifier<String?>(null);
+    c.channels.add('TicketOneUi');
+    Future<void> mountPage() async {
+      await tester.pumpWidget(
+        app(
+          Scaffold(
+            body: TicketOneNativePage(
+              controller: c,
+              generation: 0,
+              loading: false,
+              messages: messages,
+              showWebsite: () {},
+              log: (_) {},
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+    }
+
+    await mountPage();
+    await row(tester, 'a0').onActivate!();
+    final oldId = jsonDecode(
+      RegExp(r'id:("[^"]+")').firstMatch(c.scripts.last)!.group(1)!,
+    );
+    await tester.pumpWidget(const SizedBox());
+    await mountPage();
+    expect(
+      c.receive,
+      isNull,
+      reason:
+          'The host owns registration; never replace it on an already loaded document.',
+    );
+    await row(tester, 'a0').onActivate!();
+    await tester.pump();
+    final id = jsonDecode(
+      RegExp(r'id:("[^"]+")').firstMatch(c.scripts.last)!.group(1)!,
+    );
+    expect(
+      id,
+      isNot(oldId),
+      reason:
+          'Replies from the previous native page must not acknowledge a new action.',
+    );
+    messages.value = jsonEncode({
+      'id': oldId,
+      'status': 'invalid',
+      'field': 'f0',
+    });
+    await tester.pump();
+    expect(rows(tester).any((r) => r.id == 'loading'), isTrue);
+    messages.value = jsonEncode({'id': id, 'status': 'invalid', 'field': 'f0'});
+    await tester.pumpAndSettle();
+    expect(rows(tester).any((r) => r.id == 'f0'), isTrue);
+    await tester.pumpWidget(const SizedBox());
+    messages.dispose();
+  });
+
+  testWidgets('typed email survives keyboard and list rebuilds', (
+    tester,
+  ) async {
+    final c = NativeController();
+    await start(tester, c, []);
+    await tester.enterText(
+      find.byType(TextFormField).first,
+      'person@example.test',
+    );
+    await tester.pump();
+    expect(row(tester, 'f0').value, 'person@example.test');
+    tester.view.viewInsets = const FakeViewPadding(bottom: 250);
+    addTearDown(tester.view.resetViewInsets);
+    await tester.pump();
+    expect(
+      tester
+          .widget<EditableText>(find.byType(EditableText).first)
+          .controller
+          .text,
+      'person@example.test',
+    );
+    await row(tester, 'a0').onActivate!();
+    await tester.pump();
+    expect(c.scripts.single, contains('person@example.test'));
+    await tester.pumpWidget(const SizedBox());
+  });
+
+  testWidgets('structural diagnostics redact untrusted content', (
+    tester,
+  ) async {
+    final c = NativeController(), logs = <String>[];
+    c.page = {
+      'status': 'unsupported',
+      'diagnostics': {
+        'reason': 'custom_control',
+        'page': 'event',
+        'ready': 'complete',
+        'root': true,
+        'customCombos': 2,
+        'controls': 4,
+        'password': 'PRIVATE',
+        'url': 'https://secret/',
+        'forms': 'PRIVATE',
+      },
+    };
+    await start(tester, c, logs);
+    expect(logs.join(), contains('custom_control'));
+    expect(logs.join(), contains('customCombos'));
+    expect(logs.join(), isNot(contains('PRIVATE')));
+    expect(logs.join(), isNot(contains('https://secret')));
+    await tester.pumpWidget(const SizedBox());
+  });
+
+  testWidgets('registration snapshot is accepted by native page', (
+    tester,
+  ) async {
+    final c = NativeController(), logs = <String>[];
+    c.url = 'https://www.ticketone.it/dashboard/login/register';
+    c.page['stage'] = 'registration';
+    await start(tester, c, logs);
+    expect(row(tester, 'f0').keyboardType, 'email');
+    expect(logs, isNot(contains('native_schema')));
+    await tester.pumpWidget(const SizedBox());
+  });
+
   testWidgets(
     'same WebView can reopen native controls after the account panel',
     (tester) async {

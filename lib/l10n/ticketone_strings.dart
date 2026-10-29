@@ -4,7 +4,25 @@ class TicketOneStrings {
   final String locale;
   String t(String key) =>
       (locale.split(RegExp('[-_]')).first == 'it' ? _it[key] : _en[key])!;
+  String fieldLabel(String label) {
+    const digits = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth'];
+    final match = RegExp(
+      r'^(first|second|third|fourth|fifth|sixth) digit$',
+      caseSensitive: false,
+    ).firstMatch(label.trim());
+    if (match == null) return label;
+    final number = digits.indexOf(match[1]!.toLowerCase()) + 1;
+    return locale.split(RegExp('[-_]')).first == 'it'
+        ? 'Codice monouso, cifra $number di 6'
+        : 'One-time code, digit $number of 6';
+  }
+
   static const _it = {
+    'websiteTitle': 'Pagina TicketOne',
+    'accessDenied':
+        'Il server TicketOne ha rifiutato questa richiesta. Non posso confermare che l’operazione sia riuscita. Non invio nuovamente i dati: puoi aprire la pagina TicketOne per verificare.',
+    'securityCheck':
+        'TicketOne sta effettuando un controllo di sicurezza. Apri la pagina TicketOne per seguirlo o completarlo, poi torna alla modalità accessibile. L’aggiunta al carrello non è ancora confermata; non viene ripetuta automaticamente.',
     'bestSeatHelp':
         'Assegnazione automatica: scegli categoria e quantità. Per i posti numerati, TicketOne assegna i posti disponibili e mostra settore, fila e posto nel carrello, prima del pagamento.',
     'actionUncertain':
@@ -34,6 +52,11 @@ class TicketOneStrings {
     'empty': 'Il carrello è vuoto.',
   };
   static const _en = {
+    'websiteTitle': 'TicketOne page',
+    'accessDenied':
+        'The TicketOne server denied this request. The operation cannot be confirmed. Your data will not be sent again: open the TicketOne page to check.',
+    'securityCheck':
+        'TicketOne is performing a security check. Open the TicketOne page to follow or complete it, then return to accessible mode. Adding tickets to the cart is not confirmed yet and will not be retried automatically.',
     'bestSeatHelp':
         'Automatic allocation: choose a category and quantity. For numbered seating, TicketOne assigns available seats and shows the section, row and seat in the cart before payment.',
     'actionUncertain':

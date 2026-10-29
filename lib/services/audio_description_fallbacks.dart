@@ -8,20 +8,24 @@ import 'dart:math' as math;
 class AudioDescriptionFallbacks {
   /// Only called for rejected cues, after normal placements have been reserved.
   /// One native synthesis attempt; the estimate never replaces the real check.
-  static Future<({double speed, double duration, double start})?> recoverNativeTts({
+  static Future<({double speed, double duration, double start})?>
+  recoverNativeTts({
     required double baseSpeed,
     required double originalDuration,
     required double? Function(double duration) chooseStart,
     required Future<double> Function(double speed) synthesize,
   }) async {
-    if (!baseSpeed.isFinite || baseSpeed <= 0 ||
-        !originalDuration.isFinite || originalDuration <= 0) {
+    if (!baseSpeed.isFinite ||
+        baseSpeed <= 0 ||
+        !originalDuration.isFinite ||
+        originalDuration <= 0) {
       return null;
     }
     for (final factor in [1.10, 1.15]) {
       // Match Edge's integer percentage and the existing native speed limits.
       final speed = ((baseSpeed * factor * 100 + 1e-9).floor() / 100)
-          .clamp(0.5, 2.0).toDouble();
+          .clamp(0.5, 2.0)
+          .toDouble();
       if (speed <= baseSpeed ||
           chooseStart(originalDuration / (speed / baseSpeed)) == null) {
         continue;
@@ -29,7 +33,9 @@ class AudioDescriptionFallbacks {
       final duration = await synthesize(speed);
       if (!duration.isFinite || duration <= 0) return null;
       final start = chooseStart(duration);
-      return start == null ? null : (speed: speed, duration: duration, start: start);
+      return start == null
+          ? null
+          : (speed: speed, duration: duration, start: start);
     }
     return null;
   }
@@ -78,14 +84,24 @@ class AudioDescriptionFallbacks {
   /// failures must never be hidden by the compatibility transcoder.
   static bool isMediaCompatibilityInvalidArgument(String message) {
     final lower = message.toLowerCase();
-    final invalid = lower.contains('invalid_argument') ||
+    final invalid =
+        lower.contains('invalid_argument') ||
         lower.contains('invalid argument') ||
         lower.contains('invalid value');
     if (!invalid) return false;
     const nonMedia = <String>[
-      'api key', 'api_key', 'credential', 'authentication', 'unauthenticated',
-      'permission denied', 'permission_denied', 'unauthorized', 'billing',
-      'quota', 'prepayment', 'credits are depleted',
+      'api key',
+      'api_key',
+      'credential',
+      'authentication',
+      'unauthenticated',
+      'permission denied',
+      'permission_denied',
+      'unauthorized',
+      'billing',
+      'quota',
+      'prepayment',
+      'credits are depleted',
     ];
     if (nonMedia.any(lower.contains)) return false;
     // Match Windows: once this is a real HTTP-400-style INVALID_ARGUMENT and
@@ -172,7 +188,9 @@ class AudioDescriptionFallbacks {
     double keepSeconds = edgeTrailingKeepSeconds,
     double minRemoveSeconds = edgeTrailingMinRemoveSeconds,
   }) {
-    if (durationSec <= 0 || silenceStartSec < 0 || silenceEndSec <= silenceStartSec) {
+    if (durationSec <= 0 ||
+        silenceStartSec < 0 ||
+        silenceEndSec <= silenceStartSec) {
       return null;
     }
     if ((durationSec - silenceEndSec).abs() > 0.030) return null;
@@ -192,11 +210,14 @@ class AudioDescriptionFallbacks {
 
   // Pronunciation only, at the existing underscore-normalization boundary.
   // Match whole Unicode-alphanumeric tokens, as on Windows and Mac.
-  static final _pronunciationAbbreviations =
-      RegExp(r'[\p{Alphabetic}\p{Number}]+\.', unicode: true);
+  static final _pronunciationAbbreviations = RegExp(
+    r'[\p{Alphabetic}\p{Number}]+\.',
+    unicode: true,
+  );
 
-  static String normalizePronunciationText(String value) =>
-      value.replaceAll('_', ' ').replaceAllMapped(
+  static String normalizePronunciationText(String value) => value
+      .replaceAll('_', ' ')
+      .replaceAllMapped(
         _pronunciationAbbreviations,
         (match) => switch (match[0]!.toLowerCase()) {
           'dr.' => 'dr',
@@ -218,8 +239,16 @@ class AudioDescriptionFallbacks {
   static AdFailureKind classifyHttp({
     required int statusCode,
     String body = '',
+    bool sonarpadApi = false,
   }) {
     final text = body.toLowerCase();
+    // Fallback only for an HTML page from our API, not missing Google files/models.
+    if (sonarpadApi &&
+        statusCode == 404 &&
+        (text.trimLeft().startsWith('<!doctype html') ||
+            text.trimLeft().startsWith('<html'))) {
+      return AdFailureKind.transient;
+    }
     if (text.contains('prepayment credits are depleted')) {
       return AdFailureKind.prepaidCreditsDepleted;
     }
@@ -241,7 +270,8 @@ class AudioDescriptionFallbacks {
     }
     if (statusCode == 503 &&
         (text.contains('high demand') || text.contains('spikes in demand')) &&
-        (text.contains('unavailable') || text.contains('service unavailable'))) {
+        (text.contains('unavailable') ||
+            text.contains('service unavailable'))) {
       return AdFailureKind.highDemand;
     }
     if (statusCode >= 500 && statusCode <= 599) {
@@ -313,7 +343,8 @@ class AudioDescriptionFallbacks {
       'blockReason',
       'block_reason',
     });
-    if (reason == null || !reason.toUpperCase().contains('PROHIBITED_CONTENT')) {
+    if (reason == null ||
+        !reason.toUpperCase().contains('PROHIBITED_CONTENT')) {
       return false;
     }
     return !hasCandidateText(decoded);
@@ -324,7 +355,8 @@ class AudioDescriptionFallbacks {
       'finishReason',
       'finish_reason',
     });
-    if (finish == null || !finish.toUpperCase().contains('MALFORMED_RESPONSE')) {
+    if (finish == null ||
+        !finish.toUpperCase().contains('MALFORMED_RESPONSE')) {
       return false;
     }
     return !hasCandidateText(decoded);
@@ -399,7 +431,8 @@ class AudioDescriptionFallbacks {
     if (cuts.isEmpty) return const <AdTimeRange>[];
     final bounds = <double>[chunkStart, ...cuts, chunkEnd];
     return List<AdTimeRange>.generate(
-      bounds.length - 1, (i) => AdTimeRange(bounds[i], bounds[i + 1]),
+      bounds.length - 1,
+      (i) => AdTimeRange(bounds[i], bounds[i + 1]),
     );
   }
 
@@ -439,8 +472,12 @@ class AudioDescriptionFallbacks {
     final partDuration = duration / parts;
     return List<AdFallbackSlot>.generate(parts, (index) {
       final partStart = start + partDuration * index;
-      final partEnd = index == parts - 1 ? end : start + partDuration * (index + 1);
-      final marker = parts > 1 ? 'P${(index + 1).toString().padLeft(3, '0')}' : '';
+      final partEnd = index == parts - 1
+          ? end
+          : start + partDuration * (index + 1);
+      final marker = parts > 1
+          ? 'P${(index + 1).toString().padLeft(3, '0')}'
+          : '';
       return AdFallbackSlot(
         id: 'S${baseIndex.toString().padLeft(4, '0')}$marker$suffix',
         start: partStart,
@@ -463,10 +500,9 @@ class AudioDescriptionFallbacks {
       final start = math.max(slot.start, minute.start);
       final end = math.min(slot.end, minute.end);
       if (end <= start) continue;
-      result.add(slot.copyWith(
-        start: start - minute.start,
-        end: end - minute.start,
-      ));
+      result.add(
+        slot.copyWith(start: start - minute.start, end: end - minute.start),
+      );
     }
     return result;
   }
@@ -491,14 +527,17 @@ class AudioDescriptionFallbacks {
     required Iterable<AdTimeRange> descriptions,
     double minimumGapSeconds = largeCoverageGapSeconds,
   }) {
-    final sorted = descriptions
-        .where((item) => item.end > chunkStart && item.start < chunkEnd)
-        .map((item) => AdTimeRange(
-              math.max(chunkStart, item.start),
-              math.min(chunkEnd, item.end),
-            ))
-        .toList()
-      ..sort((a, b) => a.start.compareTo(b.start));
+    final sorted =
+        descriptions
+            .where((item) => item.end > chunkStart && item.start < chunkEnd)
+            .map(
+              (item) => AdTimeRange(
+                math.max(chunkStart, item.start),
+                math.min(chunkEnd, item.end),
+              ),
+            )
+            .toList()
+          ..sort((a, b) => a.start.compareTo(b.start));
     final gaps = <AdTimeRange>[];
     var cursor = chunkStart;
     for (final range in sorted) {
@@ -559,8 +598,13 @@ class AudioDescriptionFallbacks {
       final minutes = int.tryParse(parts[1]);
       final seconds = int.tryParse(parts[2]);
       final millisText = parts[3];
-      if (hours == null || minutes == null || seconds == null ||
-          minutes < 0 || minutes >= 60 || seconds < 0 || seconds >= 60 ||
+      if (hours == null ||
+          minutes == null ||
+          seconds == null ||
+          minutes < 0 ||
+          minutes >= 60 ||
+          seconds < 0 ||
+          seconds >= 60 ||
           !RegExp(r'^\d{3}$').hasMatch(millisText)) {
         return null;
       }
@@ -593,7 +637,8 @@ class AudioDescriptionFallbacks {
     final minutes = int.parse(match.group(1)!);
     final seconds = int.parse(match.group(2)!);
     final fractionText = match.group(3)!;
-    final repaired = minutes * 60.0 +
+    final repaired =
+        minutes * 60.0 +
         seconds +
         int.parse(fractionText) / math.pow(10, fractionText.length).toDouble();
     if (repaired < windowStart - toleranceSeconds ||
@@ -641,7 +686,8 @@ class AudioDescriptionFallbacks {
 
     var start = normalizeOne(startValue, slot.start) ?? slot.start;
     var end = normalizeOne(endValue, slot.end) ?? slot.end;
-    var evidence = normalizeOne(evidenceValue, (start + end) / 2.0) ??
+    var evidence =
+        normalizeOne(evidenceValue, (start + end) / 2.0) ??
         ((start + end) / 2.0);
 
     if (start < chunkStart - boundaryToleranceSeconds ||
@@ -689,9 +735,7 @@ class AudioDescriptionFallbacks {
     if (rawStart == null || rawEnd == null) return null;
 
     bool fits(double a, double b, double lo, double hi) =>
-        a >= lo - toleranceSeconds &&
-        b <= hi + toleranceSeconds &&
-        b > a;
+        a >= lo - toleranceSeconds && b <= hi + toleranceSeconds && b > a;
 
     late final String mode;
     late final double offset;
@@ -700,8 +744,16 @@ class AudioDescriptionFallbacks {
       mode = 'absolute';
       offset = 0.0;
     } else {
-      final parentStart = parseForWindow(startValue, parentLocalStart, parentLocalEnd);
-      final parentEnd = parseForWindow(endValue, parentLocalStart, parentLocalEnd);
+      final parentStart = parseForWindow(
+        startValue,
+        parentLocalStart,
+        parentLocalEnd,
+      );
+      final parentEnd = parseForWindow(
+        endValue,
+        parentLocalStart,
+        parentLocalEnd,
+      );
       if (parentStart != null &&
           parentEnd != null &&
           fits(parentStart, parentEnd, parentLocalStart, parentLocalEnd)) {
@@ -735,7 +787,10 @@ class AudioDescriptionFallbacks {
         ? (start + end) / 2.0
         : convert(evidenceValue, ((start + end) / 2.0) - offset);
     if (!fits(start, end, minuteStart, minuteEnd)) return null;
-    start = math.max(start, slot.start).clamp(minuteStart, minuteEnd).toDouble();
+    start = math
+        .max(start, slot.start)
+        .clamp(minuteStart, minuteEnd)
+        .toDouble();
     end = math.min(end, slot.end).clamp(minuteStart, minuteEnd).toDouble();
     if (end <= start) return null;
     evidence = evidence.clamp(start, end).toDouble();
@@ -750,7 +805,8 @@ class AudioDescriptionFallbacks {
     required double requiredDuration,
     double maxShiftSeconds = maxPlacementShiftSeconds,
   }) {
-    final candidates = <({double distance, int preferred, AdFallbackSlot slot})>[];
+    final candidates =
+        <({double distance, int preferred, AdFallbackSlot slot})>[];
     for (final slot in slots) {
       if (occupied.contains(slot.id)) continue;
       if (slot.end - slot.start + 1e-6 < requiredDuration) continue;
@@ -775,7 +831,10 @@ class AudioDescriptionFallbacks {
 
   static String stripJsonFences(String value) {
     var text = value.trim();
-    text = text.replaceFirst(RegExp(r'^```(?:json)?\s*', caseSensitive: false), '');
+    text = text.replaceFirst(
+      RegExp(r'^```(?:json)?\s*', caseSensitive: false),
+      '',
+    );
     text = text.replaceFirst(RegExp(r'\s*```$'), '');
     return text.trim();
   }
@@ -809,7 +868,11 @@ class AudioDescriptionFallbacks {
     final descriptions = _salvageObjectsFromArray(clean, 'audio_descriptions');
     final glossary = _salvageObjectsFromArray(clean, 'character_glossary');
     if (descriptions.isEmpty && glossary.isEmpty) {
-      return const AdJsonRecoveryResult(data: null, parseOk: false, salvaged: false);
+      return const AdJsonRecoveryResult(
+        data: null,
+        parseOk: false,
+        salvaged: false,
+      );
     }
     return AdJsonRecoveryResult(
       data: <String, Object?>{
@@ -898,27 +961,40 @@ class AudioDescriptionFallbacks {
       }
       if (payload.length > 4 && payload[4] is List) {
         final metadata = payload[4] as List;
-        if (metadata.length > 2 && metadata[2] is List && (metadata[2] as List).isNotEmpty) {
+        if (metadata.length > 2 &&
+            metadata[2] is List &&
+            (metadata[2] as List).isNotEmpty) {
           final value = (metadata[2] as List).first;
           if (value is num) confidence = value.toDouble();
         }
-        if (language.isEmpty && metadata.isNotEmpty && metadata[0] is List && (metadata[0] as List).isNotEmpty) {
+        if (language.isEmpty &&
+            metadata.isNotEmpty &&
+            metadata[0] is List &&
+            (metadata[0] as List).isNotEmpty) {
           language = normalizeLanguageCode('${(metadata[0] as List).first}');
         }
       }
-      return language.isEmpty ? null : AdLanguageDetection(language, confidence);
+      return language.isEmpty
+          ? null
+          : AdLanguageDetection(language, confidence);
     }
     if (payload is Map) {
       var language = normalizeLanguageCode('${payload['src'] ?? ''}');
       if (language.isEmpty) {
         final ld = payload['ld_result'];
-        if (ld is Map && ld['srclangs'] is List && (ld['srclangs'] as List).isNotEmpty) {
+        if (ld is Map &&
+            ld['srclangs'] is List &&
+            (ld['srclangs'] as List).isNotEmpty) {
           language = normalizeLanguageCode('${(ld['srclangs'] as List).first}');
         }
       }
       double? confidence;
-      if (payload['confidence'] is num) confidence = (payload['confidence'] as num).toDouble();
-      return language.isEmpty ? null : AdLanguageDetection(language, confidence);
+      if (payload['confidence'] is num) {
+        confidence = (payload['confidence'] as num).toDouble();
+      }
+      return language.isEmpty
+          ? null
+          : AdLanguageDetection(language, confidence);
     }
     return null;
   }
@@ -963,7 +1039,8 @@ class AudioDescriptionFallbacks {
       if (index >= 0) {
         final current = merged[index];
         merged[index] = <String, Object?>{
-          'id': '${current['id'] ?? ''}'.trim().isEmpty &&
+          'id':
+              '${current['id'] ?? ''}'.trim().isEmpty &&
                   '${candidate['id'] ?? ''}'.trim().isNotEmpty
               ? '${candidate['id'] ?? ''}'.trim()
               : '${current['id'] ?? ''}'.trim(),
@@ -985,7 +1062,8 @@ class AudioDescriptionFallbacks {
       final index = _findCharacterMatch(merged, candidate);
       if (index >= 0) {
         final current = merged[index];
-        final mayFillId = index >= authoritativeCount &&
+        final mayFillId =
+            index >= authoritativeCount &&
             '${current['id'] ?? ''}'.trim().isEmpty &&
             '${candidate['id'] ?? ''}'.trim().isNotEmpty;
         merged[index] = <String, Object?>{
@@ -1121,8 +1199,7 @@ class AudioDescriptionFallbacks {
     if (candidateTokens.isEmpty) return 1.0;
     final establishedTokens = _descriptionTokens(established).toSet();
     if (establishedTokens.isEmpty) return 0.0;
-    final shared =
-        candidateTokens.where(establishedTokens.contains).length;
+    final shared = candidateTokens.where(establishedTokens.contains).length;
     return shared / candidateTokens.length;
   }
 
@@ -1199,8 +1276,10 @@ class AudioDescriptionFallbacks {
   static bool ttsLogHasAudibleSignal(String logs) {
     final lower = logs.toLowerCase();
     if (lower.contains('max_volume: -inf')) return false;
-    final match = RegExp(r'max_volume:\s*(-?\d+(?:\.\d+)?)\s*dB', caseSensitive: false)
-        .firstMatch(logs);
+    final match = RegExp(
+      r'max_volume:\s*(-?\d+(?:\.\d+)?)\s*dB',
+      caseSensitive: false,
+    ).firstMatch(logs);
     if (match == null) return true;
     final db = double.tryParse(match.group(1) ?? '');
     if (db == null) return true;
@@ -1248,7 +1327,8 @@ class AudioDescriptionFallbacks {
 
   static bool shouldUseInlineVideo(int bytes) => bytes <= inlineVideoMaxBytes;
 
-  static bool canFallbackToInlineVideo(int bytes) => bytes <= inlineFallbackMaxBytes;
+  static bool canFallbackToInlineVideo(int bytes) =>
+      bytes <= inlineFallbackMaxBytes;
 
   static bool isPermanentTtsError(String message) {
     final text = message.toLowerCase();
@@ -1270,7 +1350,8 @@ class AudioDescriptionFallbacks {
     required int currentChunkCount,
     double durationToleranceSec = 1.0,
   }) {
-    return (savedDurationSec - currentDurationSec).abs() <= durationToleranceSec &&
+    return (savedDurationSec - currentDurationSec).abs() <=
+            durationToleranceSec &&
         savedChunkCount == currentChunkCount;
   }
 
@@ -1279,7 +1360,9 @@ class AudioDescriptionFallbacks {
     Iterable<AdTimeRange> ranges,
   ) {
     final midpoint = (description.start + description.end) / 2.0;
-    return ranges.any((range) => midpoint >= range.start && midpoint <= range.end);
+    return ranges.any(
+      (range) => midpoint >= range.start && midpoint <= range.end,
+    );
   }
 
   static String mimeTypeForPath(String path) {
@@ -1294,15 +1377,16 @@ class AudioDescriptionFallbacks {
     required AdMediaFallbackStage current,
     required AdFailureKind failure,
   }) {
-    final mediaFailure = failure == AdFailureKind.invalidArgument ||
+    final mediaFailure =
+        failure == AdFailureKind.invalidArgument ||
         failure == AdFailureKind.fileProcessingFailed ||
         failure == AdFailureKind.fileVerificationFailed;
     if (!mediaFailure) return AdMediaFallbackStage.none;
     return switch (current) {
       AdMediaFallbackStage.normal => AdMediaFallbackStage.compact,
       AdMediaFallbackStage.compact => AdMediaFallbackStage.compatibility,
-      AdMediaFallbackStage.compatibility || AdMediaFallbackStage.none =>
-        AdMediaFallbackStage.none,
+      AdMediaFallbackStage.compatibility ||
+      AdMediaFallbackStage.none => AdMediaFallbackStage.none,
     };
   }
 }
@@ -1348,13 +1432,13 @@ class AdFallbackSlot extends AdTimeRange {
   int get maxWords => math.max(1, (duration * 2.0).floor());
 
   AdFallbackSlot copyWith({double? start, double? end}) => AdFallbackSlot(
-        id: id,
-        start: start ?? this.start,
-        end: end ?? this.end,
-        mandatory: mandatory,
-        partitionIndex: partitionIndex,
-        partitionCount: partitionCount,
-      );
+    id: id,
+    start: start ?? this.start,
+    end: end ?? this.end,
+    mandatory: mandatory,
+    partitionIndex: partitionIndex,
+    partitionCount: partitionCount,
+  );
 }
 
 class AdNormalizedTimes {

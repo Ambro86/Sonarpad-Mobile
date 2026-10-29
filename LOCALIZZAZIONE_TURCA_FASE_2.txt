@@ -1,0 +1,41 @@
+SONARPAD MOBILE 0.5.1 — TURCO, FASE 2 PARZIALE
+
+Questa è la seconda consegna della localizzazione turca. Il progetto parte dallo ZIP della fase 1 e ne conserva tutte le modifiche. La versione resta 0.5.1+11. Per lo stato aggiornato fare riferimento a questo documento; il testo della fase 1 è conservato come riepilogo storico.
+
+TRADUZIONE DEGLI ARB COMPLETATA
+
+Sono state tradotte e revisionate le 779 voci che nella fase 1 erano rimaste in inglese. Il catalogo app_tr.arb contiene ora tutte le 1.339 voci attualmente previste dagli ARB del progetto in turco, con le stesse chiavi, gli stessi parametri e la stessa struttura delle altre lingue. Le 560 voci già lavorate nella fase 1 sono conservate.
+
+Questa fase comprende, fra gli altri, documenti e segnalibri, importazione ed esportazione, SonarTube, notizie, strumenti multimediali, taglio e unione dei file, effetti audio, registrazioni e controlli di riproduzione. Non restano chiavi ARB in attesa di traduzione. I 29 valori uguali all'inglese sono nomi di prodotti, sigle, unità, formati o parole valide anche in turco, come Video e Normal.
+
+Il file Dart della localizzazione turca è stato rigenerato a partire dall'ARB e include tutti i 1.339 messaggi. Sono stati verificati i parametri e i due messaggi ICU con conteggio. L'ARB rimane la fonte delle traduzioni; il normale comando del progetto è flutter gen-l10n.
+
+CHANGELOG COMPLETATO PER IL TURCO
+
+Sono state tradotte le 108 note generali delle sei versioni precedenti, dalla 0.5.0 alla 0.2.0, e le tre note specifiche di iOS e Android presenti nella 0.4.0. Tutte le sette versioni del changelog hanno ora le note generali in turco, incluse quelle 0.5.1 già tradotte nella prima fase.
+
+Alla versione 0.5.1 è stata aggiunta una nota sulla seconda fase in tutte le 13 lingue. Date, numeri di versione e testi precedenti delle altre lingue sono conservati. Gli extra riservati all'italiano e le relative regole di visibilità non sono stati modificati. Nessun asterisco Markdown è stato aggiunto al changelog.
+
+CALENDARIO E SERVIZI GIÀ INCLUSI
+
+Sono conservate tutte le 128 citazioni e le 365 voci dei santi in turco, insieme ai collegamenti della lingua e del paese per radio, podcast, percorsi e audiodescrizioni realizzati nella fase 1. Rimangono inclusi il turco nelle Impostazioni, i nomi delle lingue vocali, le voci Edge Emel e Ahmet nel catalogo di riserva, le descrizioni dei permessi iOS e le precedenti modifiche al pulsante Pausa/Riprendi.
+
+PERCHÉ LO ZIP È ANCORA PARZIALE
+
+Il completamento degli ARB non conclude ancora tutta la localizzazione dell'app. Alcune schermate e alcuni servizi costruiscono frasi direttamente nel codice o usano cataloghi separati. Restano da controllare e trasferire negli ARB le categorie dei podcast, alcune etichette di importazione da file e foto, i testi dinamici dell'editor dei progetti e diversi messaggi dei servizi. Va completato anche il controllo delle lingue e dei paesi negli altri servizi, fra cui Notizie, Wikipedia e Gutenberg.
+
+Il file tool/turkish_localization_progress.json contiene lo stato aggiornato, le chiavi lavorate in ciascuna fase e il lavoro ancora necessario. La prossima fase deve partire da questo ZIP.
+
+VERIFICHE E PROVA SUL PC
+
+Sono stati eseguiti controlli statici su JSON, chiavi e parametri ARB, corrispondenza con il Dart generato, rami dei plurali e preservazione dei dati precedenti. Il controllo indipendente dei plurali comprende 0, 1, 2 e 5. Il test turco già presente è stato aggiornato con i risultati attesi in turco.
+
+Flutter e Dart non sono disponibili nell'ambiente di preparazione. Non sono stati eseguiti compilazione, flutter analyze o flutter test. La pronuncia e il comportamento completo con VoiceOver e TalkBack richiedono una prova sui dispositivi.
+
+Nel progetto locale, dopo aver reso disponibili le dipendenze richieste, eseguire:
+
+flutter gen-l10n
+flutter analyze
+flutter test
+
+Restano necessarie le dipendenze locali packages/sonarpad_audio_dsp, third_party/epubx e third_party/rhttp_plus, già assenti nel pacchetto di partenza. Mancavano inoltre alcuni strumenti richiamati dai test, fra cui tool/check_user_facing_strings.py e i contenuti di scripts/. Queste assenze precedenti non sono state colmate dalla fase 2.

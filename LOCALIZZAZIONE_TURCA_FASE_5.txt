@@ -1,0 +1,67 @@
+SONARPAD MOBILE 0.5.1 — LOCALIZZAZIONE TURCA, FASE 5 CONCLUSA
+
+Questo ZIP contiene l’intero albero dei sorgenti aggiornato dalla fase 4 alla fase 5. Si può ripartire direttamente da questo archivio, senza riapplicare gli ZIP precedenti. La versione resta 0.5.1+11.
+
+STATO DELLA TRADUZIONE
+
+La traduzione turca dell’interfaccia condivisa è completa nei sorgenti esaminati: 1.604 messaggi ARB tradotti e revisionati, nessuna chiave in attesa di traduzione. Tutti i 1.604 valori turchi coincidono con le corrispondenti implementazioni Dart incluse. I nomi dei prodotti, i marchi, le unità e i modelli di formattazione che coincidono con l’inglese sono stati controllati singolarmente e sono intenzionali.
+
+La revisione linguistica della fase 5 ha confrontato integralmente le 1.600 voci precedenti con inglese e italiano. È stata precisata l’etichetta del riconoscimento del testo importante sullo schermo, indicando che il testo viene incluso nell’audiodescrizione. Si tratta della descrizione di un comportamento già esistente.
+
+Quattro messaggi prima esterni agli ARB sono stati aggiunti e tradotti in tutte le 14 varianti linguistiche: nome del canale notifiche audio Android, nome di ripiego dei nuovi documenti esportati, suffisso del nome degli audiolibri e opzione WAV a 32 bit in virgola mobile. L’errore di apertura di SonarMusic usa ora i messaggi ARB esistenti, conservando i dettagli tecnici nei log.
+
+CALENDARIO E CITAZIONI
+
+Sono presenti e revisionate tutte le 128 citazioni turche e tutte le 365 voci dei santi e delle ricorrenze del calendario fornito. Sono state rifinite tre citazioni e due denominazioni religiose; ordine, autori, date e identità delle ricorrenze sono conservati. Il file assets/calendar/tr.json e i dati Dart generati sono sincronizzati. Non è stato introdotto un calendario separato delle festività nazionali turche.
+
+La schermata del giorno ora aggiorna il santo quando cambia la lingua o la data mentre la schermata rimane aperta. Il dato tradotto locale viene mostrato subito; risposte asincrone relative alla lingua o al giorno precedente vengono ignorate. I promemoria personali restano contenuti dell’utente.
+
+ALFABETO, VOCI E PDF
+
+La selezione per lettera applica al turco il suo ordine alfabetico, comprese Ç, Ğ, Ö, Ş e Ü. Distingue correttamente i/İ da ı/I e conserva l’accesso alle lettere straniere Q, W e X. Il comportamento delle altre lingue rimane quello precedente.
+
+Il recupero della lingua della sintesi vocale riconosce anche il codice salvato tr_TR quando la voce selezionata non è più disponibile. Le preferenze memorizzate non vengono riscritte e il motore Edge resta invariato.
+
+L’esportazione PDF non sostituisce più le lettere fuori Latin-1 con punti interrogativi. Il servizio include il font DejaVu Sans con la sua licenza e conserva le lettere turche maiuscole e minuscole, incluse Çç Ğğ İı Öö Şş Üü âîû. La copertura dei caratteri è stata controllata nel font effettivamente distribuito. Il font non copre ogni sistema di scrittura esistente. La paginazione viene mantenuta; le nuove metriche del font possono cambiare il numero di righe e pagine.
+
+L’esportazione degli audiolibri riceve soltanto un suffisso localizzato per il nome del nuovo file. Sintesi, suddivisione del testo, tentativi, cache e conversione audio sono conservati.
+
+SERVIZI E NOTIZIE TURCHE
+
+Il turco è presente nelle impostazioni e nei selettori pertinenti di radio, podcast, percorsi, audiodescrizioni, Wikipedia, Gutenberg, voci e servizi condivisi. Sono mantenuti i collegamenti e i codici già introdotti nelle fasi precedenti, comprese le etichette del meteo e delle categorie dei podcast.
+
+Le notizie mantengono l’edizione turca di Google News, con hl=tr, gl=TR e ceid=TR:tr, e le dieci testate della fase 4: Anadolu Ajansı, TRT Haber, NTV, Habertürk, Hürriyet, Cumhuriyet, Sözcü, Sabah, BirGün ed Ensonhaber. Sono mantenuti i feed tematici e la ricerca locale, le scelte personali e il selettore Türkçe nel modulo di aggiunta delle testate alla comunità.
+
+Il supporto server è incluso in server/add_community_news_source.php e server/get_community_news_sources.php. Questi due file devono essere distribuiti nella corrispondente posizione sul server Sonarpad, conservando la cartella data_private esistente. Aggiornare l’app non distribuisce i PHP. Nessuna pubblicazione sul server o aggiunta alla comunità reale è stata eseguita durante questa lavorazione.
+
+La fase 4 ha già verificato 29 richieste HTTP/XML dei feed e 132 controlli PHP isolati. I file corrispondenti e il registro tool/turkish_news_feed_verification.json sono conservati senza modifiche: quei controlli restano documentati come risultati della fase 4 e non vengono presentati come nuove esecuzioni della fase 5.
+
+CONTENUTI CONSERVATI
+
+I titoli, gli autori, gli articoli, i brani, i nomi delle voci e gli altri metadati ricevuti dai servizi restano contenuti originali. La lingua dell’interfaccia non implica la traduzione automatica dei contenuti esterni né dei documenti personali. Anche i nomi delle cartelle già memorizzate sono conservati; non viene rinominata una cartella soltanto perché il suo nome coincide con un vecchio nome predefinito.
+
+Le sezioni Extra riservate all’italiano mantengono le regole di accesso precedenti. La pipeline delle audiodescrizioni, il motore Edge e il singolo pulsante Pausa/Riprendi dell’anteprima sono conservati.
+
+CHANGELOG
+
+Le sette versioni del changelog mantengono la traduzione turca completa. È aggiunta una nota della fase 5 alla versione 0.5.1 nelle tredici lingue del changelog, senza asterischi Markdown. Sono inoltre rifinite due formulazioni turche già presenti, mantenendone significato e posizione. Nessuna versione precedente è rimossa.
+
+VERIFICHE E LIMITI DELL’AMBIENTE
+
+Sono verificati JSON, chiavi duplicate, copertura di tutti gli ARB, segnaposto, parità zh/zh_CN, corrispondenza delle 1.604 voci turche con i file Dart, 56 nuovi valori nelle 14 varianti e conservazione delle implementazioni precedenti. La verifica indipendente controlla 22.456 firme effettive e mantiene le forme plurali esistenti.
+
+Il rapporto tecnico distingue 29 differenze ARB/runtime preesistenti nelle altre lingue, già presenti nella fase 4: nessuna riguarda il turco e nessuna è stata introdotta da questa fase. I relativi testi sono conservati. Il comando normale flutter gen-l10n rigenera i file di localizzazione a partire dagli ARB nel checkout completo.
+
+Sono aggiunti tre file di test dedicati al PDF turco, al recupero della lingua delle voci e ai comportamenti dell’interfaccia. Il test PDF genera e rilegge il documento tramite il servizio effettivo; il caso multipagina controlla la presenza e l’ordine dei marcatori di tutti i 150 paragrafi. I test UI coprono alfabeto turco, conservazione dell’ordine inglese, errore SonarMusic e cambi di lingua/data del calendario con risposte fuori ordine. I test TTS coprono i codici tr, tr-TR e tr_TR e la conservazione delle preferenze.
+
+Questi test sono inclusi ma non eseguiti: Flutter e Dart non sono disponibili in questo ambiente. Non sono state eseguite compilazioni, prove PDF tramite Syncfusion o sessioni reali con VoiceOver e TalkBack. Le API del PDF sono state controllate sull’archivio ufficiale della versione 33.2.13, il cui SHA-256 coincide con pubspec.lock.
+
+Il materiale originale fornito non includeva packages/sonarpad_audio_dsp, third_party/epubx, third_party/rhttp_plus e alcuni script locali. Per compilare occorre usare il checkout completo dello sviluppatore con le dipendenze e gli strumenti originali ripristinati, quindi eseguire:
+
+flutter gen-l10n
+flutter analyze
+flutter test
+
+Sul telefono restano da verificare pronuncia e disponibilità delle voci turche, comportamento reale di VoiceOver e TalkBack, esportazione PDF e flussi dei servizi. Queste verifiche di esecuzione non rappresentano voci turche ancora da tradurre.
+
+Il riepilogo aggiornato è in tool/turkish_localization_progress.json. La revisione e le decisioni della fase 5, compresi i controlli indipendenti e i relativi limiti, sono in tool/turkish_phase5_audit.json.

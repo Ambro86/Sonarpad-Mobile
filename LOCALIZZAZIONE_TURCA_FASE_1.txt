@@ -1,0 +1,43 @@
+SONARPAD MOBILE 0.5.1 — TURCO, FASE 1 PARZIALE
+
+Questo archivio contiene il progetto aggiornato a partire dallo ZIP Pausa/Riprendi. La versione resta 0.5.1+11. La localizzazione turca è in corso: questa è la prima consegna parziale richiesta.
+
+È inclusa anche la protezione finale dell'anteprima Pausa/Riprendi, già presente nella cartella di lavoro ma non nello ZIP precedente: impedisce di riprendere un campione che il player ha già terminato. Riguarda soltanto i comandi dell'anteprima mix.
+
+INTERFACCIA E ARB
+
+Il turco è selezionabile nelle Impostazioni in entrambe le varianti dell'interfaccia. lib/l10n/app_tr.arb contiene tutte le 1.339 chiavi previste dal progetto, con gli stessi parametri delle altre lingue. Sono state tradotte e revisionate 560 voci: comandi principali, Impostazioni e molte voci di radio, podcast, percorsi, calendario e audiodescrizioni. Fra queste, 17 nomi, generi musicali, unità o formati sono correttamente identici all'inglese. Le altre 779 voci restano temporaneamente in inglese. È incluso il relativo file Dart per l'uso a runtime; l'ARB rimane la fonte delle traduzioni.
+
+CALENDARIO E CITAZIONI
+
+assets/calendar/tr.json contiene tutte le 365 voci dei santi e tutte le 128 citazioni in turco. Non sono state omesse citazioni; ordine e attribuzioni del catalogo originale sono conservati. I dati generati del calendario includono il turco. Il calendario delle festività nazionali turche non è stato aggiunto in questa fase: la relativa mappa resta vuota, come nella fonte inglese.
+
+LINGUE E PAESI DEI SERVIZI
+
+Sono collegati il turco e la Turchia nei filtri radio, il paese Turchia nei podcast, il paese Turchia nei percorsi e la lingua turca nelle audiodescrizioni. Per i percorsi sono previsti i codici tr e TUR. I valori già salvati dall'utente mantengono la precedenza; in assenza di preferenze, l'app turca propone i nuovi valori predefiniti appropriati.
+
+Le lingue vocali turche sono presentate tramite etichette ARB come Türkçe e Türkçe (Türkiye). Il catalogo Edge di riserva include Emel e Ahmet. La lingua di sistema viene proposta come tr-TR se l'app è turca e non esiste una preferenza vocale; l'effettiva disponibilità delle voci di sistema dipende dal dispositivo.
+
+Sono incluse le sei descrizioni dei permessi iOS in turco e la traduzione turca delle novità 0.5.1. La nota sulla prima fase è stata aggiunta alle 13 lingue del changelog, mantenendo le voci e le versioni precedenti.
+
+LAVORO RIMANENTE
+
+La fase successiva dovrà completare le 779 chiavi ARB ancora inglesi. Restano da verificare e migrare negli ARB le frasi dinamiche o scritte direttamente nei servizi e nelle schermate, comprese categorie dei podcast, importazione da file e foto, testi dinamici dell'editor e messaggi dei servizi. Servono inoltre il controllo dei selettori degli altri servizi, incluse le notizie, e la traduzione delle versioni storiche del changelog. Questi punti non vanno considerati già completati.
+
+Il riepilogo preciso delle chiavi tradotte e di quelle ancora da tradurre si trova in tool/turkish_localization_progress.json. I futuri aggiornamenti devono partire da questo progetto per conservare tutte le modifiche precedenti.
+
+VERIFICA
+
+Sono stati eseguiti controlli statici sui dati, sulle chiavi ARB, sui parametri, sui riferimenti di localizzazione e sulla sincronizzazione del calendario. Flutter e Dart non sono disponibili nell'ambiente di preparazione: analisi, compilazione e test Flutter non sono stati eseguiti. Sono inclusi test mirati per il turco, le preferenze, il calendario, i percorsi e i progetti di audiodescrizione. La verifica su VoiceOver e TalkBack va eseguita su dispositivo.
+
+Nel progetto locale, dopo aver reso disponibili le dipendenze richieste, eseguire:
+
+flutter gen-l10n
+flutter analyze
+flutter test
+
+Per ricontrollare i dati del calendario:
+
+python tool/generate_calendar_localizations.py --check
+
+Il pacchetto di partenza non comprendeva le dipendenze locali packages/sonarpad_audio_dsp, third_party/epubx e third_party/rhttp_plus; per la compilazione devono essere presenti nel progetto sul PC. Mancavano anche alcuni strumenti richiamati dai test, fra cui tool/check_user_facing_strings.py e scripts/: questa fase ripristina soltanto il generatore del calendario. Non sono stati rimossi file del pacchetto di partenza.

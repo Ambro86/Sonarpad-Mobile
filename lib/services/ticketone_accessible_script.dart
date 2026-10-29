@@ -1,5 +1,60 @@
 import 'dart:convert';
 
+/// Remove observed advertising frames, not payment, login or security frames.
+/// Advertising SVG titles such as Asset_14_1 are exposed inside these frames.
+const ticketOneRemoveAdsScript = r'''
+(() => {
+  if (!['https://www.ticketone.it', 'https://auth.ticketone.it'].includes(location.origin) || window.top !== window) return;
+  if (window.__sonarpadTicketOneAds) { window.__sonarpadTicketOneAds(); return; }
+  const clean = () => {
+    for (const frame of document.querySelectorAll('iframe')) {
+      let host = '';
+      try { host = new URL(frame.src, location.href).hostname; } catch (_) {}
+      const adHost = ['googlesyndication.com', 'doubleclick.net'].some(h => host === h || host.endsWith('.' + h));
+      const adId = /^google_ads_iframe_|^google_ads_top_frame$/.test(frame.id);
+      const adTitle = /^(contenuto dell['’]annuncio di terze parti|3rd party ad content|third.party ad content)$/i.test(frame.title.trim());
+      if (!adHost && !adId && !adTitle) continue;
+      if (frame.getAttribute('aria-hidden') !== 'true') frame.setAttribute('aria-hidden', 'true');
+      if (frame.tabIndex !== -1) frame.tabIndex = -1;
+      if (!frame.inert) frame.inert = true;
+      if (frame.style.getPropertyValue('display') !== 'none' || frame.style.getPropertyPriority('display') !== 'important') {
+        frame.style.setProperty('display', 'none', 'important');
+      }
+    }
+  };
+  window.__sonarpadTicketOneAds = clean;
+  let queued = false;
+  new MutationObserver(() => {
+    if (queued) return;
+    queued = true;
+    setTimeout(() => { queued = false; clean(); }, 200);
+  }).observe(document.documentElement, {subtree:true, childList:true, attributes:true, attributeFilter:['src','title','id','style']});
+  clean();
+})();
+''';
+
+/// Move accessibility into the revealed document instead of leaving TalkBack on
+/// Flutter's Back button. Focus only: never activate a control or submit a form.
+const ticketOneWebsiteFocusScript = r'''
+(() => {
+  if (!['https://www.ticketone.it', 'https://auth.ticketone.it'].includes(location.origin) || window.top !== window) return;
+  const visible = e => e && e.getClientRects().length > 0 &&
+    getComputedStyle(e).display !== 'none' && getComputedStyle(e).visibility !== 'hidden' &&
+    !e.closest('[hidden], [aria-hidden="true"]');
+  const dialog = [...document.querySelectorAll('[role="dialog"], [aria-modal="true"]')].find(visible);
+  const paypal = !dialog && document.querySelector('[data-qa="summary-page"]') &&
+    document.querySelector('iframe[title="PayPal-paypal"]');
+  const root = dialog || document;
+  const heading = [...root.querySelectorAll('h1,h2,[role="heading"]')].find(visible);
+  const target = (visible(paypal) && paypal) || heading || dialog || document.body;
+  if (!target) return;
+  if (target === paypal) target.setAttribute('aria-label', 'PayPal');
+  if (!target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1');
+  target.scrollIntoView({block: 'center'});
+  target.focus({preventScroll: true});
+})();
+''';
+
 /// Projects the site's real controls; never builds an order from guessed API
 /// parameters. Hidden fields, credentials and payment frames stay on the site.
 const ticketOneUiSnapshotScript = r'''
@@ -19,16 +74,39 @@ const ticketOneUiSnapshotScript = r'''
     !e.closest('[hidden], .hidden') && [...(e.labels || [])].some(visible));
   const path = location.pathname;
   const login = location.hostname === 'auth.ticketone.it';
-  const registration = !login && path.startsWith('/dashboard/') &&
-    !!document.querySelector('ev-registration-page');
+  const externalProfile = !login && path === '/external-customer-data/';
+  const registration = externalProfile || (!login && path.startsWith('/dashboard/') &&
+    !!document.querySelector('ev-registration-page'));
   const event = !login && path.startsWith('/event/');
   const checkout = !login && path === '/checkout.html';
   const review = checkout && !!document.querySelector('[data-qa="summary-page"]');
   let root = login ? document.querySelector('#mainContainer, #kc-content, #kc-form-login, #kc-register-form, #kc-otp-login-form, form') :
-    registration ? document.querySelector('ev-registration-page') :
+    registration ? (externalProfile ? document.querySelector('app-external-customer-data-form') : document.querySelector('ev-registration-page')) :
     event ? document.querySelector('form.js-ticket-selection-with-limits') :
     checkout ? document.querySelector('main, [role="main"], app-root') || document.body : null;
-  if (!root) return JSON.stringify({status:'waiting'});
+  // Structural diagnostics only: never text, values, URLs, tokens or attributes.
+  const diagnostic = (status, reason) => JSON.stringify({status, diagnostics:{
+    reason, page:login?'login':registration?'registration':event?'event':checkout?'checkout':path.startsWith('/dashboard')?'account':'other',
+    ready:document.readyState, root:!!root,
+    forms:document.forms.length, frames:document.querySelectorAll('iframe').length,
+    controls:document.querySelectorAll('input,select,textarea').length,
+    dialogs:[...document.querySelectorAll('[role="dialog"], [aria-modal="true"]')].filter(visible).length,
+    customCombos:[...document.querySelectorAll('[role="combobox"]')].filter(visible).length,
+    cookies:[...document.querySelectorAll('#cmpbox, #onetrust-banner-sdk, #CybotCookiebotDialog')].filter(visible).length
+  }});
+  // The identity server can return an HTML denial instead of the next form.
+  // This is not a slowly loading login page and must not be polled as one.
+  if (login && /^access denied$/i.test(norm(document.title))) {
+    window.__sonarpadTicketOneUi = null;
+    return diagnostic('access-denied', 'access_denied');
+  }
+  // The live event page opens this modal after AddToShoppingCart. It covers
+  // the ticket form: never offer that underlying form as if it were usable.
+  if ([...document.querySelectorAll('.js-cc-layer')].some(visible)) {
+    window.__sonarpadTicketOneUi = null;
+    return diagnostic('security-check', 'security_check');
+  }
+  if (!root) return diagnostic('waiting', 'root_missing');
   if (checkout || registration) {
     const dialog = [...document.querySelectorAll('[role="dialog"], [aria-modal="true"]')]
       .find(e => visible(e) && !e.closest('#cmpbox, #onetrust-banner-sdk, #CybotCookiebotDialog'));
@@ -42,21 +120,22 @@ const ticketOneUiSnapshotScript = r'''
   const unsupported = controls.some(e => ['file','range','color'].includes(e.type)) ||
     [...root.querySelectorAll('[role="combobox"]')].some(e => visible(e) && e.tagName !== 'SELECT' &&
       !e.querySelector('input:disabled'));
-  if (unsupported || controls.length > 60) return JSON.stringify({status:'unsupported'});
-  if (controls.some(e => /^cc-/.test(e.autocomplete || '') || /card.?number|creditcard|cvv|cvc/i.test(e.name || e.id))) return JSON.stringify({status:'payment-provider'});
+  if (unsupported || controls.length > 60) return diagnostic('unsupported', controls.length > 60 ? 'control_limit' : 'custom_control');
+  if (controls.some(e => /^cc-/.test(e.autocomplete || '') || /card.?number|creditcard|cvv|cvc/i.test(e.name || e.id))) return diagnostic('payment-provider', 'payment_fields');
   const revision = Date.now().toString(36) + Math.random().toString(36).slice(2);
   const nodes = new Map(), fields = [];
   const remember = (key, e) => nodes.set(key, {e, type:e.type, name:e.name, text:label(e)});
   for (const e of controls) {
     const id = 'f' + fields.length;
     let text = label(e);
-    if (!text || text.length > 1200) return JSON.stringify({status:'unsupported'});
+    if (!text || text.length > 1200) return diagnostic('unsupported', !text ? 'missing_label' : 'label_limit');
     if (event && e.dataset.pcTitle) text = norm(e.dataset.pcTitle + ' — ' + text);
     const consent = e.closest('.evi-widget')?.querySelector('.evi-widget-text-below');
     if (consent) text += ' — ' + norm(consent.textContent);
     const role = e.getAttribute('role');
     const kind = e.tagName === 'SELECT' ? 'select' : ['radio','checkbox'].includes(role) ? role : e.type === 'checkbox' || e.type === 'radio' ? e.type : 'text';
-    const secret = e.type === 'password' || e.autocomplete === 'one-time-code' || /otp|totp|verification.?code/i.test(e.name || e.id);
+    const otpDigit = login && /^(first|second|third|fourth|fifth|sixth) digit$/i.test(text);
+    const secret = otpDigit || e.type === 'password' || e.autocomplete === 'one-time-code' || /otp|totp|verification.?code/i.test(e.name || e.id);
     fields.push({id, label:text, kind, type:e.type || 'text', required:e.required,
       keyboard:e.type === 'email' || e.autocomplete === 'email' ? 'email' : e.type === 'tel' || /phone|mobile/i.test(e.name || e.id) ? 'phone' : e.type === 'number' || e.inputMode === 'numeric' || /postal|zipcode|postcode/i.test(e.name || e.id) ? 'number' : null,
       enabled:!e.disabled && e.getAttribute('aria-disabled') !== 'true', secret,
@@ -69,6 +148,7 @@ const ticketOneUiSnapshotScript = r'''
   if (login) candidates = [...root.querySelectorAll('button, input[type="submit"], a')];
   if (registration) candidates = [...root.querySelectorAll('button, input[type="submit"], [role="button"]')]
     .filter(e => e.matches('[data-qa="registration-button"]') ||
+      (externalProfile && e.matches('[data-qa="save-data-button"]')) ||
       !!e.closest('[data-qa="registration-button"], ev-pl-button[dataqa="registration-button"]') ||
       /^(registrati|crea account|crea un account|conferma|continua|invia codice|verifica|register|create account|verify|continue)$/i.test(label(e)));
   if (event) candidates = [...root.querySelectorAll('[data-qa="AddToShoppingCart"]')];
@@ -87,7 +167,7 @@ const ticketOneUiSnapshotScript = r'''
       submit:e.tagName !== 'A' && (e.type === 'submit' || e.hasAttribute('data-qa') || checkout || registration)});
     remember(id,e);
   }
-  if (!fields.length && !actions.length) return JSON.stringify({status:'waiting'});
+  if (!fields.length && !actions.length) return diagnostic('waiting', 'controls_missing');
   const qty = event ? root.querySelector('[data-qa="TicketAmount"]') : null;
   const chosen = root.querySelector('input.js-fast-booking-item:checked') || root.querySelector('input.js-fast-booking-item');
   const quantity = qty && chosen ? {value:Number(qty.textContent),min:Number(chosen.dataset.min || 1),max:Number(chosen.dataset.max || 10)} : null;

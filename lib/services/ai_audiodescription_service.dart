@@ -7630,6 +7630,7 @@ $nonverbalInstruction''';
         final failure = AudioDescriptionFallbacks.classifyHttp(
           statusCode: response.statusCode,
           body: response.body,
+          sonarpadApi: uri.toString().startsWith('$_sonarpadAiBase/'),
         );
         if (isSonarpadAi) {
           await _logSonarpadAi(

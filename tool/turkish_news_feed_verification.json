@@ -1,0 +1,911 @@
+{
+  "schema_version": 1,
+  "generated_at_utc": "2026-10-13T00:50:38.878176+00:00",
+  "catalog_file": "lib/services/news_sources/turkish_news_sources.dart",
+  "summary": {
+    "builtin_sources": 11,
+    "publishers": 10,
+    "google_news_sources": 1,
+    "google_topic_feeds": 7,
+    "publisher_category_feeds": 10,
+    "static_catalog_feed_urls": 28,
+    "local_examples": 1,
+    "http_xml_checks": 29,
+    "http_200_xml_nonempty": 29,
+    "rss_feeds": 24,
+    "atom_feeds": 5
+  },
+  "method": {
+    "discovery": "Official RSS pages and publisher-domain feeds, researched with web system1 and page opens. Where the web reader blocked or could not parse XML, direct read-only HTTP was used.",
+    "xml_validation": "Python urllib HTTP GET followed by xml.etree.ElementTree RSS item or Atom entry parsing.",
+    "http_user_agent": "Sonarpad RSS verification/1.0",
+    "source_ref_ids": "Conversation search/open identifiers are retained with durable official URLs; an absent identifier does not replace direct HTTP evidence.",
+    "source_reports": [
+      "turkish_phase4_feeds_a.json",
+      "turkish_phase4_feeds_b.json"
+    ],
+    "test_fixture": "test/fixtures/ntv_atom.xml is synthetic and contains no copied publisher article text."
+  },
+  "sources": [
+    {
+      "name": "Google News",
+      "feed_url": "https://news.google.com/rss?hl=tr&gl=TR&ceid=TR:tr",
+      "official_rss_page": null,
+      "primary_evidence_urls": [
+        "https://news.google.com/rss?hl=tr&gl=TR&ceid=TR:tr"
+      ],
+      "source_ref_ids": [
+        "turn13view2",
+        "turn19view0"
+      ],
+      "verification_status": "http_200_xml_parsed_nonempty",
+      "verification": {
+        "requested_url": "https://news.google.com/rss?hl=tr&gl=TR&ceid=TR:tr",
+        "final_url": "https://news.google.com/rss?hl=tr&gl=TR&ceid=TR:tr",
+        "checked_at_utc": "2026-10-13T00:39:17.922251+00:00",
+        "timestamp_scope": "request_start",
+        "http_status": 200,
+        "content_type": "application/xml; charset=utf-8",
+        "xml_parsed": true,
+        "xml_root": "rss",
+        "feed_format": "rss",
+        "item_count": 34,
+        "channel_title": "En çok okunan haberler - Google Haberler",
+        "declared_language": "tr",
+        "content_language": "tr",
+        "language_evidence": "XML language element",
+        "first_item_pub_date": "Mon, 12 Oct 2026 07:19:00 GMT",
+        "evidence_origin": "research_a",
+        "bytes": 116411
+      },
+      "categories": [
+        {
+          "topic": "NATION",
+          "category_label": "turkey",
+          "label_arb_key": "radioCountryOptionTr",
+          "feed_url": "https://news.google.com/news/rss/headlines/section/topic/NATION?hl=tr&gl=TR&ceid=TR:tr",
+          "verification": {
+            "requested_url": "https://news.google.com/news/rss/headlines/section/topic/NATION?hl=tr&gl=TR&ceid=TR:tr",
+            "final_url": "https://news.google.com/rss/topics/CAAqIggKIhxDQkFTRHdvSkwyMHZNREY2Ym1OZkVnSjBjaWdBUAE?hl=tr&gl=TR&ceid=TR:tr",
+            "checked_at_utc": "2026-10-13T00:45:38.703812+00:00",
+            "timestamp_scope": "request_start",
+            "http_status": 200,
+            "content_type": "application/xml; charset=utf-8",
+            "xml_parsed": true,
+            "xml_root": "rss",
+            "feed_format": "rss",
+            "item_count": 70,
+            "channel_title": "Türkiye - En yeni - Google Haberler",
+            "declared_language": "tr",
+            "content_language": "tr",
+            "language_evidence": "XML language element",
+            "first_item_pub_date": "Mon, 12 Oct 2026 13:03:32 GMT",
+            "evidence_origin": "google_topic_http_check",
+            "bytes": 243054
+          }
+        },
+        {
+          "topic": "WORLD",
+          "category_label": "world",
+          "label_arb_key": "newsCategoryWorld",
+          "feed_url": "https://news.google.com/news/rss/headlines/section/topic/WORLD?hl=tr&gl=TR&ceid=TR:tr",
+          "verification": {
+            "requested_url": "https://news.google.com/news/rss/headlines/section/topic/WORLD?hl=tr&gl=TR&ceid=TR:tr",
+            "final_url": "https://news.google.com/rss/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRGx1YlY4U0FuUnlHZ0pVVWlnQVAB?hl=tr&gl=TR&ceid=TR:tr",
+            "checked_at_utc": "2026-10-13T00:45:38.704956+00:00",
+            "timestamp_scope": "request_start",
+            "http_status": 200,
+            "content_type": "application/xml; charset=utf-8",
+            "xml_parsed": true,
+            "xml_root": "rss",
+            "feed_format": "rss",
+            "item_count": 53,
+            "channel_title": "Dünya - En yeni - Google Haberler",
+            "declared_language": "tr",
+            "content_language": "tr",
+            "language_evidence": "XML language element",
+            "first_item_pub_date": "Mon, 12 Oct 2026 21:26:32 GMT",
+            "evidence_origin": "google_topic_http_check",
+            "bytes": 175286
+          }
+        },
+        {
+          "topic": "BUSINESS",
+          "category_label": "business",
+          "label_arb_key": "newsCategoryBusiness",
+          "feed_url": "https://news.google.com/news/rss/headlines/section/topic/BUSINESS?hl=tr&gl=TR&ceid=TR:tr",
+          "verification": {
+            "requested_url": "https://news.google.com/news/rss/headlines/section/topic/BUSINESS?hl=tr&gl=TR&ceid=TR:tr",
+            "final_url": "https://news.google.com/rss/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRGx6TVdZU0FuUnlHZ0pVVWlnQVAB?hl=tr&gl=TR&ceid=TR:tr",
+            "checked_at_utc": "2026-10-13T00:45:38.705529+00:00",
+            "timestamp_scope": "request_start",
+            "http_status": 200,
+            "content_type": "application/xml; charset=utf-8",
+            "xml_parsed": true,
+            "xml_root": "rss",
+            "feed_format": "rss",
+            "item_count": 70,
+            "channel_title": "İş - En yeni - Google Haberler",
+            "declared_language": "tr",
+            "content_language": "tr",
+            "language_evidence": "XML language element",
+            "first_item_pub_date": "Mon, 12 Oct 2026 08:02:04 GMT",
+            "evidence_origin": "google_topic_http_check",
+            "bytes": 223267
+          }
+        },
+        {
+          "topic": "TECHNOLOGY",
+          "category_label": "technology",
+          "label_arb_key": "newsCategoryTechnology",
+          "feed_url": "https://news.google.com/news/rss/headlines/section/topic/TECHNOLOGY?hl=tr&gl=TR&ceid=TR:tr",
+          "verification": {
+            "requested_url": "https://news.google.com/news/rss/headlines/section/topic/TECHNOLOGY?hl=tr&gl=TR&ceid=TR:tr",
+            "final_url": "https://news.google.com/rss/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRGRqTVhZU0FuUnlHZ0pVVWlnQVAB?hl=tr&gl=TR&ceid=TR:tr",
+            "checked_at_utc": "2026-10-13T00:45:38.705992+00:00",
+            "timestamp_scope": "request_start",
+            "http_status": 200,
+            "content_type": "application/xml; charset=utf-8",
+            "xml_parsed": true,
+            "xml_root": "rss",
+            "feed_format": "rss",
+            "item_count": 60,
+            "channel_title": "Teknoloji - En yeni - Google Haberler",
+            "declared_language": "tr",
+            "content_language": "tr",
+            "language_evidence": "XML language element",
+            "first_item_pub_date": "Mon, 12 Oct 2026 07:03:21 GMT",
+            "evidence_origin": "google_topic_http_check",
+            "bytes": 86501
+          }
+        },
+        {
+          "topic": "ENTERTAINMENT",
+          "category_label": "entertainment",
+          "label_arb_key": "newsCategoryEntertainment",
+          "feed_url": "https://news.google.com/news/rss/headlines/section/topic/ENTERTAINMENT?hl=tr&gl=TR&ceid=TR:tr",
+          "verification": {
+            "requested_url": "https://news.google.com/news/rss/headlines/section/topic/ENTERTAINMENT?hl=tr&gl=TR&ceid=TR:tr",
+            "final_url": "https://news.google.com/rss/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNREpxYW5RU0FuUnlHZ0pVVWlnQVAB?hl=tr&gl=TR&ceid=TR:tr",
+            "checked_at_utc": "2026-10-13T00:45:48.231759+00:00",
+            "timestamp_scope": "request_start",
+            "http_status": 200,
+            "content_type": "application/xml; charset=utf-8",
+            "xml_parsed": true,
+            "xml_root": "rss",
+            "feed_format": "rss",
+            "item_count": 49,
+            "channel_title": "Eğlence - En yeni - Google Haberler",
+            "declared_language": "tr",
+            "content_language": "tr",
+            "language_evidence": "XML language element",
+            "first_item_pub_date": "Mon, 12 Oct 2026 20:19:19 GMT",
+            "evidence_origin": "google_topic_http_check",
+            "bytes": 157883
+          }
+        },
+        {
+          "topic": "SPORTS",
+          "category_label": "sports",
+          "label_arb_key": "newsCategorySports",
+          "feed_url": "https://news.google.com/news/rss/headlines/section/topic/SPORTS?hl=tr&gl=TR&ceid=TR:tr",
+          "verification": {
+            "requested_url": "https://news.google.com/news/rss/headlines/section/topic/SPORTS?hl=tr&gl=TR&ceid=TR:tr",
+            "final_url": "https://news.google.com/rss/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRFp1ZEdvU0FuUnlHZ0pVVWlnQVAB?hl=tr&gl=TR&ceid=TR:tr",
+            "checked_at_utc": "2026-10-13T00:45:48.358748+00:00",
+            "timestamp_scope": "request_start",
+            "http_status": 200,
+            "content_type": "application/xml; charset=utf-8",
+            "xml_parsed": true,
+            "xml_root": "rss",
+            "feed_format": "rss",
+            "item_count": 48,
+            "channel_title": "Spor - En yeni - Google Haberler",
+            "declared_language": "tr",
+            "content_language": "tr",
+            "language_evidence": "XML language element",
+            "first_item_pub_date": "Mon, 12 Oct 2026 11:40:38 GMT",
+            "evidence_origin": "google_topic_http_check",
+            "bytes": 176016
+          }
+        },
+        {
+          "topic": "HEALTH",
+          "category_label": "health",
+          "label_arb_key": "newsCategoryHealth",
+          "feed_url": "https://news.google.com/news/rss/headlines/section/topic/HEALTH?hl=tr&gl=TR&ceid=TR:tr",
+          "verification": {
+            "requested_url": "https://news.google.com/news/rss/headlines/section/topic/HEALTH?hl=tr&gl=TR&ceid=TR:tr",
+            "final_url": "https://news.google.com/rss/topics/CAAqIQgKIhtDQkFTRGdvSUwyMHZNR3QwTlRFU0FuUnlLQUFQAQ?hl=tr&gl=TR&ceid=TR:tr",
+            "checked_at_utc": "2026-10-13T00:45:48.361286+00:00",
+            "timestamp_scope": "request_start",
+            "http_status": 200,
+            "content_type": "application/xml; charset=utf-8",
+            "xml_parsed": true,
+            "xml_root": "rss",
+            "feed_format": "rss",
+            "item_count": 29,
+            "channel_title": "Sağlık - En yeni - Google Haberler",
+            "declared_language": "tr",
+            "content_language": "tr",
+            "language_evidence": "XML language element",
+            "first_item_pub_date": "Mon, 12 Oct 2026 11:55:00 GMT",
+            "evidence_origin": "google_topic_http_check",
+            "bytes": 88309
+          }
+        }
+      ],
+      "locale_parameters": {
+        "hl": "tr",
+        "gl": "TR",
+        "ceid": "TR:tr"
+      },
+      "local_news": {
+        "category_label": "myCity",
+        "label_arb_key": "newsCategoryMyCity",
+        "is_local": true,
+        "placeholder_uri": "https://news.google.com/",
+        "city_example": "Ankara",
+        "example_feed_url": "https://news.google.com/rss/search?q=Ankara&hl=tr&gl=TR&ceid=TR:tr",
+        "implementation": "news_screen.dart builds a city search URL, using the Turkish TR edition even outside Turkey.",
+        "verification": {
+          "requested_url": "https://news.google.com/rss/search?q=Ankara&hl=tr&gl=TR&ceid=TR:tr",
+          "final_url": "https://news.google.com/rss/search?q=Ankara&hl=tr&gl=TR&ceid=TR:tr",
+          "checked_at_utc": "2026-10-13T00:45:48.636798+00:00",
+          "timestamp_scope": "request_start",
+          "http_status": 200,
+          "content_type": "application/xml; charset=utf-8",
+          "xml_parsed": true,
+          "xml_root": "rss",
+          "feed_format": "rss",
+          "item_count": 109,
+          "channel_title": "\"Ankara\" - Google Haberler",
+          "declared_language": "tr",
+          "content_language": "tr",
+          "language_evidence": "XML language element",
+          "first_item_pub_date": "Mon, 12 Oct 2026 16:32:16 GMT",
+          "evidence_origin": "google_local_http_check",
+          "bytes": 150518
+        }
+      },
+      "notes": [
+        "All seven existing named topic URLs returned HTTP 200 after Google redirected to its topic identifiers, preserving hl=tr, gl=TR and ceid=TR:tr. No topic URL change was necessary.",
+        "The official Google IMPORTFEED help demonstrates Google News feeds but does not specify modern Turkish edition parameters. Direct responses from news.google.com are the primary verification of these URLs."
+      ]
+    },
+    {
+      "name": "Anadolu Ajansı",
+      "feed_url": "https://www.aa.com.tr/tr/rss/default?cat=guncel",
+      "official_rss_page": "https://www.aa.com.tr/tr/turkiye/guvenilir-haberin-kaynagi-aa-her-an-yaninizda/1113561",
+      "primary_evidence_urls": [
+        "https://www.aa.com.tr/tr/rss/default?cat=guncel",
+        "https://www.aa.com.tr/tr/turkiye/guvenilir-haberin-kaynagi-aa-her-an-yaninizda/1113561"
+      ],
+      "source_ref_ids": [
+        "turn13view1",
+        "turn16view0"
+      ],
+      "verification_status": "http_200_xml_parsed_nonempty",
+      "verification": {
+        "requested_url": "https://www.aa.com.tr/tr/rss/default?cat=guncel",
+        "final_url": "https://www.aa.com.tr/tr/rss/default?cat=guncel",
+        "checked_at_utc": "2026-10-13T00:39:17.919676+00:00",
+        "timestamp_scope": "request_start",
+        "http_status": 200,
+        "content_type": "application/xml",
+        "xml_parsed": true,
+        "xml_root": "rss",
+        "feed_format": "rss",
+        "item_count": 27,
+        "channel_title": "Anadolu Ajansı Güncel Haberler",
+        "declared_language": "tr",
+        "content_language": "tr",
+        "language_evidence": "XML language element",
+        "first_item_pub_date": "Tue, 13 Oct 2026 03:07:00 +0300",
+        "evidence_origin": "research_a",
+        "bytes": 20445
+      },
+      "categories": [],
+      "notes": [
+        "The current RSS link in the official institutional navigation points directly to this general Güncel feed. No category parameter was inferred."
+      ]
+    },
+    {
+      "name": "TRT Haber",
+      "feed_url": "https://www.trthaber.com/sondakika_articles.rss",
+      "official_rss_page": "https://www.trthaber.com/sitene_ekle.html",
+      "primary_evidence_urls": [
+        "https://www.trthaber.com/sondakika_articles.rss",
+        "https://www.trthaber.com/sitene_ekle.html"
+      ],
+      "source_ref_ids": [
+        "turn4search1",
+        "turn12view0",
+        "turn16view1"
+      ],
+      "verification_status": "http_200_xml_parsed_nonempty",
+      "verification": {
+        "requested_url": "https://www.trthaber.com/sondakika_articles.rss",
+        "final_url": "https://www.trthaber.com/sondakika_articles.rss",
+        "checked_at_utc": "2026-10-13T00:39:17.920850+00:00",
+        "timestamp_scope": "request_start",
+        "http_status": 200,
+        "content_type": "text/xml; charset:utf-8;;charset=UTF-8",
+        "xml_parsed": true,
+        "xml_root": "rss",
+        "feed_format": "rss",
+        "item_count": 60,
+        "channel_title": "TRT Haber Son Dakika Haberler",
+        "declared_language": "tr-TR",
+        "content_language": "tr",
+        "language_evidence": "XML language element",
+        "first_item_pub_date": "Tue, 13 Oct 2026 01:14:00 +0300",
+        "evidence_origin": "research_a",
+        "bytes": 99542
+      },
+      "categories": [
+        {
+          "official_category_name": "Dünya",
+          "category_label": "world",
+          "label_arb_key": "newsCategoryWorld",
+          "feed_url": "https://www.trthaber.com/dunya_articles.rss",
+          "official_rss_page": "https://www.trthaber.com/sitene_ekle.html",
+          "verification": {
+            "requested_url": "https://www.trthaber.com/dunya_articles.rss",
+            "final_url": "https://www.trthaber.com/dunya_articles.rss",
+            "checked_at_utc": "2026-10-13T00:40:07.801456+00:00",
+            "timestamp_scope": "request_start",
+            "http_status": 200,
+            "content_type": "text/xml; charset:utf-8;;charset=UTF-8",
+            "xml_parsed": true,
+            "xml_root": "rss",
+            "feed_format": "rss",
+            "item_count": 60,
+            "channel_title": "TRT Haber Dünya Haberleri",
+            "declared_language": "tr-TR",
+            "content_language": "tr",
+            "language_evidence": "XML language element",
+            "first_item_pub_date": "Tue, 13 Oct 2026 00:56:00 +0300",
+            "evidence_origin": "research_a",
+            "bytes": 100423
+          }
+        },
+        {
+          "official_category_name": "Ekonomi",
+          "category_label": "business",
+          "label_arb_key": "newsCategoryBusiness",
+          "feed_url": "https://www.trthaber.com/ekonomi_articles.rss",
+          "official_rss_page": "https://www.trthaber.com/sitene_ekle.html",
+          "verification": {
+            "requested_url": "https://www.trthaber.com/ekonomi_articles.rss",
+            "final_url": "https://www.trthaber.com/ekonomi_articles.rss",
+            "checked_at_utc": "2026-10-13T00:40:07.801886+00:00",
+            "timestamp_scope": "request_start",
+            "http_status": 200,
+            "content_type": "text/xml; charset:utf-8;;charset=UTF-8",
+            "xml_parsed": true,
+            "xml_root": "rss",
+            "feed_format": "rss",
+            "item_count": 60,
+            "channel_title": "TRT Haber Ekonomi Haberleri",
+            "declared_language": "tr-TR",
+            "content_language": "tr",
+            "language_evidence": "XML language element",
+            "first_item_pub_date": "Mon, 12 Oct 2026 14:20:00 +0300",
+            "evidence_origin": "research_a",
+            "bytes": 94751
+          }
+        },
+        {
+          "official_category_name": "Spor",
+          "category_label": "sports",
+          "label_arb_key": "newsCategorySports",
+          "feed_url": "https://www.trthaber.com/spor_articles.rss",
+          "official_rss_page": "https://www.trthaber.com/sitene_ekle.html",
+          "verification": {
+            "requested_url": "https://www.trthaber.com/spor_articles.rss",
+            "final_url": "https://www.trthaber.com/spor_articles.rss",
+            "checked_at_utc": "2026-10-13T00:40:13.242429+00:00",
+            "timestamp_scope": "request_start",
+            "http_status": 200,
+            "content_type": "text/xml; charset:utf-8;;charset=UTF-8",
+            "xml_parsed": true,
+            "xml_root": "rss",
+            "feed_format": "rss",
+            "item_count": 60,
+            "channel_title": "TRT Haber Spor Haberleri",
+            "declared_language": "tr-TR",
+            "content_language": "tr",
+            "language_evidence": "XML language element",
+            "first_item_pub_date": "Sat, 10 Oct 2026 15:03:00 +0300",
+            "evidence_origin": "research_a",
+            "bytes": 88635
+          }
+        }
+      ]
+    },
+    {
+      "name": "NTV",
+      "feed_url": "https://www.ntv.com.tr/son-dakika.rss",
+      "official_rss_page": "https://www.ntv.com.tr/rss",
+      "primary_evidence_urls": [
+        "https://www.ntv.com.tr/son-dakika.rss",
+        "https://www.ntv.com.tr/rss"
+      ],
+      "source_ref_ids": [],
+      "verification_status": "http_200_xml_parsed_nonempty",
+      "verification": {
+        "requested_url": "https://www.ntv.com.tr/son-dakika.rss",
+        "final_url": "https://www.ntv.com.tr/son-dakika.rss",
+        "checked_at_utc": "2026-10-13T00:41:17.224903+00:00",
+        "timestamp_scope": "request_start",
+        "http_status": 200,
+        "content_type": "application/xml",
+        "xml_parsed": true,
+        "xml_root": "{http://www.w3.org/2005/Atom}feed",
+        "feed_format": "atom",
+        "item_count": 20,
+        "channel_title": "ntv.com.tr",
+        "declared_language": null,
+        "content_language": "tr",
+        "language_evidence": "Turkish title text inspected; language attribute/element absent",
+        "first_item_pub_date": "2026-10-13T03:30:00+03:00",
+        "evidence_origin": "research_a",
+        "bytes": 71265
+      },
+      "categories": [
+        {
+          "official_category_name": "Türkiye",
+          "category_label": "turkey",
+          "label_arb_key": "radioCountryOptionTr",
+          "feed_url": "https://www.ntv.com.tr/turkiye.rss",
+          "official_rss_page": "https://www.ntv.com.tr/rss",
+          "verification": {
+            "requested_url": "https://www.ntv.com.tr/turkiye.rss",
+            "final_url": "https://www.ntv.com.tr/turkiye.rss",
+            "checked_at_utc": "2026-10-13T00:41:17.225663+00:00",
+            "timestamp_scope": "request_start",
+            "http_status": 200,
+            "content_type": "application/xml",
+            "xml_parsed": true,
+            "xml_root": "{http://www.w3.org/2005/Atom}feed",
+            "feed_format": "atom",
+            "item_count": 20,
+            "channel_title": "ntv.com.tr",
+            "declared_language": null,
+            "content_language": "tr",
+            "language_evidence": "Turkish title text inspected; language attribute/element absent",
+            "first_item_pub_date": "2026-10-13T02:47:46+03:00",
+            "evidence_origin": "research_a",
+            "bytes": 70415
+          }
+        },
+        {
+          "official_category_name": "Dünya",
+          "category_label": "world",
+          "label_arb_key": "newsCategoryWorld",
+          "feed_url": "https://www.ntv.com.tr/dunya.rss",
+          "official_rss_page": "https://www.ntv.com.tr/rss",
+          "verification": {
+            "requested_url": "https://www.ntv.com.tr/dunya.rss",
+            "final_url": "https://www.ntv.com.tr/dunya.rss",
+            "checked_at_utc": "2026-10-13T00:41:17.226100+00:00",
+            "timestamp_scope": "request_start",
+            "http_status": 200,
+            "content_type": "application/xml",
+            "xml_parsed": true,
+            "xml_root": "{http://www.w3.org/2005/Atom}feed",
+            "feed_format": "atom",
+            "item_count": 20,
+            "channel_title": "ntv.com.tr",
+            "declared_language": null,
+            "content_language": "tr",
+            "language_evidence": "Turkish title text inspected; language attribute/element absent",
+            "first_item_pub_date": "2026-10-13T03:27:52+03:00",
+            "evidence_origin": "research_a",
+            "bytes": 92350
+          }
+        },
+        {
+          "official_category_name": "Ekonomi",
+          "category_label": "business",
+          "label_arb_key": "newsCategoryBusiness",
+          "feed_url": "https://www.ntv.com.tr/ekonomi.rss",
+          "official_rss_page": "https://www.ntv.com.tr/rss",
+          "verification": {
+            "requested_url": "https://www.ntv.com.tr/ekonomi.rss",
+            "final_url": "https://www.ntv.com.tr/ekonomi.rss",
+            "checked_at_utc": "2026-10-13T00:41:21.471999+00:00",
+            "timestamp_scope": "request_start",
+            "http_status": 200,
+            "content_type": "application/xml",
+            "xml_parsed": true,
+            "xml_root": "{http://www.w3.org/2005/Atom}feed",
+            "feed_format": "atom",
+            "item_count": 20,
+            "channel_title": "ntv.com.tr",
+            "declared_language": null,
+            "content_language": "tr",
+            "language_evidence": "Turkish title text inspected; language attribute/element absent",
+            "first_item_pub_date": "2026-10-05T08:10:30+03:00",
+            "evidence_origin": "research_a",
+            "bytes": 75620
+          }
+        },
+        {
+          "official_category_name": "Spor&Skor",
+          "category_label": "sports",
+          "label_arb_key": "newsCategorySports",
+          "feed_url": "https://www.ntv.com.tr/sporskor.rss",
+          "official_rss_page": "https://www.ntv.com.tr/rss",
+          "verification": {
+            "requested_url": "https://www.ntv.com.tr/sporskor.rss",
+            "final_url": "https://www.ntv.com.tr/sporskor.rss",
+            "checked_at_utc": "2026-10-13T00:41:21.547612+00:00",
+            "timestamp_scope": "request_start",
+            "http_status": 200,
+            "content_type": "application/xml",
+            "xml_parsed": true,
+            "xml_root": "{http://www.w3.org/2005/Atom}feed",
+            "feed_format": "atom",
+            "item_count": 20,
+            "channel_title": "ntv.com.tr",
+            "declared_language": null,
+            "content_language": "tr",
+            "language_evidence": "Turkish title text inspected; language attribute/element absent",
+            "first_item_pub_date": "2026-10-13T00:18:57+03:00",
+            "evidence_origin": "research_a",
+            "bytes": 86337
+          }
+        }
+      ],
+      "notes": [
+        "The homepage links to the official /rss catalogue; both were retrieved over HTTP. The web search reader was blocked by robots.txt.",
+        "Despite .rss URLs, these five feeds use the Atom namespace. The existing NewsService Atom parser is covered by a new MockClient test with synthetic data.",
+        "The first entry of the verified Ekonomi feed was dated 2026-10-05; feed entry order is not assumed to be newest-first."
+      ]
+    },
+    {
+      "name": "Habertürk",
+      "feed_url": "https://www.haberturk.com/rss",
+      "official_rss_page": "https://www.haberturk.com/rss/anasayfa",
+      "primary_evidence_urls": [
+        "https://www.haberturk.com/rss",
+        "https://www.haberturk.com/rss/anasayfa"
+      ],
+      "source_ref_ids": [
+        "turn5search0",
+        "turn12view2",
+        "turn16view2"
+      ],
+      "verification_status": "http_200_xml_parsed_nonempty",
+      "verification": {
+        "requested_url": "https://www.haberturk.com/rss",
+        "final_url": "https://www.haberturk.com/rss",
+        "checked_at_utc": "2026-10-13T00:39:17.921760+00:00",
+        "timestamp_scope": "request_start",
+        "http_status": 200,
+        "content_type": "application/xml",
+        "xml_parsed": true,
+        "xml_root": "rss",
+        "feed_format": "rss",
+        "item_count": 100,
+        "channel_title": "HABERTURK.COM",
+        "declared_language": "tr",
+        "content_language": "tr",
+        "language_evidence": "XML language element",
+        "first_item_pub_date": "Mon, 12 Oct 2026 22:41:53 GMT",
+        "evidence_origin": "research_a",
+        "bytes": 111321
+      },
+      "categories": [
+        {
+          "official_category_name": "Dünya",
+          "category_label": "world",
+          "label_arb_key": "newsCategoryWorld",
+          "feed_url": "https://www.haberturk.com/rss/kategori/dunya.xml",
+          "official_rss_page": "https://www.haberturk.com/rss/anasayfa",
+          "verification": {
+            "requested_url": "https://www.haberturk.com/rss/kategori/dunya.xml",
+            "final_url": "https://www.haberturk.com/rss/kategori/dunya.xml",
+            "checked_at_utc": "2026-10-13T00:40:13.348668+00:00",
+            "timestamp_scope": "request_start",
+            "http_status": 200,
+            "content_type": "application/xml",
+            "xml_parsed": true,
+            "xml_root": "rss",
+            "feed_format": "rss",
+            "item_count": 30,
+            "channel_title": "HABERTURK.COM",
+            "declared_language": "tr",
+            "content_language": "tr",
+            "language_evidence": "XML language element",
+            "first_item_pub_date": "Mon, 12 Oct 2026 22:09:16 GMT",
+            "evidence_origin": "research_a",
+            "bytes": 32586
+          }
+        },
+        {
+          "official_category_name": "Ekonomi",
+          "category_label": "business",
+          "label_arb_key": "newsCategoryBusiness",
+          "feed_url": "https://www.haberturk.com/rss/ekonomi.xml",
+          "official_rss_page": "https://www.haberturk.com/rss/anasayfa",
+          "verification": {
+            "requested_url": "https://www.haberturk.com/rss/ekonomi.xml",
+            "final_url": "https://www.haberturk.com/rss/ekonomi.xml",
+            "checked_at_utc": "2026-10-13T00:40:13.383277+00:00",
+            "timestamp_scope": "request_start",
+            "http_status": 200,
+            "content_type": "application/xml",
+            "xml_parsed": true,
+            "xml_root": "rss",
+            "feed_format": "rss",
+            "item_count": 30,
+            "channel_title": "HABERTURK.COM",
+            "declared_language": "tr",
+            "content_language": "tr",
+            "language_evidence": "XML language element",
+            "first_item_pub_date": "Mon, 12 Oct 2026 16:39:20 GMT",
+            "evidence_origin": "research_a",
+            "bytes": 34948
+          }
+        },
+        {
+          "official_category_name": "Spor",
+          "category_label": "sports",
+          "label_arb_key": "newsCategorySports",
+          "feed_url": "https://www.haberturk.com/rss/spor.xml",
+          "official_rss_page": "https://www.haberturk.com/rss/anasayfa",
+          "verification": {
+            "requested_url": "https://www.haberturk.com/rss/spor.xml",
+            "final_url": "https://www.haberturk.com/rss/spor.xml",
+            "checked_at_utc": "2026-10-13T00:40:16.231106+00:00",
+            "timestamp_scope": "request_start",
+            "http_status": 200,
+            "content_type": "application/xml",
+            "xml_parsed": true,
+            "xml_root": "rss",
+            "feed_format": "rss",
+            "item_count": 30,
+            "channel_title": "HABERTURK.COM",
+            "declared_language": "tr",
+            "content_language": "tr",
+            "language_evidence": "XML language element",
+            "first_item_pub_date": "Mon, 12 Oct 2026 20:10:27 GMT",
+            "evidence_origin": "research_a",
+            "bytes": 32197
+          }
+        }
+      ]
+    },
+    {
+      "name": "Hürriyet",
+      "feed_url": "https://www.hurriyet.com.tr/rss/anasayfa",
+      "official_rss_page": null,
+      "primary_evidence_urls": [
+        "https://www.hurriyet.com.tr/rss/anasayfa"
+      ],
+      "source_ref_ids": [
+        "turn13view0"
+      ],
+      "verification_status": "http_200_xml_parsed_nonempty",
+      "verification": {
+        "requested_url": "https://www.hurriyet.com.tr/rss/anasayfa",
+        "final_url": "https://www.hurriyet.com.tr/rss/anasayfa",
+        "checked_at_utc": "2026-10-13T00:40:29.616387+00:00",
+        "timestamp_scope": "request_start",
+        "http_status": 200,
+        "content_type": "application/rss+xml; charset=utf-8",
+        "xml_parsed": true,
+        "xml_root": "rss",
+        "feed_format": "rss",
+        "item_count": 70,
+        "channel_title": "Hürriyet",
+        "declared_language": null,
+        "content_language": "tr",
+        "language_evidence": "Turkish title text inspected; language attribute/element absent",
+        "first_item_pub_date": "Mon, 12 Oct 2026 09:29:00 Z",
+        "evidence_origin": "research_a",
+        "bytes": 124909
+      },
+      "categories": [],
+      "notes": [
+        "No current official RSS catalogue was found. URL discovery used secondary leads, followed by HTTP/XML verification of the feed on the publisher domain.",
+        "The official rss.hurriyet.com.tr landing page contains no feed links. The web search reader was blocked on the main domain; direct HTTP retrieval succeeded."
+      ]
+    },
+    {
+      "name": "Cumhuriyet",
+      "feed_url": "https://www.cumhuriyet.com.tr/rss",
+      "official_rss_page": null,
+      "primary_evidence_urls": [
+        "https://www.cumhuriyet.com.tr/rss"
+      ],
+      "source_ref_ids": [
+        "turn3view0",
+        "turn6view0",
+        "turn9view2"
+      ],
+      "verification_status": "http_200_xml_parsed_nonempty",
+      "verification": {
+        "requested_url": "https://www.cumhuriyet.com.tr/rss",
+        "final_url": "https://www.cumhuriyet.com.tr/rss",
+        "checked_at_utc": "2026-10-13T00:40:59+00:00",
+        "timestamp_scope": "batch_request_start",
+        "http_status": 200,
+        "content_type": "application/rss+xml; charset=utf-8",
+        "xml_parsed": true,
+        "xml_root": "rss",
+        "feed_format": "rss",
+        "item_count": 100,
+        "channel_title": "Cumhuriyet Gazetesi",
+        "declared_language": "tr-TR",
+        "content_language": "tr",
+        "language_evidence": "XML language element",
+        "first_item_pub_date": "Tue, 13 Oct 2026 00:54:00 +0300",
+        "evidence_origin": "research_b"
+      },
+      "categories": [],
+      "notes": [
+        "The legacy /rss/son_dakika.xml redirects to /rss. The final official URL is used in the catalogue. No separate RSS catalogue page was found."
+      ]
+    },
+    {
+      "name": "Sözcü",
+      "feed_url": "https://www.sozcu.com.tr/feeds-haberler",
+      "official_rss_page": "https://www.sozcu.com.tr/rss-servisleri",
+      "primary_evidence_urls": [
+        "https://www.sozcu.com.tr/feeds-haberler",
+        "https://www.sozcu.com.tr/rss-servisleri"
+      ],
+      "source_ref_ids": [
+        "turn2search2",
+        "turn6view1",
+        "turn7view1",
+        "turn7view2"
+      ],
+      "verification_status": "http_200_xml_parsed_nonempty",
+      "verification": {
+        "requested_url": "https://www.sozcu.com.tr/feeds-haberler",
+        "final_url": "https://www.sozcu.com.tr/feeds-haberler",
+        "checked_at_utc": "2026-10-13T00:48:52.731491+00:00",
+        "timestamp_scope": "request_start",
+        "http_status": 200,
+        "content_type": "text/xml; charset=utf-8",
+        "xml_parsed": true,
+        "xml_root": "rss",
+        "feed_format": "rss",
+        "item_count": 50,
+        "channel_title": "Sozcu Gazetesi - Haberler, son dakika haberleri, guncel haber, kose yazilari",
+        "declared_language": "tr",
+        "content_language": "tr",
+        "language_evidence": "XML language element",
+        "first_item_pub_date": "Tue, 13 Oct 2026 03:30:40 +0300",
+        "evidence_origin": "research_b_and_followup_metadata_check",
+        "bytes": 33629
+      },
+      "categories": [],
+      "notes": [
+        "The official RSS catalogue publishes the current /feeds-* endpoint. A follow-up GET filled timestamp, final URL, language and publication-date metadata omitted in the initial research record."
+      ]
+    },
+    {
+      "name": "Sabah",
+      "feed_url": "https://www.sabah.com.tr/rss/anasayfa.xml",
+      "official_rss_page": "https://www.sabah.com.tr/rss-bilgi",
+      "primary_evidence_urls": [
+        "https://www.sabah.com.tr/rss/anasayfa.xml",
+        "https://www.sabah.com.tr/rss-bilgi"
+      ],
+      "source_ref_ids": [
+        "turn7view0",
+        "turn9view3"
+      ],
+      "verification_status": "http_200_xml_parsed_nonempty",
+      "verification": {
+        "requested_url": "https://www.sabah.com.tr/rss/anasayfa.xml",
+        "final_url": "https://www.sabah.com.tr/rss/anasayfa.xml",
+        "checked_at_utc": "2026-10-13T00:40:59+00:00",
+        "timestamp_scope": "batch_request_start",
+        "http_status": 200,
+        "content_type": "text/xml; charset=utf-8",
+        "xml_parsed": true,
+        "xml_root": "rss",
+        "feed_format": "rss",
+        "item_count": 10,
+        "channel_title": "SABAH",
+        "declared_language": "tr-TR",
+        "content_language": "tr",
+        "language_evidence": "XML language element",
+        "first_item_pub_date": "Mon, 12 Oct 2026 19:12:44 +0300",
+        "evidence_origin": "research_b"
+      },
+      "categories": [],
+      "notes": [
+        "The official /rss-bilgi catalogue was retrieved directly and publishes this feed URL. Only the verified homepage feed is included."
+      ]
+    },
+    {
+      "name": "BirGün",
+      "feed_url": "https://www.birgun.net/rss/home",
+      "official_rss_page": "https://www.birgun.net/rss",
+      "primary_evidence_urls": [
+        "https://www.birgun.net/rss/home",
+        "https://www.birgun.net/rss"
+      ],
+      "source_ref_ids": [
+        "turn10search0",
+        "turn11view0",
+        "turn14view0"
+      ],
+      "verification_status": "http_200_xml_parsed_nonempty",
+      "verification": {
+        "requested_url": "https://www.birgun.net/rss/home",
+        "final_url": "https://www.birgun.net/rss/home",
+        "checked_at_utc": "2026-10-13T00:40:59+00:00",
+        "timestamp_scope": "batch_request_start",
+        "http_status": 200,
+        "content_type": "text/xml; charset=utf-8",
+        "xml_parsed": true,
+        "xml_root": "rss",
+        "feed_format": "rss",
+        "item_count": 87,
+        "channel_title": "BirGun.net",
+        "declared_language": "tr-TR",
+        "content_language": "tr",
+        "language_evidence": "XML language element",
+        "first_item_pub_date": "Tue, 13 Oct 2026 01:19:00 +0300",
+        "evidence_origin": "research_b"
+      },
+      "categories": [],
+      "notes": [
+        "The official RSS catalogue publishes this general feed. Optional categories that were not XML-parsed in research are not included in the app catalogue."
+      ]
+    },
+    {
+      "name": "Ensonhaber",
+      "feed_url": "https://www.ensonhaber.com/rss/ensonhaber.xml",
+      "official_rss_page": "https://www.ensonhaber.com/rss-servisleri",
+      "primary_evidence_urls": [
+        "https://www.ensonhaber.com/rss/ensonhaber.xml",
+        "https://www.ensonhaber.com/rss-servisleri"
+      ],
+      "source_ref_ids": [
+        "turn17search0",
+        "turn20view0",
+        "turn21view0"
+      ],
+      "verification_status": "http_200_xml_parsed_nonempty",
+      "verification": {
+        "requested_url": "https://www.ensonhaber.com/rss/ensonhaber.xml",
+        "final_url": "https://www.ensonhaber.com/rss/ensonhaber.xml",
+        "checked_at_utc": "2026-10-13T00:40:59+00:00",
+        "timestamp_scope": "batch_request_start",
+        "http_status": 200,
+        "content_type": "application/xml",
+        "xml_parsed": true,
+        "xml_root": "rss",
+        "feed_format": "rss",
+        "item_count": 50,
+        "channel_title": "Ensonhaber",
+        "declared_language": "tr-TR",
+        "content_language": "tr",
+        "language_evidence": "XML language element",
+        "first_item_pub_date": "Tue, 13 Oct 2026 03:30:24 +0300",
+        "evidence_origin": "research_b"
+      },
+      "categories": [],
+      "notes": [
+        "The official RSS catalogue publishes this general feed. Optional categories that were not XML-parsed in research are not included in the app catalogue."
+      ]
+    }
+  ],
+  "limits": [
+    "Availability and article counts are point-in-time observations on 2026-10-13, not uptime guarantees.",
+    "Batch timestamps from research B identify the recorded batch request start, not the exact completion time of every individual HTTP request.",
+    "NTV and Hürriyet do not declare a feed language; Turkish was checked from the retrieved text.",
+    "The first item publication date is preserved as observed and is not asserted to be the newest item in the feed.",
+    "No Flutter/Dart SDK was available. Added Dart tests were reviewed statically and were not executed; HTTP/XML checks do not prove runtime or device behavior."
+  ]
+}

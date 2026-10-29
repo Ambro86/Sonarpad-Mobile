@@ -41,6 +41,8 @@ class TicketController extends BrowserController {
     Object? body,
   }) async {
     expectSync(method, LoadRequestMethod.get);
+    expectSync(channels, contains('TicketOneUi'));
+    expectSync(channels, contains('TicketOneSession'));
     current = uri.toString();
     loads.add(uri);
   }
@@ -50,11 +52,13 @@ class TicketController extends BrowserController {
     scripts.add(script);
   }
 
+  Iterable<String> get probes =>
+      scripts.where((s) => s.contains('const requestId = '));
   String get requestId =>
       jsonDecode(
             RegExp(
               r'const requestId = ("[a-f0-9]+");',
-            ).firstMatch(scripts.last)!.group(1)!,
+            ).firstMatch(probes.last)!.group(1)!,
           )
           as String;
 
@@ -120,11 +124,14 @@ void main() {
       );
       controller.reply();
       await tester.pumpAndSettle();
-      expect(row(tester, 'status').title, 'Accesso a TicketOne confermato');
-      await row(tester, 'event').onActivate!();
-      await tester.pump();
+      expect(
+        rows(tester).any((r) => r.id == 'event' || r.id == 'retry'),
+        isFalse,
+      );
       expect(controller.loads.last, event);
       expect(find.text('Website'), findsOneWidget);
+      controller.delegate!.onPageFinished!(controller.current);
+      await tester.pump();
       await tester.tap(find.byTooltip('Carrello TicketOne'));
       await tester.pump();
       controller.reply(count: 1, amountMilli: 24000);
@@ -135,12 +142,30 @@ void main() {
       await tester.pump();
       expect(controller.loads.last.path, '/checkout.html');
       expect(controller.loads.last.queryParameters['doc'], 'cart');
-      expect(controller.loads.length, 3);
+      expect(controller.loads.length, path == '/dashboard/login' ? 2 : 3);
       expect(logs, contains('[TicketOne] session_authenticated'));
       expect(logs.join(), isNot(contains(controller.requestId)));
       await tester.pumpWidget(const SizedBox());
     });
   }
+
+  testWidgets('revealing website moves focus into it without navigating back', (
+    tester,
+  ) async {
+    final c = TicketController();
+    await start(tester, c, []);
+    c.reply();
+    await tester.pumpAndSettle();
+    final before = c.loads.length;
+    await row(tester, 'website').onActivate!();
+    await tester.pumpAndSettle();
+    expect(c.scripts.last, ticketOneWebsiteFocusScript);
+    expect(c.loads.length, before);
+    expect(find.byTooltip('Modalità accessibile Sonarpad'), findsOneWidget);
+    c.delegate!.onPageFinished!(c.current);
+    await tester.pumpAndSettle();
+    expect(c.scripts.where((s) => s == ticketOneWebsiteFocusScript).length, 2);
+  });
 
   testWidgets('anonymous SPA login is detected later without a new browser', (
     tester,
@@ -162,8 +187,12 @@ void main() {
     await tester.pump(const Duration(seconds: 5));
     controller.reply();
     await tester.pumpAndSettle();
-    expect(row(tester, 'status').title, 'Accesso a TicketOne confermato');
-    expect(controller.loads.length, 2);
+    expect(controller.loads.last, event);
+    expect(controller.loads.length, 3);
+    expect(
+      rows(tester).any((r) => r.id == 'event' || r.id == 'retry'),
+      isFalse,
+    );
     await tester.pumpWidget(const SizedBox());
   });
 
@@ -175,10 +204,15 @@ void main() {
       final controller = TicketController();
       await start(tester, controller, logs);
       expect(controller.loads.single, event);
-      expect(controller.scripts.single, contains("credentials: 'same-origin'"));
+      expect(controller.probes.single, contains("credentials: 'same-origin'"));
+      expect(controller.scripts, contains(ticketOneRemoveAdsScript));
       controller.reply();
       await tester.pumpAndSettle();
-      expect(row(tester, 'status').title, 'Accesso a TicketOne confermato');
+      expect(controller.loads.length, 1);
+      expect(
+        rows(tester).any((r) => r.id == 'event' || r.id == 'retry'),
+        isFalse,
+      );
       expect(controller.loads.any((u) => u.path.contains('/login')), isFalse);
       await tester.pumpWidget(const SizedBox());
     }
@@ -193,7 +227,7 @@ void main() {
     controller.reply(status: 'http', http: 403);
     await tester.pump();
     await tester.pump(const Duration(seconds: 20));
-    expect(controller.scripts.length, 1);
+    expect(controller.probes.length, 1);
     expect(logs, contains('[TicketOne] session_probe_http_403'));
     await tester.tap(find.byTooltip('Carrello TicketOne'));
     await tester.pump();
@@ -205,7 +239,7 @@ void main() {
     await tester.pump();
     controller.reply();
     await tester.pumpAndSettle();
-    expect(row(tester, 'status').title, 'Accesso a TicketOne confermato');
+    expect(logs, contains('[TicketOne] session_continue_event'));
     await tester.pumpWidget(const SizedBox());
   });
 
@@ -221,10 +255,10 @@ void main() {
       controller.reply(id: old);
       await tester.pump();
       await tester.pump(const Duration(seconds: 12));
-      expect(controller.scripts.length, 1);
+      expect(controller.probes.length, 1);
       await tester.tap(find.byTooltip('Carrello TicketOne'));
       await tester.pumpAndSettle();
-      expect(controller.scripts.length, 1);
+      expect(controller.probes.length, 1);
       expect(rows(tester).any((r) => r.id == 'event'), isFalse);
       await tester.pumpWidget(const SizedBox());
     },
@@ -237,7 +271,7 @@ void main() {
     await start(tester, controller, []);
     controller.reply();
     await tester.pumpAndSettle();
-    await row(tester, 'retry').onActivate!();
+    await tester.tap(find.byTooltip('Carrello TicketOne'));
     await tester.pump();
     controller.reply(authenticated: false);
     await tester.pumpAndSettle();
