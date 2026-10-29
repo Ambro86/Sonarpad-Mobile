@@ -273,7 +273,10 @@ class ConcertSearchService {
     DateTime? to,
     int page = 1,
   }) {
-    if (page < 1 || (from != null && to != null && to.isBefore(from))) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final start = from == null || from.isBefore(today) ? today : from;
+    if (page < 1 || (to != null && to.isBefore(start))) {
       throw const ConcertSearchException('dates');
     }
     return _get(market, 'products', {
@@ -282,7 +285,7 @@ class ConcertSearchService {
       'page': '$page',
       if (term.trim().isNotEmpty) 'search_term': term.trim(),
       if (city.isNotEmpty) 'city_names': city,
-      if (from != null) 'date_from': iso(from),
+      'date_from': iso(start),
       if (to != null) 'date_to': iso(to),
     });
   }

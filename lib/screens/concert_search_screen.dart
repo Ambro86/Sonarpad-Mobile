@@ -321,11 +321,13 @@ class _ConcertResults extends StatefulWidget {
     required this.market,
     required this.load,
     this.cities = false,
+    this.page = 1,
   });
   final String title;
   final ConcertMarket market;
   final Future<ConcertPage> Function(int) load;
   final bool cities;
+  final int page;
   @override
   State<_ConcertResults> createState() => _ConcertResultsState();
 }
@@ -337,7 +339,25 @@ class _ConcertResultsState extends State<_ConcertResults> {
   @override
   void initState() {
     super.initState();
-    unawaited(_load(1));
+    unawaited(_load(widget.page));
+  }
+
+  void _changePage(int page) {
+    if (widget.cities) {
+      unawaited(_load(page));
+      return;
+    }
+    Navigator.of(context).pushReplacement<void, void>(
+      MaterialPageRoute(
+        builder: (_) => _ConcertResults(
+          title: widget.title,
+          market: widget.market,
+          load: widget.load,
+          cities: widget.cities,
+          page: page,
+        ),
+      ),
+    );
   }
 
   Future<void> _load(int page) async {
@@ -372,7 +392,7 @@ class _ConcertResultsState extends State<_ConcertResults> {
     final l = AppLocalizations.of(context);
     return [
       event['name'],
-      if (date != null) DateFormat.yMd(l.localeName).add_Hm().format(date),
+      if (date != null) DateFormat.yMMMMd(l.localeName).add_Hm().format(date),
       place['city'],
       place['name'],
     ].whereType<String>().where((s) => s.isNotEmpty).join(' — ');
@@ -431,10 +451,10 @@ class _ConcertResultsState extends State<_ConcertResults> {
           _button(
             'previous',
             l.radioPreviousPage,
-            () => _load(_pageNumber - 1),
+            () => _changePage(_pageNumber - 1),
           ),
         if (result != null && _pageNumber < result.pages)
-          _button('next', l.radioNextPage, () => _load(_pageNumber + 1)),
+          _button('next', l.radioNextPage, () => _changePage(_pageNumber + 1)),
       ],
       key: ValueKey('concert-results-$_pageNumber'),
       focus: result?.items.isNotEmpty == true ? 'item-0' : 'empty',

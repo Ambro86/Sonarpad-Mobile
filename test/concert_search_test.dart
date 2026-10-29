@@ -8,11 +8,53 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sonarpad_mobile_starter/services/concert_search_service.dart';
 import 'package:sonarpad_mobile_starter/screens/concert_search_screen.dart';
 import 'travel_screen_test.dart' show app, row, rows;
+import 'package:sonarpad_mobile_starter/widgets/universal_accessible_view.dart';
 
 class _LiveHttpOverrides extends HttpOverrides {}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  test('search excludes past dates even without date filters', () async {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    var calls = 0;
+    final service = ConcertSearchService(
+      logger: (_) async {},
+      client: MockClient((request) async {
+        calls++;
+        expect(
+          request.url.queryParameters['date_from'],
+          ConcertSearchService.iso(today),
+        );
+        return http.Response(
+          jsonEncode({
+            'products': [],
+            'page': 1,
+            'totalPages': 0,
+            'totalResults': 0,
+          }),
+          200,
+        );
+      }),
+    );
+    try {
+      await service.search(ConcertMarket.all.first);
+      await service.search(
+        ConcertMarket.all.first,
+        from: today.subtract(const Duration(days: 5)),
+      );
+      expect(
+        () => service.search(
+          ConcertMarket.all.first,
+          to: today.subtract(const Duration(days: 1)),
+        ),
+        throwsA(isA<ConcertSearchException>()),
+      );
+      expect(calls, 2);
+    } finally {
+      service.close();
+    }
+  });
   test(
     'market category, dates and pagination are passed directly to Eventim',
     () async {
@@ -207,8 +249,31 @@ void main() {
       row(tester, 'item-0').onActivate!();
       await tester.pumpAndSettle();
       expect(row(tester, 'item-0').title, contains('21:30'));
+      expect(row(tester, 'item-0').title, contains('febbraio'));
       expect(rows(tester).any((r) => r.id == 'city'), isFalse);
       expect(row(tester, 'next').enabled, isTrue);
+      final previousRoute = ModalRoute.of(
+        tester.element(find.byType(UniversalAccessibleList).last),
+      );
+      row(tester, 'next').onActivate!();
+      await tester.pumpAndSettle();
+      final results = tester.widget<UniversalAccessibleList>(
+        find.byType(UniversalAccessibleList).last,
+      );
+      expect(results.initialFocusId, 'item-0');
+      expect(
+        ModalRoute.of(
+          tester.element(find.byType(UniversalAccessibleList).last),
+        ),
+        isNot(same(previousRoute)),
+      );
+      row(tester, 'previous').onActivate!();
+      await tester.pumpAndSettle();
+      Navigator.of(
+        tester.element(find.byType(UniversalAccessibleList).last),
+      ).pop();
+      await tester.pumpAndSettle();
+      expect(row(tester, 'city').value, 'Torino');
       expect(
         (await SharedPreferences.getInstance()).getString(
           'concert_chosen_city',
