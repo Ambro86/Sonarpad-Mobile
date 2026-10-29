@@ -12,11 +12,18 @@ import 'travel_screen_test.dart' show app, row, rows;
 class TicketController extends BrowserController {
   void Function(JavaScriptMessage)? channel;
   final loads = <Uri>[];
+  final channels = <String>{};
+  @override
+  Future<void> removeJavaScriptChannel(String name) async {
+    channels.remove(name);
+  }
+
   @override
   Future<void> addJavaScriptChannel(
     String name, {
     required void Function(JavaScriptMessage) onMessageReceived,
   }) async {
+    if (!channels.add(name)) throw ArgumentError('Channel already exists');
     if (name == 'TicketOneSession') channel = onMessageReceived;
   }
 

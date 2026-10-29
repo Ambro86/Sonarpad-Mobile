@@ -49,11 +49,18 @@ class NativeController extends Fake implements WebViewController {
   );
   final scripts = <String>[];
   void Function(JavaScriptMessage)? receive;
+  final channels = <String>{};
+  @override
+  Future<void> removeJavaScriptChannel(String name) async {
+    channels.remove(name);
+  }
+
   @override
   Future<void> addJavaScriptChannel(
     String name, {
     required void Function(JavaScriptMessage) onMessageReceived,
   }) async {
+    if (!channels.add(name)) throw ArgumentError('Channel already exists');
     receive = onMessageReceived;
   }
 
@@ -100,6 +107,27 @@ void main() {
     );
     await tester.pumpAndSettle();
   }
+
+  testWidgets(
+    'same WebView can reopen native controls after the account panel',
+    (tester) async {
+      final c = NativeController(), logs = <String>[];
+      c.channels.add('TicketOneSession');
+      await start(tester, c, logs);
+      await tester.pumpWidget(const SizedBox());
+      expect(c.channels, contains('TicketOneUi'));
+      await start(tester, c, logs);
+      expect(row(tester, 'f0').keyboardType, 'email');
+      expect(c.channels, contains('TicketOneSession'));
+      expect(logs, isNot(contains('native_channel_failed')));
+      await row(tester, 'a0').onActivate!();
+      await tester.pump();
+      c.reply('invalid', field: 'f0');
+      await tester.pumpAndSettle();
+      expect(rows(tester).any((r) => r.id == 'f0'), isTrue);
+      await tester.pumpWidget(const SizedBox());
+    },
+  );
 
   testWidgets(
     'native email submits once with explicit cookie consent then password/OTP choice',

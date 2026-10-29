@@ -51,6 +51,10 @@ class _TicketOneNativePageState extends State<TicketOneNativePage> {
 
   Future<void> _start() async {
     try {
+      // The WebView survives the account panel and website/native switches.
+      // iOS rejects registering the same channel again on that controller.
+      await widget.controller.removeJavaScriptChannel('TicketOneUi');
+      if (!mounted) return;
       await widget.controller.addJavaScriptChannel(
         'TicketOneUi',
         onMessageReceived: (m) => unawaited(_receive(m.message)),
