@@ -130,6 +130,7 @@ class TravelStrings {
     'sendData': 'Conferma e invia i dati a Omio',
     'editData': 'Modifica i dati',
     'invalidField': 'Controlla il valore di questo campo.',
+    'emptyField': 'Attenzione! Il campo {field} è vuoto.',
     'ageMismatch':
         'La data di nascita non coincide con l’età indicata nella ricerca.',
     'unsupportedForm':
@@ -289,6 +290,7 @@ class TravelStrings {
     'sendData': 'Confirm and send details to Omio',
     'editData': 'Edit details',
     'invalidField': 'Check the value of this field.',
+    'emptyField': 'Attention! The {field} field is empty.',
     'ageMismatch': 'The birth date does not match the age used for the search.',
     'unsupportedForm':
         'This field requires the Omio website. Complete your details there.',

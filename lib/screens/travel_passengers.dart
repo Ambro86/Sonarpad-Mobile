@@ -29,7 +29,9 @@ class TravelPassengersScreen extends StatefulWidget {
 class _TravelPassengersScreenState extends State<TravelPassengersScreen> {
   TravelPassengerDraft get d => widget.draft;
   final _memory = TravelPassengerMemory();
-  final _fieldsController = AccessibleListController();
+  final _fieldsController = AccessibleListController(debugName: 'travel-passenger-validation');
+  int _validationRequest = 0;
+  Timer? _validationAnnouncement;
   String? _invalidFieldId;
   bool _busy = true;
   String? _message;
@@ -41,6 +43,7 @@ class _TravelPassengersScreenState extends State<TravelPassengersScreen> {
 
   @override
   void dispose() {
+    _validationAnnouncement?.cancel();
     _filterAnnouncement?.cancel();
     super.dispose();
   }
@@ -551,8 +554,10 @@ class _TravelPassengersScreenState extends State<TravelPassengersScreen> {
     final t = _strings(context), name = f['name'] as String;
     if (!_supported(f)) return t.t('unsupportedForm');
     final value = _answer(f);
-    if (value == null || value == '') {
-      return _required(f) ? t.t('invalidField') : null;
+    if (value == null || (value is String && value.trim().isEmpty)) {
+      return _required(f)
+          ? t.t('emptyField').replaceAll('{field}', _label(f, t))
+          : null;
     }
     if (_component(f) == 'PhoneNumber') {
       if (value is! Map ||
@@ -628,18 +633,28 @@ class _TravelPassengersScreenState extends State<TravelPassengersScreen> {
   }
 
   void _showFieldError(Map<String, dynamic> field, String error) {
+    final request = ++_validationRequest;
+    _validationAnnouncement?.cancel();
     final name = field['name'] as String;
     final inputs = _inputs(field, _strings(context));
     final target = inputs.where((row) => row.kind != 'text' && !row.id.endsWith(':filter'));
     final id = target.isEmpty ? name : target.first.id;
     setState(() {
-      _message = '${_label(field, _strings(context))}: $error';
+      _message = error == _strings(context).t('emptyField').replaceAll('{field}', _label(field, _strings(context)))
+          ? error
+          : '${_label(field, _strings(context))}: $error';
       _invalidFieldId = id;
       d.position = _passengerIndices.indexOf(int.parse(name.split('.').first));
     });
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted || _invalidFieldId != id) return;
-      unawaited(_fieldsController.focusAccessibleRow(id));
+    unawaited(AppLogger.log('[TravelPassengers] validation_failed component=${_component(field)} target=$id'));
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted || _invalidFieldId != id || request != _validationRequest) return;
+      await _fieldsController.focusAccessibleRow(id, mode: AccessibleFocusMode.screenEntry);
+      if (!mounted || _invalidFieldId != id || request != _validationRequest) return;
+      _validationAnnouncement = Timer(const Duration(milliseconds: 300), () {
+        if (!mounted || _message == null || _invalidFieldId != id || request != _validationRequest) return;
+        announceStatusMessage(context, _message!);
+      });
     });
   }
 
@@ -657,6 +672,7 @@ class _TravelPassengersScreenState extends State<TravelPassengersScreen> {
       _busy = true;
       _message = null;
       _invalidFieldId = null;
+      _validationRequest++;
     });
     try {
       for (final f in fields) {

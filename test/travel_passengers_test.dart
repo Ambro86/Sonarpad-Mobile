@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:flutter/services.dart';
 import 'package:sonarpad_mobile_starter/widgets/universal_accessible_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -135,6 +136,12 @@ void main() {
   }
 
   testWidgets('Missing postcode focuses its field instead of the error text', (tester) async {
+    final announcements = <Object?>[];
+    tester.binding.defaultBinaryMessenger.setMockDecodedMessageHandler<Object?>(
+      SystemChannels.accessibility,
+      (message) async { announcements.add(message); return null; },
+    );
+    addTearDown(() => tester.binding.defaultBinaryMessenger.setMockDecodedMessageHandler<Object?>(SystemChannels.accessibility, null));
     final service = PassengerService();
     service.fields
       ..clear()
@@ -151,6 +158,15 @@ void main() {
     final list = tester.widget<UniversalAccessibleList>(find.byType(UniversalAccessibleList));
     expect(list.initialFocusId, '0.postalCode-0');
     expect(row(tester, 'error').title, contains('CAP'));
+    expect(row(tester, 'error').title, 'Attenzione! Il campo CAP è vuoto.');
+    await tester.pump(const Duration(milliseconds: 400));
+    expect(announcements.toString(), contains('Attenzione! Il campo CAP è vuoto.'));
+    announcements.clear();
+    await row(tester, '0.postalCode-0').onValueChanged!('   ');
+    await next(tester);
+    await tester.pump(const Duration(milliseconds: 400));
+    expect(announcements.toString(), contains('Attenzione! Il campo CAP è vuoto.'));
+    expect(tester.widget<UniversalAccessibleList>(find.byType(UniversalAccessibleList)).initialFocusId, '0.postalCode-0');
     expect(draft.position, 0);
     expect(row(tester, 'next-field').finishEditingOnActivate, isTrue);
     await tester.enterText(find.byType(TextField).last, '00100');
