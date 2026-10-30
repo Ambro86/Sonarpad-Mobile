@@ -288,10 +288,19 @@ void main() {
       await expectLater(service.stop(), throwsA(isA<TimeoutException>()));
       expect(native.cancelCalls, 3);
       expect(service.isRecording, isTrue);
+      final finished = Completer<void>();
+      void onFinished() {
+        if (!service.isRecording && !finished.isCompleted) finished.complete();
+      }
+      service.addListener(onFinished);
       native.finish(255);
-      await Future<void>.delayed(const Duration(milliseconds: 20));
-      expect(service.isRecording, isFalse);
-      service.dispose();
+      try {
+        await finished.future.timeout(const Duration(seconds: 5));
+        expect(service.isRecording, isFalse);
+      } finally {
+        service.removeListener(onFinished);
+        service.dispose();
+      }
     },
   );
   test(
