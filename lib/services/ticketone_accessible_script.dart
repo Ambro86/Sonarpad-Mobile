@@ -82,7 +82,7 @@ const ticketOneUiSnapshotScript = r'''
   const review = checkout && !!document.querySelector('[data-qa="summary-page"]');
   let root = login ? document.querySelector('#mainContainer, #kc-content, #kc-form-login, #kc-register-form, #kc-otp-login-form, form') :
     registration ? (externalProfile ? document.querySelector('app-external-customer-data-form') : document.querySelector('ev-registration-page')) :
-    event ? document.querySelector('form.js-ticket-selection-with-limits') :
+    event ? (document.querySelector('#tickets-bestseat-tab') || document.querySelector('.js-ticket-selection-with-limits')?.closest('form')) :
     checkout ? document.querySelector('main, [role="main"], app-root') || document.body : null;
   // Structural diagnostics only: never text, values, URLs, tokens or attributes.
   const diagnostic = (status, reason) => JSON.stringify({status, diagnostics:{
@@ -124,12 +124,15 @@ const ticketOneUiSnapshotScript = r'''
   if (controls.some(e => /^cc-/.test(e.autocomplete || '') || /card.?number|creditcard|cvv|cvc/i.test(e.name || e.id))) return diagnostic('payment-provider', 'payment_fields');
   const revision = Date.now().toString(36) + Math.random().toString(36).slice(2);
   const nodes = new Map(), fields = [];
+  const categoryLabel = e => norm(e.closest('form')?.querySelector('.pc-list-category')?.textContent ||
+    (e.closest('form')?.getAttribute('data-qa') || '').replace(/^pc-list-number-/, ''));
   const remember = (key, e) => nodes.set(key, {e, type:e.type, name:e.name, text:label(e)});
   for (const e of controls) {
     const id = 'f' + fields.length;
     let text = label(e);
     if (!text || text.length > 1200) return diagnostic('unsupported', !text ? 'missing_label' : 'label_limit');
     if (event && e.dataset.pcTitle) text = norm(e.dataset.pcTitle + ' — ' + text);
+    else if (event && categoryLabel(e)) text = categoryLabel(e) + ' — ' + text;
     const consent = e.closest('.evi-widget')?.querySelector('.evi-widget-text-below');
     if (consent) text += ' — ' + norm(consent.textContent);
     const role = e.getAttribute('role');
@@ -158,7 +161,8 @@ const ticketOneUiSnapshotScript = r'''
   const actions = [];
   for (const e of candidates) {
     if (!visible(e) || outside(e)) continue;
-    const text = norm(e.tagName === 'INPUT' ? e.value : e.textContent || e.getAttribute('aria-label'));
+    let text = norm(e.tagName === 'INPUT' ? e.value : e.textContent || e.getAttribute('aria-label'));
+    if (event && text && categoryLabel(e)) text += ' — ' + categoryLabel(e);
     if (!text || text.length > 500 || actions.some(a => a.label === text)) continue;
     // Auth-only links (OTP, password reset); never project arbitrary links.
     if (login && e.tagName === 'A' && !/codice|code|password|registr|account|acced|sign in/i.test(text)) continue;
@@ -167,7 +171,13 @@ const ticketOneUiSnapshotScript = r'''
       submit:e.tagName !== 'A' && (e.type === 'submit' || e.hasAttribute('data-qa') || checkout || registration)});
     remember(id,e);
   }
-  if (!fields.length && !actions.length) return diagnostic('waiting', 'controls_missing');
+  const unavailableCategories = event ? [...root.querySelectorAll('.ticket-type-item-wrapper-unavailable')]
+    .filter(visible).map(e => ({
+      category:norm(e.closest('form')?.querySelector('.pc-list-category')?.textContent ||
+        (e.closest('form')?.getAttribute('data-qa') || '').replace(/^pc-list-number-/, '')),
+      message:norm(e.querySelector('[data-qa="ticket-type-availability-hint"]')?.textContent)
+    })) : [];
+  if (!fields.length && !actions.length && !unavailableCategories.length) return diagnostic('waiting', 'controls_missing');
   const qty = event ? root.querySelector('[data-qa="TicketAmount"]') : null;
   const chosen = root.querySelector('input.js-fast-booking-item:checked') || root.querySelector('input.js-fast-booking-item');
   const quantity = qty && chosen ? {value:Number(qty.textContent),min:Number(chosen.dataset.min || 1),max:Number(chosen.dataset.max || 10)} : null;
@@ -251,7 +261,7 @@ const ticketOneUiSnapshotScript = r'''
     current.click();
     return {status:'submitted'};
   }};
-  return JSON.stringify({status:'ready',revision,stage:login?'login':registration?'registration':event?'event':review?'review':'checkout',title,fields,actions,quantity,errors,notices,summary,paypal});
+  return JSON.stringify({status:'ready',revision,stage:login?'login':registration?'registration':event?'event':review?'review':'checkout',title,fields,actions,quantity,errors,notices,summary,paypal,unavailableCategories});
 })();
 ''';
 

@@ -24,6 +24,22 @@ function fixture(html, url = 'https://auth.ticketone.it/identity/auth/') {
 }
 async function test(name, run) { await run(); console.log('PASS ' + name); passed++; }
 (async () => {
+  await test('diagnostic 14 categories use nested selection divs and show unavailable tickets', async () => {
+    const f=fixture('<h1>Nino Frassica</h1><div id="tickets-bestseat-tab">'+['Poltronissima','Poltrona','Galleria A','Galleria B'].map(c=>`<form class="event-list-content js-form-timestamp" data-qa="pc-list-number-${c}"><input name="token" type="hidden" value="SECRET"><div class="pc-list-category">${c}</div><div class="js-ticket-selection-with-limits"><div class="ticket-type-item-wrapper-unavailable"><div data-qa="ticket-type-availability-hint">Attualmente non disponibile</div></div></div></form>`).join('')+'</div>', 'https://www.ticketone.it/event/nino-frassica/');
+    const p=f.read(); assert.equal(p.status,'ready'); assert.equal(p.stage,'event');
+    assert.equal(p.unavailableCategories.length,4); assert.equal(p.unavailableCategories[3].category,'Galleria B');
+    assert.equal(p.unavailableCategories[0].message,'Attualmente non disponibile');
+    assert.equal(p.fields.length,0); assert.equal(p.actions.length,0);
+    assert(!JSON.stringify(p).includes('SECRET')); f.close();
+  });
+  await test('multiple available category forms keep distinct cart actions and submit only selected form', async () => {
+    const f=fixture('<div id="tickets-bestseat-tab">'+['Platea','Galleria'].map((c,i)=>`<form id="form${i}" data-qa="pc-list-number-${c}"><div class="pc-list-category">${c}</div><div class="js-ticket-selection-with-limits"><label for="q${i}">Quantità</label><select id="q${i}"><option value="1">1</option><option value="2">2</option></select><button data-qa="AddToShoppingCart">Metti nel carrello</button></div></form>`).join('')+'</div>', 'https://www.ticketone.it/event/test');
+    const submits=[]; [...f.doc.forms].forEach(form=>form.onsubmit=e=>{e.preventDefault();submits.push(form.id);});
+    const p=f.read(); assert.equal(p.status,'ready'); assert.equal(p.actions.length,2);
+    assert.equal(p.actions[1].label,'Metti nel carrello — Galleria');
+    assert.equal((await f.act(p,p.actions[1].id,{[p.fields[1].id]:'2'})).status,'submitted');
+    assert.deepEqual(submits,['form1']); assert.equal(f.doc.querySelector('#q1').value,'2'); f.close();
+  });
   await test('remove only advertisements, including late frames; keep security and payments', async () => {
     const f = fixture(`<iframe id="ad" title="Contenuto dell'annuncio di terze parti"></iframe><iframe id="security" title="reCAPTCHA" src="https://www.google.com/recaptcha/api2/anchor"></iframe><iframe id="payment" title="PayPal-paypal" src="https://www.paypal.com"></iframe><iframe id="unknown" title="Biglietti"></iframe>`, 'https://www.ticketone.it/event/test');
     f.w.eval(adsScript);

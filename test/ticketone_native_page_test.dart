@@ -187,6 +187,50 @@ void main() {
     expect(c.scripts, isEmpty);
   });
 
+  testWidgets(
+    'cancel loading returns to previous screen and ignores late read',
+    (tester) async {
+      final c = NativeController()..pendingSnapshot = Completer<Object>();
+      await tester.pumpWidget(
+        app(
+          Builder(
+            builder: (context) => Scaffold(
+              body: TextButton(
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => Scaffold(
+                      body: TicketOneNativePage(
+                        controller: c,
+                        generation: 0,
+                        loading: false,
+                        showWebsite: () {},
+                        log: (_) {},
+                      ),
+                    ),
+                  ),
+                ),
+                child: const Text('Apri prova'),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text('Apri prova'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 400));
+      expect(find.byType(TicketOneLoadingView), findsOneWidget);
+      expect(find.text('Torna alla pagina TicketOne'), findsNothing);
+      await tester.tap(find.byKey(const Key('cancel-ticketone-loading')));
+      await tester.pumpAndSettle();
+      c.pendingSnapshot!.complete(jsonEncode(c.page));
+      await tester.pump();
+      expect(find.text('Apri prova'), findsOneWidget);
+      expect(find.byType(TicketOneNativePage), findsNothing);
+      expect(tester.takeException(), isNull);
+      expect(c.scripts, isEmpty);
+    },
+  );
+
   testWidgets('unanswered snapshot exits loading without submitting anything', (
     tester,
   ) async {
@@ -204,8 +248,43 @@ void main() {
     expect(rows(tester).any((r) => r.id == 'loading'), isFalse);
   });
 
+  testWidgets(
+    'unavailable event categories remain native with a refresh action',
+    (tester) async {
+      final c = NativeController();
+      c.page = {
+        ...snapshot([], []),
+        'stage': 'event',
+        'unavailableCategories': [
+          {'category': 'Poltronissima', 'message': 'Non disponibile'},
+          {'category': 'Galleria B', 'message': ''},
+        ],
+      };
+      await start(tester, c, []);
+      expect(
+        row(tester, 'unavailable-Poltronissima').title,
+        'Poltronissima: Non disponibile',
+      );
+      expect(
+        row(tester, 'unavailable-Galleria B').title,
+        contains('attualmente non disponibili'),
+      );
+      expect(row(tester, 'refresh').title, isNotEmpty);
+      expect(rows(tester).any((r) => r.id == 'consent'), isFalse);
+      expect(
+        rows(tester).any(
+          (r) => r.title.contains(
+            'non è ancora disponibile in modalità accessibile',
+          ),
+        ),
+        isFalse,
+      );
+    },
+  );
+
   testWidgets('OTP digits have Italian labels', (tester) async {
     final c = NativeController();
+    final logs = <String>[];
     c.page = snapshot(
       [
         for (final name in [
@@ -220,12 +299,15 @@ void main() {
       ],
       [action('a0', 'Accedi')],
     );
-    await start(tester, c, []);
+    await start(tester, c, logs);
     expect(row(tester, 'otp-heading').title, 'Codice monouso');
     expect(row(tester, 'First').title, 'Cifra 1');
     expect(row(tester, 'Sixth').title, 'Cifra 6');
     await row(tester, 'First').onValueChanged!('123 456');
     await tester.pump();
+    expect(logs, contains('native_otp_complete digits=6'));
+    expect(logs.join(), isNot(contains('123456')));
+    await tester.pump(const Duration(milliseconds: 300));
     final ids = ['First', 'Second', 'Third', 'Fourth', 'Fifth', 'Sixth'];
     for (var i = 0; i < 6; i++) {
       expect(row(tester, ids[i]).value, '${i + 1}');
@@ -321,7 +403,8 @@ void main() {
       'field': 'f0',
     });
     await tester.pump();
-    expect(rows(tester).any((r) => r.id == 'loading'), isTrue);
+    expect(find.byType(TicketOneLoadingView), findsOneWidget);
+    expect(find.byKey(const Key('cancel-ticketone-loading')), findsOneWidget);
     messages.value = jsonEncode({'id': id, 'status': 'invalid', 'field': 'f0'});
     await tester.pumpAndSettle();
     expect(rows(tester).any((r) => r.id == 'f0'), isTrue);
@@ -429,7 +512,8 @@ void main() {
       expect(c.scripts.length, 1);
       expect(c.scripts.single, contains('"acceptCookies":true'));
       expect(c.scripts.single, contains('person@example.test'));
-      expect(rows(tester).any((r) => r.id == 'f0'), isFalse);
+      expect(find.byType(TicketOneLoadingView), findsOneWidget);
+      expect(find.byKey(const Key('cancel-ticketone-loading')), findsOneWidget);
       c.page = snapshot(
         [field('f0', 'Password', type: 'password', secret: true)],
         [

@@ -25,6 +25,8 @@ class TicketOneStrings {
 
   static const _it = {
     'otpHeading': 'Codice monouso',
+    'otpComplete': 'Codice completo: tutte le sei cifre sono inserite.',
+    'ticketsUnavailable': 'Biglietti attualmente non disponibili',
     'websiteTitle': 'Pagina TicketOne',
     'accessDenied':
         'Il server TicketOne ha rifiutato questa richiesta. Non posso confermare che l’operazione sia riuscita. Non invio nuovamente i dati: puoi aprire la pagina TicketOne per verificare.',
@@ -60,6 +62,8 @@ class TicketOneStrings {
   };
   static const _en = {
     'otpHeading': 'One-time code',
+    'otpComplete': 'Code complete: all six digits have been entered.',
+    'ticketsUnavailable': 'Tickets currently unavailable',
     'websiteTitle': 'TicketOne page',
     'accessDenied':
         'The TicketOne server denied this request. The operation cannot be confirmed. Your data will not be sent again: open the TicketOne page to check.',

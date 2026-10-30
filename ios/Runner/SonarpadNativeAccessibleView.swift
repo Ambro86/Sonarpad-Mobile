@@ -535,6 +535,7 @@ private final class SonarpadTextFieldCell: UITableViewCell, UITextFieldDelegate 
   }
 
   @objc private func valueChanged() {
+    field.accessibilityValue = nil
     updateClearButtonVisibility()
     if stabilizeFocusOnBegin {
       onFocusStabilized?(rowId, focusDiagnosticSummary("editingChanged"))
@@ -1319,6 +1320,7 @@ final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITableViewDa
         ?? SonarpadTextFieldCell(style: .default, reuseIdentifier: identifier)
       cell.rowId = row.id
       cell.field.text = row.value ?? ""
+      cell.field.accessibilityValue = nil
       cell.appliedTextRevision = row.textRevision
       cell.field.placeholder = row.placeholder
       cell.field.accessibilityLabel = row.effectiveAccessibilityLabel
@@ -2041,6 +2043,9 @@ final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITableViewDa
         let explicitReplacement = cell.appliedTextRevision != row.textRevision
         if explicitReplacement || (cell.field.text != (row.value ?? "") && !cell.field.isFirstResponder) {
           cell.field.text = row.value ?? ""
+          // Programmatic OTP distribution updates both the editor and its
+          // spoken value. Passwords keep UIKit's secure accessibility behavior.
+          cell.field.accessibilityValue = explicitReplacement && !row.secure ? (row.value ?? "") : nil
           if explicitReplacement && cell.field.isFirstResponder {
             let end = cell.field.endOfDocument
             cell.field.selectedTextRange = cell.field.textRange(from: end, to: end)

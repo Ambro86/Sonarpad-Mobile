@@ -22,11 +22,13 @@ class TicketOneNativePage extends StatefulWidget {
     required this.showWebsite,
     required this.log,
     this.messages,
+    this.onBusyChanged,
   });
   final WebViewController controller;
   final ValueListenable<String?>? messages;
   final int generation;
   final bool loading;
+  final ValueChanged<bool>? onBusyChanged;
   final VoidCallback showWebsite;
   final void Function(String) log;
   @override
@@ -42,6 +44,7 @@ class _TicketOneNativePageState extends State<TicketOneNativePage> {
   Timer? _timer;
   String? _message, _pending;
   bool _busy = true;
+  bool? _reportedBusy;
   int _serial = 0, _attempt = 0;
   int _otpRevision = 0;
   String? _lastDiagnostic;
@@ -73,6 +76,9 @@ class _TicketOneNativePageState extends State<TicketOneNativePage> {
     final index = fields.indexWhere((f) => f['id'] == id);
     if (fields.length != 6 || index < 0) return;
     var digits = text.replaceAll(RegExp(r'[^0-9]'), '');
+    final wasComplete = fields.every(
+      (f) => RegExp(r'^\d$').hasMatch('${_draft[f['id']] ?? ''}'),
+    );
     final previous = '${_draft[id] ?? fields[index]['value'] ?? ''}';
     // UIKit may insert into the existing digit rather than replace it.
     if (previous.length == 1 && (digits.length == 2 || digits.length == 7)) {
@@ -94,6 +100,17 @@ class _TicketOneNativePageState extends State<TicketOneNativePage> {
         _draft[fields[start + i]['id'] as String] = digits[i];
       }
     });
+    final complete = fields.every(
+      (f) => RegExp(r'^\d$').hasMatch('${_draft[f['id']] ?? ''}'),
+    );
+    if (complete && (!wasComplete || digits.length == 6)) {
+      widget.log('native_otp_complete digits=6');
+      announceStatusMessage(
+        context,
+        t.t('otpComplete'),
+        announcementDelay: const Duration(milliseconds: 300),
+      );
+    }
   }
 
   @override
@@ -617,6 +634,14 @@ class _TicketOneNativePageState extends State<TicketOneNativePage> {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
+    if (_reportedBusy != _busy) {
+      _reportedBusy = _busy;
+      final busy = _busy;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && _busy == busy) widget.onBusyChanged?.call(busy);
+      });
+    }
+    if (_busy) return const TicketOneLoadingView();
     final qty = _page?['quantity'];
     final rows = <AccessibleListRow>[
       if (_busy)
@@ -632,6 +657,13 @@ class _TicketOneNativePageState extends State<TicketOneNativePage> {
             _text('summary-${item.hashCode}', '$item'),
           for (final e in (_page!['errors'] as List? ?? []))
             _text('error-${e.hashCode}', '$e'),
+          for (final item
+              in (_page!['unavailableCategories'] as List? ?? [])
+                  .whereType<Map>())
+            _text(
+              'unavailable-${item['category']}',
+              '${item['category'] ?? ''}: ${item['message'] is String && (item['message'] as String).trim().isNotEmpty ? item['message'] : t.t('ticketsUnavailable')}',
+            ),
           for (final f in _fields) ...[
             _field(f),
             if (f['hint'] is String && (f['hint'] as String).isNotEmpty)
@@ -665,7 +697,7 @@ class _TicketOneNativePageState extends State<TicketOneNativePage> {
             ),
           for (final n in (_page!['notices'] as List? ?? []))
             _text('notice-${n.hashCode}', '$n'),
-          _text('consent', t.t('cookieConsent')),
+          if (_actions.isNotEmpty) _text('consent', t.t('cookieConsent')),
           for (final a in _actions)
             AccessibleListRow(
               id: a['id'] as String,
@@ -677,7 +709,9 @@ class _TicketOneNativePageState extends State<TicketOneNativePage> {
                   _act(a['id'] as String, submit: a['submit'] == true),
             ),
         ],
-        if (_page == null || _message != null)
+        if (_page == null ||
+            _message != null ||
+            (_page?['stage'] == 'event' && _actions.isEmpty))
           _button('refresh', l.retry, () {
             setState(() {
               _busy = true;
@@ -714,6 +748,36 @@ class _TicketOneNativePageState extends State<TicketOneNativePage> {
           : 'heading',
       padding: const EdgeInsets.all(16),
       sections: [AccessibleListSection(rows: rows)],
+    );
+  }
+}
+
+/// Same loading presentation as travel passenger forms. Keep the browser
+/// mounted behind the opaque native panel, but expose no intermediate controls.
+class TicketOneLoadingView extends StatelessWidget {
+  const TicketOneLoadingView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const ExcludeSemantics(child: LinearProgressIndicator()),
+            const SizedBox(height: 24),
+            Semantics(liveRegion: true, child: Text(l.loading)),
+            const SizedBox(height: 24),
+            FilledButton(
+              key: const Key('cancel-ticketone-loading'),
+              onPressed: () => Navigator.of(context).maybePop(),
+              child: Text(l.cancel),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

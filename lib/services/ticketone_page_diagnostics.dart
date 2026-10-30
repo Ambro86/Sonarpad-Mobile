@@ -49,9 +49,13 @@ const ticketOnePageDiagnosticsScript = r'''
     const style = e.ownerDocument.defaultView.getComputedStyle(e);
     return style.display !== 'none' && style.visibility !== 'hidden' && !e.closest('[hidden],[aria-hidden="true"]') && e.getClientRects().length>0;
   };
-  const text = e => clean(e.textContent);
+  const text = e => {
+    const copy=e.cloneNode(true);
+    for (const node of copy.querySelectorAll('script,style,input,textarea')) node.remove();
+    return clean(copy.textContent);
+  };
   const label = e => clean(e.getAttribute('aria-label') || [...(e.labels||[])].map(text).join(' ') ||
-    (e.getAttribute('aria-labelledby')||'').split(' ').map(id=>e.ownerDocument.getElementById(id)).filter(Boolean).map(text).join(' ') || e.getAttribute('placeholder') || (['BUTTON','A','LABEL','LEGEND','H1','H2','H3','SUMMARY'].includes(e.tagName)?e.textContent:''));
+    (e.getAttribute('aria-labelledby')||'').split(' ').map(id=>e.ownerDocument.getElementById(id)).filter(Boolean).map(text).join(' ') || e.getAttribute('placeholder') || (['BUTTON','A','LABEL','LEGEND','H1','H2','H3','SUMMARY'].includes(e.tagName)?text(e):''));
   const walk = (e, path, depth=0) => {
     if (e.nodeType !== 1) return '';
     if (count >= 3500 || htmlSize >= 220000 || depth > 45) { clipped=true; return ''; }
@@ -79,9 +83,10 @@ const ticketOnePageDiagnosticsScript = r'''
     }
     if (e.shadowRoot) extra += [...e.shadowRoot.children].map((c,i)=>walk(c,path+'/shadow/'+i,depth+1)).join('');
     const heading=/^h[1-6]$/.test(tag);
+    const ticketText=e.matches('.pc-list-category,.ticket-type-title,[data-qa="ticket-type-availability-hint"],[data-qa="tickettypeItem-price"]');
     // No arbitrary body/account/order text. Only UI labels/headings; values
     // from every form (including hidden fields) were redacted above.
-    const captionHtml=(control || heading || ['label','legend','summary'].includes(tag))?escape(caption|| (heading?text(e):'')):'';
+    const captionHtml=(control || heading || ticketText || ['label','legend','summary'].includes(tag))?escape(caption|| (heading || ticketText?text(e):'')):'';
     const opening='<'+tag+Object.entries(attrs).map(([k,v])=>' '+k+'="'+escape(v)+'"').join('')+'>';
     htmlSize+=opening.length+captionHtml.length;
     const children=[...e.children].map((c,i)=>walk(c,path+'/'+i,depth+1)).join('');
