@@ -261,7 +261,8 @@ void main() {
         audioStreamUrl: 'https://example.org/audio.m3u8',
       );
       expect(native.arguments.where((a) => a == '-rw_timeout').length, 2);
-      expect(native.arguments.where((a) => a == '-max_reload').length, 2);
+      expect(native.arguments, isNot(contains('-max_reload')));
+      expect(native.arguments, isNot(contains('-m3u8_hold_counters')));
       native.finishAfterCancel = 2;
       final first = service.stop();
       final second = service.stop();

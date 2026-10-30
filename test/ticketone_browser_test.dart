@@ -95,11 +95,12 @@ void main() {
     TicketController controller,
     List<String> logs, {
     String accountPath = '/dashboard/login',
+    Uri? eventUrl,
   }) async {
     await tester.pumpWidget(
       app(
         TicketOneBrowserScreen(
-          eventUrl: event,
+          eventUrl: eventUrl ?? event,
           accountPath: accountPath,
           controllerFactory: () => controller,
           browserBuilder: (_) => const Text('Website'),
@@ -113,6 +114,26 @@ void main() {
     controller.delegate!.onPageFinished!(controller.current);
     await tester.pump();
   }
+
+  testWidgets(
+    'diagnostics include the public event without query or fragment',
+    (tester) async {
+      final c = TicketController(), logs = <String>[];
+      await start(
+        tester,
+        c,
+        logs,
+        eventUrl: event.replace(
+          query: 'session=PRIVATE_QUERY',
+          fragment: 'PRIVATE_FRAGMENT',
+        ),
+      );
+      expect(logs, contains('[TicketOne] event_selected url=$event'));
+      expect(logs.join(), isNot(contains('PRIVATE_QUERY')));
+      expect(logs.join(), isNot(contains('PRIVATE_FRAGMENT')));
+      await tester.pumpWidget(const SizedBox());
+    },
+  );
 
   for (final path in ['/dashboard/login', '/dashboard/login/register']) {
     testWidgets('$path keeps the controller through login, event and cart', (
@@ -160,7 +181,7 @@ void main() {
       c.delegate!.onPageStarted!(c.current);
       await tester.pump();
       final loads = c.loads.length;
-      await tester.pump(const Duration(seconds: 12));
+      await tester.pump(const Duration(seconds: 1));
       await tester.pump();
       expect(
         c.loads.length,
@@ -185,10 +206,32 @@ void main() {
       c.delegate!.onPageStarted!(c.current);
       await tester.pump();
       final loads = c.loads.length;
-      await tester.pump(const Duration(seconds: 12));
-      await tester.pump();
+      for (var i = 0; i < 12; i++) {
+        await tester.pump(const Duration(seconds: 1));
+        await tester.pump();
+      }
       expect(c.loads.length, loads);
       expect(logs.any((l) => l.contains('navigation_timeout')), isTrue);
+      await tester.pumpWidget(const SizedBox());
+    },
+  );
+
+  testWidgets(
+    'loading page is checked each second and recovers as soon as ready',
+    (tester) async {
+      final c = TicketController(), logs = <String>[];
+      await start(tester, c, logs);
+      c.readyState = 'loading';
+      c.delegate!.onPageStarted!(c.current);
+      await tester.pump();
+      await tester.pump(const Duration(seconds: 1));
+      await tester.pump();
+      expect(logs.any((l) => l.contains('navigation_timeout')), isFalse);
+      expect(logs.any((l) => l.contains('navigation_recovered')), isFalse);
+      c.readyState = 'interactive';
+      await tester.pump(const Duration(seconds: 1));
+      await tester.pump();
+      expect(logs.any((l) => l.contains('navigation_recovered')), isTrue);
       await tester.pumpWidget(const SizedBox());
     },
   );
@@ -228,7 +271,7 @@ void main() {
     controller.reply(authenticated: false);
     await tester.pump();
     expect(find.text('Website'), findsOneWidget);
-    await tester.pump(const Duration(seconds: 5));
+    await tester.pump(const Duration(seconds: 1));
     controller.reply();
     await tester.pumpAndSettle();
     expect(controller.loads.last, event);

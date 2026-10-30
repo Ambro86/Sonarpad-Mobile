@@ -73,6 +73,9 @@ class _TicketOneBrowserScreenState extends State<TicketOneBrowserScreen> {
               ].contains(widget.accountPath))) {
         throw const FormatException('Invalid TicketOne destination');
       }
+      // Public event permalink only: exclude tracking, session queries and fragments.
+      final publicEvent = Uri.https('www.ticketone.it', widget.eventUrl.path);
+      _log('event_selected url=$publicEvent');
       // Use the platform's shared persistent WebView store. Do not copy cookies
       // or save an authenticated flag: the server must validate each reopening.
       _panel = _resumePending;
@@ -187,10 +190,10 @@ class _TicketOneBrowserScreenState extends State<TicketOneBrowserScreen> {
     _checking = false;
   }
 
-  void _watchLoading() {
+  void _watchLoading({int attempt = 0}) {
     _loadWatchdog?.cancel();
     final generation = _generation;
-    _loadWatchdog = Timer(const Duration(seconds: 12), () async {
+    _loadWatchdog = Timer(const Duration(seconds: 1), () async {
       if (!mounted || !_loading || generation != _generation) return;
       try {
         final url = await _controller!.currentUrl().timeout(
@@ -214,6 +217,9 @@ class _TicketOneBrowserScreenState extends State<TicketOneBrowserScreen> {
           setState(() => _loading = false);
           _log('navigation_recovered generation=$generation ready=$state');
           if (_waitingForLogin && isTicketOneOrigin(url)) await _check();
+        } else if (attempt < 11) {
+          // Schedule after this probe completes: never overlap WebView calls.
+          _watchLoading(attempt: attempt + 1);
         } else {
           setState(() {
             _loading = false;
@@ -335,7 +341,7 @@ class _TicketOneBrowserScreenState extends State<TicketOneBrowserScreen> {
       }
       if (_waitingForLogin && !_panel) {
         // Login is a SPA: onPageFinished alone does not report every transition.
-        _poll = Timer(const Duration(seconds: 5), () => unawaited(_check()));
+        _poll = Timer(const Duration(seconds: 1), () => unawaited(_check()));
       }
     } catch (_) {
       if (mounted) _probeFailed('invalid_response');

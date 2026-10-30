@@ -577,12 +577,9 @@ class RadioRecordingService extends ChangeNotifier with WidgetsBindingObserver {
     return [
       // Microseconds. Bound a blocked network read independently of UI timeouts.
       '-rw_timeout', '5000000',
-      if (uri.path.toLowerCase().endsWith('.m3u8')) ...[
-        // HLS otherwise keeps skipping failed segments/reloading up to 1000
-        // times during one read. Healthy reads reset these counters.
-        '-max_reload', '3',
-        '-m3u8_hold_counters', '3',
-      ],
+      // Keep FFmpeg's HLS reload defaults. A temporarily unchanged live playlist
+      // is not EOF; low reload limits silently truncate healthy recordings.
+      // Stop remains controlled by session cancellation and the read timeout.
     ];
   }
 
