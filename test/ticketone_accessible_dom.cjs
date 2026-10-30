@@ -24,6 +24,26 @@ function fixture(html, url = 'https://auth.ticketone.it/identity/auth/') {
 }
 async function test(name, run) { await run(); console.log('PASS ' + name); passed++; }
 (async () => {
+  await test('fast booking ignores three empty availability placeholders and keeps ticket quantity', async () => {
+    const f = fixture(`<form class="js-ticket-selection-with-limits">
+      <div class="pc-list-category">1. Per favore seleziona il numero di biglietti desiderati:</div>
+      <div class="ticket-type-item-wrapper-unavailable"></div>
+      <div class="ticket-type-item-wrapper-unavailable"><span data-qa="ticket-type-availability-hint"> </span></div>
+      <div class="ticket-type-item-wrapper-unavailable"><span hidden data-qa="ticket-type-availability-hint">Non disponibile</span></div>
+      <button type="button" data-qa="LessTickets">Meno</button><div data-qa="TicketAmount">1</div>
+      <button type="button" data-qa="MoreTickets">Più</button>
+      <input class="js-fast-booking-item" type="radio" id="ticket" checked data-min="1" data-max="10" data-pc-title="Platea cat1">
+      <label for="ticket">89 euro</label><button data-qa="AddToShoppingCart">Metti nel carrello</button>
+      </form>`, 'https://www.ticketone.it/event/gigi-dalessio/');
+    f.doc.querySelector('[data-qa="MoreTickets"]').onclick = () => f.doc.querySelector('[data-qa="TicketAmount"]').textContent = '2';
+    const p = f.read();
+    assert.equal(p.status, 'ready'); assert.deepEqual(p.unavailableCategories, []);
+    assert.equal(p.fields.length, 1); assert.equal(p.fields[0].label, 'Platea cat1 — 89 euro');
+    assert.equal(p.quantity.value, 1); assert.equal(p.actions.length, 1);
+    assert.equal((await f.act(p, 'quantity', {}, { quantity: 2 })).status, 'changed');
+    assert.equal(f.doc.querySelector('[data-qa="TicketAmount"]').textContent, '2');
+    f.close();
+  });
   await test('diagnostic 14 categories use nested selection divs and show unavailable tickets', async () => {
     const f=fixture('<h1>Nino Frassica</h1><div id="tickets-bestseat-tab">'+['Poltronissima','Poltrona','Galleria A','Galleria B'].map(c=>`<form class="event-list-content js-form-timestamp" data-qa="pc-list-number-${c}"><input name="token" type="hidden" value="SECRET"><div class="pc-list-category">${c}</div><div class="js-ticket-selection-with-limits"><div class="ticket-type-item-wrapper-unavailable"><div data-qa="ticket-type-availability-hint">Attualmente non disponibile</div></div></div></form>`).join('')+'</div>', 'https://www.ticketone.it/event/nino-frassica/');
     const p=f.read(); assert.equal(p.status,'ready'); assert.equal(p.stage,'event');

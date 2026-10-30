@@ -80,6 +80,7 @@ Future<void> showChangelogDialog({
 
   await showDialog<void>(
     context: context,
+    barrierDismissible: false,
     builder: (context) => AlertDialog(
       title: Text(l10n.whatIsNewInVersion(entry.version)),
       content: useSharedAccessibleViewModel

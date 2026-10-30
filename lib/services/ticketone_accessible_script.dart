@@ -172,7 +172,10 @@ const ticketOneUiSnapshotScript = r'''
     remember(id,e);
   }
   const unavailableCategories = event ? [...root.querySelectorAll('.ticket-type-item-wrapper-unavailable')]
-    .filter(visible).map(e => ({
+    // Empty availability placeholders also exist in fast booking. Their form's
+    // heading is the quantity instruction, not an unavailable ticket category.
+    .filter(e => visible(e) && [...e.querySelectorAll('[data-qa="ticket-type-availability-hint"]')]
+      .some(hint => visible(hint) && norm(hint.textContent))).map(e => ({
       category:norm(e.closest('form')?.querySelector('.pc-list-category')?.textContent ||
         (e.closest('form')?.getAttribute('data-qa') || '').replace(/^pc-list-number-/, '')),
       message:norm(e.querySelector('[data-qa="ticket-type-availability-hint"]')?.textContent)
