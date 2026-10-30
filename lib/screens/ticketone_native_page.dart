@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math' show min;
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import '../l10n/app_localizations.dart';
 import '../l10n/ticketone_strings.dart';
 import '../services/ticketone_accessible_script.dart';
+import '../services/ticketone_page_diagnostics.dart';
 import '../utils/status_message.dart';
 import '../widgets/universal_accessible_view.dart';
 
@@ -43,6 +45,9 @@ class _TicketOneNativePageState extends State<TicketOneNativePage> {
   int _serial = 0, _attempt = 0;
   int _otpRevision = 0;
   String? _lastDiagnostic;
+  final Set<String> _capturedDiagnostics = {};
+  bool _capturingDiagnostics = false;
+  ({int generation, String phase})? _queuedDiagnostics;
   TicketOneStrings get t =>
       TicketOneStrings(AppLocalizations.of(context).localeName);
   List<Map<String, dynamic>> get _fields =>
@@ -137,6 +142,7 @@ class _TicketOneNativePageState extends State<TicketOneNativePage> {
       _busy = true;
       _attempt = 0;
       _lastDiagnostic = null;
+      _capturedDiagnostics.clear();
       if (!widget.loading) unawaited(_read());
     }
   }
@@ -223,6 +229,13 @@ class _TicketOneNativePageState extends State<TicketOneNativePage> {
         }
       }
       if (value is! Map<String, dynamic> || value['status'] != 'ready') {
+        final status = value is Map ? value['status'] : 'invalid';
+        final finalAttempt = status != 'waiting' || _attempt >= 12;
+        unawaited(
+          _capturePageDiagnostics(
+            finalAttempt ? 'unrecognized_final' : 'unrecognized_initial',
+          ),
+        );
         if (value is Map && value['status'] == 'access-denied') {
           _unavailable('access_denied');
           return;
@@ -295,7 +308,72 @@ class _TicketOneNativePageState extends State<TicketOneNativePage> {
     }
   }
 
+  Future<void> _capturePageDiagnostics(String phase) async {
+    if (_capturedDiagnostics.contains(phase)) return;
+    if (_capturingDiagnostics) {
+      // A new page/final failure can arrive while the previous snapshot is
+      // pending. Preserve that request instead of silently missing this page.
+      _queuedDiagnostics = (generation: widget.generation, phase: phase);
+      return;
+    }
+    _capturingDiagnostics = true;
+    final generation = widget.generation;
+    try {
+      dynamic data = await widget.controller
+          .runJavaScriptReturningResult(ticketOnePageDiagnosticsScript)
+          .timeout(const Duration(seconds: 8));
+      if (!mounted || widget.generation != generation) return;
+      for (var i = 0; i < 2 && data is String; i++) {
+        data = jsonDecode(data);
+      }
+      if (data is! Map || data['version'] != 1) {
+        widget.log(
+          'page_capture_failed generation=$generation phase=$phase reason=schema',
+        );
+        return;
+      }
+      final payload = jsonEncode(data);
+      if (payload.length > 900000) {
+        widget.log(
+          'page_capture_failed generation=$generation phase=$phase reason=size bytes=${payload.length}',
+        );
+        return;
+      }
+      _capturedDiagnostics.add(phase);
+      final capture = '$_instance-$generation-$phase';
+      const chunkSize = 6000;
+      final parts = (payload.length / chunkSize).ceil();
+      widget.log(
+        'page_capture_begin id=$capture parts=$parts characters=${payload.length}',
+      );
+      for (var i = 0; i < parts; i++) {
+        final end = min(payload.length, (i + 1) * chunkSize);
+        widget.log(
+          'page_capture_part id=$capture part=${i + 1}/$parts ${payload.substring(i * chunkSize, end)}',
+        );
+      }
+      widget.log('page_capture_end id=$capture');
+    } catch (error) {
+      // Exception messages can include script contents or URLs: type only.
+      if (mounted && widget.generation == generation) {
+        widget.log(
+          'page_capture_failed generation=$generation phase=$phase reason=${error.runtimeType}',
+        );
+      }
+    } finally {
+      _capturingDiagnostics = false;
+      final queued = _queuedDiagnostics;
+      _queuedDiagnostics = null;
+      if (mounted && queued != null && queued.generation == widget.generation) {
+        unawaited(_capturePageDiagnostics(queued.phase));
+      }
+    }
+  }
+
   void _unavailable(String reason) {
+    if (reason != 'foreign') {
+      unawaited(_capturePageDiagnostics('unrecognized_final'));
+    }
     setState(() {
       _busy = false;
       _page = null;

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:sonarpad_mobile_starter/screens/ticketone_native_page.dart';
+import 'package:sonarpad_mobile_starter/services/ticketone_page_diagnostics.dart';
 import 'travel_screen_test.dart' show app, row, rows;
 
 Map<String, dynamic> field(
@@ -52,6 +53,7 @@ class NativeController extends Fake implements WebViewController {
   void Function(JavaScriptMessage)? receive;
   final channels = <String>{};
   Completer<Object>? pendingSnapshot;
+  int captures = 0;
   @override
   Future<void> removeJavaScriptChannel(String name) async {
     channels.remove(name);
@@ -69,10 +71,16 @@ class NativeController extends Fake implements WebViewController {
   @override
   Future<String?> currentUrl() async => url;
   @override
-  Future<Object> runJavaScriptReturningResult(String script) async =>
-      pendingSnapshot == null
-      ? jsonEncode(page)
-      : await pendingSnapshot!.future;
+  Future<Object> runJavaScriptReturningResult(String script) async {
+    if (script == ticketOnePageDiagnosticsScript) {
+      captures++;
+      return jsonEncode({'version': 1, 'html': '<form id="test"></form>'});
+    }
+    return pendingSnapshot == null
+        ? jsonEncode(page)
+        : await pendingSnapshot!.future;
+  }
+
   @override
   Future<void> runJavaScript(String script) async {
     scripts.add(script);
@@ -111,6 +119,59 @@ void main() {
     );
     await tester.pumpAndSettle();
   }
+
+  testWidgets('every unrecognized page captures its structure in the log', (
+    tester,
+  ) async {
+    final c = NativeController()..page = {'status': 'unsupported'};
+    final logs = <String>[];
+    await start(tester, c, logs);
+    expect(c.captures, 1);
+    expect(logs.any((l) => l.startsWith('page_capture_begin')), isTrue);
+    expect(
+      logs.any(
+        (l) => l.contains('form id=') && l.contains('page_capture_part'),
+      ),
+      isTrue,
+    );
+    expect(logs.any((l) => l.startsWith('page_capture_end')), isTrue);
+    // A new document is independently captured, even with the same failure.
+    await tester.pumpWidget(const SizedBox());
+    await start(tester, c, logs);
+    expect(c.captures, 2);
+    expect(c.scripts, isEmpty);
+  });
+
+  testWidgets(
+    'waiting page captures both initial and exhausted recovery state',
+    (tester) async {
+      final c = NativeController()..page = {'status': 'waiting'};
+      final logs = <String>[];
+      await start(tester, c, logs);
+      for (var i = 0; i < 13; i++) {
+        await tester.pump(const Duration(seconds: 1));
+        await tester.pump();
+      }
+      expect(c.captures, 2);
+      expect(
+        logs.any(
+          (l) =>
+              l.startsWith('page_capture_end') &&
+              l.contains('unrecognized_initial'),
+        ),
+        isTrue,
+      );
+      expect(
+        logs.any(
+          (l) =>
+              l.startsWith('page_capture_end') &&
+              l.contains('unrecognized_final'),
+        ),
+        isTrue,
+      );
+      expect(logs, contains('native_unsupported'));
+    },
+  );
 
   testWidgets('identity denial is immediate and never resubmits', (
     tester,

@@ -116,6 +116,82 @@ void main() {
   }
 
   testWidgets(
+    'late login redirect retries event GET once, without replaying login',
+    (tester) async {
+      final c = TicketController(), logs = <String>[];
+      await start(tester, c, logs, accountPath: '/dashboard/login/register');
+      c.reply();
+      await tester.pump();
+      expect(c.loads.last, event);
+      final before = c.loads.length;
+      c.current = 'https://www.ticketone.it/';
+      c.delegate!.onPageStarted!(c.current);
+      c.delegate!.onPageFinished!(c.current);
+      await tester.pump();
+      expect(c.loads.length, before + 1);
+      expect(c.loads.last, event);
+      expect(
+        logs,
+        contains('[TicketOne] session_event_return_retry route=home'),
+      );
+      c.current = 'https://www.ticketone.it/';
+      c.delegate!.onPageStarted!(c.current);
+      c.delegate!.onPageFinished!(c.current);
+      await tester.pump();
+      expect(c.loads.length, before + 1);
+      expect(
+        logs,
+        contains('[TicketOne] session_event_return_failed route=home'),
+      );
+      await tester.pumpWidget(const SizedBox());
+    },
+  );
+
+  testWidgets('event return never replaces checkout or profile', (
+    tester,
+  ) async {
+    for (final path in ['/checkout.html', '/external-customer-data/']) {
+      final c = TicketController(), logs = <String>[];
+      await start(tester, c, logs, accountPath: '/dashboard/login/register');
+      c.reply();
+      await tester.pump();
+      final before = c.loads.length;
+      c.current = 'https://www.ticketone.it$path';
+      c.delegate!.onPageStarted!(c.current);
+      c.delegate!.onPageFinished!(c.current);
+      await tester.pump();
+      expect(c.loads.length, before);
+      await tester.pumpWidget(const SizedBox());
+    }
+  });
+
+  testWidgets('cancelled and stale navigation do not interrupt the event', (
+    tester,
+  ) async {
+    final c = TicketController(), logs = <String>[];
+    await start(tester, c, logs, accountPath: '/dashboard/login/register');
+    c.reply();
+    await tester.pump();
+    c.delegate!.onPageStarted!(c.current);
+    c.delegate!.onWebResourceError!(
+      const WebResourceError(
+        errorCode: -999,
+        description: 'cancelled',
+        isForMainFrame: true,
+      ),
+    );
+    c.delegate!.onPageFinished!('https://www.ticketone.it/dashboard/');
+    await tester.pump();
+    expect(logs, contains('[TicketOne] navigation_cancelled'));
+    expect(logs, contains('[TicketOne] navigation_stale_finish_ignored'));
+    expect(logs, isNot(contains('[TicketOne] main_frame_failed')));
+    await tester.pump(const Duration(seconds: 1));
+    await tester.pump();
+    expect(logs, contains('[TicketOne] session_event_reached'));
+    await tester.pumpWidget(const SizedBox());
+  });
+
+  testWidgets(
     'diagnostics include the public event without query or fragment',
     (tester) async {
       final c = TicketController(), logs = <String>[];

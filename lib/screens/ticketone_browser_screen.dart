@@ -45,6 +45,8 @@ class _TicketOneBrowserScreenState extends State<TicketOneBrowserScreen> {
   bool _loading = true, _error = false, _checking = false;
   bool _panel = false, _canGoBack = false;
   bool _webOnly = false;
+  bool _returningToEvent = false;
+  bool _eventReturnRetried = false;
   late bool _waitingForLogin = widget.accountPath != null;
   late bool _resumePending = widget.accountPath == '/dashboard/login';
   int _generation = 0;
@@ -54,6 +56,45 @@ class _TicketOneBrowserScreenState extends State<TicketOneBrowserScreen> {
   void _log(String event) {
     // No URL queries, cookies, tokens, form data or customer identifiers.
     unawaited((widget.logger ?? AppLogger.log)('[TicketOne] $event'));
+  }
+
+  String _route(String? url) {
+    final uri = Uri.tryParse(url ?? '');
+    if (!isTicketOneOrigin(url)) {
+      return uri?.host == 'auth.ticketone.it' ? 'login' : 'provider';
+    }
+    if (uri!.path == widget.eventUrl.path) return 'selected_event';
+    if (uri.path.startsWith('/event/')) return 'other_event';
+    if (uri.path == '/' || uri.path.isEmpty) return 'home';
+    if (uri.path.startsWith('/dashboard')) return 'account';
+    if (uri.path == '/checkout.html') return 'checkout';
+    if (uri.path == '/external-customer-data/') return 'profile';
+    return 'other';
+  }
+
+  Future<bool> _recoverEventReturn(String? url) async {
+    if (!_returningToEvent) return false;
+    final route = _route(url);
+    if (route == 'selected_event') {
+      _returningToEvent = false;
+      _log('session_event_reached');
+    } else if (route == 'home' || route == 'account') {
+      if (_eventReturnRetried) {
+        _returningToEvent = false;
+        _log('session_event_return_failed route=$route');
+      } else {
+        // The identity site's final redirect can cancel our first event GET.
+        // Retry only that GET, once, after the landing page is ready. Never
+        // replay login, cart mutations or a checkout/provider navigation.
+        _eventReturnRetried = true;
+        _log('session_event_return_retry route=$route');
+        await _navigate(widget.eventUrl);
+        return true;
+      }
+    } else {
+      _returningToEvent = false;
+    }
+    return false;
   }
 
   @override
@@ -117,7 +158,7 @@ class _TicketOneBrowserScreenState extends State<TicketOneBrowserScreen> {
             );
             return NavigationDecision.prevent;
           },
-          onPageStarted: (_) {
+          onPageStarted: (url) {
             _generation++;
             _invalidateProbe();
             if (mounted) {
@@ -128,9 +169,20 @@ class _TicketOneBrowserScreenState extends State<TicketOneBrowserScreen> {
               });
             }
             _log('navigation_started generation=$_generation');
+            _log('navigation_destination route=${_route(url)}');
             _watchLoading();
           },
           onPageFinished: (url) async {
+            if (!mounted) return;
+            final finishedGeneration = _generation;
+            final current = await controller.currentUrl();
+            if (!mounted || finishedGeneration != _generation) return;
+            if (current != url) {
+              _log('navigation_stale_finish_ignored');
+              return;
+            }
+            _log('navigation_finished route=${_route(url)}');
+            if (await _recoverEventReturn(url)) return;
             if (!mounted) return;
             _loadWatchdog?.cancel();
             setState(() => _loading = false);
@@ -151,6 +203,15 @@ class _TicketOneBrowserScreenState extends State<TicketOneBrowserScreen> {
           },
           onWebResourceError: (error) {
             if (error.isForMainFrame == true && mounted) {
+              _log(
+                'main_frame_error code=${error.errorCode} type=${error.errorType?.name ?? 'unknown'}',
+              );
+              // WKWebView -999 means a navigation was superseded. The next
+              // navigation/watchdog must remain active, not become an error UI.
+              if (error.errorCode == -999) {
+                _log('navigation_cancelled');
+                return;
+              }
               _loadWatchdog?.cancel();
               _invalidateProbe();
               setState(() {
@@ -214,6 +275,8 @@ class _TicketOneBrowserScreenState extends State<TicketOneBrowserScreen> {
         if (!mounted || !_loading || generation != _generation) return;
         final state = '$ready'.replaceAll('"', '');
         if (state == 'interactive' || state == 'complete') {
+          if (await _recoverEventReturn(url)) return;
+          if (!mounted || generation != _generation) return;
           setState(() => _loading = false);
           _log('navigation_recovered generation=$generation ready=$state');
           if (_waitingForLogin && isTicketOneOrigin(url)) await _check();
@@ -335,6 +398,8 @@ class _TicketOneBrowserScreenState extends State<TicketOneBrowserScreen> {
         _log('session_continue_event');
         final uri = Uri.tryParse(current ?? '');
         if (uri?.path != widget.eventUrl.path) {
+          _returningToEvent = true;
+          _eventReturnRetried = false;
           await _navigate(widget.eventUrl);
         }
         return;
