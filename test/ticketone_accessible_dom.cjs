@@ -24,6 +24,61 @@ function fixture(html, url = 'https://auth.ticketone.it/identity/auth/') {
 }
 async function test(name, run) { await run(); console.log('PASS ' + name); passed++; }
 (async () => {
+  await test('diagnostic 19 package steppers keep quantities and carts separate', async () => {
+    const f = fixture('<div id="tickets-bestseat-tab">' + ['PLATINUM PACKAGE', 'GOLD PACKAGE'].map((c,i) => `
+      <form id="package${i}" data-qa="pc-list-number-${c}">
+        <input type="hidden" name="token" value="SECRET">
+        <div class="pc-list-category">${c}</div>
+        <div class="js-ticket-type-item"><div class="ticket-type-title">Intero Pacchetto</div>
+          <div data-qa="tickettypeItem-price">${i ? '199' : '299'},00 €</div>
+          <div class="js-stepper">
+            <button type="button" data-qa="less-tickets" disabled></button>
+            <div class="js-stepper-amount-text">0</div>
+            <input type="hidden" class="js-stepper-amount" value="0">
+            <button type="button" data-qa="more-tickets"></button>
+          </div>
+        </div>
+        <button type="submit" data-qa="add-to-shopping-cart" disabled>Quantità totale biglietti 0, prezzo 0,00 €</button>
+      </form>`).join('') + '</div>', 'https://www.ticketone.it/event/il-volo-package/');
+    const submits = [];
+    [...f.doc.forms].forEach(form => {
+      form.onsubmit = e => { e.preventDefault(); submits.push(form.id); };
+      for (const direction of ['more', 'less']) {
+        form.querySelector(`[data-qa="${direction}-tickets"]`).onclick = () => {
+          const input = form.querySelector('.js-stepper-amount');
+          const n = Number(input.value) + (direction === 'more' ? 1 : -1);
+          input.value = String(n);
+          form.querySelector('.js-stepper-amount-text').textContent = String(n);
+          form.querySelector('[data-qa="less-tickets"]').disabled = n === 0;
+          form.querySelector('[data-qa="more-tickets"]').disabled = n === 2;
+          form.querySelector('[data-qa="add-to-shopping-cart"]').disabled = n === 0;
+        };
+      }
+    });
+    let p = f.read();
+    assert.equal(p.status, 'ready'); assert.equal(p.fields.length, 0);
+    assert.equal(p.actions.length, 6); assert(!JSON.stringify(p).includes('SECRET'));
+    let more = p.actions.find(a => a.label.startsWith('Aumenta') && a.label.endsWith('GOLD PACKAGE'));
+    assert(more.label.includes('199,00 €')); assert(more.label.includes('Quantità 0'));
+    assert.equal(more.submit, false);
+    assert.equal((await f.act(p, more.id)).status, 'submitted');
+    assert.deepEqual(submits, []);
+    assert.equal(f.doc.forms[0].querySelector('.js-stepper-amount').value, '0');
+    assert.equal(f.doc.forms[1].querySelector('.js-stepper-amount').value, '1');
+    assert.equal((await f.act(p, more.id)).status, 'stale');
+    p = f.read();
+    assert(p.actions.some(a => a.label.includes('Quantità 1') && a.label.endsWith('GOLD PACKAGE')));
+    const cart = p.actions.find(a => a.submit && a.label.endsWith('GOLD PACKAGE'));
+    assert.equal(cart.enabled, true);
+    assert.equal((await f.act(p, cart.id)).status, 'submitted');
+    assert.deepEqual(submits, ['package1']);
+    p = f.read();
+    const less = p.actions.find(a => a.label.startsWith('Diminuisci') && a.label.endsWith('GOLD PACKAGE'));
+    assert.equal((await f.act(p, less.id)).status, 'submitted');
+    p = f.read();
+    assert.equal(p.actions.find(a => a.submit && a.label.endsWith('GOLD PACKAGE')).enabled, false);
+    f.close();
+  });
   await test('fast booking ignores three empty availability placeholders and keeps ticket quantity', async () => {
     const f = fixture(`<form class="js-ticket-selection-with-limits">
       <div class="pc-list-category">1. Per favore seleziona il numero di biglietti desiderati:</div>

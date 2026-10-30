@@ -269,6 +269,8 @@ void main() {
       row(tester, 'dates').onValueChanged!(true);
       await tester.pumpAndSettle();
       expect(row(tester, 'from-day').kind, 'slider');
+      expect(row(tester, 'from-day').title, 'Dal giorno');
+      expect(row(tester, 'to-day').title, 'Al giorno');
       expect(row(tester, 'to-year').kind, 'slider');
       row(tester, 'from-year').onValueChanged!(1);
       await tester.pumpAndSettle();

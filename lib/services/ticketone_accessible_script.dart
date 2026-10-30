@@ -154,7 +154,7 @@ const ticketOneUiSnapshotScript = r'''
       (externalProfile && e.matches('[data-qa="save-data-button"]')) ||
       !!e.closest('[data-qa="registration-button"], ev-pl-button[dataqa="registration-button"]') ||
       /^(registrati|crea account|crea un account|conferma|continua|invia codice|verifica|register|create account|verify|continue)$/i.test(label(e)));
-  if (event) candidates = [...root.querySelectorAll('[data-qa="AddToShoppingCart"]')];
+  if (event) candidates = [...root.querySelectorAll('[data-qa="AddToShoppingCart"], [data-qa="add-to-shopping-cart"], .js-stepper [data-qa="less-tickets"], .js-stepper [data-qa="more-tickets"]')];
   const checkoutActions = /^(vai alla spedizione|conferma la tua scelta|salva e vai al pagamento|conferma i dati|continua|prosegui|salva|avanti|elimina biglietti|continue|next|save|go to delivery|confirm your choice)$/i;
   if (checkout) candidates = [...root.querySelectorAll('button, a, input[type="submit"], [role="button"]')].filter(e =>
     checkoutActions.test(label(e)) || (/^Carrello\b/i.test(document.title) && /^Procedi con l['’]acquisto$/i.test(label(e))));
@@ -162,13 +162,24 @@ const ticketOneUiSnapshotScript = r'''
   for (const e of candidates) {
     if (!visible(e) || outside(e)) continue;
     let text = norm(e.tagName === 'INPUT' ? e.value : e.textContent || e.getAttribute('aria-label'));
+    const ticketStepper = event && e.matches('.js-stepper [data-qa="less-tickets"], .js-stepper [data-qa="more-tickets"]');
+    if (ticketStepper) {
+      const stepper = e.closest('.js-stepper');
+      const ticket = e.closest('.js-ticket-type-item');
+      const amount = norm(stepper.querySelector('.js-stepper-amount-text')?.textContent) ||
+        stepper.querySelector('input.js-stepper-amount')?.value;
+      const details = norm(ticket?.querySelector('.ticket-type-title')?.textContent);
+      const price = norm(ticket?.querySelector('[data-qa="tickettypeItem-price"]')?.textContent);
+      text = [e.dataset.qa === 'more-tickets' ? 'Aumenta biglietti' : 'Diminuisci biglietti',
+        details, price, /^\d+$/.test(amount || '') ? 'Quantità ' + amount : ''].filter(Boolean).join(' — ');
+    }
     if (event && text && categoryLabel(e)) text += ' — ' + categoryLabel(e);
     if (!text || text.length > 500 || actions.some(a => a.label === text)) continue;
     // Auth-only links (OTP, password reset); never project arbitrary links.
     if (login && e.tagName === 'A' && !/codice|code|password|registr|account|acced|sign in/i.test(text)) continue;
     const id = 'a' + actions.length;
     actions.push({id,label:text,enabled:!e.disabled && e.getAttribute('aria-disabled') !== 'true',
-      submit:e.tagName !== 'A' && (e.type === 'submit' || e.hasAttribute('data-qa') || checkout || registration)});
+      submit:!ticketStepper && e.tagName !== 'A' && (e.type === 'submit' || e.hasAttribute('data-qa') || checkout || registration)});
     remember(id,e);
   }
   const unavailableCategories = event ? [...root.querySelectorAll('.ticket-type-item-wrapper-unavailable')]

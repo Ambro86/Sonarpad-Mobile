@@ -45,12 +45,14 @@ Widget _page(
   String? initialFocusId,
   Key? listKey,
   AccessibleListController? controller,
+  String? debugTag,
 }) => Scaffold(
   appBar: SonarpadAppBar(title: Text(title)),
   body: SafeArea(
     child: UniversalAccessibleList(
       key: listKey,
       controller: controller,
+      debugTag: debugTag,
       initialFocusId: initialFocusId,
       sections: [AccessibleListSection(rows: rows)],
       padding: const EdgeInsets.all(16),
@@ -143,7 +145,7 @@ AccessibleListRow _timeBandRow(
     valueLabel: label(band.index),
     options: [
       for (final option in options)
-        AccessibleOption(value: option.name, label: label(option.index)),
+        AccessibleOption(value: option.index, label: label(option.index)),
     ],
     sliderValue: band.index.toDouble(),
     sliderMin: 0,
@@ -340,7 +342,10 @@ class _TravelSearchScreenState extends State<TravelSearchScreen> {
       kind: 'slider',
       value: value,
       valueLabel: options.where((o) => o.value == value).firstOrNull?.label,
-      options: options,
+      options: [
+        for (var i = 0; i < options.length; i++)
+          AccessibleOption(value: i, label: options[i].label),
+      ],
       sliderValue: index.toDouble(),
       sliderMin: 0,
       sliderMax: (options.length - 1).toDouble(),
@@ -377,12 +382,16 @@ class _TravelSearchScreenState extends State<TravelSearchScreen> {
       '${t.t(prefix)}: ${t.t('day')}',
       '${date.day}',
       [
-        for (var day = 1; day <= DateTime(date.year, date.month + 1, 0).day; day++)
+        for (
+          var day = 1;
+          day <= DateTime(date.year, date.month + 1, 0).day;
+          day++
+        )
           AccessibleOption(
             value: '$day',
-            label: DateFormat.MMMMEEEEd(t.locale).format(
-              DateTime(date.year, date.month, day),
-            ),
+            label: DateFormat.MMMMEEEEd(
+              t.locale,
+            ).format(DateTime(date.year, date.month, day)),
           ),
       ],
       (v) =>
@@ -686,7 +695,7 @@ class _TravelSearchScreenState extends State<TravelSearchScreen> {
         _search,
         enabled: !_busy,
       ),
-    ]);
+    ], debugTag: 'travel-search');
   }
 }
 
@@ -739,10 +748,7 @@ class _TravelCardsScreenState extends State<_TravelCardsScreen> {
       if (!empty)
         for (var i = 0; i < widget.ages.length; i++)
           if (_cards[i].isEmpty)
-            _info(
-              'card-$i',
-              '${passengerLabels[i]}: ${t.t('noDiscountCard')}',
-            )
+            _info('card-$i', '${passengerLabels[i]}: ${t.t('noDiscountCard')}')
           else
             AccessibleListRow(
               id: 'card-$i',

@@ -252,7 +252,7 @@ class _ConcertSearchScreenState extends State<ConcertSearchScreen> {
     return [
       _slider(
         '$id-day',
-        '${end ? l.concertsTo : l.concertsFrom} — ${l.concertsDay}',
+        end ? l.concertsTo : l.concertsFrom,
         List.generate(
           DateUtils.getDaysInMonth(date.year, date.month),
           (i) => DateFormat.MMMMEEEEd(l.localeName).format(

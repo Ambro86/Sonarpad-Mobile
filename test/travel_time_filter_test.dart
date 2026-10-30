@@ -65,6 +65,27 @@ void main() {
     await tester.pump();
     expect(helpers.row(tester, 'outbound-time').value, 'morning');
     expect(helpers.row(tester, 'inbound-time').value, 'all');
+    final day = helpers.row(tester, 'outbound-day');
+    expect(day.title, 'Andata: Giorno');
+    helpers.row(tester, 'outbound-day').onValueChanged!(0.0);
+    await tester.pump();
+    expect(helpers.row(tester, 'outbound-day').value, '1');
+    expect(helpers.row(tester, 'outbound-time').value, 'morning');
+    helpers.row(tester, 'outbound-time').onValueChanged!(2.0);
+    await tester.pump();
+    expect(helpers.row(tester, 'outbound-day').value, '1');
+    expect(helpers.row(tester, 'outbound-time').value, 'afternoon');
+    expect(helpers.row(tester, 'inbound-time').value, 'all');
+    for (final r in helpers.rows(tester).where((r) => r.kind == 'slider')) {
+      for (var i = 0; i < r.options.length; i++) {
+        expect(r.options[i].value, i, reason: r.id);
+      }
+      expect(
+        r.options[r.sliderValue.round()].label,
+        r.valueLabel,
+        reason: r.id,
+      );
+    }
   });
   testWidgets('filter includes later pages and switching uses cached results', (
     tester,

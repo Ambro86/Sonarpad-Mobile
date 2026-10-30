@@ -1358,7 +1358,11 @@ final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITableViewDa
     }
 
     let isDocumentParagraph = debugTag == "document" && row.id.hasPrefix("paragraph_")
-    let identifier = isDocumentParagraph ? "SonarpadDocumentParagraphCell" : "SonarpadAccessibleTableCell"
+    // Keep travel controls distinct while scrolling. VoiceOver must not retain
+    // a day cell that UITableView has recycled into the time-of-day slider.
+    let isolatedTravelSlider = debugTag == "travel-search" && row.kind == "slider"
+    let identifier = isDocumentParagraph ? "SonarpadDocumentParagraphCell" :
+      isolatedTravelSlider ? "SonarpadTravelSlider_\(row.id)" : "SonarpadAccessibleTableCell"
     let cell: SonarpadAccessibleTableCell
     if isDocumentParagraph {
       cell = (tableView.dequeueReusableCell(withIdentifier: identifier) as? SonarpadDocumentParagraphCell)
