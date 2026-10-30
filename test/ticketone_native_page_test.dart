@@ -120,6 +120,24 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  testWidgets('stale checkout refreshes controls without resubmitting', (
+    tester,
+  ) async {
+    final c = NativeController();
+    final logs = <String>[];
+    await start(tester, c, logs);
+    row(tester, 'a0').onActivate!();
+    await tester.pump();
+    c.page = snapshot([], [action('a1', 'Vai alla spedizione')])
+      ..['stage'] = 'checkout';
+    c.reply('stale');
+    await tester.pumpAndSettle();
+    expect(row(tester, 'a1').title, 'Vai alla spedizione');
+    expect(rows(tester).any((r) => r.id == 'message'), isFalse);
+    expect(c.scripts.length, 1);
+    expect(logs, contains('native_page_changed_before_action'));
+  });
+
   testWidgets('every unrecognized page captures its structure in the log', (
     tester,
   ) async {

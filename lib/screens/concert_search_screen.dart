@@ -11,6 +11,15 @@ import '../utils/country_name_helper.dart';
 import '../widgets/universal_accessible_view.dart';
 import 'ticketone_browser_screen.dart';
 
+DateTime concertDateOneMonthLater(DateTime date) {
+  final next = DateTime(date.year, date.month + 1);
+  return DateTime(
+    next.year,
+    next.month,
+    date.day.clamp(1, DateUtils.getDaysInMonth(next.year, next.month)),
+  );
+}
+
 AccessibleListRow _text(String id, String text) => AccessibleListRow(
   id: id,
   title: text,
@@ -90,7 +99,7 @@ class _ConcertSearchScreenState extends State<ConcertSearchScreen> {
   bool _welcomeAccepted = false, _welcomeFailed = false;
   int _generation = 0;
   late DateTime _from = DateUtils.dateOnly(DateTime.now());
-  late DateTime _to = _from.add(const Duration(days: 30));
+  late DateTime _to = concertDateOneMonthLater(_from);
 
   @override
   void didChangeDependencies() {
@@ -234,6 +243,7 @@ class _ConcertSearchScreenState extends State<ConcertSearchScreen> {
           _to = DateTime(y, m, d);
         } else {
           _from = DateTime(y, m, d);
+          _to = concertDateOneMonthLater(_from);
         }
       });
     }
@@ -245,7 +255,9 @@ class _ConcertSearchScreenState extends State<ConcertSearchScreen> {
         '${end ? l.concertsTo : l.concertsFrom} — ${l.concertsDay}',
         List.generate(
           DateUtils.getDaysInMonth(date.year, date.month),
-          (i) => '${i + 1}',
+          (i) => DateFormat.MMMMEEEEd(l.localeName).format(
+            DateTime(date.year, date.month, i + 1),
+          ),
         ),
         date.day - 1,
         (n) => update(day: n + 1),

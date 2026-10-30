@@ -14,6 +14,20 @@ class _LiveHttpOverrides extends HttpOverrides {}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  test('end date advances one calendar month with month-end clamping', () {
+    expect(
+      concertDateOneMonthLater(DateTime(2027, 1, 31)),
+      DateTime(2027, 2, 28),
+    );
+    expect(
+      concertDateOneMonthLater(DateTime(2028, 1, 31)),
+      DateTime(2028, 2, 29),
+    );
+    expect(
+      concertDateOneMonthLater(DateTime(2026, 12, 15)),
+      DateTime(2027, 1, 15),
+    );
+  });
   test('search excludes past dates even without date filters', () async {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
@@ -256,6 +270,17 @@ void main() {
       await tester.pumpAndSettle();
       expect(row(tester, 'from-day').kind, 'slider');
       expect(row(tester, 'to-year').kind, 'slider');
+      row(tester, 'from-year').onValueChanged!(1);
+      await tester.pumpAndSettle();
+      row(tester, 'from-month').onValueChanged!(0);
+      await tester.pumpAndSettle();
+      row(tester, 'from-day').onValueChanged!(30);
+      await tester.pumpAndSettle();
+      expect(row(tester, 'to-month').sliderValue, 1);
+      expect(
+        row(tester, 'to-day').sliderValue,
+        DateUtils.getDaysInMonth(DateTime.now().year + 1, 2) - 1,
+      );
       row(tester, 'city').onValueChanged!('torino');
       row(tester, 'search').onActivate!();
       await tester.pumpAndSettle();

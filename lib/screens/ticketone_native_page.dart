@@ -464,6 +464,14 @@ class _TicketOneNativePageState extends State<TicketOneNativePage> {
               ? 'native_action_submitted'
               : 'native_control_changed',
         );
+      } else if (status == 'stale') {
+        // The site's controls changed since our snapshot. Refresh them, but
+        // never replay an action that could add tickets or submit an order.
+        widget.log('native_page_changed_before_action');
+        _draft.clear();
+        _attempt = 0;
+        _lastDiagnostic = null;
+        await _read();
       } else if (status == 'invalid' && v['field'] is String) {
         final id = v['field'] as String;
         final field = _fields.where((f) => f['id'] == id).firstOrNull;
@@ -496,11 +504,7 @@ class _TicketOneNativePageState extends State<TicketOneNativePage> {
             _page = null;
           }
         });
-        widget.log(
-          status == 'stale'
-              ? 'native_page_changed_before_action'
-              : 'native_action_not_confirmed',
-        );
+        widget.log('native_action_not_confirmed');
       }
     } catch (_) {
       _unavailable('invalid_ack');
