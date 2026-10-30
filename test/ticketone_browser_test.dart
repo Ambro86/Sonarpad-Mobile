@@ -377,6 +377,9 @@ void main() {
         isFalse,
       );
       expect(controller.loads.any((u) => u.path.contains('/login')), isFalse);
+      expect(find.byTooltip('Verifica accesso TicketOne'), findsNothing);
+      expect(find.byTooltip('Carrello TicketOne'), findsOneWidget);
+      expect(logs, contains('[TicketOne] session_continue_event'));
       await tester.pumpWidget(const SizedBox());
     }
     expect(logs.where((s) => s == '[TicketOne] session_resumed').length, 2);

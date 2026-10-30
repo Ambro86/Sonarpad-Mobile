@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:html/parser.dart' as html;
 import '../l10n/app_localizations.dart';
+import '../l10n/ticketone_strings.dart';
 import '../services/concert_search_service.dart';
 import '../utils/country_name_helper.dart';
 import '../widgets/universal_accessible_view.dart';
@@ -85,6 +86,8 @@ class _ConcertSearchScreenState extends State<ConcertSearchScreen> {
   String _term = '', _city = '';
   String? _chosenCity, _error;
   bool _busy = true, _dates = false, _initialized = false;
+  static const _welcomeKey = 'sonarpad_concert_welcome_accepted_v1';
+  bool _welcomeAccepted = false, _welcomeFailed = false;
   int _generation = 0;
   late DateTime _from = DateUtils.dateOnly(DateTime.now());
   late DateTime _to = _from.add(const Duration(days: 30));
@@ -109,6 +112,7 @@ class _ConcertSearchScreenState extends State<ConcertSearchScreen> {
       final prefs = await SharedPreferences.getInstance();
       if (!mounted || generation != _generation) return;
       final saved = prefs.getString('concert_country');
+      _welcomeAccepted = prefs.getBool(_welcomeKey) ?? false;
       _market = ConcertMarket.all.firstWhere(
         (m) => m.country == saved,
         orElse: () => _market,
@@ -132,6 +136,25 @@ class _ConcertSearchScreenState extends State<ConcertSearchScreen> {
       await prefs.setString('concert_chosen_city', _chosenCity!);
     } else {
       await prefs.remove('concert_chosen_city');
+    }
+  }
+
+  Future<void> _acceptWelcome() async {
+    if (_busy) return;
+    setState(() {
+      _busy = true;
+      _welcomeFailed = false;
+    });
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      if (!await prefs.setBool(_welcomeKey, true)) {
+        throw StateError('preference_save_failed');
+      }
+      if (mounted) setState(() => _welcomeAccepted = true);
+    } catch (_) {
+      if (mounted) setState(() => _welcomeFailed = true);
+    } finally {
+      if (mounted) setState(() => _busy = false);
     }
   }
 
@@ -258,6 +281,25 @@ class _ConcertSearchScreenState extends State<ConcertSearchScreen> {
           setState(() => _busy = false);
         }),
       ], key: const ValueKey('concert-loading'));
+    }
+    if (!_welcomeAccepted) {
+      final t = TicketOneStrings(l.localeName);
+      return _page(
+        t.t('concertWelcomeTitle'),
+        [
+          if (_welcomeFailed) _text('welcome-error', t.t('welcomeSaveError')),
+          for (var i = 1; i <= 5; i++)
+            _text('welcome-$i', t.t('concertWelcome$i')),
+          _button('accept', t.t('accept'), _acceptWelcome),
+          _button(
+            'decline',
+            t.t('decline'),
+            () => Navigator.of(context).maybePop(),
+          ),
+        ],
+        focus: 'welcome-1',
+        key: const ValueKey('concert-welcome'),
+      );
     }
     return _page(
       l.concertsTitle,

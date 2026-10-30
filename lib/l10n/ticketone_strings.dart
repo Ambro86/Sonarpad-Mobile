@@ -24,6 +24,21 @@ class TicketOneStrings {
   }
 
   static const _it = {
+    'concertWelcomeTitle': 'Benvenuti nella ricerca concerti',
+    'concertWelcome1':
+        'Benvenuti nella ricerca concerti di Sonarpad. Con questa funzione potete cercare concerti e proseguire con l’acquisto dei biglietti tramite TicketOne o il servizio indicato per l’evento.',
+    'concertWelcome2':
+        'L’autore, coerentemente con lo spirito di servizio di Sonarpad, non percepisce commissioni sui vostri acquisti e non utilizza codici di affiliazione.',
+    'concertWelcome3':
+        'Sonarpad mostra i prezzi restituiti dal servizio, senza aggiungere maggiorazioni. Prezzi e disponibilità possono cambiare: prima di pagare, controllate su TicketOne o sul servizio di vendita il totale definitivo, comprese eventuali commissioni e servizi aggiuntivi.',
+    'concertWelcome4':
+        'Sonarpad è un facilitatore: presenta la ricerca e la compilazione dei dati nel modo più semplice e accessibile possibile. Non vende i biglietti e non gestisce gli acquisti. Per assistenza dopo l’acquisto, modifiche, cancellazioni o rimborsi, rivolgetevi a TicketOne, al venditore o all’organizzatore indicato nella conferma dell’acquisto, secondo le condizioni del biglietto.',
+    'concertWelcome5':
+        'Premendo Accetta confermate di aver letto queste informazioni. La scelta sarà ricordata su questo dispositivo. Premendo Rifiuta uscirete dalla ricerca concerti.',
+    'accept': 'Accetta',
+    'decline': 'Rifiuta',
+    'welcomeSaveError':
+        'Non è stato possibile salvare la scelta. Riprova con Accetta.',
     'otpHeading': 'Codice monouso',
     'otpComplete': 'Codice completo: tutte le sei cifre sono inserite.',
     'ticketsUnavailable': 'Biglietti attualmente non disponibili',
@@ -61,6 +76,20 @@ class TicketOneStrings {
     'empty': 'Il carrello è vuoto.',
   };
   static const _en = {
+    'concertWelcomeTitle': 'Welcome to concert search',
+    'concertWelcome1':
+        'Welcome to Sonarpad concert search. You can find concerts and continue purchasing tickets through TicketOne or the service listed for the event.',
+    'concertWelcome2':
+        'In keeping with Sonarpad’s spirit of service, its author receives no commission on your purchases and uses no affiliate codes.',
+    'concertWelcome3':
+        'Sonarpad displays the prices returned by the service without adding markups. Prices and availability can change: before paying, check the final total on TicketOne or the ticket seller’s service, including any fees and optional extras.',
+    'concertWelcome4':
+        'Sonarpad is a facilitator: it makes searching and entering information as simple and accessible as possible. It does not sell tickets or manage purchases. For assistance, changes, cancellations or refunds after purchasing, contact TicketOne, the seller or the organiser named in your purchase confirmation, according to the ticket conditions.',
+    'concertWelcome5':
+        'By selecting Accept, you confirm that you have read this information. Your choice will be remembered on this device. Decline exits concert search.',
+    'accept': 'Accept',
+    'decline': 'Decline',
+    'welcomeSaveError': 'Unable to save your choice. Please try Accept again.',
     'otpHeading': 'One-time code',
     'otpComplete': 'Code complete: all six digits have been entered.',
     'ticketsUnavailable': 'Tickets currently unavailable',

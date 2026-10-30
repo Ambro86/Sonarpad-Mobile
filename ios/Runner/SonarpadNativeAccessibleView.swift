@@ -1326,7 +1326,7 @@ final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITableViewDa
       cell.field.accessibilityLabel = row.effectiveAccessibilityLabel
       cell.field.accessibilityHint = row.hint
       if cell.field.isSecureTextEntry != row.secure { cell.field.isSecureTextEntry = row.secure }
-      cell.field.textContentType = row.id == "tv_secret_code" ? .oneTimeCode : nil
+      cell.field.textContentType = ["tv_secret_code", "ticketone_otp_code"].contains(row.id) ? .oneTimeCode : nil
       cell.field.isEnabled = row.enabled
       switch row.keyboardType {
       case "phone": cell.field.keyboardType = .phonePad
@@ -2056,7 +2056,7 @@ final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITableViewDa
         cell.field.accessibilityLabel = row.effectiveAccessibilityLabel
         cell.field.accessibilityHint = row.hint
         if cell.field.isSecureTextEntry != row.secure { cell.field.isSecureTextEntry = row.secure }
-        cell.field.textContentType = row.id == "tv_secret_code" ? .oneTimeCode : nil
+        cell.field.textContentType = ["tv_secret_code", "ticketone_otp_code"].contains(row.id) ? .oneTimeCode : nil
         cell.field.isEnabled = row.enabled
         switch row.keyboardType {
         case "phone": cell.field.keyboardType = .phonePad

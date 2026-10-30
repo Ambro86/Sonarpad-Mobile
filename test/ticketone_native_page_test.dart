@@ -282,57 +282,59 @@ void main() {
     },
   );
 
-  testWidgets('OTP digits have Italian labels', (tester) async {
-    final c = NativeController();
-    final logs = <String>[];
-    c.page = snapshot(
-      [
-        for (final name in [
-          'First',
-          'Second',
-          'Third',
-          'Fourth',
-          'Fifth',
-          'Sixth',
-        ])
-          field(name, '$name Digit', type: 'text', secret: true),
-      ],
-      [action('a0', 'Accedi')],
-    );
-    await start(tester, c, logs);
-    expect(row(tester, 'otp-heading').title, 'Codice monouso');
-    expect(row(tester, 'First').title, 'Cifra 1');
-    expect(row(tester, 'Sixth').title, 'Cifra 6');
-    await row(tester, 'First').onValueChanged!('123 456');
-    await tester.pump();
-    expect(logs, contains('native_otp_complete digits=6'));
-    expect(logs.join(), isNot(contains('123456')));
-    await tester.pump(const Duration(milliseconds: 300));
-    final ids = ['First', 'Second', 'Third', 'Fourth', 'Fifth', 'Sixth'];
-    for (var i = 0; i < 6; i++) {
-      expect(row(tester, ids[i]).value, '${i + 1}');
-      expect(row(tester, ids[i]).textRevision, 1);
-    }
-    expect(
-      c.scripts,
-      isEmpty,
-    ); // Pasting never submits the login automatically.
-    await row(tester, 'Third').onValueChanged!('654321');
-    await tester.pump();
-    expect(row(tester, 'First').value, '6');
-    expect(row(tester, 'Sixth').value, '1');
-    await row(tester, 'Third').onValueChanged!('');
-    await tester.pump();
-    expect(row(tester, 'Third').value, '');
-    expect(row(tester, 'Fourth').value, '3');
-    await row(tester, 'Third').onValueChanged!('9');
-    await tester.pump();
-    await row(tester, 'a0').onActivate!();
-    expect(c.scripts.last, contains('"Third":"9"'));
-    expect(c.scripts.last, isNot(contains('654321')));
-    c.reply('submitted');
-    await tester.pump(const Duration(milliseconds: 500));
-  });
+  testWidgets(
+    'single OTP field supports paste, editing and explicit submission',
+    (tester) async {
+      final c = NativeController();
+      final logs = <String>[];
+      c.page = snapshot(
+        [
+          for (final name in [
+            'First',
+            'Second',
+            'Third',
+            'Fourth',
+            'Fifth',
+            'Sixth',
+          ])
+            field(name, '$name Digit', type: 'text', secret: true),
+        ],
+        [action('a0', 'Accedi')],
+      );
+      await start(tester, c, logs);
+      expect(row(tester, 'ticketone_otp_code').title, 'Codice monouso');
+      expect(rows(tester).where((r) => r.kind == 'textField').length, 1);
+      expect(row(tester, 'ticketone_otp_code').keyboardType, 'number');
+      await row(tester, 'ticketone_otp_code').onValueChanged!('012 345');
+      await tester.pump();
+      expect(row(tester, 'ticketone_otp_code').value, '012345');
+      expect(logs, contains('native_otp_complete digits=6'));
+      expect(logs.join(), isNot(contains('012345')));
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(c.scripts, isEmpty);
+      await row(tester, 'ticketone_otp_code').onValueChanged!('0123456');
+      await tester.pump();
+      expect(row(tester, 'ticketone_otp_code').value, '012345');
+      await row(tester, 'ticketone_otp_code').onValueChanged!('');
+      await tester.pump();
+      expect(row(tester, 'ticketone_otp_code').value, '');
+      await row(tester, 'ticketone_otp_code').onValueChanged!('987');
+      await tester.pump();
+      expect(row(tester, 'ticketone_otp_code').value, '987');
+      await row(tester, 'ticketone_otp_code').onValueChanged!('987654');
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(c.scripts, isEmpty);
+      await row(tester, 'a0').onActivate!();
+      final ids = ['First', 'Second', 'Third', 'Fourth', 'Fifth', 'Sixth'];
+      for (var i = 0; i < 6; i++) {
+        expect(c.scripts.last, contains('"${ids[i]}":"${9 - i}"'));
+      }
+      expect(c.scripts.last, isNot(contains('ticketone_otp_code')));
+      c.reply('submitted');
+      await tester.pump(const Duration(milliseconds: 500));
+    },
+  );
 
   testWidgets('security check stops the ticket form without submitting again', (
     tester,

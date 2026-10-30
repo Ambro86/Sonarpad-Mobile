@@ -237,6 +237,20 @@ void main() {
       );
       await tester.pumpWidget(app(ConcertSearchScreen(service: service)));
       await tester.pumpAndSettle();
+      expect(row(tester, 'welcome-4').title, contains('Non vende i biglietti'));
+      expect(rows(tester).any((r) => r.id == 'search'), isFalse);
+      await row(tester, 'accept').onActivate!();
+      await tester.pumpAndSettle();
+      expect(
+        (await SharedPreferences.getInstance()).getBool(
+          'sonarpad_concert_welcome_accepted_v1',
+        ),
+        isTrue,
+      );
+      await tester.pumpWidget(const SizedBox());
+      await tester.pumpWidget(app(ConcertSearchScreen(service: service)));
+      await tester.pumpAndSettle();
+      expect(rows(tester).any((r) => r.id == 'accept'), isFalse);
       expect(row(tester, 'country').kind, 'slider');
       row(tester, 'dates').onValueChanged!(true);
       await tester.pumpAndSettle();

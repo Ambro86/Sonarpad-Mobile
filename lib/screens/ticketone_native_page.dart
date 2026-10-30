@@ -71,39 +71,23 @@ class _TicketOneNativePageState extends State<TicketOneNativePage> {
           )!.compareTo(TicketOneStrings.otpDigitIndex(b['label'])!),
         );
 
-  void _changeOtp(String id, String text) {
+  String get _otpValue =>
+      _otpFields.map((f) => '${_draft[f['id']] ?? ''}').join();
+
+  void _changeOtp(String text) {
     final fields = _otpFields;
-    final index = fields.indexWhere((f) => f['id'] == id);
-    if (fields.length != 6 || index < 0) return;
-    var digits = text.replaceAll(RegExp(r'[^0-9]'), '');
-    final wasComplete = fields.every(
-      (f) => RegExp(r'^\d$').hasMatch('${_draft[f['id']] ?? ''}'),
-    );
-    final previous = '${_draft[id] ?? fields[index]['value'] ?? ''}';
-    // UIKit may insert into the existing digit rather than replace it.
-    if (previous.length == 1 && (digits.length == 2 || digits.length == 7)) {
-      if (digits.startsWith(previous)) {
-        digits = digits.substring(1);
-      } else if (digits.endsWith(previous)) {
-        digits = digits.substring(0, digits.length - 1);
-      }
-    }
+    if (fields.length != 6) return;
+    final digits = text.replaceAll(RegExp(r'[^0-9]'), '');
+    final previous = _otpValue;
     setState(() {
-      _otpRevision++; // Replace the active UIKit editor too, preserving focus.
+      _otpRevision++;
+      // Reject excessive digits rather than silently logging in with a truncated code.
       if (digits.length > 6) return;
-      if (digits.isEmpty) {
-        _draft[id] = '';
-        return;
-      }
-      final start = digits.length == 6 ? 0 : index;
-      for (var i = 0; i < digits.length && start + i < 6; i++) {
-        _draft[fields[start + i]['id'] as String] = digits[i];
+      for (var i = 0; i < fields.length; i++) {
+        _draft[fields[i]['id'] as String] = i < digits.length ? digits[i] : '';
       }
     });
-    final complete = fields.every(
-      (f) => RegExp(r'^\d$').hasMatch('${_draft[f['id']] ?? ''}'),
-    );
-    if (complete && (!wasComplete || digits.length == 6)) {
+    if (digits.length == 6 && previous != digits) {
       widget.log('native_otp_complete digits=6');
       announceStatusMessage(
         context,
@@ -483,17 +467,18 @@ class _TicketOneNativePageState extends State<TicketOneNativePage> {
       } else if (status == 'invalid' && v['field'] is String) {
         final id = v['field'] as String;
         final field = _fields.where((f) => f['id'] == id).firstOrNull;
+        final otp = _otpFields.length == 6 && _otpFields.contains(field);
         setState(() {
           _busy = false;
           _message =
-              '${t.t('invalidField')} ${t.fieldLabel(field?['label'] as String? ?? '')}';
+              '${t.t('invalidField')} ${otp ? t.t('otpHeading') : t.fieldLabel(field?['label'] as String? ?? '')}';
         });
         announceStatusMessage(context, _message!);
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
             unawaited(
               _focus.focusAccessibleRow(
-                id,
+                otp ? 'ticketone_otp_code' : id,
                 mode: AccessibleFocusMode.screenEntry,
               ),
             );
@@ -614,7 +599,7 @@ class _TicketOneNativePageState extends State<TicketOneNativePage> {
           : null,
       onValueChanged: (v) {
         if (otp) {
-          _changeOtp(id, v?.toString() ?? '');
+          _changeOtp(v?.toString() ?? '');
           return;
         }
         setState(() => _draft[id] = v?.toString() ?? '');
@@ -650,7 +635,16 @@ class _TicketOneNativePageState extends State<TicketOneNativePage> {
         if (_message != null) _text('message', _message!),
         if (_page != null) ...[
           _text('heading', '${_page!['title']}'),
-          if (_otpFields.length == 6) _text('otp-heading', t.t('otpHeading')),
+          if (_otpFields.length == 6)
+            AccessibleListRow(
+              id: 'ticketone_otp_code',
+              title: t.t('otpHeading'),
+              kind: 'textField',
+              value: _otpValue,
+              textRevision: _otpRevision,
+              keyboardType: 'number',
+              onValueChanged: (value) => _changeOtp(value?.toString() ?? ''),
+            ),
           if (_page!['stage'] == 'event' && qty is Map)
             _text('best-seat-help', t.t('bestSeatHelp')),
           for (final item in (_page!['summary'] as List? ?? []))
@@ -664,7 +658,9 @@ class _TicketOneNativePageState extends State<TicketOneNativePage> {
               'unavailable-${item['category']}',
               '${item['category'] ?? ''}: ${item['message'] is String && (item['message'] as String).trim().isNotEmpty ? item['message'] : t.t('ticketsUnavailable')}',
             ),
-          for (final f in _fields) ...[
+          for (final f in _fields.where(
+            (f) => _otpFields.length != 6 || !_otpFields.contains(f),
+          )) ...[
             _field(f),
             if (f['hint'] is String && (f['hint'] as String).isNotEmpty)
               _text('${f['id']}-hint', f['hint'] as String),
@@ -742,7 +738,7 @@ class _TicketOneNativePageState extends State<TicketOneNativePage> {
           : _page == null
           ? 'refresh'
           : _otpFields.length == 6
-          ? 'otp-heading'
+          ? 'ticketone_otp_code'
           : _fields.isNotEmpty
           ? _fields.first['id'] as String
           : 'heading',

@@ -531,11 +531,6 @@ class _TicketOneBrowserScreenState extends State<TicketOneBrowserScreen> {
                     onPressed: () => setState(() => _webOnly = false),
                   ),
                 IconButton(
-                  tooltip: t.t('check'),
-                  onPressed: _checking ? null : () => _check(show: true),
-                  icon: const Icon(Icons.account_circle),
-                ),
-                IconButton(
                   tooltip: t.t('cart'),
                   onPressed: _checking ? null : () => _check(show: true),
                   icon: const Icon(Icons.shopping_cart),
