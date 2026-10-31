@@ -79,14 +79,16 @@ const ticketOneUiSnapshotScript = r'''
     !!document.querySelector('ev-registration-page'));
   const event = !login && path.startsWith('/event/');
   const checkout = !login && path === '/checkout.html';
+  const errorPage = !login && /^\/error\/?$/.test(path);
   const review = checkout && !!document.querySelector('[data-qa="summary-page"]');
   let root = login ? document.querySelector('#mainContainer, #kc-content, #kc-form-login, #kc-register-form, #kc-otp-login-form, form') :
     registration ? (externalProfile ? document.querySelector('app-external-customer-data-form') : document.querySelector('ev-registration-page')) :
     event ? (document.querySelector('#tickets-bestseat-tab') || document.querySelector('.js-ticket-selection-with-limits')?.closest('form')) :
+    errorPage ? document.querySelector('main, [role="main"]') :
     checkout ? document.querySelector('main, [role="main"], app-root') || document.body : null;
   // Structural diagnostics only: never text, values, URLs, tokens or attributes.
   const diagnostic = (status, reason) => JSON.stringify({status, diagnostics:{
-    reason, page:login?'login':registration?'registration':event?'event':checkout?'checkout':path.startsWith('/dashboard')?'account':'other',
+    reason, page:login?'login':registration?'registration':event?'event':errorPage?'error':checkout?'checkout':path.startsWith('/dashboard')?'account':'other',
     ready:document.readyState, root:!!root,
     forms:document.forms.length, frames:document.querySelectorAll('iframe').length,
     controls:document.querySelectorAll('input,select,textarea').length,
@@ -154,6 +156,7 @@ const ticketOneUiSnapshotScript = r'''
       (externalProfile && e.matches('[data-qa="save-data-button"]')) ||
       !!e.closest('[data-qa="registration-button"], ev-pl-button[dataqa="registration-button"]') ||
       /^(registrati|crea account|crea un account|conferma|continua|invia codice|verifica|register|create account|verify|continue)$/i.test(label(e)));
+  if (errorPage) candidates = [...root.querySelectorAll('.back-link a')];
   if (event) candidates = [...root.querySelectorAll('[data-qa="AddToShoppingCart"], [data-qa="add-to-shopping-cart"], .js-stepper [data-qa="less-tickets"], .js-stepper [data-qa="more-tickets"]')];
   const checkoutActions = /^(vai alla spedizione|conferma la tua scelta|salva e vai al pagamento|conferma i dati|continua|prosegui|salva|avanti|elimina biglietti|continue|next|save|go to delivery|confirm your choice)$/i;
   if (checkout) candidates = [...root.querySelectorAll('button, a, input[type="submit"], [role="button"]')].filter(e =>
@@ -191,11 +194,11 @@ const ticketOneUiSnapshotScript = r'''
         (e.closest('form')?.getAttribute('data-qa') || '').replace(/^pc-list-number-/, '')),
       message:norm(e.querySelector('[data-qa="ticket-type-availability-hint"]')?.textContent)
     })) : [];
-  if (!fields.length && !actions.length && !unavailableCategories.length) return diagnostic('waiting', 'controls_missing');
+  if (!errorPage && !fields.length && !actions.length && !unavailableCategories.length) return diagnostic('waiting', 'controls_missing');
   const qty = event ? root.querySelector('[data-qa="TicketAmount"]') : null;
   const chosen = root.querySelector('input.js-fast-booking-item:checked') || root.querySelector('input.js-fast-booking-item');
   const quantity = qty && chosen ? {value:Number(qty.textContent),min:Number(chosen.dataset.min || 1),max:Number(chosen.dataset.max || 10)} : null;
-  const errors = [...root.querySelectorAll('[role="alert"], .alert-error, .kc-feedback-text, .error-message, .invalid-feedback, ev-forms-field-error, [data-qa="message"]')]
+  const errors = [...root.querySelectorAll('[role="alert"], .alert-error, .alert-danger, .kc-feedback-text, .error-message, .invalid-feedback, ev-forms-field-error, [data-qa="message"]')]
     .filter(visible).map(e => norm(e.textContent)).filter(Boolean).slice(0,8);
   const title = norm(root.querySelector('h1,h2')?.textContent || document.querySelector('h1')?.textContent || document.title);
   const notices = [...root.querySelectorAll('#termsAndConditions, [data-qa="priceSum"], .evi-widget-text-above')].filter(visible)
@@ -275,7 +278,7 @@ const ticketOneUiSnapshotScript = r'''
     current.click();
     return {status:'submitted'};
   }};
-  return JSON.stringify({status:'ready',revision,stage:login?'login':registration?'registration':event?'event':review?'review':'checkout',title,fields,actions,quantity,errors,notices,summary,paypal,unavailableCategories});
+  return JSON.stringify({status:'ready',revision,stage:login?'login':registration?'registration':event?'event':errorPage?'error':review?'review':'checkout',title,fields,actions,quantity,errors,notices,summary,paypal,unavailableCategories});
 })();
 ''';
 

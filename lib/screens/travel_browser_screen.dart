@@ -9,6 +9,7 @@ import '../l10n/app_localizations.dart';
 import '../l10n/travel_strings.dart';
 import '../services/travel_cookie_script.dart';
 import '../services/travel_payment_script.dart';
+import '../services/travel_seat_script.dart';
 import '../services/travel_checkout_accessibility.dart';
 import '../services/travel_checkout_diagnostics.dart';
 import '../utils/app_logger.dart';
@@ -62,6 +63,149 @@ class _TravelBrowserScreenState extends State<TravelBrowserScreen> {
   bool _cookieVerificationPending = false;
   bool _showBrowser = false, _paymentBusy = false;
   bool _noProtection = true;
+  bool _seatsAvailable = false, _seatsOpen = false, _seatsBusy = false;
+  Map<String, dynamic> _seats = {};
+  Timer? _seatTimer;
+
+  Future<Map<String, dynamic>> _seatScript([String? action]) async {
+    dynamic value = await _controller!.runJavaScriptReturningResult(
+      travelSeatScript(action: action, italian: t.language == 'it'),
+    );
+    for (var i = 0; i < 2 && value is String; i++) {
+      value = jsonDecode(value);
+    }
+    return Map<String, dynamic>.from(value as Map);
+  }
+
+  Future<void> _refreshSeats(
+    int generation, {
+    bool afterAction = false,
+    int attempt = 0,
+  }) async {
+    if (!mounted || generation != _generation || _showBrowser) return;
+    try {
+      final data = await _seatScript();
+      if (!mounted || generation != _generation || _showBrowser) return;
+      final changed = jsonEncode(data) != jsonEncode(_seats);
+      if (changed || _seatsBusy) {
+        setState(() {
+          final wasDialog = _seats['status'] == 'dialog';
+          _seats = data;
+          _seatsAvailable = data['available'] == true;
+          _seatsBusy = false;
+          // A dialog closing means control returns to Omio's checkout, not
+          // necessarily that a seat was successfully saved.
+          if (data['status'] == 'closed' && (afterAction || wasDialog)) {
+            _seatsOpen = false;
+          }
+        });
+        unawaited(
+          _log(
+            '[Travel] seats_snapshot status=${data['status']} controls=${(data['controls'] as List?)?.length ?? 0}',
+          ),
+        );
+      }
+    } catch (_) {
+      if (mounted && generation == _generation) {
+        setState(() {
+          _seatsBusy = false;
+          _seats = {};
+        });
+        unawaited(_log('[Travel] seats_snapshot_failed'));
+      }
+    }
+    _seatTimer?.cancel();
+    if (mounted &&
+        generation == _generation &&
+        !_showBrowser &&
+        (_seatsOpen || (!_seatsAvailable && attempt < 14))) {
+      _seatTimer = Timer(
+        const Duration(seconds: 1),
+        () => unawaited(_refreshSeats(generation, attempt: attempt + 1)),
+      );
+    }
+  }
+
+  Future<void> _seatAction(String action) async {
+    if (_paymentBusy || _seatsBusy || _showBrowser) return;
+    final generation = _generation;
+    _seatTimer?.cancel();
+    setState(() {
+      _seatsOpen = true;
+      _seatsBusy = true;
+    });
+    try {
+      final data = await _seatScript(action);
+      unawaited(_log('[Travel] seats_action status=${data['status']}'));
+      // Never retry a click: confirmation may already have reached Omio.
+      await Future<void>.delayed(const Duration(seconds: 1));
+    } catch (_) {
+      unawaited(_log('[Travel] seats_action_result_unknown'));
+    }
+    await _refreshSeats(generation, afterAction: action != 'open');
+  }
+
+  Widget _seatPanel() => UniversalAccessibleList(
+    key: ValueKey('travel-seats-${_seats['stage']}'),
+    padding: const EdgeInsets.all(20),
+    sections: [
+      AccessibleListSection(
+        rows: [
+          AccessibleListRow(
+            id: 'seats-title',
+            title: t.t('seatChoice'),
+            kind: 'text',
+            accessibilityButtonTrait: false,
+          ),
+          AccessibleListRow(
+            id: 'seats-help',
+            title: t.t('seatHelp'),
+            kind: 'text',
+            accessibilityButtonTrait: false,
+          ),
+          if (_seatsBusy)
+            AccessibleListRow(
+              id: 'seats-loading',
+              title: t.t('browserLoading'),
+              kind: 'text',
+              accessibilityButtonTrait: false,
+            )
+          else ...[
+            if ((_seats['summary'] as String? ?? '').isNotEmpty)
+              AccessibleListRow(
+                id: 'seats-summary',
+                title: _seats['summary'] as String,
+                kind: 'text',
+                accessibilityButtonTrait: false,
+              ),
+            if (_seats['status'] != 'dialog')
+              AccessibleListRow(
+                id: 'seats-unavailable',
+                title: t.t('seatUnavailable'),
+                kind: 'text',
+                accessibilityButtonTrait: false,
+              ),
+            for (final control in (_seats['controls'] as List? ?? const []))
+              AccessibleListRow(
+                id: control['id'] as String,
+                title:
+                    '${control['label']}${control['selected'] == true ? ', ${t.t('seatSelected')}' : ''}',
+                kind: 'button',
+                selected: control['selected'] == true,
+                enabled: control['enabled'] == true,
+                onActivate: () => _seatAction(control['id'] as String),
+              ),
+          ],
+          AccessibleListRow(
+            id: 'seats-site',
+            title: t.t('paymentOpenSite'),
+            kind: 'button',
+            onActivate: _revealBrowser,
+          ),
+        ],
+      ),
+    ],
+  );
   bool _paymentUnavailable = false;
   List<String> _paymentMethods = [];
   Timer? _paymentTimer;
@@ -105,6 +249,11 @@ class _TravelBrowserScreenState extends State<TravelBrowserScreen> {
             _lastCheckoutSnapshot = null;
             _paymentTimer?.cancel();
             _paymentMethods = [];
+            _seatTimer?.cancel();
+            _seatsAvailable = false;
+            _seatsOpen = false;
+            _seatsBusy = false;
+            _seats = {};
             if (_cookieVerificationPending) {
               unawaited(_log('[Travel] cookie_verification_interrupted'));
               _cookieVerificationPending = false;
@@ -182,6 +331,7 @@ class _TravelBrowserScreenState extends State<TravelBrowserScreen> {
     try {
       final data = await _paymentScript();
       if (!mounted || _showBrowser || generation != _generation) return;
+      unawaited(_refreshSeats(generation));
       final methods = List<String>.from(data['methods'] as List);
       if (methods.isNotEmpty) {
         setState(() => _paymentMethods = methods);
@@ -446,6 +596,7 @@ class _TravelBrowserScreenState extends State<TravelBrowserScreen> {
   }
 
   void _revealBrowser() {
+    _seatTimer?.cancel();
     _paymentTimer?.cancel();
     setState(() {
       _paymentBusy = false;
@@ -549,6 +700,7 @@ class _TravelBrowserScreenState extends State<TravelBrowserScreen> {
 
   @override
   void dispose() {
+    _seatTimer?.cancel();
     _checkoutDiagnosticsTimer?.cancel();
     unawaited(_stopFocusTrace());
     if (_cookieVerificationPending) {
@@ -602,7 +754,8 @@ class _TravelBrowserScreenState extends State<TravelBrowserScreen> {
                       ),
                     ),
                   ),
-                  if (!_showBrowser)
+                  if (!_showBrowser && _seatsOpen) _seatPanel(),
+                  if (!_showBrowser && !_seatsOpen)
                     UniversalAccessibleList(
                       padding: const EdgeInsets.all(20),
                       sections: [
@@ -620,6 +773,14 @@ class _TravelBrowserScreenState extends State<TravelBrowserScreen> {
                               kind: 'text',
                               accessibilityButtonTrait: false,
                             ),
+                            if (_seatsAvailable)
+                              AccessibleListRow(
+                                id: 'payment-seats',
+                                title: t.t('seatChoice'),
+                                kind: 'button',
+                                enabled: !_paymentBusy,
+                                onActivate: () => _seatAction('open'),
+                              ),
                             AccessibleListRow(
                               id: 'payment-no-protection',
                               title: t.t('noProtection'),

@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:sonarpad_mobile_starter/services/travel_seat_script.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
@@ -32,6 +34,9 @@ class BrowserDelegate extends PlatformNavigationDelegate {
 class BrowserController extends Fake implements WebViewController {
   NavigationDelegate? delegate;
   final scripts = <String>[];
+  Map<String, dynamic> seats = {'status': 'closed', 'available': false};
+  String? seatAction;
+  bool throwSeatAction = false;
   String bannerStatus = 'banner-closed';
   String paymentStatus = '{"status":"ready","methods":["PayPal","card"]}';
   String current = 'https://www.omio.com/app/booking/test/checkout';
@@ -49,12 +54,19 @@ class BrowserController extends Fake implements WebViewController {
   @override
   Future<Object> runJavaScriptReturningResult(String script) async {
     scripts.add(script);
+    if (script == travelSeatScript(italian: true)) return jsonEncode(seats);
+    if (script.contains('window.__sonarpadSeats')) {
+      seatAction = script;
+      if (throwSeatAction) throw StateError('lost result');
+      return '{"status":"clicked"}';
+    }
     if (script == travelCheckoutDiagnosticsScript) {
       return '{"scope":"checkout","controls":[],"events":[]}';
     }
     if (script == travelNoProtectionScript() ||
-        script == travelNoProtectionScript(verifyOnly: true))
+        script == travelNoProtectionScript(verifyOnly: true)) {
       return 'selected';
+    }
     if (script == travelPaymentScript()) return paymentStatus;
     if (script == travelPaymentScript(select: 'PayPal')) {
       return '{"status":"selected","methods":["PayPal","card"]}';
@@ -152,7 +164,11 @@ void main() {
     await tester.pumpAndSettle();
     expect(
       controller.scripts,
-      unorderedEquals([travelNecessaryCookiesScript, travelPaymentScript()]),
+      unorderedEquals([
+        travelNecessaryCookiesScript,
+        travelPaymentScript(),
+        travelSeatScript(italian: true),
+      ]),
     );
     expect(
       await controller.delegate!.onNavigationRequest!(
@@ -167,7 +183,7 @@ void main() {
     controller.delegate!.onPageStarted!(controller.current);
     controller.delegate!.onPageFinished!(controller.current);
     await tester.pumpAndSettle();
-    expect(controller.scripts.length, 2);
+    expect(controller.scripts.length, 3);
     expect(
       await controller.delegate!.onNavigationRequest!(
         NavigationRequest(url: 'javascript:alert(1)', isMainFrame: true),
@@ -237,6 +253,80 @@ void main() {
       ]),
     );
     expect(logs.join(), isNot(contains(controller.current)));
+    await tester.pumpWidget(const SizedBox());
+  });
+  testWidgets('native seats preserve checkout and never replay confirmations', (
+    tester,
+  ) async {
+    final controller = BrowserController()
+      ..seats = {'status': 'closed', 'available': true};
+    await tester.pumpWidget(
+      app(
+        TravelBrowserScreen(
+          url: controller.current,
+          controllerFactory: () => controller,
+          browserBuilder: (_) => const SizedBox(),
+          logger: (_) async {},
+        ),
+      ),
+    );
+    await tester.pump();
+    controller.delegate!.onPageFinished!(controller.current);
+    await tester.pumpAndSettle();
+    expect(row(tester, 'payment-seats').enabled, isTrue);
+    controller.seats = {
+      'status': 'dialog',
+      'available': true,
+      'summary': 'Tratta 1. Supplemento 2,89 EUR',
+      'controls': [
+        {
+          'id': 'seat-1',
+          'label': 'Carrozza 1, posto 3A',
+          'enabled': true,
+          'selected': true,
+        },
+        {
+          'id': 'seat-2',
+          'label': 'Conferma la selezione del posto +2,89 EUR',
+          'enabled': true,
+          'selected': false,
+        },
+        {
+          'id': 'seat-3',
+          'label': 'Carrozza 1, posto 3B',
+          'enabled': false,
+          'selected': false,
+        },
+      ],
+    };
+    row(tester, 'payment-seats').onActivate!();
+    await tester.pump();
+    expect(find.text('PayPal'), findsNothing);
+    await tester.pump(const Duration(seconds: 1));
+    await tester.pumpAndSettle();
+    expect(row(tester, 'seat-1').title, contains('selezionato'));
+    expect(row(tester, 'seat-1').selected, isTrue);
+    expect(row(tester, 'seat-3').enabled, isFalse);
+    expect(row(tester, 'seats-summary').title, contains('2,89 EUR'));
+    controller.throwSeatAction = true;
+    row(tester, 'seat-2').onActivate!();
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 3));
+    await tester.pumpAndSettle();
+    expect(
+      controller.scripts
+          .where((s) => s == travelSeatScript(action: 'seat-2', italian: true))
+          .length,
+      1,
+    );
+    expect(
+      controller.scripts,
+      isNot(contains(travelPaymentScript(select: 'PayPal'))),
+    );
+    controller.seats = {'status': 'closed', 'available': true};
+    await tester.pump(const Duration(seconds: 1));
+    await tester.pumpAndSettle();
+    expect(find.text('PayPal'), findsOneWidget);
     await tester.pumpWidget(const SizedBox());
   });
   testWidgets('disabling no protection leaves Omio insurance unchanged', (

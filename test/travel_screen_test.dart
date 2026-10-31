@@ -284,6 +284,7 @@ void main() {
         'fare-review-heading',
       );
       expect(row(tester, 'continue').title, 'Continua per inserire i dati');
+      expect(row(tester, 'duration-0').title, 'Durata del viaggio: 1 ora');
       row(tester, 'continue').onActivate!();
       await tester.pumpAndSettle();
       expect(find.byType(TravelPassengersScreen), findsOneWidget);

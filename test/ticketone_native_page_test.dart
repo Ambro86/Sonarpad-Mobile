@@ -120,6 +120,32 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  testWidgets('server error is shown immediately without polling or submitting', (
+    tester,
+  ) async {
+    const message =
+        'Impossibile eseguire la Sua richiesta. Si prega di riprovare in un momento successivo.';
+    final c = NativeController()
+      ..url = 'https://www.ticketone.it/error/'
+      ..page = (snapshot([], [action('a0', 'Indietro', submit: false)])
+        ..['stage'] = 'error'
+        ..['title'] = 'Spiacenti, il processo non può essere completato.'
+        ..['errors'] = [message]);
+    final logs = <String>[];
+    await start(tester, c, logs);
+    expect(row(tester, 'heading').title, c.page['title']);
+    expect(rows(tester).any((r) => r.title == message), isTrue);
+    expect(row(tester, 'a0').title, 'Indietro');
+    expect(
+      rows(tester).any((r) => r.id == 'refresh' || r.id == 'message'),
+      isFalse,
+    );
+    await tester.pump(const Duration(seconds: 15));
+    expect(c.scripts, isEmpty);
+    expect(c.captures, 0);
+    expect(logs.where((l) => l.startsWith('native_page_error')).length, 1);
+  });
+
   testWidgets('stale checkout refreshes controls without resubmitting', (
     tester,
   ) async {

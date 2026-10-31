@@ -120,6 +120,34 @@ String _time(dynamic value, TravelStrings t) {
   return d == null ? raw : '${DateFormat.yMd(t.locale).format(d)} ${match[2]}';
 }
 
+String? travelJourneyDuration(Map<String, dynamic> item, TravelStrings t) {
+  DateTime? instant(dynamic raw) {
+    if (raw is! String ||
+        !RegExp(
+          r'T.*(?:Z|[+-]\d{2}:?\d{2})$',
+          caseSensitive: false,
+        ).hasMatch(raw)) {
+      return null;
+    }
+    return DateTime.tryParse(raw);
+  }
+
+  final departure = instant(item['departureTime']);
+  final arrival = instant(item['arrivalTime']);
+  if (departure == null || arrival == null) return null;
+  final elapsed = arrival.difference(departure);
+  if (elapsed <= Duration.zero) return null;
+  final minutes = (elapsed.inSeconds / 60).ceil();
+  final hours = minutes ~/ 60, remainder = minutes % 60;
+  final parts = [
+    if (hours > 0)
+      '$hours ${t.t(hours == 1 ? 'durationHour' : 'durationHours')}',
+    if (remainder > 0)
+      '$remainder ${t.t(remainder == 1 ? 'durationMinute' : 'durationMinutes')}',
+  ];
+  return '${t.t('journeyDuration')}: ${parts.join(' ')}';
+}
+
 String _journey(Map<String, dynamic> item, String currency, TravelStrings t) =>
     '${_time(item['departureTime'], t)} – ${_time(item['arrivalTime'], t)}. '
     '${item['departureStationName'] ?? ''} – ${item['arrivalStationName'] ?? ''}. '
@@ -1210,11 +1238,14 @@ class _TravelFaresScreenState extends State<_TravelFaresScreen> {
           kind: 'header',
           accessibilityButtonTrait: false,
         ),
-        for (var i = 0; i < widget.journeys.length; i++)
+        for (var i = 0; i < widget.journeys.length; i++) ...[
           _info(
             'summary-$i',
             _journey(widget.journeys[i], widget.query.currency, t),
           ),
+          if (travelJourneyDuration(widget.journeys[i], t) case final duration?)
+            _info('duration-$i', duration),
+        ],
         for (var i = 0; i < _selected.length; i++)
           _info(
             'fare-$i',

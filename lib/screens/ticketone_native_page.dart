@@ -198,6 +198,7 @@ class _TicketOneNativePageState extends State<TicketOneNativePage> {
               'checkout',
               'account',
               'other',
+              'error',
             ],
             'ready': ['loading', 'interactive', 'complete'],
           };
@@ -264,6 +265,7 @@ class _TicketOneNativePageState extends State<TicketOneNativePage> {
             'event',
             'checkout',
             'review',
+            'error',
           ].contains(value['stage'])) {
         _unavailable('schema');
         return;

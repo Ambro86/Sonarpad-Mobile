@@ -24,6 +24,31 @@ function fixture(html, url = 'https://auth.ticketone.it/identity/auth/') {
 }
 async function test(name, run) { await run(); console.log('PASS ' + name); passed++; }
 (async () => {
+  await test('diagnostic 20 server error displays its message and only explicit Back', async () => {
+    const f = fixture(`<header><input role="combobox"><button data-qa="cart-select">Vai al carrello 1</button></header>
+      <main id="main"><section><div class="back-link"><a href="javascript:history.back()">Indietro</a></div></section>
+      <section><h2>Spiacenti, il processo non può essere completato.</h2>
+      <div class="alert alert-danger">Impossibile eseguire la Sua richiesta. Si prega di riprovare in un momento successivo.</div></section></main>`,
+      'https://www.ticketone.it/error/');
+    let back = 0;
+    f.doc.querySelector('.back-link a').onclick = e => { e.preventDefault(); back++; };
+    const p = f.read();
+    assert.equal(p.status, 'ready'); assert.equal(p.stage, 'error');
+    assert.equal(p.title, 'Spiacenti, il processo non può essere completato.');
+    assert.deepEqual(p.errors, ['Impossibile eseguire la Sua richiesta. Si prega di riprovare in un momento successivo.']);
+    assert.equal(p.fields.length, 0); assert.equal(p.actions.length, 1);
+    assert.equal(p.actions[0].label, 'Indietro'); assert.equal(p.actions[0].submit, false);
+    assert.equal(back, 0);
+    assert.equal((await f.act(p, p.actions[0].id)).status, 'submitted');
+    assert.equal(back, 1);
+    assert.equal((await f.act(p, p.actions[0].id)).status, 'stale');
+    assert.equal(back, 1);
+    f.doc.querySelector('.back-link').remove();
+    const withoutBack = f.read();
+    assert.equal(withoutBack.status, 'ready'); assert.equal(withoutBack.actions.length, 0);
+    assert.equal(withoutBack.errors.length, 1);
+    f.close();
+  });
   await test('diagnostic 19 package steppers keep quantities and carts separate', async () => {
     const f = fixture('<div id="tickets-bestseat-tab">' + ['PLATINUM PACKAGE', 'GOLD PACKAGE'].map((c,i) => `
       <form id="package${i}" data-qa="pc-list-number-${c}">

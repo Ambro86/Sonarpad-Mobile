@@ -24,8 +24,21 @@ class TravelStrings {
             }[language] ??
             'IT';
   static const _it = {
-    'bookingPreparing': 'Omio sta preparando la prenotazione. Controllo se il checkout è pronto senza reinviare i dati.',
-    'bookingStillWaiting': 'Omio non ha ancora confermato che il checkout è pronto. Puoi ricontrollare oppure continuare con la stessa prenotazione su Omio. Non reinviare i dati.',
+    'seatChoice': 'Scegli o modifica i posti',
+    'seatHelp':
+        'La scelta è facoltativa. Omio mostra disponibilità e supplemento prima della conferma. Puoi mantenere l’assegnazione casuale. Confermare i posti non acquista il biglietto.',
+    'seatSelected': 'selezionato',
+    'seatUnavailable':
+        'La scelta dei posti non è ancora disponibile in questa schermata. Puoi proseguire sul sito nella stessa prenotazione.',
+    'journeyDuration': 'Durata del viaggio',
+    'durationHour': 'ora',
+    'durationHours': 'ore',
+    'durationMinute': 'minuto',
+    'durationMinutes': 'minuti',
+    'bookingPreparing':
+        'Omio sta preparando la prenotazione. Controllo se il checkout è pronto senza reinviare i dati.',
+    'bookingStillWaiting':
+        'Omio non ha ancora confermato che il checkout è pronto. Puoi ricontrollare oppure continuare con la stessa prenotazione su Omio. Non reinviare i dati.',
     'openSameBooking': 'Continua con la stessa prenotazione su Omio',
     'useDiscountCards': 'Usa carte sconto o fedeltà',
     'discountCards': 'Carte sconto e fedeltà dei passeggeri',
@@ -187,8 +200,21 @@ class TravelStrings {
     'linkError': 'Impossibile aprire il collegamento Omio. Riprova.',
   };
   static const _en = {
-    'bookingPreparing': 'Omio is preparing your booking. Checking whether checkout is ready without resubmitting your details.',
-    'bookingStillWaiting': 'Omio has not yet confirmed that checkout is ready. Check again or continue with the same booking on Omio. Do not resubmit your details.',
+    'seatChoice': 'Choose or change seats',
+    'seatHelp':
+        'Seat selection is optional. Omio shows availability and any surcharge before confirmation. You can keep random assignment. Confirming seats does not purchase the ticket.',
+    'seatSelected': 'selected',
+    'seatUnavailable':
+        'Seat selection is not available on this screen yet. You can continue on the website with the same booking.',
+    'journeyDuration': 'Journey duration',
+    'durationHour': 'hour',
+    'durationHours': 'hours',
+    'durationMinute': 'minute',
+    'durationMinutes': 'minutes',
+    'bookingPreparing':
+        'Omio is preparing your booking. Checking whether checkout is ready without resubmitting your details.',
+    'bookingStillWaiting':
+        'Omio has not yet confirmed that checkout is ready. Check again or continue with the same booking on Omio. Do not resubmit your details.',
     'openSameBooking': 'Continue with the same booking on Omio',
     'useDiscountCards': 'Use discount or loyalty cards',
     'discountCards': 'Passenger discount and loyalty cards',
