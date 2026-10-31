@@ -385,7 +385,8 @@ class RadioService {
     final code = knownCode.isNotEmpty ? knownCode : _dynamicLanguageCode(name);
     return RadioLanguageOption(
       code,
-      label: name,
+      // Correct the directory's label without changing its search identifier.
+      label: name.replaceAll(RegExp(r'\bengilsh\b', caseSensitive: false), 'english'),
       stationCount: _intFromDynamic(item['stationcount']),
     );
   }
