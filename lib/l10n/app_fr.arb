@@ -4889,5 +4889,7 @@
   },
   "raiPlayMediaUnavailable": "RaiPlay n’a pas fourni d’adresse lisible après plusieurs tentatives. Le contenu est peut-être temporairement indisponible. Réessayez plus tard.",
   "concertsTicketOneLogin": "Se connecter à votre compte TicketOne",
-  "concertsTicketOneRegister": "Créer un compte TicketOne"
+  "concertsTicketOneRegister": "Créer un compte TicketOne",
+  "savePdfWithoutPassword": "Enregistrer le PDF sans mot de passe",
+  "pdfUnprotectedCopyDescription": "Enregistrez une copie du PDF sans mot de passe en conservant sa mise en page et son contenu. Le PDF original reste inchangé."
 }

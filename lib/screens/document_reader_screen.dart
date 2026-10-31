@@ -9,6 +9,9 @@ import 'package:flutter/foundation.dart' show ValueListenable;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 import '../l10n/app_localizations.dart';
 import '../models/document_item.dart';
@@ -17,6 +20,7 @@ import '../services/app_cache_service.dart';
 import '../services/audio_player_service.dart';
 import '../services/document_library_service.dart';
 import '../services/document_text_extractor.dart';
+import '../services/pdf_password_service.dart';
 import '../services/voice_dictionary_service.dart';
 import '../tts/edge_tts_bridge.dart';
 import '../tts/edge_tts_retry.dart';
@@ -26,6 +30,7 @@ import '../utils/epub_index_remapper.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import '../utils/status_message.dart';
 import '../widgets/universal_accessible_view.dart';
+import '../widgets/document_password_dialog.dart';
 
 /// Schermata di lettura/ascolto di un documento della libreria.
 ///
@@ -56,6 +61,10 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   bool _loadingText = true;
   String _documentText = '';
   String? _loadError;
+  // Session only: never persisted with the document or included in diagnostics.
+  String? _pdfPassword;
+  String? _pdfSourcePath;
+  bool _savingUnlockedPdf = false;
   List<String> _chunks = [];
   // Identita' accessibili stabili per la durata della schermata. Gli indici
   // possono cambiare dopo split/eliminazioni; VoiceOver invece deve poter
@@ -155,11 +164,14 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
       }
     });
 
-    _extractText();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) unawaited(_extractText());
+    });
   }
 
   @override
   void dispose() {
+    _pdfPassword = null;
     if (Platform.isIOS) {
       _ttsCommands.invokeMethod('clearMagicTap').catchError((_) {});
     }
@@ -252,12 +264,46 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         final path =
             originalPath ?? await documentLibrary.resolveFilePath(_currentDoc);
         originalPath = path;
-        final result = await _extractor.extract(
+        var result = await _extractor.extract(
           path: path,
           extension: ext,
           includeEpubFootnotesInText: includeEpubFootnotes,
           footnoteLabel: l10n.documentFootnoteLabel,
         );
+        String? password;
+        while (result.passwordRequired) {
+          if (!mounted) return;
+          _docLog('DOC_PDF password required retry=${password != null}');
+          password = await showDialog<String>(
+            context: context,
+            builder: (_) => DocumentPasswordDialog(
+              title: l10n.documentPasswordRequiredTitle,
+              prompt: l10n.enterDocumentPasswordToOpen,
+              passwordLabel: l10n.documentPassword,
+              confirmPasswordLabel: l10n.confirmDocumentPassword,
+              requiredMessage: l10n.documentPasswordRequired,
+              mismatchMessage: l10n.documentPasswordsDoNotMatch,
+              invalidMessage: l10n.incorrectDocumentPassword,
+              initialError: password == null ? null : l10n.incorrectDocumentPassword,
+            ),
+          );
+          if (!mounted) return;
+          if (password == null) {
+            _docLog('DOC_PDF password entry cancelled');
+            Navigator.of(context).pop();
+            return;
+          }
+          result = await _extractor.extract(
+            path: path,
+            extension: ext,
+            pdfPassword: password,
+          );
+        }
+        if (password != null) {
+          _pdfPassword = password;
+          _pdfSourcePath = path;
+          _docLog('DOC_PDF authenticated textAvailable=${result.text.isNotEmpty}');
+        }
         _documentText = normalizeDocumentUnicode(result.text);
         _loadError = result.error == null ? null : l10n.technicalErrorGeneric;
       }
@@ -323,6 +369,66 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
           }
         });
       }
+    }
+  }
+
+  Future<void> _savePdfWithoutPassword() async {
+    final password = _pdfPassword;
+    final source = _pdfSourcePath;
+    if (password == null || source == null || _savingUnlockedPdf) return;
+    final l10n = AppLocalizations.of(context);
+    final action = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.savePdfWithoutPassword),
+        content: Text(l10n.pdfUnprotectedCopyDescription),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false),
+              child: Text(l10n.saveInSonarpad)),
+          TextButton(onPressed: () => Navigator.pop(ctx, true),
+              child: Text(l10n.share)),
+          TextButton(onPressed: () => Navigator.pop(ctx),
+              child: Text(l10n.cancel)),
+        ],
+      ),
+    );
+    if (!mounted || action == null) return;
+    setState(() => _savingUnlockedPdf = true);
+    Directory? temporary;
+    var shared = false;
+    try {
+      final bytes = await File(source).readAsBytes();
+      final unlocked = await pdfWithoutPassword(bytes, password);
+      if (!mounted) return;
+      temporary = await (await getTemporaryDirectory()).createTemp('pdf-unlocked-');
+      final name = '${p.basenameWithoutExtension(_currentDoc.name)}_unlocked.pdf';
+      final file = File(p.join(temporary.path, name));
+      await file.writeAsBytes(unlocked, flush: true);
+      if (!mounted) return;
+      if (action) {
+        final box = context.findRenderObject() as RenderBox?;
+        await SharePlus.instance.share(ShareParams(
+          files: [XFile(file.path)],
+          sharePositionOrigin: box == null ? null : box.localToGlobal(Offset.zero) & box.size,
+        ));
+        // The platform share provider may still be reading the temporary file.
+        shared = true;
+      } else {
+        final library = DocumentLibraryService();
+        final copy = await library.importFile(file,
+            originalName: name, parentId: _currentDoc.parentId);
+        await library.add(copy);
+        if (mounted) showStatusMessage(context, l10n.exportSavedInSonarpad);
+      }
+      _docLog('DOC_PDF unprotected copy completed shared=$action');
+    } catch (error) {
+      _docLog('DOC_PDF unprotected copy failed type=${error.runtimeType}');
+      if (mounted) showStatusMessage(context, l10n.exportError);
+    } finally {
+      if (temporary != null && !shared) {
+        await temporary.delete(recursive: true);
+      }
+      if (mounted) setState(() => _savingUnlockedPdf = false);
     }
   }
 
@@ -2637,7 +2743,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         ],
       ),
       body: SafeArea(
-        child: _loadingText
+        child: _loadingText || _savingUnlockedPdf
             ? const Center(child: CircularProgressIndicator())
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -2647,6 +2753,13 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
+                        if (_pdfPassword != null && _pdfSourcePath != null)
+                          OutlinedButton.icon(
+                            key: const ValueKey('save_pdf_without_password'),
+                            onPressed: _savePdfWithoutPassword,
+                            icon: const Icon(Icons.save_alt),
+                            label: Text(l10n.savePdfWithoutPassword),
+                          ),
                         if (_ttsStatus != null) ...[
                           Text(_ttsStatus!),
                           const SizedBox(height: 12),

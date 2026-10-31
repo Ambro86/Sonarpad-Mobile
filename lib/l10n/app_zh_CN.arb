@@ -4883,5 +4883,7 @@
   },
   "raiPlayMediaUnavailable": "多次尝试后，RaiPlay 仍未返回可播放的地址。内容可能暂时不可用，请稍后重试。",
   "concertsTicketOneLogin": "登录 TicketOne 账户",
-  "concertsTicketOneRegister": "注册新的 TicketOne 账户"
+  "concertsTicketOneRegister": "注册新的 TicketOne 账户",
+  "savePdfWithoutPassword": "保存无密码 PDF",
+  "pdfUnprotectedCopyDescription": "保存无需密码的 PDF 副本，保留原有排版和内容。原始 PDF 保持不变。"
 }

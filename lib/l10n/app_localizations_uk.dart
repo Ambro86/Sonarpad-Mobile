@@ -5474,4 +5474,11 @@ class AppLocalizationsUk extends AppLocalizations {
   @override
   String get concertsTicketOneRegister =>
       'Створити новий обліковий запис TicketOne';
+
+  @override
+  String get savePdfWithoutPassword => 'Зберегти PDF без пароля';
+
+  @override
+  String get pdfUnprotectedCopyDescription =>
+      'Збережіть копію PDF без пароля зі збереженням оформлення та вмісту. Оригінальний PDF залишиться без змін.';
 }

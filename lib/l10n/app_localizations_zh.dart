@@ -5305,6 +5305,13 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get concertsTicketOneRegister => '注册新的 TicketOne 账户';
+
+  @override
+  String get savePdfWithoutPassword => '保存无密码 PDF';
+
+  @override
+  String get pdfUnprotectedCopyDescription =>
+      '保存无需密码的 PDF 副本，保留原有排版和内容。原始 PDF 保持不变。';
 }
 
 /// The translations for Chinese, as used in China (`zh_CN`).
@@ -10608,4 +10615,11 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get concertsTicketOneRegister => '注册新的 TicketOne 账户';
+
+  @override
+  String get savePdfWithoutPassword => '保存无密码 PDF';
+
+  @override
+  String get pdfUnprotectedCopyDescription =>
+      '保存无需密码的 PDF 副本，保留原有排版和内容。原始 PDF 保持不变。';
 }

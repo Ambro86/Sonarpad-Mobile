@@ -5336,4 +5336,11 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String get concertsTicketOneRegister => 'Creează un cont TicketOne nou';
+
+  @override
+  String get savePdfWithoutPassword => 'Salvează PDF fără parolă';
+
+  @override
+  String get pdfUnprotectedCopyDescription =>
+      'Salvează o copie a PDF-ului fără parolă, păstrând aspectul și conținutul. PDF-ul original rămâne neschimbat.';
 }

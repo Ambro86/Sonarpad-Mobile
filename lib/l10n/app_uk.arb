@@ -6461,5 +6461,7 @@
   },
   "raiPlayMediaUnavailable": "RaiPlay не повернув адресу для відтворення після кількох спроб. Вміст може бути тимчасово недоступним. Спробуйте пізніше.",
   "concertsTicketOneLogin": "Увійти до облікового запису TicketOne",
-  "concertsTicketOneRegister": "Створити новий обліковий запис TicketOne"
+  "concertsTicketOneRegister": "Створити новий обліковий запис TicketOne",
+  "savePdfWithoutPassword": "Зберегти PDF без пароля",
+  "pdfUnprotectedCopyDescription": "Збережіть копію PDF без пароля зі збереженням оформлення та вмісту. Оригінальний PDF залишиться без змін."
 }

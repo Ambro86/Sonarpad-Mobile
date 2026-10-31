@@ -5521,4 +5521,11 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get concertsTicketOneRegister => 'Créer un compte TicketOne';
+
+  @override
+  String get savePdfWithoutPassword => 'Enregistrer le PDF sans mot de passe';
+
+  @override
+  String get pdfUnprotectedCopyDescription =>
+      'Enregistrez une copie du PDF sans mot de passe en conservant sa mise en page et son contenu. Le PDF original reste inchangé.';
 }

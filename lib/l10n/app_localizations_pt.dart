@@ -5503,6 +5503,13 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get concertsTicketOneRegister => 'Criar uma nova conta TicketOne';
+
+  @override
+  String get savePdfWithoutPassword => 'Guardar PDF sem palavra-passe';
+
+  @override
+  String get pdfUnprotectedCopyDescription =>
+      'Guarde uma cópia do PDF sem palavra-passe, preservando a disposição e o conteúdo. O PDF original permanece inalterado.';
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
@@ -10990,4 +10997,11 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get concertsTicketOneRegister => 'Criar uma nova conta TicketOne';
+
+  @override
+  String get savePdfWithoutPassword => 'Salvar PDF sem senha';
+
+  @override
+  String get pdfUnprotectedCopyDescription =>
+      'Salve uma cópia do PDF sem senha, preservando a diagramação e o conteúdo. O PDF original permanece intacto.';
 }

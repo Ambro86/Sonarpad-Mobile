@@ -4883,5 +4883,7 @@
   },
   "raiPlayMediaUnavailable": "RaiPlay nu a returnat o adresă care poate fi redată după mai multe încercări. Conținutul poate fi temporar indisponibil. Încercați din nou mai târziu.",
   "concertsTicketOneLogin": "Conectează-te la contul TicketOne",
-  "concertsTicketOneRegister": "Creează un cont TicketOne nou"
+  "concertsTicketOneRegister": "Creează un cont TicketOne nou",
+  "savePdfWithoutPassword": "Salvează PDF fără parolă",
+  "pdfUnprotectedCopyDescription": "Salvează o copie a PDF-ului fără parolă, păstrând aspectul și conținutul. PDF-ul original rămâne neschimbat."
 }

@@ -4886,5 +4886,7 @@
   },
   "raiPlayMediaUnavailable": "RaiPlay ani po několika pokusech nevrátil adresu pro přehrávání. Obsah může být dočasně nedostupný. Zkuste to znovu později.",
   "concertsTicketOneLogin": "Přihlásit se k účtu TicketOne",
-  "concertsTicketOneRegister": "Vytvořit nový účet TicketOne"
+  "concertsTicketOneRegister": "Vytvořit nový účet TicketOne",
+  "savePdfWithoutPassword": "Uložit PDF bez hesla",
+  "pdfUnprotectedCopyDescription": "Uložte kopii PDF bez hesla se zachovaným rozložením a obsahem. Původní PDF zůstane beze změny."
 }

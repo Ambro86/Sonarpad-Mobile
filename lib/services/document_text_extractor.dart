@@ -15,6 +15,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 
 import '../utils/document_unicode_normalizer.dart';
+import 'pdf_password_service.dart';
 
 /// Risultato dell'estrazione testo da un documento.
 class ExtractionResult {
@@ -24,7 +25,9 @@ class ExtractionResult {
   /// Messaggio di errore/info da mostrare all'utente. Null se ok.
   final String? error;
 
-  const ExtractionResult({required this.text, this.error});
+  final bool passwordRequired;
+
+  const ExtractionResult({required this.text, this.error, this.passwordRequired = false});
 }
 
 /// Voce dell'indice di un documento EPUB collegata al blocco di lettura.
@@ -624,6 +627,7 @@ class DocumentTextExtractor {
   Future<ExtractionResult> extract({
     required String path,
     required String extension,
+    String? pdfPassword,
     bool includeEpubFootnotesInText = false,
     String footnoteLabel = 'Nota a piè di pagina',
   }) async {
@@ -644,7 +648,7 @@ class DocumentTextExtractor {
           );
 
         case 'pdf':
-          return await _extractPdf(path);
+          return await _extractPdf(path, password: pdfPassword);
 
         case 'docx':
         case 'doc':
@@ -664,6 +668,8 @@ class DocumentTextExtractor {
                 "per l'estrazione del testo.",
           );
       }
+    } on PdfPasswordRequired {
+      return const ExtractionResult(text: '', passwordRequired: true);
     } catch (e) {
       dev.log('DocumentTextExtractor: errore per $path: $e');
       return ExtractionResult(
@@ -677,20 +683,26 @@ class DocumentTextExtractor {
   // PDF — syncfusion_flutter_pdf
   // ---------------------------------------------------------------------------
 
-  Future<ExtractionResult> _extractPdf(String path) async {
+  Future<ExtractionResult> _extractPdf(String path, {String? password}) async {
     final bytes = await File(path).readAsBytes();
-    final document = PdfDocument(inputBytes: bytes);
+    final document = openPdfWithPassword(bytes, password: password);
     String text;
     try {
-      // extractText() senza parametri estrae tutto il documento.
-      text = PdfTextExtractor(document).extractText().trim();
+      // Preserve positioned glyphs: the default extraction can drop narrow
+      // letters in PDFs with subset fonts. This still reads every page.
+      text = PdfTextExtractor(document).extractText(layoutText: true).trim();
     } finally {
       document.dispose();
     }
     text = _repairPdfTextExtractionArtifacts(text).trim();
     if (text.isEmpty) {
       dev.log('Nessun testo estratto. Tento fallback OCR...');
-      return await _extractPdfOcr(path);
+      // pdfx does not support passwords on every native platform. Pass an
+      // unlocked in-memory copy to its existing OCR renderer when necessary.
+      final unlockedBytes = password == null
+          ? null
+          : await pdfWithoutPassword(bytes, password);
+      return await _extractPdfOcr(path, unlockedBytes: unlockedBytes);
     }
     return ExtractionResult(text: normalizeDocumentUnicode(text));
   }
@@ -740,13 +752,15 @@ class DocumentTextExtractor {
     return ratio >= 0.20;
   }
 
-  Future<ExtractionResult> _extractPdfOcr(String path) async {
+  Future<ExtractionResult> _extractPdfOcr(String path, {Uint8List? unlockedBytes}) async {
     pdfx.PdfDocument? doc;
     final textRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
     final buffer = StringBuffer();
 
     try {
-      doc = await pdfx.PdfDocument.openFile(path);
+      doc = unlockedBytes == null
+          ? await pdfx.PdfDocument.openFile(path)
+          : await pdfx.PdfDocument.openData(unlockedBytes);
       final pagesCount = doc.pagesCount;
       final maxPages =
           pagesCount > 20 ? 20 : pagesCount; // Limitiamo a 20 per performance
@@ -794,12 +808,7 @@ class DocumentTextExtractor {
       );
     } finally {
       await textRecognizer.close();
-      // Nota: doc non ha un dispose esplicito su alcune vecchie versioni pdfx,
-      // ma proviamo a chiuderlo se necessario. In pdfx doc viene gestito in automatico
-      // o con doc.close().
-      try {
-        // doc.close(); non supportato in pdfx.PdfDocument ma è document_ref internamente
-      } catch (_) {}
+      await doc?.close();
     }
   }
 

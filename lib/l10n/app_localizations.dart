@@ -4813,6 +4813,12 @@ abstract class AppLocalizations {
 
   String get concertsTicketOneRegister;
 
+  /// Save an authenticated copy of the original PDF without its password.
+  String get savePdfWithoutPassword;
+
+  /// Explain that the original PDF remains unchanged.
+  String get pdfUnprotectedCopyDescription;
+
   /// No description provided for @podcastPlayedEpisodes.
   ///
   /// In it, this message translates to:

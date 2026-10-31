@@ -4883,5 +4883,7 @@
   },
   "raiPlayMediaUnavailable": "RaiPlay birkaç denemeden sonra oynatılabilir bir adres döndürmedi. İçerik geçici olarak kullanılamıyor olabilir. Lütfen daha sonra tekrar deneyin.",
   "concertsTicketOneLogin": "TicketOne hesabınızla giriş yapın",
-  "concertsTicketOneRegister": "Yeni TicketOne hesabı oluşturun"
+  "concertsTicketOneRegister": "Yeni TicketOne hesabı oluşturun",
+  "savePdfWithoutPassword": "PDF’yi parolasız kaydet",
+  "pdfUnprotectedCopyDescription": "PDF’nin düzenini ve içeriğini koruyarak parolasız bir kopyasını kaydedin. Özgün PDF değişmeden kalır."
 }
