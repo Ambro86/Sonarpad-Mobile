@@ -32,7 +32,7 @@ Future<Uint8List> pdfWithoutPassword(List<int> bytes, String password) async {
     final verified = openPdfWithPassword(result);
     try {
       if (verified.pages.count != pages) {
-        throw StateError('PDF page count changed while removing password');
+        throw StateError('pdf_page_count_mismatch');
       }
     } finally {
       verified.dispose();

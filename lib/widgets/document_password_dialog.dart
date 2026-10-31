@@ -73,51 +73,50 @@ class _DocumentPasswordDialogState extends State<DocumentPasswordDialog> {
     final l10n = AppLocalizations.of(context);
     return AlertDialog(
       title: Text(widget.title),
-      content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(widget.prompt),
-            const SizedBox(height: 12),
+      scrollable: true,
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(widget.prompt),
+          const SizedBox(height: 12),
+          TextField(
+            controller: _passwordController,
+            autofocus: true,
+            obscureText: true,
+            autocorrect: false,
+            enableSuggestions: false,
+            textInputAction: widget.requireConfirmation
+                ? TextInputAction.next
+                : TextInputAction.done,
+            decoration: InputDecoration(labelText: widget.passwordLabel),
+            onSubmitted: widget.requireConfirmation ? null : (_) => _submit(),
+          ),
+          if (widget.requireConfirmation) ...[
+            const SizedBox(height: 8),
             TextField(
-              controller: _passwordController,
-              autofocus: true,
+              controller: _confirmationController,
               obscureText: true,
               autocorrect: false,
               enableSuggestions: false,
-              textInputAction: widget.requireConfirmation
-                  ? TextInputAction.next
-                  : TextInputAction.done,
-              decoration: InputDecoration(labelText: widget.passwordLabel),
-              onSubmitted: widget.requireConfirmation ? null : (_) => _submit(),
+              textInputAction: TextInputAction.done,
+              decoration: InputDecoration(
+                labelText: widget.confirmPasswordLabel,
+              ),
+              onSubmitted: (_) => _submit(),
             ),
-            if (widget.requireConfirmation) ...[
-              const SizedBox(height: 8),
-              TextField(
-                controller: _confirmationController,
-                obscureText: true,
-                autocorrect: false,
-                enableSuggestions: false,
-                textInputAction: TextInputAction.done,
-                decoration: InputDecoration(
-                  labelText: widget.confirmPasswordLabel,
-                ),
-                onSubmitted: (_) => _submit(),
-              ),
-            ],
-            if (_error != null) ...[
-              const SizedBox(height: 12),
-              Semantics(
-                liveRegion: true,
-                child: Text(
-                  _error!,
-                  style: TextStyle(color: Theme.of(context).colorScheme.error),
-                ),
-              ),
-            ],
           ],
-        ),
+          if (_error != null) ...[
+            const SizedBox(height: 12),
+            Semantics(
+              liveRegion: true,
+              child: Text(
+                _error!,
+                style: TextStyle(color: Theme.of(context).colorScheme.error),
+              ),
+            ),
+          ],
+        ],
       ),
       actions: [
         TextButton(
