@@ -7,6 +7,32 @@ import 'app_localizations.dart';
 /// The translations for Spanish Castilian (`es`).
 class AppLocalizationsEs extends AppLocalizations {
   @override
+  String onlineDictionaryEntryTitle(String word, String language) => "$word — $language";
+  @override
+  String onlineDictionaryDefinition(int number, String text) => "$number. $text";
+  @override
+  String onlineDictionarySource(String url) => "Wiktionary — CC BY-SA 4.0\n$url";
+
+  @override
+  String get onlineDictionaryTitle => "Diccionario en línea";
+  @override
+  String get onlineDictionaryWord => "Palabra:";
+  @override
+  String get onlineDictionaryLanguage => "Idioma del diccionario:";
+  @override
+  String get onlineDictionaryDefinitions => "Definiciones";
+  @override
+  String get onlineDictionarySynonyms => "Sinónimos";
+  @override
+  String get onlineDictionaryNotFound => "Palabra no encontrada.";
+  @override
+  String get onlineDictionaryLimited => "Resultado demasiado largo. Refina la búsqueda.";
+  @override
+  String get onlineDictionaryTranslation => "Idioma de traducción del diccionario:";
+  @override
+  String get onlineDictionaryNone => "Ninguna";
+
+  @override
   String get raiPlayMediaUnavailable => "RaiPlay no ha devuelto una dirección reproducible tras varios intentos. Es posible que el contenido no esté disponible temporalmente. Inténtalo de nuevo más tarde.";
 
   @override

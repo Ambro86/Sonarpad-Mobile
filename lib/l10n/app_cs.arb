@@ -4888,5 +4888,20 @@
   "concertsTicketOneLogin": "Přihlásit se k účtu TicketOne",
   "concertsTicketOneRegister": "Vytvořit nový účet TicketOne",
   "savePdfWithoutPassword": "Uložit PDF bez hesla",
-  "pdfUnprotectedCopyDescription": "Uložte kopii PDF bez hesla se zachovaným rozložením a obsahem. Původní PDF zůstane beze změny."
+  "pdfUnprotectedCopyDescription": "Uložte kopii PDF bez hesla se zachovaným rozložením a obsahem. Původní PDF zůstane beze změny.",
+  "onlineDictionaryTitle": "Online slovník",
+  "onlineDictionaryWord": "Slovo:",
+  "onlineDictionaryLanguage": "Jazyk slovníku:",
+  "onlineDictionaryDefinitions": "Definice",
+  "onlineDictionarySynonyms": "Synonyma",
+  "onlineDictionaryNotFound": "Slovo nenalezeno.",
+  "onlineDictionaryLimited": "Výsledek je příliš velký. Upřesněte hledání.",
+  "onlineDictionaryTranslation": "Jazyk překladu slovníku:",
+  "onlineDictionaryNone": "Žádný",
+  "onlineDictionaryEntryTitle": "{word} — {language}",
+  "@onlineDictionaryEntryTitle": {"placeholders": {"word": {"type": "String"}, "language": {"type": "String"}}},
+  "onlineDictionaryDefinition": "{number}. {text}",
+  "@onlineDictionaryDefinition": {"placeholders": {"number": {"type": "int"}, "text": {"type": "String"}}},
+  "onlineDictionarySource": "Wiktionary — CC BY-SA 4.0\n{url}",
+  "@onlineDictionarySource": {"placeholders": {"url": {"type": "String"}}}
 }

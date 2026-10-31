@@ -7,6 +7,32 @@ import 'app_localizations.dart';
 /// The translations for Turkish (`tr`).
 class AppLocalizationsTr extends AppLocalizations {
   @override
+  String onlineDictionaryEntryTitle(String word, String language) => "$word — $language";
+  @override
+  String onlineDictionaryDefinition(int number, String text) => "$number. $text";
+  @override
+  String onlineDictionarySource(String url) => "Wiktionary — CC BY-SA 4.0\n$url";
+
+  @override
+  String get onlineDictionaryTitle => "Çevrimiçi sözlük";
+  @override
+  String get onlineDictionaryWord => "Sözcük:";
+  @override
+  String get onlineDictionaryLanguage => "Sözlük dili:";
+  @override
+  String get onlineDictionaryDefinitions => "Tanımlar";
+  @override
+  String get onlineDictionarySynonyms => "Eş anlamlılar";
+  @override
+  String get onlineDictionaryNotFound => "Sözcük bulunamadı.";
+  @override
+  String get onlineDictionaryLimited => "Sonuç çok büyük. Aramayı daraltın.";
+  @override
+  String get onlineDictionaryTranslation => "Çeviri dili:";
+  @override
+  String get onlineDictionaryNone => "Yok";
+
+  @override
   String get raiPlayMediaUnavailable => "RaiPlay birkaç denemeden sonra oynatılabilir bir adres döndürmedi. İçerik geçici olarak kullanılamıyor olabilir. Lütfen daha sonra tekrar deneyin.";
 
   @override

@@ -7,6 +7,32 @@ import 'app_localizations.dart';
 /// The translations for Chinese (`zh`).
 class AppLocalizationsZh extends AppLocalizations {
   @override
+  String onlineDictionaryEntryTitle(String word, String language) => "$word — $language";
+  @override
+  String onlineDictionaryDefinition(int number, String text) => "$number. $text";
+  @override
+  String onlineDictionarySource(String url) => "Wiktionary — CC BY-SA 4.0\n$url";
+
+  @override
+  String get onlineDictionaryTitle => "在线词典";
+  @override
+  String get onlineDictionaryWord => "词：";
+  @override
+  String get onlineDictionaryLanguage => "词典语言：";
+  @override
+  String get onlineDictionaryDefinitions => "定义";
+  @override
+  String get onlineDictionarySynonyms => "同义词";
+  @override
+  String get onlineDictionaryNotFound => "未找到该词。";
+  @override
+  String get onlineDictionaryLimited => "结果过多。请优化搜索条件。";
+  @override
+  String get onlineDictionaryTranslation => "词典翻译语言：";
+  @override
+  String get onlineDictionaryNone => "无";
+
+  @override
   String get raiPlayMediaUnavailable => "多次尝试后，RaiPlay 仍未返回可播放的地址。内容可能暂时不可用，请稍后重试。";
 
   @override
@@ -5316,6 +5342,32 @@ class AppLocalizationsZh extends AppLocalizations {
 
 /// The translations for Chinese, as used in China (`zh_CN`).
 class AppLocalizationsZhCn extends AppLocalizationsZh {
+  @override
+  String onlineDictionaryEntryTitle(String word, String language) => "$word — $language";
+  @override
+  String onlineDictionaryDefinition(int number, String text) => "$number. $text";
+  @override
+  String onlineDictionarySource(String url) => "Wiktionary — CC BY-SA 4.0\n$url";
+
+  @override
+  String get onlineDictionaryTitle => "在线词典";
+  @override
+  String get onlineDictionaryWord => "词：";
+  @override
+  String get onlineDictionaryLanguage => "词典语言：";
+  @override
+  String get onlineDictionaryDefinitions => "定义";
+  @override
+  String get onlineDictionarySynonyms => "同义词";
+  @override
+  String get onlineDictionaryNotFound => "未找到该词。";
+  @override
+  String get onlineDictionaryLimited => "结果过多。请优化搜索条件。";
+  @override
+  String get onlineDictionaryTranslation => "词典翻译语言：";
+  @override
+  String get onlineDictionaryNone => "无";
+
   @override
   String get raiPlayMediaUnavailable => "多次尝试后，RaiPlay 仍未返回可播放的地址。内容可能暂时不可用，请稍后重试。";
 

@@ -73,6 +73,10 @@ void main() {
       'audioDescriptionProjectEditorDescriptionOption',
       // Numeric index and timestamps only; no words to translate.
       'audioDescriptionProjectEditorSegmentOption',
+      // Dictionary placeholders/punctuation and the unchanged source/licence name.
+      'onlineDictionaryEntryTitle',
+      'onlineDictionaryDefinition',
+      'onlineDictionarySource',
       'audioDescriptionLanguageCountry',
       'homeTv',
       'homeRaiPlay',

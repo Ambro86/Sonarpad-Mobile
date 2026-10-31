@@ -7,6 +7,32 @@ import 'app_localizations.dart';
 /// The translations for Ukrainian (`uk`).
 class AppLocalizationsUk extends AppLocalizations {
   @override
+  String onlineDictionaryEntryTitle(String word, String language) => "$word — $language";
+  @override
+  String onlineDictionaryDefinition(int number, String text) => "$number. $text";
+  @override
+  String onlineDictionarySource(String url) => "Wiktionary — CC BY-SA 4.0\n$url";
+
+  @override
+  String get onlineDictionaryTitle => "Онлайн-словник";
+  @override
+  String get onlineDictionaryWord => "Слово:";
+  @override
+  String get onlineDictionaryLanguage => "Мова словника:";
+  @override
+  String get onlineDictionaryDefinitions => "Визначення";
+  @override
+  String get onlineDictionarySynonyms => "Синоніми";
+  @override
+  String get onlineDictionaryNotFound => "Слово не знайдено.";
+  @override
+  String get onlineDictionaryLimited => "Результат занадто довгий. Уточніть пошук.";
+  @override
+  String get onlineDictionaryTranslation => "Мова перекладу словника:";
+  @override
+  String get onlineDictionaryNone => "Немає";
+
+  @override
   String get raiPlayMediaUnavailable => "RaiPlay не повернув адресу для відтворення після кількох спроб. Вміст може бути тимчасово недоступним. Спробуйте пізніше.";
 
   @override

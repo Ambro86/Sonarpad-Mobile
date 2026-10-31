@@ -7,6 +7,32 @@ import 'app_localizations.dart';
 /// The translations for Italian (`it`).
 class AppLocalizationsIt extends AppLocalizations {
   @override
+  String onlineDictionaryEntryTitle(String word, String language) => "$word — $language";
+  @override
+  String onlineDictionaryDefinition(int number, String text) => "$number. $text";
+  @override
+  String onlineDictionarySource(String url) => "Wiktionary — CC BY-SA 4.0\n$url";
+
+  @override
+  String get onlineDictionaryTitle => "Dizionario online";
+  @override
+  String get onlineDictionaryWord => "Parola:";
+  @override
+  String get onlineDictionaryLanguage => "Lingua dizionario:";
+  @override
+  String get onlineDictionaryDefinitions => "Definizioni";
+  @override
+  String get onlineDictionarySynonyms => "Sinonimi";
+  @override
+  String get onlineDictionaryNotFound => "Parola non trovata.";
+  @override
+  String get onlineDictionaryLimited => "Risultato troppo lungo, raffina la ricerca.";
+  @override
+  String get onlineDictionaryTranslation => "Lingua traduzione dizionario:";
+  @override
+  String get onlineDictionaryNone => "Nessuna";
+
+  @override
   String get raiPlayMediaUnavailable => "RaiPlay non ha restituito un indirizzo riproducibile dopo più tentativi. Il contenuto potrebbe essere temporaneamente non disponibile. Riprova più tardi.";
 
   @override

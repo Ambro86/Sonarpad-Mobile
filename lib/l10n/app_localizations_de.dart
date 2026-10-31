@@ -7,6 +7,32 @@ import 'app_localizations.dart';
 /// The translations for German (`de`).
 class AppLocalizationsDe extends AppLocalizations {
   @override
+  String onlineDictionaryEntryTitle(String word, String language) => "$word — $language";
+  @override
+  String onlineDictionaryDefinition(int number, String text) => "$number. $text";
+  @override
+  String onlineDictionarySource(String url) => "Wiktionary — CC BY-SA 4.0\n$url";
+
+  @override
+  String get onlineDictionaryTitle => "Online-Wörterbuch";
+  @override
+  String get onlineDictionaryWord => "Wort:";
+  @override
+  String get onlineDictionaryLanguage => "Wörterbuchsprache:";
+  @override
+  String get onlineDictionaryDefinitions => "Definitionen";
+  @override
+  String get onlineDictionarySynonyms => "Synonyme";
+  @override
+  String get onlineDictionaryNotFound => "Wort nicht gefunden.";
+  @override
+  String get onlineDictionaryLimited => "Das Ergebnis ist zu groß. Grenzen Sie die Suche ein.";
+  @override
+  String get onlineDictionaryTranslation => "Übersetzungssprache des Wörterbuchs:";
+  @override
+  String get onlineDictionaryNone => "Keine";
+
+  @override
   String get raiPlayMediaUnavailable => "RaiPlay hat nach mehreren Versuchen keine abspielbare Adresse zurückgegeben. Der Inhalt ist möglicherweise vorübergehend nicht verfügbar. Bitte versuche es später erneut.";
 
   @override

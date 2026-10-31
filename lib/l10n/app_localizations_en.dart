@@ -7,6 +7,32 @@ import 'app_localizations.dart';
 /// The translations for English (`en`).
 class AppLocalizationsEn extends AppLocalizations {
   @override
+  String onlineDictionaryEntryTitle(String word, String language) => "$word — $language";
+  @override
+  String onlineDictionaryDefinition(int number, String text) => "$number. $text";
+  @override
+  String onlineDictionarySource(String url) => "Wiktionary — CC BY-SA 4.0\n$url";
+
+  @override
+  String get onlineDictionaryTitle => "Online Dictionary";
+  @override
+  String get onlineDictionaryWord => "Word:";
+  @override
+  String get onlineDictionaryLanguage => "Dictionary language:";
+  @override
+  String get onlineDictionaryDefinitions => "Definitions";
+  @override
+  String get onlineDictionarySynonyms => "Synonyms";
+  @override
+  String get onlineDictionaryNotFound => "Word not found.";
+  @override
+  String get onlineDictionaryLimited => "Result too large. Refine the search.";
+  @override
+  String get onlineDictionaryTranslation => "Dictionary Translation Language:";
+  @override
+  String get onlineDictionaryNone => "None";
+
+  @override
   String get raiPlayMediaUnavailable => "RaiPlay did not return a playable address after several attempts. The content may be temporarily unavailable. Please try again later.";
 
   @override

@@ -4885,5 +4885,20 @@
   "concertsTicketOneLogin": "TicketOne hesabınızla giriş yapın",
   "concertsTicketOneRegister": "Yeni TicketOne hesabı oluşturun",
   "savePdfWithoutPassword": "PDF’yi parolasız kaydet",
-  "pdfUnprotectedCopyDescription": "PDF’nin düzenini ve içeriğini koruyarak parolasız bir kopyasını kaydedin. Özgün PDF değişmeden kalır."
+  "pdfUnprotectedCopyDescription": "PDF’nin düzenini ve içeriğini koruyarak parolasız bir kopyasını kaydedin. Özgün PDF değişmeden kalır.",
+  "onlineDictionaryTitle": "Çevrimiçi sözlük",
+  "onlineDictionaryWord": "Sözcük:",
+  "onlineDictionaryLanguage": "Sözlük dili:",
+  "onlineDictionaryDefinitions": "Tanımlar",
+  "onlineDictionarySynonyms": "Eş anlamlılar",
+  "onlineDictionaryNotFound": "Sözcük bulunamadı.",
+  "onlineDictionaryLimited": "Sonuç çok büyük. Aramayı daraltın.",
+  "onlineDictionaryTranslation": "Çeviri dili:",
+  "onlineDictionaryNone": "Yok",
+  "onlineDictionaryEntryTitle": "{word} — {language}",
+  "@onlineDictionaryEntryTitle": {"placeholders": {"word": {"type": "String"}, "language": {"type": "String"}}},
+  "onlineDictionaryDefinition": "{number}. {text}",
+  "@onlineDictionaryDefinition": {"placeholders": {"number": {"type": "int"}, "text": {"type": "String"}}},
+  "onlineDictionarySource": "Wiktionary — CC BY-SA 4.0\n{url}",
+  "@onlineDictionarySource": {"placeholders": {"url": {"type": "String"}}}
 }

@@ -7,6 +7,32 @@ import 'app_localizations.dart';
 /// The translations for French (`fr`).
 class AppLocalizationsFr extends AppLocalizations {
   @override
+  String onlineDictionaryEntryTitle(String word, String language) => "$word — $language";
+  @override
+  String onlineDictionaryDefinition(int number, String text) => "$number. $text";
+  @override
+  String onlineDictionarySource(String url) => "Wiktionary — CC BY-SA 4.0\n$url";
+
+  @override
+  String get onlineDictionaryTitle => "Dictionnaire en ligne";
+  @override
+  String get onlineDictionaryWord => "Mot :";
+  @override
+  String get onlineDictionaryLanguage => "Langue du dictionnaire :";
+  @override
+  String get onlineDictionaryDefinitions => "Définitions";
+  @override
+  String get onlineDictionarySynonyms => "Synonymes";
+  @override
+  String get onlineDictionaryNotFound => "Mot non trouvé.";
+  @override
+  String get onlineDictionaryLimited => "Résultat trop long. Affinez la recherche.";
+  @override
+  String get onlineDictionaryTranslation => "Langue de traduction du dictionnaire :";
+  @override
+  String get onlineDictionaryNone => "Aucune";
+
+  @override
   String get raiPlayMediaUnavailable => "RaiPlay n’a pas fourni d’adresse lisible après plusieurs tentatives. Le contenu est peut-être temporairement indisponible. Réessayez plus tard.";
 
   @override

@@ -23,6 +23,7 @@ Set<String> availableHomeItemIds({
     HomeItemIds.cinema,
     HomeItemIds.radio,
     HomeItemIds.wikipedia,
+    HomeItemIds.onlineDictionary,
     HomeItemIds.voiceDictionary,
     HomeItemIds.route,
     HomeItemIds.concerts,
@@ -96,6 +97,8 @@ String homeItemLabel(AppLocalizations l10n, String id) {
       return l10n.audiodescriptionTitle;
     case HomeItemIds.sonarpadAudioDescriptions:
       return l10n.sonarpadAudiodescriptionsTitle;
+    case HomeItemIds.onlineDictionary:
+      return l10n.onlineDictionaryTitle;
     case HomeItemIds.wikipedia:
       return l10n.importFromWikipedia;
     case HomeItemIds.treccani:

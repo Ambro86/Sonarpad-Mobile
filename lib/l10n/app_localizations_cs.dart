@@ -7,6 +7,32 @@ import 'app_localizations.dart';
 /// The translations for Czech (`cs`).
 class AppLocalizationsCs extends AppLocalizations {
   @override
+  String onlineDictionaryEntryTitle(String word, String language) => "$word — $language";
+  @override
+  String onlineDictionaryDefinition(int number, String text) => "$number. $text";
+  @override
+  String onlineDictionarySource(String url) => "Wiktionary — CC BY-SA 4.0\n$url";
+
+  @override
+  String get onlineDictionaryTitle => "Online slovník";
+  @override
+  String get onlineDictionaryWord => "Slovo:";
+  @override
+  String get onlineDictionaryLanguage => "Jazyk slovníku:";
+  @override
+  String get onlineDictionaryDefinitions => "Definice";
+  @override
+  String get onlineDictionarySynonyms => "Synonyma";
+  @override
+  String get onlineDictionaryNotFound => "Slovo nenalezeno.";
+  @override
+  String get onlineDictionaryLimited => "Výsledek je příliš velký. Upřesněte hledání.";
+  @override
+  String get onlineDictionaryTranslation => "Jazyk překladu slovníku:";
+  @override
+  String get onlineDictionaryNone => "Žádný";
+
+  @override
   String get raiPlayMediaUnavailable => "RaiPlay ani po několika pokusech nevrátil adresu pro přehrávání. Obsah může být dočasně nedostupný. Zkuste to znovu později.";
 
   @override

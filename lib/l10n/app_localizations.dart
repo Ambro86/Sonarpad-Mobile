@@ -72,6 +72,20 @@ import 'app_localizations_zh.dart';
 /// be consistent with the languages listed in the AppLocalizations.supportedLocales
 /// property.
 abstract class AppLocalizations {
+  String onlineDictionaryEntryTitle(String word, String language);
+  String onlineDictionaryDefinition(int number, String text);
+  String onlineDictionarySource(String url);
+
+  String get onlineDictionaryTitle;
+  String get onlineDictionaryWord;
+  String get onlineDictionaryLanguage;
+  String get onlineDictionaryDefinitions;
+  String get onlineDictionarySynonyms;
+  String get onlineDictionaryNotFound;
+  String get onlineDictionaryLimited;
+  String get onlineDictionaryTranslation;
+  String get onlineDictionaryNone;
+
   /// Segment number and start/end timestamps in the project selector.
   String audioDescriptionProjectEditorSegmentOption(int index, String start, String end);
 

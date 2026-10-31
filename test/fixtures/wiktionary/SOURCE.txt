@@ -1,0 +1,7 @@
+These 60 real Wiktionary wikitext fixtures were copied unchanged from
+Sonarpad Windows tests/fixtures/wiktionary (src/wiktionary.rs tests).
+index.csv records the Wiktionary edition, word and local filename.
+Original pages: https://<lang>.wiktionary.org/wiki/<word>
+Wiktionary contributors; page histories provide individual attribution.
+Text is available under CC BY-SA; see https://creativecommons.org/licenses/by-sa/4.0/
+The files contain public dictionary entries, not user data.

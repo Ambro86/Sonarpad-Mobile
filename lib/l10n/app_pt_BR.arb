@@ -4891,5 +4891,20 @@
   "concertsTicketOneLogin": "Entrar com sua conta TicketOne",
   "concertsTicketOneRegister": "Criar uma nova conta TicketOne",
   "savePdfWithoutPassword": "Salvar PDF sem senha",
-  "pdfUnprotectedCopyDescription": "Salve uma cópia do PDF sem senha, preservando a diagramação e o conteúdo. O PDF original permanece intacto."
+  "pdfUnprotectedCopyDescription": "Salve uma cópia do PDF sem senha, preservando a diagramação e o conteúdo. O PDF original permanece intacto.",
+  "onlineDictionaryTitle": "Dicionário online",
+  "onlineDictionaryWord": "Palavra:",
+  "onlineDictionaryLanguage": "Idioma do dicionário:",
+  "onlineDictionaryDefinitions": "Configurações",
+  "onlineDictionarySynonyms": "Sinônimos",
+  "onlineDictionaryNotFound": "Palavra não encontrada.",
+  "onlineDictionaryLimited": "Resultado muito longo. Refine a busca.",
+  "onlineDictionaryTranslation": "Idioma da tradução do dicionário:",
+  "onlineDictionaryNone": "Nenhuma",
+  "onlineDictionaryEntryTitle": "{word} — {language}",
+  "@onlineDictionaryEntryTitle": {"placeholders": {"word": {"type": "String"}, "language": {"type": "String"}}},
+  "onlineDictionaryDefinition": "{number}. {text}",
+  "@onlineDictionaryDefinition": {"placeholders": {"number": {"type": "int"}, "text": {"type": "String"}}},
+  "onlineDictionarySource": "Wiktionary — CC BY-SA 4.0\n{url}",
+  "@onlineDictionarySource": {"placeholders": {"url": {"type": "String"}}}
 }

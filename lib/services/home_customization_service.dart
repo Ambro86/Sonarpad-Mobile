@@ -20,6 +20,7 @@ class HomeItemIds {
   static const la7Play = 'la7play';
   static const audioDescriptions = 'audiodescriptions';
   static const sonarpadAudioDescriptions = 'sonarpad_audiodescriptions';
+  static const onlineDictionary = 'online_dictionary';
   static const wikipedia = 'wikipedia';
   static const treccani = 'treccani';
   static const voiceDictionary = 'voice_dictionary';
@@ -54,6 +55,7 @@ class HomeItemIds {
     audioDescriptions,
     sonarpadAudioDescriptions,
     wikipedia,
+    onlineDictionary,
     treccani,
     voiceDictionary,
     digitalLibrary,
@@ -72,6 +74,7 @@ class HomeItemIds {
   static const List<String> readingOrder = [
     documents,
     wikipedia,
+    onlineDictionary,
     treccani,
     news,
     digitalLibrary,

@@ -8,6 +8,32 @@ import 'app_localizations.dart';
 /// Remaining untranslated messages temporarily keep their English text until the next phase.
 class AppLocalizationsRo extends AppLocalizations {
   @override
+  String onlineDictionaryEntryTitle(String word, String language) => "$word — $language";
+  @override
+  String onlineDictionaryDefinition(int number, String text) => "$number. $text";
+  @override
+  String onlineDictionarySource(String url) => "Wiktionary — CC BY-SA 4.0\n$url";
+
+  @override
+  String get onlineDictionaryTitle => "Dicționar online";
+  @override
+  String get onlineDictionaryWord => "Cuvânt:";
+  @override
+  String get onlineDictionaryLanguage => "Limba dicționarului:";
+  @override
+  String get onlineDictionaryDefinitions => "Definiții";
+  @override
+  String get onlineDictionarySynonyms => "Sinonime";
+  @override
+  String get onlineDictionaryNotFound => "Cuvântul nu a fost găsit.";
+  @override
+  String get onlineDictionaryLimited => "Rezultat prea mare. Restrângeți căutarea.";
+  @override
+  String get onlineDictionaryTranslation => "Limba traducerii:";
+  @override
+  String get onlineDictionaryNone => "Niciuna";
+
+  @override
   String get raiPlayMediaUnavailable => "RaiPlay nu a returnat o adresă care poate fi redată după mai multe încercări. Conținutul poate fi temporar indisponibil. Încercați din nou mai târziu.";
 
   @override

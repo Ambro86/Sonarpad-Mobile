@@ -6463,5 +6463,20 @@
   "concertsTicketOneLogin": "Увійти до облікового запису TicketOne",
   "concertsTicketOneRegister": "Створити новий обліковий запис TicketOne",
   "savePdfWithoutPassword": "Зберегти PDF без пароля",
-  "pdfUnprotectedCopyDescription": "Збережіть копію PDF без пароля зі збереженням оформлення та вмісту. Оригінальний PDF залишиться без змін."
+  "pdfUnprotectedCopyDescription": "Збережіть копію PDF без пароля зі збереженням оформлення та вмісту. Оригінальний PDF залишиться без змін.",
+  "onlineDictionaryTitle": "Онлайн-словник",
+  "onlineDictionaryWord": "Слово:",
+  "onlineDictionaryLanguage": "Мова словника:",
+  "onlineDictionaryDefinitions": "Визначення",
+  "onlineDictionarySynonyms": "Синоніми",
+  "onlineDictionaryNotFound": "Слово не знайдено.",
+  "onlineDictionaryLimited": "Результат занадто довгий. Уточніть пошук.",
+  "onlineDictionaryTranslation": "Мова перекладу словника:",
+  "onlineDictionaryNone": "Немає",
+  "onlineDictionaryEntryTitle": "{word} — {language}",
+  "@onlineDictionaryEntryTitle": {"placeholders": {"word": {"type": "String"}, "language": {"type": "String"}}},
+  "onlineDictionaryDefinition": "{number}. {text}",
+  "@onlineDictionaryDefinition": {"placeholders": {"number": {"type": "int"}, "text": {"type": "String"}}},
+  "onlineDictionarySource": "Wiktionary — CC BY-SA 4.0\n{url}",
+  "@onlineDictionarySource": {"placeholders": {"url": {"type": "String"}}}
 }

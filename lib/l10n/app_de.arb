@@ -6463,5 +6463,20 @@
   "concertsTicketOneLogin": "Mit deinem TicketOne-Konto anmelden",
   "concertsTicketOneRegister": "Neues TicketOne-Konto erstellen",
   "savePdfWithoutPassword": "PDF ohne Passwort speichern",
-  "pdfUnprotectedCopyDescription": "Speichern Sie eine Kopie der PDF ohne Passwort mit unverändertem Layout und Inhalt. Die ursprüngliche PDF bleibt unverändert."
+  "pdfUnprotectedCopyDescription": "Speichern Sie eine Kopie der PDF ohne Passwort mit unverändertem Layout und Inhalt. Die ursprüngliche PDF bleibt unverändert.",
+  "onlineDictionaryTitle": "Online-Wörterbuch",
+  "onlineDictionaryWord": "Wort:",
+  "onlineDictionaryLanguage": "Wörterbuchsprache:",
+  "onlineDictionaryDefinitions": "Definitionen",
+  "onlineDictionarySynonyms": "Synonyme",
+  "onlineDictionaryNotFound": "Wort nicht gefunden.",
+  "onlineDictionaryLimited": "Das Ergebnis ist zu groß. Grenzen Sie die Suche ein.",
+  "onlineDictionaryTranslation": "Übersetzungssprache des Wörterbuchs:",
+  "onlineDictionaryNone": "Keine",
+  "onlineDictionaryEntryTitle": "{word} — {language}",
+  "@onlineDictionaryEntryTitle": {"placeholders": {"word": {"type": "String"}, "language": {"type": "String"}}},
+  "onlineDictionaryDefinition": "{number}. {text}",
+  "@onlineDictionaryDefinition": {"placeholders": {"number": {"type": "int"}, "text": {"type": "String"}}},
+  "onlineDictionarySource": "Wiktionary — CC BY-SA 4.0\n{url}",
+  "@onlineDictionarySource": {"placeholders": {"url": {"type": "String"}}}
 }

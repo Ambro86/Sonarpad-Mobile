@@ -7,6 +7,32 @@ import 'app_localizations.dart';
 /// The translations for Portuguese (`pt`).
 class AppLocalizationsPt extends AppLocalizations {
   @override
+  String onlineDictionaryEntryTitle(String word, String language) => "$word — $language";
+  @override
+  String onlineDictionaryDefinition(int number, String text) => "$number. $text";
+  @override
+  String onlineDictionarySource(String url) => "Wiktionary — CC BY-SA 4.0\n$url";
+
+  @override
+  String get onlineDictionaryTitle => "Dicionário online";
+  @override
+  String get onlineDictionaryWord => "Palavra:";
+  @override
+  String get onlineDictionaryLanguage => "Idioma do dicionário:";
+  @override
+  String get onlineDictionaryDefinitions => "Definições";
+  @override
+  String get onlineDictionarySynonyms => "Sinónimos";
+  @override
+  String get onlineDictionaryNotFound => "Palavra não encontrada.";
+  @override
+  String get onlineDictionaryLimited => "Resultado muito longo. Refine a busca.";
+  @override
+  String get onlineDictionaryTranslation => "Idioma da tradução do dicionário:";
+  @override
+  String get onlineDictionaryNone => "Nenhuma";
+
+  @override
   String get raiPlayMediaUnavailable => "O RaiPlay não devolveu um endereço reproduzível após várias tentativas. O conteúdo pode estar temporariamente indisponível. Tente novamente mais tarde.";
 
   @override
@@ -5514,6 +5540,32 @@ class AppLocalizationsPt extends AppLocalizations {
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
 class AppLocalizationsPtBr extends AppLocalizationsPt {
+  @override
+  String onlineDictionaryEntryTitle(String word, String language) => "$word — $language";
+  @override
+  String onlineDictionaryDefinition(int number, String text) => "$number. $text";
+  @override
+  String onlineDictionarySource(String url) => "Wiktionary — CC BY-SA 4.0\n$url";
+
+  @override
+  String get onlineDictionaryTitle => "Dicionário online";
+  @override
+  String get onlineDictionaryWord => "Palavra:";
+  @override
+  String get onlineDictionaryLanguage => "Idioma do dicionário:";
+  @override
+  String get onlineDictionaryDefinitions => "Configurações";
+  @override
+  String get onlineDictionarySynonyms => "Sinônimos";
+  @override
+  String get onlineDictionaryNotFound => "Palavra não encontrada.";
+  @override
+  String get onlineDictionaryLimited => "Resultado muito longo. Refine a busca.";
+  @override
+  String get onlineDictionaryTranslation => "Idioma da tradução do dicionário:";
+  @override
+  String get onlineDictionaryNone => "Nenhuma";
+
   @override
   String get raiPlayMediaUnavailable => "O RaiPlay não retornou um endereço reproduzível após várias tentativas. O conteúdo pode estar temporariamente indisponível. Tente novamente mais tarde.";
 

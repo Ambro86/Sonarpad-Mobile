@@ -7,6 +7,32 @@ import 'app_localizations.dart';
 /// The translations for Polish (`pl`).
 class AppLocalizationsPl extends AppLocalizations {
   @override
+  String onlineDictionaryEntryTitle(String word, String language) => "$word — $language";
+  @override
+  String onlineDictionaryDefinition(int number, String text) => "$number. $text";
+  @override
+  String onlineDictionarySource(String url) => "Wiktionary — CC BY-SA 4.0\n$url";
+
+  @override
+  String get onlineDictionaryTitle => "Słownik online";
+  @override
+  String get onlineDictionaryWord => "Słowo:";
+  @override
+  String get onlineDictionaryLanguage => "Język słownika:";
+  @override
+  String get onlineDictionaryDefinitions => "Definicje";
+  @override
+  String get onlineDictionarySynonyms => "Synonimy";
+  @override
+  String get onlineDictionaryNotFound => "Słowo nie znalezione.";
+  @override
+  String get onlineDictionaryLimited => "Wynik zbyt duży. Uściślij wyszukiwanie.";
+  @override
+  String get onlineDictionaryTranslation => "Język tłumaczenia słownika:";
+  @override
+  String get onlineDictionaryNone => "Brak";
+
+  @override
   String get raiPlayMediaUnavailable => "RaiPlay nie zwrócił adresu umożliwiającego odtwarzanie po kilku próbach. Treść może być tymczasowo niedostępna. Spróbuj ponownie później.";
 
   @override

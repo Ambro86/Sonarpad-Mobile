@@ -4885,5 +4885,20 @@
   "concertsTicketOneLogin": "Conectează-te la contul TicketOne",
   "concertsTicketOneRegister": "Creează un cont TicketOne nou",
   "savePdfWithoutPassword": "Salvează PDF fără parolă",
-  "pdfUnprotectedCopyDescription": "Salvează o copie a PDF-ului fără parolă, păstrând aspectul și conținutul. PDF-ul original rămâne neschimbat."
+  "pdfUnprotectedCopyDescription": "Salvează o copie a PDF-ului fără parolă, păstrând aspectul și conținutul. PDF-ul original rămâne neschimbat.",
+  "onlineDictionaryTitle": "Dicționar online",
+  "onlineDictionaryWord": "Cuvânt:",
+  "onlineDictionaryLanguage": "Limba dicționarului:",
+  "onlineDictionaryDefinitions": "Definiții",
+  "onlineDictionarySynonyms": "Sinonime",
+  "onlineDictionaryNotFound": "Cuvântul nu a fost găsit.",
+  "onlineDictionaryLimited": "Rezultat prea mare. Restrângeți căutarea.",
+  "onlineDictionaryTranslation": "Limba traducerii:",
+  "onlineDictionaryNone": "Niciuna",
+  "onlineDictionaryEntryTitle": "{word} — {language}",
+  "@onlineDictionaryEntryTitle": {"placeholders": {"word": {"type": "String"}, "language": {"type": "String"}}},
+  "onlineDictionaryDefinition": "{number}. {text}",
+  "@onlineDictionaryDefinition": {"placeholders": {"number": {"type": "int"}, "text": {"type": "String"}}},
+  "onlineDictionarySource": "Wiktionary — CC BY-SA 4.0\n{url}",
+  "@onlineDictionarySource": {"placeholders": {"url": {"type": "String"}}}
 }
