@@ -63,6 +63,7 @@ dependencies:
   onnxruntime_plus: 1.5.0
   sonarpad_audio_dsp:
     path: packages/sonarpad_audio_dsp
+  record: 7.1.2
 
 dependency_overrides:
   epubx:

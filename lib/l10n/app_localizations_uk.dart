@@ -5507,4 +5507,56 @@ class AppLocalizationsUk extends AppLocalizations {
   @override
   String get pdfUnprotectedCopyDescription =>
       'Збережіть копію PDF без пароля зі збереженням оформлення та вмісту. Оригінальний PDF залишиться без змін.';
+
+  @override
+  String get podcastRecorderTitle => 'Записати подкаст';
+
+  @override
+  String get podcastRecorderHint =>
+      'Записується лише мікрофон. Необов’язкова фонова музика додається після завершення. Рівні гучності застосовуються до всього запису. Використовуйте навушники, щоб не записувати голос читача екрана з динаміків. Перехід до іншого застосунку призупиняє запис.';
+
+  @override
+  String get podcastRecorderMicVolume => 'Гучність мікрофона';
+
+  @override
+  String get podcastRecorderMusicVolume => 'Гучність фонової музики';
+
+  @override
+  String get podcastRecorderChooseMusic =>
+      'Вибрати фонову музику (необов’язково)';
+
+  @override
+  String get podcastRecorderRemoveMusic => 'Прибрати фонову музику';
+
+  @override
+  String get podcastRecorderReady =>
+      'Запис готовий. Налаштуйте гучність, прослухайте та збережіть.';
+
+  @override
+  String get podcastRecorderRecovered =>
+      'Попередній запис відновлено. Його можна прослухати та зберегти.';
+
+  @override
+  String get podcastRecorderPermission =>
+      'Щоб записувати, дозвольте доступ до мікрофона в налаштуваннях пристрою.';
+
+  @override
+  String get podcastRecorderLeave =>
+      'Вийти? Запис буде зупинено й збережено до наступного відкриття.';
+
+  @override
+  String get podcastRecorderDiscard =>
+      'Видалити цей запис? Копії, вже збережені в Документах, залишаться доступними.';
+
+  @override
+  String get podcastRecorderChooseIntro => 'Вибрати вступну заставку (необов’язково)';
+
+  @override
+  String get podcastRecorderChooseOutro => 'Вибрати кінцеву заставку (необов’язково)';
+
+  @override
+  String get podcastRecorderRemoveIntro => 'Видалити вступну заставку';
+
+  @override
+  String get podcastRecorderRemoveOutro => 'Видалити кінцеву заставку';
 }

@@ -6478,5 +6478,20 @@
   "onlineDictionaryDefinition": "{number}. {text}",
   "@onlineDictionaryDefinition": {"placeholders": {"number": {"type": "int"}, "text": {"type": "String"}}},
   "onlineDictionarySource": "Wiktionary — CC BY-SA 4.0\n{url}",
-  "@onlineDictionarySource": {"placeholders": {"url": {"type": "String"}}}
+  "@onlineDictionarySource": {"placeholders": {"url": {"type": "String"}}},
+  "podcastRecorderTitle": "Записати подкаст",
+  "podcastRecorderHint": "Записується лише мікрофон. Необов’язкова фонова музика додається після завершення. Рівні гучності застосовуються до всього запису. Використовуйте навушники, щоб не записувати голос читача екрана з динаміків. Перехід до іншого застосунку призупиняє запис.",
+  "podcastRecorderMicVolume": "Гучність мікрофона",
+  "podcastRecorderMusicVolume": "Гучність фонової музики",
+  "podcastRecorderChooseMusic": "Вибрати фонову музику (необов’язково)",
+  "podcastRecorderRemoveMusic": "Прибрати фонову музику",
+  "podcastRecorderReady": "Запис готовий. Налаштуйте гучність, прослухайте та збережіть.",
+  "podcastRecorderRecovered": "Попередній запис відновлено. Його можна прослухати та зберегти.",
+  "podcastRecorderPermission": "Щоб записувати, дозвольте доступ до мікрофона в налаштуваннях пристрою.",
+  "podcastRecorderLeave": "Вийти? Запис буде зупинено й збережено до наступного відкриття.",
+  "podcastRecorderDiscard": "Видалити цей запис? Копії, вже збережені в Документах, залишаться доступними.",
+  "podcastRecorderChooseIntro": "Вибрати вступну заставку (необов’язково)",
+  "podcastRecorderChooseOutro": "Вибрати кінцеву заставку (необов’язково)",
+  "podcastRecorderRemoveIntro": "Видалити вступну заставку",
+  "podcastRecorderRemoveOutro": "Видалити кінцеву заставку"
 }

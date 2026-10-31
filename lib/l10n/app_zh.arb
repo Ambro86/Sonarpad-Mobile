@@ -4900,5 +4900,20 @@
   "onlineDictionaryDefinition": "{number}. {text}",
   "@onlineDictionaryDefinition": {"placeholders": {"number": {"type": "int"}, "text": {"type": "String"}}},
   "onlineDictionarySource": "Wiktionary — CC BY-SA 4.0\n{url}",
-  "@onlineDictionarySource": {"placeholders": {"url": {"type": "String"}}}
+  "@onlineDictionarySource": {"placeholders": {"url": {"type": "String"}}},
+  "podcastRecorderTitle": "录制播客",
+  "podcastRecorderHint": "仅录制麦克风。可选背景音乐会在结束后添加，音量设置应用于整段录音。请使用耳机，避免录入扬声器中的屏幕阅读器语音。切换到其他应用会暂停录音。",
+  "podcastRecorderMicVolume": "麦克风音量",
+  "podcastRecorderMusicVolume": "背景音乐音量",
+  "podcastRecorderChooseMusic": "选择背景音乐（可选）",
+  "podcastRecorderRemoveMusic": "移除背景音乐",
+  "podcastRecorderReady": "录音已就绪。调整音量、试听并保存。",
+  "podcastRecorderRecovered": "已恢复上次的录音。您可以试听并保存。",
+  "podcastRecorderPermission": "请在设备设置中允许麦克风访问以进行录音。",
+  "podcastRecorderLeave": "退出吗？录音将停止，并保留至下次打开。",
+  "podcastRecorderDiscard": "删除此录音吗？已保存到文档中的副本不会被删除。",
+  "podcastRecorderChooseIntro": "选择片头音乐（可选）",
+  "podcastRecorderChooseOutro": "选择片尾音乐（可选）",
+  "podcastRecorderRemoveIntro": "移除片头音乐",
+  "podcastRecorderRemoveOutro": "移除片尾音乐"
 }

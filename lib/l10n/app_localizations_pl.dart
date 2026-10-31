@@ -5519,4 +5519,56 @@ class AppLocalizationsPl extends AppLocalizations {
   @override
   String get pdfUnprotectedCopyDescription =>
       'Zapisz kopię PDF bez hasła, zachowując układ i zawartość. Oryginalny PDF pozostanie bez zmian.';
+
+  @override
+  String get podcastRecorderTitle => 'Nagraj podcast';
+
+  @override
+  String get podcastRecorderHint =>
+      'Nagrywany jest tylko mikrofon. Opcjonalny podkład muzyczny jest dodawany na końcu. Poziomy głośności dotyczą całego nagrania. Używaj słuchawek, aby nie nagrywać głosu czytnika ekranu z głośników. Przełączenie do innej aplikacji wstrzymuje nagrywanie.';
+
+  @override
+  String get podcastRecorderMicVolume => 'Głośność mikrofonu';
+
+  @override
+  String get podcastRecorderMusicVolume => 'Głośność podkładu muzycznego';
+
+  @override
+  String get podcastRecorderChooseMusic =>
+      'Wybierz podkład muzyczny (opcjonalnie)';
+
+  @override
+  String get podcastRecorderRemoveMusic => 'Usuń podkład muzyczny';
+
+  @override
+  String get podcastRecorderReady =>
+      'Nagranie gotowe. Dostosuj głośność, odsłuchaj i zapisz.';
+
+  @override
+  String get podcastRecorderRecovered =>
+      'Odzyskano poprzednie nagranie. Możesz je odsłuchać i zapisać.';
+
+  @override
+  String get podcastRecorderPermission =>
+      'Aby nagrywać, zezwól na dostęp do mikrofonu w ustawieniach urządzenia.';
+
+  @override
+  String get podcastRecorderLeave =>
+      'Wyjść? Nagrywanie zostanie zakończone, a nagranie zachowane do następnego otwarcia.';
+
+  @override
+  String get podcastRecorderDiscard =>
+      'Usunąć to nagranie? Kopie zapisane już w Dokumentach pozostaną dostępne.';
+
+  @override
+  String get podcastRecorderChooseIntro => 'Wybierz sygnał początkowy (opcjonalnie)';
+
+  @override
+  String get podcastRecorderChooseOutro => 'Wybierz sygnał końcowy (opcjonalnie)';
+
+  @override
+  String get podcastRecorderRemoveIntro => 'Usuń sygnał początkowy';
+
+  @override
+  String get podcastRecorderRemoveOutro => 'Usuń sygnał końcowy';
 }

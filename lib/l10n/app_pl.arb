@@ -6481,5 +6481,20 @@
   "onlineDictionaryDefinition": "{number}. {text}",
   "@onlineDictionaryDefinition": {"placeholders": {"number": {"type": "int"}, "text": {"type": "String"}}},
   "onlineDictionarySource": "Wiktionary — CC BY-SA 4.0\n{url}",
-  "@onlineDictionarySource": {"placeholders": {"url": {"type": "String"}}}
+  "@onlineDictionarySource": {"placeholders": {"url": {"type": "String"}}},
+  "podcastRecorderTitle": "Nagraj podcast",
+  "podcastRecorderHint": "Nagrywany jest tylko mikrofon. Opcjonalny podkład muzyczny jest dodawany na końcu. Poziomy głośności dotyczą całego nagrania. Używaj słuchawek, aby nie nagrywać głosu czytnika ekranu z głośników. Przełączenie do innej aplikacji wstrzymuje nagrywanie.",
+  "podcastRecorderMicVolume": "Głośność mikrofonu",
+  "podcastRecorderMusicVolume": "Głośność podkładu muzycznego",
+  "podcastRecorderChooseMusic": "Wybierz podkład muzyczny (opcjonalnie)",
+  "podcastRecorderRemoveMusic": "Usuń podkład muzyczny",
+  "podcastRecorderReady": "Nagranie gotowe. Dostosuj głośność, odsłuchaj i zapisz.",
+  "podcastRecorderRecovered": "Odzyskano poprzednie nagranie. Możesz je odsłuchać i zapisać.",
+  "podcastRecorderPermission": "Aby nagrywać, zezwól na dostęp do mikrofonu w ustawieniach urządzenia.",
+  "podcastRecorderLeave": "Wyjść? Nagrywanie zostanie zakończone, a nagranie zachowane do następnego otwarcia.",
+  "podcastRecorderDiscard": "Usunąć to nagranie? Kopie zapisane już w Dokumentach pozostaną dostępne.",
+  "podcastRecorderChooseIntro": "Wybierz sygnał początkowy (opcjonalnie)",
+  "podcastRecorderChooseOutro": "Wybierz sygnał końcowy (opcjonalnie)",
+  "podcastRecorderRemoveIntro": "Usuń sygnał początkowy",
+  "podcastRecorderRemoveOutro": "Usuń sygnał końcowy"
 }

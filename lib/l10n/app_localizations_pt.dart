@@ -5536,6 +5536,58 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get pdfUnprotectedCopyDescription =>
       'Guarde uma cópia do PDF sem palavra-passe, preservando a disposição e o conteúdo. O PDF original permanece inalterado.';
+
+  @override
+  String get podcastRecorderTitle => 'Gravar podcast';
+
+  @override
+  String get podcastRecorderHint =>
+      'Grave apenas o microfone. A música de fundo opcional é adicionada no fim. Os volumes aplicam-se a toda a gravação. Use auscultadores para não gravar o leitor de ecrã pelos altifalantes. Ao mudar de aplicação, a gravação fica em pausa.';
+
+  @override
+  String get podcastRecorderMicVolume => 'Volume do microfone';
+
+  @override
+  String get podcastRecorderMusicVolume => 'Volume da música de fundo';
+
+  @override
+  String get podcastRecorderChooseMusic =>
+      'Escolher música de fundo (opcional)';
+
+  @override
+  String get podcastRecorderRemoveMusic => 'Remover música de fundo';
+
+  @override
+  String get podcastRecorderReady =>
+      'Gravação pronta. Ajuste os volumes, ouça e guarde.';
+
+  @override
+  String get podcastRecorderRecovered =>
+      'Gravação anterior recuperada. Pode ouvi-la e guardá-la.';
+
+  @override
+  String get podcastRecorderPermission =>
+      'Permita o acesso ao microfone nas definições do dispositivo para gravar.';
+
+  @override
+  String get podcastRecorderLeave =>
+      'Sair? A gravação será parada e conservada para a próxima abertura.';
+
+  @override
+  String get podcastRecorderDiscard =>
+      'Eliminar esta gravação? Qualquer cópia já guardada em Documentos será mantida.';
+
+  @override
+  String get podcastRecorderChooseIntro => 'Escolher abertura (opcional)';
+
+  @override
+  String get podcastRecorderChooseOutro => 'Escolher encerramento (opcional)';
+
+  @override
+  String get podcastRecorderRemoveIntro => 'Remover abertura';
+
+  @override
+  String get podcastRecorderRemoveOutro => 'Remover encerramento';
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
@@ -11056,4 +11108,56 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   @override
   String get pdfUnprotectedCopyDescription =>
       'Salve uma cópia do PDF sem senha, preservando a diagramação e o conteúdo. O PDF original permanece intacto.';
+
+  @override
+  String get podcastRecorderTitle => 'Gravar podcast';
+
+  @override
+  String get podcastRecorderHint =>
+      'Grave apenas o microfone. A música de fundo opcional é adicionada ao terminar. Os volumes se aplicam à gravação inteira. Use fones para não gravar o leitor de tela pelos alto-falantes. Ao mudar de aplicativo, a gravação é pausada.';
+
+  @override
+  String get podcastRecorderMicVolume => 'Volume do microfone';
+
+  @override
+  String get podcastRecorderMusicVolume => 'Volume da música de fundo';
+
+  @override
+  String get podcastRecorderChooseMusic =>
+      'Escolher música de fundo (opcional)';
+
+  @override
+  String get podcastRecorderRemoveMusic => 'Remover música de fundo';
+
+  @override
+  String get podcastRecorderReady =>
+      'Gravação pronta. Ajuste os volumes, ouça e salve.';
+
+  @override
+  String get podcastRecorderRecovered =>
+      'Gravação anterior recuperada. Você pode ouvi-la e salvá-la.';
+
+  @override
+  String get podcastRecorderPermission =>
+      'Permita o acesso ao microfone nas configurações do dispositivo para gravar.';
+
+  @override
+  String get podcastRecorderLeave =>
+      'Sair? A gravação será interrompida e mantida para a próxima abertura.';
+
+  @override
+  String get podcastRecorderDiscard =>
+      'Excluir esta gravação? Qualquer cópia já salva em Documentos será mantida.';
+
+  @override
+  String get podcastRecorderChooseIntro => 'Escolher abertura (opcional)';
+
+  @override
+  String get podcastRecorderChooseOutro => 'Escolher encerramento (opcional)';
+
+  @override
+  String get podcastRecorderRemoveIntro => 'Remover abertura';
+
+  @override
+  String get podcastRecorderRemoveOutro => 'Remover encerramento';
 }

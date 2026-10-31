@@ -5550,4 +5550,55 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get pdfUnprotectedCopyDescription =>
       'Guarda una copia del PDF sin contraseña conservando el diseño y el contenido. El PDF original no se modifica.';
+
+  @override
+  String get podcastRecorderTitle => 'Grabar podcast';
+
+  @override
+  String get podcastRecorderHint =>
+      'Graba solo el micrófono. La música de fondo opcional se añade al terminar. Los volúmenes se aplican a toda la grabación. Usa auriculares para no grabar el lector de pantalla desde los altavoces. Al cambiar a otra aplicación, la grabación se pausa.';
+
+  @override
+  String get podcastRecorderMicVolume => 'Volumen del micrófono';
+
+  @override
+  String get podcastRecorderMusicVolume => 'Volumen de la música de fondo';
+
+  @override
+  String get podcastRecorderChooseMusic => 'Elegir música de fondo (opcional)';
+
+  @override
+  String get podcastRecorderRemoveMusic => 'Quitar música de fondo';
+
+  @override
+  String get podcastRecorderReady =>
+      'Grabación lista. Ajusta los volúmenes, escucha y guarda.';
+
+  @override
+  String get podcastRecorderRecovered =>
+      'Grabación anterior recuperada. Puedes escucharla y guardarla.';
+
+  @override
+  String get podcastRecorderPermission =>
+      'Permite el acceso al micrófono en los ajustes del dispositivo para grabar.';
+
+  @override
+  String get podcastRecorderLeave =>
+      '¿Salir? La grabación se detendrá y se conservará para la próxima apertura.';
+
+  @override
+  String get podcastRecorderDiscard =>
+      '¿Eliminar esta grabación? Las copias ya guardadas en Documentos se conservarán.';
+
+  @override
+  String get podcastRecorderChooseIntro => 'Elegir sintonía inicial (opcional)';
+
+  @override
+  String get podcastRecorderChooseOutro => 'Elegir sintonía final (opcional)';
+
+  @override
+  String get podcastRecorderRemoveIntro => 'Quitar sintonía inicial';
+
+  @override
+  String get podcastRecorderRemoveOutro => 'Quitar sintonía final';
 }

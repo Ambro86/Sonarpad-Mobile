@@ -4906,5 +4906,20 @@
   "onlineDictionaryDefinition": "{number}. {text}",
   "@onlineDictionaryDefinition": {"placeholders": {"number": {"type": "int"}, "text": {"type": "String"}}},
   "onlineDictionarySource": "Wiktionary — CC BY-SA 4.0\n{url}",
-  "@onlineDictionarySource": {"placeholders": {"url": {"type": "String"}}}
+  "@onlineDictionarySource": {"placeholders": {"url": {"type": "String"}}},
+  "podcastRecorderTitle": "Enregistrer un podcast",
+  "podcastRecorderHint": "Enregistrez uniquement le microphone. La musique de fond facultative est ajoutée ensuite. Les volumes s’appliquent à tout l’enregistrement. Utilisez un casque pour ne pas enregistrer le lecteur d’écran diffusé par les haut-parleurs. Le passage à une autre application met l’enregistrement en pause.",
+  "podcastRecorderMicVolume": "Volume du microphone",
+  "podcastRecorderMusicVolume": "Volume de la musique de fond",
+  "podcastRecorderChooseMusic": "Choisir une musique de fond (facultatif)",
+  "podcastRecorderRemoveMusic": "Retirer la musique de fond",
+  "podcastRecorderReady": "Enregistrement prêt. Réglez les volumes, écoutez et enregistrez le fichier.",
+  "podcastRecorderRecovered": "Enregistrement précédent récupéré. Vous pouvez l’écouter et le sauvegarder.",
+  "podcastRecorderPermission": "Autorisez l’accès au microphone dans les réglages de l’appareil pour enregistrer.",
+  "podcastRecorderLeave": "Quitter cet écran ? L’enregistrement sera arrêté et conservé pour la prochaine ouverture.",
+  "podcastRecorderDiscard": "Supprimer cet enregistrement ? Toute copie déjà sauvegardée dans Documents sera conservée.",
+  "podcastRecorderChooseIntro": "Choisir un générique de début (facultatif)",
+  "podcastRecorderChooseOutro": "Choisir un générique de fin (facultatif)",
+  "podcastRecorderRemoveIntro": "Supprimer le générique de début",
+  "podcastRecorderRemoveOutro": "Supprimer le générique de fin"
 }

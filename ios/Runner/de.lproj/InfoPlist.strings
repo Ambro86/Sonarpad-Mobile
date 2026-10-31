@@ -4,3 +4,5 @@
 "NSContactsUsageDescription" = "Sonarpad benötigt Zugriff auf deine Kontakte, um Termineinladungen Personen zuordnen zu können.";
 "NSLocationWhenInUseUsageDescription" = "Sonarpad verwendet deinen Standort nur, wenn du Routen- oder Navigationsfunktionen auswählst, um Wegbeschreibungen und Orte in der Nähe zu berechnen.";
 "NSLocationAlwaysAndWhenInUseUsageDescription" = "Sonarpad benötigt normalerweise keinen dauerhaften Standortzugriff. Diese Beschreibung ist vorhanden, weil einige in der App enthaltene iOS-Komponenten auf Standort-APIs verweisen können. Dein Standort wird nur verwendet, wenn du Routen- oder Navigationsfunktionen auswählst.";
+
+"NSMicrophoneUsageDescription" = "Sonarpad verwendet das Mikrofon, um deine Stimme für Podcasts aufzunehmen.";

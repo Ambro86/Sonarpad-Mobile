@@ -4,3 +4,5 @@
 "NSContactsUsageDescription" = "O Sonarpad necessita de acesso aos contactos para associar convidados aos eventos do calendário.";
 "NSLocationWhenInUseUsageDescription" = "O Sonarpad utiliza a localização apenas quando escolhe funções de percursos ou navegação, para calcular indicações e locais próximos.";
 "NSLocationAlwaysAndWhenInUseUsageDescription" = "O Sonarpad normalmente não solicita acesso contínuo à localização. Esta descrição está presente porque alguns componentes iOS incluídos na app podem referenciar APIs de localização. A localização só é utilizada quando escolhe funções de percursos ou navegação.";
+
+"NSMicrophoneUsageDescription" = "O Sonarpad usa o microfone para gravar a sua voz em podcasts.";

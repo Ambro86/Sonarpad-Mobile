@@ -5338,6 +5338,52 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get pdfUnprotectedCopyDescription =>
       '保存无需密码的 PDF 副本，保留原有排版和内容。原始 PDF 保持不变。';
+
+  @override
+  String get podcastRecorderTitle => '录制播客';
+
+  @override
+  String get podcastRecorderHint =>
+      '仅录制麦克风。可选背景音乐会在结束后添加，音量设置应用于整段录音。请使用耳机，避免录入扬声器中的屏幕阅读器语音。切换到其他应用会暂停录音。';
+
+  @override
+  String get podcastRecorderMicVolume => '麦克风音量';
+
+  @override
+  String get podcastRecorderMusicVolume => '背景音乐音量';
+
+  @override
+  String get podcastRecorderChooseMusic => '选择背景音乐（可选）';
+
+  @override
+  String get podcastRecorderRemoveMusic => '移除背景音乐';
+
+  @override
+  String get podcastRecorderReady => '录音已就绪。调整音量、试听并保存。';
+
+  @override
+  String get podcastRecorderRecovered => '已恢复上次的录音。您可以试听并保存。';
+
+  @override
+  String get podcastRecorderPermission => '请在设备设置中允许麦克风访问以进行录音。';
+
+  @override
+  String get podcastRecorderLeave => '退出吗？录音将停止，并保留至下次打开。';
+
+  @override
+  String get podcastRecorderDiscard => '删除此录音吗？已保存到文档中的副本不会被删除。';
+
+  @override
+  String get podcastRecorderChooseIntro => '选择片头音乐（可选）';
+
+  @override
+  String get podcastRecorderChooseOutro => '选择片尾音乐（可选）';
+
+  @override
+  String get podcastRecorderRemoveIntro => '移除片头音乐';
+
+  @override
+  String get podcastRecorderRemoveOutro => '移除片尾音乐';
 }
 
 /// The translations for Chinese, as used in China (`zh_CN`).
@@ -10674,4 +10720,50 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
   @override
   String get pdfUnprotectedCopyDescription =>
       '保存无需密码的 PDF 副本，保留原有排版和内容。原始 PDF 保持不变。';
+
+  @override
+  String get podcastRecorderTitle => '录制播客';
+
+  @override
+  String get podcastRecorderHint =>
+      '仅录制麦克风。可选背景音乐会在结束后添加，音量设置应用于整段录音。请使用耳机，避免录入扬声器中的屏幕阅读器语音。切换到其他应用会暂停录音。';
+
+  @override
+  String get podcastRecorderMicVolume => '麦克风音量';
+
+  @override
+  String get podcastRecorderMusicVolume => '背景音乐音量';
+
+  @override
+  String get podcastRecorderChooseMusic => '选择背景音乐（可选）';
+
+  @override
+  String get podcastRecorderRemoveMusic => '移除背景音乐';
+
+  @override
+  String get podcastRecorderReady => '录音已就绪。调整音量、试听并保存。';
+
+  @override
+  String get podcastRecorderRecovered => '已恢复上次的录音。您可以试听并保存。';
+
+  @override
+  String get podcastRecorderPermission => '请在设备设置中允许麦克风访问以进行录音。';
+
+  @override
+  String get podcastRecorderLeave => '退出吗？录音将停止，并保留至下次打开。';
+
+  @override
+  String get podcastRecorderDiscard => '删除此录音吗？已保存到文档中的副本不会被删除。';
+
+  @override
+  String get podcastRecorderChooseIntro => '选择片头音乐（可选）';
+
+  @override
+  String get podcastRecorderChooseOutro => '选择片尾音乐（可选）';
+
+  @override
+  String get podcastRecorderRemoveIntro => '移除片头音乐';
+
+  @override
+  String get podcastRecorderRemoveOutro => '移除片尾音乐';
 }

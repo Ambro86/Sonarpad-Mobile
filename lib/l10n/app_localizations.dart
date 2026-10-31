@@ -8827,6 +8827,37 @@ abstract class AppLocalizations {
 
   String get convertMediaDocumentAudiobookHint;
 
+
+  String get podcastRecorderTitle;
+
+  String get podcastRecorderHint;
+
+  String get podcastRecorderMicVolume;
+
+  String get podcastRecorderMusicVolume;
+
+  String get podcastRecorderChooseMusic;
+
+  String get podcastRecorderRemoveMusic;
+
+  String get podcastRecorderReady;
+
+  String get podcastRecorderRecovered;
+
+  String get podcastRecorderPermission;
+
+  String get podcastRecorderLeave;
+
+  String get podcastRecorderDiscard;
+
+  String get podcastRecorderChooseIntro;
+
+  String get podcastRecorderChooseOutro;
+
+  String get podcastRecorderRemoveIntro;
+
+  String get podcastRecorderRemoveOutro;
+
 }
 
 class _AppLocalizationsDelegate

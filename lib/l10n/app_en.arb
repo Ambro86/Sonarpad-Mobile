@@ -4900,5 +4900,20 @@
   "onlineDictionaryDefinition": "{number}. {text}",
   "@onlineDictionaryDefinition": {"placeholders": {"number": {"type": "int"}, "text": {"type": "String"}}},
   "onlineDictionarySource": "Wiktionary — CC BY-SA 4.0\n{url}",
-  "@onlineDictionarySource": {"placeholders": {"url": {"type": "String"}}}
+  "@onlineDictionarySource": {"placeholders": {"url": {"type": "String"}}},
+  "podcastRecorderTitle": "Record podcast",
+  "podcastRecorderHint": "Record the microphone only. Optional background music is added afterwards. Volume levels apply to the entire recording. Use headphones to avoid recording screen reader speech from the speakers. Switching to another app pauses recording.",
+  "podcastRecorderMicVolume": "Microphone volume",
+  "podcastRecorderMusicVolume": "Background music volume",
+  "podcastRecorderChooseMusic": "Choose background music (optional)",
+  "podcastRecorderRemoveMusic": "Remove background music",
+  "podcastRecorderReady": "Recording ready. Adjust volumes, listen and save.",
+  "podcastRecorderRecovered": "Previous recording recovered. You can listen and save it.",
+  "podcastRecorderPermission": "Allow microphone access in your device settings to record.",
+  "podcastRecorderLeave": "Leave this screen? Recording will stop and be kept for your next visit.",
+  "podcastRecorderDiscard": "Delete this recording? Any copy already saved in Documents will remain available.",
+  "podcastRecorderChooseIntro": "Choose intro (optional)",
+  "podcastRecorderChooseOutro": "Choose outro (optional)",
+  "podcastRecorderRemoveIntro": "Remove intro",
+  "podcastRecorderRemoveOutro": "Remove outro"
 }

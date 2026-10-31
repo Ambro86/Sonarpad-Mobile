@@ -5530,4 +5530,55 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get pdfUnprotectedCopyDescription =>
       'Salva una copia del PDF senza password, mantenendo impaginazione e contenuti. Il PDF originale rimane invariato.';
+
+  @override
+  String get podcastRecorderTitle => 'Registra podcast';
+
+  @override
+  String get podcastRecorderHint =>
+      'Registra solo il microfono. La base musicale facoltativa viene aggiunta al termine. I volumi si applicano a tutta la registrazione. Usa le cuffie per non registrare VoiceOver dagli altoparlanti. Passando a un’altra app, la registrazione va in pausa.';
+
+  @override
+  String get podcastRecorderMicVolume => 'Volume microfono';
+
+  @override
+  String get podcastRecorderMusicVolume => 'Volume base musicale';
+
+  @override
+  String get podcastRecorderChooseMusic => 'Scegli base musicale (facoltativa)';
+
+  @override
+  String get podcastRecorderRemoveMusic => 'Rimuovi base musicale';
+
+  @override
+  String get podcastRecorderReady =>
+      'Registrazione pronta. Regola i volumi, ascolta e salva.';
+
+  @override
+  String get podcastRecorderRecovered =>
+      'Registrazione precedente recuperata. Puoi ascoltarla e salvarla.';
+
+  @override
+  String get podcastRecorderPermission =>
+      'Consenti l’accesso al microfono nelle impostazioni del dispositivo per registrare.';
+
+  @override
+  String get podcastRecorderLeave =>
+      'Vuoi uscire? La registrazione verrà fermata e conservata per la prossima apertura.';
+
+  @override
+  String get podcastRecorderDiscard =>
+      'Vuoi eliminare questa registrazione? La copia eventualmente già salvata in Documenti resta disponibile.';
+
+  @override
+  String get podcastRecorderChooseIntro => 'Scegli sigla iniziale (facoltativa)';
+
+  @override
+  String get podcastRecorderChooseOutro => 'Scegli sigla finale (facoltativa)';
+
+  @override
+  String get podcastRecorderRemoveIntro => 'Rimuovi sigla iniziale';
+
+  @override
+  String get podcastRecorderRemoveOutro => 'Rimuovi sigla finale';
 }

@@ -5503,4 +5503,55 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get pdfUnprotectedCopyDescription =>
       'Save a copy of the PDF without a password, preserving its layout and contents. The original PDF remains unchanged.';
+
+  @override
+  String get podcastRecorderTitle => 'Record podcast';
+
+  @override
+  String get podcastRecorderHint =>
+      'Record the microphone only. Optional background music is added afterwards. Volume levels apply to the entire recording. Use headphones to avoid recording screen reader speech from the speakers. Switching to another app pauses recording.';
+
+  @override
+  String get podcastRecorderMicVolume => 'Microphone volume';
+
+  @override
+  String get podcastRecorderMusicVolume => 'Background music volume';
+
+  @override
+  String get podcastRecorderChooseMusic => 'Choose background music (optional)';
+
+  @override
+  String get podcastRecorderRemoveMusic => 'Remove background music';
+
+  @override
+  String get podcastRecorderReady =>
+      'Recording ready. Adjust volumes, listen and save.';
+
+  @override
+  String get podcastRecorderRecovered =>
+      'Previous recording recovered. You can listen and save it.';
+
+  @override
+  String get podcastRecorderPermission =>
+      'Allow microphone access in your device settings to record.';
+
+  @override
+  String get podcastRecorderLeave =>
+      'Leave this screen? Recording will stop and be kept for your next visit.';
+
+  @override
+  String get podcastRecorderDiscard =>
+      'Delete this recording? Any copy already saved in Documents will remain available.';
+
+  @override
+  String get podcastRecorderChooseIntro => 'Choose intro (optional)';
+
+  @override
+  String get podcastRecorderChooseOutro => 'Choose outro (optional)';
+
+  @override
+  String get podcastRecorderRemoveIntro => 'Remove intro';
+
+  @override
+  String get podcastRecorderRemoveOutro => 'Remove outro';
 }

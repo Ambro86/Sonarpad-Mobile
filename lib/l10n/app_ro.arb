@@ -4900,5 +4900,20 @@
   "onlineDictionaryDefinition": "{number}. {text}",
   "@onlineDictionaryDefinition": {"placeholders": {"number": {"type": "int"}, "text": {"type": "String"}}},
   "onlineDictionarySource": "Wiktionary — CC BY-SA 4.0\n{url}",
-  "@onlineDictionarySource": {"placeholders": {"url": {"type": "String"}}}
+  "@onlineDictionarySource": {"placeholders": {"url": {"type": "String"}}},
+  "podcastRecorderTitle": "Înregistrează un podcast",
+  "podcastRecorderHint": "Se înregistrează doar microfonul. Muzica de fundal opțională este adăugată la final. Volumele se aplică întregii înregistrări. Folosiți căști pentru a nu înregistra cititorul de ecran din difuzoare. Trecerea la altă aplicație pune înregistrarea pe pauză.",
+  "podcastRecorderMicVolume": "Volumul microfonului",
+  "podcastRecorderMusicVolume": "Volumul muzicii de fundal",
+  "podcastRecorderChooseMusic": "Alege muzica de fundal (opțional)",
+  "podcastRecorderRemoveMusic": "Elimină muzica de fundal",
+  "podcastRecorderReady": "Înregistrarea este gata. Reglați volumele, ascultați și salvați.",
+  "podcastRecorderRecovered": "Înregistrarea anterioară a fost recuperată. O puteți asculta și salva.",
+  "podcastRecorderPermission": "Permiteți accesul la microfon în setările dispozitivului pentru a înregistra.",
+  "podcastRecorderLeave": "Ieșiți? Înregistrarea se va opri și va fi păstrată pentru următoarea deschidere.",
+  "podcastRecorderDiscard": "Ștergeți această înregistrare? Copiile deja salvate în Documente vor rămâne disponibile.",
+  "podcastRecorderChooseIntro": "Alege genericul de început (opțional)",
+  "podcastRecorderChooseOutro": "Alege genericul de final (opțional)",
+  "podcastRecorderRemoveIntro": "Elimină genericul de început",
+  "podcastRecorderRemoveOutro": "Elimină genericul de final"
 }

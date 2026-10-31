@@ -51,6 +51,7 @@ import 'screens/tv_recordings_screen.dart';
 import 'screens/aifa_search_screen.dart';
 import 'screens/wikipedia_screen.dart';
 import 'screens/online_dictionary_screen.dart';
+import 'screens/podcast_recorder_screen.dart';
 import 'screens/treccani_screen.dart';
 import 'screens/weather_screen.dart';
 import 'screens/bdciechi_login_screen.dart';
@@ -539,6 +540,7 @@ class _SonarpadAppState extends State<SonarpadApp> {
             italianOnlyRoute(context, const La7PlayScreen()),
         '/wikipedia': (_) => const WikipediaScreen(),
           '/online-dictionary': (_) => const OnlineDictionaryScreen(),
+          '/podcast-recorder': (_) => const PodcastRecorderScreen(),
         '/treccani': (context) =>
             italianOnlyRoute(context, const TreccaniScreen()),
         '/gutenberg': (_) => const GutenbergScreen(),

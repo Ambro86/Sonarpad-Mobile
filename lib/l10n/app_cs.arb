@@ -4903,5 +4903,20 @@
   "onlineDictionaryDefinition": "{number}. {text}",
   "@onlineDictionaryDefinition": {"placeholders": {"number": {"type": "int"}, "text": {"type": "String"}}},
   "onlineDictionarySource": "Wiktionary — CC BY-SA 4.0\n{url}",
-  "@onlineDictionarySource": {"placeholders": {"url": {"type": "String"}}}
+  "@onlineDictionarySource": {"placeholders": {"url": {"type": "String"}}},
+  "podcastRecorderTitle": "Nahrát podcast",
+  "podcastRecorderHint": "Nahrává se pouze mikrofon. Volitelný hudební podklad se přidá po dokončení. Hlasitosti platí pro celou nahrávku. Použijte sluchátka, aby se nenahrával hlas čtečky obrazovky z reproduktorů. Přepnutí do jiné aplikace nahrávání pozastaví.",
+  "podcastRecorderMicVolume": "Hlasitost mikrofonu",
+  "podcastRecorderMusicVolume": "Hlasitost hudebního podkladu",
+  "podcastRecorderChooseMusic": "Vybrat hudební podklad (volitelné)",
+  "podcastRecorderRemoveMusic": "Odebrat hudební podklad",
+  "podcastRecorderReady": "Nahrávka je připravena. Upravte hlasitosti, poslechněte si ji a uložte.",
+  "podcastRecorderRecovered": "Předchozí nahrávka byla obnovena. Můžete si ji poslechnout a uložit.",
+  "podcastRecorderPermission": "Pro nahrávání povolte přístup k mikrofonu v nastavení zařízení.",
+  "podcastRecorderLeave": "Odejít? Nahrávání se zastaví a nahrávka se uchová do příštího otevření.",
+  "podcastRecorderDiscard": "Smazat tuto nahrávku? Kopie již uložené v Dokumentech zůstanou zachovány.",
+  "podcastRecorderChooseIntro": "Vybrat úvodní znělku (volitelné)",
+  "podcastRecorderChooseOutro": "Vybrat závěrečnou znělku (volitelné)",
+  "podcastRecorderRemoveIntro": "Odstranit úvodní znělku",
+  "podcastRecorderRemoveOutro": "Odstranit závěrečnou znělku"
 }

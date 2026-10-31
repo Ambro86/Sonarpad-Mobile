@@ -4900,5 +4900,20 @@
   "onlineDictionaryDefinition": "{number}. {text}",
   "@onlineDictionaryDefinition": {"placeholders": {"number": {"type": "int"}, "text": {"type": "String"}}},
   "onlineDictionarySource": "Wiktionary — CC BY-SA 4.0\n{url}",
-  "@onlineDictionarySource": {"placeholders": {"url": {"type": "String"}}}
+  "@onlineDictionarySource": {"placeholders": {"url": {"type": "String"}}},
+  "podcastRecorderTitle": "Podcast kaydet",
+  "podcastRecorderHint": "Yalnızca mikrofon kaydedilir. İsteğe bağlı fon müziği sonunda eklenir. Ses düzeyleri kaydın tamamına uygulanır. Ekran okuyucunun hoparlörden kayda girmemesi için kulaklık kullanın. Başka bir uygulamaya geçmek kaydı duraklatır.",
+  "podcastRecorderMicVolume": "Mikrofon ses düzeyi",
+  "podcastRecorderMusicVolume": "Fon müziği ses düzeyi",
+  "podcastRecorderChooseMusic": "Fon müziği seç (isteğe bağlı)",
+  "podcastRecorderRemoveMusic": "Fon müziğini kaldır",
+  "podcastRecorderReady": "Kayıt hazır. Ses düzeylerini ayarlayın, dinleyin ve kaydedin.",
+  "podcastRecorderRecovered": "Önceki kayıt kurtarıldı. Dinleyebilir ve kaydedebilirsiniz.",
+  "podcastRecorderPermission": "Kayıt yapmak için cihaz ayarlarından mikrofon erişimine izin verin.",
+  "podcastRecorderLeave": "Çıkılsın mı? Kayıt durdurulacak ve sonraki açılış için saklanacak.",
+  "podcastRecorderDiscard": "Bu kayıt silinsin mi? Belgeler’e önceden kaydedilmiş kopyalar korunur.",
+  "podcastRecorderChooseIntro": "Açılış müziği seç (isteğe bağlı)",
+  "podcastRecorderChooseOutro": "Kapanış müziği seç (isteğe bağlı)",
+  "podcastRecorderRemoveIntro": "Açılış müziğini kaldır",
+  "podcastRecorderRemoveOutro": "Kapanış müziğini kaldır"
 }

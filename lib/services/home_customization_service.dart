@@ -6,6 +6,7 @@ class HomeItemIds {
   static const news = 'news';
   static const weather = 'weather';
   static const podcasts = 'podcasts';
+  static const podcastRecorder = 'podcast_recorder';
   static const sonarTube = 'sonartube';
   static const sonarMusic = 'sonarmusic';
   static const createAiAudioDescription = 'create_ai_audiodescription';
@@ -40,6 +41,7 @@ class HomeItemIds {
     news,
     weather,
     podcasts,
+    podcastRecorder,
     sonarTube,
     sonarMusic,
     createAiAudioDescription,
@@ -83,6 +85,7 @@ class HomeItemIds {
   static const List<String> mediaOrder = [
     radio,
     podcasts,
+    podcastRecorder,
     sonarTube,
     sonarMusic,
     createAiAudioDescription,

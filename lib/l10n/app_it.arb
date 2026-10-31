@@ -6478,5 +6478,20 @@
   "onlineDictionaryDefinition": "{number}. {text}",
   "@onlineDictionaryDefinition": {"placeholders": {"number": {"type": "int"}, "text": {"type": "String"}}},
   "onlineDictionarySource": "Wiktionary — CC BY-SA 4.0\n{url}",
-  "@onlineDictionarySource": {"placeholders": {"url": {"type": "String"}}}
+  "@onlineDictionarySource": {"placeholders": {"url": {"type": "String"}}},
+  "podcastRecorderTitle": "Registra podcast",
+  "podcastRecorderHint": "Registra solo il microfono. La base musicale facoltativa viene aggiunta al termine. I volumi si applicano a tutta la registrazione. Usa le cuffie per non registrare VoiceOver dagli altoparlanti. Passando a un’altra app, la registrazione va in pausa.",
+  "podcastRecorderMicVolume": "Volume microfono",
+  "podcastRecorderMusicVolume": "Volume base musicale",
+  "podcastRecorderChooseMusic": "Scegli base musicale (facoltativa)",
+  "podcastRecorderRemoveMusic": "Rimuovi base musicale",
+  "podcastRecorderReady": "Registrazione pronta. Regola i volumi, ascolta e salva.",
+  "podcastRecorderRecovered": "Registrazione precedente recuperata. Puoi ascoltarla e salvarla.",
+  "podcastRecorderPermission": "Consenti l’accesso al microfono nelle impostazioni del dispositivo per registrare.",
+  "podcastRecorderLeave": "Vuoi uscire? La registrazione verrà fermata e conservata per la prossima apertura.",
+  "podcastRecorderDiscard": "Vuoi eliminare questa registrazione? La copia eventualmente già salvata in Documenti resta disponibile.",
+  "podcastRecorderChooseIntro": "Scegli sigla iniziale (facoltativa)",
+  "podcastRecorderChooseOutro": "Scegli sigla finale (facoltativa)",
+  "podcastRecorderRemoveIntro": "Rimuovi sigla iniziale",
+  "podcastRecorderRemoveOutro": "Rimuovi sigla finale"
 }

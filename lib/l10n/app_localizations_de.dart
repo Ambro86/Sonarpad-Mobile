@@ -5533,4 +5533,56 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get pdfUnprotectedCopyDescription =>
       'Speichern Sie eine Kopie der PDF ohne Passwort mit unverändertem Layout und Inhalt. Die ursprüngliche PDF bleibt unverändert.';
+
+  @override
+  String get podcastRecorderTitle => 'Podcast aufnehmen';
+
+  @override
+  String get podcastRecorderHint =>
+      'Nur das Mikrofon wird aufgenommen. Optionale Hintergrundmusik wird anschließend hinzugefügt. Die Lautstärken gelten für die gesamte Aufnahme. Verwenden Sie Kopfhörer, damit die Sprachausgabe nicht über die Lautsprecher mit aufgenommen wird. Beim Wechsel zu einer anderen App pausiert die Aufnahme.';
+
+  @override
+  String get podcastRecorderMicVolume => 'Mikrofonlautstärke';
+
+  @override
+  String get podcastRecorderMusicVolume => 'Lautstärke der Hintergrundmusik';
+
+  @override
+  String get podcastRecorderChooseMusic =>
+      'Hintergrundmusik auswählen (optional)';
+
+  @override
+  String get podcastRecorderRemoveMusic => 'Hintergrundmusik entfernen';
+
+  @override
+  String get podcastRecorderReady =>
+      'Aufnahme bereit. Lautstärken einstellen, anhören und speichern.';
+
+  @override
+  String get podcastRecorderRecovered =>
+      'Vorherige Aufnahme wiederhergestellt. Sie können sie anhören und speichern.';
+
+  @override
+  String get podcastRecorderPermission =>
+      'Erlauben Sie den Mikrofonzugriff in den Geräteeinstellungen, um aufzunehmen.';
+
+  @override
+  String get podcastRecorderLeave =>
+      'Diese Seite verlassen? Die Aufnahme wird beendet und bis zum nächsten Öffnen aufbewahrt.';
+
+  @override
+  String get podcastRecorderDiscard =>
+      'Diese Aufnahme löschen? Bereits in Dokumente gespeicherte Kopien bleiben erhalten.';
+
+  @override
+  String get podcastRecorderChooseIntro => 'Intro auswählen (optional)';
+
+  @override
+  String get podcastRecorderChooseOutro => 'Outro auswählen (optional)';
+
+  @override
+  String get podcastRecorderRemoveIntro => 'Intro entfernen';
+
+  @override
+  String get podcastRecorderRemoveOutro => 'Outro entfernen';
 }

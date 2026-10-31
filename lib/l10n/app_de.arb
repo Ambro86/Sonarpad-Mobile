@@ -6478,5 +6478,20 @@
   "onlineDictionaryDefinition": "{number}. {text}",
   "@onlineDictionaryDefinition": {"placeholders": {"number": {"type": "int"}, "text": {"type": "String"}}},
   "onlineDictionarySource": "Wiktionary — CC BY-SA 4.0\n{url}",
-  "@onlineDictionarySource": {"placeholders": {"url": {"type": "String"}}}
+  "@onlineDictionarySource": {"placeholders": {"url": {"type": "String"}}},
+  "podcastRecorderTitle": "Podcast aufnehmen",
+  "podcastRecorderHint": "Nur das Mikrofon wird aufgenommen. Optionale Hintergrundmusik wird anschließend hinzugefügt. Die Lautstärken gelten für die gesamte Aufnahme. Verwenden Sie Kopfhörer, damit die Sprachausgabe nicht über die Lautsprecher mit aufgenommen wird. Beim Wechsel zu einer anderen App pausiert die Aufnahme.",
+  "podcastRecorderMicVolume": "Mikrofonlautstärke",
+  "podcastRecorderMusicVolume": "Lautstärke der Hintergrundmusik",
+  "podcastRecorderChooseMusic": "Hintergrundmusik auswählen (optional)",
+  "podcastRecorderRemoveMusic": "Hintergrundmusik entfernen",
+  "podcastRecorderReady": "Aufnahme bereit. Lautstärken einstellen, anhören und speichern.",
+  "podcastRecorderRecovered": "Vorherige Aufnahme wiederhergestellt. Sie können sie anhören und speichern.",
+  "podcastRecorderPermission": "Erlauben Sie den Mikrofonzugriff in den Geräteeinstellungen, um aufzunehmen.",
+  "podcastRecorderLeave": "Diese Seite verlassen? Die Aufnahme wird beendet und bis zum nächsten Öffnen aufbewahrt.",
+  "podcastRecorderDiscard": "Diese Aufnahme löschen? Bereits in Dokumente gespeicherte Kopien bleiben erhalten.",
+  "podcastRecorderChooseIntro": "Intro auswählen (optional)",
+  "podcastRecorderChooseOutro": "Outro auswählen (optional)",
+  "podcastRecorderRemoveIntro": "Intro entfernen",
+  "podcastRecorderRemoveOutro": "Outro entfernen"
 }

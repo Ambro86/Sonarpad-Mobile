@@ -5300,4 +5300,55 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get pdfUnprotectedCopyDescription =>
       'PDF’nin düzenini ve içeriğini koruyarak parolasız bir kopyasını kaydedin. Özgün PDF değişmeden kalır.';
+
+  @override
+  String get podcastRecorderTitle => 'Podcast kaydet';
+
+  @override
+  String get podcastRecorderHint =>
+      'Yalnızca mikrofon kaydedilir. İsteğe bağlı fon müziği sonunda eklenir. Ses düzeyleri kaydın tamamına uygulanır. Ekran okuyucunun hoparlörden kayda girmemesi için kulaklık kullanın. Başka bir uygulamaya geçmek kaydı duraklatır.';
+
+  @override
+  String get podcastRecorderMicVolume => 'Mikrofon ses düzeyi';
+
+  @override
+  String get podcastRecorderMusicVolume => 'Fon müziği ses düzeyi';
+
+  @override
+  String get podcastRecorderChooseMusic => 'Fon müziği seç (isteğe bağlı)';
+
+  @override
+  String get podcastRecorderRemoveMusic => 'Fon müziğini kaldır';
+
+  @override
+  String get podcastRecorderReady =>
+      'Kayıt hazır. Ses düzeylerini ayarlayın, dinleyin ve kaydedin.';
+
+  @override
+  String get podcastRecorderRecovered =>
+      'Önceki kayıt kurtarıldı. Dinleyebilir ve kaydedebilirsiniz.';
+
+  @override
+  String get podcastRecorderPermission =>
+      'Kayıt yapmak için cihaz ayarlarından mikrofon erişimine izin verin.';
+
+  @override
+  String get podcastRecorderLeave =>
+      'Çıkılsın mı? Kayıt durdurulacak ve sonraki açılış için saklanacak.';
+
+  @override
+  String get podcastRecorderDiscard =>
+      'Bu kayıt silinsin mi? Belgeler’e önceden kaydedilmiş kopyalar korunur.';
+
+  @override
+  String get podcastRecorderChooseIntro => 'Açılış müziği seç (isteğe bağlı)';
+
+  @override
+  String get podcastRecorderChooseOutro => 'Kapanış müziği seç (isteğe bağlı)';
+
+  @override
+  String get podcastRecorderRemoveIntro => 'Açılış müziğini kaldır';
+
+  @override
+  String get podcastRecorderRemoveOutro => 'Kapanış müziğini kaldır';
 }

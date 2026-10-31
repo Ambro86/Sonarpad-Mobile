@@ -4906,5 +4906,20 @@
   "onlineDictionaryDefinition": "{number}. {text}",
   "@onlineDictionaryDefinition": {"placeholders": {"number": {"type": "int"}, "text": {"type": "String"}}},
   "onlineDictionarySource": "Wiktionary — CC BY-SA 4.0\n{url}",
-  "@onlineDictionarySource": {"placeholders": {"url": {"type": "String"}}}
+  "@onlineDictionarySource": {"placeholders": {"url": {"type": "String"}}},
+  "podcastRecorderTitle": "Gravar podcast",
+  "podcastRecorderHint": "Grave apenas o microfone. A música de fundo opcional é adicionada no fim. Os volumes aplicam-se a toda a gravação. Use auscultadores para não gravar o leitor de ecrã pelos altifalantes. Ao mudar de aplicação, a gravação fica em pausa.",
+  "podcastRecorderMicVolume": "Volume do microfone",
+  "podcastRecorderMusicVolume": "Volume da música de fundo",
+  "podcastRecorderChooseMusic": "Escolher música de fundo (opcional)",
+  "podcastRecorderRemoveMusic": "Remover música de fundo",
+  "podcastRecorderReady": "Gravação pronta. Ajuste os volumes, ouça e guarde.",
+  "podcastRecorderRecovered": "Gravação anterior recuperada. Pode ouvi-la e guardá-la.",
+  "podcastRecorderPermission": "Permita o acesso ao microfone nas definições do dispositivo para gravar.",
+  "podcastRecorderLeave": "Sair? A gravação será parada e conservada para a próxima abertura.",
+  "podcastRecorderDiscard": "Eliminar esta gravação? Qualquer cópia já guardada em Documentos será mantida.",
+  "podcastRecorderChooseIntro": "Escolher abertura (opcional)",
+  "podcastRecorderChooseOutro": "Escolher encerramento (opcional)",
+  "podcastRecorderRemoveIntro": "Remover abertura",
+  "podcastRecorderRemoveOutro": "Remover encerramento"
 }

@@ -147,6 +147,7 @@ class _HomeScreenState extends State<HomeScreen> {
       HomeItemIds.news => '/news',
       HomeItemIds.weather => '/meteo',
       HomeItemIds.podcasts => '/podcasts',
+      HomeItemIds.podcastRecorder => '/podcast-recorder',
       HomeItemIds.sonarTube => '/sonartube',
       HomeItemIds.sonarMusic => '/sonarmusic',
       HomeItemIds.createAiAudioDescription => '/create_ai_audiodescription',

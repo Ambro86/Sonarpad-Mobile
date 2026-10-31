@@ -4,3 +4,5 @@
 "NSCalendarsUsageDescription" = "Sonarpad, hatırlatıcılarınızı ve etkinliklerinizi eklemek için takviminize erişim ister.";
 "NSCalendarsFullAccessUsageDescription" = "Sonarpad, hatırlatıcılarınızı doğrudan sistem takviminde oluşturup kaydetmek için takviminize tam erişim ister.";
 "NSContactsUsageDescription" = "Sonarpad, davetlileri takvim etkinlikleriyle ilişkilendirmek için kişilerinize erişim ister.";
+
+"NSMicrophoneUsageDescription" = "Sonarpad, podcastler için sesinizi kaydetmek üzere mikrofonu kullanır.";

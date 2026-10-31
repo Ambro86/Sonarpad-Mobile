@@ -5369,4 +5369,55 @@ class AppLocalizationsRo extends AppLocalizations {
   @override
   String get pdfUnprotectedCopyDescription =>
       'Salvează o copie a PDF-ului fără parolă, păstrând aspectul și conținutul. PDF-ul original rămâne neschimbat.';
+
+  @override
+  String get podcastRecorderTitle => 'Înregistrează un podcast';
+
+  @override
+  String get podcastRecorderHint =>
+      'Se înregistrează doar microfonul. Muzica de fundal opțională este adăugată la final. Volumele se aplică întregii înregistrări. Folosiți căști pentru a nu înregistra cititorul de ecran din difuzoare. Trecerea la altă aplicație pune înregistrarea pe pauză.';
+
+  @override
+  String get podcastRecorderMicVolume => 'Volumul microfonului';
+
+  @override
+  String get podcastRecorderMusicVolume => 'Volumul muzicii de fundal';
+
+  @override
+  String get podcastRecorderChooseMusic => 'Alege muzica de fundal (opțional)';
+
+  @override
+  String get podcastRecorderRemoveMusic => 'Elimină muzica de fundal';
+
+  @override
+  String get podcastRecorderReady =>
+      'Înregistrarea este gata. Reglați volumele, ascultați și salvați.';
+
+  @override
+  String get podcastRecorderRecovered =>
+      'Înregistrarea anterioară a fost recuperată. O puteți asculta și salva.';
+
+  @override
+  String get podcastRecorderPermission =>
+      'Permiteți accesul la microfon în setările dispozitivului pentru a înregistra.';
+
+  @override
+  String get podcastRecorderLeave =>
+      'Ieșiți? Înregistrarea se va opri și va fi păstrată pentru următoarea deschidere.';
+
+  @override
+  String get podcastRecorderDiscard =>
+      'Ștergeți această înregistrare? Copiile deja salvate în Documente vor rămâne disponibile.';
+
+  @override
+  String get podcastRecorderChooseIntro => 'Alege genericul de început (opțional)';
+
+  @override
+  String get podcastRecorderChooseOutro => 'Alege genericul de final (opțional)';
+
+  @override
+  String get podcastRecorderRemoveIntro => 'Elimină genericul de început';
+
+  @override
+  String get podcastRecorderRemoveOutro => 'Elimină genericul de final';
 }

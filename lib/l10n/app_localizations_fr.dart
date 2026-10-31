@@ -5554,4 +5554,56 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get pdfUnprotectedCopyDescription =>
       'Enregistrez une copie du PDF sans mot de passe en conservant sa mise en page et son contenu. Le PDF original reste inchangé.';
+
+  @override
+  String get podcastRecorderTitle => 'Enregistrer un podcast';
+
+  @override
+  String get podcastRecorderHint =>
+      'Enregistrez uniquement le microphone. La musique de fond facultative est ajoutée ensuite. Les volumes s’appliquent à tout l’enregistrement. Utilisez un casque pour ne pas enregistrer le lecteur d’écran diffusé par les haut-parleurs. Le passage à une autre application met l’enregistrement en pause.';
+
+  @override
+  String get podcastRecorderMicVolume => 'Volume du microphone';
+
+  @override
+  String get podcastRecorderMusicVolume => 'Volume de la musique de fond';
+
+  @override
+  String get podcastRecorderChooseMusic =>
+      'Choisir une musique de fond (facultatif)';
+
+  @override
+  String get podcastRecorderRemoveMusic => 'Retirer la musique de fond';
+
+  @override
+  String get podcastRecorderReady =>
+      'Enregistrement prêt. Réglez les volumes, écoutez et enregistrez le fichier.';
+
+  @override
+  String get podcastRecorderRecovered =>
+      'Enregistrement précédent récupéré. Vous pouvez l’écouter et le sauvegarder.';
+
+  @override
+  String get podcastRecorderPermission =>
+      'Autorisez l’accès au microphone dans les réglages de l’appareil pour enregistrer.';
+
+  @override
+  String get podcastRecorderLeave =>
+      'Quitter cet écran ? L’enregistrement sera arrêté et conservé pour la prochaine ouverture.';
+
+  @override
+  String get podcastRecorderDiscard =>
+      'Supprimer cet enregistrement ? Toute copie déjà sauvegardée dans Documents sera conservée.';
+
+  @override
+  String get podcastRecorderChooseIntro => 'Choisir un générique de début (facultatif)';
+
+  @override
+  String get podcastRecorderChooseOutro => 'Choisir un générique de fin (facultatif)';
+
+  @override
+  String get podcastRecorderRemoveIntro => 'Supprimer le générique de début';
+
+  @override
+  String get podcastRecorderRemoveOutro => 'Supprimer le générique de fin';
 }

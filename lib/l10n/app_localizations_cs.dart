@@ -5510,4 +5510,55 @@ class AppLocalizationsCs extends AppLocalizations {
   @override
   String get pdfUnprotectedCopyDescription =>
       'Uložte kopii PDF bez hesla se zachovaným rozložením a obsahem. Původní PDF zůstane beze změny.';
+
+  @override
+  String get podcastRecorderTitle => 'Nahrát podcast';
+
+  @override
+  String get podcastRecorderHint =>
+      'Nahrává se pouze mikrofon. Volitelný hudební podklad se přidá po dokončení. Hlasitosti platí pro celou nahrávku. Použijte sluchátka, aby se nenahrával hlas čtečky obrazovky z reproduktorů. Přepnutí do jiné aplikace nahrávání pozastaví.';
+
+  @override
+  String get podcastRecorderMicVolume => 'Hlasitost mikrofonu';
+
+  @override
+  String get podcastRecorderMusicVolume => 'Hlasitost hudebního podkladu';
+
+  @override
+  String get podcastRecorderChooseMusic => 'Vybrat hudební podklad (volitelné)';
+
+  @override
+  String get podcastRecorderRemoveMusic => 'Odebrat hudební podklad';
+
+  @override
+  String get podcastRecorderReady =>
+      'Nahrávka je připravena. Upravte hlasitosti, poslechněte si ji a uložte.';
+
+  @override
+  String get podcastRecorderRecovered =>
+      'Předchozí nahrávka byla obnovena. Můžete si ji poslechnout a uložit.';
+
+  @override
+  String get podcastRecorderPermission =>
+      'Pro nahrávání povolte přístup k mikrofonu v nastavení zařízení.';
+
+  @override
+  String get podcastRecorderLeave =>
+      'Odejít? Nahrávání se zastaví a nahrávka se uchová do příštího otevření.';
+
+  @override
+  String get podcastRecorderDiscard =>
+      'Smazat tuto nahrávku? Kopie již uložené v Dokumentech zůstanou zachovány.';
+
+  @override
+  String get podcastRecorderChooseIntro => 'Vybrat úvodní znělku (volitelné)';
+
+  @override
+  String get podcastRecorderChooseOutro => 'Vybrat závěrečnou znělku (volitelné)';
+
+  @override
+  String get podcastRecorderRemoveIntro => 'Odstranit úvodní znělku';
+
+  @override
+  String get podcastRecorderRemoveOutro => 'Odstranit závěrečnou znělku';
 }
