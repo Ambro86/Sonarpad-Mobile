@@ -315,7 +315,7 @@ void main() {
       expect(rows(tester).any((r) => r.id == 'accept'), isFalse);
       expect(row(tester, 'country').kind, 'slider');
       expect(row(tester, 'category').kind, 'slider');
-      expect(row(tester, 'category').valueLabel, 'Tutti gli eventi');
+      expect(row(tester, 'category').valueLabel, 'Concerti');
       final sportIndex =
           ConcertMarket.all.first.categories.indexOf('Sport') + 1;
       row(tester, 'category').onValueChanged!(sportIndex);
@@ -346,6 +346,9 @@ void main() {
       await tester.pumpAndSettle();
       expect(row(tester, 'item-0').title, contains('21:30'));
       expect(row(tester, 'item-0').title, contains('febbraio'));
+      expect(row(tester, 'item-0').title, contains(' — '));
+      expect(row(tester, 'item-0').title, isNot(contains('€')));
+      expect(row(tester, 'item-0').title, isNot(contains('â')));
       expect(rows(tester).any((r) => r.id == 'city'), isFalse);
       expect(row(tester, 'next').enabled, isTrue);
       final previousRoute = ModalRoute.of(
@@ -405,6 +408,45 @@ void main() {
       service.close();
     },
   );
+  testWidgets(
+    'category defaults to concerts and remembers changes without searching',
+    (tester) async {
+      SharedPreferences.setMockInitialValues({
+        'sonarpad_concert_welcome_accepted_v1': true,
+      });
+      final service = ConcertSearchService(
+        client: MockClient((_) async => throw StateError('Unexpected request')),
+        logger: (_) async {},
+      );
+      addTearDown(service.close);
+      Future<void> reopen() async {
+        await tester.pumpWidget(const SizedBox());
+        await tester.pumpWidget(app(ConcertSearchScreen(service: service)));
+        await tester.pumpAndSettle();
+      }
+
+      await reopen();
+      expect(row(tester, 'category').valueLabel, 'Concerti');
+      for (final category in ['Sport', '', 'Teatro']) {
+        final index = category.isEmpty
+            ? 0
+            : ConcertMarket.all.first.categories.indexOf(category) + 1;
+        row(tester, 'category').onValueChanged!(index);
+        await tester.pumpAndSettle();
+        expect(
+          (await SharedPreferences.getInstance()).getString('concert_category'),
+          category,
+        );
+        await reopen();
+        expect(
+          row(tester, 'category').valueLabel,
+          category.isEmpty ? 'Tutti gli eventi' : category,
+        );
+      }
+      await tester.pumpWidget(const SizedBox());
+    },
+  );
+
   test(
     'live Dart client searches each configured concert catalogue',
     () => HttpOverrides.runWithHttpOverrides(() async {

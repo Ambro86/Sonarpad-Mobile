@@ -10,7 +10,6 @@ import '../services/concert_search_service.dart';
 import '../utils/country_name_helper.dart';
 import '../widgets/universal_accessible_view.dart';
 import 'ticketone_browser_screen.dart';
-import 'concert_disability_screen.dart';
 
 DateTime concertDateOneMonthLater(DateTime date) {
   final next = DateTime(date.year, date.month + 1);
@@ -118,6 +117,7 @@ class _ConcertSearchScreenState extends State<ConcertSearchScreen> {
       (m) => m.language == locale.split('_').first,
       orElse: () => ConcertMarket.all.first,
     );
+    _category = _market.category;
     try {
       final prefs = await SharedPreferences.getInstance();
       if (!mounted || generation != _generation) return;
@@ -127,10 +127,11 @@ class _ConcertSearchScreenState extends State<ConcertSearchScreen> {
         (m) => m.country == saved,
         orElse: () => _market,
       );
-      final savedCategory = prefs.getString('concert_category') ?? '';
-      _category = _market.categories.contains(savedCategory)
-          ? savedCategory
-          : '';
+      final savedCategory = prefs.getString('concert_category');
+      _category =
+          savedCategory == '' || _market.categories.contains(savedCategory)
+          ? savedCategory!
+          : _market.category;
       _term = prefs.getString('concert_term') ?? '';
       _city = prefs.getString('concert_city') ?? '';
       _chosenCity = prefs.getString('concert_chosen_city');
@@ -138,6 +139,16 @@ class _ConcertSearchScreenState extends State<ConcertSearchScreen> {
       // Searching remains available if saved preferences cannot be restored.
     } finally {
       if (mounted && generation == _generation) setState(() => _busy = false);
+    }
+  }
+
+  Future<void> _rememberCategory(String country, String category) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('concert_country', country);
+      await prefs.setString('concert_category', category);
+    } catch (_) {
+      // A storage failure must not prevent selecting or searching events.
     }
   }
 
@@ -356,9 +367,10 @@ class _ConcertSearchScreenState extends State<ConcertSearchScreen> {
           l.concertsCategory,
           [l.concertsAllEvents, ..._market.categories],
           _category.isEmpty ? 0 : _market.categories.indexOf(_category) + 1,
-          (n) => setState(
-            () => _category = n == 0 ? '' : _market.categories[n - 1],
-          ),
+          (n) {
+            setState(() => _category = n == 0 ? '' : _market.categories[n - 1]);
+            unawaited(_rememberCategory(_market.country, _category));
+          },
         ),
         AccessibleListRow(
           id: 'term',
@@ -475,7 +487,7 @@ class _ConcertResultsState extends State<_ConcertResults> {
       if (date != null) DateFormat.yMMMMd(l.localeName).add_Hm().format(date),
       place['city'],
       place['name'],
-    ].whereType<String>().where((s) => s.isNotEmpty).join(' â€” ');
+    ].whereType<String>().where((s) => s.isNotEmpty).join(' — ');
   }
 
   Future<void> _select(Map<String, dynamic> event) async {
@@ -513,7 +525,7 @@ class _ConcertResultsState extends State<_ConcertResults> {
       ], focus: 'error');
     }
     return _page(
-      '${widget.title} â€” $_pageNumber/${result?.pages ?? 0}',
+      '${widget.title} — $_pageNumber/${result?.pages ?? 0}',
       [
         if (result == null || result.items.isEmpty)
           _text(
@@ -596,15 +608,12 @@ class _ConcertDetails extends StatelessWidget {
           () async {
             await Navigator.of(context).push(
               MaterialPageRoute<void>(
-                builder: (_) => ConcertDisabilityScreen(
-                  eventTitle: label,
-                  openEvent: () async {
-                    final url = ConcertSearchService.eventUrl(
-                      market,
-                      event['link'],
-                    );
-                    await _open(context, url);
-                  },
+                builder: (_) => TicketOneBrowserScreen(
+                  eventUrl: ConcertSearchService.eventUrl(
+                    market,
+                    event['link'],
+                  ),
+                  disabilityOnly: true,
                 ),
               ),
             );

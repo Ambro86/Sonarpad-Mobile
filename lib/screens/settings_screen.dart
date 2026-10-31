@@ -278,6 +278,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _load() async {
+    final activationRevision = ActivationLinkService.changes.value;
     final appLang = await _settings.loadAppLanguage();
     final themeMode = await _settings.loadThemeMode();
     final weatherTemperatureUnit = await _settings.loadWeatherTemperatureUnit();
@@ -285,7 +286,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final voice = await _settings.loadTtsVoice();
     final speed = await _settings.loadTtsSpeed();
     final pitch = await _settings.loadTtsPitch();
-    final tvSecretCode = await _settings.getTvSecretCode();
+    var tvSecretCode = await _settings.getTvSecretCode();
 
     final ttsEngine = await _settings.loadTtsEngine();
     final sysLang = await _settings.loadSystemTtsLanguage();
@@ -296,8 +297,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final mediaSpeedControl = await _settings.isMediaSpeedControlEnabled();
     final preferRaiAudioDescription =
         await _settings.preferRaiAudioDescription();
-    final extraFeaturesUnlocked =
-        RecordingFeatureAccess.isCodeValid(tvSecretCode);
+
     final includeEpubFootnotesInText =
         await _settings.includeEpubFootnotesInText();
     final multipleDocumentBookmarks =
@@ -328,6 +328,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     await _loadSystemVoices();
 
+    if (activationRevision != ActivationLinkService.changes.value) {
+      tvSecretCode = await _settings.getTvSecretCode();
+    }
+    final extraFeaturesUnlocked = RecordingFeatureAccess.isCodeValid(tvSecretCode);
     if (!mounted) return;
     setState(() {
       _appLanguage = appLang;
@@ -410,6 +414,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _save({bool showConfirmation = true}) async {
+    final activationRevision = ActivationLinkService.changes.value;
     setState(() => _isSaving = true);
     final l10n = AppLocalizations.of(context);
     final rawCode = _tvSecretCodeController.text.trim();
@@ -484,7 +489,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         await AudiodescriptionService().fetchRecentCatalog(rawCode);
       } catch (e) {
         setState(() => _isSaving = false);
-        await AppLogger.log('Settings: save failed invalid Sonarpad code: $e');
+        await AppLogger.log('Settings: save failed invalid Sonarpad code');
         if (!mounted) return;
         await _showSaveResultDialog(
           title: l10n.sonarpadCodeInvalidTitle,
@@ -506,7 +511,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
     await _settings.saveWeatherTemperatureUnit(_weatherTemperatureUnit);
     await _settings.saveTtsSpeed(_ttsSpeed);
     await _settings.saveTtsPitch(_ttsPitch);
-    await _settings.setTvSecretCode(rawCode);
+    // Unrelated settings must never overwrite a code activated from an email
+    // while this screen or an asynchronous save was already open.
+    if (codeChanged && activationRevision == ActivationLinkService.changes.value) {
+      await _settings.setTvSecretCode(rawCode);
+    }
     await _settings.setAutoBookmarkEnabled(_autoBookmark);
     await _settings.setMediaSpeedControlEnabled(_mediaSpeedControl);
     await _settings.setCalendarSaintsHidden(_hideCalendarSaints);
@@ -521,7 +530,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
     await _settings.saveDocumentReadingSleepTimerMinutes(
       _documentReadingSleepTimerMinutes,
     );
-    _markSaved(rawCode);
+    final persistedCode = await _settings.getTvSecretCode();
+    if (!mounted) return;
+    _tvSecretCodeController.text = persistedCode;
+    _markSaved(persistedCode);
 
     if (!mounted) return;
     setState(() => _isSaving = false);

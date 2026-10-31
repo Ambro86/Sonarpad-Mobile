@@ -21,11 +21,13 @@ class TicketOneBrowserScreen extends StatefulWidget {
     super.key,
     required this.eventUrl,
     this.accountPath,
+    this.disabilityOnly = false,
     this.controllerFactory,
     this.browserBuilder,
     this.logger,
   });
   final Uri eventUrl;
+  final bool disabilityOnly;
   final String? accountPath;
   final WebViewController Function()? controllerFactory;
   final Widget Function(WebViewController)? browserBuilder;
@@ -578,6 +580,8 @@ class _TicketOneBrowserScreenState extends State<TicketOneBrowserScreen> {
                         color: Theme.of(context).scaffoldBackgroundColor,
                         child: TicketOneNativePage(
                           controller: _controller!,
+                          disabilityOnly: widget.disabilityOnly,
+                          eventPath: widget.eventUrl.path,
                           messages: _uiMessages,
                           generation: _generation,
                           loading: _loading,

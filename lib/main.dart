@@ -158,6 +158,7 @@ Future<void> main() async {
     'developerMode=$developerModeEnabled '
     'accessibleRenderer=$effectiveAccessibleRendererMode',
   );
+  unawaited(ActivationLinkService.logContext('startup'));
   await AppCacheService.cleanupAtStartup();
   tz_data.initializeTimeZones();
   await AppLogger.log('Sonarpad bootstrap timezone data initialized');
@@ -319,6 +320,9 @@ class _SonarpadAppState extends State<SonarpadApp> {
   }
 
   void _handleIncomingFile(Uri uri) {
+    if (ActivationLinkService.recognizes(uri)) {
+      unawaited(ActivationLinkService.logContext('link_received'));
+    }
     if (!_seenSharedUris.add(uri)) return;
     _pendingSharedUris.add(uri);
     unawaited(_drainSharedFiles());

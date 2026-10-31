@@ -1,5 +1,19 @@
 import 'dart:convert';
 
+/// Read public event metadata even when ticket controls are unavailable.
+/// Hidden accordion copies can be empty while another copy is populated.
+const ticketOneOrganiserScript = r'''
+(() => {
+  if (location.origin !== 'https://www.ticketone.it' || !location.pathname.startsWith('/event/') || window.top !== window)
+    return JSON.stringify({status:'waiting'});
+  const norm = value => String(value || '').replace(/\s+/g, ' ').trim();
+  const organiser = Array.from(document.querySelectorAll('[data-qa="promoter-address"]'))
+    .map(el => norm(el.textContent)).find(value => value.length > 0 && value.length <= 1500) || '';
+  const eventTitle = norm(document.querySelector('h1')?.textContent).slice(0,500);
+  return JSON.stringify({status:organiser ? 'ready' : 'waiting',organiser,eventTitle,path:location.pathname});
+})()
+''';
+
 /// Remove observed advertising frames, not payment, login or security frames.
 /// Advertising SVG titles such as Asset_14_1 are exposed inside these frames.
 const ticketOneRemoveAdsScript = r'''
@@ -201,7 +215,7 @@ const ticketOneUiSnapshotScript = r'''
   const errors = [...root.querySelectorAll('[role="alert"], .alert-error, .alert-danger, .kc-feedback-text, .error-message, .invalid-feedback, ev-forms-field-error, [data-qa="message"]')]
     .filter(visible).map(e => norm(e.textContent)).filter(Boolean).slice(0,8);
   const eventTitle = event ? norm(document.querySelector('h1')?.textContent).slice(0,500) : '';
-  const organiser = event ? norm(document.querySelector('[data-qa="promoter-address"]')?.textContent).slice(0,1500) : '';
+  const organiser = event ? (Array.from(document.querySelectorAll('[data-qa="promoter-address"]')).map(el => norm(el.textContent)).find(value => value.length > 0 && value.length <= 1500) || '') : '';
   const title = norm(root.querySelector('h1,h2')?.textContent || document.querySelector('h1')?.textContent || document.title);
   const notices = [...root.querySelectorAll('#termsAndConditions, [data-qa="priceSum"], .evi-widget-text-above')].filter(visible)
     .map(e => norm(e.textContent)).filter(Boolean);

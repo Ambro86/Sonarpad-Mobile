@@ -142,6 +142,89 @@ void main() {
       await tester.pumpWidget(const SizedBox());
     },
   );
+  testWidgets(
+    'disability entry waits for organiser and opens matched contacts',
+    (tester) async {
+      final c = NativeController()
+        ..url = 'https://www.ticketone.it/event/malika-21313510/'
+        ..page = {'status': 'waiting'};
+      final logs = <String>[];
+      await tester.pumpWidget(
+        app(
+          Scaffold(
+            body: TicketOneNativePage(
+              controller: c,
+              generation: 0,
+              loading: false,
+              disabilityOnly: true,
+              eventPath: '/event/malika-21313510/',
+              showWebsite: () {},
+              log: logs.add,
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
+      expect(find.byType(TicketOneLoadingView), findsOneWidget);
+      c.page = {
+        'status': 'ready',
+        'path': '/event/malika-21313510/',
+        'eventTitle': 'Malika Ayane',
+        'organiser': 'FRIENDS & PARTNERS SPA,',
+      };
+      await tester.pump(const Duration(seconds: 1));
+      await tester.pumpAndSettle();
+      expect(
+        row(tester, 'disability-organiser').title,
+        contains('FRIENDS & PARTNERS'),
+      );
+      expect(row(tester, 'disability-selected').title, 'Friends & Partners');
+      expect(c.scripts, isEmpty);
+      expect(logs.any((s) => s.contains('found=true')), isTrue);
+      await tester.pumpWidget(const SizedBox());
+    },
+  );
+
+  testWidgets(
+    'organiser from a different event is rejected and retries are bounded',
+    (tester) async {
+      final c = NativeController()
+        ..url = 'https://www.ticketone.it/event/selected-123/'
+        ..page = {
+          'status': 'ready',
+          'path': '/event/other-456/',
+          'eventTitle': 'Other event',
+          'organiser': 'Vivo Concerti srl',
+        };
+      final logs = <String>[];
+      await tester.pumpWidget(
+        app(
+          Scaffold(
+            body: TicketOneNativePage(
+              controller: c,
+              generation: 0,
+              loading: false,
+              disabilityOnly: true,
+              eventPath: '/event/selected-123/',
+              showWebsite: () {},
+              log: logs.add,
+            ),
+          ),
+        ),
+      );
+      for (var i = 0; i < 15; i++) {
+        await tester.pump(const Duration(seconds: 1));
+      }
+      await tester.pumpAndSettle();
+      expect(rows(tester).any((r) => r.id == 'disability-organiser'), isFalse);
+      expect(row(tester, 'refresh').title, isNotEmpty);
+      expect(logs, contains('native_organiser_missing'));
+      expect(c.scripts, isEmpty);
+      await tester.pumpWidget(const SizedBox());
+    },
+  );
+
   testWidgets('server error is shown immediately without polling or submitting', (
     tester,
   ) async {

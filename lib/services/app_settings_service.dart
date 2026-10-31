@@ -452,7 +452,12 @@ class AppSettingsService {
 
   Future<void> setTvSecretCode(String value) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_tvSecretCodeKey, value);
+    final saved = await prefs.setString(_tvSecretCodeKey, value);
+    // Read back the persistent store, not the optimistic preferences cache.
+    await prefs.reload();
+    if (!saved || prefs.getString(_tvSecretCodeKey) != value) {
+      throw StateError('activation_storage_failed');
+    }
   }
 
   Future<String> getBdCiechiUsername() async {

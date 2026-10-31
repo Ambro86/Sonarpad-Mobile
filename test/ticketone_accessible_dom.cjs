@@ -8,6 +8,7 @@ const source = fs.readFileSync(path.join(__dirname, '../lib/services/ticketone_a
 const script = source.split("const ticketOneUiSnapshotScript = r'''")[1].split("''';")[0];
 const focusScript = source.split("const ticketOneWebsiteFocusScript = r'''")[1].split("''';")[0];
 const adsScript = source.split("const ticketOneRemoveAdsScript = r'''")[1].split("''';")[0];
+const organiserScript = source.split("const ticketOneOrganiserScript = r'''")[1].split("''';")[0];
 let passed = 0;
 function fixture(html, url = 'https://auth.ticketone.it/identity/auth/') {
   const dom = new JSDOM(html, { url, runScripts: 'outside-only' });
@@ -37,6 +38,21 @@ async function test(name, run) { await run(); console.log('PASS ' + name); passe
     assert.equal(submissions, 0);
     f.doc.querySelector('[data-qa="promoter-address"]').remove();
     assert.equal(f.read().organiser, '');
+    f.close();
+  });
+  await test('organiser read ignores empty duplicate, needs no ticket controls and never submits', async () => {
+    const f = fixture(`<h1>Malika Ayane</h1><span data-qa="promoter-address"></span>
+      <section hidden><span data-qa="promoter-address">FRIENDS &amp; PARTNERS SPA,</span></section>
+      <button>Acquista</button>`, 'https://www.ticketone.it/event/malika-21313510/');
+    let clicks = 0;
+    f.doc.querySelector('button').onclick = () => clicks++;
+    const p = JSON.parse(f.w.eval(organiserScript));
+    assert.equal(p.status, 'ready');
+    assert.equal(p.organiser, 'FRIENDS & PARTNERS SPA,');
+    assert.equal(p.path, '/event/malika-21313510/');
+    assert.equal(clicks, 0);
+    f.doc.querySelectorAll('[data-qa="promoter-address"]').forEach(el => el.remove());
+    assert.equal(JSON.parse(f.w.eval(organiserScript)).status, 'waiting');
     f.close();
   });
   await test('diagnostic 20 server error displays its message and only explicit Back', async () => {

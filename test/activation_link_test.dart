@@ -2,10 +2,24 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+// ignore: depend_on_referenced_packages
+import 'package:shared_preferences_platform_interface/shared_preferences_platform_interface.dart';
+import 'package:sonarpad_mobile_starter/services/app_settings_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sonarpad_mobile_starter/l10n/app_localizations.dart';
 import 'package:sonarpad_mobile_starter/services/activation_link_service.dart';
 import 'package:sonarpad_mobile_starter/widgets/activation_link_dialog.dart';
+
+class _FailedStorage extends InMemorySharedPreferencesStore {
+  _FailedStorage(this.reportSuccess)
+    : super.withData({'flutter.tvSecretCode': 'previous'});
+  final bool reportSuccess;
+  @override
+  Future<bool> setValue(String valueType, String key, Object value) async =>
+      reportSuccess;
+}
 
 void main() {
   // Synthetic credential only; exercise all reserved characters, including a trailing backslash.
@@ -21,6 +35,63 @@ void main() {
       expect(
         ActivationLinkService.codeFromLink(Uri.parse(link.toString())),
         code,
+      );
+    },
+  );
+
+  test(
+    'default activation storage survives a fresh preferences cache',
+    () async {
+      SharedPreferences.setMockInitialValues({});
+      await ActivationLinkService(
+        validate: (_) async {},
+      ).activate(ActivationLinkService.linkForCode(code));
+      final persisted = await SharedPreferencesStorePlatform.instance.getAll();
+      SharedPreferences.setMockInitialValues(persisted);
+      expect(await AppSettingsService().getTvSecretCode(), code);
+    },
+  );
+
+  for (final reportSuccess in [false, true]) {
+    test(
+      'storage readback rejects missing write even if reported success=$reportSuccess',
+      () async {
+        SharedPreferences.setMockInitialValues({'tvSecretCode': 'previous'});
+        final original = SharedPreferencesStorePlatform.instance;
+        SharedPreferencesStorePlatform.instance = _FailedStorage(reportSuccess);
+        addTearDown(() => SharedPreferencesStorePlatform.instance = original);
+        final before = ActivationLinkService.changes.value;
+        await expectLater(
+          ActivationLinkService(
+            validate: (_) async {},
+          ).activate(ActivationLinkService.linkForCode(code)),
+          throwsStateError,
+        );
+        expect(ActivationLinkService.changes.value, before);
+        expect(await AppSettingsService().getTvSecretCode(), 'previous');
+      },
+    );
+  }
+
+  test(
+    'activation diagnostics distinguish app builds without exposing credentials',
+    () async {
+      SharedPreferences.setMockInitialValues({'tvSecretCode': code});
+      PackageInfo.setMockInitialValues(
+        appName: 'Sonarpad',
+        packageName: 'test.sideload.sonarpad',
+        version: '0.5.3',
+        buildNumber: '14',
+        buildSignature: '',
+      );
+      final summary = await ActivationLinkService.diagnosticSummary();
+      expect(summary, contains('package=test.sideload.sonarpad'));
+      expect(summary, contains('version=0.5.3 build=14 codePresent=true'));
+      expect(summary, isNot(contains(code)));
+      SharedPreferences.setMockInitialValues({});
+      expect(
+        await ActivationLinkService.diagnosticSummary(),
+        contains('codePresent=false'),
       );
     },
   );

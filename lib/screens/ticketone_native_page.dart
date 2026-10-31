@@ -23,9 +23,13 @@ class TicketOneNativePage extends StatefulWidget {
     required this.showWebsite,
     required this.log,
     this.messages,
+    this.disabilityOnly = false,
+    this.eventPath,
     this.onBusyChanged,
   });
   final WebViewController controller;
+  final bool disabilityOnly;
+  final String? eventPath;
   final ValueListenable<String?>? messages;
   final int generation;
   final bool loading;
@@ -45,6 +49,7 @@ class _TicketOneNativePageState extends State<TicketOneNativePage> {
   Timer? _timer;
   String? _message, _pending;
   bool _busy = true;
+  late bool _organiserRequested = widget.disabilityOnly;
   bool? _reportedBusy;
   int _serial = 0, _attempt = 0;
   int _otpRevision = 0;
@@ -166,6 +171,10 @@ class _TicketOneNativePageState extends State<TicketOneNativePage> {
           !['www.ticketone.it', 'auth.ticketone.it'].contains(current.host) ||
           (current.hasPort && current.port != 443)) {
         _unavailable('foreign');
+        return;
+      }
+      if (_organiserRequested) {
+        await _readOrganiser(serial, current);
         return;
       }
       dynamic value = await widget.controller
@@ -312,6 +321,51 @@ class _TicketOneNativePageState extends State<TicketOneNativePage> {
     }
   }
 
+  Future<void> _readOrganiser(int serial, Uri current) async {
+    dynamic value = await widget.controller
+        .runJavaScriptReturningResult(ticketOneOrganiserScript)
+        .timeout(const Duration(seconds: 8));
+    for (var i = 0; i < 2 && value is String; i++) {
+      value = jsonDecode(value);
+    }
+    if (!mounted || serial != _serial) return;
+    final organiser = value is Map ? value['organiser'] : null;
+    final title = value is Map ? value['eventTitle'] : null;
+    final found =
+        value is Map &&
+        value['status'] == 'ready' &&
+        value['path'] == current.path &&
+        (widget.eventPath == null || value['path'] == widget.eventPath) &&
+        organiser is String &&
+        organiser.trim().isNotEmpty &&
+        organiser.length <= 1500 &&
+        title is String &&
+        title.trim().isNotEmpty &&
+        title.length <= 500;
+    widget.log('disability_organiser_read attempt=$_attempt found=$found');
+    if (!found) {
+      if (_attempt++ < 12) {
+        _timer = Timer(const Duration(seconds: 1), () => unawaited(_read()));
+      } else {
+        _unavailable('organiser_missing');
+      }
+      return;
+    }
+    setState(() {
+      _organiserRequested = false;
+      _busy = false;
+    });
+    final route = MaterialPageRoute<void>(
+      builder: (_) =>
+          ConcertDisabilityScreen(eventTitle: title, organiser: organiser),
+    );
+    if (widget.disabilityOnly) {
+      Navigator.of(context).pushReplacement(route);
+    } else {
+      await Navigator.of(context).push(route);
+    }
+  }
+
   Future<void> _capturePageDiagnostics(String phase) async {
     if (_capturedDiagnostics.contains(phase)) return;
     if (_capturingDiagnostics) {
@@ -382,7 +436,9 @@ class _TicketOneNativePageState extends State<TicketOneNativePage> {
       _busy = false;
       _page = null;
       _message = t.t(
-        reason == 'action_timeout_no_retry'
+        reason == 'organiser_missing'
+            ? 'disabilityUnknownOrganiser'
+            : reason == 'action_timeout_no_retry'
             ? 'actionUncertain'
             : reason == 'security_check'
             ? 'securityCheck'
@@ -646,6 +702,15 @@ class _TicketOneNativePageState extends State<TicketOneNativePage> {
             _button('disability-access', t.t('disabilityTitle'), () async {
               widget.log('disability_information_open');
               final organiser = _page?['organiser'];
+              if (organiser is! String || organiser.trim().isEmpty) {
+                setState(() {
+                  _organiserRequested = true;
+                  _busy = true;
+                  _attempt = 0;
+                });
+                await _read();
+                return;
+              }
               final eventTitle = _page?['eventTitle'];
               final label =
                   eventTitle is String &&
@@ -657,7 +722,7 @@ class _TicketOneNativePageState extends State<TicketOneNativePage> {
                 MaterialPageRoute<void>(
                   builder: (_) => ConcertDisabilityScreen(
                     eventTitle: label,
-                    organiser: organiser is String && organiser.length <= 1500
+                    organiser: organiser.length <= 1500
                         ? organiser
                         : '',
                   ),
