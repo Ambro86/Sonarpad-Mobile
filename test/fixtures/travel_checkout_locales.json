@@ -1,0 +1,57 @@
+[
+  {
+    "locale": "fr",
+    "noProtection": "Je veux voyager sans couverture",
+    "card": "Carte"
+  },
+  {
+    "locale": "en",
+    "noProtection": "I want to travel without protection",
+    "card": "Card"
+  },
+  {
+    "locale": "de",
+    "noProtection": "Ich möchte ohne Versicherungsschutz verreisen",
+    "card": "Karte"
+  },
+  {
+    "locale": "es",
+    "noProtection": "Quiero viajar sin protección",
+    "card": "Tarjeta"
+  },
+  {
+    "locale": "pt",
+    "noProtection": "Pretendo viajar sem proteção",
+    "card": "Cartão"
+  },
+  {
+    "locale": "pl",
+    "noProtection": "Chcę podróżować bez ochrony",
+    "card": "Karta"
+  },
+  {
+    "locale": "cs",
+    "noProtection": "Nepotřebuji na cestách ochranu",
+    "card": "Karta"
+  },
+  {
+    "locale": "ro",
+    "noProtection": "Vreau să călătoresc fără protecție",
+    "card": "Card"
+  },
+  {
+    "locale": "tr",
+    "noProtection": "Korumasız seyahat etmek istiyorum",
+    "card": "Kart"
+  },
+  {
+    "locale": "uk",
+    "noProtection": "Я хочу подорожувати без страховки",
+    "card": "Карта"
+  },
+  {
+    "locale": "zh",
+    "noProtection": "我想在没有保护的情况下旅行。",
+    "card": "Card"
+  }
+]

@@ -2590,7 +2590,7 @@ class AppLocalizationsUk extends AppLocalizations {
   String get cinemaOpenTrailer => 'Відкрити трейлер';
 
   @override
-  String get concertsArtist => 'Виконавець або концерт';
+  String get concertsArtist => 'Виконавець, команда або подія';
 
   @override
   String get concertsAllCities => 'Залиште порожнім для всіх міст каталогу';
@@ -2614,7 +2614,17 @@ class AppLocalizationsUk extends AppLocalizations {
   String get concertsYear => 'Рік';
 
   @override
-  String get concertsTitle => 'Пошук концертів';
+  String get concertsCategory => 'Категорія';
+
+  @override
+  String get concertsAllEvents => 'Усі події';
+
+  @override
+  String get concertsQueryRequired =>
+      'Для пошуку всіх подій цього каталогу введіть місто чи назву або виберіть категорію.';
+
+  @override
+  String get concertsTitle => 'Пошук концертів і подій';
 
   @override
   String get concertsSearchHint => 'Введіть місто (наприклад, Київ, Львів)';

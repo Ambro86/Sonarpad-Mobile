@@ -1,0 +1,210 @@
+[
+  {
+    "name": "Aurora Eventi",
+    "source": "https://www.ticketone.it/campaign/diversamente-abili/#collapse1276442",
+    "emails": [
+      "disabili@auroraeventi.net"
+    ],
+    "automaticAliases": [
+      "Aurora Eventi"
+    ],
+    "verified": "Official TicketOne directory card; no accreditation submitted"
+  },
+  {
+    "name": "Best Eventi",
+    "source": "https://www.ticketone.it/campaign/diversamente-abili/#collapse330718",
+    "emails": [
+      "servizioclienti@besteventi.it"
+    ],
+    "automaticAliases": [
+      "Best Eventi"
+    ],
+    "verified": "Official TicketOne directory card; no accreditation submitted"
+  },
+  {
+    "name": "ChorusLife Arena",
+    "source": "https://www.ticketone.it/campaign/diversamente-abili/#collapse940895",
+    "emails": [],
+    "automaticAliases": [],
+    "verified": "Official TicketOne directory card; no accreditation submitted"
+  },
+  {
+    "name": "D’Alessandro e Galli",
+    "source": "https://www.ticketone.it/campaign/diversamente-abili/#collapse316665",
+    "emails": [],
+    "automaticAliases": [
+      "D’Alessandro e Galli"
+    ],
+    "verified": "Official TicketOne directory card; no accreditation submitted"
+  },
+  {
+    "name": "Fondazione INDA",
+    "source": "https://www.ticketone.it/campaign/diversamente-abili/#collapse1150900",
+    "emails": [],
+    "automaticAliases": [
+      "Fondazione INDA"
+    ],
+    "verified": "Official TicketOne directory card; no accreditation submitted"
+  },
+  {
+    "name": "Eclissi Eventi",
+    "source": "https://www.ticketone.it/campaign/diversamente-abili/#collapse350520",
+    "emails": [
+      "info-areadisabili@eclissieventi.it"
+    ],
+    "automaticAliases": [
+      "Eclissi Eventi"
+    ],
+    "verified": "Official TicketOne directory card; no accreditation submitted"
+  },
+  {
+    "name": "Elite Agency",
+    "source": "https://www.ticketone.it/campaign/diversamente-abili/#collapse350820",
+    "emails": [
+      "elite@eliteagency.it"
+    ],
+    "automaticAliases": [
+      "Elite Agency"
+    ],
+    "verified": "Official TicketOne directory card; no accreditation submitted"
+  },
+  {
+    "name": "Friends & Partners",
+    "source": "https://www.ticketone.it/campaign/diversamente-abili/#collapse317223",
+    "emails": [
+      "servizioclienti@friendsandpartners.it"
+    ],
+    "automaticAliases": [
+      "Friends e Partners",
+      "Friends and Partners",
+      "Friends & Partners"
+    ],
+    "verified": "Official TicketOne directory card; no accreditation submitted"
+  },
+  {
+    "name": "Fondazione Musica per Roma",
+    "source": "https://www.ticketone.it/campaign/diversamente-abili/#collapse323144",
+    "emails": [
+      "info@musicaperroma.it"
+    ],
+    "automaticAliases": [
+      "Fondazione Musica per Roma"
+    ],
+    "verified": "Official TicketOne directory card; no accreditation submitted"
+  },
+  {
+    "name": "Live Nation",
+    "source": "https://www.ticketone.it/campaign/diversamente-abili/#collapse330679",
+    "emails": [],
+    "automaticAliases": [
+      "Live Nation",
+      "Live Nation 6"
+    ],
+    "verified": "Official TicketOne directory card; no accreditation submitted"
+  },
+  {
+    "name": "Nexo / Ferrara Summer Festival",
+    "source": "https://www.ticketone.it/campaign/diversamente-abili/#collapse350496",
+    "emails": [],
+    "automaticAliases": [],
+    "verified": "Official TicketOne directory card; no accreditation submitted"
+  },
+  {
+    "name": "Pulp",
+    "source": "https://www.ticketone.it/campaign/diversamente-abili/#collapse343299",
+    "emails": [
+      "info@pulpconcerti.eu"
+    ],
+    "automaticAliases": [
+      "Pulp",
+      "Pulp Concerti"
+    ],
+    "verified": "Official TicketOne directory card; no accreditation submitted"
+  },
+  {
+    "name": "Shining Production / Live Club",
+    "source": "https://www.ticketone.it/campaign/diversamente-abili/#collapse330739",
+    "emails": [
+      "laura@shiningproduction.com",
+      "laura@liveclub.it"
+    ],
+    "automaticAliases": [
+      "Shining Production",
+      "Live Club"
+    ],
+    "verified": "Official TicketOne directory card; no accreditation submitted"
+  },
+  {
+    "name": "Show Bees / Teatro Arcimboldi",
+    "source": "https://www.ticketone.it/campaign/diversamente-abili/#collapse317247",
+    "emails": [],
+    "automaticAliases": [],
+    "verified": "Official TicketOne directory card; no accreditation submitted"
+  },
+  {
+    "name": "Stage Entertainment",
+    "source": "https://www.ticketone.it/campaign/diversamente-abili/#collapse327295",
+    "emails": [],
+    "automaticAliases": [],
+    "verified": "Official TicketOne directory card; no accreditation submitted"
+  },
+  {
+    "name": "Teatro Brancaccio",
+    "source": "https://www.ticketone.it/campaign/diversamente-abili/#collapse400996",
+    "emails": [],
+    "automaticAliases": [],
+    "verified": "Official TicketOne directory card; no accreditation submitted"
+  },
+  {
+    "name": "Teatro dell’Opera di Roma",
+    "source": "https://www.ticketone.it/campaign/diversamente-abili/#collapse323168",
+    "emails": [
+      "ufficio.biglietteria@operaroma.it"
+    ],
+    "automaticAliases": [],
+    "verified": "Official TicketOne directory card; no accreditation submitted"
+  },
+  {
+    "name": "Teatro Repower",
+    "source": "https://www.ticketone.it/campaign/diversamente-abili/#collapse327271",
+    "emails": [],
+    "automaticAliases": [],
+    "verified": "Official TicketOne directory card; no accreditation submitted"
+  },
+  {
+    "name": "Sala Umberto",
+    "source": "https://www.ticketone.it/campaign/diversamente-abili/#collapse401020",
+    "emails": [],
+    "automaticAliases": [],
+    "verified": "Official TicketOne directory card; no accreditation submitted"
+  },
+  {
+    "name": "The Base",
+    "source": "https://www.ticketone.it/campaign/diversamente-abili/#collapse323192",
+    "emails": [],
+    "automaticAliases": [
+      "The Base"
+    ],
+    "verified": "Official TicketOne directory card; no accreditation submitted"
+  },
+  {
+    "name": "Vertigo",
+    "source": "https://www.ticketone.it/campaign/diversamente-abili/#collapse330763",
+    "emails": [],
+    "automaticAliases": [
+      "Vertigo"
+    ],
+    "verified": "Official TicketOne directory card; no accreditation submitted"
+  },
+  {
+    "name": "Vivo Concerti",
+    "source": "https://www.ticketone.it/campaign/diversamente-abili/#collapse323072",
+    "emails": [
+      "info@vivoconcerti.com"
+    ],
+    "automaticAliases": [
+      "Vivo Concerti"
+    ],
+    "verified": "Official TicketOne directory card; no accreditation submitted"
+  }
+]

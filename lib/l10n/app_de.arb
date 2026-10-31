@@ -3195,7 +3195,7 @@
   "@cinemaOpenTrailer": {
     "description": "Label per aprire il trailer"
   },
-  "concertsArtist": "Künstler oder Konzert",
+  "concertsArtist": "Künstler, Mannschaft oder Veranstaltung",
   "concertsAllCities": "Leer lassen für alle Städte im Katalog",
   "concertsDates": "Nach Datum filtern",
   "concertsFrom": "Von",
@@ -3203,7 +3203,10 @@
   "concertsDay": "Tag",
   "concertsMonth": "Monat",
   "concertsYear": "Jahr",
-  "concertsTitle": "Konzertsuche",
+  "concertsQueryRequired": "Gib für alle Veranstaltungen dieses Katalogs eine Stadt oder einen Namen ein oder wähle eine Kategorie.",
+  "concertsCategory": "Kategorie",
+  "concertsAllEvents": "Alle Veranstaltungen",
+  "concertsTitle": "Konzert- und Veranstaltungssuche",
   "concertsSearchHint": "Stadt eingeben (z. B. Berlin, München)",
   "concertsSearchLabel": "Konzerte nach Stadt suchen",
   "concertsSearchTooltip": "Suchen",

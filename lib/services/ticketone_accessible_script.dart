@@ -200,6 +200,8 @@ const ticketOneUiSnapshotScript = r'''
   const quantity = qty && chosen ? {value:Number(qty.textContent),min:Number(chosen.dataset.min || 1),max:Number(chosen.dataset.max || 10)} : null;
   const errors = [...root.querySelectorAll('[role="alert"], .alert-error, .alert-danger, .kc-feedback-text, .error-message, .invalid-feedback, ev-forms-field-error, [data-qa="message"]')]
     .filter(visible).map(e => norm(e.textContent)).filter(Boolean).slice(0,8);
+  const eventTitle = event ? norm(document.querySelector('h1')?.textContent).slice(0,500) : '';
+  const organiser = event ? norm(document.querySelector('[data-qa="promoter-address"]')?.textContent).slice(0,1500) : '';
   const title = norm(root.querySelector('h1,h2')?.textContent || document.querySelector('h1')?.textContent || document.title);
   const notices = [...root.querySelectorAll('#termsAndConditions, [data-qa="priceSum"], .evi-widget-text-above')].filter(visible)
     .map(e => norm(e.textContent)).filter(Boolean);
@@ -278,7 +280,7 @@ const ticketOneUiSnapshotScript = r'''
     current.click();
     return {status:'submitted'};
   }};
-  return JSON.stringify({status:'ready',revision,stage:login?'login':registration?'registration':event?'event':errorPage?'error':review?'review':'checkout',title,fields,actions,quantity,errors,notices,summary,paypal,unavailableCategories});
+  return JSON.stringify({status:'ready',revision,stage:login?'login':registration?'registration':event?'event':errorPage?'error':review?'review':'checkout',title,eventTitle,organiser,fields,actions,quantity,errors,notices,summary,paypal,unavailableCategories});
 })();
 ''';
 

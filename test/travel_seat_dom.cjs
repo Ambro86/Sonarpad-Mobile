@@ -6,7 +6,7 @@ const {JSDOM} = require(process.argv[2] || 'jsdom');
 const source = fs.readFileSync(path.join(__dirname, '../lib/services/travel_seat_script.dart'), 'utf8');
 function script(action = null) {
   return source.split("'''")[1].replace('${jsonEncode(action)}', JSON.stringify(action))
-    .replace('$italian', 'true').replace(/\\\$/g, '$').replace(/\\\\/g, '\\');
+    .replace('${jsonEncode(labels)}', 'null').replace('$italian', 'true').replace(/\\\$/g, '$').replace(/\\\\/g, '\\');
 }
 const dom = new JSDOM(`<button data-e2e="seatMapLauncherBtn">Seleziona posto</button>
   <button id="pay">Paga</button><div role="dialog">

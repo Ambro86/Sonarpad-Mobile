@@ -2593,7 +2593,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get cinemaOpenTrailer => "Fragmanı aç";
 
   @override
-  String get concertsArtist => 'Sanatçı veya konser';
+  String get concertsArtist => 'Sanatçı, takım veya etkinlik';
 
   @override
   String get concertsAllCities => 'Katalogdaki tüm şehirler için boş bırakın';
@@ -2617,7 +2617,17 @@ class AppLocalizationsTr extends AppLocalizations {
   String get concertsYear => 'Yıl';
 
   @override
-  String get concertsTitle => 'Konser arama';
+  String get concertsCategory => 'Kategori';
+
+  @override
+  String get concertsAllEvents => 'Tüm etkinlikler';
+
+  @override
+  String get concertsQueryRequired =>
+      'Bu katalogdaki tüm etkinlikleri aramak için bir şehir veya etkinlik adı girin ya da kategori seçin.';
+
+  @override
+  String get concertsTitle => 'Konser ve etkinlik arama';
 
   @override
   String get concertsSearchHint => "Bir şehir girin (ör. İstanbul, Ankara)";

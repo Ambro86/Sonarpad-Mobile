@@ -136,7 +136,12 @@ class FakeTravel extends TravelService {
 }
 
 void main() {
-  setUp(() => SharedPreferences.setMockInitialValues({}));
+  final binding = TestWidgetsFlutterBinding.ensureInitialized();
+  setUp(() {
+    SharedPreferences.setMockInitialValues({});
+    binding.platformDispatcher.localeTestValue = const Locale('it', 'IT');
+  });
+  tearDown(binding.platformDispatcher.clearLocaleTestValue);
   testWidgets('landing contains only new search and recent journeys', (
     tester,
   ) async {

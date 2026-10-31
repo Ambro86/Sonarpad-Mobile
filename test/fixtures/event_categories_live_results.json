@@ -1,0 +1,106 @@
+[
+  {
+    "country": "IT",
+    "query": {
+      "categories": "Altre manifestazioni,Cinema,Concerti,Eventi Internazionali,Mostre e Musei,Sport,Teatro"
+    },
+    "http": 200,
+    "total": 16676
+  },
+  {
+    "country": "DE",
+    "query": {
+      "categories": "Freizeit,Humor,Konzerte,Kultur,Musical & Show,Sport,Ticket-Gutschein,VIP & Extras"
+    },
+    "http": 200,
+    "total": 174271
+  },
+  {
+    "country": "AT",
+    "query": {
+      "categories": "Freizeit,Gutscheine,Kabarett & Comedy,Konzerte,Kultur,Musical & Show,Sport"
+    },
+    "http": 200,
+    "total": 23195
+  },
+  {
+    "country": "CH",
+    "query": {
+      "categories": "Freizeit,Gutscheine,Kultur,Musik,Sport,Unterhaltung,VIP & Hospitality"
+    },
+    "http": 200,
+    "total": 10334
+  },
+  {
+    "country": "ES",
+    "query": {
+      "categories": "Actividades y otros eventos,Conciertos y festivales,Deportes,Discotecas y Fiestas,Exposiciones y parques,Infantil y familiar,Musicales y shows,Planes y promociones,Teatro"
+    },
+    "http": 200,
+    "total": 26716
+  },
+  {
+    "country": "GB",
+    "query": {
+      "categories": "Comedy,Exhibitions & Immersive,Family & Attractions,Festive and Seasonal,Music,Sport,Theatre, Arts & Talks"
+    },
+    "http": 200,
+    "total": 14366
+  },
+  {
+    "country": "NL",
+    "query": {
+      "city_names": "Amsterdam"
+    },
+    "http": 200,
+    "total": 378
+  },
+  {
+    "country": "PL",
+    "query": {
+      "categories": "Koncerty,Kultura,Rozrywka,Sport,Vouchery"
+    },
+    "http": 200,
+    "total": 4198
+  },
+  {
+    "country": "SE",
+    "query": {
+      "categories": "Familj,Humor,Jul,Kultur,Musik,Musikal och Teater,Sport"
+    },
+    "http": 200,
+    "total": 46
+  },
+  {
+    "country": "NO",
+    "query": {
+      "categories": "Familie,Humor,Jul,Kultur,Musikal og Teater,Musikk,Sport"
+    },
+    "http": 200,
+    "total": 1207
+  },
+  {
+    "country": "RO",
+    "query": {
+      "categories": "Altele,Cultură,Familie,Muzică,Sport,Voucher"
+    },
+    "http": 200,
+    "total": 419
+  },
+  {
+    "country": "FR",
+    "query": {
+      "categories": "Classique & Danse,Concerts & Festivals,Expositions & Musées,Humour,Parcs & Loisirs,Spectacles,Sports,Théâtre"
+    },
+    "http": 200,
+    "total": 102183
+  },
+  {
+    "country": "BR",
+    "query": {
+      "categories": "Cultura & Lazer,Espetáculos,Esportes,Festivais & Rodeios,Infantil & Família,Shows & Música,Shows Nacionais"
+    },
+    "http": 200,
+    "total": 526
+  }
+]

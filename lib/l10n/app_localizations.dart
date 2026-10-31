@@ -4759,6 +4759,12 @@ abstract class AppLocalizations {
 
   String get concertsYear;
 
+  String get concertsCategory;
+
+  String get concertsAllEvents;
+
+  String get concertsQueryRequired;
+
   String get concertsTitle;
 
   /// No description provided for @concertsSearchHint.

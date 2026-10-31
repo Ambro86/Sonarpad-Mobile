@@ -24,9 +24,36 @@ class TicketOneStrings {
   }
 
   static const _it = {
-    'concertWelcomeTitle': 'Benvenuti nella ricerca concerti',
+    'disabilityContactInstructions': 'Leggi le istruzioni ufficiali',
+    'disabilityContactEmail': 'Scrivi un’email',
+    'disabilityChooseOrganiser': 'Scegli organizzatore o struttura',
+    'disabilityChooseHelp':
+        'Scegli soltanto l’organizzatore indicato per il concerto o la struttura che lo ospita. Non tutti gli eventi seguono la stessa procedura. Le istruzioni ufficiali indicano requisiti e contatti: verifica artista, luogo e data prima di inviare una richiesta.',
+    'disabilityTitle': 'Accesso per persone con disabilità',
+    'disabilityHelp':
+        'Le richieste di posti riservati e di accesso con accompagnatore sono gestite dall’organizzatore dell’evento. Consulta le istruzioni prima di acquistare un biglietto ordinario.',
+    'disabilityOrganiser': 'Organizzatore indicato da TicketOne',
+    'disabilityUnknownOrganiser':
+        'L’organizzatore non è ancora stato letto. Lo trovi nelle informazioni della pagina del concerto.',
+    'disabilityConditions':
+        'Le condizioni dipendono dall’evento e dalle esigenze di accesso, anche per persone cieche o ipovedenti. Non tutte le richieste riguardano la carrozzina. Verifica direttamente requisiti, documenti, accompagnatore, prezzi e disponibilità: Sonarpad non determina il diritto all’agevolazione.',
+    'disabilityVivoHelp':
+        'Vivo Concerti indica info@vivoconcerti.com per informazioni sull’accesso. Il pulsante email apre una bozza: sarai tu a scriverla e inviarla.',
+    'disabilityOfficialInstructions':
+        'Leggi le istruzioni ufficiali di Vivo Concerti',
+    'disabilityWriteOrganiser': 'Scrivi a Vivo Concerti',
+    'disabilityCalendarHelp':
+        'Mani Amiche pubblica un calendario di accrediti che comprende eventi di Vivo Concerti. Cerca lo stesso artista, città e data: il collegamento non conferma che il tuo evento sia presente o che vi siano posti. Il modulo ufficiale può richiedere certificato, dati dell’accompagnatore e verifica CAPTCHA.',
+    'disabilityCalendar': 'Apri il calendario accrediti di Mani Amiche',
+    'disabilityDirectory': 'Apri informazioni e contatti ufficiali TicketOne',
+    'disabilityReadOrganiser':
+        'Leggi l’organizzatore sulla pagina del concerto',
+    'disabilityRequestNotice':
+        'Una richiesta di accredito non equivale a una prenotazione confermata. Attendi la risposta del servizio competente. Sonarpad non invia richieste o documenti automaticamente.',
+
+    'concertWelcomeTitle': 'Benvenuti nella ricerca concerti ed eventi',
     'concertWelcome1':
-        'Benvenuti nella ricerca concerti di Sonarpad. Con questa funzione potete cercare concerti e proseguire con l’acquisto dei biglietti tramite TicketOne o il servizio indicato per l’evento.',
+        'Benvenuti nella ricerca concerti ed eventi di Sonarpad. Con questa funzione potete cercare concerti, sport e altri eventi e proseguire con l’acquisto dei biglietti tramite TicketOne o il servizio indicato per l’evento.',
     'concertWelcome2':
         'L’autore, coerentemente con lo spirito di servizio di Sonarpad, non percepisce commissioni sui vostri acquisti e non utilizza codici di affiliazione.',
     'concertWelcome3':
@@ -34,7 +61,7 @@ class TicketOneStrings {
     'concertWelcome4':
         'Sonarpad è un facilitatore: presenta la ricerca e la compilazione dei dati nel modo più semplice e accessibile possibile. Non vende i biglietti e non gestisce gli acquisti. Per assistenza dopo l’acquisto, modifiche, cancellazioni o rimborsi, rivolgetevi a TicketOne, al venditore o all’organizzatore indicato nella conferma dell’acquisto, secondo le condizioni del biglietto.',
     'concertWelcome5':
-        'Premendo Accetta confermate di aver letto queste informazioni. La scelta sarà ricordata su questo dispositivo. Premendo Rifiuta uscirete dalla ricerca concerti.',
+        'Premendo Accetta confermate di aver letto queste informazioni. La scelta sarà ricordata su questo dispositivo. Premendo Rifiuta uscirete dalla ricerca concerti ed eventi.',
     'accept': 'Accetta',
     'decline': 'Rifiuta',
     'welcomeSaveError':
@@ -76,9 +103,35 @@ class TicketOneStrings {
     'empty': 'Il carrello è vuoto.',
   };
   static const _en = {
-    'concertWelcomeTitle': 'Welcome to concert search',
+    'disabilityContactInstructions': 'Read official instructions',
+    'disabilityContactEmail': 'Write an email',
+    'disabilityChooseOrganiser': 'Choose organiser or venue',
+    'disabilityChooseHelp':
+        'Choose only the organiser listed for your concert or the venue hosting it. Procedures vary by event. Official instructions explain requirements and contacts: check artist, venue and date before sending a request.',
+    'disabilityTitle': 'Access for people with disabilities',
+    'disabilityHelp':
+        'Requests for reserved places and companion access are handled by the event organiser. Read the instructions before purchasing a regular ticket.',
+    'disabilityOrganiser': 'Organiser listed by TicketOne',
+    'disabilityUnknownOrganiser':
+        'The organiser has not been read yet. You can find it in the concert page information.',
+    'disabilityConditions':
+        'Conditions depend on the event and access needs, including those of blind or partially sighted people. Not all requests concern wheelchairs. Check eligibility, documents, companion arrangements, prices and availability directly: Sonarpad does not decide eligibility.',
+    'disabilityVivoHelp':
+        'Vivo Concerti lists info@vivoconcerti.com for access enquiries. The email button opens a draft for you to write and send.',
+    'disabilityOfficialInstructions':
+        'Read the official Vivo Concerti instructions',
+    'disabilityWriteOrganiser': 'Write to Vivo Concerti',
+    'disabilityCalendarHelp':
+        'Mani Amiche publishes an accreditation calendar including Vivo Concerti events. Find the same artist, city and date: this link does not confirm that your event is listed or places are available. The official form may require a certificate, companion details and a CAPTCHA.',
+    'disabilityCalendar': 'Open the Mani Amiche accreditation calendar',
+    'disabilityDirectory': 'Open official TicketOne information and contacts',
+    'disabilityReadOrganiser': 'Read the organiser on the concert page',
+    'disabilityRequestNotice':
+        'An accreditation request is not a confirmed reservation. Wait for a reply from the responsible service. Sonarpad does not automatically send requests or documents.',
+
+    'concertWelcomeTitle': 'Welcome to concert and event search',
     'concertWelcome1':
-        'Welcome to Sonarpad concert search. You can find concerts and continue purchasing tickets through TicketOne or the service listed for the event.',
+        'Welcome to Sonarpad concert and event search. You can find concerts and continue purchasing tickets through TicketOne or the service listed for the event.',
     'concertWelcome2':
         'In keeping with Sonarpad’s spirit of service, its author receives no commission on your purchases and uses no affiliate codes.',
     'concertWelcome3':
@@ -86,7 +139,7 @@ class TicketOneStrings {
     'concertWelcome4':
         'Sonarpad is a facilitator: it makes searching and entering information as simple and accessible as possible. It does not sell tickets or manage purchases. For assistance, changes, cancellations or refunds after purchasing, contact TicketOne, the seller or the organiser named in your purchase confirmation, according to the ticket conditions.',
     'concertWelcome5':
-        'By selecting Accept, you confirm that you have read this information. Your choice will be remembered on this device. Decline exits concert search.',
+        'By selecting Accept, you confirm that you have read this information. Your choice will be remembered on this device. Decline exits concert and event search.',
     'accept': 'Accept',
     'decline': 'Decline',
     'welcomeSaveError': 'Unable to save your choice. Please try Accept again.',

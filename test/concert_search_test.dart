@@ -14,6 +14,54 @@ class _LiveHttpOverrides extends HttpOverrides {}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  test(
+    'event filters, all categories and query-only searches preserve pagination',
+    () async {
+      final requests = <Uri>[];
+      final service = ConcertSearchService(
+        logger: (_) async {},
+        client: MockClient((r) async {
+          requests.add(r.url);
+          return http.Response(
+            jsonEncode({
+              'products': [],
+              'page': 2,
+              'totalPages': 2,
+              'totalResults': 21,
+            }),
+            200,
+          );
+        }),
+      );
+      final it = ConcertMarket.all.first;
+      await service.search(it, category: 'Sport', page: 2);
+      expect(requests.last.queryParameters['categories'], 'Sport');
+      expect(requests.last.queryParameters['page'], '2');
+      await service.search(it, category: 'Teatro');
+      expect(requests.last.queryParameters['categories'], 'Teatro');
+      await service.search(it, category: '');
+      expect(
+        requests.last.queryParameters['categories'],
+        it.categories.join(','),
+      );
+      await service.search(it, category: '', city: 'Torino');
+      expect(requests.last.queryParameters.containsKey('categories'), isFalse);
+      expect(requests.last.queryParameters['city_names'], 'Torino');
+      final nl = ConcertMarket.all.firstWhere((m) => m.country == 'NL');
+      expect(
+        () => service.search(nl, category: ''),
+        throwsA(isA<ConcertSearchException>()),
+      );
+      await service.search(nl, category: '', term: 'Amsterdam');
+      expect(requests.last.queryParameters['search_term'], 'Amsterdam');
+      expect(requests.last.queryParameters.containsKey('categories'), isFalse);
+      expect(
+        () => service.search(it, category: 'invalid'),
+        throwsA(isA<ConcertSearchException>()),
+      );
+      service.close();
+    },
+  );
   test('end date advances one calendar month with month-end clamping', () {
     expect(
       concertDateOneMonthLater(DateTime(2027, 1, 31)),
@@ -266,6 +314,13 @@ void main() {
       await tester.pumpAndSettle();
       expect(rows(tester).any((r) => r.id == 'accept'), isFalse);
       expect(row(tester, 'country').kind, 'slider');
+      expect(row(tester, 'category').kind, 'slider');
+      expect(row(tester, 'category').valueLabel, 'Tutti gli eventi');
+      final sportIndex =
+          ConcertMarket.all.first.categories.indexOf('Sport') + 1;
+      row(tester, 'category').onValueChanged!(sportIndex);
+      await tester.pumpAndSettle();
+      expect(row(tester, 'category').valueLabel, 'Sport');
       row(tester, 'dates').onValueChanged!(true);
       await tester.pumpAndSettle();
       expect(row(tester, 'from-day').kind, 'slider');
@@ -329,6 +384,17 @@ void main() {
       ).pop();
       await tester.pumpAndSettle();
       expect(row(tester, 'city').value, 'Torino');
+      expect(
+        (await SharedPreferences.getInstance()).getString('concert_category'),
+        'Sport',
+      );
+      await tester.pumpWidget(const SizedBox());
+      await tester.pumpWidget(app(ConcertSearchScreen(service: service)));
+      await tester.pumpAndSettle();
+      expect(row(tester, 'category').valueLabel, 'Sport');
+      row(tester, 'country').onValueChanged!(1);
+      await tester.pumpAndSettle();
+      expect(row(tester, 'category').valueLabel, 'Tutti gli eventi');
       expect(
         (await SharedPreferences.getInstance()).getString(
           'concert_chosen_city',

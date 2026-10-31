@@ -13,7 +13,8 @@ const travelCheckoutAccessibilityScript = r'''
     return r.width>0 && r.height>0 && s.display!=='none' && s.visibility!=='hidden';
   };
   if ([...document.querySelectorAll('[aria-modal="true"],dialog[open]')].some(visible)) return result('modal');
-  const known = new Map([['paypal','PayPal'],['carta','Carta'],['card','Card'],
+  const known = new Map([['paypal','PayPal'],['carta','Carta'],['card','Card'], ['carte','Carte'], ['karte','Karte'], ['tarjeta','Tarjeta'],
+    ['cartão','Cartão'], ['karta','Karta'], ['kart','Kart'], ['карта','Карта'],
     ['apple pay','Apple Pay'],['google pay','Google Pay'],['revolut pay','Revolut Pay']]);
   let radios=0,decorations=0,promotions=0,frames=0,wrappers=0;
   const set = (el,key,value) => {if(el.getAttribute(key)!==value) el.setAttribute(key,value);};

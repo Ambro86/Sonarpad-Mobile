@@ -15,8 +15,10 @@ import 'travel_browser_screen.dart';
 
 part 'travel_passengers.dart';
 
-TravelStrings _strings(BuildContext context) =>
-    TravelStrings(AppLocalizations.of(context).localeName);
+TravelStrings _strings(BuildContext context) => TravelStrings(
+  AppLocalizations.of(context).localeName,
+  deviceCountry: WidgetsBinding.instance.platformDispatcher.locale.countryCode,
+);
 AccessibleListRow _action(
   String id,
   String title,
@@ -140,10 +142,8 @@ String? travelJourneyDuration(Map<String, dynamic> item, TravelStrings t) {
   final minutes = (elapsed.inSeconds / 60).ceil();
   final hours = minutes ~/ 60, remainder = minutes % 60;
   final parts = [
-    if (hours > 0)
-      '$hours ${t.t(hours == 1 ? 'durationHour' : 'durationHours')}',
-    if (remainder > 0)
-      '$remainder ${t.t(remainder == 1 ? 'durationMinute' : 'durationMinutes')}',
+    if (hours > 0) t.durationValue(hours, hours: true),
+    if (remainder > 0) t.durationValue(remainder, hours: false),
   ];
   return '${t.t('journeyDuration')}: ${parts.join(' ')}';
 }
@@ -244,11 +244,6 @@ class _TravelScreenState extends State<TravelScreen> {
   @override
   Widget build(BuildContext context) {
     final t = _strings(context);
-    if (t.language != 'it') {
-      return _page(t.t('title'), [
-        _info('unavailable-language', t.t('italianOnly')),
-      ]);
-    }
     if (!_loaded) {
       return _page(t.t('title'), [_info('loading', t.t('working'))]);
     }
@@ -302,7 +297,10 @@ class _TravelSearchScreenState extends State<TravelSearchScreen> {
     if (_query == null) {
       _query =
           widget.initial?.copy() ??
-          TravelQuery(country: _strings(context).defaultCountry);
+          TravelQuery(
+            country: _strings(context).defaultCountry,
+            currency: _strings(context).defaultCurrency,
+          );
       if (widget.initial != null) {
         _restored = true;
       } else {
@@ -596,27 +594,10 @@ class _TravelSearchScreenState extends State<TravelSearchScreen> {
       'DK',
       'GR',
     ];
+    if (!countries.contains(q.country)) countries.add(q.country);
     return _page(t.t('new'), [
       _picker('currency', t.t('currency'), q.currency, [
-        for (final c in [
-          'EUR',
-          'USD',
-          'GBP',
-          'CHF',
-          'CAD',
-          'AUD',
-          'NZD',
-          'SEK',
-          'NOK',
-          'DKK',
-          'PLN',
-          'CZK',
-          'HUF',
-          'RON',
-          'BGN',
-          'BRL',
-          'MXN',
-        ])
+        for (final c in TravelStrings.supportedCurrencies)
           AccessibleOption(value: c, label: c == 'EUR' ? 'Euro (EUR)' : c),
       ], (v) => q.currency = v),
       _picker('country', t.t('country'), q.country, [

@@ -3195,7 +3195,7 @@
   "@cinemaOpenTrailer": {
     "description": "Label per aprire il trailer"
   },
-  "concertsArtist": "Виконавець або концерт",
+  "concertsArtist": "Виконавець, команда або подія",
   "concertsAllCities": "Залиште порожнім для всіх міст каталогу",
   "concertsDates": "Фільтрувати за датами",
   "concertsFrom": "Від",
@@ -3203,7 +3203,10 @@
   "concertsDay": "День",
   "concertsMonth": "Місяць",
   "concertsYear": "Рік",
-  "concertsTitle": "Пошук концертів",
+  "concertsQueryRequired": "Для пошуку всіх подій цього каталогу введіть місто чи назву або виберіть категорію.",
+  "concertsCategory": "Категорія",
+  "concertsAllEvents": "Усі події",
+  "concertsTitle": "Пошук концертів і подій",
   "concertsSearchHint": "Введіть місто (наприклад, Київ, Львів)",
   "concertsSearchLabel": "Пошук концертів за містом",
   "concertsSearchTooltip": "Пошук",

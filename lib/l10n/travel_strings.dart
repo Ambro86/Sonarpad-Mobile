@@ -1,12 +1,19 @@
-/// Travel UI uses Italian and English; other locales use English labels while
-/// city names, provider content, dates and country names follow the app locale.
+import 'package:sealed_countries/sealed_countries.dart';
+import 'travel_translations.dart';
+
 class TravelStrings {
-  TravelStrings(this.locale);
+  TravelStrings(this.locale, {this.deviceCountry});
+  final String? deviceCountry;
   final String locale;
-  String get language => locale.split(RegExp('[-_]')).first;
+  String get language => locale.split(RegExp('[-_]')).first.toLowerCase();
+  String get _catalogue =>
+      locale.replaceAll('-', '_').toLowerCase() == 'pt_br' ? 'pt_BR' : language;
+  static Iterable<String> get keys => _en.keys;
   String t(String key) =>
-      (language == 'it' ? _it[key] : _en[key]) ?? _en[key] ?? key;
-  String get defaultCountry => locale == 'pt_BR'
+      (language == 'it' ? _it[key] : travelTranslations[_catalogue]?[key]) ??
+      _en[key] ??
+      key;
+  String get _languageCountry => _catalogue == 'pt_BR'
       ? 'BR'
       : const {
               'it': 'IT',
@@ -23,7 +30,80 @@ class TravelStrings {
               'zh': 'CN',
             }[language] ??
             'IT';
+  static const supportedCurrencies = [
+    'EUR',
+    'USD',
+    'GBP',
+    'CHF',
+    'CAD',
+    'AUD',
+    'NZD',
+    'SEK',
+    'NOK',
+    'DKK',
+    'PLN',
+    'CZK',
+    'HUF',
+    'RON',
+    'BGN',
+    'BRL',
+    'MXN',
+  ];
+  static final _countries = {for (final c in WorldCountry.list) c.codeShort: c};
+  String get defaultCountry {
+    final device = deviceCountry?.trim().toUpperCase();
+    if (_countries.containsKey(device)) return device!;
+    final parts = locale.replaceAll('-', '_').split('_');
+    final region = parts.length > 1 ? parts.last.toUpperCase() : null;
+    return _countries.containsKey(region) ? region! : _languageCountry;
+  }
+
+  String get defaultCurrency {
+    final currencies = _countries[defaultCountry]?.currencies;
+    return currencies
+            ?.map((c) => c.code)
+            .where(supportedCurrencies.contains)
+            .firstOrNull ??
+        'EUR';
+  }
+
+  String get defaultPhonePrefix =>
+      _countries[defaultCountry]?.idd.phoneCode() ?? '+';
+
+  String durationValue(int count, {required bool hours}) {
+    final singular = t(hours ? 'durationHour' : 'durationMinute');
+    final plural = t(hours ? 'durationHours' : 'durationMinutes');
+    String word = count == 1 ? singular : plural;
+    if (language == 'cs') {
+      word = count == 1
+          ? singular
+          : (count >= 2 && count <= 4 ? plural : (hours ? 'hodin' : 'minut'));
+    } else if (language == 'pl' || language == 'uk') {
+      final few =
+          count % 10 >= 2 &&
+          count % 10 <= 4 &&
+          !(count % 100 >= 12 && count % 100 <= 14);
+      final one = language == 'pl'
+          ? count == 1
+          : count % 10 == 1 && count % 100 != 11;
+      word = one
+          ? singular
+          : few
+          ? plural
+          : language == 'pl'
+          ? (hours ? 'godzin' : 'minut')
+          : (hours ? 'годин' : 'хвилин');
+    } else if (language == 'ro' && count >= 20) {
+      word = 'de $plural';
+    }
+    return '$count $word';
+  }
+
   static const _it = {
+    "seatClose": "Chiudi scelta posti",
+    "seatBack": "Indietro",
+    "seatPosition": "Carrozza {coach}, posto {seat}",
+
     'seatChoice': 'Scegli o modifica i posti',
     'seatHelp':
         'La scelta è facoltativa. Omio mostra disponibilità e supplemento prima della conferma. Puoi mantenere l’assegnazione casuale. Confermare i posti non acquista il biglietto.',
@@ -200,6 +280,10 @@ class TravelStrings {
     'linkError': 'Impossibile aprire il collegamento Omio. Riprova.',
   };
   static const _en = {
+    "seatClose": "Close seat selection",
+    "seatBack": "Back",
+    "seatPosition": "Coach {coach}, seat {seat}",
+
     'seatChoice': 'Choose or change seats',
     'seatHelp':
         'Seat selection is optional. Omio shows availability and any surcharge before confirmation. You can keep random assignment. Confirming seats does not purchase the ticket.',

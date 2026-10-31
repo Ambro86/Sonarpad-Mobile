@@ -15,6 +15,120 @@ class ConcertMarket {
     this.category,
   );
   final String country, host, webId, partner, language, category;
+
+  /// Category names returned by the official catalogues (2026-10-31).
+  List<String> get categories => _categories[country] ?? [category];
+  static const _categories = <String, List<String>>{
+    "IT": [
+      "Altre manifestazioni",
+      "Cinema",
+      "Concerti",
+      "Eventi Internazionali",
+      "Mostre e Musei",
+      "Sport",
+      "Teatro",
+    ],
+    "DE": [
+      "Freizeit",
+      "Humor",
+      "Konzerte",
+      "Kultur",
+      "Musical & Show",
+      "Sport",
+      "Ticket-Gutschein",
+      "VIP & Extras",
+    ],
+    "AT": [
+      "Freizeit",
+      "Gutscheine",
+      "Kabarett & Comedy",
+      "Konzerte",
+      "Kultur",
+      "Musical & Show",
+      "Sport",
+    ],
+    "CH": [
+      "Freizeit",
+      "Gutscheine",
+      "Kultur",
+      "Musik",
+      "Sport",
+      "Unterhaltung",
+      "VIP & Hospitality",
+    ],
+    "ES": [
+      "Actividades y otros eventos",
+      "Conciertos y festivales",
+      "Deportes",
+      "Discotecas y Fiestas",
+      "Exposiciones y parques",
+      "Infantil y familiar",
+      "Musicales y shows",
+      "Planes y promociones",
+      "Teatro",
+    ],
+    "GB": [
+      "Comedy",
+      "Exhibitions & Immersive",
+      "Family & Attractions",
+      "Festive and Seasonal",
+      "Music",
+      "Sport",
+      "Theatre, Arts & Talks",
+    ],
+    "NL": [
+      "België",
+      "Concerten",
+      "Extra's",
+      "Familie",
+      "Festivals",
+      "Meer events",
+      "Musicals",
+      "Over de grens",
+      "Podium & Cultuur",
+      "Shows",
+      "Winterse uitjes",
+    ],
+    "PL": ["Koncerty", "Kultura", "Rozrywka", "Sport", "Vouchery"],
+    "SE": [
+      "Familj",
+      "Humor",
+      "Jul",
+      "Kultur",
+      "Musik",
+      "Musikal och Teater",
+      "Sport",
+    ],
+    "NO": [
+      "Familie",
+      "Humor",
+      "Jul",
+      "Kultur",
+      "Musikal og Teater",
+      "Musikk",
+      "Sport",
+    ],
+    "RO": ["Altele", "Cultură", "Familie", "Muzică", "Sport", "Voucher"],
+    "FR": [
+      "Classique & Danse",
+      "Concerts & Festivals",
+      "Expositions & Musées",
+      "Humour",
+      "Parcs & Loisirs",
+      "Spectacles",
+      "Sports",
+      "Théâtre",
+    ],
+    "BR": [
+      "Cultura & Lazer",
+      "Espetáculos",
+      "Esportes",
+      "Festivais & Rodeios",
+      "Infantil & Família",
+      "Shows & Música",
+      "Shows Nacionais",
+    ],
+  };
   static const all = [
     ConcertMarket(
       'IT',
@@ -102,7 +216,7 @@ class ConcertMarket {
       'web__eventim-rou',
       'ROF',
       'ro',
-      'Muzică',
+      'MuzicÄƒ',
     ),
     ConcertMarket(
       'FR',
@@ -118,7 +232,7 @@ class ConcertMarket {
       'web__eventim-com-br',
       'BR1',
       'pt',
-      'Shows & Música',
+      'Shows & MÃºsica',
     ),
   ];
 }
@@ -269,6 +383,7 @@ class ConcertSearchService {
     ConcertMarket market, {
     String term = '',
     String city = '',
+    String? category,
     DateTime? from,
     DateTime? to,
     int page = 1,
@@ -279,8 +394,23 @@ class ConcertSearchService {
     if (page < 1 || (to != null && to.isBefore(start))) {
       throw const ConcertSearchException('dates');
     }
+    if (category != null &&
+        category.isNotEmpty &&
+        !market.categories.contains(category)) {
+      throw const ConcertSearchException('category');
+    }
+    // The API accepts at most ten categories. With a city or search term,
+    // omitting categories searches the whole catalogue without this limit.
+    final all = category == '';
+    final hasQuery = term.trim().isNotEmpty || city.isNotEmpty;
+    if (all && !hasQuery && market.categories.length > 10) {
+      throw const ConcertSearchException('category_query');
+    }
     return _get(market, 'products', {
-      'categories': market.category,
+      if (!all || !hasQuery)
+        'categories': all
+            ? market.categories.join(',')
+            : (category ?? market.category),
       'sort': 'DateAsc',
       'page': '$page',
       if (term.trim().isNotEmpty) 'search_term': term.trim(),

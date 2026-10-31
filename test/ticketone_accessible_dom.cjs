@@ -24,6 +24,21 @@ function fixture(html, url = 'https://auth.ticketone.it/identity/auth/') {
 }
 async function test(name, run) { await run(); console.log('PASS ' + name); passed++; }
 (async () => {
+  await test('organiser comes only from event promoter metadata, without submitting', async () => {
+    const f = fixture(`<h1>Concerto di dicembre</h1><span data-qa="promoter-address">Vivo Concerti srl, Milano</span>
+      <div id="tickets-bestseat-tab"><button data-qa="AddToShoppingCart">Metti nel carrello</button></div>`,
+      'https://www.ticketone.it/event/test-123/');
+    let submissions = 0;
+    f.doc.querySelector('button').onclick = () => submissions++;
+    const p = f.read();
+    assert.equal(p.organiser, 'Vivo Concerti srl, Milano');
+    assert.equal(p.eventTitle, 'Concerto di dicembre');
+    assert.equal(p.stage, 'event');
+    assert.equal(submissions, 0);
+    f.doc.querySelector('[data-qa="promoter-address"]').remove();
+    assert.equal(f.read().organiser, '');
+    f.close();
+  });
   await test('diagnostic 20 server error displays its message and only explicit Back', async () => {
     const f = fixture(`<header><input role="combobox"><button data-qa="cart-select">Vai al carrello 1</button></header>
       <main id="main"><section><div class="back-link"><a href="javascript:history.back()">Indietro</a></div></section>

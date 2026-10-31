@@ -29,7 +29,9 @@ class TravelPassengersScreen extends StatefulWidget {
 class _TravelPassengersScreenState extends State<TravelPassengersScreen> {
   TravelPassengerDraft get d => widget.draft;
   final _memory = TravelPassengerMemory();
-  final _fieldsController = AccessibleListController(debugName: 'travel-passenger-validation');
+  final _fieldsController = AccessibleListController(
+    debugName: 'travel-passenger-validation',
+  );
   int _validationRequest = 0;
   Timer? _validationAnnouncement;
   String? _invalidFieldId;
@@ -116,7 +118,7 @@ class _TravelPassengersScreenState extends State<TravelPassengersScreen> {
           d.values.putIfAbsent(
             name,
             () => <String, dynamic>{
-              'countryDiallingCode': country == 'IT' ? '+39' : '+',
+              'countryDiallingCode': _strings(context).defaultPhonePrefix,
               'nationalNumber': '',
               'countryIsoCode': country,
             },
@@ -637,22 +639,44 @@ class _TravelPassengersScreenState extends State<TravelPassengersScreen> {
     _validationAnnouncement?.cancel();
     final name = field['name'] as String;
     final inputs = _inputs(field, _strings(context));
-    final target = inputs.where((row) => row.kind != 'text' && !row.id.endsWith(':filter'));
+    final target = inputs.where(
+      (row) => row.kind != 'text' && !row.id.endsWith(':filter'),
+    );
     final id = target.isEmpty ? name : target.first.id;
     setState(() {
-      _message = error == _strings(context).t('emptyField').replaceAll('{field}', _label(field, _strings(context)))
+      _message =
+          error ==
+              _strings(context)
+                  .t('emptyField')
+                  .replaceAll('{field}', _label(field, _strings(context)))
           ? error
           : '${_label(field, _strings(context))}: $error';
       _invalidFieldId = id;
       d.position = _passengerIndices.indexOf(int.parse(name.split('.').first));
     });
-    unawaited(AppLogger.log('[TravelPassengers] validation_failed component=${_component(field)} target=$id'));
+    unawaited(
+      AppLogger.log(
+        '[TravelPassengers] validation_failed component=${_component(field)} target=$id',
+      ),
+    );
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if (!mounted || _invalidFieldId != id || request != _validationRequest) return;
-      await _fieldsController.focusAccessibleRow(id, mode: AccessibleFocusMode.screenEntry);
-      if (!mounted || _invalidFieldId != id || request != _validationRequest) return;
+      if (!mounted || _invalidFieldId != id || request != _validationRequest) {
+        return;
+      }
+      await _fieldsController.focusAccessibleRow(
+        id,
+        mode: AccessibleFocusMode.screenEntry,
+      );
+      if (!mounted || _invalidFieldId != id || request != _validationRequest) {
+        return;
+      }
       _validationAnnouncement = Timer(const Duration(milliseconds: 300), () {
-        if (!mounted || _message == null || _invalidFieldId != id || request != _validationRequest) return;
+        if (!mounted ||
+            _message == null ||
+            _invalidFieldId != id ||
+            request != _validationRequest) {
+          return;
+        }
         announceStatusMessage(context, _message!);
       });
     });
@@ -722,7 +746,10 @@ class _TravelPassengersScreenState extends State<TravelPassengersScreen> {
         if (!mounted) return;
         final result = await widget.service.request('/v1/booking/status');
         if (!mounted) return;
-        await widget.service.logCheckoutPoll(n + 1, DateTime.now().difference(started).inSeconds);
+        await widget.service.logCheckoutPoll(
+          n + 1,
+          DateTime.now().difference(started).inSeconds,
+        );
         if (!mounted) return;
         if (result['payment_url'] is String &&
             (result['payment_url'] as String).isNotEmpty) {
@@ -730,22 +757,28 @@ class _TravelPassengersScreenState extends State<TravelPassengersScreen> {
           break;
         }
         if ([
-          'TIMEOUT',
-          'FAILED',
-          'CANCELLED',
-          'EXPIRED',
-        ].contains(result['status']) || result['checkout_state'] == 'unavailable') {
+              'TIMEOUT',
+              'FAILED',
+              'CANCELLED',
+              'EXPIRED',
+            ].contains(result['status']) ||
+            result['checkout_state'] == 'unavailable') {
           _message = _strings(context).t('bookingUnavailable');
           break;
         }
-        if (result['checkout_state'] == 'manual' || n == 59 ||
+        if (result['checkout_state'] == 'manual' ||
+            n == 59 ||
             DateTime.now().difference(started) >= const Duration(minutes: 3)) {
           _message = _strings(context).t('bookingStillWaiting');
           break;
         }
         final recovery = result['recovery'];
-        final suggested = recovery is Map ? recovery['retry_after_seconds'] : null;
-        final seconds = suggested is int ? suggested.clamp(2, 8) : (2 + n ~/ 5).clamp(2, 8);
+        final suggested = recovery is Map
+            ? recovery['retry_after_seconds']
+            : null;
+        final seconds = suggested is int
+            ? suggested.clamp(2, 8)
+            : (2 + n ~/ 5).clamp(2, 8);
         await Future<void>.delayed(Duration(seconds: seconds));
         if (!mounted) return;
       }
@@ -815,7 +848,11 @@ class _TravelPassengersScreenState extends State<TravelPassengersScreen> {
                   const SizedBox(height: 24),
                   Semantics(
                     liveRegion: true,
-                    child: Text(t.t(d.attempted ? 'bookingPreparing' : 'passengerLoading')),
+                    child: Text(
+                      t.t(
+                        d.attempted ? 'bookingPreparing' : 'passengerLoading',
+                      ),
+                    ),
                   ),
                   const SizedBox(height: 24),
                   FilledButton(
@@ -897,8 +934,13 @@ class _TravelPassengersScreenState extends State<TravelPassengersScreen> {
           _info('optional-hint', t.t('optionalHint')),
           for (final field in fields) ..._inputs(field, t),
           if (fields.every(_supported))
-            _action('next-field', t.t('nextField'), _next, enabled: !_busy,
-                finishEditingOnActivate: true),
+            _action(
+              'next-field',
+              t.t('nextField'),
+              _next,
+              enabled: !_busy,
+              finishEditingOnActivate: true,
+            ),
           if (d.position > 0)
             _action('previous-field', t.t('previous'), () async {
               setState(() {
@@ -932,13 +974,15 @@ class _TravelPassengersScreenState extends State<TravelPassengersScreen> {
           ? const ValueKey('passenger-review')
           : null,
       controller: _fieldsController,
-      initialFocusId: _invalidFieldId ?? (_message != null
-          ? 'error'
-          : d.attempted
-          ? (d.paymentUrl != null ? 'checkout' : 'submitted')
-          : fields.isEmpty
-          ? 'review-passenger-${_passengerIndices.first}'
-          : 'passenger-heading'),
+      initialFocusId:
+          _invalidFieldId ??
+          (_message != null
+              ? 'error'
+              : d.attempted
+              ? (d.paymentUrl != null ? 'checkout' : 'submitted')
+              : fields.isEmpty
+              ? 'review-passenger-${_passengerIndices.first}'
+              : 'passenger-heading'),
     );
   }
 

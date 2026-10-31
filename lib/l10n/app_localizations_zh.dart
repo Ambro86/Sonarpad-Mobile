@@ -2530,7 +2530,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get cinemaOpenTrailer => '打开预告片';
 
   @override
-  String get concertsArtist => '艺人或演唱会';
+  String get concertsArtist => '艺人、球队或活动';
 
   @override
   String get concertsAllCities => '留空以搜索目录中的所有城市';
@@ -2554,7 +2554,16 @@ class AppLocalizationsZh extends AppLocalizations {
   String get concertsYear => '年';
 
   @override
-  String get concertsTitle => '搜索演唱会';
+  String get concertsCategory => '类别';
+
+  @override
+  String get concertsAllEvents => '所有活动';
+
+  @override
+  String get concertsQueryRequired => '要搜索此目录中的所有活动，请输入城市或活动名称，或选择类别。';
+
+  @override
+  String get concertsTitle => '搜索演唱会和活动';
 
   @override
   String get concertsSearchHint => '输入城市（例如北京、上海）';
@@ -7827,7 +7836,7 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
   String get cinemaOpenTrailer => '打开预告片';
 
   @override
-  String get concertsArtist => '艺人或演唱会';
+  String get concertsArtist => '艺人、球队或活动';
 
   @override
   String get concertsAllCities => '留空以搜索目录中的所有城市';
@@ -7851,7 +7860,16 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
   String get concertsYear => '年';
 
   @override
-  String get concertsTitle => '搜索演唱会';
+  String get concertsCategory => '类别';
+
+  @override
+  String get concertsAllEvents => '所有活动';
+
+  @override
+  String get concertsQueryRequired => '要搜索此目录中的所有活动，请输入城市或活动名称，或选择类别。';
+
+  @override
+  String get concertsTitle => '搜索演唱会和活动';
 
   @override
   String get concertsSearchHint => '输入城市（例如北京、上海）';

@@ -1,3 +1,4 @@
+import '../l10n/app_localizations.dart';
 import '../services/accessible_reading_tts.dart';
 import 'dart:async';
 import 'dart:io';
@@ -137,6 +138,27 @@ class _ItaliaOnlineDetailScreenState extends State<ItaliaOnlineDetailScreen> {
     }
   }
 
+  Future<void> _openDirections() async {
+    final destination = [widget.detail.address, widget.detail.locality]
+        .whereType<String>()
+        .map((value) => value.trim())
+        .where((value) => value.isNotEmpty)
+        .join(', ');
+    if (destination.isEmpty) return;
+    final uri = Uri.https('www.google.com', '/maps/dir/', {
+      'api': '1',
+      'destination': destination,
+    });
+    try {
+      if (await launchUrl(uri, mode: LaunchMode.externalApplication)) return;
+    } catch (e) {
+      debugPrint('ItaliaOnline: impossibile aprire le indicazioni: $e');
+    }
+    if (mounted) {
+      showStatusMessage(context, AppLocalizations.of(context).routeOpenError);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final detail = widget.detail;
@@ -190,9 +212,21 @@ class _ItaliaOnlineDetailScreenState extends State<ItaliaOnlineDetailScreen> {
                   if (detail.category != null && detail.category!.isNotEmpty)
                     AccessibleListRow(id: 'category', kind: 'text', title: 'Categoria: ${detail.category}'),
                   if (detail.address != null && detail.address!.isNotEmpty)
-                    AccessibleListRow(id: 'address', kind: 'text', title: detail.address!),
+                    AccessibleListRow(
+                      id: 'address',
+                      kind: 'button',
+                      title: detail.address!,
+                      subtitle: AppLocalizations.of(context).routeGoogleMapsAction,
+                      onActivate: _openDirections,
+                    ),
                   if (detail.locality != null && detail.locality!.isNotEmpty)
-                    AccessibleListRow(id: 'locality', kind: 'text', title: detail.locality!),
+                    AccessibleListRow(
+                      id: 'locality',
+                      kind: 'button',
+                      title: detail.locality!,
+                      subtitle: AppLocalizations.of(context).routeGoogleMapsAction,
+                      onActivate: _openDirections,
+                    ),
                   for (var i = 0; i < detail.phones.length; i++)
                     AccessibleListRow(id: 'phone_$i', title: detail.phones[i], subtitle: 'Telefono'),
                   for (var i = 0; i < detail.websites.length; i++)
@@ -245,8 +279,15 @@ class _ItaliaOnlineDetailScreenState extends State<ItaliaOnlineDetailScreen> {
               'Indirizzo:',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            if (detail.address != null && detail.address!.isNotEmpty) Text(detail.address!),
-            if (detail.locality != null && detail.locality!.isNotEmpty) Text(detail.locality!),
+            ListTile(
+              title: Text([
+                detail.address,
+                detail.locality,
+              ].whereType<String>().where((value) => value.trim().isNotEmpty).join(', ')),
+              subtitle: Text(AppLocalizations.of(context).routeGoogleMapsAction),
+              leading: const Icon(Icons.directions),
+              onTap: _openDirections,
+            ),
             const SizedBox(height: 16),
           ],
           if (detail.phones.isNotEmpty) ...[

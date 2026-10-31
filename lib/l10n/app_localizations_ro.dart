@@ -2548,7 +2548,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get cinemaOpenTrailer => 'Deschide trailerul';
 
   @override
-  String get concertsArtist => 'Artist sau concert';
+  String get concertsArtist => 'Artist, echipă sau eveniment';
 
   @override
   String get concertsAllCities => 'Lasă gol pentru toate orașele din catalog';
@@ -2572,7 +2572,17 @@ class AppLocalizationsRo extends AppLocalizations {
   String get concertsYear => 'An';
 
   @override
-  String get concertsTitle => 'Căutare concerte';
+  String get concertsCategory => 'Categorie';
+
+  @override
+  String get concertsAllEvents => 'Toate evenimentele';
+
+  @override
+  String get concertsQueryRequired =>
+      'Pentru toate evenimentele din acest catalog, introduceți un oraș sau un nume ori alegeți o categorie.';
+
+  @override
+  String get concertsTitle => 'Căutare concerte și evenimente';
 
   @override
   String get concertsSearchHint => 'Introdu un oraș (de ex. București, Londra)';

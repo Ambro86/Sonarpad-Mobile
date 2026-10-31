@@ -15,7 +15,18 @@ const _noProtection = r'''
   };
   if ([...document.querySelectorAll('[aria-modal="true"], dialog[open]')].some(visible)) return 'blocked';
   const names = new Set(['voglio viaggiare senza protezione',
-    'i want to travel without protection', 'travel without protection']);
+    'i want to travel without protection', 'travel without protection',
+    "je veux voyager sans couverture",
+    "i want to travel without protection",
+    "ich möchte ohne versicherungsschutz verreisen",
+    "quiero viajar sin protección",
+    "pretendo viajar sem proteção",
+    "chcę podróżować bez ochrony",
+    "nepotřebuji na cestách ochranu",
+    "vreau să călătoresc fără protecție",
+    "korumasız seyahat etmek istiyorum",
+    "я хочу подорожувати без страховки",
+    "我想在没有保护的情况下旅行。"]);
   const normalize = text => (text || '').toLowerCase().replace(/\s+/g, ' ').trim();
   const matches = [];
   for (const el of document.querySelectorAll('input[type="radio"], input[type="checkbox"], [role="radio"], [role="checkbox"], [role="switch"], button[aria-pressed], [role="button"][aria-pressed]')) {
@@ -61,7 +72,9 @@ const _script = r'''
     ['google pay', 'Google Pay'], ['revolut pay', 'Revolut Pay'],
     ['carta', 'card'], ['card', 'card'], ['credit card', 'card'],
     ['carta di credito', 'card'], ['carte bancaire', 'card'],
-    ['kreditkarte', 'card'], ['tarjeta', 'card']
+    ['kreditkarte', 'card'], ['tarjeta', 'card'],
+    ['carte', 'card'], ['karte', 'card'], ['cartão', 'card'],
+    ['karta', 'card'], ['kart', 'card'], ['карта', 'card']
   ]);
   const visible = el => {
     const r = el.getBoundingClientRect(), s = getComputedStyle(el);

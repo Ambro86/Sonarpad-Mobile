@@ -100,7 +100,12 @@ class PassengerService extends TravelService {
 }
 
 void main() {
-  setUp(() => SharedPreferences.setMockInitialValues({}));
+  final binding = TestWidgetsFlutterBinding.ensureInitialized();
+  setUp(() {
+    SharedPreferences.setMockInitialValues({});
+    binding.platformDispatcher.localeTestValue = const Locale('it', 'IT');
+  });
+  tearDown(binding.platformDispatcher.clearLocaleTestValue);
   Future<void> next(WidgetTester tester) async {
     row(tester, 'next-field').onActivate!();
     await tester.pumpAndSettle();

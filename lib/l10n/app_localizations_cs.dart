@@ -2591,7 +2591,7 @@ class AppLocalizationsCs extends AppLocalizations {
   String get cinemaOpenTrailer => 'Otevřít trailer';
 
   @override
-  String get concertsArtist => 'Interpret nebo koncert';
+  String get concertsArtist => 'Interpret, tým nebo akce';
 
   @override
   String get concertsAllCities =>
@@ -2616,7 +2616,17 @@ class AppLocalizationsCs extends AppLocalizations {
   String get concertsYear => 'Rok';
 
   @override
-  String get concertsTitle => 'Hledání koncertů';
+  String get concertsCategory => 'Kategorie';
+
+  @override
+  String get concertsAllEvents => 'Všechny akce';
+
+  @override
+  String get concertsQueryRequired =>
+      'Pro hledání všech akcí v tomto katalogu zadejte město nebo název akce, nebo vyberte kategorii.';
+
+  @override
+  String get concertsTitle => 'Hledání koncertů a akcí';
 
   @override
   String get concertsSearchHint => 'Zadejte město (např. Praha, Brno)';

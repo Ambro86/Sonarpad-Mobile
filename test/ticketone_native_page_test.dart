@@ -120,6 +120,28 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  testWidgets(
+    'event disability information opens natively without adding to cart',
+    (tester) async {
+      final c = NativeController()
+        ..url = 'https://www.ticketone.it/event/test-123/'
+        ..page = (snapshot([], [action('a0', 'Metti nel carrello')])
+          ..['stage'] = 'event'
+          ..['title'] = 'Concerto di dicembre'
+          ..['organiser'] = 'Vivo Concerti srl, Milano');
+      await start(tester, c, []);
+      final before = c.scripts.length;
+      row(tester, 'disability-access').onActivate!();
+      await tester.pumpAndSettle();
+      expect(row(tester, 'disability-event').title, 'Concerto di dicembre');
+      expect(
+        row(tester, 'disability-organiser').title,
+        contains('Vivo Concerti'),
+      );
+      expect(c.scripts.length, before);
+      await tester.pumpWidget(const SizedBox());
+    },
+  );
   testWidgets('server error is shown immediately without polling or submitting', (
     tester,
   ) async {

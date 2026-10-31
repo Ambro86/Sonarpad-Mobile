@@ -26,13 +26,13 @@ Set<String> availableHomeItemIds({
     HomeItemIds.voiceDictionary,
     HomeItemIds.route,
     HomeItemIds.concerts,
+    HomeItemIds.travel,
     HomeItemIds.settings,
     HomeItemIds.info,
   };
 
   if (isItalian) {
     ids.addAll({
-      HomeItemIds.travel,
       HomeItemIds.treccani,
       HomeItemIds.digitalLibrary,
       HomeItemIds.openingHours,

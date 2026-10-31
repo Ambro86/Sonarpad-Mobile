@@ -2610,7 +2610,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get cinemaOpenTrailer => 'Ver tráiler';
 
   @override
-  String get concertsArtist => 'Artista o concierto';
+  String get concertsArtist => 'Artista, equipo o evento';
 
   @override
   String get concertsAllCities =>
@@ -2635,7 +2635,17 @@ class AppLocalizationsEs extends AppLocalizations {
   String get concertsYear => 'Año';
 
   @override
-  String get concertsTitle => 'Buscar conciertos';
+  String get concertsCategory => 'Categoría';
+
+  @override
+  String get concertsAllEvents => 'Todos los eventos';
+
+  @override
+  String get concertsQueryRequired =>
+      'Para buscar todos los eventos de este catálogo, introduce una ciudad o un nombre, o elige una categoría.';
+
+  @override
+  String get concertsTitle => 'Buscar conciertos y eventos';
 
   @override
   String get concertsSearchHint =>

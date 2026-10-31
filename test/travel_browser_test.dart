@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:sonarpad_mobile_starter/l10n/travel_strings.dart';
+
 import 'package:flutter/material.dart';
 import 'package:sonarpad_mobile_starter/services/travel_seat_script.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -9,6 +11,15 @@ import 'package:sonarpad_mobile_starter/services/travel_cookie_script.dart';
 import 'package:sonarpad_mobile_starter/services/travel_payment_script.dart';
 import 'package:sonarpad_mobile_starter/services/travel_checkout_diagnostics.dart';
 import 'travel_screen_test.dart' show app, row;
+
+Map<String, String> get seatLabels {
+  final t = TravelStrings('it');
+  return {
+    'close': t.t('seatClose'),
+    'back': t.t('seatBack'),
+    'position': t.t('seatPosition'),
+  };
+}
 
 class BrowserPlatform extends WebViewPlatform {
   @override
@@ -54,7 +65,9 @@ class BrowserController extends Fake implements WebViewController {
   @override
   Future<Object> runJavaScriptReturningResult(String script) async {
     scripts.add(script);
-    if (script == travelSeatScript(italian: true)) return jsonEncode(seats);
+    if (script == travelSeatScript(italian: true, labels: seatLabels)) {
+      return jsonEncode(seats);
+    }
     if (script.contains('window.__sonarpadSeats')) {
       seatAction = script;
       if (throwSeatAction) throw StateError('lost result');
@@ -167,7 +180,7 @@ void main() {
       unorderedEquals([
         travelNecessaryCookiesScript,
         travelPaymentScript(),
-        travelSeatScript(italian: true),
+        travelSeatScript(italian: true, labels: seatLabels),
       ]),
     );
     expect(
@@ -315,7 +328,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(
       controller.scripts
-          .where((s) => s == travelSeatScript(action: 'seat-2', italian: true))
+          .where((s) => s == travelSeatScript(action: 'seat-2', italian: true, labels: seatLabels))
           .length,
       1,
     );

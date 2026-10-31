@@ -2,11 +2,16 @@ import 'dart:convert';
 
 /// Mirrors only Omio's seat dialog. Payment controls are never actionable here.
 /// Handles refer to the actual DOM node: a replaced node requires a fresh read.
-String travelSeatScript({String? action, bool italian = false}) =>
+String travelSeatScript({
+  String? action,
+  bool italian = false,
+  Map<String, String>? labels,
+}) =>
     '''
 (() => {
   const action = ${jsonEncode(action)};
   const italian = $italian;
+  const labels = ${jsonEncode(labels)};
   const result = value => JSON.stringify(value);
   if (location.protocol !== 'https:' ||
       !['omio.com','www.omio.com'].includes(location.hostname) ||
@@ -40,8 +45,12 @@ String travelSeatScript({String? action, bool italian = false}) =>
     let label = e.getAttribute('data-seat-place') || e.getAttribute('aria-label') || text(e);
     if (e.hasAttribute('data-seat-place') && italian)
       label = label.replace(/^Coach (.*?) Seat (.*)\$/, 'Carrozza \$1, posto \$2');
-    if (kind === 'modal-close-button') label = italian ? 'Chiudi scelta posti' : 'Close seat selection';
-    if (kind === 'seatmaps-header-back-btn') label = italian ? 'Indietro' : 'Back';
+    if (labels && e.hasAttribute('data-seat-place')) {
+      const match = /^Coach (.*?) Seat (.*)\$/.exec(e.getAttribute('data-seat-place'));
+      if (match) label = labels.position.replace('{coach}', match[1]).replace('{seat}', match[2]);
+    }
+    if (kind === 'modal-close-button') label = labels?.close || (italian ? 'Chiudi scelta posti' : 'Close seat selection');
+    if (kind === 'seatmaps-header-back-btn') label = labels?.back || (italian ? 'Indietro' : 'Back');
     const radio = e.querySelector('input[type="radio"]');
     const selected = e.getAttribute('aria-selected') === 'true' || e.getAttribute('aria-pressed') === 'true' || !!radio?.checked;
     return {id:idFor(e),label,enabled:enabled(e),selected};

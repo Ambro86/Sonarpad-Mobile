@@ -69,7 +69,15 @@ class _TravelBrowserScreenState extends State<TravelBrowserScreen> {
 
   Future<Map<String, dynamic>> _seatScript([String? action]) async {
     dynamic value = await _controller!.runJavaScriptReturningResult(
-      travelSeatScript(action: action, italian: t.language == 'it'),
+      travelSeatScript(
+        action: action,
+        italian: t.language == 'it',
+        labels: {
+          'close': t.t('seatClose'),
+          'back': t.t('seatBack'),
+          'position': t.t('seatPosition'),
+        },
+      ),
     );
     for (var i = 0; i < 2 && value is String; i++) {
       value = jsonDecode(value);

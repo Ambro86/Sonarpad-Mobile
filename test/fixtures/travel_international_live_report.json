@@ -1,0 +1,257 @@
+{
+  "date": "2026-10-31",
+  "scope": "Live Omio via the local backend adapter and isolated Chrome contexts; no payment executed.",
+  "search_languages": [
+    {
+      "locale": "fr",
+      "route": "Torino-Milano",
+      "booking_created": false,
+      "confirmed_locale": "fr",
+      "confirmed_currency": "EUR",
+      "status": "ok",
+      "results_type": "dict",
+      "count": null,
+      "results_status": null
+    },
+    {
+      "locale": "en",
+      "route": "Torino-Milano",
+      "booking_created": false,
+      "confirmed_locale": "en",
+      "confirmed_currency": "EUR",
+      "status": "ok",
+      "results_type": "dict",
+      "count": null,
+      "results_status": null
+    },
+    {
+      "locale": "de",
+      "route": "Torino-Milano",
+      "booking_created": false,
+      "confirmed_locale": "de",
+      "confirmed_currency": "EUR",
+      "status": "ok",
+      "results_type": "dict",
+      "count": null,
+      "results_status": null
+    },
+    {
+      "locale": "es",
+      "route": "Torino-Milano",
+      "booking_created": false,
+      "confirmed_locale": "es",
+      "confirmed_currency": "EUR",
+      "status": "ok",
+      "results_type": "dict",
+      "count": null,
+      "results_status": null
+    },
+    {
+      "locale": "pt",
+      "route": "Torino-Milano",
+      "booking_created": false,
+      "confirmed_locale": "pt",
+      "confirmed_currency": "EUR",
+      "status": "ok",
+      "results_type": "dict",
+      "count": null,
+      "results_status": null
+    },
+    {
+      "locale": "pl",
+      "route": "Torino-Milano",
+      "booking_created": false,
+      "confirmed_locale": "pl",
+      "confirmed_currency": "EUR",
+      "status": "ok",
+      "results_type": "dict",
+      "count": null,
+      "results_status": null
+    },
+    {
+      "locale": "cs",
+      "route": "Torino-Milano",
+      "booking_created": false,
+      "confirmed_locale": "cs",
+      "confirmed_currency": "EUR",
+      "status": "ok",
+      "results_type": "dict",
+      "count": null,
+      "results_status": null
+    },
+    {
+      "locale": "ro",
+      "route": "Torino-Milano",
+      "booking_created": false,
+      "confirmed_locale": "ro",
+      "confirmed_currency": "EUR",
+      "status": "ok",
+      "results_type": "dict",
+      "count": null,
+      "results_status": null
+    },
+    {
+      "locale": "tr",
+      "route": "Torino-Milano",
+      "booking_created": false,
+      "confirmed_locale": "tr",
+      "confirmed_currency": "EUR",
+      "status": "ok",
+      "results_type": "dict",
+      "count": null,
+      "results_status": null
+    },
+    {
+      "locale": "uk",
+      "route": "Torino-Milano",
+      "booking_created": false,
+      "confirmed_locale": "uk",
+      "confirmed_currency": "EUR",
+      "status": "ok",
+      "results_type": "dict",
+      "count": null,
+      "results_status": null
+    },
+    {
+      "locale": "zh",
+      "route": "Torino-Milano",
+      "booking_created": false,
+      "confirmed_locale": "zh",
+      "confirmed_currency": "EUR",
+      "status": "ok",
+      "results_type": "dict",
+      "count": null,
+      "results_status": null
+    }
+  ],
+  "international_routes": [
+    {
+      "locale": "fr",
+      "route": "Paris-Lyon",
+      "mode": "train",
+      "currency": "EUR",
+      "payment_executed": false,
+      "count": 27,
+      "results_status": "complete",
+      "confirmed_locale": "fr",
+      "fare_groups": 1,
+      "booking_created": true,
+      "form_keys": [
+        "searchId",
+        "bookingId",
+        "showPromotionalEmailsCheckbox",
+        "components"
+      ],
+      "field_count": 4,
+      "status": "ok"
+    },
+    {
+      "locale": "en",
+      "route": "London-Manchester",
+      "mode": "train",
+      "currency": "GBP",
+      "payment_executed": false,
+      "count": 6,
+      "results_status": "complete",
+      "confirmed_locale": "en",
+      "fare_groups": 1,
+      "booking_created": true,
+      "form_keys": [
+        "searchId",
+        "bookingId",
+        "showPromotionalEmailsCheckbox",
+        "components"
+      ],
+      "field_count": 4,
+      "status": "ok"
+    },
+    {
+      "locale": "de",
+      "route": "Berlin-Hamburg",
+      "mode": "bus",
+      "currency": "EUR",
+      "payment_executed": false,
+      "count": 30,
+      "results_status": "complete",
+      "confirmed_locale": "de",
+      "fare_groups": 1,
+      "status": "ok"
+    },
+    {
+      "locale": "es",
+      "route": "Madrid-Barcelona",
+      "mode": "flight",
+      "currency": "EUR",
+      "payment_executed": false,
+      "count": 46,
+      "results_status": "complete",
+      "confirmed_locale": "es",
+      "fare_groups": 1,
+      "status": "ok"
+    }
+  ],
+  "live_checkout_actions": [
+    {
+      "locale": "fr",
+      "cookies": [
+        "banner-not-found",
+        "banner-not-found",
+        "banner-not-found"
+      ],
+      "payment_executed": false,
+      "protection": "unconfirmed",
+      "protection_verified": "selected",
+      "methods": {
+        "status": "ready",
+        "methods": [
+          "Apple Pay",
+          "card",
+          "Revolut Pay",
+          "PayPal",
+          "Google Pay"
+        ]
+      },
+      "paypal": {
+        "status": "selected",
+        "methods": [
+          "Apple Pay",
+          "card",
+          "Revolut Pay",
+          "PayPal",
+          "Google Pay"
+        ]
+      }
+    },
+    {
+      "locale": "en",
+      "cookies": [
+        "banner-not-found",
+        "banner-not-found",
+        "banner-not-found"
+      ],
+      "payment_executed": false,
+      "protection": "unconfirmed",
+      "protection_verified": "selected",
+      "methods": {
+        "status": "ready",
+        "methods": [
+          "Apple Pay",
+          "card",
+          "Revolut Pay",
+          "PayPal",
+          "Google Pay"
+        ]
+      },
+      "paypal": {
+        "status": "selected",
+        "methods": [
+          "Apple Pay",
+          "card",
+          "Revolut Pay",
+          "PayPal",
+          "Google Pay"
+        ]
+      }
+    }
+  ]
+}

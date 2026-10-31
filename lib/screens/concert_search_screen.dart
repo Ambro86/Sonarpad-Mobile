@@ -10,6 +10,7 @@ import '../services/concert_search_service.dart';
 import '../utils/country_name_helper.dart';
 import '../widgets/universal_accessible_view.dart';
 import 'ticketone_browser_screen.dart';
+import 'concert_disability_screen.dart';
 
 DateTime concertDateOneMonthLater(DateTime date) {
   final next = DateTime(date.year, date.month + 1);
@@ -92,7 +93,7 @@ class _ConcertSearchScreenState extends State<ConcertSearchScreen> {
   late final ConcertSearchService _service =
       widget.service ?? ConcertSearchService();
   ConcertMarket _market = ConcertMarket.all.first;
-  String _term = '', _city = '';
+  String _term = '', _city = '', _category = '';
   String? _chosenCity, _error;
   bool _busy = true, _dates = false, _initialized = false;
   static const _welcomeKey = 'sonarpad_concert_welcome_accepted_v1';
@@ -126,6 +127,10 @@ class _ConcertSearchScreenState extends State<ConcertSearchScreen> {
         (m) => m.country == saved,
         orElse: () => _market,
       );
+      final savedCategory = prefs.getString('concert_category') ?? '';
+      _category = _market.categories.contains(savedCategory)
+          ? savedCategory
+          : '';
       _term = prefs.getString('concert_term') ?? '';
       _city = prefs.getString('concert_city') ?? '';
       _chosenCity = prefs.getString('concert_chosen_city');
@@ -139,6 +144,7 @@ class _ConcertSearchScreenState extends State<ConcertSearchScreen> {
   Future<void> _save() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('concert_country', _market.country);
+    await prefs.setString('concert_category', _category);
     await prefs.setString('concert_term', _term);
     await prefs.setString('concert_city', _city);
     if (_chosenCity != null) {
@@ -183,6 +189,13 @@ class _ConcertSearchScreenState extends State<ConcertSearchScreen> {
       );
       return;
     }
+    if (_category.isEmpty &&
+        _market.categories.length > 10 &&
+        _city.trim().isEmpty &&
+        _term.trim().isEmpty) {
+      setState(() => _error = l.concertsQueryRequired);
+      return;
+    }
     final generation = ++_generation;
     setState(() {
       _busy = true;
@@ -208,6 +221,7 @@ class _ConcertSearchScreenState extends State<ConcertSearchScreen> {
       if (!mounted || generation != _generation) return;
       final market = _market, term = _term, city = _chosenCity ?? '';
       final from = _dates ? _from : null, to = _dates ? _to : null;
+      final category = _category;
       await Navigator.of(context).push(
         MaterialPageRoute(
           builder: (_) => _ConcertResults(
@@ -216,6 +230,7 @@ class _ConcertSearchScreenState extends State<ConcertSearchScreen> {
             load: (page) => _service.search(
               market,
               term: term,
+              category: category,
               city: city,
               from: from,
               to: to,
@@ -255,9 +270,9 @@ class _ConcertSearchScreenState extends State<ConcertSearchScreen> {
         end ? l.concertsTo : l.concertsFrom,
         List.generate(
           DateUtils.getDaysInMonth(date.year, date.month),
-          (i) => DateFormat.MMMMEEEEd(l.localeName).format(
-            DateTime(date.year, date.month, i + 1),
-          ),
+          (i) => DateFormat.MMMMEEEEd(
+            l.localeName,
+          ).format(DateTime(date.year, date.month, i + 1)),
         ),
         date.day - 1,
         (n) => update(day: n + 1),
@@ -331,9 +346,19 @@ class _ConcertSearchScreenState extends State<ConcertSearchScreen> {
           ConcertMarket.all.indexOf(_market),
           (n) => setState(() {
             _market = ConcertMarket.all[n];
+            _category = '';
             _city = '';
             _chosenCity = null;
           }),
+        ),
+        _slider(
+          'category',
+          l.concertsCategory,
+          [l.concertsAllEvents, ..._market.categories],
+          _category.isEmpty ? 0 : _market.categories.indexOf(_category) + 1,
+          (n) => setState(
+            () => _category = n == 0 ? '' : _market.categories[n - 1],
+          ),
         ),
         AccessibleListRow(
           id: 'term',
@@ -450,7 +475,7 @@ class _ConcertResultsState extends State<_ConcertResults> {
       if (date != null) DateFormat.yMMMMd(l.localeName).add_Hm().format(date),
       place['city'],
       place['name'],
-    ].whereType<String>().where((s) => s.isNotEmpty).join(' — ');
+    ].whereType<String>().where((s) => s.isNotEmpty).join(' â€” ');
   }
 
   Future<void> _select(Map<String, dynamic> event) async {
@@ -488,7 +513,7 @@ class _ConcertResultsState extends State<_ConcertResults> {
       ], focus: 'error');
     }
     return _page(
-      '${widget.title} — $_pageNumber/${result?.pages ?? 0}',
+      '${widget.title} â€” $_pageNumber/${result?.pages ?? 0}',
       [
         if (result == null || result.items.isEmpty)
           _text(
@@ -565,6 +590,26 @@ class _ConcertDetails extends StatelessWidget {
       ),
       _text('notice', l.concertsInitialText),
       if (market.host == 'www.ticketone.it') ...[
+        _button(
+          'disability-access',
+          TicketOneStrings(l.localeName).t('disabilityTitle'),
+          () async {
+            await Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => ConcertDisabilityScreen(
+                  eventTitle: label,
+                  openEvent: () async {
+                    final url = ConcertSearchService.eventUrl(
+                      market,
+                      event['link'],
+                    );
+                    await _open(context, url);
+                  },
+                ),
+              ),
+            );
+          },
+        ),
         _button(
           'ticketone-login',
           l.concertsTicketOneLogin,

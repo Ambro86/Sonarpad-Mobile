@@ -2585,7 +2585,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cinemaOpenTrailer => 'Open trailer';
 
   @override
-  String get concertsArtist => 'Artist or concert';
+  String get concertsArtist => 'Artist, team or event';
 
   @override
   String get concertsAllCities =>
@@ -2610,7 +2610,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get concertsYear => 'Year';
 
   @override
-  String get concertsTitle => 'Concert search';
+  String get concertsCategory => 'Category';
+
+  @override
+  String get concertsAllEvents => 'All events';
+
+  @override
+  String get concertsQueryRequired =>
+      'To search all events in this catalogue, enter a city or event name, or choose a category.';
+
+  @override
+  String get concertsTitle => 'Concert and event search';
 
   @override
   String get concertsSearchHint => 'Enter a city (e.g. London, New York)';

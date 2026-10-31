@@ -2601,7 +2601,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get cinemaOpenTrailer => 'Abrir trailer';
 
   @override
-  String get concertsArtist => 'Artista ou concerto';
+  String get concertsArtist => 'Artista, equipa ou evento';
 
   @override
   String get concertsAllCities =>
@@ -2626,7 +2626,17 @@ class AppLocalizationsPt extends AppLocalizations {
   String get concertsYear => 'Ano';
 
   @override
-  String get concertsTitle => 'Pesquisar concertos';
+  String get concertsCategory => 'Categoria';
+
+  @override
+  String get concertsAllEvents => 'Todos os eventos';
+
+  @override
+  String get concertsQueryRequired =>
+      'Para pesquisar todos os eventos deste catálogo, indique uma cidade ou um nome, ou escolha uma categoria.';
+
+  @override
+  String get concertsTitle => 'Pesquisar concertos e eventos';
 
   @override
   String get concertsSearchHint => 'Introduza uma cidade (ex.: Lisboa, Porto)';
@@ -8093,7 +8103,7 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   String get cinemaOpenTrailer => 'Abrir trailer';
 
   @override
-  String get concertsArtist => 'Artista ou show';
+  String get concertsArtist => 'Artista, time ou evento';
 
   @override
   String get concertsAllCities =>
@@ -8118,7 +8128,17 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   String get concertsYear => 'Ano';
 
   @override
-  String get concertsTitle => 'Buscar shows';
+  String get concertsCategory => 'Categoria';
+
+  @override
+  String get concertsAllEvents => 'Todos os eventos';
+
+  @override
+  String get concertsQueryRequired =>
+      'Para buscar todos os eventos deste catálogo, informe uma cidade ou um nome, ou escolha uma categoria.';
+
+  @override
+  String get concertsTitle => 'Buscar shows e eventos';
 
   @override
   String get concertsSearchHint =>

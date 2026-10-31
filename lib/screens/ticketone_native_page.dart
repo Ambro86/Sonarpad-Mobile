@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'concert_disability_screen.dart';
 import 'dart:convert';
 import 'dart:math' show min;
 import 'package:flutter/material.dart';
@@ -641,6 +642,28 @@ class _TicketOneNativePageState extends State<TicketOneNativePage> {
         if (_message != null) _text('message', _message!),
         if (_page != null) ...[
           _text('heading', '${_page!['title']}'),
+          if (_page!['stage'] == 'event')
+            _button('disability-access', t.t('disabilityTitle'), () async {
+              widget.log('disability_information_open');
+              final organiser = _page?['organiser'];
+              final eventTitle = _page?['eventTitle'];
+              final label =
+                  eventTitle is String &&
+                      eventTitle.trim().isNotEmpty &&
+                      eventTitle.length <= 500
+                  ? eventTitle
+                  : '${_page!['title']}';
+              await Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => ConcertDisabilityScreen(
+                    eventTitle: label,
+                    organiser: organiser is String && organiser.length <= 1500
+                        ? organiser
+                        : '',
+                  ),
+                ),
+              );
+            }),
           if (_otpFields.length == 6)
             AccessibleListRow(
               id: 'ticketone_otp_code',
