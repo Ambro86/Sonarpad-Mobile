@@ -321,8 +321,13 @@ class _TranslatorScreenState extends State<TranslatorScreen> {
 }
 
 class TranslationDocumentPickerScreen extends StatefulWidget {
-  const TranslationDocumentPickerScreen({super.key, required this.library});
+  const TranslationDocumentPickerScreen({
+    super.key,
+    required this.library,
+    this.allowedExtensions = _translationFileExtensions,
+  });
   final DocumentLibraryService library;
+  final List<String> allowedExtensions;
   @override
   State<TranslationDocumentPickerScreen> createState() =>
       _TranslationDocumentPickerScreenState();
@@ -382,7 +387,7 @@ class _TranslationDocumentPickerScreenState
         .where(
           (d) =>
               !d.isFolder &&
-              _translationFileExtensions.contains(d.extension.toLowerCase()) &&
+              widget.allowedExtensions.contains(d.extension.toLowerCase()) &&
               d.name.toLowerCase().contains(_query.toLowerCase()),
         )
         .toList();

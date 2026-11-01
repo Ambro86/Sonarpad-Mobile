@@ -1,5 +1,5 @@
 import '../utils/imported_file_display_name.dart';
-import '../services/cloud_file_picker_service.dart';
+import '../services/media_file_picker_service.dart';
 import 'dart:async';
 import 'dart:io';
 
@@ -120,7 +120,7 @@ class _MediaCutterAddTrackScreenState
 
   Future<void> _pickTrack() async {
     final l10n = AppLocalizations.of(context);
-    final result = await CloudFilePicker.pickFiles(context: context, 
+    final result = await MediaFilePicker.pickFiles(context: context,
       type: FileType.custom,
       allowedExtensions: _audioExtensions,
     );

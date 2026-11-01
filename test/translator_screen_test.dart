@@ -9,6 +9,8 @@ import 'package:http/testing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sonarpad_mobile_starter/l10n/app_localizations.dart';
 import 'package:sonarpad_mobile_starter/screens/translator_screen.dart';
+import 'package:sonarpad_mobile_starter/screens/media_join_screen.dart';
+import 'package:sonarpad_mobile_starter/services/media_join_service.dart';
 import 'package:sonarpad_mobile_starter/services/news_translation_service.dart';
 import 'package:sonarpad_mobile_starter/services/home_customization_service.dart';
 import 'package:sonarpad_mobile_starter/utils/home_item_catalog.dart';
@@ -23,7 +25,7 @@ class TranslationTestLibrary extends DocumentLibraryService {
   Future<void> load() async {}
   @override
   List<DocumentItem> get documents => [
-    for (final ext in ['txt', 'mp3', 'zip'])
+    for (final ext in ['txt', 'mp3', 'mp4', 'zip'])
       DocumentItem(
         id: ext,
         name: 'Example.$ext',
@@ -51,6 +53,46 @@ Widget app(Widget home) => MaterialApp(
 );
 
 void main() {
+  testWidgets(
+    'media join offers existing library and browse choices and cancels cleanly',
+    (tester) async {
+      await tester.pumpWidget(app(const MediaJoinScreen()));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Aggiungi file media'));
+      await tester.pumpAndSettle();
+      expect(find.text('Documenti · Sonarpad'), findsOneWidget);
+      expect(find.text('Sfoglia…'), findsOneWidget);
+      await tester.tap(find.text('Annulla'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Aggiungi file media'));
+      await tester.pumpAndSettle();
+      expect(find.byType(AlertDialog), findsOneWidget);
+      await tester.tap(find.text('Annulla'));
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+    },
+  );
+  testWidgets(
+    'existing document picker filters audio and video for media join',
+    (tester) async {
+      await tester.pumpWidget(
+        app(
+          TranslationDocumentPickerScreen(
+            library: TranslationTestLibrary(),
+            allowedExtensions: MediaJoinService.supportedExtensions,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      final list = tester.widget<UniversalAccessibleList>(
+        find.byType(UniversalAccessibleList),
+      );
+      final ids = list.sections.expand((s) => s.rows).map((r) => r.id);
+      expect(ids, containsAll(['mp3', 'mp4']));
+      expect(ids, isNot(contains('txt')));
+      expect(ids, isNot(contains('zip')));
+    },
+  );
   testWidgets('result updates stable rows for both complete and partial text', (
     tester,
   ) async {

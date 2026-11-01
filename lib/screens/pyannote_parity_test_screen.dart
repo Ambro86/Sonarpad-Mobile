@@ -6,7 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../l10n/app_localizations.dart';
-import '../services/cloud_file_picker_service.dart';
+import '../services/media_file_picker_service.dart';
+import '../services/media_join_service.dart';
 import '../services/pyannote_benchmark_service.dart';
 import '../services/pyannote_parity_service.dart';
 import '../utils/app_logger.dart';
@@ -57,9 +58,10 @@ class _PyannoteParityTestScreenState extends State<PyannoteParityTestScreen>
   Future<String?> _pickMedia({required String operation}) async {
     await AppLogger.log('PYANNOTE[UI] picker opening operation=$operation');
     if (!mounted) return null;
-    final picked = await CloudFilePicker.pickFiles(context: context, 
+    final picked = await MediaFilePicker.pickFiles(context: context,
       allowMultiple: false,
       type: FileType.any,
+      allowedExtensions: MediaJoinService.supportedExtensions,
       withData: false,
     );
     final path = picked?.files.single.path;

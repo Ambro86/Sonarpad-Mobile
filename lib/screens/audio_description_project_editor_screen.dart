@@ -13,6 +13,7 @@ import '../l10n/app_localizations.dart';
 import '../l10n/localized_dynamic_labels.dart';
 import 'audio_description_project_picker_screen.dart';
 import '../services/cloud_file_picker_service.dart';
+import '../services/media_file_picker_service.dart';
 import '../services/ai_audiodescription_service.dart';
 import '../services/app_settings_service.dart';
 import '../services/audio_description_mix.dart';
@@ -360,7 +361,7 @@ class _AudioDescriptionProjectEditorScreenState
     if (_running) return;
     await _stopPlayback();
     if (!mounted) return;
-    final result = await CloudFilePicker.pickFiles(context: context, 
+    final result = await MediaFilePicker.pickFiles(context: context,
       type: FileType.custom,
       allowMultiple: false,
       withData: false,

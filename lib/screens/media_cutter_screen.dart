@@ -23,7 +23,7 @@ import '../utils/imported_file_display_name.dart';
 import '../services/protected_wakelock.dart';
 
 import '../l10n/app_localizations.dart';
-import '../services/cloud_file_picker_service.dart';
+import '../services/media_file_picker_service.dart';
 import '../services/app_cache_service.dart';
 import '../services/media_cutter_seek_step_preferences.dart';
 import '../services/media_export_destination_service.dart';
@@ -875,7 +875,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       return;
     }
     if (!mounted) return;
-    final result = await CloudFilePicker.pickFiles(context: context, 
+    final result = await MediaFilePicker.pickFiles(context: context,
       type: FileType.custom,
       allowedExtensions: _mediaExtensions,
     );

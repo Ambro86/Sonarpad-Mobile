@@ -1,16 +1,15 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:path/path.dart' as p;
 import 'package:share_plus/share_plus.dart';
 
 import '../l10n/app_localizations.dart';
-import '../services/cloud_file_picker_service.dart';
 import '../services/media_export_destination_service.dart';
 import '../services/media_join_service.dart';
+import '../services/media_file_picker_service.dart';
 import '../utils/app_logger.dart';
 import '../utils/status_message.dart';
 import '../widgets/universal_accessible_view.dart';
@@ -390,18 +389,18 @@ class _MediaJoinScreenState extends State<MediaJoinScreen> {
   }
 
   Future<void> _pickFiles() async {
+    if (_loadingFiles || _processing) return;
     final l10n = AppLocalizations.of(context);
-    final result = await CloudFilePicker.pickFiles(context: context, 
-      type: FileType.custom,
-      allowedExtensions: MediaJoinService.supportedExtensions,
-      allowMultiple: true,
-    );
-    if (result == null || result.files.isEmpty) return;
-    if (!mounted) return;
-
     setState(() => _loadingFiles = true);
     var added = 0;
     try {
+      final result = await MediaFilePicker.pickFiles(
+        context: context,
+        title: l10n.joinMediaAddFiles,
+        allowedExtensions: MediaJoinService.supportedExtensions,
+        allowMultiple: true,
+      );
+      if (!mounted || result == null || result.files.isEmpty) return;
       for (final picked in result.files) {
         final path = picked.path;
         if (path == null || path.trim().isEmpty) {
@@ -433,6 +432,9 @@ class _MediaJoinScreenState extends State<MediaJoinScreen> {
       if (mounted && added > 0) {
         announceStatusMessage(context, l10n.joinMediaFilesAdded);
       }
+    } catch (error) {
+      await AppLogger.log('Media join: file selection failed error=$error');
+      if (mounted) showStatusMessage(context, l10n.joinMediaFileSkipped);
     } finally {
       if (mounted) setState(() => _loadingFiles = false);
     }

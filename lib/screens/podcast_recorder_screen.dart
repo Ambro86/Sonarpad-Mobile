@@ -8,7 +8,7 @@ import 'package:share_plus/share_plus.dart';
 
 import '../l10n/app_localizations.dart';
 import '../services/audio_player_service.dart';
-import '../services/cloud_file_picker_service.dart';
+import '../services/media_file_picker_service.dart';
 import '../services/media_export_destination_service.dart';
 import '../services/podcast_recorder_service.dart';
 import '../utils/app_logger.dart';
@@ -185,7 +185,7 @@ class _PodcastRecorderScreenState extends State<PodcastRecorderScreen>
   Future<void> _chooseMusic({bool? intro}) => _run(() async {
     await _stopPreview();
     if (!mounted) return;
-    final result = await CloudFilePicker.pickFiles(
+    final result = await MediaFilePicker.pickFiles(
       context: context,
       type: FileType.custom,
       allowedExtensions: ['mp3', 'm4a', 'wav', 'aac', 'ogg', 'flac', 'opus'],

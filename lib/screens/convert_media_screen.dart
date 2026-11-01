@@ -10,7 +10,7 @@ import 'package:share_plus/share_plus.dart';
 
 import '../utils/imported_file_display_name.dart';
 import '../l10n/app_localizations.dart';
-import '../services/cloud_file_picker_service.dart';
+import '../services/media_file_picker_service.dart';
 import '../services/app_cache_service.dart';
 import '../services/media_export_destination_service.dart';
 import '../services/persistent_form_preferences.dart';
@@ -186,7 +186,7 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
   }
 
   Future<void> _pickInput() async {
-    final result = await CloudFilePicker.pickFiles(context: context, 
+    final result = await MediaFilePicker.pickFiles(context: context,
       type: FileType.custom,
       allowedExtensions: _mediaExtensions,
       unsupportedFileMessage: (extension) => const {
@@ -206,7 +206,7 @@ class _ConvertMediaScreenState extends State<ConvertMediaScreen> {
   }
 
   Future<void> _pickImage() async {
-    final result = await CloudFilePicker.pickFiles(context: context, 
+    final result = await MediaFilePicker.pickFiles(context: context,
       type: FileType.custom,
       allowedExtensions: _imageExtensions,
     );

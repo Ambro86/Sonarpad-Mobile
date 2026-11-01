@@ -22,6 +22,8 @@ import 'services/app_settings_service.dart';
 import 'widgets/universal_accessible_view.dart';
 import 'services/changelog_service.dart';
 import 'services/document_library_service.dart';
+import 'services/media_export_destination_service.dart';
+import 'utils/status_message.dart';
 import 'screens/changelog_screen.dart';
 import 'screens/convert_media_screen.dart';
 import 'screens/create_ai_audiodescription_screen.dart';
@@ -410,6 +412,8 @@ class _SonarpadAppState extends State<SonarpadApp> {
       }
 
       if (isAudio || isVideo) {
+        var saving = false;
+        var saved = false;
         final episode = PodcastEpisode(
           id: basename,
           title: displayName,
@@ -420,10 +424,51 @@ class _SonarpadAppState extends State<SonarpadApp> {
         navigator.push(
           MaterialPageRoute(
             settings: const RouteSettings(name: '/local_media_player'),
-            builder: (_) => PodcastEpisodePlayerScreen(
+            builder: (playerContext) => PodcastEpisodePlayerScreen(
               episode: episode,
               isVideoSupported: isVideo,
               startWithVideo: isVideo,
+              extraActions: [
+                PodcastPlayerExtraAction(
+                  id: 'save_shared_media',
+                  label: () => AppLocalizations.of(playerContext).saveInSonarpadDocuments,
+                  icon: Icons.save,
+                  onPressed: () async {
+                    if (saving) return;
+                    saving = true;
+                    final l10n = AppLocalizations.of(playerContext);
+                    try {
+                      if (!saved) {
+                        await MediaExportDestinationService().saveInSonarpadDocuments(
+                          originalFile.path,
+                          originalName: displayName,
+                        );
+                        saved = true;
+                      }
+                      if (!playerContext.mounted) return;
+                      await showDialog<void>(
+                        context: playerContext,
+                        builder: (dialogContext) => AlertDialog(
+                          content: Text(l10n.exportSavedInSonarpad),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(dialogContext),
+                              child: Text(l10n.ok),
+                            ),
+                          ],
+                        ),
+                      );
+                    } catch (error) {
+                      await AppLogger.log('Shared media: save in Documents failed: $error');
+                      if (playerContext.mounted) {
+                        showStatusMessage(playerContext, l10n.saveError);
+                      }
+                    } finally {
+                      saving = false;
+                    }
+                  },
+                ),
+              ],
             ),
           ),
         );

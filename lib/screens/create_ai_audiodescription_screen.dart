@@ -15,6 +15,7 @@ import '../services/protected_wakelock.dart';
 import '../l10n/app_localizations.dart';
 import '../l10n/localized_dynamic_labels.dart';
 import '../services/cloud_file_picker_service.dart';
+import '../services/media_file_picker_service.dart';
 import '../services/ai_audiodescription_service.dart';
 import '../services/app_settings_service.dart';
 import '../services/audio_description_mix.dart';
@@ -405,11 +406,6 @@ class _CreateAiAudiodescriptionScreenState
     try {
       await _stopPreviews();
       if (!mounted || _running) return;
-      if (!_photoImport.isSupported) {
-        await _chooseVideoFromFiles();
-        return;
-      }
-
       final l10n = AppLocalizations.of(context);
       final source = await showDialog<String>(
         context: context,
@@ -421,14 +417,27 @@ class _CreateAiAudiodescriptionScreenState
               child: Text(_chooseFromFilesLabel(l10n)),
             ),
             SimpleDialogOption(
-              onPressed: () => Navigator.pop(ctx, 'photos'),
-              child: Text(_importFromPhotosLabel(l10n)),
+              onPressed: () => Navigator.pop(ctx, 'documents'),
+              child: Text(l10n.translationLibraryDocuments),
             ),
+            if (_photoImport.isSupported)
+              SimpleDialogOption(
+                onPressed: () => Navigator.pop(ctx, 'photos'),
+                child: Text(_importFromPhotosLabel(l10n)),
+              ),
           ],
         ),
       );
       if (!mounted || source == null) return;
-      if (source == 'photos') {
+      if (source == 'documents') {
+        final result = await MediaFilePicker.pickFromDocuments(
+          context: context,
+          allowedExtensions: const [
+            'mp4', 'mkv', 'mov', 'm4v', 'avi', 'webm', 'ts', 'mts', 'm2ts',
+          ],
+        );
+        await _setSelectedSourcePath(result?.files.single.path);
+      } else if (source == 'photos') {
         await _chooseVideoFromPhotos();
       } else {
         await _chooseVideoFromFiles();
