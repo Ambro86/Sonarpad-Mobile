@@ -5678,4 +5678,71 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dutch => 'Dutch';
+
+  @override
+  String get newsTranslateToInterface => 'Translate into English';
+
+  @override
+  String get newsTranslating => 'Translating';
+
+  @override
+  String get newsShowOriginal => 'Show original article';
+
+  @override
+  String get newsTranslationFailed =>
+      'Translation failed. Please retry; the original article is still available.';
+
+  @override
+  String get newsTranslationPartial =>
+      'Partial translation: an error occurred. Only the parts already translated are shown. You can return to the original article.';
+
+  @override
+  String get translateDocument => 'Translate document';
+
+  @override
+  String get translationTargetLanguage => 'Target language';
+
+  @override
+  String get startTranslation => 'Start translation';
+
+  @override
+  String get documentTranslatedSuffix => 'translated';
+
+  @override
+  String get documentTranslationPartial =>
+      'Partial translation: an error interrupted translation. The new document contains the parts already translated. The original is unchanged.';
+
+  @override
+  String get documentTranslationTextOnly =>
+      'The translation will be saved as a new text document (.txt), without the original layout.';
+
+  @override
+  String get translatorTitle => 'Translator';
+
+  @override
+  String get translationSourceLanguage => 'Source language';
+
+  @override
+  String get translationDetectLanguage => 'Detect automatically';
+
+  @override
+  String get translationInputText => 'Text to translate';
+
+  @override
+  String get translationChooseFile => 'Choose file';
+
+  @override
+  String get translationResult => 'Translation result';
+
+  @override
+  String get translationTranslatedText => 'Translated text';
+
+  @override
+  String get translationOriginalText => 'Original text';
+
+  @override
+  String get translationSave => 'Save translation';
+
+  @override
+  String get translationLibraryDocuments => 'Documents · Sonarpad';
 }

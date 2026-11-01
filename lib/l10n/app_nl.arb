@@ -6521,5 +6521,26 @@
   "dutch": "Nederlands",
   "@dutch": {
     "description": "Localized name of the Dutch language in menus."
-  }
+  },
+  "newsTranslateToInterface": "Vertalen naar het Nederlands",
+  "newsTranslating": "Bezig met vertalen",
+  "newsShowOriginal": "Oorspronkelijk artikel tonen",
+  "newsTranslationFailed": "Vertaling mislukt. Probeer het opnieuw; het oorspronkelijke artikel blijft beschikbaar.",
+  "newsTranslationPartial": "Gedeeltelijke vertaling: er is een fout opgetreden. Alleen de reeds vertaalde delen worden getoond. U kunt teruggaan naar het oorspronkelijke artikel.",
+  "translateDocument": "Document vertalen",
+  "translationTargetLanguage": "Doeltaal",
+  "startTranslation": "Vertaling starten",
+  "documentTranslatedSuffix": "vertaald",
+  "documentTranslationPartial": "Gedeeltelijke vertaling: een fout heeft de vertaling onderbroken. Het nieuwe document bevat de reeds vertaalde delen. Het origineel is ongewijzigd.",
+  "documentTranslationTextOnly": "De vertaling wordt opgeslagen als een nieuw tekstdocument (.txt), zonder de oorspronkelijke opmaak.",
+  "translatorTitle": "Vertaler",
+  "translationSourceLanguage": "Brontaal",
+  "translationDetectLanguage": "Automatisch detecteren",
+  "translationInputText": "Te vertalen tekst",
+  "translationChooseFile": "Bestand kiezen",
+  "translationResult": "Vertaalresultaat",
+  "translationTranslatedText": "Vertaalde tekst",
+  "translationOriginalText": "Oorspronkelijke tekst",
+  "translationSave": "Vertaling opslaan",
+  "translationLibraryDocuments": "Documenten · Sonarpad"
 }

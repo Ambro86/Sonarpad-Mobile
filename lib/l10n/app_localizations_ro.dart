@@ -5724,4 +5724,71 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String get dutch => 'Neerlandeză';
+
+  @override
+  String get newsTranslateToInterface => 'Tradu în română';
+
+  @override
+  String get newsTranslating => 'Se traduce';
+
+  @override
+  String get newsShowOriginal => 'Arată articolul original';
+
+  @override
+  String get newsTranslationFailed =>
+      'Traducerea a eșuat. Încearcă din nou; articolul original este încă disponibil.';
+
+  @override
+  String get newsTranslationPartial =>
+      'Traducere parțială: a apărut o eroare. Sunt afișate doar părțile deja traduse. Poți reveni la articolul original.';
+
+  @override
+  String get translateDocument => 'Tradu documentul';
+
+  @override
+  String get translationTargetLanguage => 'Limba de destinație';
+
+  @override
+  String get startTranslation => 'Începe traducerea';
+
+  @override
+  String get documentTranslatedSuffix => 'tradus';
+
+  @override
+  String get documentTranslationPartial =>
+      'Traducere parțială: o eroare a întrerupt traducerea. Noul document conține părțile deja traduse. Originalul a rămas intact.';
+
+  @override
+  String get documentTranslationTextOnly =>
+      'Traducerea va fi salvată într-un document text nou (.txt), fără aspectul original.';
+
+  @override
+  String get translatorTitle => 'Traducător';
+
+  @override
+  String get translationSourceLanguage => 'Limba sursă';
+
+  @override
+  String get translationDetectLanguage => 'Detectează automat';
+
+  @override
+  String get translationInputText => 'Text de tradus';
+
+  @override
+  String get translationChooseFile => 'Alege fișierul';
+
+  @override
+  String get translationResult => 'Rezultatul traducerii';
+
+  @override
+  String get translationTranslatedText => 'Text tradus';
+
+  @override
+  String get translationOriginalText => 'Text original';
+
+  @override
+  String get translationSave => 'Salvează traducerea';
+
+  @override
+  String get translationLibraryDocuments => 'Documente · Sonarpad';
 }

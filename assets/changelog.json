@@ -3,6 +3,7 @@
     "version": "0.5.3",
     "date": "2026-10-27",
     "it": [
+      "Aggiunto Traduttore: traduci testi e documenti con Google, scegliendo lingua di partenza (anche automatica) e destinazione tramite slider accessibili. Puoi scrivere, scegliere dai Documenti di Sonarpad o sfogliare i file. Il risultato ha una schermata dedicata per alternare testo tradotto e originale, salvare un nuovo file TXT o condividere. Disponibile anche la traduzione delle notizie nella lingua dell’interfaccia e l’azione Traduci documento. Avanzamento con Annulla; in caso di errore, le parti già tradotte vengono conservate e indicate come traduzione parziale.",
       "Aggiunta la traduzione olandese dell’interfaccia di Sonarpad.",
       "Aggiunto Registra podcast: registra la voce, metti in pausa e riprendi, regola i volumi di voce e base musicale, ascolta l’anteprima, salva e condividi. Puoi aggiungere sigle iniziali e finali facoltative, ricordate per le registrazioni successive. La base musicale e le sigle vengono montate al termine; passando a un’altra app la registrazione va in pausa.",
       "Aggiunto il Dizionario online basato su Wiktionary: cerca parole e consulta definizioni numerate, sinonimi e voci in altre lingue in una schermata accessibile dedicata. Puoi scegliere le lingue tramite slider accessibili; le preferenze e le ricerche recenti vengono ricordate.",
@@ -18,6 +19,7 @@
       "Migliorata l’estrazione del testo dai PDF: recuperate lettere che in alcuni documenti venivano omesse, rendendo più corretta la lettura e l’esportazione del testo."
     ],
     "en": [
+      "Added Translator: translate text and documents with Google, choosing the source language (including automatic detection) and target language with accessible sliders. Type, select from Sonarpad Documents or browse files. A dedicated results screen switches between translated and original text, saves a new TXT file or shares it. News can also be translated into the interface language, and Documents has a Translate document action. Progress includes Cancel; on errors, completed parts are retained and clearly marked as a partial translation.",
       "Added a Dutch translation of the Sonarpad interface.",
       "Added Record podcast: record your voice, pause and resume, adjust voice and background music levels, preview, save and share. Optional intros and outros are remembered for future recordings. Music and jingles are assembled afterwards; switching to another app pauses recording.",
       "Added an online dictionary powered by Wiktionary: search for words and read numbered definitions, synonyms and entries in other languages on a dedicated accessible screen. Choose languages with accessible sliders; preferences and recent searches are remembered.",
@@ -32,6 +34,7 @@
       "Improved PDF text extraction: letters previously omitted in some documents are now recovered, improving text reading and export."
     ],
     "fr": [
+      "Ajout du Traducteur : traduisez textes et documents avec Google, choisissez les langues source (avec détection automatique) et cible avec des curseurs accessibles. Saisissez du texte, choisissez dans les Documents Sonarpad ou parcourez les fichiers. Un écran dédié permet d’alterner traduction et original, d’enregistrer un nouveau fichier TXT ou de partager. Traduction des actualités dans la langue de l’interface et action Traduire le document également disponibles. Progression avec Annuler ; en cas d’erreur, les parties traduites sont conservées et signalées comme traduction partielle.",
       "Ajout de la traduction néerlandaise de l’interface de Sonarpad.",
       "Ajout de l’enregistrement de podcasts : enregistrez votre voix, mettez en pause et reprenez, réglez les volumes de la voix et de la musique, écoutez un aperçu, enregistrez et partagez. Les génériques de début et de fin facultatifs sont mémorisés. La musique et les génériques sont ajoutés à la fin ; changer d’application met l’enregistrement en pause.",
       "Ajout du Dictionnaire en ligne basé sur Wiktionary : recherchez des mots et consultez des définitions numérotées, des synonymes et des entrées dans d’autres langues sur un écran accessible dédié. Choisissez les langues avec des curseurs accessibles ; les préférences et les recherches récentes sont mémorisées.",
@@ -46,6 +49,7 @@
       "Amélioration de l’extraction du texte des PDF : récupération de lettres auparavant omises dans certains documents, pour une lecture et une exportation plus fidèles."
     ],
     "es": [
+      "Añadido Traductor: traduce textos y documentos con Google y elige los idiomas de origen (con detección automática) y destino mediante controles deslizantes accesibles. Escribe, elige en Documentos de Sonarpad o explora archivos. Una pantalla de resultados permite alternar traducción y original, guardar un nuevo TXT o compartirlo. También puedes traducir noticias al idioma de la interfaz y usar Traducir documento. Progreso con Cancelar; ante errores, se conservan las partes traducidas y se indican como traducción parcial.",
       "Añadida la traducción al neerlandés de la interfaz de Sonarpad.",
       "Añadida la grabación de podcasts: graba tu voz, pausa y reanuda, ajusta los volúmenes de voz y música, escucha una vista previa, guarda y comparte. Las sintonías iniciales y finales opcionales se recuerdan para futuras grabaciones. La música y las sintonías se añaden al terminar; cambiar de aplicación pausa la grabación.",
       "Añadido el Diccionario en línea basado en Wiktionary: busca palabras y consulta definiciones numeradas, sinónimos y entradas en otros idiomas en una pantalla accesible dedicada. Elige los idiomas mediante controles deslizantes accesibles; se recuerdan las preferencias y las búsquedas recientes.",
@@ -60,6 +64,7 @@
       "Mejorada la extracción de texto de los PDF: se recuperan letras que antes se omitían en algunos documentos, mejorando la lectura y la exportación del texto."
     ],
     "pt": [
+      "Adicionado o Tradutor: traduza textos e documentos com o Google e escolha os idiomas de origem (com deteção automática) e destino com controlos deslizantes acessíveis. Escreva, escolha nos Documentos Sonarpad ou procure ficheiros. Um ecrã dedicado permite alternar entre tradução e original, guardar um novo TXT ou partilhar. Também pode traduzir notícias para o idioma da interface e usar Traduzir documento. Progresso com Cancelar; em caso de erro, as partes traduzidas são conservadas e identificadas como tradução parcial.",
       "Adicionada a tradução da interface do Sonarpad para neerlandês.",
       "Adicionada a gravação de podcasts: grave a voz, pause e retome, ajuste os volumes da voz e da música, ouça uma prévia, guarde e partilhe. As aberturas e os encerramentos opcionais são guardados para futuras gravações. A música é adicionada no final; mudar de aplicação pausa a gravação.",
       "Adicionado o Dicionário online baseado no Wiktionary: pesquise palavras e consulte definições numeradas, sinónimos e entradas noutras línguas num ecrã acessível dedicado. Escolha as línguas através de controlos deslizantes acessíveis; as preferências e as pesquisas recentes são guardadas.",
@@ -74,6 +79,7 @@
       "Melhorada a extração de texto dos PDF: são recuperadas letras anteriormente omitidas em alguns documentos, melhorando a leitura e a exportação do texto."
     ],
     "pt_BR": [
+      "Adicionado o Tradutor: traduza textos e documentos com o Google e escolha os idiomas de origem (com detecção automática) e destino por controles deslizantes acessíveis. Digite, escolha nos Documentos do Sonarpad ou procure arquivos. Uma tela dedicada permite alternar entre tradução e original, salvar um novo TXT ou compartilhar. Também é possível traduzir notícias para o idioma da interface e usar Traduzir documento. Progresso com Cancelar; em caso de erro, as partes traduzidas são preservadas e identificadas como tradução parcial.",
       "Adicionada a tradução da interface do Sonarpad para holandês.",
       "Adicionada a gravação de podcasts: grave sua voz, pause e retome, ajuste os volumes da voz e da música, ouça uma prévia, salve e compartilhe. As vinhetas opcionais de abertura e encerramento são lembradas nas próximas gravações. A música é adicionada ao terminar; mudar de aplicativo pausa a gravação.",
       "Adicionado o Dicionário online baseado no Wiktionary: pesquise palavras e consulte definições numeradas, sinônimos e verbetes em outros idiomas em uma tela acessível dedicada. Escolha os idiomas por controles deslizantes acessíveis; as preferências e as pesquisas recentes são lembradas.",
@@ -88,6 +94,7 @@
       "Melhorada a extração de texto dos PDFs: letras antes omitidas em alguns documentos são recuperadas, melhorando a leitura e a exportação do texto."
     ],
     "pl": [
+      "Dodano Tłumacza: tłumacz tekst i dokumenty przez Google, wybierając język źródłowy (także automatycznie) i docelowy dostępnymi suwakami. Wpisz tekst, wybierz z Dokumentów Sonarpad lub przeglądaj pliki. Osobny ekran wyników pozwala przełączać tłumaczenie i oryginał, zapisać nowy plik TXT lub udostępnić. Można też tłumaczyć wiadomości na język interfejsu i używać akcji Przetłumacz dokument. Postęp z przyciskiem Anuluj; w razie błędu przetłumaczone części są zachowywane i oznaczane jako tłumaczenie częściowe.",
       "Dodano niderlandzkie tłumaczenie interfejsu Sonarpad.",
       "Dodano nagrywanie podcastów: nagrywaj głos, wstrzymuj i wznawiaj, reguluj głośność głosu i muzyki, odsłuchuj, zapisuj i udostępniaj. Opcjonalne sygnały początkowe i końcowe są zapamiętywane dla kolejnych nagrań. Muzyka i sygnały są dodawane po nagraniu; przejście do innej aplikacji wstrzymuje nagrywanie.",
       "Dodano Słownik online oparty na Wiktionary: wyszukuj słowa i przeglądaj numerowane definicje, synonimy oraz hasła w innych językach na osobnym, dostępnym ekranie. Języki można wybierać za pomocą dostępnych suwaków; preferencje i ostatnie wyszukiwania są zapamiętywane.",
@@ -102,6 +109,7 @@
       "Ulepszono wyodrębnianie tekstu z plików PDF: odzyskiwane są litery pomijane wcześniej w niektórych dokumentach, co poprawia odczyt i eksport tekstu."
     ],
     "cs": [
+      "Přidán Překladač: překládejte texty a dokumenty přes Google a vybírejte zdrojový jazyk (i automaticky) a cílový jazyk přístupnými posuvníky. Pište, vybírejte z Dokumentů Sonarpad nebo procházejte soubory. Samostatná obrazovka výsledků přepíná mezi překladem a originálem a umožňuje uložit nový TXT nebo sdílet. Lze také překládat zprávy do jazyka rozhraní a použít akci Přeložit dokument. Průběh s tlačítkem Zrušit; při chybě se přeložené části zachovají a označí jako částečný překlad.",
       "Přidán nizozemský překlad rozhraní Sonarpadu.",
       "Přidáno nahrávání podcastů: nahrávejte hlas, pozastavujte a pokračujte, upravujte hlasitost hlasu a hudby, poslouchejte náhled, ukládejte a sdílejte. Volitelné úvodní a závěrečné znělky se pamatují pro další nahrávky. Hudba a znělky se přidají po dokončení; přechod do jiné aplikace nahrávání pozastaví.",
       "Přidán Online slovník založený na Wiktionary: vyhledávejte slova a prohlížejte si číslované definice, synonyma a hesla v dalších jazycích na samostatné přístupné obrazovce. Jazyky lze vybírat pomocí přístupných posuvníků; předvolby a nedávná hledání se ukládají.",
@@ -116,6 +124,7 @@
       "Vylepšeno získávání textu z PDF: obnovují se písmena dříve vynechávaná v některých dokumentech, takže čtení a export textu jsou přesnější."
     ],
     "de": [
+      "Übersetzer hinzugefügt: Texte und Dokumente mit Google übersetzen, Ausgangssprache (auch automatisch) und Zielsprache über barrierefreie Schieberegler wählen. Text eingeben, aus Sonarpad-Dokumenten wählen oder Dateien durchsuchen. Die eigene Ergebnisseite wechselt zwischen Übersetzung und Original und ermöglicht das Speichern als neue TXT-Datei oder Teilen. Auch Nachrichten lassen sich in die Oberflächensprache übersetzen; Dokumente bieten die Aktion Dokument übersetzen. Fortschrittsanzeige mit Abbrechen; bei Fehlern bleiben übersetzte Teile als teilweise Übersetzung erhalten.",
       "Niederländische Übersetzung der Sonarpad-Oberfläche hinzugefügt.",
       "Podcast-Aufnahme hinzugefügt: Stimme aufnehmen, pausieren und fortsetzen, Sprach- und Musiklautstärke einstellen, vorhören, speichern und teilen. Optionale Intros und Outros werden für weitere Aufnahmen gespeichert. Musik und Jingles werden anschließend hinzugefügt; beim Wechsel zu einer anderen App pausiert die Aufnahme.",
       "Online-Wörterbuch auf Basis von Wiktionary hinzugefügt: Suchen Sie Wörter und lesen Sie nummerierte Definitionen, Synonyme und Einträge in anderen Sprachen auf einer eigenen barrierefreien Seite. Die Sprachen lassen sich mit barrierefreien Schiebereglern auswählen; Einstellungen und letzte Suchanfragen werden gespeichert.",
@@ -130,6 +139,7 @@
       "Textextraktion aus PDFs verbessert: In manchen Dokumenten zuvor ausgelassene Buchstaben werden nun wiederhergestellt, wodurch das Lesen und Exportieren des Textes genauer wird."
     ],
     "zh_CN": [
+      "新增翻译器：使用 Google 翻译文本和文档，通过无障碍滑块选择源语言（支持自动检测）和目标语言。可以输入文本、从 Sonarpad 文档中选择或浏览文件。独立的结果页面支持切换译文和原文、保存新的 TXT 文件或分享。还可将新闻翻译为界面语言，并使用“翻译文档”操作。进度页面提供取消按钮；发生错误时保留已翻译的部分，并明确标记为部分翻译。",
       "新增 Sonarpad 界面的荷兰语翻译。",
       "新增播客录制：录制声音、暂停和继续，调节人声与背景音乐音量，试听、保存和分享。可选的片头和片尾音乐会为后续录制保留。音乐在录制结束后合成；切换到其他应用会暂停录制。",
       "新增基于 Wiktionary 的在线词典：搜索单词，在专用的无障碍页面中查看编号释义、同义词和其他语言的词条。可通过无障碍滑块选择语言，并保存偏好设置和最近的搜索记录。",
@@ -144,6 +154,7 @@
       "改进了 PDF 文本提取：恢复某些文档中此前遗漏的字母，提高文本阅读和导出的准确性。"
     ],
     "uk": [
+      "Додано Перекладач: перекладайте тексти й документи через Google, вибираючи мову оригіналу (також автоматично) і перекладу доступними повзунками. Введіть текст, виберіть із Документів Sonarpad або перегляньте файли. Окремий екран результатів перемикає переклад і оригінал та дозволяє зберегти новий TXT або поділитися. Також доступні переклад новин мовою інтерфейсу й дія Перекласти документ. Індикатор поступу має Скасувати; у разі помилки перекладені частини зберігаються з позначкою часткового перекладу.",
       "Додано нідерландський переклад інтерфейсу Sonarpad.",
       "Додано запис подкастів: записуйте голос, призупиняйте та продовжуйте, регулюйте гучність голосу й музики, прослуховуйте, зберігайте та діліться. Необов’язкові вступні й кінцеві заставки запам’ятовуються для наступних записів. Музика та заставки додаються після завершення; перехід до іншої програми призупиняє запис.",
       "Додано Онлайн-словник на основі Wiktionary: шукайте слова та переглядайте нумеровані визначення, синоніми й статті іншими мовами на окремому доступному екрані. Мови можна вибирати за допомогою доступних повзунків; налаштування й останні пошукові запити зберігаються.",
@@ -158,6 +169,7 @@
       "Покращено видобування тексту з PDF: відновлюються літери, які раніше пропускалися в деяких документах, що покращує читання та експорт тексту."
     ],
     "ro": [
+      "Adăugat Traducătorul: traduce texte și documente cu Google, alegând limba sursă (inclusiv detectare automată) și destinația prin glisoare accesibile. Scrie, alege din Documentele Sonarpad sau răsfoiește fișiere. Un ecran dedicat alternează traducerea și originalul și permite salvarea unui TXT nou sau partajarea. Sunt disponibile și traducerea știrilor în limba interfeței și acțiunea Tradu documentul. Progres cu Anulare; la erori, părțile traduse sunt păstrate și marcate ca traducere parțială.",
       "A fost adăugată traducerea în neerlandeză a interfeței Sonarpad.",
       "Adăugată înregistrarea podcasturilor: înregistrează vocea, pune pe pauză și reia, reglează volumul vocii și al muzicii, ascultă previzualizarea, salvează și distribuie. Genericele opționale de început și de final sunt memorate pentru înregistrările viitoare. Muzica se adaugă la final; trecerea la altă aplicație pune înregistrarea pe pauză.",
       "A fost adăugat Dicționarul online bazat pe Wiktionary: căutați cuvinte și consultați definiții numerotate, sinonime și articole în alte limbi pe un ecran accesibil dedicat. Alegeți limbile folosind glisoare accesibile; preferințele și căutările recente sunt memorate.",
@@ -172,6 +184,7 @@
       "Extragerea textului din PDF a fost îmbunătățită: sunt recuperate litere omise anterior în unele documente, pentru o citire și un export mai corecte."
     ],
     "tr": [
+      "Çevirmen eklendi: Google ile metin ve belgeleri çevirin; kaynak dili (otomatik algılama dahil) ve hedef dili erişilebilir kaydırıcılarla seçin. Metin yazın, Sonarpad Belgelerinden seçin veya dosyalara göz atın. Ayrı sonuç ekranında çeviri ve orijinal arasında geçiş yapabilir, yeni TXT dosyası kaydedebilir veya paylaşabilirsiniz. Haberleri arayüz diline çevirme ve Belgeyi çevir işlemi de eklendi. İlerleme ekranında İptal bulunur; hatalarda çevrilmiş bölümler korunur ve kısmi çeviri olarak belirtilir.",
       "Sonarpad arayüzüne Felemenkçe çeviri eklendi.",
       "Podcast kaydı eklendi: sesinizi kaydedin, duraklatıp sürdürün, ses ve arka plan müziği düzeylerini ayarlayın, önizleyin, kaydedin ve paylaşın. İsteğe bağlı açılış ve kapanış müzikleri sonraki kayıtlar için hatırlanır. Müzik kayıt tamamlandıktan sonra eklenir; başka bir uygulamaya geçmek kaydı duraklatır.",
       "Wiktionary tabanlı Çevrimiçi sözlük eklendi: sözcük arayın ve özel bir erişilebilir ekranda numaralandırılmış tanımları, eş anlamlıları ve diğer dillerdeki maddeleri okuyun. Dilleri erişilebilir kaydırıcılarla seçebilirsiniz; tercihler ve son aramalar hatırlanır.",
@@ -186,6 +199,7 @@
       "PDF metin çıkarma iyileştirildi: bazı belgelerde önceden atlanan harfler artık kurtarılarak metnin okunması ve dışa aktarılması daha doğru hale getirildi."
     ],
     "nl": [
+      "Vertaler toegevoegd: vertaal tekst en documenten met Google en kies de brontaal (ook automatisch) en doeltaal met toegankelijke schuifregelaars. Typ tekst, kies uit Sonarpad-documenten of blader door bestanden. Een apart resultatenscherm wisselt tussen vertaling en origineel en biedt opslaan als nieuw TXT-bestand of delen. Ook nieuws kan naar de interfacetaal worden vertaald; Documenten biedt Document vertalen. Voortgang met Annuleren; bij fouten blijven vertaalde delen bewaard en worden ze als gedeeltelijke vertaling gemarkeerd.",
       "Nederlandse vertaling van de Sonarpad-interface toegevoegd.",
       "Nieuw: Podcast opnemen. Neem je stem op, pauzeer en hervat, stel het volume van de stem en achtergrondmuziek in, beluister een voorbeeld, sla op en deel. Optionele intro's en outro's worden voor volgende opnamen onthouden. Muziek en jingles worden achteraf samengevoegd; wanneer je naar een andere app schakelt, pauzeert de opname.",
       "Nieuw: een onlinewoordenboek op basis van Wiktionary. Zoek woorden op en lees genummerde definities, synoniemen en lemma's in andere talen op een afzonderlijk toegankelijk scherm. Kies talen met toegankelijke schuifregelaars; voorkeuren en recente zoekopdrachten worden onthouden.",

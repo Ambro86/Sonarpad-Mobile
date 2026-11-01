@@ -6521,5 +6521,89 @@
   "dutch": "Olandese",
   "@dutch": {
     "description": "Localized name of the Dutch language in menus."
+  },
+  "newsTranslateToInterface": "Traduci in italiano",
+  "newsTranslating": "Traduzione in corso",
+  "newsShowOriginal": "Mostra articolo originale",
+  "newsTranslationFailed": "Traduzione non riuscita. Riprova: l’articolo originale è ancora disponibile.",
+  "@newsTranslateToInterface": {
+    "description": "News article Google translation: newsTranslateToInterface"
+  },
+  "@newsTranslating": {
+    "description": "News article Google translation: newsTranslating"
+  },
+  "@newsShowOriginal": {
+    "description": "News article Google translation: newsShowOriginal"
+  },
+  "@newsTranslationFailed": {
+    "description": "News article Google translation: newsTranslationFailed"
+  },
+  "newsTranslationPartial": "Traduzione parziale: si è verificato un errore. Sono mostrate soltanto le parti già tradotte. Puoi tornare all’articolo originale.",
+  "@newsTranslationPartial": {
+    "description": "Notice that an article translation is incomplete after an error."
+  },
+  "translateDocument": "Traduci documento",
+  "translationTargetLanguage": "Lingua di destinazione",
+  "startTranslation": "Avvia traduzione",
+  "documentTranslatedSuffix": "tradotto",
+  "documentTranslationPartial": "Traduzione parziale: un errore ha interrotto la traduzione. Il nuovo documento contiene le parti già tradotte. L’originale è rimasto intatto.",
+  "documentTranslationTextOnly": "La traduzione sarà salvata in un nuovo documento di testo (.txt), senza conservare l’impaginazione originale.",
+  "@translateDocument": {
+    "description": "Document translation: translateDocument"
+  },
+  "@translationTargetLanguage": {
+    "description": "Document translation: translationTargetLanguage"
+  },
+  "@startTranslation": {
+    "description": "Document translation: startTranslation"
+  },
+  "@documentTranslatedSuffix": {
+    "description": "Document translation: documentTranslatedSuffix"
+  },
+  "@documentTranslationPartial": {
+    "description": "Document translation: documentTranslationPartial"
+  },
+  "@documentTranslationTextOnly": {
+    "description": "Document translation: documentTranslationTextOnly"
+  },
+  "translatorTitle": "Traduttore",
+  "translationSourceLanguage": "Lingua di partenza",
+  "translationDetectLanguage": "Rileva automaticamente",
+  "translationInputText": "Testo da tradurre",
+  "translationChooseFile": "Scegli file",
+  "translationResult": "Risultato della traduzione",
+  "translationTranslatedText": "Testo tradotto",
+  "translationOriginalText": "Testo originale",
+  "translationSave": "Salva traduzione",
+  "@translatorTitle": {
+    "description": "Standalone translator: translatorTitle"
+  },
+  "@translationSourceLanguage": {
+    "description": "Standalone translator: translationSourceLanguage"
+  },
+  "@translationDetectLanguage": {
+    "description": "Standalone translator: translationDetectLanguage"
+  },
+  "@translationInputText": {
+    "description": "Standalone translator: translationInputText"
+  },
+  "@translationChooseFile": {
+    "description": "Standalone translator: translationChooseFile"
+  },
+  "@translationResult": {
+    "description": "Standalone translator: translationResult"
+  },
+  "@translationTranslatedText": {
+    "description": "Standalone translator: translationTranslatedText"
+  },
+  "@translationOriginalText": {
+    "description": "Standalone translator: translationOriginalText"
+  },
+  "@translationSave": {
+    "description": "Standalone translator: translationSave"
+  },
+  "translationLibraryDocuments": "Documenti · Sonarpad",
+  "@translationLibraryDocuments": {
+    "description": "Pick a text document from the Sonarpad library."
   }
 }

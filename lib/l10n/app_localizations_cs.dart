@@ -5698,4 +5698,71 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get dutch => 'Nizozemština';
+
+  @override
+  String get newsTranslateToInterface => 'Přeložit do češtiny';
+
+  @override
+  String get newsTranslating => 'Probíhá překlad';
+
+  @override
+  String get newsShowOriginal => 'Zobrazit původní článek';
+
+  @override
+  String get newsTranslationFailed =>
+      'Překlad se nezdařil. Zkuste to znovu; původní článek je stále dostupný.';
+
+  @override
+  String get newsTranslationPartial =>
+      'Částečný překlad: došlo k chybě. Zobrazují se pouze již přeložené části. Můžete se vrátit k původnímu článku.';
+
+  @override
+  String get translateDocument => 'Přeložit dokument';
+
+  @override
+  String get translationTargetLanguage => 'Cílový jazyk';
+
+  @override
+  String get startTranslation => 'Spustit překlad';
+
+  @override
+  String get documentTranslatedSuffix => 'přeloženo';
+
+  @override
+  String get documentTranslationPartial =>
+      'Částečný překlad: překlad byl přerušen chybou. Nový dokument obsahuje již přeložené části. Originál zůstává nezměněn.';
+
+  @override
+  String get documentTranslationTextOnly =>
+      'Překlad bude uložen jako nový textový dokument (.txt), bez původního rozvržení.';
+
+  @override
+  String get translatorTitle => 'Překladač';
+
+  @override
+  String get translationSourceLanguage => 'Zdrojový jazyk';
+
+  @override
+  String get translationDetectLanguage => 'Rozpoznat automaticky';
+
+  @override
+  String get translationInputText => 'Text k překladu';
+
+  @override
+  String get translationChooseFile => 'Vybrat soubor';
+
+  @override
+  String get translationResult => 'Výsledek překladu';
+
+  @override
+  String get translationTranslatedText => 'Přeložený text';
+
+  @override
+  String get translationOriginalText => 'Původní text';
+
+  @override
+  String get translationSave => 'Uložit překlad';
+
+  @override
+  String get translationLibraryDocuments => 'Dokumenty · Sonarpad';
 }

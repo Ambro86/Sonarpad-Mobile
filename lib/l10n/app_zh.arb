@@ -4943,5 +4943,26 @@
   "dutch": "荷兰语",
   "@dutch": {
     "description": "Localized name of the Dutch language in menus."
-  }
+  },
+  "newsTranslateToInterface": "翻译成中文",
+  "newsTranslating": "正在翻译",
+  "newsShowOriginal": "显示原文",
+  "newsTranslationFailed": "翻译失败。请重试，原文仍然可用。",
+  "newsTranslationPartial": "部分翻译：发生错误。仅显示已翻译的部分。您可以返回原文。",
+  "translateDocument": "翻译文档",
+  "translationTargetLanguage": "目标语言",
+  "startTranslation": "开始翻译",
+  "documentTranslatedSuffix": "已翻译",
+  "documentTranslationPartial": "部分翻译：错误中断了翻译。新文档包含已翻译的部分。原文档保持不变。",
+  "documentTranslationTextOnly": "译文将保存为新的文本文档（.txt），不保留原始排版。",
+  "translatorTitle": "翻译器",
+  "translationSourceLanguage": "源语言",
+  "translationDetectLanguage": "自动检测",
+  "translationInputText": "待翻译文本",
+  "translationChooseFile": "选择文件",
+  "translationResult": "翻译结果",
+  "translationTranslatedText": "译文",
+  "translationOriginalText": "原文",
+  "translationSave": "保存译文",
+  "translationLibraryDocuments": "文档 · Sonarpad"
 }

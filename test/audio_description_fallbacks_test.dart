@@ -112,6 +112,9 @@ void main() {
       'adr. amr. 2dr. édr. 中mr.': 'adr. amr. 2dr. édr. 中mr.',
       '  Dr.\nArinsu\tMr. Rossi  ': '  dr\nArinsu\tmr Rossi  ',
       'Jon_Snow entra. 3.14, fine!': 'Jon Snow entra. 3.14, fine!',
+      'b. Devereaux e P. Jonson': 'b Devereaux e P Jonson',
+      'Richard P. Rubinstein; R. C.': 'Richard P Rubinstein; R C',
+      '(M. Stewart), É. Rossi. 2. prova': '(M Stewart), É Rossi. 2. prova',
       '': '',
     };
     for (final entry in cases.entries) {

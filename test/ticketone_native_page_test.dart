@@ -102,8 +102,9 @@ void main() {
   Future<void> start(
     WidgetTester tester,
     NativeController c,
-    List<String> logs,
-  ) async {
+    List<String> logs, {
+    bool settle = true,
+  }) async {
     await tester.pumpWidget(
       app(
         Scaffold(
@@ -117,7 +118,59 @@ void main() {
         ),
       ),
     );
+    if (settle) {
+      await tester.pumpAndSettle();
+    } else {
+      await tester.pump();
+    }
+  }
+
+  testWidgets('initial event quantity becomes one without submitting a cart', (tester) async {
+    final c = NativeController()
+      ..url = 'https://www.ticketone.it/event/test-123/'
+      ..page = (snapshot([], [action('a0', 'Metti nel carrello')])
+        ..['stage'] = 'event'
+        ..['quantity'] = {'value': 2, 'min': 1, 'max': 10});
+    final logs = <String>[];
+    await start(tester, c, logs, settle: false);
+    expect(c.scripts, hasLength(1));
+    expect(c.scripts.single, contains('"action":"quantity"'));
+    expect(c.scripts.single, contains('"quantity":1'));
+    expect(c.scripts.single, contains('"acceptCookies":false'));
+    c.page['quantity']['value'] = 1;
+    c.reply('changed');
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 600));
     await tester.pumpAndSettle();
+    expect(rows(tester).map((r) => r.id), contains('quantity'), reason: logs.join(' | '));
+    expect(row(tester, 'quantity').sliderValue, 1);
+    row(tester, 'quantity').onValueChanged!(3.0);
+    await tester.pump();
+    c.page['quantity']['value'] = 3;
+    c.reply('changed');
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 600));
+    await tester.pumpAndSettle();
+    expect(c.scripts, hasLength(2));
+    expect(row(tester, 'quantity').sliderValue, 3);
+    await tester.pumpWidget(const SizedBox());
+  });
+
+  for (final sample in [
+    ['event', 1, 1],
+    ['event', 2, 2],
+    ['checkout', 2, 1],
+  ]) {
+    testWidgets('quantity is unchanged for $sample', (tester) async {
+      final c = NativeController()
+        ..url = 'https://www.ticketone.it/event/test-123/'
+        ..page = (snapshot([], [])
+          ..['stage'] = sample[0]
+          ..['quantity'] = {'value': sample[1], 'min': sample[2], 'max': 10});
+      await start(tester, c, []);
+      expect(c.scripts, isEmpty);
+      await tester.pumpWidget(const SizedBox());
+    });
   }
 
   testWidgets(

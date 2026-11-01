@@ -5743,4 +5743,71 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get dutch => 'Neerlandés';
+
+  @override
+  String get newsTranslateToInterface => 'Traducir al español';
+
+  @override
+  String get newsTranslating => 'Traduciendo';
+
+  @override
+  String get newsShowOriginal => 'Mostrar artículo original';
+
+  @override
+  String get newsTranslationFailed =>
+      'No se pudo traducir. Inténtalo de nuevo; el artículo original sigue disponible.';
+
+  @override
+  String get newsTranslationPartial =>
+      'Traducción parcial: se produjo un error. Solo se muestran las partes ya traducidas. Puedes volver al artículo original.';
+
+  @override
+  String get translateDocument => 'Traducir documento';
+
+  @override
+  String get translationTargetLanguage => 'Idioma de destino';
+
+  @override
+  String get startTranslation => 'Iniciar traducción';
+
+  @override
+  String get documentTranslatedSuffix => 'traducido';
+
+  @override
+  String get documentTranslationPartial =>
+      'Traducción parcial: un error interrumpió la traducción. El nuevo documento contiene las partes ya traducidas. El original no se ha modificado.';
+
+  @override
+  String get documentTranslationTextOnly =>
+      'La traducción se guardará como un nuevo documento de texto (.txt), sin el diseño original.';
+
+  @override
+  String get translatorTitle => 'Traductor';
+
+  @override
+  String get translationSourceLanguage => 'Idioma de origen';
+
+  @override
+  String get translationDetectLanguage => 'Detectar automáticamente';
+
+  @override
+  String get translationInputText => 'Texto para traducir';
+
+  @override
+  String get translationChooseFile => 'Elegir archivo';
+
+  @override
+  String get translationResult => 'Resultado de la traducción';
+
+  @override
+  String get translationTranslatedText => 'Texto traducido';
+
+  @override
+  String get translationOriginalText => 'Texto original';
+
+  @override
+  String get translationSave => 'Guardar traducción';
+
+  @override
+  String get translationLibraryDocuments => 'Documentos · Sonarpad';
 }

@@ -5706,4 +5706,71 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get dutch => 'Felemenkçe';
+
+  @override
+  String get newsTranslateToInterface => 'Türkçeye çevir';
+
+  @override
+  String get newsTranslating => 'Çevriliyor';
+
+  @override
+  String get newsShowOriginal => 'Orijinal makaleyi göster';
+
+  @override
+  String get newsTranslationFailed =>
+      'Çeviri başarısız oldu. Tekrar deneyin; orijinal makale hâlâ kullanılabilir.';
+
+  @override
+  String get newsTranslationPartial =>
+      'Kısmi çeviri: bir hata oluştu. Yalnızca çevrilmiş bölümler gösteriliyor. Orijinal makaleye dönebilirsiniz.';
+
+  @override
+  String get translateDocument => 'Belgeyi çevir';
+
+  @override
+  String get translationTargetLanguage => 'Hedef dil';
+
+  @override
+  String get startTranslation => 'Çeviriyi başlat';
+
+  @override
+  String get documentTranslatedSuffix => 'çevrilmiş';
+
+  @override
+  String get documentTranslationPartial =>
+      'Kısmi çeviri: bir hata çeviriyi durdurdu. Yeni belge çevrilmiş bölümleri içerir. Orijinal belge değiştirilmedi.';
+
+  @override
+  String get documentTranslationTextOnly =>
+      'Çeviri, orijinal düzen korunmadan yeni bir metin belgesi (.txt) olarak kaydedilir.';
+
+  @override
+  String get translatorTitle => 'Çevirmen';
+
+  @override
+  String get translationSourceLanguage => 'Kaynak dil';
+
+  @override
+  String get translationDetectLanguage => 'Otomatik algıla';
+
+  @override
+  String get translationInputText => 'Çevrilecek metin';
+
+  @override
+  String get translationChooseFile => 'Dosya seç';
+
+  @override
+  String get translationResult => 'Çeviri sonucu';
+
+  @override
+  String get translationTranslatedText => 'Çevrilmiş metin';
+
+  @override
+  String get translationOriginalText => 'Orijinal metin';
+
+  @override
+  String get translationSave => 'Çeviriyi kaydet';
+
+  @override
+  String get translationLibraryDocuments => 'Belgeler · Sonarpad';
 }

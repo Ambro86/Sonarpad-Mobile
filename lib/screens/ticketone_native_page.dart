@@ -46,6 +46,7 @@ class _TicketOneNativePageState extends State<TicketOneNativePage> {
   final int _instance = ++_nextInstance;
   final _focus = AccessibleListController(debugName: 'ticketone-form');
   final Map<String, dynamic> _draft = {};
+  final Set<String> _initializedQuantities = {};
   Map<String, dynamic>? _page;
   Timer? _timer;
   String? _message, _pending;
@@ -312,6 +313,24 @@ class _TicketOneNativePageState extends State<TicketOneNativePage> {
         _page = value;
         _busy = false;
       });
+      final quantity = value['quantity'];
+      if (value['stage'] == 'event' &&
+          current.host == 'www.ticketone.it' &&
+          current.path.startsWith('/event/') &&
+          quantity is Map &&
+          quantity['value'] is num &&
+          quantity['min'] is num &&
+          quantity['max'] is num &&
+          _initializedQuantities.add(current.path)) {
+        // Use the site's existing quantity action, once per event. Do not
+        // overwrite a subsequent user choice or touch an existing checkout.
+        if (quantity['value'] > 1 &&
+            quantity['min'] <= 1 && quantity['max'] >= 1) {
+          widget.log('native_initial_quantity target=1');
+          await _act('quantity', quantity: 1);
+          return;
+        }
+      }
       widget.log(
         'native_page_${value['stage']} fields=${fields.length} actions=${actions.length} errors=${(value['errors'] as List? ?? []).length}',
       );
@@ -782,6 +801,8 @@ class _TicketOneNativePageState extends State<TicketOneNativePage> {
               sliderMin: (qty['min'] as num).toDouble(),
               sliderMax: (qty['max'] as num).toDouble(),
               sliderStep: 1,
+              sliderIncreasedValueLabel: '${(qty['value'] + 1).clamp(qty['min'], qty['max'])}',
+              sliderDecreasedValueLabel: '${(qty['value'] - 1).clamp(qty['min'], qty['max'])}',
               onValueChanged: (v) {
                 final n = double.tryParse('$v');
                 if (n != null && n.isFinite) {

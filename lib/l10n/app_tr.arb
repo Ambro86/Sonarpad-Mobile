@@ -4943,5 +4943,26 @@
   "dutch": "Felemenkçe",
   "@dutch": {
     "description": "Localized name of the Dutch language in menus."
-  }
+  },
+  "newsTranslateToInterface": "Türkçeye çevir",
+  "newsTranslating": "Çevriliyor",
+  "newsShowOriginal": "Orijinal makaleyi göster",
+  "newsTranslationFailed": "Çeviri başarısız oldu. Tekrar deneyin; orijinal makale hâlâ kullanılabilir.",
+  "newsTranslationPartial": "Kısmi çeviri: bir hata oluştu. Yalnızca çevrilmiş bölümler gösteriliyor. Orijinal makaleye dönebilirsiniz.",
+  "translateDocument": "Belgeyi çevir",
+  "translationTargetLanguage": "Hedef dil",
+  "startTranslation": "Çeviriyi başlat",
+  "documentTranslatedSuffix": "çevrilmiş",
+  "documentTranslationPartial": "Kısmi çeviri: bir hata çeviriyi durdurdu. Yeni belge çevrilmiş bölümleri içerir. Orijinal belge değiştirilmedi.",
+  "documentTranslationTextOnly": "Çeviri, orijinal düzen korunmadan yeni bir metin belgesi (.txt) olarak kaydedilir.",
+  "translatorTitle": "Çevirmen",
+  "translationSourceLanguage": "Kaynak dil",
+  "translationDetectLanguage": "Otomatik algıla",
+  "translationInputText": "Çevrilecek metin",
+  "translationChooseFile": "Dosya seç",
+  "translationResult": "Çeviri sonucu",
+  "translationTranslatedText": "Çevrilmiş metin",
+  "translationOriginalText": "Orijinal metin",
+  "translationSave": "Çeviriyi kaydet",
+  "translationLibraryDocuments": "Belgeler · Sonarpad"
 }

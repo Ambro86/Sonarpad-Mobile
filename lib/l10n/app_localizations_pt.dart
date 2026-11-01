@@ -5727,6 +5727,73 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get dutch => 'Neerlandês';
+
+  @override
+  String get newsTranslateToInterface => 'Traduzir para português';
+
+  @override
+  String get newsTranslating => 'A traduzir';
+
+  @override
+  String get newsShowOriginal => 'Mostrar artigo original';
+
+  @override
+  String get newsTranslationFailed =>
+      'A tradução falhou. Tente novamente; o artigo original continua disponível.';
+
+  @override
+  String get newsTranslationPartial =>
+      'Tradução parcial: ocorreu um erro. São mostradas apenas as partes já traduzidas. Pode voltar ao artigo original.';
+
+  @override
+  String get translateDocument => 'Traduzir documento';
+
+  @override
+  String get translationTargetLanguage => 'Idioma de destino';
+
+  @override
+  String get startTranslation => 'Iniciar tradução';
+
+  @override
+  String get documentTranslatedSuffix => 'traduzido';
+
+  @override
+  String get documentTranslationPartial =>
+      'Tradução parcial: um erro interrompeu a tradução. O novo documento contém as partes já traduzidas. O original não foi alterado.';
+
+  @override
+  String get documentTranslationTextOnly =>
+      'A tradução será guardada num novo documento de texto (.txt), sem a formatação original.';
+
+  @override
+  String get translatorTitle => 'Tradutor';
+
+  @override
+  String get translationSourceLanguage => 'Idioma de origem';
+
+  @override
+  String get translationDetectLanguage => 'Detetar automaticamente';
+
+  @override
+  String get translationInputText => 'Texto a traduzir';
+
+  @override
+  String get translationChooseFile => 'Escolher ficheiro';
+
+  @override
+  String get translationResult => 'Resultado da tradução';
+
+  @override
+  String get translationTranslatedText => 'Texto traduzido';
+
+  @override
+  String get translationOriginalText => 'Texto original';
+
+  @override
+  String get translationSave => 'Guardar tradução';
+
+  @override
+  String get translationLibraryDocuments => 'Documentos · Sonarpad';
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
@@ -11444,4 +11511,71 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get dutch => 'Neerlandês';
+
+  @override
+  String get newsTranslateToInterface => 'Traduzir para português';
+
+  @override
+  String get newsTranslating => 'Traduzindo';
+
+  @override
+  String get newsShowOriginal => 'Mostrar artigo original';
+
+  @override
+  String get newsTranslationFailed =>
+      'Não foi possível traduzir. Tente novamente; o artigo original continua disponível.';
+
+  @override
+  String get newsTranslationPartial =>
+      'Tradução parcial: ocorreu um erro. Apenas as partes já traduzidas são exibidas. Você pode voltar ao artigo original.';
+
+  @override
+  String get translateDocument => 'Traduzir documento';
+
+  @override
+  String get translationTargetLanguage => 'Idioma de destino';
+
+  @override
+  String get startTranslation => 'Iniciar tradução';
+
+  @override
+  String get documentTranslatedSuffix => 'traduzido';
+
+  @override
+  String get documentTranslationPartial =>
+      'Tradução parcial: um erro interrompeu a tradução. O novo documento contém as partes já traduzidas. O original não foi alterado.';
+
+  @override
+  String get documentTranslationTextOnly =>
+      'A tradução será salva em um novo documento de texto (.txt), sem a formatação original.';
+
+  @override
+  String get translatorTitle => 'Tradutor';
+
+  @override
+  String get translationSourceLanguage => 'Idioma de origem';
+
+  @override
+  String get translationDetectLanguage => 'Detectar automaticamente';
+
+  @override
+  String get translationInputText => 'Texto para traduzir';
+
+  @override
+  String get translationChooseFile => 'Escolher arquivo';
+
+  @override
+  String get translationResult => 'Resultado da tradução';
+
+  @override
+  String get translationTranslatedText => 'Texto traduzido';
+
+  @override
+  String get translationOriginalText => 'Texto original';
+
+  @override
+  String get translationSave => 'Salvar tradução';
+
+  @override
+  String get translationLibraryDocuments => 'Documentos · Sonarpad';
 }

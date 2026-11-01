@@ -22,6 +22,7 @@ class HomeItemIds {
   static const audioDescriptions = 'audiodescriptions';
   static const sonarpadAudioDescriptions = 'sonarpad_audiodescriptions';
   static const onlineDictionary = 'online_dictionary';
+  static const translator = 'translator';
   static const wikipedia = 'wikipedia';
   static const treccani = 'treccani';
   static const voiceDictionary = 'voice_dictionary';
@@ -58,6 +59,7 @@ class HomeItemIds {
     sonarpadAudioDescriptions,
     wikipedia,
     onlineDictionary,
+    translator,
     treccani,
     voiceDictionary,
     digitalLibrary,
@@ -74,6 +76,7 @@ class HomeItemIds {
   static const Set<String> alwaysVisible = {settings, info};
 
   static const List<String> readingOrder = [
+    translator,
     documents,
     wikipedia,
     onlineDictionary,

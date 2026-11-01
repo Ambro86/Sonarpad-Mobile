@@ -5712,4 +5712,71 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get dutch => 'Nederlands';
+
+  @override
+  String get newsTranslateToInterface => 'Vertalen naar het Nederlands';
+
+  @override
+  String get newsTranslating => 'Bezig met vertalen';
+
+  @override
+  String get newsShowOriginal => 'Oorspronkelijk artikel tonen';
+
+  @override
+  String get newsTranslationFailed =>
+      'Vertaling mislukt. Probeer het opnieuw; het oorspronkelijke artikel blijft beschikbaar.';
+
+  @override
+  String get newsTranslationPartial =>
+      'Gedeeltelijke vertaling: er is een fout opgetreden. Alleen de reeds vertaalde delen worden getoond. U kunt teruggaan naar het oorspronkelijke artikel.';
+
+  @override
+  String get translateDocument => 'Document vertalen';
+
+  @override
+  String get translationTargetLanguage => 'Doeltaal';
+
+  @override
+  String get startTranslation => 'Vertaling starten';
+
+  @override
+  String get documentTranslatedSuffix => 'vertaald';
+
+  @override
+  String get documentTranslationPartial =>
+      'Gedeeltelijke vertaling: een fout heeft de vertaling onderbroken. Het nieuwe document bevat de reeds vertaalde delen. Het origineel is ongewijzigd.';
+
+  @override
+  String get documentTranslationTextOnly =>
+      'De vertaling wordt opgeslagen als een nieuw tekstdocument (.txt), zonder de oorspronkelijke opmaak.';
+
+  @override
+  String get translatorTitle => 'Vertaler';
+
+  @override
+  String get translationSourceLanguage => 'Brontaal';
+
+  @override
+  String get translationDetectLanguage => 'Automatisch detecteren';
+
+  @override
+  String get translationInputText => 'Te vertalen tekst';
+
+  @override
+  String get translationChooseFile => 'Bestand kiezen';
+
+  @override
+  String get translationResult => 'Vertaalresultaat';
+
+  @override
+  String get translationTranslatedText => 'Vertaalde tekst';
+
+  @override
+  String get translationOriginalText => 'Oorspronkelijke tekst';
+
+  @override
+  String get translationSave => 'Vertaling opslaan';
+
+  @override
+  String get translationLibraryDocuments => 'Documenten · Sonarpad';
 }

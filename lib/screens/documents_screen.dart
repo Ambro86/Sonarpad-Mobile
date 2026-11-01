@@ -37,6 +37,7 @@ import 'document_editor_screen.dart';
 import 'audio_description_project_editor_screen.dart';
 import 'document_reader_screen.dart';
 import 'document_rename_screen.dart';
+import 'document_translation_screen.dart';
 import 'dropbox_browser_screen.dart';
 import 'gutenberg_screen.dart';
 import 'internet_archive_screen.dart';
@@ -1104,7 +1105,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     );
   }
 
-  Future<String> _exportTextForDocument(DocumentItem doc) async {
+  Future<String> _exportTextForDocument(DocumentItem doc, {bool requestPdfPassword = false}) async {
     final l10n = AppLocalizations.of(context);
     await AppLogger.log('Cerco file modificato per ${doc.id}');
     final editedPath = await _service.resolveEditedFilePath(doc);
@@ -1123,12 +1124,30 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
         'Estrazione testo da file originale (estensione: ${doc.extension})');
     final includeFootnotes = doc.extension.toLowerCase() == 'epub' &&
         await AppSettingsService().includeEpubFootnotesInText();
-    final result = await DocumentTextExtractor().extract(
+    var result = await DocumentTextExtractor().extract(
       path: resolvedPath,
       extension: doc.extension,
       includeEpubFootnotesInText: includeFootnotes,
       footnoteLabel: l10n.documentFootnoteLabel,
     );
+    String? password;
+    while (requestPdfPassword && result.passwordRequired) {
+      if (!mounted) throw StateError('Cancelled');
+      password = await showDialog<String>(context: context, builder: (_) => DocumentPasswordDialog(
+        title: l10n.documentPasswordRequiredTitle,
+        prompt: l10n.enterDocumentPasswordToOpen,
+        passwordLabel: l10n.documentPassword,
+        confirmPasswordLabel: l10n.confirmDocumentPassword,
+        requiredMessage: l10n.documentPasswordRequired,
+        mismatchMessage: l10n.documentPasswordsDoNotMatch,
+        invalidMessage: l10n.incorrectDocumentPassword,
+        initialError: password == null ? null : l10n.incorrectDocumentPassword,
+      ));
+      if (password == null || !mounted) throw StateError('Cancelled');
+      result = await DocumentTextExtractor().extract(
+        path: resolvedPath, extension: doc.extension, pdfPassword: password,
+      );
+    }
     if (result.text.trim().isEmpty) {
       throw Exception(result.error == null ? l10n.noExportableTextFound : l10n.technicalErrorGeneric);
     }
@@ -1281,6 +1300,28 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     final path = '$outDir/${baseName}_export.pdf';
     await File(path).writeAsBytes(bytes);
     return path;
+  }
+
+  bool _canTranslateDocument(DocumentItem doc) => !doc.isFolder &&
+      const {'txt', 'md', 'html', 'htm', 'rtf', 'pdf', 'epub', 'docx', 'doc'}
+          .contains(doc.extension.toLowerCase());
+
+  Future<void> _translateDocument(DocumentItem doc) async {
+    if (!_canTranslateDocument(doc) || !await _authorizeDocumentOpen(doc) || !mounted) return;
+    final translated = await Navigator.of(context).push<DocumentItem>(MaterialPageRoute(
+      settings: const RouteSettings(name: '/documents/translate'),
+      builder: (_) => DocumentTranslationScreen(
+        document: doc, library: _service,
+        loadText: () => _exportTextForDocument(doc, requestPdfPassword: true),
+      ),
+    ));
+    if (!mounted) return;
+    if (translated != null) {
+      await _service.load();
+      if (!mounted) return;
+      setState(() {});
+      await _openDocument(translated);
+    }
   }
 
   Future<void> _openDocument(DocumentItem doc) async {
@@ -1574,6 +1615,8 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     for (var index = 0; index < docs.length; index++) {
       final doc = docs[index];
       final actions = <AccessibleCustomAction>[
+        if (_canTranslateDocument(doc))
+          AccessibleCustomAction(id: 'translate', label: l10n.translateDocument),
         AccessibleCustomAction(
           id: 'remove',
           label: doc.isFolder ? l10n.removeFolder : l10n.removeDocument,
@@ -1615,6 +1658,8 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
         kind: 'action',
         actions: actions,
         visualActions: [
+          if (_canTranslateDocument(doc))
+            AccessibleVisualAction(id: 'translate', label: l10n.translateDocument, icon: 'translate'),
           if (!doc.isFolder)
             AccessibleVisualAction(
               id: 'select',
@@ -1654,6 +1699,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
           await _openDocument(doc);
         } else if (event.type == 'customAction') {
           switch (event.action) {
+            case 'translate': await _translateDocument(doc); break;
             case 'select': await _selectDocuments(initialDocumentId: doc.id); break;
             case 'remove': await _remove(doc.id); break;
             case 'rename': await _renameDocument(doc); break;
@@ -1786,6 +1832,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                                     ),
                             onRemove: () => _remove(doc.id),
                             onRename: () => _renameDocument(doc),
+                            onTranslate: _canTranslateDocument(doc) ? () => _translateDocument(doc) : null,
                             canPasswordProtect:
                                 _canPasswordProtectDocument(doc),
                             onPasswordProtection: () =>
@@ -1823,6 +1870,7 @@ class _DocumentTile extends StatelessWidget {
   final VoidCallback? onSelect;
   final VoidCallback onRemove;
   final VoidCallback onRename;
+  final VoidCallback? onTranslate;
   final bool canPasswordProtect;
   final VoidCallback onPasswordProtection;
   final bool canShare;
@@ -1839,6 +1887,7 @@ class _DocumentTile extends StatelessWidget {
     required this.onSelect,
     required this.onRemove,
     required this.onRename,
+    this.onTranslate,
     required this.canPasswordProtect,
     required this.onPasswordProtection,
     required this.canShare,
@@ -1916,6 +1965,7 @@ class _DocumentTile extends StatelessWidget {
       button: true,
       onTap: onOpen,
       customSemanticsActions: {
+          CustomSemanticsAction(label: l10n.translateDocument): ?onTranslate,
           CustomSemanticsAction(
               label: doc.isFolder
                   ? l10n.removeFolder
@@ -2042,6 +2092,11 @@ class _DocumentTile extends StatelessWidget {
                           : l10n.protectDocumentWithPassword,
                       onPressed: onPasswordProtection,
                     ),
+                  if (onTranslate != null)
+                    ExcludeSemantics(child: IconButton(
+                      icon: const Icon(Icons.translate), tooltip: l10n.translateDocument,
+                      onPressed: onTranslate,
+                    )),
                   // Pulsante rimuovi
                   ExcludeSemantics(
                     child: Semantics(

@@ -6521,5 +6521,26 @@
   "dutch": "Niederländisch",
   "@dutch": {
     "description": "Localized name of the Dutch language in menus."
-  }
+  },
+  "newsTranslateToInterface": "Ins Deutsche übersetzen",
+  "newsTranslating": "Übersetzung läuft",
+  "newsShowOriginal": "Originalartikel anzeigen",
+  "newsTranslationFailed": "Übersetzung fehlgeschlagen. Versuchen Sie es erneut; der Originalartikel ist weiterhin verfügbar.",
+  "newsTranslationPartial": "Teilweise Übersetzung: Ein Fehler ist aufgetreten. Nur bereits übersetzte Teile werden angezeigt. Sie können zum Originalartikel zurückkehren.",
+  "translateDocument": "Dokument übersetzen",
+  "translationTargetLanguage": "Zielsprache",
+  "startTranslation": "Übersetzung starten",
+  "documentTranslatedSuffix": "übersetzt",
+  "documentTranslationPartial": "Teilweise Übersetzung: Ein Fehler hat die Übersetzung unterbrochen. Das neue Dokument enthält die bereits übersetzten Teile. Das Original bleibt unverändert.",
+  "documentTranslationTextOnly": "Die Übersetzung wird als neues Textdokument (.txt) ohne das ursprüngliche Layout gespeichert.",
+  "translatorTitle": "Übersetzer",
+  "translationSourceLanguage": "Ausgangssprache",
+  "translationDetectLanguage": "Automatisch erkennen",
+  "translationInputText": "Zu übersetzender Text",
+  "translationChooseFile": "Datei auswählen",
+  "translationResult": "Übersetzungsergebnis",
+  "translationTranslatedText": "Übersetzter Text",
+  "translationOriginalText": "Originaltext",
+  "translationSave": "Übersetzung speichern",
+  "translationLibraryDocuments": "Dokumente · Sonarpad"
 }

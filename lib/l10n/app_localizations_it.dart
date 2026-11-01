@@ -5720,4 +5720,71 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get dutch => 'Olandese';
+
+  @override
+  String get newsTranslateToInterface => 'Traduci in italiano';
+
+  @override
+  String get newsTranslating => 'Traduzione in corso';
+
+  @override
+  String get newsShowOriginal => 'Mostra articolo originale';
+
+  @override
+  String get newsTranslationFailed =>
+      'Traduzione non riuscita. Riprova: l’articolo originale è ancora disponibile.';
+
+  @override
+  String get newsTranslationPartial =>
+      'Traduzione parziale: si è verificato un errore. Sono mostrate soltanto le parti già tradotte. Puoi tornare all’articolo originale.';
+
+  @override
+  String get translateDocument => 'Traduci documento';
+
+  @override
+  String get translationTargetLanguage => 'Lingua di destinazione';
+
+  @override
+  String get startTranslation => 'Avvia traduzione';
+
+  @override
+  String get documentTranslatedSuffix => 'tradotto';
+
+  @override
+  String get documentTranslationPartial =>
+      'Traduzione parziale: un errore ha interrotto la traduzione. Il nuovo documento contiene le parti già tradotte. L’originale è rimasto intatto.';
+
+  @override
+  String get documentTranslationTextOnly =>
+      'La traduzione sarà salvata in un nuovo documento di testo (.txt), senza conservare l’impaginazione originale.';
+
+  @override
+  String get translatorTitle => 'Traduttore';
+
+  @override
+  String get translationSourceLanguage => 'Lingua di partenza';
+
+  @override
+  String get translationDetectLanguage => 'Rileva automaticamente';
+
+  @override
+  String get translationInputText => 'Testo da tradurre';
+
+  @override
+  String get translationChooseFile => 'Scegli file';
+
+  @override
+  String get translationResult => 'Risultato della traduzione';
+
+  @override
+  String get translationTranslatedText => 'Testo tradotto';
+
+  @override
+  String get translationOriginalText => 'Testo originale';
+
+  @override
+  String get translationSave => 'Salva traduzione';
+
+  @override
+  String get translationLibraryDocuments => 'Documenti · Sonarpad';
 }

@@ -5754,4 +5754,71 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get dutch => 'Néerlandais';
+
+  @override
+  String get newsTranslateToInterface => 'Traduire en français';
+
+  @override
+  String get newsTranslating => 'Traduction en cours';
+
+  @override
+  String get newsShowOriginal => 'Afficher l’article original';
+
+  @override
+  String get newsTranslationFailed =>
+      'La traduction a échoué. Réessayez : l’article original reste disponible.';
+
+  @override
+  String get newsTranslationPartial =>
+      'Traduction partielle : une erreur est survenue. Seules les parties déjà traduites sont affichées. Vous pouvez revenir à l’article original.';
+
+  @override
+  String get translateDocument => 'Traduire le document';
+
+  @override
+  String get translationTargetLanguage => 'Langue de destination';
+
+  @override
+  String get startTranslation => 'Démarrer la traduction';
+
+  @override
+  String get documentTranslatedSuffix => 'traduit';
+
+  @override
+  String get documentTranslationPartial =>
+      'Traduction partielle : une erreur a interrompu la traduction. Le nouveau document contient les parties déjà traduites. L’original est inchangé.';
+
+  @override
+  String get documentTranslationTextOnly =>
+      'La traduction sera enregistrée dans un nouveau document texte (.txt), sans la mise en page originale.';
+
+  @override
+  String get translatorTitle => 'Traducteur';
+
+  @override
+  String get translationSourceLanguage => 'Langue source';
+
+  @override
+  String get translationDetectLanguage => 'Détecter automatiquement';
+
+  @override
+  String get translationInputText => 'Texte à traduire';
+
+  @override
+  String get translationChooseFile => 'Choisir un fichier';
+
+  @override
+  String get translationResult => 'Résultat de la traduction';
+
+  @override
+  String get translationTranslatedText => 'Texte traduit';
+
+  @override
+  String get translationOriginalText => 'Texte original';
+
+  @override
+  String get translationSave => 'Enregistrer la traduction';
+
+  @override
+  String get translationLibraryDocuments => 'Documents · Sonarpad';
 }

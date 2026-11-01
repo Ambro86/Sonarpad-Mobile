@@ -5694,4 +5694,71 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get dutch => 'Нідерландська';
+
+  @override
+  String get newsTranslateToInterface => 'Перекласти українською';
+
+  @override
+  String get newsTranslating => 'Триває переклад';
+
+  @override
+  String get newsShowOriginal => 'Показати оригінальну статтю';
+
+  @override
+  String get newsTranslationFailed =>
+      'Не вдалося перекласти. Спробуйте ще раз; оригінальна стаття залишається доступною.';
+
+  @override
+  String get newsTranslationPartial =>
+      'Частковий переклад: сталася помилка. Показано лише вже перекладені частини. Можна повернутися до оригінальної статті.';
+
+  @override
+  String get translateDocument => 'Перекласти документ';
+
+  @override
+  String get translationTargetLanguage => 'Мова перекладу';
+
+  @override
+  String get startTranslation => 'Почати переклад';
+
+  @override
+  String get documentTranslatedSuffix => 'перекладено';
+
+  @override
+  String get documentTranslationPartial =>
+      'Частковий переклад: переклад перервано через помилку. Новий документ містить уже перекладені частини. Оригінал не змінено.';
+
+  @override
+  String get documentTranslationTextOnly =>
+      'Переклад буде збережено як новий текстовий документ (.txt), без оригінального оформлення.';
+
+  @override
+  String get translatorTitle => 'Перекладач';
+
+  @override
+  String get translationSourceLanguage => 'Мова оригіналу';
+
+  @override
+  String get translationDetectLanguage => 'Визначити автоматично';
+
+  @override
+  String get translationInputText => 'Текст для перекладу';
+
+  @override
+  String get translationChooseFile => 'Вибрати файл';
+
+  @override
+  String get translationResult => 'Результат перекладу';
+
+  @override
+  String get translationTranslatedText => 'Перекладений текст';
+
+  @override
+  String get translationOriginalText => 'Оригінальний текст';
+
+  @override
+  String get translationSave => 'Зберегти переклад';
+
+  @override
+  String get translationLibraryDocuments => 'Документи · Sonarpad';
 }

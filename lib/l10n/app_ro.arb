@@ -4943,5 +4943,26 @@
   "dutch": "Neerlandeză",
   "@dutch": {
     "description": "Localized name of the Dutch language in menus."
-  }
+  },
+  "newsTranslateToInterface": "Tradu în română",
+  "newsTranslating": "Se traduce",
+  "newsShowOriginal": "Arată articolul original",
+  "newsTranslationFailed": "Traducerea a eșuat. Încearcă din nou; articolul original este încă disponibil.",
+  "newsTranslationPartial": "Traducere parțială: a apărut o eroare. Sunt afișate doar părțile deja traduse. Poți reveni la articolul original.",
+  "translateDocument": "Tradu documentul",
+  "translationTargetLanguage": "Limba de destinație",
+  "startTranslation": "Începe traducerea",
+  "documentTranslatedSuffix": "tradus",
+  "documentTranslationPartial": "Traducere parțială: o eroare a întrerupt traducerea. Noul document conține părțile deja traduse. Originalul a rămas intact.",
+  "documentTranslationTextOnly": "Traducerea va fi salvată într-un document text nou (.txt), fără aspectul original.",
+  "translatorTitle": "Traducător",
+  "translationSourceLanguage": "Limba sursă",
+  "translationDetectLanguage": "Detectează automat",
+  "translationInputText": "Text de tradus",
+  "translationChooseFile": "Alege fișierul",
+  "translationResult": "Rezultatul traducerii",
+  "translationTranslatedText": "Text tradus",
+  "translationOriginalText": "Text original",
+  "translationSave": "Salvează traducerea",
+  "translationLibraryDocuments": "Documente · Sonarpad"
 }

@@ -28,7 +28,7 @@ void main() {
       expect(decoded.changesFor('nl'), dutch);
       total += dutch.length;
     }
-    expect(total, 164);
+    expect(total, 165);
   });
 
   test('Platform-specific changes use Dutch rather than English', () {

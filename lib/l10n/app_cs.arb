@@ -4946,5 +4946,26 @@
   "dutch": "Nizozemština",
   "@dutch": {
     "description": "Localized name of the Dutch language in menus."
-  }
+  },
+  "newsTranslateToInterface": "Přeložit do češtiny",
+  "newsTranslating": "Probíhá překlad",
+  "newsShowOriginal": "Zobrazit původní článek",
+  "newsTranslationFailed": "Překlad se nezdařil. Zkuste to znovu; původní článek je stále dostupný.",
+  "newsTranslationPartial": "Částečný překlad: došlo k chybě. Zobrazují se pouze již přeložené části. Můžete se vrátit k původnímu článku.",
+  "translateDocument": "Přeložit dokument",
+  "translationTargetLanguage": "Cílový jazyk",
+  "startTranslation": "Spustit překlad",
+  "documentTranslatedSuffix": "přeloženo",
+  "documentTranslationPartial": "Částečný překlad: překlad byl přerušen chybou. Nový dokument obsahuje již přeložené části. Originál zůstává nezměněn.",
+  "documentTranslationTextOnly": "Překlad bude uložen jako nový textový dokument (.txt), bez původního rozvržení.",
+  "translatorTitle": "Překladač",
+  "translationSourceLanguage": "Zdrojový jazyk",
+  "translationDetectLanguage": "Rozpoznat automaticky",
+  "translationInputText": "Text k překladu",
+  "translationChooseFile": "Vybrat soubor",
+  "translationResult": "Výsledek překladu",
+  "translationTranslatedText": "Přeložený text",
+  "translationOriginalText": "Původní text",
+  "translationSave": "Uložit překlad",
+  "translationLibraryDocuments": "Dokumenty · Sonarpad"
 }

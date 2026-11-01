@@ -5478,6 +5478,69 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get dutch => '荷兰语';
+
+  @override
+  String get newsTranslateToInterface => '翻译成中文';
+
+  @override
+  String get newsTranslating => '正在翻译';
+
+  @override
+  String get newsShowOriginal => '显示原文';
+
+  @override
+  String get newsTranslationFailed => '翻译失败。请重试，原文仍然可用。';
+
+  @override
+  String get newsTranslationPartial => '部分翻译：发生错误。仅显示已翻译的部分。您可以返回原文。';
+
+  @override
+  String get translateDocument => '翻译文档';
+
+  @override
+  String get translationTargetLanguage => '目标语言';
+
+  @override
+  String get startTranslation => '开始翻译';
+
+  @override
+  String get documentTranslatedSuffix => '已翻译';
+
+  @override
+  String get documentTranslationPartial => '部分翻译：错误中断了翻译。新文档包含已翻译的部分。原文档保持不变。';
+
+  @override
+  String get documentTranslationTextOnly => '译文将保存为新的文本文档（.txt），不保留原始排版。';
+
+  @override
+  String get translatorTitle => '翻译器';
+
+  @override
+  String get translationSourceLanguage => '源语言';
+
+  @override
+  String get translationDetectLanguage => '自动检测';
+
+  @override
+  String get translationInputText => '待翻译文本';
+
+  @override
+  String get translationChooseFile => '选择文件';
+
+  @override
+  String get translationResult => '翻译结果';
+
+  @override
+  String get translationTranslatedText => '译文';
+
+  @override
+  String get translationOriginalText => '原文';
+
+  @override
+  String get translationSave => '保存译文';
+
+  @override
+  String get translationLibraryDocuments => '文档 · Sonarpad';
 }
 
 /// The translations for Chinese, as used in China (`zh_CN`).
@@ -10954,4 +11017,67 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get dutch => '荷兰语';
+
+  @override
+  String get newsTranslateToInterface => '翻译成中文';
+
+  @override
+  String get newsTranslating => '正在翻译';
+
+  @override
+  String get newsShowOriginal => '显示原文';
+
+  @override
+  String get newsTranslationFailed => '翻译失败。请重试，原文仍然可用。';
+
+  @override
+  String get newsTranslationPartial => '部分翻译：发生错误。仅显示已翻译的部分。您可以返回原文。';
+
+  @override
+  String get translateDocument => '翻译文档';
+
+  @override
+  String get translationTargetLanguage => '目标语言';
+
+  @override
+  String get startTranslation => '开始翻译';
+
+  @override
+  String get documentTranslatedSuffix => '已翻译';
+
+  @override
+  String get documentTranslationPartial => '部分翻译：错误中断了翻译。新文档包含已翻译的部分。原文档保持不变。';
+
+  @override
+  String get documentTranslationTextOnly => '译文将保存为新的文本文档（.txt），不保留原始排版。';
+
+  @override
+  String get translatorTitle => '翻译器';
+
+  @override
+  String get translationSourceLanguage => '源语言';
+
+  @override
+  String get translationDetectLanguage => '自动检测';
+
+  @override
+  String get translationInputText => '待翻译文本';
+
+  @override
+  String get translationChooseFile => '选择文件';
+
+  @override
+  String get translationResult => '翻译结果';
+
+  @override
+  String get translationTranslatedText => '译文';
+
+  @override
+  String get translationOriginalText => '原文';
+
+  @override
+  String get translationSave => '保存译文';
+
+  @override
+  String get translationLibraryDocuments => '文档 · Sonarpad';
 }

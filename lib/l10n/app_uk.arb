@@ -6521,5 +6521,26 @@
   "dutch": "Нідерландська",
   "@dutch": {
     "description": "Localized name of the Dutch language in menus."
-  }
+  },
+  "newsTranslateToInterface": "Перекласти українською",
+  "newsTranslating": "Триває переклад",
+  "newsShowOriginal": "Показати оригінальну статтю",
+  "newsTranslationFailed": "Не вдалося перекласти. Спробуйте ще раз; оригінальна стаття залишається доступною.",
+  "newsTranslationPartial": "Частковий переклад: сталася помилка. Показано лише вже перекладені частини. Можна повернутися до оригінальної статті.",
+  "translateDocument": "Перекласти документ",
+  "translationTargetLanguage": "Мова перекладу",
+  "startTranslation": "Почати переклад",
+  "documentTranslatedSuffix": "перекладено",
+  "documentTranslationPartial": "Частковий переклад: переклад перервано через помилку. Новий документ містить уже перекладені частини. Оригінал не змінено.",
+  "documentTranslationTextOnly": "Переклад буде збережено як новий текстовий документ (.txt), без оригінального оформлення.",
+  "translatorTitle": "Перекладач",
+  "translationSourceLanguage": "Мова оригіналу",
+  "translationDetectLanguage": "Визначити автоматично",
+  "translationInputText": "Текст для перекладу",
+  "translationChooseFile": "Вибрати файл",
+  "translationResult": "Результат перекладу",
+  "translationTranslatedText": "Перекладений текст",
+  "translationOriginalText": "Оригінальний текст",
+  "translationSave": "Зберегти переклад",
+  "translationLibraryDocuments": "Документи · Sonarpad"
 }

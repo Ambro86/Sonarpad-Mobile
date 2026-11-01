@@ -214,6 +214,10 @@ class AudioDescriptionFallbacks {
     r'[\p{Alphabetic}\p{Number}]+\.',
     unicode: true,
   );
+  static final _pronunciationInitial = RegExp(
+    r'^\p{Alphabetic}\.$',
+    unicode: true,
+  );
 
   static String normalizePronunciationText(String value) => value
       .replaceAll('_', ' ')
@@ -222,6 +226,8 @@ class AudioDescriptionFallbacks {
         (match) => switch (match[0]!.toLowerCase()) {
           'dr.' => 'dr',
           'mr.' => 'mr',
+          _ when _pronunciationInitial.hasMatch(match[0]!) =>
+            match[0]!.substring(0, match[0]!.length - 1),
           _ => match[0]!,
         },
       );

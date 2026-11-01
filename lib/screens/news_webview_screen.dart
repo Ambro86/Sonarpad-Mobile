@@ -18,6 +18,7 @@ import '../models/media_playback_speed.dart';
 import '../services/app_settings_service.dart';
 import '../services/audio_player_service.dart';
 import '../services/news_service.dart';
+import '../services/news_translation_service.dart';
 import '../services/tgcom_video_service.dart';
 import '../services/sonartube_service.dart';
 import '../services/document_library_service.dart';
@@ -69,8 +70,15 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   ];
 
   bool _loading = true;
-  String? _readerTitle;
-  String? _readerText;
+  String? _originalReaderTitle;
+  String? _originalReaderText;
+  NewsTranslation? _translation;
+  NewsTranslationService? _translationJob;
+  double _translationProgress = 0;
+  String? get _readerTitle => _translation?.title ?? _originalReaderTitle;
+  set _readerTitle(String? value) => _originalReaderTitle = value;
+  String? get _readerText => _translation?.text ?? _originalReaderText;
+  set _readerText(String? value) => _originalReaderText = value;
   // Lunghezza del miglior testo già disponibile; la WebView può ancora
   // migliorarlo se resta sotto _httpShortThreshold.
   int _readerBestTextLength = 0;
@@ -132,6 +140,78 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
     }
   }
 
+  void _cancelTranslation() {
+    _translationJob?.close();
+    setState(() => _translationJob = null);
+    unawaited(AppLogger.log('News translation: cancelled'));
+  }
+
+  Future<void> _translateArticle() async {
+    if (_translationJob != null) return;
+    if (_translation != null) {
+      if (_speaking) await _stopReading();
+      if (mounted) setState(() => _translation = null);
+      return;
+    }
+    final text = _originalReaderText;
+    if (text == null || text.trim().isEmpty) return;
+    final title = _originalReaderTitle ?? widget.article.title;
+    final target = Localizations.localeOf(context).toLanguageTag();
+    final job = NewsTranslationService();
+    setState(() {
+      _translationJob = job;
+      _translationProgress = 0;
+    });
+    final timer = Stopwatch()..start();
+    unawaited(
+      AppLogger.log(
+        'News translation: start target=$target '
+        'chars=${text.length} blocks=${NewsTranslationService.splitSentences(text).length}',
+      ),
+    );
+    try {
+      if (_speaking) await _stopReading();
+      if (!mounted || _translationJob != job) return;
+      final result = await job.translateArticle(
+        title: title,
+        text: text,
+        targetLanguage: target,
+        onProgress: (completed, total) {
+          if (mounted && _translationJob == job) {
+            setState(() => _translationProgress = completed / total);
+          }
+        },
+      );
+      if (!mounted || _translationJob != job) return;
+      setState(() {
+        _translation = result;
+        _translationJob = null;
+        _status = null;
+      });
+      unawaited(
+        AppLogger.log(
+          'News translation: complete target=$target partial=${result.isPartial} '
+          'chars=${result.text.length} elapsedMs=${timer.elapsedMilliseconds}',
+        ),
+      );
+    } catch (error) {
+      if (!mounted || _translationJob != job) return;
+      setState(() => _translationJob = null);
+      unawaited(
+        AppLogger.log(
+          'News translation: failed type=${error.runtimeType} '
+          'elapsedMs=${timer.elapsedMilliseconds}',
+        ),
+      );
+      showStatusMessage(
+        context,
+        AppLocalizations.of(context).newsTranslationFailed,
+      );
+    } finally {
+      job.close();
+    }
+  }
+
   Future<void> _saveArticle() async {
     if (_readerText == null) return;
     try {
@@ -142,7 +222,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
       final titleSafe = '$safeName.txt';
       final service = DocumentLibraryService();
       await service.load();
-      final content = '${widget.article.title}\n\n$_readerText';
+      final content = '${_readerTitle ?? widget.article.title}\n\n$_readerText';
       final doc = await service.createTextDocument(
         name: titleSafe,
         content: content,
@@ -240,7 +320,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
       );
 
       final buffer = StringBuffer()
-        ..writeln(widget.article.title)
+        ..writeln(_readerTitle ?? widget.article.title)
         ..writeln();
       final source = widget.article.source.trim();
       if (source.isNotEmpty) {
@@ -704,14 +784,17 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
     await _stopReading();
     final episode = await _tgcomVideoService.resolve(video);
     if (!mounted) return;
-    await Navigator.of(context).push<void>(MaterialPageRoute(
-      settings: const RouteSettings(name: '/news/media/video'),
-      builder: (_) => PodcastEpisodePlayerScreen(
-        episode: episode, isVideoSupported: true,
-        startWithVideoThenRestorePreference: true,
-        refreshEpisode: () => _tgcomVideoService.resolve(video),
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute(
+        settings: const RouteSettings(name: '/news/media/video'),
+        builder: (_) => PodcastEpisodePlayerScreen(
+          episode: episode,
+          isVideoSupported: true,
+          startWithVideoThenRestorePreference: true,
+          refreshEpisode: () => _tgcomVideoService.resolve(video),
+        ),
       ),
-    ));
+    );
   }
 
   Future<void> _openArticleAudio(NewsArticleMediaLink link) async {
@@ -864,6 +947,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
 
   @override
   void dispose() {
+    _translationJob?.close();
     _tgcomVideoService.dispose();
     _readingToken += 1;
     final edgeController = _edgeFileController;
@@ -2042,7 +2126,8 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
 
   Future<String> _textForReading(AppLocalizations l10n) async {
     final readerText = _readerText;
-    if (readerText != null && readerText.length >= 200) {
+    if (readerText != null &&
+        (_translation != null || readerText.length >= 200)) {
       unawaited(
         AppLogger.log(
           'News TTS: uso testo reader già pronto length=${readerText.length}',
@@ -2121,10 +2206,12 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
     final title = (_readerTitle ?? widget.article.title).trim();
     final paragraphs = _dropLeadingDuplicateTitle(
       title,
-      _ReaderArticleView.readerParagraphs(readerText),
+      NewsArticleReaderView.readerParagraphs(readerText),
     );
     return [
       if (title.isNotEmpty) title,
+      if (_translation?.isPartial == true)
+        AppLocalizations.of(context).newsTranslationPartial,
       ..._dedupeConsecutiveParagraphs(paragraphs),
     ].join('\n\n').trim();
   }
@@ -2264,98 +2351,100 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
           'controller=${identityHashCode(controller)}',
         );
 
-        final generation = Future<void>(() async {
-          for (var i = 0; i < chunks.length; i++) {
-            if (!mounted || !_speaking || readingToken != _readingToken) {
-              await AppLogger.log(
-                'News Edge TTS debug [$readingToken]: generazione interrotta '
-                'prima del chunk ${i + 1}; mounted=$mounted speaking=$_speaking '
-                'currentToken=$_readingToken',
-              );
-              break;
-            }
-            final textToSpeak = _voiceDictionary
-                .applyToText(chunks[i], dictionaryEntries)
-                .trim();
-            if (!EdgeTtsRetry.isTextUsable(textToSpeak)) {
-              await AppLogger.log(
-                'News Edge TTS debug [$readingToken]: chunk ${i + 1}/${chunks.length} '
-                'saltato perché privo di testo pronunciabile dopo dizionario',
-              );
-              continue;
-            }
-            await AppLogger.log(
-              'News Edge TTS debug [$readingToken]: sintesi chunk ${i + 1}/${chunks.length} '
-              'len=${textToSpeak.length} hash=${textToSpeak.hashCode} '
-              'tail="${_newsTtsDebugSnippet(textToSpeak, maxChars: 140)}"',
-            );
-            final file = await EdgeTtsRetry.run(
-              retryUntilCancelled: true,
-              generate: () => _tts.speakToFile(text: textToSpeak, voice: voice),
-              isActive: () =>
-                  mounted &&
-                  _speaking &&
-                  readingToken == _readingToken &&
-                  !controller.isClosed,
-              onRetry: (retry, delay, error) => AppLogger.log(
-                'News Edge TTS debug [$readingToken]: errore temporaneo '
-                'chunk ${i + 1}/${chunks.length}, tentativo $retry/illimitati '
-                'tra ${delay.inMilliseconds}ms: '
-                '$error',
-              ),
-            );
-            if (file == null) break;
-            generatedCount += 1;
-            final size = await file.length();
-            debugPrint(
-              'Sonarpad TTS: web chunk ${i + 1}/${chunks.length} ready '
-              'path=${file.path} size=$size',
-            );
-            await AppLogger.log(
-              'News Edge TTS debug [$readingToken]: file pronto '
-              'chunk=${i + 1}/${chunks.length} generated=$generatedCount '
-              'path=${file.path} size=$size',
-            );
-            if (!controller.isClosed &&
-                mounted &&
-                _speaking &&
-                readingToken == _readingToken) {
-              if (!queuedFilePaths.add(file.path)) {
+        final generation =
+            Future<void>(() async {
+              for (var i = 0; i < chunks.length; i++) {
+                if (!mounted || !_speaking || readingToken != _readingToken) {
+                  await AppLogger.log(
+                    'News Edge TTS debug [$readingToken]: generazione interrotta '
+                    'prima del chunk ${i + 1}; mounted=$mounted speaking=$_speaking '
+                    'currentToken=$_readingToken',
+                  );
+                  break;
+                }
+                final textToSpeak = _voiceDictionary
+                    .applyToText(chunks[i], dictionaryEntries)
+                    .trim();
+                if (!EdgeTtsRetry.isTextUsable(textToSpeak)) {
+                  await AppLogger.log(
+                    'News Edge TTS debug [$readingToken]: chunk ${i + 1}/${chunks.length} '
+                    'saltato perché privo di testo pronunciabile dopo dizionario',
+                  );
+                  continue;
+                }
                 await AppLogger.log(
-                  'News Edge TTS debug [$readingToken]: DUPLICATO BLOCCATO '
-                  'path già accodato ${file.path}',
+                  'News Edge TTS debug [$readingToken]: sintesi chunk ${i + 1}/${chunks.length} '
+                  'len=${textToSpeak.length} hash=${textToSpeak.hashCode} '
+                  'tail="${_newsTtsDebugSnippet(textToSpeak, maxChars: 140)}"',
                 );
-                continue;
+                final file = await EdgeTtsRetry.run(
+                  retryUntilCancelled: true,
+                  generate: () =>
+                      _tts.speakToFile(text: textToSpeak, voice: voice),
+                  isActive: () =>
+                      mounted &&
+                      _speaking &&
+                      readingToken == _readingToken &&
+                      !controller.isClosed,
+                  onRetry: (retry, delay, error) => AppLogger.log(
+                    'News Edge TTS debug [$readingToken]: errore temporaneo '
+                    'chunk ${i + 1}/${chunks.length}, tentativo $retry/illimitati '
+                    'tra ${delay.inMilliseconds}ms: '
+                    '$error',
+                  ),
+                );
+                if (file == null) break;
+                generatedCount += 1;
+                final size = await file.length();
+                debugPrint(
+                  'Sonarpad TTS: web chunk ${i + 1}/${chunks.length} ready '
+                  'path=${file.path} size=$size',
+                );
+                await AppLogger.log(
+                  'News Edge TTS debug [$readingToken]: file pronto '
+                  'chunk=${i + 1}/${chunks.length} generated=$generatedCount '
+                  'path=${file.path} size=$size',
+                );
+                if (!controller.isClosed &&
+                    mounted &&
+                    _speaking &&
+                    readingToken == _readingToken) {
+                  if (!queuedFilePaths.add(file.path)) {
+                    await AppLogger.log(
+                      'News Edge TTS debug [$readingToken]: DUPLICATO BLOCCATO '
+                      'path già accodato ${file.path}',
+                    );
+                    continue;
+                  }
+                  queuedCount += 1;
+                  controller.add(file);
+                  await AppLogger.log(
+                    'News Edge TTS debug [$readingToken]: file accodato allo stream '
+                    'chunk=${i + 1}/${chunks.length} queued=$queuedCount '
+                    'path=${file.path}',
+                  );
+                } else {
+                  await AppLogger.log(
+                    'News Edge TTS debug [$readingToken]: file NON accodato '
+                    'controllerClosed=${controller.isClosed} mounted=$mounted '
+                    'speaking=$_speaking currentToken=$_readingToken',
+                  );
+                }
               }
-              queuedCount += 1;
-              controller.add(file);
+              generationDone = true;
               await AppLogger.log(
-                'News Edge TTS debug [$readingToken]: file accodato allo stream '
-                'chunk=${i + 1}/${chunks.length} queued=$queuedCount '
-                'path=${file.path}',
+                'News Edge TTS debug [$readingToken]: generazione completata '
+                'generated=$generatedCount queued=$queuedCount',
               );
-            } else {
+              if (!controller.isClosed) await controller.close();
+            }).catchError((e) async {
+              generationError = e;
+              generationDone = true;
               await AppLogger.log(
-                'News Edge TTS debug [$readingToken]: file NON accodato '
-                'controllerClosed=${controller.isClosed} mounted=$mounted '
-                'speaking=$_speaking currentToken=$_readingToken',
+                'News Edge TTS debug [$readingToken]: ERRORE generazione $e',
               );
-            }
-          }
-          generationDone = true;
-          await AppLogger.log(
-            'News Edge TTS debug [$readingToken]: generazione completata '
-            'generated=$generatedCount queued=$queuedCount',
-          );
-          if (!controller.isClosed) await controller.close();
-        }).catchError((e) async {
-          generationError = e;
-          generationDone = true;
-          await AppLogger.log(
-            'News Edge TTS debug [$readingToken]: ERRORE generazione $e',
-          );
-          if (!controller.isClosed) await controller.close();
-        });
+              if (!controller.isClosed) await controller.close();
+            });
 
         await AppLogger.log(
           'News Edge TTS debug [$readingToken]: riproduzione veloce a chunk singoli, '
@@ -2464,32 +2553,34 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
       appBar: SonarpadAppBar(
         title: Text(l10n.article),
         actions: [
-          IconButton(
-            onPressed: _saveArticle,
-            icon: const Icon(Icons.save),
-            tooltip: l10n.saveArticle,
-          ),
-          IconButton(
-            onPressed: _shareArticle,
-            icon: const Icon(Icons.share),
-            tooltip: l10n.shareArticle,
-          ),
-          IconButton(
-            onPressed: _shareArticleAsTxt,
-            icon: const Icon(Icons.description_outlined),
-            tooltip: l10n.shareArticleAsTxt,
-          ),
-          IconButton(
-            onPressed: _speaking ? null : _readArticle,
-            icon: const Icon(Icons.volume_up),
-            tooltip: l10n.readWithEdgeTts,
-          ),
-          IconButton(
-            onPressed: _speaking ? _stopReading : null,
-            icon: const Icon(Icons.stop),
-            tooltip: l10n.stopReading,
-          ),
-          if (_loading)
+          if (_translationJob == null) ...[
+            IconButton(
+              onPressed: _saveArticle,
+              icon: const Icon(Icons.save),
+              tooltip: l10n.saveArticle,
+            ),
+            IconButton(
+              onPressed: _shareArticle,
+              icon: const Icon(Icons.share),
+              tooltip: l10n.shareArticle,
+            ),
+            IconButton(
+              onPressed: _shareArticleAsTxt,
+              icon: const Icon(Icons.description_outlined),
+              tooltip: l10n.shareArticleAsTxt,
+            ),
+            IconButton(
+              onPressed: _speaking ? null : _readArticle,
+              icon: const Icon(Icons.volume_up),
+              tooltip: l10n.readWithEdgeTts,
+            ),
+            IconButton(
+              onPressed: _speaking ? _stopReading : null,
+              icon: const Icon(Icons.stop),
+              tooltip: l10n.stopReading,
+            ),
+          ],
+          if (_loading && _translationJob == null)
             const Padding(
               padding: EdgeInsets.only(right: 16),
               child: Center(
@@ -2503,7 +2594,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
         ],
       ),
       body: _buildBody(l10n),
-      bottomNavigationBar: _status == null
+      bottomNavigationBar: _status == null || _translationJob != null
           ? null
           : BottomAppBar(
               child: Semantics(
@@ -2519,7 +2610,13 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   }
 
   Widget _buildBody(AppLocalizations l10n) {
-    if (_paywallDetected && !_readerPreparing) {
+    if (_translationJob != null) {
+      return NewsTranslationProgressView(
+        progress: _translationProgress,
+        onCancel: _cancelTranslation,
+      );
+    }
+    if (_translation == null && _paywallDetected && !_readerPreparing) {
       final summary = widget.article.summary.trim();
       return ListView(
         padding: const EdgeInsets.all(20),
@@ -2547,17 +2644,26 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
       );
     }
 
-    if (_pureWebViewMode && !_readerPreparing) {
+    if (_translation == null && _pureWebViewMode && !_readerPreparing) {
       return WebViewWidget(controller: _controller);
     }
 
     final readerText = _readerText;
-    if (readerText != null && readerText.isNotEmpty) {
-      return _ReaderArticleView(
+    if (readerText != null && (readerText.isNotEmpty || _translation != null)) {
+      return NewsArticleReaderView(
+        key: ValueKey(_translation != null),
         title: _readerTitle ?? widget.article.title,
         text: readerText,
         mediaLinks: _articleMediaLinks,
         onOpenMediaLink: _openArticleMediaLink,
+        translationLabel: _translation != null
+            ? l10n.newsShowOriginal
+            : NewsTranslationService.normalizeLanguage(widget.language.code) !=
+                  Localizations.localeOf(context).languageCode
+            ? l10n.newsTranslateToInterface
+            : null,
+        onTranslate: _translateArticle,
+        notice: _translation?.isPartial == true ? l10n.newsTranslationPartial : null,
       );
     }
 
@@ -2578,18 +2684,49 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   }
 }
 
-class _ReaderArticleView extends StatelessWidget {
-  const _ReaderArticleView({
+class NewsTranslationProgressView extends StatelessWidget {
+  const NewsTranslationProgressView({super.key, required this.progress, required this.onCancel});
+  final double progress;
+  final VoidCallback onCancel;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final percentage = '${(progress * 100).floor()}%';
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          Text(l10n.newsTranslating),
+          const SizedBox(height: 16),
+          LinearProgressIndicator(value: progress, semanticsLabel: l10n.newsTranslating, semanticsValue: percentage),
+          ExcludeSemantics(child: Text(percentage)),
+          TextButton(onPressed: onCancel, child: Text(l10n.cancel)),
+        ]),
+      ),
+    );
+  }
+}
+
+class NewsArticleReaderView extends StatelessWidget {
+  const NewsArticleReaderView({
+    super.key,
     required this.title,
     required this.text,
     required this.mediaLinks,
     required this.onOpenMediaLink,
+    this.translationLabel,
+    this.onTranslate,
+    this.notice,
   });
 
   final String title;
   final String text;
   final List<NewsArticleMediaLink> mediaLinks;
   final Future<void> Function(NewsArticleMediaLink link) onOpenMediaLink;
+  final String? translationLabel;
+  final VoidCallback? onTranslate;
+  final String? notice;
 
   @override
   Widget build(BuildContext context) {
@@ -2611,6 +2748,14 @@ class _ReaderArticleView extends StatelessWidget {
           AccessibleListSection(
             header: title,
             rows: [
+              if (notice != null)
+                AccessibleListRow(id: 'translation_notice', title: notice!, kind: 'text'),
+              if (translationLabel != null)
+                AccessibleListRow(
+                  id: 'translate_article',
+                  title: translationLabel!,
+                  kind: 'button',
+                ),
               for (var i = 0; i < paragraphs.length; i++)
                 AccessibleListRow(
                   id: 'paragraph_$i',
@@ -2627,6 +2772,10 @@ class _ReaderArticleView extends StatelessWidget {
           ),
         ],
         onEvent: (event) {
+          if (event.type == 'activate' && event.id == 'translate_article') {
+            onTranslate?.call();
+            return;
+          }
           if (event.type != 'activate' ||
               event.id?.startsWith('media_') != true) {
             return;
@@ -2651,6 +2800,16 @@ class _ReaderArticleView extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             sliver: SliverList(
               delegate: SliverChildListDelegate([
+                if (notice != null) Text(notice!),
+                if (translationLabel != null)
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: TextButton.icon(
+                      onPressed: onTranslate,
+                      icon: const Icon(Icons.translate),
+                      label: Text(translationLabel!),
+                    ),
+                  ),
                 SelectableText(title, style: theme.textTheme.headlineSmall),
                 const SizedBox(height: 16),
                 ...paragraphs.map(

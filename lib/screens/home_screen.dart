@@ -164,6 +164,7 @@ class _HomeScreenState extends State<HomeScreen> {
       HomeItemIds.sonarpadAudioDescriptions => '/sonarpad_audiodescriptions',
       HomeItemIds.wikipedia => '/wikipedia',
       HomeItemIds.onlineDictionary => '/online-dictionary',
+      HomeItemIds.translator => '/translator',
       HomeItemIds.treccani => '/treccani',
       HomeItemIds.voiceDictionary => '/voice_dictionary',
       HomeItemIds.digitalLibrary => '/bdciechi',

@@ -10261,6 +10261,132 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Olandese'**
   String get dutch;
+
+  /// News article Google translation: newsTranslateToInterface
+  ///
+  /// In it, this message translates to:
+  /// **'Traduci in italiano'**
+  String get newsTranslateToInterface;
+
+  /// News article Google translation: newsTranslating
+  ///
+  /// In it, this message translates to:
+  /// **'Traduzione in corso'**
+  String get newsTranslating;
+
+  /// News article Google translation: newsShowOriginal
+  ///
+  /// In it, this message translates to:
+  /// **'Mostra articolo originale'**
+  String get newsShowOriginal;
+
+  /// News article Google translation: newsTranslationFailed
+  ///
+  /// In it, this message translates to:
+  /// **'Traduzione non riuscita. Riprova: l’articolo originale è ancora disponibile.'**
+  String get newsTranslationFailed;
+
+  /// Notice that an article translation is incomplete after an error.
+  ///
+  /// In it, this message translates to:
+  /// **'Traduzione parziale: si è verificato un errore. Sono mostrate soltanto le parti già tradotte. Puoi tornare all’articolo originale.'**
+  String get newsTranslationPartial;
+
+  /// Document translation: translateDocument
+  ///
+  /// In it, this message translates to:
+  /// **'Traduci documento'**
+  String get translateDocument;
+
+  /// Document translation: translationTargetLanguage
+  ///
+  /// In it, this message translates to:
+  /// **'Lingua di destinazione'**
+  String get translationTargetLanguage;
+
+  /// Document translation: startTranslation
+  ///
+  /// In it, this message translates to:
+  /// **'Avvia traduzione'**
+  String get startTranslation;
+
+  /// Document translation: documentTranslatedSuffix
+  ///
+  /// In it, this message translates to:
+  /// **'tradotto'**
+  String get documentTranslatedSuffix;
+
+  /// Document translation: documentTranslationPartial
+  ///
+  /// In it, this message translates to:
+  /// **'Traduzione parziale: un errore ha interrotto la traduzione. Il nuovo documento contiene le parti già tradotte. L’originale è rimasto intatto.'**
+  String get documentTranslationPartial;
+
+  /// Document translation: documentTranslationTextOnly
+  ///
+  /// In it, this message translates to:
+  /// **'La traduzione sarà salvata in un nuovo documento di testo (.txt), senza conservare l’impaginazione originale.'**
+  String get documentTranslationTextOnly;
+
+  /// Standalone translator: translatorTitle
+  ///
+  /// In it, this message translates to:
+  /// **'Traduttore'**
+  String get translatorTitle;
+
+  /// Standalone translator: translationSourceLanguage
+  ///
+  /// In it, this message translates to:
+  /// **'Lingua di partenza'**
+  String get translationSourceLanguage;
+
+  /// Standalone translator: translationDetectLanguage
+  ///
+  /// In it, this message translates to:
+  /// **'Rileva automaticamente'**
+  String get translationDetectLanguage;
+
+  /// Standalone translator: translationInputText
+  ///
+  /// In it, this message translates to:
+  /// **'Testo da tradurre'**
+  String get translationInputText;
+
+  /// Standalone translator: translationChooseFile
+  ///
+  /// In it, this message translates to:
+  /// **'Scegli file'**
+  String get translationChooseFile;
+
+  /// Standalone translator: translationResult
+  ///
+  /// In it, this message translates to:
+  /// **'Risultato della traduzione'**
+  String get translationResult;
+
+  /// Standalone translator: translationTranslatedText
+  ///
+  /// In it, this message translates to:
+  /// **'Testo tradotto'**
+  String get translationTranslatedText;
+
+  /// Standalone translator: translationOriginalText
+  ///
+  /// In it, this message translates to:
+  /// **'Testo originale'**
+  String get translationOriginalText;
+
+  /// Standalone translator: translationSave
+  ///
+  /// In it, this message translates to:
+  /// **'Salva traduzione'**
+  String get translationSave;
+
+  /// Pick a text document from the Sonarpad library.
+  ///
+  /// In it, this message translates to:
+  /// **'Documenti · Sonarpad'**
+  String get translationLibraryDocuments;
 }
 
 class _AppLocalizationsDelegate
