@@ -2574,6 +2574,18 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
               icon: const Icon(Icons.volume_up),
               tooltip: l10n.readWithEdgeTts,
             ),
+            if (_translation != null ||
+                (!_readerPreparing && !_pureWebViewMode && !_paywallDetected &&
+                    _readerText?.isNotEmpty == true &&
+                    NewsTranslationService.normalizeLanguage(widget.language.code) !=
+                        Localizations.localeOf(context).languageCode))
+              IconButton(
+                onPressed: _translateArticle,
+                icon: const Icon(Icons.translate),
+                tooltip: _translation != null
+                    ? l10n.newsShowOriginal
+                    : l10n.newsTranslateToInterface,
+              ),
             IconButton(
               onPressed: _speaking ? _stopReading : null,
               icon: const Icon(Icons.stop),
@@ -2656,13 +2668,6 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
         text: readerText,
         mediaLinks: _articleMediaLinks,
         onOpenMediaLink: _openArticleMediaLink,
-        translationLabel: _translation != null
-            ? l10n.newsShowOriginal
-            : NewsTranslationService.normalizeLanguage(widget.language.code) !=
-                  Localizations.localeOf(context).languageCode
-            ? l10n.newsTranslateToInterface
-            : null,
-        onTranslate: _translateArticle,
         notice: _translation?.isPartial == true ? l10n.newsTranslationPartial : null,
       );
     }
@@ -2715,8 +2720,6 @@ class NewsArticleReaderView extends StatelessWidget {
     required this.text,
     required this.mediaLinks,
     required this.onOpenMediaLink,
-    this.translationLabel,
-    this.onTranslate,
     this.notice,
   });
 
@@ -2724,8 +2727,6 @@ class NewsArticleReaderView extends StatelessWidget {
   final String text;
   final List<NewsArticleMediaLink> mediaLinks;
   final Future<void> Function(NewsArticleMediaLink link) onOpenMediaLink;
-  final String? translationLabel;
-  final VoidCallback? onTranslate;
   final String? notice;
 
   @override
@@ -2750,12 +2751,6 @@ class NewsArticleReaderView extends StatelessWidget {
             rows: [
               if (notice != null)
                 AccessibleListRow(id: 'translation_notice', title: notice!, kind: 'text'),
-              if (translationLabel != null)
-                AccessibleListRow(
-                  id: 'translate_article',
-                  title: translationLabel!,
-                  kind: 'button',
-                ),
               for (var i = 0; i < paragraphs.length; i++)
                 AccessibleListRow(
                   id: 'paragraph_$i',
@@ -2772,10 +2767,6 @@ class NewsArticleReaderView extends StatelessWidget {
           ),
         ],
         onEvent: (event) {
-          if (event.type == 'activate' && event.id == 'translate_article') {
-            onTranslate?.call();
-            return;
-          }
           if (event.type != 'activate' ||
               event.id?.startsWith('media_') != true) {
             return;
@@ -2801,15 +2792,6 @@ class NewsArticleReaderView extends StatelessWidget {
             sliver: SliverList(
               delegate: SliverChildListDelegate([
                 if (notice != null) Text(notice!),
-                if (translationLabel != null)
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: TextButton.icon(
-                      onPressed: onTranslate,
-                      icon: const Icon(Icons.translate),
-                      label: Text(translationLabel!),
-                    ),
-                  ),
                 SelectableText(title, style: theme.textTheme.headlineSmall),
                 const SizedBox(height: 16),
                 ...paragraphs.map(

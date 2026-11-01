@@ -76,8 +76,8 @@ class HomeItemIds {
   static const Set<String> alwaysVisible = {settings, info};
 
   static const List<String> readingOrder = [
-    translator,
     documents,
+    translator,
     wikipedia,
     onlineDictionary,
     treccani,

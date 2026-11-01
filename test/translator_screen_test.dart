@@ -51,6 +51,55 @@ Widget app(Widget home) => MaterialApp(
 );
 
 void main() {
+  testWidgets('result updates stable rows for both complete and partial text', (
+    tester,
+  ) async {
+    for (final partial in [false, true]) {
+      await tester.pumpWidget(
+        app(
+          TranslatorResultScreen(
+            key: ValueKey(partial),
+            original: 'Original text.',
+            translation: NewsTranslation(
+              title: '',
+              text: 'Testo tradotto.',
+              isPartial: partial,
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      final resultFinder = find.byType(UniversalAccessibleList);
+      final state = tester.state(resultFinder);
+      List<AccessibleListRow> rows() => tester
+          .widget<UniversalAccessibleList>(resultFinder)
+          .sections
+          .expand((s) => s.rows)
+          .toList();
+      final structure = rows().map((r) => '${r.id}:${r.kind}').toList();
+      expect(find.text('Risultato della traduzione'), findsOneWidget);
+      expect(
+        rows().where((r) => r.title.contains('Risultato della traduzione')),
+        isEmpty,
+      );
+      for (final value in ['1', '0', '1', '0']) {
+        await Future<void>.sync(() => rows().first.onValueChanged!(value));
+        await tester.pump();
+        expect(tester.state(resultFinder), same(state));
+        expect(rows().map((r) => '${r.id}:${r.kind}'), structure);
+        expect(rows().first.value, value);
+        expect(
+          rows()[1].title,
+          contains(value == '0' ? 'Testo tradotto.' : 'Original text.'),
+        );
+        expect(
+          rows()[1].title.contains('Traduzione parziale:'),
+          partial && value == '0',
+        );
+      }
+      expect(tester.takeException(), isNull);
+    }
+  });
   testWidgets(
     'library picker filters non-text files and asks for protected document password',
     (tester) async {

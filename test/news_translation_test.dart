@@ -260,10 +260,9 @@ void main() {
     const Locale('fr'),
     const Locale('en'),
   ]) {
-    testWidgets('reader exposes one localized translation action: $locale', (
+    testWidgets('reader keeps translation controls out of the article: $locale', (
       tester,
     ) async {
-      var pressed = 0;
       await tester.pumpWidget(
         MaterialApp(
           locale: locale,
@@ -276,10 +275,7 @@ void main() {
                 text: 'Article paragraph.',
                 mediaLinks: const [],
                 onOpenMediaLink: (_) async {},
-                translationLabel: AppLocalizations.of(
-                  context,
-                ).newsTranslateToInterface,
-                onTranslate: () => pressed++,
+
               ),
             ),
           ),
@@ -291,9 +287,7 @@ void main() {
         'fr': 'Traduire en français',
         'en': 'Translate into English',
       }[locale.languageCode]!;
-      expect(find.text(label), findsOneWidget);
-      await tester.tap(find.text(label));
-      expect(pressed, 1);
+      expect(find.text(label), findsNothing);
       expect(find.text('Article paragraph.'), findsOneWidget);
     });
   }

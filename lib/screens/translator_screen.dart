@@ -46,7 +46,13 @@ class TranslationChoiceSlider extends StatelessWidget {
   Widget build(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      ExcludeSemantics(child: Text(AppLocalizations.of(context).radioScheduleLabeledValue(title, labels[value]))),
+      ExcludeSemantics(
+        child: Text(
+          AppLocalizations.of(
+            context,
+          ).radioScheduleLabeledValue(title, labels[value]),
+        ),
+      ),
       Semantics(
         label: title,
         child: Slider(
@@ -598,32 +604,92 @@ class _TranslatorResultScreenState extends State<TranslatorResultScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final labels = [
+      l10n.translationTranslatedText,
+      l10n.translationOriginalText,
+    ];
+    final text = _selected == 0 ? widget.translation.text : widget.original;
+    final partial = widget.translation.isPartial && _selected == 0;
+    void selectText(int value) {
+      if (_selected != value) setState(() => _selected = value);
+    }
+
     return Scaffold(
       appBar: SonarpadAppBar(title: Text(l10n.translationResult)),
-      body: ListView(
+      body: UniversalAccessibleList(
+        debugTag: 'translator_result',
         padding: const EdgeInsets.all(16),
-        children: [
-          TranslationChoiceSlider(
-            title: l10n.translationResult,
-            labels: [
-              l10n.translationTranslatedText,
-              l10n.translationOriginalText,
+        sections: [
+          AccessibleListSection(
+            rows: [
+              AccessibleListRow(
+                id: 'translation_text_choice',
+                title: l10n.documentTextLabel,
+                kind: 'slider',
+                value: '$_selected',
+                valueLabel: labels[_selected],
+                options: [
+                  for (var i = 0; i < labels.length; i++)
+                    AccessibleOption(value: '$i', label: labels[i]),
+                ],
+                sliderValue: _selected.toDouble(),
+                sliderMin: 0,
+                sliderMax: 1,
+                sliderStep: 1,
+                sliderIncreasedValueLabel: labels[1],
+                sliderDecreasedValueLabel: labels[0],
+                onValueChanged: (value) {
+                  final n = double.tryParse('$value');
+                  if (n != null && n.isFinite) {
+                    selectText(n.round().clamp(0, 1));
+                  }
+                },
+                flutterChild: TranslationChoiceSlider(
+                  title: l10n.documentTextLabel,
+                  labels: labels,
+                  value: _selected,
+                  onChanged: selectText,
+                ),
+              ),
+              // Keep row identity and structure stable, including partial results:
+              // UIKit updates the content without replacing the focused slider.
+              AccessibleListRow(
+                id: 'translation_text',
+                title: partial
+                    ? '${l10n.documentTranslationPartial}\n\n$text'
+                    : text,
+                kind: 'text',
+                flutterChild: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (partial) Text(l10n.documentTranslationPartial),
+                    SelectableText(text),
+                  ],
+                ),
+              ),
+              AccessibleListRow(
+                id: 'translation_save',
+                title: l10n.translationSave,
+                kind: 'button',
+                enabled: !_saving,
+                onActivate: () => _save(),
+                flutterChild: ElevatedButton(
+                  onPressed: _saving ? null : () => _save(),
+                  child: Text(l10n.translationSave),
+                ),
+              ),
+              AccessibleListRow(
+                id: 'translation_share',
+                title: l10n.share,
+                kind: 'button',
+                enabled: !_saving,
+                onActivate: () => _save(share: true),
+                flutterChild: TextButton(
+                  onPressed: _saving ? null : () => _save(share: true),
+                  child: Text(l10n.share),
+                ),
+              ),
             ],
-            value: _selected,
-            onChanged: (v) => setState(() => _selected = v),
-          ),
-          if (widget.translation.isPartial && _selected == 0)
-            Text(l10n.documentTranslationPartial),
-          SelectableText(
-            _selected == 0 ? widget.translation.text : widget.original,
-          ),
-          ElevatedButton(
-            onPressed: _saving ? null : () => _save(),
-            child: Text(l10n.translationSave),
-          ),
-          TextButton(
-            onPressed: _saving ? null : () => _save(share: true),
-            child: Text(l10n.share),
           ),
         ],
       ),

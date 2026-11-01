@@ -40,14 +40,16 @@ class NewsScreen extends StatefulWidget {
 class _NewsScreenState extends State<NewsScreen> {
   final _service = NewsService();
   NewsLanguage? _language;
+  bool _initializingLanguage = false;
   List<NewsRssSource>? _sources;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (_language == null) {
+    if (_language == null && !_initializingLanguage) {
+      _initializingLanguage = true;
       final code = AppLocalizations.of(context).localeName;
-      _language = widget.initialLanguage ?? switch (code) {
+      final fallbackLanguage = switch (code) {
         'en' => NewsLanguage.english,
         'fr' => NewsLanguage.french,
         'es' => NewsLanguage.spanish,
@@ -64,17 +66,27 @@ class _NewsScreenState extends State<NewsScreen> {
         _ => NewsLanguage.italian,
       };
       _service.prefetchTinyfishFallbackOnlyPolicy();
-      _loadSources();
+      _initializeLanguage(fallbackLanguage);
     }
+  }
+
+  Future<void> _initializeLanguage(NewsLanguage fallback) async {
+    final language = widget.initialLanguage ??
+        await _service.loadSelectedLanguage() ??
+        fallback;
+    if (!mounted) return;
+    setState(() => _language = language);
+    await _loadSources();
   }
 
   Future<void> _loadSources() async {
     if (_language == null) return;
+    final language = _language!;
     final sources = await _service.getOrderedSources(
-      _language!,
+      language,
       folderId: widget.folderId,
     );
-    if (mounted) {
+    if (mounted && language == _language) {
       setState(() {
         _sources = sources;
       });
@@ -357,6 +369,7 @@ class _NewsScreenState extends State<NewsScreen> {
             Padding(
               padding: const EdgeInsets.all(12),
               child: DropdownButtonFormField<NewsLanguage>(
+                key: ValueKey(_language),
                 initialValue: _language,
                 isExpanded: true,
                 decoration: InputDecoration(labelText: l10n.newsLanguage),
@@ -368,14 +381,17 @@ class _NewsScreenState extends State<NewsScreen> {
                       ),
                     )
                     .toList(),
-                onChanged: (value) {
-                  if (value == null) return;
-                  setState(() {
-                    _language = value;
-                    _sources = null;
-                  });
-                  _loadSources();
-                },
+                onChanged: _language == null
+                    ? null
+                    : (value) async {
+                        if (value == null) return;
+                        setState(() {
+                          _language = value;
+                          _sources = null;
+                        });
+                        await _service.saveSelectedLanguage(value);
+                        if (mounted) _loadSources();
+                      },
               ),
             ),
           Expanded(

@@ -229,6 +229,20 @@ class NewsService {
         .toList(growable: false);
   }
 
+  Future<NewsLanguage?> loadSelectedLanguage() async {
+    final prefs = await SharedPreferences.getInstance();
+    final name = prefs.getString('news_selected_language');
+    for (final language in NewsLanguage.values) {
+      if (language.name == name) return language;
+    }
+    return null;
+  }
+
+  Future<void> saveSelectedLanguage(NewsLanguage language) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('news_selected_language', language.name);
+  }
+
   String _getPrefsKey(NewsLanguage language) =>
       'news_sources_order_${language.name}';
   String _getHiddenPrefsKey(NewsLanguage language) =>
