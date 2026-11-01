@@ -46,10 +46,26 @@ void main() {
       UniversalAccessibleList form() =>
           tester.widget(find.byType(UniversalAccessibleList));
       Future<void> event(String id, String type, [String? value]) async {
+        final pending = Future<void>.sync(() => form().onEvent!(
+          AccessibleListEvent(id: id, type: type, value: value),
+        ));
+        if (type == 'activate') {
+          await tester.pumpAndSettle();
+          final label = AppLocalizations.of(tester.element(find.byType(AlertDialog)))
+              .audioDescriptionBrowseProject;
+          await tester.tap(find.text(label));
+          await tester.pumpAndSettle();
+        }
         await tester.runAsync(() async {
-          await form().onEvent!(
-            AccessibleListEvent(id: id, type: type, value: value),
-          );
+          var complete = false;
+          final completion = pending.whenComplete(() => complete = true);
+          final timer = Stopwatch()..start();
+          while (!complete) {
+            if (timer.elapsed > const Duration(seconds: 5)) throw StateError('Picker timeout');
+            await tester.pump(const Duration(milliseconds: 100));
+            await Future<void>.delayed(const Duration(milliseconds: 10));
+          }
+          await completion;
         });
         await tester.pumpAndSettle();
       }

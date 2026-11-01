@@ -17,9 +17,11 @@ void main() {
       'news_screen.dart',
       'pyannote_parity_test_screen.dart',
     ];
+    expect(File('lib/services/media_file_picker_service.dart').readAsStringSync(),
+        contains('CloudFilePicker.pickFiles('));
     for (final name in screenFiles) {
       final source = File('lib/screens/$name').readAsStringSync();
-      expect(source, contains('CloudFilePicker.pickFiles('), reason: name);
+      expect(source, anyOf(contains('CloudFilePicker.pickFiles('), contains('MediaFilePicker.pickFiles(')), reason: name);
       expect(source, isNot(contains(RegExp(r'\bFilePicker\.pickFiles\('))), reason: name);
     }
   });
