@@ -1,0 +1,842 @@
+{
+  "checked": "2026-10-31",
+  "method": "Live Eventim exploration API; 40 distinct product IDs. Verified official venue sources; no booking or availability confirmation. Null expectedProfile explicitly tests safe unknown-venue handling.",
+  "events": [
+    {
+      "productId": "21652434",
+      "name": "Bob Dylan",
+      "link": "https://www.ticketcorner.ch/event/bob-dylan-hallenstadion-21652434/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Zürich",
+            "geoLocation": {
+              "latitude": 47.411329,
+              "longitude": 8.55164
+            },
+            "name": "Hallenstadion",
+            "postalCode": "8050"
+          },
+          "startDate": "2026-11-01T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "ch-hallenstadion",
+      "officialInstructions": "https://hallenstadion.ch/besucherinfo/guests/"
+    },
+    {
+      "productId": "21229276",
+      "name": "Placebo",
+      "link": "https://www.ticketcorner.ch/event/placebo-hallenstadion-21229276/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Zürich",
+            "geoLocation": {
+              "latitude": 47.411329,
+              "longitude": 8.55164
+            },
+            "name": "Hallenstadion",
+            "postalCode": "8050"
+          },
+          "startDate": "2026-11-04T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "ch-hallenstadion",
+      "officialInstructions": "https://hallenstadion.ch/besucherinfo/guests/"
+    },
+    {
+      "productId": "21091940",
+      "name": "Swiss Cup Zürich - Weltklasse Turnen",
+      "link": "https://www.ticketcorner.ch/event/swiss-cup-zuerich-2026-hallenstadion-21091940/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Zürich",
+            "geoLocation": {
+              "latitude": 47.411329,
+              "longitude": 8.55164
+            },
+            "name": "Hallenstadion",
+            "postalCode": "8050"
+          },
+          "startDate": "2026-11-07T16:00:00+01:00"
+        }
+      },
+      "expectedProfile": "ch-hallenstadion",
+      "officialInstructions": "https://hallenstadion.ch/besucherinfo/guests/"
+    },
+    {
+      "productId": "21335564",
+      "name": "Swiss Cup - StarLounge Package",
+      "link": "https://www.ticketcorner.ch/event/swiss-cup-zuerich-2026-hallenstadion-21335564/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Zürich",
+            "geoLocation": {
+              "latitude": 47.411329,
+              "longitude": 8.55164
+            },
+            "name": "Hallenstadion",
+            "postalCode": "8050"
+          },
+          "startDate": "2026-11-07T16:01:00+01:00"
+        }
+      },
+      "expectedProfile": "ch-hallenstadion",
+      "officialInstructions": "https://hallenstadion.ch/besucherinfo/guests/"
+    },
+    {
+      "productId": "21405126",
+      "name": "Pitbull - StarLounge Package",
+      "link": "https://www.ticketcorner.ch/event/pitbull-hallenstadion-21405126/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Zürich",
+            "geoLocation": {
+              "latitude": 47.411329,
+              "longitude": 8.55164
+            },
+            "name": "Hallenstadion",
+            "postalCode": "8050"
+          },
+          "startDate": "2026-11-08T20:01:00+01:00"
+        }
+      },
+      "expectedProfile": "ch-hallenstadion",
+      "officialInstructions": "https://hallenstadion.ch/besucherinfo/guests/"
+    },
+    {
+      "productId": "19975103",
+      "name": "Tokio Hotel",
+      "link": "https://www.ticketcorner.ch/event/tokio-hotel-hallenstadion-19975103/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Zürich",
+            "geoLocation": {
+              "latitude": 47.411329,
+              "longitude": 8.55164
+            },
+            "name": "Hallenstadion",
+            "postalCode": "8050"
+          },
+          "startDate": "2026-11-10T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "ch-hallenstadion",
+      "officialInstructions": "https://hallenstadion.ch/besucherinfo/guests/"
+    },
+    {
+      "productId": "19478506",
+      "name": "Nico Santos - Arena Tour 2026",
+      "link": "https://www.ticketcorner.ch/event/nico-santos-hallenstadion-19478506/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Zürich",
+            "geoLocation": {
+              "latitude": 47.411329,
+              "longitude": 8.55164
+            },
+            "name": "Hallenstadion",
+            "postalCode": "8050"
+          },
+          "startDate": "2026-11-11T19:30:00+01:00"
+        }
+      },
+      "expectedProfile": "ch-hallenstadion",
+      "officialInstructions": "https://hallenstadion.ch/besucherinfo/guests/"
+    },
+    {
+      "productId": "19562855",
+      "name": "Nico Santos - Arena Tour 2026 - StarLounge Package",
+      "link": "https://www.ticketcorner.ch/event/nico-santos-hallenstadion-19562855/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Zürich",
+            "geoLocation": {
+              "latitude": 47.411329,
+              "longitude": 8.55164
+            },
+            "name": "Hallenstadion",
+            "postalCode": "8050"
+          },
+          "startDate": "2026-11-11T19:31:00+01:00"
+        }
+      },
+      "expectedProfile": "ch-hallenstadion",
+      "officialInstructions": "https://hallenstadion.ch/besucherinfo/guests/"
+    },
+    {
+      "productId": "19209201",
+      "name": "Felix Lobrecht 2026",
+      "link": "https://www.ticketcorner.ch/event/felix-lobrecht-2026-hallenstadion-19209201/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Zürich",
+            "geoLocation": {
+              "latitude": 47.411329,
+              "longitude": 8.55164
+            },
+            "name": "Hallenstadion",
+            "postalCode": "8050"
+          },
+          "startDate": "2026-11-13T19:30:00+01:00"
+        }
+      },
+      "expectedProfile": "ch-hallenstadion",
+      "officialInstructions": "https://hallenstadion.ch/besucherinfo/guests/"
+    },
+    {
+      "productId": "19970898",
+      "name": "The World of Hans Zimmer: A New Dimension 2026",
+      "link": "https://www.ticketcorner.ch/event/the-world-of-hans-zimmer-a-new-dimension-2026-hallenstadion-19970898/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Zürich",
+            "geoLocation": {
+              "latitude": 47.411329,
+              "longitude": 8.55164
+            },
+            "name": "Hallenstadion",
+            "postalCode": "8050"
+          },
+          "startDate": "2026-11-15T19:00:00+01:00"
+        }
+      },
+      "expectedProfile": "ch-hallenstadion",
+      "officialInstructions": "https://hallenstadion.ch/besucherinfo/guests/"
+    },
+    {
+      "productId": "20010904",
+      "name": "The World of Hans Zimmer A new dimension 2026 - StarLounge Package",
+      "link": "https://www.ticketcorner.ch/event/the-world-of-hans-zimmer-a-new-dimension-2026-hallenstadion-20010904/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Zürich",
+            "geoLocation": {
+              "latitude": 47.411329,
+              "longitude": 8.55164
+            },
+            "name": "Hallenstadion",
+            "postalCode": "8050"
+          },
+          "startDate": "2026-11-15T19:01:00+01:00"
+        }
+      },
+      "expectedProfile": "ch-hallenstadion",
+      "officialInstructions": "https://hallenstadion.ch/besucherinfo/guests/"
+    },
+    {
+      "productId": "20700643",
+      "name": "The World of Hans Zimmer 2026 - StarLounge Package",
+      "link": "https://www.ticketcorner.ch/event/the-world-of-hans-zimmer-a-new-dimension-2026-hallenstadion-20700643/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Zürich",
+            "geoLocation": {
+              "latitude": 47.411329,
+              "longitude": 8.55164
+            },
+            "name": "Hallenstadion",
+            "postalCode": "8050"
+          },
+          "startDate": "2026-11-16T19:31:00+01:00"
+        }
+      },
+      "expectedProfile": "ch-hallenstadion",
+      "officialInstructions": "https://hallenstadion.ch/besucherinfo/guests/"
+    },
+    {
+      "productId": "21743200",
+      "name": "Bryson Tiller - StarLounge Package",
+      "link": "https://www.ticketcorner.ch/event/bryson-tiller-hallenstadion-21743200/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Zürich",
+            "geoLocation": {
+              "latitude": 47.411329,
+              "longitude": 8.55164
+            },
+            "name": "Hallenstadion",
+            "postalCode": "8050"
+          },
+          "startDate": "2026-11-17T20:01:00+01:00"
+        }
+      },
+      "expectedProfile": "ch-hallenstadion",
+      "officialInstructions": "https://hallenstadion.ch/besucherinfo/guests/"
+    },
+    {
+      "productId": "20744423",
+      "name": "CAVALLUNA - Die Farben des Lebens",
+      "link": "https://www.ticketcorner.ch/event/cavalluna-die-farben-des-lebens-hallenstadion-20744423/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Zürich",
+            "geoLocation": {
+              "latitude": 47.411329,
+              "longitude": 8.55164
+            },
+            "name": "Hallenstadion",
+            "postalCode": "8050"
+          },
+          "startDate": "2026-11-21T14:00:00+01:00"
+        }
+      },
+      "expectedProfile": "ch-hallenstadion",
+      "officialInstructions": "https://hallenstadion.ch/besucherinfo/guests/"
+    },
+    {
+      "productId": "21033573",
+      "name": "CAVALLUNA - Die Farben des Lebens - StarLounge Package",
+      "link": "https://www.ticketcorner.ch/event/cavalluna-die-farben-des-lebens-hallenstadion-21033573/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Zürich",
+            "geoLocation": {
+              "latitude": 47.411329,
+              "longitude": 8.55164
+            },
+            "name": "Hallenstadion",
+            "postalCode": "8050"
+          },
+          "startDate": "2026-11-21T14:01:00+01:00"
+        }
+      },
+      "expectedProfile": "ch-hallenstadion",
+      "officialInstructions": "https://hallenstadion.ch/besucherinfo/guests/"
+    },
+    {
+      "productId": "20857037",
+      "name": "Let's Dance - Die Live-Tour 2026",
+      "link": "https://www.ticketcorner.ch/event/lets-dance-die-live-tour-lets-dance-2026-hallenstadion-20857037/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Zürich",
+            "geoLocation": {
+              "latitude": 47.411329,
+              "longitude": 8.55164
+            },
+            "name": "Hallenstadion",
+            "postalCode": "8050"
+          },
+          "startDate": "2026-11-24T19:30:00+01:00"
+        }
+      },
+      "expectedProfile": "ch-hallenstadion",
+      "officialInstructions": "https://hallenstadion.ch/besucherinfo/guests/"
+    },
+    {
+      "productId": "21559995",
+      "name": "Blade Runner",
+      "link": "https://www.ticketcorner.ch/event/lugano-arte-e-cultura-blade-runner-lac-lugano-arte-e-cultura-21559995/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Lugano",
+            "geoLocation": {
+              "latitude": 45.99937962064082,
+              "longitude": 8.948162453982574
+            },
+            "name": "LAC Lugano Arte e Cultura",
+            "postalCode": "6900"
+          },
+          "startDate": "2026-11-14T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "ch-lac",
+      "officialInstructions": "https://www.luganolac.ch/lac/info/ticket-info.html"
+    },
+    {
+      "productId": "21774373",
+      "name": "Anni Settanta. Terrore e Diritti",
+      "link": "https://www.ticketcorner.ch/event/lugano-arte-e-cultura-anni-settanta-terrore-e-diritti-lac-lugano-arte-e-cultura-21774373/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Lugano",
+            "geoLocation": {
+              "latitude": 45.99937962064082,
+              "longitude": 8.948162453982574
+            },
+            "name": "LAC Lugano Arte e Cultura",
+            "postalCode": "6900"
+          },
+          "startDate": "2026-11-16T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "ch-lac",
+      "officialInstructions": "https://www.luganolac.ch/lac/info/ticket-info.html"
+    },
+    {
+      "productId": "22007604",
+      "name": "Chronos Portfolio Tasting 2026",
+      "link": "https://www.ticketcorner.ch/event/chronos-wine-cellar-portfolio-tasting-chronos-portfolio-tasting-2026-lac-lugano-arte-e-cultura-22007604/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Lugano",
+            "name": "LAC Lugano Arte e Cultura",
+            "postalCode": "6900"
+          },
+          "startDate": "2026-11-20T13:30:00+01:00"
+        }
+      },
+      "expectedProfile": "ch-lac",
+      "officialInstructions": "https://www.luganolac.ch/lac/info/ticket-info.html"
+    },
+    {
+      "productId": "21772543",
+      "name": "My Fierce Ignorant Step",
+      "link": "https://www.ticketcorner.ch/event/lugano-arte-e-cultura-my-fierce-ignorant-step-lac-lugano-arte-e-cultura-21772543/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Lugano",
+            "geoLocation": {
+              "latitude": 45.99937962064082,
+              "longitude": 8.948162453982574
+            },
+            "name": "LAC Lugano Arte e Cultura",
+            "postalCode": "6900"
+          },
+          "startDate": "2026-11-21T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "ch-lac",
+      "officialInstructions": "https://www.luganolac.ch/lac/info/ticket-info.html"
+    },
+    {
+      "productId": "21508466",
+      "name": "Arisa - Live Tour",
+      "link": "https://www.ticketcorner.ch/event/arisa-live-tour-lac-lugano-arte-e-cultura-21508466/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Lugano",
+            "geoLocation": {
+              "latitude": 45.99937962064082,
+              "longitude": 8.948162453982574
+            },
+            "name": "LAC Lugano Arte e Cultura",
+            "postalCode": "6900"
+          },
+          "startDate": "2026-11-23T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "ch-lac",
+      "officialInstructions": "https://www.luganolac.ch/lac/info/ticket-info.html"
+    },
+    {
+      "productId": "20983798",
+      "name": "Massimo Ranieri",
+      "link": "https://www.ticketcorner.ch/event/massimo-ranieri-lac-lugano-arte-e-cultura-20983798/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Lugano",
+            "geoLocation": {
+              "latitude": 45.99937962064082,
+              "longitude": 8.948162453982574
+            },
+            "name": "LAC Lugano Arte e Cultura",
+            "postalCode": "6900"
+          },
+          "startDate": "2026-11-28T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "ch-lac",
+      "officialInstructions": "https://www.luganolac.ch/lac/info/ticket-info.html"
+    },
+    {
+      "productId": "21559985",
+      "name": "Freiburger Barockorchester",
+      "link": "https://www.ticketcorner.ch/event/freiburger-barockorchester-lac-lugano-arte-e-cultura-21559985/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Lugano",
+            "geoLocation": {
+              "latitude": 45.99937962064082,
+              "longitude": 8.948162453982574
+            },
+            "name": "LAC Lugano Arte e Cultura",
+            "postalCode": "6900"
+          },
+          "startDate": "2026-12-05T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "ch-lac",
+      "officialInstructions": "https://www.luganolac.ch/lac/info/ticket-info.html"
+    },
+    {
+      "productId": "21772561",
+      "name": "Paolo Nori racconta Il maestro e Margherita",
+      "link": "https://www.ticketcorner.ch/event/paolo-nori-racconta-il-maestro-e-margherita-lac-lugano-arte-e-cultura-21772561/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Lugano",
+            "geoLocation": {
+              "latitude": 45.99937962064082,
+              "longitude": 8.948162453982574
+            },
+            "name": "LAC Lugano Arte e Cultura",
+            "postalCode": "6900"
+          },
+          "startDate": "2026-12-16T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "ch-lac",
+      "officialInstructions": "https://www.luganolac.ch/lac/info/ticket-info.html"
+    },
+    {
+      "productId": "21772545",
+      "name": "Lo schiaccianoci",
+      "link": "https://www.ticketcorner.ch/event/lo-schiaccianoci-lac-lugano-arte-e-cultura-21772545/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Lugano",
+            "geoLocation": {
+              "latitude": 45.99937962064082,
+              "longitude": 8.948162453982574
+            },
+            "name": "LAC Lugano Arte e Cultura",
+            "postalCode": "6900"
+          },
+          "startDate": "2026-12-19T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "ch-lac",
+      "officialInstructions": "https://www.luganolac.ch/lac/info/ticket-info.html"
+    },
+    {
+      "productId": "21772558",
+      "name": "Gospel di Natale",
+      "link": "https://www.ticketcorner.ch/event/gospel-weihnachts-konzert-gospel-di-natale-lac-lugano-arte-e-cultura-21772558/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Lugano",
+            "geoLocation": {
+              "latitude": 45.99937962064082,
+              "longitude": 8.948162453982574
+            },
+            "name": "LAC Lugano Arte e Cultura",
+            "postalCode": "6900"
+          },
+          "startDate": "2026-12-21T18:00:00+01:00"
+        }
+      },
+      "expectedProfile": "ch-lac",
+      "officialInstructions": "https://www.luganolac.ch/lac/info/ticket-info.html"
+    },
+    {
+      "productId": "21559991",
+      "name": "Asmik Grigorian",
+      "link": "https://www.ticketcorner.ch/event/asmik-grigorian-lac-lugano-arte-e-cultura-21559991/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Lugano",
+            "geoLocation": {
+              "latitude": 45.99937962064082,
+              "longitude": 8.948162453982574
+            },
+            "name": "LAC Lugano Arte e Cultura",
+            "postalCode": "6900"
+          },
+          "startDate": "2027-01-20T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "ch-lac",
+      "officialInstructions": "https://www.luganolac.ch/lac/info/ticket-info.html"
+    },
+    {
+      "productId": "21557774",
+      "name": "Mummenschanz",
+      "link": "https://www.ticketcorner.ch/event/mummenschanz-adieu-lac-lugano-arte-e-cultura-21557774/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Lugano",
+            "geoLocation": {
+              "latitude": 45.99937962064082,
+              "longitude": 8.948162453982574
+            },
+            "name": "LAC Lugano Arte e Cultura",
+            "postalCode": "6900"
+          },
+          "startDate": "2027-01-22T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "ch-lac",
+      "officialInstructions": "https://www.luganolac.ch/lac/info/ticket-info.html"
+    },
+    {
+      "productId": "21772547",
+      "name": "Nederlands Dans Theater NDT2",
+      "link": "https://www.ticketcorner.ch/event/nederlands-dans-theater-ndt2-lac-lugano-arte-e-cultura-21772547/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Lugano",
+            "geoLocation": {
+              "latitude": 45.99937962064082,
+              "longitude": 8.948162453982574
+            },
+            "name": "LAC Lugano Arte e Cultura",
+            "postalCode": "6900"
+          },
+          "startDate": "2027-01-27T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "ch-lac",
+      "officialInstructions": "https://www.luganolac.ch/lac/info/ticket-info.html"
+    },
+    {
+      "productId": "21772551",
+      "name": "Nessuno. Le avventure di Ulisse",
+      "link": "https://www.ticketcorner.ch/event/lugano-arte-e-cultura-nessuno-le-avventure-di-ulisse-lac-lugano-arte-e-cultura-21772551/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Lugano",
+            "geoLocation": {
+              "latitude": 45.99937962064082,
+              "longitude": 8.948162453982574
+            },
+            "name": "LAC Lugano Arte e Cultura",
+            "postalCode": "6900"
+          },
+          "startDate": "2027-01-28T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "ch-lac",
+      "officialInstructions": "https://www.luganolac.ch/lac/info/ticket-info.html"
+    },
+    {
+      "productId": "21559986",
+      "name": "Evgeny Kissin",
+      "link": "https://www.ticketcorner.ch/event/evgeny-kissin-lac-lugano-arte-e-cultura-21559986/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Lugano",
+            "geoLocation": {
+              "latitude": 45.99937962064082,
+              "longitude": 8.948162453982574
+            },
+            "name": "LAC Lugano Arte e Cultura",
+            "postalCode": "6900"
+          },
+          "startDate": "2027-02-05T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "ch-lac",
+      "officialInstructions": "https://www.luganolac.ch/lac/info/ticket-info.html"
+    },
+    {
+      "productId": "21772562",
+      "name": "Ale e Franz",
+      "link": "https://www.ticketcorner.ch/event/ale-e-franz-lac-lugano-arte-e-cultura-21772562/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Lugano",
+            "geoLocation": {
+              "latitude": 45.99937962064082,
+              "longitude": 8.948162453982574
+            },
+            "name": "LAC Lugano Arte e Cultura",
+            "postalCode": "6900"
+          },
+          "startDate": "2027-02-24T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "ch-lac",
+      "officialInstructions": "https://www.luganolac.ch/lac/info/ticket-info.html"
+    },
+    {
+      "productId": "22040812",
+      "name": "Les Derniers Jours de Pompéi",
+      "link": "https://www.ticketcorner.ch/event/les-derniers-jours-de-pompei-tagestickets-theatre-de-beaulieu-22040812/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Lausanne",
+            "geoLocation": {
+              "latitude": 46.528747840411796,
+              "longitude": 6.623423465444309
+            },
+            "name": "Théâtre de Beaulieu",
+            "postalCode": "1000"
+          },
+          "startDate": "2026-11-01T09:00:00+01:00"
+        }
+      },
+      "expectedProfile": "ch-beaulieu",
+      "officialInstructions": "https://beaulieu-lausanne.com/en/useful-links/help-and-faq/"
+    },
+    {
+      "productId": "21282230",
+      "name": "Moguiz",
+      "link": "https://www.ticketcorner.ch/event/moguiz-theatre-de-beaulieu-21282230/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Lausanne",
+            "geoLocation": {
+              "latitude": 46.528747840411796,
+              "longitude": 6.623423465444309
+            },
+            "name": "Théâtre de Beaulieu",
+            "postalCode": "1000"
+          },
+          "startDate": "2026-11-01T18:00:00+01:00"
+        }
+      },
+      "expectedProfile": "ch-beaulieu",
+      "officialInstructions": "https://beaulieu-lausanne.com/en/useful-links/help-and-faq/"
+    },
+    {
+      "productId": "21342143",
+      "name": "La folle soirée de Yann Guillarme Gala d'ouverture - Montreux Comedy 2026",
+      "link": "https://www.ticketcorner.ch/event/montreux-comedy-2026-theatre-de-beaulieu-21342143/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Lausanne",
+            "geoLocation": {
+              "latitude": 46.528747840411796,
+              "longitude": 6.623423465444309
+            },
+            "name": "Théâtre de Beaulieu",
+            "postalCode": "1000"
+          },
+          "startDate": "2026-11-11T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "ch-beaulieu",
+      "officialInstructions": "https://beaulieu-lausanne.com/en/useful-links/help-and-faq/"
+    },
+    {
+      "productId": "21399936",
+      "name": "Gala Stand Up - Montreux Comedy 2026",
+      "link": "https://www.ticketcorner.ch/event/montreux-comedy-2026-theatre-de-beaulieu-21399936/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Lausanne",
+            "geoLocation": {
+              "latitude": 46.528747840411796,
+              "longitude": 6.623423465444309
+            },
+            "name": "Théâtre de Beaulieu",
+            "postalCode": "1000"
+          },
+          "startDate": "2026-11-13T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "ch-beaulieu",
+      "officialInstructions": "https://beaulieu-lausanne.com/en/useful-links/help-and-faq/"
+    },
+    {
+      "productId": "21400003",
+      "name": "Gala #3 - MISSION MPOSSIBLE COMPLIQUÉE ! - Montreux Comedy 2026",
+      "link": "https://www.ticketcorner.ch/event/montreux-comedy-2026-theatre-de-beaulieu-21400003/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Lausanne",
+            "geoLocation": {
+              "latitude": 46.528747840411796,
+              "longitude": 6.623423465444309
+            },
+            "name": "Théâtre de Beaulieu",
+            "postalCode": "1000"
+          },
+          "startDate": "2026-11-16T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "ch-beaulieu",
+      "officialInstructions": "https://beaulieu-lausanne.com/en/useful-links/help-and-faq/"
+    },
+    {
+      "productId": "21400004",
+      "name": "La séance de coaching de Edgar-Yves JR.",
+      "link": "https://www.ticketcorner.ch/event/montreux-comedy-2026-theatre-de-beaulieu-21400004/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Lausanne",
+            "geoLocation": {
+              "latitude": 46.528747840411796,
+              "longitude": 6.623423465444309
+            },
+            "name": "Théâtre de Beaulieu",
+            "postalCode": "1000"
+          },
+          "startDate": "2026-11-18T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "ch-beaulieu",
+      "officialInstructions": "https://beaulieu-lausanne.com/en/useful-links/help-and-faq/"
+    },
+    {
+      "productId": "21400035",
+      "name": "Gala Transgres-Suisse présenté par Lord Betterave",
+      "link": "https://www.ticketcorner.ch/event/montreux-comedy-2026-theatre-de-beaulieu-21400035/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Lausanne",
+            "geoLocation": {
+              "latitude": 46.528747840411796,
+              "longitude": 6.623423465444309
+            },
+            "name": "Théâtre de Beaulieu",
+            "postalCode": "1000"
+          },
+          "startDate": "2026-11-20T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "ch-beaulieu",
+      "officialInstructions": "https://beaulieu-lausanne.com/en/useful-links/help-and-faq/"
+    },
+    {
+      "productId": "21531395",
+      "name": "Noah Kahan - The Great Divide Tour",
+      "link": "https://www.ticketcorner.ch/event/noah-kahan-hallenstadion-21531395/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Zürich",
+            "geoLocation": {
+              "latitude": 47.411329,
+              "longitude": 8.55164
+            },
+            "name": "Hallenstadion",
+            "postalCode": "8050"
+          },
+          "startDate": "2026-11-25T19:30:00+01:00"
+        }
+      },
+      "expectedProfile": "ch-hallenstadion",
+      "officialInstructions": "https://hallenstadion.ch/besucherinfo/guests/"
+    }
+  ]
+}

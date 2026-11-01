@@ -1,0 +1,751 @@
+{
+  "checked": "2026-10-31",
+  "method": "Live Eventim exploration API; 40 distinct product IDs. Verified official venue sources; no booking or availability confirmation. Null expectedProfile explicitly tests safe unknown-venue handling.",
+  "events": [
+    {
+      "productId": "22311631",
+      "name": "REGINA ZAPEZII - după: Hans Christian Andersen +5 ani",
+      "link": "https://www.eventim.ro/event/regina-zapezii-teatrul-municipal-tony-bulandra-22311631/?affiliate=ROF",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Târgoviște",
+            "name": "Teatrul Municipal Tony Bulandra",
+            "postalCode": "130024"
+          },
+          "startDate": "2026-11-01T11:00:00+02:00"
+        }
+      },
+      "expectedProfile": "ro-tony",
+      "officialInstructions": "https://www.tonybulandra.ro/ro/agentia-de-bilete/"
+    },
+    {
+      "productId": "22241609",
+      "name": "GAITELE - de Alexandru Kiritescu, regia: Mc Ranin, + 6 ani",
+      "link": "https://www.eventim.ro/event/gaitele-teatrul-municipal-tony-bulandra-22241609/?affiliate=ROF",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Târgoviște",
+            "name": "Teatrul Municipal Tony Bulandra",
+            "postalCode": "130024"
+          },
+          "startDate": "2026-11-01T19:00:00+02:00"
+        }
+      },
+      "expectedProfile": "ro-tony",
+      "officialInstructions": "https://www.tonybulandra.ro/ro/agentia-de-bilete/"
+    },
+    {
+      "productId": "22311712",
+      "name": "Amintiri din copilărie - După Ion Creangă +5 ani",
+      "link": "https://www.eventim.ro/event/amintiri-din-copilrie-teatrul-municipal-tony-bulandra-22311712/?affiliate=ROF",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Târgoviște",
+            "name": "Teatrul Municipal Tony Bulandra",
+            "postalCode": "130024"
+          },
+          "startDate": "2026-11-05T10:00:00+02:00"
+        }
+      },
+      "expectedProfile": "ro-tony",
+      "officialInstructions": "https://www.tonybulandra.ro/ro/agentia-de-bilete/"
+    },
+    {
+      "productId": "22243695",
+      "name": "Marginea - după “The Edge” de Eduard Bond + 12 ani",
+      "link": "https://www.eventim.ro/event/marginea-teatrul-municipal-tony-bulandra-22243695/?affiliate=ROF",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Târgoviște",
+            "name": "Teatrul Municipal Tony Bulandra",
+            "postalCode": "130024"
+          },
+          "startDate": "2026-11-05T19:00:00+02:00"
+        }
+      },
+      "expectedProfile": "ro-tony",
+      "officialInstructions": "https://www.tonybulandra.ro/ro/agentia-de-bilete/"
+    },
+    {
+      "productId": "22241611",
+      "name": "Poveste japoneză - după „Pusca de vânătoare",
+      "link": "https://www.eventim.ro/event/poveste-japonez-teatrul-municipal-tony-bulandra-22241611/?affiliate=ROF",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Târgoviște",
+            "name": "Teatrul Municipal Tony Bulandra",
+            "postalCode": "130024"
+          },
+          "startDate": "2026-11-06T19:00:00+02:00"
+        }
+      },
+      "expectedProfile": "ro-tony",
+      "officialInstructions": "https://www.tonybulandra.ro/ro/agentia-de-bilete/"
+    },
+    {
+      "productId": "22311630",
+      "name": "MICA SIRENA +5 ani",
+      "link": "https://www.eventim.ro/event/mica-sirena-teatrul-municipal-tony-bulandra-22311630/?affiliate=ROF",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Târgoviște",
+            "name": "Teatrul Municipal Tony Bulandra",
+            "postalCode": "130024"
+          },
+          "startDate": "2026-11-07T11:00:00+02:00"
+        }
+      },
+      "expectedProfile": "ro-tony",
+      "officialInstructions": "https://www.tonybulandra.ro/ro/agentia-de-bilete/"
+    },
+    {
+      "productId": "22241610",
+      "name": "SOSESC DESEARĂ - de Tudor Musatescu +12 ani",
+      "link": "https://www.eventim.ro/event/sosesc-desear-teatrul-municipal-tony-bulandra-22241610/?affiliate=ROF",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Târgoviște",
+            "name": "Teatrul Municipal Tony Bulandra",
+            "postalCode": "130024"
+          },
+          "startDate": "2026-11-07T19:00:00+02:00"
+        }
+      },
+      "expectedProfile": "ro-tony",
+      "officialInstructions": "https://www.tonybulandra.ro/ro/agentia-de-bilete/"
+    },
+    {
+      "productId": "22242027",
+      "name": "Doamna Escobar - după Victoria Eugenia Henao, +12 ani",
+      "link": "https://www.eventim.ro/event/doamna-escobar-teatrul-municipal-tony-bulandra-22242027/?affiliate=ROF",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Târgoviște",
+            "name": "Teatrul Municipal Tony Bulandra",
+            "postalCode": "130024"
+          },
+          "startDate": "2026-11-08T19:00:00+02:00"
+        }
+      },
+      "expectedProfile": "ro-tony",
+      "officialInstructions": "https://www.tonybulandra.ro/ro/agentia-de-bilete/"
+    },
+    {
+      "productId": "22311647",
+      "name": "PINOCCHIO - după o poveste de Carlo Collodi +5 ani",
+      "link": "https://www.eventim.ro/event/pinocchio-teatrul-municipal-tony-bulandra-22311647/?affiliate=ROF",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Târgoviște",
+            "name": "Teatrul Municipal Tony Bulandra",
+            "postalCode": "130024"
+          },
+          "startDate": "2026-11-11T18:00:00+02:00"
+        }
+      },
+      "expectedProfile": "ro-tony",
+      "officialInstructions": "https://www.tonybulandra.ro/ro/agentia-de-bilete/"
+    },
+    {
+      "productId": "22243694",
+      "name": "RAZBOI - de Lars Norén + 14 ani",
+      "link": "https://www.eventim.ro/event/razboi-teatrul-municipal-tony-bulandra-22243694/?affiliate=ROF",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Târgoviște",
+            "name": "Teatrul Municipal Tony Bulandra",
+            "postalCode": "130024"
+          },
+          "startDate": "2026-11-13T19:00:00+02:00"
+        }
+      },
+      "expectedProfile": "ro-tony",
+      "officialInstructions": "https://www.tonybulandra.ro/ro/agentia-de-bilete/"
+    },
+    {
+      "productId": "22243675",
+      "name": "Nebunul si moartea - de Hugo von Hofmannsthal + 14 ani",
+      "link": "https://www.eventim.ro/event/nebunul-si-moartea-teatrul-municipal-tony-bulandra-22243675/?affiliate=ROF",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Târgoviște",
+            "name": "Teatrul Municipal Tony Bulandra",
+            "postalCode": "130024"
+          },
+          "startDate": "2026-11-14T19:00:00+02:00"
+        }
+      },
+      "expectedProfile": "ro-tony",
+      "officialInstructions": "https://www.tonybulandra.ro/ro/agentia-de-bilete/"
+    },
+    {
+      "productId": "22311646",
+      "name": "MOTANUL INCALTAT - de Charles Perrault +5 ani",
+      "link": "https://www.eventim.ro/event/motanul-incaltat-teatrul-municipal-tony-bulandra-22311646/?affiliate=ROF",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Târgoviște",
+            "name": "Teatrul Municipal Tony Bulandra",
+            "postalCode": "130024"
+          },
+          "startDate": "2026-11-15T11:00:00+02:00"
+        }
+      },
+      "expectedProfile": "ro-tony",
+      "officialInstructions": "https://www.tonybulandra.ro/ro/agentia-de-bilete/"
+    },
+    {
+      "productId": "22243676",
+      "name": "O noapte furtunoasă - după I.L. Caragiale +12 ani",
+      "link": "https://www.eventim.ro/event/o-noapte-furtunoas-teatrul-municipal-tony-bulandra-22243676/?affiliate=ROF",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Târgoviște",
+            "name": "Teatrul Municipal Tony Bulandra",
+            "postalCode": "130024"
+          },
+          "startDate": "2026-11-15T19:00:00+02:00"
+        }
+      },
+      "expectedProfile": "ro-tony",
+      "officialInstructions": "https://www.tonybulandra.ro/ro/agentia-de-bilete/"
+    },
+    {
+      "productId": "22311687",
+      "name": "Greuceanu - După Petre Ispirescu +5 ani",
+      "link": "https://www.eventim.ro/event/greuceanu-teatrul-municipal-tony-bulandra-22311687/?affiliate=ROF",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Târgoviște",
+            "name": "Teatrul Municipal Tony Bulandra",
+            "postalCode": "130024"
+          },
+          "startDate": "2026-11-18T18:00:00+02:00"
+        }
+      },
+      "expectedProfile": "ro-tony",
+      "officialInstructions": "https://www.tonybulandra.ro/ro/agentia-de-bilete/"
+    },
+    {
+      "productId": "22317375",
+      "name": "Lalele, păsări si beton - de Leta Popescu",
+      "link": "https://www.eventim.ro/event/lalele-psri-si-beton-teatrul-clasic-ioan-slavici-22317375/?affiliate=ROF",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Arad",
+            "geoLocation": {
+              "latitude": 46.171487116502526,
+              "longitude": 21.315437874202164
+            },
+            "name": "Teatrul Clasic Ioan Slavici",
+            "postalCode": "310099",
+            "state": "RO"
+          },
+          "startDate": "2026-11-01T17:00:00+02:00"
+        }
+      },
+      "expectedProfile": "ro-arad",
+      "officialInstructions": "https://teatrulclasic.ro/contact/"
+    },
+    {
+      "productId": "22318952",
+      "name": "zeite de categoria B",
+      "link": "https://www.eventim.ro/event/zeite-de-categoria-b-teatrul-clasic-ioan-slavici-22318952/?affiliate=ROF",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Arad",
+            "geoLocation": {
+              "latitude": 46.171487116502526,
+              "longitude": 21.315437874202164
+            },
+            "name": "Teatrul Clasic Ioan Slavici",
+            "postalCode": "310099",
+            "state": "RO"
+          },
+          "startDate": "2026-11-01T19:00:00+02:00"
+        }
+      },
+      "expectedProfile": "ro-arad",
+      "officialInstructions": "https://teatrulclasic.ro/contact/"
+    },
+    {
+      "productId": "22318974",
+      "name": "Eine Kleine Nachtmusik - un spectacol de Gigi Căciuleanu",
+      "link": "https://www.eventim.ro/event/eine-kleine-nachtmusik-teatrul-clasic-ioan-slavici-22318974/?affiliate=ROF",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Arad",
+            "geoLocation": {
+              "latitude": 46.171487116502526,
+              "longitude": 21.315437874202164
+            },
+            "name": "Teatrul Clasic Ioan Slavici",
+            "postalCode": "310099",
+            "state": "RO"
+          },
+          "startDate": "2026-11-02T18:00:00+02:00"
+        }
+      },
+      "expectedProfile": "ro-arad",
+      "officialInstructions": "https://teatrulclasic.ro/contact/"
+    },
+    {
+      "productId": "22318976",
+      "name": "Club 27",
+      "link": "https://www.eventim.ro/event/club-27-teatrul-clasic-ioan-slavici-22318976/?affiliate=ROF",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Arad",
+            "geoLocation": {
+              "latitude": 46.171487116502526,
+              "longitude": 21.315437874202164
+            },
+            "name": "Teatrul Clasic Ioan Slavici",
+            "postalCode": "310099",
+            "state": "RO"
+          },
+          "startDate": "2026-11-02T19:30:00+02:00"
+        }
+      },
+      "expectedProfile": "ro-arad",
+      "officialInstructions": "https://teatrulclasic.ro/contact/"
+    },
+    {
+      "productId": "22318975",
+      "name": "Desteptarea",
+      "link": "https://www.eventim.ro/event/desteptarea-teatrul-clasic-ioan-slavici-22318975/?affiliate=ROF",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Arad",
+            "geoLocation": {
+              "latitude": 46.171487116502526,
+              "longitude": 21.315437874202164
+            },
+            "name": "Teatrul Clasic Ioan Slavici",
+            "postalCode": "310099",
+            "state": "RO"
+          },
+          "startDate": "2026-11-03T17:00:00+02:00"
+        }
+      },
+      "expectedProfile": "ro-arad",
+      "officialInstructions": "https://teatrulclasic.ro/contact/"
+    },
+    {
+      "productId": "22319073",
+      "name": "Albastru - de Ionut Visan",
+      "link": "https://www.eventim.ro/event/albastru-teatrul-clasic-ioan-slavici-22319073/?affiliate=ROF",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Arad",
+            "geoLocation": {
+              "latitude": 46.171487116502526,
+              "longitude": 21.315437874202164
+            },
+            "name": "Teatrul Clasic Ioan Slavici",
+            "postalCode": "310099",
+            "state": "RO"
+          },
+          "startDate": "2026-11-03T20:00:00+02:00"
+        }
+      },
+      "expectedProfile": "ro-arad",
+      "officialInstructions": "https://teatrulclasic.ro/contact/"
+    },
+    {
+      "productId": "22319075",
+      "name": "ImprovShow",
+      "link": "https://www.eventim.ro/event/improvshow-teatrul-clasic-ioan-slavici-22319075/?affiliate=ROF",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Arad",
+            "geoLocation": {
+              "latitude": 46.171487116502526,
+              "longitude": 21.315437874202164
+            },
+            "name": "Teatrul Clasic Ioan Slavici",
+            "postalCode": "310099",
+            "state": "RO"
+          },
+          "startDate": "2026-11-04T18:00:00+02:00"
+        }
+      },
+      "expectedProfile": "ro-arad",
+      "officialInstructions": "https://teatrulclasic.ro/contact/"
+    },
+    {
+      "productId": "22319074",
+      "name": "Concert NightLosers",
+      "link": "https://www.eventim.ro/event/concert-nightlosers-teatrul-clasic-ioan-slavici-22319074/?affiliate=ROF",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Arad",
+            "geoLocation": {
+              "latitude": 46.171487116502526,
+              "longitude": 21.315437874202164
+            },
+            "name": "Teatrul Clasic Ioan Slavici",
+            "postalCode": "310099",
+            "state": "RO"
+          },
+          "startDate": "2026-11-04T20:00:00+02:00"
+        }
+      },
+      "expectedProfile": "ro-arad",
+      "officialInstructions": "https://teatrulclasic.ro/contact/"
+    },
+    {
+      "productId": "22319088",
+      "name": "Visuri LED",
+      "link": "https://www.eventim.ro/event/visuri-led-teatrul-clasic-ioan-slavici-22319088/?affiliate=ROF",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Arad",
+            "geoLocation": {
+              "latitude": 46.171487116502526,
+              "longitude": 21.315437874202164
+            },
+            "name": "Teatrul Clasic Ioan Slavici",
+            "postalCode": "310099",
+            "state": "RO"
+          },
+          "startDate": "2026-11-05T18:00:00+02:00"
+        }
+      },
+      "expectedProfile": "ro-arad",
+      "officialInstructions": "https://teatrulclasic.ro/contact/"
+    },
+    {
+      "productId": "22319087",
+      "name": "Odată am ucis o vrabie - de Tudor Cucu-Dumitrescu",
+      "link": "https://www.eventim.ro/event/odat-am-ucis-o-vrabie-teatrul-clasic-ioan-slavici-22319087/?affiliate=ROF",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Arad",
+            "geoLocation": {
+              "latitude": 46.171487116502526,
+              "longitude": 21.315437874202164
+            },
+            "name": "Teatrul Clasic Ioan Slavici",
+            "postalCode": "310099",
+            "state": "RO"
+          },
+          "startDate": "2026-11-05T19:30:00+02:00"
+        }
+      },
+      "expectedProfile": "ro-arad",
+      "officialInstructions": "https://teatrulclasic.ro/contact/"
+    },
+    {
+      "productId": "22356662",
+      "name": "Szép új világ / spectacol pentru copii - Proiect Teatru Multilingv - Aradi Kama",
+      "link": "https://www.eventim.ro/event/szep-uj-vilag-spectacol-pentru-copii-teatrul-clasic-ioan-slavici-22356662/?affiliate=ROF",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Arad",
+            "geoLocation": {
+              "latitude": 46.171487116502526,
+              "longitude": 21.315437874202164
+            },
+            "name": "Teatrul Clasic Ioan Slavici",
+            "postalCode": "310099",
+            "state": "RO"
+          },
+          "startDate": "2026-11-10T12:30:00+02:00"
+        }
+      },
+      "expectedProfile": "ro-arad",
+      "officialInstructions": "https://teatrulclasic.ro/contact/"
+    },
+    {
+      "productId": "22356667",
+      "name": "Angyalcsinálók /spectacol de teatru dans - Proiect Teatru Multilingv - Aradi Kam",
+      "link": "https://www.eventim.ro/event/angyalcsinalok-spectacol-de-teatru-dans-teatrul-clasic-ioan-slavici-22356667/?affiliate=ROF",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Arad",
+            "geoLocation": {
+              "latitude": 46.171487116502526,
+              "longitude": 21.315437874202164
+            },
+            "name": "Teatrul Clasic Ioan Slavici",
+            "postalCode": "310099",
+            "state": "RO"
+          },
+          "startDate": "2026-11-10T19:00:00+02:00"
+        }
+      },
+      "expectedProfile": "ro-arad",
+      "officialInstructions": "https://teatrulclasic.ro/contact/"
+    },
+    {
+      "productId": "22311347",
+      "name": "Năpasta - de Ion Luca Caragiale - PREMIERA",
+      "link": "https://www.eventim.ro/event/npasta-teatrul-clasic-ioan-slavici-22311347/?affiliate=ROF",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Arad",
+            "geoLocation": {
+              "latitude": 46.171487116502526,
+              "longitude": 21.315437874202164
+            },
+            "name": "Teatrul Clasic Ioan Slavici",
+            "postalCode": "310099",
+            "state": "RO"
+          },
+          "startDate": "2026-11-17T19:00:00+02:00"
+        }
+      },
+      "expectedProfile": "ro-arad",
+      "officialInstructions": "https://teatrulclasic.ro/contact/"
+    },
+    {
+      "productId": "22121728",
+      "name": "TEROARE",
+      "link": "https://www.eventim.ro/event/teroare-teatrul-bulandra-sala-toma-caragiu-22121728/?affiliate=ROF",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "București",
+            "name": "Teatrul Bulandra - Sala Toma Caragiu",
+            "postalCode": "020039"
+          },
+          "startDate": "2026-11-01T19:00:00+02:00"
+        }
+      },
+      "expectedProfile": "ro-toma",
+      "officialInstructions": "https://www.bulandra.ro/contact/"
+    },
+    {
+      "productId": "22231138",
+      "name": "FAMILY.EXE - de Mimi Branescu - +16 ani",
+      "link": "https://www.eventim.ro/event/family-exe-teatrul-bulandra-sala-toma-caragiu-22231138/?affiliate=ROF",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "București",
+            "name": "Teatrul Bulandra - Sala Toma Caragiu",
+            "postalCode": "020039"
+          },
+          "startDate": "2026-11-04T19:00:00+02:00"
+        }
+      },
+      "expectedProfile": "ro-toma",
+      "officialInstructions": "https://www.bulandra.ro/contact/"
+    },
+    {
+      "productId": "22231140",
+      "name": "RABBIT HOLE",
+      "link": "https://www.eventim.ro/event/rabbit-hole-teatrul-bulandra-sala-toma-caragiu-22231140/?affiliate=ROF",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "București",
+            "name": "Teatrul Bulandra - Sala Toma Caragiu",
+            "postalCode": "020039"
+          },
+          "startDate": "2026-11-06T19:00:00+02:00"
+        }
+      },
+      "expectedProfile": "ro-toma",
+      "officialInstructions": "https://www.bulandra.ro/contact/"
+    },
+    {
+      "productId": "22231139",
+      "name": "BĂIETII DE ZINC - +14 ani",
+      "link": "https://www.eventim.ro/event/bietii-de-zinc-teatrul-bulandra-sala-toma-caragiu-22231139/?affiliate=ROF",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "București",
+            "name": "Teatrul Bulandra - Sala Toma Caragiu",
+            "postalCode": "020039"
+          },
+          "startDate": "2026-11-07T19:00:00+02:00"
+        }
+      },
+      "expectedProfile": "ro-toma",
+      "officialInstructions": "https://www.bulandra.ro/contact/"
+    },
+    {
+      "productId": "22231143",
+      "name": "GIGEL - +14 ani",
+      "link": "https://www.eventim.ro/event/gigel-teatrul-bulandra-sala-toma-caragiu-22231143/?affiliate=ROF",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "București",
+            "name": "Teatrul Bulandra - Sala Toma Caragiu",
+            "postalCode": "020039"
+          },
+          "startDate": "2026-11-08T19:00:00+02:00"
+        }
+      },
+      "expectedProfile": "ro-toma",
+      "officialInstructions": "https://www.bulandra.ro/contact/"
+    },
+    {
+      "productId": "22231156",
+      "name": "AZILUL DE MOARTE - de: Georges Contamin - +16 ani",
+      "link": "https://www.eventim.ro/event/azilul-de-moarte-teatrul-bulandra-sala-toma-caragiu-22231156/?affiliate=ROF",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "București",
+            "name": "Teatrul Bulandra - Sala Toma Caragiu",
+            "postalCode": "020039"
+          },
+          "startDate": "2026-11-12T19:00:00+02:00"
+        }
+      },
+      "expectedProfile": "ro-toma",
+      "officialInstructions": "https://www.bulandra.ro/contact/"
+    },
+    {
+      "productId": "22231169",
+      "name": "ROMEO SI JULIETA - de William Shakespeare",
+      "link": "https://www.eventim.ro/event/romeo-si-julieta-teatrul-bulandra-sala-toma-caragiu-22231169/?affiliate=ROF",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "București",
+            "name": "Teatrul Bulandra - Sala Toma Caragiu",
+            "postalCode": "020039"
+          },
+          "startDate": "2026-11-15T19:00:00+02:00"
+        }
+      },
+      "expectedProfile": "ro-toma",
+      "officialInstructions": "https://www.bulandra.ro/contact/"
+    },
+    {
+      "productId": "22231167",
+      "name": "OEDIP - de Robert Icke după Sofocle",
+      "link": "https://www.eventim.ro/event/oedip-teatrul-bulandra-sala-toma-caragiu-22231167/?affiliate=ROF",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "București",
+            "name": "Teatrul Bulandra - Sala Toma Caragiu",
+            "postalCode": "020039"
+          },
+          "startDate": "2026-11-20T19:00:00+02:00"
+        }
+      },
+      "expectedProfile": "ro-toma",
+      "officialInstructions": "https://www.bulandra.ro/contact/"
+    },
+    {
+      "productId": "22231142",
+      "name": "OBICEIURI NECURATE - +14 ani",
+      "link": "https://www.eventim.ro/event/obiceiuri-necurate-teatrul-bulandra-sala-liviu-ciulei-22231142/?affiliate=ROF",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "București",
+            "name": "Teatrul Bulandra - Sala Liviu Ciulei",
+            "postalCode": "050025"
+          },
+          "startDate": "2026-11-04T19:00:00+02:00"
+        }
+      },
+      "expectedProfile": "ro-liviu",
+      "officialInstructions": "https://www.bulandra.ro/contact/"
+    },
+    {
+      "productId": "22231141",
+      "name": "CINĂ CU PRIETENI - de Donald Margulies - +16 ani",
+      "link": "https://www.eventim.ro/event/cin-cu-prieteni-teatrul-bulandra-sala-liviu-ciulei-22231141/?affiliate=ROF",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "București",
+            "name": "Teatrul Bulandra - Sala Liviu Ciulei",
+            "postalCode": "050025"
+          },
+          "startDate": "2026-11-08T19:00:00+02:00"
+        }
+      },
+      "expectedProfile": "ro-liviu",
+      "officialInstructions": "https://www.bulandra.ro/contact/"
+    },
+    {
+      "productId": "22231153",
+      "name": "ARTĂ - +14 ani",
+      "link": "https://www.eventim.ro/event/art-teatrul-bulandra-sala-liviu-ciulei-22231153/?affiliate=ROF",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "București",
+            "name": "Teatrul Bulandra - Sala Liviu Ciulei",
+            "postalCode": "050025"
+          },
+          "startDate": "2026-11-12T19:00:00+02:00"
+        }
+      },
+      "expectedProfile": "ro-liviu",
+      "officialInstructions": "https://www.bulandra.ro/contact/"
+    },
+    {
+      "productId": "22231155",
+      "name": "MESTESUGUL VIETII - +14 ani",
+      "link": "https://www.eventim.ro/event/mestesugul-vietii-teatrul-bulandra-sala-liviu-ciulei-22231155/?affiliate=ROF",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "București",
+            "name": "Teatrul Bulandra - Sala Liviu Ciulei",
+            "postalCode": "050025"
+          },
+          "startDate": "2026-11-14T19:00:00+02:00"
+        }
+      },
+      "expectedProfile": "ro-liviu",
+      "officialInstructions": "https://www.bulandra.ro/contact/"
+    },
+    {
+      "productId": "22231154",
+      "name": "PORTUGALIA - de Zoltan Egressy - +16 ani",
+      "link": "https://www.eventim.ro/event/portugalia-teatrul-bulandra-sala-liviu-ciulei-22231154/?affiliate=ROF",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "București",
+            "name": "Teatrul Bulandra - Sala Liviu Ciulei",
+            "postalCode": "050025"
+          },
+          "startDate": "2026-11-15T19:00:00+02:00"
+        }
+      },
+      "expectedProfile": "ro-liviu",
+      "officialInstructions": "https://www.bulandra.ro/contact/"
+    }
+  ]
+}

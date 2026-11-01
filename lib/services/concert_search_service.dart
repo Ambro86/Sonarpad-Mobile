@@ -216,7 +216,7 @@ class ConcertMarket {
       'web__eventim-rou',
       'ROF',
       'ro',
-      'MuzicÄƒ',
+      'Muzică',
     ),
     ConcertMarket(
       'FR',
@@ -232,7 +232,7 @@ class ConcertMarket {
       'web__eventim-com-br',
       'BR1',
       'pt',
-      'Shows & MÃºsica',
+      'Shows & Música',
     ),
   ];
 }

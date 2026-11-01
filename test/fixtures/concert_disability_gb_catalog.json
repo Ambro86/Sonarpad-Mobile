@@ -1,0 +1,846 @@
+{
+  "checked": "2026-10-31",
+  "method": "Live Eventim catalogue plus official venue accessibility procedures; no booking or seat availability checked.",
+  "events": [
+    {
+      "productId": "21337819",
+      "name": "The Kid LAROI",
+      "link": "https://www.eventim.co.uk/event/the-kid-laroi-eventim-apollo-21337819/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "London",
+            "geoLocation": {
+              "latitude": 51.49101454370065,
+              "longitude": -0.2245701150897991
+            },
+            "name": "Eventim Apollo",
+            "postalCode": "W6 9QH"
+          },
+          "startDate": "2026-11-01T18:30:00Z"
+        }
+      },
+      "expectedProfile": "gb-apollo",
+      "officialInstructions": "https://www.eventimapollo.com/venue-info/access-requirements/"
+    },
+    {
+      "productId": "21061836",
+      "name": "Sam Campbell: Kid Giblet",
+      "link": "https://www.eventim.co.uk/event/sam-campbell-eventim-apollo-21061836/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "London",
+            "geoLocation": {
+              "latitude": 51.49101454370065,
+              "longitude": -0.2245701150897991
+            },
+            "name": "Eventim Apollo",
+            "postalCode": "W6 9QH"
+          },
+          "startDate": "2026-11-05T20:00:00Z"
+        }
+      },
+      "expectedProfile": "gb-apollo",
+      "officialInstructions": "https://www.eventimapollo.com/venue-info/access-requirements/"
+    },
+    {
+      "productId": "20698098",
+      "name": "Laura Smyth: Born Aggy",
+      "link": "https://www.eventim.co.uk/event/laura-smyth-born-aggy-eventim-apollo-20698098/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "London",
+            "geoLocation": {
+              "latitude": 51.49101454370065,
+              "longitude": -0.2245701150897991
+            },
+            "name": "Eventim Apollo",
+            "postalCode": "W6 9QH"
+          },
+          "startDate": "2026-11-07T19:30:00Z"
+        }
+      },
+      "expectedProfile": "gb-apollo",
+      "officialInstructions": "https://www.eventimapollo.com/venue-info/access-requirements/"
+    },
+    {
+      "productId": "21337883",
+      "name": "Josh Pugh: Ha Ha, Yeah Sound",
+      "link": "https://www.eventim.co.uk/event/josh-pugh-eventim-apollo-21337883/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "London",
+            "geoLocation": {
+              "latitude": 51.49101454370065,
+              "longitude": -0.2245701150897991
+            },
+            "name": "Eventim Apollo",
+            "postalCode": "W6 9QH"
+          },
+          "startDate": "2026-11-08T19:30:00Z"
+        }
+      },
+      "expectedProfile": "gb-apollo",
+      "officialInstructions": "https://www.eventimapollo.com/venue-info/access-requirements/"
+    },
+    {
+      "productId": "21732134",
+      "name": "The Jacksons",
+      "link": "https://www.eventim.co.uk/event/the-jacksons-eventim-apollo-21732134/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "London",
+            "geoLocation": {
+              "latitude": 51.49101454370065,
+              "longitude": -0.2245701150897991
+            },
+            "name": "Eventim Apollo",
+            "postalCode": "W6 9QH"
+          },
+          "startDate": "2026-11-13T20:00:00Z"
+        }
+      },
+      "expectedProfile": "gb-apollo",
+      "officialInstructions": "https://www.eventimapollo.com/venue-info/access-requirements/"
+    },
+    {
+      "productId": "22093355",
+      "name": "kwn – wn night only",
+      "link": "https://www.eventim.co.uk/event/kwn-wn-night-only-eventim-apollo-22093355/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "London",
+            "geoLocation": {
+              "latitude": 51.49101454370065,
+              "longitude": -0.2245701150897991
+            },
+            "name": "Eventim Apollo",
+            "postalCode": "W6 9QH"
+          },
+          "startDate": "2026-11-14T19:00:00Z"
+        }
+      },
+      "expectedProfile": "gb-apollo",
+      "officialInstructions": "https://www.eventimapollo.com/venue-info/access-requirements/"
+    },
+    {
+      "productId": "21548270",
+      "name": "Noah Kahan: The Great Divide Tour",
+      "link": "https://www.eventim.co.uk/event/noah-kahan-ao-arena-manchester-21548270/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Manchester",
+            "geoLocation": {
+              "latitude": 53.487131513704355,
+              "longitude": -2.2421359226142865
+            },
+            "name": "AO Arena Manchester",
+            "postalCode": "M3 1AR"
+          },
+          "startDate": "2026-11-09T18:30:00Z"
+        }
+      },
+      "expectedProfile": "gb-ao",
+      "officialInstructions": "https://www.ao-arena.com/venue-information/accessibility"
+    },
+    {
+      "productId": "21972139",
+      "name": "Gladiators Live",
+      "link": "https://www.eventim.co.uk/event/gladiators-live-ao-arena-manchester-21972139/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Manchester",
+            "geoLocation": {
+              "latitude": 53.487131513704355,
+              "longitude": -2.2421359226142865
+            },
+            "name": "AO Arena Manchester",
+            "postalCode": "M3 1AR"
+          },
+          "startDate": "2026-11-15T10:00:00Z"
+        }
+      },
+      "expectedProfile": "gb-ao",
+      "officialInstructions": "https://www.ao-arena.com/venue-information/accessibility"
+    },
+    {
+      "productId": "21878329",
+      "name": "beabadoobee: The Powerlines Tour",
+      "link": "https://www.eventim.co.uk/event/beabadoobee-ao-arena-manchester-21878329/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Manchester",
+            "geoLocation": {
+              "latitude": 53.487131513704355,
+              "longitude": -2.2421359226142865
+            },
+            "name": "AO Arena Manchester",
+            "postalCode": "M3 1AR"
+          },
+          "startDate": "2026-11-17T18:30:00Z"
+        }
+      },
+      "expectedProfile": "gb-ao",
+      "officialInstructions": "https://www.ao-arena.com/venue-information/accessibility"
+    },
+    {
+      "productId": "20792603",
+      "name": "Ocean Colour Scene",
+      "link": "https://www.eventim.co.uk/event/ocean-colour-scene-ao-arena-manchester-20792603/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Manchester",
+            "geoLocation": {
+              "latitude": 53.487131513704355,
+              "longitude": -2.2421359226142865
+            },
+            "name": "AO Arena Manchester",
+            "postalCode": "M3 1AR"
+          },
+          "startDate": "2026-11-28T18:00:00Z"
+        }
+      },
+      "expectedProfile": "gb-ao",
+      "officialInstructions": "https://www.ao-arena.com/venue-information/accessibility"
+    },
+    {
+      "productId": "21087009",
+      "name": "Pete Tong Presents Ibiza Classics",
+      "link": "https://www.eventim.co.uk/event/pete-tong-presents-ibiza-classics-ao-arena-manchester-21087009/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Manchester",
+            "geoLocation": {
+              "latitude": 53.487131513704355,
+              "longitude": -2.2421359226142865
+            },
+            "name": "AO Arena Manchester",
+            "postalCode": "M3 1AR"
+          },
+          "startDate": "2026-12-04T18:00:00Z"
+        }
+      },
+      "expectedProfile": "gb-ao",
+      "officialInstructions": "https://www.ao-arena.com/venue-information/accessibility"
+    },
+    {
+      "productId": "21717656",
+      "name": "Culture Club",
+      "link": "https://www.eventim.co.uk/event/culture-club-the-singles-tour-ao-arena-manchester-21717656/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Manchester",
+            "geoLocation": {
+              "latitude": 53.487131513704355,
+              "longitude": -2.2421359226142865
+            },
+            "name": "AO Arena Manchester",
+            "postalCode": "M3 1AR"
+          },
+          "startDate": "2026-12-10T18:00:00Z"
+        }
+      },
+      "expectedProfile": "gb-ao",
+      "officialInstructions": "https://www.ao-arena.com/venue-information/accessibility"
+    },
+    {
+      "productId": "20907652",
+      "name": "Jonny Cole: Armagudd'n",
+      "link": "https://www.eventim.co.uk/event/jonny-cole-armaguddn-utilita-arena-birmingham-20907652/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Birmingham",
+            "geoLocation": {
+              "latitude": 52.48046286164344,
+              "longitude": -1.9140328212871422
+            },
+            "name": "Utilita Arena Birmingham",
+            "postalCode": "B1 2AA"
+          },
+          "startDate": "2026-11-03T19:30:00Z"
+        }
+      },
+      "expectedProfile": "gb-birmingham",
+      "officialInstructions": "https://www.utilitaarenabham.co.uk/accessibility"
+    },
+    {
+      "productId": "21317673",
+      "name": "Papa Roach - Rise of the Roach",
+      "link": "https://www.eventim.co.uk/event/papa-roach-utilita-arena-birmingham-21317673/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Birmingham",
+            "geoLocation": {
+              "latitude": 52.48046286164344,
+              "longitude": -1.9140328212871422
+            },
+            "name": "Utilita Arena Birmingham",
+            "postalCode": "B1 2AA"
+          },
+          "startDate": "2026-11-05T18:00:00Z"
+        }
+      },
+      "expectedProfile": "gb-birmingham",
+      "officialInstructions": "https://www.utilitaarenabham.co.uk/accessibility"
+    },
+    {
+      "productId": "21716905",
+      "name": "The Script",
+      "link": "https://www.eventim.co.uk/event/the-script-utilita-arena-birmingham-21716905/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Birmingham",
+            "geoLocation": {
+              "latitude": 52.48046286164344,
+              "longitude": -1.9140328212871422
+            },
+            "name": "Utilita Arena Birmingham",
+            "postalCode": "B1 2AA"
+          },
+          "startDate": "2026-11-06T18:00:00Z"
+        }
+      },
+      "expectedProfile": "gb-birmingham",
+      "officialInstructions": "https://www.utilitaarenabham.co.uk/accessibility"
+    },
+    {
+      "productId": "21617467",
+      "name": "Manic Street Preachers & Suede",
+      "link": "https://www.eventim.co.uk/event/manic-street-preachers-suede-utilita-arena-birmingham-21617467/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Birmingham",
+            "geoLocation": {
+              "latitude": 52.48046286164344,
+              "longitude": -1.9140328212871422
+            },
+            "name": "Utilita Arena Birmingham",
+            "postalCode": "B1 2AA"
+          },
+          "startDate": "2026-11-07T18:00:00Z"
+        }
+      },
+      "expectedProfile": "gb-birmingham",
+      "officialInstructions": "https://www.utilitaarenabham.co.uk/accessibility"
+    },
+    {
+      "productId": "21730423",
+      "name": "Paul Heaton",
+      "link": "https://www.eventim.co.uk/event/paul-heaton-utilita-arena-birmingham-21730423/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Birmingham",
+            "geoLocation": {
+              "latitude": 52.48046286164344,
+              "longitude": -1.9140328212871422
+            },
+            "name": "Utilita Arena Birmingham",
+            "postalCode": "B1 2AA"
+          },
+          "startDate": "2026-11-13T18:00:00Z"
+        }
+      },
+      "expectedProfile": "gb-birmingham",
+      "officialInstructions": "https://www.utilitaarenabham.co.uk/accessibility"
+    },
+    {
+      "productId": "20910283",
+      "name": "Bloc Party & Interpol Co-Headline Tour",
+      "link": "https://www.eventim.co.uk/event/bloc-party-interpol-utilita-arena-birmingham-20910283/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Birmingham",
+            "geoLocation": {
+              "latitude": 52.48046286164344,
+              "longitude": -1.9140328212871422
+            },
+            "name": "Utilita Arena Birmingham",
+            "postalCode": "B1 2AA"
+          },
+          "startDate": "2026-11-20T18:00:00Z"
+        }
+      },
+      "expectedProfile": "gb-birmingham",
+      "officialInstructions": "https://www.utilitaarenabham.co.uk/accessibility"
+    },
+    {
+      "productId": "21547293",
+      "name": "Courteeners",
+      "link": "https://www.eventim.co.uk/event/courteeners-first-direct-arena-21547293/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Leeds",
+            "geoLocation": {
+              "latitude": 53.80422393555825,
+              "longitude": -1.5431373699495372
+            },
+            "name": "first direct arena",
+            "postalCode": "LS2 8AR"
+          },
+          "startDate": "2026-11-06T18:00:00Z"
+        }
+      },
+      "expectedProfile": "gb-leeds",
+      "officialInstructions": "https://www.firstdirectbankarena.com/your-visit/accessibility"
+    },
+    {
+      "productId": "21483038",
+      "name": "Myles Smith",
+      "link": "https://www.eventim.co.uk/event/myles-smith-first-direct-arena-21483038/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Leeds",
+            "geoLocation": {
+              "latitude": 53.80422393555825,
+              "longitude": -1.5431373699495372
+            },
+            "name": "first direct arena",
+            "postalCode": "LS2 8AR"
+          },
+          "startDate": "2026-11-08T18:00:00Z"
+        }
+      },
+      "expectedProfile": "gb-leeds",
+      "officialInstructions": "https://www.firstdirectbankarena.com/your-visit/accessibility"
+    },
+    {
+      "productId": "21716906",
+      "name": "The Script",
+      "link": "https://www.eventim.co.uk/event/the-script-first-direct-arena-21716906/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Leeds",
+            "geoLocation": {
+              "latitude": 53.80422393555825,
+              "longitude": -1.5431373699495372
+            },
+            "name": "first direct arena",
+            "postalCode": "LS2 8AR"
+          },
+          "startDate": "2026-11-10T18:00:00Z"
+        }
+      },
+      "expectedProfile": "gb-leeds",
+      "officialInstructions": "https://www.firstdirectbankarena.com/your-visit/accessibility"
+    },
+    {
+      "productId": "20984924",
+      "name": "Squeeze Plus Very Special Guest Billy Bragg",
+      "link": "https://www.eventim.co.uk/event/squeeze-first-direct-arena-20984924/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Leeds",
+            "geoLocation": {
+              "latitude": 53.80422393555825,
+              "longitude": -1.5431373699495372
+            },
+            "name": "first direct arena",
+            "postalCode": "LS2 8AR"
+          },
+          "startDate": "2026-11-20T18:00:00Z"
+        }
+      },
+      "expectedProfile": "gb-leeds",
+      "officialInstructions": "https://www.firstdirectbankarena.com/your-visit/accessibility"
+    },
+    {
+      "productId": "21494457",
+      "name": "Jungle",
+      "link": "https://www.eventim.co.uk/event/jungle-first-direct-arena-21494457/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Leeds",
+            "geoLocation": {
+              "latitude": 53.80422393555825,
+              "longitude": -1.5431373699495372
+            },
+            "name": "first direct arena",
+            "postalCode": "LS2 8AR"
+          },
+          "startDate": "2026-11-21T18:30:00Z"
+        }
+      },
+      "expectedProfile": "gb-leeds",
+      "officialInstructions": "https://www.firstdirectbankarena.com/your-visit/accessibility"
+    },
+    {
+      "productId": "22061190",
+      "name": "Blossoms",
+      "link": "https://www.eventim.co.uk/event/blossoms-first-direct-arena-22061190/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Leeds",
+            "geoLocation": {
+              "latitude": 53.80422393555825,
+              "longitude": -1.5431373699495372
+            },
+            "name": "first direct arena",
+            "postalCode": "LS2 8AR"
+          },
+          "startDate": "2026-12-03T18:00:00Z"
+        }
+      },
+      "expectedProfile": "gb-leeds",
+      "officialInstructions": "https://www.firstdirectbankarena.com/your-visit/accessibility"
+    },
+    {
+      "productId": "20984920",
+      "name": "Squeeze Plus Very Special Guest Billy Bragg",
+      "link": "https://www.eventim.co.uk/event/squeeze-ovo-hydro-20984920/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Glasgow",
+            "geoLocation": {
+              "latitude": 55.86433267526208,
+              "longitude": -4.251830066123233
+            },
+            "name": "OVO Hydro",
+            "postalCode": "G3 8WY"
+          },
+          "startDate": "2026-11-12T18:30:00Z"
+        }
+      },
+      "expectedProfile": "gb-hydro",
+      "officialInstructions": "https://www.ovohydro.com/visitor-info/accessibility-information"
+    },
+    {
+      "productId": "21549522",
+      "name": "Courteeners",
+      "link": "https://www.eventim.co.uk/event/courteeners-ovo-hydro-21549522/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Glasgow",
+            "geoLocation": {
+              "latitude": 55.86433267526208,
+              "longitude": -4.251830066123233
+            },
+            "name": "OVO Hydro",
+            "postalCode": "G3 8WY"
+          },
+          "startDate": "2026-11-20T18:30:00Z"
+        }
+      },
+      "expectedProfile": "gb-hydro",
+      "officialInstructions": "https://www.ovohydro.com/visitor-info/accessibility-information"
+    },
+    {
+      "productId": "20811139",
+      "name": "Ocean Colour Scene - Moseley Shoals 30th Anniversary UK Tour",
+      "link": "https://www.eventim.co.uk/event/ocean-colour-scene-ovo-hydro-20811139/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Glasgow",
+            "geoLocation": {
+              "latitude": 55.86433267526208,
+              "longitude": -4.251830066123233
+            },
+            "name": "OVO Hydro",
+            "postalCode": "G3 8WY"
+          },
+          "startDate": "2026-11-21T18:30:00Z"
+        }
+      },
+      "expectedProfile": "gb-hydro",
+      "officialInstructions": "https://www.ovohydro.com/visitor-info/accessibility-information"
+    },
+    {
+      "productId": "21762548",
+      "name": "Phoebe Bridgers",
+      "link": "https://www.eventim.co.uk/event/phoebe-bridgers-ovo-hydro-21762548/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Glasgow",
+            "geoLocation": {
+              "latitude": 55.86433267526208,
+              "longitude": -4.251830066123233
+            },
+            "name": "OVO Hydro",
+            "postalCode": "G3 8WY"
+          },
+          "startDate": "2026-11-27T19:00:00Z"
+        }
+      },
+      "expectedProfile": "gb-hydro",
+      "officialInstructions": "https://www.ovohydro.com/visitor-info/accessibility-information"
+    },
+    {
+      "productId": "21970362",
+      "name": "JUNGLE",
+      "link": "https://www.eventim.co.uk/event/jungle-ovo-hydro-21970362/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Glasgow",
+            "geoLocation": {
+              "latitude": 55.86433267526208,
+              "longitude": -4.251830066123233
+            },
+            "name": "OVO Hydro",
+            "postalCode": "G3 8WY"
+          },
+          "startDate": "2026-11-28T18:30:00Z"
+        }
+      },
+      "expectedProfile": "gb-hydro",
+      "officialInstructions": "https://www.ovohydro.com/visitor-info/accessibility-information"
+    },
+    {
+      "productId": "21487258",
+      "name": "Placebo",
+      "link": "https://www.eventim.co.uk/event/placebo-ovo-hydro-21487258/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Glasgow",
+            "geoLocation": {
+              "latitude": 55.86433267526208,
+              "longitude": -4.251830066123233
+            },
+            "name": "OVO Hydro",
+            "postalCode": "G3 8WY"
+          },
+          "startDate": "2026-11-30T18:30:00Z"
+        }
+      },
+      "expectedProfile": "gb-hydro",
+      "officialInstructions": "https://www.ovohydro.com/visitor-info/accessibility-information"
+    },
+    {
+      "productId": "21483036",
+      "name": "Myles Smith",
+      "link": "https://www.eventim.co.uk/event/myles-smith-motorpoint-arena-nottingham-21483036/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Nottingham",
+            "geoLocation": {
+              "latitude": 52.95270202176059,
+              "longitude": -1.1404273600264214
+            },
+            "name": "Motorpoint Arena Nottingham",
+            "postalCode": "NG1 1LA"
+          },
+          "startDate": "2026-11-07T18:30:00Z"
+        }
+      },
+      "expectedProfile": "gb-nottingham",
+      "officialInstructions": "https://www.motorpointarenanottingham.com/accessibility/"
+    },
+    {
+      "productId": "21716898",
+      "name": "The Script",
+      "link": "https://www.eventim.co.uk/event/the-script-motorpoint-arena-nottingham-21716898/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Nottingham",
+            "geoLocation": {
+              "latitude": 52.95270202176059,
+              "longitude": -1.1404273600264214
+            },
+            "name": "Motorpoint Arena Nottingham",
+            "postalCode": "NG1 1LA"
+          },
+          "startDate": "2026-11-09T18:30:00Z"
+        }
+      },
+      "expectedProfile": "gb-nottingham",
+      "officialInstructions": "https://www.motorpointarenanottingham.com/accessibility/"
+    },
+    {
+      "productId": "21730419",
+      "name": "Paul Heaton",
+      "link": "https://www.eventim.co.uk/event/paul-heaton-motorpoint-arena-nottingham-21730419/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Nottingham",
+            "geoLocation": {
+              "latitude": 52.95270202176059,
+              "longitude": -1.1404273600264214
+            },
+            "name": "Motorpoint Arena Nottingham",
+            "postalCode": "NG1 1LA"
+          },
+          "startDate": "2026-11-10T18:30:00Z"
+        }
+      },
+      "expectedProfile": "gb-nottingham",
+      "officialInstructions": "https://www.motorpointarenanottingham.com/accessibility/"
+    },
+    {
+      "productId": "21617469",
+      "name": "Suede & Manic Street Preachers",
+      "link": "https://www.eventim.co.uk/event/manic-street-preachers-suede-motorpoint-arena-nottingham-21617469/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Nottingham",
+            "geoLocation": {
+              "latitude": 52.95270202176059,
+              "longitude": -1.1404273600264214
+            },
+            "name": "Motorpoint Arena Nottingham",
+            "postalCode": "NG1 1LA"
+          },
+          "startDate": "2026-11-11T18:30:00Z"
+        }
+      },
+      "expectedProfile": "gb-nottingham",
+      "officialInstructions": "https://www.motorpointarenanottingham.com/accessibility/"
+    },
+    {
+      "productId": "20984923",
+      "name": "Squeeze Plus Very Special Guest Billy Bragg",
+      "link": "https://www.eventim.co.uk/event/squeeze-motorpoint-arena-nottingham-20984923/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Nottingham",
+            "geoLocation": {
+              "latitude": 52.95270202176059,
+              "longitude": -1.1404273600264214
+            },
+            "name": "Motorpoint Arena Nottingham",
+            "postalCode": "NG1 1LA"
+          },
+          "startDate": "2026-11-14T18:30:00Z"
+        }
+      },
+      "expectedProfile": "gb-nottingham",
+      "officialInstructions": "https://www.motorpointarenanottingham.com/accessibility/"
+    },
+    {
+      "productId": "21716903",
+      "name": "The Script",
+      "link": "https://www.eventim.co.uk/event/the-script-newcastle-utilita-arena-21716903/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Newcastle",
+            "geoLocation": {
+              "latitude": 54.96308005466838,
+              "longitude": -1.6241104898217151
+            },
+            "name": "Newcastle Utilita Arena",
+            "postalCode": "NE4 7NA"
+          },
+          "startDate": "2026-11-05T18:00:00Z"
+        }
+      },
+      "expectedProfile": "gb-newcastle",
+      "officialInstructions": "https://www.utilitaarena.co.uk/venue-information/accessibility"
+    },
+    {
+      "productId": "21972141",
+      "name": "Gladiators Live",
+      "link": "https://www.eventim.co.uk/event/gladiators-live-newcastle-utilita-arena-21972141/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Newcastle",
+            "geoLocation": {
+              "latitude": 54.96308005466838,
+              "longitude": -1.6241104898217151
+            },
+            "name": "Newcastle Utilita Arena",
+            "postalCode": "NE4 7NA"
+          },
+          "startDate": "2026-11-22T10:00:00Z"
+        }
+      },
+      "expectedProfile": "gb-newcastle",
+      "officialInstructions": "https://www.utilitaarena.co.uk/venue-information/accessibility"
+    },
+    {
+      "productId": "21717654",
+      "name": "Culture Club",
+      "link": "https://www.eventim.co.uk/event/culture-club-the-singles-tour-newcastle-utilita-arena-21717654/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Newcastle",
+            "geoLocation": {
+              "latitude": 54.96308005466838,
+              "longitude": -1.6241104898217151
+            },
+            "name": "Newcastle Utilita Arena",
+            "postalCode": "NE4 7NA"
+          },
+          "startDate": "2026-12-13T18:00:00Z"
+        }
+      },
+      "expectedProfile": "gb-newcastle",
+      "officialInstructions": "https://www.utilitaarena.co.uk/venue-information/accessibility"
+    },
+    {
+      "productId": "21697216",
+      "name": "Donny Osmond",
+      "link": "https://www.eventim.co.uk/event/donny-osmond-newcastle-utilita-arena-21697216/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Newcastle",
+            "geoLocation": {
+              "latitude": 54.96308005466838,
+              "longitude": -1.6241104898217151
+            },
+            "name": "Newcastle Utilita Arena",
+            "postalCode": "NE4 7NA"
+          },
+          "startDate": "2027-01-21T19:30:00Z"
+        }
+      },
+      "expectedProfile": "gb-newcastle",
+      "officialInstructions": "https://www.utilitaarena.co.uk/venue-information/accessibility"
+    },
+    {
+      "productId": "22112966",
+      "name": "Strictly Come Dancing The Live Tour 2027",
+      "link": "https://www.eventim.co.uk/event/strictly-come-dancing-the-live-tour-2027-newcastle-utilita-arena-22112966/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Newcastle",
+            "geoLocation": {
+              "latitude": 54.96308005466838,
+              "longitude": -1.6241104898217151
+            },
+            "name": "Newcastle Utilita Arena",
+            "postalCode": "NE4 7NA"
+          },
+          "startDate": "2027-01-27T19:30:00Z"
+        }
+      },
+      "expectedProfile": "gb-newcastle",
+      "officialInstructions": "https://www.utilitaarena.co.uk/venue-information/accessibility"
+    }
+  ]
+}

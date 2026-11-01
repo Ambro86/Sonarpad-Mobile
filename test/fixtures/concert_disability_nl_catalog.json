@@ -1,0 +1,846 @@
+{
+  "checked": "2026-10-31",
+  "method": "Live Eventim exploration API; 40 distinct product IDs. Verified official venue sources; no booking or availability confirmation. Null expectedProfile explicitly tests safe unknown-venue handling.",
+  "events": [
+    {
+      "productId": "21996365",
+      "name": "Mahsun Kirmizigül Live in Concert",
+      "link": "https://www.eventim.nl/event/mahsun-kirmiziguel-live-in-concert-afas-live-21996365/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Amsterdam",
+            "geoLocation": {
+              "latitude": 52.3121993786606,
+              "longitude": 4.944405311648309
+            },
+            "name": "AFAS Live",
+            "postalCode": "1101 DS"
+          },
+          "startDate": "2027-01-10T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "nl-afas",
+      "officialInstructions": "https://www.afaslive.nl/faq"
+    },
+    {
+      "productId": "22206139",
+      "name": "Kool & The Gang",
+      "link": "https://www.eventim.nl/event/kool-the-gang-afas-live-22206139/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Amsterdam",
+            "geoLocation": {
+              "latitude": 52.3121993786606,
+              "longitude": 4.944405311648309
+            },
+            "name": "AFAS Live",
+            "postalCode": "1101 DS"
+          },
+          "startDate": "2027-03-08T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "nl-afas",
+      "officialInstructions": "https://www.afaslive.nl/faq"
+    },
+    {
+      "productId": "22151395",
+      "name": "Lizzy McAlpine",
+      "link": "https://www.eventim.nl/event/lizzy-mcalpine-afas-live-22151395/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Amsterdam",
+            "geoLocation": {
+              "latitude": 52.3121993786606,
+              "longitude": 4.944405311648309
+            },
+            "name": "AFAS Live",
+            "postalCode": "1101 DS"
+          },
+          "startDate": "2027-03-26T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "nl-afas",
+      "officialInstructions": "https://www.afaslive.nl/faq"
+    },
+    {
+      "productId": "21638824",
+      "name": "Thomas Bergersen Live",
+      "link": "https://www.eventim.nl/event/thomas-bergersen-live-afas-live-21638824/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Amsterdam",
+            "geoLocation": {
+              "latitude": 52.3121993786606,
+              "longitude": 4.944405311648309
+            },
+            "name": "AFAS Live",
+            "postalCode": "1101 DS"
+          },
+          "startDate": "2027-04-14T20:00:00+02:00"
+        }
+      },
+      "expectedProfile": "nl-afas",
+      "officialInstructions": "https://www.afaslive.nl/faq"
+    },
+    {
+      "productId": "22195665",
+      "name": "Take That",
+      "link": "https://www.eventim.nl/event/take-that-afas-live-22195665/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Amsterdam",
+            "geoLocation": {
+              "latitude": 52.3121993786606,
+              "longitude": 4.944405311648309
+            },
+            "name": "AFAS Live",
+            "postalCode": "1101 DS"
+          },
+          "startDate": "2027-06-27T20:00:00+02:00"
+        }
+      },
+      "expectedProfile": "nl-afas",
+      "officialInstructions": "https://www.afaslive.nl/faq"
+    },
+    {
+      "productId": "21792622",
+      "name": "Luna Sabella",
+      "link": "https://www.eventim.nl/event/luna-sabella-afas-live-21792622/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Amsterdam",
+            "geoLocation": {
+              "latitude": 52.3121993786606,
+              "longitude": 4.944405311648309
+            },
+            "name": "AFAS Live",
+            "postalCode": "1101 DS"
+          },
+          "startDate": "2027-07-04T14:00:00+02:00"
+        }
+      },
+      "expectedProfile": "nl-afas",
+      "officialInstructions": "https://www.afaslive.nl/faq"
+    },
+    {
+      "productId": "22136251",
+      "name": "Ronan Keating",
+      "link": "https://www.eventim.nl/event/ronan-keating-afas-live-22136251/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Amsterdam",
+            "geoLocation": {
+              "latitude": 52.3121993786606,
+              "longitude": 4.944405311648309
+            },
+            "name": "AFAS Live",
+            "postalCode": "1101 DS"
+          },
+          "startDate": "2027-09-06T20:00:00+02:00"
+        }
+      },
+      "expectedProfile": "nl-afas",
+      "officialInstructions": "https://www.afaslive.nl/faq"
+    },
+    {
+      "productId": "22178953",
+      "name": "Mega KidsDisco 2027",
+      "link": "https://www.eventim.nl/event/mega-kidsdisco-2027-afas-live-22178953/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Amsterdam",
+            "geoLocation": {
+              "latitude": 52.3121993786606,
+              "longitude": 4.944405311648309
+            },
+            "name": "AFAS Live",
+            "postalCode": "1101 DS"
+          },
+          "startDate": "2027-10-03T13:30:00+02:00"
+        }
+      },
+      "expectedProfile": "nl-afas",
+      "officialInstructions": "https://www.afaslive.nl/faq"
+    },
+    {
+      "productId": "22007280",
+      "name": "Fontaines D.C.",
+      "link": "https://www.eventim.nl/event/fontaines-d-c-ziggo-dome-22007280/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Amsterdam",
+            "geoLocation": {
+              "latitude": 52.31335504625203,
+              "longitude": 4.937104985079941
+            },
+            "name": "Ziggo Dome",
+            "postalCode": "1101 AX"
+          },
+          "startDate": "2026-11-10T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "nl-ziggo",
+      "officialInstructions": "https://ziggodome.nl/belangrijk/veelgestelde-vragen/"
+    },
+    {
+      "productId": "21523576",
+      "name": "Noah Kahan: The Great Divide Tour",
+      "link": "https://www.eventim.nl/event/noah-kahan-the-great-divide-tour-ziggo-dome-21523576/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Amsterdam",
+            "geoLocation": {
+              "latitude": 52.31335504625203,
+              "longitude": 4.937104985079941
+            },
+            "name": "Ziggo Dome",
+            "postalCode": "1101 AX"
+          },
+          "startDate": "2026-12-01T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "nl-ziggo",
+      "officialInstructions": "https://ziggodome.nl/belangrijk/veelgestelde-vragen/"
+    },
+    {
+      "productId": "21012023",
+      "name": "KENSINGTON",
+      "link": "https://www.eventim.nl/event/kensington-ziggo-dome-21012023/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Amsterdam",
+            "geoLocation": {
+              "latitude": 52.31335504625203,
+              "longitude": 4.937104985079941
+            },
+            "name": "Ziggo Dome",
+            "postalCode": "1101 AX"
+          },
+          "startDate": "2026-12-03T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "nl-ziggo",
+      "officialInstructions": "https://ziggodome.nl/belangrijk/veelgestelde-vragen/"
+    },
+    {
+      "productId": "21679969",
+      "name": "Phoebe Bridgers",
+      "link": "https://www.eventim.nl/event/phoebe-bridgers-ziggo-dome-21679969/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Amsterdam",
+            "geoLocation": {
+              "latitude": 52.31335504625203,
+              "longitude": 4.937104985079941
+            },
+            "name": "Ziggo Dome",
+            "postalCode": "1101 AX"
+          },
+          "startDate": "2026-12-07T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "nl-ziggo",
+      "officialInstructions": "https://ziggodome.nl/belangrijk/veelgestelde-vragen/"
+    },
+    {
+      "productId": "22348971",
+      "name": "Beach Boys' Best & Metropole Orkest",
+      "link": "https://www.eventim.nl/event/beach-boys-best-metropole-orkest-good-vibrations-ziggo-dome-22348971/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Amsterdam",
+            "geoLocation": {
+              "latitude": 52.31335504625203,
+              "longitude": 4.937104985079941
+            },
+            "name": "Ziggo Dome",
+            "postalCode": "1101 AX"
+          },
+          "startDate": "2026-12-19T20:30:00+01:00"
+        }
+      },
+      "expectedProfile": "nl-ziggo",
+      "officialInstructions": "https://ziggodome.nl/belangrijk/veelgestelde-vragen/"
+    },
+    {
+      "productId": "21141582",
+      "name": "Disney in Concert - Wonderful Worlds",
+      "link": "https://www.eventim.nl/event/disney-in-concert-wonderful-worlds-ziggo-dome-21141582/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Amsterdam",
+            "geoLocation": {
+              "latitude": 52.31335504625203,
+              "longitude": 4.937104985079941
+            },
+            "name": "Ziggo Dome",
+            "postalCode": "1101 AX"
+          },
+          "startDate": "2026-12-20T15:00:00+01:00"
+        }
+      },
+      "expectedProfile": "nl-ziggo",
+      "officialInstructions": "https://ziggodome.nl/belangrijk/veelgestelde-vragen/"
+    },
+    {
+      "productId": "22023477",
+      "name": "James Blunt",
+      "link": "https://www.eventim.nl/event/james-blunt-ziggo-dome-22023477/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Amsterdam",
+            "geoLocation": {
+              "latitude": 52.31335504625203,
+              "longitude": 4.937104985079941
+            },
+            "name": "Ziggo Dome",
+            "postalCode": "1101 AX"
+          },
+          "startDate": "2027-02-20T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "nl-ziggo",
+      "officialInstructions": "https://ziggodome.nl/belangrijk/veelgestelde-vragen/"
+    },
+    {
+      "productId": "21744124",
+      "name": "Holland Zingt Hazes 2027",
+      "link": "https://www.eventim.nl/event/holland-zingt-hazes-2027-ziggo-dome-21744124/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Amsterdam",
+            "geoLocation": {
+              "latitude": 52.31335504625203,
+              "longitude": 4.937104985079941
+            },
+            "name": "Ziggo Dome",
+            "postalCode": "1101 AX"
+          },
+          "startDate": "2027-03-12T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "nl-ziggo",
+      "officialInstructions": "https://ziggodome.nl/belangrijk/veelgestelde-vragen/"
+    },
+    {
+      "productId": "21534697",
+      "name": "Ladies of Soul",
+      "link": "https://www.eventim.nl/event/ladies-of-soul-ziggo-dome-21534697/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Amsterdam",
+            "geoLocation": {
+              "latitude": 52.31335504625203,
+              "longitude": 4.937104985079941
+            },
+            "name": "Ziggo Dome",
+            "postalCode": "1101 AX"
+          },
+          "startDate": "2027-04-02T20:00:00+02:00"
+        }
+      },
+      "expectedProfile": "nl-ziggo",
+      "officialInstructions": "https://ziggodome.nl/belangrijk/veelgestelde-vragen/"
+    },
+    {
+      "productId": "21359745",
+      "name": "The World of Hans Zimmer",
+      "link": "https://www.eventim.nl/event/the-world-of-hans-zimmer-ziggo-dome-21359745/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Amsterdam",
+            "geoLocation": {
+              "latitude": 52.31335504625203,
+              "longitude": 4.937104985079941
+            },
+            "name": "Ziggo Dome",
+            "postalCode": "1101 AX"
+          },
+          "startDate": "2027-04-28T19:30:00+02:00"
+        }
+      },
+      "expectedProfile": "nl-ziggo",
+      "officialInstructions": "https://ziggodome.nl/belangrijk/veelgestelde-vragen/"
+    },
+    {
+      "productId": "21695303",
+      "name": "Vlieg Met Me Mee",
+      "link": "https://www.eventim.nl/event/vlieg-met-me-mee-delamar-21695303/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Amsterdam",
+            "geoLocation": {
+              "latitude": 52.364330774353746,
+              "longitude": 4.880857211577404
+            },
+            "name": "DeLaMar",
+            "postalCode": "1017 PL"
+          },
+          "startDate": "2027-01-20T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "nl-delamar",
+      "officialInstructions": "https://delamar.nl/rolstoeltoegankelijkheid/"
+    },
+    {
+      "productId": "21571481",
+      "name": "Titanique",
+      "link": "https://www.eventim.nl/event/titanique-delamar-21571481/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Amsterdam",
+            "geoLocation": {
+              "latitude": 52.364330774353746,
+              "longitude": 4.880857211577404
+            },
+            "name": "DeLaMar",
+            "postalCode": "1017 PL"
+          },
+          "startDate": "2027-02-24T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "nl-delamar",
+      "officialInstructions": "https://delamar.nl/rolstoeltoegankelijkheid/"
+    },
+    {
+      "productId": "21504953",
+      "name": "The Bodyguard",
+      "link": "https://www.eventim.nl/event/the-bodyguard-delamar-21504953/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Amsterdam",
+            "geoLocation": {
+              "latitude": 52.364330774353746,
+              "longitude": 4.880857211577404
+            },
+            "name": "DeLaMar",
+            "postalCode": "1017 PL"
+          },
+          "startDate": "2027-03-24T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "nl-delamar",
+      "officialInstructions": "https://delamar.nl/rolstoeltoegankelijkheid/"
+    },
+    {
+      "productId": "22097740",
+      "name": "Cats",
+      "link": "https://www.eventim.nl/event/cats-het-meesterwerk-delamar-22097740/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Amsterdam",
+            "geoLocation": {
+              "latitude": 52.364330774353746,
+              "longitude": 4.880857211577404
+            },
+            "name": "DeLaMar",
+            "postalCode": "1017 PL"
+          },
+          "startDate": "2027-03-31T20:00:00+02:00"
+        }
+      },
+      "expectedProfile": "nl-delamar",
+      "officialInstructions": "https://delamar.nl/rolstoeltoegankelijkheid/"
+    },
+    {
+      "productId": "21698313",
+      "name": "101 Dalmatiërs",
+      "link": "https://www.eventim.nl/event/101-dalmatiers-rai-theater-21698313/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Amsterdam",
+            "geoLocation": {
+              "latitude": 52.34180476677438,
+              "longitude": 4.886611173410201
+            },
+            "name": "RAI Theater",
+            "postalCode": "1078 GZ"
+          },
+          "startDate": "2026-11-05T19:30:00+01:00"
+        }
+      },
+      "expectedProfile": "nl-rai",
+      "officialInstructions": "https://www.rai.nl/theater-bezoeken"
+    },
+    {
+      "productId": "21466219",
+      "name": "De 4 Jaargetijden - Ballet op de muziek van Antonio Vivaldi",
+      "link": "https://www.eventim.nl/event/de-4-jaargetijden-ballet-op-de-muziek-van-antonio-vivaldi-rai-theater-21466219/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Amsterdam",
+            "geoLocation": {
+              "latitude": 52.34180476677438,
+              "longitude": 4.886611173410201
+            },
+            "name": "RAI Theater",
+            "postalCode": "1078 GZ"
+          },
+          "startDate": "2026-12-04T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "nl-rai",
+      "officialInstructions": "https://www.rai.nl/theater-bezoeken"
+    },
+    {
+      "productId": "21608282",
+      "name": "Maher Zain",
+      "link": "https://www.eventim.nl/event/maher-zain-rai-theater-21608282/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Amsterdam",
+            "geoLocation": {
+              "latitude": 52.34180476677438,
+              "longitude": 4.886611173410201
+            },
+            "name": "RAI Theater",
+            "postalCode": "1078 GZ"
+          },
+          "startDate": "2026-12-05T20:30:00+01:00"
+        }
+      },
+      "expectedProfile": "nl-rai",
+      "officialInstructions": "https://www.rai.nl/theater-bezoeken"
+    },
+    {
+      "productId": "21268809",
+      "name": "De 4 jaargetijden - Ballet op de muziek van Antonio Vivaldi",
+      "link": "https://www.eventim.nl/event/de-4-jaargetijden-ballet-op-de-muziek-van-antonio-vivaldi-rai-theater-21268809/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Amsterdam",
+            "geoLocation": {
+              "latitude": 52.34180476677438,
+              "longitude": 4.886611173410201
+            },
+            "name": "RAI Theater",
+            "postalCode": "1078 GZ"
+          },
+          "startDate": "2026-12-06T16:00:00+01:00"
+        }
+      },
+      "expectedProfile": "nl-rai",
+      "officialInstructions": "https://www.rai.nl/theater-bezoeken"
+    },
+    {
+      "productId": "21813294",
+      "name": "KAOS Night - Hayrettin ile surpriz konuklar ",
+      "link": "https://www.eventim.nl/event/kaos-night-hayrettin-ile-surpriz-konuklar-rai-theater-21813294/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Amsterdam",
+            "geoLocation": {
+              "latitude": 52.34180476677438,
+              "longitude": 4.886611173410201
+            },
+            "name": "RAI Theater",
+            "postalCode": "1078 GZ"
+          },
+          "startDate": "2026-12-12T20:30:00+01:00"
+        }
+      },
+      "expectedProfile": "nl-rai",
+      "officialInstructions": "https://www.rai.nl/theater-bezoeken"
+    },
+    {
+      "productId": "22235142",
+      "name": "Het Amsterdamse Winterparadijs",
+      "link": "https://www.eventim.nl/event/het-amsterdamse-winterparadijs-rai-theater-22235142/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Amsterdam",
+            "geoLocation": {
+              "latitude": 52.34180476677438,
+              "longitude": 4.886611173410201
+            },
+            "name": "RAI Theater",
+            "postalCode": "1078 GZ"
+          },
+          "startDate": "2026-12-17T09:00:00+01:00"
+        }
+      },
+      "expectedProfile": "nl-rai",
+      "officialInstructions": "https://www.rai.nl/theater-bezoeken"
+    },
+    {
+      "productId": "22129057",
+      "name": "Mustafa Sandal Live in Amsterdam",
+      "link": "https://www.eventim.nl/event/mustafa-sandal-live-in-amsterdam-rai-theater-22129057/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Amsterdam",
+            "geoLocation": {
+              "latitude": 52.34180476677438,
+              "longitude": 4.886611173410201
+            },
+            "name": "RAI Theater",
+            "postalCode": "1078 GZ"
+          },
+          "startDate": "2026-12-20T20:30:00+01:00"
+        }
+      },
+      "expectedProfile": "nl-rai",
+      "officialInstructions": "https://www.rai.nl/theater-bezoeken"
+    },
+    {
+      "productId": "21022654",
+      "name": "Holiday on Ice - CINEMA OF DREAMS",
+      "link": "https://www.eventim.nl/event/holiday-on-ice-cinema-of-dreams-rai-theater-21022654/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Amsterdam",
+            "geoLocation": {
+              "latitude": 52.34180476677438,
+              "longitude": 4.886611173410201
+            },
+            "name": "RAI Theater",
+            "postalCode": "1078 GZ"
+          },
+          "startDate": "2026-12-23T15:00:00+01:00"
+        }
+      },
+      "expectedProfile": "nl-rai",
+      "officialInstructions": "https://www.rai.nl/theater-bezoeken"
+    },
+    {
+      "productId": "21423528",
+      "name": "Mijn eerste Notenkraker",
+      "link": "https://www.eventim.nl/event/mijn-eerste-notenkraker-rai-theater-21423528/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Amsterdam",
+            "geoLocation": {
+              "latitude": 52.34180476677438,
+              "longitude": 4.886611173410201
+            },
+            "name": "RAI Theater",
+            "postalCode": "1078 GZ"
+          },
+          "startDate": "2026-12-28T14:00:00+01:00"
+        }
+      },
+      "expectedProfile": "nl-rai",
+      "officialInstructions": "https://www.rai.nl/theater-bezoeken"
+    },
+    {
+      "productId": "22052649",
+      "name": "Doornroosje",
+      "link": "https://www.eventim.nl/event/doornroosje-rai-theater-22052649/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Amsterdam",
+            "geoLocation": {
+              "latitude": 52.34180476677438,
+              "longitude": 4.886611173410201
+            },
+            "name": "RAI Theater",
+            "postalCode": "1078 GZ"
+          },
+          "startDate": "2026-12-28T18:00:00+01:00"
+        }
+      },
+      "expectedProfile": "nl-rai",
+      "officialInstructions": "https://www.rai.nl/theater-bezoeken"
+    },
+    {
+      "productId": "19958791",
+      "name": "The World of Hans Zimmer",
+      "link": "https://www.eventim.nl/event/the-world-of-hans-zimmer-rotterdam-ahoy-19958791/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Rotterdam",
+            "geoLocation": {
+              "latitude": 51.88203201206322,
+              "longitude": 4.486634378256051
+            },
+            "name": "Rotterdam Ahoy",
+            "postalCode": "3084 BA"
+          },
+          "startDate": "2026-11-01T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "nl-ahoy",
+      "officialInstructions": "https://www.ahoy.nl/bezoek-ahoy/faq"
+    },
+    {
+      "productId": "21925172",
+      "name": "Ashton Brothers Kerstcircus 2026 - PART III",
+      "link": "https://www.eventim.nl/event/ashton-brothers-kerstcircus-in-ahoy-2026-part-iii-rotterdam-ahoy-21925172/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Rotterdam",
+            "geoLocation": {
+              "latitude": 51.88203201206322,
+              "longitude": 4.486634378256051
+            },
+            "name": "Rotterdam Ahoy",
+            "postalCode": "3084 BA"
+          },
+          "startDate": "2026-12-19T15:30:00+01:00"
+        }
+      },
+      "expectedProfile": "nl-ahoy",
+      "officialInstructions": "https://www.ahoy.nl/bezoek-ahoy/faq"
+    },
+    {
+      "productId": "22263868",
+      "name": "3JS Acoustic Christmas",
+      "link": "https://www.eventim.nl/event/3js-acoustic-christmas-rotterdam-ahoy-22263868/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Rotterdam",
+            "geoLocation": {
+              "latitude": 51.88203201206322,
+              "longitude": 4.486634378256051
+            },
+            "name": "Rotterdam Ahoy",
+            "postalCode": "3084 BA"
+          },
+          "startDate": "2026-12-21T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "nl-ahoy",
+      "officialInstructions": "https://www.ahoy.nl/bezoek-ahoy/faq"
+    },
+    {
+      "productId": "22264665",
+      "name": "Charly Luske - Last Christmas",
+      "link": "https://www.eventim.nl/event/charly-luske-last-christmas-rotterdam-ahoy-22264665/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Rotterdam",
+            "geoLocation": {
+              "latitude": 51.88203201206322,
+              "longitude": 4.486634378256051
+            },
+            "name": "Rotterdam Ahoy",
+            "postalCode": "3084 BA"
+          },
+          "startDate": "2026-12-26T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "nl-ahoy",
+      "officialInstructions": "https://www.ahoy.nl/bezoek-ahoy/faq"
+    },
+    {
+      "productId": "22264989",
+      "name": "Borstel Blèren",
+      "link": "https://www.eventim.nl/event/borstel-bleren-rotterdam-ahoy-22264989/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Rotterdam",
+            "geoLocation": {
+              "latitude": 51.88203201206322,
+              "longitude": 4.486634378256051
+            },
+            "name": "Rotterdam Ahoy",
+            "postalCode": "3084 BA"
+          },
+          "startDate": "2026-12-27T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "nl-ahoy",
+      "officialInstructions": "https://www.ahoy.nl/bezoek-ahoy/faq"
+    },
+    {
+      "productId": "21022994",
+      "name": "Holiday on Ice - CINEMA OF DREAMS",
+      "link": "https://www.eventim.nl/event/holiday-on-ice-cinema-of-dreams-rotterdam-ahoy-21022994/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Rotterdam",
+            "geoLocation": {
+              "latitude": 51.88203201206322,
+              "longitude": 4.486634378256051
+            },
+            "name": "Rotterdam Ahoy",
+            "postalCode": "3084 BA"
+          },
+          "startDate": "2026-12-31T14:00:00+01:00"
+        }
+      },
+      "expectedProfile": "nl-ahoy",
+      "officialInstructions": "https://www.ahoy.nl/bezoek-ahoy/faq"
+    },
+    {
+      "productId": "21744122",
+      "name": "Holland Zingt Hazes 2027",
+      "link": "https://www.eventim.nl/event/holland-zingt-hazes-2027-rotterdam-ahoy-21744122/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Rotterdam",
+            "geoLocation": {
+              "latitude": 51.88203201206322,
+              "longitude": 4.486634378256051
+            },
+            "name": "Rotterdam Ahoy",
+            "postalCode": "3084 BA"
+          },
+          "startDate": "2027-03-05T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "nl-ahoy",
+      "officialInstructions": "https://www.ahoy.nl/bezoek-ahoy/faq"
+    },
+    {
+      "productId": "21424847",
+      "name": "CAVALLUNA - The Colours of Life",
+      "link": "https://www.eventim.nl/event/cavalluna-the-colours-of-life-rotterdam-ahoy-21424847/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Rotterdam",
+            "geoLocation": {
+              "latitude": 51.88203201206322,
+              "longitude": 4.486634378256051
+            },
+            "name": "Rotterdam Ahoy",
+            "postalCode": "3084 BA"
+          },
+          "startDate": "2027-03-20T14:00:00+01:00"
+        }
+      },
+      "expectedProfile": "nl-ahoy",
+      "officialInstructions": "https://www.ahoy.nl/bezoek-ahoy/faq"
+    }
+  ]
+}

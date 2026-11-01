@@ -8,6 +8,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 import '../l10n/app_localizations.dart';
 import '../l10n/ticketone_strings.dart';
 import '../services/ticketone_accessible_script.dart';
+import '../services/concert_disability_contacts.dart';
 import '../services/ticketone_page_diagnostics.dart';
 import '../utils/status_message.dart';
 import '../widgets/universal_accessible_view.dart';
@@ -351,6 +352,11 @@ class _TicketOneNativePageState extends State<TicketOneNativePage> {
       }
       return;
     }
+    final profile = ConcertDisabilityContact.match(organiser);
+    // Public event metadata only: no account data or accreditation documents.
+    widget.log(
+      'disability_contact eventPath=${current.path} organiser=${jsonEncode(organiser)} profile=${profile?.id ?? 'unmatched'} emails=${profile?.emails.length ?? 0}',
+    );
     setState(() {
       _organiserRequested = false;
       _busy = false;
@@ -722,9 +728,7 @@ class _TicketOneNativePageState extends State<TicketOneNativePage> {
                 MaterialPageRoute<void>(
                   builder: (_) => ConcertDisabilityScreen(
                     eventTitle: label,
-                    organiser: organiser.length <= 1500
-                        ? organiser
-                        : '',
+                    organiser: organiser.length <= 1500 ? organiser : '',
                   ),
                 ),
               );

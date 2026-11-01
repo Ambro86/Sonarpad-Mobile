@@ -1,0 +1,793 @@
+{
+  "checked": "2026-10-31",
+  "method": "Live Eventim exploration API; 40 distinct product IDs. Verified official venue sources; no booking or availability confirmation. Null expectedProfile explicitly tests safe unknown-venue handling.",
+  "events": [
+    {
+      "productId": "21036435",
+      "name": "Käärijä",
+      "link": "https://www.eventim.se/event/kaeaerijae-berns-21036435/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Stockholm",
+            "geoLocation": {
+              "latitude": 59.33266830702789,
+              "longitude": 18.074576567372528
+            },
+            "name": "Berns"
+          },
+          "startDate": "2026-11-01T19:00:00+01:00"
+        }
+      },
+      "expectedProfile": null,
+      "officialInstructions": null
+    },
+    {
+      "productId": "21945562",
+      "name": "EsDeeKid - Council House Rat Tour",
+      "link": "https://www.eventim.se/event/esdeekid-fallan-21945562/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Stockholm",
+            "geoLocation": {
+              "latitude": 59.29183629532655,
+              "longitude": 18.075290627335004
+            },
+            "name": "Fållan",
+            "postalCode": "121 62"
+          },
+          "startDate": "2026-11-05T19:30:00+01:00"
+        }
+      },
+      "expectedProfile": "se-fallan",
+      "officialInstructions": "https://www.fallan.nu/faq"
+    },
+    {
+      "productId": "21269198",
+      "name": "Ezhel",
+      "link": "https://www.eventim.se/event/ezhel-fallan-21269198/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Stockholm",
+            "geoLocation": {
+              "latitude": 59.29183629532655,
+              "longitude": 18.075290627335004
+            },
+            "name": "Fållan",
+            "postalCode": "121 62"
+          },
+          "startDate": "2026-11-08T19:00:00+01:00"
+        }
+      },
+      "expectedProfile": "se-fallan",
+      "officialInstructions": "https://www.fallan.nu/faq"
+    },
+    {
+      "productId": "21359310",
+      "name": "KAJ",
+      "link": "https://www.eventim.se/event/kaj-filmstudion-21359310/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Göteborg",
+            "geoLocation": {
+              "latitude": 57.689611,
+              "longitude": 11.97808
+            },
+            "name": "Filmstudion",
+            "postalCode": "417 56"
+          },
+          "startDate": "2026-11-19T18:00:00+01:00"
+        }
+      },
+      "expectedProfile": "se-filmstudion",
+      "officialInstructions": "https://www.gothenburgfilmstudios.com/filmstudion/faq"
+    },
+    {
+      "productId": "21499708",
+      "name": "Uriah Heep",
+      "link": "https://www.eventim.se/event/uriah-heep-conventum-21499708/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Örebro",
+            "name": "Conventum",
+            "postalCode": "70222"
+          },
+          "startDate": "2026-11-19T18:30:00+01:00"
+        }
+      },
+      "expectedProfile": null,
+      "officialInstructions": null
+    },
+    {
+      "productId": "22219204",
+      "name": "Pubkväll med underhållning av: Anders Djup",
+      "link": "https://www.eventim.se/event/pubkvaell-med-underhallning-av-anders-djup-vretstorps-folkets-hus-22219204/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Vretstorp",
+            "name": "Vretstorps Folkets Hus",
+            "postalCode": "69450"
+          },
+          "startDate": "2026-11-21T19:00:00+01:00"
+        }
+      },
+      "expectedProfile": null,
+      "officialInstructions": null
+    },
+    {
+      "productId": "21466472",
+      "name": "Master Boot Record & Fulci",
+      "link": "https://www.eventim.se/event/master-boot-record-fulci-monument-031-21466472/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Göteborg",
+            "name": "Monument 031",
+            "postalCode": "41707"
+          },
+          "startDate": "2026-11-24T19:00:00+01:00"
+        }
+      },
+      "expectedProfile": "se-monument",
+      "officialInstructions": "https://www.monument031.com/faq/"
+    },
+    {
+      "productId": "20899342",
+      "name": "Beast In Black",
+      "link": "https://www.eventim.se/event/beast-in-black-traedgarn-20899342/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Göteborg",
+            "geoLocation": {
+              "latitude": 57.7044131766,
+              "longitude": 11.9756345597
+            },
+            "name": "Trädgårn",
+            "postalCode": "411 38 "
+          },
+          "startDate": "2026-11-24T19:00:00+01:00"
+        }
+      },
+      "expectedProfile": null,
+      "officialInstructions": null
+    },
+    {
+      "productId": "20755769",
+      "name": "Beast In Black",
+      "link": "https://www.eventim.se/event/beast-in-black-arenan-fryshuset-20755769/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Stockholm",
+            "geoLocation": {
+              "latitude": 59.3009192935,
+              "longitude": 18.0887069172
+            },
+            "name": "Arenan (Fryshuset)",
+            "postalCode": "12006"
+          },
+          "startDate": "2026-11-25T18:30:00+01:00"
+        }
+      },
+      "expectedProfile": "se-fryshuset",
+      "officialInstructions": "https://fryshuset.se/konserter/info"
+    },
+    {
+      "productId": "21779208",
+      "name": "thrown",
+      "link": "https://www.eventim.se/event/thrown-fallan-21779208/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Stockholm",
+            "geoLocation": {
+              "latitude": 59.29183629532655,
+              "longitude": 18.075290627335004
+            },
+            "name": "Fållan",
+            "postalCode": "121 62"
+          },
+          "startDate": "2026-11-27T18:30:00+01:00"
+        }
+      },
+      "expectedProfile": "se-fallan",
+      "officialInstructions": "https://www.fallan.nu/faq"
+    },
+    {
+      "productId": "22329115",
+      "name": "Strålande jul",
+      "link": "https://www.eventim.se/event/stralande-jul-eskilstuna-konserthall-22329115/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Eskilstuna",
+            "name": "Eskilstuna Konserthall",
+            "postalCode": "632 28"
+          },
+          "startDate": "2026-11-28T15:00:00+01:00"
+        }
+      },
+      "expectedProfile": null,
+      "officialInstructions": null
+    },
+    {
+      "productId": "22029758",
+      "name": "Fördomspodden Live",
+      "link": "https://www.eventim.se/event/foerdomspodden-live-rival-22029758/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Stockholm",
+            "geoLocation": {
+              "latitude": 59.31844279513406,
+              "longitude": 18.063699271515567
+            },
+            "name": "Rival",
+            "postalCode": "11891"
+          },
+          "startDate": "2026-11-28T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "se-rival",
+      "officialInstructions": "https://www.rival.se/biljettfragor/"
+    },
+    {
+      "productId": "21696895",
+      "name": "Mental Cruelty",
+      "link": "https://www.eventim.se/event/mental-cruelty-monument-031-21696895/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Göteborg",
+            "name": "Monument 031",
+            "postalCode": "41707"
+          },
+          "startDate": "2026-12-13T18:30:00+01:00"
+        }
+      },
+      "expectedProfile": "se-monument",
+      "officialInstructions": "https://www.monument031.com/faq/"
+    },
+    {
+      "productId": "21301100",
+      "name": "Jimmy Carr - Laughs Funny",
+      "link": "https://www.eventim.se/event/jimmy-carr-laughs-funny-waterfront-congress-centre-21301100/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Stockholm",
+            "geoLocation": {
+              "latitude": 59.32966586414235,
+              "longitude": 18.05545017151608
+            },
+            "name": "Waterfront Congress Centre",
+            "postalCode": "111 64"
+          },
+          "startDate": "2026-12-18T19:30:00+01:00"
+        }
+      },
+      "expectedProfile": "se-waterfront",
+      "officialInstructions": "https://stockholmwaterfront.com/en/getting-here/"
+    },
+    {
+      "productId": "22281481",
+      "name": "Jimmy Carr - Laughs Funny",
+      "link": "https://www.eventim.se/event/jimmy-carr-laughs-funny-waterfront-congress-centre-22281481/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Stockholm",
+            "geoLocation": {
+              "latitude": 59.32966586414235,
+              "longitude": 18.05545017151608
+            },
+            "name": "Waterfront Congress Centre",
+            "postalCode": "111 64"
+          },
+          "startDate": "2026-12-18T21:45:00+01:00"
+        }
+      },
+      "expectedProfile": "se-waterfront",
+      "officialInstructions": "https://stockholmwaterfront.com/en/getting-here/"
+    },
+    {
+      "productId": "22085484",
+      "name": "Jul i Vasastan – Årets Julkonsert",
+      "link": "https://www.eventim.se/event/jul-i-vasastan-arets-julkonsert-gustaf-vasa-kyrka-22085484/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Stockholm",
+            "name": "Gustaf Vasa Kyrka",
+            "postalCode": "113 27"
+          },
+          "startDate": "2026-12-21T19:00:00+01:00"
+        }
+      },
+      "expectedProfile": null,
+      "officialInstructions": null
+    },
+    {
+      "productId": "21721365",
+      "name": "Imminence",
+      "link": "https://www.eventim.se/event/imminence-filmstudion-21721365/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Göteborg",
+            "geoLocation": {
+              "latitude": 57.689611,
+              "longitude": 11.97808
+            },
+            "name": "Filmstudion",
+            "postalCode": "417 56"
+          },
+          "startDate": "2027-01-08T18:30:00+01:00"
+        }
+      },
+      "expectedProfile": "se-filmstudion",
+      "officialInstructions": "https://www.gothenburgfilmstudios.com/filmstudion/faq"
+    },
+    {
+      "productId": "21721386",
+      "name": "Imminence",
+      "link": "https://www.eventim.se/event/imminence-fallan-21721386/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Stockholm",
+            "geoLocation": {
+              "latitude": 59.29183629532655,
+              "longitude": 18.075290627335004
+            },
+            "name": "Fållan",
+            "postalCode": "121 62"
+          },
+          "startDate": "2027-02-05T18:30:00+01:00"
+        }
+      },
+      "expectedProfile": "se-fallan",
+      "officialInstructions": "https://www.fallan.nu/faq"
+    },
+    {
+      "productId": "22081732",
+      "name": "Signs of The Swarm",
+      "link": "https://www.eventim.se/event/signs-of-the-swarm-filmstudion-22081732/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Göteborg",
+            "geoLocation": {
+              "latitude": 57.689611,
+              "longitude": 11.97808
+            },
+            "name": "Filmstudion",
+            "postalCode": "417 56"
+          },
+          "startDate": "2027-02-08T19:00:00+01:00"
+        }
+      },
+      "expectedProfile": "se-filmstudion",
+      "officialInstructions": "https://www.gothenburgfilmstudios.com/filmstudion/faq"
+    },
+    {
+      "productId": "21696646",
+      "name": "Elder",
+      "link": "https://www.eventim.se/event/elder-monument-031-21696646/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Göteborg",
+            "name": "Monument 031",
+            "postalCode": "41707"
+          },
+          "startDate": "2027-02-08T19:00:00+01:00"
+        }
+      },
+      "expectedProfile": "se-monument",
+      "officialInstructions": "https://www.monument031.com/faq/"
+    },
+    {
+      "productId": "22116502",
+      "name": "ORSA SPELMÄN, TINA AHLIN & BENGAN JANSON",
+      "link": "https://www.eventim.se/event/orsa-spelmaen-tina-ahlin-bengan-janson-rival-22116502/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Stockholm",
+            "geoLocation": {
+              "latitude": 59.31844279513406,
+              "longitude": 18.063699271515567
+            },
+            "name": "Rival",
+            "postalCode": "11891"
+          },
+          "startDate": "2027-02-18T19:30:00+01:00"
+        }
+      },
+      "expectedProfile": "se-rival",
+      "officialInstructions": "https://www.rival.se/biljettfragor/"
+    },
+    {
+      "productId": "22294611",
+      "name": "WESTSIDE GUNN – HEEL THE WORLD TOUR 2",
+      "link": "https://www.eventim.se/event/westside-gunn-heel-the-world-tour-2-arenan-fryshuset-22294611/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Stockholm",
+            "geoLocation": {
+              "latitude": 59.3009192935,
+              "longitude": 18.0887069172
+            },
+            "name": "Arenan (Fryshuset)",
+            "postalCode": "12006"
+          },
+          "startDate": "2027-02-19T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "se-fryshuset",
+      "officialInstructions": "https://fryshuset.se/konserter/info"
+    },
+    {
+      "productId": "21411734",
+      "name": "Whitechapel",
+      "link": "https://www.eventim.se/event/whitechapel-fallan-21411734/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Stockholm",
+            "geoLocation": {
+              "latitude": 59.29183629532655,
+              "longitude": 18.075290627335004
+            },
+            "name": "Fållan",
+            "postalCode": "121 62"
+          },
+          "startDate": "2027-02-24T18:00:00+01:00"
+        }
+      },
+      "expectedProfile": "se-fallan",
+      "officialInstructions": "https://www.fallan.nu/faq"
+    },
+    {
+      "productId": "21741835",
+      "name": "Daniel Sloss: Bitter",
+      "link": "https://www.eventim.se/event/daniel-sloss-bitter-waterfront-congress-centre-21741835/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Stockholm",
+            "geoLocation": {
+              "latitude": 59.32966586414235,
+              "longitude": 18.05545017151608
+            },
+            "name": "Waterfront Congress Centre",
+            "postalCode": "111 64"
+          },
+          "startDate": "2027-02-26T19:30:00+01:00"
+        }
+      },
+      "expectedProfile": "se-waterfront",
+      "officialInstructions": "https://stockholmwaterfront.com/en/getting-here/"
+    },
+    {
+      "productId": "21300517",
+      "name": "Sofie Hagen",
+      "link": "https://www.eventim.se/event/sofie-hagen-quality-hotel-11-21300517/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Göteborg",
+            "name": "Quality Hotel 11",
+            "postalCode": "417 64"
+          },
+          "startDate": "2027-02-27T19:00:00+01:00"
+        }
+      },
+      "expectedProfile": null,
+      "officialInstructions": null
+    },
+    {
+      "productId": "22119453",
+      "name": "ORSA SPELMÄN, TINA AHLIN & BENGAN JANSON",
+      "link": "https://www.eventim.se/event/orsa-spelmaen-tina-ahlin-bengan-janson-ahaga-22119453/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Borås",
+            "geoLocation": {
+              "latitude": 57.70984730665051,
+              "longitude": 12.94650124715607
+            },
+            "name": "Åhaga",
+            "postalCode": "504 33"
+          },
+          "startDate": "2027-02-27T19:00:00+01:00"
+        }
+      },
+      "expectedProfile": null,
+      "officialInstructions": null
+    },
+    {
+      "productId": "21741662",
+      "name": "Daniel Sloss: Bitter",
+      "link": "https://www.eventim.se/event/daniel-sloss-bitter-sparbanken-skane-arena-21741662/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Lund",
+            "name": "Sparbanken Skåne Arena",
+            "postalCode": "222 28"
+          },
+          "startDate": "2027-03-05T19:30:00+01:00"
+        }
+      },
+      "expectedProfile": null,
+      "officialInstructions": null
+    },
+    {
+      "productId": "22119599",
+      "name": "ORSA SPELMÄN, TINA AHLIN & BENGAN JANSON",
+      "link": "https://www.eventim.se/event/orsa-spelmaen-tina-ahlin-bengan-janson-draken-live-22119599/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Göteborg",
+            "name": "Draken Live",
+            "postalCode": "413 01"
+          },
+          "startDate": "2027-03-12T19:00:00+01:00"
+        }
+      },
+      "expectedProfile": null,
+      "officialInstructions": null
+    },
+    {
+      "productId": "22341887",
+      "name": "tAKiDA",
+      "link": "https://www.eventim.se/event/takida-fallan-22341887/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Stockholm",
+            "geoLocation": {
+              "latitude": 59.29183629532655,
+              "longitude": 18.075290627335004
+            },
+            "name": "Fållan",
+            "postalCode": "121 62"
+          },
+          "startDate": "2027-03-31T20:00:00+02:00"
+        }
+      },
+      "expectedProfile": "se-fallan",
+      "officialInstructions": "https://www.fallan.nu/faq"
+    },
+    {
+      "productId": "22349883",
+      "name": "tAKiDA",
+      "link": "https://www.eventim.se/event/takida-noejesfabriken-22349883/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Karlstad",
+            "name": "Nöjesfabriken",
+            "postalCode": "652 23"
+          },
+          "startDate": "2027-04-02T20:00:00+02:00"
+        }
+      },
+      "expectedProfile": null,
+      "officialInstructions": null
+    },
+    {
+      "productId": "22357097",
+      "name": "tAKiDA",
+      "link": "https://www.eventim.se/event/takida-filmstudion-22357097/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Göteborg",
+            "geoLocation": {
+              "latitude": 57.689611,
+              "longitude": 11.97808
+            },
+            "name": "Filmstudion",
+            "postalCode": "417 56"
+          },
+          "startDate": "2027-04-03T20:00:00+02:00"
+        }
+      },
+      "expectedProfile": "se-filmstudion",
+      "officialInstructions": "https://www.gothenburgfilmstudios.com/filmstudion/faq"
+    },
+    {
+      "productId": "22148081",
+      "name": "Pomme",
+      "link": "https://www.eventim.se/event/pomme-fallan-22148081/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Stockholm",
+            "geoLocation": {
+              "latitude": 59.29183629532655,
+              "longitude": 18.075290627335004
+            },
+            "name": "Fållan",
+            "postalCode": "121 62"
+          },
+          "startDate": "2027-04-05T18:30:00+02:00"
+        }
+      },
+      "expectedProfile": "se-fallan",
+      "officialInstructions": "https://www.fallan.nu/faq"
+    },
+    {
+      "productId": "22121398",
+      "name": "ORSA SPELMÄN, TINA AHLIN & BENGAN JANSON",
+      "link": "https://www.eventim.se/event/orsa-spelmaen-tina-ahlin-bengan-janson-kulturhuset-tio14-22121398/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Falun",
+            "name": "Kulturhuset tio14",
+            "postalCode": "791 62"
+          },
+          "startDate": "2027-04-09T19:00:00+02:00"
+        }
+      },
+      "expectedProfile": null,
+      "officialInstructions": null
+    },
+    {
+      "productId": "22310287",
+      "name": "Choir! Choir! Choir! - MAMMA MIA: An EPIC ABBA Sing-Along!",
+      "link": "https://www.eventim.se/event/choir-choir-choir-mamma-mia-an-epic-abba-sing-along-bio-skandia-22310287/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Stockholm",
+            "name": "Bio Skandia",
+            "postalCode": "111 36"
+          },
+          "startDate": "2027-04-12T19:00:00+02:00"
+        }
+      },
+      "expectedProfile": null,
+      "officialInstructions": null
+    },
+    {
+      "productId": "22242073",
+      "name": "Harlem Globetrotters",
+      "link": "https://www.eventim.se/event/harlem-globetrotters-arenan-fryshuset-22242073/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Stockholm",
+            "geoLocation": {
+              "latitude": 59.3009192935,
+              "longitude": 18.0887069172
+            },
+            "name": "Arenan (Fryshuset)",
+            "postalCode": "12006"
+          },
+          "startDate": "2027-04-18T18:00:00+02:00"
+        }
+      },
+      "expectedProfile": "se-fryshuset",
+      "officialInstructions": "https://fryshuset.se/konserter/info"
+    },
+    {
+      "productId": "22147240",
+      "name": "Dragonforce",
+      "link": "https://www.eventim.se/event/dragonforce-filmstudion-22147240/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Göteborg",
+            "geoLocation": {
+              "latitude": 57.689611,
+              "longitude": 11.97808
+            },
+            "name": "Filmstudion",
+            "postalCode": "417 56"
+          },
+          "startDate": "2027-04-21T18:00:00+02:00"
+        }
+      },
+      "expectedProfile": "se-filmstudion",
+      "officialInstructions": "https://www.gothenburgfilmstudios.com/filmstudion/faq"
+    },
+    {
+      "productId": "21941979",
+      "name": "Ministry",
+      "link": "https://www.eventim.se/event/ministry-special-guest-foerband-die-krupps-fallan-21941979/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Stockholm",
+            "geoLocation": {
+              "latitude": 59.29183629532655,
+              "longitude": 18.075290627335004
+            },
+            "name": "Fållan",
+            "postalCode": "121 62"
+          },
+          "startDate": "2027-04-29T18:30:00+02:00"
+        }
+      },
+      "expectedProfile": "se-fallan",
+      "officialInstructions": "https://www.fallan.nu/faq"
+    },
+    {
+      "productId": "22275781",
+      "name": "Dead By April x Memphis May Fire",
+      "link": "https://www.eventim.se/event/dead-by-april-x-memphis-may-fire-filmstudion-22275781/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Göteborg",
+            "geoLocation": {
+              "latitude": 57.689611,
+              "longitude": 11.97808
+            },
+            "name": "Filmstudion",
+            "postalCode": "417 56"
+          },
+          "startDate": "2027-05-01T20:00:00+02:00"
+        }
+      },
+      "expectedProfile": "se-filmstudion",
+      "officialInstructions": "https://www.gothenburgfilmstudios.com/filmstudion/faq"
+    },
+    {
+      "productId": "21851186",
+      "name": "Bill Bailey: Vaudevillean",
+      "link": "https://www.eventim.se/event/bill-bailey-vaudevillean-waterfront-congress-centre-21851186/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Stockholm",
+            "geoLocation": {
+              "latitude": 59.32966586414235,
+              "longitude": 18.05545017151608
+            },
+            "name": "Waterfront Congress Centre",
+            "postalCode": "111 64"
+          },
+          "startDate": "2027-05-01T20:00:00+02:00"
+        }
+      },
+      "expectedProfile": "se-waterfront",
+      "officialInstructions": "https://stockholmwaterfront.com/en/getting-here/"
+    },
+    {
+      "productId": "21964073",
+      "name": "Kanonenfieber",
+      "link": "https://www.eventim.se/event/kanonenfieber-filmstudion-21964073/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Göteborg",
+            "geoLocation": {
+              "latitude": 57.689611,
+              "longitude": 11.97808
+            },
+            "name": "Filmstudion",
+            "postalCode": "417 56"
+          },
+          "startDate": "2027-11-25T18:00:00+01:00"
+        }
+      },
+      "expectedProfile": "se-filmstudion",
+      "officialInstructions": "https://www.gothenburgfilmstudios.com/filmstudion/faq"
+    }
+  ]
+}

@@ -1,0 +1,847 @@
+{
+  "captured": "2026-10-31",
+  "catalogue": "https://public-api.eventim.com/websearch/search/api/exploration/v1/products",
+  "webId": "web__eventim-de",
+  "events": [
+    {
+      "productId": "21787086",
+      "name": "DON TOLIVER: NITROUS - OCTANE WORLD TOUR LEG 2",
+      "link": "https://www.eventim.de/event/don-toliver-nitrous-octane-world-tour-leg-2-uber-arena-berlin-21787086/",
+      "promoter": {
+        "id": "423193",
+        "name": "Live Nation GmbH"
+      },
+      "typeAttributes": {
+        "liveEntertainment": {
+          "startDate": "2026-11-02T20:00:00+01:00",
+          "location": {
+            "name": "Uber Arena Berlin",
+            "city": "Berlin"
+          }
+        }
+      },
+      "expectedProfile": "de-uber",
+      "officialInstructions": "https://www.uber-arena.de/ihr-besuch/barrierefreiheit/kontakt-barrierefreietickets/",
+      "verification": "catalogue venue and city + official accessibility procedure; no availability or booking confirmation"
+    },
+    {
+      "productId": "19917607",
+      "name": "DISNEY IN CONCERT - Die Jubiläumstournee mit dem Hollywood Sound Orchestra",
+      "link": "https://www.eventim.de/event/disney-in-concert-die-jubilaeumstournee-mit-dem-hollywood-sound-orchestra-uber-arena-berlin-19917607/",
+      "promoter": {
+        "id": "2401",
+        "name": "Semmel Concerts Entertainment GmbH"
+      },
+      "typeAttributes": {
+        "liveEntertainment": {
+          "startDate": "2026-11-03T19:30:00+01:00",
+          "location": {
+            "name": "Uber Arena Berlin",
+            "city": "Berlin"
+          }
+        }
+      },
+      "expectedProfile": "de-uber",
+      "officialInstructions": "https://www.uber-arena.de/ihr-besuch/barrierefreiheit/kontakt-barrierefreietickets/",
+      "verification": "catalogue venue and city + official accessibility procedure; no availability or booking confirmation"
+    },
+    {
+      "productId": "20964689",
+      "name": "Deep Purple",
+      "link": "https://www.eventim.de/event/deep-purple-splat-world-tour-2026-uber-arena-berlin-20964689/",
+      "promoter": {
+        "id": "10",
+        "name": "Concert Concept Veranstaltungs-GmbH (Berlin)"
+      },
+      "typeAttributes": {
+        "liveEntertainment": {
+          "startDate": "2026-11-04T19:30:00+01:00",
+          "location": {
+            "name": "Uber Arena Berlin",
+            "city": "Berlin"
+          }
+        }
+      },
+      "expectedProfile": "de-uber",
+      "officialInstructions": "https://www.uber-arena.de/ihr-besuch/barrierefreiheit/kontakt-barrierefreietickets/",
+      "verification": "catalogue venue and city + official accessibility procedure; no availability or booking confirmation"
+    },
+    {
+      "productId": "22196553",
+      "name": "Deutschland - Belgien",
+      "link": "https://www.eventim.de/event/dhb-nationalmannschaft-mens-ehf-euro-2028-qualifiers-uber-arena-berlin-22196553/",
+      "promoter": {
+        "id": "423584",
+        "name": "Deutscher Handballbund e.V."
+      },
+      "typeAttributes": {
+        "liveEntertainment": {
+          "startDate": "2026-11-05T20:30:00+01:00",
+          "location": {
+            "name": "Uber Arena Berlin",
+            "city": "Berlin"
+          }
+        }
+      },
+      "expectedProfile": "de-uber",
+      "officialInstructions": "https://www.uber-arena.de/ihr-besuch/barrierefreiheit/kontakt-barrierefreietickets/",
+      "verification": "catalogue venue and city + official accessibility procedure; no availability or booking confirmation"
+    },
+    {
+      "productId": "19977717",
+      "name": "Tokio Hotel - Arena Tour 2026",
+      "link": "https://www.eventim.de/event/tokio-hotel-arena-tour-2026-uber-arena-berlin-19977717/",
+      "promoter": {
+        "id": "10",
+        "name": "Concert Concept Veranstaltungs-GmbH (Berlin)"
+      },
+      "typeAttributes": {
+        "liveEntertainment": {
+          "startDate": "2026-11-07T20:00:00+01:00",
+          "location": {
+            "name": "Uber Arena Berlin",
+            "city": "Berlin"
+          }
+        }
+      },
+      "expectedProfile": "de-uber",
+      "officialInstructions": "https://www.uber-arena.de/ihr-besuch/barrierefreiheit/kontakt-barrierefreietickets/",
+      "verification": "catalogue venue and city + official accessibility procedure; no availability or booking confirmation"
+    },
+    {
+      "productId": "22031235",
+      "name": "Kölner Haie - Iserlohn Roosters",
+      "link": "https://www.eventim.de/event/koelner-haie-del-saison-202627-lanxess-arena-22031235/",
+      "promoter": {
+        "id": "249507",
+        "name": "1972 Haie Eishockey GmbH"
+      },
+      "typeAttributes": {
+        "liveEntertainment": {
+          "startDate": "2026-11-01T19:00:00+01:00",
+          "location": {
+            "name": "LANXESS arena",
+            "city": "Köln"
+          }
+        }
+      },
+      "expectedProfile": "de-lanxess",
+      "officialInstructions": "https://www.lanxess-arena.de/besucherinfos/barrierefreiheit",
+      "verification": "catalogue venue and city + official accessibility procedure; no availability or booking confirmation"
+    },
+    {
+      "productId": "20537335",
+      "name": "PLACEBO - 30TH ANNIVERSARY TOUR",
+      "link": "https://www.eventim.de/event/placebo-30th-anniversary-tour-lanxess-arena-20537335/",
+      "promoter": {
+        "id": "933",
+        "name": "FKP Scorpio Konzertproduktionen GmbH"
+      },
+      "typeAttributes": {
+        "liveEntertainment": {
+          "startDate": "2026-11-02T20:00:00+01:00",
+          "location": {
+            "name": "LANXESS arena",
+            "city": "Köln"
+          }
+        }
+      },
+      "expectedProfile": "de-lanxess",
+      "officialInstructions": "https://www.lanxess-arena.de/besucherinfos/barrierefreiheit",
+      "verification": "catalogue venue and city + official accessibility procedure; no availability or booking confirmation"
+    },
+    {
+      "productId": "19276821",
+      "name": "Felix Lobrecht",
+      "link": "https://www.eventim.de/event/felix-lobrecht-sell-out-lanxess-arena-19276821/",
+      "promoter": {
+        "id": "329888",
+        "name": "P-Promotion Event GmbH"
+      },
+      "typeAttributes": {
+        "liveEntertainment": {
+          "startDate": "2026-11-05T20:00:00+01:00",
+          "location": {
+            "name": "LANXESS arena",
+            "city": "Köln"
+          }
+        }
+      },
+      "expectedProfile": "de-lanxess",
+      "officialInstructions": "https://www.lanxess-arena.de/besucherinfos/barrierefreiheit",
+      "verification": "catalogue venue and city + official accessibility procedure; no availability or booking confirmation"
+    },
+    {
+      "productId": "19955409",
+      "name": "THE WORLD OF HANS ZIMMER - A NEW DIMENSION",
+      "link": "https://www.eventim.de/event/the-world-of-hans-zimmer-a-new-dimension-lanxess-arena-19955409/",
+      "promoter": {
+        "id": "2401",
+        "name": "Semmel Concerts Entertainment GmbH"
+      },
+      "typeAttributes": {
+        "liveEntertainment": {
+          "startDate": "2026-11-08T19:30:00+01:00",
+          "location": {
+            "name": "LANXESS arena",
+            "city": "Köln"
+          }
+        }
+      },
+      "expectedProfile": "de-lanxess",
+      "officialInstructions": "https://www.lanxess-arena.de/besucherinfos/barrierefreiheit",
+      "verification": "catalogue venue and city + official accessibility procedure; no availability or booking confirmation"
+    },
+    {
+      "productId": "22317392",
+      "name": "Kölner Haie - Bílí Tygri Liberec",
+      "link": "https://www.eventim.de/event/koelner-haie-del-saison-202627-lanxess-arena-22317392/",
+      "promoter": {
+        "id": "249507",
+        "name": "1972 Haie Eishockey GmbH"
+      },
+      "typeAttributes": {
+        "liveEntertainment": {
+          "startDate": "2026-11-11T19:30:00+01:00",
+          "location": {
+            "name": "LANXESS arena",
+            "city": "Köln"
+          }
+        }
+      },
+      "expectedProfile": "de-lanxess",
+      "officialInstructions": "https://www.lanxess-arena.de/besucherinfos/barrierefreiheit",
+      "verification": "catalogue venue and city + official accessibility procedure; no availability or booking confirmation"
+    },
+    {
+      "productId": "19351771",
+      "name": "Tokio Hotel - Arena Tour 2026 + Support: Nia Ashleigh",
+      "link": "https://www.eventim.de/event/tokio-hotel-arena-tour-2026-barclays-arena-19351771/",
+      "promoter": {
+        "id": "42413",
+        "name": "River Concerts GmbH"
+      },
+      "typeAttributes": {
+        "liveEntertainment": {
+          "startDate": "2026-11-01T20:00:00+01:00",
+          "location": {
+            "name": "Barclays Arena",
+            "city": "Hamburg"
+          }
+        }
+      },
+      "expectedProfile": "de-barclays",
+      "officialInstructions": "https://www.barclays-arena.de/besuch-planen/barrierefreiheit",
+      "verification": "catalogue venue and city + official accessibility procedure; no availability or booking confirmation"
+    },
+    {
+      "productId": "20137155",
+      "name": "DISNEY IN CONCERT - Die Jubiläumstournee mit dem Hollywood Sound Orchestra",
+      "link": "https://www.eventim.de/event/disney-in-concert-die-jubilaeumstournee-mit-dem-hollywood-sound-orchestra-barclays-arena-20137155/",
+      "promoter": {
+        "id": "2401",
+        "name": "Semmel Concerts Entertainment GmbH"
+      },
+      "typeAttributes": {
+        "liveEntertainment": {
+          "startDate": "2026-11-04T19:30:00+01:00",
+          "location": {
+            "name": "Barclays Arena",
+            "city": "Hamburg"
+          }
+        }
+      },
+      "expectedProfile": "de-barclays",
+      "officialInstructions": "https://www.barclays-arena.de/besuch-planen/barrierefreiheit",
+      "verification": "catalogue venue and city + official accessibility procedure; no availability or booking confirmation"
+    },
+    {
+      "productId": "20362763",
+      "name": "Jungle",
+      "link": "https://www.eventim.de/event/jungle-tour-2026-barclays-arena-20362763/",
+      "promoter": {
+        "id": "933",
+        "name": "FKP Scorpio Konzertproduktionen GmbH"
+      },
+      "typeAttributes": {
+        "liveEntertainment": {
+          "startDate": "2026-11-05T20:00:00+01:00",
+          "location": {
+            "name": "Barclays Arena",
+            "city": "Hamburg"
+          }
+        }
+      },
+      "expectedProfile": "de-barclays",
+      "officialInstructions": "https://www.barclays-arena.de/besuch-planen/barrierefreiheit",
+      "verification": "catalogue venue and city + official accessibility procedure; no availability or booking confirmation"
+    },
+    {
+      "productId": "21820278",
+      "name": "DON TOLIVER: NITROUS - OCTANE WORLD TOUR LEG 2",
+      "link": "https://www.eventim.de/event/don-toliver-nitrous-octane-world-tour-leg-2-barclays-arena-21820278/",
+      "promoter": {
+        "id": "423193",
+        "name": "Live Nation GmbH"
+      },
+      "typeAttributes": {
+        "liveEntertainment": {
+          "startDate": "2026-11-06T20:00:00+01:00",
+          "location": {
+            "name": "Barclays Arena",
+            "city": "Hamburg"
+          }
+        }
+      },
+      "expectedProfile": "de-barclays",
+      "officialInstructions": "https://www.barclays-arena.de/besuch-planen/barrierefreiheit",
+      "verification": "catalogue venue and city + official accessibility procedure; no availability or booking confirmation"
+    },
+    {
+      "productId": "20896738",
+      "name": "Laura Larsson - Balaton97",
+      "link": "https://www.eventim.de/event/laura-larsson-balaton97-barclays-arena-20896738/",
+      "promoter": {
+        "id": "1140637",
+        "name": "Neuland Concerts GmbH"
+      },
+      "typeAttributes": {
+        "liveEntertainment": {
+          "startDate": "2026-11-07T20:00:00+01:00",
+          "location": {
+            "name": "Barclays Arena",
+            "city": "Hamburg"
+          }
+        }
+      },
+      "expectedProfile": "de-barclays",
+      "officialInstructions": "https://www.barclays-arena.de/besuch-planen/barrierefreiheit",
+      "verification": "catalogue venue and city + official accessibility procedure; no availability or booking confirmation"
+    },
+    {
+      "productId": "19975950",
+      "name": "Tokio Hotel - Arena Tour 2026",
+      "link": "https://www.eventim.de/event/tokio-hotel-arena-tour-2026-festhalle-frankfurt-19975950/",
+      "promoter": {
+        "id": "1016157",
+        "name": "FOH Rhein Main Concerts GmbH"
+      },
+      "typeAttributes": {
+        "liveEntertainment": {
+          "startDate": "2026-11-05T20:00:00+01:00",
+          "location": {
+            "name": "Festhalle Frankfurt",
+            "city": "Frankfurt"
+          }
+        }
+      },
+      "expectedProfile": "de-festhalle",
+      "officialInstructions": "https://festhalle.messefrankfurt.com/frankfurt/de/besucher.html",
+      "verification": "catalogue venue and city + official accessibility procedure; no availability or booking confirmation"
+    },
+    {
+      "productId": "20971802",
+      "name": "Deep Purple",
+      "link": "https://www.eventim.de/event/deep-purple-splat-world-tour-2026-festhalle-frankfurt-20971802/",
+      "promoter": {
+        "id": "1575231",
+        "name": "Shooter Promotions GmbH"
+      },
+      "typeAttributes": {
+        "liveEntertainment": {
+          "startDate": "2026-11-06T19:30:00+01:00",
+          "location": {
+            "name": "Festhalle Frankfurt",
+            "city": "Frankfurt"
+          }
+        }
+      },
+      "expectedProfile": "de-festhalle",
+      "officialInstructions": "https://festhalle.messefrankfurt.com/frankfurt/de/besucher.html",
+      "verification": "catalogue venue and city + official accessibility procedure; no availability or booking confirmation"
+    },
+    {
+      "productId": "19475668",
+      "name": "Nico Santos - Arena Tour 2026",
+      "link": "https://www.eventim.de/event/nico-santos-arena-tour-2026-festhalle-frankfurt-19475668/",
+      "promoter": {
+        "id": "2401",
+        "name": "Semmel Concerts Entertainment GmbH"
+      },
+      "typeAttributes": {
+        "liveEntertainment": {
+          "startDate": "2026-11-07T19:30:00+01:00",
+          "location": {
+            "name": "Festhalle Frankfurt",
+            "city": "Frankfurt"
+          }
+        }
+      },
+      "expectedProfile": "de-festhalle",
+      "officialInstructions": "https://festhalle.messefrankfurt.com/frankfurt/de/besucher.html",
+      "verification": "catalogue venue and city + official accessibility procedure; no availability or booking confirmation"
+    },
+    {
+      "productId": "20642077",
+      "name": "Berq - Tour 2026",
+      "link": "https://www.eventim.de/event/berq-tour-2026-festhalle-frankfurt-20642077/",
+      "promoter": {
+        "id": "266",
+        "name": "Konzertbüro Schoneberg GmbH"
+      },
+      "typeAttributes": {
+        "liveEntertainment": {
+          "startDate": "2026-11-14T20:00:00+01:00",
+          "location": {
+            "name": "Festhalle Frankfurt",
+            "city": "Frankfurt"
+          }
+        }
+      },
+      "expectedProfile": "de-festhalle",
+      "officialInstructions": "https://festhalle.messefrankfurt.com/frankfurt/de/besucher.html",
+      "verification": "catalogue venue and city + official accessibility procedure; no availability or booking confirmation"
+    },
+    {
+      "productId": "20889701",
+      "name": "LET'S DANCE - Die Live-Tour 2026",
+      "link": "https://www.eventim.de/event/lets-dance-die-live-tour-2026-festhalle-frankfurt-20889701/",
+      "promoter": {
+        "id": "2401",
+        "name": "Semmel Concerts Entertainment GmbH"
+      },
+      "typeAttributes": {
+        "liveEntertainment": {
+          "startDate": "2026-11-20T19:30:00+01:00",
+          "location": {
+            "name": "Festhalle Frankfurt",
+            "city": "Frankfurt"
+          }
+        }
+      },
+      "expectedProfile": "de-festhalle",
+      "officialInstructions": "https://festhalle.messefrankfurt.com/frankfurt/de/besucher.html",
+      "verification": "catalogue venue and city + official accessibility procedure; no availability or booking confirmation"
+    },
+    {
+      "productId": "20664835",
+      "name": "The Dark Tenor - Symphonica - Rock meets Klassik",
+      "link": "https://www.eventim.de/event/the-dark-tenor-symphonica-rock-meets-klassik-2026-westfalenhalle-20664835/",
+      "promoter": {
+        "id": "1235110",
+        "name": "Red Raven GmbH"
+      },
+      "typeAttributes": {
+        "liveEntertainment": {
+          "startDate": "2026-11-02T20:00:00+01:00",
+          "location": {
+            "name": "Westfalenhalle",
+            "city": "Dortmund"
+          }
+        }
+      },
+      "expectedProfile": "de-westfalen",
+      "officialInstructions": "https://www.westfalenhalle.de/besucherservices/barrierefrei/",
+      "verification": "catalogue venue and city + official accessibility procedure; no availability or booking confirmation"
+    },
+    {
+      "productId": "20965203",
+      "name": "Deep Purple",
+      "link": "https://www.eventim.de/event/deep-purple-splat-world-tour-2026-westfalenhalle-20965203/",
+      "promoter": {
+        "id": "392",
+        "name": "handwerker promotion e. gmbh"
+      },
+      "typeAttributes": {
+        "liveEntertainment": {
+          "startDate": "2026-11-03T19:30:00+01:00",
+          "location": {
+            "name": "Westfalenhalle",
+            "city": "Dortmund"
+          }
+        }
+      },
+      "expectedProfile": "de-westfalen",
+      "officialInstructions": "https://www.westfalenhalle.de/besucherservices/barrierefrei/",
+      "verification": "catalogue venue and city + official accessibility procedure; no availability or booking confirmation"
+    },
+    {
+      "productId": "19955858",
+      "name": "THE WORLD OF HANS ZIMMER - A NEW DIMENSION",
+      "link": "https://www.eventim.de/event/the-world-of-hans-zimmer-a-new-dimension-westfalenhalle-19955858/",
+      "promoter": {
+        "id": "2401",
+        "name": "Semmel Concerts Entertainment GmbH"
+      },
+      "typeAttributes": {
+        "liveEntertainment": {
+          "startDate": "2026-11-12T19:30:00+01:00",
+          "location": {
+            "name": "Westfalenhalle",
+            "city": "Dortmund"
+          }
+        }
+      },
+      "expectedProfile": "de-westfalen",
+      "officialInstructions": "https://www.westfalenhalle.de/besucherservices/barrierefrei/",
+      "verification": "catalogue venue and city + official accessibility procedure; no availability or booking confirmation"
+    },
+    {
+      "productId": "20196679",
+      "name": "GameChanger by Bastian Bielendorfer",
+      "link": "https://www.eventim.de/event/gamechanger-by-bastian-bielendorfer-westfalenhalle-20196679/",
+      "promoter": {
+        "id": "32214",
+        "name": "S-PROMOTION Event GmbH"
+      },
+      "typeAttributes": {
+        "liveEntertainment": {
+          "startDate": "2026-11-13T20:00:00+01:00",
+          "location": {
+            "name": "Westfalenhalle",
+            "city": "Dortmund"
+          }
+        }
+      },
+      "expectedProfile": "de-westfalen",
+      "officialInstructions": "https://www.westfalenhalle.de/besucherservices/barrierefrei/",
+      "verification": "catalogue venue and city + official accessibility procedure; no availability or booking confirmation"
+    },
+    {
+      "productId": "20871353",
+      "name": "Torsten Sträter - Die Zyklopen von Saint-Tropez",
+      "link": "https://www.eventim.de/event/torsten-straeter-die-zyklopen-von-saint-tropez-westfalenhalle-20871353/",
+      "promoter": {
+        "id": "33108",
+        "name": "Agentur Udo Lühr"
+      },
+      "typeAttributes": {
+        "liveEntertainment": {
+          "startDate": "2026-11-13T20:00:00+01:00",
+          "location": {
+            "name": "Westfalenhalle",
+            "city": "Dortmund"
+          }
+        }
+      },
+      "expectedProfile": "de-westfalen",
+      "officialInstructions": "https://www.westfalenhalle.de/besucherservices/barrierefrei/",
+      "verification": "catalogue venue and city + official accessibility procedure; no availability or booking confirmation"
+    },
+    {
+      "productId": "19073358",
+      "name": "Felix Lobrecht - Sell Out",
+      "link": "https://www.eventim.de/event/felix-lobrecht-sell-out-sap-arena-19073358/",
+      "promoter": {
+        "id": "329888",
+        "name": "P-Promotion Event GmbH"
+      },
+      "typeAttributes": {
+        "liveEntertainment": {
+          "startDate": "2026-11-20T20:00:00+01:00",
+          "location": {
+            "name": "SAP Arena",
+            "city": "Mannheim"
+          }
+        }
+      },
+      "expectedProfile": "de-sap",
+      "officialInstructions": "https://saparena.de/besucherservice/barrierefreiheit/",
+      "verification": "catalogue venue and city + official accessibility procedure; no availability or booking confirmation"
+    },
+    {
+      "productId": "20889774",
+      "name": "LET'S DANCE - Die Live-Tour 2026",
+      "link": "https://www.eventim.de/event/lets-dance-die-live-tour-2026-sap-arena-20889774/",
+      "promoter": {
+        "id": "2401",
+        "name": "Semmel Concerts Entertainment GmbH"
+      },
+      "typeAttributes": {
+        "liveEntertainment": {
+          "startDate": "2026-11-25T19:30:00+01:00",
+          "location": {
+            "name": "SAP Arena",
+            "city": "Mannheim"
+          }
+        }
+      },
+      "expectedProfile": "de-sap",
+      "officialInstructions": "https://saparena.de/besucherservice/barrierefreiheit/",
+      "verification": "catalogue venue and city + official accessibility procedure; no availability or booking confirmation"
+    },
+    {
+      "productId": "20893943",
+      "name": "Night of the Proms 2026",
+      "link": "https://www.eventim.de/event/night-of-the-proms-2026-sap-arena-20893943/",
+      "promoter": {
+        "id": "266",
+        "name": "Konzertbüro Schoneberg GmbH"
+      },
+      "typeAttributes": {
+        "liveEntertainment": {
+          "startDate": "2026-11-27T20:00:00+01:00",
+          "location": {
+            "name": "SAP Arena",
+            "city": "Mannheim"
+          }
+        }
+      },
+      "expectedProfile": "de-sap",
+      "officialInstructions": "https://saparena.de/besucherservice/barrierefreiheit/",
+      "verification": "catalogue venue and city + official accessibility procedure; no availability or booking confirmation"
+    },
+    {
+      "productId": "20653076",
+      "name": "Michael Tsokos | Phänomen Forensik - Faszination Rechtsmedizin 2.0",
+      "link": "https://www.eventim.de/event/michael-tsokos-phaenomen-forensik-faszination-rechtsmedizin-2-0-sap-arena-20653076/",
+      "promoter": {
+        "id": "32214",
+        "name": "S-PROMOTION Event GmbH"
+      },
+      "typeAttributes": {
+        "liveEntertainment": {
+          "startDate": "2026-12-03T20:00:00+01:00",
+          "location": {
+            "name": "SAP Arena",
+            "city": "Mannheim"
+          }
+        }
+      },
+      "expectedProfile": "de-sap",
+      "officialInstructions": "https://saparena.de/besucherservice/barrierefreiheit/",
+      "verification": "catalogue venue and city + official accessibility procedure; no availability or booking confirmation"
+    },
+    {
+      "productId": "20048147",
+      "name": "Chris Tall - Keep Laughing",
+      "link": "https://www.eventim.de/event/chris-tall-keep-laughing-sap-arena-20048147/",
+      "promoter": {
+        "id": "1452",
+        "name": "Dirk Becker Entertainment GmbH"
+      },
+      "typeAttributes": {
+        "liveEntertainment": {
+          "startDate": "2026-12-11T20:00:00+01:00",
+          "location": {
+            "name": "SAP Arena",
+            "city": "Mannheim"
+          }
+        }
+      },
+      "expectedProfile": "de-sap",
+      "officialInstructions": "https://saparena.de/besucherservice/barrierefreiheit/",
+      "verification": "catalogue venue and city + official accessibility procedure; no availability or booking confirmation"
+    },
+    {
+      "productId": "20137473",
+      "name": "DISNEY IN CONCERT - Die Jubiläumstournee mit dem Hollywood Sound Orchestra",
+      "link": "https://www.eventim.de/event/disney-in-concert-die-jubilaeumstournee-mit-dem-hollywood-sound-orchestra-olympiahalle-muenchen-20137473/",
+      "promoter": {
+        "id": "2401",
+        "name": "Semmel Concerts Entertainment GmbH"
+      },
+      "typeAttributes": {
+        "liveEntertainment": {
+          "startDate": "2026-11-06T19:30:00+01:00",
+          "location": {
+            "name": "Olympiahalle München",
+            "city": "München"
+          }
+        }
+      },
+      "expectedProfile": "de-olympia",
+      "officialInstructions": "https://www.muenchenticket.de/barrierefrei/",
+      "verification": "catalogue venue and city + official accessibility procedure; no availability or booking confirmation"
+    },
+    {
+      "productId": "20889626",
+      "name": "LET'S DANCE - Die Live-Tour 2026",
+      "link": "https://www.eventim.de/event/lets-dance-die-live-tour-2026-olympiahalle-muenchen-20889626/",
+      "promoter": {
+        "id": "2401",
+        "name": "Semmel Concerts Entertainment GmbH"
+      },
+      "typeAttributes": {
+        "liveEntertainment": {
+          "startDate": "2026-11-07T20:00:00+01:00",
+          "location": {
+            "name": "Olympiahalle München",
+            "city": "München"
+          }
+        }
+      },
+      "expectedProfile": "de-olympia",
+      "officialInstructions": "https://www.muenchenticket.de/barrierefrei/",
+      "verification": "catalogue venue and city + official accessibility procedure; no availability or booking confirmation"
+    },
+    {
+      "productId": "20538745",
+      "name": "PLACEBO - 30TH ANNIVERSARY TOUR",
+      "link": "https://www.eventim.de/event/placebo-30th-anniversary-tour-olympiahalle-muenchen-20538745/",
+      "promoter": {
+        "id": "933",
+        "name": "FKP Scorpio Konzertproduktionen GmbH"
+      },
+      "typeAttributes": {
+        "liveEntertainment": {
+          "startDate": "2026-11-09T20:00:00+01:00",
+          "location": {
+            "name": "Olympiahalle München",
+            "city": "München"
+          }
+        }
+      },
+      "expectedProfile": "de-olympia",
+      "officialInstructions": "https://www.muenchenticket.de/barrierefrei/",
+      "verification": "catalogue venue and city + official accessibility procedure; no availability or booking confirmation"
+    },
+    {
+      "productId": "19466711",
+      "name": "Nico Santos - Arena Tour 2026",
+      "link": "https://www.eventim.de/event/nico-santos-arena-tour-2026-olympiahalle-muenchen-19466711/",
+      "promoter": {
+        "id": "2401",
+        "name": "Semmel Concerts Entertainment GmbH"
+      },
+      "typeAttributes": {
+        "liveEntertainment": {
+          "startDate": "2026-11-10T19:30:00+01:00",
+          "location": {
+            "name": "Olympiahalle München",
+            "city": "München"
+          }
+        }
+      },
+      "expectedProfile": "de-olympia",
+      "officialInstructions": "https://www.muenchenticket.de/barrierefrei/",
+      "verification": "catalogue venue and city + official accessibility procedure; no availability or booking confirmation"
+    },
+    {
+      "productId": "21459453",
+      "name": "Jungle",
+      "link": "https://www.eventim.de/event/jungle-tour-2026-olympiahalle-muenchen-21459453/",
+      "promoter": {
+        "id": "3498",
+        "name": "Propeller Music & Event GmbH"
+      },
+      "typeAttributes": {
+        "liveEntertainment": {
+          "startDate": "2026-11-12T20:00:00+01:00",
+          "location": {
+            "name": "Olympiahalle München",
+            "city": "München"
+          }
+        }
+      },
+      "expectedProfile": "de-olympia",
+      "officialInstructions": "https://www.muenchenticket.de/barrierefrei/",
+      "verification": "catalogue venue and city + official accessibility procedure; no availability or booking confirmation"
+    },
+    {
+      "productId": "20786429",
+      "name": "90s Super Show - live & on stage!",
+      "link": "https://www.eventim.de/event/90s-super-show-quarterback-immobilien-arena-20786429/",
+      "promoter": {
+        "id": "31954",
+        "name": "media.one GmbH"
+      },
+      "typeAttributes": {
+        "liveEntertainment": {
+          "startDate": "2026-11-07T17:00:00+01:00",
+          "location": {
+            "name": "QUARTERBACK Immobilien ARENA",
+            "city": "Leipzig"
+          }
+        }
+      },
+      "expectedProfile": "de-quarterback",
+      "officialInstructions": "https://www.quarterback-immobilien-arena.de/faq",
+      "verification": "catalogue venue and city + official accessibility procedure; no availability or booking confirmation"
+    },
+    {
+      "productId": "20889015",
+      "name": "LET'S DANCE - Die Live-Tour 2026",
+      "link": "https://www.eventim.de/event/lets-dance-die-live-tour-2026-quarterback-immobilien-arena-20889015/",
+      "promoter": {
+        "id": "2401",
+        "name": "Semmel Concerts Entertainment GmbH"
+      },
+      "typeAttributes": {
+        "liveEntertainment": {
+          "startDate": "2026-11-10T19:30:00+01:00",
+          "location": {
+            "name": "QUARTERBACK Immobilien ARENA",
+            "city": "Leipzig"
+          }
+        }
+      },
+      "expectedProfile": "de-quarterback",
+      "officialInstructions": "https://www.quarterback-immobilien-arena.de/faq",
+      "verification": "catalogue venue and city + official accessibility procedure; no availability or booking confirmation"
+    },
+    {
+      "productId": "19975845",
+      "name": "Tokio Hotel - Arena Tour 2026",
+      "link": "https://www.eventim.de/event/tokio-hotel-arena-tour-2026-quarterback-immobilien-arena-19975845/",
+      "promoter": {
+        "id": "787",
+        "name": "MAWI Concert Konzertagentur GmbH"
+      },
+      "typeAttributes": {
+        "liveEntertainment": {
+          "startDate": "2026-11-13T20:00:00+01:00",
+          "location": {
+            "name": "QUARTERBACK Immobilien ARENA",
+            "city": "Leipzig"
+          }
+        }
+      },
+      "expectedProfile": "de-quarterback",
+      "officialInstructions": "https://www.quarterback-immobilien-arena.de/faq",
+      "verification": "catalogue venue and city + official accessibility procedure; no availability or booking confirmation"
+    },
+    {
+      "productId": "19801761",
+      "name": "Ina Müller und Band - Die 6.0 Tour",
+      "link": "https://www.eventim.de/event/ina-mueller-und-band-die-6-0-tour-quarterback-immobilien-arena-19801761/",
+      "promoter": {
+        "id": "1140637",
+        "name": "Neuland Concerts GmbH"
+      },
+      "typeAttributes": {
+        "liveEntertainment": {
+          "startDate": "2026-11-14T20:00:00+01:00",
+          "location": {
+            "name": "QUARTERBACK Immobilien ARENA",
+            "city": "Leipzig"
+          }
+        }
+      },
+      "expectedProfile": "de-quarterback",
+      "officialInstructions": "https://www.quarterback-immobilien-arena.de/faq",
+      "verification": "catalogue venue and city + official accessibility procedure; no availability or booking confirmation"
+    },
+    {
+      "productId": "20635117",
+      "name": "Berq - Tour 2026",
+      "link": "https://www.eventim.de/event/berq-tour-2026-quarterback-immobilien-arena-20635117/",
+      "promoter": {
+        "id": "497737",
+        "name": "Landstreicher Kulturproduktionen GmbH"
+      },
+      "typeAttributes": {
+        "liveEntertainment": {
+          "startDate": "2026-11-17T20:00:00+01:00",
+          "location": {
+            "name": "QUARTERBACK Immobilien ARENA",
+            "city": "Leipzig"
+          }
+        }
+      },
+      "expectedProfile": "de-quarterback",
+      "officialInstructions": "https://www.quarterback-immobilien-arena.de/faq",
+      "verification": "catalogue venue and city + official accessibility procedure; no availability or booking confirmation"
+    }
+  ]
+}

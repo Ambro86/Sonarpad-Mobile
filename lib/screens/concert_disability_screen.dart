@@ -16,9 +16,13 @@ class ConcertDisabilityScreen extends StatelessWidget {
     this.openEvent,
     this.opener,
     this.contact,
+    this.country = 'IT',
+    this.venue = '',
+    this.city = '',
   });
 
   final String eventTitle, organiser;
+  final String country, venue, city;
   final ConcertDisabilityContact? contact;
   final Future<void> Function()? openEvent;
   final Future<bool> Function(Uri, LaunchMode)? opener;
@@ -50,10 +54,53 @@ class ConcertDisabilityScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = TicketOneStrings(AppLocalizations.of(context).localeName);
-    final selected = contact ?? ConcertDisabilityContact.match(organiser);
+    final french = country == 'FR';
+    final german = country == 'DE';
+    final spanish = country == 'ES';
+    final british = country == 'GB';
+    final austrian = country == 'AT';
+    final international = ConcertDisabilityContact.international[country];
+    final venueBased =
+        french ||
+        german ||
+        spanish ||
+        british ||
+        austrian ||
+        international != null;
+    final profiles = french
+        ? ConcertDisabilityContact.france
+        : german
+        ? ConcertDisabilityContact.germany
+        : spanish
+        ? ConcertDisabilityContact.spain
+        : british
+        ? ConcertDisabilityContact.unitedKingdom
+        : austrian
+        ? ConcertDisabilityContact.austria
+        : international ?? ConcertDisabilityContact.all;
+    final selected =
+        (profiles.contains(contact) ? contact : null) ??
+        (french
+            ? ConcertDisabilityContact.matchFrenchVenue(venue, city)
+            : german
+            ? ConcertDisabilityContact.matchGermanVenue(venue, city)
+            : spanish
+            ? ConcertDisabilityContact.matchSpanishVenue(venue, city)
+            : british
+            ? ConcertDisabilityContact.matchBritishVenue(venue, city)
+            : austrian
+            ? ConcertDisabilityContact.matchAustrianVenue(venue, city)
+            : international != null
+            ? ConcertDisabilityContact.matchInternationalVenue(
+                country,
+                venue,
+                city,
+              )
+            : ConcertDisabilityContact.match(organiser));
     final vivo =
-        selected?.name == 'Vivo Concerti' ||
-        (contact == null && isVivo(organiser));
+        !venueBased &&
+        (selected?.name == 'Vivo Concerti' ||
+            (contact == null && isVivo(organiser)));
     AccessibleListRow text(String id, String value) => AccessibleListRow(
       id: id,
       title: value,
@@ -80,11 +127,30 @@ class ConcertDisabilityScreen extends StatelessWidget {
                 text('disability-help', t.t('disabilityHelp')),
                 text(
                   'disability-organiser',
-                  organiser.isEmpty
+                  venueBased
+                      ? '${t.t('disabilityVenue')}: ${[venue, city].where((v) => v.isNotEmpty).join(' — ')}'
+                      : organiser.isEmpty
                       ? t.t('disabilityUnknownOrganiser')
                       : '${t.t('disabilityOrganiser')}: $organiser',
                 ),
                 text('disability-conditions', t.t('disabilityConditions')),
+                if (venueBased && selected == null)
+                  text(
+                    'disability-unmatched',
+                    t.t(
+                      international != null
+                          ? 'disabilityInternationalUnknown'
+                          : austrian
+                          ? 'disabilityAtUnknown'
+                          : british
+                          ? 'disabilityGbUnknown'
+                          : spanish
+                          ? 'disabilityEsUnknown'
+                          : german
+                          ? 'disabilityDeUnknown'
+                          : 'disabilityFrUnknown',
+                    ),
+                  ),
                 if (vivo) ...[
                   text('disability-vivo-help', t.t('disabilityVivoHelp')),
                   link(
@@ -109,6 +175,8 @@ class ConcertDisabilityScreen extends StatelessWidget {
                 ],
                 if (selected != null && !vivo) ...[
                   text('disability-selected', selected.name),
+                  if (selected.guidanceKey != null)
+                    text('disability-guidance', t.t(selected.guidanceKey!)),
                   link(
                     'disability-contact-info',
                     '${t.t('disabilityContactInstructions')}: ${selected.name}',
@@ -119,6 +187,12 @@ class ConcertDisabilityScreen extends StatelessWidget {
                       'disability-mail-$email',
                       '${t.t('disabilityContactEmail')}: $email',
                       Uri(scheme: 'mailto', path: email),
+                    ),
+                  for (final phone in selected.phones)
+                    link(
+                      'disability-phone-$phone',
+                      '${t.t(german || spanish || british || austrian || international != null ? 'disabilityCallContact' : 'disabilityPhone')}: $phone',
+                      Uri(scheme: 'tel', path: phone),
                     ),
                 ],
                 AccessibleListRow(
@@ -141,8 +215,7 @@ class ConcertDisabilityScreen extends StatelessWidget {
                                     'disability-choose-help',
                                     t.t('disabilityChooseHelp'),
                                   ),
-                                  for (final profile
-                                      in ConcertDisabilityContact.all)
+                                  for (final profile in profiles)
                                     AccessibleListRow(
                                       id: profile.id,
                                       title: profile.name,
@@ -159,6 +232,9 @@ class ConcertDisabilityScreen extends StatelessWidget {
                                                     openEvent: openEvent,
                                                     opener: opener,
                                                     contact: profile,
+                                                    country: country,
+                                                    venue: venue,
+                                                    city: city,
                                                   ),
                                             ),
                                           ),
@@ -172,17 +248,22 @@ class ConcertDisabilityScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                link(
-                  'disability-directory',
-                  t.t('disabilityDirectory'),
-                  Uri.parse(
-                    'https://www.ticketone.it/campaign/diversamente-abili/',
+                if (!venueBased)
+                  link(
+                    'disability-directory',
+                    t.t('disabilityDirectory'),
+                    Uri.parse(
+                      'https://www.ticketone.it/campaign/diversamente-abili/',
+                    ),
                   ),
-                ),
                 if (openEvent != null)
                   AccessibleListRow(
                     id: 'disability-open-event',
-                    title: t.t('disabilityReadOrganiser'),
+                    title: t.t(
+                      venueBased
+                          ? 'disabilityOpenEvent'
+                          : 'disabilityReadOrganiser',
+                    ),
                     kind: 'button',
                     onActivate: openEvent,
                   ),

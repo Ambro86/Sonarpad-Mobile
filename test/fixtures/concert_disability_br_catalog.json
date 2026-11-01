@@ -1,0 +1,886 @@
+{
+  "checked": "2026-10-31",
+  "method": "Live Eventim exploration API; 40 distinct product IDs. Verified official venue sources; no booking or availability confirmation. Null expectedProfile explicitly tests safe unknown-venue handling.",
+  "events": [
+    {
+      "productId": "22225422",
+      "name": "HIGHWAY TO ROCK - CHARLES GAVIN, MARK LAMBERT, GABI E GU ANIAS",
+      "link": "https://www.eventim.com.br/event/highway-to-rock-charles-gavin-mark-lambert-gabi-e-gu-anias-blue-note-sao-paulo-22225422/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "São Paulo",
+            "geoLocation": {
+              "latitude": -23.558482195164064,
+              "longitude": -46.66003358395513
+            },
+            "name": "Blue Note São Paulo",
+            "postalCode": "01311-300",
+            "state": "SP"
+          },
+          "startDate": "2026-11-01T19:00:00-03:00"
+        }
+      },
+      "expectedProfile": "br-bluenote",
+      "officialInstructions": "https://bluenotesp.com/contato/"
+    },
+    {
+      "productId": "22207790",
+      "name": "ECHOES PINK FLOYD SÃO PAULO - ANIMALS - 50 ANOS",
+      "link": "https://www.eventim.com.br/event/echoes-pink-floyd-sao-paulo-animals-50-anos-blue-note-sao-paulo-22207790/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "São Paulo",
+            "geoLocation": {
+              "latitude": -23.558482195164064,
+              "longitude": -46.66003358395513
+            },
+            "name": "Blue Note São Paulo",
+            "postalCode": "01311-300",
+            "state": "SP"
+          },
+          "startDate": "2026-11-03T20:00:00-03:00"
+        }
+      },
+      "expectedProfile": "br-bluenote",
+      "officialInstructions": "https://bluenotesp.com/contato/"
+    },
+    {
+      "productId": "22207926",
+      "name": "LEANDRO CABRAL - COM TEXTO",
+      "link": "https://www.eventim.com.br/event/leandro-cabral-com-texto-blue-note-sao-paulo-22207926/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "São Paulo",
+            "geoLocation": {
+              "latitude": -23.558482195164064,
+              "longitude": -46.66003358395513
+            },
+            "name": "Blue Note São Paulo",
+            "postalCode": "01311-300",
+            "state": "SP"
+          },
+          "startDate": "2026-11-04T20:00:00-03:00"
+        }
+      },
+      "expectedProfile": "br-bluenote",
+      "officialInstructions": "https://bluenotesp.com/contato/"
+    },
+    {
+      "productId": "22207927",
+      "name": "WEATHER REPORT TRIBUTO",
+      "link": "https://www.eventim.com.br/event/weather-report-tributo-blue-note-sao-paulo-22207927/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "São Paulo",
+            "geoLocation": {
+              "latitude": -23.558482195164064,
+              "longitude": -46.66003358395513
+            },
+            "name": "Blue Note São Paulo",
+            "postalCode": "01311-300",
+            "state": "SP"
+          },
+          "startDate": "2026-11-04T22:30:00-03:00"
+        }
+      },
+      "expectedProfile": "br-bluenote",
+      "officialInstructions": "https://bluenotesp.com/contato/"
+    },
+    {
+      "productId": "21720613",
+      "name": "JEAN LUC PONTY PROJECT - IMAGINARY VOYAGE 50 ANOS",
+      "link": "https://www.eventim.com.br/event/jean-luc-ponty-project-imaginary-voyage-50-anos-blue-note-sao-paulo-21720613/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "São Paulo",
+            "geoLocation": {
+              "latitude": -23.558482195164064,
+              "longitude": -46.66003358395513
+            },
+            "name": "Blue Note São Paulo",
+            "postalCode": "01311-300",
+            "state": "SP"
+          },
+          "startDate": "2026-11-05T20:00:00-03:00"
+        }
+      },
+      "expectedProfile": "br-bluenote",
+      "officialInstructions": "https://bluenotesp.com/contato/"
+    },
+    {
+      "productId": "22038796",
+      "name": "U2 EXPERIENCE - U2 RIO",
+      "link": "https://www.eventim.com.br/event/u2-experience-u2-rio-blue-note-sao-paulo-22038796/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "São Paulo",
+            "geoLocation": {
+              "latitude": -23.558482195164064,
+              "longitude": -46.66003358395513
+            },
+            "name": "Blue Note São Paulo",
+            "postalCode": "01311-300",
+            "state": "SP"
+          },
+          "startDate": "2026-11-05T22:30:00-03:00"
+        }
+      },
+      "expectedProfile": "br-bluenote",
+      "officialInstructions": "https://bluenotesp.com/contato/"
+    },
+    {
+      "productId": "22131645",
+      "name": "DANCE PARTY COM MARK LAMBERT & BLUE NOTE BIG BAND",
+      "link": "https://www.eventim.com.br/event/dance-party-com-mark-lambert-blue-note-big-band-blue-note-sao-paulo-22131645/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "São Paulo",
+            "geoLocation": {
+              "latitude": -23.558482195164064,
+              "longitude": -46.66003358395513
+            },
+            "name": "Blue Note São Paulo",
+            "postalCode": "01311-300",
+            "state": "SP"
+          },
+          "startDate": "2026-11-06T20:00:00-03:00"
+        }
+      },
+      "expectedProfile": "br-bluenote",
+      "officialInstructions": "https://bluenotesp.com/contato/"
+    },
+    {
+      "productId": "22105696",
+      "name": "BIG ALLANBIK - O RETORNO DE UMA LENDA DO BLUES-ROCK",
+      "link": "https://www.eventim.com.br/event/big-allanbik-o-retorno-de-uma-lenda-do-blues-rock-blue-note-sao-paulo-22105696/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "São Paulo",
+            "geoLocation": {
+              "latitude": -23.558482195164064,
+              "longitude": -46.66003358395513
+            },
+            "name": "Blue Note São Paulo",
+            "postalCode": "01311-300",
+            "state": "SP"
+          },
+          "startDate": "2026-11-06T22:30:00-03:00"
+        }
+      },
+      "expectedProfile": "br-bluenote",
+      "officialInstructions": "https://bluenotesp.com/contato/"
+    },
+    {
+      "productId": "22105694",
+      "name": "BAILE DISCO CONVIDA DUO YORI",
+      "link": "https://www.eventim.com.br/event/baile-disco-convida-duo-yori-blue-note-sao-paulo-22105694/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "São Paulo",
+            "geoLocation": {
+              "latitude": -23.558482195164064,
+              "longitude": -46.66003358395513
+            },
+            "name": "Blue Note São Paulo",
+            "postalCode": "01311-300",
+            "state": "SP"
+          },
+          "startDate": "2026-11-07T20:00:00-03:00"
+        }
+      },
+      "expectedProfile": "br-bluenote",
+      "officialInstructions": "https://bluenotesp.com/contato/"
+    },
+    {
+      "productId": "22105697",
+      "name": "KLEITON & KLEDIR",
+      "link": "https://www.eventim.com.br/event/kleiton-kledir-blue-note-sao-paulo-22105697/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "São Paulo",
+            "geoLocation": {
+              "latitude": -23.558482195164064,
+              "longitude": -46.66003358395513
+            },
+            "name": "Blue Note São Paulo",
+            "postalCode": "01311-300",
+            "state": "SP"
+          },
+          "startDate": "2026-11-07T20:00:00-03:00"
+        }
+      },
+      "expectedProfile": "br-bluenote",
+      "officialInstructions": "https://bluenotesp.com/contato/"
+    },
+    {
+      "productId": "22270088",
+      "name": "HOLLAND MEETS BRAZIL FEAT. NAILOR PROVETA",
+      "link": "https://www.eventim.com.br/event/holland-meets-brazil-feat-nailor-proveta-blue-note-sao-paulo-22270088/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "São Paulo",
+            "geoLocation": {
+              "latitude": -23.558482195164064,
+              "longitude": -46.66003358395513
+            },
+            "name": "Blue Note São Paulo",
+            "postalCode": "01311-300",
+            "state": "SP"
+          },
+          "startDate": "2026-11-08T19:00:00-03:00"
+        }
+      },
+      "expectedProfile": "br-bluenote",
+      "officialInstructions": "https://bluenotesp.com/contato/"
+    },
+    {
+      "productId": "22225239",
+      "name": "LORENZA POZZA - DE BEATLES A CARPENTERS",
+      "link": "https://www.eventim.com.br/event/lorenza-pozza-de-beatles-a-carpenters-blue-note-sao-paulo-22225239/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "São Paulo",
+            "geoLocation": {
+              "latitude": -23.558482195164064,
+              "longitude": -46.66003358395513
+            },
+            "name": "Blue Note São Paulo",
+            "postalCode": "01311-300",
+            "state": "SP"
+          },
+          "startDate": "2026-11-10T20:00:00-03:00"
+        }
+      },
+      "expectedProfile": "br-bluenote",
+      "officialInstructions": "https://bluenotesp.com/contato/"
+    },
+    {
+      "productId": "22289454",
+      "name": "ÁRIDA - SERTÃO ENCANTADO DE HÉLOA",
+      "link": "https://www.eventim.com.br/event/arida-sertao-encantado-de-heloa-blue-note-sao-paulo-22289454/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "São Paulo",
+            "geoLocation": {
+              "latitude": -23.558482195164064,
+              "longitude": -46.66003358395513
+            },
+            "name": "Blue Note São Paulo",
+            "postalCode": "01311-300",
+            "state": "SP"
+          },
+          "startDate": "2026-11-11T20:00:00-03:00"
+        }
+      },
+      "expectedProfile": "br-bluenote",
+      "officialInstructions": "https://bluenotesp.com/contato/"
+    },
+    {
+      "productId": "22259537",
+      "name": "BOB MARLEY IN JAZZ",
+      "link": "https://www.eventim.com.br/event/bob-marley-in-jazz-blue-note-sao-paulo-22259537/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "São Paulo",
+            "geoLocation": {
+              "latitude": -23.558482195164064,
+              "longitude": -46.66003358395513
+            },
+            "name": "Blue Note São Paulo",
+            "postalCode": "01311-300",
+            "state": "SP"
+          },
+          "startDate": "2026-11-11T22:30:00-03:00"
+        }
+      },
+      "expectedProfile": "br-bluenote",
+      "officialInstructions": "https://bluenotesp.com/contato/"
+    },
+    {
+      "productId": "22319878",
+      "name": "GAN SUMMIT 2026",
+      "link": "https://www.eventim.com.br/event/gan-summit-2026-blue-note-sao-paulo-22319878/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "São Paulo",
+            "geoLocation": {
+              "latitude": -23.558482195164064,
+              "longitude": -46.66003358395513
+            },
+            "name": "Blue Note São Paulo",
+            "postalCode": "01311-300",
+            "state": "SP"
+          },
+          "startDate": "2026-11-12T13:00:00-03:00"
+        }
+      },
+      "expectedProfile": "br-bluenote",
+      "officialInstructions": "https://bluenotesp.com/contato/"
+    },
+    {
+      "productId": "21032840",
+      "name": "TRIBUTO A ELLA FITZGERALD POR INDIANA NOMMA",
+      "link": "https://www.eventim.com.br/event/tributo-a-ella-fitzgerald-por-indiana-nomma-blue-note-sao-paulo-21032840/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "São Paulo",
+            "geoLocation": {
+              "latitude": -23.558482195164064,
+              "longitude": -46.66003358395513
+            },
+            "name": "Blue Note São Paulo",
+            "postalCode": "01311-300",
+            "state": "SP"
+          },
+          "startDate": "2026-11-12T20:00:00-03:00"
+        }
+      },
+      "expectedProfile": "br-bluenote",
+      "officialInstructions": "https://bluenotesp.com/contato/"
+    },
+    {
+      "productId": "22207930",
+      "name": "COLLABORATION IN CONCERT - CELEBRAÇÃO DOS 100 ANOS DE MILES DAVIS",
+      "link": "https://www.eventim.com.br/event/collaboration-in-concert-celebracao-dos-100-anos-de-miles-davis-blue-note-sao-paulo-22207930/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "São Paulo",
+            "geoLocation": {
+              "latitude": -23.558482195164064,
+              "longitude": -46.66003358395513
+            },
+            "name": "Blue Note São Paulo",
+            "postalCode": "01311-300",
+            "state": "SP"
+          },
+          "startDate": "2026-11-12T22:30:00-03:00"
+        }
+      },
+      "expectedProfile": "br-bluenote",
+      "officialInstructions": "https://bluenotesp.com/contato/"
+    },
+    {
+      "productId": "21957490",
+      "name": "AMICI - REINTERPRETAM OS SUCESSOS DOS AMIGOS",
+      "link": "https://www.eventim.com.br/event/amici-reinterpretam-os-sucessos-dos-amigos-blue-note-sao-paulo-21957490/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "São Paulo",
+            "geoLocation": {
+              "latitude": -23.558482195164064,
+              "longitude": -46.66003358395513
+            },
+            "name": "Blue Note São Paulo",
+            "postalCode": "01311-300",
+            "state": "SP"
+          },
+          "startDate": "2026-11-13T20:00:00-03:00"
+        }
+      },
+      "expectedProfile": "br-bluenote",
+      "officialInstructions": "https://bluenotesp.com/contato/"
+    },
+    {
+      "productId": "22300327",
+      "name": "ABBA THE HISTORY - A TRIBUTE BAND",
+      "link": "https://www.eventim.com.br/event/abba-the-history-a-tribute-band-blue-note-sao-paulo-22300327/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "São Paulo",
+            "geoLocation": {
+              "latitude": -23.558482195164064,
+              "longitude": -46.66003358395513
+            },
+            "name": "Blue Note São Paulo",
+            "postalCode": "01311-300",
+            "state": "SP"
+          },
+          "startDate": "2026-11-13T22:30:00-03:00"
+        }
+      },
+      "expectedProfile": "br-bluenote",
+      "officialInstructions": "https://bluenotesp.com/contato/"
+    },
+    {
+      "productId": "22259539",
+      "name": "NONETO BRASIL JAZZ SINFÔNICA - AFRO-SAMBAS",
+      "link": "https://www.eventim.com.br/event/noneto-brasil-jazz-sinfonica-afro-sambas-blue-note-sao-paulo-22259539/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "São Paulo",
+            "geoLocation": {
+              "latitude": -23.558482195164064,
+              "longitude": -46.66003358395513
+            },
+            "name": "Blue Note São Paulo",
+            "postalCode": "01311-300",
+            "state": "SP"
+          },
+          "startDate": "2026-11-14T20:00:00-03:00"
+        }
+      },
+      "expectedProfile": "br-bluenote",
+      "officialInstructions": "https://bluenotesp.com/contato/"
+    },
+    {
+      "productId": "22014270",
+      "name": "ÉDITH PIAF POR LIA PARIS - UMA VIAGEM PELA CHANSON FRANÇAISE",
+      "link": "https://www.eventim.com.br/event/edith-piaf-por-lia-paris-uma-viagem-pela-chanson-francaise-blue-note-sao-paulo-22014270/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "São Paulo",
+            "geoLocation": {
+              "latitude": -23.558482195164064,
+              "longitude": -46.66003358395513
+            },
+            "name": "Blue Note São Paulo",
+            "postalCode": "01311-300",
+            "state": "SP"
+          },
+          "startDate": "2026-11-14T22:30:00-03:00"
+        }
+      },
+      "expectedProfile": "br-bluenote",
+      "officialInstructions": "https://bluenotesp.com/contato/"
+    },
+    {
+      "productId": "22355896",
+      "name": "PULP FICTION SOUNDTRACK POR FRÃ FINAMORE",
+      "link": "https://www.eventim.com.br/event/pulp-fiction-soundtrack-por-fra-finamore-blue-note-sao-paulo-22355896/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "São Paulo",
+            "geoLocation": {
+              "latitude": -23.558482195164064,
+              "longitude": -46.66003358395513
+            },
+            "name": "Blue Note São Paulo",
+            "postalCode": "01311-300",
+            "state": "SP"
+          },
+          "startDate": "2026-11-15T19:00:00-03:00"
+        }
+      },
+      "expectedProfile": "br-bluenote",
+      "officialInstructions": "https://bluenotesp.com/contato/"
+    },
+    {
+      "productId": "20931223",
+      "name": "TRIBUTO A MILES DAVIS - BITCHES BREW - MUSICMAN JAZZ",
+      "link": "https://www.eventim.com.br/event/tributo-a-miles-davis-bitches-brew-musicman-jazz-blue-note-sao-paulo-20931223/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "São Paulo",
+            "geoLocation": {
+              "latitude": -23.558482195164064,
+              "longitude": -46.66003358395513
+            },
+            "name": "Blue Note São Paulo",
+            "postalCode": "01311-300",
+            "state": "SP"
+          },
+          "startDate": "2026-11-17T20:00:00-03:00"
+        }
+      },
+      "expectedProfile": "br-bluenote",
+      "officialInstructions": "https://bluenotesp.com/contato/"
+    },
+    {
+      "productId": "22038816",
+      "name": "ANDREA POLINELLI QUARTET - GATO BARBIERI RELOADED",
+      "link": "https://www.eventim.com.br/event/andrea-polinelli-quartet-gato-barbieri-reloaded-blue-note-sao-paulo-22038816/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "São Paulo",
+            "geoLocation": {
+              "latitude": -23.558482195164064,
+              "longitude": -46.66003358395513
+            },
+            "name": "Blue Note São Paulo",
+            "postalCode": "01311-300",
+            "state": "SP"
+          },
+          "startDate": "2026-11-17T22:30:00-03:00"
+        }
+      },
+      "expectedProfile": "br-bluenote",
+      "officialInstructions": "https://bluenotesp.com/contato/"
+    },
+    {
+      "productId": "21947730",
+      "name": "TIPATIA, SÔ! – ANDERSON PROFETA",
+      "link": "https://www.eventim.com.br/event/tipatia-so-anderson-profeta-cine-theatro-brasil-21947730/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Belo Horizonte",
+            "geoLocation": {
+              "latitude": -19.91916587208342,
+              "longitude": -43.9380038533745
+            },
+            "name": "Cine Theatro Brasil",
+            "postalCode": "30180-000",
+            "state": "BH"
+          },
+          "startDate": "2026-11-01T18:00:00-03:00"
+        }
+      },
+      "expectedProfile": "br-cine",
+      "officialInstructions": "https://www.cinetheatrobrasil.com.br/contato/"
+    },
+    {
+      "productId": "22319892",
+      "name": "SEGUNDA NO CINE APRESENTA: TRILOGIA DO \"ANTES DO AMANHECER\"",
+      "link": "https://www.eventim.com.br/event/segunda-no-cine-apresenta-trilogia-do-antes-antes-do-amanhecer-cine-theatro-brasil-22319892/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Belo Horizonte",
+            "geoLocation": {
+              "latitude": -19.91916587208342,
+              "longitude": -43.9380038533745
+            },
+            "name": "Cine Theatro Brasil",
+            "postalCode": "30180-000",
+            "state": "BH"
+          },
+          "startDate": "2026-11-02T15:00:00-03:00"
+        }
+      },
+      "expectedProfile": "br-cine",
+      "officialInstructions": "https://www.cinetheatrobrasil.com.br/contato/"
+    },
+    {
+      "productId": "22324521",
+      "name": "SEGUNDA NO CINE APRESENTA TRILOGIA DO ANTES “ANTES DO PÔR-DO-SOL\"",
+      "link": "https://www.eventim.com.br/event/segunda-no-cine-apresenta-trilogia-do-antes-antes-do-por-do-sol-cine-theatro-brasil-22324521/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Belo Horizonte",
+            "geoLocation": {
+              "latitude": -19.91916587208342,
+              "longitude": -43.9380038533745
+            },
+            "name": "Cine Theatro Brasil",
+            "postalCode": "30180-000",
+            "state": "BH"
+          },
+          "startDate": "2026-11-02T17:30:00-03:00"
+        }
+      },
+      "expectedProfile": "br-cine",
+      "officialInstructions": "https://www.cinetheatrobrasil.com.br/contato/"
+    },
+    {
+      "productId": "22319900",
+      "name": "SEGUNDA NO CINE APRESENTA TRILOGIA DO ANTES “ANTES DA MEIA-NOITE\"",
+      "link": "https://www.eventim.com.br/event/segunda-no-cine-apresenta-trilogia-do-antes-antes-da-meia-noite-cine-theatro-brasil-22319900/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Belo Horizonte",
+            "geoLocation": {
+              "latitude": -19.91916587208342,
+              "longitude": -43.9380038533745
+            },
+            "name": "Cine Theatro Brasil",
+            "postalCode": "30180-000",
+            "state": "BH"
+          },
+          "startDate": "2026-11-02T19:30:00-03:00"
+        }
+      },
+      "expectedProfile": "br-cine",
+      "officialInstructions": "https://www.cinetheatrobrasil.com.br/contato/"
+    },
+    {
+      "productId": "22105353",
+      "name": "JOAQUIM - VOZ & PIANO EM BH",
+      "link": "https://www.eventim.com.br/event/joaquim-voz-piano-em-bh-cine-theatro-brasil-22105353/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Belo Horizonte",
+            "geoLocation": {
+              "latitude": -19.91916587208342,
+              "longitude": -43.9380038533745
+            },
+            "name": "Cine Theatro Brasil",
+            "postalCode": "30180-000",
+            "state": "BH"
+          },
+          "startDate": "2026-11-04T21:00:00-03:00"
+        }
+      },
+      "expectedProfile": "br-cine",
+      "officialInstructions": "https://www.cinetheatrobrasil.com.br/contato/"
+    },
+    {
+      "productId": "22245224",
+      "name": "MIBH - GRANDES PARCERIAS DA MÚSICA BRASILEIRA: RITA LEE & ROBERTO DE CARVALHO",
+      "link": "https://www.eventim.com.br/event/mibh-grandes-parcerias-da-musica-brasileira-rita-lee-roberto-de-carvalho-cine-theatro-brasil-22245224/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Belo Horizonte",
+            "geoLocation": {
+              "latitude": -19.91916587208342,
+              "longitude": -43.9380038533745
+            },
+            "name": "Cine Theatro Brasil",
+            "postalCode": "30180-000",
+            "state": "BH"
+          },
+          "startDate": "2026-11-05T19:30:00-03:00"
+        }
+      },
+      "expectedProfile": "br-cine",
+      "officialInstructions": "https://www.cinetheatrobrasil.com.br/contato/"
+    },
+    {
+      "productId": "22089927",
+      "name": "HANNAH ARENDT - UMA AULA MAGNA",
+      "link": "https://www.eventim.com.br/event/hannah-arendt-uma-aula-magna-cine-theatro-brasil-22089927/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Belo Horizonte",
+            "geoLocation": {
+              "latitude": -19.91916587208342,
+              "longitude": -43.9380038533745
+            },
+            "name": "Cine Theatro Brasil",
+            "postalCode": "30180-000",
+            "state": "BH"
+          },
+          "startDate": "2026-11-06T20:00:00-03:00"
+        }
+      },
+      "expectedProfile": "br-cine",
+      "officialInstructions": "https://www.cinetheatrobrasil.com.br/contato/"
+    },
+    {
+      "productId": "22135918",
+      "name": "TIAGO SANTINELI EM BH: COMÉDIA STAND UP",
+      "link": "https://www.eventim.com.br/event/tiago-santineli-em-bh-comedia-stand-up-cine-theatro-brasil-22135918/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Belo Horizonte",
+            "geoLocation": {
+              "latitude": -19.91916587208342,
+              "longitude": -43.9380038533745
+            },
+            "name": "Cine Theatro Brasil",
+            "postalCode": "30180-000",
+            "state": "BH"
+          },
+          "startDate": "2026-11-06T20:30:00-03:00"
+        }
+      },
+      "expectedProfile": "br-cine",
+      "officialInstructions": "https://www.cinetheatrobrasil.com.br/contato/"
+    },
+    {
+      "productId": "22099850",
+      "name": "PASSAPORTE 2 DIAS - OFICINAS WOTZIK O ATOR E O TEXTO COM EDUARDO WOTZIK",
+      "link": "https://www.eventim.com.br/event/oficinas-wotzik-o-ator-e-o-texto-com-eduardo-wotzik-cine-theatro-brasil-22099850/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Belo Horizonte",
+            "geoLocation": {
+              "latitude": -19.91916587208342,
+              "longitude": -43.9380038533745
+            },
+            "name": "Cine Theatro Brasil",
+            "postalCode": "30180-000",
+            "state": "BH"
+          },
+          "startDate": "2026-11-07T10:00:00-03:00"
+        }
+      },
+      "expectedProfile": "br-cine",
+      "officialInstructions": "https://www.cinetheatrobrasil.com.br/contato/"
+    },
+    {
+      "productId": "22099846",
+      "name": "OFICINAS WOTZIK O ATOR E O TEXTO COM EDUARDO WOTZIK",
+      "link": "https://www.eventim.com.br/event/oficinas-wotzik-o-ator-e-o-texto-com-eduardo-wotzik-cine-theatro-brasil-22099846/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Belo Horizonte",
+            "geoLocation": {
+              "latitude": -19.91916587208342,
+              "longitude": -43.9380038533745
+            },
+            "name": "Cine Theatro Brasil",
+            "postalCode": "30180-000",
+            "state": "BH"
+          },
+          "startDate": "2026-11-07T10:00:00-03:00"
+        }
+      },
+      "expectedProfile": "br-cine",
+      "officialInstructions": "https://www.cinetheatrobrasil.com.br/contato/"
+    },
+    {
+      "productId": "22324556",
+      "name": "SEGUNDA NO CINE APRESENTA: AMORES EXPRESSOS",
+      "link": "https://www.eventim.com.br/event/segunda-no-cine-apresenta-amores-expressos-cine-theatro-brasil-22324556/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Belo Horizonte",
+            "geoLocation": {
+              "latitude": -19.91916587208342,
+              "longitude": -43.9380038533745
+            },
+            "name": "Cine Theatro Brasil",
+            "postalCode": "30180-000",
+            "state": "BH"
+          },
+          "startDate": "2026-11-09T19:30:00-03:00"
+        }
+      },
+      "expectedProfile": "br-cine",
+      "officialInstructions": "https://www.cinetheatrobrasil.com.br/contato/"
+    },
+    {
+      "productId": "21903874",
+      "name": "ESPETÁCULO ELVIS & ABBA",
+      "link": "https://www.eventim.com.br/event/espetaculo-elvis-abba-cine-theatro-brasil-21903874/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Belo Horizonte",
+            "geoLocation": {
+              "latitude": -19.91916587208342,
+              "longitude": -43.9380038533745
+            },
+            "name": "Cine Theatro Brasil",
+            "postalCode": "30180-000",
+            "state": "BH"
+          },
+          "startDate": "2026-11-12T20:00:00-03:00"
+        }
+      },
+      "expectedProfile": "br-cine",
+      "officialInstructions": "https://www.cinetheatrobrasil.com.br/contato/"
+    },
+    {
+      "productId": "22324630",
+      "name": "SEGUNDA NO CINE APRESENTA: A MAÇÃ (SIB, SAMIRA MAKHMALBAF, 1998)",
+      "link": "https://www.eventim.com.br/event/segunda-no-cine-apresenta-a-maca-sib-samira-makhmalbaf-1998-cine-theatro-brasil-22324630/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Belo Horizonte",
+            "geoLocation": {
+              "latitude": -19.91916587208342,
+              "longitude": -43.9380038533745
+            },
+            "name": "Cine Theatro Brasil",
+            "postalCode": "30180-000",
+            "state": "BH"
+          },
+          "startDate": "2026-11-16T19:30:00-03:00"
+        }
+      },
+      "expectedProfile": "br-cine",
+      "officialInstructions": "https://www.cinetheatrobrasil.com.br/contato/"
+    },
+    {
+      "productId": "21796300",
+      "name": "HELLO ADELE TRIBUTE - ONE AND ONLY",
+      "link": "https://www.eventim.com.br/event/hello-adele-tribute-one-and-only-cine-theatro-brasil-21796300/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Belo Horizonte",
+            "geoLocation": {
+              "latitude": -19.91916587208342,
+              "longitude": -43.9380038533745
+            },
+            "name": "Cine Theatro Brasil",
+            "postalCode": "30180-000",
+            "state": "BH"
+          },
+          "startDate": "2026-11-17T20:00:00-03:00"
+        }
+      },
+      "expectedProfile": "br-cine",
+      "officialInstructions": "https://www.cinetheatrobrasil.com.br/contato/"
+    },
+    {
+      "productId": "22258614",
+      "name": "AUDIÇÃO SEGUNDO SEMESTRE",
+      "link": "https://www.eventim.com.br/event/audicao-segundo-semestre-cine-theatro-brasil-22258614/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Belo Horizonte",
+            "geoLocation": {
+              "latitude": -19.91916587208342,
+              "longitude": -43.9380038533745
+            },
+            "name": "Cine Theatro Brasil",
+            "postalCode": "30180-000",
+            "state": "BH"
+          },
+          "startDate": "2026-11-18T19:00:00-03:00"
+        }
+      },
+      "expectedProfile": "br-cine",
+      "officialInstructions": "https://www.cinetheatrobrasil.com.br/contato/"
+    },
+    {
+      "productId": "22319882",
+      "name": "NOVO SHOW: MURILO COUTO",
+      "link": "https://www.eventim.com.br/event/novo-show-murilo-couto-cine-theatro-brasil-22319882/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Belo Horizonte",
+            "geoLocation": {
+              "latitude": -19.91916587208342,
+              "longitude": -43.9380038533745
+            },
+            "name": "Cine Theatro Brasil",
+            "postalCode": "30180-000",
+            "state": "BH"
+          },
+          "startDate": "2026-11-19T18:30:00-03:00"
+        }
+      },
+      "expectedProfile": "br-cine",
+      "officialInstructions": "https://www.cinetheatrobrasil.com.br/contato/"
+    }
+  ]
+}

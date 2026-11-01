@@ -1,0 +1,621 @@
+{
+  "checkedOn": "2026-10-31",
+  "source": "https://public-api.eventim.com/websearch/search/api/exploration/v1/products",
+  "method": "Public live catalogue: first 50 concerts from 2026-11-01 sorted DateAsc, plus reported Zarrillo event. No login, cart or accreditation submissions. UI tested locally with captured public organiser metadata; not 51 physical iPhone sessions. Unmatched entries retain the official directory fallback.",
+  "events": [
+    {
+      "id": "21865557",
+      "title": "G.Espinoza,A.S.Filiz,G.Zorn",
+      "url": "https://www.ticketone.it/event/jazzmi-2026-la-triennale-21865557/",
+      "city": "Milano",
+      "date": "2026-11-01T16:00:00+01:00",
+      "organiser": "Associazione Jazzmi",
+      "expectedProfile": "organiser-26"
+    },
+    {
+      "id": "22092595",
+      "title": "Pink Floyd Immersion",
+      "url": "https://www.ticketone.it/event/pink-floyd-immersion-beyond-the-moon-chapter-1-tour-20262027-teatro-colognola-22092595/",
+      "city": "Bergamo",
+      "date": "2026-11-01T17:30:00+01:00",
+      "organiser": "Prisma Show S.R.L.",
+      "expectedProfile": "organiser-32"
+    },
+    {
+      "id": "22075411",
+      "title": "K-Pop Halloween",
+      "url": "https://www.ticketone.it/event/k-pop-halloween-teatro-ambasciatori-22075411/",
+      "city": "Catania",
+      "date": "2026-11-01T18:00:00+01:00",
+      "organiser": "MUSICAL SRLS",
+      "expectedProfile": null
+    },
+    {
+      "id": "21710771",
+      "title": "Kind of Lives - Paolo Fresu",
+      "url": "https://www.ticketone.it/event/roma-jazz-festival-2026-auditorium-parco-della-musica-ennio-morricone-21710771/",
+      "city": "Roma",
+      "date": "2026-11-01T18:00:00+01:00",
+      "organiser": "International Music Festival Foundation Srl",
+      "expectedProfile": null
+    },
+    {
+      "id": "22140905",
+      "title": "Boosta",
+      "url": "https://www.ticketone.it/event/boosta-auditorium-parco-della-musica-ennio-morricone-22140905/",
+      "city": "Roma",
+      "date": "2026-11-01T18:00:00+01:00",
+      "organiser": "Fondazione Musica per Roma",
+      "expectedProfile": "organiser-9"
+    },
+    {
+      "id": "21974951",
+      "title": "Italian Stars Roberto Gatto /A.Salis Duo",
+      "url": "https://www.ticketone.it/event/casa-del-jazz-casa-del-jazz-21974951/",
+      "city": "Roma",
+      "date": "2026-11-01T18:00:00+01:00",
+      "organiser": "Musica per Roma - Casa del Jazz",
+      "expectedProfile": "organiser-31"
+    },
+    {
+      "id": "22128261",
+      "title": "Abbonamento Aruan Ortiz solo + Marco Colonna",
+      "url": "https://www.ticketone.it/event/flux-flussi-di-musica-creativa-2026-palazzina-ex-fabbri-22128261/",
+      "city": "Firenze",
+      "date": "2026-11-01T19:00:00+01:00",
+      "organiser": "Toscana Produzione Musica Ets",
+      "expectedProfile": null
+    },
+    {
+      "id": "22048748",
+      "title": "Sirenia - 25th Anniversary Tour + Illumishade",
+      "url": "https://www.ticketone.it/event/sirenia-25th-anniversary-tour-legend-club-22048748/",
+      "city": "Milano",
+      "date": "2026-11-01T20:00:00+01:00",
+      "organiser": "ERP Concerti srls",
+      "expectedProfile": null
+    },
+    {
+      "id": "21548286",
+      "title": "Nate Smith",
+      "url": "https://www.ticketone.it/event/jazzmi-2026-la-triennale-21548286/",
+      "city": "Milano",
+      "date": "2026-11-01T20:00:00+01:00",
+      "organiser": "Associazione Jazzmi",
+      "expectedProfile": "organiser-26"
+    },
+    {
+      "id": "21959021",
+      "title": "Peter Cincotti",
+      "url": "https://www.ticketone.it/event/blue-note-milano-blue-note-20262027-blue-note-21959021/",
+      "city": "Milano",
+      "date": "2026-11-01T20:30:00+01:00",
+      "organiser": "Blue Note Srl",
+      "expectedProfile": "organiser-27"
+    },
+    {
+      "id": "21956479",
+      "title": "Radiodervish",
+      "url": "https://www.ticketone.it/event/radiodervish-attraversa-menti-auditorium-cavallerizza-spazio-5-21956479/",
+      "city": "Reggio Emilia",
+      "date": "2026-11-01T21:00:00+01:00",
+      "organiser": "Segnali di vita aps",
+      "expectedProfile": null
+    },
+    {
+      "id": "21758798",
+      "title": "Vinicio Capossela",
+      "url": "https://www.ticketone.it/event/vinicio-capossela-e-morte-non-avra-dominio-teatro-lirico-giorgio-gaber-21758798/",
+      "city": "Milano",
+      "date": "2026-11-01T21:00:00+01:00",
+      "organiser": "International Music and Arts srl",
+      "expectedProfile": "organiser-34"
+    },
+    {
+      "id": "21299478",
+      "title": "Malika Ayane",
+      "url": "https://www.ticketone.it/event/malika-ayane-teatro-dellaquila-21299478/",
+      "city": "Fermo",
+      "date": "2026-11-01T21:00:00+01:00",
+      "organiser": "BEST EVENTI 2 SRL",
+      "expectedProfile": "organiser-2"
+    },
+    {
+      "id": "21702295",
+      "title": "NAYT",
+      "url": "https://www.ticketone.it/event/nayt-noi-individui-tour-modigliani-forum-21702295/",
+      "city": "Livorno",
+      "date": "2026-11-01T21:00:00+01:00",
+      "organiser": "Live Emotion Group srl",
+      "expectedProfile": "organiser-24"
+    },
+    {
+      "id": "21553553",
+      "title": "Valentino Aquilano canta Dalla",
+      "url": "https://www.ticketone.it/event/valentino-aquilano-canta-dalla-teatro-apollo-21553553/",
+      "city": "Lecce",
+      "date": "2026-11-01T21:00:00+01:00",
+      "organiser": "AR LIVE SRL",
+      "expectedProfile": null
+    },
+    {
+      "id": "21530175",
+      "title": "Mario Biondi",
+      "url": "https://www.ticketone.it/event/mario-biondi-teatro-auditorium-santa-chiara-21530175/",
+      "city": "Trento",
+      "date": "2026-11-01T21:00:00+01:00",
+      "organiser": "FIABAMUSIC S.r.l",
+      "expectedProfile": null
+    },
+    {
+      "id": "21719907",
+      "title": "Coez",
+      "url": "https://www.ticketone.it/event/coez-live-2026-from-the-rooftop-auditorium-conciliazione-21719907/",
+      "city": "Roma",
+      "date": "2026-11-01T21:00:00+01:00",
+      "organiser": "Vivo Concerti srl",
+      "expectedProfile": "organiser-22"
+    },
+    {
+      "id": "21690766",
+      "title": "The Bausa",
+      "url": "https://www.ticketone.it/event/the-bausa-circolo-magnolia-21690766/",
+      "city": "Milano",
+      "date": "2026-11-01T21:00:00+01:00",
+      "organiser": "ASSOCIAZIONE ARCI MAGNOLIA",
+      "expectedProfile": "organiser-28"
+    },
+    {
+      "id": "21591374",
+      "title": "Francesco De Gregori",
+      "url": "https://www.ticketone.it/event/francesco-de-gregori-nevergreen-perfette-sconosciute-roma-e-milano-teatro-sala-umberto-21591374/",
+      "city": "Roma",
+      "date": "2026-11-01T21:00:00+01:00",
+      "organiser": "Viola Produzioni Srl",
+      "expectedProfile": "organiser-35"
+    },
+    {
+      "id": "21973766",
+      "title": "Claudio Baglioni",
+      "url": "https://www.ticketone.it/event/claudio-baglioni-che-notte-e-questa-piazza-di-siena-21973766/",
+      "city": "Roma",
+      "date": "2026-11-01T21:00:00+01:00",
+      "organiser": "FRIENDS e PARTNERS S.P.A.",
+      "expectedProfile": "organiser-8"
+    },
+    {
+      "id": "21548287",
+      "title": "Nate Smith",
+      "url": "https://www.ticketone.it/event/jazzmi-2026-la-triennale-21548287/",
+      "city": "Milano",
+      "date": "2026-11-01T22:00:00+01:00",
+      "organiser": "Associazione Jazzmi",
+      "expectedProfile": "organiser-26"
+    },
+    {
+      "id": "21959022",
+      "title": "Peter Cincotti",
+      "url": "https://www.ticketone.it/event/blue-note-milano-blue-note-20262027-blue-note-21959022/",
+      "city": "Milano",
+      "date": "2026-11-01T22:30:00+01:00",
+      "organiser": "Blue Note Srl",
+      "expectedProfile": "organiser-27"
+    },
+    {
+      "id": "21926556",
+      "title": "Giulia Mazzoni - Piano Solo",
+      "url": "https://www.ticketone.it/event/giulia-mazzoni-auditorium-parco-della-musica-ennio-morricone-21926556/",
+      "city": "Roma",
+      "date": "2026-11-02T20:00:00+01:00",
+      "organiser": "Fondazione Musica per Roma",
+      "expectedProfile": "organiser-9"
+    },
+    {
+      "id": "21957806",
+      "title": "PACK Dire Straits Legacy Meet and Greet",
+      "url": "https://www.ticketone.it/event/dsl-dire-straits-legacy-teatro-nazionale-italiana-assicurazioni-21957806/",
+      "city": "Milano",
+      "date": "2026-11-02T20:30:00+01:00",
+      "organiser": "WE4SHOW di Fabiana Palama'",
+      "expectedProfile": "organiser-33"
+    },
+    {
+      "id": "21957164",
+      "title": "DSL Dire Straits Legacy",
+      "url": "https://www.ticketone.it/event/dsl-dire-straits-legacy-teatro-nazionale-italiana-assicurazioni-21957164/",
+      "city": "Milano",
+      "date": "2026-11-02T20:30:00+01:00",
+      "organiser": "WE4SHOW di Fabiana Palama'",
+      "expectedProfile": "organiser-33"
+    },
+    {
+      "id": "21884824",
+      "title": "Bob Dylan",
+      "url": "https://www.ticketone.it/event/bob-dylan-unipol-dome-arena-milano-21884824/",
+      "city": "Milano",
+      "date": "2026-11-02T21:00:00+01:00",
+      "organiser": "Di and Gi Srl",
+      "expectedProfile": "organiser-4"
+    },
+    {
+      "id": "21897488",
+      "title": "Bob Dylan VIP PACKAGE",
+      "url": "https://www.ticketone.it/event/bob-dylan-unipol-dome-arena-milano-21897488/",
+      "city": "Milano",
+      "date": "2026-11-02T21:00:00+01:00",
+      "organiser": "Di and Gi Srl",
+      "expectedProfile": "organiser-4"
+    },
+    {
+      "id": "21950255",
+      "title": "Bob Dylan - UNIPOL DOME PREMIUM PACK",
+      "url": "https://www.ticketone.it/event/bob-dylan-unipol-dome-arena-milano-21950255/",
+      "city": "Milano",
+      "date": "2026-11-02T21:00:00+01:00",
+      "organiser": "Di and Gi Srl",
+      "expectedProfile": "organiser-4"
+    },
+    {
+      "id": "21759048",
+      "title": "Vinicio Capossela",
+      "url": "https://www.ticketone.it/event/vinicio-capossela-e-morte-non-avra-dominio-teatro-lirico-giorgio-gaber-21759048/",
+      "city": "Milano",
+      "date": "2026-11-02T21:00:00+01:00",
+      "organiser": "International Music and Arts srl",
+      "expectedProfile": "organiser-34"
+    },
+    {
+      "id": "21950278",
+      "title": "Bob Dylan - UNIPOL DOME PREMIUM PACK CENA",
+      "url": "https://www.ticketone.it/event/bob-dylan-unipol-dome-arena-milano-21950278/",
+      "city": "Milano",
+      "date": "2026-11-02T21:00:00+01:00",
+      "organiser": "Di and Gi Srl",
+      "expectedProfile": "organiser-4"
+    },
+    {
+      "id": "21524188",
+      "title": "Hans Zimmer - Tribute by Ensemble Symphony Orchestra",
+      "url": "https://www.ticketone.it/event/hans-zimmer-by-ensemble-symphony-orchestra-teatro-filarmonico-21524188/",
+      "city": "Verona",
+      "date": "2026-11-02T21:00:00+01:00",
+      "organiser": "EVENTI VERONA SRL",
+      "expectedProfile": null
+    },
+    {
+      "id": "21877438",
+      "title": "Robyn Hitchcock",
+      "url": "https://www.ticketone.it/event/robyn-hitchcock-teatro-comunale-di-vicenza-21877438/",
+      "city": "Vicenza",
+      "date": "2026-11-02T21:00:00+01:00",
+      "organiser": "Fondazione Teatro Comunale Citta' di Vicenza",
+      "expectedProfile": "organiser-30"
+    },
+    {
+      "id": "21414205",
+      "title": "The Koln Concert",
+      "url": "https://www.ticketone.it/event/the-koln-concert-auditorium-parco-della-musica-ennio-morricone-21414205/",
+      "city": "Roma",
+      "date": "2026-11-02T21:00:00+01:00",
+      "organiser": "Fondazione RomaEuropa Arte e Cultura",
+      "expectedProfile": "organiser-29"
+    },
+    {
+      "id": "22098322",
+      "title": "Dr. Feelgood",
+      "url": "https://www.ticketone.it/event/dr-feelgood-circolo-admr-chiari-22098322/",
+      "city": "Chiari",
+      "date": "2026-11-03T19:15:00+01:00",
+      "organiser": "ADMR Music Events Srls",
+      "expectedProfile": null
+    },
+    {
+      "id": "21865554",
+      "title": "David Binney & Louis Cole",
+      "url": "https://www.ticketone.it/event/jazzmi-2026-la-triennale-21865554/",
+      "city": "Milano",
+      "date": "2026-11-03T20:00:00+01:00",
+      "organiser": "Associazione Jazzmi",
+      "expectedProfile": "organiser-26"
+    },
+    {
+      "id": "20975132",
+      "title": "Hans Zimmer - Tribute by Ensemble Symphony Orchestra",
+      "url": "https://www.ticketone.it/event/hans-zimmer-by-ensemble-symphony-orchestra-teatro-malibran-20975132/",
+      "city": "Cannareggio",
+      "date": "2026-11-03T20:00:00+01:00",
+      "organiser": "Associazione Culturale Veneto Jazz",
+      "expectedProfile": null
+    },
+    {
+      "id": "20643142",
+      "title": "Laura Pausini - Package",
+      "url": "https://www.ticketone.it/event/laura-pausini-io-canto-world-tour-unipol-arena-20643142/",
+      "city": "Bologna",
+      "date": "2026-11-03T20:30:00+01:00",
+      "organiser": "FRIENDS e PARTNERS S.P.A.",
+      "expectedProfile": "organiser-8"
+    },
+    {
+      "id": "20642019",
+      "title": "Laura Pausini",
+      "url": "https://www.ticketone.it/event/laura-pausini-io-canto-world-tour-unipol-arena-20642019/",
+      "city": "Bologna",
+      "date": "2026-11-03T20:30:00+01:00",
+      "organiser": "FRIENDS e PARTNERS S.P.A.",
+      "expectedProfile": "organiser-8"
+    },
+    {
+      "id": "22234273",
+      "title": "Chicago Blues Night",
+      "url": "https://www.ticketone.it/event/blue-note-20262027-blue-note-22234273/",
+      "city": "Milano",
+      "date": "2026-11-03T20:31:00+01:00",
+      "organiser": "Blue Note Srl",
+      "expectedProfile": "organiser-27"
+    },
+    {
+      "id": "21112061",
+      "title": "Sal Da Vinci",
+      "url": "https://www.ticketone.it/event/sal-da-vinci-live-2026-teatro-verdi-21112061/",
+      "city": "Firenze",
+      "date": "2026-11-03T20:45:00+01:00",
+      "organiser": "PRG - Pubblic Relations Group S.r.l.",
+      "expectedProfile": "organiser-25"
+    },
+    {
+      "id": "21513224",
+      "title": "Willie Peyote",
+      "url": "https://www.ticketone.it/event/willie-peyote-teatro-della-concordia-21513224/",
+      "city": "Venaria Reale",
+      "date": "2026-11-03T21:00:00+01:00",
+      "organiser": "Live Nation 6 srl",
+      "expectedProfile": "organiser-10"
+    },
+    {
+      "id": "21591375",
+      "title": "Francesco De Gregori",
+      "url": "https://www.ticketone.it/event/francesco-de-gregori-nevergreen-perfette-sconosciute-roma-e-milano-teatro-sala-umberto-21591375/",
+      "city": "Roma",
+      "date": "2026-11-03T21:00:00+01:00",
+      "organiser": "Viola Produzioni Srl",
+      "expectedProfile": "organiser-35"
+    },
+    {
+      "id": "21317284",
+      "title": "Malika Ayane",
+      "url": "https://www.ticketone.it/event/malika-ayane-auditorium-conciliazione-21317284/",
+      "city": "Roma",
+      "date": "2026-11-03T21:00:00+01:00",
+      "organiser": "FRIENDS e PARTNERS S.P.A.",
+      "expectedProfile": "organiser-8"
+    },
+    {
+      "id": "21778891",
+      "title": "Dario Cecchini Trio",
+      "url": "https://www.ticketone.it/event/dario-cecchini-trio-teatro-politeama-pratese-21778891/",
+      "city": "Prato",
+      "date": "2026-11-03T21:00:00+01:00",
+      "organiser": "Fondazione POLITEAMA PRATESE",
+      "expectedProfile": null
+    },
+    {
+      "id": "21332672",
+      "title": "NAYT - Early Entry Pack",
+      "url": "https://www.ticketone.it/event/nayt-noi-individui-tour-palaflorio-21332672/",
+      "city": "Bari",
+      "date": "2026-11-03T21:00:00+01:00",
+      "organiser": "Live Nation Italia S.r.l.",
+      "expectedProfile": "organiser-10"
+    },
+    {
+      "id": "21103234",
+      "title": "Marco Masini",
+      "url": "https://www.ticketone.it/event/marco-masini-live-2026-unipol-forum-21103234/",
+      "city": "Milano",
+      "date": "2026-11-03T21:00:00+01:00",
+      "organiser": "FRIENDS e PARTNERS S.P.A.",
+      "expectedProfile": "organiser-8"
+    },
+    {
+      "id": "21889919",
+      "title": "Rkomi",
+      "url": "https://www.ticketone.it/event/rkomi-a-milano-live-fabrique-21889919/",
+      "city": "Milano",
+      "date": "2026-11-03T21:00:00+01:00",
+      "organiser": "FRIENDS e PARTNERS S.P.A.",
+      "expectedProfile": "organiser-8"
+    },
+    {
+      "id": "21365145",
+      "title": "Gregory Porter",
+      "url": "https://www.ticketone.it/event/jazzmi-2026-alcatraz-21365145/",
+      "city": "Milano",
+      "date": "2026-11-03T21:00:00+01:00",
+      "organiser": "Associazione Jazzmi",
+      "expectedProfile": "organiser-26"
+    },
+    {
+      "id": "21476510",
+      "title": "Sulle note di Ultimo e Baglioni",
+      "url": "https://www.ticketone.it/event/sulle-note-di-ultimo-e-baglioni-teatro-ghione-21476510/",
+      "city": "Roma",
+      "date": "2026-11-03T21:00:00+01:00",
+      "organiser": "Vela Classica Srl",
+      "expectedProfile": null
+    },
+    {
+      "id": "21968628",
+      "title": "Dizzy Dros",
+      "url": "https://www.ticketone.it/event/dizzy-dros-circolo-magnolia-21968628/",
+      "city": "Milano",
+      "date": "2026-11-03T21:00:00+01:00",
+      "organiser": "ASSOCIAZIONE ARCI MAGNOLIA",
+      "expectedProfile": "organiser-28"
+    },
+    {
+      "id": "21405302",
+      "title": "Michele Zarrillo",
+      "url": "https://www.ticketone.it/event/michele-zarrillo-teatro-colosseo-21405302/",
+      "city": "Torino",
+      "date": "2026-11-16T20:30:00+01:00",
+      "organiser": "Ventidieci Srl",
+      "expectedProfile": "organiser-23"
+    }
+  ],
+  "summary": {
+    "events": 51,
+    "organisers": 32,
+    "cities": 19,
+    "directContactOrInstructions": 39,
+    "officialDirectoryFallback": 12
+  },
+  "profiles": {
+    "organiser-10": {
+      "name": "Live Nation",
+      "source": "https://www.ticketone.it/campaign/diversamente-abili/#collapse330679",
+      "emails": [],
+      "instructions": "https://www.livenation.it/faq"
+    },
+    "organiser-2": {
+      "name": "Best Eventi",
+      "source": "https://www.ticketone.it/campaign/diversamente-abili/#collapse330718",
+      "emails": [
+        "servizioclienti@besteventi.it"
+      ],
+      "instructions": "https://www.ticketone.it/campaign/diversamente-abili/#collapse330718"
+    },
+    "organiser-22": {
+      "name": "Vivo Concerti",
+      "source": "https://www.ticketone.it/campaign/diversamente-abili/#collapse323072",
+      "emails": [
+        "info@vivoconcerti.com"
+      ],
+      "instructions": "https://www.ticketone.it/campaign/diversamente-abili/#collapse323072"
+    },
+    "organiser-23": {
+      "name": "Ventidieci",
+      "source": "https://ventidieci.it/contatti/",
+      "emails": [
+        "info@ventidieci.it"
+      ],
+      "instructions": "https://ventidieci.it/contatti/"
+    },
+    "organiser-24": {
+      "name": "Live Emotion Group",
+      "source": "https://www.legsrl.net/accesso-disabili/",
+      "emails": [],
+      "instructions": "https://www.legsrl.net/accesso-disabili/"
+    },
+    "organiser-25": {
+      "name": "PRG / BitConcerti",
+      "source": "https://www.bitconcerti.it/da-sapere.html",
+      "emails": [],
+      "instructions": "https://www.bitconcerti.it/da-sapere.html"
+    },
+    "organiser-26": {
+      "name": "Associazione Jazzmi",
+      "source": "https://jazzmi.it/contact/",
+      "emails": [
+        "info@jazzmi.it"
+      ],
+      "instructions": "https://jazzmi.it/contact/"
+    },
+    "organiser-27": {
+      "name": "Blue Note",
+      "source": "https://bluenotemilano.com/domande-frequenti/",
+      "emails": [],
+      "instructions": "https://bluenotemilano.com/domande-frequenti/"
+    },
+    "organiser-28": {
+      "name": "Circolo Magnolia",
+      "source": "https://www.circolomagnolia.it/accessibilita/",
+      "emails": [
+        "info@circolomagnolia.it"
+      ],
+      "instructions": "https://www.circolomagnolia.it/accessibilita/"
+    },
+    "organiser-29": {
+      "name": "Fondazione Romaeuropa",
+      "source": "https://romaeuropa.net/box-office/accessibilita/",
+      "emails": [],
+      "instructions": "https://romaeuropa.net/box-office/accessibilita/"
+    },
+    "organiser-30": {
+      "name": "Teatro Comunale di Vicenza",
+      "source": "https://www.tcvi.it/it/informazioni/accoglienza-e-accessibilita/",
+      "emails": [
+        "biglietteria@tcvi.it"
+      ],
+      "instructions": "https://www.tcvi.it/it/informazioni/accoglienza-e-accessibilita/"
+    },
+    "organiser-31": {
+      "name": "Casa del Jazz",
+      "source": "https://www.casadeljazz.com/frequently-asked-question/",
+      "emails": [],
+      "instructions": "https://www.casadeljazz.com/frequently-asked-question/"
+    },
+    "organiser-32": {
+      "name": "Prisma Show",
+      "source": "https://www.prismashow.com/contact",
+      "emails": [
+        "info@prismashow.com"
+      ],
+      "instructions": "https://www.prismashow.com/contact"
+    },
+    "organiser-33": {
+      "name": "We4Show",
+      "source": "https://we4show.com/contatti/",
+      "emails": [
+        "info@we4show.com"
+      ],
+      "instructions": "https://we4show.com/contatti/"
+    },
+    "organiser-34": {
+      "name": "International Music and Arts",
+      "source": "https://internationalmusic.it/team/",
+      "emails": [
+        "info@internationalmusic.it"
+      ],
+      "instructions": "https://internationalmusic.it/team/"
+    },
+    "organiser-35": {
+      "name": "Viola Produzioni",
+      "source": "https://violaproduzioni.it/contatti/",
+      "emails": [],
+      "instructions": "https://violaproduzioni.it/contatti/"
+    },
+    "organiser-4": {
+      "name": "D’Alessandro e Galli",
+      "source": "https://www.ticketone.it/campaign/diversamente-abili/#collapse316665",
+      "emails": [],
+      "instructions": "https://www.ticketone.it/campaign/diversamente-abili/#collapse316665"
+    },
+    "organiser-8": {
+      "name": "Friends & Partners",
+      "source": "https://www.ticketone.it/campaign/diversamente-abili/#collapse317223",
+      "emails": [
+        "servizioclienti@friendsandpartners.it"
+      ],
+      "instructions": "https://www.ticketone.it/campaign/diversamente-abili/#collapse317223"
+    },
+    "organiser-9": {
+      "name": "Fondazione Musica per Roma",
+      "source": "https://www.ticketone.it/campaign/diversamente-abili/#collapse323144",
+      "emails": [
+        "info@musicaperroma.it"
+      ],
+      "instructions": "https://www.ticketone.it/campaign/diversamente-abili/#collapse323144"
+    }
+  },
+  "aliasEvidence": {
+    "Best Eventi 2 / New Events": "https://www.besteventi.it/contatti",
+    "Di and Gi": "https://dalessandroegalli.com/biglietti/",
+    "Live Nation Italia": "https://www.livenation.it/"
+  },
+  "limits": [
+    "Live catalogue and public official sources checked; local Flutter UI tests verify buttons and destinations. No physical iPhone run, no emails sent, no booking requests.",
+    "General organiser contacts are for enquiries, not proof of a dedicated disability booking channel or seat availability.",
+    "Direct event HTML requests received a protection page; the public catalogue supplied organiser names. The reported Zarrillo event was also checked through the publicly indexed TicketOne page."
+  ]
+}

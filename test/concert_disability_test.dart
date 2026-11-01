@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:sonarpad_mobile_starter/services/concert_disability_contacts.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -6,12 +8,13 @@ import 'package:sonarpad_mobile_starter/screens/concert_disability_screen.dart';
 import 'travel_screen_test.dart' show app, row, rows;
 
 void main() {
-  test('22 distinct official profiles, conservative organiser matching', () {
+  test('35 distinct official profiles, conservative organiser matching', () {
     final profiles = ConcertDisabilityContact.all;
-    expect(profiles.length, 22);
-    expect(profiles.map((p) => p.id).toSet().length, 22);
+    expect(profiles.length, 35);
+    expect(profiles.map((p) => p.id).toSet().length, 35);
     for (final profile in profiles) {
-      expect(Uri.parse(profile.source).host, 'www.ticketone.it');
+      expect(Uri.parse(profile.source).scheme, 'https');
+      expect(Uri.parse(profile.source).host, isNotEmpty);
       expect(Uri.parse(profile.instructions).scheme, 'https');
       for (final alias in profile.aliases) {
         expect(
@@ -79,7 +82,7 @@ void main() {
     );
     row(tester, 'disability-choose-organiser').onActivate!();
     await tester.pumpAndSettle();
-    expect(rows(tester).where((r) => r.id.startsWith('organiser-')).length, 22);
+    expect(rows(tester).where((r) => r.id.startsWith('organiser-')).length, 35);
     row(tester, 'organiser-8').onActivate!();
     await tester.pumpAndSettle();
     expect(row(tester, 'disability-event').title, 'My concert');
@@ -90,6 +93,73 @@ void main() {
     expect(row(tester, 'disability-selected').title, 'Friends & Partners');
     await tester.pumpWidget(const SizedBox());
   });
+
+  final audit =
+      jsonDecode(
+            File(
+              'test/fixtures/concert_disability_event_audit.json',
+            ).readAsStringSync(),
+          )
+          as Map;
+  final events = audit['events'] as List;
+  test('audit contains at least 40 distinct real catalogue events', () {
+    expect(events.length, greaterThanOrEqualTo(40));
+    expect(events.map((e) => e['id']).toSet().length, events.length);
+    expect(
+      events.map((e) => e['organiser']).toSet().length,
+      greaterThanOrEqualTo(20),
+    );
+  });
+  for (final event in events) {
+    testWidgets('catalogue event ${event['id']}: ${event['title']}', (
+      tester,
+    ) async {
+      final opened = <Uri>[];
+      final profile = ConcertDisabilityContact.match(
+        event['organiser'] as String,
+      );
+      expect(profile?.id, event['expectedProfile']);
+      await tester.pumpWidget(
+        app(
+          ConcertDisabilityScreen(
+            eventTitle: event['title'] as String,
+            organiser: event['organiser'] as String,
+            opener: (uri, _) async {
+              opened.add(uri);
+              return true;
+            },
+          ),
+        ),
+      );
+      expect(opened, isEmpty);
+      final actions = rows(tester)
+          .where(
+            (r) =>
+                r.id.startsWith('disability-mail-') ||
+                r.id == 'disability-vivo-mail',
+          )
+          .toList();
+      expect(actions.length, profile?.emails.length ?? 0);
+      for (final action in actions) {
+        action.onActivate!();
+        await tester.pumpAndSettle();
+        expect(opened.last.scheme, 'mailto');
+        expect(profile!.emails, contains(opened.last.path));
+      }
+      final info = profile == null
+          ? 'disability-directory'
+          : profile.name == 'Vivo Concerti'
+          ? 'disability-vivo-info'
+          : 'disability-contact-info';
+      row(tester, info).onActivate!();
+      await tester.pumpAndSettle();
+      expect(opened.last.scheme, 'https');
+      if (profile != null && profile.name != 'Vivo Concerti') {
+        expect(opened.last.toString(), profile.instructions);
+      }
+      await tester.pumpWidget(const SizedBox());
+    });
+  }
 
   test('Vivo routing requires the actual organiser name', () {
     expect(ConcertDisabilityScreen.isVivo('Vivo Concerti srl, Milano'), isTrue);

@@ -1,0 +1,846 @@
+{
+  "checked": "2026-10-31",
+  "method": "Live Eventim exploration API; 40 distinct product IDs. Verified official venue sources; no booking or availability confirmation. Null expectedProfile explicitly tests safe unknown-venue handling.",
+  "events": [
+    {
+      "productId": "20935144",
+      "name": "WIEDŹMIN. MUZYKA KONTYNENTU",
+      "link": "https://www.eventim.pl/event/wiedzmin-muzyka-kontynentu-tauron-arena-krakow-20935144/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Kraków",
+            "geoLocation": {
+              "latitude": 50.06881885278667,
+              "longitude": 19.987872184784532
+            },
+            "name": "TAURON Arena Kraków",
+            "postalCode": "31-571"
+          },
+          "startDate": "2026-11-06T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "pl-tauron",
+      "officialInstructions": "https://www.tauronarenakrakow.pl/arena-dla-osob-niepelnosprawnych/"
+    },
+    {
+      "productId": "21650746",
+      "name": "KoRn",
+      "link": "https://www.eventim.pl/event/korn-tauron-arena-krakow-21650746/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Kraków",
+            "geoLocation": {
+              "latitude": 50.06881885278667,
+              "longitude": 19.987872184784532
+            },
+            "name": "TAURON Arena Kraków",
+            "postalCode": "31-571"
+          },
+          "startDate": "2026-11-17T16:30:00+01:00"
+        }
+      },
+      "expectedProfile": "pl-tauron",
+      "officialInstructions": "https://www.tauronarenakrakow.pl/arena-dla-osob-niepelnosprawnych/"
+    },
+    {
+      "productId": "21253069",
+      "name": "LORD OF THE DANCE - 30th Anniversary Tour",
+      "link": "https://www.eventim.pl/event/lord-of-the-dance-30th-anniversary-tour-tauron-arena-krakow-21253069/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Kraków",
+            "geoLocation": {
+              "latitude": 50.06881885278667,
+              "longitude": 19.987872184784532
+            },
+            "name": "TAURON Arena Kraków",
+            "postalCode": "31-571"
+          },
+          "startDate": "2026-12-15T19:30:00+01:00"
+        }
+      },
+      "expectedProfile": "pl-tauron",
+      "officialInstructions": "https://www.tauronarenakrakow.pl/arena-dla-osob-niepelnosprawnych/"
+    },
+    {
+      "productId": "21959853",
+      "name": "VITO BAMBINO POLONIA",
+      "link": "https://www.eventim.pl/event/vito-bambino-polonia-tauron-arena-krakow-21959853/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Kraków",
+            "geoLocation": {
+              "latitude": 50.06881885278667,
+              "longitude": 19.987872184784532
+            },
+            "name": "TAURON Arena Kraków",
+            "postalCode": "31-571"
+          },
+          "startDate": "2026-12-19T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "pl-tauron",
+      "officialInstructions": "https://www.tauronarenakrakow.pl/arena-dla-osob-niepelnosprawnych/"
+    },
+    {
+      "productId": "21638241",
+      "name": "MAGIC CHRISTMAS CONCERT 2026",
+      "link": "https://www.eventim.pl/event/magic-christmas-concert-2026-tauron-arena-krakow-21638241/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Kraków",
+            "geoLocation": {
+              "latitude": 50.06881885278667,
+              "longitude": 19.987872184784532
+            },
+            "name": "TAURON Arena Kraków",
+            "postalCode": "31-571"
+          },
+          "startDate": "2026-12-20T18:00:00+01:00"
+        }
+      },
+      "expectedProfile": "pl-tauron",
+      "officialInstructions": "https://www.tauronarenakrakow.pl/arena-dla-osob-niepelnosprawnych/"
+    },
+    {
+      "productId": "22083493",
+      "name": "Góralskie kolędowanie z Małą Armią Janosika w Krakowie",
+      "link": "https://www.eventim.pl/event/mala-armia-janosika-goralskie-koledowanie-z-mala-armia-janosika-tauron-arena-krakow-22083493/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Kraków",
+            "geoLocation": {
+              "latitude": 50.06881885278667,
+              "longitude": 19.987872184784532
+            },
+            "name": "TAURON Arena Kraków",
+            "postalCode": "31-571"
+          },
+          "startDate": "2027-01-03T17:00:00+01:00"
+        }
+      },
+      "expectedProfile": "pl-tauron",
+      "officialInstructions": "https://www.tauronarenakrakow.pl/arena-dla-osob-niepelnosprawnych/"
+    },
+    {
+      "productId": "22196370",
+      "name": "TAURON Puchar Polski Mężczyzn 2027 - Półfinały",
+      "link": "https://www.eventim.pl/event/pls-tauron-puchar-polski-mezczyzn-2027-tauron-arena-krakow-22196370/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Kraków",
+            "geoLocation": {
+              "latitude": 50.06881885278667,
+              "longitude": 19.987872184784532
+            },
+            "name": "TAURON Arena Kraków",
+            "postalCode": "31-571"
+          },
+          "startDate": "2027-01-23T14:45:00+01:00"
+        }
+      },
+      "expectedProfile": "pl-tauron",
+      "officialInstructions": "https://www.tauronarenakrakow.pl/arena-dla-osob-niepelnosprawnych/"
+    },
+    {
+      "productId": "22196703",
+      "name": "TAURON Puchar Polski Mężczyzn 2027 - Finał",
+      "link": "https://www.eventim.pl/event/pls-tauron-puchar-polski-mezczyzn-2027-tauron-arena-krakow-22196703/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Kraków",
+            "geoLocation": {
+              "latitude": 50.06881885278667,
+              "longitude": 19.987872184784532
+            },
+            "name": "TAURON Arena Kraków",
+            "postalCode": "31-571"
+          },
+          "startDate": "2027-01-24T14:45:00+01:00"
+        }
+      },
+      "expectedProfile": "pl-tauron",
+      "officialInstructions": "https://www.tauronarenakrakow.pl/arena-dla-osob-niepelnosprawnych/"
+    },
+    {
+      "productId": "22150302",
+      "name": "MANOWAR — FIGHTING THE WORLD",
+      "link": "https://www.eventim.pl/event/manowar-tauron-arena-krakow-22150302/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Kraków",
+            "geoLocation": {
+              "latitude": 50.06881885278667,
+              "longitude": 19.987872184784532
+            },
+            "name": "TAURON Arena Kraków",
+            "postalCode": "31-571"
+          },
+          "startDate": "2027-01-27T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "pl-tauron",
+      "officialInstructions": "https://www.tauronarenakrakow.pl/arena-dla-osob-niepelnosprawnych/"
+    },
+    {
+      "productId": "21719962",
+      "name": "I Love Italia: Al Bano",
+      "link": "https://www.eventim.pl/event/i-love-italia-al-bano-tauron-arena-krakow-21719962/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Kraków",
+            "geoLocation": {
+              "latitude": 50.06881885278667,
+              "longitude": 19.987872184784532
+            },
+            "name": "TAURON Arena Kraków",
+            "postalCode": "31-571"
+          },
+          "startDate": "2027-03-21T18:00:00+01:00"
+        }
+      },
+      "expectedProfile": "pl-tauron",
+      "officialInstructions": "https://www.tauronarenakrakow.pl/arena-dla-osob-niepelnosprawnych/"
+    },
+    {
+      "productId": "21424430",
+      "name": "THE WORLD OF HANS ZIMMER - A New Dimension",
+      "link": "https://www.eventim.pl/event/the-world-of-hans-zimmer-a-new-dimension-tauron-arena-krakow-21424430/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Kraków",
+            "geoLocation": {
+              "latitude": 50.06881885278667,
+              "longitude": 19.987872184784532
+            },
+            "name": "TAURON Arena Kraków",
+            "postalCode": "31-571"
+          },
+          "startDate": "2027-04-17T19:30:00+02:00"
+        }
+      },
+      "expectedProfile": "pl-tauron",
+      "officialInstructions": "https://www.tauronarenakrakow.pl/arena-dla-osob-niepelnosprawnych/"
+    },
+    {
+      "productId": "22078661",
+      "name": "Clair Obscur: Expedition 33",
+      "link": "https://www.eventim.pl/event/clair-obscur-expedition-33-tauron-arena-krakow-22078661/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Kraków",
+            "geoLocation": {
+              "latitude": 50.06881885278667,
+              "longitude": 19.987872184784532
+            },
+            "name": "TAURON Arena Kraków",
+            "postalCode": "31-571"
+          },
+          "startDate": "2027-05-04T20:00:00+02:00"
+        }
+      },
+      "expectedProfile": "pl-tauron",
+      "officialInstructions": "https://www.tauronarenakrakow.pl/arena-dla-osob-niepelnosprawnych/"
+    },
+    {
+      "productId": "21575138",
+      "name": "André Rieu i Johann Strauss Orchestra WORLD TOUR 2027",
+      "link": "https://www.eventim.pl/event/andre-rieu-i-johann-strauss-orchestra-world-tour-2027-tauron-arena-krakow-21575138/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Kraków",
+            "geoLocation": {
+              "latitude": 50.06881885278667,
+              "longitude": 19.987872184784532
+            },
+            "name": "TAURON Arena Kraków",
+            "postalCode": "31-571"
+          },
+          "startDate": "2027-05-15T19:30:00+02:00"
+        }
+      },
+      "expectedProfile": "pl-tauron",
+      "officialInstructions": "https://www.tauronarenakrakow.pl/arena-dla-osob-niepelnosprawnych/"
+    },
+    {
+      "productId": "22303727",
+      "name": "Rod Stewart: The Final Encore",
+      "link": "https://www.eventim.pl/event/rod-stewart-the-final-encore-tauron-arena-krakow-22303727/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Kraków",
+            "geoLocation": {
+              "latitude": 50.06881885278667,
+              "longitude": 19.987872184784532
+            },
+            "name": "TAURON Arena Kraków",
+            "postalCode": "31-571"
+          },
+          "startDate": "2027-07-20T18:00:00+02:00"
+        }
+      },
+      "expectedProfile": "pl-tauron",
+      "officialInstructions": "https://www.tauronarenakrakow.pl/arena-dla-osob-niepelnosprawnych/"
+    },
+    {
+      "productId": "21401829",
+      "name": "MAYDAY Poland „ICONIC\"",
+      "link": "https://www.eventim.pl/event/mayday-poland-iconic-spodek-21401829/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Katowice",
+            "geoLocation": {
+              "latitude": 50.266066429862285,
+              "longitude": 19.025338223029827
+            },
+            "name": "Spodek",
+            "postalCode": "40-951"
+          },
+          "startDate": "2026-11-10T17:00:00+01:00"
+        }
+      },
+      "expectedProfile": "pl-spodek",
+      "officialInstructions": "https://www.spodekkatowice.pl/pl/spodek-dla-niepelnosprawnych/215/"
+    },
+    {
+      "productId": "21395573",
+      "name": "Kult - Trasa Pomarańczowa 2026",
+      "link": "https://www.eventim.pl/event/kult-trasa-pomaranczowa-spodek-21395573/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Katowice",
+            "geoLocation": {
+              "latitude": 50.266066429862285,
+              "longitude": 19.025338223029827
+            },
+            "name": "Spodek",
+            "postalCode": "40-951"
+          },
+          "startDate": "2026-11-14T19:00:00+01:00"
+        }
+      },
+      "expectedProfile": "pl-spodek",
+      "officialInstructions": "https://www.spodekkatowice.pl/pl/spodek-dla-niepelnosprawnych/215/"
+    },
+    {
+      "productId": "21377576",
+      "name": "Myslovitz",
+      "link": "https://www.eventim.pl/event/myslovitz-spodek-21377576/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Katowice",
+            "geoLocation": {
+              "latitude": 50.266066429862285,
+              "longitude": 19.025338223029827
+            },
+            "name": "Spodek",
+            "postalCode": "40-951"
+          },
+          "startDate": "2026-11-15T19:00:00+01:00"
+        }
+      },
+      "expectedProfile": "pl-spodek",
+      "officialInstructions": "https://www.spodekkatowice.pl/pl/spodek-dla-niepelnosprawnych/215/"
+    },
+    {
+      "productId": "21335225",
+      "name": "Zadzwońcie po Milicję!",
+      "link": "https://www.eventim.pl/event/zadzwoncie-po-milicje-spodek-21335225/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Katowice",
+            "geoLocation": {
+              "latitude": 50.266066429862285,
+              "longitude": 19.025338223029827
+            },
+            "name": "Spodek",
+            "postalCode": "40-951"
+          },
+          "startDate": "2026-11-20T19:00:00+01:00"
+        }
+      },
+      "expectedProfile": "pl-spodek",
+      "officialInstructions": "https://www.spodekkatowice.pl/pl/spodek-dla-niepelnosprawnych/215/"
+    },
+    {
+      "productId": "20948573",
+      "name": "Bilet Katowice",
+      "link": "https://www.eventim.pl/event/womens-ehf-euro-2026-pakiety-spodek-20948573/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Katowice",
+            "geoLocation": {
+              "latitude": 50.266066429862285,
+              "longitude": 19.025338223029827
+            },
+            "name": "Spodek",
+            "postalCode": "40-951"
+          },
+          "startDate": "2026-12-05T17:58:00+01:00"
+        }
+      },
+      "expectedProfile": "pl-spodek",
+      "officialInstructions": "https://www.spodekkatowice.pl/pl/spodek-dla-niepelnosprawnych/215/"
+    },
+    {
+      "productId": "20948461",
+      "name": "Bilet na rundę wstępną - Grupa E",
+      "link": "https://www.eventim.pl/event/womens-ehf-euro-2026-pakiety-spodek-20948461/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Katowice",
+            "geoLocation": {
+              "latitude": 50.266066429862285,
+              "longitude": 19.025338223029827
+            },
+            "name": "Spodek",
+            "postalCode": "40-951"
+          },
+          "startDate": "2026-12-05T17:59:00+01:00"
+        }
+      },
+      "expectedProfile": "pl-spodek",
+      "officialInstructions": "https://www.spodekkatowice.pl/pl/spodek-dla-niepelnosprawnych/215/"
+    },
+    {
+      "productId": "20947728",
+      "name": "Bilet jednodniowy - Grupie E (FAR-UKR + FRA-POL)",
+      "link": "https://www.eventim.pl/event/womens-ehf-euro-womens-ehf-euro-2026-bilety-jednodniowe-spodek-20947728/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Katowice",
+            "geoLocation": {
+              "latitude": 50.266066429862285,
+              "longitude": 19.025338223029827
+            },
+            "name": "Spodek",
+            "postalCode": "40-951"
+          },
+          "startDate": "2026-12-05T18:00:00+01:00"
+        }
+      },
+      "expectedProfile": "pl-spodek",
+      "officialInstructions": "https://www.spodekkatowice.pl/pl/spodek-dla-niepelnosprawnych/215/"
+    },
+    {
+      "productId": "20948325",
+      "name": "Bilet jednodniowy - Grupie E (FRA-FAR + POL-UKR)",
+      "link": "https://www.eventim.pl/event/womens-ehf-euro-womens-ehf-euro-2026-bilety-jednodniowe-spodek-20948325/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Katowice",
+            "geoLocation": {
+              "latitude": 50.266066429862285,
+              "longitude": 19.025338223029827
+            },
+            "name": "Spodek",
+            "postalCode": "40-951"
+          },
+          "startDate": "2026-12-07T18:00:00+01:00"
+        }
+      },
+      "expectedProfile": "pl-spodek",
+      "officialInstructions": "https://www.spodekkatowice.pl/pl/spodek-dla-niepelnosprawnych/215/"
+    },
+    {
+      "productId": "20948321",
+      "name": "Bilet jednodniowy - Grupie E (UKR-FRA + FAR-POL)",
+      "link": "https://www.eventim.pl/event/womens-ehf-euro-womens-ehf-euro-2026-bilety-jednodniowe-spodek-20948321/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Katowice",
+            "geoLocation": {
+              "latitude": 50.266066429862285,
+              "longitude": 19.025338223029827
+            },
+            "name": "Spodek",
+            "postalCode": "40-951"
+          },
+          "startDate": "2026-12-09T18:00:00+01:00"
+        }
+      },
+      "expectedProfile": "pl-spodek",
+      "officialInstructions": "https://www.spodekkatowice.pl/pl/spodek-dla-niepelnosprawnych/215/"
+    },
+    {
+      "productId": "20948572",
+      "name": "Bilet na rundę główną - Grupa II",
+      "link": "https://www.eventim.pl/event/womens-ehf-euro-2026-pakiety-spodek-20948572/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Katowice",
+            "geoLocation": {
+              "latitude": 50.266066429862285,
+              "longitude": 19.025338223029827
+            },
+            "name": "Spodek",
+            "postalCode": "40-951"
+          },
+          "startDate": "2026-12-11T15:29:00+01:00"
+        }
+      },
+      "expectedProfile": "pl-spodek",
+      "officialInstructions": "https://www.spodekkatowice.pl/pl/spodek-dla-niepelnosprawnych/215/"
+    },
+    {
+      "productId": "20948324",
+      "name": "Bilet jednodniowy - Grupie II",
+      "link": "https://www.eventim.pl/event/womens-ehf-euro-womens-ehf-euro-2026-bilety-jednodniowe-spodek-20948324/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Katowice",
+            "geoLocation": {
+              "latitude": 50.266066429862285,
+              "longitude": 19.025338223029827
+            },
+            "name": "Spodek",
+            "postalCode": "40-951"
+          },
+          "startDate": "2026-12-11T15:30:00+01:00"
+        }
+      },
+      "expectedProfile": "pl-spodek",
+      "officialInstructions": "https://www.spodekkatowice.pl/pl/spodek-dla-niepelnosprawnych/215/"
+    },
+    {
+      "productId": "20948574",
+      "name": "Bilet na weekend finałowy",
+      "link": "https://www.eventim.pl/event/womens-ehf-euro-2026-pakiety-spodek-20948574/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Katowice",
+            "geoLocation": {
+              "latitude": 50.266066429862285,
+              "longitude": 19.025338223029827
+            },
+            "name": "Spodek",
+            "postalCode": "40-951"
+          },
+          "startDate": "2026-12-18T14:59:00+01:00"
+        }
+      },
+      "expectedProfile": "pl-spodek",
+      "officialInstructions": "https://www.spodekkatowice.pl/pl/spodek-dla-niepelnosprawnych/215/"
+    },
+    {
+      "productId": "20948322",
+      "name": "Bilet jednodniowy - Półfinały",
+      "link": "https://www.eventim.pl/event/womens-ehf-euro-womens-ehf-euro-2026-bilety-jednodniowe-spodek-20948322/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Katowice",
+            "geoLocation": {
+              "latitude": 50.266066429862285,
+              "longitude": 19.025338223029827
+            },
+            "name": "Spodek",
+            "postalCode": "40-951"
+          },
+          "startDate": "2026-12-18T15:00:00+01:00"
+        }
+      },
+      "expectedProfile": "pl-spodek",
+      "officialInstructions": "https://www.spodekkatowice.pl/pl/spodek-dla-niepelnosprawnych/215/"
+    },
+    {
+      "productId": "20948327",
+      "name": "Bilet jednodniowy - Finały",
+      "link": "https://www.eventim.pl/event/womens-ehf-euro-womens-ehf-euro-2026-bilety-jednodniowe-spodek-20948327/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Katowice",
+            "geoLocation": {
+              "latitude": 50.266066429862285,
+              "longitude": 19.025338223029827
+            },
+            "name": "Spodek",
+            "postalCode": "40-951"
+          },
+          "startDate": "2026-12-20T15:15:00+01:00"
+        }
+      },
+      "expectedProfile": "pl-spodek",
+      "officialInstructions": "https://www.spodekkatowice.pl/pl/spodek-dla-niepelnosprawnych/215/"
+    },
+    {
+      "productId": "20935143",
+      "name": "WIEDŹMIN. MUZYKA KONTYNENTU",
+      "link": "https://www.eventim.pl/event/wiedzmin-muzyka-kontynentu-ergo-arena-20935143/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Gdańsk",
+            "geoLocation": {
+              "latitude": 54.42516640205329,
+              "longitude": 18.576974857230187
+            },
+            "name": "ERGO ARENA",
+            "postalCode": "80-344"
+          },
+          "startDate": "2026-11-05T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "pl-ergo",
+      "officialInstructions": "https://ergoarena.pl/dla-odwiedzajacych/osoby-z-niepelnosprawnosciami/"
+    },
+    {
+      "productId": "22044443",
+      "name": "Ostatnia trasa GENZIE - 404 TOUR",
+      "link": "https://www.eventim.pl/event/ostatnia-trasa-genzie-404-tour-ergo-arena-22044443/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Gdańsk",
+            "geoLocation": {
+              "latitude": 54.42516640205329,
+              "longitude": 18.576974857230187
+            },
+            "name": "ERGO ARENA",
+            "postalCode": "80-344"
+          },
+          "startDate": "2026-11-14T19:00:00+01:00"
+        }
+      },
+      "expectedProfile": "pl-ergo",
+      "officialInstructions": "https://ergoarena.pl/dla-odwiedzajacych/osoby-z-niepelnosprawnosciami/"
+    },
+    {
+      "productId": "21355019",
+      "name": "Hype DISCO 80 Festiwal: Sandra, Londonbeat, Boney M",
+      "link": "https://www.eventim.pl/event/hype-disco-80-festiwal-sandra-londonbeat-boney-m-ergo-arena-21355019/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Gdańsk",
+            "geoLocation": {
+              "latitude": 54.42516640205329,
+              "longitude": 18.576974857230187
+            },
+            "name": "ERGO ARENA",
+            "postalCode": "80-344"
+          },
+          "startDate": "2026-11-27T19:30:00+01:00"
+        }
+      },
+      "expectedProfile": "pl-ergo",
+      "officialInstructions": "https://ergoarena.pl/dla-odwiedzajacych/osoby-z-niepelnosprawnosciami/"
+    },
+    {
+      "productId": "21684916",
+      "name": "HYPE RAP FEST II w Trójmieście",
+      "link": "https://www.eventim.pl/event/hype-rap-fest-ii-ergo-arena-21684916/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Gdańsk",
+            "geoLocation": {
+              "latitude": 54.42516640205329,
+              "longitude": 18.576974857230187
+            },
+            "name": "ERGO ARENA",
+            "postalCode": "80-344"
+          },
+          "startDate": "2026-11-28T19:00:00+01:00"
+        }
+      },
+      "expectedProfile": "pl-ergo",
+      "officialInstructions": "https://ergoarena.pl/dla-odwiedzajacych/osoby-z-niepelnosprawnosciami/"
+    },
+    {
+      "productId": "22172251",
+      "name": "Góralskie kolędowanie z Małą Armią Janosika w Gdańsku",
+      "link": "https://www.eventim.pl/event/mala-armia-janosika-goralskie-koledowanie-z-mala-armia-janosika-ergo-arena-22172251/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Gdańsk",
+            "geoLocation": {
+              "latitude": 54.42516640205329,
+              "longitude": 18.576974857230187
+            },
+            "name": "ERGO ARENA",
+            "postalCode": "80-344"
+          },
+          "startDate": "2027-01-17T16:00:00+01:00"
+        }
+      },
+      "expectedProfile": "pl-ergo",
+      "officialInstructions": "https://ergoarena.pl/dla-odwiedzajacych/osoby-z-niepelnosprawnosciami/"
+    },
+    {
+      "productId": "21759897",
+      "name": "90s Super Show Gdańsk - live & on stage!",
+      "link": "https://www.eventim.pl/event/90s-super-show-gdansk-live-on-stage-ergo-arena-21759897/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Gdańsk",
+            "geoLocation": {
+              "latitude": 54.42516640205329,
+              "longitude": 18.576974857230187
+            },
+            "name": "ERGO ARENA",
+            "postalCode": "80-344"
+          },
+          "startDate": "2027-01-30T17:00:00+01:00"
+        }
+      },
+      "expectedProfile": "pl-ergo",
+      "officialInstructions": "https://ergoarena.pl/dla-odwiedzajacych/osoby-z-niepelnosprawnosciami/"
+    },
+    {
+      "productId": "21343138",
+      "name": "Don’t Let Daddy Know Poland",
+      "link": "https://www.eventim.pl/event/dont-let-daddy-know-poland-ergo-arena-21343138/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Gdańsk",
+            "geoLocation": {
+              "latitude": 54.42516640205329,
+              "longitude": 18.576974857230187
+            },
+            "name": "ERGO ARENA",
+            "postalCode": "80-344"
+          },
+          "startDate": "2027-02-13T19:00:00+01:00"
+        }
+      },
+      "expectedProfile": "pl-ergo",
+      "officialInstructions": "https://ergoarena.pl/dla-odwiedzajacych/osoby-z-niepelnosprawnosciami/"
+    },
+    {
+      "productId": "21501437",
+      "name": "Finał Puchar Polski Mężczyzn w Piłce Ręcznej 2027",
+      "link": "https://www.eventim.pl/event/final-puchar-polski-mezczyzn-w-pilce-recznej-final-pucharu-polski-mezczyzn-2027-ergo-arena-21501437/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Gdańsk",
+            "geoLocation": {
+              "latitude": 54.42516640205329,
+              "longitude": 18.576974857230187
+            },
+            "name": "ERGO ARENA",
+            "postalCode": "80-344"
+          },
+          "startDate": "2027-04-24T18:00:00+02:00"
+        }
+      },
+      "expectedProfile": "pl-ergo",
+      "officialInstructions": "https://ergoarena.pl/dla-odwiedzajacych/osoby-z-niepelnosprawnosciami/"
+    },
+    {
+      "productId": "21571463",
+      "name": "André Rieu i Johann Strauss Orchestra WORLD TOUR 2027",
+      "link": "https://www.eventim.pl/event/andre-rieu-i-johann-strauss-orchestra-world-tour-2027-ergo-arena-21571463/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Gdańsk",
+            "geoLocation": {
+              "latitude": 54.42516640205329,
+              "longitude": 18.576974857230187
+            },
+            "name": "ERGO ARENA",
+            "postalCode": "80-344"
+          },
+          "startDate": "2027-05-12T19:30:00+02:00"
+        }
+      },
+      "expectedProfile": "pl-ergo",
+      "officialInstructions": "https://ergoarena.pl/dla-odwiedzajacych/osoby-z-niepelnosprawnosciami/"
+    },
+    {
+      "productId": "22104221",
+      "name": "KPOP ALL-STARS",
+      "link": "https://www.eventim.pl/event/k-pop-all-stars-kpop-all-stars-ergo-arena-22104221/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Gdańsk",
+            "geoLocation": {
+              "latitude": 54.42516640205329,
+              "longitude": 18.576974857230187
+            },
+            "name": "ERGO ARENA",
+            "postalCode": "80-344"
+          },
+          "startDate": "2027-06-13T19:00:00+02:00"
+        }
+      },
+      "expectedProfile": "pl-ergo",
+      "officialInstructions": "https://ergoarena.pl/dla-odwiedzajacych/osoby-z-niepelnosprawnosciami/"
+    },
+    {
+      "productId": "22349330",
+      "name": "Jean-Michel Jarre \"OXYGENE & BEYOND” 2027 TOUR",
+      "link": "https://www.eventim.pl/event/jean-michel-jarre-oxygene-beyond-2027-tour-ergo-arena-22349330/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Gdańsk",
+            "geoLocation": {
+              "latitude": 54.42516640205329,
+              "longitude": 18.576974857230187
+            },
+            "name": "ERGO ARENA",
+            "postalCode": "80-344"
+          },
+          "startDate": "2027-09-24T18:00:00+02:00"
+        }
+      },
+      "expectedProfile": "pl-ergo",
+      "officialInstructions": "https://ergoarena.pl/dla-odwiedzajacych/osoby-z-niepelnosprawnosciami/"
+    },
+    {
+      "productId": "21922811",
+      "name": "Hype Disco Festiwal - Festiwal Muzyki Disco Gdańsk",
+      "link": "https://www.eventim.pl/event/hype-disco-festiwal-festiwal-muzyki-disco-ergo-arena-21922811/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Gdańsk",
+            "geoLocation": {
+              "latitude": 54.42516640205329,
+              "longitude": 18.576974857230187
+            },
+            "name": "ERGO ARENA",
+            "postalCode": "80-344"
+          },
+          "startDate": "2027-11-20T18:00:00+01:00"
+        }
+      },
+      "expectedProfile": "pl-ergo",
+      "officialInstructions": "https://ergoarena.pl/dla-odwiedzajacych/osoby-z-niepelnosprawnosciami/"
+    }
+  ]
+}

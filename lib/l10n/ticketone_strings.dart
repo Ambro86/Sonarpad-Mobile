@@ -1,9 +1,26 @@
+import 'concert_disability_international_strings.dart';
+
 /// Like travel strings, use English as fallback outside the Italian catalogue UI.
 class TicketOneStrings {
   TicketOneStrings(this.locale);
   final String locale;
-  String t(String key) =>
-      (locale.split(RegExp('[-_]')).first == 'it' ? _it[key] : _en[key])!;
+  String t(String key) {
+    final language = locale.split(RegExp('[-_]')).first;
+    final international =
+        concertDisabilityInternationalStrings[language]?[key] ??
+        concertDisabilityInternationalStrings['en']?[key];
+    if (international != null) return international;
+    return (language == 'it'
+        ? _it[key]
+        : language == 'fr'
+        ? _fr[key] ?? _en[key]
+        : language == 'de'
+        ? _de[key] ?? _en[key]
+        : language == 'es'
+        ? _es[key] ?? _en[key]
+        : _en[key])!;
+  }
+
   static int? otpDigitIndex(String label) {
     const digits = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth'];
     final match = RegExp(
@@ -23,7 +40,191 @@ class TicketOneStrings {
         : 'Digit $number';
   }
 
+  static const _es = {
+    'disabilityTitle': 'Acceso para personas con discapacidad',
+    'disabilityHelp':
+        'Las localidades adaptadas y las condiciones para acompañantes dependen del recinto y del organizador. Consulta los canales oficiales antes de comprar.',
+    'disabilityVenue': 'Recinto y ciudad',
+    'disabilityConditions':
+        'Explica tus necesidades, también si eres una persona ciega o con baja visión. Las entradas PMR pueden estar reservadas para movilidad reducida y no corresponden automáticamente a cualquier discapacidad. Confirma documentación, acompañante, perro de asistencia, precio y disponibilidad. Sonarpad no decide la elegibilidad.',
+    'disabilityContactInstructions': 'Consultar las instrucciones oficiales',
+    'disabilityContactEmail': 'Escribir un correo electrónico',
+    'disabilityPhone': 'Llamar a la taquilla',
+    'disabilityCallContact': 'Llamar al servicio indicado',
+    'disabilityOpenEvent': 'Abrir la página original del evento',
+    'disabilityChooseOrganiser': 'Elegir organizador o recinto',
+    'disabilityChooseHelp':
+        'Selecciona únicamente el recinto o el organizador de tu evento. Comprueba espectáculo, ciudad y fecha antes de contactar.',
+    'disabilityRequestNotice':
+        'Una consulta no es una reserva confirmada. Sonarpad no envía solicitudes ni documentos automáticamente.',
+    'disabilityEsUnknown':
+        'Todavía no tenemos un contacto verificado para este recinto. Abre la página del evento y busca accesibilidad o contacta con su organizador. No utilices los contactos de otro recinto.',
+    'disabilityEsMovistar':
+        'Para discapacidad visual o auditiva, el recinto ofrece ayuda para llegar al asiento: consulta al servicio indicado. Las entradas PMR tienen requisitos de movilidad y el acompañante debe tener su entrada específica. No selecciones PMR solo por tener discapacidad visual.',
+    'disabilityEsPalau':
+        'Consulta las condiciones oficiales de asistencia y acceso. Las puertas y servicios PMR tienen criterios propios; para otras necesidades, confirma la ayuda con el recinto. Para localidades adaptadas y acompañantes consulta al organizador o vendedor de tu evento: esta página no confirma una reserva.',
+    'disabilityEsRoig':
+        'El correo es atención general del recinto. Confirma la categoría adecuada y las condiciones para tu evento. La FAQ exige una entrada específica y acreditación para movilidad reducida; no equivale automáticamente a discapacidad visual. Consulta también la entrada del acompañante, sin asumir que sea gratuita.',
+    'disabilityEsBec':
+        'Bizkaia Arena BEC! no es Bilbao Arena Miribilla. La FAQ indica consultar al canal de venta si el evento tiene localidades reservadas para movilidad reducida o admite entrada general. Los contactos del recinto son informativos; confirma tus necesidades y acompañamiento antes de comprar.',
+    'disabilityEsBilbao':
+        'Este contacto corresponde a Bilbao Arena Miribilla, no a Bizkaia Arena BEC!. Las condiciones cambian según el montaje y el organizador. La información sobre acompañantes en partidos de Bilbao Basket no se aplica automáticamente a conciertos; confirma las condiciones de tu evento.',
+    'disabilityEsCartuja':
+        'La FAQ recomienda contactar con la taquilla para elegir localidades y consultar accesibilidad. Pregunta por tus necesidades concretas y por posibles descuentos según el espectáculo. El contacto es el departamento de entradas, no una garantía de plazas disponibles.',
+  };
+  static const _de = {
+    "disabilityAtUnknown":
+        "Für diese österreichische Spielstätte liegt noch kein verifizierter Kontakt vor. Öffnen Sie die Originalveranstaltung und prüfen Sie die Hinweise zur Barrierefreiheit. Verwenden Sie keine Kontakte anderer Spielstätten.",
+    "disabilityAtStadthalle":
+        "Wenden Sie sich für geeignete Plätze, auch bei Sehbeeinträchtigungen, an die Halle. Rollstuhlplätze werden direkt über die Wiener Stadthalle verkauft. Bestuhlung, Ermäßigungen und Begleitplätze hängen von der Veranstaltung ab.",
+    "disabilityAtKonzerthaus":
+        "Das Ticket- & Service-Center vermittelt Rollstuhl- und Begleitplätze. Sonderpreise für Eigenveranstaltungen gelten nicht automatisch für Gastveranstaltungen. Der Publikumsdienst hilft bei Sehbeeinträchtigungen bis zum Sitzplatz. Assistenzhunde bitte voranmelden.",
+    "disabilityAtBruckner":
+        "Das Haus bietet Rollstuhl- und Begleitplätze sowie Hörunterstützung. Der allgemeine Kontakt berät zu Ihren Bedürfnissen und verweist an den zuständigen Kartenservice. Ermäßigungen und Begleitbedingungen bitte vor dem Kauf für Ihre Veranstaltung klären.",
+    "disabilityAtMusikverein":
+        "Die Konzertkassa betreut barrierefreie Buchungen für Eigenveranstaltungen. Bei Gastveranstaltungen gelten möglicherweise andere Bedingungen: Anbieter und Begleitung vorab klären. Assistenzhunde benötigen Voranmeldung und Nachweis. Rollstuhlermäßigungen gelten nicht automatisch bei Sehbeeinträchtigungen.",
+    "disabilityAtInnsbruck":
+        "Das Haus bietet taktile Orientierung, sprechende Aufzüge und Zugangsinformationen. Der allgemeine Kontakt ist keine zentrale Konzertkasse: Nutzen Sie den Anbieter Ihrer Veranstaltung. Ermäßigungen für CMI-Eigenveranstaltungen gelten nicht automatisch für Gastkonzerte.",
+    "disabilityAtGraz":
+        "Der offizielle Grazer Tourismusführer nennt diesen Kontakt. Plätze und Ermäßigungen hängen vom Veranstalter ab. Ein taktiles Leitsystem fehlt: Hilfe und Assistenzhund vorab absprechen. Der Kontakt dient der Information, nicht als Reservierungsbestätigung.",
+
+    'disabilityTitle': 'Zugang für Menschen mit Behinderung',
+    'disabilityHelp':
+        'Barrierefreie Plätze und Regelungen für Begleitpersonen hängen von der Spielstätte und dem Veranstalter ab. Bitte informieren Sie sich vor dem Kauf bei der zuständigen Stelle.',
+    'disabilityVenue': 'Spielstätte und Stadt',
+    'disabilityConditions':
+        'Beschreiben Sie Ihre Bedürfnisse, auch bei Blindheit oder Sehbehinderung. Rollstuhlplätze sind nicht für jede Behinderung die passende Kategorie. Klären Sie Nachweise, Begleitpersonen, Assistenzhunde, Preise und Verfügbarkeit vor dem Kauf. Sonarpad entscheidet nicht über eine Berechtigung.',
+    'disabilityContactInstructions': 'Offizielle Hinweise lesen',
+    'disabilityContactEmail': 'E-Mail schreiben',
+    'disabilityPhone': 'Ticketservice anrufen',
+    'disabilityCallContact': 'Kontaktstelle anrufen',
+    'disabilityOpenEvent': 'Originalseite der Veranstaltung öffnen',
+    'disabilityChooseOrganiser': 'Veranstalter oder Spielstätte auswählen',
+    'disabilityChooseHelp':
+        'Wählen Sie nur die tatsächliche Spielstätte oder den Veranstalter Ihrer Veranstaltung. Prüfen Sie Ort, Datum und Veranstaltung vor einer Anfrage.',
+    'disabilityRequestNotice':
+        'Eine Anfrage ist keine bestätigte Buchung. Sonarpad sendet keine Anfragen oder Nachweise automatisch.',
+    'disabilityDeUnknown':
+        'Für diese Spielstätte haben wir noch keine verifizierte Kontaktstelle. Öffnen Sie die Veranstaltungsseite und suchen Sie nach Barrierefreiheit, Schwerbehindertentickets oder Begleitpersonen. Verwenden Sie keine Kontakte einer anderen Spielstätte.',
+    'disabilityDeUber':
+        'Die zuständige Ticketstelle ist je nach Veranstaltung unterschiedlich. Öffnen Sie die offizielle Übersicht und suchen Sie Ihr Event mit Datum. Für ALBA BERLIN und Eisbären Berlin gelten eigene Buchungswege. Der Gästeservice für Hilfe bei der Ankunft ist keine allgemeine Ticketbuchungsstelle.',
+    'disabilityDeLanxess':
+        'Die Arena nennt ihren Ticket-Shop für Rollstuhltickets mit Begleitung. Bei Sehbehinderung oder anderen Bedürfnissen fragen Sie nach der passenden Kategorie und den Bedingungen für Ihr Event; eine kostenlose Begleitung wird nicht pauschal zugesichert.',
+    'disabilityDeSeller':
+        'Die Arena verweist beim Kartenkauf auf den jeweiligen Ticketanbieter. Klären Sie dort Ihren Platzbedarf und die Begleitung. Die offiziellen Hinweise beschreiben den Zugang zur Halle; sie bestätigen keine verfügbaren barrierefreien Tickets.',
+    'disabilityDeFesthalle':
+        'Eintritt und Platzkontingente legt der jeweilige Veranstalter fest, dessen Kontakt im Veranstaltungskalender steht. Die angezeigte E-Mail und Telefonnummer sind eine Info-Hotline für Barrierefreiheit, keine Zusage zur Ticketbuchung. Die Regeln für Messeveranstaltungen gelten nicht automatisch für Konzerte.',
+    'disabilityDeWestfalen':
+        'Die Platzierung wird für jede Veranstaltung individuell geplant. Nutzen Sie den Ticketshop oder das Ticket-Kontaktformular auf der offiziellen Seite für persönliche Beratung. Die Ränge sind nur über Treppen erreichbar.',
+    'disabilityDeSap':
+        'Kontaktieren Sie die Service- und Tickethotline. Für manche Konzerte verkauft ausschließlich der Veranstalter die Rollstuhlplätze; der Service nennt dann den Buchungskontakt. Klären Sie andere Bedürfnisse und Begleitplätze ebenfalls vor dem Kauf.',
+    'disabilityDeMunich':
+        'München Ticket berät auch Menschen mit Seh- oder Hörbehinderung. Fragen Sie zunächst, ob Ihr Event und die benötigte Kategorie dort buchbar sind. Der Barrierefrei-Shop umfasst nur eine Auswahl von Veranstaltungen und kann Registrierung mit Nachweis verlangen. Nicht jedes Event der Olympiahalle ist darüber buchbar.',
+    'disabilityDeLeipzig':
+        'ARENA TICKET nimmt Anfragen zu Rollstuhl- und Schwerbehindertentickets mit möglicher Begleitung entgegen. Laut FAQ ist für Begleitertickets ein Behindertenausweis mit Merkzeichen B erforderlich. Klären Sie bei anderen Nachweisen oder Bedürfnissen die Bedingungen direkt mit dem Service.',
+  };
+  static const _fr = {
+    'disabilityTitle': 'Accès pour les personnes en situation de handicap',
+    'disabilityHelp':
+        'Les places adaptées et les conditions pour les accompagnateurs dépendent de la salle et de l’organisateur. Consultez leurs informations officielles avant d’acheter.',
+    'disabilityVenue': 'Salle et ville',
+    'disabilityConditions':
+        'Précisez vos besoins, notamment en cas de handicap visuel. Les dispositifs ne concernent pas uniquement les fauteuils roulants. Vérifiez les justificatifs, les conditions et les disponibilités auprès de la billetterie.',
+    'disabilityContactInstructions': 'Consulter les instructions officielles',
+    'disabilityContactEmail': 'Envoyer un e-mail',
+    'disabilityPhone': 'Appeler la billetterie',
+    'disabilityOpenEvent': 'Ouvrir la page originale de l’événement',
+    'disabilityChooseOrganiser': 'Choisir l’organisateur ou la salle',
+    'disabilityChooseHelp':
+        'Choisissez uniquement la salle ou l’organisateur de votre événement. Vérifiez le spectacle, la ville et la date avant de contacter la billetterie.',
+    'disabilityRequestNotice':
+        'Une demande ne constitue pas une réservation confirmée. Sonarpad ne transmet automatiquement aucun document ni aucune demande.',
+    'disabilityFrUnknown':
+        'Nous n’avons pas encore de contact vérifié pour cette salle française. Ouvrez la page originale et recherchez les informations PSH/PMR, ou choisissez la bonne salle dans la liste. N’utilisez pas les coordonnées d’une autre salle.',
+    'disabilityFrPhone':
+        'Accor Arena propose un service téléphonique dédié pour réserver les places adaptées et celle de l’accompagnateur. Vérifiez les conditions et les disponibilités auprès de ce service.',
+    'disabilityFrStade':
+        'Pour les concerts, choisissez votre événement sur le site officiel, puis « Réservation PSH ». Les réservations ne sont pas acceptées par e-mail ou téléphone. Pour le rugby, les circuits diffèrent : consultez les instructions officielles de votre événement.',
+    'disabilityFrZenith':
+        'Sur le site de la salle, choisissez votre spectacle, « Réserver », puis « PSH » : le contact dépend de l’événement. Les instructions distinguent les personnes en fauteuil, les personnes malentendantes et les autres besoins. Vérifiez la procédure adaptée avant d’acheter.',
+  };
   static const _it = {
+    "disabilityAtUnknown":
+        "Non abbiamo ancora un contatto verificato per questa struttura austriaca. Apri l’evento originale e consulta le informazioni di accessibilità. Non usare contatti di altre strutture.",
+    "disabilityAtStadthalle":
+        "Contatta la struttura per posti adatti, anche per esigenze visive. I biglietti per carrozzina sono venduti direttamente dalla Wiener Stadthalle. Posti, sconti e accompagnatore dipendono dall’evento.",
+    "disabilityAtKonzerthaus":
+        "Il Ticket & Service Center gestisce posti per carrozzina e accompagnatore. Le tariffe per eventi propri non valgono automaticamente per eventi ospiti. Il personale aiuta le persone cieche a raggiungere il posto. Segnala il cane guida in anticipo.",
+    "disabilityAtBruckner":
+        "La struttura offre posti per carrozzina e accompagnatore e supporto uditivo. Il contatto generale indicato può consigliare e indirizzare alla biglietteria dell’evento. Conferma sconti e condizioni accompagnatore prima di acquistare.",
+    "disabilityAtMusikverein":
+        "La biglietteria gestisce le prenotazioni accessibili per eventi propri. Gli eventi ospiti possono avere condizioni diverse: conferma venditore e accompagnatore. Per il cane guida servono preavviso e documentazione. Gli sconti carrozzina non valgono automaticamente per disabilità visive.",
+    "disabilityAtInnsbruck":
+        "La struttura offre percorsi tattili, ascensori con annunci vocali e informazioni di accesso. Il contatto generale non è una biglietteria universale: usa il venditore indicato nell’evento. Gli sconti per eventi propri CMI non coprono automaticamente concerti ospiti.",
+    "disabilityAtGraz":
+        "La guida ufficiale del turismo di Graz indica questo contatto. Posti e sconti dipendono dall’organizzatore. Non è presente un percorso tattile per persone cieche: concorda assistenza e cane guida in anticipo. Il contatto informa, non conferma una prenotazione.",
+
+    "disabilityGbUnknown":
+        "Non abbiamo ancora un contatto verificato per questa struttura. Apri la pagina originale e consulta le istruzioni di accessibilità. Non usare contatti di un’altra struttura.",
+    "disabilityGbApollo":
+        "Scrivi alla struttura indicando evento, data, telefono ed esigenze. Concorda accompagnatore e posti prima di acquistare; possono essere richiesti documenti. Access Card accettata ma non obbligatoria.",
+    "disabilityGbAo":
+        "Biglietti accessibili tramite Ticketmaster. Contatta la struttura se le opzioni online non rispondono alle tue esigenze. Accompagnatore da concordare durante la prenotazione, con eventuali documenti: non presumere di poterlo aggiungere dopo.",
+    "disabilityGbBirmingham":
+        "Usa Accessible Tickets nella pagina AXS del tuo evento indicata dalla struttura. La registrazione Nimbus permette di accedere ai posti adatti. Concorda cane guida e altre esigenze prima di prenotare; disponibilità e accompagnatore dipendono dall’evento.",
+    "disabilityGbLeeds":
+        "Prenota tramite AXS o il servizio telefonico accessibilità. Per eventi messi in vendita da luglio 2026 serve Access Card oppure Digital Access Pass gratuito. Le vendite precedenti hanno regole documentali diverse: consulta le istruzioni per il tuo evento.",
+    "disabilityGbHydro":
+        "Usa Ticketmaster o il numero per prenotazioni accessibili. Chiama per esigenze visive, audiodescrizione o cane guida. Posti per carrozzina e posti ambulant rispondono a esigenze diverse. Accompagnatore e documenti seguono le condizioni della struttura.",
+    "disabilityGbNottingham":
+        "Usa il numero per prenotazioni accessibili o il modulo nelle istruzioni ufficiali. Sono accettati documenti alternativi ad Access Card. Le regole accompagnatore variano: le partite Nottingham Panthers non hanno la stessa gratuità della maggior parte degli eventi.",
+    "disabilityGbNewcastle":
+        "AXS usa Digital Access Pass gratuito o Access Card per le nuove vendite. La struttura offre anche consulenza e prenotazione telefonica, inclusa assistenza se non hai ancora il pass. Consulta i requisiti aggiornati prima di acquistare.",
+
+    'disabilityEsUnknown':
+        'Non abbiamo ancora un contatto verificato per questa struttura. Apri la pagina dell’evento e cerca accessibilità o contatta l’organizzatore. Non usare i contatti di un’altra sede.',
+    'disabilityEsMovistar':
+        'Per disabilità visive o uditive la struttura offre aiuto per raggiungere il posto: contatta il servizio indicato. I biglietti PMR richiedono condizioni motorie specifiche e l’accompagnatore deve avere il proprio biglietto. Non scegliere PMR solo perché sei non vedente.',
+    'disabilityEsPalau':
+        'Consulta le condizioni ufficiali di assistenza e accesso. Porte e servizi PMR hanno requisiti propri; per altre esigenze concorda l’aiuto con la struttura. Per posti adattati e accompagnatori rivolgiti all’organizzatore o venditore del tuo evento: la pagina non conferma una prenotazione.',
+    'disabilityEsRoig':
+        'L’email è il servizio generale della struttura. Verifica categoria e condizioni del tuo evento. La FAQ richiede biglietto e documentazione specifici per mobilità ridotta, che non coincide automaticamente con disabilità visiva. Verifica anche il biglietto dell’accompagnatore, senza presumere la gratuità.',
+    'disabilityEsBec':
+        'Bizkaia Arena BEC! è diversa da Bilbao Arena Miribilla. La FAQ invita a chiedere al venditore se l’evento prevede posti PMR o ingresso generale. I contatti della struttura sono informativi: concorda esigenze e accompagnamento prima dell’acquisto.',
+    'disabilityEsBilbao':
+        'Questo contatto è di Bilbao Arena Miribilla, non di Bizkaia Arena BEC!. Condizioni e servizi dipendono dall’allestimento e dall’organizzatore. Le indicazioni sugli accompagnatori alle partite del Bilbao Basket non valgono automaticamente per i concerti.',
+    'disabilityEsCartuja':
+        'La FAQ consiglia di contattare la biglietteria per scegliere i posti e concordare l’accessibilità. Specifica le tue esigenze e chiedi eventuali sconti per lo spettacolo. È il contatto del servizio biglietti, non una garanzia di disponibilità.',
+    'disabilityCallContact': 'Chiama il servizio indicato',
+    'disabilityDeUnknown':
+        'Non abbiamo ancora un contatto verificato per questa struttura. Apri la pagina dell’evento e cerca Barrierefreiheit, Schwerbehindertentickets o Begleitpersonen. Non usare i contatti di un’altra sede.',
+    'disabilityDeUber':
+        'Il referente dei biglietti cambia secondo l’evento. Apri l’elenco ufficiale e cerca spettacolo e data. ALBA BERLIN ed Eisbären Berlin seguono canali propri. Il servizio di assistenza all’arrivo non è una biglietteria generale.',
+    'disabilityDeLanxess':
+        'L’arena indica la propria biglietteria per i posti in carrozzina con accompagnatore. Per non vedenti, ipovedenti o altre esigenze chiedi la categoria e le condizioni del tuo evento: la gratuità dell’accompagnatore non è garantita in generale.',
+    'disabilityDeSeller':
+        'L’arena invita a concordare posti e accompagnamento con il venditore del singolo evento. Le istruzioni ufficiali descrivono l’accesso alla struttura, ma non confermano la disponibilità di biglietti accessibili.',
+    'disabilityDeFesthalle':
+        'Ingresso e contingenti dipendono dall’organizzatore, indicato nel calendario della struttura. Email e telefono qui presenti sono un servizio informativo sull’accessibilità, non una conferma di prenotazione. Le regole delle fiere non valgono automaticamente per i concerti.',
+    'disabilityDeWestfalen':
+        'I posti vengono organizzati per ogni evento. Usa la biglietteria o il modulo di contatto per i biglietti dalla pagina ufficiale, per ricevere assistenza personale. Le gradinate sono raggiungibili solo tramite scale.',
+    'disabilityDeSap':
+        'Contatta il servizio biglietti. Per alcuni concerti i posti in carrozzina sono venduti solo dall’organizzatore: il servizio ti indica il referente. Concorda prima dell’acquisto anche altre esigenze e accompagnamento.',
+    'disabilityDeMunich':
+        'München Ticket assiste anche persone con disabilità visive o uditive. Verifica che il tuo evento e la categoria richiesta siano acquistabili tramite questo servizio. Il negozio accessibile copre solo alcuni eventi e può richiedere registrazione con documentazione. Non copre automaticamente ogni evento dell’Olympiahalle.',
+    'disabilityDeLeipzig':
+        'ARENA TICKET riceve richieste per posti in carrozzina e biglietti per persone con disabilità con eventuale accompagnatore. La FAQ richiede il contrassegno B sul documento tedesco per il biglietto dell’accompagnatore. Per documenti diversi o altre esigenze chiedi conferma al servizio.',
+    'disabilityVenue': 'Struttura e città',
+    'disabilityPhone': 'Chiama la biglietteria',
+    'disabilityOpenEvent': 'Apri la pagina originale dell’evento',
+    'disabilityFrUnknown':
+        'Non abbiamo ancora un contatto verificato per questa struttura francese. Apri la pagina originale e cerca le indicazioni PSH/PMR, oppure scegli la struttura corretta nell’elenco. Non usare i contatti di un’altra sede.',
+    'disabilityFrPhone':
+        'Accor Arena indica un servizio telefonico dedicato per prenotare posti adatti alle proprie esigenze e per l’accompagnatore. Verifica con il servizio requisiti e disponibilità.',
+    'disabilityFrStade':
+        'Per i concerti, dal sito ufficiale scegli l’evento e poi «Réservation PSH». Non si prenota per email o telefono. Per il rugby il canale cambia: leggi le istruzioni ufficiali relative al tuo evento.',
+    'disabilityFrZenith':
+        'Sul sito della struttura scegli il tuo spettacolo, «Réserver» e poi «PSH»: il contatto dipende dall’evento. Le istruzioni distinguono persone in carrozzina, persone con disabilità uditive e altre esigenze; verifica il percorso adatto prima di acquistare.',
     'disabilityContactInstructions': 'Leggi le istruzioni ufficiali',
     'disabilityContactEmail': 'Scrivi un’email',
     'disabilityChooseOrganiser': 'Scegli organizzatore o struttura',
@@ -103,6 +304,82 @@ class TicketOneStrings {
     'empty': 'Il carrello è vuoto.',
   };
   static const _en = {
+    "disabilityAtUnknown":
+        "No verified contact for this Austrian venue yet. Open the original event and check its accessibility information. Do not use contacts for another venue.",
+    "disabilityAtStadthalle":
+        "Contact the venue for suitable seats, including visual access needs. Wheelchair tickets are sold directly by Wiener Stadthalle. Seating, discounts and companion arrangements depend on the event.",
+    "disabilityAtKonzerthaus":
+        "The Ticket & Service Center arranges wheelchair and companion seats. Special prices for in-house events do not automatically apply to guest events. Staff can assist blind visitors to their seat. Register assistance dogs in advance.",
+    "disabilityAtBruckner":
+        "The venue provides wheelchair and companion places and hearing support. The listed general contact can advise on your needs and direct you to the event ticket service. Confirm discounts and companion conditions for your event before buying.",
+    "disabilityAtMusikverein":
+        "The box office handles accessible bookings for in-house events. Guest events may have different conditions: confirm the seller and companion arrangements first. Assistance dogs require advance registration and documentation. Wheelchair discounts do not automatically apply to visual disabilities.",
+    "disabilityAtInnsbruck":
+        "The venue provides tactile guidance, lifts with spoken announcements and access information. Its general contact is not a universal ticket office: use the seller listed for your event. Discounts for CMI’s own events do not automatically cover guest concerts.",
+    "disabilityAtGraz":
+        "The official Graz tourism accessibility guide lists this venue contact. Seating and disability discounts depend on the organiser. There is no tactile guidance system for blind visitors; discuss assistance and guide dogs in advance. The contact provides information, not a confirmed reservation.",
+
+    "disabilityGbUnknown":
+        "We do not yet have a verified contact for this venue. Open the original event page and check its accessibility instructions. Do not use another venue’s contacts.",
+    "disabilityGbApollo":
+        "Email the venue with event name, date, telephone number and access needs. Discuss companion tickets and suitable seating before buying; supporting evidence may be requested. An Access Card is accepted but not compulsory.",
+    "disabilityGbAo":
+        "Accessible tickets are sold through Ticketmaster. Ask the venue if the online options do not meet your needs. Companion tickets must be arranged when booking and may require evidence; do not buy a regular ticket assuming a companion can be added later.",
+    "disabilityGbBirmingham":
+        "Use the Accessible Tickets option for your event through the venue’s AXS booking page. Nimbus registration can unlock suitable seats. Discuss assistance dogs and other requirements before booking; availability and companion arrangements depend on the event.",
+    "disabilityGbLeeds":
+        "Book through AXS or its accessibility telephone service. Events put on sale from July 2026 require an Access Card or the free Digital Access Pass. Earlier sales have different documentation rules: follow the official instructions for your event.",
+    "disabilityGbHydro":
+        "Use Ticketmaster or the accessible booking line. Call for visual access needs, audio description or assistance dogs. Wheelchair and ambulant seats serve different needs. Companion tickets and supporting evidence are subject to the venue’s conditions.",
+    "disabilityGbNottingham":
+        "Use the accessible booking telephone line or the form linked in the official instructions. Alternative evidence is accepted without an Access Card. Companion rules vary: Nottingham Panthers games do not have the same free-companion policy as most events.",
+    "disabilityGbNewcastle":
+        "AXS uses the free Digital Access Pass or Access Card for new event sales. The venue also provides telephone advice and bookings, including assistance when you do not yet have a pass. Read the current event requirements before buying.",
+
+    'disabilityEsUnknown':
+        'We do not yet have a verified contact for this venue. Open the event page and look for accessibility information or contact its organiser. Do not use contacts for a different venue.',
+    'disabilityEsMovistar':
+        'For visual or hearing disabilities, the venue offers help reaching your seat: contact the listed service. PMR tickets have specific mobility requirements and companions need their own ticket. Do not choose PMR solely because of a visual disability.',
+    'disabilityEsPalau':
+        'Read the official assistance and access conditions. PMR entrances and services have specific criteria; arrange help for other needs with the venue. Ask the event organiser or seller about adapted seats and companions: this page does not confirm a reservation.',
+    'disabilityEsRoig':
+        'The email is the venue’s general customer service. Confirm the appropriate category and event conditions. Its FAQ requires specific tickets and documentation for reduced mobility, which is not automatically equivalent to visual disability. Check companion tickets too; do not assume free admission.',
+    'disabilityEsBec':
+        'Bizkaia Arena BEC! is separate from Bilbao Arena Miribilla. Its FAQ asks you to check with the seller whether the event uses reserved mobility places or general admission. Venue contacts provide information; discuss your needs and companion arrangements before buying.',
+    'disabilityEsBilbao':
+        'This contact is for Bilbao Arena Miribilla, not Bizkaia Arena BEC!. Conditions depend on the layout and organiser. Companion information for Bilbao Basket games does not automatically apply to concerts; confirm your event’s conditions.',
+    'disabilityEsCartuja':
+        'The FAQ recommends contacting the box office to choose seats and discuss accessibility. Explain your specific needs and ask about any event discounts. This is a ticket service contact, not guaranteed availability.',
+    'disabilityCallContact': 'Call the listed service',
+    'disabilityDeUnknown':
+        'We do not yet have a verified contact for this venue. Open the event page and look for Barrierefreiheit, Schwerbehindertentickets or Begleitpersonen. Do not use contacts for a different venue.',
+    'disabilityDeUber':
+        'The ticket contact varies by event. Open the official directory and find your event and date. ALBA BERLIN and Eisbären Berlin have their own booking channels. The arrival assistance service is not a general ticket office.',
+    'disabilityDeLanxess':
+        'The arena lists its ticket office for wheelchair tickets with a companion. For visual disabilities or other needs, ask about the appropriate category and event conditions. Free companion admission is not guaranteed for everyone.',
+    'disabilityDeSeller':
+        'The arena asks you to discuss seating and companions with the seller for your event. The official instructions describe venue access, but do not confirm accessible ticket availability.',
+    'disabilityDeFesthalle':
+        'Admission and allocations are set by the event organiser, listed in the venue calendar. The email and phone shown here provide accessibility information, not confirmed ticket bookings. Trade fair rules do not automatically apply to concerts.',
+    'disabilityDeWestfalen':
+        'Seating is planned individually for each event. Use the ticket shop or ticket contact form on the official page for personal advice. Upper tiers are only accessible via stairs.',
+    'disabilityDeSap':
+        'Contact the service and ticket hotline. For some concerts only the organiser sells wheelchair places; the service will provide the booking contact. Discuss other needs and companion seats before buying.',
+    'disabilityDeMunich':
+        'München Ticket also assists people with visual or hearing disabilities. First confirm that your event and required category can be booked through the service. Its accessible shop covers selected events and may require registration with supporting documents. It does not cover every Olympiahalle event.',
+    'disabilityDeLeipzig':
+        'ARENA TICKET handles wheelchair and disability ticket enquiries, including companions where applicable. Its FAQ requires a German disability card marked B for companion tickets. Ask the service about other documents or needs.',
+    'disabilityVenue': 'Venue and city',
+    'disabilityPhone': 'Call the ticket office',
+    'disabilityOpenEvent': 'Open the original event page',
+    'disabilityFrUnknown':
+        'We do not yet have a verified contact for this French venue. Open the original event page and look for PSH/PMR information, or choose the correct venue from the list. Do not use contacts for a different venue.',
+    'disabilityFrPhone':
+        'Accor Arena provides a dedicated telephone service to book suitable seats and a companion’s seat. Check eligibility and availability with the service.',
+    'disabilityFrStade':
+        'For concerts, choose your event on the official site, then “Réservation PSH”. Reservations are not accepted by email or phone. Rugby uses different channels: read the official instructions for your event.',
+    'disabilityFrZenith':
+        'On the venue website, choose your event, “Réserver”, then “PSH”: the contact depends on the event. Instructions distinguish wheelchair users, hearing disabilities and other needs; check the appropriate procedure before buying.',
     'disabilityContactInstructions': 'Read official instructions',
     'disabilityContactEmail': 'Write an email',
     'disabilityChooseOrganiser': 'Choose organiser or venue',

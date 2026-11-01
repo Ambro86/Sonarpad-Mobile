@@ -1,0 +1,880 @@
+{
+  "checked": "2026-10-31",
+  "method": "Live oeticket catalogue and official venue/tourism instructions. Not a booking or availability check.",
+  "events": [
+    {
+      "productId": "21129180",
+      "name": "Irish Celtic - Spirit of Ireland",
+      "link": "https://www.oeticket.com/event/irish-celtic-2026-wiener-stadthalle-halle-f-21129180/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Wien",
+            "geoLocation": {
+              "latitude": 48.2024112,
+              "longitude": 16.3311657
+            },
+            "name": "Wiener Stadthalle - Halle F",
+            "postalCode": "1150",
+            "state": "Wien"
+          },
+          "startDate": "2026-11-03T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "at-stadthalle",
+      "officialInstructions": "https://www.stadthalle.com/en-us/information/faq/accessibility"
+    },
+    {
+      "productId": "21363411",
+      "name": "PETER CORNELIUS & BAND - !ZEiTLOS!",
+      "link": "https://www.oeticket.com/event/peter-cornelius-band-zeitlos-wiener-stadthalle-halle-f-21363411/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Wien",
+            "geoLocation": {
+              "latitude": 48.2024112,
+              "longitude": 16.3311657
+            },
+            "name": "Wiener Stadthalle - Halle F",
+            "postalCode": "1150",
+            "state": "Wien"
+          },
+          "startDate": "2026-11-05T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "at-stadthalle",
+      "officialInstructions": "https://www.stadthalle.com/en-us/information/faq/accessibility"
+    },
+    {
+      "productId": "20337462",
+      "name": "Chris Tall - Keep Laughing",
+      "link": "https://www.oeticket.com/event/chris-tall-keep-laughing-wiener-stadthalle-halle-d-20337462/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Wien",
+            "geoLocation": {
+              "latitude": 48.2024112,
+              "longitude": 16.3311657
+            },
+            "name": "Wiener Stadthalle - Halle D",
+            "postalCode": "1150",
+            "state": "Wien"
+          },
+          "startDate": "2026-11-05T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "at-stadthalle",
+      "officialInstructions": "https://www.stadthalle.com/en-us/information/faq/accessibility"
+    },
+    {
+      "productId": "20857155",
+      "name": "André Rieu Tour 2026",
+      "link": "https://www.oeticket.com/event/andre-rieu-tour-2026-wiener-stadthalle-halle-d-20857155/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Wien",
+            "geoLocation": {
+              "latitude": 48.2024112,
+              "longitude": 16.3311657
+            },
+            "name": "Wiener Stadthalle - Halle D",
+            "postalCode": "1150",
+            "state": "Wien"
+          },
+          "startDate": "2026-11-06T19:30:00+01:00"
+        }
+      },
+      "expectedProfile": "at-stadthalle",
+      "officialInstructions": "https://www.stadthalle.com/en-us/information/faq/accessibility"
+    },
+    {
+      "productId": "20166307",
+      "name": "Disney in Concert - Die Jubiläumstournee",
+      "link": "https://www.oeticket.com/event/disney-in-concert-die-jubilaeumstournee-wiener-stadthalle-halle-d-20166307/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Wien",
+            "geoLocation": {
+              "latitude": 48.2024112,
+              "longitude": 16.3311657
+            },
+            "name": "Wiener Stadthalle - Halle D",
+            "postalCode": "1150",
+            "state": "Wien"
+          },
+          "startDate": "2026-11-08T19:00:00+01:00"
+        }
+      },
+      "expectedProfile": "at-stadthalle",
+      "officialInstructions": "https://www.stadthalle.com/en-us/information/faq/accessibility"
+    },
+    {
+      "productId": "19466755",
+      "name": "Nico Santos",
+      "link": "https://www.oeticket.com/event/nico-santos-pov-arena-tour-2026-wiener-stadthalle-halle-d-19466755/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Wien",
+            "geoLocation": {
+              "latitude": 48.2024112,
+              "longitude": 16.3311657
+            },
+            "name": "Wiener Stadthalle - Halle D",
+            "postalCode": "1150",
+            "state": "Wien"
+          },
+          "startDate": "2026-11-09T19:30:00+01:00"
+        }
+      },
+      "expectedProfile": "at-stadthalle",
+      "officialInstructions": "https://www.stadthalle.com/en-us/information/faq/accessibility"
+    },
+    {
+      "productId": "21473883",
+      "name": "Placebo",
+      "link": "https://www.oeticket.com/event/placebo-30th-anniversary-tour-wiener-stadthalle-halle-d-21473883/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Wien",
+            "geoLocation": {
+              "latitude": 48.2024112,
+              "longitude": 16.3311657
+            },
+            "name": "Wiener Stadthalle - Halle D",
+            "postalCode": "1150",
+            "state": "Wien"
+          },
+          "startDate": "2026-11-10T19:30:00+01:00"
+        }
+      },
+      "expectedProfile": "at-stadthalle",
+      "officialInstructions": "https://www.stadthalle.com/en-us/information/faq/accessibility"
+    },
+    {
+      "productId": "21939042",
+      "name": "Bob Dylan",
+      "link": "https://www.oeticket.com/event/bob-dylan-wiener-stadthalle-halle-d-21939042/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Wien",
+            "geoLocation": {
+              "latitude": 48.2024112,
+              "longitude": 16.3311657
+            },
+            "name": "Wiener Stadthalle - Halle D",
+            "postalCode": "1150",
+            "state": "Wien"
+          },
+          "startDate": "2026-11-11T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "at-stadthalle",
+      "officialInstructions": "https://www.stadthalle.com/en-us/information/faq/accessibility"
+    },
+    {
+      "productId": "22057509",
+      "name": "Ernst Molden & Der Nino aus Wien - Unser Österreich ff",
+      "link": "https://www.oeticket.com/event/ernst-molden-der-nino-aus-wien-unser-oesterreich-ff-wiener-konzerthaus-22057509/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Wien",
+            "geoLocation": {
+              "latitude": 48.2008773,
+              "longitude": 16.3751409
+            },
+            "name": "Wiener Konzerthaus",
+            "postalCode": "1030",
+            "state": "Wien"
+          },
+          "startDate": "2026-11-02T19:30:00+01:00"
+        }
+      },
+      "expectedProfile": "at-konzerthaus",
+      "officialInstructions": "https://konzerthaus.at/de/barrierefreiheit"
+    },
+    {
+      "productId": "20819137",
+      "name": "Helge Schneider - Ellebogen vom Tich!",
+      "link": "https://www.oeticket.com/event/helge-schneider-ellebogen-vom-tich-wiener-konzerthaus-20819137/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Wien",
+            "geoLocation": {
+              "latitude": 48.2008773,
+              "longitude": 16.3751409
+            },
+            "name": "Wiener Konzerthaus",
+            "postalCode": "1030",
+            "state": "Wien"
+          },
+          "startDate": "2026-11-04T19:30:00+01:00"
+        }
+      },
+      "expectedProfile": "at-konzerthaus",
+      "officialInstructions": "https://konzerthaus.at/de/barrierefreiheit"
+    },
+    {
+      "productId": "20967307",
+      "name": "Heinz Marecek & Erwin Steinhauer - Was lachen Sie?",
+      "link": "https://www.oeticket.com/event/heinz-marecek-erwin-steinhauer-was-lachen-sie-wiener-konzerthaus-20967307/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Wien",
+            "geoLocation": {
+              "latitude": 48.2008773,
+              "longitude": 16.3751409
+            },
+            "name": "Wiener Konzerthaus",
+            "postalCode": "1030",
+            "state": "Wien"
+          },
+          "startDate": "2026-11-07T19:30:00+01:00"
+        }
+      },
+      "expectedProfile": "at-konzerthaus",
+      "officialInstructions": "https://konzerthaus.at/de/barrierefreiheit"
+    },
+    {
+      "productId": "22057552",
+      "name": "Branford Marsalis & Dianne Reeves celebrate John Coltrane",
+      "link": "https://www.oeticket.com/event/branford-marsalis-dianne-reeves-celebrate-john-coltrane-wiener-konzerthaus-22057552/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Wien",
+            "geoLocation": {
+              "latitude": 48.2008773,
+              "longitude": 16.3751409
+            },
+            "name": "Wiener Konzerthaus",
+            "postalCode": "1030",
+            "state": "Wien"
+          },
+          "startDate": "2026-11-09T19:30:00+01:00"
+        }
+      },
+      "expectedProfile": "at-konzerthaus",
+      "officialInstructions": "https://konzerthaus.at/de/barrierefreiheit"
+    },
+    {
+      "productId": "22057598",
+      "name": "Manu Delago & Max ZT - Deuce Tour 2026",
+      "link": "https://www.oeticket.com/event/manu-delago-max-zt-wiener-konzerthaus-22057598/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Wien",
+            "geoLocation": {
+              "latitude": 48.2008773,
+              "longitude": 16.3751409
+            },
+            "name": "Wiener Konzerthaus",
+            "postalCode": "1030",
+            "state": "Wien"
+          },
+          "startDate": "2026-11-10T19:30:00+01:00"
+        }
+      },
+      "expectedProfile": "at-konzerthaus",
+      "officialInstructions": "https://konzerthaus.at/de/barrierefreiheit"
+    },
+    {
+      "productId": "21345967",
+      "name": "Maria Bill singt Edith Piaf",
+      "link": "https://www.oeticket.com/event/maria-bill-singt-edith-piaf-wiener-konzerthaus-21345967/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Wien",
+            "geoLocation": {
+              "latitude": 48.2008773,
+              "longitude": 16.3751409
+            },
+            "name": "Wiener Konzerthaus",
+            "postalCode": "1030",
+            "state": "Wien"
+          },
+          "startDate": "2026-11-12T19:30:00+01:00"
+        }
+      },
+      "expectedProfile": "at-konzerthaus",
+      "officialInstructions": "https://konzerthaus.at/de/barrierefreiheit"
+    },
+    {
+      "productId": "22057635",
+      "name": "Mnozil Brass - Strau$$",
+      "link": "https://www.oeticket.com/event/mnozil-brass-strauss-ein-taenzchen-zwischen-den-stuehlen-wiener-konzerthaus-22057635/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Wien",
+            "geoLocation": {
+              "latitude": 48.2008773,
+              "longitude": 16.3751409
+            },
+            "name": "Wiener Konzerthaus",
+            "postalCode": "1030",
+            "state": "Wien"
+          },
+          "startDate": "2026-11-15T19:30:00+01:00"
+        }
+      },
+      "expectedProfile": "at-konzerthaus",
+      "officialInstructions": "https://konzerthaus.at/de/barrierefreiheit"
+    },
+    {
+      "productId": "22057636",
+      "name": "SODL Live",
+      "link": "https://www.oeticket.com/event/sodl-live-wiener-konzerthaus-22057636/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Wien",
+            "geoLocation": {
+              "latitude": 48.2008773,
+              "longitude": 16.3751409
+            },
+            "name": "Wiener Konzerthaus",
+            "postalCode": "1030",
+            "state": "Wien"
+          },
+          "startDate": "2026-11-18T21:00:00+01:00"
+        }
+      },
+      "expectedProfile": "at-konzerthaus",
+      "officialInstructions": "https://konzerthaus.at/de/barrierefreiheit"
+    },
+    {
+      "productId": "21489972",
+      "name": "Guido Sant’Anna & Giorgi Gigashvili",
+      "link": "https://www.oeticket.com/event/guido-santanna-giorgi-gigashvili-brucknerhaus-21489972/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Linz",
+            "geoLocation": {
+              "latitude": 48.310630060538905,
+              "longitude": 14.292740878037383
+            },
+            "name": "Brucknerhaus",
+            "postalCode": "4010",
+            "state": "OÖ"
+          },
+          "startDate": "2026-11-03T19:30:00+01:00"
+        }
+      },
+      "expectedProfile": "at-bruckner",
+      "officialInstructions": "https://www.brucknerhaus.at/das-haus/raeumlichkeiten"
+    },
+    {
+      "productId": "20611174",
+      "name": "Helge Schneider - Ellebogen vom Tich!",
+      "link": "https://www.oeticket.com/event/helge-schneider-ellebogen-vom-tich-brucknerhaus-20611174/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Linz",
+            "geoLocation": {
+              "latitude": 48.310630060538905,
+              "longitude": 14.292740878037383
+            },
+            "name": "Brucknerhaus",
+            "postalCode": "4010",
+            "state": "OÖ"
+          },
+          "startDate": "2026-11-06T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "at-bruckner",
+      "officialInstructions": "https://www.brucknerhaus.at/das-haus/raeumlichkeiten"
+    },
+    {
+      "productId": "21489948",
+      "name": "Anna Mabo & Friends",
+      "link": "https://www.oeticket.com/event/anna-mabo-friends-brucknerhaus-21489948/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Linz",
+            "geoLocation": {
+              "latitude": 48.310630060538905,
+              "longitude": 14.292740878037383
+            },
+            "name": "Brucknerhaus",
+            "postalCode": "4010",
+            "state": "OÖ"
+          },
+          "startDate": "2026-11-07T19:30:00+01:00"
+        }
+      },
+      "expectedProfile": "at-bruckner",
+      "officialInstructions": "https://www.brucknerhaus.at/das-haus/raeumlichkeiten"
+    },
+    {
+      "productId": "21490014",
+      "name": "The Fluteman with Orchestra Show",
+      "link": "https://www.oeticket.com/event/the-fluteman-with-orchestra-show-brucknerhaus-21490014/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Linz",
+            "geoLocation": {
+              "latitude": 48.310630060538905,
+              "longitude": 14.292740878037383
+            },
+            "name": "Brucknerhaus",
+            "postalCode": "4010",
+            "state": "OÖ"
+          },
+          "startDate": "2026-11-08T11:00:00+01:00"
+        }
+      },
+      "expectedProfile": "at-bruckner",
+      "officialInstructions": "https://www.brucknerhaus.at/das-haus/raeumlichkeiten"
+    },
+    {
+      "productId": "21951679",
+      "name": "Pizzera & Jaus & folkshilfe",
+      "link": "https://www.oeticket.com/event/pizzera-jaus-folkshilfe-tour-ma-uns-zamm-brucknerhaus-21951679/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Linz",
+            "geoLocation": {
+              "latitude": 48.310630060538905,
+              "longitude": 14.292740878037383
+            },
+            "name": "Brucknerhaus",
+            "postalCode": "4010",
+            "state": "OÖ"
+          },
+          "startDate": "2026-11-11T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "at-bruckner",
+      "officialInstructions": "https://www.brucknerhaus.at/das-haus/raeumlichkeiten"
+    },
+    {
+      "productId": "21489951",
+      "name": "Danish String Quartet",
+      "link": "https://www.oeticket.com/event/danish-string-quartet-brucknerhaus-21489951/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Linz",
+            "geoLocation": {
+              "latitude": 48.310630060538905,
+              "longitude": 14.292740878037383
+            },
+            "name": "Brucknerhaus",
+            "postalCode": "4010",
+            "state": "OÖ"
+          },
+          "startDate": "2026-11-13T19:30:00+01:00"
+        }
+      },
+      "expectedProfile": "at-bruckner",
+      "officialInstructions": "https://www.brucknerhaus.at/das-haus/raeumlichkeiten"
+    },
+    {
+      "productId": "21969567",
+      "name": "Grosse C-Dur Symphonie",
+      "link": "https://www.oeticket.com/event/grosse-c-dur-symphonie-musikverein-wien-21969567/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Wien",
+            "geoLocation": {
+              "latitude": 48.2004437,
+              "longitude": 16.3706797
+            },
+            "name": "Musikverein Wien",
+            "postalCode": "1010",
+            "state": "Wien"
+          },
+          "startDate": "2026-11-01T15:30:00+01:00"
+        }
+      },
+      "expectedProfile": "at-musikverein",
+      "officialInstructions": "https://musikverein.at/de/konzertbesuch/"
+    },
+    {
+      "productId": "20940008",
+      "name": "Wiener Mozart Konzert - Musikverein",
+      "link": "https://www.oeticket.com/event/wiener-mozart-konzert-im-musikverein-wiener-mozart-konzert-musikverein-musikverein-wien-20940008/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Wien",
+            "geoLocation": {
+              "latitude": 48.2004437,
+              "longitude": 16.3706797
+            },
+            "name": "Musikverein Wien",
+            "postalCode": "1010",
+            "state": "Wien"
+          },
+          "startDate": "2026-11-02T20:15:00+01:00"
+        }
+      },
+      "expectedProfile": "at-musikverein",
+      "officialInstructions": "https://musikverein.at/de/konzertbesuch/"
+    },
+    {
+      "productId": "21969568",
+      "name": "Schumann & Strauss",
+      "link": "https://www.oeticket.com/event/schumann-strauss-musikverein-wien-21969568/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Wien",
+            "geoLocation": {
+              "latitude": 48.2004437,
+              "longitude": 16.3706797
+            },
+            "name": "Musikverein Wien",
+            "postalCode": "1010",
+            "state": "Wien"
+          },
+          "startDate": "2026-11-13T19:30:00+01:00"
+        }
+      },
+      "expectedProfile": "at-musikverein",
+      "officialInstructions": "https://musikverein.at/de/konzertbesuch/"
+    },
+    {
+      "productId": "22144811",
+      "name": "The Music of the Lord of the Rings - Tribute to Howard Shore by Mystery Ensemble",
+      "link": "https://www.oeticket.com/event/the-music-of-the-lord-of-the-rings-musikverein-wien-22144811/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Wien",
+            "geoLocation": {
+              "latitude": 48.2004437,
+              "longitude": 16.3706797
+            },
+            "name": "Musikverein Wien",
+            "postalCode": "1010",
+            "state": "Wien"
+          },
+          "startDate": "2026-11-21T19:30:00+01:00"
+        }
+      },
+      "expectedProfile": "at-musikverein",
+      "officialInstructions": "https://musikverein.at/de/konzertbesuch/"
+    },
+    {
+      "productId": "21969570",
+      "name": "Brahms & Zemlinsky",
+      "link": "https://www.oeticket.com/event/brahms-zemlinsky-musikverein-wien-21969570/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Wien",
+            "geoLocation": {
+              "latitude": 48.2004437,
+              "longitude": 16.3706797
+            },
+            "name": "Musikverein Wien",
+            "postalCode": "1010",
+            "state": "Wien"
+          },
+          "startDate": "2026-11-28T19:30:00+01:00"
+        }
+      },
+      "expectedProfile": "at-musikverein",
+      "officialInstructions": "https://musikverein.at/de/konzertbesuch/"
+    },
+    {
+      "productId": "21969572",
+      "name": "Schwanensee",
+      "link": "https://www.oeticket.com/event/schwanensee-musikverein-wien-21969572/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Wien",
+            "geoLocation": {
+              "latitude": 48.2004437,
+              "longitude": 16.3706797
+            },
+            "name": "Musikverein Wien",
+            "postalCode": "1010",
+            "state": "Wien"
+          },
+          "startDate": "2026-12-18T19:30:00+01:00"
+        }
+      },
+      "expectedProfile": "at-musikverein",
+      "officialInstructions": "https://musikverein.at/de/konzertbesuch/"
+    },
+    {
+      "productId": "21377207",
+      "name": "THE MAGIC OF ELVIS feat. Jimmy Holmes",
+      "link": "https://www.oeticket.com/event/the-magic-of-elvis-feat-jimmy-holmes-congress-innsbruck-21377207/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Innsbruck",
+            "geoLocation": {
+              "latitude": 47.2706751787194,
+              "longitude": 11.395121475698573
+            },
+            "name": "Congress Innsbruck",
+            "postalCode": "6020",
+            "state": "Tirol"
+          },
+          "startDate": "2026-11-07T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "at-innsbruck",
+      "officialInstructions": "https://www.cmi.at/de/unternehmen/barrierefreiheit"
+    },
+    {
+      "productId": "21044908",
+      "name": "Gernot Kulis - Ich kann nicht anders",
+      "link": "https://www.oeticket.com/event/gernot-kulis-ich-kann-nicht-anders-congress-innsbruck-21044908/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Innsbruck",
+            "geoLocation": {
+              "latitude": 47.2706751787194,
+              "longitude": 11.395121475698573
+            },
+            "name": "Congress Innsbruck",
+            "postalCode": "6020",
+            "state": "Tirol"
+          },
+          "startDate": "2026-11-11T19:30:00+01:00"
+        }
+      },
+      "expectedProfile": "at-innsbruck",
+      "officialInstructions": "https://www.cmi.at/de/unternehmen/barrierefreiheit"
+    },
+    {
+      "productId": "19739180",
+      "name": "Mnozil Brass - Strau$$",
+      "link": "https://www.oeticket.com/event/mnozil-brass-strauss-ein-taenzchen-zwischen-den-stuehlen-congress-innsbruck-19739180/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Innsbruck",
+            "geoLocation": {
+              "latitude": 47.2706751787194,
+              "longitude": 11.395121475698573
+            },
+            "name": "Congress Innsbruck",
+            "postalCode": "6020",
+            "state": "Tirol"
+          },
+          "startDate": "2026-11-14T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "at-innsbruck",
+      "officialInstructions": "https://www.cmi.at/de/unternehmen/barrierefreiheit"
+    },
+    {
+      "productId": "21952640",
+      "name": "ABBA Show - Tour 2026",
+      "link": "https://www.oeticket.com/event/abba-show-tour-2026-congress-innsbruck-21952640/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Innsbruck",
+            "geoLocation": {
+              "latitude": 47.2706751787194,
+              "longitude": 11.395121475698573
+            },
+            "name": "Congress Innsbruck",
+            "postalCode": "6020",
+            "state": "Tirol"
+          },
+          "startDate": "2026-11-15T19:00:00+01:00"
+        }
+      },
+      "expectedProfile": "at-innsbruck",
+      "officialInstructions": "https://www.cmi.at/de/unternehmen/barrierefreiheit"
+    },
+    {
+      "productId": "21926076",
+      "name": "Wein & Genuss Innsbruck",
+      "link": "https://www.oeticket.com/event/wein-genuss-innsbruck-congress-innsbruck-21926076/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Innsbruck",
+            "geoLocation": {
+              "latitude": 47.2706751787194,
+              "longitude": 11.395121475698573
+            },
+            "name": "Congress Innsbruck",
+            "postalCode": "6020",
+            "state": "Tirol"
+          },
+          "startDate": "2026-11-19T13:00:00+01:00"
+        }
+      },
+      "expectedProfile": "at-innsbruck",
+      "officialInstructions": "https://www.cmi.at/de/unternehmen/barrierefreiheit"
+    },
+    {
+      "productId": "20963248",
+      "name": "Gernot & Stipsits - Lotterbuben",
+      "link": "https://www.oeticket.com/event/gernot-stipsits-lotterbuben-congress-innsbruck-20963248/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Innsbruck",
+            "geoLocation": {
+              "latitude": 47.2706751787194,
+              "longitude": 11.395121475698573
+            },
+            "name": "Congress Innsbruck",
+            "postalCode": "6020",
+            "state": "Tirol"
+          },
+          "startDate": "2026-11-24T19:30:00+01:00"
+        }
+      },
+      "expectedProfile": "at-innsbruck",
+      "officialInstructions": "https://www.cmi.at/de/unternehmen/barrierefreiheit"
+    },
+    {
+      "productId": "20989180",
+      "name": "Cirque du Soleil OVO",
+      "link": "https://www.oeticket.com/event/cirque-du-soleil-ovo-stadthalle-graz-20989180/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Graz",
+            "geoLocation": {
+              "latitude": 47.0577932,
+              "longitude": 15.446928
+            },
+            "name": "Stadthalle Graz",
+            "postalCode": "8010"
+          },
+          "startDate": "2026-11-01T13:00:00+01:00"
+        }
+      },
+      "expectedProfile": "at-graz",
+      "officialInstructions": "https://www.graztourismus.at/Barrierefrei/PDFs/va-orte/stadthalle-und-messecongress-graz_barrierefrei_2025.pdf"
+    },
+    {
+      "productId": "22122672",
+      "name": "Junker-Präsentation 2026",
+      "link": "https://www.oeticket.com/event/wein-steiermark-junkerpraesentation-2026-stadthalle-graz-22122672/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Graz",
+            "geoLocation": {
+              "latitude": 47.0577932,
+              "longitude": 15.446928
+            },
+            "name": "Stadthalle Graz",
+            "postalCode": "8010"
+          },
+          "startDate": "2026-11-04T17:00:00+01:00"
+        }
+      },
+      "expectedProfile": "at-graz",
+      "officialInstructions": "https://www.graztourismus.at/Barrierefrei/PDFs/va-orte/stadthalle-und-messecongress-graz_barrierefrei_2025.pdf"
+    },
+    {
+      "productId": "20336466",
+      "name": "Chris Tall - Keep Laughing",
+      "link": "https://www.oeticket.com/event/chris-tall-keep-laughing-stadthalle-graz-20336466/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Graz",
+            "geoLocation": {
+              "latitude": 47.0577932,
+              "longitude": 15.446928
+            },
+            "name": "Stadthalle Graz",
+            "postalCode": "8010"
+          },
+          "startDate": "2026-11-07T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "at-graz",
+      "officialInstructions": "https://www.graztourismus.at/Barrierefrei/PDFs/va-orte/stadthalle-und-messecongress-graz_barrierefrei_2025.pdf"
+    },
+    {
+      "productId": "20918861",
+      "name": "XL Schlagershow Stadthalle Graz 2026 - mit Giovanni Zarrella, Kerstin Ott, uvm.",
+      "link": "https://www.oeticket.com/event/xl-schlagershow-stadthalle-graz-2026-mit-giovanni-zarrella-kerstin-ott-uvm-stadthalle-graz-20918861/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Graz",
+            "geoLocation": {
+              "latitude": 47.0577932,
+              "longitude": 15.446928
+            },
+            "name": "Stadthalle Graz",
+            "postalCode": "8010"
+          },
+          "startDate": "2026-11-14T19:00:00+01:00"
+        }
+      },
+      "expectedProfile": "at-graz",
+      "officialInstructions": "https://www.graztourismus.at/Barrierefrei/PDFs/va-orte/stadthalle-und-messecongress-graz_barrierefrei_2025.pdf"
+    },
+    {
+      "productId": "21973612",
+      "name": "Bonez MC & RAF Camora",
+      "link": "https://www.oeticket.com/event/bonez-mc-raf-camora-10-jahre-palmen-aus-plastik-tour-stadthalle-graz-21973612/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Graz",
+            "geoLocation": {
+              "latitude": 47.0577932,
+              "longitude": 15.446928
+            },
+            "name": "Stadthalle Graz",
+            "postalCode": "8010"
+          },
+          "startDate": "2026-11-30T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "at-graz",
+      "officialInstructions": "https://www.graztourismus.at/Barrierefrei/PDFs/va-orte/stadthalle-und-messecongress-graz_barrierefrei_2025.pdf"
+    },
+    {
+      "productId": "20600919",
+      "name": "Die Udo Jürgens Tribute-Show",
+      "link": "https://www.oeticket.com/event/die-udo-juergens-tribute-show-melodien-eines-lebens-stadthalle-graz-20600919/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Graz",
+            "geoLocation": {
+              "latitude": 47.0577932,
+              "longitude": 15.446928
+            },
+            "name": "Stadthalle Graz",
+            "postalCode": "8010"
+          },
+          "startDate": "2026-12-12T15:00:00+01:00"
+        }
+      },
+      "expectedProfile": "at-graz",
+      "officialInstructions": "https://www.graztourismus.at/Barrierefrei/PDFs/va-orte/stadthalle-und-messecongress-graz_barrierefrei_2025.pdf"
+    }
+  ]
+}

@@ -727,7 +727,14 @@ class SonarTubeService {
     }
 
     // The playing codec can differ from the AAC variant offered in the picker.
-    final playingTrackId = _asList(streaming['adaptiveFormats'])
+    // A progressive stream can contain the original language even when a
+    // dubbed adaptive track is marked audioIsDefault. Only identify the track
+    // from the stream actually loaded; otherwise leave the selection unknown
+    // so choosing that default language still loads its own audio URL.
+    final playingTrackId = [
+        ..._asList(streaming['formats']),
+        ..._asList(streaming['adaptiveFormats']),
+      ]
         .map(_asMap).where((format) => format?['url'] == audioUrl)
         .map((format) => _string(_asMap(format?['audioTrack'])?['id']))
         .whereType<String>().firstOrNull;
@@ -738,7 +745,7 @@ class SonarTubeService {
       videoUrl: videoUrl,
       audioTracks: playbackIsLive ? const [] : audioTracks,
       selectedAudioTrackId: playingTrackId ?? audioTracks.where((track) =>
-          track.url == audioUrl || (videoUrl == null && track.isDefault))
+          track.url == audioUrl || track.fallbackUrls.contains(audioUrl))
           .firstOrNull?.id,
       // isLiveContent also describes archived broadcasts; an explicit
       // isLiveNow/isLive=false or endTimestamp keeps recordings eligible.

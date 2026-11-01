@@ -1,0 +1,759 @@
+{
+  "captured": "2026-10-31",
+  "events": [
+    {
+      "query": "Accor Arena",
+      "name": "The World of Hans Zimmer - A New Dimension",
+      "link": "https://www.eventim.fr/event/the-world-of-hans-zimmer-a-new-dimension-accor-arena-20001976/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Paris",
+            "geoLocation": {
+              "latitude": 48.83853271728945,
+              "longitude": 2.378530531462742
+            },
+            "name": "Accor Arena",
+            "postalCode": "75012"
+          },
+          "startDate": "2026-11-02T20:00:00+01:00"
+        }
+      }
+    },
+    {
+      "query": "Accor Arena",
+      "name": "J. Cole : The Fall-Off Tour",
+      "link": "https://www.eventim.fr/event/j-cole-the-fall-off-tour-accor-arena-21331292/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Paris",
+            "geoLocation": {
+              "latitude": 48.83853271728945,
+              "longitude": 2.378530531462742
+            },
+            "name": "Accor Arena",
+            "postalCode": "75012"
+          },
+          "startDate": "2026-11-05T20:00:00+01:00"
+        }
+      }
+    },
+    {
+      "query": "Accor Arena",
+      "name": "Niall Horan - Dinner Party Live on Tour",
+      "link": "https://www.eventim.fr/event/niall-horan-dinner-party-live-on-tour-accor-arena-21490500/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Paris",
+            "geoLocation": {
+              "latitude": 48.83853271728945,
+              "longitude": 2.378530531462742
+            },
+            "name": "Accor Arena",
+            "postalCode": "75012"
+          },
+          "startDate": "2026-11-06T20:00:00+01:00"
+        }
+      }
+    },
+    {
+      "query": "Accor Arena",
+      "name": "Lujipeka",
+      "link": "https://www.eventim.fr/event/lujipeka-accor-arena-20268343/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Paris",
+            "geoLocation": {
+              "latitude": 48.83853271728945,
+              "longitude": 2.378530531462742
+            },
+            "name": "Accor Arena",
+            "postalCode": "75012"
+          },
+          "startDate": "2026-11-07T20:00:00+01:00"
+        }
+      }
+    },
+    {
+      "query": "Accor Arena",
+      "name": "Paris Basketball / Fenerbahce Istanbul - Euroleague",
+      "link": "https://www.eventim.fr/event/paris-basketball-saison-20262027-accor-arena-22134484/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Paris",
+            "geoLocation": {
+              "latitude": 48.83853271728945,
+              "longitude": 2.378530531462742
+            },
+            "name": "Accor Arena",
+            "postalCode": "75012"
+          },
+          "startDate": "2026-11-11T20:45:00+01:00"
+        }
+      }
+    },
+    {
+      "query": "Accor Arena",
+      "name": "Fianso + 1ère partie",
+      "link": "https://www.eventim.fr/event/fianso-1ere-partie-accor-arena-20665422/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Paris",
+            "geoLocation": {
+              "latitude": 48.83853271728945,
+              "longitude": 2.378530531462742
+            },
+            "name": "Accor Arena",
+            "postalCode": "75012"
+          },
+          "startDate": "2026-11-12T20:00:00+01:00"
+        }
+      }
+    },
+    {
+      "query": "Accor Arena",
+      "name": "Fontaines D.C. + Chalk",
+      "link": "https://www.eventim.fr/event/fontaines-d-c-accor-arena-22075866/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Paris",
+            "geoLocation": {
+              "latitude": 48.83853271728945,
+              "longitude": 2.378530531462742
+            },
+            "name": "Accor Arena",
+            "postalCode": "75012"
+          },
+          "startDate": "2026-11-13T20:00:00+01:00"
+        }
+      }
+    },
+    {
+      "query": "Accor Arena",
+      "name": "JB MPiana",
+      "link": "https://www.eventim.fr/event/jb-mpiana-accor-arena-21964565/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Paris",
+            "geoLocation": {
+              "latitude": 48.83853271728945,
+              "longitude": 2.378530531462742
+            },
+            "name": "Accor Arena",
+            "postalCode": "75012"
+          },
+          "startDate": "2026-11-14T20:00:00+01:00"
+        }
+      }
+    },
+    {
+      "query": "Olympia",
+      "name": "S.S. Lazio / Cagliari Calcio - Serie A",
+      "link": "https://www.eventim.fr/event/s-s-lazio-saison-20262027-stade-olympique-rome-21781037/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "endDate": "2026-11-01T15:00:00+01:00",
+          "location": {
+            "city": "Rome",
+            "geoLocation": {
+              "latitude": 41.94026723220291,
+              "longitude": 12.481281092264956
+            },
+            "name": "STADE OLYMPIQUE ROME",
+            "postalCode": "00194"
+          },
+          "startDate": "2026-11-01T15:00:00+01:00"
+        }
+      }
+    },
+    {
+      "query": "Olympia",
+      "name": "Mémoires de l'Olympia",
+      "link": "https://www.eventim.fr/event/memoires-de-lolympia-le-funambule-montmartre-paris-le-funambule-montmartre-paris-18-21632014/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Paris",
+            "geoLocation": {
+              "latitude": 48.890682148560025,
+              "longitude": 2.3403297521726834
+            },
+            "name": "LE FUNAMBULE-MONTMARTRE PARIS 18",
+            "postalCode": "75018"
+          },
+          "startDate": "2026-11-01T16:00:00+01:00"
+        }
+      }
+    },
+    {
+      "query": "Olympia",
+      "name": "Edith Piaf : Olympia 1961",
+      "link": "https://www.eventim.fr/event/edith-piaf-olympia-1961-la-scene-parisienne-paris-la-scene-parisienne-21972579/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Paris",
+            "geoLocation": {
+              "latitude": 48.874285225957,
+              "longitude": 2.3447563321694647
+            },
+            "name": "La Scène Parisienne",
+            "postalCode": "75009"
+          },
+          "startDate": "2026-11-01T18:15:00+01:00"
+        }
+      }
+    },
+    {
+      "query": "Olympia",
+      "name": "Ebony",
+      "link": "https://www.eventim.fr/event/ebony-conception-tour-lolympia-21204821/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Paris",
+            "geoLocation": {
+              "latitude": 48.87028196161264,
+              "longitude": 2.3282571273269506
+            },
+            "name": "LOlympia",
+            "postalCode": "75009"
+          },
+          "startDate": "2026-11-01T20:00:00+01:00"
+        }
+      }
+    },
+    {
+      "query": "Olympia",
+      "name": "The Fray - Autumn Light Tour",
+      "link": "https://www.eventim.fr/event/the-fray-autumn-light-tour-lolympia-21457781/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Paris",
+            "geoLocation": {
+              "latitude": 48.87028196161264,
+              "longitude": 2.3282571273269506
+            },
+            "name": "LOlympia",
+            "postalCode": "75009"
+          },
+          "startDate": "2026-11-03T20:00:00+01:00"
+        }
+      }
+    },
+    {
+      "query": "Olympia",
+      "name": "Félix Radu",
+      "link": "https://www.eventim.fr/event/felix-radu-tournee-lolympia-21071849/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Paris",
+            "geoLocation": {
+              "latitude": 48.87028196161264,
+              "longitude": 2.3282571273269506
+            },
+            "name": "LOlympia",
+            "postalCode": "75009"
+          },
+          "startDate": "2026-11-04T20:00:00+01:00"
+        }
+      }
+    },
+    {
+      "query": "Olympia",
+      "name": "Calogero - Un Soir dans les Théâtres",
+      "link": "https://www.eventim.fr/event/calogero-un-soir-dans-les-theatres-theatre-olympia-darcachon-21891956/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Arcachon",
+            "geoLocation": {
+              "latitude": 44.66104466051933,
+              "longitude": -1.1653680885962432
+            },
+            "name": "Théâtre Olympia dArcachon",
+            "postalCode": "33120"
+          },
+          "startDate": "2026-11-04T20:30:00+01:00"
+        }
+      }
+    },
+    {
+      "query": "Olympia",
+      "name": "Mentissa - Enfants Difficiles Tour",
+      "link": "https://www.eventim.fr/event/mentissa-enfants-difficiles-tour-lolympia-20501349/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Paris",
+            "geoLocation": {
+              "latitude": 48.87028196161264,
+              "longitude": 2.3282571273269506
+            },
+            "name": "LOlympia",
+            "postalCode": "75009"
+          },
+          "startDate": "2026-11-05T20:00:00+01:00"
+        }
+      }
+    },
+    {
+      "query": "Palais des Congres",
+      "name": "Colombia Mon Amour",
+      "link": "https://www.eventim.fr/event/colombia-mon-amour-palais-des-congres-22324632/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Paris",
+            "geoLocation": {
+              "latitude": 48.8822559645669,
+              "longitude": 2.281970446907191
+            },
+            "name": "PALAIS DES CONGRES",
+            "postalCode": "75017"
+          },
+          "startDate": "2026-11-01T19:00:00+01:00"
+        }
+      }
+    },
+    {
+      "query": "Palais des Congres",
+      "name": "Cyrano",
+      "link": "https://www.eventim.fr/event/cyrano-palais-des-congres-digne-les-bains-21943755/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Digne-Les-Bains",
+            "geoLocation": {
+              "latitude": 44.098017592430125,
+              "longitude": 6.230030029862246
+            },
+            "name": "Palais des Congrès - Digne-les-Bains",
+            "postalCode": "04000"
+          },
+          "startDate": "2026-11-03T19:00:00+01:00"
+        }
+      }
+    },
+    {
+      "query": "Palais des Congres",
+      "name": "Drag Race France Live, Saison 4",
+      "link": "https://www.eventim.fr/event/drag-race-france-live-saison-4-tournee-palais-des-congres-de-tours-21088672/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Tours",
+            "geoLocation": {
+              "latitude": 47.39093082087312,
+              "longitude": 0.6927500802118137
+            },
+            "name": "Palais des Congrès de Tours",
+            "postalCode": "37000"
+          },
+          "startDate": "2026-11-05T20:00:00+01:00"
+        }
+      }
+    },
+    {
+      "query": "Palais des Congres",
+      "name": "Balavoine, Ma Bataille - L'Hommage Authentique",
+      "link": "https://www.eventim.fr/event/balavoine-ma-bataille-tournee-palais-des-congres-de-tours-21309470/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Tours",
+            "geoLocation": {
+              "latitude": 47.39093082087312,
+              "longitude": 0.6927500802118137
+            },
+            "name": "Palais des Congrès de Tours",
+            "postalCode": "37000"
+          },
+          "startDate": "2026-11-06T20:00:00+01:00"
+        }
+      }
+    },
+    {
+      "query": "Palais des Congres",
+      "name": "Hubert Félix Thiefaine - Des Adieux .../...",
+      "link": "https://www.eventim.fr/event/hubert-felix-thiefaine-des-adieux-tournee-palais-des-festivals-des-congres-cannes-21492105/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Cannes",
+            "geoLocation": {
+              "latitude": 43.550653664459766,
+              "longitude": 7.018167176188549
+            },
+            "name": "PALAIS DES  FESTIVALS & DES CONGRES CANNES",
+            "postalCode": "06400"
+          },
+          "startDate": "2026-11-06T20:00:00+01:00"
+        }
+      }
+    },
+    {
+      "query": "Palais des Congres",
+      "name": "D'Jal - En Pleine Conscience",
+      "link": "https://www.eventim.fr/event/djal-en-pleine-conscience-tournee-palais-des-congres-perpignan-20973993/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Perpignan",
+            "geoLocation": {
+              "latitude": 42.7029270106949,
+              "longitude": 2.8988711743633298
+            },
+            "name": "PALAIS DES CONGRES PERPIGNAN",
+            "postalCode": "66000"
+          },
+          "startDate": "2026-11-06T20:29:00+01:00"
+        }
+      }
+    },
+    {
+      "query": "Palais des Congres",
+      "name": "Michèle Laroque & Kad Merad - L'Âge Bête",
+      "link": "https://www.eventim.fr/event/michele-laroque-kad-merad-lage-bete-tournee-palais-des-congres-de-tours-20012356/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Tours",
+            "geoLocation": {
+              "latitude": 47.39093082087312,
+              "longitude": 0.6927500802118137
+            },
+            "name": "Palais des Congrès de Tours",
+            "postalCode": "37000"
+          },
+          "startDate": "2026-11-07T20:00:00+01:00"
+        }
+      }
+    },
+    {
+      "query": "Palais des Congres",
+      "name": "Asaf Avidan - Unfurl",
+      "link": "https://www.eventim.fr/event/asaf-avidan-orchestra-unfurl-palais-des-congres-de-tours-21775847/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Tours",
+            "geoLocation": {
+              "latitude": 47.39093082087312,
+              "longitude": 0.6927500802118137
+            },
+            "name": "Palais des Congrès de Tours",
+            "postalCode": "37000"
+          },
+          "startDate": "2026-11-10T20:00:00+01:00"
+        }
+      }
+    },
+    {
+      "query": "Stade de France",
+      "name": "Les Coulisses du Stade de France",
+      "link": "https://www.eventim.fr/event/les-coulisses-du-stade-de-france-stade-de-france-21015563/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "endDate": "2026-12-31T00:00:00+01:00",
+          "location": {
+            "city": "Paris",
+            "geoLocation": {
+              "latitude": 48.92655902168593,
+              "longitude": 2.3620286836916393
+            },
+            "name": "Stade De France",
+            "postalCode": "93200"
+          },
+          "startDate": "2025-11-27T00:00:00+01:00"
+        }
+      }
+    },
+    {
+      "query": "Stade de France",
+      "name": "Italie / France - Ligue des Nations",
+      "link": "https://www.eventim.fr/event/ligue-des-nations-de-luefa-saison-20262027-stade-san-siro-22229853/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "endDate": "2026-11-12T20:45:00+01:00",
+          "location": {
+            "city": "Milan",
+            "name": "Stade San Siro",
+            "postalCode": "20151"
+          },
+          "startDate": "2026-11-12T20:45:00+01:00"
+        }
+      }
+    },
+    {
+      "query": "Stade de France",
+      "name": "Angleterre / France - Tournoi des 6 Nations 2027",
+      "link": "https://www.eventim.fr/event/tournoi-des-6-nations-2027-twickenham-stadium-21428069/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "endDate": "2027-02-14T15:10:00Z",
+          "location": {
+            "city": "Londres",
+            "name": "TWICKENHAM STADIUM",
+            "postalCode": "TW1 1DZ"
+          },
+          "startDate": "2027-02-14T15:10:00Z"
+        }
+      }
+    },
+    {
+      "query": "Stade de France",
+      "name": "L5 on Stage",
+      "link": "https://www.eventim.fr/event/l5-on-stage-dome-de-paris-21459774/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Paris",
+            "geoLocation": {
+              "latitude": 48.834625244140625,
+              "longitude": 2.2830605506896973
+            },
+            "name": "Dôme de Paris",
+            "postalCode": "75015"
+          },
+          "startDate": "2027-02-19T20:00:00+01:00"
+        }
+      }
+    },
+    {
+      "query": "Stade de France",
+      "name": "Italie / France - Tournoi des 6 Nations 2027",
+      "link": "https://www.eventim.fr/event/tournoi-des-6-nations-2027-stade-olympique-rome-21425296/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "endDate": "2027-03-06T14:10:00+01:00",
+          "location": {
+            "city": "Rome",
+            "geoLocation": {
+              "latitude": 41.94026723220291,
+              "longitude": 12.481281092264956
+            },
+            "name": "STADE OLYMPIQUE ROME",
+            "postalCode": "00194"
+          },
+          "startDate": "2027-03-06T14:10:00+01:00"
+        }
+      }
+    },
+    {
+      "query": "Stade de France",
+      "name": "Irlande / France - Tournoi des 6 Nations 2027",
+      "link": "https://www.eventim.fr/event/tournoi-des-6-nations-2027-aviva-stadium-21462349/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "endDate": "2027-03-13T20:10:00+01:00",
+          "location": {
+            "city": "Dublin",
+            "name": "Aviva Stadium",
+            "postalCode": "D04W2F3"
+          },
+          "startDate": "2027-03-13T20:10:00+01:00"
+        }
+      }
+    },
+    {
+      "query": "Stade de France",
+      "name": "Darts Grand Prix de France",
+      "link": "https://www.eventim.fr/event/darts-grand-prix-de-france-arena-stade-couvert-lievin-22360022/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Lievin",
+            "geoLocation": {
+              "latitude": 50.4129891093905,
+              "longitude": 2.7675946286763606
+            },
+            "name": "ARENA STADE COUVERT LIEVIN",
+            "postalCode": "62800"
+          },
+          "startDate": "2027-03-20T13:00:00+01:00"
+        }
+      }
+    },
+    {
+      "query": "Stade de France",
+      "name": "Darts Grand Prix de France",
+      "link": "https://www.eventim.fr/event/darts-grand-prix-de-france-arena-stade-couvert-lievin-22360023/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Lievin",
+            "geoLocation": {
+              "latitude": 50.4129891093905,
+              "longitude": 2.7675946286763606
+            },
+            "name": "ARENA STADE COUVERT LIEVIN",
+            "postalCode": "62800"
+          },
+          "startDate": "2027-03-20T19:00:00+01:00"
+        }
+      }
+    },
+    {
+      "query": "Zenith Nantes",
+      "name": "Helena",
+      "link": "https://www.eventim.fr/event/helena-tournee-zenith-de-nantes-metropole-21129596/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Nantes",
+            "geoLocation": {
+              "latitude": 47.23041046589605,
+              "longitude": -1.6304109931428559
+            },
+            "name": "Zénith de Nantes Métropole",
+            "postalCode": "44800"
+          },
+          "startDate": "2026-11-03T20:00:00+01:00"
+        }
+      }
+    },
+    {
+      "query": "Zenith Nantes",
+      "name": "Florent Pagny - La Suite du Retour - 65 Tour",
+      "link": "https://www.eventim.fr/event/florent-pagny-la-suite-du-retour-65-tour-zenith-de-nantes-metropole-21402976/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Nantes",
+            "geoLocation": {
+              "latitude": 47.23041046589605,
+              "longitude": -1.6304109931428559
+            },
+            "name": "Zénith de Nantes Métropole",
+            "postalCode": "44800"
+          },
+          "startDate": "2026-11-05T20:00:00+01:00"
+        }
+      }
+    },
+    {
+      "query": "Zenith Nantes",
+      "name": "Florent Pagny - La Suite du Retour - 65 Tour",
+      "link": "https://www.eventim.fr/event/florent-pagny-la-suite-du-retour-65-tour-zenith-de-nantes-metropole-21472227/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Nantes",
+            "geoLocation": {
+              "latitude": 47.23041046589605,
+              "longitude": -1.6304109931428559
+            },
+            "name": "Zénith de Nantes Métropole",
+            "postalCode": "44800"
+          },
+          "startDate": "2026-11-06T20:00:00+01:00"
+        }
+      }
+    },
+    {
+      "query": "Zenith Nantes",
+      "name": "Christophe Maé",
+      "link": "https://www.eventim.fr/event/christophe-mae-tournee-zenith-de-nantes-metropole-20820695/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Nantes",
+            "geoLocation": {
+              "latitude": 47.23041046589605,
+              "longitude": -1.6304109931428559
+            },
+            "name": "Zénith de Nantes Métropole",
+            "postalCode": "44800"
+          },
+          "startDate": "2026-11-08T18:00:00+01:00"
+        }
+      }
+    },
+    {
+      "query": "Zenith Nantes",
+      "name": "Benjamin Biolay",
+      "link": "https://www.eventim.fr/event/benjamin-biolay-en-tournee-zenith-de-nantes-metropole-20810662/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Nantes",
+            "geoLocation": {
+              "latitude": 47.23041046589605,
+              "longitude": -1.6304109931428559
+            },
+            "name": "Zénith de Nantes Métropole",
+            "postalCode": "44800"
+          },
+          "startDate": "2026-11-10T20:00:00+01:00"
+        }
+      }
+    },
+    {
+      "query": "Zenith Nantes",
+      "name": "L'Héritage Goldman - La Tournée Evènement",
+      "link": "https://www.eventim.fr/event/lheritage-goldman-nouveau-spectacle-zenith-de-nantes-metropole-20614536/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Nantes",
+            "geoLocation": {
+              "latitude": 47.23041046589605,
+              "longitude": -1.6304109931428559
+            },
+            "name": "Zénith de Nantes Métropole",
+            "postalCode": "44800"
+          },
+          "startDate": "2026-11-11T20:00:00+01:00"
+        }
+      }
+    },
+    {
+      "query": "Zenith Nantes",
+      "name": "Ben Mazué",
+      "link": "https://www.eventim.fr/event/ben-mazue-tournee-des-zenith-2026-zenith-de-nantes-metropole-21558258/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Nantes",
+            "geoLocation": {
+              "latitude": 47.23041046589605,
+              "longitude": -1.6304109931428559
+            },
+            "name": "Zénith de Nantes Métropole",
+            "postalCode": "44800"
+          },
+          "startDate": "2026-11-12T20:00:00+01:00"
+        }
+      }
+    },
+    {
+      "query": "Zenith Nantes",
+      "name": "Deep Purple",
+      "link": "https://www.eventim.fr/event/deep-purple-zenith-de-nantes-metropole-20967009/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Nantes",
+            "geoLocation": {
+              "latitude": 47.23041046589605,
+              "longitude": -1.6304109931428559
+            },
+            "name": "Zénith de Nantes Métropole",
+            "postalCode": "44800"
+          },
+          "startDate": "2026-11-13T20:00:00+01:00"
+        }
+      }
+    }
+  ]
+}

@@ -1,3 +1,4 @@
+import '../services/concert_disability_contacts.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -10,6 +11,7 @@ import '../services/concert_search_service.dart';
 import '../utils/country_name_helper.dart';
 import '../widgets/universal_accessible_view.dart';
 import 'ticketone_browser_screen.dart';
+import 'concert_disability_screen.dart';
 
 DateTime concertDateOneMonthLater(DateTime date) {
   final next = DateTime(date.year, date.month + 1);
@@ -601,6 +603,41 @@ class _ConcertDetails extends StatelessWidget {
         html.parseFragment(event['description']?.toString() ?? '').text ?? '',
       ),
       _text('notice', l.concertsInitialText),
+      if (market.country == 'FR' ||
+          market.country == 'DE' ||
+          market.country == 'ES' ||
+          market.country == 'GB' ||
+          market.country == 'AT' ||
+          ConcertDisabilityContact.international.containsKey(market.country))
+        _button(
+          'disability-access',
+          TicketOneStrings(l.localeName).t('disabilityTitle'),
+          () async {
+            final attributes = event['typeAttributes'];
+            final live = attributes is Map
+                ? attributes['liveEntertainment']
+                : null;
+            final location = live is Map ? live['location'] : null;
+            await Navigator.of(context).push<void>(
+              MaterialPageRoute(
+                builder: (_) => ConcertDisabilityScreen(
+                  eventTitle: label,
+                  country: market.country,
+                  venue: location is Map
+                      ? location['name']?.toString() ?? ''
+                      : '',
+                  city: location is Map
+                      ? location['city']?.toString() ?? ''
+                      : '',
+                  openEvent: () => _open(
+                    context,
+                    ConcertSearchService.eventUrl(market, event['link']),
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
       if (market.host == 'www.ticketone.it') ...[
         _button(
           'disability-access',

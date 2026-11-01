@@ -1,0 +1,794 @@
+{
+  "checked": "2026-10-31",
+  "method": "Live Eventim exploration API; 40 distinct product IDs. Verified official venue sources; no booking or availability confirmation. Null expectedProfile explicitly tests safe unknown-venue handling.",
+  "events": [
+    {
+      "productId": "22297945",
+      "name": "Thomas Strønen’s Extended Ground feat. Fredrik Høyer og Håvard A",
+      "link": "https://www.eventim.no/event/thomas-stroenens-extended-ground-feat-fredrik-hoeyer-og-havard-a-cosmopolite-scene-22297945/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Oslo, Akershus, Buskerud, Østfold<br> Og Innlandet",
+            "geoLocation": {
+              "latitude": 59.92716,
+              "longitude": 10.76011
+            },
+            "name": "Cosmopolite Scene",
+            "postalCode": "0477"
+          },
+          "startDate": "2026-11-01T21:00:00+01:00"
+        }
+      },
+      "expectedProfile": "no-cosmopolite",
+      "officialInstructions": "https://cosmopolite.no/info/praktisk-informasjon"
+    },
+    {
+      "productId": "22297966",
+      "name": "Scheen Jazzorkester & Thea Grant - Century Caves",
+      "link": "https://www.eventim.no/event/scheen-jazzorkester-thea-grant-century-caves-cosmopolite-scene-22297966/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Oslo, Akershus, Buskerud, Østfold<br> Og Innlandet",
+            "geoLocation": {
+              "latitude": 59.92716,
+              "longitude": 10.76011
+            },
+            "name": "Cosmopolite Scene",
+            "postalCode": "0477"
+          },
+          "startDate": "2026-11-03T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "no-cosmopolite",
+      "officialInstructions": "https://cosmopolite.no/info/praktisk-informasjon"
+    },
+    {
+      "productId": "21730129",
+      "name": "Bill Frisell Trio",
+      "link": "https://www.eventim.no/event/bill-frisell-trio-cosmopolite-scene-21730129/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Oslo, Akershus, Buskerud, Østfold<br> Og Innlandet",
+            "geoLocation": {
+              "latitude": 59.92716,
+              "longitude": 10.76011
+            },
+            "name": "Cosmopolite Scene",
+            "postalCode": "0477"
+          },
+          "startDate": "2026-11-04T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "no-cosmopolite",
+      "officialInstructions": "https://cosmopolite.no/info/praktisk-informasjon"
+    },
+    {
+      "productId": "21740914",
+      "name": "HUUN-HUUR-TU",
+      "link": "https://www.eventim.no/event/huun-huur-tu-cosmopolite-scene-21740914/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Oslo, Akershus, Buskerud, Østfold<br> Og Innlandet",
+            "geoLocation": {
+              "latitude": 59.92716,
+              "longitude": 10.76011
+            },
+            "name": "Cosmopolite Scene",
+            "postalCode": "0477"
+          },
+          "startDate": "2026-11-06T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "no-cosmopolite",
+      "officialInstructions": "https://cosmopolite.no/info/praktisk-informasjon"
+    },
+    {
+      "productId": "21725856",
+      "name": "Lizz Wright",
+      "link": "https://www.eventim.no/event/lizz-wright-cosmopolite-scene-21725856/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Oslo, Akershus, Buskerud, Østfold<br> Og Innlandet",
+            "geoLocation": {
+              "latitude": 59.92716,
+              "longitude": 10.76011
+            },
+            "name": "Cosmopolite Scene",
+            "postalCode": "0477"
+          },
+          "startDate": "2026-11-07T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "no-cosmopolite",
+      "officialInstructions": "https://cosmopolite.no/info/praktisk-informasjon"
+    },
+    {
+      "productId": "22059096",
+      "name": "CosmopoLITEN - Tipp Tipp Tátára Ur!",
+      "link": "https://www.eventim.no/event/cosmopoliten-tipp-tipp-tatara-ur-cosmopolite-scene-22059096/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Oslo, Akershus, Buskerud, Østfold<br> Og Innlandet",
+            "geoLocation": {
+              "latitude": 59.92716,
+              "longitude": 10.76011
+            },
+            "name": "Cosmopolite Scene",
+            "postalCode": "0477"
+          },
+          "startDate": "2026-11-08T12:00:00+01:00"
+        }
+      },
+      "expectedProfile": "no-cosmopolite",
+      "officialInstructions": "https://cosmopolite.no/info/praktisk-informasjon"
+    },
+    {
+      "productId": "22134246",
+      "name": "Filmvisning Amadou & Mariam - The blind couple from Mali",
+      "link": "https://www.eventim.no/event/filmvisning-amadou-mariam-the-blind-couple-from-mali-cosmopolite-scene-22134246/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Oslo, Akershus, Buskerud, Østfold<br> Og Innlandet",
+            "geoLocation": {
+              "latitude": 59.92716,
+              "longitude": 10.76011
+            },
+            "name": "Cosmopolite Scene",
+            "postalCode": "0477"
+          },
+          "startDate": "2026-11-08T18:00:00+01:00"
+        }
+      },
+      "expectedProfile": "no-cosmopolite",
+      "officialInstructions": "https://cosmopolite.no/info/praktisk-informasjon"
+    },
+    {
+      "productId": "22298063",
+      "name": "Dr Rangan Chatterjee",
+      "link": "https://www.eventim.no/event/dr-rangan-chatterjee-cosmopolite-scene-22298063/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Oslo, Akershus, Buskerud, Østfold<br> Og Innlandet",
+            "geoLocation": {
+              "latitude": 59.92716,
+              "longitude": 10.76011
+            },
+            "name": "Cosmopolite Scene",
+            "postalCode": "0477"
+          },
+          "startDate": "2026-11-09T19:30:00+01:00"
+        }
+      },
+      "expectedProfile": "no-cosmopolite",
+      "officialInstructions": "https://cosmopolite.no/info/praktisk-informasjon"
+    },
+    {
+      "productId": "22033252",
+      "name": "Bugge Bang oppsummerer 2026",
+      "link": "https://www.eventim.no/event/bugge-bang-oppsummerer-2026-cosmopolite-scene-22033252/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Oslo, Akershus, Buskerud, Østfold<br> Og Innlandet",
+            "geoLocation": {
+              "latitude": 59.92716,
+              "longitude": 10.76011
+            },
+            "name": "Cosmopolite Scene",
+            "postalCode": "0477"
+          },
+          "startDate": "2026-11-10T18:00:00+01:00"
+        }
+      },
+      "expectedProfile": "no-cosmopolite",
+      "officialInstructions": "https://cosmopolite.no/info/praktisk-informasjon"
+    },
+    {
+      "productId": "21740776",
+      "name": "True Loves",
+      "link": "https://www.eventim.no/event/true-loves-cosmopolite-scene-21740776/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Oslo, Akershus, Buskerud, Østfold<br> Og Innlandet",
+            "geoLocation": {
+              "latitude": 59.92716,
+              "longitude": 10.76011
+            },
+            "name": "Cosmopolite Scene",
+            "postalCode": "0477"
+          },
+          "startDate": "2026-11-12T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "no-cosmopolite",
+      "officialInstructions": "https://cosmopolite.no/info/praktisk-informasjon"
+    },
+    {
+      "productId": "22298256",
+      "name": "UNG TEKSTs 10-årsjubileum",
+      "link": "https://www.eventim.no/event/ung-teksts-10-arsjubileum-cosmopolite-scene-22298256/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Oslo, Akershus, Buskerud, Østfold<br> Og Innlandet",
+            "geoLocation": {
+              "latitude": 59.92716,
+              "longitude": 10.76011
+            },
+            "name": "Cosmopolite Scene",
+            "postalCode": "0477"
+          },
+          "startDate": "2026-11-13T19:00:00+01:00"
+        }
+      },
+      "expectedProfile": "no-cosmopolite",
+      "officialInstructions": "https://cosmopolite.no/info/praktisk-informasjon"
+    },
+    {
+      "productId": "22298099",
+      "name": "Nubiyan Twist",
+      "link": "https://www.eventim.no/event/nubiyan-twist-cosmopolite-scene-22298099/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Oslo, Akershus, Buskerud, Østfold<br> Og Innlandet",
+            "geoLocation": {
+              "latitude": 59.92716,
+              "longitude": 10.76011
+            },
+            "name": "Cosmopolite Scene",
+            "postalCode": "0477"
+          },
+          "startDate": "2026-11-13T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "no-cosmopolite",
+      "officialInstructions": "https://cosmopolite.no/info/praktisk-informasjon"
+    },
+    {
+      "productId": "22103983",
+      "name": "Alune Wade",
+      "link": "https://www.eventim.no/event/alune-wade-cosmopolite-scene-22103983/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Oslo, Akershus, Buskerud, Østfold<br> Og Innlandet",
+            "geoLocation": {
+              "latitude": 59.92716,
+              "longitude": 10.76011
+            },
+            "name": "Cosmopolite Scene",
+            "postalCode": "0477"
+          },
+          "startDate": "2026-11-14T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "no-cosmopolite",
+      "officialInstructions": "https://cosmopolite.no/info/praktisk-informasjon"
+    },
+    {
+      "productId": "21677906",
+      "name": "Alceu Valença",
+      "link": "https://www.eventim.no/event/alceu-valenca-cosmopolite-scene-21677906/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Oslo, Akershus, Buskerud, Østfold<br> Og Innlandet",
+            "geoLocation": {
+              "latitude": 59.92716,
+              "longitude": 10.76011
+            },
+            "name": "Cosmopolite Scene",
+            "postalCode": "0477"
+          },
+          "startDate": "2026-11-15T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "no-cosmopolite",
+      "officialInstructions": "https://cosmopolite.no/info/praktisk-informasjon"
+    },
+    {
+      "productId": "21729474",
+      "name": "Tore Strømøy: 30 År På Sporet",
+      "link": "https://www.eventim.no/event/tore-stroemoey-byscenen-21729474/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Trondheim Og Trøndelag",
+            "name": "Byscenen",
+            "postalCode": "7012"
+          },
+          "startDate": "2026-11-04T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "no-byscenen",
+      "officialInstructions": "https://www.byscenen.no/info/praktisk-info"
+    },
+    {
+      "productId": "21903818",
+      "name": "Luftforsvarets musikkorps",
+      "link": "https://www.eventim.no/event/luftforsvarets-musikkorps-byscenen-21903818/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Trondheim Og Trøndelag",
+            "name": "Byscenen",
+            "postalCode": "7012"
+          },
+          "startDate": "2026-11-05T19:30:00+01:00"
+        }
+      },
+      "expectedProfile": "no-byscenen",
+      "officialInstructions": "https://www.byscenen.no/info/praktisk-info"
+    },
+    {
+      "productId": "21903501",
+      "name": "Frog Leap",
+      "link": "https://www.eventim.no/event/frog-leap-byscenen-21903501/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Trondheim Og Trøndelag",
+            "name": "Byscenen",
+            "postalCode": "7012"
+          },
+          "startDate": "2026-11-06T21:00:00+01:00"
+        }
+      },
+      "expectedProfile": "no-byscenen",
+      "officialInstructions": "https://www.byscenen.no/info/praktisk-info"
+    },
+    {
+      "productId": "21719262",
+      "name": "vinni",
+      "link": "https://www.eventim.no/event/vinni-byscenen-21719262/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Trondheim Og Trøndelag",
+            "name": "Byscenen",
+            "postalCode": "7012"
+          },
+          "startDate": "2026-11-07T21:00:00+01:00"
+        }
+      },
+      "expectedProfile": "no-byscenen",
+      "officialInstructions": "https://www.byscenen.no/info/praktisk-info"
+    },
+    {
+      "productId": "21737347",
+      "name": "Tuva & Ronny følger drømmen",
+      "link": "https://www.eventim.no/event/tuva-ronny-foelger-droemmen-byscenen-byscenen-21737347/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Trondheim Og Trøndelag",
+            "name": "Byscenen",
+            "postalCode": "7012"
+          },
+          "startDate": "2026-11-11T19:00:00+01:00"
+        }
+      },
+      "expectedProfile": "no-byscenen",
+      "officialInstructions": "https://www.byscenen.no/info/praktisk-info"
+    },
+    {
+      "productId": "21000318",
+      "name": "MIkkey Dee With Friends",
+      "link": "https://www.eventim.no/event/mikkey-dee-byscenen-21000318/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Trondheim Og Trøndelag",
+            "name": "Byscenen",
+            "postalCode": "7012"
+          },
+          "startDate": "2026-11-12T21:00:00+01:00"
+        }
+      },
+      "expectedProfile": "no-byscenen",
+      "officialInstructions": "https://www.byscenen.no/info/praktisk-info"
+    },
+    {
+      "productId": "21876455",
+      "name": "Tungtvann",
+      "link": "https://www.eventim.no/event/tungtvann-byscenen-21876455/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Trondheim Og Trøndelag",
+            "name": "Byscenen",
+            "postalCode": "7012"
+          },
+          "startDate": "2026-11-13T21:00:00+01:00"
+        }
+      },
+      "expectedProfile": "no-byscenen",
+      "officialInstructions": "https://www.byscenen.no/info/praktisk-info"
+    },
+    {
+      "productId": "21413688",
+      "name": "Gluecifer",
+      "link": "https://www.eventim.no/event/gluecifer-byscenen-21413688/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Trondheim Og Trøndelag",
+            "name": "Byscenen",
+            "postalCode": "7012"
+          },
+          "startDate": "2026-11-14T21:00:00+01:00"
+        }
+      },
+      "expectedProfile": "no-byscenen",
+      "officialInstructions": "https://www.byscenen.no/info/praktisk-info"
+    },
+    {
+      "productId": "21951439",
+      "name": "Macy Gray",
+      "link": "https://www.eventim.no/event/macy-gray-byscenen-21951439/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Trondheim Og Trøndelag",
+            "name": "Byscenen",
+            "postalCode": "7012"
+          },
+          "startDate": "2026-11-16T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "no-byscenen",
+      "officialInstructions": "https://www.byscenen.no/info/praktisk-info"
+    },
+    {
+      "productId": "22105716",
+      "name": "Krimpodden",
+      "link": "https://www.eventim.no/event/krimpodden-byscenen-22105716/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Trondheim Og Trøndelag",
+            "name": "Byscenen",
+            "postalCode": "7012"
+          },
+          "startDate": "2026-11-17T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "no-byscenen",
+      "officialInstructions": "https://www.byscenen.no/info/praktisk-info"
+    },
+    {
+      "productId": "21603671",
+      "name": "Molly Hammar",
+      "link": "https://www.eventim.no/event/molly-hammar-byscenen-21603671/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Trondheim Og Trøndelag",
+            "name": "Byscenen",
+            "postalCode": "7012"
+          },
+          "startDate": "2026-11-18T21:00:00+01:00"
+        }
+      },
+      "expectedProfile": "no-byscenen",
+      "officialInstructions": "https://www.byscenen.no/info/praktisk-info"
+    },
+    {
+      "productId": "22047975",
+      "name": "Luftforsvarets musikkorps: Nye Flåklypa",
+      "link": "https://www.eventim.no/event/luftforsvarets-musikkorps-byscenen-22047975/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Trondheim Og Trøndelag",
+            "name": "Byscenen",
+            "postalCode": "7012"
+          },
+          "startDate": "2026-11-19T19:30:00+01:00"
+        }
+      },
+      "expectedProfile": "no-byscenen",
+      "officialInstructions": "https://www.byscenen.no/info/praktisk-info"
+    },
+    {
+      "productId": "21368063",
+      "name": "Valentourettes speller jokke",
+      "link": "https://www.eventim.no/event/valentourettes-byscenen-21368063/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Trondheim Og Trøndelag",
+            "name": "Byscenen",
+            "postalCode": "7012"
+          },
+          "startDate": "2026-11-20T21:00:00+01:00"
+        }
+      },
+      "expectedProfile": "no-byscenen",
+      "officialInstructions": "https://www.byscenen.no/info/praktisk-info"
+    },
+    {
+      "productId": "22021461",
+      "name": "Gutten som ikke ble ammet",
+      "link": "https://www.eventim.no/event/gutten-som-ikke-ble-ammet-olavshallen-22021461/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Trondheim Og Trøndelag",
+            "geoLocation": {
+              "latitude": 63.4308,
+              "longitude": 10.3946
+            },
+            "name": "Olavshallen",
+            "postalCode": "7010"
+          },
+          "startDate": "2026-11-05T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "no-olavshallen",
+      "officialInstructions": "https://www.olavshallen.no/kontakt/ofte-stilte-sp%C3%B8rsm%C3%A5l"
+    },
+    {
+      "productId": "22001572",
+      "name": "Espen Lind",
+      "link": "https://www.eventim.no/event/espen-lind-olavshallen-22001572/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Trondheim Og Trøndelag",
+            "geoLocation": {
+              "latitude": 63.4308,
+              "longitude": 10.3946
+            },
+            "name": "Olavshallen",
+            "postalCode": "7010"
+          },
+          "startDate": "2026-11-06T19:30:00+01:00"
+        }
+      },
+      "expectedProfile": "no-olavshallen",
+      "officialInstructions": "https://www.olavshallen.no/kontakt/ofte-stilte-sp%C3%B8rsm%C3%A5l"
+    },
+    {
+      "productId": "21718711",
+      "name": "Thomas Dybdahl",
+      "link": "https://www.eventim.no/event/thomas-dybdahl-olavshallen-21718711/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Trondheim Og Trøndelag",
+            "geoLocation": {
+              "latitude": 63.4308,
+              "longitude": 10.3946
+            },
+            "name": "Olavshallen",
+            "postalCode": "7010"
+          },
+          "startDate": "2026-11-07T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "no-olavshallen",
+      "officialInstructions": "https://www.olavshallen.no/kontakt/ofte-stilte-sp%C3%B8rsm%C3%A5l"
+    },
+    {
+      "productId": "21517871",
+      "name": "Romeo og Juliet",
+      "link": "https://www.eventim.no/event/romeo-og-juliet-olavshallen-21517871/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Trondheim Og Trøndelag",
+            "geoLocation": {
+              "latitude": 63.4308,
+              "longitude": 10.3946
+            },
+            "name": "Olavshallen",
+            "postalCode": "7010"
+          },
+          "startDate": "2026-11-10T18:00:00+01:00"
+        }
+      },
+      "expectedProfile": "no-olavshallen",
+      "officialInstructions": "https://www.olavshallen.no/kontakt/ofte-stilte-sp%C3%B8rsm%C3%A5l"
+    },
+    {
+      "productId": "21863368",
+      "name": "Putti Plutti Pott",
+      "link": "https://www.eventim.no/event/putti-plutti-pott-olavshallen-21863368/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Trondheim Og Trøndelag",
+            "geoLocation": {
+              "latitude": 63.4308,
+              "longitude": 10.3946
+            },
+            "name": "Olavshallen",
+            "postalCode": "7010"
+          },
+          "startDate": "2026-11-14T12:00:00+01:00"
+        }
+      },
+      "expectedProfile": "no-olavshallen",
+      "officialInstructions": "https://www.olavshallen.no/kontakt/ofte-stilte-sp%C3%B8rsm%C3%A5l"
+    },
+    {
+      "productId": "21842209",
+      "name": "Ylvis & Calle",
+      "link": "https://www.eventim.no/event/ylvis-calle-olavshallen-21842209/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Trondheim Og Trøndelag",
+            "geoLocation": {
+              "latitude": 63.4308,
+              "longitude": 10.3946
+            },
+            "name": "Olavshallen",
+            "postalCode": "7010"
+          },
+          "startDate": "2026-11-18T19:00:00+01:00"
+        }
+      },
+      "expectedProfile": "no-olavshallen",
+      "officialInstructions": "https://www.olavshallen.no/kontakt/ofte-stilte-sp%C3%B8rsm%C3%A5l"
+    },
+    {
+      "productId": "21513370",
+      "name": "Den dårlige skamvittigheten",
+      "link": "https://www.eventim.no/event/den-darlige-skamvittigheten-olavshallen-21513370/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Trondheim Og Trøndelag",
+            "geoLocation": {
+              "latitude": 63.4308,
+              "longitude": 10.3946
+            },
+            "name": "Olavshallen",
+            "postalCode": "7010"
+          },
+          "startDate": "2026-11-19T19:00:00+01:00"
+        }
+      },
+      "expectedProfile": "no-olavshallen",
+      "officialInstructions": "https://www.olavshallen.no/kontakt/ofte-stilte-sp%C3%B8rsm%C3%A5l"
+    },
+    {
+      "productId": "21265642",
+      "name": "Kristian Valen",
+      "link": "https://www.eventim.no/event/kristian-valen-olavshallen-21265642/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Trondheim Og Trøndelag",
+            "geoLocation": {
+              "latitude": 63.4308,
+              "longitude": 10.3946
+            },
+            "name": "Olavshallen",
+            "postalCode": "7010"
+          },
+          "startDate": "2026-11-20T18:30:00+01:00"
+        }
+      },
+      "expectedProfile": "no-olavshallen",
+      "officialInstructions": "https://www.olavshallen.no/kontakt/ofte-stilte-sp%C3%B8rsm%C3%A5l"
+    },
+    {
+      "productId": "21601213",
+      "name": "Stand Up Trondheim Comedy Klubbkveld",
+      "link": "https://www.eventim.no/event/stand-up-trondheim-comedy-klubbkveld-olavshallen-21601213/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Trondheim Og Trøndelag",
+            "geoLocation": {
+              "latitude": 63.4308,
+              "longitude": 10.3946
+            },
+            "name": "Olavshallen",
+            "postalCode": "7010"
+          },
+          "startDate": "2026-11-20T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "no-olavshallen",
+      "officialInstructions": "https://www.olavshallen.no/kontakt/ofte-stilte-sp%C3%B8rsm%C3%A5l"
+    },
+    {
+      "productId": "22141975",
+      "name": "Highwaymen The tribute",
+      "link": "https://www.eventim.no/event/highwaymen-the-tribute-olavshallen-22141975/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Trondheim Og Trøndelag",
+            "geoLocation": {
+              "latitude": 63.4308,
+              "longitude": 10.3946
+            },
+            "name": "Olavshallen",
+            "postalCode": "7010"
+          },
+          "startDate": "2026-11-21T20:00:00+01:00"
+        }
+      },
+      "expectedProfile": "no-olavshallen",
+      "officialInstructions": "https://www.olavshallen.no/kontakt/ofte-stilte-sp%C3%B8rsm%C3%A5l"
+    },
+    {
+      "productId": "21575705",
+      "name": "Janove med strykekvartett",
+      "link": "https://www.eventim.no/event/janove-med-strykekvartett-olavshallen-21575705/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Trondheim Og Trøndelag",
+            "geoLocation": {
+              "latitude": 63.4308,
+              "longitude": 10.3946
+            },
+            "name": "Olavshallen",
+            "postalCode": "7010"
+          },
+          "startDate": "2026-11-21T21:00:00+01:00"
+        }
+      },
+      "expectedProfile": "no-olavshallen",
+      "officialInstructions": "https://www.olavshallen.no/kontakt/ofte-stilte-sp%C3%B8rsm%C3%A5l"
+    },
+    {
+      "productId": "21743727",
+      "name": "Nøtteknekkeren",
+      "link": "https://www.eventim.no/event/noetteknekkeren-olavshallen-21743727/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Trondheim Og Trøndelag",
+            "geoLocation": {
+              "latitude": 63.4308,
+              "longitude": 10.3946
+            },
+            "name": "Olavshallen",
+            "postalCode": "7010"
+          },
+          "startDate": "2026-11-22T19:00:00+01:00"
+        }
+      },
+      "expectedProfile": "no-olavshallen",
+      "officialInstructions": "https://www.olavshallen.no/kontakt/ofte-stilte-sp%C3%B8rsm%C3%A5l"
+    },
+    {
+      "productId": "22039537",
+      "name": "TGR & Friends Skifilmfestival",
+      "link": "https://www.eventim.no/event/tgr-friends-skifilmfestival-olavshallen-22039537/",
+      "typeAttributes": {
+        "liveEntertainment": {
+          "location": {
+            "city": "Trondheim Og Trøndelag",
+            "geoLocation": {
+              "latitude": 63.4308,
+              "longitude": 10.3946
+            },
+            "name": "Olavshallen",
+            "postalCode": "7010"
+          },
+          "startDate": "2026-11-23T18:00:00+01:00"
+        }
+      },
+      "expectedProfile": "no-olavshallen",
+      "officialInstructions": "https://www.olavshallen.no/kontakt/ofte-stilte-sp%C3%B8rsm%C3%A5l"
+    }
+  ]
+}

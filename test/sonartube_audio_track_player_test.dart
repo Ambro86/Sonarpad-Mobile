@@ -109,6 +109,7 @@ Future<void> pumpTestPlayer(
   bool audioOnly = false,
   bool remote = false,
   List<MediaAudioTrack> tracks = const [],
+  String? selectedTrackId = 'it',
 }) async {
   tester.view.devicePixelRatio = 1;
   tester.view.physicalSize = fullscreen
@@ -134,7 +135,7 @@ Future<void> pumpTestPlayer(
                 ? 'https://example.org/video.mp4'
                 : 'file:///recorded-video.mp4',
             audioTracks: tracks,
-            selectedAudioTrackId: 'it',
+            selectedAudioTrackId: selectedTrackId,
           ),
           speedCategory: MediaPlaybackSpeedCategory.sonartube,
           isVideoSupported: !audioOnly,
@@ -396,6 +397,41 @@ void main() {
           }
         }
       }
+      // Use the same fake audio backend: the player service is a singleton.
+      audio.rejectPrimary = false;
+      debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+      const spanishTracks = [
+        MediaAudioTrack(id: 'en.4', label: 'English', url: 'https://example.org/en'),
+        MediaAudioTrack(id: 'es-US.10', label: 'Español (US)',
+          url: 'https://example.org/es', isDefault: true),
+      ];
+      await pumpTestPlayer(tester, tracks: spanishTracks, selectedTrackId: null);
+      final dialog = form(tester).onEvent!(
+        const AccessibleListEvent(type: 'activate', id: 'audio_track'));
+      await tester.pumpAndSettle();
+      expect(find.byIcon(Icons.check), findsNothing);
+      await tester.runAsync(() async {
+        await tester.tap(find.text('Español (US)'));
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+      });
+      await tester.pumpAndSettle();
+      var completed = false;
+      unawaited(Future<void>.value(dialog).then((_) => completed = true));
+      for (var i = 0; i < 150 && !completed; i++) {
+        await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 20)));
+        await tester.pump(const Duration(milliseconds: 100));
+      }
+      expect(completed, isTrue);
+      expect(audio.latest?.url, 'https://example.org/es');
+      expect(video.volume, 0);
+      final reopened = form(tester).onEvent!(
+        const AccessibleListEvent(type: 'activate', id: 'audio_track'));
+      await tester.pumpAndSettle();
+      expect(find.byIcon(Icons.check), findsOneWidget);
+      await tester.tap(find.text('Español (US)'));
+      await tester.pumpAndSettle();
+      await reopened;
+      await disposeTestPlayer(tester);
       debugDefaultTargetPlatformOverride = null;
     },
   );
@@ -409,4 +445,6 @@ void main() {
     );
     await disposeTestPlayer(tester);
   });
+
+
 }

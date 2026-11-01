@@ -45,6 +45,33 @@ Map<String, Object?> player(List<Map<String, Object?>> tracks) => {
 };
 
 void main() {
+  for (final knownOriginal in [false, true]) {
+    test('Spanish default does not label progressive English audio: known=$knownOriginal', () async {
+      final spanish = audio('es-US.10');
+      spanish['audioTrack'] = {
+        'id': 'es-US.10', 'displayName': 'Español (US)', 'audioIsDefault': true,
+      };
+      final data = player([spanish, audio('en.4')]);
+      if (knownOriginal) {
+        final streaming = data['streamingData'] as Map;
+        (streaming['formats'] as List).first['audioTrack'] = {'id': 'en.4'};
+      }
+      final service = SonarTubeService(client: MockClient((_) async =>
+        http.Response.bytes(utf8.encode(jsonEncode(data)), 200)));
+      final media = await service.resolveUrl('RE3_PGwDwhw', fallbackTitle: 'Video');
+      expect(media.audioUrl, 'https://example.org/video');
+      expect(media.selectedAudioTrackId, knownOriginal ? 'en.4' : isNull);
+      expect(media.selectedAudioTrackId, isNot('es-US.10'));
+      final episode = PodcastEpisode(title: 'Video', description: '',
+        audioUrl: media.audioUrl, videoUrl: media.videoUrl,
+        audioTracks: media.audioTracks, selectedAudioTrackId: media.selectedAudioTrackId);
+      final selected = episode.withAudioTrack('es-US.10');
+      expect(selected.audioUrl, 'https://example.org/es-US.10/mp4/128000');
+      expect(selected.selectedAudioTrackId, 'es-US.10');
+      expect(selected.videoUrl, media.audioUrl);
+    });
+  }
+
   test('deduplicates codecs, prefers AAC and excludes unplayable tracks', () {
     final tracks = MediaAudioTrack.fromYouTube({
       'adaptiveFormats': [
@@ -108,7 +135,7 @@ void main() {
     );
     expect(versions, ['21.29.366', '20.10.38']);
     expect(media.audioTracks, hasLength(2));
-    expect(media.selectedAudioTrackId, 'it.3');
+    expect(media.selectedAudioTrackId, isNull);
     expect(media.audioUrl, 'https://example.org/video');
   });
 
