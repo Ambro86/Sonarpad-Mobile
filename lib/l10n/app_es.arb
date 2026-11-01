@@ -4902,11 +4902,35 @@
   "onlineDictionaryTranslation": "Idioma de traducción del diccionario:",
   "onlineDictionaryNone": "Ninguna",
   "onlineDictionaryEntryTitle": "{word} — {language}",
-  "@onlineDictionaryEntryTitle": {"placeholders": {"word": {"type": "String"}, "language": {"type": "String"}}},
+  "@onlineDictionaryEntryTitle": {
+    "placeholders": {
+      "word": {
+        "type": "String"
+      },
+      "language": {
+        "type": "String"
+      }
+    }
+  },
   "onlineDictionaryDefinition": "{number}. {text}",
-  "@onlineDictionaryDefinition": {"placeholders": {"number": {"type": "int"}, "text": {"type": "String"}}},
+  "@onlineDictionaryDefinition": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "text": {
+        "type": "String"
+      }
+    }
+  },
   "onlineDictionarySource": "Wiktionary — CC BY-SA 4.0\n{url}",
-  "@onlineDictionarySource": {"placeholders": {"url": {"type": "String"}}},
+  "@onlineDictionarySource": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
   "podcastRecorderTitle": "Grabar podcast",
   "podcastRecorderHint": "Graba solo el micrófono. La música de fondo opcional se añade al terminar. Los volúmenes se aplican a toda la grabación. Usa auriculares para no grabar el lector de pantalla desde los altavoces. Al cambiar a otra aplicación, la grabación se pausa.",
   "podcastRecorderMicVolume": "Volumen del micrófono",
@@ -4921,5 +4945,9 @@
   "podcastRecorderChooseIntro": "Elegir sintonía inicial (opcional)",
   "podcastRecorderChooseOutro": "Elegir sintonía final (opcional)",
   "podcastRecorderRemoveIntro": "Quitar sintonía inicial",
-  "podcastRecorderRemoveOutro": "Quitar sintonía final"
+  "podcastRecorderRemoveOutro": "Quitar sintonía final",
+  "dutch": "Neerlandés",
+  "@dutch": {
+    "description": "Localized name of the Dutch language in menus."
+  }
 }

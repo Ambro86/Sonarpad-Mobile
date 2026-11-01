@@ -4902,11 +4902,35 @@
   "onlineDictionaryTranslation": "Langue de traduction du dictionnaire :",
   "onlineDictionaryNone": "Aucune",
   "onlineDictionaryEntryTitle": "{word} — {language}",
-  "@onlineDictionaryEntryTitle": {"placeholders": {"word": {"type": "String"}, "language": {"type": "String"}}},
+  "@onlineDictionaryEntryTitle": {
+    "placeholders": {
+      "word": {
+        "type": "String"
+      },
+      "language": {
+        "type": "String"
+      }
+    }
+  },
   "onlineDictionaryDefinition": "{number}. {text}",
-  "@onlineDictionaryDefinition": {"placeholders": {"number": {"type": "int"}, "text": {"type": "String"}}},
+  "@onlineDictionaryDefinition": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "text": {
+        "type": "String"
+      }
+    }
+  },
   "onlineDictionarySource": "Wiktionary — CC BY-SA 4.0\n{url}",
-  "@onlineDictionarySource": {"placeholders": {"url": {"type": "String"}}},
+  "@onlineDictionarySource": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
   "podcastRecorderTitle": "Enregistrer un podcast",
   "podcastRecorderHint": "Enregistrez uniquement le microphone. La musique de fond facultative est ajoutée ensuite. Les volumes s’appliquent à tout l’enregistrement. Utilisez un casque pour ne pas enregistrer le lecteur d’écran diffusé par les haut-parleurs. Le passage à une autre application met l’enregistrement en pause.",
   "podcastRecorderMicVolume": "Volume du microphone",
@@ -4921,5 +4945,9 @@
   "podcastRecorderChooseIntro": "Choisir un générique de début (facultatif)",
   "podcastRecorderChooseOutro": "Choisir un générique de fin (facultatif)",
   "podcastRecorderRemoveIntro": "Supprimer le générique de début",
-  "podcastRecorderRemoveOutro": "Supprimer le générique de fin"
+  "podcastRecorderRemoveOutro": "Supprimer le générique de fin",
+  "dutch": "Néerlandais",
+  "@dutch": {
+    "description": "Localized name of the Dutch language in menus."
+  }
 }

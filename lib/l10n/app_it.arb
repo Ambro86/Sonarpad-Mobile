@@ -6474,11 +6474,35 @@
   "onlineDictionaryTranslation": "Lingua traduzione dizionario:",
   "onlineDictionaryNone": "Nessuna",
   "onlineDictionaryEntryTitle": "{word} — {language}",
-  "@onlineDictionaryEntryTitle": {"placeholders": {"word": {"type": "String"}, "language": {"type": "String"}}},
+  "@onlineDictionaryEntryTitle": {
+    "placeholders": {
+      "word": {
+        "type": "String"
+      },
+      "language": {
+        "type": "String"
+      }
+    }
+  },
   "onlineDictionaryDefinition": "{number}. {text}",
-  "@onlineDictionaryDefinition": {"placeholders": {"number": {"type": "int"}, "text": {"type": "String"}}},
+  "@onlineDictionaryDefinition": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "text": {
+        "type": "String"
+      }
+    }
+  },
   "onlineDictionarySource": "Wiktionary — CC BY-SA 4.0\n{url}",
-  "@onlineDictionarySource": {"placeholders": {"url": {"type": "String"}}},
+  "@onlineDictionarySource": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
   "podcastRecorderTitle": "Registra podcast",
   "podcastRecorderHint": "Registra solo il microfono. La base musicale facoltativa viene aggiunta al termine. I volumi si applicano a tutta la registrazione. Usa le cuffie per non registrare VoiceOver dagli altoparlanti. Passando a un’altra app, la registrazione va in pausa.",
   "podcastRecorderMicVolume": "Volume microfono",
@@ -6493,5 +6517,9 @@
   "podcastRecorderChooseIntro": "Scegli sigla iniziale (facoltativa)",
   "podcastRecorderChooseOutro": "Scegli sigla finale (facoltativa)",
   "podcastRecorderRemoveIntro": "Rimuovi sigla iniziale",
-  "podcastRecorderRemoveOutro": "Rimuovi sigla finale"
+  "podcastRecorderRemoveOutro": "Rimuovi sigla finale",
+  "dutch": "Olandese",
+  "@dutch": {
+    "description": "Localized name of the Dutch language in menus."
+  }
 }

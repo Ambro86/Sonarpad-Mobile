@@ -48,7 +48,7 @@ enum WeatherTemperatureUnit {
 }
 
 class AppSettingsService {
-  static const _supportedAppLanguages = {'it', 'en', 'es', 'fr', 'pt', 'pt_BR', 'pl', 'cs', 'de', 'zh_CN', 'uk', 'ro', 'tr'};
+  static const _supportedAppLanguages = {'it', 'en', 'es', 'fr', 'pt', 'pt_BR', 'pl', 'cs', 'de', 'nl', 'zh_CN', 'uk', 'ro', 'tr'};
   static const _ttsLanguageKey = 'sonarpad_tts_language';
   static const _ttsVoiceKey = 'sonarpad_tts_voice';
   static const _tvSecretCodeKey = 'tvSecretCode';
@@ -136,6 +136,7 @@ class AppSettingsService {
     TtsVoiceLanguage('pl', 'Polski'),
     TtsVoiceLanguage('cs', 'Čeština'),
     TtsVoiceLanguage('de', 'Deutsch'),
+    TtsVoiceLanguage('nl', 'Nederlands'),
     TtsVoiceLanguage('ro', 'Română'),
     TtsVoiceLanguage('tr', 'tr'),
     TtsVoiceLanguage('zh-CN', '简体中文'),
@@ -231,6 +232,16 @@ class AppSettingsService {
       languageCode: 'de',
       voice: 'de-DE-ConradNeural',
       label: 'Conrad',
+    ),
+    TtsVoiceOption(
+      languageCode: 'nl',
+      voice: 'nl-NL-ColetteNeural',
+      label: 'Colette',
+    ),
+    TtsVoiceOption(
+      languageCode: 'nl',
+      voice: 'nl-NL-MaartenNeural',
+      label: 'Maarten',
     ),
     TtsVoiceOption(
       languageCode: 'tr',
@@ -757,6 +768,7 @@ class AppSettingsService {
       'pl' || 'pl-PL' => 'pl-PL-ZofiaNeural',
       'cs' || 'cs-CZ' => 'cs-CZ-VlastaNeural',
       'de' || 'de-DE' => 'de-DE-KatjaNeural',
+      'nl' || 'nl-NL' => 'nl-NL-ColetteNeural',
       'zh' || 'zh-CN' || 'zh_CN' => 'zh-CN-XiaoxiaoNeural',
       'uk' || 'uk-UA' => 'uk-UA-PolinaNeural',
       'ro' || 'ro-RO' => 'ro-RO-AlinaNeural',

@@ -4896,11 +4896,35 @@
   "onlineDictionaryTranslation": "Çeviri dili:",
   "onlineDictionaryNone": "Yok",
   "onlineDictionaryEntryTitle": "{word} — {language}",
-  "@onlineDictionaryEntryTitle": {"placeholders": {"word": {"type": "String"}, "language": {"type": "String"}}},
+  "@onlineDictionaryEntryTitle": {
+    "placeholders": {
+      "word": {
+        "type": "String"
+      },
+      "language": {
+        "type": "String"
+      }
+    }
+  },
   "onlineDictionaryDefinition": "{number}. {text}",
-  "@onlineDictionaryDefinition": {"placeholders": {"number": {"type": "int"}, "text": {"type": "String"}}},
+  "@onlineDictionaryDefinition": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "text": {
+        "type": "String"
+      }
+    }
+  },
   "onlineDictionarySource": "Wiktionary — CC BY-SA 4.0\n{url}",
-  "@onlineDictionarySource": {"placeholders": {"url": {"type": "String"}}},
+  "@onlineDictionarySource": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
   "podcastRecorderTitle": "Podcast kaydet",
   "podcastRecorderHint": "Yalnızca mikrofon kaydedilir. İsteğe bağlı fon müziği sonunda eklenir. Ses düzeyleri kaydın tamamına uygulanır. Ekran okuyucunun hoparlörden kayda girmemesi için kulaklık kullanın. Başka bir uygulamaya geçmek kaydı duraklatır.",
   "podcastRecorderMicVolume": "Mikrofon ses düzeyi",
@@ -4915,5 +4939,9 @@
   "podcastRecorderChooseIntro": "Açılış müziği seç (isteğe bağlı)",
   "podcastRecorderChooseOutro": "Kapanış müziği seç (isteğe bağlı)",
   "podcastRecorderRemoveIntro": "Açılış müziğini kaldır",
-  "podcastRecorderRemoveOutro": "Kapanış müziğini kaldır"
+  "podcastRecorderRemoveOutro": "Kapanış müziğini kaldır",
+  "dutch": "Felemenkçe",
+  "@dutch": {
+    "description": "Localized name of the Dutch language in menus."
+  }
 }

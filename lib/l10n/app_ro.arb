@@ -4896,11 +4896,35 @@
   "onlineDictionaryTranslation": "Limba traducerii:",
   "onlineDictionaryNone": "Niciuna",
   "onlineDictionaryEntryTitle": "{word} — {language}",
-  "@onlineDictionaryEntryTitle": {"placeholders": {"word": {"type": "String"}, "language": {"type": "String"}}},
+  "@onlineDictionaryEntryTitle": {
+    "placeholders": {
+      "word": {
+        "type": "String"
+      },
+      "language": {
+        "type": "String"
+      }
+    }
+  },
   "onlineDictionaryDefinition": "{number}. {text}",
-  "@onlineDictionaryDefinition": {"placeholders": {"number": {"type": "int"}, "text": {"type": "String"}}},
+  "@onlineDictionaryDefinition": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "text": {
+        "type": "String"
+      }
+    }
+  },
   "onlineDictionarySource": "Wiktionary — CC BY-SA 4.0\n{url}",
-  "@onlineDictionarySource": {"placeholders": {"url": {"type": "String"}}},
+  "@onlineDictionarySource": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
   "podcastRecorderTitle": "Înregistrează un podcast",
   "podcastRecorderHint": "Se înregistrează doar microfonul. Muzica de fundal opțională este adăugată la final. Volumele se aplică întregii înregistrări. Folosiți căști pentru a nu înregistra cititorul de ecran din difuzoare. Trecerea la altă aplicație pune înregistrarea pe pauză.",
   "podcastRecorderMicVolume": "Volumul microfonului",
@@ -4915,5 +4939,9 @@
   "podcastRecorderChooseIntro": "Alege genericul de început (opțional)",
   "podcastRecorderChooseOutro": "Alege genericul de final (opțional)",
   "podcastRecorderRemoveIntro": "Elimină genericul de început",
-  "podcastRecorderRemoveOutro": "Elimină genericul de final"
+  "podcastRecorderRemoveOutro": "Elimină genericul de final",
+  "dutch": "Neerlandeză",
+  "@dutch": {
+    "description": "Localized name of the Dutch language in menus."
+  }
 }

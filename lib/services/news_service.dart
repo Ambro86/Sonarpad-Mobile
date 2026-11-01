@@ -26,6 +26,7 @@ import 'news_sources/brazilian_portuguese_news_sources.dart';
 import 'news_sources/polish_news_sources.dart';
 import 'news_sources/czech_news_sources.dart';
 import 'news_sources/german_news_sources.dart';
+import 'news_sources/dutch_news_sources.dart';
 import 'news_sources/simplified_chinese_news_sources.dart';
 import 'news_sources/ukrainian_news_sources.dart';
 import 'news_sources/romanian_news_sources.dart';
@@ -41,6 +42,7 @@ enum NewsLanguage {
   polish,
   czech,
   german,
+  dutch,
   chineseSimplified,
   ukrainian,
   romanian,
@@ -65,6 +67,7 @@ extension NewsLanguageInfo on NewsLanguage {
         NewsLanguage.polish => 'pl',
         NewsLanguage.czech => 'cs',
         NewsLanguage.german => 'de',
+        NewsLanguage.dutch => 'nl',
         NewsLanguage.chineseSimplified => 'zh-CN',
         NewsLanguage.ukrainian => 'uk',
         NewsLanguage.romanian => 'ro',
@@ -81,6 +84,7 @@ extension NewsLanguageInfo on NewsLanguage {
         NewsLanguage.polish => 'polish',
         NewsLanguage.czech => 'czech',
         NewsLanguage.german => 'german',
+        NewsLanguage.dutch => 'dutch',
         NewsLanguage.chineseSimplified => 'chinese_simplified',
         NewsLanguage.ukrainian => 'ukrainian',
         NewsLanguage.romanian => 'romanian',
@@ -99,6 +103,7 @@ extension NewsLanguageInfo on NewsLanguage {
         NewsLanguage.polish => l10n.radioLanguagePl,
         NewsLanguage.czech => l10n.radioLanguageCs,
         NewsLanguage.german => l10n.german,
+        NewsLanguage.dutch => l10n.dutch,
         NewsLanguage.chineseSimplified => l10n.simplifiedChineseLanguageName,
         NewsLanguage.ukrainian => l10n.radioLanguageUk,
         NewsLanguage.romanian => l10n.radioLanguageRo,
@@ -115,6 +120,7 @@ extension NewsLanguageInfo on NewsLanguage {
         NewsLanguage.polish => polishNewsSources,
         NewsLanguage.czech => czechNewsSources,
         NewsLanguage.german => germanNewsSources,
+        NewsLanguage.dutch => dutchNewsSources,
         NewsLanguage.chineseSimplified => simplifiedChineseNewsSources,
         NewsLanguage.ukrainian => ukrainianNewsSources,
         NewsLanguage.romanian => romanianNewsSources,
@@ -671,6 +677,11 @@ class NewsService {
             hl = 'de';
             gl = 'DE';
             ceid = 'DE:de';
+            break;
+          case NewsLanguage.dutch:
+            hl = 'nl';
+            gl = 'NL';
+            ceid = 'NL:nl';
             break;
           case NewsLanguage.chineseSimplified:
             hl = 'zh-CN';
@@ -1867,6 +1878,7 @@ class NewsService {
         NewsLanguage.polish => 'PL',
         NewsLanguage.czech => 'CZ',
         NewsLanguage.german => 'DE',
+        NewsLanguage.dutch => 'NL',
         NewsLanguage.chineseSimplified => 'CN',
         NewsLanguage.ukrainian => 'UA',
         NewsLanguage.romanian => 'RO',
@@ -2553,6 +2565,7 @@ class NewsService {
       NewsLanguage.polish => 'pl-PL,pl;q=0.9,en-US;q=0.8,en;q=0.7',
       NewsLanguage.czech => 'cs-CZ,cs;q=0.9,en-US;q=0.8,en;q=0.7',
       NewsLanguage.german => 'de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7',
+      NewsLanguage.dutch => 'nl-NL,nl;q=0.9,en-US;q=0.8,en;q=0.7',
       NewsLanguage.chineseSimplified => 'zh-CN,zh;q=0.9,en-US;q=0.7,en;q=0.6',
       NewsLanguage.ukrainian => 'uk-UA,uk;q=0.9,en-US;q=0.8,en;q=0.7',
       NewsLanguage.romanian => 'ro-RO,ro;q=0.9,en-US;q=0.8,en;q=0.7',

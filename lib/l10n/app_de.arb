@@ -6474,11 +6474,35 @@
   "onlineDictionaryTranslation": "Übersetzungssprache des Wörterbuchs:",
   "onlineDictionaryNone": "Keine",
   "onlineDictionaryEntryTitle": "{word} — {language}",
-  "@onlineDictionaryEntryTitle": {"placeholders": {"word": {"type": "String"}, "language": {"type": "String"}}},
+  "@onlineDictionaryEntryTitle": {
+    "placeholders": {
+      "word": {
+        "type": "String"
+      },
+      "language": {
+        "type": "String"
+      }
+    }
+  },
   "onlineDictionaryDefinition": "{number}. {text}",
-  "@onlineDictionaryDefinition": {"placeholders": {"number": {"type": "int"}, "text": {"type": "String"}}},
+  "@onlineDictionaryDefinition": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "text": {
+        "type": "String"
+      }
+    }
+  },
   "onlineDictionarySource": "Wiktionary — CC BY-SA 4.0\n{url}",
-  "@onlineDictionarySource": {"placeholders": {"url": {"type": "String"}}},
+  "@onlineDictionarySource": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
   "podcastRecorderTitle": "Podcast aufnehmen",
   "podcastRecorderHint": "Nur das Mikrofon wird aufgenommen. Optionale Hintergrundmusik wird anschließend hinzugefügt. Die Lautstärken gelten für die gesamte Aufnahme. Verwenden Sie Kopfhörer, damit die Sprachausgabe nicht über die Lautsprecher mit aufgenommen wird. Beim Wechsel zu einer anderen App pausiert die Aufnahme.",
   "podcastRecorderMicVolume": "Mikrofonlautstärke",
@@ -6493,5 +6517,9 @@
   "podcastRecorderChooseIntro": "Intro auswählen (optional)",
   "podcastRecorderChooseOutro": "Outro auswählen (optional)",
   "podcastRecorderRemoveIntro": "Intro entfernen",
-  "podcastRecorderRemoveOutro": "Outro entfernen"
+  "podcastRecorderRemoveOutro": "Outro entfernen",
+  "dutch": "Niederländisch",
+  "@dutch": {
+    "description": "Localized name of the Dutch language in menus."
+  }
 }

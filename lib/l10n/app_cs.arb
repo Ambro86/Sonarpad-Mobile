@@ -4899,11 +4899,35 @@
   "onlineDictionaryTranslation": "Jazyk překladu slovníku:",
   "onlineDictionaryNone": "Žádný",
   "onlineDictionaryEntryTitle": "{word} — {language}",
-  "@onlineDictionaryEntryTitle": {"placeholders": {"word": {"type": "String"}, "language": {"type": "String"}}},
+  "@onlineDictionaryEntryTitle": {
+    "placeholders": {
+      "word": {
+        "type": "String"
+      },
+      "language": {
+        "type": "String"
+      }
+    }
+  },
   "onlineDictionaryDefinition": "{number}. {text}",
-  "@onlineDictionaryDefinition": {"placeholders": {"number": {"type": "int"}, "text": {"type": "String"}}},
+  "@onlineDictionaryDefinition": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "text": {
+        "type": "String"
+      }
+    }
+  },
   "onlineDictionarySource": "Wiktionary — CC BY-SA 4.0\n{url}",
-  "@onlineDictionarySource": {"placeholders": {"url": {"type": "String"}}},
+  "@onlineDictionarySource": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
   "podcastRecorderTitle": "Nahrát podcast",
   "podcastRecorderHint": "Nahrává se pouze mikrofon. Volitelný hudební podklad se přidá po dokončení. Hlasitosti platí pro celou nahrávku. Použijte sluchátka, aby se nenahrával hlas čtečky obrazovky z reproduktorů. Přepnutí do jiné aplikace nahrávání pozastaví.",
   "podcastRecorderMicVolume": "Hlasitost mikrofonu",
@@ -4918,5 +4942,9 @@
   "podcastRecorderChooseIntro": "Vybrat úvodní znělku (volitelné)",
   "podcastRecorderChooseOutro": "Vybrat závěrečnou znělku (volitelné)",
   "podcastRecorderRemoveIntro": "Odstranit úvodní znělku",
-  "podcastRecorderRemoveOutro": "Odstranit závěrečnou znělku"
+  "podcastRecorderRemoveOutro": "Odstranit závěrečnou znělku",
+  "dutch": "Nizozemština",
+  "@dutch": {
+    "description": "Localized name of the Dutch language in menus."
+  }
 }

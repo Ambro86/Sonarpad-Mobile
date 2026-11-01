@@ -1,3 +1,7 @@
+> **Aggiornamento changelog olandese:** tradotte in `nl` tutte le 163 note generali inglesi delle nove versioni nel sorgente (da 0.2.0 a 0.5.3) e le 3 note specifiche iOS/Android; il parser Dart ora legge `nl` direttamente. Vedi `DUTCH_CHANGELOG_COMPLETE.md`. La traduzione di Omio resta un lavoro separato; compilazione e test su dispositivo non eseguiti.
+
+> **Aggiornamento localizzazione NL:** la terza fase copre le stringhe ARB, ma l’audit successivo ha individuato integrazioni mancanti. Vedi `DUTCH_INTEGRATION_AUDIT.md`: i servizi principali sono stati corretti, mentre ricerca viaggi Omio e changelog richiedono ancora traduzioni specifiche. Non considerare completa l’intera localizzazione per la pubblicazione senza ulteriori test.
+
 # Sonarpad Mobile
 
 **Sonarpad Mobile** is the mobile companion to Sonarpad: an accessibility-focused Flutter application for reading documents, listening to media, following news and podcasts, searching routes, discovering radio stations, and consulting cinema information.
@@ -166,3 +170,8 @@ Le regole per ARB, Calendario/citazioni e controllo delle stringhe hard-coded so
 ## Modifica progetto audiodescrizione mobile
 
 Da **Media -> Modifica progetto audiodescrizione** è possibile aprire un file `.sonarpad-ad.json`, modificare le descrizioni con controllo reale della durata TTS, ascoltare l'anteprima, eliminare descrizioni, cambiare voce verificando tutte le frasi, riesportare l'MP3 ed esportare SRT/VTT. I nuovi progetti usano il formato Windows `sonarpad-audio-description-project` v1 e restano leggibili anche dal mobile se creati con il precedente schema mobile.
+
+
+## Dutch / Nederlands – Fase 3 (1 novembre 2026)
+
+Il pacchetto contiene la terza fase della localizzazione nl e tutte le modifiche precedenti. Copertura completa delle chiavi ARB, miglioramento calendario e verifica delle stringhe parametriche. Stato e limiti in `DUTCH_LOCALIZATION_PHASE3.md`.

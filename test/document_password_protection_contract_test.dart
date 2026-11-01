@@ -140,6 +140,7 @@ void main() {
             line.contains('hasł') ||
             line.contains('hesl') ||
             line.toLowerCase().contains('passwort') ||
+            line.toLowerCase().contains('wachtwoord') ||
             line.contains('парол') ||
             line.contains('parol') ||
             line.contains('密码')),

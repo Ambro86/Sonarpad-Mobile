@@ -56,6 +56,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
     return switch (widget.language) {
       NewsLanguage.italian => 'it-IT-IsabellaNeural',
       NewsLanguage.romanian => 'ro-RO-AlinaNeural',
+      NewsLanguage.dutch => 'nl-NL-ColetteNeural',
       NewsLanguage.turkish => 'tr-TR-EmelNeural',
       _ => 'en-US-JennyNeural',
     };

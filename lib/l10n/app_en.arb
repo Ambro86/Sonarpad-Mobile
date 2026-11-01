@@ -4896,11 +4896,35 @@
   "onlineDictionaryTranslation": "Dictionary Translation Language:",
   "onlineDictionaryNone": "None",
   "onlineDictionaryEntryTitle": "{word} — {language}",
-  "@onlineDictionaryEntryTitle": {"placeholders": {"word": {"type": "String"}, "language": {"type": "String"}}},
+  "@onlineDictionaryEntryTitle": {
+    "placeholders": {
+      "word": {
+        "type": "String"
+      },
+      "language": {
+        "type": "String"
+      }
+    }
+  },
   "onlineDictionaryDefinition": "{number}. {text}",
-  "@onlineDictionaryDefinition": {"placeholders": {"number": {"type": "int"}, "text": {"type": "String"}}},
+  "@onlineDictionaryDefinition": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "text": {
+        "type": "String"
+      }
+    }
+  },
   "onlineDictionarySource": "Wiktionary — CC BY-SA 4.0\n{url}",
-  "@onlineDictionarySource": {"placeholders": {"url": {"type": "String"}}},
+  "@onlineDictionarySource": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
   "podcastRecorderTitle": "Record podcast",
   "podcastRecorderHint": "Record the microphone only. Optional background music is added afterwards. Volume levels apply to the entire recording. Use headphones to avoid recording screen reader speech from the speakers. Switching to another app pauses recording.",
   "podcastRecorderMicVolume": "Microphone volume",
@@ -4915,5 +4939,9 @@
   "podcastRecorderChooseIntro": "Choose intro (optional)",
   "podcastRecorderChooseOutro": "Choose outro (optional)",
   "podcastRecorderRemoveIntro": "Remove intro",
-  "podcastRecorderRemoveOutro": "Remove outro"
+  "podcastRecorderRemoveOutro": "Remove outro",
+  "dutch": "Dutch",
+  "@dutch": {
+    "description": "Localized name of the Dutch language in menus."
+  }
 }

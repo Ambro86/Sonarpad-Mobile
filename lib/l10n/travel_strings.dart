@@ -20,6 +20,7 @@ class TravelStrings {
               'en': 'GB',
               'fr': 'FR',
               'de': 'DE',
+              'nl': 'NL',
               'es': 'ES',
               'pt': 'PT',
               'pl': 'PL',

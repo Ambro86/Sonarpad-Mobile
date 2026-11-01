@@ -234,6 +234,7 @@ class _CreateAiAudiodescriptionScreenState
       final appLanguage = await _settings.loadAppLanguage();
       final defaultLanguage = switch (appLanguage) {
         'tr' || 'tr_TR' || 'tr-TR' => 'tr',
+        'nl' => 'nl',
         _ => 'it',
       };
       final preferences = await AiAudioDescriptionPreferences.load(
@@ -1470,6 +1471,7 @@ class _CreateAiAudiodescriptionScreenState
         AccessibleOption(value: 'pl', label: l10n.radioLanguagePl),
         AccessibleOption(value: 'cs', label: l10n.radioLanguageCs),
         AccessibleOption(value: 'de', label: l10n.german),
+        AccessibleOption(value: 'nl', label: l10n.dutch),
         AccessibleOption(
           value: 'zh_CN',
           label: l10n.simplifiedChineseLanguageName,

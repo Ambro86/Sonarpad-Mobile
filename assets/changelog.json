@@ -3,6 +3,7 @@
     "version": "0.5.3",
     "date": "2026-10-27",
     "it": [
+      "Aggiunta la traduzione olandese dell’interfaccia di Sonarpad.",
       "Aggiunto Registra podcast: registra la voce, metti in pausa e riprendi, regola i volumi di voce e base musicale, ascolta l’anteprima, salva e condividi. Puoi aggiungere sigle iniziali e finali facoltative, ricordate per le registrazioni successive. La base musicale e le sigle vengono montate al termine; passando a un’altra app la registrazione va in pausa.",
       "Aggiunto il Dizionario online basato su Wiktionary: cerca parole e consulta definizioni numerate, sinonimi e voci in altre lingue in una schermata accessibile dedicata. Puoi scegliere le lingue tramite slider accessibili; le preferenze e le ricerche recenti vengono ricordate.",
       "Dopo una prima fase di prova riservata all’interfaccia italiana, la ricerca viaggi è ora disponibile in tutte le lingue di Sonarpad e per tutti i paesi serviti dall’agenzia di riferimento. Sonarpad rende più semplice e accessibile cercare e acquistare biglietti di treni, aerei e pullman, anche per chi usa uno screen reader. Sonarpad non vende biglietti: coerentemente con lo spirito di servizio che ha sempre contraddistinto il suo autore, non riceve commissioni né proventi da link di affiliazione. I prezzi sono quelli proposti dall’agenzia, senza maggiorazioni da parte di Sonarpad, come consultando direttamente il suo sito o la sua app. Sonarpad facilita l’accesso a una procedura che può risultare difficile da usare con uno screen reader; l’acquisto avviene tramite l’agenzia, attualmente Omio. Per modifiche, cancellazioni o assistenza sui biglietti acquistati, rivolgetevi direttamente all’agenzia di riferimento.",
@@ -17,6 +18,7 @@
       "Migliorata l’estrazione del testo dai PDF: recuperate lettere che in alcuni documenti venivano omesse, rendendo più corretta la lettura e l’esportazione del testo."
     ],
     "en": [
+      "Added a Dutch translation of the Sonarpad interface.",
       "Added Record podcast: record your voice, pause and resume, adjust voice and background music levels, preview, save and share. Optional intros and outros are remembered for future recordings. Music and jingles are assembled afterwards; switching to another app pauses recording.",
       "Added an online dictionary powered by Wiktionary: search for words and read numbered definitions, synonyms and entries in other languages on a dedicated accessible screen. Choose languages with accessible sliders; preferences and recent searches are remembered.",
       "After an initial trial limited to the Italian interface, travel search is now available in every Sonarpad language and for all countries served by the booking agency. Sonarpad makes finding and buying train, flight and coach tickets simpler and more accessible, including for screen reader users. Sonarpad does not sell tickets: in keeping with its author’s longstanding spirit of service, it receives no commissions or affiliate-link revenue. Prices are those offered by the agency, with no Sonarpad markup, just as when visiting its website or app directly. Sonarpad facilitates a process that can be difficult to use with a screen reader; purchases are made through the agency, currently Omio. For changes, cancellations or help with purchased tickets, contact the agency directly.",
@@ -30,6 +32,7 @@
       "Improved PDF text extraction: letters previously omitted in some documents are now recovered, improving text reading and export."
     ],
     "fr": [
+      "Ajout de la traduction néerlandaise de l’interface de Sonarpad.",
       "Ajout de l’enregistrement de podcasts : enregistrez votre voix, mettez en pause et reprenez, réglez les volumes de la voix et de la musique, écoutez un aperçu, enregistrez et partagez. Les génériques de début et de fin facultatifs sont mémorisés. La musique et les génériques sont ajoutés à la fin ; changer d’application met l’enregistrement en pause.",
       "Ajout du Dictionnaire en ligne basé sur Wiktionary : recherchez des mots et consultez des définitions numérotées, des synonymes et des entrées dans d’autres langues sur un écran accessible dédié. Choisissez les langues avec des curseurs accessibles ; les préférences et les recherches récentes sont mémorisées.",
       "Après une première phase d’essai réservée à l’interface italienne, la recherche de voyages est désormais disponible dans toutes les langues de Sonarpad et pour tous les pays desservis par l’agence. Sonarpad simplifie la recherche et l’achat de billets de train, d’avion et d’autocar, notamment pour les utilisateurs de lecteurs d’écran. Sonarpad ne vend pas de billets : fidèle à l’esprit de service qui a toujours animé son auteur, il ne perçoit aucune commission ni aucun revenu de liens d’affiliation. Les prix sont ceux proposés par l’agence, sans majoration de Sonarpad, comme sur son site ou son application. Sonarpad facilite une procédure parfois difficile à utiliser avec un lecteur d’écran ; l’achat s’effectue auprès de l’agence, actuellement Omio. Pour toute modification, annulation ou assistance concernant les billets achetés, contactez directement l’agence.",
@@ -43,6 +46,7 @@
       "Amélioration de l’extraction du texte des PDF : récupération de lettres auparavant omises dans certains documents, pour une lecture et une exportation plus fidèles."
     ],
     "es": [
+      "Añadida la traducción al neerlandés de la interfaz de Sonarpad.",
       "Añadida la grabación de podcasts: graba tu voz, pausa y reanuda, ajusta los volúmenes de voz y música, escucha una vista previa, guarda y comparte. Las sintonías iniciales y finales opcionales se recuerdan para futuras grabaciones. La música y las sintonías se añaden al terminar; cambiar de aplicación pausa la grabación.",
       "Añadido el Diccionario en línea basado en Wiktionary: busca palabras y consulta definiciones numeradas, sinónimos y entradas en otros idiomas en una pantalla accesible dedicada. Elige los idiomas mediante controles deslizantes accesibles; se recuerdan las preferencias y las búsquedas recientes.",
       "Tras una primera fase de prueba limitada a la interfaz italiana, la búsqueda de viajes ya está disponible en todos los idiomas de Sonarpad y para todos los países atendidos por la agencia. Sonarpad facilita la búsqueda y compra de billetes de tren, avión y autobús, también para quienes usan un lector de pantalla. Sonarpad no vende billetes: fiel al espíritu de servicio que siempre ha caracterizado a su autor, no recibe comisiones ni ingresos por enlaces de afiliación. Los precios son los ofrecidos por la agencia, sin recargos de Sonarpad, como al consultar directamente su web o aplicación. Sonarpad facilita un proceso que puede resultar difícil con un lector de pantalla; la compra se realiza a través de la agencia, actualmente Omio. Para cambios, cancelaciones o ayuda con los billetes comprados, contacta directamente con la agencia.",
@@ -56,6 +60,7 @@
       "Mejorada la extracción de texto de los PDF: se recuperan letras que antes se omitían en algunos documentos, mejorando la lectura y la exportación del texto."
     ],
     "pt": [
+      "Adicionada a tradução da interface do Sonarpad para neerlandês.",
       "Adicionada a gravação de podcasts: grave a voz, pause e retome, ajuste os volumes da voz e da música, ouça uma prévia, guarde e partilhe. As aberturas e os encerramentos opcionais são guardados para futuras gravações. A música é adicionada no final; mudar de aplicação pausa a gravação.",
       "Adicionado o Dicionário online baseado no Wiktionary: pesquise palavras e consulte definições numeradas, sinónimos e entradas noutras línguas num ecrã acessível dedicado. Escolha as línguas através de controlos deslizantes acessíveis; as preferências e as pesquisas recentes são guardadas.",
       "Após uma primeira fase de testes limitada à interface italiana, a pesquisa de viagens está disponível em todos os idiomas do Sonarpad e para todos os países abrangidos pela agência. O Sonarpad torna mais simples e acessível pesquisar e comprar bilhetes de comboio, avião e autocarro, incluindo para quem utiliza um leitor de ecrã. O Sonarpad não vende bilhetes: fiel ao espírito de serviço que sempre caracterizou o seu autor, não recebe comissões nem receitas de ligações de afiliação. Os preços são os propostos pela agência, sem acréscimos do Sonarpad, tal como no seu site ou aplicação. O Sonarpad facilita um processo que pode ser difícil com um leitor de ecrã; a compra é efetuada através da agência, atualmente a Omio. Para alterações, cancelamentos ou apoio relativo aos bilhetes comprados, contacte diretamente a agência.",
@@ -69,6 +74,7 @@
       "Melhorada a extração de texto dos PDF: são recuperadas letras anteriormente omitidas em alguns documentos, melhorando a leitura e a exportação do texto."
     ],
     "pt_BR": [
+      "Adicionada a tradução da interface do Sonarpad para holandês.",
       "Adicionada a gravação de podcasts: grave sua voz, pause e retome, ajuste os volumes da voz e da música, ouça uma prévia, salve e compartilhe. As vinhetas opcionais de abertura e encerramento são lembradas nas próximas gravações. A música é adicionada ao terminar; mudar de aplicativo pausa a gravação.",
       "Adicionado o Dicionário online baseado no Wiktionary: pesquise palavras e consulte definições numeradas, sinônimos e verbetes em outros idiomas em uma tela acessível dedicada. Escolha os idiomas por controles deslizantes acessíveis; as preferências e as pesquisas recentes são lembradas.",
       "Após uma primeira fase de testes limitada à interface italiana, a busca de viagens está disponível em todos os idiomas do Sonarpad e para todos os países atendidos pela agência. O Sonarpad torna mais simples e acessível buscar e comprar passagens de trem, avião e ônibus, inclusive para quem usa um leitor de tela. O Sonarpad não vende passagens: fiel ao espírito de serviço que sempre caracterizou seu autor, não recebe comissões nem receitas de links de afiliados. Os preços são os oferecidos pela agência, sem acréscimos do Sonarpad, como ao consultar diretamente seu site ou aplicativo. O Sonarpad facilita um processo que pode ser difícil com um leitor de tela; a compra é feita pela agência, atualmente a Omio. Para alterações, cancelamentos ou ajuda com as passagens compradas, entre em contato diretamente com a agência.",
@@ -82,6 +88,7 @@
       "Melhorada a extração de texto dos PDFs: letras antes omitidas em alguns documentos são recuperadas, melhorando a leitura e a exportação do texto."
     ],
     "pl": [
+      "Dodano niderlandzkie tłumaczenie interfejsu Sonarpad.",
       "Dodano nagrywanie podcastów: nagrywaj głos, wstrzymuj i wznawiaj, reguluj głośność głosu i muzyki, odsłuchuj, zapisuj i udostępniaj. Opcjonalne sygnały początkowe i końcowe są zapamiętywane dla kolejnych nagrań. Muzyka i sygnały są dodawane po nagraniu; przejście do innej aplikacji wstrzymuje nagrywanie.",
       "Dodano Słownik online oparty na Wiktionary: wyszukuj słowa i przeglądaj numerowane definicje, synonimy oraz hasła w innych językach na osobnym, dostępnym ekranie. Języki można wybierać za pomocą dostępnych suwaków; preferencje i ostatnie wyszukiwania są zapamiętywane.",
       "Po pierwszej fazie testów ograniczonej do włoskiego interfejsu wyszukiwanie podróży jest dostępne we wszystkich językach Sonarpad i dla wszystkich krajów obsługiwanych przez agencję. Sonarpad ułatwia dostępne wyszukiwanie i zakup biletów kolejowych, lotniczych i autobusowych, również osobom korzystającym z czytnika ekranu. Sonarpad nie sprzedaje biletów: zgodnie z duchem służenia innym, który zawsze przyświecał jego autorowi, nie otrzymuje prowizji ani przychodów z linków afiliacyjnych. Ceny są takie jak w agencji, bez dopłat Sonarpad, jak przy korzystaniu bezpośrednio z jej strony lub aplikacji. Sonarpad ułatwia procedurę, która może być trudna z czytnikiem ekranu; zakup odbywa się przez agencję, obecnie Omio. W sprawie zmian, anulowania lub pomocy dotyczącej zakupionych biletów należy kontaktować się bezpośrednio z agencją.",
@@ -95,6 +102,7 @@
       "Ulepszono wyodrębnianie tekstu z plików PDF: odzyskiwane są litery pomijane wcześniej w niektórych dokumentach, co poprawia odczyt i eksport tekstu."
     ],
     "cs": [
+      "Přidán nizozemský překlad rozhraní Sonarpadu.",
       "Přidáno nahrávání podcastů: nahrávejte hlas, pozastavujte a pokračujte, upravujte hlasitost hlasu a hudby, poslouchejte náhled, ukládejte a sdílejte. Volitelné úvodní a závěrečné znělky se pamatují pro další nahrávky. Hudba a znělky se přidají po dokončení; přechod do jiné aplikace nahrávání pozastaví.",
       "Přidán Online slovník založený na Wiktionary: vyhledávejte slova a prohlížejte si číslované definice, synonyma a hesla v dalších jazycích na samostatné přístupné obrazovce. Jazyky lze vybírat pomocí přístupných posuvníků; předvolby a nedávná hledání se ukládají.",
       "Po úvodním testování omezeném na italské rozhraní je vyhledávání cest dostupné ve všech jazycích Sonarpad a pro všechny země obsluhované agenturou. Sonarpad usnadňuje přístupné vyhledávání a nákup vlakových a autobusových jízdenek i letenek, také uživatelům odečítačů obrazovky. Sonarpad jízdenky ani letenky neprodává: v souladu s duchem služby ostatním, který vždy charakterizoval jeho autora, nepřijímá provize ani příjmy z partnerských odkazů. Ceny jsou stejné jako u agentury, bez přirážek Sonarpad, jako při přímém použití jejího webu nebo aplikace. Sonarpad zpřístupňuje postup, který může být s odečítačem obtížný; nákup probíhá prostřednictvím agentury, nyní Omio. Se změnami, zrušením nebo dotazy k zakoupeným dokladům se obracejte přímo na agenturu.",
@@ -108,6 +116,7 @@
       "Vylepšeno získávání textu z PDF: obnovují se písmena dříve vynechávaná v některých dokumentech, takže čtení a export textu jsou přesnější."
     ],
     "de": [
+      "Niederländische Übersetzung der Sonarpad-Oberfläche hinzugefügt.",
       "Podcast-Aufnahme hinzugefügt: Stimme aufnehmen, pausieren und fortsetzen, Sprach- und Musiklautstärke einstellen, vorhören, speichern und teilen. Optionale Intros und Outros werden für weitere Aufnahmen gespeichert. Musik und Jingles werden anschließend hinzugefügt; beim Wechsel zu einer anderen App pausiert die Aufnahme.",
       "Online-Wörterbuch auf Basis von Wiktionary hinzugefügt: Suchen Sie Wörter und lesen Sie nummerierte Definitionen, Synonyme und Einträge in anderen Sprachen auf einer eigenen barrierefreien Seite. Die Sprachen lassen sich mit barrierefreien Schiebereglern auswählen; Einstellungen und letzte Suchanfragen werden gespeichert.",
       "Nach einer ersten Testphase mit italienischer Oberfläche ist die Reisesuche nun in allen Sonarpad-Sprachen und für alle von der Buchungsagentur bedienten Länder verfügbar. Sonarpad erleichtert die barrierefreie Suche und den Kauf von Bahn-, Flug- und Bustickets, auch mit Screenreader. Sonarpad verkauft keine Tickets: Getreu dem Hilfsgedanken seines Autors erhält es weder Provisionen noch Einnahmen aus Affiliate-Links. Es gelten die Preise der Agentur ohne Sonarpad-Aufschlag, genau wie auf deren Website oder in deren App. Sonarpad erleichtert einen Vorgang, der mit Screenreader schwierig sein kann; der Kauf erfolgt über die Agentur, derzeit Omio. Für Änderungen, Stornierungen oder Hilfe zu gekauften Tickets wenden Sie sich direkt an die Agentur.",
@@ -121,6 +130,7 @@
       "Textextraktion aus PDFs verbessert: In manchen Dokumenten zuvor ausgelassene Buchstaben werden nun wiederhergestellt, wodurch das Lesen und Exportieren des Textes genauer wird."
     ],
     "zh_CN": [
+      "新增 Sonarpad 界面的荷兰语翻译。",
       "新增播客录制：录制声音、暂停和继续，调节人声与背景音乐音量，试听、保存和分享。可选的片头和片尾音乐会为后续录制保留。音乐在录制结束后合成；切换到其他应用会暂停录制。",
       "新增基于 Wiktionary 的在线词典：搜索单词，在专用的无障碍页面中查看编号释义、同义词和其他语言的词条。可通过无障碍滑块选择语言，并保存偏好设置和最近的搜索记录。",
       "经过最初仅面向意大利语界面的测试阶段，旅行搜索现已支持 Sonarpad 的所有语言，以及合作代理机构提供服务的所有国家。Sonarpad 让搜索和购买火车票、机票及长途汽车票变得更简单、更无障碍，也方便屏幕阅读器用户使用。Sonarpad 不销售票务：秉承作者一贯服务他人的精神，不收取佣金，也不通过推广联盟链接获利。价格由代理机构提供，与直接使用其网站或应用时相同，Sonarpad 不加价。Sonarpad 帮助用户完成可能难以用屏幕阅读器操作的流程；购票通过代理机构完成，目前为 Omio。如需改签、取消或咨询已购票务，请直接联系相关代理机构。",
@@ -134,6 +144,7 @@
       "改进了 PDF 文本提取：恢复某些文档中此前遗漏的字母，提高文本阅读和导出的准确性。"
     ],
     "uk": [
+      "Додано нідерландський переклад інтерфейсу Sonarpad.",
       "Додано запис подкастів: записуйте голос, призупиняйте та продовжуйте, регулюйте гучність голосу й музики, прослуховуйте, зберігайте та діліться. Необов’язкові вступні й кінцеві заставки запам’ятовуються для наступних записів. Музика та заставки додаються після завершення; перехід до іншої програми призупиняє запис.",
       "Додано Онлайн-словник на основі Wiktionary: шукайте слова та переглядайте нумеровані визначення, синоніми й статті іншими мовами на окремому доступному екрані. Мови можна вибирати за допомогою доступних повзунків; налаштування й останні пошукові запити зберігаються.",
       "Після початкового тестування лише з італійським інтерфейсом пошук подорожей доступний усіма мовами Sonarpad і для всіх країн, які обслуговує агенція. Sonarpad спрощує та робить доступнішим пошук і придбання квитків на потяги, літаки й автобуси, зокрема для користувачів читачів екрана. Sonarpad не продає квитки: відповідно до духу служіння людям, який завжди вирізняв його автора, він не отримує комісій чи доходів від партнерських посилань. Ціни відповідають пропозиціям агенції без націнок Sonarpad, як на її сайті чи в застосунку. Sonarpad полегшує процедуру, яка може бути складною з читачем екрана; придбання відбувається через агенцію, наразі Omio. Щодо змін, скасувань або допомоги з придбаними квитками звертайтеся безпосередньо до агенції.",
@@ -147,6 +158,7 @@
       "Покращено видобування тексту з PDF: відновлюються літери, які раніше пропускалися в деяких документах, що покращує читання та експорт тексту."
     ],
     "ro": [
+      "A fost adăugată traducerea în neerlandeză a interfeței Sonarpad.",
       "Adăugată înregistrarea podcasturilor: înregistrează vocea, pune pe pauză și reia, reglează volumul vocii și al muzicii, ascultă previzualizarea, salvează și distribuie. Genericele opționale de început și de final sunt memorate pentru înregistrările viitoare. Muzica se adaugă la final; trecerea la altă aplicație pune înregistrarea pe pauză.",
       "A fost adăugat Dicționarul online bazat pe Wiktionary: căutați cuvinte și consultați definiții numerotate, sinonime și articole în alte limbi pe un ecran accesibil dedicat. Alegeți limbile folosind glisoare accesibile; preferințele și căutările recente sunt memorate.",
       "După o primă etapă de testare limitată la interfața italiană, căutarea călătoriilor este disponibilă în toate limbile Sonarpad și pentru toate țările deservite de agenție. Sonarpad simplifică și face accesibilă căutarea și cumpărarea biletelor de tren, avion și autocar, inclusiv pentru utilizatorii cititoarelor de ecran. Sonarpad nu vinde bilete: fidel spiritului de a-i ajuta pe ceilalți care l-a caracterizat mereu pe autorul său, nu primește comisioane sau venituri din linkuri de afiliere. Prețurile sunt cele oferite de agenție, fără adaosuri Sonarpad, ca atunci când consultați direct site-ul sau aplicația acesteia. Sonarpad facilitează un proces care poate fi dificil cu un cititor de ecran; achiziția se face prin agenție, în prezent Omio. Pentru modificări, anulări sau asistență privind biletele cumpărate, contactați direct agenția.",
@@ -160,6 +172,7 @@
       "Extragerea textului din PDF a fost îmbunătățită: sunt recuperate litere omise anterior în unele documente, pentru o citire și un export mai corecte."
     ],
     "tr": [
+      "Sonarpad arayüzüne Felemenkçe çeviri eklendi.",
       "Podcast kaydı eklendi: sesinizi kaydedin, duraklatıp sürdürün, ses ve arka plan müziği düzeylerini ayarlayın, önizleyin, kaydedin ve paylaşın. İsteğe bağlı açılış ve kapanış müzikleri sonraki kayıtlar için hatırlanır. Müzik kayıt tamamlandıktan sonra eklenir; başka bir uygulamaya geçmek kaydı duraklatır.",
       "Wiktionary tabanlı Çevrimiçi sözlük eklendi: sözcük arayın ve özel bir erişilebilir ekranda numaralandırılmış tanımları, eş anlamlıları ve diğer dillerdeki maddeleri okuyun. Dilleri erişilebilir kaydırıcılarla seçebilirsiniz; tercihler ve son aramalar hatırlanır.",
       "Başlangıçta yalnızca İtalyanca arayüzle yapılan testlerin ardından seyahat araması artık Sonarpad’in tüm dillerinde ve acentenin hizmet verdiği tüm ülkeler için kullanılabilir. Sonarpad, ekran okuyucu kullananlar da dahil olmak üzere herkes için tren, uçak ve otobüs bileti aramayı ve satın almayı daha kolay ve erişilebilir hale getirir. Sonarpad bilet satmaz: geliştiricisinin her zaman benimsediği hizmet anlayışına uygun olarak komisyon veya satış ortaklığı bağlantılarından gelir elde etmez. Fiyatlar, acentenin sitesine veya uygulamasına doğrudan girildiğinde sunulan fiyatlardır; Sonarpad ek ücret uygulamaz. Sonarpad, ekran okuyucuyla zor olabilen bir süreci kolaylaştırır; satın alma, şu anda Omio olan acente üzerinden gerçekleşir. Satın alınan biletlerde değişiklik, iptal veya destek için doğrudan acenteyle iletişime geçin.",
@@ -171,6 +184,20 @@
       "Parola korumalı PDF’ler: Sonarpad artık parolayı erişilebilir bir alanda ister, yanlış parolaları bildirir ve doğrulama sonrasında belgeyi açar.",
       "Okuma ekranına PDF’yi parolasız kaydet düğmesi eklendi: PDF’yi doğru parolayla açtıktan sonra düzenini ve içeriğini koruyarak bir kopyasını Sonarpad’e kaydedebilir veya paylaşabilirsiniz. Özgün dosya değişmez.",
       "PDF metin çıkarma iyileştirildi: bazı belgelerde önceden atlanan harfler artık kurtarılarak metnin okunması ve dışa aktarılması daha doğru hale getirildi."
+    ],
+    "nl": [
+      "Nederlandse vertaling van de Sonarpad-interface toegevoegd.",
+      "Nieuw: Podcast opnemen. Neem je stem op, pauzeer en hervat, stel het volume van de stem en achtergrondmuziek in, beluister een voorbeeld, sla op en deel. Optionele intro's en outro's worden voor volgende opnamen onthouden. Muziek en jingles worden achteraf samengevoegd; wanneer je naar een andere app schakelt, pauzeert de opname.",
+      "Nieuw: een onlinewoordenboek op basis van Wiktionary. Zoek woorden op en lees genummerde definities, synoniemen en lemma's in andere talen op een afzonderlijk toegankelijk scherm. Kies talen met toegankelijke schuifregelaars; voorkeuren en recente zoekopdrachten worden onthouden.",
+      "Na een eerste proefperiode die beperkt was tot de Italiaanse interface, is reizen zoeken nu beschikbaar in alle talen van Sonarpad en voor alle landen die door de boekingsaanbieder worden ondersteund. Sonarpad maakt het zoeken en kopen van trein-, vlieg- en buskaartjes eenvoudiger en toegankelijker, ook met een schermlezer. Sonarpad verkoopt zelf geen tickets: vanuit de dienstverlenende instelling van de ontwikkelaar ontvangt het geen commissies of inkomsten uit affiliatielinks. Je betaalt de prijzen van de aanbieder, zonder opslag van Sonarpad, net als wanneer je rechtstreeks de website of app van die aanbieder gebruikt. Sonarpad maakt een procedure toegankelijker die met een schermlezer lastig kan zijn; de aankoop verloopt via de aanbieder, momenteel Omio. Neem voor wijzigingen, annuleringen of hulp bij gekochte tickets rechtstreeks contact op met de aanbieder.",
+      "Nieuw: concerten en evenementen zoeken. Zoek op datum en stad naar concerten, wedstrijden, andere sportevenementen, theater, tentoonstellingen en andere evenementen in de gekozen catalogus. Met een toegankelijke schuifregelaar kies je een categorie of Alle evenementen; je keuze wordt onthouden.",
+      "Delen van links in SonarTube en SonarMusic verbeterd: voortaan wordt alleen de URL gedeeld, zodat je deze gemakkelijk kunt kopiëren en plakken zonder eerst de titel te verwijderen.",
+      "SonarTube en SonarMusic onthouden nu het gekozen zoektype. Als je bijvoorbeeld in SonarMusic Artiesten kiest, blijft Artiesten geselecteerd wanneer je de functie opnieuw opent. Elke module bewaart zijn eigen keuze, ook nadat je de app hebt gesloten.",
+      "Podcasts: Snel abonneren toegevoegd, zodat je je kunt abonneren zonder de zoekresultaten te verlaten of afleveringen te openen. Beschikbaar als toegankelijkheidsactie en als zichtbare knop die is uitgesloten van VoiceOver-navigatie, zonder de lijst opnieuw te laden of de focus te verplaatsen.",
+      "Audiodescripties: zinnen die eerder wegens te weinig ruimte waren weggelaten, kunnen worden hersteld door de werkelijke duur van de spraaksynthese te controleren en zo nodig de spreeksnelheid met 10% of maximaal 15% te verhogen. Al ingevoegde beschrijvingen en dialogen blijven beschermd; de snelheid wordt per herstelde zin in het project opgeslagen.",
+      "Met een wachtwoord beveiligde pdf's: Sonarpad vraagt het wachtwoord nu in een toegankelijk invoerveld, meldt onjuiste wachtwoorden en opent het document na verificatie.",
+      "De knop Pdf zonder wachtwoord opslaan is toegevoegd aan het leesscherm: nadat je een pdf met het juiste wachtwoord hebt geopend, kun je een kopie in Sonarpad opslaan of delen, met behoud van de opmaak en inhoud en zonder het origineel te wijzigen.",
+      "Tekstextractie uit pdf's verbeterd: letters die in bepaalde documenten eerder ontbraken, worden nu teruggevonden, zodat lezen en exporteren nauwkeuriger verlopen."
     ]
   },
   {
@@ -529,6 +556,33 @@
       "Yapay zekâ ile sesli betimleme oluşturma artık SonarTube ve SonarMusic’te tüm dillerde ikincil eylem olarak kullanılabilir.",
       "SonarTube ve SonarMusic favorilerindeki Son videolar düğmesi, tüm favori kanalların veya sanatçıların son videolarını en yeniden başlayarak tek ekranda gösterir.",
       "SonarTube ve SonarMusic favorileri yukarı, aşağı veya seçilen başka bir favorinin önüne taşınabilir ve alfabetik sıralanabilir. Komutlar ikincil eylemler ve ekran okuyucu gezinmesine dahil edilmeyen görsel düğmeler olarak sunulur. Sıralama kaydedilir."
+    ],
+    "nl": [
+      "Audiodescripties: kies het audiospoor bij video's met meerdere sporen en analyseer een afzonderlijk segment opnieuw vanuit de projecteditor. Opgeslagen tijdcodes blijven behouden en nieuwe beschrijvingen worden alleen in beschikbare pauzes ingevoegd.",
+      "Audiodescripties: de minimaal vereiste pauze is verkort tot 1,5 seconde. Sonarpad kan nu meer beschrijvingen maken, ook tijdens korte pauzes die eerder niet werden benut.",
+      "Audiodescripties: als een zin niet in de beschikbare pauze past, probeert Sonarpad deze opnieuw met 10% of indien nodig 15% hogere spreeksnelheid te synthetiseren en controleert daarbij de werkelijke duur. De snelheid wordt alleen voor die beschrijving opgeslagen en blijft behouden bij bewerken, voorbeluisteren en later exporteren; andere zinnen veranderen niet.",
+      "Audiodescripties verbeterd: wanneer het voorlezen van schermtekst is ingeschakeld, worden nu ook eindtitels voorgelezen die Gemini kan herkennen.",
+      "Tijdcodes van audiodescripties verbeterd: een probleem verholpen waardoor Gemini na lange passages zonder ruimte voor gesproken beschrijvingen eerdere scènes kon blijven beschrijven in plaats van de huidige scène te volgen.",
+      "Datums en tijden in Nieuws gecorrigeerd, evenals enkele feedadressen die oude artikelen toonden. Als de publicatiedatum ontbreekt, wordt niet langer de verversingstijd getoond alsof het de publicatiedatum is. Türkiye Gazetesi, İHA en TGRT Haber toegevoegd aan de Turkse nieuwsbronnen.",
+      "Zoeken in SonarMusic verbeterd met vollediger resultaten voor nummers, albums, artiesten, afspeellijsten en video's, betrouwbaarder laden van meer resultaten en toegang tot volledige lijsten met albums en singles van artiesten.",
+      "Cursussen en podcasts zijn nu beschikbaar in SonarTube, zowel in de kanaalonderdelen als in de zoekfilters.",
+      "In Documenten kun je tekst nu exporteren als Markdown (.md) en HTML (.html), opslaan in Sonarpad of delen.",
+      "Aan Instellingen is een optie toegevoegd om heiligen in de kalender te verbergen.",
+      "In SonarTube kun je het audiospoor kiezen van video's die in meerdere talen beschikbaar zijn, zonder je afspeelpositie te verliezen. De knop Audiospoor selecteren verschijnt alleen wanneer er meerdere sporen zijn.",
+      "Sonarpad onthoudt de naam en het e-mailadres die je in meldingen invult, zodat je ze niet opnieuw hoeft te typen. Bij een volgende melding kun je ze wijzigen of wissen.",
+      "De converter onthoudt je gekozen bestandsindeling en instellingen, waaronder WAV en FLAC. Je kunt geconverteerde bestanden altijd opslaan in Sonarpad Documenten, het deelvenster openen of dit telkens opnieuw kiezen.",
+      "Artikelen in Nieuws worden beter weergegeven: vollediger en overzichtelijker, met minder onderbrekingen, advertenties en irrelevante inhoud. Ook zijn koppelingen hersteld die een ander artikel openden dan het geselecteerde.",
+      "Beheer van personagecatalogi gecorrigeerd: catalogi die uit Documenten zijn verwijderd, verschijnen niet langer bij Audiodescriptie maken met AI. Als je een catalogus met dezelfde naam opnieuw maakt, worden verwijderde personages niet meer teruggehaald.",
+      "Onlangs beluisterd in SonarMusic ondersteunt nu het verwijderen van afzonderlijke vermeldingen via VoiceOver-acties of een zichtbare knop die is uitgesloten van schermlezernavigatie, en het wissen van de volledige geschiedenis na bevestiging, net als in SonarTube.",
+      "Op Android kun je het voorlezen met lokale stemmen nu pauzeren en hervatten door met twee vingers dubbel te tikken in TalkBack, onder meer in Nieuws, Documenten, Wikipedia en Treccani.",
+      "In SonarMusic verschijnt Suggesties alleen wanneer het zoekveld tekst bevat. Wanneer de knop verschijnt of verdwijnt, blijft de VoiceOver-focus behouden en wordt niet de hele lijst opnieuw geladen.",
+      "Chromecast toegevoegd aan compatibele spelers, met apparaatkeuze, afspeelbediening en terugschakelen naar de telefoon op dezelfde positie. Je kunt de knop verbergen via Instellingen.",
+      "Bestandsnamen van geïmporteerde bestanden gecorrigeerd: Bestanden samenvoegen, Media knippen, Media converteren en AI-audiodescripties tonen de oorspronkelijke namen in plaats van tijdelijke codes, ook in VoiceOver-meldingen bij het wijzigen van de volgorde. Bestanden met dezelfde naam blijven afzonderlijk.",
+      "In Documenten kun je nu een volledige map als ZIP-archief exporteren, inclusief bestanden en submappen.",
+      "ZIP-archieven die in Documenten zijn opgeslagen, worden nu geopend als doorzoekbare mappen, met behoud van audio- en videobestanden, submappen en lege mappen, in plaats van een lege lezer te openen.",
+      "AI-audiodescriptie maken is nu in alle talen beschikbaar als secundaire actie in SonarTube en SonarMusic.",
+      "Bij Favorieten in SonarTube en SonarMusic verzamelt de knop Nieuwste video's recente video's van alle favoriete kanalen of artiesten op één scherm, met de nieuwste bovenaan.",
+      "Favorieten in SonarTube en SonarMusic kunnen omhoog of omlaag worden verplaatst, naar een gekozen positie vóór een andere favoriet worden gezet en alfabetisch worden gesorteerd. De opdrachten zijn beschikbaar als secundaire acties en als zichtbare knoppen die zijn uitgesloten van schermlezernavigatie. De volgorde wordt opgeslagen."
     ]
   },
   {
@@ -810,6 +864,27 @@
     "it_extra": [
       "Nella guida TV, l’azione “Programma registrazione” non viene più mostrata per i programmi già terminati; resta disponibile per i programmi attualmente in onda e per quelli futuri.",
       "Nel lettore dei trailer del Cinema è stato aggiunto il comando “Crea audiodescrizione con IA”: scarica il trailer con avanzamento e possibilità di annullare, lo importa nei Documenti e apre la schermata di creazione con il video già selezionato."
+    ],
+    "nl": [
+      "Turks toegevoegd, met een volledige vertaling van de app en de versienotities, eigen nieuwsbronnen en ondersteuning voor het Turkse alfabet bij navigatie en in pdf's.",
+      "SonarMusic toegevoegd om nummers, muziekvideo's, artiesten, albums en afspeellijsten te zoeken en af te spelen, met toegankelijke filters, doorlopend afspelen, favorieten en geschiedenis.",
+      "Toegankelijkheid van SonarMusic verbeterd: zoeksuggesties hebben een eigen scherm, pagina's van artiesten, albums en afspeellijsten zijn eenvoudiger en lege elementen die VoiceOver voorlas zijn verwijderd.",
+      "In SonarTube kun je video-, Shorts- en livestreamlinks rechtstreeks openen met URL openen en zoekopdrachten filteren op Alles, Afspeellijsten of Kanalen. Het filter blijft behouden wanneer meer resultaten worden geladen.",
+      "De resultaten van SonarMusic en SonarTube tonen de duur nu duidelijker, bijvoorbeeld '4 minuten en 32 seconden', met consistente scheidingstekens en zonder dubbele informatie.",
+      "Bij Audiodescriptie maken met AI is de nieuwe optie Beschrijvingen toestaan tijdens niet-verbale stemgeluiden standaard ingeschakeld en wordt je keuze onthouden. Pyannote herkent stemgeluiden met lage zekerheid en Gemini controleert deze afzonderlijk voordat extra ruimte voor gesproken beschrijvingen wordt toegestaan. Uitschakelen laat de oorspronkelijke bescherming van dialogen ongewijzigd.",
+      "Audiodescripties beschikken nu over toegankelijke regelaars voor stemtoonhoogte (0,5×–2×) en MP3-bitsnelheid (64–256 kbit/s, standaard 192 kbit/s). De instellingen worden in projecten opgeslagen en toegepast bij spraaksynthese en export.",
+      "In Audiodescriptie maken en de projecteditor kun je het filmvolume aanpassen van 0 tot 200%, met behoud van stabiele VoiceOver- en TalkBack-focus. Als er een video is geselecteerd, gebruikt een voorbeeld met stem en film dezelfde automatische volumeverlaging als bij het exporteren. Het volume wordt in het project opgeslagen; tijdens afspelen kun je Pauzeren/Hervatten gebruiken.",
+      "Met toegankelijke instellingen voor audiodescriptie kies je Sonarpad AI of je eigen Gemini-API-sleutel. Met een persoonlijke sleutel kun je ook het model kiezen en deze keuze bewaren; bij Sonarpad AI beheert de dienst het model.",
+      "Tijdens het maken van audiodescripties, ook als Gemini het in de modus Beknopt opnieuw probeert, kondigen VoiceOver en TalkBack de voortgangsfase en het percentage nu slechts één keer aan.",
+      "In Documenten en bij AI-audiodescriptie maken kun je video's rechtstreeks kiezen uit de Foto's-bibliotheek op de iPhone of de galerij op Android, naast gewone bestanden.",
+      "Wanneer je op Android een video met Sonarpad deelt, kun je nu kiezen tussen Video openen en AI-audiodescriptie maken.",
+      "Importeren uit iCloud, Google Drive en andere clouddiensten verbeterd, met weergave van de daadwerkelijke kopieervoortgang en de mogelijkheid om te annuleren. Op iOS maakt de indicator onderscheid tussen kopiëren naar Sonarpad en downloads die door Bestanden/iCloud worden uitgevoerd.",
+      "Edge-stemmen zijn nu betrouwbaarder: Sonarpad gebruikt een bijgewerkte verbinding, houdt de vorige als reserve achter de hand en probeert onderbroken aanvragen opnieuw in plaats van onvolledige spraak op te slaan.",
+      "Sonarpad onthoudt nu routevoorkeuren, de videosorteervolgorde in SonarTube-kanalen en het interval om vooruit of achteruit te springen in Media Cutter, ook na het sluiten van de app.",
+      "Op Android en iOS opent twee keer op Terug tikken, waarbij je de tweede tik vasthoudt, nu het menu Naar beginscherm om rechtstreeks naar het hoofdscherm terug te keren.",
+      "De afspeelsnelheid van media wordt nu ingesteld met een schuifregelaar van 0,5× tot 2×, met stabiele VoiceOver- en TalkBack-focus en ondersteuning voor snelle aanpassingen.",
+      "Kalenderherinneringen kunnen nu een optionele tijd bevatten die samen met de tekst wordt opgeslagen, getoond en voorgelezen. Als toegang tot de apparaatkalender is toegestaan, wordt de afspraak aangemaakt met een melding op het gekozen tijdstip.",
+      "Radio zoeken biedt nu een veel grotere catalogus van zenders."
     ]
   },
   {
@@ -1055,6 +1130,24 @@
       "Yeni “Medya dosyalarını birleştir” özelliği eklendi. Birden fazla ses veya video dosyasını sırayla birleştirebilir, birleştirmeden önce yeniden sıralayabilir veya kaldırabilir, yaygın ses ve video biçimleri arasından çıktı biçimini seçebilir ve işlemi ilerleme çubuğundan takip edebilirsiniz. İşlem, onay istendikten sonra güvenle iptal edilebilir.",
       "Belgeler'e “Belgeleri seç” modu eklendi. Bir veya daha fazla belgeyi ya da tümünü seçmenizi ve silme, paylaşma gibi eylemleri toplu olarak uygulamanızı sağlar. Seçim, belgeyi açmadan üzerinde aşağı kaydırarak VoiceOver'ın ikincil eylemlerinden başlatılabilir.",
       "SonarTube, podcastler, sesli kitaplar ve diğer medya dosyaları için ortak oynatıcıya oynatma hızı denetimi eklendi. Ayarlar'daki “Medya oynatma hızı denetimini etkinleştir” seçeneğini açarak VoiceOver desteğiyle 0,5× ile 2× arasında hız seçebilir ve her kategori için ayrı bir tercih kaydedebilirsiniz. Canlı yayınların ve metin okumanın hızı değiştirilmedi."
+    ],
+    "nl": [
+      "Nieuw: AI-audiodescriptie maken. Kies een video, laat dialogen en pauzes automatisch herkennen, maak beschrijvingen met Gemini of de Sonarpad-dienst, spreek ze in met Edge- of systeemstemmen en maak de uiteindelijke video met audiodescriptie. Ook beschikbaar: herkenning van personages en schermtekst, personagecatalogi, detailniveaus, hervatten en het opslaan van projecten.",
+      "Problemen in Nieuws verholpen waardoor pagina-elementen of irrelevante inhoud konden worden getoond in plaats van de artikeltekst.",
+      "Het openen van artikelen in Nieuws verbeterd: als het extraheren van tekst mislukt, wordt nu de artikelpagina correct weergegeven in plaats van alleen de titel of een korte voorvertoning.",
+      "Een optie Automatisch afspelen toegevoegd aan de SonarTube-spelerinstellingen: als deze is ingeschakeld, speelt SonarTube na afloop automatisch de volgende video of track af wanneer die beschikbaar is.",
+      "Vanuit de kanaalpagina kun je nu rechtstreeks de openbare afspeellijsten van een SonarTube-kanaal openen, met ondersteuning voor het laden van extra resultaten.",
+      "Vanuit de kanaalpagina kun je nu rechtstreeks de Shorts van een SonarTube-kanaal openen, met ondersteuning voor het laden van extra resultaten.",
+      "Een actie Beschrijving bekijken toegevoegd aan SonarTube om de volledige videobeschrijving te lezen. Je kunt Beschrijving ook toevoegen aan de spelerknoppen via de instellingen voor SonarTube-knoppen en -gedrag.",
+      "Documenten kunnen nu via de secundaire acties met een wachtwoord worden beveiligd. Voor het openen of delen van een beveiligd document is het juiste wachtwoord vereist.",
+      "Melding verzenden toegevoegd aan Instellingen: beschrijf een probleem, vul desgewenst je naam in en verstuur de melding naar de ontwikkelaar. Het technische logboek van Sonarpad wordt automatisch bijgevoegd.",
+      "Het beginscherm kan nu worden aangepast: kies in Instellingen of je categorieën gebruikt, toon of verberg afzonderlijke functies en verander, als categorieën uitstaan, de volgorde met Omhoog verplaatsen, Omlaag verplaatsen en Naar positie verplaatsen. Instellingen en Info blijven altijd zichtbaar, maar kunnen worden verplaatst. Als categorieën aanstaan, kun je met Items herschikken de knopvolgorde binnen Lezen, Media en Hulpmiddelen aanpassen zonder onderdelen naar een andere categorie te verplaatsen.",
+      "Aan het aanpassen van het beginscherm is Standaardinstellingen herstellen toegevoegd. Hiermee worden categorieën opnieuw ingeschakeld, alle beschikbare functies zichtbaar gemaakt en de oorspronkelijke volgorde hersteld.",
+      "Volledige Roemeense vertaling toegevoegd: de interface, versiegeschiedenis, kalender en citaten, SonarTube, Nieuws, podcasts, radio, routes, weer, Wikipedia, Gutenberg, AI-audiodescripties en andere meertalige diensten ondersteunen nu Roemeens.",
+      "Navigatie op interne schermen verbeterd: met VoiceOver heeft de knop Terug nu ook de secundaire actie Naar beginscherm om rechtstreeks terug te keren; voor ziende gebruikers staat naast Terug een zichtbare knop Beginscherm.",
+      "Nieuw: Mediabestanden samenvoegen. Combineer meerdere audio- of videobestanden achter elkaar, verander de volgorde of verwijder bestanden vóór het samenvoegen, kies een veelgebruikte audio- of video-indeling en volg de verwerking met een voortgangsbalk. Na bevestiging kun je de bewerking veilig annuleren.",
+      "In Documenten is de modus Documenten selecteren toegevoegd: selecteer één of meer documenten of alles tegelijk en voer acties uit zoals verwijderen en delen. Met VoiceOver kun je de selectie starten via de secundaire acties door op een document omlaag te vegen zonder het te openen.",
+      "Regeling van afspeelsnelheid toegevoegd aan de gedeelde speler voor SonarTube, podcasts, luisterboeken en andere media. Schakel deze in via Afspeelsnelheid voor media inschakelen in Instellingen en kies met VoiceOver-ondersteuning een snelheid van 0,5× tot 2×, met een afzonderlijke voorkeur per categorie. Livestreams en de snelheid van tekst-naar-spraak veranderen niet."
     ]
   },
   {
@@ -1505,6 +1598,10 @@
       "tr": [
         "iPhone arayüzü, uygulamada kapsamlı bir yenileme gerektiren iOS 27 ile uyumlu olacak şekilde yeniden yazıldı. Bunun sonucunda tüm ekranlar artık UIKit kullanıyor. Böylece uygulamada zaten bulunan “Harf seç” ve “Tarih seç” komutlarının yanı sıra VoiceOver’ın üç parmak hareketiyle uzun listelerde daha hızlı kaydırma yapabilirsiniz.",
         "iPhone’da VoiceOver kullanırken artık bir öğenin ikincil eylemlerini çift dokunup ikinci dokunuşta basılı tutarak açabilirsiniz. Bu hareketi, yukarı veya aşağı kaydırmanın alternatifi olarak kullanabilirsiniz."
+      ],
+      "nl": [
+        "De iPhone-interface is herschreven voor compatibiliteit met iOS 27, waarvoor een ingrijpende herziening van de app nodig was. Alle schermen gebruiken nu UIKit, waardoor lange lijsten sneller kunnen worden doorlopen met de drievingerbeweging van VoiceOver, naast de bestaande opdrachten Ga naar letter en Ga naar datum.",
+        "Op de iPhone kun je met VoiceOver nu ook de secundaire acties van een item openen door dubbel te tikken en vast te houden, als alternatief voor omhoog of omlaag vegen."
       ]
     },
     "android": {
@@ -1543,6 +1640,9 @@
       ],
       "tr": [
         "Android’de TalkBack kullanırken artık bir öğenin ikincil eylemlerini çift dokunup ikinci dokunuşta basılı tutarak açabilirsiniz."
+      ],
+      "nl": [
+        "Op Android kun je met TalkBack nu ook de secundaire acties van een item openen door dubbel te tikken en vast te houden."
       ]
     },
     "ro": [
@@ -1614,6 +1714,41 @@
       "Rotalar’a, hesaplanan rotayı cihazın navigasyon uygulamasında hemen açmanızı sağlayan “Rotayı aç” düğmesi eklendi. iPhone’da Haritalar’ı veya yüklüyse Google Haritalar’ı seçebilirsiniz. Android’de rota Google Haritalar’da açılır. Başlangıç, varış ve ulaşım şekli korunur.",
       "Hava durumu artık hem Flutter hem de UIKit arayüzünde Avrupa AQI ölçeğini kullanarak güncel hava kalitesini ve kolay anlaşılır bir düzey açıklamasını gösteriyor.",
       "iOS ve Android'de kararlılık, erişilebilirlik, ekran okuyucu odağı, yerelleştirme, medya oynatma ve dosya yönetimi için çok sayıda genel iyileştirme yapıldı."
+    ],
+    "nl": [
+      "SonarTube toegevoegd: het nieuwe geïntegreerde systeem om YouTube-video's rechtstreeks in Sonarpad te zoeken en af te spelen. Blader door video's, kanalen en afspeellijsten, laad meer resultaten, voeg kanalen en afzonderlijke video's toe aan Favorieten en speel inhoud af met de ingebouwde speler. Je kunt ook videotranscripties lezen wanneer die beschikbaar zijn en reacties bij video's bekijken.",
+      "In SonarTube kunnen kanaalvideo's nu worden gesorteerd op Nieuwste, Oudste of Populair. De gekozen volgorde blijft behouden wanneer je meer video's laadt.",
+      "Tijdweergave in Sonarpad-spelers verbeterd: bij inhoud van minimaal één uur worden nu uren, minuten en seconden getoond en kondigen VoiceOver en TalkBack de duur op een natuurlijkere manier aan.",
+      "Media Cutter toegevoegd om audio- en videobestanden te openen en op de gewenste positie te knippen. Er zijn twee modi: Begeleid knippen en Geavanceerd knippen, met nauwkeurig instellen van knippunten, voorbeluisteren van segmenten, herstellen van verwijderde stukken, aanpassen van de spronggrootte, roteren van video's en betrouwbaarder exporteren van audio en video.",
+      "Talrijke audio-effecten toegevoegd aan Media Cutter, waaronder chorus, robot, superrobot, oude radio, vocoder, stemveranderingen en verschillende omgevingseffecten. Veel effecten gebruiken nu een eigen DSP-engine die door iPhone en Android wordt gedeeld, voor consistentere kwaliteit van het voorbeeld en de uitvoer.",
+      "In Media Cutter kun je nu een nieuw audiospoor toevoegen aan het geopende bestand, bijvoorbeeld achtergrondmuziek. Je kunt het volume van het oorspronkelijke en het toegevoegde spoor afzonderlijk aanpassen, het nieuwe spoor herhalen, een voorbeeld beluisteren en het in het uiteindelijke bestand opnemen.",
+      "Betrouwbaarheid van export uit Media Cutter sterk verbeterd: Sonarpad herkent de daadwerkelijke sporen in bestanden, verwerkt video's zonder geluid en audiobestanden met albumhoes correct, controleert de duur en decodeerbaarheid en maakt het resultaat pas beschikbaar nadat is vastgesteld dat het uitvoerbestand geldig is.",
+      "Documenten verbeterd met meervoudige selectie en het verwijderen van alinea's, meerdere bladwijzers in één document, een instelbare stapgrootte voor de positieschuifregelaar, onmiddellijke heruitlijning van de spraak na het springen, een slaaptimer en een schatting van de resterende leestijd.",
+      "Je kunt documenten nu een andere naam geven: ga naar het document en veeg omlaag.",
+      "Het openen van TXT-, RTF- en EPUB-documenten verbeterd. Problemen met tekencodering en accenten zijn verholpen, RTF wordt beter geïnterpreteerd en de inhoudsopgave, hoofdstuknavigatie en voetnoten van EPUB zijn verbeterd.",
+      "Weergave van de EPUB-inhoudsopgave toegevoegd aan Documenten.",
+      "Een instelling toegevoegd om, voor ondersteunde bestandsindelingen, voetnoten naast de bijbehorende alinea weer te geven.",
+      "In Documenten is de modus Alinea selecteren toegevoegd. Open een document, veeg omlaag en activeer de betreffende actie. Veeg vervolgens door de alinea's en dubbeltik op een alinea om deze te selecteren; veeg opnieuw omlaag om alle geselecteerde alinea's te verwijderen.",
+      "Geïmporteerde audiobestanden kunnen nu rechtstreeks vanuit Documenten worden gedeeld via het standaard deelvenster van iOS of Android.",
+      "Nieuws verbeterd met betrouwbaardere artikelherkenning, ondersteund door de externe dienst Tinyfish, zodat de meeste artikelen zonder problemen kunnen worden geopend. Je kunt ook nieuwe nieuwsbronnen voorstellen aan de Sonarpad-gemeenschap en door anderen gedeelde bronnen aan je verzameling toevoegen.",
+      "Je kunt nu een nieuwsartikel rechtstreeks delen via de secundaire acties, zonder het eerst te openen.",
+      "Nieuwsartikelen kunnen nu ook rechtstreeks als volledige TXT-bestanden worden gedeeld met het standaard deelvenster van het systeem.",
+      "Nieuws ondersteunt nu ook eigen RSS-bronnen in je verzameling waarvan artikelen links naar documenten, audio of video bevatten. Sonarpad maakt automatisch toegankelijke knoppen aan om die inhoud rechtstreeks in de app te openen; daarna kun je gemakkelijk terug naar het artikel om verder te lezen.",
+      "Podcasts verbeterd met selectie op afleveringsdatum, hoofdstukken indien beschikbaar, alfabetisch sorteren van abonnementen, duidelijkere verwerking van lokale audiobestanden en nieuwe opties om de cache te bekijken en te wissen.",
+      "Verschillende lange lijsten verbeterd met de opdracht Letter selecteren, waarmee je snel naar een bepaalde beginletter kunt gaan. Ook het herstellen van de focus, VoiceOver-navigatie en het lijstgedrag zijn verbeterd in zowel de Flutter-weergave als de native UIKit-weergave.",
+      "Toegankelijkheid van tekstvelden met VoiceOver en UIKit verbeterd door onnodige herhalingen van veldnamen en aanwijzingen te verwijderen, bijvoorbeeld in de velden Plaats van de Witte en Gouden Gids. Ook verschillende labels van de Digitale bibliotheek worden nu natuurlijker voorgelezen.",
+      "Bioscoopfilms verbeterd: met Trailer openen wordt de YouTube-trailer nu rechtstreeks afgespeeld in de Sonarpad-speler, met dezelfde methode voor videoweergave als SonarTube.",
+      "Taalnamen in Wikipedia, Project Gutenberg en andere apponderdelen worden beter vertaald: ze verschijnen nu in de taal van de interface, bijvoorbeeld 'Italiano, Inglese, Francese' in een Italiaanse interface en 'Italian, English, French' in een Engelse.",
+      "Routes uitgebreid met ondersteuning voor meer landen, waaronder Australië, Canada, Duitsland, het Verenigd Koninkrijk en de Verenigde Staten.",
+      "Volledige vertalingen toegevoegd voor Duits, vereenvoudigd Chinees, Braziliaans Portugees en Oekraïens, inclusief de hoofdonderdelen van de app, Kalender, Weer, Nieuws, Podcasts, Radio en de iOS-toestemmingsbeschrijvingen.",
+      "De Kalender is eveneens verbeterd: het aantal dagelijkse citaten is sterk uitgebreid tot 128 unieke citaten, vertaald in alle ondersteunde talen.",
+      "Weergave van SonarTube-video's en andere video-inhoud gecorrigeerd: bij de optie Liggend volledig scherm voor video wordt de video nu correct schermvullend weergegeven.",
+      "Weergave van Edge-stemmen verbeterd met duidelijkere, minder technische namen.",
+      "Lezen met Edge-stemmen verbeterd bij een onstabiele verbinding: als het verzenden van een alinea mislukt, probeert Sonarpad dit automatisch maximaal vijf keer opnieuw. Het voorlezen stopt pas wanneer alle pogingen zijn mislukt.",
+      "Aan alle bewerkbare tekstvelden is een knop toegevoegd om de inhoud snel te wissen. In zoekvelden wordt deze aangekondigd als 'Zoekopdracht wissen', in andere velden als 'Tekst wissen', met vertaalde toegankelijkheidslabels.",
+      "In Routes is de knop Route openen toegevoegd om de berekende route meteen in een navigatie-app van het apparaat te openen. Op de iPhone kun je kiezen tussen Kaarten en Google Maps als die zijn geïnstalleerd; op Android wordt de route geopend in Google Maps. Vertrekpunt, bestemming en vervoerswijze blijven behouden.",
+      "Weer toont nu de actuele luchtkwaliteit volgens de Europese luchtkwaliteitsindex (AQI), met een begrijpelijke omschrijving van het niveau, in zowel de Flutter- als de UIKit-interface.",
+      "Talrijke algemene verbeteringen aan stabiliteit, toegankelijkheid, schermlezerfocus, vertalingen, het afspelen van media en bestandsverwerking op iOS en Android."
     ]
   },
   {
@@ -1788,6 +1923,19 @@
       "Radyo filtrelerini sıfırlayıp yeni bir aramaya başlamak için bir düğme eklendi.",
       "Podcast arama sonuçlarına doğrudan abone olmak için ikincil bir eylem eklendi. Podcast zaten mevcutsa bu eylem podcasti açıyor.",
       "Hava durumu sıcaklık birimini Santigrat veya Fahrenhayt olarak seçmek için bir ayar eklendi."
+    ],
+    "nl": [
+      "Eerste openbare uitgave van Sonarpad Mobile in de App Store. De app bevat de belangrijkste bestaande functies: documenten lezen en ordenen; importeren uit Project Gutenberg, LibriVox, PoetryDB, Internet Archive en iTunes / Apple-apparaten; exporteren naar DOCX, EPUB, MP3 en M4B; Nieuws met RSS, OPML en mappen; podcasts, radio, routes, weer, kalender en keuze uit een licht, donker of automatisch thema.",
+      "Als een radiozoekopdracht door verbindingsproblemen geen resultaten kan ophalen, toont Sonarpad nu een duidelijkere melding in plaats van een technische fout.",
+      "Opslaan in de bestandsconverter verbeterd: als Sonarpad niet rechtstreeks naar de geselecteerde bestemming kan opslaan, opent het systeemdeelvenster zodat je zelf kunt kiezen waar je het bestand bewaart.",
+      "Verschillende correcties in alle vertalingen.",
+      "Een probleem bij radio zoeken verholpen waarbij je na het typen van het eerste teken terug moest naar het tekstveld om verder te typen.",
+      "Importeren via iTunes / Apple-apparaten verbeterd: Sonarpad behoudt nu ook de map- en submapstructuur van geïmporteerde bestanden.",
+      "Radio zoeken verbeterd: landen worden nu weergegeven met hun volledige naam en code, bijvoorbeeld 'Turkije (TR)', in plaats van alleen de code.",
+      "Een overzicht van actieve filters toegevoegd aan Radio zoeken, zodat je gemakkelijker ziet welke criteria worden gebruikt.",
+      "Een knop toegevoegd om radiofilters te herstellen en met een nieuwe zoekopdracht te beginnen.",
+      "In podcastzoekresultaten is een secundaire actie toegevoegd om je rechtstreeks te abonneren; als je al geabonneerd bent, opent de actie de podcast.",
+      "In Instellingen kun je nu de temperatuureenheid voor het weer kiezen: Celsius of Fahrenheit."
     ]
   },
   {
@@ -2092,6 +2240,29 @@
       "Ayarlar'a tema seçimi eklendi. Sonarpad sistem temasını izleyebilir veya her zaman açık ya da koyu modu kullanabilir.",
       "Kullanıcının önceden seçtiği okuma motoru, ses, hız ve ses perdesi ayarları kullanılarak belgelerin DOCX, EPUB ve MP3 veya M4B sesli kitap biçiminde dışa aktarılması eklendi.",
       "Belge okurken otomatik yer işaretleri iyileştirildi. Konum artık duraklatıldığında da kaydediliyor; böylece uygulama yanlışlıkla kapatılsa bile Sonarpad doğru paragraftan devam edebiliyor."
+    ],
+    "nl": [
+      "Poolse, Portugese en Tsjechische vertalingen toegevoegd.",
+      "Radio zoeken verbeterd: je kunt nu zoeken op taal, land, stad en genre; de recentste keuzes worden opgeslagen.",
+      "In Documenten is importeren toegevoegd uit Project Gutenberg, LibriVox, PoetryDB en Internet Archive, en van documenten die via iTunes op Apple-apparaten zijn gezet.",
+      "De mediaconverter is verbeterd met meer conversiemogelijkheden en de keuze van de map waarin het geconverteerde bestand wordt opgeslagen.",
+      "Zoeken binnen documenten toegevoegd: in de resultaten zie je het begin van de overeenkomende alinea. Dubbeltik op een resultaat om rechtstreeks naar de alinea met de zoekterm te gaan.",
+      "In Mijn stad kun je de stad nu handmatig aanpassen om de benaderde locatie die Sonarpad heeft gevonden te corrigeren.",
+      "Weer verbeterd: een stad kiezen is eenvoudiger en met Recent gebruikte steden kun je snel van stad wisselen.",
+      "Een probleem opgelost waardoor de afspeelpositie van een lokaal mediabestand niet werd opgeslagen wanneer je het sloot.",
+      "In Routes zijn knoppen toegevoegd om routeaanwijzingen in Documenten op te slaan en ze met spraaksynthese te beluisteren.",
+      "In Nieuws is na het lezen van een artikel de knop Gelezen artikelen beschikbaar. Gelezen artikelen verdwijnen uit de hoofdlijst en blijven per bron beschikbaar in een afzonderlijke geschiedenis, die kan worden gewist.",
+      "Tekencodering van documenten verbeterd: Sonarpad verwerkt nu UTF-8, ANSI, Europese tekencoderingen en andere coderingen beter, zodat meer documenten correct worden geopend.",
+      "Een probleem opgelost waardoor de volumeregelaar verdween als video was ingeschakeld tijdens het afspelen van media.",
+      "Een probleem in Nieuws opgelost waarbij het stoppen van voorlezen de weergave niet echt stopzette.",
+      "Een probleem opgelost waardoor de laatste alinea van een nieuwsartikel twee keer werd voorgelezen.",
+      "Wanneer je in Kalender een dag met een herinnering deelt, vraagt Sonarpad nu of je die herinnering ook wilt delen, om te voorkomen dat persoonlijke informatie per ongeluk wordt meegestuurd.",
+      "In Nieuws zijn knoppen toegevoegd om bronnen in OPML-formaat te importeren en exporteren. Importeren ondersteunt ook complexe bestanden, zoals bestanden van Lire, met bronnen die in mappen zijn ingedeeld.",
+      "Mapbeheer voor nieuwsbronnen toegevoegd: verplaats bronnen naar of uit mappen en verwijder mappen.",
+      "Nieuwe map maken toegevoegd aan de secundaire acties in Nieuws.",
+      "Een themakeuze toegevoegd aan Instellingen: Sonarpad kan het systeemthema volgen of altijd de lichte of donkere modus gebruiken.",
+      "Documenten kunnen nu worden geëxporteerd als DOCX, EPUB of luisterboek in MP3- of M4B-formaat, met de spraakengine, stem, snelheid en toonhoogte die je eerder hebt gekozen.",
+      "Automatische bladwijzers tijdens het lezen van documenten verbeterd: de positie wordt nu ook opgeslagen wanneer je pauzeert, zodat Sonarpad bij een onbedoelde sluiting bij de juiste alinea kan hervatten."
     ]
   },
   {
@@ -2129,6 +2300,9 @@
     ],
     "tr": [
       "İlk açılışta dil algılama düzeltildi. Kullanıcı henüz uygulama dilini seçmemişse Sonarpad artık cihazın tercih edilen dilleri arasındaki ilk desteklenen dili kullanıyor."
+    ],
+    "nl": [
+      "Taalherkenning bij de eerste start gecorrigeerd: als je nog geen app-taal hebt gekozen, gebruikt Sonarpad nu de eerste ondersteunde voorkeurstaal van het apparaat."
     ]
   },
   {
@@ -2450,6 +2624,34 @@
       "İngilizce, Fransızca ve İspanyolca çeviriler iyileştirildi.",
       "Çeşitli ekranların ve uygulama mesajlarının anlaşılırlığı iyileştirildi.",
       "Sinemalarda gösterimde olan filmleri keşfetmek, konularını okumak ve varsa fragmanlarını izlemek için “Vizyondaki filmler” özelliği eklendi. Gelecek filmleri incelemek için “Yakında gösterime girecekler” düğmesi de bulunuyor."
+    ],
+    "nl": [
+      "Je kunt nu rechtstreeks in Sonarpad een nieuw document maken.",
+      "Dropbox-import toegevoegd: na het aanmelden kun je je Dropbox-bestanden rechtstreeks vanuit Sonarpad bekijken en in de documentbibliotheek importeren.",
+      "Je kunt nu een document delen vanuit de app Bestanden op je telefoon en het rechtstreeks openen met Sonarpad om het in de bibliotheek te importeren.",
+      "Ondersteuning voor ZIP-bestanden toegevoegd: bij het importeren van een archief maakt Sonarpad automatisch een map met de inhoud aan.",
+      "Je kunt nu nieuwe mappen maken en documenten naar mappen verplaatsen, zodat boeken en documenten gemakkelijker te ordenen zijn.",
+      "OCR-ondersteuning toegevoegd om documenten die alleen uit afbeeldingen bestaan te herkennen en voor te lezen.",
+      "Een schuifregelaar toegevoegd om tijdens het lezen van een document snel vooruit of achteruit te gaan.",
+      "Bladwijzerbeheer in documenten verbeterd: de beschikbare optie wordt nu automatisch aangepast aan de aanwezigheid van een bladwijzer.",
+      "Je kunt nu automatisch een nieuwe bladwijzer opslaan wanneer je het voorlezen stopt, mits deze optie in Instellingen is ingeschakeld.",
+      "Het nieuwe onderdeel Weer toegevoegd, met zoeken op stad, datumkeuze, actuele weersomstandigheden, neerslag, minimum- en maximumtemperatuur en andere nuttige informatie.",
+      "Een toegankelijke kalender toegevoegd met de heilige van de dag en voor elke dag een ander citaat.",
+      "Automatisch hervatten toegevoegd: documenten, podcasts en mediabestanden kunnen verdergaan waar je was gebleven. Je kunt deze optie uitschakelen in Instellingen.",
+      "Schuifregelaars toegevoegd om volume en afspeelpositie van mediabestanden in te stellen.",
+      "In Instellingen kun je kiezen hoeveel je in mediabestanden vooruit of achteruit springt. De standaardwaarde is één minuut.",
+      "Je kunt nu mediabestanden uit andere apps delen en rechtstreeks openen in Sonarpad.",
+      "Voor video-inhoud is een selectievakje toegevoegd om het videobeeld aan of uit te zetten.",
+      "Importeren en exporteren van podcastabonnementen toegevoegd, zodat je abonnementen naar Sonarpad Mobile kunt overzetten, ook vanuit Sonarpad voor Windows of Mac.",
+      "Radio zoeken is nu toleranter: de eerste letters van een zendernaam typen is voldoende om resultaten te krijgen.",
+      "Nieuws lezen verbeterd, met een overzichtelijkere weergave dan in de vorige versie.",
+      "Sonarpad probeert overbodige blokken en elementen op webpagina's over te slaan, zodat artikelen eenvoudiger te lezen zijn.",
+      "Een mediaconverter voor audio- en videobestanden toegevoegd: zet bijvoorbeeld een MP3 om naar WAV of maak van audio een MP4-video door een afbeelding toe te voegen.",
+      "Je kunt schermen nu in categorieën groeperen, zodat de pictogrammen op het hoofdscherm gemakkelijker te ordenen zijn.",
+      "In Instellingen kun je kiezen tussen schermen gegroepeerd op categorie of de klassieke weergave.",
+      "De Engelse, Franse en Spaanse vertalingen verbeterd.",
+      "Verschillende schermen en appmeldingen duidelijker gemaakt.",
+      "De functie Bioscoop toegevoegd om films te ontdekken die nu in de bioscoop draaien, met een samenvatting van het verhaal en een trailer indien beschikbaar. Met de knop Binnenkort kun je aankomende films bekijken."
     ]
   }
 ]

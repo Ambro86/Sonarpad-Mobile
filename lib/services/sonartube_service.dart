@@ -254,6 +254,9 @@ class SonarTubeService {
     } else if (normalized == 'de') {
       _youtubeLanguage = 'de';
       _youtubeRegion = 'DE';
+    } else if (normalized == 'nl' || normalized.startsWith('nl_')) {
+      _youtubeLanguage = 'nl';
+      _youtubeRegion = 'NL';
     } else if (normalized == 'en') {
       _youtubeLanguage = 'en';
       _youtubeRegion = 'US';

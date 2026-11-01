@@ -6,129 +6,7 @@ import 'app_localizations.dart';
 
 /// The translations for Chinese (`zh`).
 class AppLocalizationsZh extends AppLocalizations {
-  @override
-  String onlineDictionaryEntryTitle(String word, String language) => "$word — $language";
-  @override
-  String onlineDictionaryDefinition(int number, String text) => "$number. $text";
-  @override
-  String onlineDictionarySource(String url) => "Wiktionary — CC BY-SA 4.0\n$url";
-
-  @override
-  String get onlineDictionaryTitle => "在线词典";
-  @override
-  String get onlineDictionaryWord => "词：";
-  @override
-  String get onlineDictionaryLanguage => "词典语言：";
-  @override
-  String get onlineDictionaryDefinitions => "定义";
-  @override
-  String get onlineDictionarySynonyms => "同义词";
-  @override
-  String get onlineDictionaryNotFound => "未找到该词。";
-  @override
-  String get onlineDictionaryLimited => "结果过多。请优化搜索条件。";
-  @override
-  String get onlineDictionaryTranslation => "词典翻译语言：";
-  @override
-  String get onlineDictionaryNone => "无";
-
-  @override
-  String get raiPlayMediaUnavailable => "多次尝试后，RaiPlay 仍未返回可播放的地址。内容可能暂时不可用，请稍后重试。";
-
-  @override
-  String audioDescriptionProjectEditorSegmentOption(int index, String start, String end) => '$index: $start – $end';
-
-  @override
-  String get convertMediaDocumentAudiobookHint => '要将文档转换为有声书，请前往“文档”→“从文件导入”。导入后，选择“导出文档”→“MP3 有声书 (.mp3)”。';
-
-  @override
-  String get audioDescriptionProjectSegment => '重新分析的片段';
-
-  @override
-  String get audioDescriptionProjectReanalyze => '重新分析片段';
-
-  @override
-  String get audioDescriptionProjectReanalyzeConfirm =>
-      '重新分析所选片段？更新的文本将替换对应描述，并保留已保存的时间。新描述只会添加到可用的空隙中。需要重新导出带有音频描述的文件。';
-
-  @override
-  String get saveMp4WithAudiodescription => "带音频描述的 MP4";
-
-  @override
-  String get saveMediaContent => "保存内容";
-
-  @override
-  String get favoritesSortAlphabetically => "按字母顺序排序";
-
-  @override
-  String get favoriteVideosLatest => "最新视频";
-  @override
-  String get favoriteVideosTitle => "收藏中的最新视频";
-  @override
-  String get favoriteVideosPartial => "部分频道无法加载。现显示其他频道的视频。";
-
-  @override
-  String get recordingNotAdvancing => "录制未收到新数据。请检查网络连接，必要时重新开始录制。";
-
-  @override
-  String get castToDevice => "通过 Chromecast 投放";
-  @override
-  String get castNoDevices => "未找到设备。请确认设备连接到同一 Wi-Fi 网络，然后重试。";
-  @override
-  String get castFailure => "投放失败或连接已断开。你可以在此设备上继续播放。";
-  @override
-  String get castResumeHere => "在此设备上继续播放";
-  @override
-  String get settingsHideCalendarSaints => "在日历中隐藏圣人";
-
-  @override
-  String get settingsShowCast => "在兼容的播放器中显示 Chromecast";
-  @override
-  String get castStop => "停止投放";
-
   AppLocalizationsZh([String locale = 'zh']) : super(locale);
-
-  @override
-  String get sonarTubeSearchType => '搜索类型';
-
-  @override
-  String get sonarTubeSearchAll => '全部';
-
-  @override
-  String get sonarTubeSearchPlaylists => '播放列表';
-
-  @override
-  String get sonarTubeSearchChannels => '频道';
-
-  @override
-  String get calendarReminderHasTime => "设置时间";
-
-  @override
-  String get audioDescriptionMp3Bitrate => "MP3 比特率";
-
-  @override
-  String get audioDescriptionSourceVolume => "影片音量";
-
-  @override
-  String get audioDescriptionSourceVolumeHint => "调整影片的基础音量。播放音频描述时，影片音量仍会自动进一步降低。";
-
-  @override
-  String get audioDescriptionAudioNormal => "正常";
-
-  @override
-  String get audioDescriptionMixPreview => "试听影片与旁白";
-
-  @override
-  String get audioDescriptionMixPreviewPreparing => "正在准备音频试听";
-
-  @override
-  String get audioDescriptionMixPreviewStop => "停止音频试听";
-
-  @override
-  String get audioDescriptionMixPreviewPhrase => "这是自动降低原声音量的音频描述试听。";
-
-  @override
-  String get audioDescriptionMixPreviewHint => "调整音量后，会自动播放一段影片试听，配合所选语音，并在旁白期间自动降低影片音量。";
 
   @override
   String get appTitle => 'Sonarpad';
@@ -183,6 +61,21 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get sonarTubeSearchLabel => '搜索视频、频道或播放列表';
+
+  @override
+  String get sonarTubeSearchType => '搜索类型';
+
+  @override
+  String get sonarTubeSearchAll => '全部';
+
+  @override
+  String get sonarTubeSearchPlaylists => '播放列表';
+
+  @override
+  String get sonarTubeSearchChannels => '频道';
+
+  @override
+  String get calendarReminderHasTime => '设置时间';
 
   @override
   String get sonarTubeSearchPrompt => '输入搜索内容以查找视频、频道和播放列表。';
@@ -934,18 +827,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get wikipediaImportWholeArticle => '整篇文章';
 
   @override
-  String get treccaniTitle => '特雷卡尼百科全书';
-
-  @override
-  String get treccaniSearchLabel => '搜索特雷卡尼百科全书';
-
-  @override
-  String get treccaniNoResults => '未找到特雷卡尼词条';
-
-  @override
-  String get treccaniWholeEntry => '完整词条';
-
-  @override
   String get documents => '文档';
 
   @override
@@ -1447,7 +1328,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get exportDocument => '导出文档';
 
   @override
-  String get exportFolderZip => "将文件夹导出为 ZIP";
+  String get exportFolderZip => '将文件夹导出为 ZIP';
 
   @override
   String get exportFormatPrompt => '要以哪种格式导出文档？';
@@ -1457,12 +1338,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get pdfFormat => 'PDF（.pdf）';
-
-  @override
-  String get markdownFormat => 'Markdown (.md)';
-
-  @override
-  String get htmlFormat => 'HTML (.html)';
 
   @override
   String get docxFormat => 'DOCX（.docx）';
@@ -1817,9 +1692,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get developerLogNameOptional => '姓名（可选）';
 
   @override
-  String get developerReportText => '问题描述';
-
-  @override
   String get developerLogSend => '发送';
 
   @override
@@ -1830,7 +1702,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get developerLogSendFailed => '无法发送报告，请稍后重试。';
-
 
   @override
   String get donateWithPaypal => '通过 PayPal 捐赠';
@@ -2111,12 +1982,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get scheduledRecordingInProgressStatus => '定时录制进行中';
 
   @override
-  String scheduledRecordingPendingStatus(String dateTime) {
+  String scheduledRecordingPendingStatus(Object dateTime) {
     return '计划于 $dateTime';
   }
 
   @override
-  String recordingCannotOpenBeforeScheduledStart(String dateTime) {
+  String recordingCannotOpenBeforeScheduledStart(Object dateTime) {
     return '此录制尚未开始，将于 $dateTime 开始。';
   }
 
@@ -2128,17 +1999,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get selectRecordings => '选择录音';
-
-  @override
-  String get selectDocuments => '选择文档';
-
-  @override
-  String get deleteSelectedDocumentsConfirmation => '永久删除所选文档吗？';
-
-  @override
-  String documentsRemovedCount(int count) {
-    return '已删除文档：$count';
-  }
 
   @override
   String get selectAll => '选择全部';
@@ -2580,13 +2440,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get concertsYear => '年';
 
   @override
+  String get concertsQueryRequired => '要搜索此目录中的所有活动，请输入城市或活动名称，或选择类别。';
+
+  @override
   String get concertsCategory => '类别';
 
   @override
   String get concertsAllEvents => '所有活动';
-
-  @override
-  String get concertsQueryRequired => '要搜索此目录中的所有活动，请输入城市或活动名称，或选择类别。';
 
   @override
   String get concertsTitle => '搜索演唱会和活动';
@@ -3733,1698 +3593,1760 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get mediaCutterMixingAddedTrack => '正在混合新音轨';
-
-  @override
-  String get podcastImportIntoMediaCutter => "导入到剪切媒体文件";
-
-  @override
-  String get preserveMedia => '保存内容';
-
-  @override
-  String get preserveMediaSaving => '正在保存内容…';
-
-  @override
-  String get preserveMediaSaved => '内容已保存到 Sonarpad 文档。';
-
-  @override
-  String get preserveMediaError => '无法保存内容。';
-
-  @override
-  String get mediaProcessingCompleted => '处理完成。';
-
-  @override
-  String get convertMediaDestination => '转换文件的保存位置';
-
-  @override
-  String get exportAskEveryTime => '每次询问';
-
-  @override
-  String get selectAudioTrack => "选择音轨";
-
-  @override
-  String get saveInSonarpadDocuments => '保存到 Sonarpad 文档';
-
-  @override
-  String get mediaCutterProcess => '处理';
-
-  @override
-  String get sonarTubeGoToChannel => '前往频道';
-
-  @override
-  String get sonarTubeViewComments => '查看评论';
-
-  @override
-  String get sonarTubeComments => '评论';
-
-  @override
-  String get sonarTubeNoComments => '暂无评论。';
-
-  @override
-  String get sonarTubeLoadMoreComments => '加载更多评论';
-
-  @override
-  String get sonarTubeTranscribeVideo => '转录视频';
-
-  @override
-  String get sonarTubeTranscript => '转录文本';
-
-  @override
-  String get sonarTubeNoTranscript => '此视频没有可用的转录文本。';
-
-  @override
-  String get sonarTubeCopyTranscript => '复制转录文本';
-
-  @override
-  String get sonarTubeTranscriptCopied => '转录文本已复制到剪贴板';
-
-  @override
-  String get sonarTubeTranscriptSavedInDocuments => '转录文本已保存到“文档”。';
-
-  @override
-  String get copyToClipboard => '复制到剪贴板';
-
-  @override
-  String get textCopiedToClipboard => '文本已复制到剪贴板';
-
-  @override
-  String get protectDocumentWithPassword => '使用密码保护';
-
-  @override
-  String get removeDocumentPasswordProtection => '移除密码保护';
-
-  @override
-  String get documentPassword => '密码';
-
-  @override
-  String get confirmDocumentPassword => '确认密码';
-
-  @override
-  String get chooseDocumentPassword => '请输入并确认密码。打开或共享此文档前将要求输入该密码。';
-
-  @override
-  String get enterCurrentDocumentPassword => '请输入当前密码以移除保护。';
-
-  @override
-  String get documentPasswordRequired => '请输入密码。';
-
-  @override
-  String get documentPasswordsDoNotMatch => '两次输入的密码不一致。';
-
-  @override
-  String get incorrectDocumentPassword => '密码不正确。';
-
-  @override
-  String get documentPasswordProtectionEnabled => '已启用密码保护。';
-
-  @override
-  String get documentPasswordProtectionRemoved => '已移除密码保护。';
-
-  @override
-  String get documentPasswordRequiredTitle => '需要密码';
-
-  @override
-  String get enterDocumentPasswordToShare => '此文档受密码保护。请输入密码以继续共享。';
-
-  @override
-  String get enterDocumentPasswordToOpen => '此文档受密码保护。请输入密码以打开文档。';
-
-  @override
-  String get documentPasswordProtectedStatus => '受密码保护';
-
-  @override
-  String get rename => '重命名';
-
-  @override
-  String get renameRecording => '重命名录制内容';
-
-  @override
-  String get newRecordingName => '录制内容的新名称';
-
-  @override
-  String get recordingCannotRenameWhileInProgress => '正在进行的录制无法重命名。';
-
-  @override
-  String get recordingNameAlreadyExists => '已存在同名录制内容。';
-
-  @override
-  String get renameDocument => '重命名文档';
-
-  @override
-  String get newDocumentName => '新文档名称';
-
-  @override
-  String get documentNameAlreadyExists => '已存在同名文档。';
-
-  @override
-  String get recordingExitPrompt => '正在录制。要停止录制还是继续录制？';
-
-  @override
-  String get continueRecording => '继续录制';
-
-  @override
-  String get settingsShowOnlyMultilingualEdgeVoices => '仅显示多语言语音';
-
-  @override
-  String get weatherAirQuality => '空气质量';
-
-  @override
-  String get weatherAirQualityGood => '良好';
-
-  @override
-  String get weatherAirQualityFair => '尚可';
-
-  @override
-  String get weatherAirQualityModerate => '中等';
-
-  @override
-  String get weatherAirQualityPoor => '较差';
-
-  @override
-  String get weatherAirQualityVeryPoor => '很差';
-
-  @override
-  String get weatherAirQualityExtremelyPoor => '极差';
-
-  @override
-  String get sonarpadAudiodescriptionsTitle => 'Sonarpad 音频描述';
-
-  @override
-  String get sonarpadAudiodescriptionsAll => '所有 Sonarpad 音频描述';
-
-  @override
-  String get sonarpadAudiodescriptionsSearchHint => '搜索电影、剧集或单集';
-
-  @override
-  String get sortBy => '排序方式';
-
-  @override
-  String get sortAlphabetical => '按字母顺序';
-
-  @override
-  String get sortChronological => '按时间顺序';
-
-  @override
-  String get contentUnavailable => '内容不可用。';
-
-  @override
-  String get downloadUnavailable => '下载不可用。';
-
-  @override
-  String get sonarTubeChannelPlaylists => '播放列表';
-
-  @override
-  String get sonarTubeChannelShorts => 'Shorts';
-  @override
-  String get sonarTubeChannelCourses => '课程';
-
-  @override
-  String get sonarTubeChannelPodcasts => '播客';
-
-
-  @override
-  String sonarTubeVideoCount(int count) {
-    return '$count 个视频';
-  }
-
-  @override
-  String get sonarTubeViewDescription => '查看说明';
-
-  @override
-  String get sonarTubeDescription => '说明';
-
-  @override
-  String get sonarTubeNoDescription => '此视频没有可用的说明。';
-
-  @override
-  String get pyannoteTestTitle => '移动版 pyannote 测试';
-
-  @override
-  String get pyannoteTestInstructions =>
-      '此测试使用与 Windows 相同的 pyannote ONNX 模型。首次比较请使用前 2 分钟的快速测试。';
-
-  @override
-  String get pyannoteQuickTest => 'pyannote 快速测试：前 2 分钟';
-
-  @override
-  String get pyannoteFullTest => 'pyannote 完整测试：整个文件';
-
-  @override
-  String get pyannoteShareArtifacts => '共享标准 WAV 和移动端 JSON 结果';
-
-  @override
-  String get pyannoteInitialStatus => '请选择音频或视频文件。首次比较请使用快速测试。';
-
-  @override
-  String get pyannotePreparingQuick => '正在准备前 2 分钟的快速测试...';
-
-  @override
-  String get pyannotePreparingFull => '正在准备完整测试...';
-
-  @override
-  String get pyannoteCompletedStatus =>
-      '移动端测试已完成。请共享 WAV 和 JSON，并在 Windows 测试中使用同一个 WAV。';
-
-  @override
-  String get pyannoteFilesUnavailable => '上一次测试的文件已不可用。';
-
-  @override
-  String get pyannoteFailure => 'pyannote 测试失败。';
-
-  @override
-  String get pyannoteShareText =>
-      'Sonarpad：移动版 pyannote 一致性测试。Windows 测试也请使用随附的标准 WAV。';
-
-  @override
-  String get pyannoteShareSubject => 'Sonarpad pyannote 测试';
-
-  @override
-  String get pyannoteBenchmark10Min => 'pyannote 基准测试：前 10 分钟';
-
-  @override
-  String get pyannoteBenchmarkPreparing => '正在对前 10 分钟运行 pyannote 基准测试...';
-
-  @override
-  String get pyannoteBenchmarkCompleted => '基准测试已完成。详细结果已记录到 Sonarpad 日志中。';
-
-  @override
-  String get pyannoteCandidateValidation5x10m => '在五个 10 分钟片段上验证步长 2 + 0.35 填充';
-
-  @override
-  String get pyannoteCandidateValidationPreparing =>
-      '正在对影片的五个片段运行 pyannote 验证...';
-
-  @override
-  String get pyannoteCandidateValidationPassed =>
-      '验证完成：步长 2 + 0.35 填充通过安全标准。详情请查看 Sonarpad 日志。';
-
-  @override
-  String get pyannoteCandidateValidationFailed =>
-      '验证完成：步长 2 + 0.35 填充未通过全部安全标准。详情请查看 Sonarpad 日志。';
-
-  @override
-  String get pyannoteXnnpackBenchmark10Min => 'CPU 与 XNNPACK 基准测试：前 10 分钟';
-
-  @override
-  String get pyannoteXnnpackBenchmarkPreparing =>
-      '正在比较前 10 分钟的 CPU 与 XNNPACK...';
-
-  @override
-  String get pyannoteXnnpackBenchmarkCompleted =>
-      'CPU 与 XNNPACK 基准测试完成。请查看日志中的一致性和速度结果。';
-
-  @override
-  String get audioDescriptionCreateAiTitle => '使用 AI 创建音频描述';
-
-  @override
-  String get audioDescriptionChooseVideo => '选择视频';
-
-  @override
-  String get audioDescriptionAiService => 'AI 服务';
-
-  @override
-  String get audioDescriptionUseGeminiKey => '使用 Gemini API 密钥';
-
-  @override
-  String get audioDescriptionUseSonarpadAi => '使用 Sonarpad AI 服务';
-
-  @override
-  String get audioDescriptionGeminiApiKey => 'Gemini API 密钥';
-
-  @override
-  String get audioDescriptionGeminiModel => 'Gemini 模型';
-
-  @override
-  String get audioDescriptionRefreshModels => '刷新模型列表';
-
-  @override
-  String get audioDescriptionRefreshingModels => '正在刷新模型...';
-
-  @override
-  String get audioDescriptionSonarpadCode => 'Sonarpad AI 个人代码';
-
-  @override
-  String get audioDescriptionActivateSonarpad => '激活 / 验证 Sonarpad AI';
-
-  @override
-  String get audioDescriptionActivatingSonarpad => '正在激活 Sonarpad AI...';
-
-  @override
-  String get audioDescriptionServerManagedModel => '由 Sonarpad AI 服务管理';
-
-  @override
-  String get audioDescriptionLanguage => '音频描述语言';
-
-  @override
-  String get audioDescriptionDetailLevel => '详细程度';
-
-  @override
-  String get audioDescriptionDetailConcise => '简短';
-
-  @override
-  String get audioDescriptionDetailNormal => '普通';
-
-  @override
-  String get audioDescriptionDetailDetailed => '详细';
-
-  @override
-  String get audioDescriptionDetailIntensive => '密集';
-
-  @override
-  String get audioDescriptionExtendedPauses => '当描述无法放入静音间隙时启用延长暂停';
-
-  @override
-  String get audioDescriptionNonverbalVocals => '允许在非语言人声期间进行解说';
-
-  @override
-  String get audioDescriptionRecognizeCharacters => '尝试识别角色并使用其姓名';
-
-  @override
-  String get audioDescriptionSaveProject => '同时保存项目以便以后编辑';
-
-  @override
-  String get audioDescriptionCreate => '创建音频描述';
-
-  @override
-  String get audioDescriptionVoiceTesting => '正在测试语音...';
-
-  @override
-  String get audioDescriptionApiKeyRequired => '请输入 Gemini API 密钥。';
-
-  @override
-  String get audioDescriptionModelsUpdated => 'Gemini 模型列表已更新。';
-
-  @override
-  String get audioDescriptionModelsError => '无法刷新 Gemini 模型列表。';
-
-  @override
-  String get audioDescriptionSonarpadCodeRequired => '请输入你的 Sonarpad AI 个人代码。';
-
-  @override
-  String get audioDescriptionSonarpadActivated => 'Sonarpad AI 已在此设备上激活。';
-
-  @override
-  String get audioDescriptionSonarpadActivationError => '无法激活或验证 Sonarpad AI。';
-
-  @override
-  String get audioDescriptionSonarpadDeviceLimitReached =>
-      '已达到此 Sonarpad AI 代码可关联的最大设备数量。请移除一个已关联的设备，或联系支持人员。';
-
-  @override
-  String get audioDescriptionSonarpadBalance => 'Sonarpad AI 余额';
-
-  @override
-  String get audioDescriptionSonarpadBalanceUnavailable => '余额不可用。';
-
-  @override
-  String get audioDescriptionSonarpadInsufficientCredit => "余额不足。请为你的 API 密钥充值，以继续为内容生成音频描述。";
-
-  @override
-  String get audioDescriptionEdgeVoiceReady => '所选 Edge 语音可用。';
-
-  @override
-  String get audioDescriptionChooseVideoFirst => '请先选择视频文件。';
-
-  @override
-  String get audioDescriptionStagePreparing => '正在准备视频...';
-
-  @override
-  String get audioDescriptionStageDialogue => '正在使用 pyannote 检测对话...';
-
-  @override
-  String get audioDescriptionStageVideo => '正在准备视频片段...';
-
-  @override
-  String get audioDescriptionStageGemini => '正在使用 AI 生成音频描述...';
-
-  @override
-  String get audioDescriptionStageTts => '正在创建语音...';
-
-  @override
-  String get audioDescriptionStageMixing => '正在创建带音频描述的 MP3...';
-
-  @override
-  String get audioDescriptionCompleted => '音频描述已完成。';
-
-  @override
-  String get audioDescriptionCancelled => '已取消创建音频描述。';
-
-  @override
-  String get audioDescriptionCancelling => '正在取消...';
-
-  @override
-  String get audioDescriptionGenerationFailed => '创建音频描述失败。';
-
-  @override
-  String get audioDescriptionGetGeminiKey => '获取 Gemini API 密钥';
-
-  @override
-  String get audioDescriptionKeepCharacterCatalog => '保存并更新角色目录：适合连续剧';
-
-  @override
-  String get audioDescriptionCharacterCatalogChoose => '选择已保存的角色目录';
-
-  @override
-  String get audioDescriptionCharacterCatalogNew => '新建目录';
-
-  @override
-  String get audioDescriptionCharacterCatalogNameTitle => '角色目录';
-
-  @override
-  String get audioDescriptionCharacterCatalogNamePrompt => '要如何命名角色目录？';
-
-  @override
-  String get audioDescriptionCharacterCatalogNameError => '请输入角色目录名称。';
-
-  @override
-  String get audioDescriptionCharacterCatalogSaved => '角色目录已更新。';
-
-  @override
-  String get audioDescriptionCharacterCatalogSaveWarning =>
-      '音频描述已创建，但无法保存角色目录：';
-
-  @override
-  String get audioDescriptionRecognizeScreenText => '识别重要的屏幕文字并纳入音频描述';
-
-  @override
-  String get audioDescriptionHighDemandTitle => 'AI 服务繁忙';
-
-  @override
-  String get audioDescriptionHighDemandMessage => '多次尝试后 AI 服务仍不可用。是否继续等待并重试？';
-
-  @override
-  String get audioDescriptionContinueWaiting => '继续等待';
-
-  @override
-  String get audioDescriptionStopGeneration => '停止';
-
-  @override
-  String get audioDescriptionQuotaTitle => 'Gemini 配额已用尽';
-
-  @override
-  String get audioDescriptionQuotaMessage =>
-      '当前 Gemini 模型的配额已用尽。你可以选择其他模型、继续等待或停止。';
-
-  @override
-  String get audioDescriptionSwitchModel => '选择其他模型';
-
-  @override
-  String get audioDescriptionOverlapTitle => '最终备用方案';
-
-  @override
-  String get audioDescriptionOverlapMessage =>
-      '生成的描述都无法安全放入无对白区间。是否使用最终备用方案，允许旁白可能覆盖对白？此功能绝不会自动启用。';
-
-  @override
-  String get audioDescriptionAllowOverlap => '使用最终备用方案';
-
-  @override
-  String get audioDescriptionResumeTitle => '发现之前的音频描述任务';
-
-  @override
-  String get audioDescriptionResumeMessage =>
-      'Sonarpad 找到兼容的检查点。要从上次完成的片段继续，还是从头开始？';
-
-  @override
-  String get audioDescriptionResume => '继续';
-
-  @override
-  String get audioDescriptionRestart => '重新开始';
-
-  @override
-  String get audioDescriptionStageBriefRetry => '正在使用简短描述重新分析...';
-
-  @override
-  String get audioDescriptionBriefRetryTitle => '使用简短描述重试';
-
-  @override
-  String get audioDescriptionBriefRetryMessage =>
-      '生成的描述都无法安全放入无对白片段。在允许旁白覆盖对白之前，是否使用非常简短的描述重新分析一次？';
-
-  @override
-  String get audioDescriptionRetryBrief => '以简短模式重试';
-
-  @override
-  String audioDescriptionProjectEditorDescriptionOption(
-    String index,
-    String time,
-    String text,
-  ) {
-    return '$index. $time s. $text';
-  }
-
-  @override
-  String audioDescriptionLanguageCountry(String language, String country) {
-    return '$language ($country)';
-  }
-
-  @override
-  String get audioDescriptionCancelConfirmation => '确定要取消创建音频描述吗？';
-
-  @override
-  String get audioDescriptionEditProject => '编辑现有项目';
-
-  @override
-  String get audioDescriptionFindProject => '搜索 Sonarpad 文档';
-
-  @override
-  String get audioDescriptionBrowseProject => '浏览…';
-
-  @override
-  String get audioDescriptionNoSavedProjects => '在 Sonarpad 文档中未找到项目。';
-
-  @override
-  String get audioDescriptionContinueAi => '继续 AI 音频描述';
-
-  @override
-  String get audioDescriptionNoCheckpoint => '未找到此视频未完成的音频描述。请选择之前使用的原始视频。';
-
-  @override
-  String get sonarTubeSaveFormatPrompt => '选择保存格式';
-
-  @override
-  String get sonarTubeSaveAsMp4 => '保存为 MP4';
-
-  @override
-  String get sonarTubeSaveAsMp3 => '保存为 MP3';
-
-  @override
-  String get audioDescriptionCreateVideoOutput => '将音频描述保存到视频中';
-
-  @override
-  String get audioDescriptionLoadCharacterCatalog => '加载角色目录';
-
-  @override
-  String get audioDescriptionImportCharacterCatalog => '从文件导入目录';
-
-  @override
-  String get audioDescriptionCharacterCatalogLoaded => '角色目录已加载。';
-
-  @override
-  String get audioDescriptionCreateWithAi => '使用 AI 创建音频描述';
-
-  @override
-  String get settingsHomeCustomization => '自定义主屏幕';
-
-  @override
-  String get settingsHomeCustomizationHint => '选择要显示的项目；关闭分类后还可调整顺序。';
-
-  @override
-  String get homeCategories => '分类';
-
-  @override
-  String get homeCategoriesHint => '将主屏幕项目按分类分组。';
-
-  @override
-  String get homeVisibleItems => '可见项目';
-
-  @override
-  String get homeReorderItems => '重新排序项目';
-
-  @override
-  String get homeResetDefaults => '恢复默认设置';
-
-  @override
-  String get homeResetDefaultsConfirmTitle => '恢复主屏幕？';
-
-  @override
-  String get homeResetDefaultsConfirmMessage => '所有可用功能将重新显示，分类将启用，自定义排序将被清除。';
-
-  @override
-  String get homeResetDefaultsDone => '主屏幕已恢复为默认设置。';
-
-  @override
-  String get homeReorderTitle => '重新排序主屏幕';
-
-  @override
-  String get homeMoveItem => '移动项目';
-
-  @override
-  String get homeDigitalLibrary => '数字图书馆';
-
-  @override
-  String get homeTv => '电视';
-
-  @override
-  String get homeRaiPlay => 'RaiPlay';
-
-  @override
-  String get homeLa7Play => 'LA7 Play';
-
-  @override
-  String get homeRaiPlaySound => 'RaiPlay Sound';
-
-  @override
-  String get homeOpeningHours => '营业时间';
-
-  @override
-  String get homeDirectory => '白页和黄页';
-
-  @override
-  String get joinMediaTitle => "合并媒体文件";
-
-  @override
-  String get joinMediaDescription => "添加两个或更多音频或视频文件，选择顺序和输出格式，然后合并为一个文件。";
-
-  @override
-  String get joinMediaAddFiles => "添加媒体文件";
-
-  @override
-  String get joinMediaLoadingFiles => "正在检查所选文件…";
-
-  @override
-  String get joinMediaFilesTitle => "要合并的文件";
-
-  @override
-  String get joinMediaNoFiles => "尚未添加文件。";
-
-  @override
-  String get joinMediaVideoLabel => "视频";
-
-  @override
-  String get joinMediaAudioLabel => "音频";
-
-  @override
-  String get joinMediaActionsHint => "可用操作：上移、下移、移除。";
-
-  @override
-  String get joinMediaRemove => "移除";
-
-  @override
-  String get joinMediaOutputMp4 => "输出格式：MP4。纯音频项目使用黑色视频画面；无音频的视频会加入静音轨道。";
-
-  @override
-  String get joinMediaOutputMp3 => "输出格式：MP3。";
-
-  @override
-  String get joinMediaJoin => "合并";
-
-  @override
-  String get joinMediaFileSkipped => "某个文件因无法访问或不含可用音频/视频而被跳过。";
-
-  @override
-  String get joinMediaFilesAdded => "已添加媒体文件。";
-
-  @override
-  String get joinMediaRemoved => "已移除项目。";
-
-  @override
-  String get joinMediaNeedTwoFiles => "至少添加两个文件才能合并。";
-
-  @override
-  String get joinMediaProcessing => "正在合并媒体";
-
-  @override
-  String get joinMediaCancelled => "已取消合并。";
-
-  @override
-  String get joinMediaFailed => "无法合并媒体文件。";
-
-  @override
-  String get joinMediaPreparing => "准备中";
-
-  @override
-  String get joinMediaNormalizing => "正在准备文件";
-
-  @override
-  String get joinMediaMerging => "正在合并文件";
-
-  @override
-  String get joinMediaVerifying => "最终验证";
-
-  @override
-  String get joinMediaCompleting => "正在完成";
-
-  @override
-  String get joinMediaCompleted => "合并完成。请选择文件保存位置。";
-
-  @override
-  String get joinMediaFormat => "合并格式";
-
-  @override
-  String get joinMediaChooseFormat => "选择合并格式";
-
-  @override
-  String get joinMediaAudioFormatHint => "仅包含音频文件时可选择 MP3、M4A、WAV、FLAC、OGG、OPUS、AAC、WMA 或 AIFF。默认：MP3。";
-
-  @override
-  String get joinMediaVideoFormatHint => "包含视频或音视频混合文件时可选择 MP4、MKV、MOV、AVI、WMV、MPEG/MPG、FLV、3GP 或 TS。默认：MP4。";
-
-  @override
-  String get joinMediaCancelConfirmTitle => "取消合并？";
-
-  @override
-  String get joinMediaCancelConfirmMessage => "确定要取消吗？正在运行的 FFmpeg 进程将被停止。";
-
-  @override
-  String get joinMediaKeepWorking => "继续";
-
-  @override
-  String get joinMediaConfirmCancel => "取消合并";
-
-  @override
-  String get joinMediaCancelling => "正在取消…";
-
-  @override
-  String get streamReconnecting => "正在尝试重新连接…";
-
-  @override
-  String get streamPlaybackRetryMessage => "频道未能启动。请选择“重试”以刷新流媒体链接。";
-
-  @override
-  String get settingsMediaSpeedControl => "启用媒体文件播放速度控制";
-
-  @override
-  String get settingsMediaSpeedControlHint => "显示 Sonartube、播客和其他录制内容的速度控制。不适用于直播。";
-
-  @override
-  String get settingsPreferRaiAudioDescription => "有音频描述时优先使用";
-
-  @override
-  String get settingsPreferRaiAudioDescriptionHint => "在 Rai 频道中，如果有音频描述音轨则自动使用。关闭此选项可优先使用普通意大利语音轨。";
-
-  @override
-  String get mediaPlaybackSpeed => "播放速度";
-
-  @override
-  String get mediaPlaybackSpeedNormal => "正常";
-
-  @override
-  String get mediaPlaybackSpeedUnavailable => "此内容不支持该速度。已恢复之前的播放速度。";
-
-  @override
-  String get mediaPlaybackSpeedRecoveryFailed => "无法恢复播放速度。请重新打开内容后重试。";
-
-  @override
-  String mediaPlaybackSpeedChanged(String speed) => "播放速度：$speed";
-
-
-  @override
-  String get routeServiceInvalidAddress => "地址无效";
-
-  @override
-  String routeServiceGeocodingNetworkError(int statusCode) => "地理编码网络错误：HTTP ${statusCode}";
-
-  @override
-  String routeServiceNetworkError(int statusCode) => "路线网络错误：HTTP ${statusCode}";
-
-  @override
-  String get routeServiceServerError => "服务器错误";
-
-  @override
-  String get routeServiceCalculationError => "服务器路线计算错误";
-
-  @override
-  String get routeServiceUnauthorized => "客户端未授权。请更新 Sonarpad 或检查应用配置。";
-
-  @override
-  String get routeServiceStartNotFound => "未找到起始地址";
-
-  @override
-  String get routeServiceDestinationNotFound => "未找到目的地地址";
-
-  @override
-  String get radioLanguageRo => "罗马尼亚语";
-
-  @override
-  String get radioCountryOptionRo => "罗马尼亚";
-
-  @override
-  String get sonarTubeServiceError => "Errore SonarTube";
-
-  @override
-  String get sonarTubeServiceInvalidResponse => "Risposta SonarTube non valida.";
-
-  @override
-  String get sonarTubeServiceInnerTubeError => "Errore API InnerTube.";
-
-  @override
-  String get sonarTubeServiceInvalidInnerTubeResponse => "Risposta InnerTube non valida.";
-
-  @override
-  String get sonarTubeServiceNoStream => "Nessun flusso riproducibile disponibile.";
-
-  @override
-  String get sonarTubeServiceOnlyVideo => "È possibile risolvere soltanto un video.";
-
-  @override
-  String get sonarTubeServiceNotCollection => "Un video non è una raccolta SonarTube.";
-
-  @override
-  String get listTimestampToday => "今天";
-
-  @override
-  String get listTimestampYesterday => "昨天";
-
-  @override
-  String get listTimestampDayBeforeYesterday => "前天";
-
-  @override
-  String get listTimestampTomorrow => "明天";
-
-  @override
-  String get listTimestampDayAfterTomorrow => "后天";
-
-  @override
-  String get articleTitleNotFound => "未找到标题";
-
-  @override
-  String get articleUnknownTitle => "未知标题";
-
-  @override
-  String get articleAuthorPrefix => "作者：";
-
-  @override
-  String get audioDescriptionProjectEditorTitle => "编辑音频描述项目";
-
-  @override
-  String get audioDescriptionProjectOpen => "打开音频描述项目";
-
-  @override
-  String get audioDescriptionProjectLabel => "Project";
-
-  @override
-  String get audioDescriptionProjectChooseSource => "选择原始视频";
-
-  @override
-  String get audioDescriptionProjectSource => "Original video";
-
-  @override
-  String get audioDescriptionProjectDescription => "描述";
-
-  @override
-  String get audioDescriptionProjectDescriptionText => "描述文本";
-
-  @override
-  String get audioDescriptionProjectPreviewDescription => "播放描述";
-
-  @override
-  String get audioDescriptionProjectApplyText => "应用修改";
-
-  @override
-  String get audioDescriptionProjectDeleteDescription => "删除描述";
-
-  @override
-  String get audioDescriptionProjectDeleteConfirmation => "Delete the selected description from the project?";
-
-  @override
-  String get audioDescriptionProjectCannotDeleteLast => "The only description in the project cannot be deleted.";
-
-  @override
-  String get audioDescriptionProjectApplyVoice => "将语音应用到项目";
-
-  @override
-  String get audioDescriptionProjectReadingEngine => "Reading engine";
-
-  @override
-  String get audioDescriptionProjectEdgeVoice => "Microsoft Edge voice";
-
-  @override
-  String get audioDescriptionProjectSystemVoice => "System / VoiceOver / Android voice";
-
-  @override
-  String get audioDescriptionProjectVoiceLanguage => "Voice language";
-
-  @override
-  String get audioDescriptionProjectVoice => "Voice";
-
-  @override
-  String get audioDescriptionProjectReexportMp3 => "重新导出 MP3";
-
-  @override
-  String get audioDescriptionProjectExportSrt => "导出为 SRT";
-
-  @override
-  String get audioDescriptionProjectExportVtt => "导出为 VTT";
-
-  @override
-  String get audioDescriptionProjectNormalWithDucking => "normal with ducking";
-
-  @override
-  String get audioDescriptionProjectExtendedPause => "extended pause";
-
-  @override
-  String get audioDescriptionProjectReady => "Project ready.";
-
-  @override
-  String get audioDescriptionProjectDescriptionApplied => "Description checked and saved in the project.";
-
-  @override
-  String get audioDescriptionProjectDescriptionDeleted => "Description deleted and project saved.";
-
-  @override
-  String get audioDescriptionProjectVoiceChanged => "Voice changed and all descriptions were checked.";
-
-  @override
-  String audioDescriptionProjectDescriptionTooLong(String actual, String available) => "The synthesized description lasts ${actual} seconds, but only ${available} seconds are available. The previous text was not changed.";
-
-  @override
-  String get audioDescriptionProjectSourceMissing => "The original video is not available. Choose it before re-exporting the MP3.";
-
-  @override
-  String get audioDescriptionProjectInvalid => "The selected file is not a valid Sonarpad audio description project.";
-
-  @override
-  String get audioDescriptionProjectUnsavedText => "Apply the current text before re-exporting the MP3.";
-
-  @override
-  String get audioDescriptionProjectWorking => "正在处理项目…";
-
-  @override
-  String get audioDescriptionProjectExported => "项目已导出。";
-
-  @override
-  String get audioDescriptionProjectSelectFirst => "Open a project first.";
-
-  @override
-  String get audioDescriptionProjectSelectDescription => "Select a description.";
-
-  @override
-  String audioDescriptionProjectDescriptionDetails(String source, String start, String end, String duration, String mode) => "Scene ${source} s; MP3 ${start}-${end} s; voice ${duration} s; ${mode}";
-
-  @override
-  String get audioDescriptionProjectShare => "共享";
-
-  @override
-  String get audioDescriptionProjectSaveDocuments => "保存到 Sonarpad 文档";
-
-  @override
-  String get audioDescriptionProjectSavedDocuments => "Files saved in Sonarpad Documents.";
-
-  @override
-  String get audioDescriptionProjectCancel => "Cancel";
-
-  @override
-  String get audioDescriptionProjectChooseFromFiles => "从文件选择视频";
-
-  @override
-  String get audioDescriptionProjectImportFromPhotos => "从照片导入视频";
-
-  @override
-  String get newsCategoryWorld => "World";
-
-  @override
-  String get newsCategoryBusiness => "Business";
-
-  @override
-  String get newsCategoryTechnology => "Technology";
-
-  @override
-  String get newsCategoryEntertainment => "Entertainment";
-
-  @override
-  String get newsCategorySports => "Sports";
-
-  @override
-  String get newsCategoryHealth => "Health";
-
-  @override
-  String get newsArticleSubscribersOnly => "此文章仅供订阅用户阅读。";
-
-  @override
-  String wikipediaSearchHttpError(int statusCode) => "维基百科错误：${statusCode}";
-
-  @override
-  String wikipediaImportHttpError(int statusCode) => "维基百科导入错误：${statusCode}";
-
-  @override
-  String gutenbergSearchHttpError(int statusCode) => "Errore Gutenberg ${statusCode}";
-
-  @override
-  String gutenbergDownloadHttpError(int statusCode) => "Errore download ${statusCode}";
-
-  @override
-  String gutenbergEpubDownloadHttpError(int statusCode) => "Errore download EPUB ${statusCode}";
-
-  @override
-  String get gutenbergInvalidBookId => "ID Gutenberg non valido.";
-
-  @override
-  String get gutenbergDownloadTimeout => "Download Gutenberg troppo lento. Riprova tra poco o scegli un altro formato.";
-
-  @override
-  String get gutenbergUnreadableArchive => "Archivio ZIP Gutenberg senza file di testo leggibile.";
-
-  @override
-  String get gutenbergUntitledBook => "Senza titolo";
-
-  @override
-  String get gutenbergUnknownAuthor => "Autore sconosciuto";
-
-  @override
-  String get podcastCategoryAll => "所有类别";
-
-  @override
-  String get podcastCategoryArts => "艺术";
-
-  @override
-  String get podcastCategoryBusiness => "商务";
-
-  @override
-  String get podcastCategoryComedy => "喜剧";
-
-  @override
-  String get podcastCategoryEducation => "教育";
-
-  @override
-  String get podcastCategoryFiction => "小说";
-
-  @override
-  String get podcastCategoryGovernment => "政府";
-
-  @override
-  String get podcastCategoryHealthAndFitness => "健康与健身";
-
-  @override
-  String get podcastCategoryHistory => "历史";
-
-  @override
-  String get podcastCategoryKidsAndFamily => "儿童与家庭";
-
-  @override
-  String get podcastCategoryLeisure => "休闲";
-
-  @override
-  String get podcastCategoryMusic => "音乐";
-
-  @override
-  String get podcastCategoryNews => "新闻";
-
-  @override
-  String get podcastCategoryReligionAndSpirituality => "宗教与灵性";
-
-  @override
-  String get podcastCategoryScience => "科学";
-
-  @override
-  String get podcastCategorySocietyAndCulture => "社会与文化";
-
-  @override
-  String get podcastCategorySports => "体育";
-
-  @override
-  String get podcastCategoryTechnology => "科技";
-
-  @override
-  String get podcastCategoryTrueCrime => "真实犯罪";
-
-  @override
-  String get podcastCategoryTvAndFilm => "电视与电影";
-
-  @override
-  String get podcastCategoryBooks => "书籍";
-
-  @override
-  String get podcastCategoryDesign => "设计";
-
-  @override
-  String get podcastCategoryFashionAndBeauty => "时尚与美容";
-
-  @override
-  String get podcastCategoryFood => "美食";
-
-  @override
-  String get podcastCategoryPerformingArts => "表演艺术";
-
-  @override
-  String get podcastCategoryVisualArts => "视觉艺术";
-
-  @override
-  String get podcastCategoryCareers => "职业发展";
-
-  @override
-  String get podcastCategoryEntrepreneurship => "创业";
-
-  @override
-  String get podcastCategoryInvesting => "投资";
-
-  @override
-  String get podcastCategoryManagement => "管理";
-
-  @override
-  String get podcastCategoryMarketing => "营销";
-
-  @override
-  String get podcastCategoryNonProfit => "非营利组织";
-
-  @override
-  String get podcastCategoryComedyInterviews => "喜剧访谈";
-
-  @override
-  String get podcastCategoryImprov => "即兴喜剧";
-
-  @override
-  String get podcastCategoryStandUp => "单口喜剧";
-
-  @override
-  String get podcastCategoryCourses => "课程";
-
-  @override
-  String get podcastCategoryHowTo => "实用指南";
-
-  @override
-  String get podcastCategoryLanguageLearning => "语言学习";
-
-  @override
-  String get podcastCategorySelfImprovement => "自我提升";
-
-  @override
-  String get podcastCategoryComedyFiction => "喜剧小说";
-
-  @override
-  String get podcastCategoryDrama => "剧情";
-
-  @override
-  String get podcastCategoryScienceFiction => "科幻小说";
-
-  @override
-  String get podcastCategoryAlternativeHealth => "另类健康";
-
-  @override
-  String get podcastCategoryFitness => "健身";
-
-  @override
-  String get podcastCategoryMedicine => "医学";
-
-  @override
-  String get podcastCategoryMentalHealth => "心理健康";
-
-  @override
-  String get podcastCategoryNutrition => "营养";
-
-  @override
-  String get podcastCategorySexuality => "性";
-
-  @override
-  String get podcastCategoryEducationForKids => "儿童教育";
-
-  @override
-  String get podcastCategoryParenting => "育儿";
-
-  @override
-  String get podcastCategoryPetsAndAnimals => "宠物与动物";
-
-  @override
-  String get podcastCategoryStoriesForKids => "儿童故事";
-
-  @override
-  String get podcastCategoryAnimationAndManga => "动画与漫画";
-
-  @override
-  String get podcastCategoryAutomotive => "汽车";
-
-  @override
-  String get podcastCategoryAviation => "航空";
-
-  @override
-  String get podcastCategoryCrafts => "手工艺";
-
-  @override
-  String get podcastCategoryGames => "游戏";
-
-  @override
-  String get podcastCategoryHobbies => "爱好";
-
-  @override
-  String get podcastCategoryHomeAndGarden => "家居与园艺";
-
-  @override
-  String get podcastCategoryVideoGames => "电子游戏";
-
-  @override
-  String get podcastCategoryMusicCommentary => "音乐评论";
-
-  @override
-  String get podcastCategoryMusicHistory => "音乐史";
-
-  @override
-  String get podcastCategoryMusicInterviews => "音乐访谈";
-
-  @override
-  String get podcastCategoryBusinessNews => "商业新闻";
-
-  @override
-  String get podcastCategoryDailyNews => "每日新闻";
-
-  @override
-  String get podcastCategoryEntertainmentNews => "娱乐新闻";
-
-  @override
-  String get podcastCategoryNewsCommentary => "新闻评论";
-
-  @override
-  String get podcastCategoryPolitics => "政治";
-
-  @override
-  String get podcastCategorySportsNews => "体育新闻";
-
-  @override
-  String get podcastCategoryTechNews => "科技新闻";
-
-  @override
-  String get podcastCategoryBuddhism => "佛教";
-
-  @override
-  String get podcastCategoryChristianity => "基督教";
-
-  @override
-  String get podcastCategoryHinduism => "印度教";
-
-  @override
-  String get podcastCategoryIslam => "伊斯兰教";
-
-  @override
-  String get podcastCategoryJudaism => "犹太教";
-
-  @override
-  String get podcastCategoryReligion => "宗教";
-
-  @override
-  String get podcastCategorySpirituality => "灵性";
-
-  @override
-  String get podcastCategoryAstronomy => "天文学";
-
-  @override
-  String get podcastCategoryChemistry => "化学";
-
-  @override
-  String get podcastCategoryEarthSciences => "地球科学";
-
-  @override
-  String get podcastCategoryLifeSciences => "生命科学";
-
-  @override
-  String get podcastCategoryMathematics => "数学";
-
-  @override
-  String get podcastCategoryNaturalSciences => "自然科学";
-
-  @override
-  String get podcastCategoryNature => "自然";
-
-  @override
-  String get podcastCategoryPhysics => "物理学";
-
-  @override
-  String get podcastCategorySocialSciences => "社会科学";
-
-  @override
-  String get podcastCategoryDocumentary => "纪录片";
-
-  @override
-  String get podcastCategoryPersonalJournals => "个人日记";
-
-  @override
-  String get podcastCategoryPhilosophy => "哲学";
-
-  @override
-  String get podcastCategoryPlacesAndTravel => "地点与旅行";
-
-  @override
-  String get podcastCategoryRelationships => "人际关系";
-
-  @override
-  String get podcastCategoryBaseball => "棒球";
-
-  @override
-  String get podcastCategoryBasketball => "篮球";
-
-  @override
-  String get podcastCategoryCricket => "板球";
-
-  @override
-  String get podcastCategoryFantasySports => "梦幻体育";
-
-  @override
-  String get podcastCategoryFootball => "美式橄榄球";
-
-  @override
-  String get podcastCategoryGolf => "高尔夫";
-
-  @override
-  String get podcastCategoryHockey => "冰球";
-
-  @override
-  String get podcastCategoryRugby => "橄榄球";
-
-  @override
-  String get podcastCategoryRunning => "跑步";
-
-  @override
-  String get podcastCategorySoccer => "足球";
-
-  @override
-  String get podcastCategorySwimming => "游泳";
-
-  @override
-  String get podcastCategoryTennis => "网球";
-
-  @override
-  String get podcastCategoryVolleyball => "排球";
-
-  @override
-  String get podcastCategoryWilderness => "户外";
-
-  @override
-  String get podcastCategoryWrestling => "摔跤";
-
-  @override
-  String get podcastCategoryAfterShows => "剧后讨论";
-
-  @override
-  String get podcastCategoryFilmHistory => "电影史";
-
-  @override
-  String get podcastCategoryFilmInterviews => "电影访谈";
-
-  @override
-  String get podcastCategoryFilmReviews => "电影评论";
-
-  @override
-  String get podcastCategoryTvReviews => "电视评论";
-
-  @override
-  String get weatherConditionClearSky => "晴朗";
-
-  @override
-  String get weatherConditionMainlyClear => "大部晴朗";
-
-  @override
-  String get weatherConditionPartlyCloudy => "局部多云";
-
-  @override
-  String get weatherConditionOvercast => "阴天";
-
-  @override
-  String get weatherConditionFog => "雾";
-
-  @override
-  String get weatherConditionRimeFog => "冻雾";
-
-  @override
-  String get weatherConditionLightDrizzle => "小毛毛雨";
-
-  @override
-  String get weatherConditionModerateDrizzle => "中等毛毛雨";
-
-  @override
-  String get weatherConditionDenseDrizzle => "强毛毛雨";
-
-  @override
-  String get weatherConditionLightFreezingDrizzle => "轻微冻毛毛雨";
-
-  @override
-  String get weatherConditionDenseFreezingDrizzle => "强冻毛毛雨";
-
-  @override
-  String get weatherConditionLightRain => "小雨";
-
-  @override
-  String get weatherConditionModerateRain => "中雨";
-
-  @override
-  String get weatherConditionHeavyRain => "大雨";
-
-  @override
-  String get weatherConditionLightFreezingRain => "轻微冻雨";
-
-  @override
-  String get weatherConditionHeavyFreezingRain => "强冻雨";
-
-  @override
-  String get weatherConditionLightSnowfall => "小雪";
-
-  @override
-  String get weatherConditionModerateSnowfall => "中雪";
-
-  @override
-  String get weatherConditionHeavySnowfall => "大雪";
-
-  @override
-  String get weatherConditionSnowGrains => "米雪";
-
-  @override
-  String get weatherConditionLightRainShowers => "小阵雨";
-
-  @override
-  String get weatherConditionModerateRainShowers => "中等阵雨";
-
-  @override
-  String get weatherConditionViolentRainShowers => "强阵雨";
-
-  @override
-  String get weatherConditionLightSnowShowers => "小阵雪";
-
-  @override
-  String get weatherConditionHeavySnowShowers => "强阵雪";
-
-  @override
-  String get weatherConditionThunderstorm => "雷暴";
-
-  @override
-  String get weatherConditionThunderstormLightHail => "伴有小冰雹的雷暴";
-
-  @override
-  String get weatherConditionThunderstormHeavyHail => "伴有强冰雹的雷暴";
-
-  @override
-  String get documentsImportFromFiles => "从文件导入";
-
-  @override
-  String get sonarTubeOpenUrl => "打开网址";
-
-  @override
-  String get sonarTubeUrlPrompt => "粘贴 YouTube 视频网址";
-
-  @override
-  String get sonarMusicAll => "全部";
-
-  @override
-  String get sonarMusicSong => "歌曲";
-
-  @override
-  String get sonarMusicVideo => "音乐视频";
-
-  @override
-  String get sonarMusicAlbum => "专辑";
-
-  @override
-  String get sonarMusicArtist => "艺人";
-
-  @override
-  String get sonarMusicPlaylist => "播放列表";
-
-  @override
-  String get sonarMusicFavorites => "收藏";
-
-  @override
-  String get sonarMusicRecent => "最近播放";
-
-  @override
-  String get sonarMusicOpen => "打开链接";
-
-  @override
-  String get sonarMusicLoad => "加载更多";
-
-  @override
-  String get sonarMusicArtistOpen => "查看艺人";
-
-  @override
-  String get sonarMusicAlbumOpen => "查看专辑";
-
-  @override
-  String get sonarMusicPlayAll => "播放全部";
-
-  @override
-  String get sonarMusicShare => "分享";
-
-  @override
-  String get sonarMusicAdd => "加入收藏";
-
-  @override
-  String get sonarMusicRemove => "取消收藏";
-
-  @override
-  String get sonarMusicEmpty => "无结果";
-
-  @override
-  String get sonarMusicInvalid => "无法打开";
-
-  @override
-  String get sonarMusicDescription => "说明";
-
-  @override
-  String get sonarMusicShuffle => "随机播放";
-
-  @override
-  String get sonarMusicSave => "保存媒体";
-
-  @override
-  String get sonarMusicSuggest => "搜索建议";
-
-  @override
-  String get sonarMusicSearchHint => "歌曲、艺人或专辑";
-
-  @override
-  String get catalogUntitled => "Senza titolo";
-
-  @override
-  String get catalogUnknownAuthor => "Autore sconosciuto";
-
-  @override
-  String get librivoxChapterFallback => "Capitolo";
-
-  @override
-  String get internetArchiveAudioFallback => "Audio";
-
-  @override
-  String librivoxHttpError(int statusCode) => "Errore LibriVox ${statusCode}";
-
-  @override
-  String get librivoxBookNotFound => "Audiolibro non trovato.";
-
-  @override
-  String internetArchiveHttpError(int statusCode) => "Internet Archive ${statusCode}";
-
-  @override
-  String poetryDbHttpError(int statusCode) => "Errore PoetryDB ${statusCode}";
-
-  @override
-  String get cloudFilePickerLoading => "正在加载文件";
-
-  @override
-  String get cloudFilePickerPreparing => "正在准备云端文件…";
-
-  @override
-  String get cloudFilePickerUnknownSize => "正在加载…";
-
-  @override
-  String get cloudFilePickerCancelling => "正在取消…";
-
-  @override
-  String get audioPlaybackNotificationChannelName => "音频播放";
-
-  @override
-  String get documentExportFallbackName => "文档";
-
-  @override
-  String get documentExportAudiobookSuffix => "有声书";
-
-  @override
-  String get convertMediaWavFloat32 => "32 位浮点";
-  @override
-  String get cloudFilePickerCopying => '正在将文件复制到 Sonarpad';
-
-  @override
-  String get importVideoFromGallery => '从图库选择';
-  @override
-  String get sharedVideoOpen => '打开视频';
-
-  @override
-  String get developerReportEmailOptional => '电子邮件（可选，用于回复）';
-
-  @override
-  String get developerReportEmailInvalid => '请输入有效的电子邮件地址，或将此字段留空。';
-
-  @override
-  String get concertsTicketOneLogin => '登录 TicketOne 账户';
-
-  @override
-  String get concertsTicketOneRegister => '注册新的 TicketOne 账户';
-
-  @override
-  String get savePdfWithoutPassword => '保存无密码 PDF';
-
-  @override
-  String get pdfUnprotectedCopyDescription =>
-      '保存无需密码的 PDF 副本，保留原有排版和内容。原始 PDF 保持不变。';
-
-  @override
-  String get podcastRecorderTitle => '录制播客';
-
-  @override
-  String get podcastRecorderHint =>
-      '仅录制麦克风。可选背景音乐会在结束后添加，音量设置应用于整段录音。请使用耳机，避免录入扬声器中的屏幕阅读器语音。切换到其他应用会暂停录音。';
-
-  @override
-  String get podcastRecorderMicVolume => '麦克风音量';
-
-  @override
-  String get podcastRecorderMusicVolume => '背景音乐音量';
-
-  @override
-  String get podcastRecorderChooseMusic => '选择背景音乐（可选）';
-
-  @override
-  String get podcastRecorderRemoveMusic => '移除背景音乐';
-
-  @override
-  String get podcastRecorderReady => '录音已就绪。调整音量、试听并保存。';
-
-  @override
-  String get podcastRecorderRecovered => '已恢复上次的录音。您可以试听并保存。';
-
-  @override
-  String get podcastRecorderPermission => '请在设备设置中允许麦克风访问以进行录音。';
-
-  @override
-  String get podcastRecorderLeave => '退出吗？录音将停止，并保留至下次打开。';
-
-  @override
-  String get podcastRecorderDiscard => '删除此录音吗？已保存到文档中的副本不会被删除。';
-
-  @override
-  String get podcastRecorderChooseIntro => '选择片头音乐（可选）';
-
-  @override
-  String get podcastRecorderChooseOutro => '选择片尾音乐（可选）';
-
-  @override
-  String get podcastRecorderRemoveIntro => '移除片头音乐';
-
-  @override
-  String get podcastRecorderRemoveOutro => '移除片尾音乐';
-}
-
-/// The translations for Chinese, as used in China (`zh_CN`).
-class AppLocalizationsZhCn extends AppLocalizationsZh {
-  @override
-  String onlineDictionaryEntryTitle(String word, String language) => "$word — $language";
-  @override
-  String onlineDictionaryDefinition(int number, String text) => "$number. $text";
-  @override
-  String onlineDictionarySource(String url) => "Wiktionary — CC BY-SA 4.0\n$url";
-
-  @override
-  String get onlineDictionaryTitle => "在线词典";
-  @override
-  String get onlineDictionaryWord => "词：";
-  @override
-  String get onlineDictionaryLanguage => "词典语言：";
-  @override
-  String get onlineDictionaryDefinitions => "定义";
-  @override
-  String get onlineDictionarySynonyms => "同义词";
-  @override
-  String get onlineDictionaryNotFound => "未找到该词。";
-  @override
-  String get onlineDictionaryLimited => "结果过多。请优化搜索条件。";
-  @override
-  String get onlineDictionaryTranslation => "词典翻译语言：";
-  @override
-  String get onlineDictionaryNone => "无";
-
-  @override
-  String get raiPlayMediaUnavailable => "多次尝试后，RaiPlay 仍未返回可播放的地址。内容可能暂时不可用，请稍后重试。";
 
   @override
   String get podcastImportIntoMediaCutter => '导入到剪切媒体文件';
 
   @override
-  String audioDescriptionProjectEditorSegmentOption(int index, String start, String end) => '$index: $start – $end';
+  String get preserveMedia => '保存内容';
 
   @override
-  String get convertMediaDocumentAudiobookHint => '要将文档转换为有声书，请前往“文档”→“从文件导入”。导入后，选择“导出文档”→“MP3 有声书 (.mp3)”。';
+  String get preserveMediaSaving => '正在保存内容…';
+
+  @override
+  String get preserveMediaSaved => '内容已保存到 Sonarpad 文档。';
+
+  @override
+  String get preserveMediaError => '无法保存内容。';
+
+  @override
+  String get mediaProcessingCompleted => '处理完成。';
+
+  @override
+  String get saveInSonarpadDocuments => '保存到 Sonarpad 文档';
+
+  @override
+  String get mediaCutterProcess => '处理';
+
+  @override
+  String get sonarTubeGoToChannel => '前往频道';
+
+  @override
+  String get sonarTubeViewComments => '查看评论';
+
+  @override
+  String get sonarTubeComments => '评论';
+
+  @override
+  String get sonarTubeNoComments => '暂无评论。';
+
+  @override
+  String get sonarTubeLoadMoreComments => '加载更多评论';
+
+  @override
+  String get sonarTubeTranscribeVideo => '转录视频';
+
+  @override
+  String get sonarTubeTranscript => '转录文本';
+
+  @override
+  String get sonarTubeNoTranscript => '此视频没有可用的转录文本。';
+
+  @override
+  String get sonarTubeCopyTranscript => '复制转录文本';
+
+  @override
+  String get sonarTubeTranscriptCopied => '转录文本已复制到剪贴板';
+
+  @override
+  String get sonarTubeTranscriptSavedInDocuments => '转录文本已保存到“文档”。';
+
+  @override
+  String get copyToClipboard => '复制到剪贴板';
+
+  @override
+  String get textCopiedToClipboard => '文本已复制到剪贴板';
+
+  @override
+  String get protectDocumentWithPassword => '使用密码保护';
+
+  @override
+  String get removeDocumentPasswordProtection => '移除密码保护';
+
+  @override
+  String get documentPassword => '密码';
+
+  @override
+  String get confirmDocumentPassword => '确认密码';
+
+  @override
+  String get chooseDocumentPassword => '请输入并确认密码。打开或共享此文档前将要求输入该密码。';
+
+  @override
+  String get enterCurrentDocumentPassword => '请输入当前密码以移除保护。';
+
+  @override
+  String get documentPasswordRequired => '请输入密码。';
+
+  @override
+  String get documentPasswordsDoNotMatch => '两次输入的密码不一致。';
+
+  @override
+  String get incorrectDocumentPassword => '密码不正确。';
+
+  @override
+  String get documentPasswordProtectionEnabled => '已启用密码保护。';
+
+  @override
+  String get documentPasswordProtectionRemoved => '已移除密码保护。';
+
+  @override
+  String get documentPasswordRequiredTitle => '需要密码';
+
+  @override
+  String get enterDocumentPasswordToShare => '此文档受密码保护。请输入密码以继续共享。';
+
+  @override
+  String get enterDocumentPasswordToOpen => '此文档受密码保护。请输入密码以打开文档。';
+
+  @override
+  String get documentPasswordProtectedStatus => '受密码保护';
+
+  @override
+  String get rename => '重命名';
+
+  @override
+  String get renameRecording => '重命名录制内容';
+
+  @override
+  String get newRecordingName => '录制内容的新名称';
+
+  @override
+  String get recordingCannotRenameWhileInProgress => '正在进行的录制无法重命名。';
+
+  @override
+  String get recordingNameAlreadyExists => '已存在同名录制内容。';
+
+  @override
+  String get renameDocument => '重命名文档';
+
+  @override
+  String get newDocumentName => '新文档名称';
+
+  @override
+  String get documentNameAlreadyExists => '已存在同名文档。';
+
+  @override
+  String get recordingExitPrompt => '正在录制。要停止录制还是继续录制？';
+
+  @override
+  String get continueRecording => '继续录制';
+
+  @override
+  String get settingsShowOnlyMultilingualEdgeVoices => '仅显示多语言语音';
+
+  @override
+  String get weatherAirQuality => '空气质量';
+
+  @override
+  String get weatherAirQualityGood => '良好';
+
+  @override
+  String get weatherAirQualityFair => '尚可';
+
+  @override
+  String get weatherAirQualityModerate => '中等';
+
+  @override
+  String get weatherAirQualityPoor => '较差';
+
+  @override
+  String get weatherAirQualityVeryPoor => '很差';
+
+  @override
+  String get weatherAirQualityExtremelyPoor => '极差';
+
+  @override
+  String get sonarpadAudiodescriptionsTitle => 'Sonarpad 音频描述';
+
+  @override
+  String get sonarpadAudiodescriptionsAll => '所有 Sonarpad 音频描述';
+
+  @override
+  String get sonarpadAudiodescriptionsSearchHint => '搜索电影、剧集或单集';
+
+  @override
+  String get sortBy => '排序方式';
+
+  @override
+  String get sortAlphabetical => '按字母顺序';
+
+  @override
+  String get sortChronological => '按时间顺序';
+
+  @override
+  String get contentUnavailable => '内容不可用。';
+
+  @override
+  String get downloadUnavailable => '下载不可用。';
+
+  @override
+  String get sonarTubeChannelPlaylists => '播放列表';
+
+  @override
+  String get sonarTubeChannelShorts => 'Shorts';
+
+  @override
+  String sonarTubeVideoCount(int count) {
+    return '$count 个视频';
+  }
+
+  @override
+  String get sonarTubeViewDescription => '查看说明';
+
+  @override
+  String get sonarTubeDescription => '说明';
+
+  @override
+  String get sonarTubeNoDescription => '此视频没有可用的说明。';
+
+  @override
+  String get pyannoteTestTitle => '移动版 pyannote 测试';
+
+  @override
+  String get pyannoteTestInstructions =>
+      '此测试使用与 Windows 相同的 pyannote ONNX 模型。首次比较请使用前 2 分钟的快速测试。';
+
+  @override
+  String get pyannoteQuickTest => 'pyannote 快速测试：前 2 分钟';
+
+  @override
+  String get pyannoteFullTest => 'pyannote 完整测试：整个文件';
+
+  @override
+  String get pyannoteShareArtifacts => '共享标准 WAV 和移动端 JSON 结果';
+
+  @override
+  String get pyannoteInitialStatus => '请选择音频或视频文件。首次比较请使用快速测试。';
+
+  @override
+  String get pyannotePreparingQuick => '正在准备前 2 分钟的快速测试...';
+
+  @override
+  String get pyannotePreparingFull => '正在准备完整测试...';
+
+  @override
+  String get pyannoteCompletedStatus =>
+      '移动端测试已完成。请共享 WAV 和 JSON，并在 Windows 测试中使用同一个 WAV。';
+
+  @override
+  String get pyannoteFilesUnavailable => '上一次测试的文件已不可用。';
+
+  @override
+  String get pyannoteFailure => 'pyannote 测试失败。';
+
+  @override
+  String get pyannoteShareText =>
+      'Sonarpad：移动版 pyannote 一致性测试。Windows 测试也请使用随附的标准 WAV。';
+
+  @override
+  String get pyannoteShareSubject => 'Sonarpad pyannote 测试';
+
+  @override
+  String get pyannoteBenchmark10Min => 'pyannote 基准测试：前 10 分钟';
+
+  @override
+  String get pyannoteBenchmarkPreparing => '正在对前 10 分钟运行 pyannote 基准测试...';
+
+  @override
+  String get pyannoteBenchmarkCompleted => '基准测试已完成。详细结果已记录到 Sonarpad 日志中。';
+
+  @override
+  String get pyannoteCandidateValidation5x10m => '在五个 10 分钟片段上验证步长 2 + 0.35 填充';
+
+  @override
+  String get pyannoteCandidateValidationPreparing =>
+      '正在对影片的五个片段运行 pyannote 验证...';
+
+  @override
+  String get pyannoteCandidateValidationPassed =>
+      '验证完成：步长 2 + 0.35 填充通过安全标准。详情请查看 Sonarpad 日志。';
+
+  @override
+  String get pyannoteCandidateValidationFailed =>
+      '验证完成：步长 2 + 0.35 填充未通过全部安全标准。详情请查看 Sonarpad 日志。';
+
+  @override
+  String get pyannoteXnnpackBenchmark10Min => 'CPU 与 XNNPACK 基准测试：前 10 分钟';
+
+  @override
+  String get pyannoteXnnpackBenchmarkPreparing =>
+      '正在比较前 10 分钟的 CPU 与 XNNPACK...';
+
+  @override
+  String get pyannoteXnnpackBenchmarkCompleted =>
+      'CPU 与 XNNPACK 基准测试完成。请查看日志中的一致性和速度结果。';
+
+  @override
+  String get audioDescriptionCreateAiTitle => '使用 AI 创建音频描述';
+
+  @override
+  String get audioDescriptionChooseVideo => '选择视频';
+
+  @override
+  String get audioDescriptionAiService => 'AI 服务';
+
+  @override
+  String get audioDescriptionUseGeminiKey => '使用 Gemini API 密钥';
+
+  @override
+  String get audioDescriptionUseSonarpadAi => '使用 Sonarpad AI 服务';
+
+  @override
+  String get audioDescriptionGeminiApiKey => 'Gemini API 密钥';
+
+  @override
+  String get audioDescriptionGeminiModel => 'Gemini 模型';
+
+  @override
+  String get audioDescriptionRefreshModels => '刷新模型列表';
+
+  @override
+  String get audioDescriptionRefreshingModels => '正在刷新模型...';
+
+  @override
+  String get audioDescriptionSonarpadCode => 'Sonarpad AI 个人代码';
+
+  @override
+  String get audioDescriptionActivateSonarpad => '激活 / 验证 Sonarpad AI';
+
+  @override
+  String get audioDescriptionActivatingSonarpad => '正在激活 Sonarpad AI...';
+
+  @override
+  String get audioDescriptionServerManagedModel => '由 Sonarpad AI 服务管理';
+
+  @override
+  String get audioDescriptionLanguage => '音频描述语言';
+
+  @override
+  String get audioDescriptionDetailLevel => '详细程度';
+
+  @override
+  String get audioDescriptionDetailConcise => '简短';
+
+  @override
+  String get audioDescriptionDetailNormal => '普通';
+
+  @override
+  String get audioDescriptionDetailDetailed => '详细';
+
+  @override
+  String get audioDescriptionDetailIntensive => '密集';
+
+  @override
+  String get audioDescriptionExtendedPauses => '当描述无法放入静音间隙时启用延长暂停';
+
+  @override
+  String get audioDescriptionRecognizeCharacters => '尝试识别角色并使用其姓名';
+
+  @override
+  String get audioDescriptionMp3Bitrate => 'MP3 比特率';
+
+  @override
+  String get audioDescriptionSourceVolume => '影片音量';
+
+  @override
+  String get audioDescriptionSourceVolumeHint =>
+      '调整影片的基础音量。播放音频描述时，影片音量仍会自动进一步降低。';
+
+  @override
+  String get audioDescriptionAudioNormal => '正常';
+
+  @override
+  String get audioDescriptionMixPreview => '试听影片与旁白';
+
+  @override
+  String get audioDescriptionMixPreviewPreparing => '正在准备音频试听';
+
+  @override
+  String get audioDescriptionMixPreviewStop => '停止音频试听';
+
+  @override
+  String get audioDescriptionMixPreviewPhrase => '这是自动降低原声音量的音频描述试听。';
+
+  @override
+  String get audioDescriptionMixPreviewHint =>
+      '调整音量后，会自动播放一段影片试听，配合所选语音，并在旁白期间自动降低影片音量。';
+
+  @override
+  String get audioDescriptionSaveProject => '同时保存项目以便以后编辑';
+
+  @override
+  String get audioDescriptionCreate => '创建音频描述';
+
+  @override
+  String get audioDescriptionVoiceTesting => '正在测试语音...';
+
+  @override
+  String get audioDescriptionApiKeyRequired => '请输入 Gemini API 密钥。';
+
+  @override
+  String get audioDescriptionModelsUpdated => 'Gemini 模型列表已更新。';
+
+  @override
+  String get audioDescriptionModelsError => '无法刷新 Gemini 模型列表。';
+
+  @override
+  String get audioDescriptionSonarpadCodeRequired => '请输入你的 Sonarpad AI 个人代码。';
+
+  @override
+  String get audioDescriptionSonarpadActivated => 'Sonarpad AI 已在此设备上激活。';
+
+  @override
+  String get audioDescriptionSonarpadActivationError => '无法激活或验证 Sonarpad AI。';
+
+  @override
+  String get audioDescriptionSonarpadDeviceLimitReached =>
+      '已达到此 Sonarpad AI 代码可关联的最大设备数量。请移除一个已关联的设备，或联系支持人员。';
+
+  @override
+  String get audioDescriptionSonarpadBalance => 'Sonarpad AI 余额';
+
+  @override
+  String get audioDescriptionSonarpadBalanceUnavailable => '余额不可用。';
+
+  @override
+  String get audioDescriptionSonarpadInsufficientCredit =>
+      '余额不足。请为你的 API 密钥充值，以继续为内容生成音频描述。';
+
+  @override
+  String get audioDescriptionEdgeVoiceReady => '所选 Edge 语音可用。';
+
+  @override
+  String get audioDescriptionChooseVideoFirst => '请先选择视频文件。';
+
+  @override
+  String get audioDescriptionStagePreparing => '正在准备视频...';
+
+  @override
+  String get audioDescriptionStageDialogue => '正在使用 pyannote 检测对话...';
+
+  @override
+  String get audioDescriptionStageVideo => '正在准备视频片段...';
+
+  @override
+  String get audioDescriptionStageGemini => '正在使用 AI 生成音频描述...';
+
+  @override
+  String get audioDescriptionStageTts => '正在创建语音...';
+
+  @override
+  String get audioDescriptionStageMixing => '正在创建带音频描述的 MP3...';
+
+  @override
+  String get audioDescriptionCompleted => '音频描述已完成。';
+
+  @override
+  String get audioDescriptionCancelled => '已取消创建音频描述。';
+
+  @override
+  String get audioDescriptionCancelling => '正在取消...';
+
+  @override
+  String get audioDescriptionGenerationFailed => '创建音频描述失败。';
+
+  @override
+  String get audioDescriptionGetGeminiKey => '获取 Gemini API 密钥';
+
+  @override
+  String get audioDescriptionKeepCharacterCatalog => '保存并更新角色目录：适合连续剧';
+
+  @override
+  String get audioDescriptionCharacterCatalogChoose => '选择已保存的角色目录';
+
+  @override
+  String get audioDescriptionCharacterCatalogNew => '新建目录';
+
+  @override
+  String get audioDescriptionCharacterCatalogNameTitle => '角色目录';
+
+  @override
+  String get audioDescriptionCharacterCatalogNamePrompt => '要如何命名角色目录？';
+
+  @override
+  String get audioDescriptionCharacterCatalogNameError => '请输入角色目录名称。';
+
+  @override
+  String get audioDescriptionCharacterCatalogSaved => '角色目录已更新。';
+
+  @override
+  String get audioDescriptionCharacterCatalogSaveWarning =>
+      '音频描述已创建，但无法保存角色目录：';
+
+  @override
+  String get audioDescriptionRecognizeScreenText => '识别重要的屏幕文字并纳入音频描述';
+
+  @override
+  String get audioDescriptionHighDemandTitle => 'AI 服务繁忙';
+
+  @override
+  String get audioDescriptionHighDemandMessage => '多次尝试后 AI 服务仍不可用。是否继续等待并重试？';
+
+  @override
+  String get audioDescriptionContinueWaiting => '继续等待';
+
+  @override
+  String get audioDescriptionStopGeneration => '停止';
+
+  @override
+  String get audioDescriptionQuotaTitle => 'Gemini 配额已用尽';
+
+  @override
+  String get audioDescriptionQuotaMessage =>
+      '当前 Gemini 模型的配额已用尽。你可以选择其他模型、继续等待或停止。';
+
+  @override
+  String get audioDescriptionSwitchModel => '选择其他模型';
+
+  @override
+  String get audioDescriptionOverlapTitle => '最终备用方案';
+
+  @override
+  String get audioDescriptionOverlapMessage =>
+      '生成的描述都无法安全放入无对白区间。是否使用最终备用方案，允许旁白可能覆盖对白？此功能绝不会自动启用。';
+
+  @override
+  String get audioDescriptionAllowOverlap => '使用最终备用方案';
+
+  @override
+  String get audioDescriptionResumeTitle => '发现之前的音频描述任务';
+
+  @override
+  String get audioDescriptionResumeMessage =>
+      'Sonarpad 找到兼容的检查点。要从上次完成的片段继续，还是从头开始？';
+
+  @override
+  String get audioDescriptionResume => '继续';
+
+  @override
+  String get audioDescriptionRestart => '重新开始';
+
+  @override
+  String get audioDescriptionStageBriefRetry => '正在使用简短描述重新分析...';
+
+  @override
+  String get audioDescriptionBriefRetryTitle => '使用简短描述重试';
+
+  @override
+  String get audioDescriptionBriefRetryMessage =>
+      '生成的描述都无法安全放入无对白片段。在允许旁白覆盖对白之前，是否使用非常简短的描述重新分析一次？';
+
+  @override
+  String get audioDescriptionRetryBrief => '以简短模式重试';
+
+  @override
+  String audioDescriptionProjectEditorDescriptionOption(
+    String index,
+    String time,
+    String text,
+  ) {
+    return '$index. $time s. $text';
+  }
+
+  @override
+  String audioDescriptionLanguageCountry(String language, String country) {
+    return '$language ($country)';
+  }
+
+  @override
+  String get audioDescriptionCancelConfirmation => '确定要取消创建音频描述吗？';
+
+  @override
+  String get audioDescriptionEditProject => '编辑现有项目';
+
+  @override
+  String get audioDescriptionFindProject => '搜索 Sonarpad 文档';
+
+  @override
+  String get audioDescriptionBrowseProject => '浏览…';
+
+  @override
+  String get audioDescriptionNoSavedProjects => '在 Sonarpad 文档中未找到项目。';
+
+  @override
+  String get audioDescriptionContinueAi => '继续 AI 音频描述';
+
+  @override
+  String get audioDescriptionNoCheckpoint => '未找到此视频未完成的音频描述。请选择之前使用的原始视频。';
+
+  @override
+  String get sonarTubeSaveFormatPrompt => '选择保存格式';
+
+  @override
+  String get sonarTubeSaveAsMp4 => '保存为 MP4';
+
+  @override
+  String get sonarTubeSaveAsMp3 => '保存为 MP3';
+
+  @override
+  String get developerReportText => '问题描述';
+
+  @override
+  String get audioDescriptionCreateVideoOutput => '将音频描述保存到视频中';
+
+  @override
+  String get audioDescriptionLoadCharacterCatalog => '加载角色目录';
+
+  @override
+  String get audioDescriptionImportCharacterCatalog => '从文件导入目录';
+
+  @override
+  String get audioDescriptionCharacterCatalogLoaded => '角色目录已加载。';
+
+  @override
+  String get audioDescriptionCreateWithAi => '使用 AI 创建音频描述';
+
+  @override
+  String get settingsHomeCustomization => '自定义主屏幕';
+
+  @override
+  String get settingsHomeCustomizationHint => '选择要显示的项目；关闭分类后还可调整顺序。';
+
+  @override
+  String get homeCategories => '分类';
+
+  @override
+  String get homeCategoriesHint => '将主屏幕项目按分类分组。';
+
+  @override
+  String get homeVisibleItems => '可见项目';
+
+  @override
+  String get homeReorderItems => '重新排序项目';
+
+  @override
+  String get homeResetDefaults => '恢复默认设置';
+
+  @override
+  String get homeResetDefaultsConfirmTitle => '恢复主屏幕？';
+
+  @override
+  String get homeResetDefaultsConfirmMessage => '所有可用功能将重新显示，分类将启用，自定义排序将被清除。';
+
+  @override
+  String get homeResetDefaultsDone => '主屏幕已恢复为默认设置。';
+
+  @override
+  String get homeReorderTitle => '重新排序主屏幕';
+
+  @override
+  String get homeMoveItem => '移动项目';
+
+  @override
+  String get homeDigitalLibrary => '数字图书馆';
+
+  @override
+  String get homeTv => '电视';
+
+  @override
+  String get homeRaiPlay => 'RaiPlay';
+
+  @override
+  String get homeLa7Play => 'LA7 Play';
+
+  @override
+  String get homeRaiPlaySound => 'RaiPlay Sound';
+
+  @override
+  String get homeOpeningHours => '营业时间';
+
+  @override
+  String get homeDirectory => '白页和黄页';
+
+  @override
+  String get treccaniTitle => '特雷卡尼百科全书';
+
+  @override
+  String get treccaniSearchLabel => '搜索特雷卡尼百科全书';
+
+  @override
+  String get treccaniNoResults => '未找到特雷卡尼词条';
+
+  @override
+  String get treccaniWholeEntry => '完整词条';
+
+  @override
+  String get joinMediaTitle => '合并媒体文件';
+
+  @override
+  String get joinMediaDescription => '添加两个或更多音频或视频文件，选择顺序和输出格式，然后合并为一个文件。';
+
+  @override
+  String get joinMediaAddFiles => '添加媒体文件';
+
+  @override
+  String get joinMediaLoadingFiles => '正在检查所选文件…';
+
+  @override
+  String get joinMediaFilesTitle => '要合并的文件';
+
+  @override
+  String get joinMediaNoFiles => '尚未添加文件。';
+
+  @override
+  String get joinMediaVideoLabel => '视频';
+
+  @override
+  String get joinMediaAudioLabel => '音频';
+
+  @override
+  String get joinMediaActionsHint => '可用操作：上移、下移、移除。';
+
+  @override
+  String get joinMediaRemove => '移除';
+
+  @override
+  String get joinMediaOutputMp4 => '输出格式：MP4。纯音频项目使用黑色视频画面；无音频的视频会加入静音轨道。';
+
+  @override
+  String get joinMediaOutputMp3 => '输出格式：MP3。';
+
+  @override
+  String get joinMediaJoin => '合并';
+
+  @override
+  String get joinMediaFileSkipped => '某个文件因无法访问或不含可用音频/视频而被跳过。';
+
+  @override
+  String get joinMediaFilesAdded => '已添加媒体文件。';
+
+  @override
+  String get joinMediaRemoved => '已移除项目。';
+
+  @override
+  String get joinMediaNeedTwoFiles => '至少添加两个文件才能合并。';
+
+  @override
+  String get joinMediaProcessing => '正在合并媒体';
+
+  @override
+  String get joinMediaCancelled => '已取消合并。';
+
+  @override
+  String get joinMediaFailed => '无法合并媒体文件。';
+
+  @override
+  String get joinMediaPreparing => '准备中';
+
+  @override
+  String get joinMediaNormalizing => '正在准备文件';
+
+  @override
+  String get joinMediaMerging => '正在合并文件';
+
+  @override
+  String get joinMediaVerifying => '最终验证';
+
+  @override
+  String get joinMediaCompleting => '正在完成';
+
+  @override
+  String get joinMediaCompleted => '合并完成。请选择文件保存位置。';
+
+  @override
+  String get joinMediaFormat => '合并格式';
+
+  @override
+  String get joinMediaChooseFormat => '选择合并格式';
+
+  @override
+  String get joinMediaAudioFormatHint =>
+      '仅包含音频文件时可选择 MP3、M4A、WAV、FLAC、OGG、OPUS、AAC、WMA 或 AIFF。默认：MP3。';
+
+  @override
+  String get joinMediaVideoFormatHint =>
+      '包含视频或音视频混合文件时可选择 MP4、MKV、MOV、AVI、WMV、MPEG/MPG、FLV、3GP 或 TS。默认：MP4。';
+
+  @override
+  String get joinMediaCancelConfirmTitle => '取消合并？';
+
+  @override
+  String get joinMediaCancelConfirmMessage => '确定要取消吗？正在运行的 FFmpeg 进程将被停止。';
+
+  @override
+  String get joinMediaKeepWorking => '继续';
+
+  @override
+  String get joinMediaConfirmCancel => '取消合并';
+
+  @override
+  String get joinMediaCancelling => '正在取消…';
+
+  @override
+  String get selectDocuments => '选择文档';
+
+  @override
+  String get deleteSelectedDocumentsConfirmation => '永久删除所选文档吗？';
+
+  @override
+  String documentsRemovedCount(int count) {
+    return '已删除文档：$count';
+  }
+
+  @override
+  String get streamReconnecting => '正在尝试重新连接…';
+
+  @override
+  String get streamPlaybackRetryMessage => '频道未能启动。请选择“重试”以刷新流媒体链接。';
+
+  @override
+  String get settingsMediaSpeedControl => '启用媒体文件播放速度控制';
+
+  @override
+  String get settingsMediaSpeedControlHint =>
+      '显示 Sonartube、播客和其他录制内容的速度控制。不适用于直播。';
+
+  @override
+  String get settingsPreferRaiAudioDescription => '有音频描述时优先使用';
+
+  @override
+  String get settingsPreferRaiAudioDescriptionHint =>
+      '在 Rai 频道中，如果有音频描述音轨则自动使用。关闭此选项可优先使用普通意大利语音轨。';
+
+  @override
+  String get mediaPlaybackSpeed => '播放速度';
+
+  @override
+  String get mediaPlaybackSpeedNormal => '正常';
+
+  @override
+  String get mediaPlaybackSpeedUnavailable => '此内容不支持该速度。已恢复之前的播放速度。';
+
+  @override
+  String get mediaPlaybackSpeedRecoveryFailed => '无法恢复播放速度。请重新打开内容后重试。';
+
+  @override
+  String mediaPlaybackSpeedChanged(String speed) {
+    return '播放速度：$speed';
+  }
+
+  @override
+  String get routeServiceInvalidAddress => '地址无效';
+
+  @override
+  String routeServiceGeocodingNetworkError(int statusCode) {
+    return '地理编码网络错误：HTTP $statusCode';
+  }
+
+  @override
+  String routeServiceNetworkError(int statusCode) {
+    return '路线网络错误：HTTP $statusCode';
+  }
+
+  @override
+  String get routeServiceServerError => '服务器错误';
+
+  @override
+  String get routeServiceCalculationError => '服务器路线计算错误';
+
+  @override
+  String get routeServiceUnauthorized => '客户端未授权。请更新 Sonarpad 或检查应用配置。';
+
+  @override
+  String get routeServiceStartNotFound => '未找到起始地址';
+
+  @override
+  String get routeServiceDestinationNotFound => '未找到目的地地址';
+
+  @override
+  String get radioLanguageRo => '罗马尼亚语';
+
+  @override
+  String get radioCountryOptionRo => '罗马尼亚';
+
+  @override
+  String get sonarTubeServiceError => 'Errore SonarTube';
+
+  @override
+  String get sonarTubeServiceInvalidResponse =>
+      'Risposta SonarTube non valida.';
+
+  @override
+  String get sonarTubeServiceInnerTubeError => 'Errore API InnerTube.';
+
+  @override
+  String get sonarTubeServiceInvalidInnerTubeResponse =>
+      'Risposta InnerTube non valida.';
+
+  @override
+  String get sonarTubeServiceNoStream =>
+      'Nessun flusso riproducibile disponibile.';
+
+  @override
+  String get sonarTubeServiceOnlyVideo =>
+      'È possibile risolvere soltanto un video.';
+
+  @override
+  String get sonarTubeServiceNotCollection =>
+      'Un video non è una raccolta SonarTube.';
+
+  @override
+  String get listTimestampToday => '今天';
+
+  @override
+  String get listTimestampYesterday => '昨天';
+
+  @override
+  String get listTimestampDayBeforeYesterday => '前天';
+
+  @override
+  String get listTimestampTomorrow => '明天';
+
+  @override
+  String get listTimestampDayAfterTomorrow => '后天';
+
+  @override
+  String get articleTitleNotFound => '未找到标题';
+
+  @override
+  String get articleUnknownTitle => '未知标题';
+
+  @override
+  String get articleAuthorPrefix => '作者：';
+
+  @override
+  String get audioDescriptionProjectEditorTitle => '编辑音频描述项目';
+
+  @override
+  String get audioDescriptionProjectOpen => '打开音频描述项目';
+
+  @override
+  String get audioDescriptionProjectLabel => 'Project';
+
+  @override
+  String get audioDescriptionProjectChooseSource => '选择原始视频';
+
+  @override
+  String get audioDescriptionProjectSource => 'Original video';
+
+  @override
+  String get audioDescriptionProjectDescription => '描述';
+
+  @override
+  String get audioDescriptionProjectDescriptionText => '描述文本';
+
+  @override
+  String get audioDescriptionProjectPreviewDescription => '播放描述';
+
+  @override
+  String get audioDescriptionProjectApplyText => '应用修改';
+
+  @override
+  String get audioDescriptionProjectDeleteDescription => '删除描述';
+
+  @override
+  String get audioDescriptionProjectDeleteConfirmation =>
+      'Delete the selected description from the project?';
+
+  @override
+  String get audioDescriptionProjectCannotDeleteLast =>
+      'The only description in the project cannot be deleted.';
+
+  @override
+  String get audioDescriptionProjectApplyVoice => '将语音应用到项目';
+
+  @override
+  String get audioDescriptionProjectReadingEngine => 'Reading engine';
+
+  @override
+  String get audioDescriptionProjectEdgeVoice => 'Microsoft Edge voice';
+
+  @override
+  String get audioDescriptionProjectSystemVoice =>
+      'System / VoiceOver / Android voice';
+
+  @override
+  String get audioDescriptionProjectVoiceLanguage => 'Voice language';
+
+  @override
+  String get audioDescriptionProjectVoice => 'Voice';
+
+  @override
+  String get audioDescriptionProjectReexportMp3 => '重新导出 MP3';
+
+  @override
+  String get audioDescriptionProjectExportSrt => '导出为 SRT';
+
+  @override
+  String get audioDescriptionProjectExportVtt => '导出为 VTT';
+
+  @override
+  String get audioDescriptionProjectNormalWithDucking => 'normal with ducking';
+
+  @override
+  String get audioDescriptionProjectExtendedPause => 'extended pause';
+
+  @override
+  String get audioDescriptionProjectReady => 'Project ready.';
+
+  @override
+  String get audioDescriptionProjectDescriptionApplied =>
+      'Description checked and saved in the project.';
+
+  @override
+  String get audioDescriptionProjectDescriptionDeleted =>
+      'Description deleted and project saved.';
+
+  @override
+  String get audioDescriptionProjectVoiceChanged =>
+      'Voice changed and all descriptions were checked.';
+
+  @override
+  String audioDescriptionProjectDescriptionTooLong(
+    String actual,
+    String available,
+  ) {
+    return 'The synthesized description lasts $actual seconds, but only $available seconds are available. The previous text was not changed.';
+  }
+
+  @override
+  String get audioDescriptionProjectSourceMissing =>
+      'The original video is not available. Choose it before re-exporting the MP3.';
+
+  @override
+  String get audioDescriptionProjectInvalid =>
+      'The selected file is not a valid Sonarpad audio description project.';
+
+  @override
+  String get audioDescriptionProjectUnsavedText =>
+      'Apply the current text before re-exporting the MP3.';
+
+  @override
+  String get audioDescriptionProjectWorking => '正在处理项目…';
+
+  @override
+  String get audioDescriptionProjectExported => '项目已导出。';
+
+  @override
+  String get audioDescriptionProjectSelectFirst => 'Open a project first.';
+
+  @override
+  String get audioDescriptionProjectSelectDescription =>
+      'Select a description.';
+
+  @override
+  String audioDescriptionProjectDescriptionDetails(
+    String source,
+    String start,
+    String end,
+    String duration,
+    String mode,
+  ) {
+    return 'Scene $source s; MP3 $start-$end s; voice $duration s; $mode';
+  }
+
+  @override
+  String get audioDescriptionProjectShare => '共享';
+
+  @override
+  String get audioDescriptionProjectSaveDocuments => '保存到 Sonarpad 文档';
+
+  @override
+  String get audioDescriptionProjectSavedDocuments =>
+      'Files saved in Sonarpad Documents.';
+
+  @override
+  String get audioDescriptionProjectCancel => 'Cancel';
+
+  @override
+  String get audioDescriptionProjectChooseFromFiles => '从文件选择视频';
+
+  @override
+  String get audioDescriptionProjectImportFromPhotos => '从照片导入视频';
+
+  @override
+  String get newsCategoryWorld => 'World';
+
+  @override
+  String get newsCategoryBusiness => 'Business';
+
+  @override
+  String get newsCategoryTechnology => 'Technology';
+
+  @override
+  String get newsCategoryEntertainment => 'Entertainment';
+
+  @override
+  String get newsCategorySports => 'Sports';
+
+  @override
+  String get newsCategoryHealth => 'Health';
+
+  @override
+  String get newsArticleSubscribersOnly => '此文章仅供订阅用户阅读。';
+
+  @override
+  String wikipediaSearchHttpError(int statusCode) {
+    return '维基百科错误：$statusCode';
+  }
+
+  @override
+  String wikipediaImportHttpError(int statusCode) {
+    return '维基百科导入错误：$statusCode';
+  }
+
+  @override
+  String gutenbergSearchHttpError(int statusCode) {
+    return 'Errore Gutenberg $statusCode';
+  }
+
+  @override
+  String gutenbergDownloadHttpError(int statusCode) {
+    return 'Errore download $statusCode';
+  }
+
+  @override
+  String gutenbergEpubDownloadHttpError(int statusCode) {
+    return 'Errore download EPUB $statusCode';
+  }
+
+  @override
+  String get gutenbergInvalidBookId => 'ID Gutenberg non valido.';
+
+  @override
+  String get gutenbergDownloadTimeout =>
+      'Download Gutenberg troppo lento. Riprova tra poco o scegli un altro formato.';
+
+  @override
+  String get gutenbergUnreadableArchive =>
+      'Archivio ZIP Gutenberg senza file di testo leggibile.';
+
+  @override
+  String get gutenbergUntitledBook => 'Senza titolo';
+
+  @override
+  String get gutenbergUnknownAuthor => 'Autore sconosciuto';
+
+  @override
+  String get podcastCategoryAll => '所有类别';
+
+  @override
+  String get podcastCategoryArts => '艺术';
+
+  @override
+  String get podcastCategoryBusiness => '商务';
+
+  @override
+  String get podcastCategoryComedy => '喜剧';
+
+  @override
+  String get podcastCategoryEducation => '教育';
+
+  @override
+  String get podcastCategoryFiction => '小说';
+
+  @override
+  String get podcastCategoryGovernment => '政府';
+
+  @override
+  String get podcastCategoryHealthAndFitness => '健康与健身';
+
+  @override
+  String get podcastCategoryHistory => '历史';
+
+  @override
+  String get podcastCategoryKidsAndFamily => '儿童与家庭';
+
+  @override
+  String get podcastCategoryLeisure => '休闲';
+
+  @override
+  String get podcastCategoryMusic => '音乐';
+
+  @override
+  String get podcastCategoryNews => '新闻';
+
+  @override
+  String get podcastCategoryReligionAndSpirituality => '宗教与灵性';
+
+  @override
+  String get podcastCategoryScience => '科学';
+
+  @override
+  String get podcastCategorySocietyAndCulture => '社会与文化';
+
+  @override
+  String get podcastCategorySports => '体育';
+
+  @override
+  String get podcastCategoryTechnology => '科技';
+
+  @override
+  String get podcastCategoryTrueCrime => '真实犯罪';
+
+  @override
+  String get podcastCategoryTvAndFilm => '电视与电影';
+
+  @override
+  String get podcastCategoryBooks => '书籍';
+
+  @override
+  String get podcastCategoryDesign => '设计';
+
+  @override
+  String get podcastCategoryFashionAndBeauty => '时尚与美容';
+
+  @override
+  String get podcastCategoryFood => '美食';
+
+  @override
+  String get podcastCategoryPerformingArts => '表演艺术';
+
+  @override
+  String get podcastCategoryVisualArts => '视觉艺术';
+
+  @override
+  String get podcastCategoryCareers => '职业发展';
+
+  @override
+  String get podcastCategoryEntrepreneurship => '创业';
+
+  @override
+  String get podcastCategoryInvesting => '投资';
+
+  @override
+  String get podcastCategoryManagement => '管理';
+
+  @override
+  String get podcastCategoryMarketing => '营销';
+
+  @override
+  String get podcastCategoryNonProfit => '非营利组织';
+
+  @override
+  String get podcastCategoryComedyInterviews => '喜剧访谈';
+
+  @override
+  String get podcastCategoryImprov => '即兴喜剧';
+
+  @override
+  String get podcastCategoryStandUp => '单口喜剧';
+
+  @override
+  String get podcastCategoryCourses => '课程';
+
+  @override
+  String get podcastCategoryHowTo => '实用指南';
+
+  @override
+  String get podcastCategoryLanguageLearning => '语言学习';
+
+  @override
+  String get podcastCategorySelfImprovement => '自我提升';
+
+  @override
+  String get podcastCategoryComedyFiction => '喜剧小说';
+
+  @override
+  String get podcastCategoryDrama => '剧情';
+
+  @override
+  String get podcastCategoryScienceFiction => '科幻小说';
+
+  @override
+  String get podcastCategoryAlternativeHealth => '另类健康';
+
+  @override
+  String get podcastCategoryFitness => '健身';
+
+  @override
+  String get podcastCategoryMedicine => '医学';
+
+  @override
+  String get podcastCategoryMentalHealth => '心理健康';
+
+  @override
+  String get podcastCategoryNutrition => '营养';
+
+  @override
+  String get podcastCategorySexuality => '性';
+
+  @override
+  String get podcastCategoryEducationForKids => '儿童教育';
+
+  @override
+  String get podcastCategoryParenting => '育儿';
+
+  @override
+  String get podcastCategoryPetsAndAnimals => '宠物与动物';
+
+  @override
+  String get podcastCategoryStoriesForKids => '儿童故事';
+
+  @override
+  String get podcastCategoryAnimationAndManga => '动画与漫画';
+
+  @override
+  String get podcastCategoryAutomotive => '汽车';
+
+  @override
+  String get podcastCategoryAviation => '航空';
+
+  @override
+  String get podcastCategoryCrafts => '手工艺';
+
+  @override
+  String get podcastCategoryGames => '游戏';
+
+  @override
+  String get podcastCategoryHobbies => '爱好';
+
+  @override
+  String get podcastCategoryHomeAndGarden => '家居与园艺';
+
+  @override
+  String get podcastCategoryVideoGames => '电子游戏';
+
+  @override
+  String get podcastCategoryMusicCommentary => '音乐评论';
+
+  @override
+  String get podcastCategoryMusicHistory => '音乐史';
+
+  @override
+  String get podcastCategoryMusicInterviews => '音乐访谈';
+
+  @override
+  String get podcastCategoryBusinessNews => '商业新闻';
+
+  @override
+  String get podcastCategoryDailyNews => '每日新闻';
+
+  @override
+  String get podcastCategoryEntertainmentNews => '娱乐新闻';
+
+  @override
+  String get podcastCategoryNewsCommentary => '新闻评论';
+
+  @override
+  String get podcastCategoryPolitics => '政治';
+
+  @override
+  String get podcastCategorySportsNews => '体育新闻';
+
+  @override
+  String get podcastCategoryTechNews => '科技新闻';
+
+  @override
+  String get podcastCategoryBuddhism => '佛教';
+
+  @override
+  String get podcastCategoryChristianity => '基督教';
+
+  @override
+  String get podcastCategoryHinduism => '印度教';
+
+  @override
+  String get podcastCategoryIslam => '伊斯兰教';
+
+  @override
+  String get podcastCategoryJudaism => '犹太教';
+
+  @override
+  String get podcastCategoryReligion => '宗教';
+
+  @override
+  String get podcastCategorySpirituality => '灵性';
+
+  @override
+  String get podcastCategoryAstronomy => '天文学';
+
+  @override
+  String get podcastCategoryChemistry => '化学';
+
+  @override
+  String get podcastCategoryEarthSciences => '地球科学';
+
+  @override
+  String get podcastCategoryLifeSciences => '生命科学';
+
+  @override
+  String get podcastCategoryMathematics => '数学';
+
+  @override
+  String get podcastCategoryNaturalSciences => '自然科学';
+
+  @override
+  String get podcastCategoryNature => '自然';
+
+  @override
+  String get podcastCategoryPhysics => '物理学';
+
+  @override
+  String get podcastCategorySocialSciences => '社会科学';
+
+  @override
+  String get podcastCategoryDocumentary => '纪录片';
+
+  @override
+  String get podcastCategoryPersonalJournals => '个人日记';
+
+  @override
+  String get podcastCategoryPhilosophy => '哲学';
+
+  @override
+  String get podcastCategoryPlacesAndTravel => '地点与旅行';
+
+  @override
+  String get podcastCategoryRelationships => '人际关系';
+
+  @override
+  String get podcastCategoryBaseball => '棒球';
+
+  @override
+  String get podcastCategoryBasketball => '篮球';
+
+  @override
+  String get podcastCategoryCricket => '板球';
+
+  @override
+  String get podcastCategoryFantasySports => '梦幻体育';
+
+  @override
+  String get podcastCategoryFootball => '美式橄榄球';
+
+  @override
+  String get podcastCategoryGolf => '高尔夫';
+
+  @override
+  String get podcastCategoryHockey => '冰球';
+
+  @override
+  String get podcastCategoryRugby => '橄榄球';
+
+  @override
+  String get podcastCategoryRunning => '跑步';
+
+  @override
+  String get podcastCategorySoccer => '足球';
+
+  @override
+  String get podcastCategorySwimming => '游泳';
+
+  @override
+  String get podcastCategoryTennis => '网球';
+
+  @override
+  String get podcastCategoryVolleyball => '排球';
+
+  @override
+  String get podcastCategoryWilderness => '户外';
+
+  @override
+  String get podcastCategoryWrestling => '摔跤';
+
+  @override
+  String get podcastCategoryAfterShows => '剧后讨论';
+
+  @override
+  String get podcastCategoryFilmHistory => '电影史';
+
+  @override
+  String get podcastCategoryFilmInterviews => '电影访谈';
+
+  @override
+  String get podcastCategoryFilmReviews => '电影评论';
+
+  @override
+  String get podcastCategoryTvReviews => '电视评论';
+
+  @override
+  String get weatherConditionClearSky => '晴朗';
+
+  @override
+  String get weatherConditionMainlyClear => '大部晴朗';
+
+  @override
+  String get weatherConditionPartlyCloudy => '局部多云';
+
+  @override
+  String get weatherConditionOvercast => '阴天';
+
+  @override
+  String get weatherConditionFog => '雾';
+
+  @override
+  String get weatherConditionRimeFog => '冻雾';
+
+  @override
+  String get weatherConditionLightDrizzle => '小毛毛雨';
+
+  @override
+  String get weatherConditionModerateDrizzle => '中等毛毛雨';
+
+  @override
+  String get weatherConditionDenseDrizzle => '强毛毛雨';
+
+  @override
+  String get weatherConditionLightFreezingDrizzle => '轻微冻毛毛雨';
+
+  @override
+  String get weatherConditionDenseFreezingDrizzle => '强冻毛毛雨';
+
+  @override
+  String get weatherConditionLightRain => '小雨';
+
+  @override
+  String get weatherConditionModerateRain => '中雨';
+
+  @override
+  String get weatherConditionHeavyRain => '大雨';
+
+  @override
+  String get weatherConditionLightFreezingRain => '轻微冻雨';
+
+  @override
+  String get weatherConditionHeavyFreezingRain => '强冻雨';
+
+  @override
+  String get weatherConditionLightSnowfall => '小雪';
+
+  @override
+  String get weatherConditionModerateSnowfall => '中雪';
+
+  @override
+  String get weatherConditionHeavySnowfall => '大雪';
+
+  @override
+  String get weatherConditionSnowGrains => '米雪';
+
+  @override
+  String get weatherConditionLightRainShowers => '小阵雨';
+
+  @override
+  String get weatherConditionModerateRainShowers => '中等阵雨';
+
+  @override
+  String get weatherConditionViolentRainShowers => '强阵雨';
+
+  @override
+  String get weatherConditionLightSnowShowers => '小阵雪';
+
+  @override
+  String get weatherConditionHeavySnowShowers => '强阵雪';
+
+  @override
+  String get weatherConditionThunderstorm => '雷暴';
+
+  @override
+  String get weatherConditionThunderstormLightHail => '伴有小冰雹的雷暴';
+
+  @override
+  String get weatherConditionThunderstormHeavyHail => '伴有强冰雹的雷暴';
+
+  @override
+  String get documentsImportFromFiles => '从文件导入';
+
+  @override
+  String get sonarTubeOpenUrl => '打开网址';
+
+  @override
+  String get sonarTubeUrlPrompt => '粘贴 YouTube 视频网址';
+
+  @override
+  String get sonarMusicAll => '全部';
+
+  @override
+  String get sonarMusicSong => '歌曲';
+
+  @override
+  String get sonarMusicVideo => '音乐视频';
+
+  @override
+  String get sonarMusicAlbum => '专辑';
+
+  @override
+  String get sonarMusicArtist => '艺人';
+
+  @override
+  String get sonarMusicPlaylist => '播放列表';
+
+  @override
+  String get sonarMusicFavorites => '收藏';
+
+  @override
+  String get sonarMusicRecent => '最近播放';
+
+  @override
+  String get sonarMusicOpen => '打开链接';
+
+  @override
+  String get sonarMusicLoad => '加载更多';
+
+  @override
+  String get sonarMusicArtistOpen => '查看艺人';
+
+  @override
+  String get sonarMusicAlbumOpen => '查看专辑';
+
+  @override
+  String get sonarMusicPlayAll => '播放全部';
+
+  @override
+  String get sonarMusicShare => '分享';
+
+  @override
+  String get sonarMusicAdd => '加入收藏';
+
+  @override
+  String get sonarMusicRemove => '取消收藏';
+
+  @override
+  String get sonarMusicEmpty => '无结果';
+
+  @override
+  String get sonarMusicInvalid => '无法打开';
+
+  @override
+  String get sonarMusicDescription => '说明';
+
+  @override
+  String get sonarMusicShuffle => '随机播放';
+
+  @override
+  String get sonarMusicSave => '保存媒体';
+
+  @override
+  String get sonarMusicSuggest => '搜索建议';
+
+  @override
+  String get sonarMusicSearchHint => '歌曲、艺人或专辑';
+
+  @override
+  String get catalogUntitled => 'Senza titolo';
+
+  @override
+  String get catalogUnknownAuthor => 'Autore sconosciuto';
+
+  @override
+  String get librivoxChapterFallback => 'Capitolo';
+
+  @override
+  String get internetArchiveAudioFallback => 'Audio';
+
+  @override
+  String librivoxHttpError(int statusCode) {
+    return 'Errore LibriVox $statusCode';
+  }
+
+  @override
+  String get librivoxBookNotFound => 'Audiolibro non trovato.';
+
+  @override
+  String internetArchiveHttpError(int statusCode) {
+    return 'Internet Archive $statusCode';
+  }
+
+  @override
+  String poetryDbHttpError(int statusCode) {
+    return 'Errore PoetryDB $statusCode';
+  }
+
+  @override
+  String get cloudFilePickerLoading => '正在加载文件';
+
+  @override
+  String get cloudFilePickerPreparing => '正在准备云端文件…';
+
+  @override
+  String get cloudFilePickerUnknownSize => '正在加载…';
+
+  @override
+  String get cloudFilePickerCancelling => '正在取消…';
+
+  @override
+  String get audioPlaybackNotificationChannelName => '音频播放';
+
+  @override
+  String get documentExportFallbackName => '文档';
+
+  @override
+  String get documentExportAudiobookSuffix => '有声书';
+
+  @override
+  String get convertMediaWavFloat32 => '32 位浮点';
+
+  @override
+  String get cloudFilePickerCopying => '正在将文件复制到 Sonarpad';
+
+  @override
+  String get audioDescriptionNonverbalVocals => '允许在非语言人声期间进行解说';
+
+  @override
+  String get importVideoFromGallery => '从图库选择';
+
+  @override
+  String get sharedVideoOpen => '打开视频';
+
+  @override
+  String get developerReportEmailOptional => '电子邮件（可选，用于回复）';
+
+  @override
+  String get developerReportEmailInvalid => '请输入有效的电子邮件地址，或将此字段留空。';
+
+  @override
+  String get convertMediaDestination => '转换文件的保存位置';
+
+  @override
+  String get exportAskEveryTime => '每次询问';
+
+  @override
+  String get selectAudioTrack => '选择音轨';
+
+  @override
+  String get castToDevice => '通过 Chromecast 投放';
+
+  @override
+  String get castNoDevices => '未找到设备。请确认设备连接到同一 Wi-Fi 网络，然后重试。';
+
+  @override
+  String get castFailure => '投放失败或连接已断开。你可以在此设备上继续播放。';
+
+  @override
+  String get castResumeHere => '在此设备上继续播放';
+
+  @override
+  String get settingsShowCast => '在兼容的播放器中显示 Chromecast';
+
+  @override
+  String get castStop => '停止投放';
+
+  @override
+  String get settingsHideCalendarSaints => '在日历中隐藏圣人';
+
+  @override
+  String get markdownFormat => 'Markdown (.md)';
+
+  @override
+  String get htmlFormat => 'HTML (.html)';
+
+  @override
+  String get recordingNotAdvancing => '录制未收到新数据。请检查网络连接，必要时重新开始录制。';
+
+  @override
+  String get sonarTubeChannelCourses => '课程';
+
+  @override
+  String get sonarTubeChannelPodcasts => '播客';
+
+  @override
+  String get favoriteVideosLatest => '最新视频';
+
+  @override
+  String get favoriteVideosTitle => '收藏中的最新视频';
+
+  @override
+  String get favoriteVideosPartial => '部分频道无法加载。现显示其他频道的视频。';
+
+  @override
+  String get favoritesSortAlphabetically => '按字母顺序排序';
+
+  @override
+  String get saveMediaContent => '保存内容';
+
+  @override
+  String get saveMp4WithAudiodescription => '带音频描述的 MP4';
 
   @override
   String get audioDescriptionProjectSegment => '重新分析的片段';
@@ -5437,83 +5359,130 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
       '重新分析所选片段？更新的文本将替换对应描述，并保留已保存的时间。新描述只会添加到可用的空隙中。需要重新导出带有音频描述的文件。';
 
   @override
-  String get saveMp4WithAudiodescription => "带音频描述的 MP4";
+  String get convertMediaDocumentAudiobookHint =>
+      '要将文档转换为有声书，请前往“文档”→“从文件导入”。导入后，选择“导出文档”→“MP3 有声书 (.mp3)”。';
 
   @override
-  String get saveMediaContent => "保存内容";
+  String audioDescriptionProjectEditorSegmentOption(
+    int index,
+    String start,
+    String end,
+  ) {
+    return '$index: $start – $end';
+  }
 
   @override
-  String get favoritesSortAlphabetically => "按字母顺序排序";
+  String get raiPlayMediaUnavailable =>
+      '多次尝试后，RaiPlay 仍未返回可播放的地址。内容可能暂时不可用，请稍后重试。';
 
   @override
-  String get favoriteVideosLatest => "最新视频";
-  @override
-  String get favoriteVideosTitle => "收藏中的最新视频";
-  @override
-  String get favoriteVideosPartial => "部分频道无法加载。现显示其他频道的视频。";
+  String get concertsTicketOneLogin => '登录 TicketOne 账户';
 
   @override
-  String get recordingNotAdvancing => "录制未收到新数据。请检查网络连接，必要时重新开始录制。";
+  String get concertsTicketOneRegister => '注册新的 TicketOne 账户';
 
   @override
-  String get castToDevice => "通过 Chromecast 投放";
-  @override
-  String get castNoDevices => "未找到设备。请确认设备连接到同一 Wi-Fi 网络，然后重试。";
-  @override
-  String get castFailure => "投放失败或连接已断开。你可以在此设备上继续播放。";
-  @override
-  String get castResumeHere => "在此设备上继续播放";
-  @override
-  String get settingsHideCalendarSaints => "在日历中隐藏圣人";
+  String get savePdfWithoutPassword => '保存无密码 PDF';
 
   @override
-  String get settingsShowCast => "在兼容的播放器中显示 Chromecast";
-  @override
-  String get castStop => "停止投放";
+  String get pdfUnprotectedCopyDescription =>
+      '保存无需密码的 PDF 副本，保留原有排版和内容。原始 PDF 保持不变。';
 
+  @override
+  String get onlineDictionaryTitle => '在线词典';
+
+  @override
+  String get onlineDictionaryWord => '词：';
+
+  @override
+  String get onlineDictionaryLanguage => '词典语言：';
+
+  @override
+  String get onlineDictionaryDefinitions => '定义';
+
+  @override
+  String get onlineDictionarySynonyms => '同义词';
+
+  @override
+  String get onlineDictionaryNotFound => '未找到该词。';
+
+  @override
+  String get onlineDictionaryLimited => '结果过多。请优化搜索条件。';
+
+  @override
+  String get onlineDictionaryTranslation => '词典翻译语言：';
+
+  @override
+  String get onlineDictionaryNone => '无';
+
+  @override
+  String onlineDictionaryEntryTitle(String word, String language) {
+    return '$word — $language';
+  }
+
+  @override
+  String onlineDictionaryDefinition(int number, String text) {
+    return '$number. $text';
+  }
+
+  @override
+  String onlineDictionarySource(String url) {
+    return 'Wiktionary — CC BY-SA 4.0\n$url';
+  }
+
+  @override
+  String get podcastRecorderTitle => '录制播客';
+
+  @override
+  String get podcastRecorderHint =>
+      '仅录制麦克风。可选背景音乐会在结束后添加，音量设置应用于整段录音。请使用耳机，避免录入扬声器中的屏幕阅读器语音。切换到其他应用会暂停录音。';
+
+  @override
+  String get podcastRecorderMicVolume => '麦克风音量';
+
+  @override
+  String get podcastRecorderMusicVolume => '背景音乐音量';
+
+  @override
+  String get podcastRecorderChooseMusic => '选择背景音乐（可选）';
+
+  @override
+  String get podcastRecorderRemoveMusic => '移除背景音乐';
+
+  @override
+  String get podcastRecorderReady => '录音已就绪。调整音量、试听并保存。';
+
+  @override
+  String get podcastRecorderRecovered => '已恢复上次的录音。您可以试听并保存。';
+
+  @override
+  String get podcastRecorderPermission => '请在设备设置中允许麦克风访问以进行录音。';
+
+  @override
+  String get podcastRecorderLeave => '退出吗？录音将停止，并保留至下次打开。';
+
+  @override
+  String get podcastRecorderDiscard => '删除此录音吗？已保存到文档中的副本不会被删除。';
+
+  @override
+  String get podcastRecorderChooseIntro => '选择片头音乐（可选）';
+
+  @override
+  String get podcastRecorderChooseOutro => '选择片尾音乐（可选）';
+
+  @override
+  String get podcastRecorderRemoveIntro => '移除片头音乐';
+
+  @override
+  String get podcastRecorderRemoveOutro => '移除片尾音乐';
+
+  @override
+  String get dutch => '荷兰语';
+}
+
+/// The translations for Chinese, as used in China (`zh_CN`).
+class AppLocalizationsZhCn extends AppLocalizationsZh {
   AppLocalizationsZhCn() : super('zh_CN');
-
-  @override
-  String get sonarTubeSearchType => '搜索类型';
-
-  @override
-  String get sonarTubeSearchAll => '全部';
-
-  @override
-  String get sonarTubeSearchPlaylists => '播放列表';
-
-  @override
-  String get sonarTubeSearchChannels => '频道';
-
-  @override
-  String get calendarReminderHasTime => "设置时间";
-
-  @override
-  String get audioDescriptionMp3Bitrate => "MP3 比特率";
-
-  @override
-  String get audioDescriptionSourceVolume => "影片音量";
-
-  @override
-  String get audioDescriptionSourceVolumeHint => "调整影片的基础音量。播放音频描述时，影片音量仍会自动进一步降低。";
-
-  @override
-  String get audioDescriptionAudioNormal => "正常";
-
-  @override
-  String get audioDescriptionMixPreview => "试听影片与旁白";
-
-  @override
-  String get audioDescriptionMixPreviewPreparing => "正在准备音频试听";
-
-  @override
-  String get audioDescriptionMixPreviewStop => "停止音频试听";
-
-  @override
-  String get audioDescriptionMixPreviewPhrase => "这是自动降低原声音量的音频描述试听。";
-
-  @override
-  String get audioDescriptionMixPreviewHint => "调整音量后，会自动播放一段影片试听，配合所选语音，并在旁白期间自动降低影片音量。";
 
   @override
   String get appTitle => 'Sonarpad';
@@ -5568,6 +5537,21 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get sonarTubeSearchLabel => '搜索视频、频道或播放列表';
+
+  @override
+  String get sonarTubeSearchType => '搜索类型';
+
+  @override
+  String get sonarTubeSearchAll => '全部';
+
+  @override
+  String get sonarTubeSearchPlaylists => '播放列表';
+
+  @override
+  String get sonarTubeSearchChannels => '频道';
+
+  @override
+  String get calendarReminderHasTime => '设置时间';
 
   @override
   String get sonarTubeSearchPrompt => '输入搜索内容以查找视频、频道和播放列表。';
@@ -6319,18 +6303,6 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
   String get wikipediaImportWholeArticle => '整篇文章';
 
   @override
-  String get treccaniTitle => '特雷卡尼百科全书';
-
-  @override
-  String get treccaniSearchLabel => '搜索特雷卡尼百科全书';
-
-  @override
-  String get treccaniNoResults => '未找到特雷卡尼词条';
-
-  @override
-  String get treccaniWholeEntry => '完整词条';
-
-  @override
   String get documents => '文档';
 
   @override
@@ -6832,7 +6804,7 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
   String get exportDocument => '导出文档';
 
   @override
-  String get exportFolderZip => "将文件夹导出为 ZIP";
+  String get exportFolderZip => '将文件夹导出为 ZIP';
 
   @override
   String get exportFormatPrompt => '要以哪种格式导出文档？';
@@ -6842,12 +6814,6 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get pdfFormat => 'PDF（.pdf）';
-
-  @override
-  String get markdownFormat => 'Markdown (.md)';
-
-  @override
-  String get htmlFormat => 'HTML (.html)';
 
   @override
   String get docxFormat => 'DOCX（.docx）';
@@ -7202,9 +7168,6 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
   String get developerLogNameOptional => '姓名（可选）';
 
   @override
-  String get developerReportText => '问题描述';
-
-  @override
   String get developerLogSend => '发送';
 
   @override
@@ -7215,7 +7178,6 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get developerLogSendFailed => '无法发送报告，请稍后重试。';
-
 
   @override
   String get donateWithPaypal => '通过 PayPal 捐赠';
@@ -7496,12 +7458,12 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
   String get scheduledRecordingInProgressStatus => '定时录制进行中';
 
   @override
-  String scheduledRecordingPendingStatus(String dateTime) {
+  String scheduledRecordingPendingStatus(Object dateTime) {
     return '计划于 $dateTime';
   }
 
   @override
-  String recordingCannotOpenBeforeScheduledStart(String dateTime) {
+  String recordingCannotOpenBeforeScheduledStart(Object dateTime) {
     return '此录制尚未开始，将于 $dateTime 开始。';
   }
 
@@ -7513,17 +7475,6 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get selectRecordings => '选择录音';
-
-  @override
-  String get selectDocuments => '选择文档';
-
-  @override
-  String get deleteSelectedDocumentsConfirmation => '永久删除所选文档吗？';
-
-  @override
-  String documentsRemovedCount(int count) {
-    return '已删除文档：$count';
-  }
 
   @override
   String get selectAll => '选择全部';
@@ -7965,13 +7916,13 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
   String get concertsYear => '年';
 
   @override
+  String get concertsQueryRequired => '要搜索此目录中的所有活动，请输入城市或活动名称，或选择类别。';
+
+  @override
   String get concertsCategory => '类别';
 
   @override
   String get concertsAllEvents => '所有活动';
-
-  @override
-  String get concertsQueryRequired => '要搜索此目录中的所有活动，请输入城市或活动名称，或选择类别。';
 
   @override
   String get concertsTitle => '搜索演唱会和活动';
@@ -9120,6 +9071,9 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
   String get mediaCutterMixingAddedTrack => '正在混合新音轨';
 
   @override
+  String get podcastImportIntoMediaCutter => '导入到剪切媒体文件';
+
+  @override
   String get preserveMedia => '保存内容';
 
   @override
@@ -9307,12 +9261,6 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get sonarTubeChannelShorts => 'Shorts';
-  @override
-  String get sonarTubeChannelCourses => '课程';
-
-  @override
-  String get sonarTubeChannelPodcasts => '播客';
-
 
   @override
   String sonarTubeVideoCount(int count) {
@@ -9466,10 +9414,36 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
   String get audioDescriptionExtendedPauses => '当描述无法放入静音间隙时启用延长暂停';
 
   @override
-  String get audioDescriptionNonverbalVocals => '允许在非语言人声期间进行解说';
+  String get audioDescriptionRecognizeCharacters => '尝试识别角色并使用其姓名';
 
   @override
-  String get audioDescriptionRecognizeCharacters => '尝试识别角色并使用其姓名';
+  String get audioDescriptionMp3Bitrate => 'MP3 比特率';
+
+  @override
+  String get audioDescriptionSourceVolume => '影片音量';
+
+  @override
+  String get audioDescriptionSourceVolumeHint =>
+      '调整影片的基础音量。播放音频描述时，影片音量仍会自动进一步降低。';
+
+  @override
+  String get audioDescriptionAudioNormal => '正常';
+
+  @override
+  String get audioDescriptionMixPreview => '试听影片与旁白';
+
+  @override
+  String get audioDescriptionMixPreviewPreparing => '正在准备音频试听';
+
+  @override
+  String get audioDescriptionMixPreviewStop => '停止音频试听';
+
+  @override
+  String get audioDescriptionMixPreviewPhrase => '这是自动降低原声音量的音频描述试听。';
+
+  @override
+  String get audioDescriptionMixPreviewHint =>
+      '调整音量后，会自动播放一段影片试听，配合所选语音，并在旁白期间自动降低影片音量。';
 
   @override
   String get audioDescriptionSaveProject => '同时保存项目以便以后编辑';
@@ -9509,7 +9483,8 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
   String get audioDescriptionSonarpadBalanceUnavailable => '余额不可用。';
 
   @override
-  String get audioDescriptionSonarpadInsufficientCredit => "余额不足。请为你的 API 密钥充值，以继续为内容生成音频描述。";
+  String get audioDescriptionSonarpadInsufficientCredit =>
+      '余额不足。请为你的 API 密钥充值，以继续为内容生成音频描述。';
 
   @override
   String get audioDescriptionEdgeVoiceReady => '所选 Edge 语音可用。';
@@ -9681,6 +9656,9 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
   String get sonarTubeSaveAsMp3 => '保存为 MP3';
 
   @override
+  String get developerReportText => '问题描述';
+
+  @override
   String get audioDescriptionCreateVideoOutput => '将音频描述保存到视频中';
 
   @override
@@ -9753,943 +9731,1027 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
   String get homeDirectory => '白页和黄页';
 
   @override
-  String get joinMediaTitle => "合并媒体文件";
+  String get treccaniTitle => '特雷卡尼百科全书';
 
   @override
-  String get joinMediaDescription => "添加两个或更多音频或视频文件，选择顺序和输出格式，然后合并为一个文件。";
+  String get treccaniSearchLabel => '搜索特雷卡尼百科全书';
 
   @override
-  String get joinMediaAddFiles => "添加媒体文件";
+  String get treccaniNoResults => '未找到特雷卡尼词条';
 
   @override
-  String get joinMediaLoadingFiles => "正在检查所选文件…";
+  String get treccaniWholeEntry => '完整词条';
 
   @override
-  String get joinMediaFilesTitle => "要合并的文件";
+  String get joinMediaTitle => '合并媒体文件';
 
   @override
-  String get joinMediaNoFiles => "尚未添加文件。";
+  String get joinMediaDescription => '添加两个或更多音频或视频文件，选择顺序和输出格式，然后合并为一个文件。';
 
   @override
-  String get joinMediaVideoLabel => "视频";
+  String get joinMediaAddFiles => '添加媒体文件';
 
   @override
-  String get joinMediaAudioLabel => "音频";
+  String get joinMediaLoadingFiles => '正在检查所选文件…';
 
   @override
-  String get joinMediaActionsHint => "可用操作：上移、下移、移除。";
+  String get joinMediaFilesTitle => '要合并的文件';
 
   @override
-  String get joinMediaRemove => "移除";
+  String get joinMediaNoFiles => '尚未添加文件。';
 
   @override
-  String get joinMediaOutputMp4 => "输出格式：MP4。纯音频项目使用黑色视频画面；无音频的视频会加入静音轨道。";
+  String get joinMediaVideoLabel => '视频';
 
   @override
-  String get joinMediaOutputMp3 => "输出格式：MP3。";
+  String get joinMediaAudioLabel => '音频';
 
   @override
-  String get joinMediaJoin => "合并";
+  String get joinMediaActionsHint => '可用操作：上移、下移、移除。';
 
   @override
-  String get joinMediaFileSkipped => "某个文件因无法访问或不含可用音频/视频而被跳过。";
+  String get joinMediaRemove => '移除';
 
   @override
-  String get joinMediaFilesAdded => "已添加媒体文件。";
+  String get joinMediaOutputMp4 => '输出格式：MP4。纯音频项目使用黑色视频画面；无音频的视频会加入静音轨道。';
 
   @override
-  String get joinMediaRemoved => "已移除项目。";
+  String get joinMediaOutputMp3 => '输出格式：MP3。';
 
   @override
-  String get joinMediaNeedTwoFiles => "至少添加两个文件才能合并。";
+  String get joinMediaJoin => '合并';
 
   @override
-  String get joinMediaProcessing => "正在合并媒体";
+  String get joinMediaFileSkipped => '某个文件因无法访问或不含可用音频/视频而被跳过。';
 
   @override
-  String get joinMediaCancelled => "已取消合并。";
+  String get joinMediaFilesAdded => '已添加媒体文件。';
 
   @override
-  String get joinMediaFailed => "无法合并媒体文件。";
+  String get joinMediaRemoved => '已移除项目。';
 
   @override
-  String get joinMediaPreparing => "准备中";
+  String get joinMediaNeedTwoFiles => '至少添加两个文件才能合并。';
 
   @override
-  String get joinMediaNormalizing => "正在准备文件";
+  String get joinMediaProcessing => '正在合并媒体';
 
   @override
-  String get joinMediaMerging => "正在合并文件";
+  String get joinMediaCancelled => '已取消合并。';
 
   @override
-  String get joinMediaVerifying => "最终验证";
+  String get joinMediaFailed => '无法合并媒体文件。';
 
   @override
-  String get joinMediaCompleting => "正在完成";
+  String get joinMediaPreparing => '准备中';
 
   @override
-  String get joinMediaCompleted => "合并完成。请选择文件保存位置。";
+  String get joinMediaNormalizing => '正在准备文件';
 
   @override
-  String get joinMediaFormat => "合并格式";
+  String get joinMediaMerging => '正在合并文件';
 
   @override
-  String get joinMediaChooseFormat => "选择合并格式";
+  String get joinMediaVerifying => '最终验证';
 
   @override
-  String get joinMediaAudioFormatHint => "仅包含音频文件时可选择 MP3、M4A、WAV、FLAC、OGG、OPUS、AAC、WMA 或 AIFF。默认：MP3。";
+  String get joinMediaCompleting => '正在完成';
 
   @override
-  String get joinMediaVideoFormatHint => "包含视频或音视频混合文件时可选择 MP4、MKV、MOV、AVI、WMV、MPEG/MPG、FLV、3GP 或 TS。默认：MP4。";
+  String get joinMediaCompleted => '合并完成。请选择文件保存位置。';
 
   @override
-  String get joinMediaCancelConfirmTitle => "取消合并？";
+  String get joinMediaFormat => '合并格式';
 
   @override
-  String get joinMediaCancelConfirmMessage => "确定要取消吗？正在运行的 FFmpeg 进程将被停止。";
+  String get joinMediaChooseFormat => '选择合并格式';
 
   @override
-  String get joinMediaKeepWorking => "继续";
+  String get joinMediaAudioFormatHint =>
+      '仅包含音频文件时可选择 MP3、M4A、WAV、FLAC、OGG、OPUS、AAC、WMA 或 AIFF。默认：MP3。';
 
   @override
-  String get joinMediaConfirmCancel => "取消合并";
+  String get joinMediaVideoFormatHint =>
+      '包含视频或音视频混合文件时可选择 MP4、MKV、MOV、AVI、WMV、MPEG/MPG、FLV、3GP 或 TS。默认：MP4。';
 
   @override
-  String get joinMediaCancelling => "正在取消…";
+  String get joinMediaCancelConfirmTitle => '取消合并？';
 
   @override
-  String get streamReconnecting => "正在尝试重新连接…";
+  String get joinMediaCancelConfirmMessage => '确定要取消吗？正在运行的 FFmpeg 进程将被停止。';
 
   @override
-  String get streamPlaybackRetryMessage => "频道未能启动。请选择“重试”以刷新流媒体链接。";
+  String get joinMediaKeepWorking => '继续';
 
   @override
-  String get settingsMediaSpeedControl => "启用媒体文件播放速度控制";
+  String get joinMediaConfirmCancel => '取消合并';
 
   @override
-  String get settingsMediaSpeedControlHint => "显示 Sonartube、播客和其他录制内容的速度控制。不适用于直播。";
+  String get joinMediaCancelling => '正在取消…';
 
   @override
-  String get settingsPreferRaiAudioDescription => "有音频描述时优先使用";
+  String get selectDocuments => '选择文档';
 
   @override
-  String get settingsPreferRaiAudioDescriptionHint => "在 Rai 频道中，如果有音频描述音轨则自动使用。关闭此选项可优先使用普通意大利语音轨。";
+  String get deleteSelectedDocumentsConfirmation => '永久删除所选文档吗？';
 
   @override
-  String get mediaPlaybackSpeed => "播放速度";
+  String documentsRemovedCount(int count) {
+    return '已删除文档：$count';
+  }
 
   @override
-  String get mediaPlaybackSpeedNormal => "正常";
+  String get streamReconnecting => '正在尝试重新连接…';
 
   @override
-  String get mediaPlaybackSpeedUnavailable => "此内容不支持该速度。已恢复之前的播放速度。";
+  String get streamPlaybackRetryMessage => '频道未能启动。请选择“重试”以刷新流媒体链接。';
 
   @override
-  String get mediaPlaybackSpeedRecoveryFailed => "无法恢复播放速度。请重新打开内容后重试。";
+  String get settingsMediaSpeedControl => '启用媒体文件播放速度控制';
 
   @override
-  String mediaPlaybackSpeedChanged(String speed) => "播放速度：$speed";
+  String get settingsMediaSpeedControlHint =>
+      '显示 Sonartube、播客和其他录制内容的速度控制。不适用于直播。';
 
+  @override
+  String get settingsPreferRaiAudioDescription => '有音频描述时优先使用';
+
+  @override
+  String get settingsPreferRaiAudioDescriptionHint =>
+      '在 Rai 频道中，如果有音频描述音轨则自动使用。关闭此选项可优先使用普通意大利语音轨。';
+
+  @override
+  String get mediaPlaybackSpeed => '播放速度';
+
+  @override
+  String get mediaPlaybackSpeedNormal => '正常';
 
   @override
-  String get routeServiceInvalidAddress => "地址无效";
+  String get mediaPlaybackSpeedUnavailable => '此内容不支持该速度。已恢复之前的播放速度。';
 
   @override
-  String routeServiceGeocodingNetworkError(int statusCode) => "地理编码网络错误：HTTP ${statusCode}";
+  String get mediaPlaybackSpeedRecoveryFailed => '无法恢复播放速度。请重新打开内容后重试。';
 
   @override
-  String routeServiceNetworkError(int statusCode) => "路线网络错误：HTTP ${statusCode}";
+  String mediaPlaybackSpeedChanged(String speed) {
+    return '播放速度：$speed';
+  }
 
   @override
-  String get routeServiceServerError => "服务器错误";
+  String get routeServiceInvalidAddress => '地址无效';
 
   @override
-  String get routeServiceCalculationError => "服务器路线计算错误";
+  String routeServiceGeocodingNetworkError(int statusCode) {
+    return '地理编码网络错误：HTTP $statusCode';
+  }
 
   @override
-  String get routeServiceUnauthorized => "客户端未授权。请更新 Sonarpad 或检查应用配置。";
+  String routeServiceNetworkError(int statusCode) {
+    return '路线网络错误：HTTP $statusCode';
+  }
 
   @override
-  String get routeServiceStartNotFound => "未找到起始地址";
+  String get routeServiceServerError => '服务器错误';
 
   @override
-  String get routeServiceDestinationNotFound => "未找到目的地地址";
+  String get routeServiceCalculationError => '服务器路线计算错误';
 
   @override
-  String get radioLanguageRo => "罗马尼亚语";
+  String get routeServiceUnauthorized => '客户端未授权。请更新 Sonarpad 或检查应用配置。';
 
   @override
-  String get radioCountryOptionRo => "罗马尼亚";
+  String get routeServiceStartNotFound => '未找到起始地址';
 
   @override
-  String get sonarTubeServiceError => "Errore SonarTube";
+  String get routeServiceDestinationNotFound => '未找到目的地地址';
 
   @override
-  String get sonarTubeServiceInvalidResponse => "Risposta SonarTube non valida.";
+  String get radioLanguageRo => '罗马尼亚语';
 
   @override
-  String get sonarTubeServiceInnerTubeError => "Errore API InnerTube.";
+  String get radioCountryOptionRo => '罗马尼亚';
 
   @override
-  String get sonarTubeServiceInvalidInnerTubeResponse => "Risposta InnerTube non valida.";
+  String get sonarTubeServiceError => 'Errore SonarTube';
 
   @override
-  String get sonarTubeServiceNoStream => "Nessun flusso riproducibile disponibile.";
+  String get sonarTubeServiceInvalidResponse =>
+      'Risposta SonarTube non valida.';
 
   @override
-  String get sonarTubeServiceOnlyVideo => "È possibile risolvere soltanto un video.";
+  String get sonarTubeServiceInnerTubeError => 'Errore API InnerTube.';
 
   @override
-  String get sonarTubeServiceNotCollection => "Un video non è una raccolta SonarTube.";
+  String get sonarTubeServiceInvalidInnerTubeResponse =>
+      'Risposta InnerTube non valida.';
 
   @override
-  String get listTimestampToday => "今天";
+  String get sonarTubeServiceNoStream =>
+      'Nessun flusso riproducibile disponibile.';
 
   @override
-  String get listTimestampYesterday => "昨天";
+  String get sonarTubeServiceOnlyVideo =>
+      'È possibile risolvere soltanto un video.';
 
   @override
-  String get listTimestampDayBeforeYesterday => "前天";
+  String get sonarTubeServiceNotCollection =>
+      'Un video non è una raccolta SonarTube.';
 
   @override
-  String get listTimestampTomorrow => "明天";
+  String get listTimestampToday => '今天';
 
   @override
-  String get listTimestampDayAfterTomorrow => "后天";
+  String get listTimestampYesterday => '昨天';
 
   @override
-  String get articleTitleNotFound => "未找到标题";
+  String get listTimestampDayBeforeYesterday => '前天';
 
   @override
-  String get articleUnknownTitle => "未知标题";
+  String get listTimestampTomorrow => '明天';
 
   @override
-  String get articleAuthorPrefix => "作者：";
+  String get listTimestampDayAfterTomorrow => '后天';
 
   @override
-  String get audioDescriptionProjectEditorTitle => "编辑音频描述项目";
+  String get articleTitleNotFound => '未找到标题';
 
   @override
-  String get audioDescriptionProjectOpen => "打开音频描述项目";
+  String get articleUnknownTitle => '未知标题';
 
   @override
-  String get audioDescriptionProjectLabel => "Project";
+  String get articleAuthorPrefix => '作者：';
 
   @override
-  String get audioDescriptionProjectChooseSource => "选择原始视频";
+  String get audioDescriptionProjectEditorTitle => '编辑音频描述项目';
 
   @override
-  String get audioDescriptionProjectSource => "Original video";
+  String get audioDescriptionProjectOpen => '打开音频描述项目';
 
   @override
-  String get audioDescriptionProjectDescription => "描述";
+  String get audioDescriptionProjectLabel => 'Project';
 
   @override
-  String get audioDescriptionProjectDescriptionText => "描述文本";
+  String get audioDescriptionProjectChooseSource => '选择原始视频';
 
   @override
-  String get audioDescriptionProjectPreviewDescription => "播放描述";
+  String get audioDescriptionProjectSource => 'Original video';
 
   @override
-  String get audioDescriptionProjectApplyText => "应用修改";
+  String get audioDescriptionProjectDescription => '描述';
 
   @override
-  String get audioDescriptionProjectDeleteDescription => "删除描述";
+  String get audioDescriptionProjectDescriptionText => '描述文本';
 
   @override
-  String get audioDescriptionProjectDeleteConfirmation => "Delete the selected description from the project?";
+  String get audioDescriptionProjectPreviewDescription => '播放描述';
 
   @override
-  String get audioDescriptionProjectCannotDeleteLast => "The only description in the project cannot be deleted.";
+  String get audioDescriptionProjectApplyText => '应用修改';
 
   @override
-  String get audioDescriptionProjectApplyVoice => "将语音应用到项目";
+  String get audioDescriptionProjectDeleteDescription => '删除描述';
 
   @override
-  String get audioDescriptionProjectReadingEngine => "Reading engine";
+  String get audioDescriptionProjectDeleteConfirmation =>
+      'Delete the selected description from the project?';
 
   @override
-  String get audioDescriptionProjectEdgeVoice => "Microsoft Edge voice";
+  String get audioDescriptionProjectCannotDeleteLast =>
+      'The only description in the project cannot be deleted.';
 
   @override
-  String get audioDescriptionProjectSystemVoice => "System / VoiceOver / Android voice";
+  String get audioDescriptionProjectApplyVoice => '将语音应用到项目';
 
   @override
-  String get audioDescriptionProjectVoiceLanguage => "Voice language";
+  String get audioDescriptionProjectReadingEngine => 'Reading engine';
 
   @override
-  String get audioDescriptionProjectVoice => "Voice";
+  String get audioDescriptionProjectEdgeVoice => 'Microsoft Edge voice';
 
   @override
-  String get audioDescriptionProjectReexportMp3 => "重新导出 MP3";
+  String get audioDescriptionProjectSystemVoice =>
+      'System / VoiceOver / Android voice';
 
   @override
-  String get audioDescriptionProjectExportSrt => "导出为 SRT";
+  String get audioDescriptionProjectVoiceLanguage => 'Voice language';
 
   @override
-  String get audioDescriptionProjectExportVtt => "导出为 VTT";
+  String get audioDescriptionProjectVoice => 'Voice';
 
   @override
-  String get audioDescriptionProjectNormalWithDucking => "normal with ducking";
+  String get audioDescriptionProjectReexportMp3 => '重新导出 MP3';
 
   @override
-  String get audioDescriptionProjectExtendedPause => "extended pause";
+  String get audioDescriptionProjectExportSrt => '导出为 SRT';
 
   @override
-  String get audioDescriptionProjectReady => "Project ready.";
+  String get audioDescriptionProjectExportVtt => '导出为 VTT';
 
   @override
-  String get audioDescriptionProjectDescriptionApplied => "Description checked and saved in the project.";
+  String get audioDescriptionProjectNormalWithDucking => 'normal with ducking';
 
   @override
-  String get audioDescriptionProjectDescriptionDeleted => "Description deleted and project saved.";
+  String get audioDescriptionProjectExtendedPause => 'extended pause';
 
   @override
-  String get audioDescriptionProjectVoiceChanged => "Voice changed and all descriptions were checked.";
+  String get audioDescriptionProjectReady => 'Project ready.';
 
   @override
-  String audioDescriptionProjectDescriptionTooLong(String actual, String available) => "The synthesized description lasts ${actual} seconds, but only ${available} seconds are available. The previous text was not changed.";
+  String get audioDescriptionProjectDescriptionApplied =>
+      'Description checked and saved in the project.';
 
   @override
-  String get audioDescriptionProjectSourceMissing => "The original video is not available. Choose it before re-exporting the MP3.";
+  String get audioDescriptionProjectDescriptionDeleted =>
+      'Description deleted and project saved.';
 
   @override
-  String get audioDescriptionProjectInvalid => "The selected file is not a valid Sonarpad audio description project.";
+  String get audioDescriptionProjectVoiceChanged =>
+      'Voice changed and all descriptions were checked.';
 
   @override
-  String get audioDescriptionProjectUnsavedText => "Apply the current text before re-exporting the MP3.";
+  String audioDescriptionProjectDescriptionTooLong(
+    String actual,
+    String available,
+  ) {
+    return 'The synthesized description lasts $actual seconds, but only $available seconds are available. The previous text was not changed.';
+  }
 
   @override
-  String get audioDescriptionProjectWorking => "正在处理项目…";
+  String get audioDescriptionProjectSourceMissing =>
+      'The original video is not available. Choose it before re-exporting the MP3.';
 
   @override
-  String get audioDescriptionProjectExported => "项目已导出。";
+  String get audioDescriptionProjectInvalid =>
+      'The selected file is not a valid Sonarpad audio description project.';
 
   @override
-  String get audioDescriptionProjectSelectFirst => "Open a project first.";
+  String get audioDescriptionProjectUnsavedText =>
+      'Apply the current text before re-exporting the MP3.';
 
   @override
-  String get audioDescriptionProjectSelectDescription => "Select a description.";
+  String get audioDescriptionProjectWorking => '正在处理项目…';
 
   @override
-  String audioDescriptionProjectDescriptionDetails(String source, String start, String end, String duration, String mode) => "Scene ${source} s; MP3 ${start}-${end} s; voice ${duration} s; ${mode}";
+  String get audioDescriptionProjectExported => '项目已导出。';
 
   @override
-  String get audioDescriptionProjectShare => "共享";
+  String get audioDescriptionProjectSelectFirst => 'Open a project first.';
 
   @override
-  String get audioDescriptionProjectSaveDocuments => "保存到 Sonarpad 文档";
+  String get audioDescriptionProjectSelectDescription =>
+      'Select a description.';
 
   @override
-  String get audioDescriptionProjectSavedDocuments => "Files saved in Sonarpad Documents.";
+  String audioDescriptionProjectDescriptionDetails(
+    String source,
+    String start,
+    String end,
+    String duration,
+    String mode,
+  ) {
+    return 'Scene $source s; MP3 $start-$end s; voice $duration s; $mode';
+  }
 
   @override
-  String get audioDescriptionProjectCancel => "Cancel";
+  String get audioDescriptionProjectShare => '共享';
 
   @override
-  String get audioDescriptionProjectChooseFromFiles => "从文件选择视频";
+  String get audioDescriptionProjectSaveDocuments => '保存到 Sonarpad 文档';
 
   @override
-  String get audioDescriptionProjectImportFromPhotos => "从照片导入视频";
+  String get audioDescriptionProjectSavedDocuments =>
+      'Files saved in Sonarpad Documents.';
 
   @override
-  String get newsCategoryWorld => "World";
+  String get audioDescriptionProjectCancel => 'Cancel';
 
   @override
-  String get newsCategoryBusiness => "Business";
+  String get audioDescriptionProjectChooseFromFiles => '从文件选择视频';
 
   @override
-  String get newsCategoryTechnology => "Technology";
+  String get audioDescriptionProjectImportFromPhotos => '从照片导入视频';
 
   @override
-  String get newsCategoryEntertainment => "Entertainment";
+  String get newsCategoryWorld => 'World';
 
   @override
-  String get newsCategorySports => "Sports";
+  String get newsCategoryBusiness => 'Business';
 
   @override
-  String get newsCategoryHealth => "Health";
+  String get newsCategoryTechnology => 'Technology';
 
   @override
-  String get newsArticleSubscribersOnly => "此文章仅供订阅用户阅读。";
+  String get newsCategoryEntertainment => 'Entertainment';
 
   @override
-  String wikipediaSearchHttpError(int statusCode) => "维基百科错误：${statusCode}";
+  String get newsCategorySports => 'Sports';
 
   @override
-  String wikipediaImportHttpError(int statusCode) => "维基百科导入错误：${statusCode}";
+  String get newsCategoryHealth => 'Health';
 
   @override
-  String gutenbergSearchHttpError(int statusCode) => "Errore Gutenberg ${statusCode}";
+  String get newsArticleSubscribersOnly => '此文章仅供订阅用户阅读。';
 
   @override
-  String gutenbergDownloadHttpError(int statusCode) => "Errore download ${statusCode}";
+  String wikipediaSearchHttpError(int statusCode) {
+    return '维基百科错误：$statusCode';
+  }
 
   @override
-  String gutenbergEpubDownloadHttpError(int statusCode) => "Errore download EPUB ${statusCode}";
+  String wikipediaImportHttpError(int statusCode) {
+    return '维基百科导入错误：$statusCode';
+  }
 
   @override
-  String get gutenbergInvalidBookId => "ID Gutenberg non valido.";
+  String gutenbergSearchHttpError(int statusCode) {
+    return 'Errore Gutenberg $statusCode';
+  }
 
   @override
-  String get gutenbergDownloadTimeout => "Download Gutenberg troppo lento. Riprova tra poco o scegli un altro formato.";
+  String gutenbergDownloadHttpError(int statusCode) {
+    return 'Errore download $statusCode';
+  }
 
   @override
-  String get gutenbergUnreadableArchive => "Archivio ZIP Gutenberg senza file di testo leggibile.";
+  String gutenbergEpubDownloadHttpError(int statusCode) {
+    return 'Errore download EPUB $statusCode';
+  }
 
   @override
-  String get gutenbergUntitledBook => "Senza titolo";
+  String get gutenbergInvalidBookId => 'ID Gutenberg non valido.';
 
   @override
-  String get gutenbergUnknownAuthor => "Autore sconosciuto";
+  String get gutenbergDownloadTimeout =>
+      'Download Gutenberg troppo lento. Riprova tra poco o scegli un altro formato.';
 
   @override
-  String get podcastCategoryAll => "所有类别";
+  String get gutenbergUnreadableArchive =>
+      'Archivio ZIP Gutenberg senza file di testo leggibile.';
 
   @override
-  String get podcastCategoryArts => "艺术";
+  String get gutenbergUntitledBook => 'Senza titolo';
 
   @override
-  String get podcastCategoryBusiness => "商务";
+  String get gutenbergUnknownAuthor => 'Autore sconosciuto';
 
   @override
-  String get podcastCategoryComedy => "喜剧";
+  String get podcastCategoryAll => '所有类别';
 
   @override
-  String get podcastCategoryEducation => "教育";
+  String get podcastCategoryArts => '艺术';
 
   @override
-  String get podcastCategoryFiction => "小说";
+  String get podcastCategoryBusiness => '商务';
 
   @override
-  String get podcastCategoryGovernment => "政府";
+  String get podcastCategoryComedy => '喜剧';
 
   @override
-  String get podcastCategoryHealthAndFitness => "健康与健身";
+  String get podcastCategoryEducation => '教育';
 
   @override
-  String get podcastCategoryHistory => "历史";
+  String get podcastCategoryFiction => '小说';
 
   @override
-  String get podcastCategoryKidsAndFamily => "儿童与家庭";
+  String get podcastCategoryGovernment => '政府';
 
   @override
-  String get podcastCategoryLeisure => "休闲";
+  String get podcastCategoryHealthAndFitness => '健康与健身';
 
   @override
-  String get podcastCategoryMusic => "音乐";
+  String get podcastCategoryHistory => '历史';
 
   @override
-  String get podcastCategoryNews => "新闻";
+  String get podcastCategoryKidsAndFamily => '儿童与家庭';
 
   @override
-  String get podcastCategoryReligionAndSpirituality => "宗教与灵性";
+  String get podcastCategoryLeisure => '休闲';
 
   @override
-  String get podcastCategoryScience => "科学";
+  String get podcastCategoryMusic => '音乐';
 
   @override
-  String get podcastCategorySocietyAndCulture => "社会与文化";
+  String get podcastCategoryNews => '新闻';
 
   @override
-  String get podcastCategorySports => "体育";
+  String get podcastCategoryReligionAndSpirituality => '宗教与灵性';
 
   @override
-  String get podcastCategoryTechnology => "科技";
+  String get podcastCategoryScience => '科学';
 
   @override
-  String get podcastCategoryTrueCrime => "真实犯罪";
+  String get podcastCategorySocietyAndCulture => '社会与文化';
 
   @override
-  String get podcastCategoryTvAndFilm => "电视与电影";
+  String get podcastCategorySports => '体育';
 
   @override
-  String get podcastCategoryBooks => "书籍";
+  String get podcastCategoryTechnology => '科技';
 
   @override
-  String get podcastCategoryDesign => "设计";
+  String get podcastCategoryTrueCrime => '真实犯罪';
 
   @override
-  String get podcastCategoryFashionAndBeauty => "时尚与美容";
+  String get podcastCategoryTvAndFilm => '电视与电影';
 
   @override
-  String get podcastCategoryFood => "美食";
+  String get podcastCategoryBooks => '书籍';
 
   @override
-  String get podcastCategoryPerformingArts => "表演艺术";
+  String get podcastCategoryDesign => '设计';
 
   @override
-  String get podcastCategoryVisualArts => "视觉艺术";
+  String get podcastCategoryFashionAndBeauty => '时尚与美容';
 
   @override
-  String get podcastCategoryCareers => "职业发展";
+  String get podcastCategoryFood => '美食';
 
   @override
-  String get podcastCategoryEntrepreneurship => "创业";
+  String get podcastCategoryPerformingArts => '表演艺术';
 
   @override
-  String get podcastCategoryInvesting => "投资";
+  String get podcastCategoryVisualArts => '视觉艺术';
 
   @override
-  String get podcastCategoryManagement => "管理";
+  String get podcastCategoryCareers => '职业发展';
 
   @override
-  String get podcastCategoryMarketing => "营销";
+  String get podcastCategoryEntrepreneurship => '创业';
 
   @override
-  String get podcastCategoryNonProfit => "非营利组织";
+  String get podcastCategoryInvesting => '投资';
 
   @override
-  String get podcastCategoryComedyInterviews => "喜剧访谈";
+  String get podcastCategoryManagement => '管理';
 
   @override
-  String get podcastCategoryImprov => "即兴喜剧";
+  String get podcastCategoryMarketing => '营销';
 
   @override
-  String get podcastCategoryStandUp => "单口喜剧";
+  String get podcastCategoryNonProfit => '非营利组织';
 
   @override
-  String get podcastCategoryCourses => "课程";
+  String get podcastCategoryComedyInterviews => '喜剧访谈';
 
   @override
-  String get podcastCategoryHowTo => "实用指南";
+  String get podcastCategoryImprov => '即兴喜剧';
 
   @override
-  String get podcastCategoryLanguageLearning => "语言学习";
+  String get podcastCategoryStandUp => '单口喜剧';
 
   @override
-  String get podcastCategorySelfImprovement => "自我提升";
+  String get podcastCategoryCourses => '课程';
 
   @override
-  String get podcastCategoryComedyFiction => "喜剧小说";
+  String get podcastCategoryHowTo => '实用指南';
 
   @override
-  String get podcastCategoryDrama => "剧情";
+  String get podcastCategoryLanguageLearning => '语言学习';
 
   @override
-  String get podcastCategoryScienceFiction => "科幻小说";
+  String get podcastCategorySelfImprovement => '自我提升';
 
   @override
-  String get podcastCategoryAlternativeHealth => "另类健康";
+  String get podcastCategoryComedyFiction => '喜剧小说';
 
   @override
-  String get podcastCategoryFitness => "健身";
+  String get podcastCategoryDrama => '剧情';
 
   @override
-  String get podcastCategoryMedicine => "医学";
+  String get podcastCategoryScienceFiction => '科幻小说';
 
   @override
-  String get podcastCategoryMentalHealth => "心理健康";
+  String get podcastCategoryAlternativeHealth => '另类健康';
 
   @override
-  String get podcastCategoryNutrition => "营养";
+  String get podcastCategoryFitness => '健身';
 
   @override
-  String get podcastCategorySexuality => "性";
+  String get podcastCategoryMedicine => '医学';
 
   @override
-  String get podcastCategoryEducationForKids => "儿童教育";
+  String get podcastCategoryMentalHealth => '心理健康';
 
   @override
-  String get podcastCategoryParenting => "育儿";
+  String get podcastCategoryNutrition => '营养';
 
   @override
-  String get podcastCategoryPetsAndAnimals => "宠物与动物";
+  String get podcastCategorySexuality => '性';
 
   @override
-  String get podcastCategoryStoriesForKids => "儿童故事";
+  String get podcastCategoryEducationForKids => '儿童教育';
 
   @override
-  String get podcastCategoryAnimationAndManga => "动画与漫画";
+  String get podcastCategoryParenting => '育儿';
 
   @override
-  String get podcastCategoryAutomotive => "汽车";
+  String get podcastCategoryPetsAndAnimals => '宠物与动物';
 
   @override
-  String get podcastCategoryAviation => "航空";
+  String get podcastCategoryStoriesForKids => '儿童故事';
 
   @override
-  String get podcastCategoryCrafts => "手工艺";
+  String get podcastCategoryAnimationAndManga => '动画与漫画';
 
   @override
-  String get podcastCategoryGames => "游戏";
+  String get podcastCategoryAutomotive => '汽车';
 
   @override
-  String get podcastCategoryHobbies => "爱好";
+  String get podcastCategoryAviation => '航空';
 
   @override
-  String get podcastCategoryHomeAndGarden => "家居与园艺";
+  String get podcastCategoryCrafts => '手工艺';
 
   @override
-  String get podcastCategoryVideoGames => "电子游戏";
+  String get podcastCategoryGames => '游戏';
 
   @override
-  String get podcastCategoryMusicCommentary => "音乐评论";
+  String get podcastCategoryHobbies => '爱好';
 
   @override
-  String get podcastCategoryMusicHistory => "音乐史";
+  String get podcastCategoryHomeAndGarden => '家居与园艺';
 
   @override
-  String get podcastCategoryMusicInterviews => "音乐访谈";
+  String get podcastCategoryVideoGames => '电子游戏';
 
   @override
-  String get podcastCategoryBusinessNews => "商业新闻";
+  String get podcastCategoryMusicCommentary => '音乐评论';
 
   @override
-  String get podcastCategoryDailyNews => "每日新闻";
+  String get podcastCategoryMusicHistory => '音乐史';
 
   @override
-  String get podcastCategoryEntertainmentNews => "娱乐新闻";
+  String get podcastCategoryMusicInterviews => '音乐访谈';
 
   @override
-  String get podcastCategoryNewsCommentary => "新闻评论";
+  String get podcastCategoryBusinessNews => '商业新闻';
 
   @override
-  String get podcastCategoryPolitics => "政治";
+  String get podcastCategoryDailyNews => '每日新闻';
 
   @override
-  String get podcastCategorySportsNews => "体育新闻";
+  String get podcastCategoryEntertainmentNews => '娱乐新闻';
 
   @override
-  String get podcastCategoryTechNews => "科技新闻";
+  String get podcastCategoryNewsCommentary => '新闻评论';
 
   @override
-  String get podcastCategoryBuddhism => "佛教";
+  String get podcastCategoryPolitics => '政治';
 
   @override
-  String get podcastCategoryChristianity => "基督教";
+  String get podcastCategorySportsNews => '体育新闻';
 
   @override
-  String get podcastCategoryHinduism => "印度教";
+  String get podcastCategoryTechNews => '科技新闻';
 
   @override
-  String get podcastCategoryIslam => "伊斯兰教";
+  String get podcastCategoryBuddhism => '佛教';
 
   @override
-  String get podcastCategoryJudaism => "犹太教";
+  String get podcastCategoryChristianity => '基督教';
 
   @override
-  String get podcastCategoryReligion => "宗教";
+  String get podcastCategoryHinduism => '印度教';
 
   @override
-  String get podcastCategorySpirituality => "灵性";
+  String get podcastCategoryIslam => '伊斯兰教';
 
   @override
-  String get podcastCategoryAstronomy => "天文学";
+  String get podcastCategoryJudaism => '犹太教';
 
   @override
-  String get podcastCategoryChemistry => "化学";
+  String get podcastCategoryReligion => '宗教';
 
   @override
-  String get podcastCategoryEarthSciences => "地球科学";
+  String get podcastCategorySpirituality => '灵性';
 
   @override
-  String get podcastCategoryLifeSciences => "生命科学";
+  String get podcastCategoryAstronomy => '天文学';
 
   @override
-  String get podcastCategoryMathematics => "数学";
+  String get podcastCategoryChemistry => '化学';
 
   @override
-  String get podcastCategoryNaturalSciences => "自然科学";
+  String get podcastCategoryEarthSciences => '地球科学';
 
   @override
-  String get podcastCategoryNature => "自然";
+  String get podcastCategoryLifeSciences => '生命科学';
 
   @override
-  String get podcastCategoryPhysics => "物理学";
+  String get podcastCategoryMathematics => '数学';
 
   @override
-  String get podcastCategorySocialSciences => "社会科学";
+  String get podcastCategoryNaturalSciences => '自然科学';
 
   @override
-  String get podcastCategoryDocumentary => "纪录片";
+  String get podcastCategoryNature => '自然';
 
   @override
-  String get podcastCategoryPersonalJournals => "个人日记";
+  String get podcastCategoryPhysics => '物理学';
 
   @override
-  String get podcastCategoryPhilosophy => "哲学";
+  String get podcastCategorySocialSciences => '社会科学';
 
   @override
-  String get podcastCategoryPlacesAndTravel => "地点与旅行";
+  String get podcastCategoryDocumentary => '纪录片';
 
   @override
-  String get podcastCategoryRelationships => "人际关系";
+  String get podcastCategoryPersonalJournals => '个人日记';
 
   @override
-  String get podcastCategoryBaseball => "棒球";
+  String get podcastCategoryPhilosophy => '哲学';
 
   @override
-  String get podcastCategoryBasketball => "篮球";
+  String get podcastCategoryPlacesAndTravel => '地点与旅行';
 
   @override
-  String get podcastCategoryCricket => "板球";
+  String get podcastCategoryRelationships => '人际关系';
 
   @override
-  String get podcastCategoryFantasySports => "梦幻体育";
+  String get podcastCategoryBaseball => '棒球';
 
   @override
-  String get podcastCategoryFootball => "美式橄榄球";
+  String get podcastCategoryBasketball => '篮球';
 
   @override
-  String get podcastCategoryGolf => "高尔夫";
+  String get podcastCategoryCricket => '板球';
 
   @override
-  String get podcastCategoryHockey => "冰球";
+  String get podcastCategoryFantasySports => '梦幻体育';
 
   @override
-  String get podcastCategoryRugby => "橄榄球";
+  String get podcastCategoryFootball => '美式橄榄球';
 
   @override
-  String get podcastCategoryRunning => "跑步";
+  String get podcastCategoryGolf => '高尔夫';
 
   @override
-  String get podcastCategorySoccer => "足球";
+  String get podcastCategoryHockey => '冰球';
 
   @override
-  String get podcastCategorySwimming => "游泳";
+  String get podcastCategoryRugby => '橄榄球';
 
   @override
-  String get podcastCategoryTennis => "网球";
+  String get podcastCategoryRunning => '跑步';
 
   @override
-  String get podcastCategoryVolleyball => "排球";
+  String get podcastCategorySoccer => '足球';
 
   @override
-  String get podcastCategoryWilderness => "户外";
+  String get podcastCategorySwimming => '游泳';
 
   @override
-  String get podcastCategoryWrestling => "摔跤";
+  String get podcastCategoryTennis => '网球';
 
   @override
-  String get podcastCategoryAfterShows => "剧后讨论";
+  String get podcastCategoryVolleyball => '排球';
 
   @override
-  String get podcastCategoryFilmHistory => "电影史";
+  String get podcastCategoryWilderness => '户外';
 
   @override
-  String get podcastCategoryFilmInterviews => "电影访谈";
+  String get podcastCategoryWrestling => '摔跤';
 
   @override
-  String get podcastCategoryFilmReviews => "电影评论";
+  String get podcastCategoryAfterShows => '剧后讨论';
 
   @override
-  String get podcastCategoryTvReviews => "电视评论";
+  String get podcastCategoryFilmHistory => '电影史';
 
   @override
-  String get weatherConditionClearSky => "晴朗";
+  String get podcastCategoryFilmInterviews => '电影访谈';
 
   @override
-  String get weatherConditionMainlyClear => "大部晴朗";
+  String get podcastCategoryFilmReviews => '电影评论';
 
   @override
-  String get weatherConditionPartlyCloudy => "局部多云";
+  String get podcastCategoryTvReviews => '电视评论';
 
   @override
-  String get weatherConditionOvercast => "阴天";
+  String get weatherConditionClearSky => '晴朗';
 
   @override
-  String get weatherConditionFog => "雾";
+  String get weatherConditionMainlyClear => '大部晴朗';
 
   @override
-  String get weatherConditionRimeFog => "冻雾";
+  String get weatherConditionPartlyCloudy => '局部多云';
 
   @override
-  String get weatherConditionLightDrizzle => "小毛毛雨";
+  String get weatherConditionOvercast => '阴天';
 
   @override
-  String get weatherConditionModerateDrizzle => "中等毛毛雨";
+  String get weatherConditionFog => '雾';
 
   @override
-  String get weatherConditionDenseDrizzle => "强毛毛雨";
+  String get weatherConditionRimeFog => '冻雾';
 
   @override
-  String get weatherConditionLightFreezingDrizzle => "轻微冻毛毛雨";
+  String get weatherConditionLightDrizzle => '小毛毛雨';
 
   @override
-  String get weatherConditionDenseFreezingDrizzle => "强冻毛毛雨";
+  String get weatherConditionModerateDrizzle => '中等毛毛雨';
 
   @override
-  String get weatherConditionLightRain => "小雨";
+  String get weatherConditionDenseDrizzle => '强毛毛雨';
 
   @override
-  String get weatherConditionModerateRain => "中雨";
+  String get weatherConditionLightFreezingDrizzle => '轻微冻毛毛雨';
 
   @override
-  String get weatherConditionHeavyRain => "大雨";
+  String get weatherConditionDenseFreezingDrizzle => '强冻毛毛雨';
 
   @override
-  String get weatherConditionLightFreezingRain => "轻微冻雨";
+  String get weatherConditionLightRain => '小雨';
 
   @override
-  String get weatherConditionHeavyFreezingRain => "强冻雨";
+  String get weatherConditionModerateRain => '中雨';
 
   @override
-  String get weatherConditionLightSnowfall => "小雪";
+  String get weatherConditionHeavyRain => '大雨';
 
   @override
-  String get weatherConditionModerateSnowfall => "中雪";
+  String get weatherConditionLightFreezingRain => '轻微冻雨';
 
   @override
-  String get weatherConditionHeavySnowfall => "大雪";
+  String get weatherConditionHeavyFreezingRain => '强冻雨';
 
   @override
-  String get weatherConditionSnowGrains => "米雪";
+  String get weatherConditionLightSnowfall => '小雪';
 
   @override
-  String get weatherConditionLightRainShowers => "小阵雨";
+  String get weatherConditionModerateSnowfall => '中雪';
 
   @override
-  String get weatherConditionModerateRainShowers => "中等阵雨";
+  String get weatherConditionHeavySnowfall => '大雪';
 
   @override
-  String get weatherConditionViolentRainShowers => "强阵雨";
+  String get weatherConditionSnowGrains => '米雪';
 
   @override
-  String get weatherConditionLightSnowShowers => "小阵雪";
+  String get weatherConditionLightRainShowers => '小阵雨';
 
   @override
-  String get weatherConditionHeavySnowShowers => "强阵雪";
+  String get weatherConditionModerateRainShowers => '中等阵雨';
 
   @override
-  String get weatherConditionThunderstorm => "雷暴";
+  String get weatherConditionViolentRainShowers => '强阵雨';
 
   @override
-  String get weatherConditionThunderstormLightHail => "伴有小冰雹的雷暴";
+  String get weatherConditionLightSnowShowers => '小阵雪';
 
   @override
-  String get weatherConditionThunderstormHeavyHail => "伴有强冰雹的雷暴";
+  String get weatherConditionHeavySnowShowers => '强阵雪';
 
   @override
-  String get documentsImportFromFiles => "从文件导入";
+  String get weatherConditionThunderstorm => '雷暴';
 
   @override
-  String get sonarTubeOpenUrl => "打开网址";
+  String get weatherConditionThunderstormLightHail => '伴有小冰雹的雷暴';
 
   @override
-  String get sonarTubeUrlPrompt => "粘贴 YouTube 视频网址";
+  String get weatherConditionThunderstormHeavyHail => '伴有强冰雹的雷暴';
 
   @override
-  String get sonarMusicAll => "全部";
+  String get documentsImportFromFiles => '从文件导入';
 
   @override
-  String get sonarMusicSong => "歌曲";
+  String get sonarTubeOpenUrl => '打开网址';
 
   @override
-  String get sonarMusicVideo => "音乐视频";
+  String get sonarTubeUrlPrompt => '粘贴 YouTube 视频网址';
 
   @override
-  String get sonarMusicAlbum => "专辑";
+  String get sonarMusicAll => '全部';
 
   @override
-  String get sonarMusicArtist => "艺人";
+  String get sonarMusicSong => '歌曲';
 
   @override
-  String get sonarMusicPlaylist => "播放列表";
+  String get sonarMusicVideo => '音乐视频';
 
   @override
-  String get sonarMusicFavorites => "收藏";
+  String get sonarMusicAlbum => '专辑';
 
   @override
-  String get sonarMusicRecent => "最近播放";
+  String get sonarMusicArtist => '艺人';
 
   @override
-  String get sonarMusicOpen => "打开链接";
+  String get sonarMusicPlaylist => '播放列表';
 
   @override
-  String get sonarMusicLoad => "加载更多";
+  String get sonarMusicFavorites => '收藏';
 
   @override
-  String get sonarMusicArtistOpen => "查看艺人";
+  String get sonarMusicRecent => '最近播放';
 
   @override
-  String get sonarMusicAlbumOpen => "查看专辑";
+  String get sonarMusicOpen => '打开链接';
 
   @override
-  String get sonarMusicPlayAll => "播放全部";
+  String get sonarMusicLoad => '加载更多';
 
   @override
-  String get sonarMusicShare => "分享";
+  String get sonarMusicArtistOpen => '查看艺人';
 
   @override
-  String get sonarMusicAdd => "加入收藏";
+  String get sonarMusicAlbumOpen => '查看专辑';
 
   @override
-  String get sonarMusicRemove => "取消收藏";
+  String get sonarMusicPlayAll => '播放全部';
 
   @override
-  String get sonarMusicEmpty => "无结果";
+  String get sonarMusicShare => '分享';
 
   @override
-  String get sonarMusicInvalid => "无法打开";
+  String get sonarMusicAdd => '加入收藏';
 
   @override
-  String get sonarMusicDescription => "说明";
+  String get sonarMusicRemove => '取消收藏';
 
   @override
-  String get sonarMusicShuffle => "随机播放";
+  String get sonarMusicEmpty => '无结果';
 
   @override
-  String get sonarMusicSave => "保存媒体";
+  String get sonarMusicInvalid => '无法打开';
 
   @override
-  String get sonarMusicSuggest => "搜索建议";
+  String get sonarMusicDescription => '说明';
 
   @override
-  String get sonarMusicSearchHint => "歌曲、艺人或专辑";
+  String get sonarMusicShuffle => '随机播放';
 
   @override
-  String get catalogUntitled => "Senza titolo";
+  String get sonarMusicSave => '保存媒体';
 
   @override
-  String get catalogUnknownAuthor => "Autore sconosciuto";
+  String get sonarMusicSuggest => '搜索建议';
 
   @override
-  String get librivoxChapterFallback => "Capitolo";
+  String get sonarMusicSearchHint => '歌曲、艺人或专辑';
 
   @override
-  String get internetArchiveAudioFallback => "Audio";
+  String get catalogUntitled => 'Senza titolo';
 
   @override
-  String librivoxHttpError(int statusCode) => "Errore LibriVox ${statusCode}";
+  String get catalogUnknownAuthor => 'Autore sconosciuto';
 
   @override
-  String get librivoxBookNotFound => "Audiolibro non trovato.";
+  String get librivoxChapterFallback => 'Capitolo';
 
   @override
-  String internetArchiveHttpError(int statusCode) => "Internet Archive ${statusCode}";
+  String get internetArchiveAudioFallback => 'Audio';
 
   @override
-  String poetryDbHttpError(int statusCode) => "Errore PoetryDB ${statusCode}";
+  String librivoxHttpError(int statusCode) {
+    return 'Errore LibriVox $statusCode';
+  }
 
   @override
-  String get cloudFilePickerLoading => "正在加载文件";
+  String get librivoxBookNotFound => 'Audiolibro non trovato.';
 
   @override
-  String get cloudFilePickerPreparing => "正在准备云端文件…";
+  String internetArchiveHttpError(int statusCode) {
+    return 'Internet Archive $statusCode';
+  }
 
   @override
-  String get cloudFilePickerUnknownSize => "正在加载…";
+  String poetryDbHttpError(int statusCode) {
+    return 'Errore PoetryDB $statusCode';
+  }
 
   @override
-  String get cloudFilePickerCancelling => "正在取消…";
+  String get cloudFilePickerLoading => '正在加载文件';
 
   @override
-  String get audioPlaybackNotificationChannelName => "音频播放";
+  String get cloudFilePickerPreparing => '正在准备云端文件…';
 
   @override
-  String get documentExportFallbackName => "文档";
+  String get cloudFilePickerUnknownSize => '正在加载…';
 
   @override
-  String get documentExportAudiobookSuffix => "有声书";
+  String get cloudFilePickerCancelling => '正在取消…';
 
   @override
-  String get convertMediaWavFloat32 => "32 位浮点";
+  String get audioPlaybackNotificationChannelName => '音频播放';
+
+  @override
+  String get documentExportFallbackName => '文档';
+
+  @override
+  String get documentExportAudiobookSuffix => '有声书';
+
+  @override
+  String get convertMediaWavFloat32 => '32 位浮点';
+
   @override
   String get cloudFilePickerCopying => '正在将文件复制到 Sonarpad';
 
   @override
+  String get audioDescriptionNonverbalVocals => '允许在非语言人声期间进行解说';
+
+  @override
   String get importVideoFromGallery => '从图库选择';
+
   @override
   String get sharedVideoOpen => '打开视频';
 
@@ -10706,7 +10768,88 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
   String get exportAskEveryTime => '每次询问';
 
   @override
-  String get selectAudioTrack => "选择音轨";
+  String get selectAudioTrack => '选择音轨';
+
+  @override
+  String get castToDevice => '通过 Chromecast 投放';
+
+  @override
+  String get castNoDevices => '未找到设备。请确认设备连接到同一 Wi-Fi 网络，然后重试。';
+
+  @override
+  String get castFailure => '投放失败或连接已断开。你可以在此设备上继续播放。';
+
+  @override
+  String get castResumeHere => '在此设备上继续播放';
+
+  @override
+  String get settingsShowCast => '在兼容的播放器中显示 Chromecast';
+
+  @override
+  String get castStop => '停止投放';
+
+  @override
+  String get settingsHideCalendarSaints => '在日历中隐藏圣人';
+
+  @override
+  String get markdownFormat => 'Markdown (.md)';
+
+  @override
+  String get htmlFormat => 'HTML (.html)';
+
+  @override
+  String get recordingNotAdvancing => '录制未收到新数据。请检查网络连接，必要时重新开始录制。';
+
+  @override
+  String get sonarTubeChannelCourses => '课程';
+
+  @override
+  String get sonarTubeChannelPodcasts => '播客';
+
+  @override
+  String get favoriteVideosLatest => '最新视频';
+
+  @override
+  String get favoriteVideosTitle => '收藏中的最新视频';
+
+  @override
+  String get favoriteVideosPartial => '部分频道无法加载。现显示其他频道的视频。';
+
+  @override
+  String get favoritesSortAlphabetically => '按字母顺序排序';
+
+  @override
+  String get saveMediaContent => '保存内容';
+
+  @override
+  String get saveMp4WithAudiodescription => '带音频描述的 MP4';
+
+  @override
+  String get audioDescriptionProjectSegment => '重新分析的片段';
+
+  @override
+  String get audioDescriptionProjectReanalyze => '重新分析片段';
+
+  @override
+  String get audioDescriptionProjectReanalyzeConfirm =>
+      '重新分析所选片段？更新的文本将替换对应描述，并保留已保存的时间。新描述只会添加到可用的空隙中。需要重新导出带有音频描述的文件。';
+
+  @override
+  String get convertMediaDocumentAudiobookHint =>
+      '要将文档转换为有声书，请前往“文档”→“从文件导入”。导入后，选择“导出文档”→“MP3 有声书 (.mp3)”。';
+
+  @override
+  String audioDescriptionProjectEditorSegmentOption(
+    int index,
+    String start,
+    String end,
+  ) {
+    return '$index: $start – $end';
+  }
+
+  @override
+  String get raiPlayMediaUnavailable =>
+      '多次尝试后，RaiPlay 仍未返回可播放的地址。内容可能暂时不可用，请稍后重试。';
 
   @override
   String get concertsTicketOneLogin => '登录 TicketOne 账户';
@@ -10720,6 +10863,48 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
   @override
   String get pdfUnprotectedCopyDescription =>
       '保存无需密码的 PDF 副本，保留原有排版和内容。原始 PDF 保持不变。';
+
+  @override
+  String get onlineDictionaryTitle => '在线词典';
+
+  @override
+  String get onlineDictionaryWord => '词：';
+
+  @override
+  String get onlineDictionaryLanguage => '词典语言：';
+
+  @override
+  String get onlineDictionaryDefinitions => '定义';
+
+  @override
+  String get onlineDictionarySynonyms => '同义词';
+
+  @override
+  String get onlineDictionaryNotFound => '未找到该词。';
+
+  @override
+  String get onlineDictionaryLimited => '结果过多。请优化搜索条件。';
+
+  @override
+  String get onlineDictionaryTranslation => '词典翻译语言：';
+
+  @override
+  String get onlineDictionaryNone => '无';
+
+  @override
+  String onlineDictionaryEntryTitle(String word, String language) {
+    return '$word — $language';
+  }
+
+  @override
+  String onlineDictionaryDefinition(int number, String text) {
+    return '$number. $text';
+  }
+
+  @override
+  String onlineDictionarySource(String url) {
+    return 'Wiktionary — CC BY-SA 4.0\n$url';
+  }
 
   @override
   String get podcastRecorderTitle => '录制播客';
@@ -10766,4 +10951,7 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get podcastRecorderRemoveOutro => '移除片尾音乐';
+
+  @override
+  String get dutch => '荷兰语';
 }

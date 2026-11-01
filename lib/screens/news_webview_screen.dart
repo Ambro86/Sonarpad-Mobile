@@ -887,6 +887,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
     );
     if (configured.trim().isNotEmpty) return configured;
     if (widget.language == NewsLanguage.turkish) return 'tr-TR-EmelNeural';
+    if (widget.language == NewsLanguage.dutch) return 'nl-NL-ColetteNeural';
     return 'it-IT-IsabellaNeural';
   }
 

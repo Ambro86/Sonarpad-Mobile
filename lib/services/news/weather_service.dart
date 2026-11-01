@@ -166,6 +166,7 @@ class OpenMeteoWeatherService {
     return switch (languageCode) {
       'cs' => 'cs',
       'de' => 'de',
+      'nl' => 'nl',
       'en' => 'en',
       'es' => 'es',
       'fr' => 'fr',

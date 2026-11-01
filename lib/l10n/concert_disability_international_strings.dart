@@ -1,6 +1,34 @@
 /// Venue guidance: published accessibility rules and general enquiries remain
 /// distinct. English follows the existing fallback for unsupported app locales.
 const concertDisabilityInternationalStrings = <String, Map<String, String>>{
+  'nl': {
+    'disabilityTitle': 'Toegang voor mensen met een beperking',
+    'disabilityHelp': 'Toegankelijke plaatsen en voorwaarden voor begeleiders verschillen per locatie en organisator. Lees de officiële informatie voordat je koopt.',
+    'disabilityVenue': 'Locatie en stad',
+    'disabilityConditions': 'Beschrijf je behoeften, ook bij blindheid of slechtziendheid. Rolstoelplaatsen zijn niet automatisch bedoeld voor iedere beperking. Controleer bewijsstukken, begeleiding, assistentiehonden, prijzen en beschikbaarheid. Sonarpad bepaalt niet wie in aanmerking komt.',
+    'disabilityContactInstructions': 'Officiële informatie lezen',
+    'disabilityContactEmail': 'Een e-mail schrijven',
+    'disabilityCallContact': 'De vermelde dienst bellen',
+    'disabilityPhone': 'De kassa bellen',
+    'disabilityOpenEvent': 'De oorspronkelijke evenementpagina openen',
+    'disabilityChooseOrganiser': 'Organisator of locatie kiezen',
+    'disabilityChooseHelp': 'Kies alleen de organisator of locatie van jouw evenement. Controleer voorstelling, stad en datum voordat je contact opneemt.',
+    'disabilityRequestNotice': 'Een aanvraag is geen bevestigde reservering. Wacht op antwoord van de verantwoordelijke dienst. Sonarpad verstuurt niet automatisch aanvragen of documenten.',
+    'disabilityInternationalUnknown': 'We hebben nog geen geverifieerd contact voor deze locatie. Open de oorspronkelijke evenementpagina en raadpleeg de organisator. Gebruik geen contactgegevens van een andere locatie.',
+    'disabilityIntlVenueInfo': 'De officiële informatie beschrijft de toegankelijkheid van de locatie. De vermelde contacten geven informatie over het gebouw en zijn geen speciale ticketservice. Bevestig toegankelijke plaatsen en begeleidersvoorwaarden bij de ticketverkoper van het evenement.',
+    'disabilityIntlBoxOffice': 'Neem vóór aankoop contact op met de locatie om een toegankelijke plaats en eventuele begeleiding af te spreken. De beschikbaarheid moet voor de gekozen voorstelling worden bevestigd.',
+    'disabilityIntlEnquire': 'Er is een officieel contact van de kassa of locatie beschikbaar. We hebben geen specifieke procedure voor mensen met een beperking geverifieerd: vraag vóór aankoop naar hulp, plaatsen, bewijsstukken en begeleidersvoorwaarden.',
+    'disabilityIntlEventSeller': 'Neem voor toegankelijke plaatsen contact op met de organisator of verkoper op de evenementpagina. De locatie regelt deze reserveringen niet rechtstreeks. Een eventueel vermeld e-mailadres van de locatie is bedoeld voor informatie over het gebouw.',
+    'disabilityIntlHallenstadion': 'Vraag rolstoeltickets aan bij de organisator van het evenement. Het vermelde nummer is de informatiedienst van Ticketcorner, die kan helpen de juiste verkoper te vinden.',
+    'disabilityIntlDeLaMar': 'Rolstoelplaatsen reserveer je telefonisch of per e-mail via de klantenservice, niet online. Er is ruimte voor een begeleider ernaast; bespreek je behoeften vóór aankoop.',
+    'disabilityIntlRai': 'Rolstoelplaatsen vereisen een specifieke reservering. Meld bij het reserveren ook een eventuele geleide- of assistentiehond. Lees de officiële instructies van het theater.',
+    'disabilityIntlAhoy': 'Heb je een rolstoelplaats nodig, kies dan de bijbehorende ticketcategorie bij aankoop. Ook de begeleider moet een geldig ticket hebben. Spreek toegang met een geleidehond vooraf af met de locatie.',
+    'disabilityIntlFilmstudion': 'De zaal heeft een hellingbaan en een rolstoelgedeelte. Concerten hebben doorgaans staanplaatsen, tenzij anders vermeld. Bespreek je behoeften met de zaal; een zitplaats is niet automatisch beschikbaar.',
+    'disabilityIntlMonument': 'De zaal op de begane grond vermeldt dat deze rolstoeltoegankelijk is. Een assistent of begeleider hoeft geen ticket te kopen. Bevestig eventuele specifieke behoeften vóór je bezoek.',
+    'disabilityIntlCosmopolite': 'Met een geldig ledsagerbevis krijgt de begeleider gratis toegang zonder apart ticket. Neem vooraf contact op met de zaal over de toegang; de galerij is niet rolstoeltoegankelijk.',
+    'disabilityIntlByscenen': 'Meld rolstoeltoegang vooraf bij de zaal. De begeleider heeft een apart ledsagerbillett en een geldig ledsagerbevis nodig; het aantal plaatsen is beperkt. Zitplaatsen kunnen niet worden gereserveerd.',
+    'disabilityIntlOlavshallen': 'Rolstoelplaatsen worden online verkocht. De begeleider moet ook een eigen gratis ticket reserveren en een geldig ledsagerbevis tonen. Neem voor hulp contact op met de kassa.',
+  },
   'it': {
     'disabilityInternationalUnknown':
         'Non abbiamo ancora un contatto verificato per questa struttura. Apri la pagina originale dell’evento e consulta l’organizzatore. Non usare i contatti di un’altra struttura.',

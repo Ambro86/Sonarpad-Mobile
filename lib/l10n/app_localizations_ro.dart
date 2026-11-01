@@ -4,133 +4,9 @@ import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
 
-/// The Romanian translations (`ro`) — phase 3 (partial).
-/// Remaining untranslated messages temporarily keep their English text until the next phase.
+/// The translations for Romanian Moldavian Moldovan (`ro`).
 class AppLocalizationsRo extends AppLocalizations {
-  @override
-  String onlineDictionaryEntryTitle(String word, String language) => "$word — $language";
-  @override
-  String onlineDictionaryDefinition(int number, String text) => "$number. $text";
-  @override
-  String onlineDictionarySource(String url) => "Wiktionary — CC BY-SA 4.0\n$url";
-
-  @override
-  String get onlineDictionaryTitle => "Dicționar online";
-  @override
-  String get onlineDictionaryWord => "Cuvânt:";
-  @override
-  String get onlineDictionaryLanguage => "Limba dicționarului:";
-  @override
-  String get onlineDictionaryDefinitions => "Definiții";
-  @override
-  String get onlineDictionarySynonyms => "Sinonime";
-  @override
-  String get onlineDictionaryNotFound => "Cuvântul nu a fost găsit.";
-  @override
-  String get onlineDictionaryLimited => "Rezultat prea mare. Restrângeți căutarea.";
-  @override
-  String get onlineDictionaryTranslation => "Limba traducerii:";
-  @override
-  String get onlineDictionaryNone => "Niciuna";
-
-  @override
-  String get raiPlayMediaUnavailable => "RaiPlay nu a returnat o adresă care poate fi redată după mai multe încercări. Conținutul poate fi temporar indisponibil. Încercați din nou mai târziu.";
-
-  @override
-  String audioDescriptionProjectEditorSegmentOption(int index, String start, String end) => '$index: $start – $end';
-
-  @override
-  String get convertMediaDocumentAudiobookHint => 'Pentru a transforma un document în carte audio, accesați Documente → Importă din Fișiere. După import, alegeți Exportă documentul → Carte audio MP3 (.mp3).';
-
-  @override
-  String get audioDescriptionProjectSegment => 'Segment de reanalizat';
-
-  @override
-  String get audioDescriptionProjectReanalyze => 'Reanalizează segmentul';
-
-  @override
-  String get audioDescriptionProjectReanalyzeConfirm =>
-      'Reanalizați segmentul selectat? Textele actualizate vor înlocui descrierile corespunzătoare, păstrând timpii salvați. Descrieri noi vor fi adăugate numai în spațiile disponibile. Fișierul cu audiodescriere va trebui exportat din nou.';
-
-  @override
-  String get saveMp4WithAudiodescription => "MP4 cu audiodescriere";
-
-  @override
-  String get saveMediaContent => "Salvează conținutul";
-
-  @override
-  String get favoritesSortAlphabetically => "Sortează alfabetic";
-
-  @override
-  String get favoriteVideosLatest => 'Cele mai noi videoclipuri';
-  @override
-  String get favoriteVideosTitle => 'Cele mai noi videoclipuri din favorite';
-  @override
-  String get favoriteVideosPartial =>
-      'Unele canale nu au putut fi încărcate. Sunt afișate videoclipurile celorlalte canale.';
-
-  @override
-  String get recordingNotAdvancing => "Înregistrarea nu primește date noi. Verifică conexiunea și repornește înregistrarea dacă este necesar.";
-
-  @override
-  String get castToDevice => "Transmite cu Chromecast";
-  @override
-  String get castNoDevices => "Nu s-au găsit dispozitive. Verifică dacă folosesc aceeași rețea Wi-Fi și încearcă din nou.";
-  @override
-  String get castFailure => "Transmiterea a eșuat sau conexiunea s-a pierdut. Poți continua pe acest dispozitiv.";
-  @override
-  String get castResumeHere => "Continuă pe acest dispozitiv";
-  @override
-  String get settingsHideCalendarSaints => "Ascunde sfinții din calendar";
-
-  @override
-  String get settingsShowCast => "Afișează Chromecast în playerele compatibile";
-  @override
-  String get castStop => "Oprește transmiterea";
-
   AppLocalizationsRo([String locale = 'ro']) : super(locale);
-
-  @override
-  String get sonarTubeSearchType => 'Tip de căutare';
-
-  @override
-  String get sonarTubeSearchAll => 'Toate';
-
-  @override
-  String get sonarTubeSearchPlaylists => 'Liste de redare';
-
-  @override
-  String get sonarTubeSearchChannels => 'Canale';
-
-  @override
-  String get calendarReminderHasTime => "Setează o oră";
-
-  @override
-  String get audioDescriptionMp3Bitrate => "Rată de biți MP3";
-
-  @override
-  String get audioDescriptionSourceVolume => "Volumul filmului";
-
-  @override
-  String get audioDescriptionSourceVolumeHint => "Reglează volumul de bază al filmului. Acesta este redus automat și mai mult în timpul audiodescrierii.";
-
-  @override
-  String get audioDescriptionAudioNormal => "Normal";
-
-  @override
-  String get audioDescriptionMixPreview => "Ascultă proba cu film și voce";
-
-  @override
-  String get audioDescriptionMixPreviewPreparing => "Se pregătește proba audio";
-
-  @override
-  String get audioDescriptionMixPreviewStop => "Oprește proba audio";
-
-  @override
-  String get audioDescriptionMixPreviewPhrase => "Probă de audiodescriere cu reducerea automată a sunetului.";
-
-  @override
-  String get audioDescriptionMixPreviewHint => "După reglarea volumului, pornește o probă scurtă cu un fragment din film, vocea aleasă și reducerea automată a sunetului filmului.";
 
   @override
   String get appTitle => 'Sonarpad';
@@ -151,7 +27,8 @@ class AppLocalizationsRo extends AppLocalizations {
   String get settingsThemeDark => 'Întunecată';
 
   @override
-  String get settingsWeatherTemperatureUnit => 'Unitatea de temperatură pentru vreme';
+  String get settingsWeatherTemperatureUnit =>
+      'Unitatea de temperatură pentru vreme';
 
   @override
   String get weatherTemperatureCelsius => 'Celsius (°C)';
@@ -184,7 +61,23 @@ class AppLocalizationsRo extends AppLocalizations {
   String get sonarTubeTitle => 'SonarTube';
 
   @override
-  String get sonarTubeSearchLabel => 'Caută videoclipuri, canale sau liste de redare';
+  String get sonarTubeSearchLabel =>
+      'Caută videoclipuri, canale sau liste de redare';
+
+  @override
+  String get sonarTubeSearchType => 'Tip de căutare';
+
+  @override
+  String get sonarTubeSearchAll => 'Toate';
+
+  @override
+  String get sonarTubeSearchPlaylists => 'Liste de redare';
+
+  @override
+  String get sonarTubeSearchChannels => 'Canale';
+
+  @override
+  String get calendarReminderHasTime => 'Setează o oră';
 
   @override
   String get sonarTubeSearchPrompt =>
@@ -233,7 +126,8 @@ class AppLocalizationsRo extends AppLocalizations {
   String get sonarTubeChannelFavorites => 'Canale favorite';
 
   @override
-  String get sonarTubeNoVideoFavorites => 'Nu există videoclipuri sau liste de redare favorite.';
+  String get sonarTubeNoVideoFavorites =>
+      'Nu există videoclipuri sau liste de redare favorite.';
 
   @override
   String get sonarTubeNoChannelFavorites => 'Nu există canale favorite.';
@@ -284,12 +178,12 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String sonarTubeFavoriteAdded(String name) {
-    return '$name added to favorites.';
+    return '$name a fost adăugat la favorite.';
   }
 
   @override
   String sonarTubeFavoriteRemoved(String name) {
-    return '$name removed from favorites.';
+    return '$name a fost eliminat din favorite.';
   }
 
   @override
@@ -374,16 +268,19 @@ class AppLocalizationsRo extends AppLocalizations {
   String get convertMediaNoOutput => 'Selectează un folder de salvare.';
 
   @override
-  String get convertMediaOutputNotWritable => 'Folderul selectat nu este accesibil direct. Fișierul va fi salvat în folderul intern Sonarpad; după terminarea conversiei îl poți distribui sau salva în aplicația Fișiere.';
+  String get convertMediaOutputNotWritable =>
+      'Folderul selectat nu este accesibil direct. Fișierul va fi salvat în folderul intern Sonarpad; după terminarea conversiei îl poți distribui sau salva în aplicația Fișiere.';
 
   @override
   String get convertMediaNoImage => 'Selectează o imagine pentru videoclip.';
 
   @override
-  String get convertMediaSamePath => 'Fișierul convertit trebuie să fie diferit de fișierul sursă.';
+  String get convertMediaSamePath =>
+      'Fișierul convertit trebuie să fie diferit de fișierul sursă.';
 
   @override
-  String get convertMediaInvalidBitrate => 'Rată de biți nevalidă. Introdu o valoare între 64 și 320 kbps.';
+  String get convertMediaInvalidBitrate =>
+      'Rată de biți nevalidă. Introdu o valoare între 64 și 320 kbps.';
 
   @override
   String convertMediaFailed(Object error) {
@@ -436,16 +333,20 @@ class AppLocalizationsRo extends AppLocalizations {
   String get infoAuthor => 'Autor: Ambrogio Riili';
 
   @override
-  String get donationsIntro => 'Sonarpad a fost creat inițial pentru a răspunde unor nevoi personale, dar în timp a devenit o aplicație mult mai amplă. Dezvoltarea sa necesită muncă permanentă: îmbunătățirea funcțiilor, corectarea erorilor, explorarea unor idei noi și testarea atentă a fiecărei funcții.\n\nDacă Sonarpad îți este util și dorești să îi sprijini dezvoltarea, poți face o donație.';
+  String get donationsIntro =>
+      'Sonarpad a fost creat inițial pentru a răspunde unor nevoi personale, dar în timp a devenit o aplicație mult mai amplă. Dezvoltarea sa necesită muncă permanentă: îmbunătățirea funcțiilor, corectarea erorilor, explorarea unor idei noi și testarea atentă a fiecărei funcții.\n\nDacă Sonarpad îți este util și dorești să îi sprijini dezvoltarea, poți face o donație.';
 
   @override
-  String get donationsPaypalDesc => 'Poți dona prin PayPal folosind acest link:\nhttps://www.paypal.me/ambrogio86\nDacă este posibil, adaugă „Sonarpad” ca notă a plății.';
+  String get donationsPaypalDesc =>
+      'Poți dona prin PayPal folosind acest link:\nhttps://www.paypal.me/ambrogio86\nDacă este posibil, adaugă „Sonarpad” ca notă a plății.';
 
   @override
-  String get donationsBankDesc => 'Poți dona și prin transfer bancar în contul pe numele Ambrogio Riili.\nIBAN: IT77W0306901020100000064149\nDacă este posibil, folosește o explicație clară a plății, de exemplu „Sonarpad”.';
+  String get donationsBankDesc =>
+      'Poți dona și prin transfer bancar în contul pe numele Ambrogio Riili.\nIBAN: IT77W0306901020100000064149\nDacă este posibil, folosește o explicație clară a plății, de exemplu „Sonarpad”.';
 
   @override
-  String get donationsThanks => 'Oricine sprijină proiectul va fi menționat în aplicație și în depozitul GitHub, cu excepția cazului în care preferă să rămână anonim sau să folosească o poreclă.\n\nMulțumiri lui Jiri Holzinger și Paola Vagata pentru contribuția lor.\nPentru traducerea în cehă, mulțumiri lui Radek Žalud și Jiri Holzinger.\nPentru traducerea în spaniolă, mulțumiri lui Arturo Fernandez Rivas.\n\nMulțumiri enorme lui Leonardo Graziano, Paolo Marcelli, Tiziano Ferraro și întregului grup Tecnologia accessibile pentru tot sprijinul oferit în îmbunătățirea zilnică a acestui minunat proiect.';
+  String get donationsThanks =>
+      'Oricine sprijină proiectul va fi menționat în aplicație și în depozitul GitHub, cu excepția cazului în care preferă să rămână anonim sau să folosească o poreclă.\n\nMulțumiri lui Jiri Holzinger și Paola Vagata pentru contribuția lor.\nPentru traducerea în cehă, mulțumiri lui Radek Žalud și Jiri Holzinger.\nPentru traducerea în spaniolă, mulțumiri lui Arturo Fernandez Rivas.\n\nMulțumiri enorme lui Leonardo Graziano, Paolo Marcelli, Tiziano Ferraro și întregului grup Tecnologia accessibile pentru tot sprijinul oferit în îmbunătățirea zilnică a acestui minunat proiect.';
 
   @override
   String get news => 'Știri';
@@ -483,7 +384,8 @@ class AppLocalizationsRo extends AppLocalizations {
   String get newsLocalCityLabel => 'Introdu orașul';
 
   @override
-  String get newsLocalCityHint => 'Corectează orașul folosit pentru știrile locale';
+  String get newsLocalCityHint =>
+      'Corectează orașul folosit pentru știrile locale';
 
   @override
   String get update => 'Actualizare';
@@ -518,7 +420,8 @@ class AppLocalizationsRo extends AppLocalizations {
   String get newsSourceName => 'Numele sursei sau al site-ului';
 
   @override
-  String get newsSourceUrlOrSearch => 'URL site, flux RSS sau termen de căutare';
+  String get newsSourceUrlOrSearch =>
+      'URL site, flux RSS sau termen de căutare';
 
   @override
   String get deleteNewsSource => 'Elimină';
@@ -558,7 +461,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String error(Object error) {
-    return 'Error: $error';
+    return 'Eroare: $error';
   }
 
   @override
@@ -599,10 +502,12 @@ class AppLocalizationsRo extends AppLocalizations {
   String get readFullArticle => 'Citește articolul complet';
 
   @override
-  String get extractingReaderArticleText => 'Se extrage textul în modul de citire...';
+  String get extractingReaderArticleText =>
+      'Se extrage textul în modul de citire...';
 
   @override
-  String get extractingVisibleArticleText => 'Se extrage textul vizibil din pagină...';
+  String get extractingVisibleArticleText =>
+      'Se extrage textul vizibil din pagină...';
 
   @override
   String source(String source) {
@@ -730,12 +635,12 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String podcastResultsFound(int count) {
-    return 'Found $count podcasts';
+    return 'S-au găsit $count podcasturi';
   }
 
   @override
   String podcastSearchError(Object error) {
-    return 'Podcast search error: $error';
+    return 'Eroare la căutarea podcasturilor: $error';
   }
 
   @override
@@ -750,7 +655,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String podcastSubscriptionError(Object error) {
-    return 'Podcast subscription error: $error';
+    return 'Eroare la urmărirea podcastului: $error';
   }
 
   @override
@@ -824,12 +729,12 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String podcastImportComplete(int count) {
-    return 'Imported podcasts: $count';
+    return 'Podcasturi importate: $count';
   }
 
   @override
   String podcastImportError(Object error) {
-    return 'Podcast import error: $error';
+    return 'Eroare la importul podcasturilor: $error';
   }
 
   @override
@@ -840,7 +745,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String podcastExportError(Object error) {
-    return 'Podcast export error: $error';
+    return 'Eroare la exportul podcasturilor: $error';
   }
 
   @override
@@ -891,7 +796,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String nowPlayingTitle(String title) {
-    return 'Now playing: $title';
+    return 'În redare: $title';
   }
 
   @override
@@ -902,7 +807,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String playbackPositionValue(String position, String duration) {
-    return '$position of $duration';
+    return '$position din $duration';
   }
 
   @override
@@ -910,7 +815,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String volumeValue(int percentage) {
-    return 'Volume: $percentage%';
+    return 'Volum: $percentage%';
   }
 
   @override
@@ -941,18 +846,6 @@ class AppLocalizationsRo extends AppLocalizations {
   String get wikipediaImportWholeArticle => 'Articol complet';
 
   @override
-  String get treccaniTitle => 'Enciclopedia Treccani';
-
-  @override
-  String get treccaniSearchLabel => 'Caută în Enciclopedia Treccani';
-
-  @override
-  String get treccaniNoResults => 'Nu s-au găsit articole Treccani';
-
-  @override
-  String get treccaniWholeEntry => 'Articol complet';
-
-  @override
   String get documents => 'Documente';
 
   @override
@@ -965,7 +858,8 @@ class AppLocalizationsRo extends AppLocalizations {
   String get addToLibrary => 'Adaugă în bibliotecă';
 
   @override
-  String get documentImportSelectionMode => 'Dorești să selectezi un singur document sau mai multe documente?';
+  String get documentImportSelectionMode =>
+      'Dorești să selectezi un singur document sau mai multe documente?';
 
   @override
   String get documentImportSingle => 'Un document';
@@ -986,7 +880,8 @@ class AppLocalizationsRo extends AppLocalizations {
   String get documentsAdded => 'Documente adăugate';
 
   @override
-  String get importDocumentsFromITunes => 'Importă documente din iTunes / Apple Devices';
+  String get importDocumentsFromITunes =>
+      'Importă documente din iTunes / Apple Devices';
 
   @override
   String sharedDocumentsImportComplete(int count) {
@@ -1022,10 +917,12 @@ class AppLocalizationsRo extends AppLocalizations {
   }
 
   @override
-  String get noExportableTextFound => 'Nu s-a găsit text care poate fi exportat.';
+  String get noExportableTextFound =>
+      'Nu s-a găsit text care poate fi exportat.';
 
   @override
-  String get modifiedDocumentNoExportableText => 'Documentul modificat nu conține text care poate fi exportat.';
+  String get modifiedDocumentNoExportableText =>
+      'Documentul modificat nu conține text care poate fi exportat.';
 
   @override
   String get documentRemoved => 'Document eliminat';
@@ -1043,7 +940,8 @@ class AppLocalizationsRo extends AppLocalizations {
   String get writeNewDocument => 'Scrie un document nou';
 
   @override
-  String get addDocumentToLibraryHint => 'Adaugă documentul în bibliotecă. Răsfoiește fișierele dispozitivului și adaugă-l.';
+  String get addDocumentToLibraryHint =>
+      'Adaugă documentul în bibliotecă. Răsfoiește fișierele dispozitivului și adaugă-l.';
 
   @override
   String get documentTypeLabel => 'Document';
@@ -1086,11 +984,12 @@ class AppLocalizationsRo extends AppLocalizations {
   String get openFolderHint => 'Atinge de două ori pentru a deschide folderul';
 
   @override
-  String get openDocumentHint => 'Atinge de două ori pentru a deschide și citi documentul';
+  String get openDocumentHint =>
+      'Atinge de două ori pentru a deschide și citi documentul';
 
   @override
   String removeItem(String name) {
-    return 'Remove $name';
+    return 'Elimină $name';
   }
 
   @override
@@ -1109,16 +1008,20 @@ class AppLocalizationsRo extends AppLocalizations {
   String get documentReaderTitle => 'Cititor de documente';
 
   @override
-  String get documentReaderEditHint => 'Atinge un paragraf pentru a-l edita. Glisează în sus sau în jos pentru a adăuga un semn de carte.';
+  String get documentReaderEditHint =>
+      'Atinge un paragraf pentru a-l edita. Glisează în sus sau în jos pentru a adăuga un semn de carte.';
 
   @override
-  String get documentParagraphSelectionStartAction => 'Începe selectarea paragrafelor';
+  String get documentParagraphSelectionStartAction =>
+      'Începe selectarea paragrafelor';
 
   @override
-  String get documentParagraphSelectionTapHint => 'Modul de selectare este activ. Atinge de două ori pentru a selecta sau deselecta acest paragraf.';
+  String get documentParagraphSelectionTapHint =>
+      'Modul de selectare este activ. Atinge de două ori pentru a selecta sau deselecta acest paragraf.';
 
   @override
-  String get documentParagraphSelectionStarted => 'Modul de selectare este activ. Paragraf selectat. Atinge de două ori alte paragrafe pentru a le selecta.';
+  String get documentParagraphSelectionStarted =>
+      'Modul de selectare este activ. Paragraf selectat. Atinge de două ori alte paragrafe pentru a le selecta.';
 
   @override
   String documentParagraphSelectedAnnouncement(int count) {
@@ -1149,19 +1052,24 @@ class AppLocalizationsRo extends AppLocalizations {
   }
 
   @override
-  String get documentExitParagraphSelection => 'Ieși din selectarea paragrafelor';
+  String get documentExitParagraphSelection =>
+      'Ieși din selectarea paragrafelor';
 
   @override
-  String get documentParagraphSelectionExited => 'Modul de selectare a fost dezactivat.';
+  String get documentParagraphSelectionExited =>
+      'Modul de selectare a fost dezactivat.';
 
   @override
-  String get documentBookmarkHintSet => 'Glisează în sus sau în jos pentru a seta un semn de carte.';
+  String get documentBookmarkHintSet =>
+      'Glisează în sus sau în jos pentru a seta un semn de carte.';
 
   @override
-  String get documentEditParagraphActionHint => 'Atinge de două ori pentru a edita acest paragraf. ';
+  String get documentEditParagraphActionHint =>
+      'Atinge de două ori pentru a edita acest paragraf. ';
 
   @override
-  String get documentBookmarkHintReplace => 'Glisează în sus sau în jos pentru a elimina semnul de carte existent sau pentru a-l înlocui cu acest paragraf.';
+  String get documentBookmarkHintReplace =>
+      'Glisează în sus sau în jos pentru a elimina semnul de carte existent sau pentru a-l înlocui cu acest paragraf.';
 
   @override
   String get documentSetBookmarkAction => 'Adaugă un semn de carte nou';
@@ -1170,7 +1078,8 @@ class AppLocalizationsRo extends AppLocalizations {
   String get documentRemoveBookmarkAction => 'Elimină semnul de carte';
 
   @override
-  String get documentReplaceBookmarkAction => 'Elimină și adaugă un semn de carte nou';
+  String get documentReplaceBookmarkAction =>
+      'Elimină și adaugă un semn de carte nou';
 
   @override
   String get searchInDocument => 'Caută în document';
@@ -1192,7 +1101,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String noDocumentSearchResults(String query) {
-    return 'No results found for $query.';
+    return 'Nu s-au găsit rezultate pentru $query.';
   }
 
   @override
@@ -1250,12 +1159,12 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String settingsVoiceTestError(Object error) {
-    return 'Voice test error: $error';
+    return 'Eroare la testarea vocii: $error';
   }
 
   @override
   String settingsVoiceSaveError(Object error) {
-    return 'TTS voice save error: $error';
+    return 'Eroare la salvarea vocii TTS: $error';
   }
 
   @override
@@ -1285,7 +1194,8 @@ class AppLocalizationsRo extends AppLocalizations {
   String get settingsDocumentSliderStep => 'Pasul glisorului documentului';
 
   @override
-  String get settingsDocumentSliderStepHint => 'Controlează cât de mult se deplasează glisorul poziției în document când glisezi în sus sau în jos.';
+  String get settingsDocumentSliderStepHint =>
+      'Controlează cât de mult se deplasează glisorul poziției în document când glisezi în sus sau în jos.';
 
   @override
   String get settingsReadingSleepTimer => 'Temporizator de oprire a citirii';
@@ -1295,17 +1205,20 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String settingsReadingSleepTimerMinutes(int minutes) {
-    return '$minutes minutes';
+    return '$minutes minute';
   }
 
   @override
-  String get settingsReadingSleepTimerHint => 'Oprește automat lectura documentului curent după timpul selectat și salvează poziția. Numărătoarea inversă repornește de fiecare dată când începi lectura unui document.';
+  String get settingsReadingSleepTimerHint =>
+      'Oprește automat lectura documentului curent după timpul selectat și salvează poziția. Numărătoarea inversă repornește de fiecare dată când începi lectura unui document.';
 
   @override
-  String get documentReadingSleepTimerStopped => 'Temporizator de somn: lectura a fost oprită și poziția a fost salvată.';
+  String get documentReadingSleepTimerStopped =>
+      'Temporizator de somn: lectura a fost oprită și poziția a fost salvată.';
 
   @override
-  String get settingsSeekStep => 'Pas pentru derulare înapoi / înainte la media';
+  String get settingsSeekStep =>
+      'Pas pentru derulare înapoi / înainte la media';
 
   @override
   String get aiChatIntro => 'Sunt Sonarpad AI. Cum te pot ajuta?';
@@ -1353,7 +1266,8 @@ class AppLocalizationsRo extends AppLocalizations {
   String get weatherPrecipitation => 'Precipitații';
 
   @override
-  String get weatherPrecipitationProbability => 'Probabilitatea precipitațiilor';
+  String get weatherPrecipitationProbability =>
+      'Probabilitatea precipitațiilor';
 
   @override
   String get weatherWind => 'Vânt';
@@ -1377,7 +1291,8 @@ class AppLocalizationsRo extends AppLocalizations {
   String get settingsSend => 'Trimite';
 
   @override
-  String get settingsFillFieldsCode => 'Completează toate câmpurile pentru a solicita codul.';
+  String get settingsFillFieldsCode =>
+      'Completează toate câmpurile pentru a solicita codul.';
 
   @override
   String get settingsName => 'Prenume';
@@ -1446,7 +1361,8 @@ class AppLocalizationsRo extends AppLocalizations {
   String get annulla => 'Anulează';
 
   @override
-  String get compilaTuttiICampiPerRichiedereIlCodice => 'Completează toate câmpurile pentru a solicita codul.';
+  String get compilaTuttiICampiPerRichiedereIlCodice =>
+      'Completează toate câmpurile pentru a solicita codul.';
 
   @override
   String get selectFolder => 'Selectează folderul';
@@ -1455,22 +1371,17 @@ class AppLocalizationsRo extends AppLocalizations {
   String get exportDocument => 'Exportă documentul';
 
   @override
-  String get exportFolderZip => "Exportă folderul ca ZIP";
+  String get exportFolderZip => 'Exportă folderul ca ZIP';
 
   @override
-  String get exportFormatPrompt => 'În ce format dorești să exporți documentul?';
+  String get exportFormatPrompt =>
+      'În ce format dorești să exporți documentul?';
 
   @override
   String get textFormat => 'Text (.txt)';
 
   @override
   String get pdfFormat => 'PDF (.pdf)';
-
-  @override
-  String get markdownFormat => 'Markdown (.md)';
-
-  @override
-  String get htmlFormat => 'HTML (.html)';
 
   @override
   String get docxFormat => 'DOCX (.docx)';
@@ -1506,7 +1417,8 @@ class AppLocalizationsRo extends AppLocalizations {
   String get importFromProjectGutenberg => 'Importă din Project Gutenberg';
 
   @override
-  String get projectGutenbergImportUnavailable => 'Importul din Project Gutenberg nu este încă disponibil.';
+  String get projectGutenbergImportUnavailable =>
+      'Importul din Project Gutenberg nu este încă disponibil.';
 
   @override
   String get importFromInternetArchive => 'Importă din Internet Archive';
@@ -1574,7 +1486,8 @@ class AppLocalizationsRo extends AppLocalizations {
   String get noLibrivoxAudiobooksFound => 'Nu s-au găsit cărți audio.';
 
   @override
-  String get librivoxAudiobookSaved => 'Cartea audio a fost salvată în Documente.';
+  String get librivoxAudiobookSaved =>
+      'Cartea audio a fost salvată în Documente.';
 
   @override
   String get librivoxSaveAudiobook => 'Salvează cartea audio în Documente';
@@ -1586,7 +1499,8 @@ class AppLocalizationsRo extends AppLocalizations {
   String get librivoxNoAudioTracks => 'Nu sunt disponibile piste audio.';
 
   @override
-  String get librivoxNotTextExportable => 'Cărțile audio LibriVox nu pot fi exportate ca text.';
+  String get librivoxNotTextExportable =>
+      'Cărțile audio LibriVox nu pot fi exportate ca text.';
 
   @override
   String sourceDurationValue(String duration) {
@@ -1644,7 +1558,8 @@ class AppLocalizationsRo extends AppLocalizations {
   String get applyAndSave => 'Aplică și salvează';
 
   @override
-  String get textEditedAndSaved => 'Text editat și salvat în documentul curent.';
+  String get textEditedAndSaved =>
+      'Text editat și salvat în documentul curent.';
 
   @override
   String get saveError => 'Eroare la salvare';
@@ -1662,7 +1577,8 @@ class AppLocalizationsRo extends AppLocalizations {
   String get modifiedInSonarpad => 'Modificat în Sonarpad';
 
   @override
-  String get noTextAvailableForDocument => 'Nu există text disponibil pentru acest document.';
+  String get noTextAvailableForDocument =>
+      'Nu există text disponibil pentru acest document.';
 
   @override
   String bookmarkSet(int index) {
@@ -1749,7 +1665,8 @@ class AppLocalizationsRo extends AppLocalizations {
   }
 
   @override
-  String get dropboxLoginPrompt => 'Autentifică-te în Dropbox pentru a importa documentele.';
+  String get dropboxLoginPrompt =>
+      'Autentifică-te în Dropbox pentru a importa documentele.';
 
   @override
   String get loginToDropbox => 'Autentifică-te în Dropbox';
@@ -1777,7 +1694,8 @@ class AppLocalizationsRo extends AppLocalizations {
   String get goBack => 'Înapoi';
 
   @override
-  String get noSupportedFilesInFolder => 'Nu există fișiere compatibile în acest folder.';
+  String get noSupportedFilesInFolder =>
+      'Nu există fișiere compatibile în acest folder.';
 
   @override
   String get articleNotFound => 'Articolul nu a fost găsit.';
@@ -1808,7 +1726,8 @@ class AppLocalizationsRo extends AppLocalizations {
   String get logCleared => 'Jurnal șters';
 
   @override
-  String get parafarmacoDetailReadyAnnouncement => 'Fișa produsului a fost încărcată. Glisează spre dreapta pentru a alege secțiunile.';
+  String get parafarmacoDetailReadyAnnouncement =>
+      'Fișa produsului a fost încărcată. Glisează spre dreapta pentru a alege secțiunile.';
 
   @override
   String get systemLog => 'Jurnal de sistem';
@@ -1826,9 +1745,6 @@ class AppLocalizationsRo extends AppLocalizations {
   String get developerLogNameOptional => 'Nume (opțional)';
 
   @override
-  String get developerReportText => 'Detaliile raportului';
-
-  @override
   String get developerLogSend => 'Trimite';
 
   @override
@@ -1838,7 +1754,8 @@ class AppLocalizationsRo extends AppLocalizations {
   String get developerLogSent => 'Raport trimis dezvoltatorului.';
 
   @override
-  String get developerLogSendFailed => 'Raportul nu a putut fi trimis. Încearcă din nou mai târziu.';
+  String get developerLogSendFailed =>
+      'Raportul nu a putut fi trimis. Încearcă din nou mai târziu.';
 
   @override
   String get donateWithPaypal => 'Donează prin PayPal';
@@ -1943,7 +1860,8 @@ class AppLocalizationsRo extends AppLocalizations {
   String get radio => 'Radio';
 
   @override
-  String get radioHint => 'Caută posturi de radio, ascultă transmisiuni și gestionează favoritele';
+  String get radioHint =>
+      'Caută posturi de radio, ascultă transmisiuni și gestionează favoritele';
 
   @override
   String get radioTitle => 'Posturi de radio din întreaga lume';
@@ -2079,10 +1997,12 @@ class AppLocalizationsRo extends AppLocalizations {
   String get radioAddSubmit => 'Verifică și adaugă';
 
   @override
-  String get radioAddMissingFields => 'Introdu numele postului și adresa fluxului.';
+  String get radioAddMissingFields =>
+      'Introdu numele postului și adresa fluxului.';
 
   @override
-  String get radioCommunityAdded => 'Postul a fost adăugat cu succes în comunitatea Sonarpad.';
+  String get radioCommunityAdded =>
+      'Postul a fost adăugat cu succes în comunitatea Sonarpad.';
 
   @override
   String radioCommunityAddError(Object error) {
@@ -2117,37 +2037,28 @@ class AppLocalizationsRo extends AppLocalizations {
   String get recordingInProgressStatus => 'Înregistrare în curs';
 
   @override
-  String get scheduledRecordingInProgressStatus => 'Înregistrare programată în curs';
+  String get scheduledRecordingInProgressStatus =>
+      'Înregistrare programată în curs';
 
   @override
-  String scheduledRecordingPendingStatus(String dateTime) {
+  String scheduledRecordingPendingStatus(Object dateTime) {
     return 'Programată pentru $dateTime';
   }
 
   @override
-  String recordingCannotOpenBeforeScheduledStart(String dateTime) {
+  String recordingCannotOpenBeforeScheduledStart(Object dateTime) {
     return 'Această înregistrare nu a început încă. Va începe la $dateTime.';
   }
 
   @override
-  String get recordingCannotOpenWhileInProgress => 'Această înregistrare nu poate fi deschisă deoarece este încă în curs.';
+  String get recordingCannotOpenWhileInProgress =>
+      'Această înregistrare nu poate fi deschisă deoarece este încă în curs.';
 
   @override
   String get blindLibrarySearchCatalog => 'Caută în catalog';
 
   @override
   String get selectRecordings => 'Selectează înregistrările';
-
-  @override
-  String get selectDocuments => 'Selectează documente';
-
-  @override
-  String get deleteSelectedDocumentsConfirmation => 'Ștergi definitiv documentele selectate?';
-
-  @override
-  String documentsRemovedCount(int count) {
-    return 'Documente șterse: $count.';
-  }
 
   @override
   String get selectAll => 'Selectează tot';
@@ -2291,7 +2202,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String routeError(Object error) {
-    return 'Error: $error';
+    return 'Eroare: $error';
   }
 
   @override
@@ -2598,14 +2509,14 @@ class AppLocalizationsRo extends AppLocalizations {
   String get concertsYear => 'An';
 
   @override
+  String get concertsQueryRequired =>
+      'Pentru toate evenimentele din acest catalog, introduceți un oraș sau un nume ori alegeți o categorie.';
+
+  @override
   String get concertsCategory => 'Categorie';
 
   @override
   String get concertsAllEvents => 'Toate evenimentele';
-
-  @override
-  String get concertsQueryRequired =>
-      'Pentru toate evenimentele din acest catalog, introduceți un oraș sau un nume ori alegeți o categorie.';
 
   @override
   String get concertsTitle => 'Căutare concerte și evenimente';
@@ -2686,7 +2597,8 @@ class AppLocalizationsRo extends AppLocalizations {
   String get exportCompleteTitle => 'Export finalizat';
 
   @override
-  String get exportCompleteMessage => 'Fișierul a fost creat cu succes. Dorești să îl salvezi în Sonarpad sau să îl distribui?';
+  String get exportCompleteMessage =>
+      'Fișierul a fost creat cu succes. Dorești să îl salvezi în Sonarpad sau să îl distribui?';
 
   @override
   String get saveInSonarpad => 'Salvează în Sonarpad';
@@ -2717,26 +2629,31 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String routeNavigationFromTo(Object from, Object to, Object date) {
-    return 'Navigation details from $from to $to - $date';
+    return 'Detalii de navigare de la $from la $to - $date';
   }
 
   @override
   String get sortPodcastsAlphabetically => 'Sortează podcasturile alfabetic';
 
   @override
-  String get sortRadioFavoritesAlphabetically => 'Sortează favoritele alfabetic';
+  String get sortRadioFavoritesAlphabetically =>
+      'Sortează favoritele alfabetic';
 
   @override
-  String get podcastsSortedAlphabetically => 'Podcasturile au fost sortate alfabetic.';
+  String get podcastsSortedAlphabetically =>
+      'Podcasturile au fost sortate alfabetic.';
 
   @override
-  String get radioFavoritesSortedAlphabetically => 'Favoritele radio au fost sortate alfabetic.';
+  String get radioFavoritesSortedAlphabetically =>
+      'Favoritele radio au fost sortate alfabetic.';
 
   @override
-  String get settingsIncludeFootnotesInText => 'Include notele de subsol în text';
+  String get settingsIncludeFootnotesInText =>
+      'Include notele de subsol în text';
 
   @override
-  String get settingsIncludeFootnotesInTextHint => 'Pentru cărțile EPUB compatibile, afișează fiecare notă imediat după paragraful care face trimitere la ea.';
+  String get settingsIncludeFootnotesInTextHint =>
+      'Pentru cărțile EPUB compatibile, afișează fiecare notă imediat după paragraful care face trimitere la ea.';
 
   @override
   String get documentFootnoteLabel => 'Notă de subsol';
@@ -2746,7 +2663,8 @@ class AppLocalizationsRo extends AppLocalizations {
       'Permite mai multe semne de carte în documente';
 
   @override
-  String get settingsMultipleDocumentBookmarksHint => 'Când opțiunea este dezactivată, fiecare document păstrează un singur semn de carte. Când este activată, poți salva mai multe semne de carte în același document.';
+  String get settingsMultipleDocumentBookmarksHint =>
+      'Când opțiunea este dezactivată, fiecare document păstrează un singur semn de carte. Când este activată, poți salva mai multe semne de carte în același document.';
 
   @override
   String get documentGoToBookmarkAction => 'Mergi la semnul de carte';
@@ -2758,10 +2676,12 @@ class AppLocalizationsRo extends AppLocalizations {
   String get documentDeleteBookmarkAction => 'Șterge semnul de carte';
 
   @override
-  String get documentKeepBookmarkTitle => 'Ce semn de carte dorești să păstrezi?';
+  String get documentKeepBookmarkTitle =>
+      'Ce semn de carte dorești să păstrezi?';
 
   @override
-  String get documentKeepBookmarkMessage => 'Semnele de carte multiple sunt dezactivate. Alege un semn de carte de păstrat; celelalte vor fi șterse.';
+  String get documentKeepBookmarkMessage =>
+      'Semnele de carte multiple sunt dezactivate. Alege un semn de carte de păstrat; celelalte vor fi șterse.';
 
   @override
   String documentBookmarkChoiceLabel(int order, int paragraph) {
@@ -2778,7 +2698,8 @@ class AppLocalizationsRo extends AppLocalizations {
   }
 
   @override
-  String get settingsSonarTubePlayerActions => 'Butoane și comportament SonarTube';
+  String get settingsSonarTubePlayerActions =>
+      'Butoane și comportament SonarTube';
 
   @override
   String get settingsSonarTubeAutoplay => 'Redare automată';
@@ -2788,30 +2709,35 @@ class AppLocalizationsRo extends AppLocalizations {
       'Când se termină un videoclip sau o piesă, SonarTube îl redă automat pe următorul, dacă este disponibil.';
 
   @override
-  String get settingsVideoLandscapeFullscreen => 'Videoclip pe tot ecranul în modul peisaj';
+  String get settingsVideoLandscapeFullscreen =>
+      'Videoclip pe tot ecranul în modul peisaj';
 
   @override
-  String get settingsVideoLandscapeFullscreenHint => 'Când activezi videoclipul, acesta este afișat pe tot ecranul în orientare peisaj. Posturile radio doar audio nu sunt afectate.';
+  String get settingsVideoLandscapeFullscreenHint =>
+      'Când activezi videoclipul, acesta este afișat pe tot ecranul în orientare peisaj. Posturile radio doar audio nu sunt afectate.';
 
   @override
   String get settingsPodcastCacheTitle => 'Cache podcasturi';
 
   @override
-  String get settingsPodcastCacheHint => 'Șterge doar fișierele temporare ale podcasturilor. Abonamentele, istoricul și fișierele audio importate rămân intacte.';
+  String get settingsPodcastCacheHint =>
+      'Șterge doar fișierele temporare ale podcasturilor. Abonamentele, istoricul și fișierele audio importate rămân intacte.';
 
   @override
   String settingsPodcastCacheSize(String size) {
-    return 'Space used: $size';
+    return 'Spațiu utilizat: $size';
   }
 
   @override
   String get clearPodcastCache => 'Șterge memoria cache a podcasturilor';
 
   @override
-  String get confirmClearPodcastCacheTitle => 'Ștergi memoria cache a podcasturilor?';
+  String get confirmClearPodcastCacheTitle =>
+      'Ștergi memoria cache a podcasturilor?';
 
   @override
-  String get confirmClearPodcastCacheMessage => 'Fișierele temporare ale podcasturilor vor fi șterse. Abonamentele și istoricul episoadelor nu vor fi eliminate.';
+  String get confirmClearPodcastCacheMessage =>
+      'Fișierele temporare ale podcasturilor vor fi șterse. Abonamentele și istoricul episoadelor nu vor fi eliminate.';
 
   @override
   String podcastCacheCleared(String size) {
@@ -2822,28 +2748,34 @@ class AppLocalizationsRo extends AppLocalizations {
   String get podcastCacheEmpty => 'Cache-ul podcasturilor este deja gol.';
 
   @override
-  String get pharmacyFeatureTitle => 'Medicamente, parafarmaceutice și suplimente';
+  String get pharmacyFeatureTitle =>
+      'Medicamente, parafarmaceutice și suplimente';
 
   @override
   String get pharmacyProductsSectionTitle => 'Parafarmaceutice și suplimente';
 
   @override
-  String get pharmacyProductsLoadingTitle => 'Se caută parafarmaceutice și suplimente...';
+  String get pharmacyProductsLoadingTitle =>
+      'Se caută parafarmaceutice și suplimente...';
 
   @override
-  String get pharmacyProductsErrorTitle => 'Eroare la căutarea parafarmaceuticelor și suplimentelor';
+  String get pharmacyProductsErrorTitle =>
+      'Eroare la căutarea parafarmaceuticelor și suplimentelor';
 
   @override
-  String get pharmacyProductsNoResultsTitle => 'Nu s-a găsit niciun parafarmaceutic sau supliment';
+  String get pharmacyProductsNoResultsTitle =>
+      'Nu s-a găsit niciun parafarmaceutic sau supliment';
 
   @override
   String get mediaCutterTitle => 'Taie fișier media';
 
   @override
-  String get mediaCutterInstruction1 => 'Deschide un fișier audio sau video, redă-l și deplasează-te la punctul unde dorești să tai.';
+  String get mediaCutterInstruction1 =>
+      'Deschide un fișier audio sau video, redă-l și deplasează-te la punctul unde dorești să tai.';
 
   @override
-  String get mediaCutterInstruction2 => 'Pune pe pauză, apasă Împarte, apoi șterge părțile pe care nu le dorești din secțiunea Părți de salvat și apasă Salvează.';
+  String get mediaCutterInstruction2 =>
+      'Pune pe pauză, apasă Împarte, apoi șterge părțile pe care nu le dorești din secțiunea Părți de salvat și apasă Salvează.';
 
   @override
   String get mediaCutterOpenFile => 'Deschide fișier media';
@@ -2857,7 +2789,8 @@ class AppLocalizationsRo extends AppLocalizations {
   String get mediaCutterPosition => 'Poziția tăierii';
 
   @override
-  String get mediaCutterPositionHint => 'Deplasează-te înainte sau înapoi câte o secundă.';
+  String get mediaCutterPositionHint =>
+      'Deplasează-te înainte sau înapoi câte o secundă.';
 
   @override
   String get mediaCutterHideVideoPreview => 'Ascunde videoclipul';
@@ -2887,7 +2820,8 @@ class AppLocalizationsRo extends AppLocalizations {
   String get mediaCutterPartsTitle => 'Părți de salvat';
 
   @override
-  String get mediaCutterPartsHint => 'Atinge o parte pentru a o asculta. Părțile șterse dispar din listă, sunt omise la redare și nu vor fi salvate. Efectele se aplică întregii părți doar când fișierul media este salvat.';
+  String get mediaCutterPartsHint =>
+      'Atinge o parte pentru a o asculta. Părțile șterse dispar din listă, sunt omise la redare și nu vor fi salvate. Efectele se aplică întregii părți doar când fișierul media este salvat.';
 
   @override
   String mediaCutterPartLabel(int index) {
@@ -2909,16 +2843,19 @@ class AppLocalizationsRo extends AppLocalizations {
   String get mediaCutterUnsavedExitTitle => 'Fișier nesalvat';
 
   @override
-  String get mediaCutterUnsavedExitMessage => 'Fișierul nu a fost salvat. Sigur dorești să ieși?';
+  String get mediaCutterUnsavedExitMessage =>
+      'Fișierul nu a fost salvat. Sigur dorești să ieși?';
 
   @override
   String get mediaCutterNoFile => 'Deschide mai întâi un fișier media.';
 
   @override
-  String get mediaCutterInvalidSplitPoint => 'Alege un punct din interiorul fișierului, nu începutul sau sfârșitul.';
+  String get mediaCutterInvalidSplitPoint =>
+      'Alege un punct din interiorul fișierului, nu începutul sau sfârșitul.';
 
   @override
-  String get mediaCutterSplitAlreadyExists => 'Există deja o împărțire în acest punct.';
+  String get mediaCutterSplitAlreadyExists =>
+      'Există deja o împărțire în acest punct.';
 
   @override
   String mediaCutterSplitAdded(String position) {
@@ -2944,19 +2881,22 @@ class AppLocalizationsRo extends AppLocalizations {
   }
 
   @override
-  String get mediaCutterNoPartsToSave => 'Păstrează cel puțin o parte înainte de salvare.';
+  String get mediaCutterNoPartsToSave =>
+      'Păstrează cel puțin o parte înainte de salvare.';
 
   @override
   String get mediaCutterRestoreDeletedPart => 'Restaurează partea ștersă';
 
   @override
-  String get mediaCutterNoDeletedParts => 'Nu există părți șterse de restaurat.';
+  String get mediaCutterNoDeletedParts =>
+      'Nu există părți șterse de restaurat.';
 
   @override
   String get mediaCutterPartDeleteAction => 'Șterge';
 
   @override
-  String get mediaCutterPartTapHint => 'Atinge de două ori pentru a previzualiza această parte. Folosește acțiunile Editează partea, Șterge sau Reglează efectele.';
+  String get mediaCutterPartTapHint =>
+      'Atinge de două ori pentru a previzualiza această parte. Folosește acțiunile Editează partea, Șterge sau Reglează efectele.';
 
   @override
   String mediaCutterPartDeleted(String start, String end) {
@@ -2975,7 +2915,8 @@ class AppLocalizationsRo extends AppLocalizations {
   String get mediaCutterPartEditAction => 'Editează partea';
 
   @override
-  String get mediaCutterPartEditDescription => 'Mută începutul sau sfârșitul părții cu 1 secundă, apoi ascultă partea editată.';
+  String get mediaCutterPartEditDescription =>
+      'Mută începutul sau sfârșitul părții cu 1 secundă, apoi ascultă partea editată.';
 
   @override
   String mediaCutterPartAdjusted(String start, String end) {
@@ -2986,7 +2927,8 @@ class AppLocalizationsRo extends AppLocalizations {
   String get mediaCutterPartEffectsTitle => 'Efecte pentru parte';
 
   @override
-  String get mediaCutterPartEffectsDescription => 'Reglează volumul și efectul doar pentru această parte.';
+  String get mediaCutterPartEffectsDescription =>
+      'Reglează volumul și efectul doar pentru această parte.';
 
   @override
   String get mediaCutterPartVolumeLabel => 'Volumul părții';
@@ -3122,7 +3064,8 @@ class AppLocalizationsRo extends AppLocalizations {
   String get mediaCutterPartPreviewAction => 'Previzualizare';
 
   @override
-  String get mediaCutterPartEffectsSavedOnly => 'Previzualizarea folosește volumul selectat. Efectele audio sunt aplicate la salvare.';
+  String get mediaCutterPartEffectsSavedOnly =>
+      'Previzualizarea folosește volumul selectat. Efectele audio sunt aplicate la salvare.';
 
   @override
   String mediaCutterPartEffectsApplied(String start, String end) {
@@ -3138,13 +3081,15 @@ class AppLocalizationsRo extends AppLocalizations {
   String get mediaCutterGuidedModeTitle => 'Tăiere ghidată';
 
   @override
-  String get mediaCutterGuidedModeDescription => 'Potrivită pentru începători. Selectează un punct de început și unul de sfârșit, ascultă tăierea, apoi aplic-o.';
+  String get mediaCutterGuidedModeDescription =>
+      'Potrivită pentru începători. Selectează un punct de început și unul de sfârșit, ascultă tăierea, apoi aplic-o.';
 
   @override
   String get mediaCutterAdvancedModeTitle => 'Tăiere avansată';
 
   @override
-  String get mediaCutterAdvancedModeDescription => 'Inspirată de programele populare de editare media. Îți permite să împarți un fișier media în mai multe părți și să elimini părțile pe care nu le dorești.';
+  String get mediaCutterAdvancedModeDescription =>
+      'Inspirată de programele populare de editare media. Îți permite să împarți un fișier media în mai multe părți și să elimini părțile pe care nu le dorești.';
 
   @override
   String get mediaCutterChangeCutMode => 'Schimbă tipul de tăiere';
@@ -3165,16 +3110,20 @@ class AppLocalizationsRo extends AppLocalizations {
   String get mediaCutterGuidedModifyCut => 'Editează tăierea';
 
   @override
-  String get mediaCutterGuidedMoveStartBackOneSecond => 'Mută începutul tăierii înapoi cu 1 secundă';
+  String get mediaCutterGuidedMoveStartBackOneSecond =>
+      'Mută începutul tăierii înapoi cu 1 secundă';
 
   @override
-  String get mediaCutterGuidedMoveStartForwardOneSecond => 'Mută începutul tăierii înainte cu 1 secundă';
+  String get mediaCutterGuidedMoveStartForwardOneSecond =>
+      'Mută începutul tăierii înainte cu 1 secundă';
 
   @override
-  String get mediaCutterGuidedMoveEndBackOneSecond => 'Mută sfârșitul tăierii înapoi cu 1 secundă';
+  String get mediaCutterGuidedMoveEndBackOneSecond =>
+      'Mută sfârșitul tăierii înapoi cu 1 secundă';
 
   @override
-  String get mediaCutterGuidedMoveEndForwardOneSecond => 'Mută sfârșitul tăierii înainte cu 1 secundă';
+  String get mediaCutterGuidedMoveEndForwardOneSecond =>
+      'Mută sfârșitul tăierii înainte cu 1 secundă';
 
   @override
   String get mediaCutterCutEditPrecisionLabel => 'Precizia editării tăierii';
@@ -3228,10 +3177,12 @@ class AppLocalizationsRo extends AppLocalizations {
   String get mediaCutterGuidedEffectsAction => 'Reglează efectele fișierului';
 
   @override
-  String get mediaCutterGuidedEffectsDescription => 'Reglează volumul și efectele pentru întregul fișier rezultat.';
+  String get mediaCutterGuidedEffectsDescription =>
+      'Reglează volumul și efectele pentru întregul fișier rezultat.';
 
   @override
-  String get mediaCutterGuidedFileTapHint => 'Atinge de două ori pentru a reda fișierul rezultat. Folosește Reglează efectele fișierului pentru a aplica efecte întregului fișier.';
+  String get mediaCutterGuidedFileTapHint =>
+      'Atinge de două ori pentru a reda fișierul rezultat. Folosește Reglează efectele fișierului pentru a aplica efecte întregului fișier.';
 
   @override
   String mediaCutterGuidedStartSet(String start) {
@@ -3249,7 +3200,8 @@ class AppLocalizationsRo extends AppLocalizations {
   }
 
   @override
-  String get mediaCutterGuidedNeedStartEnd => 'Setează mai întâi începutul și sfârșitul tăierii.';
+  String get mediaCutterGuidedNeedStartEnd =>
+      'Setează mai întâi începutul și sfârșitul tăierii.';
 
   @override
   String mediaCutterGuidedCutSummary(String start, String end) {
@@ -3262,7 +3214,8 @@ class AppLocalizationsRo extends AppLocalizations {
   }
 
   @override
-  String get mediaCutterGuidedPendingCutExitMessage => 'Ai o tăiere ghidată care nu a fost aplicată. Dorești să ieși fără să o păstrezi?';
+  String get mediaCutterGuidedPendingCutExitMessage =>
+      'Ai o tăiere ghidată care nu a fost aplicată. Dorești să ieși fără să o păstrezi?';
 
   @override
   String mediaCutterSplitAddedAnnouncement(int partNumber) {
@@ -3270,7 +3223,8 @@ class AppLocalizationsRo extends AppLocalizations {
   }
 
   @override
-  String get newsAddCommunitySource => 'Adaugă o sursă de știri în comunitatea Sonarpad';
+  String get newsAddCommunitySource =>
+      'Adaugă o sursă de știri în comunitatea Sonarpad';
 
   @override
   String get newsBrowseCommunitySources => 'Surse de știri ale comunității';
@@ -3301,12 +3255,12 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String newsCommunityAddError(Object error) {
-    return 'Error while adding the news source: $error';
+    return 'Eroare la adăugarea sursei de știri: $error';
   }
 
   @override
   String newsCommunitySelectedLanguage(Object language) {
-    return 'Selected language: $language';
+    return 'Limba selectată: $language';
   }
 
   @override
@@ -3318,17 +3272,17 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String newsCommunitySourcesError(Object error) {
-    return 'Error loading community news sources: $error';
+    return 'Eroare la încărcarea surselor comunității: $error';
   }
 
   @override
   String newsCommunitySourceAddedToLibrary(Object name) {
-    return '$name added to your news library.';
+    return '$name a fost adăugată în biblioteca ta de știri.';
   }
 
   @override
   String newsCommunityAddToLibraryError(Object error) {
-    return 'Error while adding to the library: $error';
+    return 'Eroare la adăugarea în bibliotecă: $error';
   }
 
   @override
@@ -3345,10 +3299,12 @@ class AppLocalizationsRo extends AppLocalizations {
   String get developerSectionTitle => 'Dezvoltator';
 
   @override
-  String get developerUseExperimentalFlutterRenderer => 'Folosește rendererul Flutter experimental';
+  String get developerUseExperimentalFlutterRenderer =>
+      'Folosește rendererul Flutter experimental';
 
   @override
-  String get developerUseExperimentalFlutterRendererHint => 'Dezactivează temporar UIKit pentru a compara VoiceOver cu Flutter pur.';
+  String get developerUseExperimentalFlutterRendererHint =>
+      'Dezactivează temporar UIKit pentru a compara VoiceOver cu Flutter pur.';
 
   @override
   String get letterJumpSelectLetter => 'Selectează litera';
@@ -3363,7 +3319,8 @@ class AppLocalizationsRo extends AppLocalizations {
   String get settingsToggleOff => 'Dezactivat';
 
   @override
-  String get radioDirectoryLoading => 'Se actualizează țările și limbile pentru radio...';
+  String get radioDirectoryLoading =>
+      'Se actualizează țările și limbile pentru radio...';
 
   @override
   String get recentRadios => 'Posturi radio recente';
@@ -3382,10 +3339,12 @@ class AppLocalizationsRo extends AppLocalizations {
   }
 
   @override
-  String get radioNoResultsWithQuery => 'Nu s-au găsit posturi. Încearcă doar numele postului, fără gen, sau schimbă limba/țara.';
+  String get radioNoResultsWithQuery =>
+      'Nu s-au găsit posturi. Încearcă doar numele postului, fără gen, sau schimbă limba/țara.';
 
   @override
-  String get radioNoResultsGeneric => 'Nu s-au găsit posturi. Încearcă altă limbă, țară sau alt gen.';
+  String get radioNoResultsGeneric =>
+      'Nu s-au găsit posturi. Încearcă altă limbă, țară sau alt gen.';
 
   @override
   String radioSearchRawError(Object error) {
@@ -3393,13 +3352,16 @@ class AppLocalizationsRo extends AppLocalizations {
   }
 
   @override
-  String get radioBrowserConnectionError => 'Eroare de conexiune la Radio Browser. Încearcă din nou mai târziu.';
+  String get radioBrowserConnectionError =>
+      'Eroare de conexiune la Radio Browser. Încearcă din nou mai târziu.';
 
   @override
-  String get documentIndexLoadingMessage => 'Se încarcă cuprinsul... Te rugăm să aștepți.';
+  String get documentIndexLoadingMessage =>
+      'Se încarcă cuprinsul... Te rugăm să aștepți.';
 
   @override
-  String get documentIndexUnavailableMessage => 'Cuprinsul nu este disponibil pentru acest EPUB.';
+  String get documentIndexUnavailableMessage =>
+      'Cuprinsul nu este disponibil pentru acest EPUB.';
 
   @override
   String mediaCutterVolumeSummary(Object percent) {
@@ -3571,7 +3533,8 @@ class AppLocalizationsRo extends AppLocalizations {
   String get cinemaTrailerLoading => 'Se încarcă trailerul';
 
   @override
-  String get cinemaNoTrailer => 'Nu este disponibil niciun trailer pentru acest film';
+  String get cinemaNoTrailer =>
+      'Nu este disponibil niciun trailer pentru acest film';
 
   @override
   String get radioScheduleHours => 'Ore';
@@ -3591,7 +3554,8 @@ class AppLocalizationsRo extends AppLocalizations {
   }
 
   @override
-  String get radioScheduleStopCurrentFirst => 'Oprește înregistrarea curentă înainte de a programa una nouă.';
+  String get radioScheduleStopCurrentFirst =>
+      'Oprește înregistrarea curentă înainte de a programa una nouă.';
 
   @override
   String get radioScheduleStartTime => 'Ora de început';
@@ -3603,7 +3567,8 @@ class AppLocalizationsRo extends AppLocalizations {
   String get radioScheduleDialogTitle => 'Programează înregistrarea';
 
   @override
-  String get radioScheduleOpenRequirement => 'Înregistrarea programată continuă să funcționeze în timp ce navighezi prin alte ecrane Sonarpad. Sonarpad trebuie să rămână deschis; dacă aplicația este închisă sau suspendată de sistem, pornirea înregistrării nu este garantată.';
+  String get radioScheduleOpenRequirement =>
+      'Înregistrarea programată continuă să funcționeze în timp ce navighezi prin alte ecrane Sonarpad. Sonarpad trebuie să rămână deschis; dacă aplicația este închisă sau suspendată de sistem, pornirea înregistrării nu este garantată.';
 
   @override
   String radioScheduleStartTimeValue(Object time) {
@@ -3619,7 +3584,8 @@ class AppLocalizationsRo extends AppLocalizations {
   String get radioScheduleOptionalTitle => 'Titlu opțional';
 
   @override
-  String get radioScheduleTitleHint => 'Lasă gol pentru a folosi numele postului radio sau al canalului TV';
+  String get radioScheduleTitleHint =>
+      'Lasă gol pentru a folosi numele postului radio sau al canalului TV';
 
   @override
   String get radioScheduleAction => 'Programează';
@@ -3630,10 +3596,12 @@ class AppLocalizationsRo extends AppLocalizations {
   }
 
   @override
-  String get radioScheduledRecordingAlreadyActive => 'Înregistrarea programată nu a pornit: o altă înregistrare este deja în curs.';
+  String get radioScheduledRecordingAlreadyActive =>
+      'Înregistrarea programată nu a pornit: o altă înregistrare este deja în curs.';
 
   @override
-  String get radioScheduledRecordingStarted => 'Înregistrarea programată a început.';
+  String get radioScheduledRecordingStarted =>
+      'Înregistrarea programată a început.';
 
   @override
   String radioScheduledRecordingError(Object error) {
@@ -3641,7 +3609,8 @@ class AppLocalizationsRo extends AppLocalizations {
   }
 
   @override
-  String get radioScheduledRecordingSaved => 'Înregistrarea programată a fost salvată.';
+  String get radioScheduledRecordingSaved =>
+      'Înregistrarea programată a fost salvată.';
 
   @override
   String radioScheduledRecordingSaveError(Object error) {
@@ -3649,7 +3618,8 @@ class AppLocalizationsRo extends AppLocalizations {
   }
 
   @override
-  String get radioScheduledRecordingCancelled => 'Înregistrarea programată a fost anulată.';
+  String get radioScheduledRecordingCancelled =>
+      'Înregistrarea programată a fost anulată.';
 
   @override
   String radioScheduledRecordingRangeWithTitle(
@@ -3682,7 +3652,8 @@ class AppLocalizationsRo extends AppLocalizations {
   String get technicalErrorGeneric => 'Eroare tehnică. Încearcă din nou.';
 
   @override
-  String get onlineVideoPreparationFailed => 'Videoclipul nu a putut fi pregătit.';
+  String get onlineVideoPreparationFailed =>
+      'Videoclipul nu a putut fi pregătit.';
 
   @override
   String cinemaTrailerTitle(String title) {
@@ -3741,19 +3712,22 @@ class AppLocalizationsRo extends AppLocalizations {
   }
 
   @override
-  String get mediaCutterAddedTrackInvalidAudio => 'Fișierul selectat nu conține o pistă audio validă.';
+  String get mediaCutterAddedTrackInvalidAudio =>
+      'Fișierul selectat nu conține o pistă audio validă.';
 
   @override
-  String get mediaCutterAddedTrackPreviewPreparing => 'Se pregătește previzualizarea…';
+  String get mediaCutterAddedTrackPreviewPreparing =>
+      'Se pregătește previzualizarea…';
 
   @override
-  String get mediaCutterAddedTrackPreviewFailed => 'Previzualizarea nu a putut fi creată.';
+  String get mediaCutterAddedTrackPreviewFailed =>
+      'Previzualizarea nu a putut fi creată.';
 
   @override
   String get mediaCutterMixingAddedTrack => 'Se mixează pista nouă';
 
   @override
-  String get podcastImportIntoMediaCutter => "Importă în Decupare fișier media";
+  String get podcastImportIntoMediaCutter => 'Importă în Decupare fișier media';
 
   @override
   String get preserveMedia => 'Păstrează conținutul';
@@ -3769,15 +3743,6 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String get mediaProcessingCompleted => 'Procesare finalizată.';
-
-  @override
-  String get convertMediaDestination => 'Destinația fișierelor convertite';
-
-  @override
-  String get exportAskEveryTime => 'Întreabă de fiecare dată';
-
-  @override
-  String get selectAudioTrack => "Selectează pista audio";
 
   @override
   String get saveInSonarpadDocuments => 'Salvează în Documentele Sonarpad';
@@ -3839,10 +3804,12 @@ class AppLocalizationsRo extends AppLocalizations {
   String get confirmDocumentPassword => 'Confirmă parola';
 
   @override
-  String get chooseDocumentPassword => 'Introdu o parolă și confirm-o. Parola va fi necesară înainte de deschiderea sau distribuirea acestui document.';
+  String get chooseDocumentPassword =>
+      'Introdu o parolă și confirm-o. Parola va fi necesară înainte de deschiderea sau distribuirea acestui document.';
 
   @override
-  String get enterCurrentDocumentPassword => 'Introdu parola curentă pentru a elimina protecția.';
+  String get enterCurrentDocumentPassword =>
+      'Introdu parola curentă pentru a elimina protecția.';
 
   @override
   String get documentPasswordRequired => 'Introdu o parolă.';
@@ -3854,19 +3821,23 @@ class AppLocalizationsRo extends AppLocalizations {
   String get incorrectDocumentPassword => 'Parolă incorectă.';
 
   @override
-  String get documentPasswordProtectionEnabled => 'Protecția cu parolă a fost activată.';
+  String get documentPasswordProtectionEnabled =>
+      'Protecția cu parolă a fost activată.';
 
   @override
-  String get documentPasswordProtectionRemoved => 'Protecția cu parolă a fost eliminată.';
+  String get documentPasswordProtectionRemoved =>
+      'Protecția cu parolă a fost eliminată.';
 
   @override
   String get documentPasswordRequiredTitle => 'Parolă necesară';
 
   @override
-  String get enterDocumentPasswordToShare => 'Acest document este protejat. Introdu parola pentru a continua distribuirea.';
+  String get enterDocumentPasswordToShare =>
+      'Acest document este protejat. Introdu parola pentru a continua distribuirea.';
 
   @override
-  String get enterDocumentPasswordToOpen => 'Acest document este protejat. Introdu parola pentru a-l deschide.';
+  String get enterDocumentPasswordToOpen =>
+      'Acest document este protejat. Introdu parola pentru a-l deschide.';
 
   @override
   String get documentPasswordProtectedStatus => 'Protejat cu parolă';
@@ -3881,10 +3852,12 @@ class AppLocalizationsRo extends AppLocalizations {
   String get newRecordingName => 'Noul nume al înregistrării';
 
   @override
-  String get recordingCannotRenameWhileInProgress => 'O înregistrare în curs nu poate fi redenumită.';
+  String get recordingCannotRenameWhileInProgress =>
+      'O înregistrare în curs nu poate fi redenumită.';
 
   @override
-  String get recordingNameAlreadyExists => 'Există deja o înregistrare cu acest nume.';
+  String get recordingNameAlreadyExists =>
+      'Există deja o înregistrare cu acest nume.';
 
   @override
   String get renameDocument => 'Redenumește documentul';
@@ -3893,16 +3866,19 @@ class AppLocalizationsRo extends AppLocalizations {
   String get newDocumentName => 'Noul nume al documentului';
 
   @override
-  String get documentNameAlreadyExists => 'Există deja un document cu acest nume.';
+  String get documentNameAlreadyExists =>
+      'Există deja un document cu acest nume.';
 
   @override
-  String get recordingExitPrompt => 'Înregistrarea este în curs. Vrei să o oprești sau să continui înregistrarea?';
+  String get recordingExitPrompt =>
+      'Înregistrarea este în curs. Vrei să o oprești sau să continui înregistrarea?';
 
   @override
   String get continueRecording => 'Continuă înregistrarea';
 
   @override
-  String get settingsShowOnlyMultilingualEdgeVoices => 'Afișează doar vocile multilingve';
+  String get settingsShowOnlyMultilingualEdgeVoices =>
+      'Afișează doar vocile multilingve';
 
   @override
   String get weatherAirQuality => 'Calitatea aerului';
@@ -3955,12 +3931,6 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String get sonarTubeChannelShorts => 'Videoclipuri scurte';
-  @override
-  String get sonarTubeChannelCourses => 'Cursuri';
-
-  @override
-  String get sonarTubeChannelPodcasts => 'Podcasturi';
-
 
   @override
   String sonarTubeVideoCount(int count) {
@@ -4030,7 +4000,8 @@ class AppLocalizationsRo extends AppLocalizations {
   String get pyannoteShareSubject => 'Test pyannote Sonarpad';
 
   @override
-  String get pyannoteBenchmark10Min => 'Test de performanță pyannote: primele 10 minute';
+  String get pyannoteBenchmark10Min =>
+      'Test de performanță pyannote: primele 10 minute';
 
   @override
   String get pyannoteBenchmarkPreparing =>
@@ -4099,13 +4070,16 @@ class AppLocalizationsRo extends AppLocalizations {
   String get audioDescriptionSonarpadCode => 'Cod personal IA Sonarpad';
 
   @override
-  String get audioDescriptionActivateSonarpad => 'Activează / verifică IA Sonarpad';
+  String get audioDescriptionActivateSonarpad =>
+      'Activează / verifică IA Sonarpad';
 
   @override
-  String get audioDescriptionActivatingSonarpad => 'Se activează IA Sonarpad...';
+  String get audioDescriptionActivatingSonarpad =>
+      'Se activează IA Sonarpad...';
 
   @override
-  String get audioDescriptionServerManagedModel => 'Gestionat de serviciul IA Sonarpad';
+  String get audioDescriptionServerManagedModel =>
+      'Gestionat de serviciul IA Sonarpad';
 
   @override
   String get audioDescriptionLanguage => 'Limba audiodescrierii';
@@ -4126,16 +4100,46 @@ class AppLocalizationsRo extends AppLocalizations {
   String get audioDescriptionDetailIntensive => 'Intensiv';
 
   @override
-  String get audioDescriptionExtendedPauses => 'Activează pauze extinse când o descriere nu încape într-un interval de liniște';
+  String get audioDescriptionExtendedPauses =>
+      'Activează pauze extinse când o descriere nu încape într-un interval de liniște';
 
   @override
-  String get audioDescriptionNonverbalVocals => 'Permite descrieri în timpul sunetelor vocale nonverbale';
+  String get audioDescriptionRecognizeCharacters =>
+      'Încearcă să recunoască personajele și să le folosească numele';
 
   @override
-  String get audioDescriptionRecognizeCharacters => 'Încearcă să recunoască personajele și să le folosească numele';
+  String get audioDescriptionMp3Bitrate => 'Rată de biți MP3';
 
   @override
-  String get audioDescriptionSaveProject => 'Salvează și proiectul pentru editare ulterioară';
+  String get audioDescriptionSourceVolume => 'Volumul filmului';
+
+  @override
+  String get audioDescriptionSourceVolumeHint =>
+      'Reglează volumul de bază al filmului. Acesta este redus automat și mai mult în timpul audiodescrierii.';
+
+  @override
+  String get audioDescriptionAudioNormal => 'Normal';
+
+  @override
+  String get audioDescriptionMixPreview => 'Ascultă proba cu film și voce';
+
+  @override
+  String get audioDescriptionMixPreviewPreparing => 'Se pregătește proba audio';
+
+  @override
+  String get audioDescriptionMixPreviewStop => 'Oprește proba audio';
+
+  @override
+  String get audioDescriptionMixPreviewPhrase =>
+      'Probă de audiodescriere cu reducerea automată a sunetului.';
+
+  @override
+  String get audioDescriptionMixPreviewHint =>
+      'După reglarea volumului, pornește o probă scurtă cu un fragment din film, vocea aleasă și reducerea automată a sunetului filmului.';
+
+  @override
+  String get audioDescriptionSaveProject =>
+      'Salvează și proiectul pentru editare ulterioară';
 
   @override
   String get audioDescriptionCreate => 'Creează audiodescrierea';
@@ -4147,49 +4151,61 @@ class AppLocalizationsRo extends AppLocalizations {
   String get audioDescriptionApiKeyRequired => 'Introdu o cheie API Gemini.';
 
   @override
-  String get audioDescriptionModelsUpdated => 'Lista modelelor Gemini a fost actualizată.';
+  String get audioDescriptionModelsUpdated =>
+      'Lista modelelor Gemini a fost actualizată.';
 
   @override
-  String get audioDescriptionModelsError => 'Lista modelelor Gemini nu a putut fi actualizată.';
+  String get audioDescriptionModelsError =>
+      'Lista modelelor Gemini nu a putut fi actualizată.';
 
   @override
-  String get audioDescriptionSonarpadCodeRequired => 'Introdu codul personal IA Sonarpad.';
+  String get audioDescriptionSonarpadCodeRequired =>
+      'Introdu codul personal IA Sonarpad.';
 
   @override
-  String get audioDescriptionSonarpadActivated => 'IA Sonarpad este activă pe acest dispozitiv.';
+  String get audioDescriptionSonarpadActivated =>
+      'IA Sonarpad este activă pe acest dispozitiv.';
 
   @override
-  String get audioDescriptionSonarpadActivationError => 'IA Sonarpad nu a putut fi activată sau verificată.';
+  String get audioDescriptionSonarpadActivationError =>
+      'IA Sonarpad nu a putut fi activată sau verificată.';
 
   @override
-  String get audioDescriptionSonarpadDeviceLimitReached => 'A fost atins numărul maxim de dispozitive asociate acestui cod IA Sonarpad. Elimină un dispozitiv deja asociat sau contactează asistența.';
+  String get audioDescriptionSonarpadDeviceLimitReached =>
+      'A fost atins numărul maxim de dispozitive asociate acestui cod IA Sonarpad. Elimină un dispozitiv deja asociat sau contactează asistența.';
 
   @override
   String get audioDescriptionSonarpadBalance => 'Credit IA Sonarpad';
 
   @override
-  String get audioDescriptionSonarpadBalanceUnavailable => 'Credit indisponibil.';
+  String get audioDescriptionSonarpadBalanceUnavailable =>
+      'Credit indisponibil.';
 
   @override
-  String get audioDescriptionSonarpadInsufficientCredit => "Creditul este insuficient. Reîncarcă cheia API pentru a continua să creezi audiodescrieri pentru conținutul tău.";
+  String get audioDescriptionSonarpadInsufficientCredit =>
+      'Creditul este insuficient. Reîncarcă cheia API pentru a continua să creezi audiodescrieri pentru conținutul tău.';
 
   @override
-  String get audioDescriptionEdgeVoiceReady => 'Vocea Edge selectată este disponibilă.';
+  String get audioDescriptionEdgeVoiceReady =>
+      'Vocea Edge selectată este disponibilă.';
 
   @override
-  String get audioDescriptionChooseVideoFirst => 'Alege mai întâi un fișier video.';
+  String get audioDescriptionChooseVideoFirst =>
+      'Alege mai întâi un fișier video.';
 
   @override
   String get audioDescriptionStagePreparing => 'Se pregătește videoclipul...';
 
   @override
-  String get audioDescriptionStageDialogue => 'Se detectează dialogurile cu pyannote...';
+  String get audioDescriptionStageDialogue =>
+      'Se detectează dialogurile cu pyannote...';
 
   @override
   String get audioDescriptionStageVideo => 'Se pregătesc segmentele video...';
 
   @override
-  String get audioDescriptionStageGemini => 'Se generează audiodescrierile cu IA...';
+  String get audioDescriptionStageGemini =>
+      'Se generează audiodescrierile cu IA...';
 
   @override
   String get audioDescriptionStageTts => 'Se creează vocile...';
@@ -4201,49 +4217,60 @@ class AppLocalizationsRo extends AppLocalizations {
   String get audioDescriptionCompleted => 'Audiodescriere finalizată.';
 
   @override
-  String get audioDescriptionCancelled => 'Crearea audiodescrierii a fost anulată.';
+  String get audioDescriptionCancelled =>
+      'Crearea audiodescrierii a fost anulată.';
 
   @override
   String get audioDescriptionCancelling => 'Se anulează...';
 
   @override
-  String get audioDescriptionGenerationFailed => 'Crearea audiodescrierii a eșuat.';
+  String get audioDescriptionGenerationFailed =>
+      'Crearea audiodescrierii a eșuat.';
 
   @override
   String get audioDescriptionGetGeminiKey => 'Obține o cheie API Gemini';
 
   @override
-  String get audioDescriptionKeepCharacterCatalog => 'Salvează și actualizează catalogul de personaje: util pentru un serial';
+  String get audioDescriptionKeepCharacterCatalog =>
+      'Salvează și actualizează catalogul de personaje: util pentru un serial';
 
   @override
-  String get audioDescriptionCharacterCatalogChoose => 'Alege un catalog de personaje salvat';
+  String get audioDescriptionCharacterCatalogChoose =>
+      'Alege un catalog de personaje salvat';
 
   @override
   String get audioDescriptionCharacterCatalogNew => 'Catalog nou';
 
   @override
-  String get audioDescriptionCharacterCatalogNameTitle => 'Catalog de personaje';
+  String get audioDescriptionCharacterCatalogNameTitle =>
+      'Catalog de personaje';
 
   @override
-  String get audioDescriptionCharacterCatalogNamePrompt => 'Cum vrei să numești catalogul de personaje?';
+  String get audioDescriptionCharacterCatalogNamePrompt =>
+      'Cum vrei să numești catalogul de personaje?';
 
   @override
-  String get audioDescriptionCharacterCatalogNameError => 'Introdu un nume pentru catalogul de personaje.';
+  String get audioDescriptionCharacterCatalogNameError =>
+      'Introdu un nume pentru catalogul de personaje.';
 
   @override
-  String get audioDescriptionCharacterCatalogSaved => 'Catalogul de personaje a fost actualizat.';
+  String get audioDescriptionCharacterCatalogSaved =>
+      'Catalogul de personaje a fost actualizat.';
 
   @override
-  String get audioDescriptionCharacterCatalogSaveWarning => 'Audiodescrierea a fost creată, dar catalogul de personaje nu a putut fi salvat:';
+  String get audioDescriptionCharacterCatalogSaveWarning =>
+      'Audiodescrierea a fost creată, dar catalogul de personaje nu a putut fi salvat:';
 
   @override
-  String get audioDescriptionRecognizeScreenText => 'Recunoaște textul de pe ecran important pentru narațiune';
+  String get audioDescriptionRecognizeScreenText =>
+      'Recunoaște textul de pe ecran important pentru narațiune';
 
   @override
   String get audioDescriptionHighDemandTitle => 'Serviciul IA este ocupat';
 
   @override
-  String get audioDescriptionHighDemandMessage => 'Serviciul IA este încă indisponibil după mai multe încercări. Vrei să continui să aștepți și să reîncerci?';
+  String get audioDescriptionHighDemandMessage =>
+      'Serviciul IA este încă indisponibil după mai multe încercări. Vrei să continui să aștepți și să reîncerci?';
 
   @override
   String get audioDescriptionContinueWaiting => 'Continuă să aștepți';
@@ -4255,7 +4282,8 @@ class AppLocalizationsRo extends AppLocalizations {
   String get audioDescriptionQuotaTitle => 'Cota Gemini a fost epuizată';
 
   @override
-  String get audioDescriptionQuotaMessage => 'Modelul Gemini curent și-a epuizat cota. Poți alege alt model, poți continua să aștepți sau poți opri.';
+  String get audioDescriptionQuotaMessage =>
+      'Modelul Gemini curent și-a epuizat cota. Poți alege alt model, poți continua să aștepți sau poți opri.';
 
   @override
   String get audioDescriptionSwitchModel => 'Alege alt model';
@@ -4264,16 +4292,20 @@ class AppLocalizationsRo extends AppLocalizations {
   String get audioDescriptionOverlapTitle => 'Soluție de rezervă finală';
 
   @override
-  String get audioDescriptionOverlapMessage => 'Nicio descriere generată nu încape în siguranță în spațiile fără dialog. Vrei să folosești soluția finală de rezervă, care poate suprapune narațiunea peste dialog? Aceasta nu este activată niciodată automat.';
+  String get audioDescriptionOverlapMessage =>
+      'Nicio descriere generată nu încape în siguranță în spațiile fără dialog. Vrei să folosești soluția finală de rezervă, care poate suprapune narațiunea peste dialog? Aceasta nu este activată niciodată automat.';
 
   @override
-  String get audioDescriptionAllowOverlap => 'Folosește soluția finală de rezervă';
+  String get audioDescriptionAllowOverlap =>
+      'Folosește soluția finală de rezervă';
 
   @override
-  String get audioDescriptionResumeTitle => 'A fost găsită o audiodescriere începută anterior';
+  String get audioDescriptionResumeTitle =>
+      'A fost găsită o audiodescriere începută anterior';
 
   @override
-  String get audioDescriptionResumeMessage => 'Sonarpad a găsit un punct de reluare compatibil. Continui de la ultimul segment finalizat sau reîncepi de la început?';
+  String get audioDescriptionResumeMessage =>
+      'Sonarpad a găsit un punct de reluare compatibil. Continui de la ultimul segment finalizat sau reîncepi de la început?';
 
   @override
   String get audioDescriptionResume => 'Continuă';
@@ -4282,13 +4314,16 @@ class AppLocalizationsRo extends AppLocalizations {
   String get audioDescriptionRestart => 'Reîncepe';
 
   @override
-  String get audioDescriptionStageBriefRetry => 'Se reia analiza cu descrieri scurte...';
+  String get audioDescriptionStageBriefRetry =>
+      'Se reia analiza cu descrieri scurte...';
 
   @override
-  String get audioDescriptionBriefRetryTitle => 'Reîncearcă folosind descrieri scurte';
+  String get audioDescriptionBriefRetryTitle =>
+      'Reîncearcă folosind descrieri scurte';
 
   @override
-  String get audioDescriptionBriefRetryMessage => 'Nicio descriere generată nu încape în siguranță în spațiile fără dialog. Înainte de a permite narațiunea peste dialog, vrei să reîncerci o dată analiza cu descrieri foarte scurte?';
+  String get audioDescriptionBriefRetryMessage =>
+      'Nicio descriere generată nu încape în siguranță în spațiile fără dialog. Înainte de a permite narațiunea peste dialog, vrei să reîncerci o dată analiza cu descrieri foarte scurte?';
 
   @override
   String get audioDescriptionRetryBrief => 'Reîncearcă în modul Scurt';
@@ -4308,7 +4343,8 @@ class AppLocalizationsRo extends AppLocalizations {
   }
 
   @override
-  String get audioDescriptionCancelConfirmation => 'Sigur vrei să anulezi crearea audiodescrierii?';
+  String get audioDescriptionCancelConfirmation =>
+      'Sigur vrei să anulezi crearea audiodescrierii?';
 
   @override
   String get audioDescriptionEditProject => 'Editează proiectul existent';
@@ -4320,13 +4356,15 @@ class AppLocalizationsRo extends AppLocalizations {
   String get audioDescriptionBrowseProject => 'Răsfoiește…';
 
   @override
-  String get audioDescriptionNoSavedProjects => 'Nu s-au găsit proiecte în Documentele Sonarpad.';
+  String get audioDescriptionNoSavedProjects =>
+      'Nu s-au găsit proiecte în Documentele Sonarpad.';
 
   @override
   String get audioDescriptionContinueAi => 'Continuă audiodescrierea cu IA';
 
   @override
-  String get audioDescriptionNoCheckpoint => 'Nu a fost găsită nicio audiodescriere întreruptă pentru acest videoclip. Selectează videoclipul original folosit anterior.';
+  String get audioDescriptionNoCheckpoint =>
+      'Nu a fost găsită nicio audiodescriere întreruptă pentru acest videoclip. Selectează videoclipul original folosit anterior.';
 
   @override
   String get sonarTubeSaveFormatPrompt => 'Alege formatul de salvare';
@@ -4338,16 +4376,23 @@ class AppLocalizationsRo extends AppLocalizations {
   String get sonarTubeSaveAsMp3 => 'Salvează ca MP3';
 
   @override
-  String get audioDescriptionCreateVideoOutput => 'Salvează audiodescrierea în videoclip';
+  String get developerReportText => 'Detaliile raportului';
 
   @override
-  String get audioDescriptionLoadCharacterCatalog => 'Încarcă catalogul de personaje';
+  String get audioDescriptionCreateVideoOutput =>
+      'Salvează audiodescrierea în videoclip';
 
   @override
-  String get audioDescriptionImportCharacterCatalog => 'Importă catalogul din fișier';
+  String get audioDescriptionLoadCharacterCatalog =>
+      'Încarcă catalogul de personaje';
 
   @override
-  String get audioDescriptionCharacterCatalogLoaded => 'Catalogul de personaje a fost încărcat.';
+  String get audioDescriptionImportCharacterCatalog =>
+      'Importă catalogul din fișier';
+
+  @override
+  String get audioDescriptionCharacterCatalogLoaded =>
+      'Catalogul de personaje a fost încărcat.';
 
   @override
   String get audioDescriptionCreateWithAi => 'Creează audiodescriere cu IA';
@@ -4356,13 +4401,15 @@ class AppLocalizationsRo extends AppLocalizations {
   String get settingsHomeCustomization => 'Personalizează ecranul principal';
 
   @override
-  String get settingsHomeCustomizationHint => 'Alege elementele care se afișează și, când categoriile sunt dezactivate, ordinea lor.';
+  String get settingsHomeCustomizationHint =>
+      'Alege elementele care se afișează și, când categoriile sunt dezactivate, ordinea lor.';
 
   @override
   String get homeCategories => 'Categorii';
 
   @override
-  String get homeCategoriesHint => 'Grupează elementele ecranului principal în categorii.';
+  String get homeCategoriesHint =>
+      'Grupează elementele ecranului principal în categorii.';
 
   @override
   String get homeVisibleItems => 'Elemente vizibile';
@@ -4377,10 +4424,12 @@ class AppLocalizationsRo extends AppLocalizations {
   String get homeResetDefaultsConfirmTitle => 'Restabilești ecranul principal?';
 
   @override
-  String get homeResetDefaultsConfirmMessage => 'Toate funcțiile disponibile vor fi afișate din nou, categoriile vor fi activate și ordinea personalizată va fi ștearsă.';
+  String get homeResetDefaultsConfirmMessage =>
+      'Toate funcțiile disponibile vor fi afișate din nou, categoriile vor fi activate și ordinea personalizată va fi ștearsă.';
 
   @override
-  String get homeResetDefaultsDone => 'Ecranul principal a fost restabilit la valorile implicite.';
+  String get homeResetDefaultsDone =>
+      'Ecranul principal a fost restabilit la valorile implicite.';
 
   @override
   String get homeReorderTitle => 'Reordonează ecranul principal';
@@ -4410,943 +4459,1056 @@ class AppLocalizationsRo extends AppLocalizations {
   String get homeDirectory => 'Pagini Albe și Pagini Aurii';
 
   @override
-  String get joinMediaTitle => "Unește fișiere media";
+  String get treccaniTitle => 'Enciclopedia Treccani';
 
   @override
-  String get joinMediaDescription => "Adaugă două sau mai multe fișiere audio ori video, alege ordinea și formatul de ieșire, apoi unește-le într-un singur fișier.";
+  String get treccaniSearchLabel => 'Caută în Enciclopedia Treccani';
 
   @override
-  String get joinMediaAddFiles => "Adaugă fișiere media";
+  String get treccaniNoResults => 'Nu s-au găsit articole Treccani';
 
   @override
-  String get joinMediaLoadingFiles => "Se verifică fișierele selectate…";
+  String get treccaniWholeEntry => 'Articol complet';
 
   @override
-  String get joinMediaFilesTitle => "Fișiere de unit";
+  String get joinMediaTitle => 'Unește fișiere media';
 
   @override
-  String get joinMediaNoFiles => "Nu a fost adăugat niciun fișier.";
+  String get joinMediaDescription =>
+      'Adaugă două sau mai multe fișiere audio ori video, alege ordinea și formatul de ieșire, apoi unește-le într-un singur fișier.';
 
   @override
-  String get joinMediaVideoLabel => "Video";
+  String get joinMediaAddFiles => 'Adaugă fișiere media';
 
   @override
-  String get joinMediaAudioLabel => "Audio";
+  String get joinMediaLoadingFiles => 'Se verifică fișierele selectate…';
 
   @override
-  String get joinMediaActionsHint => "Acțiuni disponibile: Mută în sus, Mută în jos, Elimină.";
+  String get joinMediaFilesTitle => 'Fișiere de unit';
 
   @override
-  String get joinMediaRemove => "Elimină";
+  String get joinMediaNoFiles => 'Nu a fost adăugat niciun fișier.';
 
   @override
-  String get joinMediaOutputMp4 => "Format de ieșire: MP4. Fișierele doar audio folosesc ecran negru; videoclipurile fără sunet primesc o pistă de tăcere.";
+  String get joinMediaVideoLabel => 'Video';
 
   @override
-  String get joinMediaOutputMp3 => "Format de ieșire: MP3.";
+  String get joinMediaAudioLabel => 'Audio';
 
   @override
-  String get joinMediaJoin => "Unește";
+  String get joinMediaActionsHint =>
+      'Acțiuni disponibile: Mută în sus, Mută în jos, Elimină.';
 
   @override
-  String get joinMediaFileSkipped => "Un fișier a fost omis deoarece nu este accesibil sau nu conține audio ori video utilizabil.";
+  String get joinMediaRemove => 'Elimină';
 
   @override
-  String get joinMediaFilesAdded => "Fișiere media adăugate.";
+  String get joinMediaOutputMp4 =>
+      'Format de ieșire: MP4. Fișierele doar audio folosesc ecran negru; videoclipurile fără sunet primesc o pistă de tăcere.';
 
   @override
-  String get joinMediaRemoved => "Element eliminat.";
+  String get joinMediaOutputMp3 => 'Format de ieșire: MP3.';
 
   @override
-  String get joinMediaNeedTwoFiles => "Adaugă cel puțin două fișiere pentru unire.";
+  String get joinMediaJoin => 'Unește';
 
   @override
-  String get joinMediaProcessing => "Se unesc fișierele media";
+  String get joinMediaFileSkipped =>
+      'Un fișier a fost omis deoarece nu este accesibil sau nu conține audio ori video utilizabil.';
 
   @override
-  String get joinMediaCancelled => "Unire anulată.";
+  String get joinMediaFilesAdded => 'Fișiere media adăugate.';
 
   @override
-  String get joinMediaFailed => "Fișierele media nu au putut fi unite.";
+  String get joinMediaRemoved => 'Element eliminat.';
 
   @override
-  String get joinMediaPreparing => "Pregătire";
+  String get joinMediaNeedTwoFiles =>
+      'Adaugă cel puțin două fișiere pentru unire.';
 
   @override
-  String get joinMediaNormalizing => "Pregătire fișier";
+  String get joinMediaProcessing => 'Se unesc fișierele media';
 
   @override
-  String get joinMediaMerging => "Unire fișiere";
+  String get joinMediaCancelled => 'Unire anulată.';
 
   @override
-  String get joinMediaVerifying => "Verificare finală";
+  String get joinMediaFailed => 'Fișierele media nu au putut fi unite.';
 
   @override
-  String get joinMediaCompleting => "Finalizare";
+  String get joinMediaPreparing => 'Pregătire';
 
   @override
-  String get joinMediaCompleted => "Unirea s-a încheiat. Alege unde să salvezi fișierul.";
+  String get joinMediaNormalizing => 'Pregătire fișier';
 
   @override
-  String get joinMediaFormat => "Format de unire";
+  String get joinMediaMerging => 'Unire fișiere';
 
   @override
-  String get joinMediaChooseFormat => "Alege formatul de unire";
+  String get joinMediaVerifying => 'Verificare finală';
 
   @override
-  String get joinMediaAudioFormatHint => "Pentru fișiere doar audio poți alege MP3, M4A, WAV, FLAC, OGG, OPUS, AAC, WMA sau AIFF. Implicit: MP3.";
+  String get joinMediaCompleting => 'Finalizare';
 
   @override
-  String get joinMediaVideoFormatHint => "Pentru fișiere video sau mixte poți alege MP4, MKV, MOV, AVI, WMV, MPEG/MPG, FLV, 3GP sau TS. Implicit: MP4.";
+  String get joinMediaCompleted =>
+      'Unirea s-a încheiat. Alege unde să salvezi fișierul.';
 
   @override
-  String get joinMediaCancelConfirmTitle => "Anulezi unirea?";
+  String get joinMediaFormat => 'Format de unire';
 
   @override
-  String get joinMediaCancelConfirmMessage => "Sigur vrei să anulezi? Procesul FFmpeg în curs va fi oprit.";
+  String get joinMediaChooseFormat => 'Alege formatul de unire';
 
   @override
-  String get joinMediaKeepWorking => "Continuă";
+  String get joinMediaAudioFormatHint =>
+      'Pentru fișiere doar audio poți alege MP3, M4A, WAV, FLAC, OGG, OPUS, AAC, WMA sau AIFF. Implicit: MP3.';
 
   @override
-  String get joinMediaConfirmCancel => "Anulează unirea";
+  String get joinMediaVideoFormatHint =>
+      'Pentru fișiere video sau mixte poți alege MP4, MKV, MOV, AVI, WMV, MPEG/MPG, FLV, 3GP sau TS. Implicit: MP4.';
 
   @override
-  String get joinMediaCancelling => "Se anulează…";
+  String get joinMediaCancelConfirmTitle => 'Anulezi unirea?';
 
   @override
-  String get streamReconnecting => "Se încearcă reconectarea…";
+  String get joinMediaCancelConfirmMessage =>
+      'Sigur vrei să anulezi? Procesul FFmpeg în curs va fi oprit.';
 
   @override
-  String get streamPlaybackRetryMessage => "Canalul nu a pornit. Apasă Reîncearcă pentru a actualiza legătura.";
+  String get joinMediaKeepWorking => 'Continuă';
 
   @override
-  String get settingsMediaSpeedControl => "Activează controlul vitezei fișierelor media";
+  String get joinMediaConfirmCancel => 'Anulează unirea';
 
   @override
-  String get settingsMediaSpeedControlHint => "Afișează controlul vitezei pentru Sonartube, podcasturi și alte conținuturi înregistrate. Transmisiunile în direct sunt excluse.";
+  String get joinMediaCancelling => 'Se anulează…';
 
   @override
-  String get settingsPreferRaiAudioDescription => "Preferă audiodescrierea când este disponibilă";
+  String get selectDocuments => 'Selectează documente';
 
   @override
-  String get settingsPreferRaiAudioDescriptionHint => "Pe canalele Rai folosește automat pista cu audiodescriere când este disponibilă. Dezactivează această opțiune pentru a prefera sunetul italian normal.";
+  String get deleteSelectedDocumentsConfirmation =>
+      'Ștergi definitiv documentele selectate?';
 
   @override
-  String get mediaPlaybackSpeed => "Viteza de redare";
+  String documentsRemovedCount(int count) {
+    return 'Documente șterse: $count.';
+  }
 
   @override
-  String get mediaPlaybackSpeedNormal => "Viteză normală";
+  String get streamReconnecting => 'Se încearcă reconectarea…';
 
   @override
-  String get mediaPlaybackSpeedUnavailable => "Această viteză nu este acceptată pentru acest conținut. Viteza anterioară a fost restabilită.";
+  String get streamPlaybackRetryMessage =>
+      'Canalul nu a pornit. Apasă Reîncearcă pentru a actualiza legătura.';
 
   @override
-  String get mediaPlaybackSpeedRecoveryFailed => "Viteza nu a putut fi restabilită. Redeschide conținutul pentru a încerca din nou.";
+  String get settingsMediaSpeedControl =>
+      'Activează controlul vitezei fișierelor media';
 
   @override
-  String mediaPlaybackSpeedChanged(String speed) => "Viteza de redare: $speed";
+  String get settingsMediaSpeedControlHint =>
+      'Afișează controlul vitezei pentru Sonartube, podcasturi și alte conținuturi înregistrate. Transmisiunile în direct sunt excluse.';
 
+  @override
+  String get settingsPreferRaiAudioDescription =>
+      'Preferă audiodescrierea când este disponibilă';
+
+  @override
+  String get settingsPreferRaiAudioDescriptionHint =>
+      'Pe canalele Rai folosește automat pista cu audiodescriere când este disponibilă. Dezactivează această opțiune pentru a prefera sunetul italian normal.';
+
+  @override
+  String get mediaPlaybackSpeed => 'Viteza de redare';
+
+  @override
+  String get mediaPlaybackSpeedNormal => 'Viteză normală';
 
   @override
-  String get routeServiceInvalidAddress => "Adresă nevalidă";
+  String get mediaPlaybackSpeedUnavailable =>
+      'Această viteză nu este acceptată pentru acest conținut. Viteza anterioară a fost restabilită.';
 
   @override
-  String routeServiceGeocodingNetworkError(int statusCode) => "Eroare de rețea la geocodificare: HTTP ${statusCode}";
+  String get mediaPlaybackSpeedRecoveryFailed =>
+      'Viteza nu a putut fi restabilită. Redeschide conținutul pentru a încerca din nou.';
 
   @override
-  String routeServiceNetworkError(int statusCode) => "Eroare de rețea la calcularea traseului: HTTP ${statusCode}";
+  String mediaPlaybackSpeedChanged(String speed) {
+    return 'Viteza de redare: $speed';
+  }
 
   @override
-  String get routeServiceServerError => "Eroare de server";
+  String get routeServiceInvalidAddress => 'Adresă nevalidă';
 
   @override
-  String get routeServiceCalculationError => "Eroare de calculare a traseului pe server";
+  String routeServiceGeocodingNetworkError(int statusCode) {
+    return 'Eroare de rețea la geocodificare: HTTP $statusCode';
+  }
 
   @override
-  String get routeServiceUnauthorized => "Client neautorizat. Actualizează Sonarpad sau verifică configurația aplicației.";
+  String routeServiceNetworkError(int statusCode) {
+    return 'Eroare de rețea la calcularea traseului: HTTP $statusCode';
+  }
 
   @override
-  String get routeServiceStartNotFound => "Adresa de plecare nu a fost găsită";
+  String get routeServiceServerError => 'Eroare de server';
 
   @override
-  String get routeServiceDestinationNotFound => "Adresa de destinație nu a fost găsită";
+  String get routeServiceCalculationError =>
+      'Eroare de calculare a traseului pe server';
 
   @override
-  String get radioLanguageRo => "Română";
+  String get routeServiceUnauthorized =>
+      'Client neautorizat. Actualizează Sonarpad sau verifică configurația aplicației.';
 
   @override
-  String get radioCountryOptionRo => "România";
+  String get routeServiceStartNotFound => 'Adresa de plecare nu a fost găsită';
 
   @override
-  String get sonarTubeServiceError => "Eroare SonarTube";
+  String get routeServiceDestinationNotFound =>
+      'Adresa de destinație nu a fost găsită';
 
   @override
-  String get sonarTubeServiceInvalidResponse => "Răspuns SonarTube nevalid.";
+  String get radioLanguageRo => 'Română';
 
   @override
-  String get sonarTubeServiceInnerTubeError => "Eroare API InnerTube.";
+  String get radioCountryOptionRo => 'România';
 
   @override
-  String get sonarTubeServiceInvalidInnerTubeResponse => "Răspuns InnerTube nevalid.";
+  String get sonarTubeServiceError => 'Eroare SonarTube';
 
   @override
-  String get sonarTubeServiceNoStream => "Nu este disponibil niciun flux redabil.";
+  String get sonarTubeServiceInvalidResponse => 'Răspuns SonarTube nevalid.';
 
   @override
-  String get sonarTubeServiceOnlyVideo => "Poate fi rezolvat doar un videoclip.";
+  String get sonarTubeServiceInnerTubeError => 'Eroare API InnerTube.';
 
   @override
-  String get sonarTubeServiceNotCollection => "Un videoclip nu este o colecție SonarTube.";
+  String get sonarTubeServiceInvalidInnerTubeResponse =>
+      'Răspuns InnerTube nevalid.';
 
   @override
-  String get listTimestampToday => "astăzi";
+  String get sonarTubeServiceNoStream =>
+      'Nu este disponibil niciun flux redabil.';
 
   @override
-  String get listTimestampYesterday => "ieri";
+  String get sonarTubeServiceOnlyVideo =>
+      'Poate fi rezolvat doar un videoclip.';
 
   @override
-  String get listTimestampDayBeforeYesterday => "alaltăieri";
+  String get sonarTubeServiceNotCollection =>
+      'Un videoclip nu este o colecție SonarTube.';
 
   @override
-  String get listTimestampTomorrow => "mâine";
+  String get listTimestampToday => 'astăzi';
 
   @override
-  String get listTimestampDayAfterTomorrow => "poimâine";
+  String get listTimestampYesterday => 'ieri';
 
   @override
-  String get articleTitleNotFound => "Titlul nu a fost găsit";
+  String get listTimestampDayBeforeYesterday => 'alaltăieri';
 
   @override
-  String get articleUnknownTitle => "Titlu necunoscut";
+  String get listTimestampTomorrow => 'mâine';
 
   @override
-  String get articleAuthorPrefix => "De";
+  String get listTimestampDayAfterTomorrow => 'poimâine';
 
   @override
-  String get audioDescriptionProjectEditorTitle => "Editează proiectul de audiodescriere";
+  String get articleTitleNotFound => 'Titlul nu a fost găsit';
 
   @override
-  String get audioDescriptionProjectOpen => "Deschide proiectul de audiodescriere";
+  String get articleUnknownTitle => 'Titlu necunoscut';
 
   @override
-  String get audioDescriptionProjectLabel => "Proiect";
+  String get articleAuthorPrefix => 'De';
 
   @override
-  String get audioDescriptionProjectChooseSource => "Alege videoclipul original";
+  String get audioDescriptionProjectEditorTitle =>
+      'Editează proiectul de audiodescriere';
 
   @override
-  String get audioDescriptionProjectSource => "Videoclip original";
+  String get audioDescriptionProjectOpen =>
+      'Deschide proiectul de audiodescriere';
 
   @override
-  String get audioDescriptionProjectDescription => "Descriere";
+  String get audioDescriptionProjectLabel => 'Proiect';
 
   @override
-  String get audioDescriptionProjectDescriptionText => "Textul descrierii";
+  String get audioDescriptionProjectChooseSource =>
+      'Alege videoclipul original';
 
   @override
-  String get audioDescriptionProjectPreviewDescription => "Redă descrierea";
+  String get audioDescriptionProjectSource => 'Videoclip original';
 
   @override
-  String get audioDescriptionProjectApplyText => "Aplică textul";
+  String get audioDescriptionProjectDescription => 'Descriere';
 
   @override
-  String get audioDescriptionProjectDeleteDescription => "Șterge descrierea";
+  String get audioDescriptionProjectDescriptionText => 'Textul descrierii';
 
   @override
-  String get audioDescriptionProjectDeleteConfirmation => "Ștergi descrierea selectată din proiect?";
+  String get audioDescriptionProjectPreviewDescription => 'Redă descrierea';
 
   @override
-  String get audioDescriptionProjectCannotDeleteLast => "Singura descriere din proiect nu poate fi ștearsă.";
+  String get audioDescriptionProjectApplyText => 'Aplică textul';
 
   @override
-  String get audioDescriptionProjectApplyVoice => "Aplică vocea proiectului";
+  String get audioDescriptionProjectDeleteDescription => 'Șterge descrierea';
 
   @override
-  String get audioDescriptionProjectReadingEngine => "Motor de citire";
+  String get audioDescriptionProjectDeleteConfirmation =>
+      'Ștergi descrierea selectată din proiect?';
 
   @override
-  String get audioDescriptionProjectEdgeVoice => "Voce Microsoft Edge";
+  String get audioDescriptionProjectCannotDeleteLast =>
+      'Singura descriere din proiect nu poate fi ștearsă.';
 
   @override
-  String get audioDescriptionProjectSystemVoice => "Voce de sistem / VoiceOver / Android";
+  String get audioDescriptionProjectApplyVoice => 'Aplică vocea proiectului';
 
   @override
-  String get audioDescriptionProjectVoiceLanguage => "Limba vocii";
+  String get audioDescriptionProjectReadingEngine => 'Motor de citire';
 
   @override
-  String get audioDescriptionProjectVoice => "Voce";
+  String get audioDescriptionProjectEdgeVoice => 'Voce Microsoft Edge';
 
   @override
-  String get audioDescriptionProjectReexportMp3 => "Reexportă MP3";
+  String get audioDescriptionProjectSystemVoice =>
+      'Voce de sistem / VoiceOver / Android';
 
   @override
-  String get audioDescriptionProjectExportSrt => "Exportă ca SRT";
+  String get audioDescriptionProjectVoiceLanguage => 'Limba vocii';
 
   @override
-  String get audioDescriptionProjectExportVtt => "Exportă ca VTT";
+  String get audioDescriptionProjectVoice => 'Voce';
 
   @override
-  String get audioDescriptionProjectNormalWithDucking => "normal cu reducerea volumului de fundal";
+  String get audioDescriptionProjectReexportMp3 => 'Reexportă MP3';
 
   @override
-  String get audioDescriptionProjectExtendedPause => "pauză extinsă";
+  String get audioDescriptionProjectExportSrt => 'Exportă ca SRT';
 
   @override
-  String get audioDescriptionProjectReady => "Proiect pregătit.";
+  String get audioDescriptionProjectExportVtt => 'Exportă ca VTT';
 
   @override
-  String get audioDescriptionProjectDescriptionApplied => "Descrierea a fost verificată și salvată în proiect.";
+  String get audioDescriptionProjectNormalWithDucking =>
+      'normal cu reducerea volumului de fundal';
 
   @override
-  String get audioDescriptionProjectDescriptionDeleted => "Descrierea a fost ștearsă și proiectul a fost salvat.";
+  String get audioDescriptionProjectExtendedPause => 'pauză extinsă';
 
   @override
-  String get audioDescriptionProjectVoiceChanged => "Vocea a fost schimbată și toate descrierile au fost verificate.";
+  String get audioDescriptionProjectReady => 'Proiect pregătit.';
 
   @override
-  String audioDescriptionProjectDescriptionTooLong(String actual, String available) => "Descrierea sintetizată durează ${actual} secunde, dar sunt disponibile doar ${available} secunde. Textul anterior nu a fost modificat.";
+  String get audioDescriptionProjectDescriptionApplied =>
+      'Descrierea a fost verificată și salvată în proiect.';
 
   @override
-  String get audioDescriptionProjectSourceMissing => "Videoclipul original nu este disponibil. Alege-l înainte de a reexporta MP3-ul.";
+  String get audioDescriptionProjectDescriptionDeleted =>
+      'Descrierea a fost ștearsă și proiectul a fost salvat.';
 
   @override
-  String get audioDescriptionProjectInvalid => "Fișierul selectat nu este un proiect valid de audiodescriere Sonarpad.";
+  String get audioDescriptionProjectVoiceChanged =>
+      'Vocea a fost schimbată și toate descrierile au fost verificate.';
 
   @override
-  String get audioDescriptionProjectUnsavedText => "Aplică textul curent înainte de a reexporta MP3-ul.";
+  String audioDescriptionProjectDescriptionTooLong(
+    String actual,
+    String available,
+  ) {
+    return 'Descrierea sintetizată durează $actual secunde, dar sunt disponibile doar $available secunde. Textul anterior nu a fost modificat.';
+  }
 
   @override
-  String get audioDescriptionProjectWorking => "Se procesează proiectul…";
+  String get audioDescriptionProjectSourceMissing =>
+      'Videoclipul original nu este disponibil. Alege-l înainte de a reexporta MP3-ul.';
 
   @override
-  String get audioDescriptionProjectExported => "Proiect exportat.";
+  String get audioDescriptionProjectInvalid =>
+      'Fișierul selectat nu este un proiect valid de audiodescriere Sonarpad.';
 
   @override
-  String get audioDescriptionProjectSelectFirst => "Deschide mai întâi un proiect.";
+  String get audioDescriptionProjectUnsavedText =>
+      'Aplică textul curent înainte de a reexporta MP3-ul.';
 
   @override
-  String get audioDescriptionProjectSelectDescription => "Selectează o descriere.";
+  String get audioDescriptionProjectWorking => 'Se procesează proiectul…';
 
   @override
-  String audioDescriptionProjectDescriptionDetails(String source, String start, String end, String duration, String mode) => "Scenă ${source} s; MP3 ${start}-${end} s; voce ${duration} s; ${mode}";
+  String get audioDescriptionProjectExported => 'Proiect exportat.';
 
   @override
-  String get audioDescriptionProjectShare => "Distribuie";
+  String get audioDescriptionProjectSelectFirst =>
+      'Deschide mai întâi un proiect.';
 
   @override
-  String get audioDescriptionProjectSaveDocuments => "Salvează în Documentele Sonarpad";
+  String get audioDescriptionProjectSelectDescription =>
+      'Selectează o descriere.';
 
   @override
-  String get audioDescriptionProjectSavedDocuments => "Fișierele au fost salvate în Documentele Sonarpad.";
+  String audioDescriptionProjectDescriptionDetails(
+    String source,
+    String start,
+    String end,
+    String duration,
+    String mode,
+  ) {
+    return 'Scenă $source s; MP3 $start-$end s; voce $duration s; $mode';
+  }
 
   @override
-  String get audioDescriptionProjectCancel => "Anulează";
+  String get audioDescriptionProjectShare => 'Distribuie';
 
   @override
-  String get audioDescriptionProjectChooseFromFiles => "Alege video din Fișiere";
+  String get audioDescriptionProjectSaveDocuments =>
+      'Salvează în Documentele Sonarpad';
 
   @override
-  String get audioDescriptionProjectImportFromPhotos => "Importă video din Poze";
+  String get audioDescriptionProjectSavedDocuments =>
+      'Fișierele au fost salvate în Documentele Sonarpad.';
 
   @override
-  String get newsCategoryWorld => "Știri internaționale";
+  String get audioDescriptionProjectCancel => 'Anulează';
 
   @override
-  String get newsCategoryBusiness => "Afaceri";
+  String get audioDescriptionProjectChooseFromFiles =>
+      'Alege video din Fișiere';
 
   @override
-  String get newsCategoryTechnology => "Tehnologie";
+  String get audioDescriptionProjectImportFromPhotos =>
+      'Importă video din Poze';
 
   @override
-  String get newsCategoryEntertainment => "Divertisment";
+  String get newsCategoryWorld => 'Știri internaționale';
 
   @override
-  String get newsCategorySports => "Sport";
+  String get newsCategoryBusiness => 'Afaceri';
 
   @override
-  String get newsCategoryHealth => "Sănătate";
+  String get newsCategoryTechnology => 'Tehnologie';
 
   @override
-  String get newsArticleSubscribersOnly => "Acest articol este disponibil doar abonaților.";
+  String get newsCategoryEntertainment => 'Divertisment';
 
   @override
-  String wikipediaSearchHttpError(int statusCode) => "Eroare Wikipedia: ${statusCode}";
+  String get newsCategorySports => 'Sport';
 
   @override
-  String wikipediaImportHttpError(int statusCode) => "Eroare la importul din Wikipedia: ${statusCode}";
+  String get newsCategoryHealth => 'Sănătate';
 
   @override
-  String gutenbergSearchHttpError(int statusCode) => "Errore Gutenberg ${statusCode}";
+  String get newsArticleSubscribersOnly =>
+      'Acest articol este disponibil doar abonaților.';
 
   @override
-  String gutenbergDownloadHttpError(int statusCode) => "Errore download ${statusCode}";
+  String wikipediaSearchHttpError(int statusCode) {
+    return 'Eroare Wikipedia: $statusCode';
+  }
 
   @override
-  String gutenbergEpubDownloadHttpError(int statusCode) => "Errore download EPUB ${statusCode}";
+  String wikipediaImportHttpError(int statusCode) {
+    return 'Eroare la importul din Wikipedia: $statusCode';
+  }
 
   @override
-  String get gutenbergInvalidBookId => "ID Gutenberg non valido.";
+  String gutenbergSearchHttpError(int statusCode) {
+    return 'Errore Gutenberg $statusCode';
+  }
 
   @override
-  String get gutenbergDownloadTimeout => "Download Gutenberg troppo lento. Riprova tra poco o scegli un altro formato.";
+  String gutenbergDownloadHttpError(int statusCode) {
+    return 'Errore download $statusCode';
+  }
 
   @override
-  String get gutenbergUnreadableArchive => "Archivio ZIP Gutenberg senza file di testo leggibile.";
+  String gutenbergEpubDownloadHttpError(int statusCode) {
+    return 'Errore download EPUB $statusCode';
+  }
 
   @override
-  String get gutenbergUntitledBook => "Senza titolo";
+  String get gutenbergInvalidBookId => 'ID Gutenberg non valido.';
 
   @override
-  String get gutenbergUnknownAuthor => "Autore sconosciuto";
+  String get gutenbergDownloadTimeout =>
+      'Download Gutenberg troppo lento. Riprova tra poco o scegli un altro formato.';
 
   @override
-  String get podcastCategoryAll => "Toate categoriile";
+  String get gutenbergUnreadableArchive =>
+      'Archivio ZIP Gutenberg senza file di testo leggibile.';
 
   @override
-  String get podcastCategoryArts => "Arte";
+  String get gutenbergUntitledBook => 'Senza titolo';
 
   @override
-  String get podcastCategoryBusiness => "Afaceri";
+  String get gutenbergUnknownAuthor => 'Autore sconosciuto';
 
   @override
-  String get podcastCategoryComedy => "Comedie";
+  String get podcastCategoryAll => 'Toate categoriile';
 
   @override
-  String get podcastCategoryEducation => "Educație";
+  String get podcastCategoryArts => 'Arte';
 
   @override
-  String get podcastCategoryFiction => "Ficțiune";
+  String get podcastCategoryBusiness => 'Afaceri';
 
   @override
-  String get podcastCategoryGovernment => "Guvern";
+  String get podcastCategoryComedy => 'Comedie';
 
   @override
-  String get podcastCategoryHealthAndFitness => "Sănătate și fitness";
+  String get podcastCategoryEducation => 'Educație';
 
   @override
-  String get podcastCategoryHistory => "Istorie";
+  String get podcastCategoryFiction => 'Ficțiune';
 
   @override
-  String get podcastCategoryKidsAndFamily => "Copii și familie";
+  String get podcastCategoryGovernment => 'Guvern';
 
   @override
-  String get podcastCategoryLeisure => "Timp liber";
+  String get podcastCategoryHealthAndFitness => 'Sănătate și fitness';
 
   @override
-  String get podcastCategoryMusic => "Muzică";
+  String get podcastCategoryHistory => 'Istorie';
 
   @override
-  String get podcastCategoryNews => "Știri";
+  String get podcastCategoryKidsAndFamily => 'Copii și familie';
 
   @override
-  String get podcastCategoryReligionAndSpirituality => "Religie și spiritualitate";
+  String get podcastCategoryLeisure => 'Timp liber';
 
   @override
-  String get podcastCategoryScience => "Știință";
+  String get podcastCategoryMusic => 'Muzică';
 
   @override
-  String get podcastCategorySocietyAndCulture => "Societate și cultură";
+  String get podcastCategoryNews => 'Știri';
 
   @override
-  String get podcastCategorySports => "Sport";
+  String get podcastCategoryReligionAndSpirituality =>
+      'Religie și spiritualitate';
 
   @override
-  String get podcastCategoryTechnology => "Tehnologie";
+  String get podcastCategoryScience => 'Știință';
 
   @override
-  String get podcastCategoryTrueCrime => "Crime reale";
+  String get podcastCategorySocietyAndCulture => 'Societate și cultură';
 
   @override
-  String get podcastCategoryTvAndFilm => "TV și film";
+  String get podcastCategorySports => 'Sport';
 
   @override
-  String get podcastCategoryBooks => "Cărți";
+  String get podcastCategoryTechnology => 'Tehnologie';
 
   @override
-  String get podcastCategoryDesign => "Design";
+  String get podcastCategoryTrueCrime => 'Crime reale';
 
   @override
-  String get podcastCategoryFashionAndBeauty => "Modă și frumusețe";
+  String get podcastCategoryTvAndFilm => 'TV și film';
 
   @override
-  String get podcastCategoryFood => "Gastronomie";
+  String get podcastCategoryBooks => 'Cărți';
 
   @override
-  String get podcastCategoryPerformingArts => "Artele spectacolului";
+  String get podcastCategoryDesign => 'Design';
 
   @override
-  String get podcastCategoryVisualArts => "Arte vizuale";
+  String get podcastCategoryFashionAndBeauty => 'Modă și frumusețe';
 
   @override
-  String get podcastCategoryCareers => "Cariere";
+  String get podcastCategoryFood => 'Gastronomie';
 
   @override
-  String get podcastCategoryEntrepreneurship => "Antreprenoriat";
+  String get podcastCategoryPerformingArts => 'Artele spectacolului';
 
   @override
-  String get podcastCategoryInvesting => "Investiții";
+  String get podcastCategoryVisualArts => 'Arte vizuale';
 
   @override
-  String get podcastCategoryManagement => "Management";
+  String get podcastCategoryCareers => 'Cariere';
 
   @override
-  String get podcastCategoryMarketing => "Marketing";
+  String get podcastCategoryEntrepreneurship => 'Antreprenoriat';
 
   @override
-  String get podcastCategoryNonProfit => "Organizații non-profit";
+  String get podcastCategoryInvesting => 'Investiții';
 
   @override
-  String get podcastCategoryComedyInterviews => "Interviuri de comedie";
+  String get podcastCategoryManagement => 'Management';
 
   @override
-  String get podcastCategoryImprov => "Improvizație";
+  String get podcastCategoryMarketing => 'Marketing';
 
   @override
-  String get podcastCategoryStandUp => "Stand-up";
+  String get podcastCategoryNonProfit => 'Organizații non-profit';
 
   @override
-  String get podcastCategoryCourses => "Cursuri";
+  String get podcastCategoryComedyInterviews => 'Interviuri de comedie';
 
   @override
-  String get podcastCategoryHowTo => "Ghiduri practice";
+  String get podcastCategoryImprov => 'Improvizație';
 
   @override
-  String get podcastCategoryLanguageLearning => "Învățarea limbilor";
+  String get podcastCategoryStandUp => 'Stand-up';
 
   @override
-  String get podcastCategorySelfImprovement => "Dezvoltare personală";
+  String get podcastCategoryCourses => 'Cursuri';
 
   @override
-  String get podcastCategoryComedyFiction => "Ficțiune comică";
+  String get podcastCategoryHowTo => 'Ghiduri practice';
 
   @override
-  String get podcastCategoryDrama => "Dramă";
+  String get podcastCategoryLanguageLearning => 'Învățarea limbilor';
 
   @override
-  String get podcastCategoryScienceFiction => "Științifico-fantastic";
+  String get podcastCategorySelfImprovement => 'Dezvoltare personală';
 
   @override
-  String get podcastCategoryAlternativeHealth => "Sănătate alternativă";
+  String get podcastCategoryComedyFiction => 'Ficțiune comică';
 
   @override
-  String get podcastCategoryFitness => "Fitness";
+  String get podcastCategoryDrama => 'Dramă';
 
   @override
-  String get podcastCategoryMedicine => "Medicină";
+  String get podcastCategoryScienceFiction => 'Științifico-fantastic';
 
   @override
-  String get podcastCategoryMentalHealth => "Sănătate mintală";
+  String get podcastCategoryAlternativeHealth => 'Sănătate alternativă';
 
   @override
-  String get podcastCategoryNutrition => "Nutriție";
+  String get podcastCategoryFitness => 'Fitness';
 
   @override
-  String get podcastCategorySexuality => "Sexualitate";
+  String get podcastCategoryMedicine => 'Medicină';
 
   @override
-  String get podcastCategoryEducationForKids => "Educație pentru copii";
+  String get podcastCategoryMentalHealth => 'Sănătate mintală';
 
   @override
-  String get podcastCategoryParenting => "Creșterea copiilor";
+  String get podcastCategoryNutrition => 'Nutriție';
 
   @override
-  String get podcastCategoryPetsAndAnimals => "Animale de companie și animale";
+  String get podcastCategorySexuality => 'Sexualitate';
 
   @override
-  String get podcastCategoryStoriesForKids => "Povești pentru copii";
+  String get podcastCategoryEducationForKids => 'Educație pentru copii';
 
   @override
-  String get podcastCategoryAnimationAndManga => "Animație și manga";
+  String get podcastCategoryParenting => 'Creșterea copiilor';
 
   @override
-  String get podcastCategoryAutomotive => "Automobile";
+  String get podcastCategoryPetsAndAnimals => 'Animale de companie și animale';
 
   @override
-  String get podcastCategoryAviation => "Aviație";
+  String get podcastCategoryStoriesForKids => 'Povești pentru copii';
 
   @override
-  String get podcastCategoryCrafts => "Meșteșuguri";
+  String get podcastCategoryAnimationAndManga => 'Animație și manga';
 
   @override
-  String get podcastCategoryGames => "Jocuri";
+  String get podcastCategoryAutomotive => 'Automobile';
 
   @override
-  String get podcastCategoryHobbies => "Hobby-uri";
+  String get podcastCategoryAviation => 'Aviație';
 
   @override
-  String get podcastCategoryHomeAndGarden => "Casă și grădină";
+  String get podcastCategoryCrafts => 'Meșteșuguri';
 
   @override
-  String get podcastCategoryVideoGames => "Jocuri video";
+  String get podcastCategoryGames => 'Jocuri';
 
   @override
-  String get podcastCategoryMusicCommentary => "Comentarii despre muzică";
+  String get podcastCategoryHobbies => 'Hobby-uri';
 
   @override
-  String get podcastCategoryMusicHistory => "Istoria muzicii";
+  String get podcastCategoryHomeAndGarden => 'Casă și grădină';
 
   @override
-  String get podcastCategoryMusicInterviews => "Interviuri muzicale";
+  String get podcastCategoryVideoGames => 'Jocuri video';
 
   @override
-  String get podcastCategoryBusinessNews => "Știri economice";
+  String get podcastCategoryMusicCommentary => 'Comentarii despre muzică';
 
   @override
-  String get podcastCategoryDailyNews => "Știri zilnice";
+  String get podcastCategoryMusicHistory => 'Istoria muzicii';
 
   @override
-  String get podcastCategoryEntertainmentNews => "Știri de divertisment";
+  String get podcastCategoryMusicInterviews => 'Interviuri muzicale';
 
   @override
-  String get podcastCategoryNewsCommentary => "Comentarii despre știri";
+  String get podcastCategoryBusinessNews => 'Știri economice';
 
   @override
-  String get podcastCategoryPolitics => "Politică";
+  String get podcastCategoryDailyNews => 'Știri zilnice';
 
   @override
-  String get podcastCategorySportsNews => "Știri sportive";
+  String get podcastCategoryEntertainmentNews => 'Știri de divertisment';
 
   @override
-  String get podcastCategoryTechNews => "Știri despre tehnologie";
+  String get podcastCategoryNewsCommentary => 'Comentarii despre știri';
 
   @override
-  String get podcastCategoryBuddhism => "Budism";
+  String get podcastCategoryPolitics => 'Politică';
 
   @override
-  String get podcastCategoryChristianity => "Creștinism";
+  String get podcastCategorySportsNews => 'Știri sportive';
 
   @override
-  String get podcastCategoryHinduism => "Hinduism";
+  String get podcastCategoryTechNews => 'Știri despre tehnologie';
 
   @override
-  String get podcastCategoryIslam => "Islam";
+  String get podcastCategoryBuddhism => 'Budism';
 
   @override
-  String get podcastCategoryJudaism => "Iudaism";
+  String get podcastCategoryChristianity => 'Creștinism';
 
   @override
-  String get podcastCategoryReligion => "Religie";
+  String get podcastCategoryHinduism => 'Hinduism';
 
   @override
-  String get podcastCategorySpirituality => "Spiritualitate";
+  String get podcastCategoryIslam => 'Islam';
 
   @override
-  String get podcastCategoryAstronomy => "Astronomie";
+  String get podcastCategoryJudaism => 'Iudaism';
 
   @override
-  String get podcastCategoryChemistry => "Chimie";
+  String get podcastCategoryReligion => 'Religie';
 
   @override
-  String get podcastCategoryEarthSciences => "Științele Pământului";
+  String get podcastCategorySpirituality => 'Spiritualitate';
 
   @override
-  String get podcastCategoryLifeSciences => "Științele vieții";
+  String get podcastCategoryAstronomy => 'Astronomie';
 
   @override
-  String get podcastCategoryMathematics => "Matematică";
+  String get podcastCategoryChemistry => 'Chimie';
 
   @override
-  String get podcastCategoryNaturalSciences => "Științe naturale";
+  String get podcastCategoryEarthSciences => 'Științele Pământului';
 
   @override
-  String get podcastCategoryNature => "Natură";
+  String get podcastCategoryLifeSciences => 'Științele vieții';
 
   @override
-  String get podcastCategoryPhysics => "Fizică";
+  String get podcastCategoryMathematics => 'Matematică';
 
   @override
-  String get podcastCategorySocialSciences => "Științe sociale";
+  String get podcastCategoryNaturalSciences => 'Științe naturale';
 
   @override
-  String get podcastCategoryDocumentary => "Documentar";
+  String get podcastCategoryNature => 'Natură';
 
   @override
-  String get podcastCategoryPersonalJournals => "Jurnale personale";
+  String get podcastCategoryPhysics => 'Fizică';
 
   @override
-  String get podcastCategoryPhilosophy => "Filosofie";
+  String get podcastCategorySocialSciences => 'Științe sociale';
 
   @override
-  String get podcastCategoryPlacesAndTravel => "Locuri și călătorii";
+  String get podcastCategoryDocumentary => 'Documentar';
 
   @override
-  String get podcastCategoryRelationships => "Relații";
+  String get podcastCategoryPersonalJournals => 'Jurnale personale';
 
   @override
-  String get podcastCategoryBaseball => "Baseball";
+  String get podcastCategoryPhilosophy => 'Filosofie';
 
   @override
-  String get podcastCategoryBasketball => "Baschet";
+  String get podcastCategoryPlacesAndTravel => 'Locuri și călătorii';
 
   @override
-  String get podcastCategoryCricket => "Cricket";
+  String get podcastCategoryRelationships => 'Relații';
 
   @override
-  String get podcastCategoryFantasySports => "Sporturi fantasy";
+  String get podcastCategoryBaseball => 'Baseball';
 
   @override
-  String get podcastCategoryFootball => "Fotbal american";
+  String get podcastCategoryBasketball => 'Baschet';
 
   @override
-  String get podcastCategoryGolf => "Golf";
+  String get podcastCategoryCricket => 'Cricket';
 
   @override
-  String get podcastCategoryHockey => "Hochei";
+  String get podcastCategoryFantasySports => 'Sporturi fantasy';
 
   @override
-  String get podcastCategoryRugby => "Rugby";
+  String get podcastCategoryFootball => 'Fotbal american';
 
   @override
-  String get podcastCategoryRunning => "Alergare";
+  String get podcastCategoryGolf => 'Golf';
 
   @override
-  String get podcastCategorySoccer => "Fotbal";
+  String get podcastCategoryHockey => 'Hochei';
 
   @override
-  String get podcastCategorySwimming => "Înot";
+  String get podcastCategoryRugby => 'Rugby';
 
   @override
-  String get podcastCategoryTennis => "Tenis";
+  String get podcastCategoryRunning => 'Alergare';
 
   @override
-  String get podcastCategoryVolleyball => "Volei";
+  String get podcastCategorySoccer => 'Fotbal';
 
   @override
-  String get podcastCategoryWilderness => "Natură sălbatică";
+  String get podcastCategorySwimming => 'Înot';
 
   @override
-  String get podcastCategoryWrestling => "Lupte";
+  String get podcastCategoryTennis => 'Tenis';
 
   @override
-  String get podcastCategoryAfterShows => "Emisiuni de după show";
+  String get podcastCategoryVolleyball => 'Volei';
 
   @override
-  String get podcastCategoryFilmHistory => "Istoria filmului";
+  String get podcastCategoryWilderness => 'Natură sălbatică';
 
   @override
-  String get podcastCategoryFilmInterviews => "Interviuri despre film";
+  String get podcastCategoryWrestling => 'Lupte';
 
   @override
-  String get podcastCategoryFilmReviews => "Recenzii de film";
+  String get podcastCategoryAfterShows => 'Emisiuni de după show';
 
   @override
-  String get podcastCategoryTvReviews => "Recenzii TV";
+  String get podcastCategoryFilmHistory => 'Istoria filmului';
 
   @override
-  String get weatherConditionClearSky => "Cer senin";
+  String get podcastCategoryFilmInterviews => 'Interviuri despre film';
 
   @override
-  String get weatherConditionMainlyClear => "Predominant senin";
+  String get podcastCategoryFilmReviews => 'Recenzii de film';
 
   @override
-  String get weatherConditionPartlyCloudy => "Parțial noros";
+  String get podcastCategoryTvReviews => 'Recenzii TV';
 
   @override
-  String get weatherConditionOvercast => "Acoperit";
+  String get weatherConditionClearSky => 'Cer senin';
 
   @override
-  String get weatherConditionFog => "Ceață";
+  String get weatherConditionMainlyClear => 'Predominant senin';
 
   @override
-  String get weatherConditionRimeFog => "Ceață cu depunere de chiciură";
+  String get weatherConditionPartlyCloudy => 'Parțial noros';
 
   @override
-  String get weatherConditionLightDrizzle => "Burniță slabă";
+  String get weatherConditionOvercast => 'Acoperit';
 
   @override
-  String get weatherConditionModerateDrizzle => "Burniță moderată";
+  String get weatherConditionFog => 'Ceață';
 
   @override
-  String get weatherConditionDenseDrizzle => "Burniță densă";
+  String get weatherConditionRimeFog => 'Ceață cu depunere de chiciură';
 
   @override
-  String get weatherConditionLightFreezingDrizzle => "Burniță înghețată slabă";
+  String get weatherConditionLightDrizzle => 'Burniță slabă';
 
   @override
-  String get weatherConditionDenseFreezingDrizzle => "Burniță înghețată densă";
+  String get weatherConditionModerateDrizzle => 'Burniță moderată';
 
   @override
-  String get weatherConditionLightRain => "Ploaie slabă";
+  String get weatherConditionDenseDrizzle => 'Burniță densă';
 
   @override
-  String get weatherConditionModerateRain => "Ploaie moderată";
+  String get weatherConditionLightFreezingDrizzle => 'Burniță înghețată slabă';
 
   @override
-  String get weatherConditionHeavyRain => "Ploaie puternică";
+  String get weatherConditionDenseFreezingDrizzle => 'Burniță înghețată densă';
 
   @override
-  String get weatherConditionLightFreezingRain => "Ploaie înghețată slabă";
+  String get weatherConditionLightRain => 'Ploaie slabă';
 
   @override
-  String get weatherConditionHeavyFreezingRain => "Ploaie înghețată puternică";
+  String get weatherConditionModerateRain => 'Ploaie moderată';
 
   @override
-  String get weatherConditionLightSnowfall => "Ninsoare slabă";
+  String get weatherConditionHeavyRain => 'Ploaie puternică';
 
   @override
-  String get weatherConditionModerateSnowfall => "Ninsoare moderată";
+  String get weatherConditionLightFreezingRain => 'Ploaie înghețată slabă';
 
   @override
-  String get weatherConditionHeavySnowfall => "Ninsoare puternică";
+  String get weatherConditionHeavyFreezingRain => 'Ploaie înghețată puternică';
 
   @override
-  String get weatherConditionSnowGrains => "Granule de zăpadă";
+  String get weatherConditionLightSnowfall => 'Ninsoare slabă';
 
   @override
-  String get weatherConditionLightRainShowers => "Averse slabe de ploaie";
+  String get weatherConditionModerateSnowfall => 'Ninsoare moderată';
 
   @override
-  String get weatherConditionModerateRainShowers => "Averse moderate de ploaie";
+  String get weatherConditionHeavySnowfall => 'Ninsoare puternică';
 
   @override
-  String get weatherConditionViolentRainShowers => "Averse puternice de ploaie";
+  String get weatherConditionSnowGrains => 'Granule de zăpadă';
 
   @override
-  String get weatherConditionLightSnowShowers => "Averse slabe de zăpadă";
+  String get weatherConditionLightRainShowers => 'Averse slabe de ploaie';
 
   @override
-  String get weatherConditionHeavySnowShowers => "Averse puternice de zăpadă";
+  String get weatherConditionModerateRainShowers => 'Averse moderate de ploaie';
 
   @override
-  String get weatherConditionThunderstorm => "Furtună";
+  String get weatherConditionViolentRainShowers => 'Averse puternice de ploaie';
 
   @override
-  String get weatherConditionThunderstormLightHail => "Furtună cu grindină slabă";
+  String get weatherConditionLightSnowShowers => 'Averse slabe de zăpadă';
 
   @override
-  String get weatherConditionThunderstormHeavyHail => "Furtună cu grindină puternică";
+  String get weatherConditionHeavySnowShowers => 'Averse puternice de zăpadă';
 
   @override
-  String get documentsImportFromFiles => "Importă din Fișiere";
+  String get weatherConditionThunderstorm => 'Furtună';
 
   @override
-  String get sonarTubeOpenUrl => "Deschide URL";
+  String get weatherConditionThunderstormLightHail =>
+      'Furtună cu grindină slabă';
 
   @override
-  String get sonarTubeUrlPrompt => "Lipește adresa URL a unui videoclip YouTube";
+  String get weatherConditionThunderstormHeavyHail =>
+      'Furtună cu grindină puternică';
 
   @override
-  String get sonarMusicAll => "Toate";
+  String get documentsImportFromFiles => 'Importă din Fișiere';
 
   @override
-  String get sonarMusicSong => "Melodii";
+  String get sonarTubeOpenUrl => 'Deschide URL';
 
   @override
-  String get sonarMusicVideo => "Videoclipuri";
+  String get sonarTubeUrlPrompt =>
+      'Lipește adresa URL a unui videoclip YouTube';
 
   @override
-  String get sonarMusicAlbum => "Albume";
+  String get sonarMusicAll => 'Toate';
 
   @override
-  String get sonarMusicArtist => "Artiști";
+  String get sonarMusicSong => 'Melodii';
 
   @override
-  String get sonarMusicPlaylist => "Liste";
+  String get sonarMusicVideo => 'Videoclipuri';
 
   @override
-  String get sonarMusicFavorites => "Favorite";
+  String get sonarMusicAlbum => 'Albume';
 
   @override
-  String get sonarMusicRecent => "Redate recent";
+  String get sonarMusicArtist => 'Artiști';
 
   @override
-  String get sonarMusicOpen => "Deschide URL";
+  String get sonarMusicPlaylist => 'Liste';
 
   @override
-  String get sonarMusicLoad => "Încarcă mai mult";
+  String get sonarMusicFavorites => 'Favorite';
 
   @override
-  String get sonarMusicArtistOpen => "Vezi artistul";
+  String get sonarMusicRecent => 'Redate recent';
 
   @override
-  String get sonarMusicAlbumOpen => "Vezi albumul";
+  String get sonarMusicOpen => 'Deschide URL';
 
   @override
-  String get sonarMusicPlayAll => "Redă tot";
+  String get sonarMusicLoad => 'Încarcă mai mult';
 
   @override
-  String get sonarMusicShare => "Distribuie";
+  String get sonarMusicArtistOpen => 'Vezi artistul';
 
   @override
-  String get sonarMusicAdd => "Adaugă la favorite";
+  String get sonarMusicAlbumOpen => 'Vezi albumul';
 
   @override
-  String get sonarMusicRemove => "Elimină favorit";
+  String get sonarMusicPlayAll => 'Redă tot';
 
   @override
-  String get sonarMusicEmpty => "Fără rezultate";
+  String get sonarMusicShare => 'Distribuie';
 
   @override
-  String get sonarMusicInvalid => "Nu se poate deschide";
+  String get sonarMusicAdd => 'Adaugă la favorite';
 
   @override
-  String get sonarMusicDescription => "Descriere";
+  String get sonarMusicRemove => 'Elimină favorit';
 
   @override
-  String get sonarMusicShuffle => "Aleatoriu";
+  String get sonarMusicEmpty => 'Fără rezultate';
 
   @override
-  String get sonarMusicSave => "Salvează media";
+  String get sonarMusicInvalid => 'Nu se poate deschide';
 
   @override
-  String get sonarMusicSuggest => "Sugestii";
+  String get sonarMusicDescription => 'Descriere';
 
   @override
-  String get sonarMusicSearchHint => "Melodie, artist sau album";
+  String get sonarMusicShuffle => 'Aleatoriu';
 
   @override
-  String get catalogUntitled => "Senza titolo";
+  String get sonarMusicSave => 'Salvează media';
 
   @override
-  String get catalogUnknownAuthor => "Autore sconosciuto";
+  String get sonarMusicSuggest => 'Sugestii';
 
   @override
-  String get librivoxChapterFallback => "Capitolo";
+  String get sonarMusicSearchHint => 'Melodie, artist sau album';
 
   @override
-  String get internetArchiveAudioFallback => "Audio";
+  String get catalogUntitled => 'Senza titolo';
 
   @override
-  String librivoxHttpError(int statusCode) => "Errore LibriVox ${statusCode}";
+  String get catalogUnknownAuthor => 'Autore sconosciuto';
 
   @override
-  String get librivoxBookNotFound => "Audiolibro non trovato.";
+  String get librivoxChapterFallback => 'Capitolo';
 
   @override
-  String internetArchiveHttpError(int statusCode) => "Internet Archive ${statusCode}";
+  String get internetArchiveAudioFallback => 'Audio';
 
   @override
-  String poetryDbHttpError(int statusCode) => "Errore PoetryDB ${statusCode}";
+  String librivoxHttpError(int statusCode) {
+    return 'Errore LibriVox $statusCode';
+  }
 
   @override
-  String get cloudFilePickerLoading => "Se încarcă fișierul";
+  String get librivoxBookNotFound => 'Audiolibro non trovato.';
 
   @override
-  String get cloudFilePickerPreparing => "Se pregătește fișierul din cloud…";
+  String internetArchiveHttpError(int statusCode) {
+    return 'Internet Archive $statusCode';
+  }
 
   @override
-  String get cloudFilePickerUnknownSize => "Se încarcă…";
+  String poetryDbHttpError(int statusCode) {
+    return 'Errore PoetryDB $statusCode';
+  }
 
   @override
-  String get cloudFilePickerCancelling => "Se anulează…";
+  String get cloudFilePickerLoading => 'Se încarcă fișierul';
 
   @override
-  String get audioPlaybackNotificationChannelName => "Redare audio";
+  String get cloudFilePickerPreparing => 'Se pregătește fișierul din cloud…';
 
   @override
-  String get documentExportFallbackName => "Document";
+  String get cloudFilePickerUnknownSize => 'Se încarcă…';
 
   @override
-  String get documentExportAudiobookSuffix => "carte audio";
+  String get cloudFilePickerCancelling => 'Se anulează…';
 
   @override
-  String get convertMediaWavFloat32 => "32 de biți în virgulă mobilă";
+  String get audioPlaybackNotificationChannelName => 'Redare audio';
+
+  @override
+  String get documentExportFallbackName => 'Document';
+
+  @override
+  String get documentExportAudiobookSuffix => 'carte audio';
+
+  @override
+  String get convertMediaWavFloat32 => '32 de biți în virgulă mobilă';
+
   @override
   String get cloudFilePickerCopying => 'Se copiază fișierul în Sonarpad';
 
   @override
+  String get audioDescriptionNonverbalVocals =>
+      'Permite descrieri în timpul sunetelor vocale nonverbale';
+
+  @override
   String get importVideoFromGallery => 'Alege din galerie';
+
   @override
   String get sharedVideoOpen => 'Deschide videoclipul';
 
@@ -5356,6 +5518,100 @@ class AppLocalizationsRo extends AppLocalizations {
   @override
   String get developerReportEmailInvalid =>
       'Introdu o adresă de email validă sau lasă câmpul gol.';
+
+  @override
+  String get convertMediaDestination => 'Destinația fișierelor convertite';
+
+  @override
+  String get exportAskEveryTime => 'Întreabă de fiecare dată';
+
+  @override
+  String get selectAudioTrack => 'Selectează pista audio';
+
+  @override
+  String get castToDevice => 'Transmite cu Chromecast';
+
+  @override
+  String get castNoDevices =>
+      'Nu s-au găsit dispozitive. Verifică dacă folosesc aceeași rețea Wi-Fi și încearcă din nou.';
+
+  @override
+  String get castFailure =>
+      'Transmiterea a eșuat sau conexiunea s-a pierdut. Poți continua pe acest dispozitiv.';
+
+  @override
+  String get castResumeHere => 'Continuă pe acest dispozitiv';
+
+  @override
+  String get settingsShowCast => 'Afișează Chromecast în playerele compatibile';
+
+  @override
+  String get castStop => 'Oprește transmiterea';
+
+  @override
+  String get settingsHideCalendarSaints => 'Ascunde sfinții din calendar';
+
+  @override
+  String get markdownFormat => 'Markdown (.md)';
+
+  @override
+  String get htmlFormat => 'HTML (.html)';
+
+  @override
+  String get recordingNotAdvancing =>
+      'Înregistrarea nu primește date noi. Verifică conexiunea și repornește înregistrarea dacă este necesar.';
+
+  @override
+  String get sonarTubeChannelCourses => 'Cursuri';
+
+  @override
+  String get sonarTubeChannelPodcasts => 'Podcasturi';
+
+  @override
+  String get favoriteVideosLatest => 'Cele mai noi videoclipuri';
+
+  @override
+  String get favoriteVideosTitle => 'Cele mai noi videoclipuri din favorite';
+
+  @override
+  String get favoriteVideosPartial =>
+      'Unele canale nu au putut fi încărcate. Sunt afișate videoclipurile celorlalte canale.';
+
+  @override
+  String get favoritesSortAlphabetically => 'Sortează alfabetic';
+
+  @override
+  String get saveMediaContent => 'Salvează conținutul';
+
+  @override
+  String get saveMp4WithAudiodescription => 'MP4 cu audiodescriere';
+
+  @override
+  String get audioDescriptionProjectSegment => 'Segment de reanalizat';
+
+  @override
+  String get audioDescriptionProjectReanalyze => 'Reanalizează segmentul';
+
+  @override
+  String get audioDescriptionProjectReanalyzeConfirm =>
+      'Reanalizați segmentul selectat? Textele actualizate vor înlocui descrierile corespunzătoare, păstrând timpii salvați. Descrieri noi vor fi adăugate numai în spațiile disponibile. Fișierul cu audiodescriere va trebui exportat din nou.';
+
+  @override
+  String get convertMediaDocumentAudiobookHint =>
+      'Pentru a transforma un document în carte audio, accesați Documente → Importă din Fișiere. După import, alegeți Exportă documentul → Carte audio MP3 (.mp3).';
+
+  @override
+  String audioDescriptionProjectEditorSegmentOption(
+    int index,
+    String start,
+    String end,
+  ) {
+    return '$index: $start – $end';
+  }
+
+  @override
+  String get raiPlayMediaUnavailable =>
+      'RaiPlay nu a returnat o adresă care poate fi redată după mai multe încercări. Conținutul poate fi temporar indisponibil. Încercați din nou mai târziu.';
 
   @override
   String get concertsTicketOneLogin => 'Conectează-te la contul TicketOne';
@@ -5369,6 +5625,49 @@ class AppLocalizationsRo extends AppLocalizations {
   @override
   String get pdfUnprotectedCopyDescription =>
       'Salvează o copie a PDF-ului fără parolă, păstrând aspectul și conținutul. PDF-ul original rămâne neschimbat.';
+
+  @override
+  String get onlineDictionaryTitle => 'Dicționar online';
+
+  @override
+  String get onlineDictionaryWord => 'Cuvânt:';
+
+  @override
+  String get onlineDictionaryLanguage => 'Limba dicționarului:';
+
+  @override
+  String get onlineDictionaryDefinitions => 'Definiții';
+
+  @override
+  String get onlineDictionarySynonyms => 'Sinonime';
+
+  @override
+  String get onlineDictionaryNotFound => 'Cuvântul nu a fost găsit.';
+
+  @override
+  String get onlineDictionaryLimited =>
+      'Rezultat prea mare. Restrângeți căutarea.';
+
+  @override
+  String get onlineDictionaryTranslation => 'Limba traducerii:';
+
+  @override
+  String get onlineDictionaryNone => 'Niciuna';
+
+  @override
+  String onlineDictionaryEntryTitle(String word, String language) {
+    return '$word — $language';
+  }
+
+  @override
+  String onlineDictionaryDefinition(int number, String text) {
+    return '$number. $text';
+  }
+
+  @override
+  String onlineDictionarySource(String url) {
+    return 'Wiktionary — CC BY-SA 4.0\n$url';
+  }
 
   @override
   String get podcastRecorderTitle => 'Înregistrează un podcast';
@@ -5410,14 +5709,19 @@ class AppLocalizationsRo extends AppLocalizations {
       'Ștergeți această înregistrare? Copiile deja salvate în Documente vor rămâne disponibile.';
 
   @override
-  String get podcastRecorderChooseIntro => 'Alege genericul de început (opțional)';
+  String get podcastRecorderChooseIntro =>
+      'Alege genericul de început (opțional)';
 
   @override
-  String get podcastRecorderChooseOutro => 'Alege genericul de final (opțional)';
+  String get podcastRecorderChooseOutro =>
+      'Alege genericul de final (opțional)';
 
   @override
   String get podcastRecorderRemoveIntro => 'Elimină genericul de început';
 
   @override
   String get podcastRecorderRemoveOutro => 'Elimină genericul de final';
+
+  @override
+  String get dutch => 'Neerlandeză';
 }

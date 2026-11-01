@@ -2893,6 +2893,7 @@ $nonverbalInstruction''';
       'ar' => const _WindowsPromptLanguage('Arabic', 'A car speeds down the street.', 'A tall man in a dark suit.'),
       'cs' => const _WindowsPromptLanguage('Czech', 'Po ulici se řítí auto.', 'Vysoký muž v tmavém obleku.'),
       'de' => const _WindowsPromptLanguage('German', 'Ein Auto rast die Straße entlang.', 'Ein großer Mann in einem dunklen Anzug.'),
+      'nl' => const _WindowsPromptLanguage('Dutch', 'Een auto rijdt snel door de straat.', 'Een lange man in een donker pak.'),
       'es' => const _WindowsPromptLanguage('Spanish', 'Un coche avanza a toda velocidad por la calle.', 'Un hombre alto con traje oscuro.'),
       'fr' => const _WindowsPromptLanguage('French', 'Une voiture file dans la rue.', 'Un homme grand en costume sombre.'),
       'hi' => const _WindowsPromptLanguage('Hindi', 'एक कार सड़क पर तेज़ी से दौड़ती है।', 'गहरे सूट में एक लंबा आदमी।'),
@@ -5757,6 +5758,7 @@ $nonverbalInstruction''';
     if (code == 'pt-br') return 'pt-BR';
     if (code.startsWith('en')) return 'en-US';
     if (code.startsWith('de')) return 'de-DE';
+    if (code.startsWith('nl')) return 'nl-NL';
     if (code.startsWith('es')) return 'es-ES';
     if (code.startsWith('fr')) return 'fr-FR';
     if (code.startsWith('pt')) return 'pt-PT';

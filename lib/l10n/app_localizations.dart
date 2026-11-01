@@ -11,6 +11,7 @@ import 'app_localizations_en.dart';
 import 'app_localizations_es.dart';
 import 'app_localizations_fr.dart';
 import 'app_localizations_it.dart';
+import 'app_localizations_nl.dart';
 import 'app_localizations_pl.dart';
 import 'app_localizations_pt.dart';
 import 'app_localizations_ro.dart';
@@ -72,43 +73,6 @@ import 'app_localizations_zh.dart';
 /// be consistent with the languages listed in the AppLocalizations.supportedLocales
 /// property.
 abstract class AppLocalizations {
-  String onlineDictionaryEntryTitle(String word, String language);
-  String onlineDictionaryDefinition(int number, String text);
-  String onlineDictionarySource(String url);
-
-  String get onlineDictionaryTitle;
-  String get onlineDictionaryWord;
-  String get onlineDictionaryLanguage;
-  String get onlineDictionaryDefinitions;
-  String get onlineDictionarySynonyms;
-  String get onlineDictionaryNotFound;
-  String get onlineDictionaryLimited;
-  String get onlineDictionaryTranslation;
-  String get onlineDictionaryNone;
-
-  /// Segment number and start/end timestamps in the project selector.
-  String audioDescriptionProjectEditorSegmentOption(int index, String start, String end);
-
-  String get saveMp4WithAudiodescription;
-  String get saveMediaContent;
-  String get favoritesSortAlphabetically;
-  String get favoriteVideosLatest;
-  String get favoriteVideosTitle;
-  String get favoriteVideosPartial;
-
-  String get recordingNotAdvancing;
-  String get castToDevice;
-  String get castNoDevices;
-  String get castFailure;
-  String get castResumeHere;
-  String get settingsHideCalendarSaints;
-
-  String get settingsShowCast;
-  String get castStop;
-
-  String get importVideoFromGallery;
-  String get sharedVideoOpen;
-
   AppLocalizations(String locale)
     : localeName = intl.Intl.canonicalizedLocale(locale.toString());
 
@@ -117,59 +81,6 @@ abstract class AppLocalizations {
   static AppLocalizations of(BuildContext context) {
     return Localizations.of<AppLocalizations>(context, AppLocalizations)!;
   }
-
-  /// Localized text for audioDescriptionCreateVideoOutput.
-  String get audioDescriptionCreateVideoOutput;
-
-  /// Localized text for audioDescriptionLoadCharacterCatalog.
-  String get audioDescriptionLoadCharacterCatalog;
-
-  /// Localized text for audioDescriptionImportCharacterCatalog.
-  String get audioDescriptionImportCharacterCatalog;
-
-  /// Localized text for audioDescriptionCharacterCatalogLoaded.
-  String get audioDescriptionCharacterCatalogLoaded;
-
-  /// Localized text for audioDescriptionCreateWithAi.
-  String get audioDescriptionCreateWithAi;
-
-  String get settingsHomeCustomization;
-
-  String get settingsHomeCustomizationHint;
-
-  String get homeCategories;
-
-  String get homeCategoriesHint;
-
-  String get homeVisibleItems;
-
-  String get homeReorderItems;
-
-  String get homeResetDefaults;
-
-  String get homeResetDefaultsConfirmTitle;
-
-  String get homeResetDefaultsConfirmMessage;
-
-  String get homeResetDefaultsDone;
-
-  String get homeReorderTitle;
-
-  String get homeMoveItem;
-
-  String get homeDigitalLibrary;
-
-  String get homeTv;
-
-  String get homeRaiPlay;
-
-  String get homeLa7Play;
-
-  String get homeRaiPlaySound;
-
-  String get homeOpeningHours;
-
-  String get homeDirectory;
 
   static const LocalizationsDelegate<AppLocalizations> delegate =
       _AppLocalizationsDelegate();
@@ -200,6 +111,7 @@ abstract class AppLocalizations {
     Locale('en'),
     Locale('es'),
     Locale('fr'),
+    Locale('nl'),
     Locale('pl'),
     Locale('pt'),
     Locale('pt', 'BR'),
@@ -319,88 +231,34 @@ abstract class AppLocalizations {
   String get sonarTubeSearchLabel;
 
   /// No description provided for @sonarTubeSearchType.
-
+  ///
   /// In it, this message translates to:
   /// **'Tipo di ricerca'**
   String get sonarTubeSearchType;
 
   /// No description provided for @sonarTubeSearchAll.
-
+  ///
   /// In it, this message translates to:
   /// **'Tutto'**
   String get sonarTubeSearchAll;
 
   /// No description provided for @sonarTubeSearchPlaylists.
-
+  ///
   /// In it, this message translates to:
   /// **'Playlist'**
   String get sonarTubeSearchPlaylists;
 
   /// No description provided for @sonarTubeSearchChannels.
-
+  ///
   /// In it, this message translates to:
   /// **'Canali'**
   String get sonarTubeSearchChannels;
 
-  /// Enables a specific time for a calendar reminder.
+  /// No description provided for @calendarReminderHasTime.
   ///
   /// In it, this message translates to:
   /// **'Imposta un orario'**
   String get calendarReminderHasTime;
-
-  /// Bitrate slider label for MP3 audio-description output.
-  ///
-  /// In it, this message translates to:
-  /// **'Bitrate MP3'**
-  String get audioDescriptionMp3Bitrate;
-
-  /// Base movie volume slider label.
-  ///
-  /// In it, this message translates to:
-  /// **'Volume del film'**
-  String get audioDescriptionSourceVolume;
-
-  /// Explains source volume adjustment and continued automatic ducking during audio description.
-  ///
-  /// In it, this message translates to:
-  /// **'Regola il volume di base del film. Durante l’audiodescrizione viene abbassato ulteriormente in automatico.'**
-  String get audioDescriptionSourceVolumeHint;
-
-  /// Normal/default marker for audio-description bitrate and source volume.
-  ///
-  /// In it, this message translates to:
-  /// **'Normale'**
-  String get audioDescriptionAudioNormal;
-
-  /// Plays a short sample combining movie audio with the selected narration voice.
-  ///
-  /// In it, this message translates to:
-  /// **'Ascolta prova con film e voce'**
-  String get audioDescriptionMixPreview;
-
-  /// Status shown while the movie and voice audio sample is being prepared.
-  ///
-  /// In it, this message translates to:
-  /// **'Preparazione della prova audio'**
-  String get audioDescriptionMixPreviewPreparing;
-
-  /// Stops the movie and voice audio sample.
-  ///
-  /// In it, this message translates to:
-  /// **'Interrompi prova audio'**
-  String get audioDescriptionMixPreviewStop;
-
-  /// Text spoken by the selected narration voice in the movie and voice audio sample.
-  ///
-  /// In it, this message translates to:
-  /// **'Prova audiodescrizione con ducking.'**
-  String get audioDescriptionMixPreviewPhrase;
-
-  /// Explains the automatic movie and voice sample after adjusting source volume.
-  ///
-  /// In it, this message translates to:
-  /// **'Dopo la regolazione del volume, parte una breve prova con un tratto del film, la voce scelta e l’abbassamento automatico dell’audio.'**
-  String get audioDescriptionMixPreviewHint;
 
   /// No description provided for @sonarTubeSearchPrompt.
   ///
@@ -1452,13 +1310,16 @@ abstract class AppLocalizations {
   /// **'Informazioni sul podcast'**
   String get podcastInfo;
 
+  /// No description provided for @podcastQuickSubscribe.
+  ///
+  /// In it, this message translates to:
+  /// **'Iscrizione rapida'**
+  String get podcastQuickSubscribe;
+
   /// Localized text for subscribe.
   ///
   /// In it, this message translates to:
   /// **'Iscriviti'**
-  /// Subscribe to a podcast without leaving the search results.
-  String get podcastQuickSubscribe;
-
   String get subscribe;
 
   /// Localized text for openPodcast.
@@ -1673,8 +1534,8 @@ abstract class AppLocalizations {
 
   /// Go directly to the Sonarpad Home screen from a Back control.
   ///
-  /// In en, this message translates to:
-  /// **'Go to Home'**
+  /// In it, this message translates to:
+  /// **'Vai alla Home'**
   String get goToHome;
 
   /// Localized text for episodePlayer.
@@ -1772,30 +1633,6 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Tutto l\'articolo'**
   String get wikipediaImportWholeArticle;
-
-  /// Localized text for treccaniTitle.
-  ///
-  /// In it, this message translates to:
-  /// **'Enciclopedia Treccani'**
-  String get treccaniTitle;
-
-  /// Localized text for treccaniSearchLabel.
-  ///
-  /// In it, this message translates to:
-  /// **'Cerca nell’Enciclopedia Treccani'**
-  String get treccaniSearchLabel;
-
-  /// Localized text for treccaniNoResults.
-  ///
-  /// In it, this message translates to:
-  /// **'Nessuna voce Treccani trovata'**
-  String get treccaniNoResults;
-
-  /// Localized text for treccaniWholeEntry.
-  ///
-  /// In it, this message translates to:
-  /// **'Intera voce'**
-  String get treccaniWholeEntry;
 
   /// Localized text for documents.
   ///
@@ -2696,7 +2533,10 @@ abstract class AppLocalizations {
   /// **'Esporta documento'**
   String get exportDocument;
 
-  /// Export a Documents folder and its contents as a ZIP archive.
+  /// No description provided for @exportFolderZip.
+  ///
+  /// In it, this message translates to:
+  /// **'Esporta cartella come ZIP'**
   String get exportFolderZip;
 
   /// Localized text for exportFormatPrompt.
@@ -2721,10 +2561,6 @@ abstract class AppLocalizations {
   ///
   /// In it, this message translates to:
   /// **'DOCX (.docx)'**
-  String get markdownFormat;
-
-  String get htmlFormat;
-
   String get docxFormat;
 
   /// No description provided for @epubFormat.
@@ -3369,43 +3205,37 @@ abstract class AppLocalizations {
   /// **'Copia log'**
   String get copySystemLog;
 
-  /// Localized text for sendLogToDeveloper.
+  /// No description provided for @sendLogToDeveloper.
   ///
   /// In it, this message translates to:
   /// **'Invia segnalazione'**
   String get sendLogToDeveloper;
 
-  /// Localized text for developerLogNameOptional.
+  /// No description provided for @developerLogNameOptional.
   ///
   /// In it, this message translates to:
   /// **'Nome (facoltativo)'**
   String get developerLogNameOptional;
 
-  /// Localized text for developerReportText.
-  ///
-  /// In it, this message translates to:
-  /// **'Testo della segnalazione'**
-  String get developerReportText;
-
-  /// Localized text for developerLogSend.
+  /// No description provided for @developerLogSend.
   ///
   /// In it, this message translates to:
   /// **'Invia'**
   String get developerLogSend;
 
-  /// Localized text for developerLogSending.
+  /// No description provided for @developerLogSending.
   ///
   /// In it, this message translates to:
   /// **'Invio della segnalazione...'**
   String get developerLogSending;
 
-  /// Localized text for developerLogSent.
+  /// No description provided for @developerLogSent.
   ///
   /// In it, this message translates to:
   /// **'Segnalazione inviata allo sviluppatore.'**
   String get developerLogSent;
 
-  /// Localized text for developerLogSendFailed.
+  /// No description provided for @developerLogSendFailed.
   ///
   /// In it, this message translates to:
   /// **'Impossibile inviare la segnalazione. Riprova più tardi.'**
@@ -3891,14 +3721,23 @@ abstract class AppLocalizations {
   /// **'Avvia registrazione'**
   String get startRecording;
 
+  /// No description provided for @pauseRecording.
+  ///
+  /// In it, this message translates to:
+  /// **'Pausa registrazione'**
+  String get pauseRecording;
+
+  /// No description provided for @resumeRecording.
+  ///
+  /// In it, this message translates to:
+  /// **'Riprendi registrazione'**
+  String get resumeRecording;
+
   /// No description provided for @stopRecording.
   ///
   /// In it, this message translates to:
   /// **'Ferma registrazione'**
   String get stopRecording;
-
-  String get pauseRecording;
-  String get resumeRecording;
 
   /// No description provided for @recordings.
   ///
@@ -3918,18 +3757,17 @@ abstract class AppLocalizations {
   /// **'Registrazione programmata in corso'**
   String get scheduledRecordingInProgressStatus;
 
-
-  /// Status for a scheduled recording that has not started yet.
+  /// Status shown for a scheduled recording that has not started yet.
   ///
   /// In it, this message translates to:
   /// **'Programmata per {dateTime}'**
-  String scheduledRecordingPendingStatus(String dateTime);
+  String scheduledRecordingPendingStatus(Object dateTime);
 
-  /// Message shown when a scheduled recording is opened before its start.
+  /// Message shown when opening a scheduled recording before it starts.
   ///
   /// In it, this message translates to:
   /// **'La registrazione non è ancora iniziata. Inizierà il {dateTime}.'**
-  String recordingCannotOpenBeforeScheduledStart(String dateTime);
+  String recordingCannotOpenBeforeScheduledStart(Object dateTime);
 
   /// No description provided for @recordingCannotOpenWhileInProgress.
   ///
@@ -3948,24 +3786,6 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Seleziona registrazioni'**
   String get selectRecordings;
-
-  /// No description provided for @selectDocuments.
-  ///
-  /// In it, this message translates to:
-  /// **'Seleziona documenti'**
-  String get selectDocuments;
-
-  /// No description provided for @deleteSelectedDocumentsConfirmation.
-  ///
-  /// In it, this message translates to:
-  /// **'Vuoi eliminare definitivamente i documenti selezionati?'**
-  String get deleteSelectedDocumentsConfirmation;
-
-  /// Number of documents removed from the Sonarpad library.
-  ///
-  /// In it, this message translates to:
-  /// **'Documenti eliminati: {count}.'**
-  String documentsRemovedCount(int count);
 
   /// No description provided for @selectAll.
   ///
@@ -4753,32 +4573,76 @@ abstract class AppLocalizations {
   /// **'Apri trailer'**
   String get cinemaOpenTrailer;
 
+  /// No description provided for @concertsArtist.
+  ///
+  /// In it, this message translates to:
+  /// **'Artista, squadra o evento'**
+  String get concertsArtist;
+
+  /// No description provided for @concertsAllCities.
+  ///
+  /// In it, this message translates to:
+  /// **'Lascia vuoto per tutte le città del catalogo'**
+  String get concertsAllCities;
+
+  /// No description provided for @concertsDates.
+  ///
+  /// In it, this message translates to:
+  /// **'Filtra per date'**
+  String get concertsDates;
+
+  /// No description provided for @concertsFrom.
+  ///
+  /// In it, this message translates to:
+  /// **'Dal giorno'**
+  String get concertsFrom;
+
+  /// No description provided for @concertsTo.
+  ///
+  /// In it, this message translates to:
+  /// **'Al giorno'**
+  String get concertsTo;
+
+  /// No description provided for @concertsDay.
+  ///
+  /// In it, this message translates to:
+  /// **'Giorno'**
+  String get concertsDay;
+
+  /// No description provided for @concertsMonth.
+  ///
+  /// In it, this message translates to:
+  /// **'Mese'**
+  String get concertsMonth;
+
+  /// No description provided for @concertsYear.
+  ///
+  /// In it, this message translates to:
+  /// **'Anno'**
+  String get concertsYear;
+
+  /// No description provided for @concertsQueryRequired.
+  ///
+  /// In it, this message translates to:
+  /// **'Per cercare tutti gli eventi di questo catalogo, inserisci una città o il nome di un evento. In alternativa, scegli una categoria.'**
+  String get concertsQueryRequired;
+
+  /// No description provided for @concertsCategory.
+  ///
+  /// In it, this message translates to:
+  /// **'Categoria'**
+  String get concertsCategory;
+
+  /// No description provided for @concertsAllEvents.
+  ///
+  /// In it, this message translates to:
+  /// **'Tutti gli eventi'**
+  String get concertsAllEvents;
+
   /// No description provided for @concertsTitle.
   ///
   /// In it, this message translates to:
-  /// **'Concerti ed eventi'**
-  String get concertsArtist;
-
-  String get concertsAllCities;
-
-  String get concertsDates;
-
-  String get concertsFrom;
-
-  String get concertsTo;
-
-  String get concertsDay;
-
-  String get concertsMonth;
-
-  String get concertsYear;
-
-  String get concertsCategory;
-
-  String get concertsAllEvents;
-
-  String get concertsQueryRequired;
-
+  /// **'Ricerca concerti ed eventi'**
   String get concertsTitle;
 
   /// No description provided for @concertsSearchHint.
@@ -4802,13 +4666,13 @@ abstract class AppLocalizations {
   /// No description provided for @concertsInitialText.
   ///
   /// In it, this message translates to:
-  /// **'Scrivi il nome della tua città in alto per vedere i concerti musicali in programma.'**
+  /// **'La nazione seleziona il catalogo locale Eventim/TicketOne, che può includere eventi esteri. Per acquistare prosegui sul sito del venditore; può essere richiesto un account.'**
   String get concertsInitialText;
 
   /// No description provided for @concertsEmpty.
   ///
   /// In it, this message translates to:
-  /// **'Nessun concerto trovato in questa città.'**
+  /// **'Nessun concerto per questi filtri.'**
   String get concertsEmpty;
 
   /// No description provided for @concertsVenue.
@@ -4820,18 +4684,8 @@ abstract class AppLocalizations {
   /// No description provided for @concertsBuyTickets.
   ///
   /// In it, this message translates to:
-  /// **'Acquista o vedi dettagli su Ticketmaster'**
+  /// **'Apri sul sito del venditore'**
   String get concertsBuyTickets;
-
-  String get concertsTicketOneLogin;
-
-  String get concertsTicketOneRegister;
-
-  /// Save an authenticated copy of the original PDF without its password.
-  String get savePdfWithoutPassword;
-
-  /// Explain that the original PDF remains unchanged.
-  String get pdfUnprotectedCopyDescription;
 
   /// No description provided for @podcastPlayedEpisodes.
   ///
@@ -6701,7 +6555,7 @@ abstract class AppLocalizations {
   /// **'Errore tecnico. Riprova.'**
   String get technicalErrorGeneric;
 
-  /// Error shown when an online video cannot be prepared for AI audio description.
+  /// Localized error shown when an online video cannot be prepared for AI audio description.
   ///
   /// In it, this message translates to:
   /// **'Impossibile preparare il video.'**
@@ -6827,15 +6681,17 @@ abstract class AppLocalizations {
   /// **'Mix della nuova traccia'**
   String get mediaCutterMixingAddedTrack;
 
+  /// No description provided for @podcastImportIntoMediaCutter.
+  ///
+  /// In it, this message translates to:
+  /// **'Importa in Taglia file media'**
+  String get podcastImportIntoMediaCutter;
+
   /// Secondary action that downloads and preserves a playable MP3.
   ///
   /// In it, this message translates to:
   /// **'Conserva contenuto'**
   String get preserveMedia;
-
-  String get podcastImportIntoMediaCutter;
-
-  String get raiPlayMediaUnavailable;
 
   /// Status shown while a media file is being downloaded and preserved.
   ///
@@ -6866,12 +6722,6 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Salva nei Documenti di Sonarpad'**
   String get saveInSonarpadDocuments;
-
-  String get selectAudioTrack;
-
-  String get convertMediaDestination;
-
-  String get exportAskEveryTime;
 
   /// Button that processes the current Media Cutter edits before choosing a destination.
   ///
@@ -7213,8 +7063,6 @@ abstract class AppLocalizations {
   ///
   /// In it, this message translates to:
   /// **'Shorts'**
-  String get sonarTubeChannelCourses;
-  String get sonarTubeChannelPodcasts;
   String get sonarTubeChannelShorts;
 
   /// Number of videos contained in a SonarTube playlist.
@@ -7499,14 +7347,65 @@ abstract class AppLocalizations {
   /// **'Abilita pause estese quando una descrizione non entra nel silenzio'**
   String get audioDescriptionExtendedPauses;
 
-  /// Localized text for audioDescriptionNonverbalVocals.
-  String get audioDescriptionNonverbalVocals;
-
   /// Localized text for audioDescriptionRecognizeCharacters.
   ///
   /// In it, this message translates to:
   /// **'Prova a riconoscere i personaggi e usa i loro nomi'**
   String get audioDescriptionRecognizeCharacters;
+
+  /// Bitrate slider label for MP3 audio-description output.
+  ///
+  /// In it, this message translates to:
+  /// **'Bitrate MP3'**
+  String get audioDescriptionMp3Bitrate;
+
+  /// Base movie volume slider label.
+  ///
+  /// In it, this message translates to:
+  /// **'Volume del film'**
+  String get audioDescriptionSourceVolume;
+
+  /// Explains source volume adjustment and continued automatic ducking during audio description.
+  ///
+  /// In it, this message translates to:
+  /// **'Regola il volume di base del film. Durante l’audiodescrizione viene abbassato ulteriormente in automatico.'**
+  String get audioDescriptionSourceVolumeHint;
+
+  /// Normal/default marker for audio-description bitrate and source volume.
+  ///
+  /// In it, this message translates to:
+  /// **'Normale'**
+  String get audioDescriptionAudioNormal;
+
+  /// Plays a short sample combining movie audio with the selected narration voice.
+  ///
+  /// In it, this message translates to:
+  /// **'Ascolta prova con film e voce'**
+  String get audioDescriptionMixPreview;
+
+  /// Status shown while the movie and voice audio sample is being prepared.
+  ///
+  /// In it, this message translates to:
+  /// **'Preparazione della prova audio'**
+  String get audioDescriptionMixPreviewPreparing;
+
+  /// Stops the movie and voice audio sample.
+  ///
+  /// In it, this message translates to:
+  /// **'Interrompi prova audio'**
+  String get audioDescriptionMixPreviewStop;
+
+  /// Text spoken by the selected narration voice in the movie and voice audio sample.
+  ///
+  /// In it, this message translates to:
+  /// **'Prova audiodescrizione con ducking.'**
+  String get audioDescriptionMixPreviewPhrase;
+
+  /// Explains the automatic movie and voice sample after adjusting source volume.
+  ///
+  /// In it, this message translates to:
+  /// **'Dopo la regolazione del volume, parte una breve prova con un tratto del film, la voce scelta e l’abbassamento automatico dell’audio.'**
+  String get audioDescriptionMixPreviewHint;
 
   /// Localized text for audioDescriptionSaveProject.
   ///
@@ -7563,15 +7462,27 @@ abstract class AppLocalizations {
   String get audioDescriptionSonarpadActivationError;
 
   /// Shown when a Sonarpad AI access code has reached its allowed device limit.
+  ///
+  /// In it, this message translates to:
+  /// **'È stato raggiunto il numero massimo di dispositivi associati a questo codice Sonarpad AI. Rimuovi un dispositivo già associato oppure contatta l’assistenza.'**
   String get audioDescriptionSonarpadDeviceLimitReached;
 
   /// Label for the remaining Sonarpad AI account credit.
+  ///
+  /// In it, this message translates to:
+  /// **'Credito Sonarpad AI'**
   String get audioDescriptionSonarpadBalance;
 
   /// Shown when the Sonarpad AI credit cannot be read.
+  ///
+  /// In it, this message translates to:
+  /// **'Credito non disponibile.'**
   String get audioDescriptionSonarpadBalanceUnavailable;
 
   /// Shown when Sonarpad AI cannot continue because the account credit is insufficient.
+  ///
+  /// In it, this message translates to:
+  /// **'Il credito è insufficiente. Ricarica la tua chiave API per continuare ad audiodescrivere i tuoi contenuti.'**
   String get audioDescriptionSonarpadInsufficientCredit;
 
   /// Localized text for audioDescriptionEdgeVoiceReady.
@@ -7655,7 +7566,7 @@ abstract class AppLocalizations {
   /// Localized text for audioDescriptionKeepCharacterCatalog.
   ///
   /// In it, this message translates to:
-  /// **'Mantieni il catalogo dei personaggi: utile per una serie'**
+  /// **'Salva e aggiorna il catalogo dei personaggi: utile per una serie'**
   String get audioDescriptionKeepCharacterCatalog;
 
   /// Localized text for audioDescriptionCharacterCatalogChoose.
@@ -7873,940 +7784,2113 @@ abstract class AppLocalizations {
   String get audioDescriptionNoCheckpoint;
 
   /// Prompt shown before saving SonarTube media to choose MP4 or MP3.
+  ///
+  /// In it, this message translates to:
+  /// **'Scegli il formato di salvataggio'**
   String get sonarTubeSaveFormatPrompt;
 
   /// SonarTube save-media format choice for MP4 video.
+  ///
+  /// In it, this message translates to:
+  /// **'Salva in MP4'**
   String get sonarTubeSaveAsMp4;
 
   /// SonarTube save-media format choice for MP3 audio.
+  ///
+  /// In it, this message translates to:
+  /// **'Salva in MP3'**
   String get sonarTubeSaveAsMp3;
-  /// Media join: joinMediaTitle
+
+  /// Localized text for developerReportText.
+  ///
+  /// In it, this message translates to:
+  /// **'Testo della segnalazione'**
+  String get developerReportText;
+
+  /// Localized text for audioDescriptionCreateVideoOutput.
+  ///
+  /// In it, this message translates to:
+  /// **'Salva l’audiodescrizione nel video'**
+  String get audioDescriptionCreateVideoOutput;
+
+  /// Localized text for audioDescriptionLoadCharacterCatalog.
+  ///
+  /// In it, this message translates to:
+  /// **'Carica catalogo dei personaggi'**
+  String get audioDescriptionLoadCharacterCatalog;
+
+  /// Localized text for audioDescriptionImportCharacterCatalog.
+  ///
+  /// In it, this message translates to:
+  /// **'Importa catalogo da file'**
+  String get audioDescriptionImportCharacterCatalog;
+
+  /// Localized text for audioDescriptionCharacterCatalogLoaded.
+  ///
+  /// In it, this message translates to:
+  /// **'Catalogo dei personaggi caricato.'**
+  String get audioDescriptionCharacterCatalogLoaded;
+
+  /// Localized text for audioDescriptionCreateWithAi.
+  ///
+  /// In it, this message translates to:
+  /// **'Crea audiodescrizione con IA'**
+  String get audioDescriptionCreateWithAi;
+
+  /// No description provided for @settingsHomeCustomization.
+  ///
+  /// In it, this message translates to:
+  /// **'Personalizzazione schermata principale'**
+  String get settingsHomeCustomization;
+
+  /// No description provided for @settingsHomeCustomizationHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Scegli quali elementi mostrare e, senza categorie, il loro ordine.'**
+  String get settingsHomeCustomizationHint;
+
+  /// No description provided for @homeCategories.
+  ///
+  /// In it, this message translates to:
+  /// **'Categorie'**
+  String get homeCategories;
+
+  /// No description provided for @homeCategoriesHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Raggruppa gli elementi della schermata principale in categorie.'**
+  String get homeCategoriesHint;
+
+  /// No description provided for @homeVisibleItems.
+  ///
+  /// In it, this message translates to:
+  /// **'Elementi visibili'**
+  String get homeVisibleItems;
+
+  /// No description provided for @homeReorderItems.
+  ///
+  /// In it, this message translates to:
+  /// **'Riordina elementi'**
+  String get homeReorderItems;
+
+  /// No description provided for @homeResetDefaults.
+  ///
+  /// In it, this message translates to:
+  /// **'Ripristina valori predefiniti'**
+  String get homeResetDefaults;
+
+  /// No description provided for @homeResetDefaultsConfirmTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Ripristinare la schermata principale?'**
+  String get homeResetDefaultsConfirmTitle;
+
+  /// No description provided for @homeResetDefaultsConfirmMessage.
+  ///
+  /// In it, this message translates to:
+  /// **'Tutte le funzioni disponibili torneranno visibili, le categorie verranno attivate e gli ordini personalizzati saranno cancellati.'**
+  String get homeResetDefaultsConfirmMessage;
+
+  /// No description provided for @homeResetDefaultsDone.
+  ///
+  /// In it, this message translates to:
+  /// **'Schermata principale ripristinata ai valori predefiniti.'**
+  String get homeResetDefaultsDone;
+
+  /// No description provided for @homeReorderTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Riordina schermata principale'**
+  String get homeReorderTitle;
+
+  /// No description provided for @homeMoveItem.
+  ///
+  /// In it, this message translates to:
+  /// **'Sposta elemento'**
+  String get homeMoveItem;
+
+  /// No description provided for @homeDigitalLibrary.
+  ///
+  /// In it, this message translates to:
+  /// **'Biblioteca digitale'**
+  String get homeDigitalLibrary;
+
+  /// No description provided for @homeTv.
+  ///
+  /// In it, this message translates to:
+  /// **'TV'**
+  String get homeTv;
+
+  /// No description provided for @homeRaiPlay.
+  ///
+  /// In it, this message translates to:
+  /// **'RaiPlay'**
+  String get homeRaiPlay;
+
+  /// No description provided for @homeLa7Play.
+  ///
+  /// In it, this message translates to:
+  /// **'LA7 Play'**
+  String get homeLa7Play;
+
+  /// No description provided for @homeRaiPlaySound.
+  ///
+  /// In it, this message translates to:
+  /// **'RaiPlay Sound'**
+  String get homeRaiPlaySound;
+
+  /// No description provided for @homeOpeningHours.
+  ///
+  /// In it, this message translates to:
+  /// **'Orari di apertura'**
+  String get homeOpeningHours;
+
+  /// No description provided for @homeDirectory.
+  ///
+  /// In it, this message translates to:
+  /// **'Pagine Bianche e Gialle'**
+  String get homeDirectory;
+
+  /// Localized text for treccaniTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Enciclopedia Treccani'**
+  String get treccaniTitle;
+
+  /// Localized text for treccaniSearchLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Cerca nell’Enciclopedia Treccani'**
+  String get treccaniSearchLabel;
+
+  /// Localized text for treccaniNoResults.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessuna voce Treccani trovata'**
+  String get treccaniNoResults;
+
+  /// Localized text for treccaniWholeEntry.
+  ///
+  /// In it, this message translates to:
+  /// **'Intera voce'**
+  String get treccaniWholeEntry;
+
+  /// No description provided for @joinMediaTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Unisci file media'**
   String get joinMediaTitle;
 
-  /// Media join: joinMediaDescription
+  /// No description provided for @joinMediaDescription.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiungi due o più file audio o video, scegli l’ordine, il formato di uscita e uniscili in un unico file.'**
   String get joinMediaDescription;
 
-  /// Media join: joinMediaAddFiles
+  /// No description provided for @joinMediaAddFiles.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiungi file media'**
   String get joinMediaAddFiles;
 
-  /// Media join: joinMediaLoadingFiles
+  /// No description provided for @joinMediaLoadingFiles.
+  ///
+  /// In it, this message translates to:
+  /// **'Controllo dei file selezionati…'**
   String get joinMediaLoadingFiles;
 
-  /// Media join: joinMediaFilesTitle
+  /// No description provided for @joinMediaFilesTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'File da unire'**
   String get joinMediaFilesTitle;
 
-  /// Media join: joinMediaNoFiles
+  /// No description provided for @joinMediaNoFiles.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun file aggiunto.'**
   String get joinMediaNoFiles;
 
-  /// Media join: joinMediaVideoLabel
+  /// No description provided for @joinMediaVideoLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Video'**
   String get joinMediaVideoLabel;
 
-  /// Media join: joinMediaAudioLabel
+  /// No description provided for @joinMediaAudioLabel.
+  ///
+  /// In it, this message translates to:
+  /// **'Audio'**
   String get joinMediaAudioLabel;
 
-  /// Media join: joinMediaActionsHint
+  /// No description provided for @joinMediaActionsHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Azioni disponibili: Sposta su, Sposta giù, Rimuovi.'**
   String get joinMediaActionsHint;
 
-  /// Media join: joinMediaRemove
+  /// No description provided for @joinMediaRemove.
+  ///
+  /// In it, this message translates to:
+  /// **'Rimuovi'**
   String get joinMediaRemove;
 
-  /// Media join: joinMediaOutputMp4
+  /// No description provided for @joinMediaOutputMp4.
+  ///
+  /// In it, this message translates to:
+  /// **'Formato di uscita: MP4. I file solo audio useranno uno schermo nero; ai video senza audio verrà aggiunto silenzio.'**
   String get joinMediaOutputMp4;
 
-  /// Media join: joinMediaOutputMp3
+  /// No description provided for @joinMediaOutputMp3.
+  ///
+  /// In it, this message translates to:
+  /// **'Formato di uscita: MP3.'**
   String get joinMediaOutputMp3;
 
-  /// Media join: joinMediaJoin
+  /// No description provided for @joinMediaJoin.
+  ///
+  /// In it, this message translates to:
+  /// **'Unisci'**
   String get joinMediaJoin;
 
-  /// Media join: joinMediaFileSkipped
+  /// No description provided for @joinMediaFileSkipped.
+  ///
+  /// In it, this message translates to:
+  /// **'Un file è stato ignorato perché non è accessibile o non contiene audio o video utilizzabile.'**
   String get joinMediaFileSkipped;
 
-  /// Media join: joinMediaFilesAdded
+  /// No description provided for @joinMediaFilesAdded.
+  ///
+  /// In it, this message translates to:
+  /// **'File media aggiunti.'**
   String get joinMediaFilesAdded;
 
-  /// Media join: joinMediaRemoved
+  /// No description provided for @joinMediaRemoved.
+  ///
+  /// In it, this message translates to:
+  /// **'Elemento rimosso.'**
   String get joinMediaRemoved;
 
-  /// Media join: joinMediaNeedTwoFiles
+  /// No description provided for @joinMediaNeedTwoFiles.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiungi almeno due file da unire.'**
   String get joinMediaNeedTwoFiles;
 
-  /// Media join: joinMediaProcessing
+  /// No description provided for @joinMediaProcessing.
+  ///
+  /// In it, this message translates to:
+  /// **'Unione file media'**
   String get joinMediaProcessing;
 
-  /// Media join: joinMediaCancelled
+  /// No description provided for @joinMediaCancelled.
+  ///
+  /// In it, this message translates to:
+  /// **'Unione annullata.'**
   String get joinMediaCancelled;
 
-  /// Media join: joinMediaFailed
+  /// No description provided for @joinMediaFailed.
+  ///
+  /// In it, this message translates to:
+  /// **'Impossibile unire i file media.'**
   String get joinMediaFailed;
 
-  /// Media join: joinMediaPreparing
+  /// No description provided for @joinMediaPreparing.
+  ///
+  /// In it, this message translates to:
+  /// **'Preparazione'**
   String get joinMediaPreparing;
 
-  /// Media join: joinMediaNormalizing
+  /// No description provided for @joinMediaNormalizing.
+  ///
+  /// In it, this message translates to:
+  /// **'Preparazione file'**
   String get joinMediaNormalizing;
 
-  /// Media join: joinMediaMerging
+  /// No description provided for @joinMediaMerging.
+  ///
+  /// In it, this message translates to:
+  /// **'Unione file'**
   String get joinMediaMerging;
 
-  /// Media join: joinMediaVerifying
+  /// No description provided for @joinMediaVerifying.
+  ///
+  /// In it, this message translates to:
+  /// **'Verifica finale'**
   String get joinMediaVerifying;
 
-  /// Media join: joinMediaCompleting
+  /// No description provided for @joinMediaCompleting.
+  ///
+  /// In it, this message translates to:
+  /// **'Completamento'**
   String get joinMediaCompleting;
 
-  /// Media join: joinMediaCompleted
+  /// No description provided for @joinMediaCompleted.
+  ///
+  /// In it, this message translates to:
+  /// **'Unione completata. Scegli dove salvare il file.'**
   String get joinMediaCompleted;
 
   /// Media join: joinMediaFormat
+  ///
+  /// In it, this message translates to:
+  /// **'Formato di unione'**
   String get joinMediaFormat;
 
   /// Media join: joinMediaChooseFormat
+  ///
+  /// In it, this message translates to:
+  /// **'Scegli formato di unione'**
   String get joinMediaChooseFormat;
 
   /// Media join: joinMediaAudioFormatHint
+  ///
+  /// In it, this message translates to:
+  /// **'Con soli file audio puoi scegliere MP3, M4A, WAV, FLAC, OGG, OPUS, AAC, WMA o AIFF. Predefinito: MP3.'**
   String get joinMediaAudioFormatHint;
 
   /// Media join: joinMediaVideoFormatHint
+  ///
+  /// In it, this message translates to:
+  /// **'Con file video o misti puoi scegliere MP4, MKV, MOV, AVI, WMV, MPEG/MPG, FLV, 3GP o TS. Predefinito: MP4.'**
   String get joinMediaVideoFormatHint;
 
   /// Media join: joinMediaCancelConfirmTitle
+  ///
+  /// In it, this message translates to:
+  /// **'Annullare l’unione?'**
   String get joinMediaCancelConfirmTitle;
 
   /// Media join: joinMediaCancelConfirmMessage
+  ///
+  /// In it, this message translates to:
+  /// **'Sei sicuro di voler annullare? Il processo FFmpeg in corso verrà interrotto.'**
   String get joinMediaCancelConfirmMessage;
 
   /// Media join: joinMediaKeepWorking
+  ///
+  /// In it, this message translates to:
+  /// **'Continua'**
   String get joinMediaKeepWorking;
 
   /// Media join: joinMediaConfirmCancel
+  ///
+  /// In it, this message translates to:
+  /// **'Annulla unione'**
   String get joinMediaConfirmCancel;
 
   /// Media join: joinMediaCancelling
+  ///
+  /// In it, this message translates to:
+  /// **'Annullamento…'**
   String get joinMediaCancelling;
-  /// Live stream player status.
+
+  /// No description provided for @selectDocuments.
+  ///
+  /// In it, this message translates to:
+  /// **'Seleziona documenti'**
+  String get selectDocuments;
+
+  /// No description provided for @deleteSelectedDocumentsConfirmation.
+  ///
+  /// In it, this message translates to:
+  /// **'Vuoi eliminare definitivamente i documenti selezionati?'**
+  String get deleteSelectedDocumentsConfirmation;
+
+  /// Number of documents removed from the Sonarpad library.
+  ///
+  /// In it, this message translates to:
+  /// **'Documenti eliminati: {count}.'**
+  String documentsRemovedCount(int count);
+
+  /// Live stream player status: streamReconnecting
+  ///
+  /// In it, this message translates to:
+  /// **'Tentativo di riconnessione…'**
   String get streamReconnecting;
 
-  /// Live stream player status.
+  /// Live stream player status: streamPlaybackRetryMessage
+  ///
+  /// In it, this message translates to:
+  /// **'Il canale non si è avviato. Premi Riprova per aggiornare il collegamento.'**
   String get streamPlaybackRetryMessage;
 
-
+  /// No description provided for @settingsMediaSpeedControl.
+  ///
+  /// In it, this message translates to:
+  /// **'Attiva il controllo della velocità dei file media'**
   String get settingsMediaSpeedControl;
 
+  /// No description provided for @settingsMediaSpeedControlHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Mostra il controllo della velocità per Sonartube, podcast e altri contenuti registrati. Le dirette sono escluse.'**
   String get settingsMediaSpeedControlHint;
 
+  /// No description provided for @settingsPreferRaiAudioDescription.
+  ///
+  /// In it, this message translates to:
+  /// **'Preferisci l\'audiodescrizione quando disponibile'**
   String get settingsPreferRaiAudioDescription;
 
+  /// No description provided for @settingsPreferRaiAudioDescriptionHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Nei canali Rai usa automaticamente la traccia audiodescritta se presente. Disattiva questa opzione per preferire l\'audio italiano normale.'**
   String get settingsPreferRaiAudioDescriptionHint;
 
+  /// No description provided for @mediaPlaybackSpeed.
+  ///
+  /// In it, this message translates to:
+  /// **'Velocità di riproduzione'**
   String get mediaPlaybackSpeed;
 
+  /// No description provided for @mediaPlaybackSpeedNormal.
+  ///
+  /// In it, this message translates to:
+  /// **'Normale'**
   String get mediaPlaybackSpeedNormal;
 
+  /// No description provided for @mediaPlaybackSpeedUnavailable.
+  ///
+  /// In it, this message translates to:
+  /// **'Questa velocità non è supportata per il contenuto. È stata ripristinata la velocità precedente.'**
   String get mediaPlaybackSpeedUnavailable;
 
+  /// No description provided for @mediaPlaybackSpeedRecoveryFailed.
+  ///
+  /// In it, this message translates to:
+  /// **'Non è stato possibile ripristinare la velocità. Riapri il contenuto per riprovare.'**
   String get mediaPlaybackSpeedRecoveryFailed;
 
+  /// No description provided for @mediaPlaybackSpeedChanged.
+  ///
+  /// In it, this message translates to:
+  /// **'Velocità di riproduzione: {speed}'**
   String mediaPlaybackSpeedChanged(String speed);
 
-
   /// Route service message migrated from _invalidAddress.
+  ///
+  /// In it, this message translates to:
+  /// **'Indirizzo non valido'**
   String get routeServiceInvalidAddress;
 
   /// Route service message migrated from _networkGeocodeError.
+  ///
+  /// In it, this message translates to:
+  /// **'Errore di rete geocode: HTTP {statusCode}'**
   String routeServiceGeocodingNetworkError(int statusCode);
 
   /// Route service message migrated from _networkRouteError.
+  ///
+  /// In it, this message translates to:
+  /// **'Errore di rete route: HTTP {statusCode}'**
   String routeServiceNetworkError(int statusCode);
 
   /// Route service message migrated from _serverGenericError.
+  ///
+  /// In it, this message translates to:
+  /// **'Errore dal server'**
   String get routeServiceServerError;
 
   /// Route service message migrated from _routeCalculationServerError.
+  ///
+  /// In it, this message translates to:
+  /// **'Errore di calcolo percorso dal server'**
   String get routeServiceCalculationError;
 
   /// Route service message migrated from _unauthorizedError.
+  ///
+  /// In it, this message translates to:
+  /// **'Client non autorizzato. Aggiorna Sonarpad o verifica la configurazione dell\'app.'**
   String get routeServiceUnauthorized;
 
   /// Route address lookup failure.
+  ///
+  /// In it, this message translates to:
+  /// **'Indirizzo di partenza non trovato'**
   String get routeServiceStartNotFound;
 
   /// Route address lookup failure.
+  ///
+  /// In it, this message translates to:
+  /// **'Indirizzo di arrivo non trovato'**
   String get routeServiceDestinationNotFound;
 
   /// Romanian language label shared by language pickers.
+  ///
+  /// In it, this message translates to:
+  /// **'Romena'**
   String get radioLanguageRo;
 
   /// Romania country label for radio pickers.
+  ///
+  /// In it, this message translates to:
+  /// **'Romania'**
   String get radioCountryOptionRo;
 
   /// SonarTube service failure message migrated to ARB.
+  ///
+  /// In it, this message translates to:
+  /// **'Errore SonarTube'**
   String get sonarTubeServiceError;
 
   /// SonarTube service failure message migrated to ARB.
+  ///
+  /// In it, this message translates to:
+  /// **'Risposta SonarTube non valida.'**
   String get sonarTubeServiceInvalidResponse;
 
   /// SonarTube service failure message migrated to ARB.
+  ///
+  /// In it, this message translates to:
+  /// **'Errore API InnerTube.'**
   String get sonarTubeServiceInnerTubeError;
 
   /// SonarTube service failure message migrated to ARB.
+  ///
+  /// In it, this message translates to:
+  /// **'Risposta InnerTube non valida.'**
   String get sonarTubeServiceInvalidInnerTubeResponse;
 
   /// SonarTube service failure message migrated to ARB.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun flusso riproducibile disponibile.'**
   String get sonarTubeServiceNoStream;
 
   /// SonarTube service failure message migrated to ARB.
+  ///
+  /// In it, this message translates to:
+  /// **'È possibile risolvere soltanto un video.'**
   String get sonarTubeServiceOnlyVideo;
 
   /// SonarTube service failure message migrated to ARB.
+  ///
+  /// In it, this message translates to:
+  /// **'Un video non è una raccolta SonarTube.'**
   String get sonarTubeServiceNotCollection;
 
   /// Relative day label for publication timestamps in lists.
+  ///
+  /// In it, this message translates to:
+  /// **'oggi'**
   String get listTimestampToday;
 
   /// Relative day label for publication timestamps in lists.
+  ///
+  /// In it, this message translates to:
+  /// **'ieri'**
   String get listTimestampYesterday;
 
   /// Relative day label for publication timestamps in lists.
+  ///
+  /// In it, this message translates to:
+  /// **'l\'altro ieri'**
   String get listTimestampDayBeforeYesterday;
 
   /// Relative day label for publication timestamps in lists.
+  ///
+  /// In it, this message translates to:
+  /// **'domani'**
   String get listTimestampTomorrow;
 
   /// Relative day label for publication timestamps in lists.
+  ///
+  /// In it, this message translates to:
+  /// **'dopodomani'**
   String get listTimestampDayAfterTomorrow;
 
   /// Fallback article title when the imported source has no usable title.
+  ///
+  /// In it, this message translates to:
+  /// **'Titolo non trovato'**
   String get articleTitleNotFound;
 
   /// Fallback article title when the imported source has no usable title.
+  ///
+  /// In it, this message translates to:
+  /// **'Titolo sconosciuto'**
   String get articleUnknownTitle;
 
   /// Prefix before the author name in imported article text.
+  ///
+  /// In it, this message translates to:
+  /// **'Di'**
   String get articleAuthorPrefix;
 
   /// Title and menu command for editing an audio description project.
+  ///
+  /// In it, this message translates to:
+  /// **'Modifica progetto audiodescrizione'**
   String get audioDescriptionProjectEditorTitle;
 
   /// Audio description project editor text for the legacy open label or status.
+  ///
+  /// In it, this message translates to:
+  /// **'Apri progetto audiodescrizione'**
   String get audioDescriptionProjectOpen;
 
   /// Audio description project editor text for the legacy project label or status.
+  ///
+  /// In it, this message translates to:
+  /// **'Progetto'**
   String get audioDescriptionProjectLabel;
 
   /// Audio description project editor text for the legacy chooseSource label or status.
+  ///
+  /// In it, this message translates to:
+  /// **'Scegli video originale'**
   String get audioDescriptionProjectChooseSource;
 
   /// Audio description project editor text for the legacy source label or status.
+  ///
+  /// In it, this message translates to:
+  /// **'Video originale'**
   String get audioDescriptionProjectSource;
 
   /// Audio description project editor text for the legacy description label or status.
+  ///
+  /// In it, this message translates to:
+  /// **'Descrizione'**
   String get audioDescriptionProjectDescription;
 
   /// Audio description project editor text for the legacy text label or status.
+  ///
+  /// In it, this message translates to:
+  /// **'Testo della descrizione'**
   String get audioDescriptionProjectDescriptionText;
 
   /// Audio description project editor text for the legacy preview label or status.
+  ///
+  /// In it, this message translates to:
+  /// **'Riproduci descrizione'**
   String get audioDescriptionProjectPreviewDescription;
 
   /// Audio description project editor text for the legacy apply label or status.
+  ///
+  /// In it, this message translates to:
+  /// **'Applica modifica'**
   String get audioDescriptionProjectApplyText;
 
   /// Audio description project editor text for the legacy delete label or status.
+  ///
+  /// In it, this message translates to:
+  /// **'Elimina descrizione'**
   String get audioDescriptionProjectDeleteDescription;
 
   /// Audio description project editor text for the legacy deleteConfirm label or status.
+  ///
+  /// In it, this message translates to:
+  /// **'Eliminare la descrizione selezionata dal progetto?'**
   String get audioDescriptionProjectDeleteConfirmation;
 
   /// Audio description project editor text for the legacy deleteLast label or status.
+  ///
+  /// In it, this message translates to:
+  /// **'Non è possibile eliminare l’unica descrizione del progetto.'**
   String get audioDescriptionProjectCannotDeleteLast;
 
   /// Audio description project editor text for the legacy changeVoice label or status.
+  ///
+  /// In it, this message translates to:
+  /// **'Applica voce al progetto'**
   String get audioDescriptionProjectApplyVoice;
 
   /// Audio description project editor text for the legacy engine label or status.
+  ///
+  /// In it, this message translates to:
+  /// **'Motore di lettura'**
   String get audioDescriptionProjectReadingEngine;
 
   /// Audio description project editor text for the legacy edge label or status.
+  ///
+  /// In it, this message translates to:
+  /// **'Voce Microsoft Edge'**
   String get audioDescriptionProjectEdgeVoice;
 
   /// Audio description project editor text for the legacy system label or status.
+  ///
+  /// In it, this message translates to:
+  /// **'Voce di sistema / VoiceOver / Android'**
   String get audioDescriptionProjectSystemVoice;
 
   /// Audio description project editor text for the legacy language label or status.
+  ///
+  /// In it, this message translates to:
+  /// **'Lingua della voce'**
   String get audioDescriptionProjectVoiceLanguage;
 
   /// Audio description project editor text for the legacy voice label or status.
+  ///
+  /// In it, this message translates to:
+  /// **'Voce'**
   String get audioDescriptionProjectVoice;
 
   /// Audio description project editor text for the legacy reexport label or status.
+  ///
+  /// In it, this message translates to:
+  /// **'Esporta nuovamente MP3'**
   String get audioDescriptionProjectReexportMp3;
 
   /// Audio description project editor text for the legacy srt label or status.
+  ///
+  /// In it, this message translates to:
+  /// **'Esporta come SRT'**
   String get audioDescriptionProjectExportSrt;
 
   /// Audio description project editor text for the legacy vtt label or status.
+  ///
+  /// In it, this message translates to:
+  /// **'Esporta come VTT'**
   String get audioDescriptionProjectExportVtt;
 
   /// Audio description project editor text for the legacy normal label or status.
+  ///
+  /// In it, this message translates to:
+  /// **'normale con ducking'**
   String get audioDescriptionProjectNormalWithDucking;
 
   /// Audio description project editor text for the legacy extended label or status.
+  ///
+  /// In it, this message translates to:
+  /// **'pausa estesa'**
   String get audioDescriptionProjectExtendedPause;
 
   /// Audio description project editor text for the legacy ready label or status.
+  ///
+  /// In it, this message translates to:
+  /// **'Progetto pronto.'**
   String get audioDescriptionProjectReady;
 
   /// Audio description project editor text for the legacy applied label or status.
+  ///
+  /// In it, this message translates to:
+  /// **'Descrizione verificata e salvata nel progetto.'**
   String get audioDescriptionProjectDescriptionApplied;
 
   /// Audio description project editor text for the legacy deleted label or status.
+  ///
+  /// In it, this message translates to:
+  /// **'Descrizione eliminata e progetto salvato.'**
   String get audioDescriptionProjectDescriptionDeleted;
 
   /// Audio description project editor text for the legacy voiceChanged label or status.
+  ///
+  /// In it, this message translates to:
+  /// **'Voce cambiata e tutte le descrizioni sono state verificate.'**
   String get audioDescriptionProjectVoiceChanged;
 
   /// Duration validation error after synthesizing a description. actual and available are seconds already formatted to two decimal places by the caller; the previous project text remains unchanged.
-  String audioDescriptionProjectDescriptionTooLong(String actual, String available);
+  ///
+  /// In it, this message translates to:
+  /// **'La descrizione sintetizzata dura {actual} secondi, ma sono disponibili solo {available} secondi. Il testo precedente non è stato modificato.'**
+  String audioDescriptionProjectDescriptionTooLong(
+    String actual,
+    String available,
+  );
 
   /// Audio description project editor text for the legacy sourceMissing label or status.
+  ///
+  /// In it, this message translates to:
+  /// **'Il video originale non è disponibile. Sceglilo prima di riesportare l’MP3.'**
   String get audioDescriptionProjectSourceMissing;
 
   /// Audio description project editor text for the legacy invalidProject label or status.
+  ///
+  /// In it, this message translates to:
+  /// **'Il file selezionato non è un progetto audiodescrizione Sonarpad valido.'**
   String get audioDescriptionProjectInvalid;
 
   /// Audio description project editor text for the legacy unsaved label or status.
+  ///
+  /// In it, this message translates to:
+  /// **'Applica prima la modifica corrente, poi riesporta l’MP3.'**
   String get audioDescriptionProjectUnsavedText;
 
   /// Audio description project editor text for the legacy working label or status.
+  ///
+  /// In it, this message translates to:
+  /// **'Elaborazione progetto…'**
   String get audioDescriptionProjectWorking;
 
   /// Audio description project editor text for the legacy completed label or status.
+  ///
+  /// In it, this message translates to:
+  /// **'Progetto esportato.'**
   String get audioDescriptionProjectExported;
 
   /// Audio description project editor text for the legacy selectFirst label or status.
+  ///
+  /// In it, this message translates to:
+  /// **'Apri prima un progetto.'**
   String get audioDescriptionProjectSelectFirst;
 
   /// Audio description project editor text for the legacy selectDescription label or status.
+  ///
+  /// In it, this message translates to:
+  /// **'Seleziona una descrizione.'**
   String get audioDescriptionProjectSelectDescription;
 
   /// Selected description timing summary. source is its scene position; start and end are MP3 positions; duration is synthesized voice length. Times are seconds already formatted to two decimal places; mode is a localized playback mode label.
-  String audioDescriptionProjectDescriptionDetails(String source, String start, String end, String duration, String mode);
+  ///
+  /// In it, this message translates to:
+  /// **'Scena {source} s; MP3 {start}-{end} s; voce {duration} s; {mode}'**
+  String audioDescriptionProjectDescriptionDetails(
+    String source,
+    String start,
+    String end,
+    String duration,
+    String mode,
+  );
 
   /// Audio description project editor text for the legacy share label or status.
+  ///
+  /// In it, this message translates to:
+  /// **'Condividi'**
   String get audioDescriptionProjectShare;
 
   /// Audio description project editor text for the legacy saveDocuments label or status.
+  ///
+  /// In it, this message translates to:
+  /// **'Salva in Documenti Sonarpad'**
   String get audioDescriptionProjectSaveDocuments;
 
   /// Audio description project editor text for the legacy saved label or status.
+  ///
+  /// In it, this message translates to:
+  /// **'File salvati in Documenti Sonarpad.'**
   String get audioDescriptionProjectSavedDocuments;
 
   /// Audio description project editor text for the legacy cancel label or status.
+  ///
+  /// In it, this message translates to:
+  /// **'Annulla'**
   String get audioDescriptionProjectCancel;
 
   /// Source-picker action to choose a video from the Files app.
+  ///
+  /// In it, this message translates to:
+  /// **'Scegli video da File'**
   String get audioDescriptionProjectChooseFromFiles;
 
   /// Source-picker action to import a video from the Photos app.
+  ///
+  /// In it, this message translates to:
+  /// **'Importa video da Foto'**
   String get audioDescriptionProjectImportFromPhotos;
 
   /// World-news category label for built-in feeds.
+  ///
+  /// In it, this message translates to:
+  /// **'Mondo'**
   String get newsCategoryWorld;
 
   /// Business-news category label for built-in feeds.
+  ///
+  /// In it, this message translates to:
+  /// **'Economia'**
   String get newsCategoryBusiness;
 
   /// Technology-news category label for built-in feeds.
+  ///
+  /// In it, this message translates to:
+  /// **'Tecnologia'**
   String get newsCategoryTechnology;
 
   /// Entertainment-news category label for built-in feeds.
+  ///
+  /// In it, this message translates to:
+  /// **'Intrattenimento'**
   String get newsCategoryEntertainment;
 
   /// Sports-news category label for built-in feeds.
+  ///
+  /// In it, this message translates to:
+  /// **'Sport'**
   String get newsCategorySports;
 
   /// Health-news category label for built-in feeds.
+  ///
+  /// In it, this message translates to:
+  /// **'Salute'**
   String get newsCategoryHealth;
 
   /// Message shown when the news article requires a subscription.
+  ///
+  /// In it, this message translates to:
+  /// **'Questo articolo è riservato agli abbonati.'**
   String get newsArticleSubscribersOnly;
 
   /// HTTP failure returned by a Wikipedia search request.
+  ///
+  /// In it, this message translates to:
+  /// **'Errore Wikipedia: {statusCode}'**
   String wikipediaSearchHttpError(int statusCode);
 
   /// HTTP failure returned by a Wikipedia article import request.
+  ///
+  /// In it, this message translates to:
+  /// **'Errore importazione Wikipedia: {statusCode}'**
   String wikipediaImportHttpError(int statusCode);
 
   /// HTTP failure returned by a Gutenberg catalog search.
+  ///
+  /// In it, this message translates to:
+  /// **'Errore Gutenberg {statusCode}'**
   String gutenbergSearchHttpError(int statusCode);
 
   /// HTTP failure while downloading a Gutenberg text file.
+  ///
+  /// In it, this message translates to:
+  /// **'Errore download {statusCode}'**
   String gutenbergDownloadHttpError(int statusCode);
 
   /// HTTP failure while downloading a Gutenberg EPUB file.
+  ///
+  /// In it, this message translates to:
+  /// **'Errore download EPUB {statusCode}'**
   String gutenbergEpubDownloadHttpError(int statusCode);
 
   /// Error shown when a Gutenberg download has no valid book identifier.
+  ///
+  /// In it, this message translates to:
+  /// **'ID Gutenberg non valido.'**
   String get gutenbergInvalidBookId;
 
   /// Error shown when a Gutenberg download times out.
+  ///
+  /// In it, this message translates to:
+  /// **'Download Gutenberg troppo lento. Riprova tra poco o scegli un altro formato.'**
   String get gutenbergDownloadTimeout;
 
   /// Error shown when a Gutenberg ZIP archive has no readable text.
+  ///
+  /// In it, this message translates to:
+  /// **'Archivio ZIP Gutenberg senza file di testo leggibile.'**
   String get gutenbergUnreadableArchive;
 
   /// Fallback label for a Gutenberg book with no title.
+  ///
+  /// In it, this message translates to:
+  /// **'Senza titolo'**
   String get gutenbergUntitledBook;
 
   /// Fallback label for a Gutenberg book with no author.
+  ///
+  /// In it, this message translates to:
+  /// **'Autore sconosciuto'**
   String get gutenbergUnknownAuthor;
 
   /// Display name for the podcast category selector without a genre filter.
+  ///
+  /// In it, this message translates to:
+  /// **'Tutte le categorie'**
   String get podcastCategoryAll;
 
   /// Display name for podcast genre 1301 (Arts). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Arti'**
   String get podcastCategoryArts;
 
   /// Display name for podcast genre 1321 (Business). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Affari'**
   String get podcastCategoryBusiness;
 
   /// Display name for podcast genre 1303 (Comedy). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Commedia'**
   String get podcastCategoryComedy;
 
   /// Display name for podcast genre 1304 (Education). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Istruzione'**
   String get podcastCategoryEducation;
 
   /// Display name for podcast genre 1483 (Fiction). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Narrativa'**
   String get podcastCategoryFiction;
 
   /// Display name for podcast genre 1511 (Government). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Governo'**
   String get podcastCategoryGovernment;
 
   /// Display name for podcast genre 1512 (Health & Fitness). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Salute e fitness'**
   String get podcastCategoryHealthAndFitness;
 
   /// Display name for podcast genre 1487 (History). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Storia'**
   String get podcastCategoryHistory;
 
   /// Display name for podcast genre 1305 (Kids & Family). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Bambini e famiglia'**
   String get podcastCategoryKidsAndFamily;
 
   /// Display name for podcast genre 1502 (Leisure). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Tempo libero'**
   String get podcastCategoryLeisure;
 
   /// Display name for podcast genre 1310 (Music). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Musica'**
   String get podcastCategoryMusic;
 
   /// Display name for podcast genre 1489 (News). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Notizie'**
   String get podcastCategoryNews;
 
   /// Display name for podcast genre 1314 (Religion & Spirituality). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Religione e spiritualità'**
   String get podcastCategoryReligionAndSpirituality;
 
   /// Display name for podcast genre 1533 (Science). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Scienza'**
   String get podcastCategoryScience;
 
   /// Display name for podcast genre 1324 (Society & Culture). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Società e cultura'**
   String get podcastCategorySocietyAndCulture;
 
   /// Display name for podcast genre 1545 (Sports). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Sport'**
   String get podcastCategorySports;
 
   /// Display name for podcast genre 1318 (Technology). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Tecnologia'**
   String get podcastCategoryTechnology;
 
   /// Display name for podcast genre 1488 (True Crime). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'True crime'**
   String get podcastCategoryTrueCrime;
 
   /// Display name for podcast genre 1309 (TV & Film). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'TV e film'**
   String get podcastCategoryTvAndFilm;
 
   /// Display name for podcast genre 1482 (Books). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Libri'**
   String get podcastCategoryBooks;
 
   /// Display name for podcast genre 1402 (Design). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Design'**
   String get podcastCategoryDesign;
 
   /// Display name for podcast genre 1459 (Fashion & Beauty). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Moda e bellezza'**
   String get podcastCategoryFashionAndBeauty;
 
   /// Display name for podcast genre 1306 (Food). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Cibo'**
   String get podcastCategoryFood;
 
   /// Display name for podcast genre 1405 (Performing Arts). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Arti performative'**
   String get podcastCategoryPerformingArts;
 
   /// Display name for podcast genre 1406 (Visual Arts). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Arti visive'**
   String get podcastCategoryVisualArts;
 
   /// Display name for podcast genre 1410 (Careers). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Carriere'**
   String get podcastCategoryCareers;
 
   /// Display name for podcast genre 1493 (Entrepreneurship). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Imprenditoria'**
   String get podcastCategoryEntrepreneurship;
 
   /// Display name for podcast genre 1412 (Investing). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Investimenti'**
   String get podcastCategoryInvesting;
 
   /// Display name for podcast genre 1491 (Management). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Management'**
   String get podcastCategoryManagement;
 
   /// Display name for podcast genre 1492 (Marketing). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Marketing'**
   String get podcastCategoryMarketing;
 
   /// Display name for podcast genre 1494 (Non-Profit). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Non profit'**
   String get podcastCategoryNonProfit;
 
   /// Display name for podcast genre 1496 (Comedy Interviews). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Interviste comiche'**
   String get podcastCategoryComedyInterviews;
 
   /// Display name for podcast genre 1495 (Improv). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Improvvisazione'**
   String get podcastCategoryImprov;
 
   /// Display name for podcast genre 1497 (Stand-Up). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Stand-up'**
   String get podcastCategoryStandUp;
 
   /// Display name for podcast genre 1501 (Courses). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Corsi'**
   String get podcastCategoryCourses;
 
   /// Display name for podcast genre 1499 (How To). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Come fare'**
   String get podcastCategoryHowTo;
 
   /// Display name for podcast genre 1498 (Language Learning). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Apprendimento lingue'**
   String get podcastCategoryLanguageLearning;
 
   /// Display name for podcast genre 1500 (Self-Improvement). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Crescita personale'**
   String get podcastCategorySelfImprovement;
 
   /// Display name for podcast genre 1486 (Comedy Fiction). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Narrativa comica'**
   String get podcastCategoryComedyFiction;
 
   /// Display name for podcast genre 1484 (Drama). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Dramma'**
   String get podcastCategoryDrama;
 
   /// Display name for podcast genre 1485 (Science Fiction). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Fantascienza'**
   String get podcastCategoryScienceFiction;
 
   /// Display name for podcast genre 1513 (Alternative Health). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Salute alternativa'**
   String get podcastCategoryAlternativeHealth;
 
   /// Display name for podcast genre 1514 (Fitness). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Fitness'**
   String get podcastCategoryFitness;
 
   /// Display name for podcast genre 1518 (Medicine). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Medicina'**
   String get podcastCategoryMedicine;
 
   /// Display name for podcast genre 1517 (Mental Health). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Salute mentale'**
   String get podcastCategoryMentalHealth;
 
   /// Display name for podcast genre 1515 (Nutrition). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Nutrizione'**
   String get podcastCategoryNutrition;
 
   /// Display name for podcast genre 1516 (Sexuality). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Sessualità'**
   String get podcastCategorySexuality;
 
   /// Display name for podcast genre 1519 (Education for Kids). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Educazione per bambini'**
   String get podcastCategoryEducationForKids;
 
   /// Display name for podcast genre 1521 (Parenting). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Genitorialità'**
   String get podcastCategoryParenting;
 
   /// Display name for podcast genre 1522 (Pets & Animals). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Animali domestici'**
   String get podcastCategoryPetsAndAnimals;
 
   /// Display name for podcast genre 1520 (Stories for Kids). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Storie per bambini'**
   String get podcastCategoryStoriesForKids;
 
   /// Display name for podcast genre 1510 (Animation & Manga). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Animazione e manga'**
   String get podcastCategoryAnimationAndManga;
 
   /// Display name for podcast genre 1503 (Automotive). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Automobili'**
   String get podcastCategoryAutomotive;
 
   /// Display name for podcast genre 1504 (Aviation). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Aviazione'**
   String get podcastCategoryAviation;
 
   /// Display name for podcast genre 1506 (Crafts). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Artigianato'**
   String get podcastCategoryCrafts;
 
   /// Display name for podcast genre 1507 (Games). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Giochi'**
   String get podcastCategoryGames;
 
   /// Display name for podcast genre 1505 (Hobbies). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Hobby'**
   String get podcastCategoryHobbies;
 
   /// Display name for podcast genre 1508 (Home & Garden). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Casa e giardino'**
   String get podcastCategoryHomeAndGarden;
 
   /// Display name for podcast genre 1509 (Video Games). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Videogiochi'**
   String get podcastCategoryVideoGames;
 
   /// Display name for podcast genre 1523 (Music Commentary). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Commenti musicali'**
   String get podcastCategoryMusicCommentary;
 
   /// Display name for podcast genre 1524 (Music History). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Storia della musica'**
   String get podcastCategoryMusicHistory;
 
   /// Display name for podcast genre 1525 (Music Interviews). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Interviste musicali'**
   String get podcastCategoryMusicInterviews;
 
   /// Display name for podcast genre 1490 (Business News). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Notizie di economia'**
   String get podcastCategoryBusinessNews;
 
   /// Display name for podcast genre 1526 (Daily News). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Notizie quotidiane'**
   String get podcastCategoryDailyNews;
 
   /// Display name for podcast genre 1531 (Entertainment News). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Notizie di spettacolo'**
   String get podcastCategoryEntertainmentNews;
 
   /// Display name for podcast genre 1530 (News Commentary). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Commenti alle notizie'**
   String get podcastCategoryNewsCommentary;
 
   /// Display name for podcast genre 1527 (Politics). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Politica'**
   String get podcastCategoryPolitics;
 
   /// Display name for podcast genre 1529 (Sports News). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Notizie sportive'**
   String get podcastCategorySportsNews;
 
   /// Display name for podcast genre 1528 (Tech News). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Notizie tecnologiche'**
   String get podcastCategoryTechNews;
 
   /// Display name for podcast genre 1438 (Buddhism). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Buddismo'**
   String get podcastCategoryBuddhism;
 
   /// Display name for podcast genre 1439 (Christianity). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Cristianesimo'**
   String get podcastCategoryChristianity;
 
   /// Display name for podcast genre 1463 (Hinduism). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Induismo'**
   String get podcastCategoryHinduism;
 
   /// Display name for podcast genre 1440 (Islam). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Islam'**
   String get podcastCategoryIslam;
 
   /// Display name for podcast genre 1441 (Judaism). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Ebraismo'**
   String get podcastCategoryJudaism;
 
   /// Display name for podcast genre 1532 (Religion). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Religione'**
   String get podcastCategoryReligion;
 
   /// Display name for podcast genre 1444 (Spirituality). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Spiritualità'**
   String get podcastCategorySpirituality;
 
   /// Display name for podcast genre 1538 (Astronomy). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Astronomia'**
   String get podcastCategoryAstronomy;
 
   /// Display name for podcast genre 1539 (Chemistry). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Chimica'**
   String get podcastCategoryChemistry;
 
   /// Display name for podcast genre 1540 (Earth Sciences). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Scienze della terra'**
   String get podcastCategoryEarthSciences;
 
   /// Display name for podcast genre 1541 (Life Sciences). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Scienze della vita'**
   String get podcastCategoryLifeSciences;
 
   /// Display name for podcast genre 1536 (Mathematics). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Matematica'**
   String get podcastCategoryMathematics;
 
   /// Display name for podcast genre 1534 (Natural Sciences). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Scienze naturali'**
   String get podcastCategoryNaturalSciences;
 
   /// Display name for podcast genre 1537 (Nature). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Natura'**
   String get podcastCategoryNature;
 
   /// Display name for podcast genre 1542 (Physics). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Fisica'**
   String get podcastCategoryPhysics;
 
   /// Display name for podcast genre 1535 (Social Sciences). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Scienze sociali'**
   String get podcastCategorySocialSciences;
 
   /// Display name for podcast genre 1543 (Documentary). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Documentari'**
   String get podcastCategoryDocumentary;
 
   /// Display name for podcast genre 1302 (Personal Journals). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Diari personali'**
   String get podcastCategoryPersonalJournals;
 
   /// Display name for podcast genre 1443 (Philosophy). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Filosofia'**
   String get podcastCategoryPhilosophy;
 
   /// Display name for podcast genre 1320 (Places & Travel). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Luoghi e viaggi'**
   String get podcastCategoryPlacesAndTravel;
 
   /// Display name for podcast genre 1544 (Relationships). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Relazioni'**
   String get podcastCategoryRelationships;
 
   /// Display name for podcast genre 1549 (Baseball). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Baseball'**
   String get podcastCategoryBaseball;
 
   /// Display name for podcast genre 1548 (Basketball). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Pallacanestro'**
   String get podcastCategoryBasketball;
 
   /// Display name for podcast genre 1554 (Cricket). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Cricket'**
   String get podcastCategoryCricket;
 
   /// Display name for podcast genre 1560 (Fantasy Sports). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Fantasy sport'**
   String get podcastCategoryFantasySports;
 
   /// Display name for podcast genre 1547 (Football). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Football americano'**
   String get podcastCategoryFootball;
 
   /// Display name for podcast genre 1553 (Golf). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Golf'**
   String get podcastCategoryGolf;
 
   /// Display name for podcast genre 1550 (Hockey). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Hockey'**
   String get podcastCategoryHockey;
 
   /// Display name for podcast genre 1552 (Rugby). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Rugby'**
   String get podcastCategoryRugby;
 
   /// Display name for podcast genre 1551 (Running). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Corsa'**
   String get podcastCategoryRunning;
 
   /// Display name for podcast genre 1546 (Soccer). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Calcio'**
   String get podcastCategorySoccer;
 
   /// Display name for podcast genre 1558 (Swimming). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Nuoto'**
   String get podcastCategorySwimming;
 
   /// Display name for podcast genre 1556 (Tennis). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Tennis'**
   String get podcastCategoryTennis;
 
   /// Display name for podcast genre 1557 (Volleyball). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Pallavolo'**
   String get podcastCategoryVolleyball;
 
   /// Display name for podcast genre 1559 (Wilderness). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Natura selvaggia'**
   String get podcastCategoryWilderness;
 
   /// Display name for podcast genre 1555 (Wrestling). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Lotta'**
   String get podcastCategoryWrestling;
 
   /// Display name for podcast genre 1562 (After Shows). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Dopo show'**
   String get podcastCategoryAfterShows;
 
   /// Display name for podcast genre 1564 (Film History). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Storia del cinema'**
   String get podcastCategoryFilmHistory;
 
   /// Display name for podcast genre 1565 (Film Interviews). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Interviste sul cinema'**
   String get podcastCategoryFilmInterviews;
 
   /// Display name for podcast genre 1563 (Film Reviews). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Recensioni di film'**
   String get podcastCategoryFilmReviews;
 
   /// Display name for podcast genre 1561 (TV Reviews). The genre ID is stable and is not translated.
+  ///
+  /// In it, this message translates to:
+  /// **'Recensioni TV'**
   String get podcastCategoryTvReviews;
 
   /// Weather condition for WMO code 0. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels.
+  ///
+  /// In it, this message translates to:
+  /// **'Sereno'**
   String get weatherConditionClearSky;
 
   /// Weather condition for WMO code 1. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels.
+  ///
+  /// In it, this message translates to:
+  /// **'Prevalentemente sereno'**
   String get weatherConditionMainlyClear;
 
   /// Weather condition for WMO code 2. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels.
+  ///
+  /// In it, this message translates to:
+  /// **'Parzialmente nuvoloso'**
   String get weatherConditionPartlyCloudy;
 
   /// Weather condition for WMO code 3. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels.
+  ///
+  /// In it, this message translates to:
+  /// **'Coperto'**
   String get weatherConditionOvercast;
 
   /// Weather condition for WMO code 45. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels.
+  ///
+  /// In it, this message translates to:
+  /// **'Nebbia'**
   String get weatherConditionFog;
 
   /// Weather condition for WMO code 48. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels.
+  ///
+  /// In it, this message translates to:
+  /// **'Nebbia con brina'**
   String get weatherConditionRimeFog;
 
   /// Weather condition for WMO code 51. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels.
+  ///
+  /// In it, this message translates to:
+  /// **'Pioviggine leggera'**
   String get weatherConditionLightDrizzle;
 
   /// Weather condition for WMO code 53. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels.
+  ///
+  /// In it, this message translates to:
+  /// **'Pioviggine moderata'**
   String get weatherConditionModerateDrizzle;
 
   /// Weather condition for WMO code 55. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels.
+  ///
+  /// In it, this message translates to:
+  /// **'Pioviggine intensa'**
   String get weatherConditionDenseDrizzle;
 
   /// Weather condition for WMO code 56. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels.
+  ///
+  /// In it, this message translates to:
+  /// **'Pioviggine gelata leggera'**
   String get weatherConditionLightFreezingDrizzle;
 
   /// Weather condition for WMO code 57. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels.
+  ///
+  /// In it, this message translates to:
+  /// **'Pioviggine gelata intensa'**
   String get weatherConditionDenseFreezingDrizzle;
 
   /// Weather condition for WMO code 61. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels.
+  ///
+  /// In it, this message translates to:
+  /// **'Pioggia leggera'**
   String get weatherConditionLightRain;
 
   /// Weather condition for WMO code 63. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels.
+  ///
+  /// In it, this message translates to:
+  /// **'Pioggia moderata'**
   String get weatherConditionModerateRain;
 
   /// Weather condition for WMO code 65. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels.
+  ///
+  /// In it, this message translates to:
+  /// **'Pioggia intensa'**
   String get weatherConditionHeavyRain;
 
   /// Weather condition for WMO code 66. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels.
+  ///
+  /// In it, this message translates to:
+  /// **'Pioggia gelata leggera'**
   String get weatherConditionLightFreezingRain;
 
   /// Weather condition for WMO code 67. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels.
+  ///
+  /// In it, this message translates to:
+  /// **'Pioggia gelata intensa'**
   String get weatherConditionHeavyFreezingRain;
 
   /// Weather condition for WMO code 71. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels.
+  ///
+  /// In it, this message translates to:
+  /// **'Neve leggera'**
   String get weatherConditionLightSnowfall;
 
   /// Weather condition for WMO code 73. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels.
+  ///
+  /// In it, this message translates to:
+  /// **'Neve moderata'**
   String get weatherConditionModerateSnowfall;
 
   /// Weather condition for WMO code 75. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels.
+  ///
+  /// In it, this message translates to:
+  /// **'Neve intensa'**
   String get weatherConditionHeavySnowfall;
 
   /// Weather condition for WMO code 77. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels.
+  ///
+  /// In it, this message translates to:
+  /// **'Granelli di neve'**
   String get weatherConditionSnowGrains;
 
   /// Weather condition for WMO code 80. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels.
+  ///
+  /// In it, this message translates to:
+  /// **'Rovesci leggeri'**
   String get weatherConditionLightRainShowers;
 
   /// Weather condition for WMO code 81. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels.
+  ///
+  /// In it, this message translates to:
+  /// **'Rovesci moderati'**
   String get weatherConditionModerateRainShowers;
 
   /// Weather condition for WMO code 82. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels.
+  ///
+  /// In it, this message translates to:
+  /// **'Rovesci violenti'**
   String get weatherConditionViolentRainShowers;
 
   /// Weather condition for WMO code 85. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels.
+  ///
+  /// In it, this message translates to:
+  /// **'Rovesci di neve leggeri'**
   String get weatherConditionLightSnowShowers;
 
   /// Weather condition for WMO code 86. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels.
+  ///
+  /// In it, this message translates to:
+  /// **'Rovesci di neve intensi'**
   String get weatherConditionHeavySnowShowers;
 
   /// Weather condition for WMO code 95. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels.
+  ///
+  /// In it, this message translates to:
+  /// **'Temporale'**
   String get weatherConditionThunderstorm;
 
   /// Weather condition for WMO code 96. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels.
+  ///
+  /// In it, this message translates to:
+  /// **'Temporale con grandine leggera'**
   String get weatherConditionThunderstormLightHail;
 
   /// Weather condition for WMO code 99. Czech retains the previous Italian fallback; Portuguese and Chinese regional variants retain their previous shared labels.
+  ///
+  /// In it, this message translates to:
+  /// **'Temporale con grandine intensa'**
   String get weatherConditionThunderstormHeavyHail;
 
   /// Label migrated from _importFromFilesLabel to ARB for all app languages.
+  ///
+  /// In it, this message translates to:
+  /// **'Importa da File'**
   String get documentsImportFromFiles;
 
   /// Label migrated from _openUrlLabel to ARB for all app languages.
+  ///
+  /// In it, this message translates to:
+  /// **'Apri URL'**
   String get sonarTubeOpenUrl;
 
   /// Label migrated from _urlPromptLabel to ARB for all app languages.
+  ///
+  /// In it, this message translates to:
+  /// **'Incolla l’URL di un video YouTube'**
   String get sonarTubeUrlPrompt;
 
   /// SonarMusic label for all, migrated from the existing language table.
+  ///
+  /// In it, this message translates to:
+  /// **'Tutto'**
   String get sonarMusicAll;
 
   /// SonarMusic label for song, migrated from the existing language table.
+  ///
+  /// In it, this message translates to:
+  /// **'Brani'**
   String get sonarMusicSong;
 
   /// SonarMusic label for video, migrated from the existing language table.
+  ///
+  /// In it, this message translates to:
+  /// **'Video musicali'**
   String get sonarMusicVideo;
 
   /// SonarMusic label for album, migrated from the existing language table.
+  ///
+  /// In it, this message translates to:
+  /// **'Album'**
   String get sonarMusicAlbum;
 
   /// SonarMusic label for artist, migrated from the existing language table.
+  ///
+  /// In it, this message translates to:
+  /// **'Artisti'**
   String get sonarMusicArtist;
 
   /// SonarMusic label for playlist, migrated from the existing language table.
+  ///
+  /// In it, this message translates to:
+  /// **'Playlist'**
   String get sonarMusicPlaylist;
 
   /// SonarMusic label for favorites, migrated from the existing language table.
+  ///
+  /// In it, this message translates to:
+  /// **'Preferiti'**
   String get sonarMusicFavorites;
 
   /// SonarMusic label for recent, migrated from the existing language table.
+  ///
+  /// In it, this message translates to:
+  /// **'Ascoltati di recente'**
   String get sonarMusicRecent;
 
   /// SonarMusic label for open, migrated from the existing language table.
+  ///
+  /// In it, this message translates to:
+  /// **'Apri URL'**
   String get sonarMusicOpen;
 
   /// SonarMusic label for load, migrated from the existing language table.
+  ///
+  /// In it, this message translates to:
+  /// **'Carica altri risultati'**
   String get sonarMusicLoad;
 
   /// SonarMusic label for artist_open, migrated from the existing language table.
+  ///
+  /// In it, this message translates to:
+  /// **'Vai all’artista'**
   String get sonarMusicArtistOpen;
 
   /// SonarMusic label for album_open, migrated from the existing language table.
+  ///
+  /// In it, this message translates to:
+  /// **'Vai all’album'**
   String get sonarMusicAlbumOpen;
 
   /// SonarMusic label for play_all, migrated from the existing language table.
+  ///
+  /// In it, this message translates to:
+  /// **'Riproduci tutto'**
   String get sonarMusicPlayAll;
 
   /// SonarMusic label for share, migrated from the existing language table.
+  ///
+  /// In it, this message translates to:
+  /// **'Condividi'**
   String get sonarMusicShare;
 
   /// SonarMusic label for add, migrated from the existing language table.
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiungi ai preferiti'**
   String get sonarMusicAdd;
 
   /// SonarMusic label for remove, migrated from the existing language table.
+  ///
+  /// In it, this message translates to:
+  /// **'Rimuovi dai preferiti'**
   String get sonarMusicRemove;
 
   /// SonarMusic label for empty, migrated from the existing language table.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun risultato'**
   String get sonarMusicEmpty;
 
   /// SonarMusic label for invalid, migrated from the existing language table.
+  ///
+  /// In it, this message translates to:
+  /// **'Impossibile aprire questo elemento'**
   String get sonarMusicInvalid;
 
   /// SonarMusic label for description, migrated from the existing language table.
+  ///
+  /// In it, this message translates to:
+  /// **'Descrizione'**
   String get sonarMusicDescription;
 
   /// SonarMusic label for shuffle, migrated from the existing language table.
+  ///
+  /// In it, this message translates to:
+  /// **'Riproduzione casuale'**
   String get sonarMusicShuffle;
 
   /// SonarMusic label for save, migrated from the existing language table.
+  ///
+  /// In it, this message translates to:
+  /// **'Salva media'**
   String get sonarMusicSave;
 
   /// SonarMusic label for suggest, migrated from the existing language table.
+  ///
+  /// In it, this message translates to:
+  /// **'Suggerimenti'**
   String get sonarMusicSuggest;
 
   /// SonarMusic label for search_hint, migrated from the existing language table.
+  ///
+  /// In it, this message translates to:
+  /// **'Titolo, artista o album'**
   String get sonarMusicSearchHint;
 
   /// Fallback title for missing LibriVox or PoetryDB metadata. Original supplied titles must be retained.
+  ///
+  /// In it, this message translates to:
+  /// **'Senza titolo'**
   String get catalogUntitled;
 
   /// Fallback author for missing LibriVox or PoetryDB metadata. Original supplied author names must be retained.
+  ///
+  /// In it, this message translates to:
+  /// **'Autore sconosciuto'**
   String get catalogUnknownAuthor;
 
   /// Fallback title for a LibriVox section whose title is absent; a section number may be added by the screen.
+  ///
+  /// In it, this message translates to:
+  /// **'Capitolo'**
   String get librivoxChapterFallback;
 
   /// Fallback title for a saved Internet Archive audio track whose title is absent.
+  ///
+  /// In it, this message translates to:
+  /// **'Audio'**
   String get internetArchiveAudioFallback;
 
   /// LibriVox HTTP failure, localized in the app language while preserving its HTTP status.
+  ///
+  /// In it, this message translates to:
+  /// **'Errore LibriVox {statusCode}'**
   String librivoxHttpError(int statusCode);
 
   /// A requested LibriVox audiobook is absent, including HTTP 404 or an empty book response.
+  ///
+  /// In it, this message translates to:
+  /// **'Audiolibro non trovato.'**
   String get librivoxBookNotFound;
 
   /// Internet Archive HTTP failure, localized in the app language while preserving its HTTP status.
+  ///
+  /// In it, this message translates to:
+  /// **'Internet Archive {statusCode}'**
   String internetArchiveHttpError(int statusCode);
 
   /// PoetryDB HTTP failure, localized in the app language while preserving its HTTP status.
+  ///
+  /// In it, this message translates to:
+  /// **'Errore PoetryDB {statusCode}'**
   String poetryDbHttpError(int statusCode);
 
   /// Title and accessible status while a chosen cloud file is copied into the app.
+  ///
+  /// In it, this message translates to:
+  /// **'Caricamento del file in corso'**
   String get cloudFilePickerLoading;
 
   /// Progress message while the document provider prepares a selected cloud file.
+  ///
+  /// In it, this message translates to:
+  /// **'Preparazione del file dal cloud…'**
   String get cloudFilePickerPreparing;
 
   /// Progress message when the cloud file total byte size is not yet known.
+  ///
+  /// In it, this message translates to:
+  /// **'Caricamento in corso…'**
   String get cloudFilePickerUnknownSize;
 
-  /// Labels the measured copy, not the system-owned iCloud download.
-  String get cloudFilePickerCopying;
-
   /// Progress message while a requested cloud file import cancellation is being completed.
+  ///
+  /// In it, this message translates to:
+  /// **'Annullamento in corso…'**
   String get cloudFilePickerCancelling;
 
   /// Android audio notification channel display name; keep the existing channel identifier and audio behavior.
+  ///
+  /// In it, this message translates to:
+  /// **'Riproduzione audio'**
   String get audioPlaybackNotificationChannelName;
 
   /// Name for a new exported document only when its source display name sanitizes to an empty string; do not rename existing documents.
+  ///
+  /// In it, this message translates to:
+  /// **'Documento'**
   String get documentExportFallbackName;
 
   /// Descriptive suffix appended to a newly exported audiobook filename; keep user-supplied title unchanged.
+  ///
+  /// In it, this message translates to:
+  /// **'audiolibro'**
   String get documentExportAudiobookSuffix;
 
   /// Label for 32-bit floating-point PCM audio in the WAV bit-depth selector; does not change the codec or saved choice.
+  ///
+  /// In it, this message translates to:
+  /// **'32 bit a virgola mobile'**
   String get convertMediaWavFloat32;
+
+  /// No description provided for @cloudFilePickerCopying.
+  ///
+  /// In it, this message translates to:
+  /// **'Copia del file in Sonarpad'**
+  String get cloudFilePickerCopying;
+
+  /// Localized text for audioDescriptionNonverbalVocals.
+  ///
+  /// In it, this message translates to:
+  /// **'Consenti descrizioni su suoni vocali non verbali'**
+  String get audioDescriptionNonverbalVocals;
+
+  /// No description provided for @importVideoFromGallery.
+  ///
+  /// In it, this message translates to:
+  /// **'Scegli dalla galleria'**
+  String get importVideoFromGallery;
+
+  /// No description provided for @sharedVideoOpen.
+  ///
+  /// In it, this message translates to:
+  /// **'Apri video'**
+  String get sharedVideoOpen;
 
   /// No description provided for @developerReportEmailOptional.
   ///
@@ -8819,45 +9903,364 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Inserisci un indirizzo email valido oppure lascia il campo vuoto.'**
   String get developerReportEmailInvalid;
+
+  /// No description provided for @convertMediaDestination.
+  ///
+  /// In it, this message translates to:
+  /// **'Destinazione dei file convertiti'**
+  String get convertMediaDestination;
+
+  /// No description provided for @exportAskEveryTime.
+  ///
+  /// In it, this message translates to:
+  /// **'Chiedi ogni volta'**
+  String get exportAskEveryTime;
+
+  /// No description provided for @selectAudioTrack.
+  ///
+  /// In it, this message translates to:
+  /// **'Seleziona traccia audio'**
+  String get selectAudioTrack;
+
+  /// No description provided for @castToDevice.
+  ///
+  /// In it, this message translates to:
+  /// **'Trasmetti con Chromecast'**
+  String get castToDevice;
+
+  /// No description provided for @castNoDevices.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun dispositivo trovato. Verifica la connessione alla stessa rete Wi-Fi e riprova.'**
+  String get castNoDevices;
+
+  /// No description provided for @castFailure.
+  ///
+  /// In it, this message translates to:
+  /// **'Trasmissione non riuscita o connessione interrotta. Puoi riprendere su questo dispositivo.'**
+  String get castFailure;
+
+  /// No description provided for @castResumeHere.
+  ///
+  /// In it, this message translates to:
+  /// **'Riprendi su questo dispositivo'**
+  String get castResumeHere;
+
+  /// No description provided for @settingsShowCast.
+  ///
+  /// In it, this message translates to:
+  /// **'Mostra Chromecast nei player compatibili'**
+  String get settingsShowCast;
+
+  /// No description provided for @castStop.
+  ///
+  /// In it, this message translates to:
+  /// **'Interrompi trasmissione'**
+  String get castStop;
+
+  /// No description provided for @settingsHideCalendarSaints.
+  ///
+  /// In it, this message translates to:
+  /// **'Nascondi i santi nel calendario'**
+  String get settingsHideCalendarSaints;
+
+  /// No description provided for @markdownFormat.
+  ///
+  /// In it, this message translates to:
+  /// **'Markdown (.md)'**
+  String get markdownFormat;
+
+  /// No description provided for @htmlFormat.
+  ///
+  /// In it, this message translates to:
+  /// **'HTML (.html)'**
+  String get htmlFormat;
+
+  /// No description provided for @recordingNotAdvancing.
+  ///
+  /// In it, this message translates to:
+  /// **'La registrazione non sta acquisendo nuovi dati. Controlla la connessione e riavviala se necessario.'**
+  String get recordingNotAdvancing;
+
+  /// YouTube channel courses section
+  ///
+  /// In it, this message translates to:
+  /// **'Corsi'**
+  String get sonarTubeChannelCourses;
+
+  /// YouTube channel podcasts section
+  ///
+  /// In it, this message translates to:
+  /// **'Podcast'**
+  String get sonarTubeChannelPodcasts;
+
+  /// No description provided for @favoriteVideosLatest.
+  ///
+  /// In it, this message translates to:
+  /// **'Ultimi video'**
+  String get favoriteVideosLatest;
+
+  /// No description provided for @favoriteVideosTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Ultimi video dai preferiti'**
+  String get favoriteVideosTitle;
+
+  /// No description provided for @favoriteVideosPartial.
+  ///
+  /// In it, this message translates to:
+  /// **'Non è stato possibile caricare alcuni canali. Sono mostrati i video degli altri canali.'**
+  String get favoriteVideosPartial;
+
+  /// No description provided for @favoritesSortAlphabetically.
+  ///
+  /// In it, this message translates to:
+  /// **'Ordina alfabeticamente'**
+  String get favoritesSortAlphabetically;
+
+  /// No description provided for @saveMediaContent.
+  ///
+  /// In it, this message translates to:
+  /// **'Salva contenuto'**
+  String get saveMediaContent;
+
+  /// No description provided for @saveMp4WithAudiodescription.
+  ///
+  /// In it, this message translates to:
+  /// **'MP4 con audiodescrizione'**
+  String get saveMp4WithAudiodescription;
+
+  /// No description provided for @audioDescriptionProjectSegment.
+  ///
+  /// In it, this message translates to:
+  /// **'Segmento da rianalizzare'**
   String get audioDescriptionProjectSegment;
 
+  /// No description provided for @audioDescriptionProjectReanalyze.
+  ///
+  /// In it, this message translates to:
+  /// **'Rianalizza segmento'**
   String get audioDescriptionProjectReanalyze;
 
+  /// No description provided for @audioDescriptionProjectReanalyzeConfirm.
+  ///
+  /// In it, this message translates to:
+  /// **'Rianalizzare il segmento selezionato? I testi aggiornati sostituiranno quelli corrispondenti, mantenendo i tempi salvati. Saranno aggiunte nuove descrizioni solo negli spazi disponibili. Il file audiodescritto andrà riesportato.'**
   String get audioDescriptionProjectReanalyzeConfirm;
 
+  /// No description provided for @convertMediaDocumentAudiobookHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Per trasformare un documento in audiolibro, vai in Documenti → Importa da File. Dopo averlo importato, scegli Esporta documento → Audiolibro MP3 (.mp3).'**
   String get convertMediaDocumentAudiobookHint;
 
+  /// Segment number and start/end timestamps in the audio description project selector.
+  ///
+  /// In it, this message translates to:
+  /// **'{index}: {start} – {end}'**
+  String audioDescriptionProjectEditorSegmentOption(
+    int index,
+    String start,
+    String end,
+  );
 
+  /// No description provided for @raiPlayMediaUnavailable.
+  ///
+  /// In it, this message translates to:
+  /// **'RaiPlay non ha restituito un indirizzo riproducibile dopo più tentativi. Il contenuto potrebbe essere temporaneamente non disponibile. Riprova più tardi.'**
+  String get raiPlayMediaUnavailable;
+
+  /// No description provided for @concertsTicketOneLogin.
+  ///
+  /// In it, this message translates to:
+  /// **'Accedi con il tuo account TicketOne'**
+  String get concertsTicketOneLogin;
+
+  /// No description provided for @concertsTicketOneRegister.
+  ///
+  /// In it, this message translates to:
+  /// **'Registra un nuovo account TicketOne'**
+  String get concertsTicketOneRegister;
+
+  /// No description provided for @savePdfWithoutPassword.
+  ///
+  /// In it, this message translates to:
+  /// **'Salva PDF senza password'**
+  String get savePdfWithoutPassword;
+
+  /// No description provided for @pdfUnprotectedCopyDescription.
+  ///
+  /// In it, this message translates to:
+  /// **'Salva una copia del PDF senza password, mantenendo impaginazione e contenuti. Il PDF originale rimane invariato.'**
+  String get pdfUnprotectedCopyDescription;
+
+  /// No description provided for @onlineDictionaryTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Dizionario online'**
+  String get onlineDictionaryTitle;
+
+  /// No description provided for @onlineDictionaryWord.
+  ///
+  /// In it, this message translates to:
+  /// **'Parola:'**
+  String get onlineDictionaryWord;
+
+  /// No description provided for @onlineDictionaryLanguage.
+  ///
+  /// In it, this message translates to:
+  /// **'Lingua dizionario:'**
+  String get onlineDictionaryLanguage;
+
+  /// No description provided for @onlineDictionaryDefinitions.
+  ///
+  /// In it, this message translates to:
+  /// **'Definizioni'**
+  String get onlineDictionaryDefinitions;
+
+  /// No description provided for @onlineDictionarySynonyms.
+  ///
+  /// In it, this message translates to:
+  /// **'Sinonimi'**
+  String get onlineDictionarySynonyms;
+
+  /// No description provided for @onlineDictionaryNotFound.
+  ///
+  /// In it, this message translates to:
+  /// **'Parola non trovata.'**
+  String get onlineDictionaryNotFound;
+
+  /// No description provided for @onlineDictionaryLimited.
+  ///
+  /// In it, this message translates to:
+  /// **'Risultato troppo lungo, raffina la ricerca.'**
+  String get onlineDictionaryLimited;
+
+  /// No description provided for @onlineDictionaryTranslation.
+  ///
+  /// In it, this message translates to:
+  /// **'Lingua traduzione dizionario:'**
+  String get onlineDictionaryTranslation;
+
+  /// No description provided for @onlineDictionaryNone.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessuna'**
+  String get onlineDictionaryNone;
+
+  /// No description provided for @onlineDictionaryEntryTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'{word} — {language}'**
+  String onlineDictionaryEntryTitle(String word, String language);
+
+  /// No description provided for @onlineDictionaryDefinition.
+  ///
+  /// In it, this message translates to:
+  /// **'{number}. {text}'**
+  String onlineDictionaryDefinition(int number, String text);
+
+  /// No description provided for @onlineDictionarySource.
+  ///
+  /// In it, this message translates to:
+  /// **'Wiktionary — CC BY-SA 4.0\n{url}'**
+  String onlineDictionarySource(String url);
+
+  /// No description provided for @podcastRecorderTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Registra podcast'**
   String get podcastRecorderTitle;
 
+  /// No description provided for @podcastRecorderHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Registra solo il microfono. La base musicale facoltativa viene aggiunta al termine. I volumi si applicano a tutta la registrazione. Usa le cuffie per non registrare VoiceOver dagli altoparlanti. Passando a un’altra app, la registrazione va in pausa.'**
   String get podcastRecorderHint;
 
+  /// No description provided for @podcastRecorderMicVolume.
+  ///
+  /// In it, this message translates to:
+  /// **'Volume microfono'**
   String get podcastRecorderMicVolume;
 
+  /// No description provided for @podcastRecorderMusicVolume.
+  ///
+  /// In it, this message translates to:
+  /// **'Volume base musicale'**
   String get podcastRecorderMusicVolume;
 
+  /// No description provided for @podcastRecorderChooseMusic.
+  ///
+  /// In it, this message translates to:
+  /// **'Scegli base musicale (facoltativa)'**
   String get podcastRecorderChooseMusic;
 
+  /// No description provided for @podcastRecorderRemoveMusic.
+  ///
+  /// In it, this message translates to:
+  /// **'Rimuovi base musicale'**
   String get podcastRecorderRemoveMusic;
 
+  /// No description provided for @podcastRecorderReady.
+  ///
+  /// In it, this message translates to:
+  /// **'Registrazione pronta. Regola i volumi, ascolta e salva.'**
   String get podcastRecorderReady;
 
+  /// No description provided for @podcastRecorderRecovered.
+  ///
+  /// In it, this message translates to:
+  /// **'Registrazione precedente recuperata. Puoi ascoltarla e salvarla.'**
   String get podcastRecorderRecovered;
 
+  /// No description provided for @podcastRecorderPermission.
+  ///
+  /// In it, this message translates to:
+  /// **'Consenti l’accesso al microfono nelle impostazioni del dispositivo per registrare.'**
   String get podcastRecorderPermission;
 
+  /// No description provided for @podcastRecorderLeave.
+  ///
+  /// In it, this message translates to:
+  /// **'Vuoi uscire? La registrazione verrà fermata e conservata per la prossima apertura.'**
   String get podcastRecorderLeave;
 
+  /// No description provided for @podcastRecorderDiscard.
+  ///
+  /// In it, this message translates to:
+  /// **'Vuoi eliminare questa registrazione? La copia eventualmente già salvata in Documenti resta disponibile.'**
   String get podcastRecorderDiscard;
 
+  /// No description provided for @podcastRecorderChooseIntro.
+  ///
+  /// In it, this message translates to:
+  /// **'Scegli sigla iniziale (facoltativa)'**
   String get podcastRecorderChooseIntro;
 
+  /// No description provided for @podcastRecorderChooseOutro.
+  ///
+  /// In it, this message translates to:
+  /// **'Scegli sigla finale (facoltativa)'**
   String get podcastRecorderChooseOutro;
 
+  /// No description provided for @podcastRecorderRemoveIntro.
+  ///
+  /// In it, this message translates to:
+  /// **'Rimuovi sigla iniziale'**
   String get podcastRecorderRemoveIntro;
 
+  /// No description provided for @podcastRecorderRemoveOutro.
+  ///
+  /// In it, this message translates to:
+  /// **'Rimuovi sigla finale'**
   String get podcastRecorderRemoveOutro;
 
+  /// Localized name of the Dutch language in menus.
+  ///
+  /// In it, this message translates to:
+  /// **'Olandese'**
+  String get dutch;
 }
 
 class _AppLocalizationsDelegate
@@ -8877,6 +10280,7 @@ class _AppLocalizationsDelegate
     'es',
     'fr',
     'it',
+    'nl',
     'pl',
     'pt',
     'ro',
@@ -8924,6 +10328,8 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
       return AppLocalizationsFr();
     case 'it':
       return AppLocalizationsIt();
+    case 'nl':
+      return AppLocalizationsNl();
     case 'pl':
       return AppLocalizationsPl();
     case 'pt':

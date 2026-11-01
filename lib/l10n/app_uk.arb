@@ -6474,11 +6474,35 @@
   "onlineDictionaryTranslation": "Мова перекладу словника:",
   "onlineDictionaryNone": "Немає",
   "onlineDictionaryEntryTitle": "{word} — {language}",
-  "@onlineDictionaryEntryTitle": {"placeholders": {"word": {"type": "String"}, "language": {"type": "String"}}},
+  "@onlineDictionaryEntryTitle": {
+    "placeholders": {
+      "word": {
+        "type": "String"
+      },
+      "language": {
+        "type": "String"
+      }
+    }
+  },
   "onlineDictionaryDefinition": "{number}. {text}",
-  "@onlineDictionaryDefinition": {"placeholders": {"number": {"type": "int"}, "text": {"type": "String"}}},
+  "@onlineDictionaryDefinition": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "text": {
+        "type": "String"
+      }
+    }
+  },
   "onlineDictionarySource": "Wiktionary — CC BY-SA 4.0\n{url}",
-  "@onlineDictionarySource": {"placeholders": {"url": {"type": "String"}}},
+  "@onlineDictionarySource": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
   "podcastRecorderTitle": "Записати подкаст",
   "podcastRecorderHint": "Записується лише мікрофон. Необов’язкова фонова музика додається після завершення. Рівні гучності застосовуються до всього запису. Використовуйте навушники, щоб не записувати голос читача екрана з динаміків. Перехід до іншого застосунку призупиняє запис.",
   "podcastRecorderMicVolume": "Гучність мікрофона",
@@ -6493,5 +6517,9 @@
   "podcastRecorderChooseIntro": "Вибрати вступну заставку (необов’язково)",
   "podcastRecorderChooseOutro": "Вибрати кінцеву заставку (необов’язково)",
   "podcastRecorderRemoveIntro": "Видалити вступну заставку",
-  "podcastRecorderRemoveOutro": "Видалити кінцеву заставку"
+  "podcastRecorderRemoveOutro": "Видалити кінцеву заставку",
+  "dutch": "Нідерландська",
+  "@dutch": {
+    "description": "Localized name of the Dutch language in menus."
+  }
 }

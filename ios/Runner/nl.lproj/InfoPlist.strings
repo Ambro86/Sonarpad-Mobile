@@ -1,0 +1,7 @@
+"NSCameraUsageDescription" = "Sonarpad gebruikt de camera alleen voor scan- of opnamefuncties die je zelf start.";
+"NSCalendarsUsageDescription" = "Sonarpad heeft toegang tot je agenda nodig om herinneringen en afspraken toe te voegen.";
+"NSCalendarsFullAccessUsageDescription" = "Sonarpad heeft volledige toegang tot je agenda nodig om herinneringen en afspraken rechtstreeks in je systeemagenda op te slaan.";
+"NSContactsUsageDescription" = "Sonarpad heeft toegang tot je contacten nodig om genodigden aan agenda-afspraken te koppelen.";
+"NSLocationWhenInUseUsageDescription" = "Sonarpad gebruikt je locatie alleen wanneer je routes of navigatie kiest, om routebeschrijvingen en plaatsen in de buurt te berekenen.";
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "Sonarpad heeft normaal gesproken geen voortdurende locatietoegang nodig. Je locatie wordt alleen gebruikt wanneer je routes of navigatie kiest.";
+"NSMicrophoneUsageDescription" = "Sonarpad gebruikt de microfoon om je stem op te nemen.";

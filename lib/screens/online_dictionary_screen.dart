@@ -25,6 +25,7 @@ class _OnlineDictionaryScreenState extends State<OnlineDictionaryScreen> {
     'it',
     'en',
     'de',
+    'nl',
     'es',
     'fr',
     'pt',

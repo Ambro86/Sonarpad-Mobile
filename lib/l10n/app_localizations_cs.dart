@@ -6,130 +6,7 @@ import 'app_localizations.dart';
 
 /// The translations for Czech (`cs`).
 class AppLocalizationsCs extends AppLocalizations {
-  @override
-  String onlineDictionaryEntryTitle(String word, String language) => "$word — $language";
-  @override
-  String onlineDictionaryDefinition(int number, String text) => "$number. $text";
-  @override
-  String onlineDictionarySource(String url) => "Wiktionary — CC BY-SA 4.0\n$url";
-
-  @override
-  String get onlineDictionaryTitle => "Online slovník";
-  @override
-  String get onlineDictionaryWord => "Slovo:";
-  @override
-  String get onlineDictionaryLanguage => "Jazyk slovníku:";
-  @override
-  String get onlineDictionaryDefinitions => "Definice";
-  @override
-  String get onlineDictionarySynonyms => "Synonyma";
-  @override
-  String get onlineDictionaryNotFound => "Slovo nenalezeno.";
-  @override
-  String get onlineDictionaryLimited => "Výsledek je příliš velký. Upřesněte hledání.";
-  @override
-  String get onlineDictionaryTranslation => "Jazyk překladu slovníku:";
-  @override
-  String get onlineDictionaryNone => "Žádný";
-
-  @override
-  String get raiPlayMediaUnavailable => "RaiPlay ani po několika pokusech nevrátil adresu pro přehrávání. Obsah může být dočasně nedostupný. Zkuste to znovu později.";
-
-  @override
-  String audioDescriptionProjectEditorSegmentOption(int index, String start, String end) => '$index: $start – $end';
-
-  @override
-  String get convertMediaDocumentAudiobookHint => 'Chcete-li převést dokument na audioknihu, přejděte do Dokumenty → Importovat ze Souborů. Po importu zvolte Exportovat dokument → Audiokniha MP3 (.mp3).';
-
-  @override
-  String get audioDescriptionProjectSegment => 'Úsek k nové analýze';
-
-  @override
-  String get audioDescriptionProjectReanalyze => 'Znovu analyzovat úsek';
-
-  @override
-  String get audioDescriptionProjectReanalyzeConfirm =>
-      'Znovu analyzovat vybraný úsek? Nové texty nahradí odpovídající popisy při zachování uložených časů. Další popisy budou přidány pouze do volných mezer. Soubor s audiopopisem bude nutné znovu exportovat.';
-
-  @override
-  String get saveMp4WithAudiodescription => "MP4 s audiopopisem";
-
-  @override
-  String get saveMediaContent => "Uložit obsah";
-
-  @override
-  String get favoritesSortAlphabetically => "Seřadit abecedně";
-
-  @override
-  String get favoriteVideosLatest => 'Nejnovější videa';
-  @override
-  String get favoriteVideosTitle => 'Nejnovější videa z oblíbených';
-  @override
-  String get favoriteVideosPartial =>
-      'Některé kanály se nepodařilo načíst. Zobrazují se videa z ostatních kanálů.';
-
-  @override
-  String get recordingNotAdvancing => "Nahrávání nepřijímá nová data. Zkontrolujte připojení a v případě potřeby nahrávání restartujte.";
-
-  @override
-  String get castToDevice => "Odesílat přes Chromecast";
-  @override
-  String get castNoDevices => "Nebyla nalezena žádná zařízení. Ověřte stejnou síť Wi-Fi a zkuste to znovu.";
-  @override
-  String get castFailure => "Odesílání selhalo nebo bylo přerušeno připojení. Můžete pokračovat na tomto zařízení.";
-  @override
-  String get castResumeHere => "Pokračovat na tomto zařízení";
-  @override
-  String get settingsHideCalendarSaints => "Skrýt svaté v kalendáři";
-
-  @override
-  String get settingsShowCast => "Zobrazit Chromecast v podporovaných přehrávačích";
-  @override
-  String get castStop => "Zastavit odesílání";
-
   AppLocalizationsCs([String locale = 'cs']) : super(locale);
-
-  @override
-  String get sonarTubeSearchType => 'Typ hledání';
-
-  @override
-  String get sonarTubeSearchAll => 'Vše';
-
-  @override
-  String get sonarTubeSearchPlaylists => 'Playlisty';
-
-  @override
-  String get sonarTubeSearchChannels => 'Kanály';
-
-  @override
-  String get calendarReminderHasTime => "Nastavit čas";
-
-  @override
-  String get audioDescriptionMp3Bitrate => "Datový tok MP3";
-
-  @override
-  String get audioDescriptionSourceVolume => "Hlasitost filmu";
-
-  @override
-  String get audioDescriptionSourceVolumeHint => "Nastavte základní hlasitost filmu. Během audiopopisu se automaticky ještě více ztlumí.";
-
-  @override
-  String get audioDescriptionAudioNormal => "Normální";
-
-  @override
-  String get audioDescriptionMixPreview => "Poslechnout ukázku filmu a hlasu";
-
-  @override
-  String get audioDescriptionMixPreviewPreparing => "Příprava zvukové ukázky";
-
-  @override
-  String get audioDescriptionMixPreviewStop => "Zastavit zvukovou ukázku";
-
-  @override
-  String get audioDescriptionMixPreviewPhrase => "Zkouška audiopopisu s automatickým ztlumením zvuku.";
-
-  @override
-  String get audioDescriptionMixPreviewHint => "Po změně hlasitosti se spustí krátká ukázka s úryvkem filmu, vybraným hlasem a automatickým ztlumením zvuku filmu.";
 
   @override
   String get appTitle => 'Sonarpad';
@@ -184,6 +61,21 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get sonarTubeSearchLabel => 'Hledat videa, kanály nebo playlisty';
+
+  @override
+  String get sonarTubeSearchType => 'Typ hledání';
+
+  @override
+  String get sonarTubeSearchAll => 'Vše';
+
+  @override
+  String get sonarTubeSearchPlaylists => 'Playlisty';
+
+  @override
+  String get sonarTubeSearchChannels => 'Kanály';
+
+  @override
+  String get calendarReminderHasTime => 'Nastavit čas';
 
   @override
   String get sonarTubeSearchPrompt =>
@@ -954,18 +846,6 @@ class AppLocalizationsCs extends AppLocalizations {
   String get wikipediaImportWholeArticle => 'Celý článek';
 
   @override
-  String get treccaniTitle => 'Encyklopedie Treccani';
-
-  @override
-  String get treccaniSearchLabel => 'Hledat v Encyklopedii Treccani';
-
-  @override
-  String get treccaniNoResults => 'Nebylo nalezeno žádné heslo Treccani';
-
-  @override
-  String get treccaniWholeEntry => 'Celé heslo';
-
-  @override
   String get documents => 'Dokumenty';
 
   @override
@@ -1485,7 +1365,7 @@ class AppLocalizationsCs extends AppLocalizations {
   String get exportDocument => 'Exportovat dokument';
 
   @override
-  String get exportFolderZip => "Exportovat složku jako ZIP";
+  String get exportFolderZip => 'Exportovat složku jako ZIP';
 
   @override
   String get exportFormatPrompt =>
@@ -1496,12 +1376,6 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get pdfFormat => 'PDF (.pdf)';
-
-  @override
-  String get markdownFormat => 'Markdown (.md)';
-
-  @override
-  String get htmlFormat => 'HTML (.html)';
 
   @override
   String get docxFormat => 'DOCX (.docx)';
@@ -1865,9 +1739,6 @@ class AppLocalizationsCs extends AppLocalizations {
   String get developerLogNameOptional => 'Jméno (volitelné)';
 
   @override
-  String get developerReportText => 'Text hlášení';
-
-  @override
   String get developerLogSend => 'Odeslat';
 
   @override
@@ -1877,8 +1748,8 @@ class AppLocalizationsCs extends AppLocalizations {
   String get developerLogSent => 'Hlášení bylo odesláno vývojáři.';
 
   @override
-  String get developerLogSendFailed => 'Hlášení se nepodařilo odeslat. Zkuste to později.';
-
+  String get developerLogSendFailed =>
+      'Hlášení se nepodařilo odeslat. Zkuste to později.';
 
   @override
   String get donateWithPaypal => 'Darovat přes PayPal';
@@ -2163,12 +2034,12 @@ class AppLocalizationsCs extends AppLocalizations {
       'Probíhá naplánované nahrávání';
 
   @override
-  String scheduledRecordingPendingStatus(String dateTime) {
+  String scheduledRecordingPendingStatus(Object dateTime) {
     return 'Naplánováno na $dateTime';
   }
 
   @override
-  String recordingCannotOpenBeforeScheduledStart(String dateTime) {
+  String recordingCannotOpenBeforeScheduledStart(Object dateTime) {
     return 'Toto nahrávání ještě nezačalo. Začne $dateTime.';
   }
 
@@ -2181,17 +2052,6 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get selectRecordings => 'Vybrat nahrávky';
-
-  @override
-  String get selectDocuments => 'Vybrat dokumenty';
-
-  @override
-  String get deleteSelectedDocumentsConfirmation => 'Trvale odstranit vybrané dokumenty?';
-
-  @override
-  String documentsRemovedCount(int count) {
-    return 'Odstraněné dokumenty: $count.';
-  }
 
   @override
   String get selectAll => 'Vybrat vše';
@@ -2642,14 +2502,14 @@ class AppLocalizationsCs extends AppLocalizations {
   String get concertsYear => 'Rok';
 
   @override
+  String get concertsQueryRequired =>
+      'Pro hledání všech akcí v tomto katalogu zadejte město nebo název akce, nebo vyberte kategorii.';
+
+  @override
   String get concertsCategory => 'Kategorie';
 
   @override
   String get concertsAllEvents => 'Všechny akce';
-
-  @override
-  String get concertsQueryRequired =>
-      'Pro hledání všech akcí v tomto katalogu zadejte město nebo název akce, nebo vyberte kategorii.';
 
   @override
   String get concertsTitle => 'Hledání koncertů a akcí';
@@ -3850,7 +3710,8 @@ class AppLocalizationsCs extends AppLocalizations {
   String get mediaCutterMixingAddedTrack => 'Míchání nové stopy';
 
   @override
-  String get podcastImportIntoMediaCutter => "Importovat do Střihu mediálních souborů";
+  String get podcastImportIntoMediaCutter =>
+      'Importovat do Střihu mediálních souborů';
 
   @override
   String get preserveMedia => 'Uchovat obsah';
@@ -3866,15 +3727,6 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get mediaProcessingCompleted => 'Zpracování dokončeno.';
-
-  @override
-  String get convertMediaDestination => 'Cíl převedených souborů';
-
-  @override
-  String get exportAskEveryTime => 'Vždy se zeptat';
-
-  @override
-  String get selectAudioTrack => "Vybrat zvukovou stopu";
 
   @override
   String get saveInSonarpadDocuments => 'Uložit do Dokumentů Sonarpadu';
@@ -4063,12 +3915,6 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get sonarTubeChannelShorts => 'Shorts';
-  @override
-  String get sonarTubeChannelCourses => 'Kurzy';
-
-  @override
-  String get sonarTubeChannelPodcasts => 'Podcasty';
-
 
   @override
   String sonarTubeVideoCount(int count) {
@@ -4240,11 +4086,38 @@ class AppLocalizationsCs extends AppLocalizations {
       'Povolit prodloužené pauzy, když se popis nevejde do ticha';
 
   @override
-  String get audioDescriptionNonverbalVocals => 'Povolit popisy během neverbálních hlasových projevů';
-
-  @override
   String get audioDescriptionRecognizeCharacters =>
       'Pokusit se rozpoznat postavy a používat jejich jména';
+
+  @override
+  String get audioDescriptionMp3Bitrate => 'Datový tok MP3';
+
+  @override
+  String get audioDescriptionSourceVolume => 'Hlasitost filmu';
+
+  @override
+  String get audioDescriptionSourceVolumeHint =>
+      'Nastavte základní hlasitost filmu. Během audiopopisu se automaticky ještě více ztlumí.';
+
+  @override
+  String get audioDescriptionAudioNormal => 'Normální';
+
+  @override
+  String get audioDescriptionMixPreview => 'Poslechnout ukázku filmu a hlasu';
+
+  @override
+  String get audioDescriptionMixPreviewPreparing => 'Příprava zvukové ukázky';
+
+  @override
+  String get audioDescriptionMixPreviewStop => 'Zastavit zvukovou ukázku';
+
+  @override
+  String get audioDescriptionMixPreviewPhrase =>
+      'Zkouška audiopopisu s automatickým ztlumením zvuku.';
+
+  @override
+  String get audioDescriptionMixPreviewHint =>
+      'Po změně hlasitosti se spustí krátká ukázka s úryvkem filmu, vybraným hlasem a automatickým ztlumením zvuku filmu.';
 
   @override
   String get audioDescriptionSaveProject =>
@@ -4287,10 +4160,12 @@ class AppLocalizationsCs extends AppLocalizations {
   String get audioDescriptionSonarpadBalance => 'Kredit Sonarpad AI';
 
   @override
-  String get audioDescriptionSonarpadBalanceUnavailable => 'Kredit není k dispozici.';
+  String get audioDescriptionSonarpadBalanceUnavailable =>
+      'Kredit není k dispozici.';
 
   @override
-  String get audioDescriptionSonarpadInsufficientCredit => "Kredit nestačí. Dobijte svou API klíč, abyste mohli pokračovat v audiopopisu svého obsahu.";
+  String get audioDescriptionSonarpadInsufficientCredit =>
+      'Kredit nestačí. Dobijte svou API klíč, abyste mohli pokračovat v audiopopisu svého obsahu.';
 
   @override
   String get audioDescriptionEdgeVoiceReady => 'Vybraný hlas Edge je dostupný.';
@@ -4479,16 +4354,21 @@ class AppLocalizationsCs extends AppLocalizations {
   String get sonarTubeSaveAsMp3 => 'Uložit jako MP3';
 
   @override
+  String get developerReportText => 'Text hlášení';
+
+  @override
   String get audioDescriptionCreateVideoOutput => 'Uložit audiopopis do videa';
 
   @override
   String get audioDescriptionLoadCharacterCatalog => 'Načíst katalog postav';
 
   @override
-  String get audioDescriptionImportCharacterCatalog => 'Importovat katalog ze souboru';
+  String get audioDescriptionImportCharacterCatalog =>
+      'Importovat katalog ze souboru';
 
   @override
-  String get audioDescriptionCharacterCatalogLoaded => 'Katalog postav byl načten.';
+  String get audioDescriptionCharacterCatalogLoaded =>
+      'Katalog postav byl načten.';
 
   @override
   String get audioDescriptionCreateWithAi => 'Vytvořit audiopopis pomocí AI';
@@ -4497,13 +4377,15 @@ class AppLocalizationsCs extends AppLocalizations {
   String get settingsHomeCustomization => 'Přizpůsobit domovskou obrazovku';
 
   @override
-  String get settingsHomeCustomizationHint => 'Vyberte zobrazené položky a bez kategorií také jejich pořadí.';
+  String get settingsHomeCustomizationHint =>
+      'Vyberte zobrazené položky a bez kategorií také jejich pořadí.';
 
   @override
   String get homeCategories => 'Kategorie';
 
   @override
-  String get homeCategoriesHint => 'Seskupit položky domovské obrazovky do kategorií.';
+  String get homeCategoriesHint =>
+      'Seskupit položky domovské obrazovky do kategorií.';
 
   @override
   String get homeVisibleItems => 'Viditelné položky';
@@ -4518,10 +4400,12 @@ class AppLocalizationsCs extends AppLocalizations {
   String get homeResetDefaultsConfirmTitle => 'Obnovit domovskou obrazovku?';
 
   @override
-  String get homeResetDefaultsConfirmMessage => 'Všechny dostupné funkce se znovu zobrazí, kategorie se zapnou a vlastní pořadí se odstraní.';
+  String get homeResetDefaultsConfirmMessage =>
+      'Všechny dostupné funkce se znovu zobrazí, kategorie se zapnou a vlastní pořadí se odstraní.';
 
   @override
-  String get homeResetDefaultsDone => 'Domovská obrazovka byla obnovena na výchozí nastavení.';
+  String get homeResetDefaultsDone =>
+      'Domovská obrazovka byla obnovena na výchozí nastavení.';
 
   @override
   String get homeReorderTitle => 'Změnit pořadí domovské obrazovky';
@@ -4551,943 +4435,1054 @@ class AppLocalizationsCs extends AppLocalizations {
   String get homeDirectory => 'Bílé a žluté stránky';
 
   @override
-  String get joinMediaTitle => "Sloučit multimediální soubory";
+  String get treccaniTitle => 'Encyklopedie Treccani';
 
   @override
-  String get joinMediaDescription => "Přidejte dva nebo více zvukových či video souborů, zvolte pořadí a výstupní formát a spojte je do jednoho souboru.";
+  String get treccaniSearchLabel => 'Hledat v Encyklopedii Treccani';
 
   @override
-  String get joinMediaAddFiles => "Přidat multimediální soubory";
+  String get treccaniNoResults => 'Nebylo nalezeno žádné heslo Treccani';
 
   @override
-  String get joinMediaLoadingFiles => "Kontrola vybraných souborů…";
+  String get treccaniWholeEntry => 'Celé heslo';
 
   @override
-  String get joinMediaFilesTitle => "Soubory ke sloučení";
+  String get joinMediaTitle => 'Sloučit multimediální soubory';
 
   @override
-  String get joinMediaNoFiles => "Zatím nebyly přidány žádné soubory.";
+  String get joinMediaDescription =>
+      'Přidejte dva nebo více zvukových či video souborů, zvolte pořadí a výstupní formát a spojte je do jednoho souboru.';
 
   @override
-  String get joinMediaVideoLabel => "Video";
+  String get joinMediaAddFiles => 'Přidat multimediální soubory';
 
   @override
-  String get joinMediaAudioLabel => "Zvuk";
+  String get joinMediaLoadingFiles => 'Kontrola vybraných souborů…';
 
   @override
-  String get joinMediaActionsHint => "Dostupné akce: Posunout nahoru, Posunout dolů, Odebrat.";
+  String get joinMediaFilesTitle => 'Soubory ke sloučení';
 
   @override
-  String get joinMediaRemove => "Odebrat";
+  String get joinMediaNoFiles => 'Zatím nebyly přidány žádné soubory.';
 
   @override
-  String get joinMediaOutputMp4 => "Výstupní formát: MP4. Zvukové soubory použijí černý obraz; k videím bez zvuku bude přidáno ticho.";
+  String get joinMediaVideoLabel => 'Video';
 
   @override
-  String get joinMediaOutputMp3 => "Výstupní formát: MP3.";
+  String get joinMediaAudioLabel => 'Zvuk';
 
   @override
-  String get joinMediaJoin => "Sloučit";
+  String get joinMediaActionsHint =>
+      'Dostupné akce: Posunout nahoru, Posunout dolů, Odebrat.';
 
   @override
-  String get joinMediaFileSkipped => "Soubor byl přeskočen, protože není dostupný nebo neobsahuje použitelný zvuk či video.";
+  String get joinMediaRemove => 'Odebrat';
 
   @override
-  String get joinMediaFilesAdded => "Multimediální soubory přidány.";
+  String get joinMediaOutputMp4 =>
+      'Výstupní formát: MP4. Zvukové soubory použijí černý obraz; k videím bez zvuku bude přidáno ticho.';
 
   @override
-  String get joinMediaRemoved => "Položka odebrána.";
+  String get joinMediaOutputMp3 => 'Výstupní formát: MP3.';
 
   @override
-  String get joinMediaNeedTwoFiles => "Přidejte alespoň dva soubory ke sloučení.";
+  String get joinMediaJoin => 'Sloučit';
 
   @override
-  String get joinMediaProcessing => "Slučování médií";
+  String get joinMediaFileSkipped =>
+      'Soubor byl přeskočen, protože není dostupný nebo neobsahuje použitelný zvuk či video.';
 
   @override
-  String get joinMediaCancelled => "Slučování zrušeno.";
+  String get joinMediaFilesAdded => 'Multimediální soubory přidány.';
 
   @override
-  String get joinMediaFailed => "Multimediální soubory se nepodařilo sloučit.";
+  String get joinMediaRemoved => 'Položka odebrána.';
 
   @override
-  String get joinMediaPreparing => "Příprava";
+  String get joinMediaNeedTwoFiles =>
+      'Přidejte alespoň dva soubory ke sloučení.';
 
   @override
-  String get joinMediaNormalizing => "Příprava souboru";
+  String get joinMediaProcessing => 'Slučování médií';
 
   @override
-  String get joinMediaMerging => "Slučování souborů";
+  String get joinMediaCancelled => 'Slučování zrušeno.';
 
   @override
-  String get joinMediaVerifying => "Závěrečná kontrola";
+  String get joinMediaFailed => 'Multimediální soubory se nepodařilo sloučit.';
 
   @override
-  String get joinMediaCompleting => "Dokončování";
+  String get joinMediaPreparing => 'Příprava';
 
   @override
-  String get joinMediaCompleted => "Sloučení dokončeno. Zvolte, kam soubor uložit.";
+  String get joinMediaNormalizing => 'Příprava souboru';
 
   @override
-  String get joinMediaFormat => "Formát spojení";
+  String get joinMediaMerging => 'Slučování souborů';
 
   @override
-  String get joinMediaChooseFormat => "Zvolit formát spojení";
+  String get joinMediaVerifying => 'Závěrečná kontrola';
 
   @override
-  String get joinMediaAudioFormatHint => "Pouze u zvukových souborů můžete zvolit MP3, M4A, WAV, FLAC, OGG, OPUS, AAC, WMA nebo AIFF. Výchozí: MP3.";
+  String get joinMediaCompleting => 'Dokončování';
 
   @override
-  String get joinMediaVideoFormatHint => "U videa nebo smíšených souborů můžete zvolit MP4, MKV, MOV, AVI, WMV, MPEG/MPG, FLV, 3GP nebo TS. Výchozí: MP4.";
+  String get joinMediaCompleted =>
+      'Sloučení dokončeno. Zvolte, kam soubor uložit.';
 
   @override
-  String get joinMediaCancelConfirmTitle => "Zrušit spojování?";
+  String get joinMediaFormat => 'Formát spojení';
 
   @override
-  String get joinMediaCancelConfirmMessage => "Opravdu chcete zrušit operaci? Probíhající proces FFmpeg bude ukončen.";
+  String get joinMediaChooseFormat => 'Zvolit formát spojení';
 
   @override
-  String get joinMediaKeepWorking => "Pokračovat";
+  String get joinMediaAudioFormatHint =>
+      'Pouze u zvukových souborů můžete zvolit MP3, M4A, WAV, FLAC, OGG, OPUS, AAC, WMA nebo AIFF. Výchozí: MP3.';
 
   @override
-  String get joinMediaConfirmCancel => "Zrušit spojování";
+  String get joinMediaVideoFormatHint =>
+      'U videa nebo smíšených souborů můžete zvolit MP4, MKV, MOV, AVI, WMV, MPEG/MPG, FLV, 3GP nebo TS. Výchozí: MP4.';
 
   @override
-  String get joinMediaCancelling => "Rušení…";
+  String get joinMediaCancelConfirmTitle => 'Zrušit spojování?';
 
   @override
-  String get streamReconnecting => "Obnovování připojení…";
+  String get joinMediaCancelConfirmMessage =>
+      'Opravdu chcete zrušit operaci? Probíhající proces FFmpeg bude ukončen.';
 
   @override
-  String get streamPlaybackRetryMessage => "Kanál se nespustil. Vyberte Zkusit znovu pro obnovení odkazu na stream.";
+  String get joinMediaKeepWorking => 'Pokračovat';
 
   @override
-  String get settingsMediaSpeedControl => "Zapnout ovládání rychlosti přehrávání médií";
+  String get joinMediaConfirmCancel => 'Zrušit spojování';
 
   @override
-  String get settingsMediaSpeedControlHint => "Zobrazí ovládání rychlosti pro Sonartube, podcasty a další nahraný obsah. Živé vysílání je vyloučeno.";
+  String get joinMediaCancelling => 'Rušení…';
 
   @override
-  String get settingsPreferRaiAudioDescription => "Upřednostnit audiopopis, pokud je k dispozici";
+  String get selectDocuments => 'Vybrat dokumenty';
 
   @override
-  String get settingsPreferRaiAudioDescriptionHint => "U kanálů Rai se automaticky použije stopa s audiopopisem, pokud je k dispozici. Vypnutím této možnosti se upřednostní běžný italský zvuk.";
+  String get deleteSelectedDocumentsConfirmation =>
+      'Trvale odstranit vybrané dokumenty?';
 
   @override
-  String get mediaPlaybackSpeed => "Rychlost přehrávání";
+  String documentsRemovedCount(int count) {
+    return 'Odstraněné dokumenty: $count.';
+  }
 
   @override
-  String get mediaPlaybackSpeedNormal => "Normální";
+  String get streamReconnecting => 'Obnovování připojení…';
 
   @override
-  String get mediaPlaybackSpeedUnavailable => "Tato rychlost není pro tento obsah podporována. Byla obnovena předchozí rychlost.";
+  String get streamPlaybackRetryMessage =>
+      'Kanál se nespustil. Vyberte Zkusit znovu pro obnovení odkazu na stream.';
 
   @override
-  String get mediaPlaybackSpeedRecoveryFailed => "Rychlost se nepodařilo obnovit. Otevřete obsah znovu a opakujte pokus.";
+  String get settingsMediaSpeedControl =>
+      'Zapnout ovládání rychlosti přehrávání médií';
 
   @override
-  String mediaPlaybackSpeedChanged(String speed) => "Rychlost přehrávání: $speed";
+  String get settingsMediaSpeedControlHint =>
+      'Zobrazí ovládání rychlosti pro Sonartube, podcasty a další nahraný obsah. Živé vysílání je vyloučeno.';
 
+  @override
+  String get settingsPreferRaiAudioDescription =>
+      'Upřednostnit audiopopis, pokud je k dispozici';
+
+  @override
+  String get settingsPreferRaiAudioDescriptionHint =>
+      'U kanálů Rai se automaticky použije stopa s audiopopisem, pokud je k dispozici. Vypnutím této možnosti se upřednostní běžný italský zvuk.';
+
+  @override
+  String get mediaPlaybackSpeed => 'Rychlost přehrávání';
+
+  @override
+  String get mediaPlaybackSpeedNormal => 'Normální';
 
   @override
-  String get routeServiceInvalidAddress => "Indirizzo non valido";
+  String get mediaPlaybackSpeedUnavailable =>
+      'Tato rychlost není pro tento obsah podporována. Byla obnovena předchozí rychlost.';
 
   @override
-  String routeServiceGeocodingNetworkError(int statusCode) => "Errore di rete geocode: HTTP ${statusCode}";
+  String get mediaPlaybackSpeedRecoveryFailed =>
+      'Rychlost se nepodařilo obnovit. Otevřete obsah znovu a opakujte pokus.';
 
   @override
-  String routeServiceNetworkError(int statusCode) => "Errore di rete route: HTTP ${statusCode}";
+  String mediaPlaybackSpeedChanged(String speed) {
+    return 'Rychlost přehrávání: $speed';
+  }
 
   @override
-  String get routeServiceServerError => "Errore dal server";
+  String get routeServiceInvalidAddress => 'Indirizzo non valido';
 
   @override
-  String get routeServiceCalculationError => "Errore di calcolo percorso dal server";
+  String routeServiceGeocodingNetworkError(int statusCode) {
+    return 'Errore di rete geocode: HTTP $statusCode';
+  }
 
   @override
-  String get routeServiceUnauthorized => "Client non autorizzato. Aggiorna Sonarpad o verifica la configurazione dell'app.";
+  String routeServiceNetworkError(int statusCode) {
+    return 'Errore di rete route: HTTP $statusCode';
+  }
 
   @override
-  String get routeServiceStartNotFound => "Indirizzo di partenza non trovato";
+  String get routeServiceServerError => 'Errore dal server';
 
   @override
-  String get routeServiceDestinationNotFound => "Indirizzo di arrivo non trovato";
+  String get routeServiceCalculationError =>
+      'Errore di calcolo percorso dal server';
 
   @override
-  String get radioLanguageRo => "Rumunština";
+  String get routeServiceUnauthorized =>
+      'Client non autorizzato. Aggiorna Sonarpad o verifica la configurazione dell\'app.';
 
   @override
-  String get radioCountryOptionRo => "Rumunsko";
+  String get routeServiceStartNotFound => 'Indirizzo di partenza non trovato';
 
   @override
-  String get sonarTubeServiceError => "Errore SonarTube";
+  String get routeServiceDestinationNotFound =>
+      'Indirizzo di arrivo non trovato';
 
   @override
-  String get sonarTubeServiceInvalidResponse => "Risposta SonarTube non valida.";
+  String get radioLanguageRo => 'Rumunština';
 
   @override
-  String get sonarTubeServiceInnerTubeError => "Errore API InnerTube.";
+  String get radioCountryOptionRo => 'Rumunsko';
 
   @override
-  String get sonarTubeServiceInvalidInnerTubeResponse => "Risposta InnerTube non valida.";
+  String get sonarTubeServiceError => 'Errore SonarTube';
 
   @override
-  String get sonarTubeServiceNoStream => "Nessun flusso riproducibile disponibile.";
+  String get sonarTubeServiceInvalidResponse =>
+      'Risposta SonarTube non valida.';
 
   @override
-  String get sonarTubeServiceOnlyVideo => "È possibile risolvere soltanto un video.";
+  String get sonarTubeServiceInnerTubeError => 'Errore API InnerTube.';
 
   @override
-  String get sonarTubeServiceNotCollection => "Un video non è una raccolta SonarTube.";
+  String get sonarTubeServiceInvalidInnerTubeResponse =>
+      'Risposta InnerTube non valida.';
 
   @override
-  String get listTimestampToday => "dnes";
+  String get sonarTubeServiceNoStream =>
+      'Nessun flusso riproducibile disponibile.';
 
   @override
-  String get listTimestampYesterday => "včera";
+  String get sonarTubeServiceOnlyVideo =>
+      'È possibile risolvere soltanto un video.';
 
   @override
-  String get listTimestampDayBeforeYesterday => "předevčírem";
+  String get sonarTubeServiceNotCollection =>
+      'Un video non è una raccolta SonarTube.';
 
   @override
-  String get listTimestampTomorrow => "zítra";
+  String get listTimestampToday => 'dnes';
 
   @override
-  String get listTimestampDayAfterTomorrow => "pozítří";
+  String get listTimestampYesterday => 'včera';
 
   @override
-  String get articleTitleNotFound => "Název nenalezen";
+  String get listTimestampDayBeforeYesterday => 'předevčírem';
 
   @override
-  String get articleUnknownTitle => "Neznámý název";
+  String get listTimestampTomorrow => 'zítra';
 
   @override
-  String get articleAuthorPrefix => "Di";
+  String get listTimestampDayAfterTomorrow => 'pozítří';
 
   @override
-  String get audioDescriptionProjectEditorTitle => "Upravit projekt audiopopisu";
+  String get articleTitleNotFound => 'Název nenalezen';
 
   @override
-  String get audioDescriptionProjectOpen => "Otevřít projekt audiopopisu";
+  String get articleUnknownTitle => 'Neznámý název';
 
   @override
-  String get audioDescriptionProjectLabel => "Project";
+  String get articleAuthorPrefix => 'Di';
 
   @override
-  String get audioDescriptionProjectChooseSource => "Vybrat původní video";
+  String get audioDescriptionProjectEditorTitle =>
+      'Upravit projekt audiopopisu';
 
   @override
-  String get audioDescriptionProjectSource => "Original video";
+  String get audioDescriptionProjectOpen => 'Otevřít projekt audiopopisu';
 
   @override
-  String get audioDescriptionProjectDescription => "Popis";
+  String get audioDescriptionProjectLabel => 'Project';
 
   @override
-  String get audioDescriptionProjectDescriptionText => "Text popisu";
+  String get audioDescriptionProjectChooseSource => 'Vybrat původní video';
 
   @override
-  String get audioDescriptionProjectPreviewDescription => "Přehrát popis";
+  String get audioDescriptionProjectSource => 'Original video';
 
   @override
-  String get audioDescriptionProjectApplyText => "Použít změnu";
+  String get audioDescriptionProjectDescription => 'Popis';
 
   @override
-  String get audioDescriptionProjectDeleteDescription => "Odstranit popis";
+  String get audioDescriptionProjectDescriptionText => 'Text popisu';
 
   @override
-  String get audioDescriptionProjectDeleteConfirmation => "Delete the selected description from the project?";
+  String get audioDescriptionProjectPreviewDescription => 'Přehrát popis';
 
   @override
-  String get audioDescriptionProjectCannotDeleteLast => "The only description in the project cannot be deleted.";
+  String get audioDescriptionProjectApplyText => 'Použít změnu';
 
   @override
-  String get audioDescriptionProjectApplyVoice => "Použít hlas na projekt";
+  String get audioDescriptionProjectDeleteDescription => 'Odstranit popis';
 
   @override
-  String get audioDescriptionProjectReadingEngine => "Reading engine";
+  String get audioDescriptionProjectDeleteConfirmation =>
+      'Delete the selected description from the project?';
 
   @override
-  String get audioDescriptionProjectEdgeVoice => "Microsoft Edge voice";
+  String get audioDescriptionProjectCannotDeleteLast =>
+      'The only description in the project cannot be deleted.';
 
   @override
-  String get audioDescriptionProjectSystemVoice => "System / VoiceOver / Android voice";
+  String get audioDescriptionProjectApplyVoice => 'Použít hlas na projekt';
 
   @override
-  String get audioDescriptionProjectVoiceLanguage => "Voice language";
+  String get audioDescriptionProjectReadingEngine => 'Reading engine';
 
   @override
-  String get audioDescriptionProjectVoice => "Voice";
+  String get audioDescriptionProjectEdgeVoice => 'Microsoft Edge voice';
 
   @override
-  String get audioDescriptionProjectReexportMp3 => "Znovu exportovat MP3";
+  String get audioDescriptionProjectSystemVoice =>
+      'System / VoiceOver / Android voice';
 
   @override
-  String get audioDescriptionProjectExportSrt => "Exportovat jako SRT";
+  String get audioDescriptionProjectVoiceLanguage => 'Voice language';
 
   @override
-  String get audioDescriptionProjectExportVtt => "Exportovat jako VTT";
+  String get audioDescriptionProjectVoice => 'Voice';
 
   @override
-  String get audioDescriptionProjectNormalWithDucking => "normal with ducking";
+  String get audioDescriptionProjectReexportMp3 => 'Znovu exportovat MP3';
 
   @override
-  String get audioDescriptionProjectExtendedPause => "extended pause";
+  String get audioDescriptionProjectExportSrt => 'Exportovat jako SRT';
 
   @override
-  String get audioDescriptionProjectReady => "Project ready.";
+  String get audioDescriptionProjectExportVtt => 'Exportovat jako VTT';
 
   @override
-  String get audioDescriptionProjectDescriptionApplied => "Description checked and saved in the project.";
+  String get audioDescriptionProjectNormalWithDucking => 'normal with ducking';
 
   @override
-  String get audioDescriptionProjectDescriptionDeleted => "Description deleted and project saved.";
+  String get audioDescriptionProjectExtendedPause => 'extended pause';
 
   @override
-  String get audioDescriptionProjectVoiceChanged => "Voice changed and all descriptions were checked.";
+  String get audioDescriptionProjectReady => 'Project ready.';
 
   @override
-  String audioDescriptionProjectDescriptionTooLong(String actual, String available) => "The synthesized description lasts ${actual} seconds, but only ${available} seconds are available. The previous text was not changed.";
+  String get audioDescriptionProjectDescriptionApplied =>
+      'Description checked and saved in the project.';
 
   @override
-  String get audioDescriptionProjectSourceMissing => "The original video is not available. Choose it before re-exporting the MP3.";
+  String get audioDescriptionProjectDescriptionDeleted =>
+      'Description deleted and project saved.';
 
   @override
-  String get audioDescriptionProjectInvalid => "The selected file is not a valid Sonarpad audio description project.";
+  String get audioDescriptionProjectVoiceChanged =>
+      'Voice changed and all descriptions were checked.';
 
   @override
-  String get audioDescriptionProjectUnsavedText => "Apply the current text before re-exporting the MP3.";
+  String audioDescriptionProjectDescriptionTooLong(
+    String actual,
+    String available,
+  ) {
+    return 'The synthesized description lasts $actual seconds, but only $available seconds are available. The previous text was not changed.';
+  }
 
   @override
-  String get audioDescriptionProjectWorking => "Zpracování projektu…";
+  String get audioDescriptionProjectSourceMissing =>
+      'The original video is not available. Choose it before re-exporting the MP3.';
 
   @override
-  String get audioDescriptionProjectExported => "Projekt exportován.";
+  String get audioDescriptionProjectInvalid =>
+      'The selected file is not a valid Sonarpad audio description project.';
 
   @override
-  String get audioDescriptionProjectSelectFirst => "Open a project first.";
+  String get audioDescriptionProjectUnsavedText =>
+      'Apply the current text before re-exporting the MP3.';
 
   @override
-  String get audioDescriptionProjectSelectDescription => "Select a description.";
+  String get audioDescriptionProjectWorking => 'Zpracování projektu…';
 
   @override
-  String audioDescriptionProjectDescriptionDetails(String source, String start, String end, String duration, String mode) => "Scene ${source} s; MP3 ${start}-${end} s; voice ${duration} s; ${mode}";
+  String get audioDescriptionProjectExported => 'Projekt exportován.';
 
   @override
-  String get audioDescriptionProjectShare => "Sdílet";
+  String get audioDescriptionProjectSelectFirst => 'Open a project first.';
 
   @override
-  String get audioDescriptionProjectSaveDocuments => "Uložit do Dokumentů Sonarpad";
+  String get audioDescriptionProjectSelectDescription =>
+      'Select a description.';
 
   @override
-  String get audioDescriptionProjectSavedDocuments => "Files saved in Sonarpad Documents.";
+  String audioDescriptionProjectDescriptionDetails(
+    String source,
+    String start,
+    String end,
+    String duration,
+    String mode,
+  ) {
+    return 'Scene $source s; MP3 $start-$end s; voice $duration s; $mode';
+  }
 
   @override
-  String get audioDescriptionProjectCancel => "Cancel";
+  String get audioDescriptionProjectShare => 'Sdílet';
 
   @override
-  String get audioDescriptionProjectChooseFromFiles => "Vybrat video ze Souborů";
+  String get audioDescriptionProjectSaveDocuments =>
+      'Uložit do Dokumentů Sonarpad';
 
   @override
-  String get audioDescriptionProjectImportFromPhotos => "Importovat video z Fotek";
+  String get audioDescriptionProjectSavedDocuments =>
+      'Files saved in Sonarpad Documents.';
 
   @override
-  String get newsCategoryWorld => "World";
+  String get audioDescriptionProjectCancel => 'Cancel';
 
   @override
-  String get newsCategoryBusiness => "Business";
+  String get audioDescriptionProjectChooseFromFiles =>
+      'Vybrat video ze Souborů';
 
   @override
-  String get newsCategoryTechnology => "Technology";
+  String get audioDescriptionProjectImportFromPhotos =>
+      'Importovat video z Fotek';
 
   @override
-  String get newsCategoryEntertainment => "Entertainment";
+  String get newsCategoryWorld => 'World';
 
   @override
-  String get newsCategorySports => "Sports";
+  String get newsCategoryBusiness => 'Business';
 
   @override
-  String get newsCategoryHealth => "Health";
+  String get newsCategoryTechnology => 'Technology';
 
   @override
-  String get newsArticleSubscribersOnly => "Tento článek je určen pouze předplatitelům.";
+  String get newsCategoryEntertainment => 'Entertainment';
 
   @override
-  String wikipediaSearchHttpError(int statusCode) => "Errore Wikipedia: ${statusCode}";
+  String get newsCategorySports => 'Sports';
 
   @override
-  String wikipediaImportHttpError(int statusCode) => "Errore importazione Wikipedia: ${statusCode}";
+  String get newsCategoryHealth => 'Health';
 
   @override
-  String gutenbergSearchHttpError(int statusCode) => "Errore Gutenberg ${statusCode}";
+  String get newsArticleSubscribersOnly =>
+      'Tento článek je určen pouze předplatitelům.';
 
   @override
-  String gutenbergDownloadHttpError(int statusCode) => "Errore download ${statusCode}";
+  String wikipediaSearchHttpError(int statusCode) {
+    return 'Errore Wikipedia: $statusCode';
+  }
 
   @override
-  String gutenbergEpubDownloadHttpError(int statusCode) => "Errore download EPUB ${statusCode}";
+  String wikipediaImportHttpError(int statusCode) {
+    return 'Errore importazione Wikipedia: $statusCode';
+  }
 
   @override
-  String get gutenbergInvalidBookId => "ID Gutenberg non valido.";
+  String gutenbergSearchHttpError(int statusCode) {
+    return 'Errore Gutenberg $statusCode';
+  }
 
   @override
-  String get gutenbergDownloadTimeout => "Download Gutenberg troppo lento. Riprova tra poco o scegli un altro formato.";
+  String gutenbergDownloadHttpError(int statusCode) {
+    return 'Errore download $statusCode';
+  }
 
   @override
-  String get gutenbergUnreadableArchive => "Archivio ZIP Gutenberg senza file di testo leggibile.";
+  String gutenbergEpubDownloadHttpError(int statusCode) {
+    return 'Errore download EPUB $statusCode';
+  }
 
   @override
-  String get gutenbergUntitledBook => "Senza titolo";
+  String get gutenbergInvalidBookId => 'ID Gutenberg non valido.';
 
   @override
-  String get gutenbergUnknownAuthor => "Autore sconosciuto";
+  String get gutenbergDownloadTimeout =>
+      'Download Gutenberg troppo lento. Riprova tra poco o scegli un altro formato.';
 
   @override
-  String get podcastCategoryAll => "Všechny kategorie";
+  String get gutenbergUnreadableArchive =>
+      'Archivio ZIP Gutenberg senza file di testo leggibile.';
 
   @override
-  String get podcastCategoryArts => "Umění";
+  String get gutenbergUntitledBook => 'Senza titolo';
 
   @override
-  String get podcastCategoryBusiness => "Obchod";
+  String get gutenbergUnknownAuthor => 'Autore sconosciuto';
 
   @override
-  String get podcastCategoryComedy => "Komedie";
+  String get podcastCategoryAll => 'Všechny kategorie';
 
   @override
-  String get podcastCategoryEducation => "Vzdělávání";
+  String get podcastCategoryArts => 'Umění';
 
   @override
-  String get podcastCategoryFiction => "Fikce";
+  String get podcastCategoryBusiness => 'Obchod';
 
   @override
-  String get podcastCategoryGovernment => "Vláda";
+  String get podcastCategoryComedy => 'Komedie';
 
   @override
-  String get podcastCategoryHealthAndFitness => "Zdraví a fitness";
+  String get podcastCategoryEducation => 'Vzdělávání';
 
   @override
-  String get podcastCategoryHistory => "Historie";
+  String get podcastCategoryFiction => 'Fikce';
 
   @override
-  String get podcastCategoryKidsAndFamily => "Děti a rodina";
+  String get podcastCategoryGovernment => 'Vláda';
 
   @override
-  String get podcastCategoryLeisure => "Volný čas";
+  String get podcastCategoryHealthAndFitness => 'Zdraví a fitness';
 
   @override
-  String get podcastCategoryMusic => "Hudba";
+  String get podcastCategoryHistory => 'Historie';
 
   @override
-  String get podcastCategoryNews => "Zprávy";
+  String get podcastCategoryKidsAndFamily => 'Děti a rodina';
 
   @override
-  String get podcastCategoryReligionAndSpirituality => "Náboženství a spiritualita";
+  String get podcastCategoryLeisure => 'Volný čas';
 
   @override
-  String get podcastCategoryScience => "Věda";
+  String get podcastCategoryMusic => 'Hudba';
 
   @override
-  String get podcastCategorySocietyAndCulture => "Společnost a kultura";
+  String get podcastCategoryNews => 'Zprávy';
 
   @override
-  String get podcastCategorySports => "Sport";
+  String get podcastCategoryReligionAndSpirituality =>
+      'Náboženství a spiritualita';
 
   @override
-  String get podcastCategoryTechnology => "Technologie";
+  String get podcastCategoryScience => 'Věda';
 
   @override
-  String get podcastCategoryTrueCrime => "Skutečné zločiny";
+  String get podcastCategorySocietyAndCulture => 'Společnost a kultura';
 
   @override
-  String get podcastCategoryTvAndFilm => "TV a film";
+  String get podcastCategorySports => 'Sport';
 
   @override
-  String get podcastCategoryBooks => "Knihy";
+  String get podcastCategoryTechnology => 'Technologie';
 
   @override
-  String get podcastCategoryDesign => "Design";
+  String get podcastCategoryTrueCrime => 'Skutečné zločiny';
 
   @override
-  String get podcastCategoryFashionAndBeauty => "Móda a krása";
+  String get podcastCategoryTvAndFilm => 'TV a film';
 
   @override
-  String get podcastCategoryFood => "Jídlo";
+  String get podcastCategoryBooks => 'Knihy';
 
   @override
-  String get podcastCategoryPerformingArts => "Performativní umění";
+  String get podcastCategoryDesign => 'Design';
 
   @override
-  String get podcastCategoryVisualArts => "Výtvarné umění";
+  String get podcastCategoryFashionAndBeauty => 'Móda a krása';
 
   @override
-  String get podcastCategoryCareers => "Kariéra";
+  String get podcastCategoryFood => 'Jídlo';
 
   @override
-  String get podcastCategoryEntrepreneurship => "Podnikání";
+  String get podcastCategoryPerformingArts => 'Performativní umění';
 
   @override
-  String get podcastCategoryInvesting => "Investice";
+  String get podcastCategoryVisualArts => 'Výtvarné umění';
 
   @override
-  String get podcastCategoryManagement => "Management";
+  String get podcastCategoryCareers => 'Kariéra';
 
   @override
-  String get podcastCategoryMarketing => "Marketing";
+  String get podcastCategoryEntrepreneurship => 'Podnikání';
 
   @override
-  String get podcastCategoryNonProfit => "Neziskové organizace";
+  String get podcastCategoryInvesting => 'Investice';
 
   @override
-  String get podcastCategoryComedyInterviews => "Komediální rozhovory";
+  String get podcastCategoryManagement => 'Management';
 
   @override
-  String get podcastCategoryImprov => "Improvizace";
+  String get podcastCategoryMarketing => 'Marketing';
 
   @override
-  String get podcastCategoryStandUp => "Stand-up";
+  String get podcastCategoryNonProfit => 'Neziskové organizace';
 
   @override
-  String get podcastCategoryCourses => "Kurzy";
+  String get podcastCategoryComedyInterviews => 'Komediální rozhovory';
 
   @override
-  String get podcastCategoryHowTo => "Návody";
+  String get podcastCategoryImprov => 'Improvizace';
 
   @override
-  String get podcastCategoryLanguageLearning => "Učení jazyků";
+  String get podcastCategoryStandUp => 'Stand-up';
 
   @override
-  String get podcastCategorySelfImprovement => "Osobní růst";
+  String get podcastCategoryCourses => 'Kurzy';
 
   @override
-  String get podcastCategoryComedyFiction => "Komediální fikce";
+  String get podcastCategoryHowTo => 'Návody';
 
   @override
-  String get podcastCategoryDrama => "Drama";
+  String get podcastCategoryLanguageLearning => 'Učení jazyků';
 
   @override
-  String get podcastCategoryScienceFiction => "Sci-fi";
+  String get podcastCategorySelfImprovement => 'Osobní růst';
 
   @override
-  String get podcastCategoryAlternativeHealth => "Alternativní zdraví";
+  String get podcastCategoryComedyFiction => 'Komediální fikce';
 
   @override
-  String get podcastCategoryFitness => "Fitness";
+  String get podcastCategoryDrama => 'Drama';
 
   @override
-  String get podcastCategoryMedicine => "Medicína";
+  String get podcastCategoryScienceFiction => 'Sci-fi';
 
   @override
-  String get podcastCategoryMentalHealth => "Duševní zdraví";
+  String get podcastCategoryAlternativeHealth => 'Alternativní zdraví';
 
   @override
-  String get podcastCategoryNutrition => "Výživa";
+  String get podcastCategoryFitness => 'Fitness';
 
   @override
-  String get podcastCategorySexuality => "Sexualita";
+  String get podcastCategoryMedicine => 'Medicína';
 
   @override
-  String get podcastCategoryEducationForKids => "Vzdělávání dětí";
+  String get podcastCategoryMentalHealth => 'Duševní zdraví';
 
   @override
-  String get podcastCategoryParenting => "Rodičovství";
+  String get podcastCategoryNutrition => 'Výživa';
 
   @override
-  String get podcastCategoryPetsAndAnimals => "Domácí mazlíčci";
+  String get podcastCategorySexuality => 'Sexualita';
 
   @override
-  String get podcastCategoryStoriesForKids => "Příběhy pro děti";
+  String get podcastCategoryEducationForKids => 'Vzdělávání dětí';
 
   @override
-  String get podcastCategoryAnimationAndManga => "Animace a manga";
+  String get podcastCategoryParenting => 'Rodičovství';
 
   @override
-  String get podcastCategoryAutomotive => "Automobily";
+  String get podcastCategoryPetsAndAnimals => 'Domácí mazlíčci';
 
   @override
-  String get podcastCategoryAviation => "Letectví";
+  String get podcastCategoryStoriesForKids => 'Příběhy pro děti';
 
   @override
-  String get podcastCategoryCrafts => "Řemesla";
+  String get podcastCategoryAnimationAndManga => 'Animace a manga';
 
   @override
-  String get podcastCategoryGames => "Hry";
+  String get podcastCategoryAutomotive => 'Automobily';
 
   @override
-  String get podcastCategoryHobbies => "Koníčky";
+  String get podcastCategoryAviation => 'Letectví';
 
   @override
-  String get podcastCategoryHomeAndGarden => "Dům a zahrada";
+  String get podcastCategoryCrafts => 'Řemesla';
 
   @override
-  String get podcastCategoryVideoGames => "Videohry";
+  String get podcastCategoryGames => 'Hry';
 
   @override
-  String get podcastCategoryMusicCommentary => "Hudební komentáře";
+  String get podcastCategoryHobbies => 'Koníčky';
 
   @override
-  String get podcastCategoryMusicHistory => "Historie hudby";
+  String get podcastCategoryHomeAndGarden => 'Dům a zahrada';
 
   @override
-  String get podcastCategoryMusicInterviews => "Hudební rozhovory";
+  String get podcastCategoryVideoGames => 'Videohry';
 
   @override
-  String get podcastCategoryBusinessNews => "Ekonomické zprávy";
+  String get podcastCategoryMusicCommentary => 'Hudební komentáře';
 
   @override
-  String get podcastCategoryDailyNews => "Denní zprávy";
+  String get podcastCategoryMusicHistory => 'Historie hudby';
 
   @override
-  String get podcastCategoryEntertainmentNews => "Zprávy ze zábavy";
+  String get podcastCategoryMusicInterviews => 'Hudební rozhovory';
 
   @override
-  String get podcastCategoryNewsCommentary => "Komentáře ke zprávám";
+  String get podcastCategoryBusinessNews => 'Ekonomické zprávy';
 
   @override
-  String get podcastCategoryPolitics => "Politika";
+  String get podcastCategoryDailyNews => 'Denní zprávy';
 
   @override
-  String get podcastCategorySportsNews => "Sportovní zprávy";
+  String get podcastCategoryEntertainmentNews => 'Zprávy ze zábavy';
 
   @override
-  String get podcastCategoryTechNews => "Technologické zprávy";
+  String get podcastCategoryNewsCommentary => 'Komentáře ke zprávám';
 
   @override
-  String get podcastCategoryBuddhism => "Buddhismus";
+  String get podcastCategoryPolitics => 'Politika';
 
   @override
-  String get podcastCategoryChristianity => "Křesťanství";
+  String get podcastCategorySportsNews => 'Sportovní zprávy';
 
   @override
-  String get podcastCategoryHinduism => "Hinduismus";
+  String get podcastCategoryTechNews => 'Technologické zprávy';
 
   @override
-  String get podcastCategoryIslam => "Islám";
+  String get podcastCategoryBuddhism => 'Buddhismus';
 
   @override
-  String get podcastCategoryJudaism => "Judaismus";
+  String get podcastCategoryChristianity => 'Křesťanství';
 
   @override
-  String get podcastCategoryReligion => "Náboženství";
+  String get podcastCategoryHinduism => 'Hinduismus';
 
   @override
-  String get podcastCategorySpirituality => "Spiritualita";
+  String get podcastCategoryIslam => 'Islám';
 
   @override
-  String get podcastCategoryAstronomy => "Astronomie";
+  String get podcastCategoryJudaism => 'Judaismus';
 
   @override
-  String get podcastCategoryChemistry => "Chemie";
+  String get podcastCategoryReligion => 'Náboženství';
 
   @override
-  String get podcastCategoryEarthSciences => "Vědy o Zemi";
+  String get podcastCategorySpirituality => 'Spiritualita';
 
   @override
-  String get podcastCategoryLifeSciences => "Vědy o životě";
+  String get podcastCategoryAstronomy => 'Astronomie';
 
   @override
-  String get podcastCategoryMathematics => "Matematika";
+  String get podcastCategoryChemistry => 'Chemie';
 
   @override
-  String get podcastCategoryNaturalSciences => "Přírodní vědy";
+  String get podcastCategoryEarthSciences => 'Vědy o Zemi';
 
   @override
-  String get podcastCategoryNature => "Příroda";
+  String get podcastCategoryLifeSciences => 'Vědy o životě';
 
   @override
-  String get podcastCategoryPhysics => "Fyzika";
+  String get podcastCategoryMathematics => 'Matematika';
 
   @override
-  String get podcastCategorySocialSciences => "Sociální vědy";
+  String get podcastCategoryNaturalSciences => 'Přírodní vědy';
 
   @override
-  String get podcastCategoryDocumentary => "Dokumenty";
+  String get podcastCategoryNature => 'Příroda';
 
   @override
-  String get podcastCategoryPersonalJournals => "Osobní deníky";
+  String get podcastCategoryPhysics => 'Fyzika';
 
   @override
-  String get podcastCategoryPhilosophy => "Filozofie";
+  String get podcastCategorySocialSciences => 'Sociální vědy';
 
   @override
-  String get podcastCategoryPlacesAndTravel => "Místa a cestování";
+  String get podcastCategoryDocumentary => 'Dokumenty';
 
   @override
-  String get podcastCategoryRelationships => "Vztahy";
+  String get podcastCategoryPersonalJournals => 'Osobní deníky';
 
   @override
-  String get podcastCategoryBaseball => "Baseball";
+  String get podcastCategoryPhilosophy => 'Filozofie';
 
   @override
-  String get podcastCategoryBasketball => "Basketbal";
+  String get podcastCategoryPlacesAndTravel => 'Místa a cestování';
 
   @override
-  String get podcastCategoryCricket => "Kriket";
+  String get podcastCategoryRelationships => 'Vztahy';
 
   @override
-  String get podcastCategoryFantasySports => "Fantasy sporty";
+  String get podcastCategoryBaseball => 'Baseball';
 
   @override
-  String get podcastCategoryFootball => "Americký fotbal";
+  String get podcastCategoryBasketball => 'Basketbal';
 
   @override
-  String get podcastCategoryGolf => "Golf";
+  String get podcastCategoryCricket => 'Kriket';
 
   @override
-  String get podcastCategoryHockey => "Hokej";
+  String get podcastCategoryFantasySports => 'Fantasy sporty';
 
   @override
-  String get podcastCategoryRugby => "Ragby";
+  String get podcastCategoryFootball => 'Americký fotbal';
 
   @override
-  String get podcastCategoryRunning => "Běh";
+  String get podcastCategoryGolf => 'Golf';
 
   @override
-  String get podcastCategorySoccer => "Fotbal";
+  String get podcastCategoryHockey => 'Hokej';
 
   @override
-  String get podcastCategorySwimming => "Plavání";
+  String get podcastCategoryRugby => 'Ragby';
 
   @override
-  String get podcastCategoryTennis => "Tenis";
+  String get podcastCategoryRunning => 'Běh';
 
   @override
-  String get podcastCategoryVolleyball => "Volejbal";
+  String get podcastCategorySoccer => 'Fotbal';
 
   @override
-  String get podcastCategoryWilderness => "Divoká příroda";
+  String get podcastCategorySwimming => 'Plavání';
 
   @override
-  String get podcastCategoryWrestling => "Zápas";
+  String get podcastCategoryTennis => 'Tenis';
 
   @override
-  String get podcastCategoryAfterShows => "Aftershow";
+  String get podcastCategoryVolleyball => 'Volejbal';
 
   @override
-  String get podcastCategoryFilmHistory => "Historie filmu";
+  String get podcastCategoryWilderness => 'Divoká příroda';
 
   @override
-  String get podcastCategoryFilmInterviews => "Filmové rozhovory";
+  String get podcastCategoryWrestling => 'Zápas';
 
   @override
-  String get podcastCategoryFilmReviews => "Filmové recenze";
+  String get podcastCategoryAfterShows => 'Aftershow';
 
   @override
-  String get podcastCategoryTvReviews => "TV recenze";
+  String get podcastCategoryFilmHistory => 'Historie filmu';
 
   @override
-  String get weatherConditionClearSky => "Sereno";
+  String get podcastCategoryFilmInterviews => 'Filmové rozhovory';
 
   @override
-  String get weatherConditionMainlyClear => "Prevalentemente sereno";
+  String get podcastCategoryFilmReviews => 'Filmové recenze';
 
   @override
-  String get weatherConditionPartlyCloudy => "Parzialmente nuvoloso";
+  String get podcastCategoryTvReviews => 'TV recenze';
 
   @override
-  String get weatherConditionOvercast => "Coperto";
+  String get weatherConditionClearSky => 'Sereno';
 
   @override
-  String get weatherConditionFog => "Nebbia";
+  String get weatherConditionMainlyClear => 'Prevalentemente sereno';
 
   @override
-  String get weatherConditionRimeFog => "Nebbia con brina";
+  String get weatherConditionPartlyCloudy => 'Parzialmente nuvoloso';
 
   @override
-  String get weatherConditionLightDrizzle => "Pioviggine leggera";
+  String get weatherConditionOvercast => 'Coperto';
 
   @override
-  String get weatherConditionModerateDrizzle => "Pioviggine moderata";
+  String get weatherConditionFog => 'Nebbia';
 
   @override
-  String get weatherConditionDenseDrizzle => "Pioviggine intensa";
+  String get weatherConditionRimeFog => 'Nebbia con brina';
 
   @override
-  String get weatherConditionLightFreezingDrizzle => "Pioviggine gelata leggera";
+  String get weatherConditionLightDrizzle => 'Pioviggine leggera';
 
   @override
-  String get weatherConditionDenseFreezingDrizzle => "Pioviggine gelata intensa";
+  String get weatherConditionModerateDrizzle => 'Pioviggine moderata';
 
   @override
-  String get weatherConditionLightRain => "Pioggia leggera";
+  String get weatherConditionDenseDrizzle => 'Pioviggine intensa';
 
   @override
-  String get weatherConditionModerateRain => "Pioggia moderata";
+  String get weatherConditionLightFreezingDrizzle =>
+      'Pioviggine gelata leggera';
 
   @override
-  String get weatherConditionHeavyRain => "Pioggia intensa";
+  String get weatherConditionDenseFreezingDrizzle =>
+      'Pioviggine gelata intensa';
 
   @override
-  String get weatherConditionLightFreezingRain => "Pioggia gelata leggera";
+  String get weatherConditionLightRain => 'Pioggia leggera';
 
   @override
-  String get weatherConditionHeavyFreezingRain => "Pioggia gelata intensa";
+  String get weatherConditionModerateRain => 'Pioggia moderata';
 
   @override
-  String get weatherConditionLightSnowfall => "Neve leggera";
+  String get weatherConditionHeavyRain => 'Pioggia intensa';
 
   @override
-  String get weatherConditionModerateSnowfall => "Neve moderata";
+  String get weatherConditionLightFreezingRain => 'Pioggia gelata leggera';
 
   @override
-  String get weatherConditionHeavySnowfall => "Neve intensa";
+  String get weatherConditionHeavyFreezingRain => 'Pioggia gelata intensa';
 
   @override
-  String get weatherConditionSnowGrains => "Granelli di neve";
+  String get weatherConditionLightSnowfall => 'Neve leggera';
 
   @override
-  String get weatherConditionLightRainShowers => "Rovesci leggeri";
+  String get weatherConditionModerateSnowfall => 'Neve moderata';
 
   @override
-  String get weatherConditionModerateRainShowers => "Rovesci moderati";
+  String get weatherConditionHeavySnowfall => 'Neve intensa';
 
   @override
-  String get weatherConditionViolentRainShowers => "Rovesci violenti";
+  String get weatherConditionSnowGrains => 'Granelli di neve';
 
   @override
-  String get weatherConditionLightSnowShowers => "Rovesci di neve leggeri";
+  String get weatherConditionLightRainShowers => 'Rovesci leggeri';
 
   @override
-  String get weatherConditionHeavySnowShowers => "Rovesci di neve intensi";
+  String get weatherConditionModerateRainShowers => 'Rovesci moderati';
 
   @override
-  String get weatherConditionThunderstorm => "Temporale";
+  String get weatherConditionViolentRainShowers => 'Rovesci violenti';
 
   @override
-  String get weatherConditionThunderstormLightHail => "Temporale con grandine leggera";
+  String get weatherConditionLightSnowShowers => 'Rovesci di neve leggeri';
 
   @override
-  String get weatherConditionThunderstormHeavyHail => "Temporale con grandine intensa";
+  String get weatherConditionHeavySnowShowers => 'Rovesci di neve intensi';
 
   @override
-  String get documentsImportFromFiles => "Importovat ze Souborů";
+  String get weatherConditionThunderstorm => 'Temporale';
 
   @override
-  String get sonarTubeOpenUrl => "Otevřít URL";
+  String get weatherConditionThunderstormLightHail =>
+      'Temporale con grandine leggera';
 
   @override
-  String get sonarTubeUrlPrompt => "Vložte URL videa YouTube";
+  String get weatherConditionThunderstormHeavyHail =>
+      'Temporale con grandine intensa';
 
   @override
-  String get sonarMusicAll => "Vše";
+  String get documentsImportFromFiles => 'Importovat ze Souborů';
 
   @override
-  String get sonarMusicSong => "Skladby";
+  String get sonarTubeOpenUrl => 'Otevřít URL';
 
   @override
-  String get sonarMusicVideo => "Hudební videa";
+  String get sonarTubeUrlPrompt => 'Vložte URL videa YouTube';
 
   @override
-  String get sonarMusicAlbum => "Alba";
+  String get sonarMusicAll => 'Vše';
 
   @override
-  String get sonarMusicArtist => "Umělci";
+  String get sonarMusicSong => 'Skladby';
 
   @override
-  String get sonarMusicPlaylist => "Playlisty";
+  String get sonarMusicVideo => 'Hudební videa';
 
   @override
-  String get sonarMusicFavorites => "Oblíbené";
+  String get sonarMusicAlbum => 'Alba';
 
   @override
-  String get sonarMusicRecent => "Nedávno přehrané";
+  String get sonarMusicArtist => 'Umělci';
 
   @override
-  String get sonarMusicOpen => "Otevřít URL";
+  String get sonarMusicPlaylist => 'Playlisty';
 
   @override
-  String get sonarMusicLoad => "Načíst další";
+  String get sonarMusicFavorites => 'Oblíbené';
 
   @override
-  String get sonarMusicArtistOpen => "Přejít na interpreta";
+  String get sonarMusicRecent => 'Nedávno přehrané';
 
   @override
-  String get sonarMusicAlbumOpen => "Přejít na album";
+  String get sonarMusicOpen => 'Otevřít URL';
 
   @override
-  String get sonarMusicPlayAll => "Přehrát vše";
+  String get sonarMusicLoad => 'Načíst další';
 
   @override
-  String get sonarMusicShare => "Sdílet";
+  String get sonarMusicArtistOpen => 'Přejít na interpreta';
 
   @override
-  String get sonarMusicAdd => "Přidat mezi oblíbené";
+  String get sonarMusicAlbumOpen => 'Přejít na album';
 
   @override
-  String get sonarMusicRemove => "Odebrat z oblíbených";
+  String get sonarMusicPlayAll => 'Přehrát vše';
 
   @override
-  String get sonarMusicEmpty => "Žádné výsledky";
+  String get sonarMusicShare => 'Sdílet';
 
   @override
-  String get sonarMusicInvalid => "Nelze otevřít";
+  String get sonarMusicAdd => 'Přidat mezi oblíbené';
 
   @override
-  String get sonarMusicDescription => "Popis";
+  String get sonarMusicRemove => 'Odebrat z oblíbených';
 
   @override
-  String get sonarMusicShuffle => "Náhodně";
+  String get sonarMusicEmpty => 'Žádné výsledky';
 
   @override
-  String get sonarMusicSave => "Uložit média";
+  String get sonarMusicInvalid => 'Nelze otevřít';
 
   @override
-  String get sonarMusicSuggest => "Návrhy";
+  String get sonarMusicDescription => 'Popis';
 
   @override
-  String get sonarMusicSearchHint => "Skladba, interpret nebo album";
+  String get sonarMusicShuffle => 'Náhodně';
 
   @override
-  String get catalogUntitled => "Senza titolo";
+  String get sonarMusicSave => 'Uložit média';
 
   @override
-  String get catalogUnknownAuthor => "Autore sconosciuto";
+  String get sonarMusicSuggest => 'Návrhy';
 
   @override
-  String get librivoxChapterFallback => "Capitolo";
+  String get sonarMusicSearchHint => 'Skladba, interpret nebo album';
 
   @override
-  String get internetArchiveAudioFallback => "Audio";
+  String get catalogUntitled => 'Senza titolo';
 
   @override
-  String librivoxHttpError(int statusCode) => "Errore LibriVox ${statusCode}";
+  String get catalogUnknownAuthor => 'Autore sconosciuto';
 
   @override
-  String get librivoxBookNotFound => "Audiolibro non trovato.";
+  String get librivoxChapterFallback => 'Capitolo';
 
   @override
-  String internetArchiveHttpError(int statusCode) => "Internet Archive ${statusCode}";
+  String get internetArchiveAudioFallback => 'Audio';
 
   @override
-  String poetryDbHttpError(int statusCode) => "Errore PoetryDB ${statusCode}";
+  String librivoxHttpError(int statusCode) {
+    return 'Errore LibriVox $statusCode';
+  }
 
   @override
-  String get cloudFilePickerLoading => "Načítání souboru";
+  String get librivoxBookNotFound => 'Audiolibro non trovato.';
 
   @override
-  String get cloudFilePickerPreparing => "Příprava souboru z cloudu…";
+  String internetArchiveHttpError(int statusCode) {
+    return 'Internet Archive $statusCode';
+  }
 
   @override
-  String get cloudFilePickerUnknownSize => "Načítání…";
+  String poetryDbHttpError(int statusCode) {
+    return 'Errore PoetryDB $statusCode';
+  }
 
   @override
-  String get cloudFilePickerCancelling => "Rušení…";
+  String get cloudFilePickerLoading => 'Načítání souboru';
 
   @override
-  String get audioPlaybackNotificationChannelName => "Přehrávání zvuku";
+  String get cloudFilePickerPreparing => 'Příprava souboru z cloudu…';
 
   @override
-  String get documentExportFallbackName => "Dokument";
+  String get cloudFilePickerUnknownSize => 'Načítání…';
 
   @override
-  String get documentExportAudiobookSuffix => "audiokniha";
+  String get cloudFilePickerCancelling => 'Rušení…';
 
   @override
-  String get convertMediaWavFloat32 => "32 bitů s plovoucí desetinnou čárkou";
+  String get audioPlaybackNotificationChannelName => 'Přehrávání zvuku';
+
+  @override
+  String get documentExportFallbackName => 'Dokument';
+
+  @override
+  String get documentExportAudiobookSuffix => 'audiokniha';
+
+  @override
+  String get convertMediaWavFloat32 => '32 bitů s plovoucí desetinnou čárkou';
+
   @override
   String get cloudFilePickerCopying => 'Kopírování souboru do Sonarpadu';
 
   @override
+  String get audioDescriptionNonverbalVocals =>
+      'Povolit popisy během neverbálních hlasových projevů';
+
+  @override
   String get importVideoFromGallery => 'Vybrat z galerie';
+
   @override
   String get sharedVideoOpen => 'Otevřít video';
 
@@ -5497,6 +5492,101 @@ class AppLocalizationsCs extends AppLocalizations {
   @override
   String get developerReportEmailInvalid =>
       'Zadejte platnou e-mailovou adresu nebo ponechte pole prázdné.';
+
+  @override
+  String get convertMediaDestination => 'Cíl převedených souborů';
+
+  @override
+  String get exportAskEveryTime => 'Vždy se zeptat';
+
+  @override
+  String get selectAudioTrack => 'Vybrat zvukovou stopu';
+
+  @override
+  String get castToDevice => 'Odesílat přes Chromecast';
+
+  @override
+  String get castNoDevices =>
+      'Nebyla nalezena žádná zařízení. Ověřte stejnou síť Wi-Fi a zkuste to znovu.';
+
+  @override
+  String get castFailure =>
+      'Odesílání selhalo nebo bylo přerušeno připojení. Můžete pokračovat na tomto zařízení.';
+
+  @override
+  String get castResumeHere => 'Pokračovat na tomto zařízení';
+
+  @override
+  String get settingsShowCast =>
+      'Zobrazit Chromecast v podporovaných přehrávačích';
+
+  @override
+  String get castStop => 'Zastavit odesílání';
+
+  @override
+  String get settingsHideCalendarSaints => 'Skrýt svaté v kalendáři';
+
+  @override
+  String get markdownFormat => 'Markdown (.md)';
+
+  @override
+  String get htmlFormat => 'HTML (.html)';
+
+  @override
+  String get recordingNotAdvancing =>
+      'Nahrávání nepřijímá nová data. Zkontrolujte připojení a v případě potřeby nahrávání restartujte.';
+
+  @override
+  String get sonarTubeChannelCourses => 'Kurzy';
+
+  @override
+  String get sonarTubeChannelPodcasts => 'Podcasty';
+
+  @override
+  String get favoriteVideosLatest => 'Nejnovější videa';
+
+  @override
+  String get favoriteVideosTitle => 'Nejnovější videa z oblíbených';
+
+  @override
+  String get favoriteVideosPartial =>
+      'Některé kanály se nepodařilo načíst. Zobrazují se videa z ostatních kanálů.';
+
+  @override
+  String get favoritesSortAlphabetically => 'Seřadit abecedně';
+
+  @override
+  String get saveMediaContent => 'Uložit obsah';
+
+  @override
+  String get saveMp4WithAudiodescription => 'MP4 s audiopopisem';
+
+  @override
+  String get audioDescriptionProjectSegment => 'Úsek k nové analýze';
+
+  @override
+  String get audioDescriptionProjectReanalyze => 'Znovu analyzovat úsek';
+
+  @override
+  String get audioDescriptionProjectReanalyzeConfirm =>
+      'Znovu analyzovat vybraný úsek? Nové texty nahradí odpovídající popisy při zachování uložených časů. Další popisy budou přidány pouze do volných mezer. Soubor s audiopopisem bude nutné znovu exportovat.';
+
+  @override
+  String get convertMediaDocumentAudiobookHint =>
+      'Chcete-li převést dokument na audioknihu, přejděte do Dokumenty → Importovat ze Souborů. Po importu zvolte Exportovat dokument → Audiokniha MP3 (.mp3).';
+
+  @override
+  String audioDescriptionProjectEditorSegmentOption(
+    int index,
+    String start,
+    String end,
+  ) {
+    return '$index: $start – $end';
+  }
+
+  @override
+  String get raiPlayMediaUnavailable =>
+      'RaiPlay ani po několika pokusech nevrátil adresu pro přehrávání. Obsah může být dočasně nedostupný. Zkuste to znovu později.';
 
   @override
   String get concertsTicketOneLogin => 'Přihlásit se k účtu TicketOne';
@@ -5510,6 +5600,49 @@ class AppLocalizationsCs extends AppLocalizations {
   @override
   String get pdfUnprotectedCopyDescription =>
       'Uložte kopii PDF bez hesla se zachovaným rozložením a obsahem. Původní PDF zůstane beze změny.';
+
+  @override
+  String get onlineDictionaryTitle => 'Online slovník';
+
+  @override
+  String get onlineDictionaryWord => 'Slovo:';
+
+  @override
+  String get onlineDictionaryLanguage => 'Jazyk slovníku:';
+
+  @override
+  String get onlineDictionaryDefinitions => 'Definice';
+
+  @override
+  String get onlineDictionarySynonyms => 'Synonyma';
+
+  @override
+  String get onlineDictionaryNotFound => 'Slovo nenalezeno.';
+
+  @override
+  String get onlineDictionaryLimited =>
+      'Výsledek je příliš velký. Upřesněte hledání.';
+
+  @override
+  String get onlineDictionaryTranslation => 'Jazyk překladu slovníku:';
+
+  @override
+  String get onlineDictionaryNone => 'Žádný';
+
+  @override
+  String onlineDictionaryEntryTitle(String word, String language) {
+    return '$word — $language';
+  }
+
+  @override
+  String onlineDictionaryDefinition(int number, String text) {
+    return '$number. $text';
+  }
+
+  @override
+  String onlineDictionarySource(String url) {
+    return 'Wiktionary — CC BY-SA 4.0\n$url';
+  }
 
   @override
   String get podcastRecorderTitle => 'Nahrát podcast';
@@ -5554,11 +5687,15 @@ class AppLocalizationsCs extends AppLocalizations {
   String get podcastRecorderChooseIntro => 'Vybrat úvodní znělku (volitelné)';
 
   @override
-  String get podcastRecorderChooseOutro => 'Vybrat závěrečnou znělku (volitelné)';
+  String get podcastRecorderChooseOutro =>
+      'Vybrat závěrečnou znělku (volitelné)';
 
   @override
   String get podcastRecorderRemoveIntro => 'Odstranit úvodní znělku';
 
   @override
   String get podcastRecorderRemoveOutro => 'Odstranit závěrečnou znělku';
+
+  @override
+  String get dutch => 'Nizozemština';
 }

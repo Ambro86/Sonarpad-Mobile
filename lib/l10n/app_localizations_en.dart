@@ -6,130 +6,7 @@ import 'app_localizations.dart';
 
 /// The translations for English (`en`).
 class AppLocalizationsEn extends AppLocalizations {
-  @override
-  String onlineDictionaryEntryTitle(String word, String language) => "$word — $language";
-  @override
-  String onlineDictionaryDefinition(int number, String text) => "$number. $text";
-  @override
-  String onlineDictionarySource(String url) => "Wiktionary — CC BY-SA 4.0\n$url";
-
-  @override
-  String get onlineDictionaryTitle => "Online Dictionary";
-  @override
-  String get onlineDictionaryWord => "Word:";
-  @override
-  String get onlineDictionaryLanguage => "Dictionary language:";
-  @override
-  String get onlineDictionaryDefinitions => "Definitions";
-  @override
-  String get onlineDictionarySynonyms => "Synonyms";
-  @override
-  String get onlineDictionaryNotFound => "Word not found.";
-  @override
-  String get onlineDictionaryLimited => "Result too large. Refine the search.";
-  @override
-  String get onlineDictionaryTranslation => "Dictionary Translation Language:";
-  @override
-  String get onlineDictionaryNone => "None";
-
-  @override
-  String get raiPlayMediaUnavailable => "RaiPlay did not return a playable address after several attempts. The content may be temporarily unavailable. Please try again later.";
-
-  @override
-  String audioDescriptionProjectEditorSegmentOption(int index, String start, String end) => '$index: $start – $end';
-
-  @override
-  String get convertMediaDocumentAudiobookHint => 'To turn a document into an audiobook, go to Documents → Import from Files. After importing it, choose Export document → MP3 audiobook (.mp3).';
-
-  @override
-  String get audioDescriptionProjectSegment => 'Segment to reanalyze';
-
-  @override
-  String get audioDescriptionProjectReanalyze => 'Reanalyze segment';
-
-  @override
-  String get audioDescriptionProjectReanalyzeConfirm =>
-      'Reanalyze the selected segment? Updated texts will replace matching descriptions while preserving saved timings. New descriptions will only be added in available gaps. The audio-described file will need to be exported again.';
-
-  @override
-  String get saveMp4WithAudiodescription => "MP4 with audio description";
-
-  @override
-  String get saveMediaContent => "Save content";
-
-  @override
-  String get favoritesSortAlphabetically => "Sort alphabetically";
-
-  @override
-  String get favoriteVideosLatest => 'Latest videos';
-  @override
-  String get favoriteVideosTitle => 'Latest videos from favorites';
-  @override
-  String get favoriteVideosPartial =>
-      'Some channels could not be loaded. Videos from the other channels are shown.';
-
-  @override
-  String get recordingNotAdvancing => "The recording is not receiving new data. Check your connection and restart it if needed.";
-
-  @override
-  String get castToDevice => "Cast with Chromecast";
-  @override
-  String get castNoDevices => "No devices found. Check that both devices use the same Wi-Fi network and try again.";
-  @override
-  String get castFailure => "Casting failed or the connection was lost. You can resume on this device.";
-  @override
-  String get castResumeHere => "Resume on this device";
-  @override
-  String get settingsHideCalendarSaints => "Hide saints in the calendar";
-
-  @override
-  String get settingsShowCast => "Show Chromecast in compatible players";
-  @override
-  String get castStop => "Stop casting";
-
   AppLocalizationsEn([String locale = 'en']) : super(locale);
-
-  @override
-  String get sonarTubeSearchType => 'Search type';
-
-  @override
-  String get sonarTubeSearchAll => 'All';
-
-  @override
-  String get sonarTubeSearchPlaylists => 'Playlists';
-
-  @override
-  String get sonarTubeSearchChannels => 'Channels';
-
-  @override
-  String get calendarReminderHasTime => "Set a time";
-
-  @override
-  String get audioDescriptionMp3Bitrate => "MP3 bitrate";
-
-  @override
-  String get audioDescriptionSourceVolume => "Movie volume";
-
-  @override
-  String get audioDescriptionSourceVolumeHint => "Adjust the movie’s base volume. It is automatically lowered further during audio description.";
-
-  @override
-  String get audioDescriptionAudioNormal => "Normal";
-
-  @override
-  String get audioDescriptionMixPreview => "Listen to a movie and voice sample";
-
-  @override
-  String get audioDescriptionMixPreviewPreparing => "Preparing audio sample";
-
-  @override
-  String get audioDescriptionMixPreviewStop => "Stop audio sample";
-
-  @override
-  String get audioDescriptionMixPreviewPhrase => "Audio description test with ducking.";
-
-  @override
-  String get audioDescriptionMixPreviewHint => "After adjusting the volume, a short sample starts with a movie excerpt, the selected voice and automatic lowering of the movie audio.";
 
   @override
   String get appTitle => 'Sonarpad';
@@ -184,6 +61,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sonarTubeSearchLabel => 'Search videos, channels, or playlists';
+
+  @override
+  String get sonarTubeSearchType => 'Search type';
+
+  @override
+  String get sonarTubeSearchAll => 'All';
+
+  @override
+  String get sonarTubeSearchPlaylists => 'Playlists';
+
+  @override
+  String get sonarTubeSearchChannels => 'Channels';
+
+  @override
+  String get calendarReminderHasTime => 'Set a time';
 
   @override
   String get sonarTubeSearchPrompt =>
@@ -950,18 +842,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get wikipediaImportWholeArticle => 'Whole article';
 
   @override
-  String get treccaniTitle => 'Treccani Encyclopedia';
-
-  @override
-  String get treccaniSearchLabel => 'Search the Treccani Encyclopedia';
-
-  @override
-  String get treccaniNoResults => 'No Treccani entries found';
-
-  @override
-  String get treccaniWholeEntry => 'Entire entry';
-
-  @override
   String get documents => 'Documents';
 
   @override
@@ -1479,7 +1359,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exportDocument => 'Export document';
 
   @override
-  String get exportFolderZip => "Export folder as ZIP";
+  String get exportFolderZip => 'Export folder as ZIP';
 
   @override
   String get exportFormatPrompt =>
@@ -1490,12 +1370,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pdfFormat => 'PDF (.pdf)';
-
-  @override
-  String get markdownFormat => 'Markdown (.md)';
-
-  @override
-  String get htmlFormat => 'HTML (.html)';
 
   @override
   String get docxFormat => 'DOCX (.docx)';
@@ -1856,9 +1730,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get developerLogNameOptional => 'Name (optional)';
 
   @override
-  String get developerReportText => 'Report details';
-
-  @override
   String get developerLogSend => 'Send';
 
   @override
@@ -1868,8 +1739,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get developerLogSent => 'Report sent to the developer.';
 
   @override
-  String get developerLogSendFailed => 'Could not send the report. Please try again later.';
-
+  String get developerLogSendFailed =>
+      'Could not send the report. Please try again later.';
 
   @override
   String get donateWithPaypal => 'Donate with PayPal';
@@ -2156,12 +2027,12 @@ class AppLocalizationsEn extends AppLocalizations {
       'Scheduled recording in progress';
 
   @override
-  String scheduledRecordingPendingStatus(String dateTime) {
+  String scheduledRecordingPendingStatus(Object dateTime) {
     return 'Scheduled for $dateTime';
   }
 
   @override
-  String recordingCannotOpenBeforeScheduledStart(String dateTime) {
+  String recordingCannotOpenBeforeScheduledStart(Object dateTime) {
     return 'This recording has not started yet. It will start on $dateTime.';
   }
 
@@ -2174,17 +2045,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get selectRecordings => 'Select recordings';
-
-  @override
-  String get selectDocuments => 'Select documents';
-
-  @override
-  String get deleteSelectedDocumentsConfirmation => 'Permanently delete the selected documents?';
-
-  @override
-  String documentsRemovedCount(int count) {
-    return 'Documents deleted: $count.';
-  }
 
   @override
   String get selectAll => 'Select all';
@@ -2636,14 +2496,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get concertsYear => 'Year';
 
   @override
+  String get concertsQueryRequired =>
+      'To search all events in this catalogue, enter a city or event name, or choose a category.';
+
+  @override
   String get concertsCategory => 'Category';
 
   @override
   String get concertsAllEvents => 'All events';
-
-  @override
-  String get concertsQueryRequired =>
-      'To search all events in this catalogue, enter a city or event name, or choose a category.';
 
   @override
   String get concertsTitle => 'Concert and event search';
@@ -3843,7 +3703,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mediaCutterMixingAddedTrack => 'Mixing the new track';
 
   @override
-  String get podcastImportIntoMediaCutter => "Import into Cut media file";
+  String get podcastImportIntoMediaCutter => 'Import into Cut media file';
 
   @override
   String get preserveMedia => 'Preserve content';
@@ -3859,15 +3719,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get mediaProcessingCompleted => 'Processing completed.';
-
-  @override
-  String get convertMediaDestination => 'Converted file destination';
-
-  @override
-  String get exportAskEveryTime => 'Ask every time';
-
-  @override
-  String get selectAudioTrack => "Select audio track";
 
   @override
   String get saveInSonarpadDocuments => 'Save in Sonarpad Documents';
@@ -4056,12 +3907,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sonarTubeChannelShorts => 'Shorts';
-  @override
-  String get sonarTubeChannelCourses => 'Courses';
-
-  @override
-  String get sonarTubeChannelPodcasts => 'Podcasts';
-
 
   @override
   String sonarTubeVideoCount(int count) {
@@ -4233,11 +4078,38 @@ class AppLocalizationsEn extends AppLocalizations {
       'Enable extended pauses when a description does not fit in a silence';
 
   @override
-  String get audioDescriptionNonverbalVocals => 'Allow descriptions during nonverbal vocal sounds';
-
-  @override
   String get audioDescriptionRecognizeCharacters =>
       'Try to recognize characters and use their names';
+
+  @override
+  String get audioDescriptionMp3Bitrate => 'MP3 bitrate';
+
+  @override
+  String get audioDescriptionSourceVolume => 'Movie volume';
+
+  @override
+  String get audioDescriptionSourceVolumeHint =>
+      'Adjust the movie’s base volume. It is automatically lowered further during audio description.';
+
+  @override
+  String get audioDescriptionAudioNormal => 'Normal';
+
+  @override
+  String get audioDescriptionMixPreview => 'Listen to a movie and voice sample';
+
+  @override
+  String get audioDescriptionMixPreviewPreparing => 'Preparing audio sample';
+
+  @override
+  String get audioDescriptionMixPreviewStop => 'Stop audio sample';
+
+  @override
+  String get audioDescriptionMixPreviewPhrase =>
+      'Audio description test with ducking.';
+
+  @override
+  String get audioDescriptionMixPreviewHint =>
+      'After adjusting the volume, a short sample starts with a movie excerpt, the selected voice and automatic lowering of the movie audio.';
 
   @override
   String get audioDescriptionSaveProject =>
@@ -4279,10 +4151,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get audioDescriptionSonarpadBalance => 'Sonarpad AI credit';
 
   @override
-  String get audioDescriptionSonarpadBalanceUnavailable => 'Credit unavailable.';
+  String get audioDescriptionSonarpadBalanceUnavailable =>
+      'Credit unavailable.';
 
   @override
-  String get audioDescriptionSonarpadInsufficientCredit => "Your credit is insufficient. Top up your API key to continue audio describing your content.";
+  String get audioDescriptionSonarpadInsufficientCredit =>
+      'Your credit is insufficient. Top up your API key to continue audio describing your content.';
 
   @override
   String get audioDescriptionEdgeVoiceReady =>
@@ -4472,16 +4346,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sonarTubeSaveAsMp3 => 'Save as MP3';
 
   @override
-  String get audioDescriptionCreateVideoOutput => 'Save the audio description in the video';
+  String get developerReportText => 'Report details';
+
+  @override
+  String get audioDescriptionCreateVideoOutput =>
+      'Save the audio description in the video';
 
   @override
   String get audioDescriptionLoadCharacterCatalog => 'Load character catalog';
 
   @override
-  String get audioDescriptionImportCharacterCatalog => 'Import catalog from file';
+  String get audioDescriptionImportCharacterCatalog =>
+      'Import catalog from file';
 
   @override
-  String get audioDescriptionCharacterCatalogLoaded => 'Character catalog loaded.';
+  String get audioDescriptionCharacterCatalogLoaded =>
+      'Character catalog loaded.';
 
   @override
   String get audioDescriptionCreateWithAi => 'Create audio description with AI';
@@ -4490,7 +4370,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsHomeCustomization => 'Customize home screen';
 
   @override
-  String get settingsHomeCustomizationHint => 'Choose which items to show and, when categories are off, their order.';
+  String get settingsHomeCustomizationHint =>
+      'Choose which items to show and, when categories are off, their order.';
 
   @override
   String get homeCategories => 'Categories';
@@ -4511,7 +4392,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeResetDefaultsConfirmTitle => 'Restore the home screen?';
 
   @override
-  String get homeResetDefaultsConfirmMessage => 'All available features will be shown again, categories will be enabled, and custom orders will be cleared.';
+  String get homeResetDefaultsConfirmMessage =>
+      'All available features will be shown again, categories will be enabled, and custom orders will be cleared.';
 
   @override
   String get homeResetDefaultsDone => 'Home screen restored to defaults.';
@@ -4544,943 +4426,1046 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeDirectory => 'White and Yellow Pages';
 
   @override
-  String get joinMediaTitle => "Join media files";
+  String get treccaniTitle => 'Treccani Encyclopedia';
 
   @override
-  String get joinMediaDescription => "Add two or more audio or video files, choose their order and output format, and join them into one file.";
+  String get treccaniSearchLabel => 'Search the Treccani Encyclopedia';
 
   @override
-  String get joinMediaAddFiles => "Add media files";
+  String get treccaniNoResults => 'No Treccani entries found';
 
   @override
-  String get joinMediaLoadingFiles => "Checking selected files…";
+  String get treccaniWholeEntry => 'Entire entry';
 
   @override
-  String get joinMediaFilesTitle => "Files to join";
+  String get joinMediaTitle => 'Join media files';
 
   @override
-  String get joinMediaNoFiles => "No files added yet.";
+  String get joinMediaDescription =>
+      'Add two or more audio or video files, choose their order and output format, and join them into one file.';
 
   @override
-  String get joinMediaVideoLabel => "Video";
+  String get joinMediaAddFiles => 'Add media files';
 
   @override
-  String get joinMediaAudioLabel => "Audio";
+  String get joinMediaLoadingFiles => 'Checking selected files…';
 
   @override
-  String get joinMediaActionsHint => "Available actions: Move up, Move down, Remove.";
+  String get joinMediaFilesTitle => 'Files to join';
 
   @override
-  String get joinMediaRemove => "Remove";
+  String get joinMediaNoFiles => 'No files added yet.';
 
   @override
-  String get joinMediaOutputMp4 => "Output format: MP4. Audio-only items use a black video track; silent videos receive a silent audio track.";
+  String get joinMediaVideoLabel => 'Video';
 
   @override
-  String get joinMediaOutputMp3 => "Output format: MP3.";
+  String get joinMediaAudioLabel => 'Audio';
 
   @override
-  String get joinMediaJoin => "Join";
+  String get joinMediaActionsHint =>
+      'Available actions: Move up, Move down, Remove.';
 
   @override
-  String get joinMediaFileSkipped => "A file was skipped because it is inaccessible or contains no usable audio or video.";
+  String get joinMediaRemove => 'Remove';
 
   @override
-  String get joinMediaFilesAdded => "Media files added.";
+  String get joinMediaOutputMp4 =>
+      'Output format: MP4. Audio-only items use a black video track; silent videos receive a silent audio track.';
 
   @override
-  String get joinMediaRemoved => "Item removed.";
+  String get joinMediaOutputMp3 => 'Output format: MP3.';
 
   @override
-  String get joinMediaNeedTwoFiles => "Add at least two files to join.";
+  String get joinMediaJoin => 'Join';
 
   @override
-  String get joinMediaProcessing => "Joining media";
+  String get joinMediaFileSkipped =>
+      'A file was skipped because it is inaccessible or contains no usable audio or video.';
 
   @override
-  String get joinMediaCancelled => "Media join cancelled.";
+  String get joinMediaFilesAdded => 'Media files added.';
 
   @override
-  String get joinMediaFailed => "The media files could not be joined.";
+  String get joinMediaRemoved => 'Item removed.';
 
   @override
-  String get joinMediaPreparing => "Preparing";
+  String get joinMediaNeedTwoFiles => 'Add at least two files to join.';
 
   @override
-  String get joinMediaNormalizing => "Preparing file";
+  String get joinMediaProcessing => 'Joining media';
 
   @override
-  String get joinMediaMerging => "Joining files";
+  String get joinMediaCancelled => 'Media join cancelled.';
 
   @override
-  String get joinMediaVerifying => "Final verification";
+  String get joinMediaFailed => 'The media files could not be joined.';
 
   @override
-  String get joinMediaCompleting => "Completing";
+  String get joinMediaPreparing => 'Preparing';
 
   @override
-  String get joinMediaCompleted => "Media join completed. Choose where to save the file.";
+  String get joinMediaNormalizing => 'Preparing file';
 
   @override
-  String get joinMediaFormat => "Join format";
+  String get joinMediaMerging => 'Joining files';
 
   @override
-  String get joinMediaChooseFormat => "Choose join format";
+  String get joinMediaVerifying => 'Final verification';
 
   @override
-  String get joinMediaAudioFormatHint => "With audio-only files you can choose MP3, M4A, WAV, FLAC, OGG, OPUS, AAC, WMA, or AIFF. Default: MP3.";
+  String get joinMediaCompleting => 'Completing';
 
   @override
-  String get joinMediaVideoFormatHint => "With video or mixed files you can choose MP4, MKV, MOV, AVI, WMV, MPEG/MPG, FLV, 3GP, or TS. Default: MP4.";
+  String get joinMediaCompleted =>
+      'Media join completed. Choose where to save the file.';
 
   @override
-  String get joinMediaCancelConfirmTitle => "Cancel the join?";
+  String get joinMediaFormat => 'Join format';
 
   @override
-  String get joinMediaCancelConfirmMessage => "Are you sure you want to cancel? The running FFmpeg process will be stopped.";
+  String get joinMediaChooseFormat => 'Choose join format';
 
   @override
-  String get joinMediaKeepWorking => "Continue";
+  String get joinMediaAudioFormatHint =>
+      'With audio-only files you can choose MP3, M4A, WAV, FLAC, OGG, OPUS, AAC, WMA, or AIFF. Default: MP3.';
 
   @override
-  String get joinMediaConfirmCancel => "Cancel join";
+  String get joinMediaVideoFormatHint =>
+      'With video or mixed files you can choose MP4, MKV, MOV, AVI, WMV, MPEG/MPG, FLV, 3GP, or TS. Default: MP4.';
 
   @override
-  String get joinMediaCancelling => "Cancelling…";
+  String get joinMediaCancelConfirmTitle => 'Cancel the join?';
 
   @override
-  String get streamReconnecting => "Reconnecting…";
+  String get joinMediaCancelConfirmMessage =>
+      'Are you sure you want to cancel? The running FFmpeg process will be stopped.';
 
   @override
-  String get streamPlaybackRetryMessage => "The channel did not start. Select Retry to refresh the stream address.";
+  String get joinMediaKeepWorking => 'Continue';
 
   @override
-  String get settingsMediaSpeedControl => "Enable media playback speed control";
+  String get joinMediaConfirmCancel => 'Cancel join';
 
   @override
-  String get settingsMediaSpeedControlHint => "Show the speed control for Sonartube, podcasts and other recorded content. Live streams are excluded.";
+  String get joinMediaCancelling => 'Cancelling…';
 
   @override
-  String get settingsPreferRaiAudioDescription => "Prefer audio description when available";
+  String get selectDocuments => 'Select documents';
 
   @override
-  String get settingsPreferRaiAudioDescriptionHint => "On Rai channels, automatically use the audio-described track when available. Turn this off to prefer the normal Italian audio.";
+  String get deleteSelectedDocumentsConfirmation =>
+      'Permanently delete the selected documents?';
 
   @override
-  String get mediaPlaybackSpeed => "Playback speed";
+  String documentsRemovedCount(int count) {
+    return 'Documents deleted: $count.';
+  }
 
   @override
-  String get mediaPlaybackSpeedNormal => "Normal";
+  String get streamReconnecting => 'Reconnecting…';
 
   @override
-  String get mediaPlaybackSpeedUnavailable => "This speed is not supported for this content. The previous speed has been restored.";
+  String get streamPlaybackRetryMessage =>
+      'The channel did not start. Select Retry to refresh the stream address.';
 
   @override
-  String get mediaPlaybackSpeedRecoveryFailed => "The playback speed could not be restored. Reopen the content to try again.";
+  String get settingsMediaSpeedControl => 'Enable media playback speed control';
 
   @override
-  String mediaPlaybackSpeedChanged(String speed) => "Playback speed: $speed";
+  String get settingsMediaSpeedControlHint =>
+      'Show the speed control for Sonartube, podcasts and other recorded content. Live streams are excluded.';
 
+  @override
+  String get settingsPreferRaiAudioDescription =>
+      'Prefer audio description when available';
+
+  @override
+  String get settingsPreferRaiAudioDescriptionHint =>
+      'On Rai channels, automatically use the audio-described track when available. Turn this off to prefer the normal Italian audio.';
+
+  @override
+  String get mediaPlaybackSpeed => 'Playback speed';
+
+  @override
+  String get mediaPlaybackSpeedNormal => 'Normal';
 
   @override
-  String get routeServiceInvalidAddress => "Invalid address";
+  String get mediaPlaybackSpeedUnavailable =>
+      'This speed is not supported for this content. The previous speed has been restored.';
 
   @override
-  String routeServiceGeocodingNetworkError(int statusCode) => "Geocoding network error: HTTP ${statusCode}";
+  String get mediaPlaybackSpeedRecoveryFailed =>
+      'The playback speed could not be restored. Reopen the content to try again.';
 
   @override
-  String routeServiceNetworkError(int statusCode) => "Route network error: HTTP ${statusCode}";
+  String mediaPlaybackSpeedChanged(String speed) {
+    return 'Playback speed: $speed';
+  }
 
   @override
-  String get routeServiceServerError => "Server error";
+  String get routeServiceInvalidAddress => 'Invalid address';
 
   @override
-  String get routeServiceCalculationError => "Route calculation error from server";
+  String routeServiceGeocodingNetworkError(int statusCode) {
+    return 'Geocoding network error: HTTP $statusCode';
+  }
 
   @override
-  String get routeServiceUnauthorized => "Unauthorized client. Update Sonarpad or check the app configuration.";
+  String routeServiceNetworkError(int statusCode) {
+    return 'Route network error: HTTP $statusCode';
+  }
 
   @override
-  String get routeServiceStartNotFound => "Starting address not found";
+  String get routeServiceServerError => 'Server error';
 
   @override
-  String get routeServiceDestinationNotFound => "Destination address not found";
+  String get routeServiceCalculationError =>
+      'Route calculation error from server';
 
   @override
-  String get radioLanguageRo => "Romanian";
+  String get routeServiceUnauthorized =>
+      'Unauthorized client. Update Sonarpad or check the app configuration.';
 
   @override
-  String get radioCountryOptionRo => "Romania";
+  String get routeServiceStartNotFound => 'Starting address not found';
 
   @override
-  String get sonarTubeServiceError => "SonarTube error";
+  String get routeServiceDestinationNotFound => 'Destination address not found';
 
   @override
-  String get sonarTubeServiceInvalidResponse => "Invalid SonarTube response.";
+  String get radioLanguageRo => 'Romanian';
 
   @override
-  String get sonarTubeServiceInnerTubeError => "InnerTube API error.";
+  String get radioCountryOptionRo => 'Romania';
 
   @override
-  String get sonarTubeServiceInvalidInnerTubeResponse => "Invalid InnerTube response.";
+  String get sonarTubeServiceError => 'SonarTube error';
 
   @override
-  String get sonarTubeServiceNoStream => "No playable stream is available.";
+  String get sonarTubeServiceInvalidResponse => 'Invalid SonarTube response.';
 
   @override
-  String get sonarTubeServiceOnlyVideo => "Only a video can be resolved.";
+  String get sonarTubeServiceInnerTubeError => 'InnerTube API error.';
 
   @override
-  String get sonarTubeServiceNotCollection => "A video is not a SonarTube collection.";
+  String get sonarTubeServiceInvalidInnerTubeResponse =>
+      'Invalid InnerTube response.';
 
   @override
-  String get listTimestampToday => "today";
+  String get sonarTubeServiceNoStream => 'No playable stream is available.';
 
   @override
-  String get listTimestampYesterday => "yesterday";
+  String get sonarTubeServiceOnlyVideo => 'Only a video can be resolved.';
 
   @override
-  String get listTimestampDayBeforeYesterday => "day before yesterday";
+  String get sonarTubeServiceNotCollection =>
+      'A video is not a SonarTube collection.';
 
   @override
-  String get listTimestampTomorrow => "tomorrow";
+  String get listTimestampToday => 'today';
 
   @override
-  String get listTimestampDayAfterTomorrow => "day after tomorrow";
+  String get listTimestampYesterday => 'yesterday';
 
   @override
-  String get articleTitleNotFound => "Title not found";
+  String get listTimestampDayBeforeYesterday => 'day before yesterday';
 
   @override
-  String get articleUnknownTitle => "Unknown title";
+  String get listTimestampTomorrow => 'tomorrow';
 
   @override
-  String get articleAuthorPrefix => "By";
+  String get listTimestampDayAfterTomorrow => 'day after tomorrow';
 
   @override
-  String get audioDescriptionProjectEditorTitle => "Edit audio description project";
+  String get articleTitleNotFound => 'Title not found';
 
   @override
-  String get audioDescriptionProjectOpen => "Open audio description project";
+  String get articleUnknownTitle => 'Unknown title';
 
   @override
-  String get audioDescriptionProjectLabel => "Project";
+  String get articleAuthorPrefix => 'By';
 
   @override
-  String get audioDescriptionProjectChooseSource => "Choose original video";
+  String get audioDescriptionProjectEditorTitle =>
+      'Edit audio description project';
 
   @override
-  String get audioDescriptionProjectSource => "Original video";
+  String get audioDescriptionProjectOpen => 'Open audio description project';
 
   @override
-  String get audioDescriptionProjectDescription => "Description";
+  String get audioDescriptionProjectLabel => 'Project';
 
   @override
-  String get audioDescriptionProjectDescriptionText => "Description text";
+  String get audioDescriptionProjectChooseSource => 'Choose original video';
 
   @override
-  String get audioDescriptionProjectPreviewDescription => "Preview description";
+  String get audioDescriptionProjectSource => 'Original video';
 
   @override
-  String get audioDescriptionProjectApplyText => "Apply text";
+  String get audioDescriptionProjectDescription => 'Description';
 
   @override
-  String get audioDescriptionProjectDeleteDescription => "Delete description";
+  String get audioDescriptionProjectDescriptionText => 'Description text';
 
   @override
-  String get audioDescriptionProjectDeleteConfirmation => "Delete the selected description from the project?";
+  String get audioDescriptionProjectPreviewDescription => 'Preview description';
 
   @override
-  String get audioDescriptionProjectCannotDeleteLast => "The only description in the project cannot be deleted.";
+  String get audioDescriptionProjectApplyText => 'Apply text';
 
   @override
-  String get audioDescriptionProjectApplyVoice => "Apply voice to project";
+  String get audioDescriptionProjectDeleteDescription => 'Delete description';
 
   @override
-  String get audioDescriptionProjectReadingEngine => "Reading engine";
+  String get audioDescriptionProjectDeleteConfirmation =>
+      'Delete the selected description from the project?';
 
   @override
-  String get audioDescriptionProjectEdgeVoice => "Microsoft Edge voice";
+  String get audioDescriptionProjectCannotDeleteLast =>
+      'The only description in the project cannot be deleted.';
 
   @override
-  String get audioDescriptionProjectSystemVoice => "System / VoiceOver / Android voice";
+  String get audioDescriptionProjectApplyVoice => 'Apply voice to project';
 
   @override
-  String get audioDescriptionProjectVoiceLanguage => "Voice language";
+  String get audioDescriptionProjectReadingEngine => 'Reading engine';
 
   @override
-  String get audioDescriptionProjectVoice => "Voice";
+  String get audioDescriptionProjectEdgeVoice => 'Microsoft Edge voice';
 
   @override
-  String get audioDescriptionProjectReexportMp3 => "Re-export MP3";
+  String get audioDescriptionProjectSystemVoice =>
+      'System / VoiceOver / Android voice';
 
   @override
-  String get audioDescriptionProjectExportSrt => "Export as SRT";
+  String get audioDescriptionProjectVoiceLanguage => 'Voice language';
 
   @override
-  String get audioDescriptionProjectExportVtt => "Export as VTT";
+  String get audioDescriptionProjectVoice => 'Voice';
 
   @override
-  String get audioDescriptionProjectNormalWithDucking => "normal with ducking";
+  String get audioDescriptionProjectReexportMp3 => 'Re-export MP3';
 
   @override
-  String get audioDescriptionProjectExtendedPause => "extended pause";
+  String get audioDescriptionProjectExportSrt => 'Export as SRT';
 
   @override
-  String get audioDescriptionProjectReady => "Project ready.";
+  String get audioDescriptionProjectExportVtt => 'Export as VTT';
 
   @override
-  String get audioDescriptionProjectDescriptionApplied => "Description checked and saved in the project.";
+  String get audioDescriptionProjectNormalWithDucking => 'normal with ducking';
 
   @override
-  String get audioDescriptionProjectDescriptionDeleted => "Description deleted and project saved.";
+  String get audioDescriptionProjectExtendedPause => 'extended pause';
 
   @override
-  String get audioDescriptionProjectVoiceChanged => "Voice changed and all descriptions were checked.";
+  String get audioDescriptionProjectReady => 'Project ready.';
 
   @override
-  String audioDescriptionProjectDescriptionTooLong(String actual, String available) => "The synthesized description lasts ${actual} seconds, but only ${available} seconds are available. The previous text was not changed.";
+  String get audioDescriptionProjectDescriptionApplied =>
+      'Description checked and saved in the project.';
 
   @override
-  String get audioDescriptionProjectSourceMissing => "The original video is not available. Choose it before re-exporting the MP3.";
+  String get audioDescriptionProjectDescriptionDeleted =>
+      'Description deleted and project saved.';
 
   @override
-  String get audioDescriptionProjectInvalid => "The selected file is not a valid Sonarpad audio description project.";
+  String get audioDescriptionProjectVoiceChanged =>
+      'Voice changed and all descriptions were checked.';
 
   @override
-  String get audioDescriptionProjectUnsavedText => "Apply the current text before re-exporting the MP3.";
+  String audioDescriptionProjectDescriptionTooLong(
+    String actual,
+    String available,
+  ) {
+    return 'The synthesized description lasts $actual seconds, but only $available seconds are available. The previous text was not changed.';
+  }
 
   @override
-  String get audioDescriptionProjectWorking => "Processing project…";
+  String get audioDescriptionProjectSourceMissing =>
+      'The original video is not available. Choose it before re-exporting the MP3.';
 
   @override
-  String get audioDescriptionProjectExported => "Project exported.";
+  String get audioDescriptionProjectInvalid =>
+      'The selected file is not a valid Sonarpad audio description project.';
 
   @override
-  String get audioDescriptionProjectSelectFirst => "Open a project first.";
+  String get audioDescriptionProjectUnsavedText =>
+      'Apply the current text before re-exporting the MP3.';
 
   @override
-  String get audioDescriptionProjectSelectDescription => "Select a description.";
+  String get audioDescriptionProjectWorking => 'Processing project…';
 
   @override
-  String audioDescriptionProjectDescriptionDetails(String source, String start, String end, String duration, String mode) => "Scene ${source} s; MP3 ${start}-${end} s; voice ${duration} s; ${mode}";
+  String get audioDescriptionProjectExported => 'Project exported.';
 
   @override
-  String get audioDescriptionProjectShare => "Share";
+  String get audioDescriptionProjectSelectFirst => 'Open a project first.';
 
   @override
-  String get audioDescriptionProjectSaveDocuments => "Save in Sonarpad Documents";
+  String get audioDescriptionProjectSelectDescription =>
+      'Select a description.';
 
   @override
-  String get audioDescriptionProjectSavedDocuments => "Files saved in Sonarpad Documents.";
+  String audioDescriptionProjectDescriptionDetails(
+    String source,
+    String start,
+    String end,
+    String duration,
+    String mode,
+  ) {
+    return 'Scene $source s; MP3 $start-$end s; voice $duration s; $mode';
+  }
 
   @override
-  String get audioDescriptionProjectCancel => "Cancel";
+  String get audioDescriptionProjectShare => 'Share';
 
   @override
-  String get audioDescriptionProjectChooseFromFiles => "Choose video from Files";
+  String get audioDescriptionProjectSaveDocuments =>
+      'Save in Sonarpad Documents';
 
   @override
-  String get audioDescriptionProjectImportFromPhotos => "Import video from Photos";
+  String get audioDescriptionProjectSavedDocuments =>
+      'Files saved in Sonarpad Documents.';
 
   @override
-  String get newsCategoryWorld => "World";
+  String get audioDescriptionProjectCancel => 'Cancel';
 
   @override
-  String get newsCategoryBusiness => "Business";
+  String get audioDescriptionProjectChooseFromFiles =>
+      'Choose video from Files';
 
   @override
-  String get newsCategoryTechnology => "Technology";
+  String get audioDescriptionProjectImportFromPhotos =>
+      'Import video from Photos';
 
   @override
-  String get newsCategoryEntertainment => "Entertainment";
+  String get newsCategoryWorld => 'World';
 
   @override
-  String get newsCategorySports => "Sports";
+  String get newsCategoryBusiness => 'Business';
 
   @override
-  String get newsCategoryHealth => "Health";
+  String get newsCategoryTechnology => 'Technology';
 
   @override
-  String get newsArticleSubscribersOnly => "This article is reserved for subscribers.";
+  String get newsCategoryEntertainment => 'Entertainment';
 
   @override
-  String wikipediaSearchHttpError(int statusCode) => "Wikipedia error: ${statusCode}";
+  String get newsCategorySports => 'Sports';
 
   @override
-  String wikipediaImportHttpError(int statusCode) => "Wikipedia import error: ${statusCode}";
+  String get newsCategoryHealth => 'Health';
 
   @override
-  String gutenbergSearchHttpError(int statusCode) => "Gutenberg error ${statusCode}";
+  String get newsArticleSubscribersOnly =>
+      'This article is reserved for subscribers.';
 
   @override
-  String gutenbergDownloadHttpError(int statusCode) => "Download error ${statusCode}";
+  String wikipediaSearchHttpError(int statusCode) {
+    return 'Wikipedia error: $statusCode';
+  }
 
   @override
-  String gutenbergEpubDownloadHttpError(int statusCode) => "EPUB download error ${statusCode}";
+  String wikipediaImportHttpError(int statusCode) {
+    return 'Wikipedia import error: $statusCode';
+  }
 
   @override
-  String get gutenbergInvalidBookId => "Invalid Gutenberg ID.";
+  String gutenbergSearchHttpError(int statusCode) {
+    return 'Gutenberg error $statusCode';
+  }
 
   @override
-  String get gutenbergDownloadTimeout => "The Gutenberg download is taking too long. Try again shortly or choose another format.";
+  String gutenbergDownloadHttpError(int statusCode) {
+    return 'Download error $statusCode';
+  }
 
   @override
-  String get gutenbergUnreadableArchive => "The Gutenberg ZIP archive contains no readable text file.";
+  String gutenbergEpubDownloadHttpError(int statusCode) {
+    return 'EPUB download error $statusCode';
+  }
 
   @override
-  String get gutenbergUntitledBook => "Untitled";
+  String get gutenbergInvalidBookId => 'Invalid Gutenberg ID.';
 
   @override
-  String get gutenbergUnknownAuthor => "Unknown author";
+  String get gutenbergDownloadTimeout =>
+      'The Gutenberg download is taking too long. Try again shortly or choose another format.';
 
   @override
-  String get podcastCategoryAll => "All categories";
+  String get gutenbergUnreadableArchive =>
+      'The Gutenberg ZIP archive contains no readable text file.';
 
   @override
-  String get podcastCategoryArts => "Arts";
+  String get gutenbergUntitledBook => 'Untitled';
 
   @override
-  String get podcastCategoryBusiness => "Business";
+  String get gutenbergUnknownAuthor => 'Unknown author';
 
   @override
-  String get podcastCategoryComedy => "Comedy";
+  String get podcastCategoryAll => 'All categories';
 
   @override
-  String get podcastCategoryEducation => "Education";
+  String get podcastCategoryArts => 'Arts';
 
   @override
-  String get podcastCategoryFiction => "Fiction";
+  String get podcastCategoryBusiness => 'Business';
 
   @override
-  String get podcastCategoryGovernment => "Government";
+  String get podcastCategoryComedy => 'Comedy';
 
   @override
-  String get podcastCategoryHealthAndFitness => "Health & Fitness";
+  String get podcastCategoryEducation => 'Education';
 
   @override
-  String get podcastCategoryHistory => "History";
+  String get podcastCategoryFiction => 'Fiction';
 
   @override
-  String get podcastCategoryKidsAndFamily => "Kids & Family";
+  String get podcastCategoryGovernment => 'Government';
 
   @override
-  String get podcastCategoryLeisure => "Leisure";
+  String get podcastCategoryHealthAndFitness => 'Health & Fitness';
 
   @override
-  String get podcastCategoryMusic => "Music";
+  String get podcastCategoryHistory => 'History';
 
   @override
-  String get podcastCategoryNews => "News";
+  String get podcastCategoryKidsAndFamily => 'Kids & Family';
 
   @override
-  String get podcastCategoryReligionAndSpirituality => "Religion & Spirituality";
+  String get podcastCategoryLeisure => 'Leisure';
 
   @override
-  String get podcastCategoryScience => "Science";
+  String get podcastCategoryMusic => 'Music';
 
   @override
-  String get podcastCategorySocietyAndCulture => "Society & Culture";
+  String get podcastCategoryNews => 'News';
 
   @override
-  String get podcastCategorySports => "Sports";
+  String get podcastCategoryReligionAndSpirituality =>
+      'Religion & Spirituality';
 
   @override
-  String get podcastCategoryTechnology => "Technology";
+  String get podcastCategoryScience => 'Science';
 
   @override
-  String get podcastCategoryTrueCrime => "True Crime";
+  String get podcastCategorySocietyAndCulture => 'Society & Culture';
 
   @override
-  String get podcastCategoryTvAndFilm => "TV & Film";
+  String get podcastCategorySports => 'Sports';
 
   @override
-  String get podcastCategoryBooks => "Books";
+  String get podcastCategoryTechnology => 'Technology';
 
   @override
-  String get podcastCategoryDesign => "Design";
+  String get podcastCategoryTrueCrime => 'True Crime';
 
   @override
-  String get podcastCategoryFashionAndBeauty => "Fashion & Beauty";
+  String get podcastCategoryTvAndFilm => 'TV & Film';
 
   @override
-  String get podcastCategoryFood => "Food";
+  String get podcastCategoryBooks => 'Books';
 
   @override
-  String get podcastCategoryPerformingArts => "Performing Arts";
+  String get podcastCategoryDesign => 'Design';
 
   @override
-  String get podcastCategoryVisualArts => "Visual Arts";
+  String get podcastCategoryFashionAndBeauty => 'Fashion & Beauty';
 
   @override
-  String get podcastCategoryCareers => "Careers";
+  String get podcastCategoryFood => 'Food';
 
   @override
-  String get podcastCategoryEntrepreneurship => "Entrepreneurship";
+  String get podcastCategoryPerformingArts => 'Performing Arts';
 
   @override
-  String get podcastCategoryInvesting => "Investing";
+  String get podcastCategoryVisualArts => 'Visual Arts';
 
   @override
-  String get podcastCategoryManagement => "Management";
+  String get podcastCategoryCareers => 'Careers';
 
   @override
-  String get podcastCategoryMarketing => "Marketing";
+  String get podcastCategoryEntrepreneurship => 'Entrepreneurship';
 
   @override
-  String get podcastCategoryNonProfit => "Non-Profit";
+  String get podcastCategoryInvesting => 'Investing';
 
   @override
-  String get podcastCategoryComedyInterviews => "Comedy Interviews";
+  String get podcastCategoryManagement => 'Management';
 
   @override
-  String get podcastCategoryImprov => "Improv";
+  String get podcastCategoryMarketing => 'Marketing';
 
   @override
-  String get podcastCategoryStandUp => "Stand-Up";
+  String get podcastCategoryNonProfit => 'Non-Profit';
 
   @override
-  String get podcastCategoryCourses => "Courses";
+  String get podcastCategoryComedyInterviews => 'Comedy Interviews';
 
   @override
-  String get podcastCategoryHowTo => "How To";
+  String get podcastCategoryImprov => 'Improv';
 
   @override
-  String get podcastCategoryLanguageLearning => "Language Learning";
+  String get podcastCategoryStandUp => 'Stand-Up';
 
   @override
-  String get podcastCategorySelfImprovement => "Self-Improvement";
+  String get podcastCategoryCourses => 'Courses';
 
   @override
-  String get podcastCategoryComedyFiction => "Comedy Fiction";
+  String get podcastCategoryHowTo => 'How To';
 
   @override
-  String get podcastCategoryDrama => "Drama";
+  String get podcastCategoryLanguageLearning => 'Language Learning';
 
   @override
-  String get podcastCategoryScienceFiction => "Science Fiction";
+  String get podcastCategorySelfImprovement => 'Self-Improvement';
 
   @override
-  String get podcastCategoryAlternativeHealth => "Alternative Health";
+  String get podcastCategoryComedyFiction => 'Comedy Fiction';
 
   @override
-  String get podcastCategoryFitness => "Fitness";
+  String get podcastCategoryDrama => 'Drama';
 
   @override
-  String get podcastCategoryMedicine => "Medicine";
+  String get podcastCategoryScienceFiction => 'Science Fiction';
 
   @override
-  String get podcastCategoryMentalHealth => "Mental Health";
+  String get podcastCategoryAlternativeHealth => 'Alternative Health';
 
   @override
-  String get podcastCategoryNutrition => "Nutrition";
+  String get podcastCategoryFitness => 'Fitness';
 
   @override
-  String get podcastCategorySexuality => "Sexuality";
+  String get podcastCategoryMedicine => 'Medicine';
 
   @override
-  String get podcastCategoryEducationForKids => "Education for Kids";
+  String get podcastCategoryMentalHealth => 'Mental Health';
 
   @override
-  String get podcastCategoryParenting => "Parenting";
+  String get podcastCategoryNutrition => 'Nutrition';
 
   @override
-  String get podcastCategoryPetsAndAnimals => "Pets & Animals";
+  String get podcastCategorySexuality => 'Sexuality';
 
   @override
-  String get podcastCategoryStoriesForKids => "Stories for Kids";
+  String get podcastCategoryEducationForKids => 'Education for Kids';
 
   @override
-  String get podcastCategoryAnimationAndManga => "Animation & Manga";
+  String get podcastCategoryParenting => 'Parenting';
 
   @override
-  String get podcastCategoryAutomotive => "Automotive";
+  String get podcastCategoryPetsAndAnimals => 'Pets & Animals';
 
   @override
-  String get podcastCategoryAviation => "Aviation";
+  String get podcastCategoryStoriesForKids => 'Stories for Kids';
 
   @override
-  String get podcastCategoryCrafts => "Crafts";
+  String get podcastCategoryAnimationAndManga => 'Animation & Manga';
 
   @override
-  String get podcastCategoryGames => "Games";
+  String get podcastCategoryAutomotive => 'Automotive';
 
   @override
-  String get podcastCategoryHobbies => "Hobbies";
+  String get podcastCategoryAviation => 'Aviation';
 
   @override
-  String get podcastCategoryHomeAndGarden => "Home & Garden";
+  String get podcastCategoryCrafts => 'Crafts';
 
   @override
-  String get podcastCategoryVideoGames => "Video Games";
+  String get podcastCategoryGames => 'Games';
 
   @override
-  String get podcastCategoryMusicCommentary => "Music Commentary";
+  String get podcastCategoryHobbies => 'Hobbies';
 
   @override
-  String get podcastCategoryMusicHistory => "Music History";
+  String get podcastCategoryHomeAndGarden => 'Home & Garden';
 
   @override
-  String get podcastCategoryMusicInterviews => "Music Interviews";
+  String get podcastCategoryVideoGames => 'Video Games';
 
   @override
-  String get podcastCategoryBusinessNews => "Business News";
+  String get podcastCategoryMusicCommentary => 'Music Commentary';
 
   @override
-  String get podcastCategoryDailyNews => "Daily News";
+  String get podcastCategoryMusicHistory => 'Music History';
 
   @override
-  String get podcastCategoryEntertainmentNews => "Entertainment News";
+  String get podcastCategoryMusicInterviews => 'Music Interviews';
 
   @override
-  String get podcastCategoryNewsCommentary => "News Commentary";
+  String get podcastCategoryBusinessNews => 'Business News';
 
   @override
-  String get podcastCategoryPolitics => "Politics";
+  String get podcastCategoryDailyNews => 'Daily News';
 
   @override
-  String get podcastCategorySportsNews => "Sports News";
+  String get podcastCategoryEntertainmentNews => 'Entertainment News';
 
   @override
-  String get podcastCategoryTechNews => "Tech News";
+  String get podcastCategoryNewsCommentary => 'News Commentary';
 
   @override
-  String get podcastCategoryBuddhism => "Buddhism";
+  String get podcastCategoryPolitics => 'Politics';
 
   @override
-  String get podcastCategoryChristianity => "Christianity";
+  String get podcastCategorySportsNews => 'Sports News';
 
   @override
-  String get podcastCategoryHinduism => "Hinduism";
+  String get podcastCategoryTechNews => 'Tech News';
 
   @override
-  String get podcastCategoryIslam => "Islam";
+  String get podcastCategoryBuddhism => 'Buddhism';
 
   @override
-  String get podcastCategoryJudaism => "Judaism";
+  String get podcastCategoryChristianity => 'Christianity';
 
   @override
-  String get podcastCategoryReligion => "Religion";
+  String get podcastCategoryHinduism => 'Hinduism';
 
   @override
-  String get podcastCategorySpirituality => "Spirituality";
+  String get podcastCategoryIslam => 'Islam';
 
   @override
-  String get podcastCategoryAstronomy => "Astronomy";
+  String get podcastCategoryJudaism => 'Judaism';
 
   @override
-  String get podcastCategoryChemistry => "Chemistry";
+  String get podcastCategoryReligion => 'Religion';
 
   @override
-  String get podcastCategoryEarthSciences => "Earth Sciences";
+  String get podcastCategorySpirituality => 'Spirituality';
 
   @override
-  String get podcastCategoryLifeSciences => "Life Sciences";
+  String get podcastCategoryAstronomy => 'Astronomy';
 
   @override
-  String get podcastCategoryMathematics => "Mathematics";
+  String get podcastCategoryChemistry => 'Chemistry';
 
   @override
-  String get podcastCategoryNaturalSciences => "Natural Sciences";
+  String get podcastCategoryEarthSciences => 'Earth Sciences';
 
   @override
-  String get podcastCategoryNature => "Nature";
+  String get podcastCategoryLifeSciences => 'Life Sciences';
 
   @override
-  String get podcastCategoryPhysics => "Physics";
+  String get podcastCategoryMathematics => 'Mathematics';
 
   @override
-  String get podcastCategorySocialSciences => "Social Sciences";
+  String get podcastCategoryNaturalSciences => 'Natural Sciences';
 
   @override
-  String get podcastCategoryDocumentary => "Documentary";
+  String get podcastCategoryNature => 'Nature';
 
   @override
-  String get podcastCategoryPersonalJournals => "Personal Journals";
+  String get podcastCategoryPhysics => 'Physics';
 
   @override
-  String get podcastCategoryPhilosophy => "Philosophy";
+  String get podcastCategorySocialSciences => 'Social Sciences';
 
   @override
-  String get podcastCategoryPlacesAndTravel => "Places & Travel";
+  String get podcastCategoryDocumentary => 'Documentary';
 
   @override
-  String get podcastCategoryRelationships => "Relationships";
+  String get podcastCategoryPersonalJournals => 'Personal Journals';
 
   @override
-  String get podcastCategoryBaseball => "Baseball";
+  String get podcastCategoryPhilosophy => 'Philosophy';
 
   @override
-  String get podcastCategoryBasketball => "Basketball";
+  String get podcastCategoryPlacesAndTravel => 'Places & Travel';
 
   @override
-  String get podcastCategoryCricket => "Cricket";
+  String get podcastCategoryRelationships => 'Relationships';
 
   @override
-  String get podcastCategoryFantasySports => "Fantasy Sports";
+  String get podcastCategoryBaseball => 'Baseball';
 
   @override
-  String get podcastCategoryFootball => "Football";
+  String get podcastCategoryBasketball => 'Basketball';
 
   @override
-  String get podcastCategoryGolf => "Golf";
+  String get podcastCategoryCricket => 'Cricket';
 
   @override
-  String get podcastCategoryHockey => "Hockey";
+  String get podcastCategoryFantasySports => 'Fantasy Sports';
 
   @override
-  String get podcastCategoryRugby => "Rugby";
+  String get podcastCategoryFootball => 'Football';
 
   @override
-  String get podcastCategoryRunning => "Running";
+  String get podcastCategoryGolf => 'Golf';
 
   @override
-  String get podcastCategorySoccer => "Soccer";
+  String get podcastCategoryHockey => 'Hockey';
 
   @override
-  String get podcastCategorySwimming => "Swimming";
+  String get podcastCategoryRugby => 'Rugby';
 
   @override
-  String get podcastCategoryTennis => "Tennis";
+  String get podcastCategoryRunning => 'Running';
 
   @override
-  String get podcastCategoryVolleyball => "Volleyball";
+  String get podcastCategorySoccer => 'Soccer';
 
   @override
-  String get podcastCategoryWilderness => "Wilderness";
+  String get podcastCategorySwimming => 'Swimming';
 
   @override
-  String get podcastCategoryWrestling => "Wrestling";
+  String get podcastCategoryTennis => 'Tennis';
 
   @override
-  String get podcastCategoryAfterShows => "After Shows";
+  String get podcastCategoryVolleyball => 'Volleyball';
 
   @override
-  String get podcastCategoryFilmHistory => "Film History";
+  String get podcastCategoryWilderness => 'Wilderness';
 
   @override
-  String get podcastCategoryFilmInterviews => "Film Interviews";
+  String get podcastCategoryWrestling => 'Wrestling';
 
   @override
-  String get podcastCategoryFilmReviews => "Film Reviews";
+  String get podcastCategoryAfterShows => 'After Shows';
 
   @override
-  String get podcastCategoryTvReviews => "TV Reviews";
+  String get podcastCategoryFilmHistory => 'Film History';
 
   @override
-  String get weatherConditionClearSky => "Clear sky";
+  String get podcastCategoryFilmInterviews => 'Film Interviews';
 
   @override
-  String get weatherConditionMainlyClear => "Mainly clear";
+  String get podcastCategoryFilmReviews => 'Film Reviews';
 
   @override
-  String get weatherConditionPartlyCloudy => "Partly cloudy";
+  String get podcastCategoryTvReviews => 'TV Reviews';
 
   @override
-  String get weatherConditionOvercast => "Overcast";
+  String get weatherConditionClearSky => 'Clear sky';
 
   @override
-  String get weatherConditionFog => "Fog";
+  String get weatherConditionMainlyClear => 'Mainly clear';
 
   @override
-  String get weatherConditionRimeFog => "Depositing rime fog";
+  String get weatherConditionPartlyCloudy => 'Partly cloudy';
 
   @override
-  String get weatherConditionLightDrizzle => "Light drizzle";
+  String get weatherConditionOvercast => 'Overcast';
 
   @override
-  String get weatherConditionModerateDrizzle => "Moderate drizzle";
+  String get weatherConditionFog => 'Fog';
 
   @override
-  String get weatherConditionDenseDrizzle => "Dense drizzle";
+  String get weatherConditionRimeFog => 'Depositing rime fog';
 
   @override
-  String get weatherConditionLightFreezingDrizzle => "Light freezing drizzle";
+  String get weatherConditionLightDrizzle => 'Light drizzle';
 
   @override
-  String get weatherConditionDenseFreezingDrizzle => "Dense freezing drizzle";
+  String get weatherConditionModerateDrizzle => 'Moderate drizzle';
 
   @override
-  String get weatherConditionLightRain => "Slight rain";
+  String get weatherConditionDenseDrizzle => 'Dense drizzle';
 
   @override
-  String get weatherConditionModerateRain => "Moderate rain";
+  String get weatherConditionLightFreezingDrizzle => 'Light freezing drizzle';
 
   @override
-  String get weatherConditionHeavyRain => "Heavy rain";
+  String get weatherConditionDenseFreezingDrizzle => 'Dense freezing drizzle';
 
   @override
-  String get weatherConditionLightFreezingRain => "Light freezing rain";
+  String get weatherConditionLightRain => 'Slight rain';
 
   @override
-  String get weatherConditionHeavyFreezingRain => "Heavy freezing rain";
+  String get weatherConditionModerateRain => 'Moderate rain';
 
   @override
-  String get weatherConditionLightSnowfall => "Slight snow fall";
+  String get weatherConditionHeavyRain => 'Heavy rain';
 
   @override
-  String get weatherConditionModerateSnowfall => "Moderate snow fall";
+  String get weatherConditionLightFreezingRain => 'Light freezing rain';
 
   @override
-  String get weatherConditionHeavySnowfall => "Heavy snow fall";
+  String get weatherConditionHeavyFreezingRain => 'Heavy freezing rain';
 
   @override
-  String get weatherConditionSnowGrains => "Snow grains";
+  String get weatherConditionLightSnowfall => 'Slight snow fall';
 
   @override
-  String get weatherConditionLightRainShowers => "Slight rain showers";
+  String get weatherConditionModerateSnowfall => 'Moderate snow fall';
 
   @override
-  String get weatherConditionModerateRainShowers => "Moderate rain showers";
+  String get weatherConditionHeavySnowfall => 'Heavy snow fall';
 
   @override
-  String get weatherConditionViolentRainShowers => "Violent rain showers";
+  String get weatherConditionSnowGrains => 'Snow grains';
 
   @override
-  String get weatherConditionLightSnowShowers => "Slight snow showers";
+  String get weatherConditionLightRainShowers => 'Slight rain showers';
 
   @override
-  String get weatherConditionHeavySnowShowers => "Heavy snow showers";
+  String get weatherConditionModerateRainShowers => 'Moderate rain showers';
 
   @override
-  String get weatherConditionThunderstorm => "Thunderstorm";
+  String get weatherConditionViolentRainShowers => 'Violent rain showers';
 
   @override
-  String get weatherConditionThunderstormLightHail => "Thunderstorm with slight hail";
+  String get weatherConditionLightSnowShowers => 'Slight snow showers';
 
   @override
-  String get weatherConditionThunderstormHeavyHail => "Thunderstorm with heavy hail";
+  String get weatherConditionHeavySnowShowers => 'Heavy snow showers';
 
   @override
-  String get documentsImportFromFiles => "Import from Files";
+  String get weatherConditionThunderstorm => 'Thunderstorm';
 
   @override
-  String get sonarTubeOpenUrl => "Open URL";
+  String get weatherConditionThunderstormLightHail =>
+      'Thunderstorm with slight hail';
 
   @override
-  String get sonarTubeUrlPrompt => "Paste a YouTube video URL";
+  String get weatherConditionThunderstormHeavyHail =>
+      'Thunderstorm with heavy hail';
 
   @override
-  String get sonarMusicAll => "All";
+  String get documentsImportFromFiles => 'Import from Files';
 
   @override
-  String get sonarMusicSong => "Songs";
+  String get sonarTubeOpenUrl => 'Open URL';
 
   @override
-  String get sonarMusicVideo => "Music videos";
+  String get sonarTubeUrlPrompt => 'Paste a YouTube video URL';
 
   @override
-  String get sonarMusicAlbum => "Albums";
+  String get sonarMusicAll => 'All';
 
   @override
-  String get sonarMusicArtist => "Artists";
+  String get sonarMusicSong => 'Songs';
 
   @override
-  String get sonarMusicPlaylist => "Playlists";
+  String get sonarMusicVideo => 'Music videos';
 
   @override
-  String get sonarMusicFavorites => "Favorites";
+  String get sonarMusicAlbum => 'Albums';
 
   @override
-  String get sonarMusicRecent => "Recently played";
+  String get sonarMusicArtist => 'Artists';
 
   @override
-  String get sonarMusicOpen => "Open URL";
+  String get sonarMusicPlaylist => 'Playlists';
 
   @override
-  String get sonarMusicLoad => "Load more";
+  String get sonarMusicFavorites => 'Favorites';
 
   @override
-  String get sonarMusicArtistOpen => "Go to artist";
+  String get sonarMusicRecent => 'Recently played';
 
   @override
-  String get sonarMusicAlbumOpen => "Go to album";
+  String get sonarMusicOpen => 'Open URL';
 
   @override
-  String get sonarMusicPlayAll => "Play all";
+  String get sonarMusicLoad => 'Load more';
 
   @override
-  String get sonarMusicShare => "Share";
+  String get sonarMusicArtistOpen => 'Go to artist';
 
   @override
-  String get sonarMusicAdd => "Add to favorites";
+  String get sonarMusicAlbumOpen => 'Go to album';
 
   @override
-  String get sonarMusicRemove => "Remove favorite";
+  String get sonarMusicPlayAll => 'Play all';
 
   @override
-  String get sonarMusicEmpty => "No results";
+  String get sonarMusicShare => 'Share';
 
   @override
-  String get sonarMusicInvalid => "Cannot open this item";
+  String get sonarMusicAdd => 'Add to favorites';
 
   @override
-  String get sonarMusicDescription => "Description";
+  String get sonarMusicRemove => 'Remove favorite';
 
   @override
-  String get sonarMusicShuffle => "Shuffle";
+  String get sonarMusicEmpty => 'No results';
 
   @override
-  String get sonarMusicSave => "Save media";
+  String get sonarMusicInvalid => 'Cannot open this item';
 
   @override
-  String get sonarMusicSuggest => "Suggestions";
+  String get sonarMusicDescription => 'Description';
 
   @override
-  String get sonarMusicSearchHint => "Song, artist or album";
+  String get sonarMusicShuffle => 'Shuffle';
 
   @override
-  String get catalogUntitled => "Untitled";
+  String get sonarMusicSave => 'Save media';
 
   @override
-  String get catalogUnknownAuthor => "Unknown author";
+  String get sonarMusicSuggest => 'Suggestions';
 
   @override
-  String get librivoxChapterFallback => "Chapter";
+  String get sonarMusicSearchHint => 'Song, artist or album';
 
   @override
-  String get internetArchiveAudioFallback => "Audio";
+  String get catalogUntitled => 'Untitled';
 
   @override
-  String librivoxHttpError(int statusCode) => "LibriVox error ${statusCode}";
+  String get catalogUnknownAuthor => 'Unknown author';
 
   @override
-  String get librivoxBookNotFound => "Audiobook not found.";
+  String get librivoxChapterFallback => 'Chapter';
 
   @override
-  String internetArchiveHttpError(int statusCode) => "Internet Archive ${statusCode}";
+  String get internetArchiveAudioFallback => 'Audio';
 
   @override
-  String poetryDbHttpError(int statusCode) => "PoetryDB error ${statusCode}";
+  String librivoxHttpError(int statusCode) {
+    return 'LibriVox error $statusCode';
+  }
 
   @override
-  String get cloudFilePickerLoading => "Loading file";
+  String get librivoxBookNotFound => 'Audiobook not found.';
 
   @override
-  String get cloudFilePickerPreparing => "Preparing cloud file…";
+  String internetArchiveHttpError(int statusCode) {
+    return 'Internet Archive $statusCode';
+  }
 
   @override
-  String get cloudFilePickerUnknownSize => "Loading…";
+  String poetryDbHttpError(int statusCode) {
+    return 'PoetryDB error $statusCode';
+  }
 
   @override
-  String get cloudFilePickerCancelling => "Cancelling…";
+  String get cloudFilePickerLoading => 'Loading file';
 
   @override
-  String get audioPlaybackNotificationChannelName => "Audio playback";
+  String get cloudFilePickerPreparing => 'Preparing cloud file…';
 
   @override
-  String get documentExportFallbackName => "Document";
+  String get cloudFilePickerUnknownSize => 'Loading…';
 
   @override
-  String get documentExportAudiobookSuffix => "audiobook";
+  String get cloudFilePickerCancelling => 'Cancelling…';
 
   @override
-  String get convertMediaWavFloat32 => "32-bit float";
+  String get audioPlaybackNotificationChannelName => 'Audio playback';
+
+  @override
+  String get documentExportFallbackName => 'Document';
+
+  @override
+  String get documentExportAudiobookSuffix => 'audiobook';
+
+  @override
+  String get convertMediaWavFloat32 => '32-bit float';
+
   @override
   String get cloudFilePickerCopying => 'Copying the file into Sonarpad';
 
   @override
+  String get audioDescriptionNonverbalVocals =>
+      'Allow descriptions during nonverbal vocal sounds';
+
+  @override
   String get importVideoFromGallery => 'Choose from gallery';
+
   @override
   String get sharedVideoOpen => 'Open video';
 
@@ -5490,6 +5475,100 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get developerReportEmailInvalid =>
       'Enter a valid email address or leave the field empty.';
+
+  @override
+  String get convertMediaDestination => 'Converted file destination';
+
+  @override
+  String get exportAskEveryTime => 'Ask every time';
+
+  @override
+  String get selectAudioTrack => 'Select audio track';
+
+  @override
+  String get castToDevice => 'Cast with Chromecast';
+
+  @override
+  String get castNoDevices =>
+      'No devices found. Check that both devices use the same Wi-Fi network and try again.';
+
+  @override
+  String get castFailure =>
+      'Casting failed or the connection was lost. You can resume on this device.';
+
+  @override
+  String get castResumeHere => 'Resume on this device';
+
+  @override
+  String get settingsShowCast => 'Show Chromecast in compatible players';
+
+  @override
+  String get castStop => 'Stop casting';
+
+  @override
+  String get settingsHideCalendarSaints => 'Hide saints in the calendar';
+
+  @override
+  String get markdownFormat => 'Markdown (.md)';
+
+  @override
+  String get htmlFormat => 'HTML (.html)';
+
+  @override
+  String get recordingNotAdvancing =>
+      'The recording is not receiving new data. Check your connection and restart it if needed.';
+
+  @override
+  String get sonarTubeChannelCourses => 'Courses';
+
+  @override
+  String get sonarTubeChannelPodcasts => 'Podcasts';
+
+  @override
+  String get favoriteVideosLatest => 'Latest videos';
+
+  @override
+  String get favoriteVideosTitle => 'Latest videos from favorites';
+
+  @override
+  String get favoriteVideosPartial =>
+      'Some channels could not be loaded. Videos from the other channels are shown.';
+
+  @override
+  String get favoritesSortAlphabetically => 'Sort alphabetically';
+
+  @override
+  String get saveMediaContent => 'Save content';
+
+  @override
+  String get saveMp4WithAudiodescription => 'MP4 with audio description';
+
+  @override
+  String get audioDescriptionProjectSegment => 'Segment to reanalyze';
+
+  @override
+  String get audioDescriptionProjectReanalyze => 'Reanalyze segment';
+
+  @override
+  String get audioDescriptionProjectReanalyzeConfirm =>
+      'Reanalyze the selected segment? Updated texts will replace matching descriptions while preserving saved timings. New descriptions will only be added in available gaps. The audio-described file will need to be exported again.';
+
+  @override
+  String get convertMediaDocumentAudiobookHint =>
+      'To turn a document into an audiobook, go to Documents → Import from Files. After importing it, choose Export document → MP3 audiobook (.mp3).';
+
+  @override
+  String audioDescriptionProjectEditorSegmentOption(
+    int index,
+    String start,
+    String end,
+  ) {
+    return '$index: $start – $end';
+  }
+
+  @override
+  String get raiPlayMediaUnavailable =>
+      'RaiPlay did not return a playable address after several attempts. The content may be temporarily unavailable. Please try again later.';
 
   @override
   String get concertsTicketOneLogin => 'Sign in with your TicketOne account';
@@ -5503,6 +5582,48 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get pdfUnprotectedCopyDescription =>
       'Save a copy of the PDF without a password, preserving its layout and contents. The original PDF remains unchanged.';
+
+  @override
+  String get onlineDictionaryTitle => 'Online Dictionary';
+
+  @override
+  String get onlineDictionaryWord => 'Word:';
+
+  @override
+  String get onlineDictionaryLanguage => 'Dictionary language:';
+
+  @override
+  String get onlineDictionaryDefinitions => 'Definitions';
+
+  @override
+  String get onlineDictionarySynonyms => 'Synonyms';
+
+  @override
+  String get onlineDictionaryNotFound => 'Word not found.';
+
+  @override
+  String get onlineDictionaryLimited => 'Result too large. Refine the search.';
+
+  @override
+  String get onlineDictionaryTranslation => 'Dictionary Translation Language:';
+
+  @override
+  String get onlineDictionaryNone => 'None';
+
+  @override
+  String onlineDictionaryEntryTitle(String word, String language) {
+    return '$word — $language';
+  }
+
+  @override
+  String onlineDictionaryDefinition(int number, String text) {
+    return '$number. $text';
+  }
+
+  @override
+  String onlineDictionarySource(String url) {
+    return 'Wiktionary — CC BY-SA 4.0\n$url';
+  }
 
   @override
   String get podcastRecorderTitle => 'Record podcast';
@@ -5554,4 +5675,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get podcastRecorderRemoveOutro => 'Remove outro';
+
+  @override
+  String get dutch => 'Dutch';
 }

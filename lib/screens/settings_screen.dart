@@ -1165,6 +1165,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               'pl' => l10n.radioLanguagePl,
               'cs' => l10n.radioLanguageCs,
               'de' => l10n.german,
+              'nl' => l10n.dutch,
               'zh_CN' => l10n.simplifiedChineseLanguageName,
               'uk' => l10n.radioLanguageUk,
               'ro' => l10n.languageLabel('ro'),
@@ -1181,6 +1182,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               AccessibleOption(value: 'pl', label: l10n.radioLanguagePl),
               AccessibleOption(value: 'cs', label: l10n.radioLanguageCs),
               AccessibleOption(value: 'de', label: l10n.german),
+              AccessibleOption(value: 'nl', label: l10n.dutch),
               AccessibleOption(value: 'zh_CN', label: l10n.simplifiedChineseLanguageName),
               AccessibleOption(value: 'uk', label: l10n.radioLanguageUk),
               AccessibleOption(value: 'ro', label: l10n.languageLabel('ro')),
@@ -1848,6 +1850,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             value: 'cs', child: Text(l10n.radioLanguageCs)),
                         DropdownMenuItem(
                             value: 'de', child: Text(l10n.german)),
+                        DropdownMenuItem(value: 'nl', child: Text(l10n.dutch)),
                         DropdownMenuItem(
                             value: 'zh_CN', child: Text(l10n.simplifiedChineseLanguageName)),
                         DropdownMenuItem(

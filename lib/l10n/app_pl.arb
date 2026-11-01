@@ -6477,11 +6477,35 @@
   "onlineDictionaryTranslation": "Język tłumaczenia słownika:",
   "onlineDictionaryNone": "Brak",
   "onlineDictionaryEntryTitle": "{word} — {language}",
-  "@onlineDictionaryEntryTitle": {"placeholders": {"word": {"type": "String"}, "language": {"type": "String"}}},
+  "@onlineDictionaryEntryTitle": {
+    "placeholders": {
+      "word": {
+        "type": "String"
+      },
+      "language": {
+        "type": "String"
+      }
+    }
+  },
   "onlineDictionaryDefinition": "{number}. {text}",
-  "@onlineDictionaryDefinition": {"placeholders": {"number": {"type": "int"}, "text": {"type": "String"}}},
+  "@onlineDictionaryDefinition": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "text": {
+        "type": "String"
+      }
+    }
+  },
   "onlineDictionarySource": "Wiktionary — CC BY-SA 4.0\n{url}",
-  "@onlineDictionarySource": {"placeholders": {"url": {"type": "String"}}},
+  "@onlineDictionarySource": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
   "podcastRecorderTitle": "Nagraj podcast",
   "podcastRecorderHint": "Nagrywany jest tylko mikrofon. Opcjonalny podkład muzyczny jest dodawany na końcu. Poziomy głośności dotyczą całego nagrania. Używaj słuchawek, aby nie nagrywać głosu czytnika ekranu z głośników. Przełączenie do innej aplikacji wstrzymuje nagrywanie.",
   "podcastRecorderMicVolume": "Głośność mikrofonu",
@@ -6496,5 +6520,9 @@
   "podcastRecorderChooseIntro": "Wybierz sygnał początkowy (opcjonalnie)",
   "podcastRecorderChooseOutro": "Wybierz sygnał końcowy (opcjonalnie)",
   "podcastRecorderRemoveIntro": "Usuń sygnał początkowy",
-  "podcastRecorderRemoveOutro": "Usuń sygnał końcowy"
+  "podcastRecorderRemoveOutro": "Usuń sygnał końcowy",
+  "dutch": "Niderlandzki",
+  "@dutch": {
+    "description": "Localized name of the Dutch language in menus."
+  }
 }
