@@ -451,9 +451,11 @@ class MediaJoinService {
       );
 
       final outputExtension = '.${outputFormat.extension}';
+      final outputName =
+          p.basenameWithoutExtension(items.first.displayName).trim();
       final finalPath = p.join(
         operationDir.path,
-        'Sonarpad_joined_${DateTime.now().millisecondsSinceEpoch}$outputExtension',
+        '${outputName.isEmpty ? 'Sonarpad_joined' : outputName}$outputExtension',
       );
       final pendingPath = p.join(workDir.path, 'joined.partial$outputExtension');
       _progress(

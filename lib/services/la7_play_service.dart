@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as html_parser;
@@ -31,9 +32,9 @@ class La7PlayPage {
 }
 
 class La7PlayService {
-  static const _base = 'https://www.la7.it';
-  static const _rivedi = 'https://www.la7.it/rivedila7/0/la7';
-  static const _programmi = 'https://www.la7.it/programmi';
+  static const _base = 'https://www.la7play.it';
+  static const _rivedi = 'https://www.la7play.it/guida-tv-rivedi/la7';
+  static const _programmi = 'https://www.la7play.it/programmi';
   static const _tuttiProgrammi = 'https://www.la7.it/tutti-i-programmi';
   static const _userAgent =
       'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
@@ -59,20 +60,20 @@ class La7PlayService {
       RaiPlayService().isSecretCodeValid(secretKey);
 
   La7PlayPage rootPage() => const La7PlayPage(
-        title: 'LA7 Play',
-        items: [
-          La7PlayItem(
-            title: 'Rivedi LA7',
-            kind: La7PlayItemKind.page,
-            target: 'rivedi',
-          ),
-          La7PlayItem(
-            title: 'Programmi',
-            kind: La7PlayItemKind.page,
-            target: 'programs',
-          ),
-        ],
-      );
+    title: 'LA7 Play',
+    items: [
+      La7PlayItem(
+        title: 'Rivedi LA7',
+        kind: La7PlayItemKind.page,
+        target: 'rivedi',
+      ),
+      La7PlayItem(
+        title: 'Programmi',
+        kind: La7PlayItemKind.page,
+        target: 'programs',
+      ),
+    ],
+  );
 
   Future<La7PlayPage> loadPage(String source) async {
     if (source == 'rivedi') return _rivediDays();
@@ -96,6 +97,8 @@ class La7PlayService {
 
   Future<String> resolveVod(String pageUrl) async {
     final html = await _get(pageUrl);
+    final modern = _structuredVod(html);
+    if (modern != null) return modern;
     final content = RegExp(
       r'\.net/i/.*?content/(.*?)(?:\.mp4)',
       caseSensitive: false,
@@ -127,8 +130,163 @@ class La7PlayService {
     );
   }
 
+  // Catalogue and player data are included in the new site's HTML.
+  List<dynamic> _siteData(String html) {
+    final values = <dynamic>[];
+    final flight = StringBuffer();
+    for (final script in html_parser.parse(html).querySelectorAll('script')) {
+      final text = script.text.trim();
+      try {
+        if (script.attributes['type'] == 'application/ld+json') {
+          values.add(jsonDecode(text));
+        } else if (text.startsWith('self.__next_f.push(')) {
+          final end = text.lastIndexOf(')');
+          final value = jsonDecode(
+            text.substring('self.__next_f.push('.length, end),
+          );
+          if (value is List && value.length > 1 && value[1] is String) {
+            flight.write(value[1]);
+          }
+        }
+      } on FormatException {
+        continue;
+      }
+    }
+    for (final line in const LineSplitter().convert(flight.toString())) {
+      final colon = line.indexOf(':');
+      if (colon < 0) continue;
+      try {
+        values.add(jsonDecode(line.substring(colon + 1)));
+      } on FormatException {
+        continue;
+      }
+    }
+    return values;
+  }
+
+  dynamic _findField(dynamic value, String key) {
+    if (value is Map) {
+      if (value.containsKey(key)) return value[key];
+      for (final child in value.values) {
+        final found = _findField(child, key);
+        if (found != null) return found;
+      }
+    } else if (value is List) {
+      for (final child in value) {
+        final found = _findField(child, key);
+        if (found != null) return found;
+      }
+    }
+    return null;
+  }
+
+  List<({String title, String target})> _structuredItems(
+    String html,
+    Set<String> types,
+  ) {
+    final result = <({String title, String target})>[];
+    final seen = <String>{};
+    void collect(dynamic value) {
+      if (value is Map) {
+        if (value['@type'] == 'ItemList') {
+          for (final entry in (value['itemListElement'] as List? ?? const [])) {
+            final item = entry['item'];
+            if (item is! Map || !types.contains(item['@type'])) continue;
+            final title = item['name'];
+            final url = item['url'];
+            if (title is String &&
+                title.isNotEmpty &&
+                url is String &&
+                url.isNotEmpty &&
+                seen.add(url)) {
+              result.add((title: title, target: url));
+            }
+          }
+        } else {
+          for (final child in value.values) {
+            collect(child);
+          }
+        }
+      } else if (value is List) {
+        for (final child in value) {
+          collect(child);
+        }
+      }
+    }
+
+    collect(_siteData(html));
+    return result;
+  }
+
+  List<dynamic> _guideDays(String html) =>
+      _findField(_siteData(html), 'giorno') as List? ?? const [];
+
+  bool _playableGuideEntry(dynamic entry) =>
+      entry is Map &&
+      entry['pathname'] is String &&
+      (entry['pathname'] as String).isNotEmpty &&
+      (int.tryParse('${entry['timestamp']}') ?? 9223372036854775807) <=
+          DateTime.now().millisecondsSinceEpoch ~/ 1000;
+
+  String? _structuredVod(String html) {
+    final data = _siteData(html);
+    final video = _findField(data, 'videoData');
+    final settings = _findField(data, 'playerSettings');
+    if (video is! Map || settings is! Map) return null;
+    if (video['drm'] == true && settings['abilitaDrm'] == true) {
+      throw Exception(
+        'Questo contenuto richiede Widevine e non può essere riprodotto da Sonarpad.',
+      );
+    }
+    final upload = video['uploadVideo'];
+    if (upload is! Map) return null;
+    final remote = upload['cf_remote_url'];
+    final host = settings['hostnameCdn'];
+    if (remote is! String ||
+        remote.isEmpty ||
+        host is! String ||
+        !host.startsWith('https://')) {
+      return null;
+    }
+    final newStorage =
+        upload['cf_old_entry_id'] == null || upload['cf_old_entry_id'] == '';
+    final normalized = (remote.startsWith('/') ? remote : '/$remote')
+        .replaceAll('.mp4', '');
+    final paths = normalized
+        .split(',')
+        .map((part) {
+          part = part.trim();
+          return newStorage && part.isNotEmpty && !part.startsWith('/nk/')
+              ? '/nk/${part.replaceFirst(RegExp(r'^/+'), '')}'
+              : part;
+        })
+        .join(',');
+    return '${host.replaceFirst(RegExp(r'/+$'), '')}/local/hls/,$paths,.mp4.urlset/master.m3u8';
+  }
+
   Future<La7PlayPage> _rivediDays() async {
-    final document = html_parser.parse(await _get(_rivedi));
+    final html = await _get(_rivedi);
+    final days = _guideDays(html);
+    if (days.isNotEmpty) {
+      final items = <La7PlayItem>[];
+      for (final day in days) {
+        if (!(day['programma'] as List? ?? const []).any(_playableGuideEntry)) {
+          continue;
+        }
+        final date = day['@attributes']?['data'];
+        if (date is String) {
+          items.add(
+            La7PlayItem(
+              title: date.replaceAll('-', '/'),
+              kind: La7PlayItemKind.page,
+              target: 'day:$_rivedi#$date',
+            ),
+          );
+        }
+      }
+      return La7PlayPage(title: 'Rivedi LA7', items: items.reversed.toList());
+    }
+    final document = html_parser.parse(html);
     final items = <La7PlayItem>[];
 
     for (final row in document.querySelectorAll(
@@ -136,11 +294,13 @@ class La7PlayService {
     )) {
       final href = row.querySelector('a')?.attributes['href']?.trim() ?? '';
       if (href.isEmpty) continue;
-      final title = _normalizeWhitespace([
-        _text(row, '.giorno-text'),
-        _text(row, '.giorno-numero'),
-        _text(row, '.giorno-mese'),
-      ].where((value) => value.isNotEmpty).join(' '));
+      final title = _normalizeWhitespace(
+        [
+          _text(row, '.giorno-text'),
+          _text(row, '.giorno-numero'),
+          _text(row, '.giorno-mese'),
+        ].where((value) => value.isNotEmpty).join(' '),
+      );
       if (title.isEmpty) continue;
       items.add(
         La7PlayItem(
@@ -158,7 +318,29 @@ class La7PlayService {
   }
 
   Future<La7PlayPage> _rivediDay(String url) async {
-    final document = html_parser.parse(await _get(url));
+    final html = await _get(url);
+    final days = _guideDays(html);
+    if (days.isNotEmpty) {
+      final items = <La7PlayItem>[];
+      final date = Uri.parse(url).fragment;
+      for (final day in days) {
+        if (day['@attributes']?['data'] != date) continue;
+        for (final entry in (day['programma'] as List? ?? const []).where(
+          _playableGuideEntry,
+        )) {
+          items.add(
+            La7PlayItem(
+              title: '${entry['ora']} — ${entry['titolo']}',
+              description: entry['sinossi'] as String?,
+              kind: La7PlayItemKind.media,
+              target: _absolute(entry['pathname'] as String),
+            ),
+          );
+        }
+      }
+      return La7PlayPage(title: 'Rivedi LA7', items: items);
+    }
+    final document = html_parser.parse(html);
     final items = <La7PlayItem>[];
 
     for (final row in document.querySelectorAll(
@@ -194,6 +376,11 @@ class La7PlayService {
       } catch (_) {
         continue;
       }
+      final listed = _structuredItems(html, {'TVSeries'});
+      if (listed.isNotEmpty) {
+        programs.addAll(listed);
+        break;
+      }
       final document = html_parser.parse(html);
       for (final row in document.querySelectorAll(
         '#container-programmi-list div.list-item, div.list-item',
@@ -215,26 +402,30 @@ class La7PlayService {
       }
     }
 
-    if (!programs.any(
-      (program) => _normalizeSearchText(program.title) ==
-          'la mala educaxxxion 2',
-    )) {
+    if (!programs.any((program) => program.target.contains('la7play.it')) &&
+        !programs.any(
+          (program) =>
+              _normalizeSearchText(program.title) == 'la mala educaxxxion 2',
+        )) {
       programs.add((
         title: 'LA MALA EDUCAXXXION 2',
         target: '$_base/la-mala-educaxxxion',
       ));
     }
 
-    final matched = programs
-        .where(
-          (program) => query == null ||
-              _matchesProgramQuery(program.title, program.target, query),
-        )
-        .toList(growable: false)
-      ..sort(
-        (a, b) => _normalizeSearchText(a.title)
-            .compareTo(_normalizeSearchText(b.title)),
-      );
+    final matched =
+        programs
+            .where(
+              (program) =>
+                  query == null ||
+                  _matchesProgramQuery(program.title, program.target, query),
+            )
+            .toList(growable: false)
+          ..sort(
+            (a, b) => _normalizeSearchText(
+              a.title,
+            ).compareTo(_normalizeSearchText(b.title)),
+          );
 
     final items = <La7PlayItem>[];
     final mediaSeen = <String>{};
@@ -280,6 +471,19 @@ class La7PlayService {
     } catch (_) {
       return const [];
     }
+    final listed = _structuredItems(html, {'VideoObject', 'TVEpisode', 'TVClip'});
+    if (listed.isNotEmpty) {
+      return listed
+          .where((item) => !_isProgramEpisodeUrl(item.target))
+          .map(
+            (item) => La7PlayItem(
+              title: item.title,
+              kind: La7PlayItemKind.media,
+              target: item.target,
+            ),
+          )
+          .toList();
+    }
     final document = html_parser.parse(html);
     final seen = <String>{};
     final clips = <La7PlayItem>[];
@@ -302,11 +506,7 @@ class La7PlayService {
       final date = _text(row, '.data');
       if (date.isNotEmpty) title = '$title ($date)';
       clips.add(
-        La7PlayItem(
-          title: title,
-          kind: La7PlayItemKind.media,
-          target: link,
-        ),
+        La7PlayItem(title: title, kind: La7PlayItemKind.media, target: link),
       );
     }
     return clips;
@@ -317,7 +517,24 @@ class La7PlayService {
     final seen = <String>{};
 
     try {
-      final document = html_parser.parse(await _get(url));
+      final html = await _get(url);
+      final listed = _structuredItems(html, {'TVEpisode', 'VideoObject'});
+      if (listed.isNotEmpty) {
+        return La7PlayPage(
+          title: _programTitleFromHref(url),
+          items: listed
+              .where((item) => _isProgramEpisodeUrl(item.target))
+              .map(
+                (item) => La7PlayItem(
+                  title: item.title,
+                  kind: La7PlayItemKind.media,
+                  target: item.target,
+                ),
+              )
+              .toList(),
+        );
+      }
+      final document = html_parser.parse(html);
       for (final row in document.querySelectorAll('.ultima_puntata')) {
         _pushProgramEpisode(items, seen, row);
       }
@@ -456,12 +673,9 @@ class La7PlayService {
         _queryMatchesText(normalizedQuery, words, normalizedUrl);
   }
 
-  bool _queryMatchesText(
-    String query,
-    Iterable<String> words,
-    String text,
-  ) =>
-      text.contains(query) || words.isNotEmpty && words.every((word) => text.contains(word));
+  bool _queryMatchesText(String query, Iterable<String> words, String text) =>
+      text.contains(query) ||
+      words.isNotEmpty && words.every((word) => text.contains(word));
 
   String _normalizeSearchText(String value) {
     var normalized = value.trim().toLowerCase();
@@ -470,12 +684,31 @@ class La7PlayService {
       normalized = normalized.replaceAll(apostrophe, '');
     }
     const folds = <String, String>{
-      'à': 'a', 'á': 'a', 'â': 'a', 'ä': 'a', 'ã': 'a', 'å': 'a',
-      'è': 'e', 'é': 'e', 'ê': 'e', 'ë': 'e',
-      'ì': 'i', 'í': 'i', 'î': 'i', 'ï': 'i',
-      'ò': 'o', 'ó': 'o', 'ô': 'o', 'ö': 'o', 'õ': 'o',
-      'ù': 'u', 'ú': 'u', 'û': 'u', 'ü': 'u',
-      'ç': 'c', 'ñ': 'n',
+      'à': 'a',
+      'á': 'a',
+      'â': 'a',
+      'ä': 'a',
+      'ã': 'a',
+      'å': 'a',
+      'è': 'e',
+      'é': 'e',
+      'ê': 'e',
+      'ë': 'e',
+      'ì': 'i',
+      'í': 'i',
+      'î': 'i',
+      'ï': 'i',
+      'ò': 'o',
+      'ó': 'o',
+      'ô': 'o',
+      'ö': 'o',
+      'õ': 'o',
+      'ù': 'u',
+      'ú': 'u',
+      'û': 'u',
+      'ü': 'u',
+      'ç': 'c',
+      'ñ': 'n',
     };
     folds.forEach((from, to) {
       normalized = normalized.replaceAll(from, to);
@@ -488,7 +721,8 @@ class La7PlayService {
 
   bool _isProgramEpisodeUrl(String url) {
     try {
-      return Uri.parse(url).path.toLowerCase().contains('/rivedila7/');
+      final path = Uri.parse(url).path.toLowerCase();
+      return path.contains('/rivedila7/') || path.contains('/puntate/');
     } catch (_) {
       return url.toLowerCase().contains('/rivedila7/');
     }
@@ -501,8 +735,9 @@ class La7PlayService {
     try {
       return _trimTrailingSlash(Uri.parse(value).path).toLowerCase();
     } catch (_) {
-      return _trimTrailingSlash(value.split(RegExp(r'[?#]')).first)
-          .toLowerCase();
+      return _trimTrailingSlash(
+        value.split(RegExp(r'[?#]')).first,
+      ).toLowerCase();
     }
   }
 
