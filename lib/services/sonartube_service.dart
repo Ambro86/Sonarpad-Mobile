@@ -676,6 +676,14 @@ class SonarTubeService {
           if (tracks.isNotEmpty && tracks.length >= audioTracks.length) {
             audioTracks = tracks;
           }
+          final manifest = _string(alternativeStreaming['hlsManifestUrl']);
+          if (manifest != null) {
+            try {
+              audioTracks = await _withHlsAudioTracks(audioTracks, manifest);
+            } catch (_) {
+              await AppLogger.log('SonarTube: HLS audio unavailable; keeping direct tracks');
+            }
+          }
         }
       } catch (_) {
         await AppLogger.log('SonarTube: alternate audio profile unavailable');
@@ -1814,6 +1822,47 @@ class SonarTubeService {
         'item:$continuationItems,containers:$continuationContainers,'
         'next:$nextData,reload:$reloadData,commands:$continuationCommands,'
         'append:$appendActions';
+  }
+
+  Future<List<MediaAudioTrack>> _withHlsAudioTracks(
+    List<MediaAudioTrack> tracks, String manifest,
+  ) async {
+    final master = Uri.parse(manifest);
+    final response = await _client.get(master).timeout(const Duration(seconds: 10));
+    if (response.statusCode != 200) return tracks;
+    final urls = <String, List<String>>{};
+    for (final line in const LineSplitter().convert(response.body)) {
+      if (!line.startsWith('#EXT-X-MEDIA:')) continue;
+      final attributes = <String, String>{
+        for (final match in RegExp(r'([A-Z0-9-]+)=(?:"([^"]*)"|([^,]*))').allMatches(line))
+          match.group(1)!: match.group(2) ?? match.group(3)!,
+      };
+      if (attributes['TYPE'] != 'AUDIO') continue;
+      final id = attributes['YT-EXT-AUDIO-CONTENT-ID'];
+      final child = attributes['URI'];
+      if (id == null || child == null || child.isEmpty) continue;
+      final uri = master.resolve(child);
+      if (uri.scheme != 'https' && uri.scheme != 'http') continue;
+      final variants = urls.putIfAbsent(id, () => []);
+      if (variants.contains(uri.toString())) continue;
+      // YouTube's AAC-LC rendition, ahead of the lower bitrate HE-AAC.
+      if (attributes['GROUP-ID'] == '234') {
+        variants.insert(0, uri.toString());
+      } else {
+        variants.add(uri.toString());
+      }
+    }
+    await AppLogger.log('SonarTube: HLS audio matched='
+        '${tracks.where((track) => urls.containsKey(track.id)).length}/${tracks.length}');
+    return tracks.map((track) {
+      final variants = urls[track.id];
+      if (variants == null || variants.isEmpty) return track;
+      // Use the native HLS path for fragmented audio on Apple players. Match
+      // the exact content ID so original, dubbed and descriptive stay distinct.
+      return MediaAudioTrack(id: track.id, label: track.label,
+        isDefault: track.isDefault, url: variants.first,
+        fallbackUrls: {...variants.skip(1), track.url, ...track.fallbackUrls}.toList());
+    }).toList();
   }
 
   Future<Map<String, dynamic>> _playerDataDirect(String videoId, {

@@ -141,20 +141,59 @@ void main() {
     expect(media.selectedAudioTrackId, isNull);
   });
 
-  test('reported dubbed track supports open requests and seeking near the end', () async {
+  for (final manifestStatus in [200, 403]) {
+    test('HLS uses exact content ID and preserves direct fallback: $manifestStatus', () async {
+      final service = SonarTubeService(client: MockClient((request) async {
+        if (request.method == 'GET') {
+          expect(request.url.toString(), 'https://example.org/master.m3u8');
+          return http.Response('''#EXTM3U
+#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID="233",YT-EXT-AUDIO-CONTENT-ID="en-US.10",URI="en-low.m3u8"
+#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID="234",YT-EXT-AUDIO-CONTENT-ID="en-US.2",URI="description.m3u8"
+#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID="234",YT-EXT-AUDIO-CONTENT-ID="en-US.10",NAME="English, dubbed",URI="en.m3u8"
+#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID="234",YT-EXT-AUDIO-CONTENT-ID="it.3",URI="javascript:invalid"
+''', manifestStatus);
+        }
+        final data = player([audio('it.3'), audio('en-US.10')]);
+        if ((jsonDecode(request.body) as Map)['context']['client']['clientName'] == 'VISIONOS') {
+          data['streamingData'] = {
+            ...data['streamingData'] as Map,
+            'hlsManifestUrl': 'https://example.org/master.m3u8',
+          };
+        }
+        return http.Response(jsonEncode(data), 200);
+      }));
+      final media = await service.resolveUrl('RE3_PGwDwhw', fallbackTitle: 'Video');
+      expect(media.audioUrl, 'https://example.org/video');
+      expect(media.audioTracks.first.url, 'https://example.org/it.3/mp4/128000');
+      final english = media.audioTracks.last;
+      expect(english.id, 'en-US.10');
+      expect(english.url, manifestStatus == 200 ? 'https://example.org/en.m3u8' : 'https://example.org/en-US.10/mp4/128000');
+      expect(english.fallbackUrls, manifestStatus == 200 ? [
+        'https://example.org/en-low.m3u8', 'https://example.org/en-US.10/mp4/128000',
+      ] : isEmpty);
+    });
+  }
+
+  test('reported dubbed track has playable HLS segments and direct fallback', () async {
     final client = http.Client();
     try {
       final service = SonarTubeService(client: client, endpoint: Uri.parse('http://127.0.0.1:9'));
       final media = await service.resolveUrl('KtH-qmhvFIE', fallbackTitle: 'Video');
       final track = media.audioTracks.singleWhere((t) => t.id == 'en-US.10');
-      final uri = Uri.parse(track.url);
-      final response = await client.send(http.Request('GET', uri)).timeout(const Duration(seconds: 20));
-      expect(response.statusCode, 200);
-      expect(await response.stream.first, isNotEmpty);
-      final length = int.parse(uri.queryParameters['clen']!);
-      final tail = await client.get(uri, headers: {'Range': 'bytes=${length - 1024}-${length - 1}'}).timeout(const Duration(seconds: 20));
-      expect(tail.statusCode, 206);
-      expect(tail.bodyBytes.length, 1024);
+      final playlist = await client.get(Uri.parse(track.url)).timeout(const Duration(seconds: 20));
+      expect(playlist.statusCode, 200);
+      expect(playlist.body, startsWith('#EXTM3U'));
+      expect(playlist.body, contains('#EXT-X-ENDLIST'));
+      final segments = const LineSplitter().convert(playlist.body)
+          .where((line) => line.isNotEmpty && !line.startsWith('#')).toList();
+      for (final segment in [segments.first, segments.last]) {
+        final response = await client.get(Uri.parse(track.url).resolve(segment))
+            .timeout(const Duration(seconds: 20));
+        expect(response.statusCode, 200);
+        expect(response.bodyBytes, isNotEmpty);
+      }
+      final uri = track.fallbackUrls.map(Uri.parse).firstWhere((uri) => uri.queryParameters.containsKey('clen'));
+      expect(uri.queryParameters['mime'], 'audio/mp4');
     } finally {
       client.close();
     }
@@ -351,10 +390,10 @@ void main() {
       for (final id in ['it.3', 'es.3', 'pl.3']) {
         final track = media.audioTracks.singleWhere((track) => track.id == id);
         final response = await http
-            .get(Uri.parse(track.url), headers: {'Range': 'bytes=0-1023'})
+            .get(Uri.parse(track.url))
             .timeout(const Duration(seconds: 20));
-        expect(response.statusCode, 206);
-        expect(response.bodyBytes.length, 1024);
+        expect(response.statusCode, 200);
+        expect(response.body, startsWith('#EXTM3U'));
       }
       // Store only the track names, never temporary signed URLs.
       if (Platform.environment['SONARPAD_AUDIO_TRACK_REPORT']
@@ -379,6 +418,7 @@ void main() {
     var loaded = false;
     for (final url in [track.url, ...track.fallbackUrls]) {
       final uri = Uri.parse(url);
+      if (!uri.queryParameters.containsKey('clen')) continue;
       try {
         final response = await http.get(uri, headers: {'Range': 'bytes=0-'})
             .timeout(const Duration(seconds: 20));
