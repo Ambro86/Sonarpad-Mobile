@@ -661,15 +661,21 @@ class SonarTubeService {
     final declaredTracks = _asList(streaming['adaptiveFormats'])
         .map((value) => _string(_asMap(_asMap(value)?['audioTrack'])?['id']))
         .whereType<String>().toSet();
-    if (declaredTracks.length > 1 && audioTracks.length < declaredTracks.length) {
+    if (declaredTracks.length > 1) {
       try {
+        // Android adaptive URLs can be listed but reject playback (HTTP 403).
+        // Keep the main stream and obtain the same track IDs with a media
+        // profile that supports them, retaining YouTube's visitor context.
         final alternative = await _playerDataDirect(videoId,
-          clientVersion: '20.10.38');
+          alternativeAudio: true,
+          visitorData: _string(_asMap(data['responseContext'])?['visitorData']));
         final alternativeStreaming = _asMap(alternative['streamingData']);
         if (_string(_asMap(alternative['videoDetails'])?['videoId']) == videoId &&
             alternativeStreaming != null) {
           final tracks = MediaAudioTrack.fromYouTube(alternativeStreaming);
-          if (tracks.length > audioTracks.length) audioTracks = tracks;
+          if (tracks.isNotEmpty && tracks.length >= audioTracks.length) {
+            audioTracks = tracks;
+          }
         }
       } catch (_) {
         await AppLogger.log('SonarTube: alternate audio profile unavailable');
@@ -1811,7 +1817,8 @@ class SonarTubeService {
   }
 
   Future<Map<String, dynamic>> _playerDataDirect(String videoId, {
-    String clientVersion = _androidClientVersion,
+    bool alternativeAudio = false,
+    String? visitorData,
   }) async {
     if (!RegExp(r'^[A-Za-z0-9_-]{11}$').hasMatch(videoId)) {
       throw const FormatException('invalid_video_id');
@@ -1823,12 +1830,25 @@ class SonarTubeService {
           'client': {
             'hl': _youtubeLanguage,
             'gl': _youtubeRegion,
-            'clientName': 'ANDROID',
-            'clientVersion': clientVersion,
-            'androidSdkVersion': 33,
-            'osName': 'Android',
-            'osVersion': '16',
-            'platform': 'MOBILE',
+            if (alternativeAudio) ...{
+              'clientName': 'VISIONOS',
+              'clientVersion': '1.02',
+              'deviceMake': 'Apple',
+              'deviceModel': 'RealityDevice17,1',
+              'userAgent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 15_7_3) '
+                  'AppleWebKit/605.1.15 (KHTML, like Gecko) '
+                  'Version/26.0 Safari/605.1.15',
+              'osName': 'visionOS',
+              'osVersion': '26.5.23O471',
+              'visitorData': ?visitorData,
+            } else ...{
+              'clientName': 'ANDROID',
+              'clientVersion': _androidClientVersion,
+              'androidSdkVersion': 33,
+              'osName': 'Android',
+              'osVersion': '16',
+              'platform': 'MOBILE',
+            },
           },
         },
         'videoId': videoId,
@@ -1881,6 +1901,8 @@ class SonarTubeService {
     Map<String, dynamic> payload, {
     required bool webClient,
   }) async {
+    final client = _asMap(_asMap(payload['context'])?['client']);
+    final visitor = _string(client?['visitorData']);
     final response = await _client
         .post(
           uri,
@@ -1888,11 +1910,13 @@ class SonarTubeService {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
             'Accept-Language': _youtubeLanguage,
-            'User-Agent': _androidUserAgent,
-            'X-YouTube-Client-Name': webClient ? '1' : '3',
+            'User-Agent': _string(client?['userAgent']) ?? _androidUserAgent,
+            'X-YouTube-Client-Name': webClient ? '1' :
+                (client?['clientName'] == 'VISIONOS' ? '101' : '3'),
+            'X-Goog-Visitor-Id': ?visitor,
             'X-YouTube-Client-Version':
                 webClient ? _webClientVersion :
-                    (_asMap(_asMap(payload['context'])?['client'])?['clientVersion']
+                    (client?['clientVersion']
                         ?.toString() ?? _androidClientVersion),
           },
           body: jsonEncode(payload),

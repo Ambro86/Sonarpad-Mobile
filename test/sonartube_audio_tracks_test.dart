@@ -110,6 +110,57 @@ void main() {
     },
   );
 
+  test('listed Android tracks are replaced with the same playable track IDs', () async {
+    var calls = 0;
+    final service = SonarTubeService(client: MockClient((request) async {
+      calls++;
+      final body = jsonDecode(request.body) as Map;
+      final context = body['context']['client'] as Map;
+      if (calls == 1) {
+        expect(context['clientName'], 'ANDROID');
+        return http.Response(jsonEncode({
+          ...player([audio('it.3'), audio('en-US.10')]),
+          'responseContext': {'visitorData': 'test-visitor'},
+        }), 200);
+      }
+      expect(context['clientName'], 'VISIONOS');
+      expect(context['visitorData'], 'test-visitor');
+      expect(request.headers['X-Goog-Visitor-Id'], 'test-visitor');
+      expect(request.headers['X-YouTube-Client-Name'], '101');
+      expect(request.headers['User-Agent'], context['userAgent']);
+      return http.Response(jsonEncode(player([
+        {...audio('it.3'), 'url': 'https://example.org/working-it'},
+        {...audio('en-US.10'), 'url': 'https://example.org/working-en'},
+      ])), 200);
+    }));
+    final media = await service.resolveUrl('RE3_PGwDwhw', fallbackTitle: 'Video');
+    expect(calls, 2);
+    expect(media.audioUrl, 'https://example.org/video');
+    expect(media.audioTracks.singleWhere((t) => t.id == 'en-US.10').url,
+        'https://example.org/working-en');
+    expect(media.selectedAudioTrackId, isNull);
+  });
+
+  test('reported dubbed track supports open requests and seeking near the end', () async {
+    final client = http.Client();
+    try {
+      final service = SonarTubeService(client: client, endpoint: Uri.parse('http://127.0.0.1:9'));
+      final media = await service.resolveUrl('KtH-qmhvFIE', fallbackTitle: 'Video');
+      final track = media.audioTracks.singleWhere((t) => t.id == 'en-US.10');
+      final uri = Uri.parse(track.url);
+      final response = await client.send(http.Request('GET', uri)).timeout(const Duration(seconds: 20));
+      expect(response.statusCode, 200);
+      expect(await response.stream.first, isNotEmpty);
+      final length = int.parse(uri.queryParameters['clen']!);
+      final tail = await client.get(uri, headers: {'Range': 'bytes=${length - 1024}-${length - 1}'}).timeout(const Duration(seconds: 20));
+      expect(tail.statusCode, 206);
+      expect(tail.bodyBytes.length, 1024);
+    } finally {
+      client.close();
+    }
+  }, skip: !const bool.fromEnvironment('RUN_LIVE_SONARTUBE_AUDIO'),
+     timeout: const Timeout(Duration(minutes: 1)));
+
   test('encrypted alternate tracks trigger compatible profile only', () async {
     final versions = <String>[];
     final service = SonarTubeService(
@@ -133,7 +184,7 @@ void main() {
       'RE3_PGwDwhw',
       fallbackTitle: 'Video',
     );
-    expect(versions, ['21.29.366', '20.10.38']);
+    expect(versions, ['21.29.366', '1.02']);
     expect(media.audioTracks, hasLength(2));
     expect(media.selectedAudioTrackId, isNull);
     expect(media.audioUrl, 'https://example.org/video');
