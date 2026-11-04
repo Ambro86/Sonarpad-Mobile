@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -6,12 +8,62 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sonarpad_mobile_starter/l10n/app_localizations.dart';
+import 'package:sonarpad_mobile_starter/widgets/universal_accessible_view.dart';
 import 'package:sonarpad_mobile_starter/screens/sonartube_screen.dart';
 import 'package:sonarpad_mobile_starter/services/sonartube_favorites_service.dart';
 import 'package:sonarpad_mobile_starter/services/sonartube_history_service.dart';
 import 'package:sonarpad_mobile_starter/services/sonartube_service.dart';
 
 void main() {
+  testWidgets('transcript shows only available languages with interface language first', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    debugDefaultTargetPlatformOverride = TargetPlatform.android;
+    addTearDown(() => debugDefaultTargetPlatformOverride = null);
+    String? requestedLanguage;
+    final service = SonarTubeService(endpoint: Uri.parse('https://example.test/youtube_resolve.php'), enableDirectNavigation: false, client: MockClient((request) async {
+      final query = request.url.queryParameters;
+      Map<String, dynamic> data;
+      if (query['list_langs'] == '1') {
+        data = {'ok': true, 'languages': [
+          {'lang': 'en', 'name': 'English', 'auto': false},
+          {'lang': 'tr', 'name': 'Türkçe', 'auto': true},
+        ]};
+      } else if (query['transcribe'] == '1') {
+        requestedLanguage = query['lang'];
+        data = {'ok': false, 'error': 'no_captions'};
+      } else {
+        data = {'ok': true, 'page': 1, 'items': [
+          {'kind': 'video', 'id': 'abcdefghijk', 'title': 'Video example', 'views': '10 views',
+           'url': 'https://www.youtube.com/watch?v=abcdefghijk'},
+        ]};
+      }
+      return http.Response(jsonEncode(data), 200, headers: {'content-type': 'application/json; charset=utf-8'});
+    }));
+    await tester.pumpWidget(MaterialApp(
+      locale: const Locale('tr'),
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: SonarTubeScreen(service: service, collection: const SonarTubeItem(kind: SonarTubeItemKind.playlist, id: 'PL_example', title: 'Example', url: 'https://www.youtube.com/playlist?list=PL_example')),
+    ));
+    await tester.pumpAndSettle();
+    final source = tester.widget<UniversalAccessibleList>(find.byType(UniversalAccessibleList));
+    unawaited(Future<void>.sync(() => source.onEvent!(const AccessibleListEvent(type: 'customAction', id: 'item_0', action: 'transcribe_video'))));
+    await tester.pumpAndSettle();
+    expect(requestedLanguage, isNull);
+    expect(find.text('Transkripsiyon dilini seçin'), findsOneWidget);
+    final list = tester.widget<UniversalAccessibleList>(find.byType(UniversalAccessibleList));
+    final rows = list.sections.expand((s) => s.rows).toList();
+    expect(rows.map((r) => r.id), ['tr', 'en']);
+    expect(rows.first.subtitle, 'Otomatik oluşturulan altyazılar');
+    await tester.tap(find.text('English'));
+    await tester.pumpAndSettle();
+    expect(requestedLanguage, 'en');
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox());
+    await tester.pumpAndSettle();
+    debugDefaultTargetPlatformOverride = null;
+  });
+
   testWidgets('scrolls through every playlist video with standard list', (
     tester,
   ) async {

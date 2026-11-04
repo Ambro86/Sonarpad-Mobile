@@ -5773,4 +5773,66 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get translationLibraryDocuments => 'Belgeler · Sonarpad';
+
+  @override
+  String get sonarTubeChooseTranscriptLanguage => 'Transkripsiyon dilini seçin';
+
+  @override
+  String get sonarTubeAutomaticCaptions => 'Otomatik oluşturulan altyazılar';
+
+  @override
+  String get mediaCutterSaveScope => 'Ne kaydedilsin';
+
+  @override
+  String get mediaCutterSaveAll => 'Tüm dosyayı kaydet';
+
+  @override
+  String mediaCutterSaveOnlyPart(int part) {
+    return 'Yalnızca $part. bölümü kaydet';
+  }
+
+  @override
+  String get mediaCutterExportVideo => 'Sesi video olarak dışa aktar';
+
+  @override
+  String get mediaCutterAudioOnly => 'Yalnızca ses';
+
+  @override
+  String get mediaCutterBlackVideo => 'Siyah görüntülü video';
+
+  @override
+  String get mediaCutterImageVideo => 'Seçilen resimle video';
+
+  @override
+  String get mediaCutterChooseImage => 'Resim seç';
+
+  @override
+  String get mediaCutterGoToTime => 'Zamana git…';
+
+  @override
+  String get mediaCutterTimeHint => 'Saniye, mm:ss veya hh:mm:ss';
+
+  @override
+  String get mediaCutterInvalidTime =>
+      'Dosya süresi içinde geçerli bir zaman girin.';
+
+  @override
+  String get mediaCutterClearMarkers => 'İşaretçileri temizle';
+
+  @override
+  String get mediaCutterMarkersCleared =>
+      'İşaretçiler temizlendi. Uygulanan kesimler korundu.';
+
+  @override
+  String get mediaCutterInsertMedia => 'Başka dosya ekle…';
+
+  @override
+  String get mediaCutterInsertBefore => 'Şunun önüne ekle…';
+
+  @override
+  String get mediaCutterAtEnd => 'Sona';
+
+  @override
+  String get mediaCutterMediaInserted =>
+      'Dosya eklendi. Mevcut kesimler ve efektler korundu.';
 }

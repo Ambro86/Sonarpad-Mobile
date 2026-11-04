@@ -15,7 +15,10 @@ void main() {
     expect(service, contains("String languageCode = 'auto'"));
     expect(service, contains("'timestamps': '1'"));
     expect(service, contains('for (var attempt = 0; attempt < 2; attempt++)'));
-    expect(screen, isNot(contains('Localizations.localeOf(context).languageCode')));
+    expect(screen, contains('widget.languageCode ?? Localizations.localeOf(context).languageCode'));
+    expect(screen, contains('languageCode: language,'));
+    expect(screen, contains('onPressedWithEpisode: (episode)'));
+    expect(screen, contains('languageCode: track?.languageCode'));
   });
 
   test('SonarTube transcript opens in the standard document reader', () {

@@ -14,6 +14,14 @@ class MediaAudioTrack {
   final bool isDefault;
   final List<String> fallbackUrls;
 
+  /// YouTube track IDs carry a language tag before the variant suffix (tr.4).
+  String? get languageCode {
+    final tag = id.split('.').first.replaceAll('_', '-');
+    return RegExp(r'^[a-zA-Z]{2,3}(?:-[a-zA-Z0-9]{2,8})*$').hasMatch(tag)
+        ? tag.toLowerCase()
+        : null;
+  }
+
   static bool _playable(String url) {
     final uri = Uri.tryParse(url);
     return uri != null &&

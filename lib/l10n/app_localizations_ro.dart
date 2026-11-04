@@ -5791,4 +5791,66 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String get translationLibraryDocuments => 'Documente · Sonarpad';
+
+  @override
+  String get sonarTubeChooseTranscriptLanguage => 'Alege limba transcrierii';
+
+  @override
+  String get sonarTubeAutomaticCaptions => 'Subtitrări generate automat';
+
+  @override
+  String get mediaCutterSaveScope => 'Ce se salvează';
+
+  @override
+  String get mediaCutterSaveAll => 'Salvează întregul fișier';
+
+  @override
+  String mediaCutterSaveOnlyPart(int part) {
+    return 'Salvează doar partea $part';
+  }
+
+  @override
+  String get mediaCutterExportVideo => 'Exportă sunetul ca video';
+
+  @override
+  String get mediaCutterAudioOnly => 'Doar audio';
+
+  @override
+  String get mediaCutterBlackVideo => 'Video cu imagine neagră';
+
+  @override
+  String get mediaCutterImageVideo => 'Video cu imagine aleasă';
+
+  @override
+  String get mediaCutterChooseImage => 'Alege imaginea';
+
+  @override
+  String get mediaCutterGoToTime => 'Mergi la timpul…';
+
+  @override
+  String get mediaCutterTimeHint => 'Secunde, mm:ss sau hh:mm:ss';
+
+  @override
+  String get mediaCutterInvalidTime =>
+      'Introdu un timp valid în durata fișierului.';
+
+  @override
+  String get mediaCutterClearMarkers => 'Șterge marcajele';
+
+  @override
+  String get mediaCutterMarkersCleared =>
+      'Marcajele au fost șterse. Tăieturile aplicate sunt păstrate.';
+
+  @override
+  String get mediaCutterInsertMedia => 'Inserează alt fișier…';
+
+  @override
+  String get mediaCutterInsertBefore => 'Inserează înainte de…';
+
+  @override
+  String get mediaCutterAtEnd => 'La sfârșit';
+
+  @override
+  String get mediaCutterMediaInserted =>
+      'Fișier inserat. Tăieturile și efectele existente sunt păstrate.';
 }

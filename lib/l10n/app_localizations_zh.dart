@@ -5541,6 +5541,65 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get translationLibraryDocuments => '文档 · Sonarpad';
+
+  @override
+  String get sonarTubeChooseTranscriptLanguage => '选择转录语言';
+
+  @override
+  String get sonarTubeAutomaticCaptions => '自动生成的字幕';
+
+  @override
+  String get mediaCutterSaveScope => '保存范围';
+
+  @override
+  String get mediaCutterSaveAll => '保存整个文件';
+
+  @override
+  String mediaCutterSaveOnlyPart(int part) {
+    return '仅保存第 $part 部分';
+  }
+
+  @override
+  String get mediaCutterExportVideo => '将音频导出为视频';
+
+  @override
+  String get mediaCutterAudioOnly => '仅音频';
+
+  @override
+  String get mediaCutterBlackVideo => '黑色画面视频';
+
+  @override
+  String get mediaCutterImageVideo => '所选图片视频';
+
+  @override
+  String get mediaCutterChooseImage => '选择图片';
+
+  @override
+  String get mediaCutterGoToTime => '跳转到时间…';
+
+  @override
+  String get mediaCutterTimeHint => '秒、mm:ss 或 hh:mm:ss';
+
+  @override
+  String get mediaCutterInvalidTime => '请输入文件时长范围内的有效时间。';
+
+  @override
+  String get mediaCutterClearMarkers => '清除标记';
+
+  @override
+  String get mediaCutterMarkersCleared => '标记已清除，已应用的剪切保持不变。';
+
+  @override
+  String get mediaCutterInsertMedia => '插入另一个文件…';
+
+  @override
+  String get mediaCutterInsertBefore => '插入到以下部分之前…';
+
+  @override
+  String get mediaCutterAtEnd => '末尾';
+
+  @override
+  String get mediaCutterMediaInserted => '文件已插入，现有剪切和效果保持不变。';
 }
 
 /// The translations for Chinese, as used in China (`zh_CN`).
@@ -11080,4 +11139,63 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get translationLibraryDocuments => '文档 · Sonarpad';
+
+  @override
+  String get sonarTubeChooseTranscriptLanguage => '选择转录语言';
+
+  @override
+  String get sonarTubeAutomaticCaptions => '自动生成的字幕';
+
+  @override
+  String get mediaCutterSaveScope => '保存范围';
+
+  @override
+  String get mediaCutterSaveAll => '保存整个文件';
+
+  @override
+  String mediaCutterSaveOnlyPart(int part) {
+    return '仅保存第 $part 部分';
+  }
+
+  @override
+  String get mediaCutterExportVideo => '将音频导出为视频';
+
+  @override
+  String get mediaCutterAudioOnly => '仅音频';
+
+  @override
+  String get mediaCutterBlackVideo => '黑色画面视频';
+
+  @override
+  String get mediaCutterImageVideo => '所选图片视频';
+
+  @override
+  String get mediaCutterChooseImage => '选择图片';
+
+  @override
+  String get mediaCutterGoToTime => '跳转到时间…';
+
+  @override
+  String get mediaCutterTimeHint => '秒、mm:ss 或 hh:mm:ss';
+
+  @override
+  String get mediaCutterInvalidTime => '请输入文件时长范围内的有效时间。';
+
+  @override
+  String get mediaCutterClearMarkers => '清除标记';
+
+  @override
+  String get mediaCutterMarkersCleared => '标记已清除，已应用的剪切保持不变。';
+
+  @override
+  String get mediaCutterInsertMedia => '插入另一个文件…';
+
+  @override
+  String get mediaCutterInsertBefore => '插入到以下部分之前…';
+
+  @override
+  String get mediaCutterAtEnd => '末尾';
+
+  @override
+  String get mediaCutterMediaInserted => '文件已插入，现有剪切和效果保持不变。';
 }

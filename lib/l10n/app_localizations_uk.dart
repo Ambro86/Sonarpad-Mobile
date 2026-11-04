@@ -5761,4 +5761,66 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get translationLibraryDocuments => 'Документи · Sonarpad';
+
+  @override
+  String get sonarTubeChooseTranscriptLanguage => 'Виберіть мову транскрипції';
+
+  @override
+  String get sonarTubeAutomaticCaptions => 'Автоматично створені субтитри';
+
+  @override
+  String get mediaCutterSaveScope => 'Що зберегти';
+
+  @override
+  String get mediaCutterSaveAll => 'Зберегти весь файл';
+
+  @override
+  String mediaCutterSaveOnlyPart(int part) {
+    return 'Зберегти лише частину $part';
+  }
+
+  @override
+  String get mediaCutterExportVideo => 'Експортувати аудіо як відео';
+
+  @override
+  String get mediaCutterAudioOnly => 'Лише аудіо';
+
+  @override
+  String get mediaCutterBlackVideo => 'Відео з чорним зображенням';
+
+  @override
+  String get mediaCutterImageVideo => 'Відео з вибраним зображенням';
+
+  @override
+  String get mediaCutterChooseImage => 'Вибрати зображення';
+
+  @override
+  String get mediaCutterGoToTime => 'Перейти до часу…';
+
+  @override
+  String get mediaCutterTimeHint => 'Секунди, mm:ss або hh:mm:ss';
+
+  @override
+  String get mediaCutterInvalidTime =>
+      'Введіть дійсний час у межах тривалості файлу.';
+
+  @override
+  String get mediaCutterClearMarkers => 'Очистити маркери';
+
+  @override
+  String get mediaCutterMarkersCleared =>
+      'Маркери очищено. Застосовані вирізання збережено.';
+
+  @override
+  String get mediaCutterInsertMedia => 'Вставити інший файл…';
+
+  @override
+  String get mediaCutterInsertBefore => 'Вставити перед…';
+
+  @override
+  String get mediaCutterAtEnd => 'У кінці';
+
+  @override
+  String get mediaCutterMediaInserted =>
+      'Файл вставлено. Наявні вирізання та ефекти збережено.';
 }

@@ -107,7 +107,7 @@ void main() {
     });
 
     test('applies fades after every other audio effect', () {
-      expect(source, contains('filters.addAll(_terminalFadeFilters('));
+      expect(source, matches(RegExp(r'filters\.addAll\(\s*_terminalFadeFilters\(')));
       expect(
         source,
         contains('slot.effect == _MediaPartEffect.fadeIn ||'),

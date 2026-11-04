@@ -110,6 +110,7 @@ Future<void> pumpTestPlayer(
   bool remote = false,
   List<MediaAudioTrack> tracks = const [],
   String? selectedTrackId = 'it',
+  List<PodcastPlayerExtraAction> extraActions = const [],
 }) async {
   tester.view.devicePixelRatio = 1;
   tester.view.physicalSize = fullscreen
@@ -128,6 +129,7 @@ Future<void> pumpTestPlayer(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         home: PodcastEpisodePlayerScreen(
+          extraActions: extraActions,
           episode: PodcastEpisode(
             title: 'Prova velocità',
             description: '',
@@ -341,6 +343,12 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  test('YouTube language tags are extracted without assuming unknown IDs', () {
+    for (final entry in {'tr.4': 'tr', 'en-US.4': 'en-us', 'it': 'it', 'audio_12': null, '': null}.entries) {
+      expect(MediaAudioTrack(id: entry.key, label: '', url: '').languageCode, entry.value);
+    }
+  });
+
   testWidgets(
     'track switching preserves playback and pause on both mobile layouts',
     (tester) async {
@@ -352,7 +360,14 @@ void main() {
             audio.rejectLoad = rejected;
             audio.rejectPrimary = mode == 2;
             audio.requestedUrls.clear();
-            await pumpTestPlayer(tester, tracks: tracks);
+            String? actionTrack;
+            await pumpTestPlayer(tester, tracks: tracks, extraActions: [
+              PodcastPlayerExtraAction(
+                id: 'transcript', label: () => 'Transcript', icon: Icons.subject,
+                onPressed: () async => fail('Must use current episode'),
+                onPressedWithEpisode: (episode) async => actionTrack = episode.selectedAudioTrackId,
+              ),
+            ]);
             await form(tester).onEvent!(
               const AccessibleListEvent(
                 type: 'slider',
@@ -393,6 +408,8 @@ void main() {
             expect(video.position.inSeconds, 123);
             expect(video.volume, rejected ? 1 : 0);
             expect(video.playing, !paused);
+            await event(tester, 'extra_transcript');
+            expect(actionTrack, rejected ? 'it' : 'pl');
             await disposeTestPlayer(tester);
           }
         }

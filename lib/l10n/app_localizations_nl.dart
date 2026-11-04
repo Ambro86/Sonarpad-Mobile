@@ -5779,4 +5779,67 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get translationLibraryDocuments => 'Documenten · Sonarpad';
+
+  @override
+  String get sonarTubeChooseTranscriptLanguage => 'Kies de transcriptietaal';
+
+  @override
+  String get sonarTubeAutomaticCaptions =>
+      'Automatisch gegenereerde ondertitels';
+
+  @override
+  String get mediaCutterSaveScope => 'Wat opslaan';
+
+  @override
+  String get mediaCutterSaveAll => 'Het hele bestand opslaan';
+
+  @override
+  String mediaCutterSaveOnlyPart(int part) {
+    return 'Alleen deel $part opslaan';
+  }
+
+  @override
+  String get mediaCutterExportVideo => 'Audio als video exporteren';
+
+  @override
+  String get mediaCutterAudioOnly => 'Alleen audio';
+
+  @override
+  String get mediaCutterBlackVideo => 'Video met zwart beeld';
+
+  @override
+  String get mediaCutterImageVideo => 'Video met gekozen afbeelding';
+
+  @override
+  String get mediaCutterChooseImage => 'Afbeelding kiezen';
+
+  @override
+  String get mediaCutterGoToTime => 'Ga naar tijd…';
+
+  @override
+  String get mediaCutterTimeHint => 'Seconden, mm:ss of hh:mm:ss';
+
+  @override
+  String get mediaCutterInvalidTime =>
+      'Voer een geldige tijd binnen de bestandsduur in.';
+
+  @override
+  String get mediaCutterClearMarkers => 'Markeringen wissen';
+
+  @override
+  String get mediaCutterMarkersCleared =>
+      'Markeringen gewist. Toegepaste knipbewerkingen blijven behouden.';
+
+  @override
+  String get mediaCutterInsertMedia => 'Ander bestand invoegen…';
+
+  @override
+  String get mediaCutterInsertBefore => 'Invoegen vóór…';
+
+  @override
+  String get mediaCutterAtEnd => 'Aan het einde';
+
+  @override
+  String get mediaCutterMediaInserted =>
+      'Bestand ingevoegd. Bestaande knipbewerkingen en effecten blijven behouden.';
 }

@@ -376,7 +376,9 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
     final media = await _service.resolve(item);
     return PodcastEpisode(id: 'sonarmusic:${item.videoId}',
       title: media.title, description: media.channel ?? item.artist ?? '',
-      audioUrl: media.audioUrl, videoUrl: media.videoUrl);
+      audioUrl: media.audioUrl, videoUrl: media.videoUrl,
+      audioTracks: media.audioTracks,
+      selectedAudioTrackId: media.selectedAudioTrackId);
   }
   Future<void> _play(SonarMusicItem item, {bool shuffle = false, bool forceAutoplay = false}) async {
     if (_busy || !item.playable) return;

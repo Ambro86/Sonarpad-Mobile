@@ -5778,4 +5778,66 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get translationLibraryDocuments => 'Dokumenty · Sonarpad';
+
+  @override
+  String get sonarTubeChooseTranscriptLanguage => 'Wybierz język transkrypcji';
+
+  @override
+  String get sonarTubeAutomaticCaptions => 'Napisy wygenerowane automatycznie';
+
+  @override
+  String get mediaCutterSaveScope => 'Co zapisać';
+
+  @override
+  String get mediaCutterSaveAll => 'Zapisz cały plik';
+
+  @override
+  String mediaCutterSaveOnlyPart(int part) {
+    return 'Zapisz tylko część $part';
+  }
+
+  @override
+  String get mediaCutterExportVideo => 'Eksportuj dźwięk jako wideo';
+
+  @override
+  String get mediaCutterAudioOnly => 'Tylko dźwięk';
+
+  @override
+  String get mediaCutterBlackVideo => 'Wideo z czarnym obrazem';
+
+  @override
+  String get mediaCutterImageVideo => 'Wideo z wybranym obrazem';
+
+  @override
+  String get mediaCutterChooseImage => 'Wybierz obraz';
+
+  @override
+  String get mediaCutterGoToTime => 'Przejdź do czasu…';
+
+  @override
+  String get mediaCutterTimeHint => 'Sekundy, mm:ss lub hh:mm:ss';
+
+  @override
+  String get mediaCutterInvalidTime =>
+      'Wprowadź prawidłowy czas w zakresie długości pliku.';
+
+  @override
+  String get mediaCutterClearMarkers => 'Wyczyść znaczniki';
+
+  @override
+  String get mediaCutterMarkersCleared =>
+      'Znaczniki wyczyszczone. Zastosowane cięcia pozostają zachowane.';
+
+  @override
+  String get mediaCutterInsertMedia => 'Wstaw inny plik…';
+
+  @override
+  String get mediaCutterInsertBefore => 'Wstaw przed…';
+
+  @override
+  String get mediaCutterAtEnd => 'Na końcu';
+
+  @override
+  String get mediaCutterMediaInserted =>
+      'Plik wstawiony. Istniejące cięcia i efekty pozostają zachowane.';
 }

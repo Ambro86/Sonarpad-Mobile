@@ -6605,5 +6605,25 @@
   "translationLibraryDocuments": "Documenti · Sonarpad",
   "@translationLibraryDocuments": {
     "description": "Pick a text document from the Sonarpad library."
-  }
+  },
+  "sonarTubeChooseTranscriptLanguage": "Scegli la lingua di trascrizione",
+  "sonarTubeAutomaticCaptions": "Sottotitoli generati automaticamente",
+  "mediaCutterSaveScope": "Cosa salvare",
+  "mediaCutterSaveAll": "Salva tutto il file",
+  "mediaCutterSaveOnlyPart": "Salva solo la parte {part}",
+  "@mediaCutterSaveOnlyPart": {"placeholders": {"part": {"type": "int"}}},
+  "mediaCutterExportVideo": "Esporta audio come video",
+  "mediaCutterAudioOnly": "Solo audio",
+  "mediaCutterBlackVideo": "Video con immagine nera",
+  "mediaCutterImageVideo": "Video con immagine scelta",
+  "mediaCutterChooseImage": "Scegli immagine",
+  "mediaCutterGoToTime": "Vai al tempo…",
+  "mediaCutterTimeHint": "Secondi, mm:ss oppure hh:mm:ss",
+  "mediaCutterInvalidTime": "Inserisci un tempo valido entro la durata del file.",
+  "mediaCutterClearMarkers": "Azzera marcatori",
+  "mediaCutterMarkersCleared": "Marcatori azzerati. I tagli applicati sono conservati.",
+  "mediaCutterInsertMedia": "Inserisci un altro file…",
+  "mediaCutterInsertBefore": "Inserisci prima di…",
+  "mediaCutterAtEnd": "Alla fine",
+  "mediaCutterMediaInserted": "File inserito. I tagli e gli effetti esistenti sono conservati."
 }

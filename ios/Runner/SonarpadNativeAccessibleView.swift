@@ -221,19 +221,37 @@ private func sonarpadTransientRowMutation(
     guard old.header == new.header, old.footer == new.footer,
           Set(old.rows.map { $0.id }).count == old.rows.count,
           Set(new.rows.map { $0.id }).count == new.rows.count else { return nil }
-    let oldStable = old.rows.filter { !transientIds.contains($0.id) }
-    let newStable = new.rows.filter { !transientIds.contains($0.id) }
-    guard oldStable.count == newStable.count else { return nil }
-    for (left, right) in zip(oldStable, newStable) {
-      guard sonarpadRowsHaveSameStructure(left, right) else { return nil }
+
+    // A transient id is permission to insert/remove that row, NOT permission
+    // to recreate it on every structural change. A focused effect slider must
+    // survive insertion of its amount slider or the next effect slot.
+    let oldById = Dictionary(uniqueKeysWithValues: old.rows.map { ($0.id, $0) })
+    let newById = Dictionary(uniqueKeysWithValues: new.rows.map { ($0.id, $0) })
+    let retainedOld = old.rows.filter { row in
+      guard let updated = newById[row.id] else { return false }
+      return sonarpadRowsHaveSameStructure(row, updated)
     }
-    // Only opted-in rows can be replaced. All surviving controls keep their
-    // cell/accessibility object, even when their numeric index moves.
-    for (row, model) in old.rows.enumerated() where transientIds.contains(model.id) {
-      deleted.append(IndexPath(row: row, section: section))
+    let retainedNew = new.rows.filter { row in
+      guard let previous = oldById[row.id] else { return false }
+      return sonarpadRowsHaveSameStructure(previous, row)
     }
-    for (row, model) in new.rows.enumerated() where transientIds.contains(model.id) {
-      inserted.append(IndexPath(row: row, section: section))
+    guard retainedOld.count == retainedNew.count else { return nil }
+    for (before, after) in zip(retainedOld, retainedNew) {
+      guard sonarpadRowsHaveSameStructure(before, after) else { return nil }
+    }
+    for (rowIndex, row) in old.rows.enumerated() {
+      if let updated = newById[row.id], sonarpadRowsHaveSameStructure(row, updated) {
+        continue
+      }
+      guard transientIds.contains(row.id) else { return nil }
+      deleted.append(IndexPath(row: rowIndex, section: section))
+    }
+    for (rowIndex, row) in new.rows.enumerated() {
+      if let previous = oldById[row.id], sonarpadRowsHaveSameStructure(previous, row) {
+        continue
+      }
+      guard transientIds.contains(row.id) else { return nil }
+      inserted.append(IndexPath(row: rowIndex, section: section))
     }
   }
   guard !inserted.isEmpty || !deleted.isEmpty else { return nil }

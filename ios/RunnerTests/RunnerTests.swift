@@ -93,4 +93,103 @@ class RunnerTests: XCTestCase {
       XCTAssertEqual(arguments["value"] as? Double, 1.1)
     }
   }
+
+  // Regression: swiping an effect slider inserts the amount control and a
+  // following slot. The original adjustable cell must not be replaced, nor
+  // should the neighboring slider be altered or assigned the wrong id.
+  func testMediaCutterEffectSlidersKeepIndependentCellsOnInsertion() throws {
+    let messenger = TestMessenger()
+    func model(first: Int, second: Int? = nil) -> [String: Any] {
+      let names = ["None", "Echo", "Chorus"]
+      let options: [[String: Any]] = names.enumerated().map { index, label in
+        ["value": index, "label": label]
+      }
+      func effect(_ id: String, _ value: Int) -> [String: Any] {
+        ["id": id, "kind": "slider", "title": id,
+         "sliderValue": Double(value), "sliderMin": 0.0,
+         "sliderMax": 2.0, "sliderStep": 1.0,
+         "value": names[value], "valueLabel": names[value], "options": options]
+      }
+      var rows: [[String: Any]] = [
+        ["id": "volume", "kind": "slider", "title": "Volume",
+         "sliderValue": 80.0, "sliderMin": 0.0, "sliderMax": 200.0,
+         "sliderStep": 10.0, "valueLabel": "80%"],
+        effect("effect_0", first),
+      ]
+      if first > 0 {
+        rows.append(["id": "amount_0", "kind": "slider", "title": "Amount 1",
+                     "sliderValue": 50.0, "sliderMin": 0.0,
+                     "sliderMax": 100.0, "sliderStep": 10.0, "valueLabel": "50%"])
+        rows.append(effect("effect_1", second ?? 0))
+        if let second = second, second > 0 {
+          rows.append(["id": "amount_1", "kind": "slider", "title": "Amount 2",
+                       "sliderValue": 70.0, "sliderMin": 0.0,
+                       "sliderMax": 100.0, "sliderStep": 10.0, "valueLabel": "70%"])
+          rows.append(effect("effect_2", 0))
+        }
+      }
+      rows.append(["id": "preview", "kind": "button", "title": "Preview"])
+      return ["sections": [["rows": rows]], "transientRowIds":
+                ["effect_0", "effect_1", "effect_2", "effect_3",
+                 "amount_0", "amount_1", "amount_2", "amount_3"]]
+    }
+    let native = SonarpadNativeListView(
+      frame: CGRect(x: 0, y: 0, width: 390, height: 800),
+      viewIdentifier: 43, arguments: model(first: 0), messenger: messenger
+    )
+    let host = UIViewController()
+    let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 390, height: 800))
+    window.rootViewController = host
+    host.view.addSubview(native.view())
+    window.makeKeyAndVisible()
+    defer { window.isHidden = true }
+    host.view.layoutIfNeeded()
+    let table = try XCTUnwrap(native.view().subviews.compactMap { $0 as? UITableView }.first)
+    table.layoutIfNeeded()
+    let volume = try XCTUnwrap(table.cellForRow(at: IndexPath(row: 0, section: 0)))
+    let first = try XCTUnwrap(table.cellForRow(at: IndexPath(row: 1, section: 0)))
+    let firstAccessory = try XCTUnwrap(first.accessoryView)
+    let volumeAccessory = try XCTUnwrap(volume.accessoryView)
+    let receive = try XCTUnwrap(messenger.handlers["sonarpad/native_accessible_list/43"])
+    func apply(_ data: [String: Any]) {
+      let call = FlutterMethodCall(methodName: "setData", arguments: data)
+      receive(FlutterStandardMethodCodec.sharedInstance().encode(call)) { _ in }
+      table.layoutIfNeeded()
+    }
+    messenger.calls.removeAll()
+    first.accessibilityIncrement()
+    var event = try XCTUnwrap(messenger.calls.last { $0.method == "event" })
+    var args = try XCTUnwrap(event.arguments as? [String: Any])
+    XCTAssertEqual(args["id"] as? String, "effect_0")
+    XCTAssertEqual(args["value"] as? Double, 1.0)
+
+    apply(model(first: 1))
+    XCTAssertEqual(table.numberOfRows(inSection: 0), 5)
+    XCTAssertTrue(table.cellForRow(at: IndexPath(row: 0, section: 0)) === volume)
+    XCTAssertTrue(volume.accessoryView === volumeAccessory)
+    XCTAssertTrue(table.cellForRow(at: IndexPath(row: 1, section: 0)) === first)
+    XCTAssertTrue(first.accessoryView === firstAccessory)
+    XCTAssertEqual(first.accessibilityValue, "Echo")
+    let amount = try XCTUnwrap(table.cellForRow(at: IndexPath(row: 2, section: 0)))
+    let second = try XCTUnwrap(table.cellForRow(at: IndexPath(row: 3, section: 0)))
+    let secondAccessory = try XCTUnwrap(second.accessoryView)
+    messenger.calls.removeAll()
+    second.accessibilityIncrement()
+    event = try XCTUnwrap(messenger.calls.last { $0.method == "event" })
+    args = try XCTUnwrap(event.arguments as? [String: Any])
+    XCTAssertEqual(args["id"] as? String, "effect_1")
+    XCTAssertEqual(args["value"] as? Double, 1.0)
+    XCTAssertEqual(first.accessibilityValue, "Echo")
+
+    apply(model(first: 1, second: 2))
+    XCTAssertEqual(table.numberOfRows(inSection: 0), 7)
+    XCTAssertTrue(table.cellForRow(at: IndexPath(row: 0, section: 0)) === volume)
+    XCTAssertTrue(table.cellForRow(at: IndexPath(row: 1, section: 0)) === first)
+    XCTAssertTrue(table.cellForRow(at: IndexPath(row: 2, section: 0)) === amount)
+    XCTAssertTrue(table.cellForRow(at: IndexPath(row: 3, section: 0)) === second)
+    XCTAssertTrue(second.accessoryView === secondAccessory)
+    XCTAssertEqual(first.accessibilityValue, "Echo")
+    XCTAssertEqual(second.accessibilityValue, "Chorus")
+    XCTAssertEqual(volume.accessibilityValue, "80%")
+  }
 }

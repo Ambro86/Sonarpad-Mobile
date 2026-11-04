@@ -5765,4 +5765,66 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get translationLibraryDocuments => 'Dokumenty · Sonarpad';
+
+  @override
+  String get sonarTubeChooseTranscriptLanguage => 'Vyberte jazyk přepisu';
+
+  @override
+  String get sonarTubeAutomaticCaptions => 'Automaticky generované titulky';
+
+  @override
+  String get mediaCutterSaveScope => 'Co uložit';
+
+  @override
+  String get mediaCutterSaveAll => 'Uložit celý soubor';
+
+  @override
+  String mediaCutterSaveOnlyPart(int part) {
+    return 'Uložit pouze část $part';
+  }
+
+  @override
+  String get mediaCutterExportVideo => 'Exportovat zvuk jako video';
+
+  @override
+  String get mediaCutterAudioOnly => 'Pouze zvuk';
+
+  @override
+  String get mediaCutterBlackVideo => 'Video s černým obrázkem';
+
+  @override
+  String get mediaCutterImageVideo => 'Video s vybraným obrázkem';
+
+  @override
+  String get mediaCutterChooseImage => 'Vybrat obrázek';
+
+  @override
+  String get mediaCutterGoToTime => 'Přejít na čas…';
+
+  @override
+  String get mediaCutterTimeHint => 'Sekundy, mm:ss nebo hh:mm:ss';
+
+  @override
+  String get mediaCutterInvalidTime =>
+      'Zadejte platný čas v rámci délky souboru.';
+
+  @override
+  String get mediaCutterClearMarkers => 'Vymazat značky';
+
+  @override
+  String get mediaCutterMarkersCleared =>
+      'Značky vymazány. Použité střihy zůstávají zachovány.';
+
+  @override
+  String get mediaCutterInsertMedia => 'Vložit další soubor…';
+
+  @override
+  String get mediaCutterInsertBefore => 'Vložit před…';
+
+  @override
+  String get mediaCutterAtEnd => 'Na konec';
+
+  @override
+  String get mediaCutterMediaInserted =>
+      'Soubor vložen. Stávající střihy a efekty zůstávají zachovány.';
 }

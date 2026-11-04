@@ -30,6 +30,7 @@ class PodcastPlayerExtraAction {
     required this.label,
     required this.icon,
     required this.onPressed,
+    this.onPressedWithEpisode,
     this.pauseBeforeOpen = false,
   });
 
@@ -37,6 +38,7 @@ class PodcastPlayerExtraAction {
   final String Function() label;
   final IconData icon;
   final Future<void> Function() onPressed;
+  final Future<void> Function(PodcastEpisode episode)? onPressedWithEpisode;
   final bool pauseBeforeOpen;
 }
 
@@ -796,7 +798,12 @@ class _PodcastEpisodePlayerScreenState
         await _mediaCommands.invokeMethod('setMagicTapPlaying', false);
       }
     }
-    await action.onPressed();
+    final withEpisode = action.onPressedWithEpisode;
+    if (withEpisode != null) {
+      await withEpisode(_episode);
+    } else {
+      await action.onPressed();
+    }
     if (mounted) setState(() {});
   }
 

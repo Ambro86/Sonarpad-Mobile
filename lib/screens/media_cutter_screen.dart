@@ -24,6 +24,7 @@ import '../services/protected_wakelock.dart';
 
 import '../l10n/app_localizations.dart';
 import '../services/media_file_picker_service.dart';
+import '../services/media_cutter_editing.dart';
 import '../services/app_cache_service.dart';
 import '../services/media_cutter_seek_step_preferences.dart';
 import '../services/media_export_destination_service.dart';
@@ -36,12 +37,9 @@ enum _MediaCutterDoneAction { saveDocuments, share }
 
 enum _MediaCutterMode { guided, advanced }
 
-enum _VideoRotation {
-  none,
-  right,
-  left,
-  upsideDown,
-}
+enum _AudioVideoExport { audio, black, image }
+
+enum _VideoRotation { none, right, left, upsideDown }
 
 enum _MediaPartEffect {
   none,
@@ -183,12 +181,9 @@ class _MediaCutterExportProgress {
 
 class _MediaCutterExportController {
   _MediaCutterExportController()
-      : progress = ValueNotifier<_MediaCutterExportProgress>(
-          const _MediaCutterExportProgress(
-            fraction: 0,
-            label: '',
-          ),
-        );
+    : progress = ValueNotifier<_MediaCutterExportProgress>(
+        const _MediaCutterExportProgress(fraction: 0, label: ''),
+      );
 
   final ValueNotifier<_MediaCutterExportProgress> progress;
   FFmpegSession? currentSession;
@@ -212,18 +207,12 @@ class _MediaCutterExportController {
 }
 
 class _MediaEffectSlot {
-  const _MediaEffectSlot({
-    required this.effect,
-    required this.amountPercent,
-  });
+  const _MediaEffectSlot({required this.effect, required this.amountPercent});
 
   final _MediaPartEffect effect;
   final int amountPercent;
 
-  _MediaEffectSlot copyWith({
-    _MediaPartEffect? effect,
-    int? amountPercent,
-  }) =>
+  _MediaEffectSlot copyWith({_MediaPartEffect? effect, int? amountPercent}) =>
       _MediaEffectSlot(
         effect: effect ?? this.effect,
         amountPercent: amountPercent ?? this.amountPercent,
@@ -305,24 +294,23 @@ class _MediaPart {
     int? secondaryEffectAmountPercent,
     int? thirdEffectAmountPercent,
     int? fourthEffectAmountPercent,
-  }) =>
-      _MediaPart(
-        start: start ?? this.start,
-        end: end ?? this.end,
-        keep: keep ?? this.keep,
-        volumePercent: volumePercent ?? this.volumePercent,
-        effect: effect ?? this.effect,
-        secondaryEffect: secondaryEffect ?? this.secondaryEffect,
-        thirdEffect: thirdEffect ?? this.thirdEffect,
-        fourthEffect: fourthEffect ?? this.fourthEffect,
-        effectAmountPercent: effectAmountPercent ?? this.effectAmountPercent,
-        secondaryEffectAmountPercent:
-            secondaryEffectAmountPercent ?? this.secondaryEffectAmountPercent,
-        thirdEffectAmountPercent:
-            thirdEffectAmountPercent ?? this.thirdEffectAmountPercent,
-        fourthEffectAmountPercent:
-            fourthEffectAmountPercent ?? this.fourthEffectAmountPercent,
-      );
+  }) => _MediaPart(
+    start: start ?? this.start,
+    end: end ?? this.end,
+    keep: keep ?? this.keep,
+    volumePercent: volumePercent ?? this.volumePercent,
+    effect: effect ?? this.effect,
+    secondaryEffect: secondaryEffect ?? this.secondaryEffect,
+    thirdEffect: thirdEffect ?? this.thirdEffect,
+    fourthEffect: fourthEffect ?? this.fourthEffect,
+    effectAmountPercent: effectAmountPercent ?? this.effectAmountPercent,
+    secondaryEffectAmountPercent:
+        secondaryEffectAmountPercent ?? this.secondaryEffectAmountPercent,
+    thirdEffectAmountPercent:
+        thirdEffectAmountPercent ?? this.thirdEffectAmountPercent,
+    fourthEffectAmountPercent:
+        fourthEffectAmountPercent ?? this.fourthEffectAmountPercent,
+  );
 }
 
 class MediaCutterScreen extends StatefulWidget {
@@ -444,6 +432,11 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
   Duration? _scheduledDeletedSkipTarget;
 
   String _inputPath = '';
+  String? _savePartKey;
+  _AudioVideoExport _audioVideoExport = _AudioVideoExport.audio;
+  String? _exportImage;
+  final Set<String> _insertedWorkFiles = {};
+
   String _displayName = '';
   bool _isVideo = false;
   _MediaProbeInfo? _inputProbe;
@@ -493,8 +486,9 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       });
     }
     if (Platform.isIOS) {
-      _mediaEventsSubscription =
-          _mediaEvents.receiveBroadcastStream().listen((event) {
+      _mediaEventsSubscription = _mediaEvents.receiveBroadcastStream().listen((
+        event,
+      ) {
         if (event == 'toggle' && mounted) {
           unawaited(_handleMagicTapToggle());
         }
@@ -546,8 +540,17 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     _audioPlayingSubscription?.cancel();
     _videoRefreshTimer?.cancel();
     _cancelDeletedSkipTimer();
-    _videoController?.dispose();
-    _audioPlayer.dispose();
+    final ownedFiles = _insertedWorkFiles.toList();
+    unawaited(
+      Future.wait<void>([
+        if (_videoController != null) _videoController!.dispose(),
+        _audioPlayer.dispose(),
+      ]).then((_) async {
+        for (final path in ownedFiles) {
+          await _cleanupStagedOutput(path);
+        }
+      }),
+    );
     super.dispose();
   }
 
@@ -555,7 +558,8 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     try {
       final savedStep = await MediaCutterSeekStepPreferences.load();
       // Never override a choice made while preferences were still loading.
-      if (!mounted || _mediaSeekStepChangedByUser ||
+      if (!mounted ||
+          _mediaSeekStepChangedByUser ||
           savedStep == _mediaSeekStep) {
         return;
       }
@@ -610,7 +614,6 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     return file.path;
   }
 
-
   String? _nativeDspAssetFileNameFor(_MediaPartEffect effect) {
     return switch (effect) {
       _MediaPartEffect.chorus => 'choir_bed.mp3',
@@ -629,9 +632,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     };
   }
 
-  Future<String?> _ensureNativeDspAssetPcmPath(
-    _MediaPartEffect effect,
-  ) {
+  Future<String?> _ensureNativeDspAssetPcmPath(_MediaPartEffect effect) {
     final assetName = _nativeDspAssetFileNameFor(effect);
     if (assetName == null) return Future<String?>.value();
     return _nativeDspAssetPcmPaths.putIfAbsent(
@@ -698,7 +699,8 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       final returnCode = await session.getReturnCode();
       final logs = await session.getAllLogsAsString() ?? '';
       final pcmBytes = await pcmFile.exists() ? await pcmFile.length() : 0;
-      final valid = ReturnCode.isSuccess(returnCode) &&
+      final valid =
+          ReturnCode.isSuccess(returnCode) &&
           pcmBytes >= 8192 &&
           pcmBytes % (2 * 4) == 0;
       if (!valid) {
@@ -768,32 +770,30 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
   }
 
   List<_MediaEffectSlot> _effectSlotsForPart(_MediaPart part) => [
-        _MediaEffectSlot(
-          effect: part.effect,
-          amountPercent: part.effectAmountPercent,
-        ),
-        _MediaEffectSlot(
-          effect: part.secondaryEffect,
-          amountPercent: part.secondaryEffectAmountPercent,
-        ),
-        _MediaEffectSlot(
-          effect: part.thirdEffect,
-          amountPercent: part.thirdEffectAmountPercent,
-        ),
-        _MediaEffectSlot(
-          effect: part.fourthEffect,
-          amountPercent: part.fourthEffectAmountPercent,
-        ),
-      ];
+    _MediaEffectSlot(
+      effect: part.effect,
+      amountPercent: part.effectAmountPercent,
+    ),
+    _MediaEffectSlot(
+      effect: part.secondaryEffect,
+      amountPercent: part.secondaryEffectAmountPercent,
+    ),
+    _MediaEffectSlot(
+      effect: part.thirdEffect,
+      amountPercent: part.thirdEffectAmountPercent,
+    ),
+    _MediaEffectSlot(
+      effect: part.fourthEffect,
+      amountPercent: part.fourthEffectAmountPercent,
+    ),
+  ];
 
   List<_MediaEffectSlot> _activeEffectSlots(_MediaPart part) =>
-      _effectSlotsForPart(part)
-          .where((slot) => slot.effect != _MediaPartEffect.none)
-          .toList();
+      _effectSlotsForPart(
+        part,
+      ).where((slot) => slot.effect != _MediaPartEffect.none).toList();
 
-  List<_MediaEffectSlot> _normalizedEffectSlots(
-    List<_MediaEffectSlot> slots,
-  ) {
+  List<_MediaEffectSlot> _normalizedEffectSlots(List<_MediaEffectSlot> slots) {
     final active = [
       for (final slot in slots)
         if (slot.effect != _MediaPartEffect.none)
@@ -803,18 +803,20 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           ),
     ];
     while (active.length < 4) {
-      active.add(const _MediaEffectSlot(
-        effect: _MediaPartEffect.none,
-        amountPercent: 50,
-      ));
+      active.add(
+        const _MediaEffectSlot(
+          effect: _MediaPartEffect.none,
+          amountPercent: 50,
+        ),
+      );
     }
     return active.take(4).toList();
   }
 
   String _logPart(int index, _MediaPart part) {
-    final effects = _activeEffectSlots(part)
-        .map((slot) => '${slot.effect.name}:${slot.amountPercent}%')
-        .join('|');
+    final effects = _activeEffectSlots(
+      part,
+    ).map((slot) => '${slot.effect.name}:${slot.amountPercent}%').join('|');
     return 'index=$index start=${_logDuration(part.start)} '
         'end=${_logDuration(part.end)} '
         'duration=${_logDuration(part.duration)} '
@@ -826,8 +828,11 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     return slots
         .asMap()
         .entries
-        .map((entry) => 'slot${entry.key + 1}=${entry.value.effect.name}:'
-            '${entry.value.amountPercent}%')
+        .map(
+          (entry) =>
+              'slot${entry.key + 1}=${entry.value.effect.name}:'
+              '${entry.value.amountPercent}%',
+        )
         .join(',');
   }
 
@@ -848,7 +853,8 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     final now = DateTime.now();
     final lastTime = _lastSeekLogAt;
     final lastPosition = _lastSeekLogPosition;
-    final samePosition = lastPosition != null &&
+    final samePosition =
+        lastPosition != null &&
         (lastPosition.inMilliseconds - finalOriginal.inMilliseconds).abs() <
             1000;
     if (lastTime != null &&
@@ -858,35 +864,43 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     }
     _lastSeekLogAt = now;
     _lastSeekLogPosition = finalOriginal;
-    unawaited(_logMediaCutter(
-      'seek source=$source requestedTimeline=${_logDuration(requestedTimeline)} '
-      'requestedOriginal=${_logDuration(requestedOriginal)} '
-      'finalOriginal=${_logDuration(finalOriginal)} '
-      'skippedDeletedPart=$skippedDeletedPart ${_logPlaybackState()}',
-    ));
+    unawaited(
+      _logMediaCutter(
+        'seek source=$source requestedTimeline=${_logDuration(requestedTimeline)} '
+        'requestedOriginal=${_logDuration(requestedOriginal)} '
+        'finalOriginal=${_logDuration(finalOriginal)} '
+        'skippedDeletedPart=$skippedDeletedPart ${_logPlaybackState()}',
+      ),
+    );
   }
 
   Future<void> _pickInput() async {
     final l10n = AppLocalizations.of(context);
     unawaited(_logMediaCutter('pick file requested'));
     if (!await _confirmDiscardUnsavedEdit()) {
-      unawaited(_logMediaCutter(
-          'pick file cancelled because unsaved edits were kept'));
+      unawaited(
+        _logMediaCutter('pick file cancelled because unsaved edits were kept'),
+      );
       return;
     }
     if (!mounted) return;
-    final result = await MediaFilePicker.pickFiles(context: context,
+    final result = await MediaFilePicker.pickFiles(
+      context: context,
       type: FileType.custom,
       allowedExtensions: _mediaExtensions,
     );
-    final path =
-        result == null || result.files.isEmpty ? null : result.files.first.path;
+    final path = result == null || result.files.isEmpty
+        ? null
+        : result.files.first.path;
     if (path == null || path.isEmpty) {
       unawaited(_logMediaCutter('pick file cancelled by user'));
       return;
     }
     unawaited(
-        _logMediaCutter('file picked path="$path" name="${importedFileDisplayName(path)}"'));
+      _logMediaCutter(
+        'file picked path="$path" name="${importedFileDisplayName(path)}"',
+      ),
+    );
     if (!await File(path).exists()) {
       if (!mounted) return;
       _showSnack(l10n.fileInaccessible(importedFileDisplayName(path)));
@@ -900,10 +914,12 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     if (_inputPath.isEmpty) return;
     _addedTrackPreviewRestorePosition ??= _position;
     _usingAddedTrackPreviewSource = true;
-    unawaited(_logMediaCutter(
-      'added track preview playback start path="$path" '
-      'restorePosition=${_logDuration(_addedTrackPreviewRestorePosition!)}',
-    ));
+    unawaited(
+      _logMediaCutter(
+        'added track preview playback start path="$path" '
+        'restorePosition=${_logDuration(_addedTrackPreviewRestorePosition!)}',
+      ),
+    );
     try {
       await _audioPlayer.stop();
       await _audioPlayer.setVolume(1);
@@ -934,12 +950,15 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
 
   Future<void> _stopAddedTrackPreviewPlayback() async {
     if (!_usingAddedTrackPreviewSource) return;
-    final restorePosition =
-        _clampPosition(_addedTrackPreviewRestorePosition ?? _position);
-    unawaited(_logMediaCutter(
-      'added track preview playback stop restorePosition=${_logDuration(restorePosition)} '
-      'video=$_isVideo',
-    ));
+    final restorePosition = _clampPosition(
+      _addedTrackPreviewRestorePosition ?? _position,
+    );
+    unawaited(
+      _logMediaCutter(
+        'added track preview playback stop restorePosition=${_logDuration(restorePosition)} '
+        'video=$_isVideo',
+      ),
+    );
     try {
       await _audioPlayer.stop();
       if (!_isVideo && _inputPath.isNotEmpty) {
@@ -970,14 +989,14 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       await _restoreOriginalAudioSource(seekTo: _position);
     }
     if (!mounted) return;
-    final source = _inputProbe ??
+    final source =
+        _inputProbe ??
         await _probeMedia(_inputPath, purpose: 'add track source');
     if (!mounted) return;
 
     MediaCutterAddedTrackSettings? result;
     try {
-      result = await Navigator.of(context)
-          .push<MediaCutterAddedTrackSettings>(
+      result = await Navigator.of(context).push<MediaCutterAddedTrackSettings>(
         MaterialPageRoute<MediaCutterAddedTrackSettings>(
           builder: (_) => MediaCutterAddTrackScreen(
             sourcePath: _inputPath,
@@ -999,13 +1018,17 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     setState(() {
       _addedTrackSettings = applied;
       _hasUnsavedEdit = true;
-      _status = l10n.mediaCutterAddedTrackApplied(importedFileDisplayName(applied.path));
+      _status = l10n.mediaCutterAddedTrackApplied(
+        importedFileDisplayName(applied.path),
+      );
     });
-    unawaited(_logMediaCutter(
-      'added track configured path="${applied.path}" '
-      'originalVolume=${applied.originalVolumePercent}% '
-      'newTrackVolume=${applied.newTrackVolumePercent}% loop=${applied.loop}',
-    ));
+    unawaited(
+      _logMediaCutter(
+        'added track configured path="${applied.path}" '
+        'originalVolume=${applied.originalVolumePercent}% '
+        'newTrackVolume=${applied.newTrackVolumePercent}% loop=${applied.loop}',
+      ),
+    );
   }
 
   Future<VideoPlayerController> _initializeVideoControllerWithRetry(
@@ -1020,9 +1043,11 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       try {
         await controller.initialize();
         if (attempt > 1) {
-          unawaited(_logMediaCutter(
-            'video initialize retry succeeded attempt=$attempt path="$path"',
-          ));
+          unawaited(
+            _logMediaCutter(
+              'video initialize retry succeeded attempt=$attempt path="$path"',
+            ),
+          );
         }
         return controller;
       } catch (error) {
@@ -1054,14 +1079,18 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
             tag: MediaItem(
               id: 'media_cutter:${File(path).absolute.path}',
               album: 'Sonarpad',
-              title: _displayName.isEmpty ? importedFileDisplayName(path) : _displayName,
+              title: _displayName.isEmpty
+                  ? importedFileDisplayName(path)
+                  : _displayName,
             ),
           ),
         );
         if (attempt > 1) {
-          unawaited(_logMediaCutter(
-            'audio source retry succeeded attempt=$attempt path="$path"',
-          ));
+          unawaited(
+            _logMediaCutter(
+              'audio source retry succeeded attempt=$attempt path="$path"',
+            ),
+          );
         }
         return duration;
       } catch (error) {
@@ -1078,12 +1107,15 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     throw lastError ?? StateError('Audio source failed');
   }
 
-  Future<void> _loadMedia(String path) async {
+  Future<bool> _loadMedia(String path) async {
     final l10n = AppLocalizations.of(context);
     setState(() {
       _loading = true;
       _status = null;
       _inputPath = path;
+      _savePartKey = null;
+      _audioVideoExport = _AudioVideoExport.audio;
+      _exportImage = null;
       _displayName = importedFileDisplayName(path);
       _isVideo = _isVideoInput(path);
       _inputProbe = null;
@@ -1108,10 +1140,12 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       _addedTrackSettings = null;
     });
 
-    unawaited(_logMediaCutter(
-      'load start path="$path" name="${importedFileDisplayName(path)}" '
-      'type=${_isVideo ? 'video' : 'audio'}',
-    ));
+    unawaited(
+      _logMediaCutter(
+        'load start path="$path" name="${importedFileDisplayName(path)}" '
+        'type=${_isVideo ? 'video' : 'audio'}',
+      ),
+    );
 
     try {
       await _clearMagicTap();
@@ -1127,7 +1161,8 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       final probe = await _probeMedia(path, purpose: 'input load');
       if (!probe.hasVideo && !probe.hasAudio) {
         throw StateError(
-            'Il file non contiene tracce audio o video utilizzabili.');
+          'Il file non contiene tracce audio o video utilizzabili.',
+        );
       }
       if (mounted) {
         setState(() {
@@ -1139,14 +1174,16 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         _isVideo = probe.hasVideo;
       }
       unawaited(
-          _logMediaCutter('input probe ${probe.logSummary} path="$path"'));
+        _logMediaCutter('input probe ${probe.logSummary} path="$path"'),
+      );
 
       if (_isVideo) {
         final controller = await _initializeVideoControllerWithRetry(path);
         _videoController = controller;
         await controller.setVolume(1);
-        _videoRefreshTimer =
-            Timer.periodic(const Duration(milliseconds: 250), (_) {
+        _videoRefreshTimer = Timer.periodic(const Duration(milliseconds: 250), (
+          _,
+        ) {
           if (!mounted || _videoController == null) return;
           final value = _videoController!.value;
           final clamped = _clampPosition(value.position);
@@ -1166,10 +1203,12 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           _playing = controller.value.isPlaying;
           _rebuildParts();
         });
-        unawaited(_logMediaCutter(
-          'load video ok duration=${_logDuration(_duration)} '
-          'parts=${_parts.length} path="$path"',
-        ));
+        unawaited(
+          _logMediaCutter(
+            'load video ok duration=${_logDuration(_duration)} '
+            'parts=${_parts.length} path="$path"',
+          ),
+        );
       } else {
         final duration = await _setAudioSourceWithRetry(path);
         setState(() {
@@ -1178,18 +1217,27 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           _playing = false;
           _rebuildParts();
         });
-        unawaited(_logMediaCutter(
-          'load audio ok duration=${_logDuration(_duration)} '
-          'parts=${_parts.length} path="$path"',
-        ));
+        unawaited(
+          _logMediaCutter(
+            'load audio ok duration=${_logDuration(_duration)} '
+            'parts=${_parts.length} path="$path"',
+          ),
+        );
       }
       await _setupMagicTap();
       unawaited(_logMediaCutter('load completed ${_logPlaybackState()}'));
+      return true;
     } catch (error) {
       await AppLogger.log(
-          'Media cutter: load failed path="$path" error=$error');
-      if (!mounted) return;
-      setState(() => _status = l10n.mediaCutterLoadFailed(l10n.technicalErrorGeneric));
+        'Media cutter: load failed path="$path" error=$error',
+      );
+      if (mounted) {
+        setState(
+          () =>
+              _status = l10n.mediaCutterLoadFailed(l10n.technicalErrorGeneric),
+        );
+      }
+      return false;
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -1198,7 +1246,8 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
   Future<void> _togglePlayback() async {
     if (_inputPath.isEmpty || _loading || _saving) return;
     unawaited(
-        _logMediaCutter('toggle playback requested ${_logPlaybackState()}'));
+      _logMediaCutter('toggle playback requested ${_logPlaybackState()}'),
+    );
     _clearPartPreview();
     try {
       if (_isVideo) {
@@ -1208,17 +1257,22 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           await controller.pause();
           await _setMagicTapPlaying(false);
           unawaited(
-              _logMediaCutter('video paused by toggle ${_logPlaybackState()}'));
+            _logMediaCutter('video paused by toggle ${_logPlaybackState()}'),
+          );
         } else {
-          await _seekTo(_editedToOriginalPosition(_currentTimelinePosition),
-              clearPreview: false);
+          await _seekTo(
+            _editedToOriginalPosition(_currentTimelinePosition),
+            clearPreview: false,
+          );
           await _setPlaybackVolume(1);
           await controller.play();
           await _setMagicTapPlaying(true);
           _scheduleDeletedPartSkipTimer(
-              fromPosition: controller.value.position);
-          unawaited(_logMediaCutter(
-              'video playing by toggle ${_logPlaybackState()}'));
+            fromPosition: controller.value.position,
+          );
+          unawaited(
+            _logMediaCutter('video playing by toggle ${_logPlaybackState()}'),
+          );
         }
         if (!mounted) return;
         setState(() {
@@ -1230,19 +1284,23 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           await _audioPlayer.pause();
           await _setMagicTapPlaying(false);
           unawaited(
-              _logMediaCutter('audio paused by toggle ${_logPlaybackState()}'));
+            _logMediaCutter('audio paused by toggle ${_logPlaybackState()}'),
+          );
         } else {
           if (_usingRenderedPreviewSource) {
             await _restoreOriginalAudioSource(seekTo: _position);
           }
-          await _seekTo(_editedToOriginalPosition(_currentTimelinePosition),
-              clearPreview: false);
+          await _seekTo(
+            _editedToOriginalPosition(_currentTimelinePosition),
+            clearPreview: false,
+          );
           await _setPlaybackVolume(1);
           await _audioPlayer.play();
           await _setMagicTapPlaying(true);
           _scheduleDeletedPartSkipTimer(fromPosition: _audioPlayer.position);
-          unawaited(_logMediaCutter(
-              'audio playing by toggle ${_logPlaybackState()}'));
+          unawaited(
+            _logMediaCutter('audio playing by toggle ${_logPlaybackState()}'),
+          );
         }
       }
     } catch (error) {
@@ -1274,11 +1332,16 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     try {
       await _mediaCommands.invokeMethod(
         'setupMagicTap',
-        _displayName.isEmpty ? importedFileDisplayName(_inputPath) : _displayName,
+        _displayName.isEmpty
+            ? importedFileDisplayName(_inputPath)
+            : _displayName,
       );
       await _setMagicTapPlaying(false);
-      unawaited(_logMediaCutter(
-          'magic tap setup ok title="${_displayName.isEmpty ? importedFileDisplayName(_inputPath) : _displayName}"'));
+      unawaited(
+        _logMediaCutter(
+          'magic tap setup ok title="${_displayName.isEmpty ? importedFileDisplayName(_inputPath) : _displayName}"',
+        ),
+      );
     } catch (error) {
       await AppLogger.log('Media cutter: setupMagicTap failed error=$error');
     }
@@ -1307,7 +1370,8 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
   Future<void> _handleMagicTapToggle() async {
     if (_inputPath.isEmpty || _loading || _saving) return;
     unawaited(_logMediaCutter('magic tap received ${_logPlaybackState()}'));
-    final wasPreviewing = _previewPartEnd != null ||
+    final wasPreviewing =
+        _previewPartEnd != null ||
         _previewPartIndex != null ||
         _usingRenderedPreviewSource;
     final wasPlaying = _isVideo
@@ -1322,9 +1386,11 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       _clearPartPreview();
       await _setPlaybackVolume(1);
       await _setMagicTapPlaying(false);
-      unawaited(_logMediaCutter(
-        'magic tap stopped preview wasPlaying=$wasPlaying ${_logPlaybackState()}',
-      ));
+      unawaited(
+        _logMediaCutter(
+          'magic tap stopped preview wasPlaying=$wasPlaying ${_logPlaybackState()}',
+        ),
+      );
       if (wasPlaying) return;
     }
 
@@ -1349,10 +1415,12 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     final clamped = _clampPosition(position);
     final target = clearPreview ? _skipDeletedPartsForward(clamped) : clamped;
     if (target != clamped) {
-      unawaited(_logMediaCutter(
-        'seek skipped deleted part requestedOriginal=${_logDuration(clamped)} '
-        'targetOriginal=${_logDuration(target)} clearPreview=$clearPreview',
-      ));
+      unawaited(
+        _logMediaCutter(
+          'seek skipped deleted part requestedOriginal=${_logDuration(clamped)} '
+          'targetOriginal=${_logDuration(target)} clearPreview=$clearPreview',
+        ),
+      );
     }
     setState(() => _position = target);
     if (_isVideo) {
@@ -1372,15 +1440,13 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     }
   }
 
-  Future<void> _playPart(
-    int index, {
-    double? previewVolumeFactor,
-  }) async {
+  Future<void> _playPart(int index, {double? previewVolumeFactor}) async {
     if (_inputPath.isEmpty || _loading || _saving) return;
     if (index < 0 || index >= _parts.length) return;
     final part = _parts[index];
     unawaited(
-        _logMediaCutter('part preview requested ${_logPart(index, part)}'));
+      _logMediaCutter('part preview requested ${_logPart(index, part)}'),
+    );
     if (!part.keep || part.duration <= Duration.zero) {
       if (_previewPartIndex == index) {
         _clearPartPreview();
@@ -1413,7 +1479,8 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         await _setMagicTapPlaying(false);
       }
       unawaited(
-          _logMediaCutter('part preview playing ${_logPart(index, part)}'));
+        _logMediaCutter('part preview playing ${_logPart(index, part)}'),
+      );
     } catch (error) {
       await AppLogger.log('Media cutter: part preview failed error=$error');
     }
@@ -1436,19 +1503,23 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     }
     if (index < 0 || index >= _parts.length) return;
     final part = _parts[index];
-    unawaited(_logMediaCutter(
-      'effects preview requested index=$index volume=$volumePercent% '
-      'effect=${effect.name}:$effectAmountPercent% '
-      'secondary=${secondaryEffect.name}:$secondaryEffectAmountPercent% '
-      'third=${thirdEffect.name}:$thirdEffectAmountPercent% '
-      'fourth=${fourthEffect.name}:$fourthEffectAmountPercent% '
-      'part=${_logPart(index, part)}',
-    ));
+    unawaited(
+      _logMediaCutter(
+        'effects preview requested index=$index volume=$volumePercent% '
+        'effect=${effect.name}:$effectAmountPercent% '
+        'secondary=${secondaryEffect.name}:$secondaryEffectAmountPercent% '
+        'third=${thirdEffect.name}:$thirdEffectAmountPercent% '
+        'fourth=${fourthEffect.name}:$fourthEffectAmountPercent% '
+        'part=${_logPart(index, part)}',
+      ),
+    );
     if (!part.keep || part.duration <= Duration.zero) return;
     if (_inputProbe?.hasAudio == false) {
-      unawaited(_logMediaCutter(
-        'effects preview skipped because the source has no audio track',
-      ));
+      unawaited(
+        _logMediaCutter(
+          'effects preview skipped because the source has no audio track',
+        ),
+      );
       await _playPart(
         index,
         previewVolumeFactor: volumePercent.clamp(0, 200).toDouble() / 100.0,
@@ -1558,13 +1629,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         final String audioFilter = usesUnderwaterBubbles
             ? filter!.replaceFirst('[0:a:0]', '[$inputAudioMap]')
             : filter!;
-        args.addAll([
-          '-y',
-          '-ss',
-          _ffmpegTime(previewStart),
-          '-i',
-          _inputPath,
-        ]);
+        args.addAll(['-y', '-ss', _ffmpegTime(previewStart), '-i', _inputPath]);
         if (usesUnderwaterBubbles) {
           args.addAll([
             '-stream_loop',
@@ -1573,17 +1638,9 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
             await _ensureUnderwaterBubblesSourcePath(),
           ]);
         }
-        args.addAll([
-          '-t',
-          _ffmpegTime(previewDuration),
-        ]);
+        args.addAll(['-t', _ffmpegTime(previewDuration)]);
         if (usesUnderwaterBubbles) {
-          args.addAll([
-            '-filter_complex',
-            audioFilter,
-            '-map',
-            '[outa]',
-          ]);
+          args.addAll(['-filter_complex', audioFilter, '-map', '[outa]']);
         } else {
           args.addAll([
             '-map',
@@ -1595,13 +1652,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
             audioFilter,
           ]);
         }
-        args.addAll([
-          '-c:a',
-          'aac',
-          '-b:a',
-          '160k',
-          previewFile.path,
-        ]);
+        args.addAll(['-c:a', 'aac', '-b:a', '160k', previewFile.path]);
       }
       await AppLogger.log(
         'Media cutter preview effects: start=${_ffmpegTime(previewStart)} '
@@ -1625,7 +1676,9 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           tag: MediaItem(
             id: 'media_cutter_preview:${previewFile.path}',
             album: 'Sonarpad',
-            title: _displayName.isEmpty ? importedFileDisplayName(_inputPath) : _displayName,
+            title: _displayName.isEmpty
+                ? importedFileDisplayName(_inputPath)
+                : _displayName,
           ),
         ),
       );
@@ -1657,11 +1710,12 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         );
       }
       unawaited(
-          Future<void>.delayed(const Duration(seconds: 30)).then((_) async {
-        if (await previewFile.exists()) {
-          await previewFile.delete();
-        }
-      }));
+        Future<void>.delayed(const Duration(seconds: 30)).then((_) async {
+          if (await previewFile.exists()) {
+            await previewFile.delete();
+          }
+        }),
+      );
     }
   }
 
@@ -1698,10 +1752,12 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
   void _checkPartPreviewEnd(Duration position) {
     final end = _previewPartEnd;
     if (end == null || _stoppingPartPreview || position < end) return;
-    unawaited(_logMediaCutter(
-      'part preview reached end position=${_logDuration(position)} '
-      'end=${_logDuration(end)}',
-    ));
+    unawaited(
+      _logMediaCutter(
+        'part preview reached end position=${_logDuration(position)} '
+        'end=${_logDuration(end)}',
+      ),
+    );
     unawaited(_stopPartPreviewAtEnd(end));
   }
 
@@ -1741,8 +1797,11 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     if (_isVideo || !_usingRenderedPreviewSource || _inputPath.isEmpty) return;
     _restoringOriginalAudioSource = true;
     final target = _clampPosition(seekTo ?? _position);
-    unawaited(_logMediaCutter(
-        'restore original audio source target=${_logDuration(target)}'));
+    unawaited(
+      _logMediaCutter(
+        'restore original audio source target=${_logDuration(target)}',
+      ),
+    );
     final previewFile = _renderedPreviewFile;
     try {
       await _audioPlayer.stop();
@@ -1752,7 +1811,9 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           tag: MediaItem(
             id: 'media_cutter:${File(_inputPath).absolute.path}',
             album: 'Sonarpad',
-            title: _displayName.isEmpty ? importedFileDisplayName(_inputPath) : _displayName,
+            title: _displayName.isEmpty
+                ? importedFileDisplayName(_inputPath)
+                : _displayName,
           ),
         ),
       );
@@ -1771,8 +1832,11 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       if (previewFile != null) {
         unawaited(previewFile.delete().then((_) {}).catchError((_) {}));
       }
-      unawaited(_logMediaCutter(
-          'restore original audio source completed ${_logPlaybackState()}'));
+      unawaited(
+        _logMediaCutter(
+          'restore original audio source completed ${_logPlaybackState()}',
+        ),
+      );
     }
   }
 
@@ -1793,10 +1857,12 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
 
   void _clearPartPreview() {
     if (_previewPartIndex == null && _previewPartEnd == null) return;
-    unawaited(_logMediaCutter(
-      'clear part preview index=${_previewPartIndex ?? 'none'} '
-      'end=${_logMaybeDuration(_previewPartEnd)}',
-    ));
+    unawaited(
+      _logMediaCutter(
+        'clear part preview index=${_previewPartIndex ?? 'none'} '
+        'end=${_logMaybeDuration(_previewPartEnd)}',
+      ),
+    );
     if (!mounted) {
       _previewPartIndex = null;
       _previewPartEnd = null;
@@ -1860,10 +1926,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       _l10n.mediaCutterMoveEndForwardBy(_cutEditStepLabel(step));
 
   String _guidedCutAdjustedMessage(Duration start, Duration end) =>
-      _l10n.mediaCutterGuidedCutAdjusted(
-        _formatTime(start),
-        _formatTime(end),
-      );
+      _l10n.mediaCutterGuidedCutAdjusted(_formatTime(start), _formatTime(end));
 
   String get _guidedNoCutLabel => _l10n.mediaCutterGuidedNoCut;
 
@@ -1878,24 +1941,15 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       _l10n.mediaCutterGuidedStartSet(_formatTime(start));
 
   String _guidedEndSetMessage(Duration start, Duration end) =>
-      _l10n.mediaCutterGuidedEndSet(
-        _formatTime(start),
-        _formatTime(end),
-      );
+      _l10n.mediaCutterGuidedEndSet(_formatTime(start), _formatTime(end));
 
   String _guidedCutAppliedMessage(Duration start, Duration end) =>
-      _l10n.mediaCutterGuidedCutApplied(
-        _formatTime(start),
-        _formatTime(end),
-      );
+      _l10n.mediaCutterGuidedCutApplied(_formatTime(start), _formatTime(end));
 
   String get _guidedNeedStartEndMessage => _l10n.mediaCutterGuidedNeedStartEnd;
 
   String _guidedCutSummary(Duration start, Duration end) =>
-      _l10n.mediaCutterGuidedCutSummary(
-        _formatTime(start),
-        _formatTime(end),
-      );
+      _l10n.mediaCutterGuidedCutSummary(_formatTime(start), _formatTime(end));
 
   String _guidedMultipleCutSummary(int count, List<String> cuts) =>
       _l10n.mediaCutterGuidedMultipleCutSummary(count, cuts.join('; '));
@@ -2015,9 +2069,11 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         _status = _guidedStartSetMessage(current);
       });
       _showSnack(_guidedStartSetMessage(current));
-      unawaited(_logMediaCutter(
-        'guided cut start set start=${_logPreciseDuration(current)} ${_logPlaybackState()}',
-      ));
+      unawaited(
+        _logMediaCutter(
+          'guided cut start set start=${_logPreciseDuration(current)} ${_logPlaybackState()}',
+        ),
+      );
       return;
     }
     if (_guidedCutEnd == null) {
@@ -2034,10 +2090,12 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         _status = _guidedEndSetMessage(orderedStart, orderedEnd);
       });
       _showSnack(_guidedEndSetMessage(orderedStart, orderedEnd));
-      unawaited(_logMediaCutter(
-        'guided cut end set start=${_logPreciseDuration(orderedStart)} '
-        'end=${_logPreciseDuration(orderedEnd)} ${_logPlaybackState()}',
-      ));
+      unawaited(
+        _logMediaCutter(
+          'guided cut end set start=${_logPreciseDuration(orderedStart)} '
+          'end=${_logPreciseDuration(orderedEnd)} ${_logPlaybackState()}',
+        ),
+      );
       return;
     }
     await _applyGuidedCut();
@@ -2064,8 +2122,8 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       final clamped = newIndex < 0
           ? 0
           : newIndex > maxIndex
-              ? maxIndex
-              : newIndex;
+          ? maxIndex
+          : newIndex;
       onChanged(_cutEditStepOptions[clamped]);
     }
 
@@ -2119,10 +2177,14 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
             final end = _guidedCutEnd;
             final summary = start != null && end != null
                 ? _guidedCutSummary(
-                    start <= end ? start : end, start <= end ? end : start)
+                    start <= end ? start : end,
+                    start <= end ? end : start,
+                  )
                 : _guidedNeedStartEndMessage;
-            Future<void> adjust(
-                {required bool moveStart, required int direction}) async {
+            Future<void> adjust({
+              required bool moveStart,
+              required int direction,
+            }) async {
               await _adjustGuidedCutByStep(
                 moveStart: moveStart,
                 direction: direction,
@@ -2138,29 +2200,59 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                 height: 520,
                 child: useSharedAccessibleViewModel
                     ? UniversalAccessibleList(
-                        sections: [AccessibleListSection(rows: [
-                          AccessibleListRow(id: 'summary', kind: 'text', title: summary),
-                          AccessibleListRow(
-                            id: 'precision',
-                            kind: 'picker',
-                            title: _cutEditStepLabel(editStep),
-                            value: _cutEditStepIndex(editStep).toString(),
-                            options: [
-                              for (var i = 0; i < _cutEditStepOptions.length; i++)
-                                AccessibleOption(
-                                  value: i,
-                                  label: _cutEditStepLabel(_cutEditStepOptions[i]),
-                                ),
+                        sections: [
+                          AccessibleListSection(
+                            rows: [
+                              AccessibleListRow(
+                                id: 'summary',
+                                kind: 'text',
+                                title: summary,
+                              ),
+                              _choiceSliderRow(
+                                id: 'precision',
+                                title: _l10n.mediaCutterCutEditPrecisionLabel,
+                                value: _cutEditStepIndex(editStep).toString(),
+                                choices: [
+                                  for (
+                                    var i = 0;
+                                    i < _cutEditStepOptions.length;
+                                    i++
+                                  )
+                                    AccessibleOption(
+                                      value: i,
+                                      label: _cutEditStepLabel(
+                                        _cutEditStepOptions[i],
+                                      ),
+                                    ),
+                                ],
+                              ),
+                              AccessibleListRow(
+                                id: 'start_back',
+                                title: _moveStartBackLabel(editStep),
+                              ),
+                              AccessibleListRow(
+                                id: 'start_forward',
+                                title: _moveStartForwardLabel(editStep),
+                              ),
+                              AccessibleListRow(
+                                id: 'end_back',
+                                title: _moveEndBackLabel(editStep),
+                              ),
+                              AccessibleListRow(
+                                id: 'end_forward',
+                                title: _moveEndForwardLabel(editStep),
+                              ),
+                              AccessibleListRow(
+                                id: 'listen',
+                                kind: 'button',
+                                title: _guidedListenCutLabel,
+                              ),
                             ],
                           ),
-                          AccessibleListRow(id: 'start_back', title: _moveStartBackLabel(editStep)),
-                          AccessibleListRow(id: 'start_forward', title: _moveStartForwardLabel(editStep)),
-                          AccessibleListRow(id: 'end_back', title: _moveEndBackLabel(editStep)),
-                          AccessibleListRow(id: 'end_forward', title: _moveEndForwardLabel(editStep)),
-                          AccessibleListRow(id: 'listen', kind: 'button', title: _guidedListenCutLabel),
-                        ])],
+                        ],
                         onEvent: (event) async {
-                          if (event.id == 'precision' && event.type == 'picker') {
+                          if (event.id == 'precision' &&
+                              event.type == 'slider') {
                             final raw = event.value;
                             final selected = raw is num
                                 ? raw.toInt()
@@ -2168,7 +2260,9 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                             if (selected != null &&
                                 selected >= 0 &&
                                 selected < _cutEditStepOptions.length) {
-                              setDialogState(() => editStep = _cutEditStepOptions[selected]);
+                              setDialogState(
+                                () => editStep = _cutEditStepOptions[selected],
+                              );
                             }
                             return;
                           }
@@ -2206,30 +2300,42 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                             ),
                             const SizedBox(height: 16),
                             OutlinedButton.icon(
-                              onPressed: () =>
-                                  unawaited(adjust(moveStart: true, direction: -1)),
-                              icon: const Icon(Icons.keyboard_double_arrow_left),
+                              onPressed: () => unawaited(
+                                adjust(moveStart: true, direction: -1),
+                              ),
+                              icon: const Icon(
+                                Icons.keyboard_double_arrow_left,
+                              ),
                               label: Text(_moveStartBackLabel(editStep)),
                             ),
                             const SizedBox(height: 8),
                             OutlinedButton.icon(
-                              onPressed: () =>
-                                  unawaited(adjust(moveStart: true, direction: 1)),
-                              icon: const Icon(Icons.keyboard_double_arrow_right),
+                              onPressed: () => unawaited(
+                                adjust(moveStart: true, direction: 1),
+                              ),
+                              icon: const Icon(
+                                Icons.keyboard_double_arrow_right,
+                              ),
                               label: Text(_moveStartForwardLabel(editStep)),
                             ),
                             const SizedBox(height: 8),
                             OutlinedButton.icon(
-                              onPressed: () =>
-                                  unawaited(adjust(moveStart: false, direction: -1)),
-                              icon: const Icon(Icons.keyboard_double_arrow_left),
+                              onPressed: () => unawaited(
+                                adjust(moveStart: false, direction: -1),
+                              ),
+                              icon: const Icon(
+                                Icons.keyboard_double_arrow_left,
+                              ),
                               label: Text(_moveEndBackLabel(editStep)),
                             ),
                             const SizedBox(height: 8),
                             OutlinedButton.icon(
-                              onPressed: () =>
-                                  unawaited(adjust(moveStart: false, direction: 1)),
-                              icon: const Icon(Icons.keyboard_double_arrow_right),
+                              onPressed: () => unawaited(
+                                adjust(moveStart: false, direction: 1),
+                              ),
+                              icon: const Icon(
+                                Icons.keyboard_double_arrow_right,
+                              ),
                               label: Text(_moveEndForwardLabel(editStep)),
                             ),
                             const SizedBox(height: 12),
@@ -2246,7 +2352,8 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                 TextButton(
                   onPressed: () => Navigator.of(dialogContext).pop(),
                   child: Text(
-                      MaterialLocalizations.of(dialogContext).closeButtonLabel),
+                    MaterialLocalizations.of(dialogContext).closeButtonLabel,
+                  ),
                 ),
               ],
             );
@@ -2269,8 +2376,9 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       return;
     }
 
-    final signedStep =
-        Duration(milliseconds: step.inMilliseconds * (direction < 0 ? -1 : 1));
+    final signedStep = Duration(
+      milliseconds: step.inMilliseconds * (direction < 0 ? -1 : 1),
+    );
     var newStart = start;
     var newEnd = end;
     if (moveStart) {
@@ -2284,12 +2392,14 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     if (newEnd <= newStart ||
         newEnd.inMilliseconds - newStart.inMilliseconds < 100) {
       _showSnack(l10n.mediaCutterInvalidSplitPoint);
-      unawaited(_logMediaCutter(
-        'guided cut adjust rejected too close moveStart=$moveStart direction=$direction '
-        'step=${_logPreciseDuration(step)} '
-        'start=${_logPreciseDuration(start)} end=${_logPreciseDuration(end)} '
-        'newStart=${_logPreciseDuration(newStart)} newEnd=${_logPreciseDuration(newEnd)}',
-      ));
+      unawaited(
+        _logMediaCutter(
+          'guided cut adjust rejected too close moveStart=$moveStart direction=$direction '
+          'step=${_logPreciseDuration(step)} '
+          'start=${_logPreciseDuration(start)} end=${_logPreciseDuration(end)} '
+          'newStart=${_logPreciseDuration(newStart)} newEnd=${_logPreciseDuration(newEnd)}',
+        ),
+      );
       return;
     }
 
@@ -2303,12 +2413,14 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     });
     await _seekTo(moveStart ? orderedStart : orderedEnd, clearPreview: true);
     _showSnack(_guidedCutAdjustedMessage(orderedStart, orderedEnd));
-    unawaited(_logMediaCutter(
-      'guided cut adjusted moveStart=$moveStart direction=$direction '
-      'step=${_logPreciseDuration(step)} '
-      'start=${_logPreciseDuration(orderedStart)} end=${_logPreciseDuration(orderedEnd)} '
-      '${_logPlaybackState()}',
-    ));
+    unawaited(
+      _logMediaCutter(
+        'guided cut adjusted moveStart=$moveStart direction=$direction '
+        'step=${_logPreciseDuration(step)} '
+        'start=${_logPreciseDuration(orderedStart)} end=${_logPreciseDuration(orderedEnd)} '
+        '${_logPlaybackState()}',
+      ),
+    );
   }
 
   Future<void> _showAdvancedPartEditDialog(int index) async {
@@ -2325,12 +2437,14 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
               return AlertDialog(
                 title: Text(_partEditActionLabel),
                 content: Text(
-                    AppLocalizations.of(context).mediaCutterInvalidSplitPoint),
+                  AppLocalizations.of(context).mediaCutterInvalidSplitPoint,
+                ),
                 actions: [
                   TextButton(
                     onPressed: () => Navigator.of(dialogContext).pop(),
-                    child: Text(MaterialLocalizations.of(dialogContext)
-                        .closeButtonLabel),
+                    child: Text(
+                      MaterialLocalizations.of(dialogContext).closeButtonLabel,
+                    ),
                   ),
                 ],
               );
@@ -2340,8 +2454,10 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
               _formatTime(part.start),
               _formatTime(part.end),
             );
-            Future<void> adjust(
-                {required bool moveStart, required int direction}) async {
+            Future<void> adjust({
+              required bool moveStart,
+              required int direction,
+            }) async {
               await _adjustAdvancedPartEdgeByStep(
                 index: index,
                 moveStart: moveStart,
@@ -2358,30 +2474,64 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                 height: 560,
                 child: useSharedAccessibleViewModel
                     ? UniversalAccessibleList(
-                        sections: [AccessibleListSection(rows: [
-                          AccessibleListRow(id: 'description', kind: 'text', title: _partEditDescription),
-                          AccessibleListRow(id: 'summary', kind: 'text', title: summary),
-                          AccessibleListRow(
-                            id: 'precision',
-                            kind: 'picker',
-                            title: _cutEditStepLabel(editStep),
-                            value: _cutEditStepIndex(editStep).toString(),
-                            options: [
-                              for (var i = 0; i < _cutEditStepOptions.length; i++)
-                                AccessibleOption(
-                                  value: i,
-                                  label: _cutEditStepLabel(_cutEditStepOptions[i]),
-                                ),
+                        sections: [
+                          AccessibleListSection(
+                            rows: [
+                              AccessibleListRow(
+                                id: 'description',
+                                kind: 'text',
+                                title: _partEditDescription,
+                              ),
+                              AccessibleListRow(
+                                id: 'summary',
+                                kind: 'text',
+                                title: summary,
+                              ),
+                              _choiceSliderRow(
+                                id: 'precision',
+                                title: _l10n.mediaCutterCutEditPrecisionLabel,
+                                value: _cutEditStepIndex(editStep).toString(),
+                                choices: [
+                                  for (
+                                    var i = 0;
+                                    i < _cutEditStepOptions.length;
+                                    i++
+                                  )
+                                    AccessibleOption(
+                                      value: i,
+                                      label: _cutEditStepLabel(
+                                        _cutEditStepOptions[i],
+                                      ),
+                                    ),
+                                ],
+                              ),
+                              AccessibleListRow(
+                                id: 'start_back',
+                                title: _moveStartBackLabel(editStep),
+                              ),
+                              AccessibleListRow(
+                                id: 'start_forward',
+                                title: _moveStartForwardLabel(editStep),
+                              ),
+                              AccessibleListRow(
+                                id: 'end_back',
+                                title: _moveEndBackLabel(editStep),
+                              ),
+                              AccessibleListRow(
+                                id: 'end_forward',
+                                title: _moveEndForwardLabel(editStep),
+                              ),
+                              AccessibleListRow(
+                                id: 'listen',
+                                kind: 'button',
+                                title: _guidedListenCutLabel,
+                              ),
                             ],
                           ),
-                          AccessibleListRow(id: 'start_back', title: _moveStartBackLabel(editStep)),
-                          AccessibleListRow(id: 'start_forward', title: _moveStartForwardLabel(editStep)),
-                          AccessibleListRow(id: 'end_back', title: _moveEndBackLabel(editStep)),
-                          AccessibleListRow(id: 'end_forward', title: _moveEndForwardLabel(editStep)),
-                          AccessibleListRow(id: 'listen', kind: 'button', title: _guidedListenCutLabel),
-                        ])],
+                        ],
                         onEvent: (event) async {
-                          if (event.id == 'precision' && event.type == 'picker') {
+                          if (event.id == 'precision' &&
+                              event.type == 'slider') {
                             final raw = event.value;
                             final selected = raw is num
                                 ? raw.toInt()
@@ -2389,7 +2539,9 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                             if (selected != null &&
                                 selected >= 0 &&
                                 selected < _cutEditStepOptions.length) {
-                              setDialogState(() => editStep = _cutEditStepOptions[selected]);
+                              setDialogState(
+                                () => editStep = _cutEditStepOptions[selected],
+                              );
                             }
                             return;
                           }
@@ -2429,30 +2581,42 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                             ),
                             const SizedBox(height: 16),
                             OutlinedButton.icon(
-                              onPressed: () =>
-                                  unawaited(adjust(moveStart: true, direction: -1)),
-                              icon: const Icon(Icons.keyboard_double_arrow_left),
+                              onPressed: () => unawaited(
+                                adjust(moveStart: true, direction: -1),
+                              ),
+                              icon: const Icon(
+                                Icons.keyboard_double_arrow_left,
+                              ),
                               label: Text(_moveStartBackLabel(editStep)),
                             ),
                             const SizedBox(height: 8),
                             OutlinedButton.icon(
-                              onPressed: () =>
-                                  unawaited(adjust(moveStart: true, direction: 1)),
-                              icon: const Icon(Icons.keyboard_double_arrow_right),
+                              onPressed: () => unawaited(
+                                adjust(moveStart: true, direction: 1),
+                              ),
+                              icon: const Icon(
+                                Icons.keyboard_double_arrow_right,
+                              ),
                               label: Text(_moveStartForwardLabel(editStep)),
                             ),
                             const SizedBox(height: 8),
                             OutlinedButton.icon(
-                              onPressed: () =>
-                                  unawaited(adjust(moveStart: false, direction: -1)),
-                              icon: const Icon(Icons.keyboard_double_arrow_left),
+                              onPressed: () => unawaited(
+                                adjust(moveStart: false, direction: -1),
+                              ),
+                              icon: const Icon(
+                                Icons.keyboard_double_arrow_left,
+                              ),
                               label: Text(_moveEndBackLabel(editStep)),
                             ),
                             const SizedBox(height: 8),
                             OutlinedButton.icon(
-                              onPressed: () =>
-                                  unawaited(adjust(moveStart: false, direction: 1)),
-                              icon: const Icon(Icons.keyboard_double_arrow_right),
+                              onPressed: () => unawaited(
+                                adjust(moveStart: false, direction: 1),
+                              ),
+                              icon: const Icon(
+                                Icons.keyboard_double_arrow_right,
+                              ),
                               label: Text(_moveEndForwardLabel(editStep)),
                             ),
                             const SizedBox(height: 12),
@@ -2469,7 +2633,8 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                 TextButton(
                   onPressed: () => Navigator.of(dialogContext).pop(),
                   child: Text(
-                      MaterialLocalizations.of(dialogContext).closeButtonLabel),
+                    MaterialLocalizations.of(dialogContext).closeButtonLabel,
+                  ),
                 ),
               ],
             );
@@ -2491,8 +2656,9 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       return;
     }
     final currentPart = _parts[index];
-    final signedStep =
-        Duration(milliseconds: step.inMilliseconds * (direction < 0 ? -1 : 1));
+    final signedStep = Duration(
+      milliseconds: step.inMilliseconds * (direction < 0 ? -1 : 1),
+    );
     var newStart = currentPart.start;
     var newEnd = currentPart.end;
     if (moveStart) {
@@ -2511,8 +2677,9 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     }
 
     final minDuration = const Duration(milliseconds: 100);
-    final previousBoundary =
-        index == 0 ? Duration.zero : _parts[index - 1].start + minDuration;
+    final previousBoundary = index == 0
+        ? Duration.zero
+        : _parts[index - 1].start + minDuration;
     final nextBoundary = index == _parts.length - 1
         ? _duration
         : _parts[index + 1].end - minDuration;
@@ -2525,27 +2692,31 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         newEnd.inMilliseconds - newStart.inMilliseconds <
             minDuration.inMilliseconds) {
       _showSnack(l10n.mediaCutterInvalidSplitPoint);
-      unawaited(_logMediaCutter(
-        'advanced part edit rejected too close index=$index moveStart=$moveStart direction=$direction '
-        'step=${_logPreciseDuration(step)} '
-        'oldStart=${_logPreciseDuration(currentPart.start)} oldEnd=${_logPreciseDuration(currentPart.end)} '
-        'newStart=${_logPreciseDuration(newStart)} newEnd=${_logPreciseDuration(newEnd)}',
-      ));
+      unawaited(
+        _logMediaCutter(
+          'advanced part edit rejected too close index=$index moveStart=$moveStart direction=$direction '
+          'step=${_logPreciseDuration(step)} '
+          'oldStart=${_logPreciseDuration(currentPart.start)} oldEnd=${_logPreciseDuration(currentPart.end)} '
+          'newStart=${_logPreciseDuration(newStart)} newEnd=${_logPreciseDuration(newEnd)}',
+        ),
+      );
       return;
     }
 
     final updatedParts = [..._parts];
     if (moveStart) {
       if (index > 0) {
-        updatedParts[index - 1] =
-            updatedParts[index - 1].copyWith(end: newStart);
+        updatedParts[index - 1] = updatedParts[index - 1].copyWith(
+          end: newStart,
+        );
       }
       updatedParts[index] = updatedParts[index].copyWith(start: newStart);
     } else {
       updatedParts[index] = updatedParts[index].copyWith(end: newEnd);
       if (index < updatedParts.length - 1) {
-        updatedParts[index + 1] =
-            updatedParts[index + 1].copyWith(start: newEnd);
+        updatedParts[index + 1] = updatedParts[index + 1].copyWith(
+          start: newEnd,
+        );
       }
     }
 
@@ -2559,15 +2730,19 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       _hasUnsavedEdit = true;
       _status = _partAdjustedMessage(editedPart.start, editedPart.end);
     });
-    await _seekTo(moveStart ? editedPart.start : editedPart.end,
-        clearPreview: true);
+    await _seekTo(
+      moveStart ? editedPart.start : editedPart.end,
+      clearPreview: true,
+    );
     _showSnack(_partAdjustedMessage(editedPart.start, editedPart.end));
-    unawaited(_logMediaCutter(
-      'advanced part edited index=$index moveStart=$moveStart direction=$direction '
-      'step=${_logPreciseDuration(step)} '
-      'start=${_logPreciseDuration(editedPart.start)} end=${_logPreciseDuration(editedPart.end)} '
-      'splitPoints=${_splitPoints.map(_logPreciseDuration).join('|')} parts=${_parts.length} deleted=$_deletedPartCount',
-    ));
+    unawaited(
+      _logMediaCutter(
+        'advanced part edited index=$index moveStart=$moveStart direction=$direction '
+        'step=${_logPreciseDuration(step)} '
+        'start=${_logPreciseDuration(editedPart.start)} end=${_logPreciseDuration(editedPart.end)} '
+        'splitPoints=${_splitPoints.map(_logPreciseDuration).join('|')} parts=${_parts.length} deleted=$_deletedPartCount',
+      ),
+    );
   }
 
   Future<void> _listenGuidedCut() async {
@@ -2581,10 +2756,12 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       _showSnack(AppLocalizations.of(context).mediaCutterInvalidSplitPoint);
       return;
     }
-    unawaited(_logMediaCutter(
-      'guided listen cut start=${_logPreciseDuration(start)} '
-      'end=${_logPreciseDuration(end)} ${_logPlaybackState()}',
-    ));
+    unawaited(
+      _logMediaCutter(
+        'guided listen cut start=${_logPreciseDuration(start)} '
+        'end=${_logPreciseDuration(end)} ${_logPlaybackState()}',
+      ),
+    );
     try {
       await _pause();
       if (!_isVideo && _usingRenderedPreviewSource) {
@@ -2610,12 +2787,11 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       }
     } catch (error) {
       await AppLogger.log(
-          'Media cutter: guided listen cut failed error=$error');
+        'Media cutter: guided listen cut failed error=$error',
+      );
       if (mounted) {
         final l10n = AppLocalizations.of(context);
-        _showSnack(
-          l10n.mediaCutterSaveFailed(l10n.technicalErrorGeneric),
-        );
+        _showSnack(l10n.mediaCutterSaveFailed(l10n.technicalErrorGeneric));
       }
     }
   }
@@ -2663,11 +2839,13 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     });
     await _seekTo(cutStart, clearPreview: true);
     _showSnack(_guidedCutAppliedMessage(cutStart, cutEnd));
-    unawaited(_logMediaCutter(
-      'guided cut applied start=${_logPreciseDuration(cutStart)} '
-      'end=${_logPreciseDuration(cutEnd)} splitPoints=${_splitPoints.map(_logPreciseDuration).join('|')} '
-      'parts=${_parts.length} deleted=$_deletedPartCount',
-    ));
+    unawaited(
+      _logMediaCutter(
+        'guided cut applied start=${_logPreciseDuration(cutStart)} '
+        'end=${_logPreciseDuration(cutEnd)} splitPoints=${_splitPoints.map(_logPreciseDuration).join('|')} '
+        'parts=${_parts.length} deleted=$_deletedPartCount',
+      ),
+    );
   }
 
   Future<void> _showGuidedEffectsDialog() async {
@@ -2677,7 +2855,8 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     await _showPartEffectsDialog(index, applyToWholeFile: true);
     if (!mounted || index >= _parts.length) return;
     final source = _parts[index];
-    final changed = before.volumePercent != source.volumePercent ||
+    final changed =
+        before.volumePercent != source.volumePercent ||
         before.effect != source.effect ||
         before.secondaryEffect != source.secondaryEffect ||
         before.thirdEffect != source.thirdEffect ||
@@ -2687,16 +2866,18 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
             source.secondaryEffectAmountPercent ||
         before.thirdEffectAmountPercent != source.thirdEffectAmountPercent ||
         before.fourthEffectAmountPercent != source.fourthEffectAmountPercent;
-    unawaited(_logMediaCutter(
-      'guided effects ${changed ? 'applied' : 'closed without changes'} '
-      'to whole file volume=${source.volumePercent}% '
-      'effect=${source.effect.name}:${source.effectAmountPercent}% '
-      'secondary=${source.secondaryEffect.name}:'
-      '${source.secondaryEffectAmountPercent}% '
-      'third=${source.thirdEffect.name}:${source.thirdEffectAmountPercent}% '
-      'fourth=${source.fourthEffect.name}:'
-      '${source.fourthEffectAmountPercent}%',
-    ));
+    unawaited(
+      _logMediaCutter(
+        'guided effects ${changed ? 'applied' : 'closed without changes'} '
+        'to whole file volume=${source.volumePercent}% '
+        'effect=${source.effect.name}:${source.effectAmountPercent}% '
+        'secondary=${source.secondaryEffect.name}:'
+        '${source.secondaryEffectAmountPercent}% '
+        'third=${source.thirdEffect.name}:${source.thirdEffectAmountPercent}% '
+        'fourth=${source.fourthEffect.name}:'
+        '${source.fourthEffectAmountPercent}%',
+      ),
+    );
   }
 
   Duration _splitPointFromPosition(Duration position) {
@@ -2754,40 +2935,48 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     }
     var point = _splitPointFromPosition(_position);
     if (point <= Duration.zero || point >= _duration) {
-      unawaited(_logMediaCutter(
-        'split rejected invalid point=${_logPreciseDuration(point)} '
-        'duration=${_logPreciseDuration(_duration)}',
-      ));
+      unawaited(
+        _logMediaCutter(
+          'split rejected invalid point=${_logPreciseDuration(point)} '
+          'duration=${_logPreciseDuration(_duration)}',
+        ),
+      );
       _showSnack(l10n.mediaCutterInvalidSplitPoint);
       return;
     }
     final existing = _matchingExistingSplitPoint(point);
     if (existing != null) {
-      unawaited(_logMediaCutter(
-        'split rejected exact duplicate point=${_logPreciseDuration(point)} '
-        'existing=${_logPreciseDuration(existing)} '
-        'splitPoints=${_splitPoints.map(_logPreciseDuration).join('|')}',
-      ));
+      unawaited(
+        _logMediaCutter(
+          'split rejected exact duplicate point=${_logPreciseDuration(point)} '
+          'existing=${_logPreciseDuration(existing)} '
+          'splitPoints=${_splitPoints.map(_logPreciseDuration).join('|')}',
+        ),
+      );
       _showSnack(l10n.mediaCutterSplitAlreadyExists);
       return;
     }
     final targetPartIndex = _keptPartIndexContainingSplitPoint(point);
     if (targetPartIndex == null) {
-      unawaited(_logMediaCutter(
-        'split rejected not inside kept part point=${_logPreciseDuration(point)} '
-        'splitPoints=${_splitPoints.map(_logPreciseDuration).join('|')} '
-        'parts=${_parts.asMap().entries.map((entry) => _logPart(entry.key, entry.value)).join(' || ')}',
-      ));
+      unawaited(
+        _logMediaCutter(
+          'split rejected not inside kept part point=${_logPreciseDuration(point)} '
+          'splitPoints=${_splitPoints.map(_logPreciseDuration).join('|')} '
+          'parts=${_parts.asMap().entries.map((entry) => _logPart(entry.key, entry.value)).join(' || ')}',
+        ),
+      );
       _showSnack(l10n.mediaCutterInvalidSplitPoint);
       return;
     }
     final targetPart = _parts[targetPartIndex];
-    unawaited(_logMediaCutter(
-      'split target part index=$targetPartIndex '
-      'start=${_logPreciseDuration(targetPart.start)} '
-      'end=${_logPreciseDuration(targetPart.end)} '
-      'duration=${_logPreciseDuration(targetPart.duration)}',
-    ));
+    unawaited(
+      _logMediaCutter(
+        'split target part index=$targetPartIndex '
+        'start=${_logPreciseDuration(targetPart.start)} '
+        'end=${_logPreciseDuration(targetPart.end)} '
+        'duration=${_logPreciseDuration(targetPart.duration)}',
+      ),
+    );
     var addedVisiblePartNumber = 1;
     setState(() {
       _previewPartIndex = null;
@@ -2800,12 +2989,14 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     });
     final announcement = _splitAddedAnnouncement(addedVisiblePartNumber);
     _showSnack(announcement);
-    unawaited(_logMediaCutter(
-      'split added point=${_logPreciseDuration(point)} '
-      'addedVisiblePart=$addedVisiblePartNumber '
-      'splitPoints=${_splitPoints.map(_logPreciseDuration).join('|')} '
-      'parts=${_parts.length} deleted=$_deletedPartCount',
-    ));
+    unawaited(
+      _logMediaCutter(
+        'split added point=${_logPreciseDuration(point)} '
+        'addedVisiblePart=$addedVisiblePartNumber '
+        'splitPoints=${_splitPoints.map(_logPreciseDuration).join('|')} '
+        'parts=${_parts.length} deleted=$_deletedPartCount',
+      ),
+    );
   }
 
   void _deletePart(int index) {
@@ -2813,7 +3004,8 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     final l10n = AppLocalizations.of(context);
     final part = _parts[index];
     unawaited(
-        _logMediaCutter('delete part requested ${_logPart(index, part)}'));
+      _logMediaCutter('delete part requested ${_logPart(index, part)}'),
+    );
     final wasPreviewingThisPart = _previewPartIndex == index;
     if (wasPreviewingThisPart) {
       _previewPartIndex = null;
@@ -2837,10 +3029,12 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       if (!mounted) return;
       _showSnack(message);
     });
-    unawaited(_logMediaCutter(
-      'delete part completed ${_logPart(index, part.copyWith(keep: false))} '
-      'parts=${_parts.length} deleted=$_deletedPartCount',
-    ));
+    unawaited(
+      _logMediaCutter(
+        'delete part completed ${_logPart(index, part.copyWith(keep: false))} '
+        'parts=${_parts.length} deleted=$_deletedPartCount',
+      ),
+    );
     if (_isInsidePart(_position, part)) {
       unawaited(_seekTo(part.end, clearPreview: true));
     }
@@ -2858,8 +3052,9 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         : null;
     var index = keyToRestore == null
         ? -1
-        : _parts
-            .indexWhere((part) => !part.keep && _partKey(part) == keyToRestore);
+        : _parts.indexWhere(
+            (part) => !part.keep && _partKey(part) == keyToRestore,
+          );
 
     while (index == -1 && _deletedPartHistory.isNotEmpty) {
       keyToRestore = _deletedPartHistory.removeLast();
@@ -2877,8 +3072,11 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     }
 
     final part = _parts[index];
-    unawaited(_logMediaCutter(
-        'restore deleted part requested ${_logPart(index, part)}'));
+    unawaited(
+      _logMediaCutter(
+        'restore deleted part requested ${_logPart(index, part)}',
+      ),
+    );
     setState(() {
       _parts = [
         for (var i = 0; i < _parts.length; i++)
@@ -2890,10 +3088,12 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         _formatTime(part.end),
       );
     });
-    unawaited(_logMediaCutter(
-      'restore deleted part completed index=$index parts=${_parts.length} '
-      'deleted=$_deletedPartCount',
-    ));
+    unawaited(
+      _logMediaCutter(
+        'restore deleted part completed index=$index parts=${_parts.length} '
+        'deleted=$_deletedPartCount',
+      ),
+    );
   }
 
   Widget _buildEffectPicker(
@@ -2907,125 +3107,41 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     VoidCallback? onOpen,
     ValueChanged<_MediaPartEffect?>? onDialogClosed,
   }) {
-    final selectedLabel = _effectLabel(l10n, value);
-    final buttonLabel =
-        value == _MediaPartEffect.none ? label : '$label $selectedLabel';
-
-    Future<void> activateSlot(String source) async {
-      unawaited(_logMediaCutter(
-        'effect slot activated source=$source slot=$slotNumber '
-        'title="$label" label="$buttonLabel" current=${value.name} '
-        'visibleSlots=${debugVisibleSlotsSnapshot()} '
-        'slots=${debugSlotsSnapshot()}',
-      ));
-      onOpen?.call();
-      final selected = await _showEffectPickerDialog(
-        l10n,
-        title: label,
-        current: value,
-      );
-      unawaited(_logMediaCutter(
-        selected == null
-            ? 'effect slot dialog returned slot=$slotNumber selected=null '
-                'title="$label" current=${value.name} '
-                'slots=${debugSlotsSnapshot()}'
-            : 'effect slot dialog returned slot=$slotNumber selected=${selected.name} '
-                'title="$label" current=${value.name} '
-                'slots=${debugSlotsSnapshot()}',
-      ));
-      onDialogClosed?.call(selected);
-      if (selected == null) return;
-      onChanged(selected);
-    }
-
-    // Important for VoiceOver: the semantics node itself owns the tap action.
-    // If only the visual OutlinedButton receives the tap, iOS can keep focus on
-    // the newly inserted empty slot after slot 1 is filled and then open slot 2
-    // even when the user is trying to re-open slot 1. Binding the semantics tap
-    // directly to this slot keeps title, selected value and saved slot aligned.
-    return Semantics(
-      key: ValueKey('media-cutter-effect-slot-semantics-$slotNumber'),
-      container: true,
-      button: true,
-      label: buttonLabel,
-      onTap: () => unawaited(activateSlot('semantics')),
-      child: ExcludeSemantics(
-        child: OutlinedButton(
-          key: ValueKey('media-cutter-effect-slot-button-$slotNumber'),
-          onPressed: () => unawaited(activateSlot('button')),
-          child: Row(
-            children: [
-              Expanded(child: Text(buttonLabel)),
-              const Icon(Icons.arrow_drop_down),
-            ],
+    return _buildFlutterChoiceSlider(
+      id: 'effect_$slotNumber',
+      title: label,
+      selectedValue: value.name,
+      choices: [
+        for (final effect in _availableEffects)
+          AccessibleOption(
+            value: effect.name,
+            label: _effectLabel(l10n, effect),
           ),
-        ),
-      ),
+      ],
+      onChanged: (name) {
+        final selected = _availableEffects
+            .where((effect) => effect.name == name)
+            .firstOrNull;
+        if (selected == null || selected == value) return;
+        onOpen?.call();
+        unawaited(
+          _logMediaCutter(
+            'effect slot slider changed slot=$slotNumber '
+            'from=${value.name} to=${selected.name} '
+            'visibleSlots=${debugVisibleSlotsSnapshot()} '
+            'slots=${debugSlotsSnapshot()}',
+          ),
+        );
+        onDialogClosed?.call(selected);
+        onChanged(selected);
+      },
     );
   }
 
-  Future<_MediaPartEffect?> _showEffectPickerDialog(
-    AppLocalizations l10n, {
-    required String title,
-    required _MediaPartEffect current,
-  }) {
-    return showDialog<_MediaPartEffect>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(title),
-        content: SizedBox(
-          width: double.maxFinite,
-          height: 420,
-          child: useSharedAccessibleViewModel
-              ? UniversalAccessibleList(
-                  sections: [AccessibleListSection(rows: [
-                    for (var index = 0; index < _availableEffects.length; index++)
-                      AccessibleListRow(
-                        id: 'effect_$index',
-                        title: _effectLabel(l10n, _availableEffects[index]),
-                        selected: _availableEffects[index] == current,
-                      ),
-                  ])],
-                  onEvent: (event) {
-                    if (event.type != 'activate' || event.id == null) return;
-                    final index = int.tryParse(event.id!.replaceFirst('effect_', ''));
-                    if (index != null && index >= 0 && index < _availableEffects.length) {
-                      Navigator.pop(dialogContext, _availableEffects[index]);
-                    }
-                  },
-                )
-              : ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: _availableEffects.length,
-                  itemBuilder: (context, index) {
-                    final effect = _availableEffects[index];
-                    final selected = effect == current;
-                    final effectLabel = _effectLabel(l10n, effect);
-                    return Semantics(
-                      selected: selected,
-                      button: true,
-                      child: ListTile(
-                        selected: selected,
-                        title: Text(effectLabel),
-                        trailing: selected ? const Icon(Icons.check) : null,
-                        onTap: () => Navigator.pop(dialogContext, effect),
-                      ),
-                    );
-                  },
-                ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: Text(l10n.cancel),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Future<void> _showPartEffectsDialog(int index,
-      {bool applyToWholeFile = false}) async {
+  Future<void> _showPartEffectsDialog(
+    int index, {
+    bool applyToWholeFile = false,
+  }) async {
     if (_saving || index < 0 || index >= _parts.length || !_parts[index].keep) {
       return;
     }
@@ -3033,124 +3149,161 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     final part = _parts[index];
     var volumePercent = part.volumePercent;
     var effectSlots = _normalizedEffectSlots(_effectSlotsForPart(part));
-    unawaited(_logMediaCutter(
-      'effects dialog opened index=$index applyToWholeFile=$applyToWholeFile '
-      'volume=$volumePercent% slots=${_logEffectSlots(effectSlots)} '
-      'visibleSlots=${_visibleEffectSlots(effectSlots)}',
-    ));
+    unawaited(
+      _logMediaCutter(
+        'effects dialog opened index=$index applyToWholeFile=$applyToWholeFile '
+        'volume=$volumePercent% slots=${_logEffectSlots(effectSlots)} '
+        'visibleSlots=${_visibleEffectSlots(effectSlots)}',
+      ),
+    );
 
     final result = await showDialog<_PartEffectSettings>(
       context: context,
       barrierDismissible: false,
       builder: (dialogContext) => StatefulBuilder(
         builder: (dialogContext, setDialogState) => AlertDialog(
-          title: Text(applyToWholeFile
-              ? _guidedEffectsLabel
-              : l10n.mediaCutterPartEffectsTitle),
+          title: Text(
+            applyToWholeFile
+                ? _guidedEffectsLabel
+                : l10n.mediaCutterPartEffectsTitle,
+          ),
           content: SizedBox(
             width: double.maxFinite,
             height: 600,
             child: useSharedAccessibleViewModel
                 ? UniversalAccessibleList(
                     debugTag: 'media_cutter_effects',
-                    sections: [AccessibleListSection(rows: [
-                      AccessibleListRow(
-                        id: 'description',
-                        kind: 'text',
-                        title: applyToWholeFile
-                            ? _guidedEffectsDescription
-                            : l10n.mediaCutterPartEffectsDescription,
-                      ),
-                      AccessibleListRow(
-                        id: 'volume',
-                        kind: 'slider',
-                        title: l10n.mediaCutterPartVolumeLabel,
-                        sliderValue: volumePercent.toDouble(),
-                        sliderMin: 0,
-                        sliderMax: 200,
-                        sliderStep: 10,
-                        value: '$volumePercent%',
-                        valueLabel: '$volumePercent%',
-                        sliderIncreasedValueLabel:
-                            '${(volumePercent + 10).clamp(0, 200)}%',
-                        sliderDecreasedValueLabel:
-                            '${(volumePercent - 10).clamp(0, 200)}%',
-                      ),
-                      for (var slot = 0; slot < _visibleEffectSlots(effectSlots); slot++) ...[
-                        AccessibleListRow(
-                          id: 'effect_$slot',
-                          kind: 'picker',
-                          title: _effectSlotLabel(l10n, slot + 1),
-                          value: effectSlots[slot].effect.name,
-                          valueLabel: _effectLabel(l10n, effectSlots[slot].effect),
-                          options: [
-                            for (final effect in _availableEffects)
-                              AccessibleOption(
-                                value: effect.name,
-                                label: _effectLabel(l10n, effect),
+                    transientRowIds: const [
+                      'effect_0',
+                      'effect_1',
+                      'effect_2',
+                      'effect_3',
+                      'amount_0',
+                      'amount_1',
+                      'amount_2',
+                      'amount_3',
+                    ],
+                    sections: [
+                      AccessibleListSection(
+                        rows: [
+                          AccessibleListRow(
+                            id: 'description',
+                            kind: 'text',
+                            title: applyToWholeFile
+                                ? _guidedEffectsDescription
+                                : l10n.mediaCutterPartEffectsDescription,
+                          ),
+                          AccessibleListRow(
+                            id: 'volume',
+                            kind: 'slider',
+                            title: l10n.mediaCutterPartVolumeLabel,
+                            sliderValue: volumePercent.toDouble(),
+                            sliderMin: 0,
+                            sliderMax: 200,
+                            sliderStep: 10,
+                            value: '$volumePercent%',
+                            valueLabel: '$volumePercent%',
+                            sliderIncreasedValueLabel:
+                                '${(volumePercent + 10).clamp(0, 200)}%',
+                            sliderDecreasedValueLabel:
+                                '${(volumePercent - 10).clamp(0, 200)}%',
+                          ),
+                          for (
+                            var slot = 0;
+                            slot < _visibleEffectSlots(effectSlots);
+                            slot++
+                          ) ...[
+                            _choiceSliderRow(
+                              id: 'effect_$slot',
+                              title: _effectSlotLabel(l10n, slot + 1),
+                              value: effectSlots[slot].effect.name,
+                              choices: [
+                                for (final effect in _availableEffects)
+                                  AccessibleOption(
+                                    value: effect.name,
+                                    label: _effectLabel(l10n, effect),
+                                  ),
+                              ],
+                            ),
+                            if (effectSlots[slot].effect !=
+                                _MediaPartEffect.none)
+                              AccessibleListRow(
+                                id: 'amount_$slot',
+                                kind: 'slider',
+                                title:
+                                    '${_effectSlotLabel(l10n, slot + 1)}, ${l10n.mediaCutterPartEffectAmountLabel}',
+                                sliderValue: effectSlots[slot].amountPercent
+                                    .toDouble(),
+                                sliderMin: 0,
+                                sliderMax: 100,
+                                sliderStep: 10,
+                                value: '${effectSlots[slot].amountPercent}%',
+                                valueLabel:
+                                    '${effectSlots[slot].amountPercent}%',
+                                sliderIncreasedValueLabel:
+                                    '${(effectSlots[slot].amountPercent + 10).clamp(0, 100)}%',
+                                sliderDecreasedValueLabel:
+                                    '${(effectSlots[slot].amountPercent - 10).clamp(0, 100)}%',
                               ),
                           ],
-                        ),
-                        if (effectSlots[slot].effect != _MediaPartEffect.none)
                           AccessibleListRow(
-                            id: 'amount_$slot',
-                            kind: 'slider',
-                            title: '${_effectSlotLabel(l10n, slot + 1)}, ${l10n.mediaCutterPartEffectAmountLabel}',
-                            sliderValue: effectSlots[slot].amountPercent.toDouble(),
-                            sliderMin: 0,
-                            sliderMax: 100,
-                            sliderStep: 10,
-                            value: '${effectSlots[slot].amountPercent}%',
-                            valueLabel: '${effectSlots[slot].amountPercent}%',
-                            sliderIncreasedValueLabel:
-                                '${(effectSlots[slot].amountPercent + 10).clamp(0, 100)}%',
-                            sliderDecreasedValueLabel:
-                                '${(effectSlots[slot].amountPercent - 10).clamp(0, 100)}%',
+                            id: 'preview',
+                            kind: 'button',
+                            title: l10n.mediaCutterPartPreviewAction,
                           ),
-                      ],
-                      AccessibleListRow(
-                        id: 'preview',
-                        kind: 'button',
-                        title: l10n.mediaCutterPartPreviewAction,
+                        ],
                       ),
-                    ])],
+                    ],
                     onEvent: (event) async {
                       if (event.id == 'volume' && event.type == 'slider') {
                         final value = event.value;
                         final next = value is num
                             ? value.round().clamp(0, 200).toInt()
                             : volumePercent;
-                        unawaited(_logMediaCutter(
-                          'effects slider dart begin id=volume raw=$value next=$next '
-                          'before=$volumePercent preserveFocus='
-                          '$preserveAccessibleSliderFocusDuringValueChange mounted=$mounted',
-                        ));
+                        unawaited(
+                          _logMediaCutter(
+                            'effects slider dart begin id=volume raw=$value next=$next '
+                            'before=$volumePercent preserveFocus='
+                            '$preserveAccessibleSliderFocusDuringValueChange mounted=$mounted',
+                          ),
+                        );
                         // Keep Dart and the native row model synchronized exactly
                         // like the Settings sliders. UniversalAccessibleList keeps
                         // the existing UiKitView alive and sends an in-place setData;
                         // the native renderer updates same-structure rows without
                         // reloadData, so the focused adjustable cell is not replaced.
                         setDialogState(() => volumePercent = next);
-                        unawaited(_logMediaCutter(
-                          'effects slider dart end id=volume stored=$volumePercent '
-                          'preserveFocus=$preserveAccessibleSliderFocusDuringValueChange '
-                          'dialogRebuilt=true nativeUpdateExpectedInPlace='
-                          '$preserveAccessibleSliderFocusDuringValueChange',
-                        ));
+                        unawaited(
+                          _logMediaCutter(
+                            'effects slider dart end id=volume stored=$volumePercent '
+                            'preserveFocus=$preserveAccessibleSliderFocusDuringValueChange '
+                            'dialogRebuilt=true nativeUpdateExpectedInPlace='
+                            '$preserveAccessibleSliderFocusDuringValueChange',
+                          ),
+                        );
                         return;
                       }
                       if (event.id != null &&
                           event.id!.startsWith('effect_') &&
-                          event.type == 'picker') {
-                        final slot = int.tryParse(event.id!.replaceFirst('effect_', ''));
-                        if (slot == null || slot < 0 || slot >= effectSlots.length) return;
-                        final raw = event.value?.toString();
-                        final selected = _availableEffects
-                            .where((effect) => effect.name == raw)
-                            .firstOrNull;
-                        if (selected == null) return;
+                          event.type == 'slider') {
+                        final slot = int.tryParse(
+                          event.id!.replaceFirst('effect_', ''),
+                        );
+                        if (slot == null ||
+                            slot < 0 ||
+                            slot >= effectSlots.length) {
+                          return;
+                        }
+                        final selectedIndex = _choiceSliderIndex(
+                          event.value,
+                          _availableEffects.length,
+                        );
+                        if (selectedIndex == null) return;
+                        final selected = _availableEffects[selectedIndex];
                         final updated = [...effectSlots];
-                        updated[slot] = updated[slot].copyWith(effect: selected);
+                        updated[slot] = updated[slot].copyWith(
+                          effect: selected,
+                        );
                         setDialogState(() {
                           effectSlots = selected == _MediaPartEffect.none
                               ? _normalizedEffectSlots(updated)
@@ -3161,7 +3314,9 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                       if (event.id != null &&
                           event.id!.startsWith('amount_') &&
                           event.type == 'slider') {
-                        final slot = int.tryParse(event.id!.replaceFirst('amount_', ''));
+                        final slot = int.tryParse(
+                          event.id!.replaceFirst('amount_', ''),
+                        );
                         final value = event.value;
                         if (slot == null ||
                             slot < 0 ||
@@ -3169,26 +3324,29 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                             value is! num) {
                           return;
                         }
-                        final nextAmount =
-                            value.round().clamp(0, 100).toInt();
-                        unawaited(_logMediaCutter(
-                          'effects slider dart begin id=amount_$slot raw=$value '
-                          'next=$nextAmount before=${effectSlots[slot].amountPercent} '
-                          'preserveFocus=$preserveAccessibleSliderFocusDuringValueChange '
-                          'mounted=$mounted',
-                        ));
+                        final nextAmount = value.round().clamp(0, 100).toInt();
+                        unawaited(
+                          _logMediaCutter(
+                            'effects slider dart begin id=amount_$slot raw=$value '
+                            'next=$nextAmount before=${effectSlots[slot].amountPercent} '
+                            'preserveFocus=$preserveAccessibleSliderFocusDuringValueChange '
+                            'mounted=$mounted',
+                          ),
+                        );
                         setDialogState(() {
                           effectSlots[slot] = effectSlots[slot].copyWith(
                             amountPercent: nextAmount,
                           );
                         });
-                        unawaited(_logMediaCutter(
-                          'effects slider dart end id=amount_$slot '
-                          'stored=${effectSlots[slot].amountPercent} '
-                          'preserveFocus=$preserveAccessibleSliderFocusDuringValueChange '
-                          'dialogRebuilt=true nativeUpdateExpectedInPlace='
-                          '$preserveAccessibleSliderFocusDuringValueChange',
-                        ));
+                        unawaited(
+                          _logMediaCutter(
+                            'effects slider dart end id=amount_$slot '
+                            'stored=${effectSlots[slot].amountPercent} '
+                            'preserveFocus=$preserveAccessibleSliderFocusDuringValueChange '
+                            'dialogRebuilt=true nativeUpdateExpectedInPlace='
+                            '$preserveAccessibleSliderFocusDuringValueChange',
+                          ),
+                        );
                         return;
                       }
                       if (event.id == 'preview' && event.type == 'activate') {
@@ -3200,219 +3358,263 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                           thirdEffect: effectSlots[2].effect,
                           fourthEffect: effectSlots[3].effect,
                           effectAmountPercent: effectSlots[0].amountPercent,
-                          secondaryEffectAmountPercent: effectSlots[1].amountPercent,
-                          thirdEffectAmountPercent: effectSlots[2].amountPercent,
-                          fourthEffectAmountPercent: effectSlots[3].amountPercent,
+                          secondaryEffectAmountPercent:
+                              effectSlots[1].amountPercent,
+                          thirdEffectAmountPercent:
+                              effectSlots[2].amountPercent,
+                          fourthEffectAmountPercent:
+                              effectSlots[3].amountPercent,
                         );
                       }
                     },
                   )
                 : SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(applyToWholeFile
-                    ? _guidedEffectsDescription
-                    : l10n.mediaCutterPartEffectsDescription),
-                const SizedBox(height: 16),
-                ExcludeSemantics(
-                  child: Text(l10n.mediaCutterPartVolumeValue(volumePercent)),
-                ),
-                Semantics(
-                  slider: true,
-                  label: l10n.mediaCutterPartVolumeLabel,
-                  value: '$volumePercent%',
-                  increasedValue: '${(volumePercent + 10).clamp(0, 200)}%',
-                  decreasedValue: '${(volumePercent - 10).clamp(0, 200)}%',
-                  onIncrease: () => setDialogState(
-                    () => volumePercent = (volumePercent + 10).clamp(0, 200),
-                  ),
-                  onDecrease: () => setDialogState(
-                    () => volumePercent = (volumePercent - 10).clamp(0, 200),
-                  ),
-                  child: ExcludeSemantics(
-                    child: Slider(
-                      value: volumePercent.toDouble(),
-                      min: 0,
-                      max: 200,
-                      divisions: 20,
-                      label: '$volumePercent%',
-                      onChanged: (value) => setDialogState(
-                        () => volumePercent = value.round(),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Builder(
-                  builder: (context) {
-                    final visibleSlots = _visibleEffectSlots(effectSlots);
-                    final children = <Widget>[];
-
-                    void setEffectSlot(int slot, _MediaPartEffect value) {
-                      final beforeSlots = [...effectSlots];
-                      final beforeValue = beforeSlots[slot].effect;
-                      final updated = [...effectSlots];
-                      updated[slot] = updated[slot].copyWith(effect: value);
-                      // Slot fixed: tapping "Audio effect 1" always edits slot 1.
-                      // Clearing a slot compacts both the effect and its own amount.
-                      effectSlots = value == _MediaPartEffect.none
-                          ? _normalizedEffectSlots(updated)
-                          : updated;
-                      final action = beforeValue == _MediaPartEffect.none
-                          ? (value == _MediaPartEffect.none
-                              ? 'empty_kept_empty'
-                              : 'created')
-                          : (value == _MediaPartEffect.none
-                              ? 'cleared'
-                              : 'modified');
-                      unawaited(_logMediaCutter(
-                        'effect slot changed action=$action slot=${slot + 1} '
-                        'from=${beforeValue.name} to=${value.name} '
-                        'beforeSlots=${_logEffectSlots(beforeSlots)} '
-                        'afterSlots=${_logEffectSlots(effectSlots)} '
-                        'beforeVisible=${_visibleEffectSlots(beforeSlots)} '
-                        'afterVisible=${_visibleEffectSlots(effectSlots)}',
-                      ));
-                    }
-
-                    for (var slot = 0; slot < visibleSlots; slot++) {
-                      if (children.isNotEmpty) {
-                        children.add(const SizedBox(height: 12));
-                      }
-                      final fixedSlot = slot;
-                      final slotNumber = fixedSlot + 1;
-                      children.add(KeyedSubtree(
-                        key: ValueKey(
-                          'media-cutter-effect-slot-wrapper-$slotNumber',
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(
+                          applyToWholeFile
+                              ? _guidedEffectsDescription
+                              : l10n.mediaCutterPartEffectsDescription,
                         ),
-                        child: _buildEffectPicker(
-                          l10n,
-                          slotNumber: slotNumber,
-                          value: effectSlots[fixedSlot].effect,
-                          label: _effectSlotLabel(l10n, slotNumber),
-                          debugSlotsSnapshot: () =>
-                              _logEffectSlots(effectSlots),
-                          debugVisibleSlotsSnapshot: () =>
-                              _visibleEffectSlots(effectSlots),
-                          onOpen: () => unawaited(_logMediaCutter(
-                            'effect slot picker opened slot=$slotNumber '
-                            'current=${effectSlots[fixedSlot].effect.name} '
-                            'visibleSlots=${_visibleEffectSlots(effectSlots)} '
-                            'slots=${_logEffectSlots(effectSlots)}',
-                          )),
-                          onDialogClosed: (selected) =>
-                              unawaited(_logMediaCutter(
-                            selected == null
-                                ? 'effect slot picker cancelled '
-                                    'slot=$slotNumber '
-                                    'current=${effectSlots[fixedSlot].effect.name} '
-                                    'slots=${_logEffectSlots(effectSlots)}'
-                                : 'effect slot picker selected '
-                                    'slot=$slotNumber '
-                                    'from=${effectSlots[fixedSlot].effect.name} '
-                                    'to=${selected.name} '
-                                    'slotsBeforeApply=${_logEffectSlots(effectSlots)}',
-                          )),
-                          onChanged: (value) => setDialogState(
-                            () => setEffectSlot(fixedSlot, value),
+                        const SizedBox(height: 16),
+                        ExcludeSemantics(
+                          child: Text(
+                            l10n.mediaCutterPartVolumeValue(volumePercent),
                           ),
                         ),
-                      ));
-
-                      final selectedEffect = effectSlots[fixedSlot].effect;
-                      if (selectedEffect != _MediaPartEffect.none) {
-                        final amount = effectSlots[fixedSlot].amountPercent;
-                        final amountLabel =
-                            '${_effectSlotLabel(l10n, slotNumber)}, '
-                            '${_effectLabel(l10n, selectedEffect)}, '
-                            '${l10n.mediaCutterPartEffectAmountLabel}';
-                        children.add(const SizedBox(height: 6));
-                        children.add(ExcludeSemantics(
-                          child: Text(amountLabel),
-                        ));
-                        children.add(Semantics(
+                        Semantics(
                           slider: true,
-                          label: amountLabel,
-                          value: '$amount%',
-                          increasedValue: '${(amount + 10).clamp(0, 100)}%',
-                          decreasedValue: '${(amount - 10).clamp(0, 100)}%',
-                          onIncrease: () => setDialogState(() {
-                            final current =
-                                effectSlots[fixedSlot].amountPercent;
-                            effectSlots[fixedSlot] =
-                                effectSlots[fixedSlot].copyWith(
-                              amountPercent:
-                                  (current + 10).clamp(0, 100).toInt(),
-                            );
-                          }),
-                          onDecrease: () => setDialogState(() {
-                            final current =
-                                effectSlots[fixedSlot].amountPercent;
-                            effectSlots[fixedSlot] =
-                                effectSlots[fixedSlot].copyWith(
-                              amountPercent:
-                                  (current - 10).clamp(0, 100).toInt(),
-                            );
-                          }),
-                          child: ExcludeSemantics(
-                            child: Slider(
-                              value: amount.toDouble(),
-                              min: 0,
-                              max: 100,
-                              divisions: 10,
-                              label: '$amount%',
-                              onChanged: (value) => setDialogState(() {
-                                effectSlots[fixedSlot] =
-                                    effectSlots[fixedSlot].copyWith(
-                                  amountPercent: value.round(),
-                                );
-                              }),
+                          label: l10n.mediaCutterPartVolumeLabel,
+                          value: '$volumePercent%',
+                          increasedValue:
+                              '${(volumePercent + 10).clamp(0, 200)}%',
+                          decreasedValue:
+                              '${(volumePercent - 10).clamp(0, 200)}%',
+                          onIncrease: () => setDialogState(
+                            () => volumePercent = (volumePercent + 10).clamp(
+                              0,
+                              200,
                             ),
                           ),
-                        ));
-                      }
-                    }
+                          onDecrease: () => setDialogState(
+                            () => volumePercent = (volumePercent - 10).clamp(
+                              0,
+                              200,
+                            ),
+                          ),
+                          child: ExcludeSemantics(
+                            child: Slider(
+                              value: volumePercent.toDouble(),
+                              min: 0,
+                              max: 200,
+                              divisions: 20,
+                              label: '$volumePercent%',
+                              onChanged: (value) => setDialogState(
+                                () => volumePercent = value.round(),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        Builder(
+                          builder: (context) {
+                            final visibleSlots = _visibleEffectSlots(
+                              effectSlots,
+                            );
+                            final children = <Widget>[];
 
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: children,
-                    );
-                  },
-                ),
-                const SizedBox(height: 12),
-                OutlinedButton.icon(
-                  onPressed: () => unawaited(
-                    _playPartEffectsPreview(
-                      index,
-                      volumePercent: volumePercent,
-                      effect: effectSlots[0].effect,
-                      secondaryEffect: effectSlots[1].effect,
-                      thirdEffect: effectSlots[2].effect,
-                      fourthEffect: effectSlots[3].effect,
-                      effectAmountPercent: effectSlots[0].amountPercent,
-                      secondaryEffectAmountPercent:
-                          effectSlots[1].amountPercent,
-                      thirdEffectAmountPercent: effectSlots[2].amountPercent,
-                      fourthEffectAmountPercent: effectSlots[3].amountPercent,
+                            void setEffectSlot(
+                              int slot,
+                              _MediaPartEffect value,
+                            ) {
+                              final beforeSlots = [...effectSlots];
+                              final beforeValue = beforeSlots[slot].effect;
+                              final updated = [...effectSlots];
+                              updated[slot] = updated[slot].copyWith(
+                                effect: value,
+                              );
+                              // Slot fixed: tapping "Audio effect 1" always edits slot 1.
+                              // Clearing a slot compacts both the effect and its own amount.
+                              effectSlots = value == _MediaPartEffect.none
+                                  ? _normalizedEffectSlots(updated)
+                                  : updated;
+                              final action =
+                                  beforeValue == _MediaPartEffect.none
+                                  ? (value == _MediaPartEffect.none
+                                        ? 'empty_kept_empty'
+                                        : 'created')
+                                  : (value == _MediaPartEffect.none
+                                        ? 'cleared'
+                                        : 'modified');
+                              unawaited(
+                                _logMediaCutter(
+                                  'effect slot changed action=$action slot=${slot + 1} '
+                                  'from=${beforeValue.name} to=${value.name} '
+                                  'beforeSlots=${_logEffectSlots(beforeSlots)} '
+                                  'afterSlots=${_logEffectSlots(effectSlots)} '
+                                  'beforeVisible=${_visibleEffectSlots(beforeSlots)} '
+                                  'afterVisible=${_visibleEffectSlots(effectSlots)}',
+                                ),
+                              );
+                            }
+
+                            for (var slot = 0; slot < visibleSlots; slot++) {
+                              if (children.isNotEmpty) {
+                                children.add(const SizedBox(height: 12));
+                              }
+                              final fixedSlot = slot;
+                              final slotNumber = fixedSlot + 1;
+                              children.add(
+                                KeyedSubtree(
+                                  key: ValueKey(
+                                    'media-cutter-effect-slot-wrapper-$slotNumber',
+                                  ),
+                                  child: _buildEffectPicker(
+                                    l10n,
+                                    slotNumber: slotNumber,
+                                    value: effectSlots[fixedSlot].effect,
+                                    label: _effectSlotLabel(l10n, slotNumber),
+                                    debugSlotsSnapshot: () =>
+                                        _logEffectSlots(effectSlots),
+                                    debugVisibleSlotsSnapshot: () =>
+                                        _visibleEffectSlots(effectSlots),
+                                    onOpen: () => unawaited(
+                                      _logMediaCutter(
+                                        'effect slot slider adjusted slot=$slotNumber '
+                                        'current=${effectSlots[fixedSlot].effect.name} '
+                                        'visibleSlots=${_visibleEffectSlots(effectSlots)} '
+                                        'slots=${_logEffectSlots(effectSlots)}',
+                                      ),
+                                    ),
+                                    onDialogClosed: (selected) => unawaited(
+                                      _logMediaCutter(
+                                        selected == null
+                                            ? 'effect slot slider cancelled '
+                                                  'slot=$slotNumber '
+                                                  'current=${effectSlots[fixedSlot].effect.name} '
+                                                  'slots=${_logEffectSlots(effectSlots)}'
+                                            : 'effect slot slider selected '
+                                                  'slot=$slotNumber '
+                                                  'from=${effectSlots[fixedSlot].effect.name} '
+                                                  'to=${selected.name} '
+                                                  'slotsBeforeApply=${_logEffectSlots(effectSlots)}',
+                                      ),
+                                    ),
+                                    onChanged: (value) => setDialogState(
+                                      () => setEffectSlot(fixedSlot, value),
+                                    ),
+                                  ),
+                                ),
+                              );
+
+                              final selectedEffect =
+                                  effectSlots[fixedSlot].effect;
+                              if (selectedEffect != _MediaPartEffect.none) {
+                                final amount =
+                                    effectSlots[fixedSlot].amountPercent;
+                                final amountLabel =
+                                    '${_effectSlotLabel(l10n, slotNumber)}, '
+                                    '${_effectLabel(l10n, selectedEffect)}, '
+                                    '${l10n.mediaCutterPartEffectAmountLabel}';
+                                children.add(const SizedBox(height: 6));
+                                children.add(
+                                  ExcludeSemantics(child: Text(amountLabel)),
+                                );
+                                children.add(
+                                  Semantics(
+                                    slider: true,
+                                    label: amountLabel,
+                                    value: '$amount%',
+                                    increasedValue:
+                                        '${(amount + 10).clamp(0, 100)}%',
+                                    decreasedValue:
+                                        '${(amount - 10).clamp(0, 100)}%',
+                                    onIncrease: () => setDialogState(() {
+                                      final current =
+                                          effectSlots[fixedSlot].amountPercent;
+                                      effectSlots[fixedSlot] =
+                                          effectSlots[fixedSlot].copyWith(
+                                            amountPercent: (current + 10)
+                                                .clamp(0, 100)
+                                                .toInt(),
+                                          );
+                                    }),
+                                    onDecrease: () => setDialogState(() {
+                                      final current =
+                                          effectSlots[fixedSlot].amountPercent;
+                                      effectSlots[fixedSlot] =
+                                          effectSlots[fixedSlot].copyWith(
+                                            amountPercent: (current - 10)
+                                                .clamp(0, 100)
+                                                .toInt(),
+                                          );
+                                    }),
+                                    child: ExcludeSemantics(
+                                      child: Slider(
+                                        value: amount.toDouble(),
+                                        min: 0,
+                                        max: 100,
+                                        divisions: 10,
+                                        label: '$amount%',
+                                        onChanged: (value) => setDialogState(
+                                          () {
+                                            effectSlots[fixedSlot] =
+                                                effectSlots[fixedSlot].copyWith(
+                                                  amountPercent: value.round(),
+                                                );
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              }
+                            }
+
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: children,
+                            );
+                          },
+                        ),
+                        const SizedBox(height: 12),
+                        OutlinedButton.icon(
+                          onPressed: () => unawaited(
+                            _playPartEffectsPreview(
+                              index,
+                              volumePercent: volumePercent,
+                              effect: effectSlots[0].effect,
+                              secondaryEffect: effectSlots[1].effect,
+                              thirdEffect: effectSlots[2].effect,
+                              fourthEffect: effectSlots[3].effect,
+                              effectAmountPercent: effectSlots[0].amountPercent,
+                              secondaryEffectAmountPercent:
+                                  effectSlots[1].amountPercent,
+                              thirdEffectAmountPercent:
+                                  effectSlots[2].amountPercent,
+                              fourthEffectAmountPercent:
+                                  effectSlots[3].amountPercent,
+                            ),
+                          ),
+                          icon: const Icon(Icons.play_arrow),
+                          label: Text(l10n.mediaCutterPartPreviewAction),
+                        ),
+                      ],
                     ),
                   ),
-                  icon: const Icon(Icons.play_arrow),
-                  label: Text(l10n.mediaCutterPartPreviewAction),
-                ),
-              ],
-            ),
-          ),
           ),
           actions: [
             TextButton(
               onPressed: () {
-                unawaited(_logMediaCutter(
-                  'effects dialog cancelled index=$index applyToWholeFile=$applyToWholeFile '
-                  'slots=${_logEffectSlots(effectSlots)} '
-                  'visibleSlots=${_visibleEffectSlots(effectSlots)}',
-                ));
+                unawaited(
+                  _logMediaCutter(
+                    'effects dialog cancelled index=$index applyToWholeFile=$applyToWholeFile '
+                    'slots=${_logEffectSlots(effectSlots)} '
+                    'visibleSlots=${_visibleEffectSlots(effectSlots)}',
+                  ),
+                );
                 unawaited(_stopRenderedEffectsPreview());
                 Navigator.pop(dialogContext);
               },
@@ -3422,13 +3624,15 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
               onPressed: () {
                 unawaited(_stopRenderedEffectsPreview());
                 final normalizedSlots = _normalizedEffectSlots(effectSlots);
-                unawaited(_logMediaCutter(
-                  'effects dialog confirmed index=$index applyToWholeFile=$applyToWholeFile '
-                  'rawSlots=${_logEffectSlots(effectSlots)} '
-                  'normalizedSlots=${_logEffectSlots(normalizedSlots)} '
-                  'visibleSlots=${_visibleEffectSlots(effectSlots)} '
-                  'volume=$volumePercent%',
-                ));
+                unawaited(
+                  _logMediaCutter(
+                    'effects dialog confirmed index=$index applyToWholeFile=$applyToWholeFile '
+                    'rawSlots=${_logEffectSlots(effectSlots)} '
+                    'normalizedSlots=${_logEffectSlots(normalizedSlots)} '
+                    'visibleSlots=${_visibleEffectSlots(effectSlots)} '
+                    'volume=$volumePercent%',
+                  ),
+                );
                 Navigator.pop(
                   dialogContext,
                   _PartEffectSettings(
@@ -3453,11 +3657,13 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     );
 
     if (result == null || !mounted) {
-      unawaited(_logMediaCutter(
-        'effects dialog closed without applying index=$index '
-        'applyToWholeFile=$applyToWholeFile resultNull=${result == null} '
-        'mounted=$mounted',
-      ));
+      unawaited(
+        _logMediaCutter(
+          'effects dialog closed without applying index=$index '
+          'applyToWholeFile=$applyToWholeFile resultNull=${result == null} '
+          'mounted=$mounted',
+        ),
+      );
       return;
     }
     setState(() {
@@ -3486,16 +3692,287 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
             );
       _hasUnsavedEdit = true;
     });
-    unawaited(_logMediaCutter(
-      'part effects applied index=$index applyToWholeFile=$applyToWholeFile '
-      'volume=${result.volumePercent}% '
-      'effect=${result.effect.name}:${result.effectAmountPercent}% '
-      'secondary=${result.secondaryEffect.name}:'
-      '${result.secondaryEffectAmountPercent}% '
-      'third=${result.thirdEffect.name}:${result.thirdEffectAmountPercent}% '
-      'fourth=${result.fourthEffect.name}:'
-      '${result.fourthEffectAmountPercent}%',
-    ));
+    unawaited(
+      _logMediaCutter(
+        'part effects applied index=$index applyToWholeFile=$applyToWholeFile '
+        'volume=${result.volumePercent}% '
+        'effect=${result.effect.name}:${result.effectAmountPercent}% '
+        'secondary=${result.secondaryEffect.name}:'
+        '${result.secondaryEffectAmountPercent}% '
+        'third=${result.thirdEffect.name}:${result.thirdEffectAmountPercent}% '
+        'fourth=${result.fourthEffect.name}:'
+        '${result.fourthEffectAmountPercent}%',
+      ),
+    );
+  }
+
+  Future<void> _insertMedia() async {
+    if (_saving || _loading || _inputPath.isEmpty) return;
+    final l10n = _l10n;
+    if (_guidedCutStart != null || _guidedCutEnd != null) {
+      _showSnack(l10n.mediaCutterClearMarkers);
+      return;
+    }
+    final choices = [
+      for (var i = 0; i < _parts.length; i++)
+        if (_parts[i].keep) MapEntry(i, _parts[i]),
+    ];
+    final before = await showDialog<Duration>(
+      context: context,
+      builder: (dialogContext) => SimpleDialog(
+        title: Text(l10n.mediaCutterInsertBefore),
+        children: [
+          for (var i = 0; i < choices.length; i++)
+            SimpleDialogOption(
+              onPressed: () =>
+                  Navigator.pop(dialogContext, choices[i].value.start),
+              child: Text(
+                '${l10n.mediaCutterPartLabel(i + 1)}: ${_formatTime(choices[i].value.start)} – ${_formatTime(choices[i].value.end)}',
+              ),
+            ),
+          SimpleDialogOption(
+            onPressed: () => Navigator.pop(dialogContext, _duration),
+            child: Text(l10n.mediaCutterAtEnd),
+          ),
+        ],
+      ),
+    );
+    if (!mounted || before == null) return;
+    final picked = await MediaFilePicker.pickFiles(
+      context: context,
+      allowedExtensions: _mediaExtensions,
+    );
+    final inserted = picked?.files.firstOrNull?.path;
+    if (!mounted || inserted == null) return;
+    await _pause();
+    if (_usingRenderedPreviewSource) {
+      await _restoreOriginalAudioSource(seekTo: _position);
+    }
+    final oldInput = _inputPath;
+    final oldName = _displayName;
+    final oldParts = List<_MediaPart>.of(_parts);
+    final oldDuration = _duration;
+    final oldPosition = _position;
+    final oldRotation = _videoRotation;
+    final oldTrack = _addedTrackSettings;
+    final oldExport = _audioVideoExport;
+    final oldImage = _exportImage;
+    final oldDirty = _hasUnsavedEdit;
+    final oldSavePart = _savePartKey;
+    final controller = _MediaCutterExportController();
+    String? output;
+    bool loaded = false;
+    setState(() => _saving = true);
+    try {
+      await _enableExportWakelock();
+      final probe = await _probeMedia(inserted, purpose: 'insert media');
+      final length = probe.duration;
+      if ((!probe.hasAudio && !probe.hasVideo) ||
+          length == null ||
+          length <= Duration.zero) {
+        throw StateError('Inserted file has no usable media');
+      }
+      final ranges = cutterInsertionRanges(
+        original: oldInput,
+        duration: oldDuration,
+        inserted: inserted,
+        insertedDuration: length,
+        before: before,
+      );
+      final directory = await _createStagedOutputDirectory();
+      final extension = _isVideo || probe.hasVideo
+          ? '.mp4'
+          : _outputExtension(oldInput);
+      output = p.join(
+        directory,
+        '${p.basenameWithoutExtension(oldName)}$extension',
+      );
+      final destination = output;
+      await _runWithProgressDialog(
+        l10n,
+        controller,
+        () => _exportKeptParts(
+          [
+            for (final range in ranges)
+              _MediaPart(start: range.start, end: range.end),
+          ],
+          destination,
+          controller,
+          l10n,
+          inputRanges: ranges,
+        ),
+        closeEditorOnCancel: false,
+      );
+      if (!mounted) return;
+      loaded = await _loadMedia(destination);
+      if (!mounted) return;
+      if (!loaded) {
+        await _loadMedia(oldInput);
+        throw StateError('Cannot open inserted media');
+      }
+      setState(() {
+        _displayName = oldName;
+        _duration = oldDuration + length;
+        _parts = [
+          for (final part in oldParts.where((part) => part.end <= before)) part,
+          _MediaPart(start: before, end: before + length),
+          for (final part in oldParts.where((part) => part.start >= before))
+            part.copyWith(start: part.start + length, end: part.end + length),
+        ];
+        _splitPoints = [
+          for (final part in _parts.take(_parts.length - 1)) part.end,
+        ];
+        _deletedPartHistory
+          ..clear()
+          ..addAll(_parts.where((part) => !part.keep).map(_partKey));
+        _videoRotation = oldRotation;
+        _addedTrackSettings = oldTrack;
+        _audioVideoExport = oldExport;
+        _exportImage = oldImage;
+        _hasUnsavedEdit = true;
+        _savePartKey = null;
+        _status = l10n.mediaCutterMediaInserted;
+      });
+      _insertedWorkFiles.add(destination);
+      output = null;
+      await _seekTo(before);
+      _showSnack(l10n.mediaCutterMediaInserted);
+    } catch (error) {
+      await AppLogger.log('Media cutter: insertion failed error=$error');
+      if (mounted && !loaded) {
+        setState(() {
+          _displayName = oldName;
+          _parts = oldParts;
+          _duration = oldDuration;
+          _splitPoints = [
+            for (final part in oldParts.take(oldParts.length - 1)) part.end,
+          ];
+          _videoRotation = oldRotation;
+          _addedTrackSettings = oldTrack;
+          _audioVideoExport = oldExport;
+          _exportImage = oldImage;
+          _savePartKey = oldSavePart;
+          _hasUnsavedEdit = oldDirty;
+          _deletedPartHistory
+            ..clear()
+            ..addAll(oldParts.where((part) => !part.keep).map(_partKey));
+        });
+        await _seekTo(oldPosition);
+      }
+      if (mounted && error is! _MediaCutterExportCancelled) {
+        _showSnack(l10n.technicalErrorGeneric);
+      }
+    } finally {
+      if (output != null) await _cleanupStagedOutput(output);
+      controller.dispose();
+      await _disableExportWakelock();
+      if (mounted) setState(() => _saving = false);
+    }
+  }
+
+  String? get _selectedSavePart =>
+      _parts.any((part) => part.keep && _partKey(part) == _savePartKey)
+      ? _savePartKey
+      : null;
+
+  List<_MediaPart> get _partsToSave => selectCutterParts(
+    _parts,
+    keep: (part) => part.keep,
+    key: _partKey,
+    selected: _selectedSavePart,
+  );
+
+  List<AccessibleOption> get _saveOptions {
+    final l10n = _l10n;
+    final kept = _parts.where((part) => part.keep).toList();
+    return [
+      AccessibleOption(value: '', label: l10n.mediaCutterSaveAll),
+      if (_parts.length > 1)
+        for (var i = 0; i < kept.length; i++)
+          AccessibleOption(
+            value: _partKey(kept[i]),
+            label:
+                '${l10n.mediaCutterSaveOnlyPart(i + 1)}: ${_formatTime(kept[i].start)} – ${_formatTime(kept[i].end)}',
+          ),
+    ];
+  }
+
+  String _audioVideoLabel(_AudioVideoExport value) => switch (value) {
+    _AudioVideoExport.audio => _l10n.mediaCutterAudioOnly,
+    _AudioVideoExport.black => _l10n.mediaCutterBlackVideo,
+    _AudioVideoExport.image => _l10n.mediaCutterImageVideo,
+  };
+
+  Future<void> _chooseExportImage() async {
+    final result = await MediaFilePicker.pickFiles(
+      context: context,
+      allowedExtensions: const ['jpg', 'jpeg', 'png', 'webp', 'bmp'],
+    );
+    final path = result?.files.firstOrNull?.path;
+    if (!mounted || path == null) return;
+    setState(() {
+      _exportImage = path;
+      _hasUnsavedEdit = true;
+    });
+  }
+
+  void _clearMarkers() {
+    setState(() {
+      _guidedCutStart = null;
+      _guidedCutEnd = null;
+      _clearPartPreview();
+      _status = _l10n.mediaCutterMarkersCleared;
+    });
+    _showSnack(_l10n.mediaCutterMarkersCleared);
+  }
+
+  Future<void> _goToTime() async {
+    final controller = TextEditingController(
+      text: _ffmpegTime(_currentTimelinePosition),
+    );
+    String? error;
+    final target = await showDialog<Duration>(
+      context: context,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (context, update) => AlertDialog(
+          title: Text(_l10n.mediaCutterGoToTime),
+          content: TextField(
+            controller: controller,
+            autofocus: true,
+            keyboardType: TextInputType.datetime,
+            decoration: InputDecoration(
+              labelText: _l10n.mediaCutterTimeHint,
+              errorText: error,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: Text(_l10n.cancel),
+            ),
+            FilledButton(
+              onPressed: () {
+                final position = parseCutterPosition(
+                  controller.text,
+                  _editedTimelineDuration,
+                );
+                if (position == null) {
+                  update(() => error = _l10n.mediaCutterInvalidTime);
+                  return;
+                }
+                Navigator.pop(dialogContext, position);
+              },
+              child: Text(_l10n.mediaCutterGoToTime),
+            ),
+          ],
+        ),
+      ),
+    );
+    // The route may still be animating out; dispose after its text field unmounts.
+    await Future<void>.delayed(const Duration(milliseconds: 300));
+    controller.dispose();
+    if (!mounted || target == null) return;
+    await _seekTo(_editedToOriginalPosition(target));
   }
 
   Future<void> _save() async {
@@ -3504,11 +3981,19 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       _showSnack(l10n.mediaCutterNoFile);
       return;
     }
-    final keptParts = _parts.where((part) => part.keep).toList();
-    unawaited(_logMediaCutter(
-      'processing requested keptParts=${keptParts.length} totalParts=${_parts.length} '
-      'deleted=$_deletedPartCount ${_logPlaybackState()}',
-    ));
+    if (!_isVideo &&
+        _audioVideoExport == _AudioVideoExport.image &&
+        _exportImage == null) {
+      _showSnack(l10n.mediaCutterChooseImage);
+      return;
+    }
+    final keptParts = _partsToSave;
+    unawaited(
+      _logMediaCutter(
+        'processing requested keptParts=${keptParts.length} totalParts=${_parts.length} '
+        'deleted=$_deletedPartCount ${_logPlaybackState()}',
+      ),
+    );
     if (keptParts.isEmpty) {
       _showSnack(l10n.mediaCutterNoPartsToSave);
       return;
@@ -3535,11 +4020,13 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       });
 
       if (!mounted) return;
-      unawaited(_logMediaCutter(
-        'processing completed output="$output" keptParts=${keptParts.length}',
-      ));
+      unawaited(
+        _logMediaCutter(
+          'processing completed output="$output" keptParts=${keptParts.length}',
+        ),
+      );
       setState(() {
-        _hasUnsavedEdit = false;
+        if (_selectedSavePart == null) _hasUnsavedEdit = false;
         _status = l10n.mediaProcessingCompleted;
       });
       await _showDoneDialog(output);
@@ -3592,10 +4079,12 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       ),
     );
     if (result == true && hasPendingGuidedCut) {
-      unawaited(_logMediaCutter(
-        'discarding pending guided cut start=${_logMaybeDuration(_guidedCutStart)} '
-        'end=${_logMaybeDuration(_guidedCutEnd)} ${_logPlaybackState()}',
-      ));
+      unawaited(
+        _logMediaCutter(
+          'discarding pending guided cut start=${_logMaybeDuration(_guidedCutStart)} '
+          'end=${_logMaybeDuration(_guidedCutEnd)} ${_logPlaybackState()}',
+        ),
+      );
     }
     return result ?? false;
   }
@@ -3647,7 +4136,8 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     final audioStreams = streams.where((stream) => stream.getType() == 'audio');
     final video = _preferredStream(videoStreams);
     final audio = _preferredStream(audioStreams);
-    final duration = _parseProbeDuration(information.getDuration()) ??
+    final duration =
+        _parseProbeDuration(information.getDuration()) ??
         _parseProbeDuration(video?.getStringProperty('duration')) ??
         _parseProbeDuration(audio?.getStringProperty('duration'));
     final result = _MediaProbeInfo(
@@ -3686,9 +4176,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     }
   }
 
-  StreamInformation? _preferredStream(
-    Iterable<StreamInformation> streams,
-  ) {
+  StreamInformation? _preferredStream(Iterable<StreamInformation> streams) {
     StreamInformation? first;
     for (final stream in streams) {
       first ??= stream;
@@ -3710,10 +4198,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     }
   }
 
-  String _inputStreamMap(
-    _MediaProbeInfo source, {
-    required bool video,
-  }) {
+  String _inputStreamMap(_MediaProbeInfo source, {required bool video}) {
     final index = video ? source.videoStreamIndex : source.audioStreamIndex;
     if (index != null) return '0:$index';
     return video ? '0:v:0' : '0:a:0';
@@ -3752,7 +4237,8 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
   }
 
   String _normalizeAudioFilter(String? filter) {
-    const normalization = 'aresample=44100:async=1:first_pts=0,'
+    const normalization =
+        'aresample=44100:async=1:first_pts=0,'
         'aformat=sample_fmts=fltp:sample_rates=44100:'
         'channel_layouts=stereo';
     if (filter == null || filter.trim().isEmpty) return normalization;
@@ -3792,12 +4278,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     }
     if (hasAudio) {
       if (hasVideo) {
-        args.addAll([
-          '-c:a',
-          'aac',
-          '-b:a',
-          '192k',
-        ]);
+        args.addAll(['-c:a', 'aac', '-b:a', '192k']);
       } else {
         final ext = p.extension(inputPath).toLowerCase().replaceFirst('.', '');
         args.addAll(switch (ext) {
@@ -3812,12 +4293,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           _ => ['-c:a', 'aac', '-b:a', '192k'],
         });
       }
-      args.addAll([
-        '-ar',
-        '44100',
-        '-ac',
-        '2',
-      ]);
+      args.addAll(['-ar', '44100', '-ac', '2']);
     }
     return args;
   }
@@ -3848,22 +4324,14 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
 
     final pendingFile = File(pendingOutput);
     if (await pendingFile.exists()) await pendingFile.delete();
-    final args = <String>[
-      '-y',
-      '-fflags',
-      '+genpts',
-      '-i',
-      assembledPath,
-    ];
+    final args = <String>['-y', '-fflags', '+genpts', '-i', assembledPath];
     if (settings.loop) args.addAll(['-stream_loop', '-1']);
     args.addAll(['-i', settings.path]);
 
     final originalVolume = _addedTrackVolumeValue(
       settings.originalVolumePercent,
     );
-    final addedVolume = _addedTrackVolumeValue(
-      settings.newTrackVolumePercent,
-    );
+    final addedVolume = _addedTrackVolumeValue(settings.newTrackVolumePercent);
     if (source.hasAudio) {
       args.addAll([
         '-filter_complex',
@@ -3944,9 +4412,9 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       exportController,
       onStatistics: (statistics) {
         final elapsed = statistics.getTime().clamp(
-              0,
-              expectedDuration.inMilliseconds,
-            );
+          0,
+          expectedDuration.inMilliseconds,
+        );
         final fraction = expectedDuration.inMilliseconds <= 0
             ? 1.0
             : elapsed / expectedDuration.inMilliseconds;
@@ -4146,10 +4614,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         }
       }
 
-      final points = _sampleValidationPoints(
-        validationPoints,
-        actualDuration,
-      );
+      final points = _sampleValidationPoints(validationPoints, actualDuration);
       for (var i = 0; i < points.length; i++) {
         final point = points[i];
         final start = point > const Duration(milliseconds: 250)
@@ -4166,13 +4631,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         ];
         if (expectedVideo) args.addAll(['-map', '0:v:0']);
         if (expectedAudio) args.addAll(['-map', '0:a:0']);
-        args.addAll([
-          '-t',
-          '0.500',
-          '-f',
-          'null',
-          '-',
-        ]);
+        args.addAll(['-t', '0.500', '-f', 'null', '-']);
         await _runFfmpeg(
           args,
           'validate $label junction ${i + 1}/${points.length}',
@@ -4250,11 +4709,45 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     List<_MediaPart> keptParts,
     String output,
     _MediaCutterExportController exportController,
-    AppLocalizations l10n,
-  ) async {
+    AppLocalizations l10n, {
+    List<CutterSourceRange>? inputRanges,
+  }) async {
     final input = _inputPath;
-    final source =
+    var source =
         _inputProbe ?? await _probeMedia(input, purpose: 'export input');
+    final probes = <String, _MediaProbeInfo>{input: source};
+    if (inputRanges != null) {
+      for (final range in inputRanges) {
+        probes[range.path] ??= await _probeMedia(
+          range.path,
+          purpose: 'insert source',
+        );
+      }
+      final video = probes.values.where((probe) => probe.hasVideo).firstOrNull;
+      source = _MediaProbeInfo(
+        hasVideo: video != null,
+        hasAudio: probes.values.any((probe) => probe.hasAudio),
+        duration: null,
+        videoCodec: video?.videoCodec,
+        audioCodec: source.audioCodec,
+        videoStreamIndex: video?.videoStreamIndex,
+        audioStreamIndex: source.audioStreamIndex,
+        width: video?.width,
+        height: video?.height,
+        frameRate: video?.frameRate,
+        audioSampleRate: source.audioSampleRate,
+        audioChannelLayout: source.audioChannelLayout,
+      );
+    }
+    final outputHasVideo = source.hasVideo;
+    final outputHasAudio = source.hasAudio;
+    final makeStillVideo =
+        inputRanges == null &&
+        !source.hasVideo &&
+        _audioVideoExport != _AudioVideoExport.audio;
+    final sourceSnapshots = <String, FileStat>{
+      for (final path in probes.keys) path: await File(path).stat(),
+    };
     if (!source.hasVideo && !source.hasAudio) {
       throw StateError('Il file non contiene tracce esportabili.');
     }
@@ -4276,9 +4769,12 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     await _cleanupStalePendingOutputs(p.dirname(output));
     final ext = source.hasVideo ? '.mp4' : _outputExtension(input);
     final pendingOutput = _pendingOutputPath(output);
-    final addedTrack = _addedTrackSettings;
+    final addedTrack = inputRanges == null ? _addedTrackSettings : null;
+    final mediaOutput = makeStillVideo
+        ? p.join(workDir.path, 'audio$ext')
+        : pendingOutput;
     final assemblyOutput = addedTrack == null
-        ? pendingOutput
+        ? mediaOutput
         : p.join(workDir.path, 'assembled$ext');
     final segmentPaths = <String>[];
     final totalDurationMs = keptParts.fold<int>(
@@ -4304,9 +4800,10 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       if (part.start < Duration.zero || part.end <= part.start) {
         throw StateError('La parte ${i + 1} contiene limiti non validi.');
       }
-      if (i > 0 && part.start < previousEnd) {
+      if (inputRanges == null && i > 0 && part.start < previousEnd) {
         throw StateError(
-            'Le parti da esportare sono sovrapposte o disordinate.');
+          'Le parti da esportare sono sovrapposte o disordinate.',
+        );
       }
       if (part.duration.inMilliseconds < minimumPartMs) {
         throw StateError(
@@ -4314,7 +4811,9 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           '(${part.duration.inMilliseconds} ms; minimo $minimumPartMs ms).',
         );
       }
-      final sourceDuration = source.duration;
+      final sourceDuration = inputRanges == null
+          ? source.duration
+          : probes[inputRanges[i].path]?.duration;
       if (sourceDuration != null &&
           part.end > sourceDuration + const Duration(seconds: 1)) {
         throw StateError(
@@ -4324,17 +4823,21 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       previousEnd = part.end;
     }
 
-    unawaited(_logMediaCutter(
-      'export production start output="$output" pending="$pendingOutput" '
-      'keptParts=${keptParts.length} '
-      'totalDuration=${_logDuration(expectedDuration)} '
-      'source=${source.logSummary}',
-    ));
+    unawaited(
+      _logMediaCutter(
+        'export production start output="$output" pending="$pendingOutput" '
+        'keptParts=${keptParts.length} '
+        'totalDuration=${_logDuration(expectedDuration)} '
+        'source=${source.logSummary}',
+      ),
+    );
     for (var i = 0; i < keptParts.length; i++) {
-      unawaited(_logMediaCutter(
-        'export part ${i + 1}/${keptParts.length} '
-        '${_logPart(i, keptParts[i])}',
-      ));
+      unawaited(
+        _logMediaCutter(
+          'export part ${i + 1}/${keptParts.length} '
+          '${_logPart(i, keptParts[i])}',
+        ),
+      );
     }
 
     try {
@@ -4343,6 +4846,8 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           throw const _MediaCutterExportCancelled();
         }
         final part = keptParts[i];
+        final segmentInput = inputRanges == null ? input : inputRanges[i].path;
+        final source = probes[segmentInput]!;
         final segment = p.join(
           workDir.path,
           'segment_${i.toString().padLeft(3, '0')}$ext',
@@ -4362,128 +4867,139 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
             source.hasAudio && requestedUnderwater && !usesNativeDsp;
         if (!source.hasAudio &&
             (requestedUnderwater || _audioFilterForPart(part) != null)) {
-          unawaited(_logMediaCutter(
-            'export part ${i + 1}: audio effects skipped because the '
-            'source has no audio track',
-          ));
+          unawaited(
+            _logMediaCutter(
+              'export part ${i + 1}: audio effects skipped because the '
+              'source has no audio track',
+            ),
+          );
         }
         final rawAudioFilter = source.hasAudio
             ? (usesUnderwaterBubbles
-                ? _underwaterAudioFilterForPart(part)
-                : _audioFilterForPart(part))
+                  ? _underwaterAudioFilterForPart(part)
+                  : _audioFilterForPart(part))
             : null;
         final selectedRawAudioFilter =
             usesUnderwaterBubbles && rawAudioFilter != null
-                ? rawAudioFilter.replaceFirst(
-                    '[0:a:0]',
-                    '[${_inputStreamMap(source, video: false)}]',
-                  )
-                : rawAudioFilter;
+            ? rawAudioFilter.replaceFirst(
+                '[0:a:0]',
+                '[${_inputStreamMap(source, video: false)}]',
+              )
+            : rawAudioFilter;
         final audioFilter = source.hasAudio
             ? (usesUnderwaterBubbles
-                ? _normalizeComplexAudioOutput(selectedRawAudioFilter!)
-                : _normalizeAudioFilter(selectedRawAudioFilter))
+                  ? _normalizeComplexAudioOutput(selectedRawAudioFilter!)
+                  : _normalizeAudioFilter(selectedRawAudioFilter))
             : null;
-        final args = <String>[
-          '-y',
-          '-fflags',
-          '+genpts',
-          '-ss',
-          _ffmpegTime(part.start),
-          '-i',
-          input,
-        ];
-        if (usesNativeDsp) {
-          args.addAll([
-            '-f',
-            'f32le',
-            '-ar',
-            '44100',
-            '-ac',
-            '2',
+        final args = <String>[];
+        if (inputRanges != null) {
+          args.addAll(
+            cutterInsertionSegmentArguments(
+              range: inputRanges[i],
+              output: segment,
+              sourceVideo: source.hasVideo,
+              sourceAudio: source.hasAudio,
+              outputVideo: outputHasVideo,
+              outputAudio: outputHasAudio,
+              videoMap: _inputStreamMap(source, video: true),
+              audioMap: _inputStreamMap(source, video: false),
+              codecs: _productionCodecArguments(
+                inputPath: input,
+                hasVideo: outputHasVideo,
+                hasAudio: outputHasAudio,
+              ),
+            ),
+          );
+        } else {
+          args.addAll(<String>[
+            '-y',
+            '-fflags',
+            '+genpts',
+            '-ss',
+            _ffmpegTime(part.start),
             '-i',
-            nativePcm!,
+            segmentInput,
           ]);
-        } else if (usesUnderwaterBubbles) {
-          args.addAll([
-            '-stream_loop',
-            '-1',
-            '-i',
-            await _ensureUnderwaterBubblesSourcePath(),
-          ]);
-        }
-        args.addAll([
-          '-t',
-          _ffmpegTime(part.duration),
-        ]);
-        if (source.hasVideo) {
-          args.addAll([
-            '-map',
-            _inputStreamMap(source, video: true),
-          ]);
-        }
-        if (source.hasAudio) {
           if (usesNativeDsp) {
             args.addAll([
-              '-map',
-              '1:a:0',
-              '-filter:a',
-              _postNativeDspFilter(part)!,
+              '-f',
+              'f32le',
+              '-ar',
+              '44100',
+              '-ac',
+              '2',
+              '-i',
+              nativePcm!,
             ]);
           } else if (usesUnderwaterBubbles) {
             args.addAll([
-              '-filter_complex',
-              audioFilter!,
-              '-map',
-              '[outa]',
-            ]);
-          } else {
-            args.addAll([
-              '-map',
-              _inputStreamMap(source, video: false),
-              '-filter:a',
-              audioFilter!,
+              '-stream_loop',
+              '-1',
+              '-i',
+              await _ensureUnderwaterBubblesSourcePath(),
             ]);
           }
-        } else if (!source.hasVideo) {
-          throw StateError('Il file non contiene una traccia audio valida.');
-        }
-        if (!source.hasVideo) args.add('-vn');
-        args.addAll([
-          '-sn',
-          '-dn',
-          '-map_metadata',
-          '-1',
-          '-map_chapters',
-          '-1',
-        ]);
-        final videoFilter = _videoFilter();
-        if (source.hasVideo && videoFilter != null) {
+          args.addAll(['-t', _ffmpegTime(part.duration)]);
+          if (source.hasVideo) {
+            args.addAll(['-map', _inputStreamMap(source, video: true)]);
+          }
+          if (source.hasAudio) {
+            if (usesNativeDsp) {
+              args.addAll([
+                '-map',
+                '1:a:0',
+                '-filter:a',
+                _postNativeDspFilter(part)!,
+              ]);
+            } else if (usesUnderwaterBubbles) {
+              args.addAll(['-filter_complex', audioFilter!, '-map', '[outa]']);
+            } else {
+              args.addAll([
+                '-map',
+                _inputStreamMap(source, video: false),
+                '-filter:a',
+                audioFilter!,
+              ]);
+            }
+          } else if (!source.hasVideo) {
+            throw StateError('Il file non contiene una traccia audio valida.');
+          }
+          if (!source.hasVideo) args.add('-vn');
           args.addAll([
-            '-filter:v',
-            videoFilter,
+            '-sn',
+            '-dn',
+            '-map_metadata',
+            '-1',
+            '-map_chapters',
+            '-1',
           ]);
-        }
-        args.addAll(_productionCodecArguments(
-          inputPath: input,
-          hasVideo: source.hasVideo,
-          hasAudio: source.hasAudio,
-        ));
-        args.addAll([
-          '-max_muxing_queue_size',
-          '2048',
-          '-avoid_negative_ts',
-          'make_zero',
-        ]);
-        if (source.hasVideo && ext == '.mp4') {
+          final videoFilter = _videoFilter();
+          if (outputHasVideo && videoFilter != null) {
+            args.addAll(['-filter:v', videoFilter]);
+          }
+          args.addAll(
+            _productionCodecArguments(
+              inputPath: input,
+              hasVideo: outputHasVideo,
+              hasAudio: outputHasAudio,
+            ),
+          );
           args.addAll([
-            '-metadata:s:v:0',
-            'rotate=0',
-            '-movflags',
-            '+faststart',
+            '-max_muxing_queue_size',
+            '2048',
+            '-avoid_negative_ts',
+            'make_zero',
           ]);
+          if (outputHasVideo && ext == '.mp4') {
+            args.addAll([
+              '-metadata:s:v:0',
+              'rotate=0',
+              '-movflags',
+              '+faststart',
+            ]);
+          }
+          args.add(segment);
         }
-        args.add(segment);
 
         await _runFfmpeg(
           args,
@@ -4491,9 +5007,9 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           exportController,
           onStatistics: (statistics) {
             final segmentMs = statistics.getTime().clamp(
-                  0,
-                  part.duration.inMilliseconds,
-                );
+              0,
+              part.duration.inMilliseconds,
+            );
             final fraction = totalDurationMs <= 0
                 ? 0.0
                 : (completedDurationMs + segmentMs) / totalDurationMs;
@@ -4506,8 +5022,8 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         );
         await _validateExportFile(
           path: segment,
-          expectedVideo: source.hasVideo,
-          expectedAudio: source.hasAudio,
+          expectedVideo: outputHasVideo,
+          expectedAudio: outputHasAudio,
           expectedDuration: part.duration,
           label: 'segmento ${i + 1}',
           exportController: exportController,
@@ -4544,9 +5060,11 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           0.93,
           l10n.mediaCutterExportFinalVerification,
         );
-        unawaited(_logMediaCutter(
-          'export single segment staged assembly="$assemblyOutput"',
-        ));
+        unawaited(
+          _logMediaCutter(
+            'export single segment staged assembly="$assemblyOutput"',
+          ),
+        );
       } else {
         final listFile = File(p.join(workDir.path, 'concat.txt'));
         await listFile.writeAsString(
@@ -4569,10 +5087,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           'copy',
           '-avoid_negative_ts',
           'make_zero',
-          if (ext == '.mp4') ...[
-            '-movflags',
-            '+faststart',
-          ],
+          if (ext == '.mp4') ...['-movflags', '+faststart'],
           assemblyOutput,
         ];
         _updateExportProgress(
@@ -4624,24 +5139,20 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           if (source.hasAudio) {
             concatReencodeArgs.addAll(['-map', '0:a:0']);
           }
-          concatReencodeArgs.addAll(_productionCodecArguments(
-            inputPath: input,
-            hasVideo: source.hasVideo,
-            hasAudio: source.hasAudio,
-          ));
+          concatReencodeArgs.addAll(
+            _productionCodecArguments(
+              inputPath: input,
+              hasVideo: source.hasVideo,
+              hasAudio: source.hasAudio,
+            ),
+          );
           concatReencodeArgs.addAll([
             '-max_muxing_queue_size',
             '2048',
             '-avoid_negative_ts',
             'make_zero',
-            if (source.hasVideo) ...[
-              '-metadata:s:v:0',
-              'rotate=0',
-            ],
-            if (ext == '.mp4') ...[
-              '-movflags',
-              '+faststart',
-            ],
+            if (source.hasVideo) ...['-metadata:s:v:0', 'rotate=0'],
+            if (ext == '.mp4') ...['-movflags', '+faststart'],
             assemblyOutput,
           ]);
           await _runFfmpeg(
@@ -4655,7 +5166,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       if (addedTrack != null) {
         await _mixAddedTrackIntoExport(
           assembledPath: assemblyOutput,
-          pendingOutput: pendingOutput,
+          pendingOutput: mediaOutput,
           expectedDuration: expectedDuration,
           source: source,
           settings: addedTrack,
@@ -4664,6 +5175,32 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         );
       }
 
+      if (makeStillVideo) {
+        if (_audioVideoExport == _AudioVideoExport.image &&
+            _exportImage == null) {
+          throw StateError('Missing export image');
+        }
+        await _runFfmpeg(
+          cutterStillVideoArguments(
+            audio: mediaOutput,
+            output: pendingOutput,
+            duration: expectedDuration,
+            image: _audioVideoExport == _AudioVideoExport.image
+                ? _exportImage
+                : null,
+          ),
+          'audio to video',
+          exportController,
+        );
+      }
+      for (final entry in sourceSnapshots.entries) {
+        final current = await File(entry.key).stat();
+        if (current.type != FileSystemEntityType.file ||
+            current.size != entry.value.size ||
+            current.modified != entry.value.modified) {
+          throw StateError('Source changed during export');
+        }
+      }
       final currentInputStat = await inputFile.stat();
       if (currentInputStat.type != FileSystemEntityType.file ||
           currentInputStat.size != inputSnapshot.size ||
@@ -4681,7 +5218,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       );
       await _validateExportFile(
         path: pendingOutput,
-        expectedVideo: source.hasVideo,
+        expectedVideo: source.hasVideo || makeStillVideo,
         expectedAudio: source.hasAudio || addedTrack != null,
         expectedDuration: expectedDuration,
         label: 'file finale',
@@ -4706,15 +5243,14 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         1,
         l10n.mediaCutterExportCompletion,
       );
-      unawaited(_logMediaCutter(
-        'export production completed output="$output" '
-        'segments=${segmentPaths.length} source=${source.logSummary}',
-      ));
-    } finally {
-      await _deleteFileIfExists(
-        File(pendingOutput),
-        'pending output',
+      unawaited(
+        _logMediaCutter(
+          'export production completed output="$output" '
+          'segments=${segmentPaths.length} source=${source.logSummary}',
+        ),
       );
+    } finally {
+      await _deleteFileIfExists(File(pendingOutput), 'pending output');
       if (await workDir.exists()) {
         try {
           await workDir.delete(recursive: true);
@@ -4782,14 +5318,16 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       throw logs.trim().isEmpty ? 'FFmpeg ${returnCode?.getValue()}' : logs;
     }
     await AppLogger.log(
-        'Media cutter ffmpeg $step completed returnCode=${returnCode?.getValue()}');
+      'Media cutter ffmpeg $step completed returnCode=${returnCode?.getValue()}',
+    );
   }
 
   Future<void> _runWithProgressDialog(
     AppLocalizations l10n,
     _MediaCutterExportController exportController,
-    Future<void> Function() task,
-  ) async {
+    Future<void> Function() task, {
+    bool closeEditorOnCancel = true,
+  }) async {
     final taskFuture = task();
     var closeAttached = false;
 
@@ -4844,15 +5382,17 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
             actions: [
               TextButton(
                 onPressed: () {
-                  unawaited(taskFuture.catchError((error, stackTrace) async {
-                    await AppLogger.log(
-                      'Media cutter: background export stopped after cancel '
-                      'error=$error',
-                    );
-                  }));
+                  unawaited(
+                    taskFuture.catchError((error, stackTrace) async {
+                      await AppLogger.log(
+                        'Media cutter: background export stopped after cancel '
+                        'error=$error',
+                      );
+                    }),
+                  );
                   unawaited(exportController.cancel());
                   closeDialog();
-                  if (mounted) {
+                  if (mounted && closeEditorOnCancel) {
                     Navigator.of(context).pop();
                   }
                 },
@@ -4865,6 +5405,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     );
 
     if (exportController.cancelled) {
+      if (!closeEditorOnCancel) await taskFuture.catchError((_) {});
       throw const _MediaCutterExportCancelled();
     }
     await taskFuture;
@@ -4951,7 +5492,10 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
 
   Future<void> _shareOutputFile(String filePath) async {
     await SharePlus.instance.share(
-      ShareParams(files: [XFile(filePath)], text: importedFileDisplayName(filePath)),
+      ShareParams(
+        files: [XFile(filePath)],
+        text: importedFileDisplayName(filePath),
+      ),
     );
   }
 
@@ -4984,7 +5528,9 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
 
   Future<String> _uniqueOutputPath(String outputDir, String inputPath) async {
     final stem = p.basenameWithoutExtension(importedFileDisplayName(inputPath));
-    final ext = _outputExtension(inputPath);
+    final ext = !_isVideo && _audioVideoExport != _AudioVideoExport.audio
+        ? '.mp4'
+        : _outputExtension(inputPath);
     var candidate = p.join(outputDir, '${stem}_tagliato$ext');
     var index = 2;
     while (await File(candidate).exists()) {
@@ -5007,9 +5553,9 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
   bool get _hasDeletedParts => _parts.any((part) => !part.keep);
 
   List<_MediaPart> get _keptParts => [
-        for (final part in _parts)
-          if (part.keep) part,
-      ];
+    for (final part in _parts)
+      if (part.keep) part,
+  ];
 
   Duration get _editedTimelineDuration {
     if (!_hasDeletedParts) return _duration;
@@ -5139,11 +5685,13 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       _scheduledDeletedSkipTarget = target;
       final delayMs = boundary.inMilliseconds - position.inMilliseconds;
       final delay = Duration(milliseconds: delayMs <= 0 ? 1 : delayMs);
-      unawaited(_logMediaCutter(
-        'playback skip scheduled boundary=${_logPreciseDuration(boundary)} '
-        'target=${_logPreciseDuration(target)} delayMs=${delay.inMilliseconds} '
-        '${_logPlaybackState()}',
-      ));
+      unawaited(
+        _logMediaCutter(
+          'playback skip scheduled boundary=${_logPreciseDuration(boundary)} '
+          'target=${_logPreciseDuration(target)} delayMs=${delay.inMilliseconds} '
+          '${_logPlaybackState()}',
+        ),
+      );
       _deletedSkipTimer = Timer(delay, () {
         _deletedSkipTimer = null;
         _scheduledDeletedSkipBoundary = null;
@@ -5173,10 +5721,12 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     _cancelDeletedSkipTimer();
     _skippingDeletedPart = true;
     try {
-      unawaited(_logMediaCutter(
-        'playback skipped deleted part target=${_logPreciseDuration(target)} '
-        '${_logPlaybackState()}',
-      ));
+      unawaited(
+        _logMediaCutter(
+          'playback skipped deleted part target=${_logPreciseDuration(target)} '
+          '${_logPlaybackState()}',
+        ),
+      );
       await _seekTo(target, clearPreview: false);
       if (target >= _duration) await _pause();
     } finally {
@@ -5243,14 +5793,13 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
   bool _isNativeDspEffect(_MediaPartEffect effect) =>
       _nativeDspEffectFor(effect) != null;
 
-  List<_MediaEffectSlot> _nativeDspSlots(_MediaPart part) =>
-      _activeEffectSlots(part)
-          .where((slot) => _isNativeDspEffect(slot.effect))
-          .toList(growable: false);
+  List<_MediaEffectSlot> _nativeDspSlots(_MediaPart part) => _activeEffectSlots(
+    part,
+  ).where((slot) => _isNativeDspEffect(slot.effect)).toList(growable: false);
 
   Set<_MediaPartEffect> _nativeDspEffectSet(_MediaPart part) => {
-        for (final slot in _nativeDspSlots(part)) slot.effect,
-      };
+    for (final slot in _nativeDspSlots(part)) slot.effect,
+  };
 
   Future<void> _processNativeDspStep({
     required String inputPath,
@@ -5315,7 +5864,8 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     required String label,
     required _MediaCutterExportController? exportController,
   }) async {
-    final source = _inputProbe ??
+    final source =
+        _inputProbe ??
         await _probeMedia(_inputPath, purpose: '$label native DSP input');
     if (!source.hasAudio) {
       throw StateError('L’effetto DSP richiede una traccia audio.');
@@ -5486,7 +6036,8 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
 
     final activeSlots = _activeEffectSlots(part);
     for (final slot in activeSlots) {
-      if (skipEffects.contains(slot.effect) || _isNativeDspEffect(slot.effect)) {
+      if (skipEffects.contains(slot.effect) ||
+          _isNativeDspEffect(slot.effect)) {
         continue;
       }
       // I fade devono essere applicati all'uscita dell'intera catena.
@@ -5501,11 +6052,9 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       if (filter != null) filters.add(filter);
     }
 
-    filters.addAll(_terminalFadeFilters(
-      part,
-      activeSlots,
-      skipEffects: skipEffects,
-    ));
+    filters.addAll(
+      _terminalFadeFilters(part, activeSlots, skipEffects: skipEffects),
+    );
 
     if (filters.isEmpty) return null;
     return filters.join(',');
@@ -5583,10 +6132,9 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       _activeEffectSlots(part).map((slot) => slot.effect).toList();
 
   bool _usesUnderwaterBubbles(_MediaPart part) => _activeEffectSlots(part).any(
-        (slot) =>
-            slot.effect == _MediaPartEffect.underwater &&
-            slot.amountPercent > 0,
-      );
+    (slot) =>
+        slot.effect == _MediaPartEffect.underwater && slot.amountPercent > 0,
+  );
 
   String? _audioFilterForEffect(
     _MediaPartEffect effect,
@@ -6233,10 +6781,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     };
   }
 
-  String _videoRotationLabel(
-    AppLocalizations l10n,
-    _VideoRotation rotation,
-  ) {
+  String _videoRotationLabel(AppLocalizations l10n, _VideoRotation rotation) {
     return switch (rotation) {
       _VideoRotation.none => l10n.mediaCutterVideoRotationNone,
       _VideoRotation.right => l10n.mediaCutterVideoRotationRight,
@@ -6266,21 +6811,23 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         (part) => part.start <= start && part.end >= end,
       );
       final inherited = previous.isEmpty ? null : previous.first;
-      rebuilt.add(_MediaPart(
-        start: start,
-        end: end,
-        keep: inherited?.keep ?? true,
-        volumePercent: inherited?.volumePercent ?? 100,
-        effect: inherited?.effect ?? _MediaPartEffect.none,
-        secondaryEffect: inherited?.secondaryEffect ?? _MediaPartEffect.none,
-        thirdEffect: inherited?.thirdEffect ?? _MediaPartEffect.none,
-        fourthEffect: inherited?.fourthEffect ?? _MediaPartEffect.none,
-        effectAmountPercent: inherited?.effectAmountPercent ?? 50,
-        secondaryEffectAmountPercent:
-            inherited?.secondaryEffectAmountPercent ?? 50,
-        thirdEffectAmountPercent: inherited?.thirdEffectAmountPercent ?? 50,
-        fourthEffectAmountPercent: inherited?.fourthEffectAmountPercent ?? 50,
-      ));
+      rebuilt.add(
+        _MediaPart(
+          start: start,
+          end: end,
+          keep: inherited?.keep ?? true,
+          volumePercent: inherited?.volumePercent ?? 100,
+          effect: inherited?.effect ?? _MediaPartEffect.none,
+          secondaryEffect: inherited?.secondaryEffect ?? _MediaPartEffect.none,
+          thirdEffect: inherited?.thirdEffect ?? _MediaPartEffect.none,
+          fourthEffect: inherited?.fourthEffect ?? _MediaPartEffect.none,
+          effectAmountPercent: inherited?.effectAmountPercent ?? 50,
+          secondaryEffectAmountPercent:
+              inherited?.secondaryEffectAmountPercent ?? 50,
+          thirdEffectAmountPercent: inherited?.thirdEffectAmountPercent ?? 50,
+          fourthEffectAmountPercent: inherited?.fourthEffectAmountPercent ?? 50,
+        ),
+      );
     }
     _parts = rebuilt;
   }
@@ -6420,10 +6967,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     }
   }
 
-  String _nativeEffectLabel(
-    AppLocalizations l10n,
-    _MediaPartEffect effect,
-  ) {
+  String _nativeEffectLabel(AppLocalizations l10n, _MediaPartEffect effect) {
     return switch (effect) {
       _MediaPartEffect.backwards => l10n.mediaCutterPartEffectBackwards,
       _MediaPartEffect.talkingGuitar => l10n.mediaCutterPartEffectTalkingGuitar,
@@ -6436,7 +6980,8 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       _MediaPartEffect.metallic => l10n.mediaCutterPartEffectMetallic,
       _MediaPartEffect.songbird => l10n.mediaCutterPartEffectSongbird,
       _MediaPartEffect.exterminator => l10n.mediaCutterPartEffectExterminator,
-      _MediaPartEffect.rainAndThunder => l10n.mediaCutterPartEffectRainAndThunder,
+      _MediaPartEffect.rainAndThunder =>
+        l10n.mediaCutterPartEffectRainAndThunder,
       _MediaPartEffect.jungle => l10n.mediaCutterPartEffectJungle,
       _MediaPartEffect.crowd => l10n.mediaCutterPartEffectCrowd,
       _MediaPartEffect.slotMachines => l10n.mediaCutterPartEffectSlotMachines,
@@ -6538,14 +7083,14 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     final lang = l10n.localeName;
     final form = switch (lang) {
       'pl' => () {
-          final mod10 = value % 10;
-          final mod100 = value % 100;
-          if (value == 1) return 0;
-          if (mod10 >= 2 && mod10 <= 4 && !(mod100 >= 12 && mod100 <= 14)) {
-            return 1;
-          }
-          return 2;
-        }(),
+        final mod10 = value % 10;
+        final mod100 = value % 100;
+        if (value == 1) return 0;
+        if (mod10 >= 2 && mod10 <= 4 && !(mod100 >= 12 && mod100 <= 14)) {
+          return 1;
+        }
+        return 2;
+      }(),
       'cs' => value == 1 ? 0 : (value >= 2 && value <= 4 ? 1 : 2),
       _ => value == 1 ? 0 : 2,
     };
@@ -6566,57 +7111,24 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
 
   String _joinHumanDurationUnits(List<String> units) {
     if (units.length <= 1) return units.first;
-    final connector = ' ${AppLocalizations.of(context).mediaCutterDurationAnd} ';
+    final connector =
+        ' ${AppLocalizations.of(context).mediaCutterDurationAnd} ';
     if (units.length == 2) return '${units[0]}$connector${units[1]}';
     return '${units.sublist(0, units.length - 1).join(', ')}$connector${units.last}';
-  }
-
-  String _mediaSeekStepButtonLabel() {
-    final l10n = AppLocalizations.of(context);
-    return l10n.mediaCutterSeekStepButton(_formatHumanDuration(_mediaSeekStep));
   }
 
   String _mediaSeekStepDialogTitle() =>
       AppLocalizations.of(context).mediaCutterSeekStepTitle;
 
-  String _mediaSeekStepSelectedMessage(Duration step) {
-    final l10n = AppLocalizations.of(context);
-    return l10n.mediaCutterSeekStepSelected(_formatHumanDuration(step));
-  }
-
-  Future<void> _showMediaSeekStepDialog() async {
-    final selected = await showDialog<Duration>(
-      context: context,
-      builder: (context) {
-        return SimpleDialog(
-          title: Text(_mediaSeekStepDialogTitle()),
-          children: [
-            for (final step in _mediaSeekStepOptions)
-              SimpleDialogOption(
-                onPressed: () => Navigator.of(context).pop(step),
-                child: Row(
-                  children: [
-                    if (step == _mediaSeekStep)
-                      const Icon(Icons.check)
-                    else
-                      const SizedBox(width: 24),
-                    const SizedBox(width: 12),
-                    Expanded(child: Text(_formatHumanDuration(step))),
-                  ],
-                ),
-              ),
-          ],
-        );
-      },
-    );
-
-    if (selected == null || selected == _mediaSeekStep || !mounted) return;
+  void _setMediaSeekStep(Duration step) {
+    if (step == _mediaSeekStep || !_mediaSeekStepOptions.contains(step)) return;
     _mediaSeekStepChangedByUser = true;
-    setState(() => _mediaSeekStep = selected);
-    unawaited(_saveMediaSeekStep(selected));
-    unawaited(_logMediaCutter(
-        'media movement step changed to ${_logDuration(selected)}'));
-    _showSnack(_mediaSeekStepSelectedMessage(selected));
+    setState(() => _mediaSeekStep = step);
+    unawaited(_saveMediaSeekStep(step));
+    unawaited(
+      _logMediaCutter('media movement step changed to ${_logDuration(step)}'),
+    );
+    // VoiceOver announces its slider value; no SnackBar to steal focus.
   }
 
   String _formatTime(Duration duration) {
@@ -6729,8 +7241,8 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
               onChanged: _saving
                   ? null
                   : (value) => unawaited(
-                        _seekTimelineTo(Duration(seconds: value.round())),
-                      ),
+                      _seekTimelineTo(Duration(seconds: value.round())),
+                    ),
             ),
           ),
         ),
@@ -6754,9 +7266,11 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         const SizedBox(height: 8),
         Text(l10n.mediaCutterPartsHint),
         const SizedBox(height: 8),
-        for (var visibleIndex = 0;
-            visibleIndex < visibleParts.length;
-            visibleIndex++)
+        for (
+          var visibleIndex = 0;
+          visibleIndex < visibleParts.length;
+          visibleIndex++
+        )
           _buildPartTile(
             l10n,
             originalIndex: visibleParts[visibleIndex].key,
@@ -6785,9 +7299,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     final effectsAction = CustomSemanticsAction(
       label: l10n.mediaCutterPartEffectsAction,
     );
-    final editAction = CustomSemanticsAction(
-      label: _partEditActionLabel,
-    );
+    final editAction = CustomSemanticsAction(label: _partEditActionLabel);
 
     return Semantics(
       key: ValueKey('media_cutter_part_semantics_${_partKey(part)}'),
@@ -6886,39 +7398,56 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     }
 
     return Scaffold(
-      appBar:
-          SonarpadAppBar(title: Text(AppLocalizations.of(context).mediaCutterTitle)),
+      appBar: SonarpadAppBar(
+        title: Text(AppLocalizations.of(context).mediaCutterTitle),
+      ),
       body: SafeArea(
         child: useSharedAccessibleViewModel
             ? UniversalAccessibleList(
-                sections: [AccessibleListSection(rows: [
-                  AccessibleListRow(id: 'guided', title: _guidedModeTitle, subtitle: _guidedModeDescription),
-                  AccessibleListRow(id: 'advanced', title: _advancedModeTitle, subtitle: _advancedModeDescription),
-                ])],
+                sections: [
+                  AccessibleListSection(
+                    rows: [
+                      AccessibleListRow(
+                        id: 'guided',
+                        title: _guidedModeTitle,
+                        subtitle: _guidedModeDescription,
+                      ),
+                      AccessibleListRow(
+                        id: 'advanced',
+                        title: _advancedModeTitle,
+                        subtitle: _advancedModeDescription,
+                      ),
+                    ],
+                  ),
+                ],
                 onEvent: (event) {
                   if (event.type != 'activate') return;
-                  if (event.id == 'guided') _selectMode(_MediaCutterMode.guided);
-                  if (event.id == 'advanced') _selectMode(_MediaCutterMode.advanced);
+                  if (event.id == 'guided') {
+                    _selectMode(_MediaCutterMode.guided);
+                  }
+                  if (event.id == 'advanced') {
+                    _selectMode(_MediaCutterMode.advanced);
+                  }
                 },
               )
             : ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            modeCard(
-              mode: _MediaCutterMode.guided,
-              icon: Icons.content_cut,
-              title: _guidedModeTitle,
-              description: _guidedModeDescription,
-            ),
-            const SizedBox(height: 12),
-            modeCard(
-              mode: _MediaCutterMode.advanced,
-              icon: Icons.graphic_eq,
-              title: _advancedModeTitle,
-              description: _advancedModeDescription,
-            ),
-          ],
-        ),
+                padding: const EdgeInsets.all(16),
+                children: [
+                  modeCard(
+                    mode: _MediaCutterMode.guided,
+                    icon: Icons.content_cut,
+                    title: _guidedModeTitle,
+                    description: _guidedModeDescription,
+                  ),
+                  const SizedBox(height: 12),
+                  modeCard(
+                    mode: _MediaCutterMode.advanced,
+                    icon: Icons.graphic_eq,
+                    title: _advancedModeTitle,
+                    description: _advancedModeDescription,
+                  ),
+                ],
+              ),
       ),
     );
   }
@@ -6927,7 +7456,9 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     if (_inputPath.isEmpty || _duration == Duration.zero) {
       return const SizedBox();
     }
-    final title = _displayName.isEmpty ? importedFileDisplayName(_inputPath) : _displayName;
+    final title = _displayName.isEmpty
+        ? importedFileDisplayName(_inputPath)
+        : _displayName;
     final summary = _guidedCurrentSummary;
     final effectsAction = CustomSemanticsAction(label: _guidedEffectsLabel);
     return Semantics(
@@ -6962,7 +7493,114 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     );
   }
 
-  Widget _buildSharedAccessibleEditorList(AppLocalizations l10n, bool canUseMedia) {
+  // A single Flutter semantics node per choice, with stable ids. The
+  // accessible slider behaves exactly like the UIKit discrete slider.
+  Widget _buildFlutterChoiceSlider({
+    required String id,
+    required String title,
+    required String selectedValue,
+    required List<AccessibleOption> choices,
+    required ValueChanged<String> onChanged,
+    bool enabled = true,
+  }) {
+    assert(choices.isNotEmpty);
+    final found = choices.indexWhere(
+      (option) => option.value.toString() == selectedValue,
+    );
+    final index = found < 0 ? 0 : found;
+    final last = choices.length - 1;
+    void setIndex(int next) {
+      if (!enabled || next < 0 || next > last || next == index) return;
+      onChanged(choices[next].value.toString());
+    }
+
+    return Column(
+      key: ValueKey('media-cutter-choice-$id'),
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        ExcludeSemantics(child: Text('$title: ${choices[index].label}')),
+        Semantics(
+          key: ValueKey('media-cutter-choice-semantics-$id'),
+          slider: true,
+          enabled: enabled && last > 0,
+          label: title,
+          value: choices[index].label,
+          increasedValue: choices[(index + 1).clamp(0, last)].label,
+          decreasedValue: choices[(index - 1).clamp(0, last)].label,
+          onIncrease: enabled && index < last
+              ? () => setIndex(index + 1)
+              : null,
+          onDecrease: enabled && index > 0 ? () => setIndex(index - 1) : null,
+          child: ExcludeSemantics(
+            child: Slider(
+              key: ValueKey('media-cutter-choice-slider-$id'),
+              value: index.toDouble(),
+              min: 0,
+              max: last.toDouble(),
+              divisions: last > 0 ? last : null,
+              onChanged: enabled && last > 0
+                  ? (value) => setIndex(value.round())
+                  : null,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  // Stable, independent row ids and localized numeric stops reproduce the
+  // working travel sliders. The native cell remains alive while adjusting.
+  AccessibleListRow _choiceSliderRow({
+    required String id,
+    required String title,
+    required String value,
+    required List<AccessibleOption> choices,
+    String? valueLabel,
+    String? subtitle,
+    String? accessibilityLabel,
+    bool enabled = true,
+  }) {
+    assert(choices.isNotEmpty);
+    final found = choices.indexWhere(
+      (option) => option.value.toString() == value,
+    );
+    final index = found < 0 ? 0 : found;
+    final last = choices.length - 1;
+    return AccessibleListRow(
+      id: id,
+      title: title,
+      subtitle: subtitle,
+      accessibilityLabel: accessibilityLabel,
+      kind: 'slider',
+      enabled: enabled && choices.length > 1,
+      value: value,
+      valueLabel: valueLabel ?? choices[index].label,
+      options: [
+        for (var i = 0; i < choices.length; i++)
+          AccessibleOption(value: i, label: choices[i].label),
+      ],
+      sliderValue: index.toDouble(),
+      sliderMin: 0,
+      sliderMax: last.toDouble(),
+      sliderStep: 1,
+      sliderIncreasedValueLabel: choices[(index + 1).clamp(0, last)].label,
+      sliderDecreasedValueLabel: choices[(index - 1).clamp(0, last)].label,
+    );
+  }
+
+  int? _choiceSliderIndex(Object? value, int count) {
+    final numeric = value is num
+        ? value.toDouble()
+        : double.tryParse(value?.toString() ?? '');
+    if (numeric == null || !numeric.isFinite) return null;
+    final index = numeric.round();
+    return index >= 0 && index < count ? index : null;
+  }
+
+  Widget _buildSharedAccessibleEditorList(
+    AppLocalizations l10n,
+    bool canUseMedia,
+  ) {
     final visibleParts = <MapEntry<int, _MediaPart>>[
       for (var i = 0; i < _parts.length; i++)
         if (_parts[i].keep) MapEntry(i, _parts[i]),
@@ -6972,12 +7610,27 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         id: 'mode_title',
         kind: 'header',
         title: _isGuidedMode ? _guidedModeTitle : _advancedModeTitle,
-        subtitle: _isGuidedMode ? _guidedModeDescription : _advancedModeDescription,
+        subtitle: _isGuidedMode
+            ? _guidedModeDescription
+            : _advancedModeDescription,
       ),
-      AccessibleListRow(id: 'change_mode', title: _changeCutModeLabel, enabled: !_loading && !_saving),
-      AccessibleListRow(id: 'open', title: l10n.mediaCutterOpenFile, kind: 'button', enabled: !_loading && !_saving),
+      AccessibleListRow(
+        id: 'change_mode',
+        title: _changeCutModeLabel,
+        enabled: !_loading && !_saving,
+      ),
+      AccessibleListRow(
+        id: 'open',
+        title: l10n.mediaCutterOpenFile,
+        kind: 'button',
+        enabled: !_loading && !_saving,
+      ),
       if (_displayName.isNotEmpty)
-        AccessibleListRow(id: 'selected', kind: 'text', title: l10n.mediaCutterSelectedFile(_displayName)),
+        AccessibleListRow(
+          id: 'selected',
+          kind: 'text',
+          title: l10n.mediaCutterSelectedFile(_displayName),
+        ),
       if (_inputPath.isNotEmpty)
         AccessibleListRow(
           id: 'add_track',
@@ -6988,28 +7641,45 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           kind: 'button',
           enabled: canUseMedia,
         ),
-      if (_loading) AccessibleListRow(id: 'loading', kind: 'text', title: l10n.loading),
+      if (_loading)
+        AccessibleListRow(id: 'loading', kind: 'text', title: l10n.loading),
       if (_inputPath.isNotEmpty && _duration != Duration.zero)
-        AccessibleListRow(id: 'seek_step', title: _mediaSeekStepButtonLabel(), enabled: canUseMedia),
+        _choiceSliderRow(
+          id: 'seek_step',
+          title: _mediaSeekStepDialogTitle(),
+          value: _mediaSeekStep.inMilliseconds.toString(),
+          enabled: canUseMedia,
+          choices: [
+            for (final step in _mediaSeekStepOptions)
+              AccessibleOption(
+                value: step.inMilliseconds,
+                label: _formatHumanDuration(step),
+              ),
+          ],
+        ),
       if (_isVideo)
-        AccessibleListRow(
+        _choiceSliderRow(
           id: 'rotation',
           title: l10n.mediaCutterVideoRotation,
           subtitle: _videoRotationLabel(l10n, _videoRotation),
           accessibilityLabel: l10n.mediaCutterVideoRotation,
-          kind: 'picker',
           value: _videoRotation.name,
           valueLabel: _videoRotationLabel(l10n, _videoRotation),
           enabled: !_loading && !_saving,
-          options: [
+          choices: [
             for (final rotation in _VideoRotation.values)
-              AccessibleOption(value: rotation.name, label: _videoRotationLabel(l10n, rotation)),
+              AccessibleOption(
+                value: rotation.name,
+                label: _videoRotationLabel(l10n, rotation),
+              ),
           ],
         ),
       if (_isVideo)
         AccessibleListRow(
           id: 'video_preview',
-          title: _showVideoPreview ? l10n.mediaCutterHideVideoPreview : l10n.enableVideo,
+          title: _showVideoPreview
+              ? l10n.mediaCutterHideVideoPreview
+              : l10n.enableVideo,
           kind: 'toggle',
           toggleValue: _showVideoPreview,
           enabled: canUseMedia,
@@ -7021,35 +7691,65 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         enabled: canUseMedia,
       ),
       if (_isGuidedMode) ...[
-        AccessibleListRow(id: 'guided_cut', title: _guidedPrimaryCutButtonLabel, kind: 'button', enabled: canUseMedia),
+        AccessibleListRow(
+          id: 'guided_cut',
+          title: _guidedPrimaryCutButtonLabel,
+          kind: 'button',
+          enabled: canUseMedia,
+        ),
         AccessibleListRow(
           id: 'guided_listen',
           title: _guidedListenCutLabel,
-          enabled: canUseMedia && _guidedCutStart != null && _guidedCutEnd != null,
+          enabled:
+              canUseMedia && _guidedCutStart != null && _guidedCutEnd != null,
         ),
         AccessibleListRow(
           id: 'guided_modify',
           title: _guidedModifyCutLabel,
-          enabled: canUseMedia && _guidedCutStart != null && _guidedCutEnd != null,
+          enabled:
+              canUseMedia && _guidedCutStart != null && _guidedCutEnd != null,
         ),
         if (_inputPath.isNotEmpty && _duration != Duration.zero)
           AccessibleListRow(
             id: 'guided_summary',
-            title: _displayName.isEmpty ? importedFileDisplayName(_inputPath) : _displayName,
+            title: _displayName.isEmpty
+                ? importedFileDisplayName(_inputPath)
+                : _displayName,
             subtitle: _guidedCurrentSummary,
             enabled: !_saving,
-            actions: [AccessibleCustomAction(id: 'effects', label: _guidedEffectsLabel)],
+            actions: [
+              AccessibleCustomAction(id: 'effects', label: _guidedEffectsLabel),
+            ],
             mergeFlutterCustomActions: true,
           ),
       ] else ...[
-        AccessibleListRow(id: 'split', title: l10n.mediaCutterSplit, kind: 'button', enabled: canUseMedia),
-        AccessibleListRow(id: 'restore', title: l10n.mediaCutterRestoreDeletedPart, enabled: canUseMedia && _hasDeletedParts),
+        AccessibleListRow(
+          id: 'split',
+          title: l10n.mediaCutterSplit,
+          kind: 'button',
+          enabled: canUseMedia,
+        ),
+        AccessibleListRow(
+          id: 'restore',
+          title: l10n.mediaCutterRestoreDeletedPart,
+          enabled: canUseMedia && _hasDeletedParts,
+        ),
         if (visibleParts.isNotEmpty)
-          AccessibleListRow(id: 'parts_header', kind: 'header', title: l10n.mediaCutterPartsTitle, subtitle: l10n.mediaCutterPartsHint),
-        for (var visibleIndex = 0; visibleIndex < visibleParts.length; visibleIndex++)
+          AccessibleListRow(
+            id: 'parts_header',
+            kind: 'header',
+            title: l10n.mediaCutterPartsTitle,
+            subtitle: l10n.mediaCutterPartsHint,
+          ),
+        for (
+          var visibleIndex = 0;
+          visibleIndex < visibleParts.length;
+          visibleIndex++
+        )
           AccessibleListRow(
             id: 'part_${visibleParts[visibleIndex].key}',
-            title: '${l10n.mediaCutterPartLabel(visibleIndex + 1)}, ${_partDetailsSummary(l10n, visibleParts[visibleIndex].value)}',
+            title:
+                '${l10n.mediaCutterPartLabel(visibleIndex + 1)}, ${_partDetailsSummary(l10n, visibleParts[visibleIndex].value)}',
             subtitle: l10n.mediaCutterPartRange(
               _formatTime(visibleParts[visibleIndex].value.start),
               _formatTime(visibleParts[visibleIndex].value.end),
@@ -7057,34 +7757,133 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
             enabled: !_saving,
             actions: [
               AccessibleCustomAction(id: 'edit', label: _partEditActionLabel),
-              AccessibleCustomAction(id: 'effects', label: l10n.mediaCutterPartEffectsAction),
-              AccessibleCustomAction(id: 'delete', label: l10n.mediaCutterPartDeleteAction),
+              AccessibleCustomAction(
+                id: 'effects',
+                label: l10n.mediaCutterPartEffectsAction,
+              ),
+              AccessibleCustomAction(
+                id: 'delete',
+                label: l10n.mediaCutterPartDeleteAction,
+              ),
             ],
             mergeFlutterCustomActions: true,
           ),
       ],
-      AccessibleListRow(id: 'status', kind: 'text', title: _status ?? l10n.mediaCutterReady),
-      AccessibleListRow(id: 'save', title: l10n.mediaCutterSave, kind: 'button', enabled: canUseMedia),
+      AccessibleListRow(
+        id: 'go_time',
+        title: l10n.mediaCutterGoToTime,
+        enabled: canUseMedia,
+      ),
+      AccessibleListRow(
+        id: 'clear_markers',
+        title: l10n.mediaCutterClearMarkers,
+        enabled:
+            canUseMedia && (_guidedCutStart != null || _guidedCutEnd != null),
+      ),
+      AccessibleListRow(
+        id: 'insert_media',
+        title: l10n.mediaCutterInsertMedia,
+        enabled: canUseMedia,
+      ),
+      _choiceSliderRow(
+        id: 'save_scope',
+        title: l10n.mediaCutterSaveScope,
+        value: _selectedSavePart ?? '',
+        choices: _saveOptions,
+        enabled: canUseMedia,
+      ),
+      if (!_isVideo && _inputPath.isNotEmpty) ...[
+        _choiceSliderRow(
+          id: 'audio_video',
+          title: l10n.mediaCutterExportVideo,
+          value: _audioVideoExport.name,
+          enabled: canUseMedia,
+          choices: [
+            for (final export in _AudioVideoExport.values)
+              AccessibleOption(
+                value: export.name,
+                label: _audioVideoLabel(export),
+              ),
+          ],
+        ),
+        if (_audioVideoExport == _AudioVideoExport.image)
+          AccessibleListRow(
+            id: 'export_image',
+            title: l10n.mediaCutterChooseImage,
+            subtitle: _exportImage == null
+                ? null
+                : importedFileDisplayName(_exportImage!),
+            enabled: canUseMedia,
+          ),
+      ],
+      AccessibleListRow(
+        id: 'status',
+        kind: 'text',
+        title: _status ?? l10n.mediaCutterReady,
+      ),
+      AccessibleListRow(
+        id: 'save',
+        title: l10n.mediaCutterSave,
+        kind: 'button',
+        enabled: canUseMedia,
+      ),
     ];
 
     return UniversalAccessibleList(
+      transientRowIds: const ['export_image'],
       sections: [AccessibleListSection(rows: rows)],
       onEvent: (event) async {
         final id = event.id;
-        if (id == 'change_mode' && event.type == 'activate') {
+        if (id == 'save_scope' && event.type == 'slider') {
+          final options = _saveOptions;
+          final selectedIndex = _choiceSliderIndex(event.value, options.length);
+          if (selectedIndex != null) {
+            setState(
+              () => _savePartKey = options[selectedIndex].value.toString(),
+            );
+          }
+        } else if (id == 'audio_video' && event.type == 'slider') {
+          final selectedIndex = _choiceSliderIndex(
+            event.value,
+            _AudioVideoExport.values.length,
+          );
+          if (selectedIndex != null) {
+            setState(() {
+              _audioVideoExport = _AudioVideoExport.values[selectedIndex];
+              _hasUnsavedEdit = true;
+            });
+          }
+        } else if (id == 'export_image' && event.type == 'activate') {
+          await _chooseExportImage();
+        } else if (id == 'go_time' && event.type == 'activate') {
+          await _goToTime();
+        } else if (id == 'clear_markers' && event.type == 'activate') {
+          _clearMarkers();
+        } else if (id == 'insert_media' && event.type == 'activate') {
+          await _insertMedia();
+        } else if (id == 'change_mode' && event.type == 'activate') {
           await _changeMode();
         } else if (id == 'open' && event.type == 'activate') {
           await _pickInput();
         } else if (id == 'add_track' && event.type == 'activate') {
           await _openAddTrackScreen();
-        } else if (id == 'seek_step' && event.type == 'activate') {
-          await _showMediaSeekStepDialog();
-        } else if (id == 'rotation' && event.type == 'picker') {
-          final name = event.value?.toString();
-          final found = _VideoRotation.values.where((value) => value.name == name);
-          if (found.isNotEmpty && found.first != _videoRotation) {
+        } else if (id == 'seek_step' && event.type == 'slider') {
+          final selectedIndex = _choiceSliderIndex(
+            event.value,
+            _mediaSeekStepOptions.length,
+          );
+          if (selectedIndex != null) {
+            _setMediaSeekStep(_mediaSeekStepOptions[selectedIndex]);
+          }
+        } else if (id == 'rotation' && event.type == 'slider') {
+          final selectedIndex = _choiceSliderIndex(
+            event.value,
+            _VideoRotation.values.length,
+          );
+          if (selectedIndex != null &&
+              _VideoRotation.values[selectedIndex] != _videoRotation) {
             setState(() {
-              _videoRotation = found.first;
+              _videoRotation = _VideoRotation.values[selectedIndex];
               _hasUnsavedEdit = true;
             });
           }
@@ -7112,7 +7911,9 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           final index = int.tryParse(id!.substring(5));
           if (index == null || index >= _parts.length) return;
           if (event.type == 'customAction') {
-            if (event.action == 'edit') await _showAdvancedPartEditDialog(index);
+            if (event.action == 'edit') {
+              await _showAdvancedPartEditDialog(index);
+            }
             if (event.action == 'effects') await _showPartEffectsDialog(index);
             if (event.action == 'delete') _deletePart(index);
           } else if (event.type == 'activate') {
@@ -7150,7 +7951,12 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                         padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
                         child: _buildVideoPreview(l10n),
                       ),
-                    Expanded(child: _buildSharedAccessibleEditorList(l10n, canUseMedia)),
+                    Expanded(
+                      child: _buildSharedAccessibleEditorList(
+                        l10n,
+                        canUseMedia,
+                      ),
+                    ),
                     if (_inputPath.isNotEmpty && _duration != Duration.zero)
                       Padding(
                         padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
@@ -7159,175 +7965,267 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                   ],
                 )
               : ListView(
-            padding: const EdgeInsets.all(16),
-            children: [
-              Text(_isGuidedMode ? _guidedModeTitle : _advancedModeTitle),
-              const SizedBox(height: 4),
-              Text(_isGuidedMode
-                  ? _guidedModeDescription
-                  : _advancedModeDescription),
-              const SizedBox(height: 12),
-              OutlinedButton.icon(
-                onPressed:
-                    _loading || _saving ? null : () => unawaited(_changeMode()),
-                icon: const Icon(Icons.swap_horiz),
-                label: Text(_changeCutModeLabel),
-              ),
-              const SizedBox(height: 16),
-              FilledButton.icon(
-                onPressed: _loading || _saving ? null : _pickInput,
-                icon: const Icon(Icons.folder_open),
-                label: Text(l10n.mediaCutterOpenFile),
-              ),
-              if (_displayName.isNotEmpty) ...[
-                const SizedBox(height: 12),
-                Text(l10n.mediaCutterSelectedFile(_displayName)),
-              ],
-              if (_inputPath.isNotEmpty) ...[
-                const SizedBox(height: 12),
-                OutlinedButton.icon(
-                  onPressed: canUseMedia ? _openAddTrackScreen : null,
-                  icon: const Icon(Icons.library_music),
-                  label: Text(l10n.mediaCutterAddTrack),
-                ),
-                if (_addedTrackSettings != null) ...[
-                  const SizedBox(height: 8),
-                  Text(
-                    l10n.mediaCutterAddedTrackSelected(
-                      importedFileDisplayName(_addedTrackSettings!.path),
+                  padding: const EdgeInsets.all(16),
+                  children: [
+                    Text(_isGuidedMode ? _guidedModeTitle : _advancedModeTitle),
+                    const SizedBox(height: 4),
+                    Text(
+                      _isGuidedMode
+                          ? _guidedModeDescription
+                          : _advancedModeDescription,
                     ),
-                  ),
-                ],
-              ],
-              if (_loading) ...[
-                const SizedBox(height: 16),
-                const LinearProgressIndicator(),
-              ],
-              if (_isVideo && _showVideoPreview) ...[
-                const SizedBox(height: 16),
-                _buildVideoPreview(l10n),
-              ],
-              if (_inputPath.isNotEmpty && _duration != Duration.zero) ...[
-                const SizedBox(height: 12),
-                OutlinedButton.icon(
-                  onPressed: canUseMedia
-                      ? () => unawaited(_showMediaSeekStepDialog())
-                      : null,
-                  icon: const Icon(Icons.swap_horiz),
-                  label: Text(_mediaSeekStepButtonLabel()),
-                ),
-              ],
-              if (_isVideo) ...[
-                const SizedBox(height: 16),
-                DropdownButtonFormField<_VideoRotation>(
-                  initialValue: _videoRotation,
-                  decoration: InputDecoration(
-                    labelText: l10n.mediaCutterVideoRotation,
-                  ),
-                  items: [
-                    for (final rotation in _VideoRotation.values)
-                      DropdownMenuItem<_VideoRotation>(
-                        value: rotation,
-                        child: Text(_videoRotationLabel(l10n, rotation)),
+                    const SizedBox(height: 12),
+                    OutlinedButton.icon(
+                      onPressed: _loading || _saving
+                          ? null
+                          : () => unawaited(_changeMode()),
+                      icon: const Icon(Icons.swap_horiz),
+                      label: Text(_changeCutModeLabel),
+                    ),
+                    const SizedBox(height: 16),
+                    FilledButton.icon(
+                      onPressed: _loading || _saving ? null : _pickInput,
+                      icon: const Icon(Icons.folder_open),
+                      label: Text(l10n.mediaCutterOpenFile),
+                    ),
+                    if (_displayName.isNotEmpty) ...[
+                      const SizedBox(height: 12),
+                      Text(l10n.mediaCutterSelectedFile(_displayName)),
+                    ],
+                    if (_inputPath.isNotEmpty) ...[
+                      const SizedBox(height: 12),
+                      OutlinedButton.icon(
+                        onPressed: canUseMedia ? _openAddTrackScreen : null,
+                        icon: const Icon(Icons.library_music),
+                        label: Text(l10n.mediaCutterAddTrack),
                       ),
-                  ],
-                  onChanged: _loading || _saving
-                      ? null
-                      : (value) {
-                          if (value == null || value == _videoRotation) return;
+                      if (_addedTrackSettings != null) ...[
+                        const SizedBox(height: 8),
+                        Text(
+                          l10n.mediaCutterAddedTrackSelected(
+                            importedFileDisplayName(_addedTrackSettings!.path),
+                          ),
+                        ),
+                      ],
+                    ],
+                    if (_loading) ...[
+                      const SizedBox(height: 16),
+                      const LinearProgressIndicator(),
+                    ],
+                    if (_isVideo && _showVideoPreview) ...[
+                      const SizedBox(height: 16),
+                      _buildVideoPreview(l10n),
+                    ],
+                    if (_inputPath.isNotEmpty &&
+                        _duration != Duration.zero) ...[
+                      const SizedBox(height: 12),
+                      _buildFlutterChoiceSlider(
+                        id: 'seek_step',
+                        title: _mediaSeekStepDialogTitle(),
+                        selectedValue: _mediaSeekStep.inMilliseconds.toString(),
+                        enabled: canUseMedia,
+                        choices: [
+                          for (final step in _mediaSeekStepOptions)
+                            AccessibleOption(
+                              value: step.inMilliseconds,
+                              label: _formatHumanDuration(step),
+                            ),
+                        ],
+                        onChanged: (value) {
+                          final milliseconds = int.tryParse(value);
+                          if (milliseconds != null) {
+                            _setMediaSeekStep(
+                              Duration(milliseconds: milliseconds),
+                            );
+                          }
+                        },
+                      ),
+                    ],
+                    if (_isVideo) ...[
+                      const SizedBox(height: 16),
+                      _buildFlutterChoiceSlider(
+                        id: 'rotation',
+                        title: l10n.mediaCutterVideoRotation,
+                        selectedValue: _videoRotation.name,
+                        enabled: !_loading && !_saving,
+                        choices: [
+                          for (final rotation in _VideoRotation.values)
+                            AccessibleOption(
+                              value: rotation.name,
+                              label: _videoRotationLabel(l10n, rotation),
+                            ),
+                        ],
+                        onChanged: (value) {
+                          final rotation = _VideoRotation.values
+                              .where((item) => item.name == value)
+                              .firstOrNull;
+                          if (rotation == null || rotation == _videoRotation) {
+                            return;
+                          }
                           setState(() {
-                            _videoRotation = value;
+                            _videoRotation = rotation;
                             _hasUnsavedEdit = true;
                           });
-                          unawaited(_logMediaCutter(
-                            'video rotation changed rotation=${value.name} mode=${_selectedMode?.name ?? 'none'} ${_logPlaybackState()}',
-                          ));
+                          unawaited(
+                            _logMediaCutter(
+                              'video rotation changed rotation=${rotation.name} '
+                              'mode=${_selectedMode?.name ?? 'none'} ${_logPlaybackState()}',
+                            ),
+                          );
                         },
-                ),
-                const SizedBox(height: 12),
-                OutlinedButton.icon(
-                  onPressed: canUseMedia
-                      ? () => setState(
-                            () => _showVideoPreview = !_showVideoPreview,
-                          )
-                      : null,
-                  icon: Icon(
-                    _showVideoPreview ? Icons.videocam_off : Icons.videocam,
-                  ),
-                  label: Text(
-                    _showVideoPreview
-                        ? l10n.mediaCutterHideVideoPreview
-                        : l10n.enableVideo,
-                  ),
-                ),
-              ],
-              const SizedBox(height: 20),
-              _buildPositionSlider(l10n),
-              const SizedBox(height: 16),
-              Wrap(
-                spacing: 12,
-                runSpacing: 12,
-                alignment: WrapAlignment.center,
-                children: [
-                  FilledButton.icon(
-                    onPressed: canUseMedia ? _togglePlayback : null,
-                    icon: Icon(_playing ? Icons.pause : Icons.play_arrow),
-                    label: Text(_playing ? l10n.pause : l10n.play),
-                  ),
-                  if (_isGuidedMode) ...[
+                      ),
+                      const SizedBox(height: 12),
+                      OutlinedButton.icon(
+                        onPressed: canUseMedia
+                            ? () => setState(
+                                () => _showVideoPreview = !_showVideoPreview,
+                              )
+                            : null,
+                        icon: Icon(
+                          _showVideoPreview
+                              ? Icons.videocam_off
+                              : Icons.videocam,
+                        ),
+                        label: Text(
+                          _showVideoPreview
+                              ? l10n.mediaCutterHideVideoPreview
+                              : l10n.enableVideo,
+                        ),
+                      ),
+                    ],
+                    const SizedBox(height: 20),
+                    _buildPositionSlider(l10n),
+                    const SizedBox(height: 16),
+                    Wrap(
+                      spacing: 12,
+                      runSpacing: 12,
+                      alignment: WrapAlignment.center,
+                      children: [
+                        FilledButton.icon(
+                          onPressed: canUseMedia ? _togglePlayback : null,
+                          icon: Icon(_playing ? Icons.pause : Icons.play_arrow),
+                          label: Text(_playing ? l10n.pause : l10n.play),
+                        ),
+                        if (_isGuidedMode) ...[
+                          FilledButton.icon(
+                            onPressed: canUseMedia
+                                ? _guidedCutButtonPressed
+                                : null,
+                            icon: const Icon(Icons.content_cut),
+                            label: Text(_guidedPrimaryCutButtonLabel),
+                          ),
+                          OutlinedButton.icon(
+                            onPressed:
+                                canUseMedia &&
+                                    _guidedCutStart != null &&
+                                    _guidedCutEnd != null
+                                ? _listenGuidedCut
+                                : null,
+                            icon: const Icon(Icons.hearing),
+                            label: Text(_guidedListenCutLabel),
+                          ),
+                          OutlinedButton.icon(
+                            onPressed:
+                                canUseMedia &&
+                                    _guidedCutStart != null &&
+                                    _guidedCutEnd != null
+                                ? _showGuidedModifyCutDialog
+                                : null,
+                            icon: const Icon(Icons.tune),
+                            label: Text(_guidedModifyCutLabel),
+                          ),
+                        ] else ...[
+                          FilledButton.icon(
+                            onPressed: canUseMedia ? _splitHere : null,
+                            icon: const Icon(Icons.content_cut),
+                            label: Text(l10n.mediaCutterSplit),
+                          ),
+                          OutlinedButton.icon(
+                            onPressed: canUseMedia && _hasDeletedParts
+                                ? _restoreDeletedPart
+                                : null,
+                            icon: const Icon(Icons.restore),
+                            label: Text(l10n.mediaCutterRestoreDeletedPart),
+                          ),
+                        ],
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    _isGuidedMode
+                        ? _buildGuidedSummarySection(l10n)
+                        : _buildPartsSection(l10n),
+                    const SizedBox(height: 20),
+                    OutlinedButton(
+                      onPressed: canUseMedia ? _goToTime : null,
+                      child: Text(l10n.mediaCutterGoToTime),
+                    ),
+                    OutlinedButton(
+                      onPressed:
+                          canUseMedia &&
+                              (_guidedCutStart != null || _guidedCutEnd != null)
+                          ? _clearMarkers
+                          : null,
+                      child: Text(l10n.mediaCutterClearMarkers),
+                    ),
+                    OutlinedButton(
+                      onPressed: canUseMedia ? _insertMedia : null,
+                      child: Text(l10n.mediaCutterInsertMedia),
+                    ),
+                    _buildFlutterChoiceSlider(
+                      id: 'save_scope',
+                      title: l10n.mediaCutterSaveScope,
+                      selectedValue: _selectedSavePart ?? '',
+                      choices: _saveOptions,
+                      enabled: canUseMedia,
+                      onChanged: (value) =>
+                          setState(() => _savePartKey = value),
+                    ),
+                    if (!_isVideo && _inputPath.isNotEmpty) ...[
+                      _buildFlutterChoiceSlider(
+                        id: 'audio_video',
+                        title: l10n.mediaCutterExportVideo,
+                        selectedValue: _audioVideoExport.name,
+                        enabled: canUseMedia,
+                        choices: [
+                          for (final export in _AudioVideoExport.values)
+                            AccessibleOption(
+                              value: export.name,
+                              label: _audioVideoLabel(export),
+                            ),
+                        ],
+                        onChanged: (value) {
+                          final export = _AudioVideoExport.values
+                              .where((item) => item.name == value)
+                              .firstOrNull;
+                          if (export == null || export == _audioVideoExport) {
+                            return;
+                          }
+                          setState(() {
+                            _audioVideoExport = export;
+                            _hasUnsavedEdit = true;
+                          });
+                        },
+                      ),
+                      if (_audioVideoExport == _AudioVideoExport.image)
+                        OutlinedButton(
+                          onPressed: canUseMedia ? _chooseExportImage : null,
+                          child: Text(
+                            _exportImage == null
+                                ? l10n.mediaCutterChooseImage
+                                : '${l10n.mediaCutterChooseImage}: ${importedFileDisplayName(_exportImage!)}',
+                          ),
+                        ),
+                    ],
+                    const SizedBox(height: 16),
+                    Text(_status ?? l10n.mediaCutterReady),
+                    const SizedBox(height: 16),
                     FilledButton.icon(
-                      onPressed: canUseMedia ? _guidedCutButtonPressed : null,
-                      icon: const Icon(Icons.content_cut),
-                      label: Text(_guidedPrimaryCutButtonLabel),
-                    ),
-                    OutlinedButton.icon(
-                      onPressed: canUseMedia &&
-                              _guidedCutStart != null &&
-                              _guidedCutEnd != null
-                          ? _listenGuidedCut
-                          : null,
-                      icon: const Icon(Icons.hearing),
-                      label: Text(_guidedListenCutLabel),
-                    ),
-                    OutlinedButton.icon(
-                      onPressed: canUseMedia &&
-                              _guidedCutStart != null &&
-                              _guidedCutEnd != null
-                          ? _showGuidedModifyCutDialog
-                          : null,
-                      icon: const Icon(Icons.tune),
-                      label: Text(_guidedModifyCutLabel),
-                    ),
-                  ] else ...[
-                    FilledButton.icon(
-                      onPressed: canUseMedia ? _splitHere : null,
-                      icon: const Icon(Icons.content_cut),
-                      label: Text(l10n.mediaCutterSplit),
-                    ),
-                    OutlinedButton.icon(
-                      onPressed: canUseMedia && _hasDeletedParts
-                          ? _restoreDeletedPart
-                          : null,
-                      icon: const Icon(Icons.restore),
-                      label: Text(l10n.mediaCutterRestoreDeletedPart),
+                      onPressed: canUseMedia ? _save : null,
+                      icon: const Icon(Icons.save_alt),
+                      label: Text(l10n.mediaCutterSave),
                     ),
                   ],
-                ],
-              ),
-              const SizedBox(height: 20),
-              _isGuidedMode
-                  ? _buildGuidedSummarySection(l10n)
-                  : _buildPartsSection(l10n),
-              const SizedBox(height: 20),
-              Text(_status ?? l10n.mediaCutterReady),
-              const SizedBox(height: 16),
-              FilledButton.icon(
-                onPressed: canUseMedia ? _save : null,
-                icon: const Icon(Icons.save_alt),
-                label: Text(l10n.mediaCutterSave),
-              ),
-            ],
-          ),
+                ),
         ),
       ),
     );

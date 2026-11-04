@@ -51,7 +51,7 @@ void main() {
     expect(source, contains('_postNativeDspFilter'));
     expect(source, contains('_processNativeDspStep'));
     expect(source, contains('SonarpadAudioDsp.cancelActive'));
-    expect(source, contains('itemCount: _availableEffects.length'));
+    expect(source, contains('for (final effect in _availableEffects)'));
     expect(
       source,
       isNot(contains('itemCount: _MediaPartEffect.values.length')),

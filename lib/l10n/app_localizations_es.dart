@@ -5810,4 +5810,68 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get translationLibraryDocuments => 'Documentos · Sonarpad';
+
+  @override
+  String get sonarTubeChooseTranscriptLanguage =>
+      'Elige el idioma de transcripción';
+
+  @override
+  String get sonarTubeAutomaticCaptions =>
+      'Subtítulos generados automáticamente';
+
+  @override
+  String get mediaCutterSaveScope => 'Qué guardar';
+
+  @override
+  String get mediaCutterSaveAll => 'Guardar todo el archivo';
+
+  @override
+  String mediaCutterSaveOnlyPart(int part) {
+    return 'Guardar solo la parte $part';
+  }
+
+  @override
+  String get mediaCutterExportVideo => 'Exportar audio como vídeo';
+
+  @override
+  String get mediaCutterAudioOnly => 'Solo audio';
+
+  @override
+  String get mediaCutterBlackVideo => 'Vídeo con imagen negra';
+
+  @override
+  String get mediaCutterImageVideo => 'Vídeo con imagen elegida';
+
+  @override
+  String get mediaCutterChooseImage => 'Elegir imagen';
+
+  @override
+  String get mediaCutterGoToTime => 'Ir al tiempo…';
+
+  @override
+  String get mediaCutterTimeHint => 'Segundos, mm:ss o hh:mm:ss';
+
+  @override
+  String get mediaCutterInvalidTime =>
+      'Introduce un tiempo válido dentro de la duración del archivo.';
+
+  @override
+  String get mediaCutterClearMarkers => 'Borrar marcadores';
+
+  @override
+  String get mediaCutterMarkersCleared =>
+      'Marcadores borrados. Se conservan los cortes aplicados.';
+
+  @override
+  String get mediaCutterInsertMedia => 'Insertar otro archivo…';
+
+  @override
+  String get mediaCutterInsertBefore => 'Insertar antes de…';
+
+  @override
+  String get mediaCutterAtEnd => 'Al final';
+
+  @override
+  String get mediaCutterMediaInserted =>
+      'Archivo insertado. Se conservan los cortes y efectos existentes.';
 }

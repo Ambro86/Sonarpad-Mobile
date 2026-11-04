@@ -10387,6 +10387,120 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Documenti · Sonarpad'**
   String get translationLibraryDocuments;
+
+  /// No description provided for @sonarTubeChooseTranscriptLanguage.
+  ///
+  /// In it, this message translates to:
+  /// **'Scegli la lingua di trascrizione'**
+  String get sonarTubeChooseTranscriptLanguage;
+
+  /// No description provided for @sonarTubeAutomaticCaptions.
+  ///
+  /// In it, this message translates to:
+  /// **'Sottotitoli generati automaticamente'**
+  String get sonarTubeAutomaticCaptions;
+
+  /// No description provided for @mediaCutterSaveScope.
+  ///
+  /// In it, this message translates to:
+  /// **'Cosa salvare'**
+  String get mediaCutterSaveScope;
+
+  /// No description provided for @mediaCutterSaveAll.
+  ///
+  /// In it, this message translates to:
+  /// **'Salva tutto il file'**
+  String get mediaCutterSaveAll;
+
+  /// No description provided for @mediaCutterSaveOnlyPart.
+  ///
+  /// In it, this message translates to:
+  /// **'Salva solo la parte {part}'**
+  String mediaCutterSaveOnlyPart(int part);
+
+  /// No description provided for @mediaCutterExportVideo.
+  ///
+  /// In it, this message translates to:
+  /// **'Esporta audio come video'**
+  String get mediaCutterExportVideo;
+
+  /// No description provided for @mediaCutterAudioOnly.
+  ///
+  /// In it, this message translates to:
+  /// **'Solo audio'**
+  String get mediaCutterAudioOnly;
+
+  /// No description provided for @mediaCutterBlackVideo.
+  ///
+  /// In it, this message translates to:
+  /// **'Video con immagine nera'**
+  String get mediaCutterBlackVideo;
+
+  /// No description provided for @mediaCutterImageVideo.
+  ///
+  /// In it, this message translates to:
+  /// **'Video con immagine scelta'**
+  String get mediaCutterImageVideo;
+
+  /// No description provided for @mediaCutterChooseImage.
+  ///
+  /// In it, this message translates to:
+  /// **'Scegli immagine'**
+  String get mediaCutterChooseImage;
+
+  /// No description provided for @mediaCutterGoToTime.
+  ///
+  /// In it, this message translates to:
+  /// **'Vai al tempo…'**
+  String get mediaCutterGoToTime;
+
+  /// No description provided for @mediaCutterTimeHint.
+  ///
+  /// In it, this message translates to:
+  /// **'Secondi, mm:ss oppure hh:mm:ss'**
+  String get mediaCutterTimeHint;
+
+  /// No description provided for @mediaCutterInvalidTime.
+  ///
+  /// In it, this message translates to:
+  /// **'Inserisci un tempo valido entro la durata del file.'**
+  String get mediaCutterInvalidTime;
+
+  /// No description provided for @mediaCutterClearMarkers.
+  ///
+  /// In it, this message translates to:
+  /// **'Azzera marcatori'**
+  String get mediaCutterClearMarkers;
+
+  /// No description provided for @mediaCutterMarkersCleared.
+  ///
+  /// In it, this message translates to:
+  /// **'Marcatori azzerati. I tagli applicati sono conservati.'**
+  String get mediaCutterMarkersCleared;
+
+  /// No description provided for @mediaCutterInsertMedia.
+  ///
+  /// In it, this message translates to:
+  /// **'Inserisci un altro file…'**
+  String get mediaCutterInsertMedia;
+
+  /// No description provided for @mediaCutterInsertBefore.
+  ///
+  /// In it, this message translates to:
+  /// **'Inserisci prima di…'**
+  String get mediaCutterInsertBefore;
+
+  /// No description provided for @mediaCutterAtEnd.
+  ///
+  /// In it, this message translates to:
+  /// **'Alla fine'**
+  String get mediaCutterAtEnd;
+
+  /// No description provided for @mediaCutterMediaInserted.
+  ///
+  /// In it, this message translates to:
+  /// **'File inserito. I tagli e gli effetti esistenti sono conservati.'**
+  String get mediaCutterMediaInserted;
 }
 
 class _AppLocalizationsDelegate
