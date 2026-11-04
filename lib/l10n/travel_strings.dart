@@ -143,7 +143,7 @@ class TravelStrings {
         'La ricerca viaggi è attualmente disponibile solo con l’interfaccia italiana.',
     'welcomeTitle': 'Benvenuti nella ricerca viaggi',
     'welcome1':
-        'Benvenuti nella ricerca viaggi di Sonarpad. Con questa funzione potete cercare viaggi in treno, aereo e pullman e proseguire con l’acquisto sul servizio a cui Sonarpad si appoggia, Omio.',
+        'Benvenuti nella ricerca viaggi di Sonarpad. Con questa funzione potete cercare viaggi in treno, aereo, pullman e traghetto e proseguire con l’acquisto sul servizio a cui Sonarpad si appoggia, Omio.',
     'welcome2':
         'L’autore, coerentemente con lo spirito di servizio di Sonarpad, non percepisce commissioni sui vostri acquisti e non utilizza codici di affiliazione.',
     'welcome3':
@@ -166,6 +166,33 @@ class TravelStrings {
     'train': 'Treno',
     'flight': 'Aereo',
     'bus': 'Pullman',
+    "ferry": "Navi e traghetti",
+    "ferryAccommodation": "Sistemazione a bordo",
+    "ferryCancel": "Annulla",
+    "ferryReview": "Verifica sistemazione e preventivo",
+    "ferrySupplement": "Supplemento complessivo sistemazione",
+    "ferryCar": "Aggiungi un’auto a questa tratta",
+    "ferryPriceNotice":
+        "I prezzi dei singoli servizi e il supplemento complessivo possono sovrapporsi: non sommarli. Il totale finale sarà mostrato da Omio prima del pagamento.",
+    "ferryConfirm": "Conferma queste opzioni",
+    "ferryAllocation":
+        "Indica quanti passeggeri assegnare a ciascuna sistemazione, non il numero di cabine. Se la scelta è obbligatoria, assegna tutti i passeggeri.",
+    "ferryCarHelp":
+        "Sono supportate auto del catalogo senza accessori o rimorchi. La disponibilità riguarda solo questa tratta.",
+    "ferryNoCar": "Auto non disponibile per questa tratta.",
+    "ferryModels": "Cerca marca e modello",
+    "ferryPlate": "Targa",
+    "ferryDimensions":
+        "Confermo le dimensioni indicate e l’assenza di accessori e rimorchio",
+    "ferrySelectionHelp":
+        "Completa l’assegnazione dei passeggeri e, se aggiungi un’auto, modello, targa e conferma delle dimensioni.",
+    "ferryPreview": "Verifica disponibilità e prezzi",
+    "ferrySize": "Lunghezza × altezza",
+    "ferryModelHelp":
+        "Cerca marca o modello, oppure lascia vuoto per consultare tutto il catalogo. Verifica anno e dimensioni del tuo veicolo.",
+    "ferryPriceChanged":
+        "Il prezzo è cambiato. Verifica il nuovo totale prima di continuare.",
+    "ferryAcceptPrice": "Accetta il nuovo totale e continua senza pagare",
     'outbound': 'Andata',
     'return': 'Ritorno',
     'roundtrip': 'Andata e ritorno',
@@ -323,7 +350,7 @@ class TravelStrings {
     'title': 'Travel search',
     'welcomeTitle': 'Welcome to travel search',
     'welcome1':
-        'Welcome to Sonarpad travel search. You can search for train, flight and bus journeys and proceed with your purchase through Omio, the service used by Sonarpad.',
+        'Welcome to Sonarpad travel search. You can search for train, flight, bus and ferry journeys and proceed with your purchase through Omio, the service used by Sonarpad.',
     'welcome2':
         'In keeping with Sonarpad’s spirit of service, its author receives no commission on your purchases and uses no affiliate codes.',
     'welcome3':
@@ -346,6 +373,33 @@ class TravelStrings {
     'train': 'Train',
     'flight': 'Flight',
     'bus': 'Bus',
+    "ferry": "Ships and ferries",
+    "ferryAccommodation": "Onboard accommodation",
+    "ferryCancel": "Cancel",
+    "ferryReview": "Review accommodation and quote",
+    "ferrySupplement": "Overall accommodation supplement",
+    "ferryCar": "Add a car to this leg",
+    "ferryPriceNotice":
+        "Individual service prices and the overall supplement may overlap: do not add them together. Omio will show the final total before payment.",
+    "ferryConfirm": "Confirm these options",
+    "ferryAllocation":
+        "Assign passengers to each accommodation, not the number of cabins. Allocate all passengers when selection is required.",
+    "ferryCarHelp":
+        "Catalogue cars without accessories or trailers are supported. Availability applies to this leg only.",
+    "ferryNoCar": "Cars unavailable for this leg.",
+    "ferryModels": "Search make and model",
+    "ferryPlate": "Registration plate",
+    "ferryDimensions":
+        "I confirm the stated dimensions and no accessories or trailer",
+    "ferrySelectionHelp":
+        "Complete passenger allocation and, if adding a car, its model, registration plate and dimension confirmation.",
+    "ferryPreview": "Check availability and prices",
+    "ferrySize": "Length × height",
+    "ferryModelHelp":
+        "Search by make or model, or leave empty to browse the catalogue. Check your vehicle’s year and dimensions.",
+    "ferryPriceChanged":
+        "The price has changed. Check the new total before continuing.",
+    "ferryAcceptPrice": "Accept the new total and continue without paying",
     'outbound': 'Outbound',
     'return': 'Return',
     'roundtrip': 'Return journey',

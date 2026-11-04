@@ -7,6 +7,9 @@ class TravelPassengerDraft {
   int position = 0;
   bool attempted = false, submitted = false;
   String? paymentUrl;
+  Map<String, dynamic>? priceChange;
+  String? priceConfirmationKey;
+  bool priceConfirmationAttempted = false;
   final String submissionKey = const Uuid().v4();
 }
 
@@ -180,8 +183,15 @@ class _TravelPassengersScreenState extends State<TravelPassengersScreen> {
   bool _required(Map f) => (f['validation'] as List? ?? []).any(
     (r) => r is Map && r['type'] == 'required',
   );
-  String _label(Map f, TravelStrings t) =>
-      _plain(f['title'] ?? (f['name'] as String).split('.').last);
+  String _label(Map f, TravelStrings t) {
+    final title = _plain(f['title'] ?? '').trim();
+    if (title.isNotEmpty) return title;
+    final options = _options(f['options']);
+    return options.isNotEmpty
+        ? options.map((o) => o.label).join(' / ')
+        : (f['name'] as String).split('.').last;
+  }
+
   String _component(Map f) => f['component']?.toString() ?? 'Text';
   bool _supported(Map f) =>
       _options(f['options']).isNotEmpty ||
@@ -191,6 +201,7 @@ class _TravelPassengersScreenState extends State<TravelPassengersScreen> {
         'Input',
         'Email',
         'DiscountCard',
+        'TravelDocumentNumber',
         'Country',
         'CountryOfResidence',
         'Date',
@@ -201,7 +212,13 @@ class _TravelPassengersScreenState extends State<TravelPassengersScreen> {
     if (nodes is List) {
       return nodes
           .whereType<Map>()
-          .where((o) => o['value'] != null && o['label'] != null)
+          .where(
+            (o) =>
+                o['value'] != null &&
+                o['value'].toString().isNotEmpty &&
+                o['label'] != null &&
+                _plain(o['label']).trim().isNotEmpty,
+          )
           .map(
             (o) => AccessibleOption(
               value: o['value'].toString(),
@@ -530,6 +547,7 @@ class _TravelPassengersScreenState extends State<TravelPassengersScreen> {
       'Input',
       'Email',
       'DiscountCard',
+      'TravelDocumentNumber',
     ].contains(component)) {
       return [
         _text(
@@ -602,6 +620,14 @@ class _TravelPassengersScreenState extends State<TravelPassengersScreen> {
       }
       if (rules.any((r) => r['type'] == 'pastDate') &&
           !date.isBefore(DateUtilsTravel.today())) {
+        return t.t('invalidField');
+      }
+      if (rules.any((r) => r['type'] == 'futureDate') &&
+          !date.isAfter(DateUtilsTravel.today())) {
+        return t.t('invalidField');
+      }
+      if (name.contains('.travelDocumentExpirationDate-') &&
+          date.isBefore(widget.query.returnDate ?? widget.query.departure)) {
         return t.t('invalidField');
       }
       if (name.endsWith('.dateOfBirth-0')) {
@@ -751,9 +777,20 @@ class _TravelPassengersScreenState extends State<TravelPassengersScreen> {
           DateTime.now().difference(started).inSeconds,
         );
         if (!mounted) return;
+        if (result['price_change_confirmation_required'] == true &&
+            result['total'] is Map) {
+          final total = Map<String, dynamic>.from(result['total'] as Map);
+          if (d.priceChange?.toString() != total.toString()) {
+            d.priceChange = total;
+            d.priceConfirmationKey = const Uuid().v4();
+            d.priceConfirmationAttempted = false;
+          }
+          break;
+        }
         if (result['payment_url'] is String &&
             (result['payment_url'] as String).isNotEmpty) {
           d.paymentUrl = result['payment_url'];
+          d.priceChange = null;
           break;
         }
         if ([
@@ -787,6 +824,30 @@ class _TravelPassengersScreenState extends State<TravelPassengersScreen> {
     } finally {
       if (mounted) setState(() => _busy = false);
     }
+  }
+
+  Future<void> _confirmPrice() async {
+    if (_busy || d.priceChange == null || d.priceConfirmationAttempted) return;
+    setState(() {
+      _busy = true;
+      d.priceConfirmationAttempted = true;
+      _message = null;
+    });
+    var confirmed = false;
+    try {
+      await widget.service.request(
+        '/v1/booking/confirm-price',
+        body: {'confirm': true, 'expected_total': d.priceChange},
+        idempotencyKey: d.priceConfirmationKey,
+      );
+      d.priceChange = null;
+      confirmed = true;
+    } catch (e) {
+      if (mounted) _message = _error(_strings(context), e);
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+    if (confirmed && mounted) await _status();
   }
 
   Future<void> _submit() async {
@@ -869,6 +930,30 @@ class _TravelPassengersScreenState extends State<TravelPassengersScreen> {
             ),
           ),
         ),
+      );
+    }
+    if (d.priceChange != null) {
+      return _page(
+        t.t('handoff'),
+        [
+          _info('price-heading', t.t('ferryPriceChanged')),
+          _info('new-price', _money(d.priceChange, widget.query.currency, t)),
+          if (_message != null) _info('error', _message!),
+          _action(
+            'confirm-price',
+            t.t('ferryAcceptPrice'),
+            _confirmPrice,
+            enabled: !d.priceConfirmationAttempted,
+          ),
+          _action('status', t.t('statusRefresh'), _status),
+          _action(
+            'fallback',
+            t.t('openSameBooking'),
+            () => _open(widget.fallbackUrl),
+          ),
+        ],
+        initialFocusId: 'price-heading',
+        listKey: const ValueKey('price-confirmation'),
       );
     }
     List<Map<String, dynamic>> fields;

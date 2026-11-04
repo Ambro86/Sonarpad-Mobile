@@ -1,0 +1,284 @@
+{
+  "components": [
+    {
+      "type": "passengerCard",
+      "id": "feab4b30-6953-559f-8e4a-103380a17981",
+      "isMainPassenger": true,
+      "ageInfo": {
+        "group": "adult"
+      },
+      "components": [
+        {
+          "type": "componentGroup",
+          "renderingOptions": {
+            "testId": "group-emailAndPassenger"
+          },
+          "components": [
+            {
+              "name": "0.email-0",
+              "value": "",
+              "type": "text",
+              "component": "Email",
+              "title": "Indirizzo e-mail",
+              "renderingOptions": {
+                "fullWidth": true,
+                "testId": "email-field"
+              },
+              "placeholder": "Riceverai i biglietti a questa email",
+              "validation": [
+                {
+                  "type": "required",
+                  "message": "Inserisci il tuo indirizzo email"
+                },
+                {
+                  "type": "email",
+                  "message": "Formato email non valido"
+                }
+              ],
+              "disabled": false
+            }
+          ]
+        },
+        {
+          "name": "0.title-0",
+          "value": "",
+          "type": "radio",
+          "title": "",
+          "component": "Title",
+          "validation": [
+            {
+              "type": "required",
+              "message": "Obbligatorio"
+            },
+            {
+              "type": "validOption",
+              "message": "Non valido"
+            }
+          ],
+          "options": [
+            {
+              "label": "Sig.",
+              "value": "Mr"
+            },
+            {
+              "label": "Sig.ra/Sig.na",
+              "value": "Ms"
+            }
+          ],
+          "renderingOptions": {
+            "fullWidth": true,
+            "testId": "title-field"
+          }
+        },
+        {
+          "name": "0.firstName-0",
+          "value": "",
+          "type": "text",
+          "title": "Nome",
+          "validation": [
+            {
+              "type": "required",
+              "message": "Obbligatorio"
+            }
+          ],
+          "renderingOptions": {
+            "testId": "first-name-field"
+          },
+          "disabled": false
+        },
+        {
+          "name": "0.lastName-0",
+          "value": "",
+          "type": "text",
+          "title": "Cognome",
+          "validation": [
+            {
+              "type": "required",
+              "message": "Obbligatorio"
+            }
+          ],
+          "renderingOptions": {
+            "testId": "last-name-field"
+          },
+          "disabled": false
+        },
+        {
+          "name": "0.phoneNumber-0",
+          "value": "",
+          "type": "text",
+          "title": "Telefono",
+          "component": "PhoneNumber",
+          "validation": [
+            {
+              "type": "required",
+              "message": "Obbligatorio"
+            },
+            {
+              "type": "regex",
+              "message": "Il nostro sistema non accetta numeri con spazi, trattini o parentesi. Fai attenzione, perciÃ², quando digiti il numero, ricordati di dare anche il prefisso internazionale (es. '+1') prima delle altre cifre. ",
+              "regex": "^\\d{1,16}$"
+            }
+          ],
+          "renderingOptions": {
+            "testId": "phone-number-field"
+          }
+        },
+        {
+          "name": "0.dateOfBirth-0",
+          "value": "",
+          "type": "text",
+          "component": "Date",
+          "title": "Data di nascita",
+          "validation": [
+            {
+              "type": "required",
+              "message": "Obbligatorio"
+            },
+            {
+              "type": "pastDate",
+              "message": "Non valido"
+            }
+          ],
+          "renderingOptions": {
+            "testId": "date-of-birth-field"
+          }
+        },
+        {
+          "name": "0.countryOfBirth-0",
+          "value": "",
+          "type": "text",
+          "component": "Country",
+          "title": "Paese/regione di nascita",
+          "placeholder": "Seleziona",
+          "validation": [
+            {
+              "type": "required",
+              "message": "Obbligatorio"
+            },
+            {
+              "type": "country",
+              "message": "Non valido"
+            }
+          ],
+          "renderingOptions": {
+            "testId": "country-of-birth-field"
+          }
+        },
+        {
+          "name": "0.travelDocumentType-0",
+          "value": "",
+          "type": "dropdown",
+          "title": "Tipo di documento",
+          "validation": [
+            {
+              "type": "required",
+              "message": "Obbligatorio"
+            },
+            {
+              "type": "validOption",
+              "message": "Non valido"
+            }
+          ],
+          "options": [
+            {
+              "label": "",
+              "value": ""
+            },
+            {
+              "value": "PASSPORT",
+              "label": "Passaporto o C.I."
+            },
+            {
+              "value": "NATIONAL_ID",
+              "label": "Carta d'identitÃ "
+            }
+          ],
+          "renderingOptions": {
+            "testId": "travel-document-type-field"
+          }
+        },
+        {
+          "name": "0.travelDocumentNumber-0",
+          "value": "",
+          "type": "text",
+          "component": "TravelDocumentNumber",
+          "title": "Numero passaporto o C.I.",
+          "validation": [
+            {
+              "type": "required",
+              "message": "Obbligatorio"
+            },
+            {
+              "type": "validValue",
+              "message": "Non valido"
+            }
+          ],
+          "renderingOptions": {
+            "testId": "travel-document-number"
+          }
+        },
+        {
+          "name": "0.travelDocumentIssueCountry-0",
+          "value": "",
+          "type": "text",
+          "component": "Country",
+          "title": "Paese/regione di rilascio",
+          "validation": [
+            {
+              "type": "required",
+              "message": "Obbligatorio"
+            },
+            {
+              "type": "country",
+              "message": "Non valido"
+            }
+          ],
+          "renderingOptions": {
+            "testId": "travel-document-issue-country-field"
+          }
+        },
+        {
+          "name": "0.travelDocumentExpirationDate-0",
+          "value": "",
+          "type": "text",
+          "component": "Date",
+          "title": "Data di scadenza",
+          "validation": [
+            {
+              "type": "required",
+              "message": "Obbligatorio"
+            },
+            {
+              "type": "futureDate",
+              "message": "Non valido"
+            }
+          ],
+          "renderingOptions": {
+            "testId": "travel-document-expiration-date-field"
+          }
+        },
+        {
+          "name": "0.countryOfResidence-0",
+          "value": "",
+          "type": "text",
+          "component": "CountryOfResidence",
+          "title": "Paese/regione di residenza",
+          "placeholder": "Seleziona",
+          "validation": [
+            {
+              "type": "required",
+              "message": "Obbligatorio"
+            },
+            {
+              "type": "country",
+              "message": "Non valido"
+            }
+          ],
+          "renderingOptions": {
+            "testId": "country-code-field"
+          }
+        }
+      ]
+    }
+  ]
+}

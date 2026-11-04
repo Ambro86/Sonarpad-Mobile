@@ -192,7 +192,7 @@ class TravelService {
         if (keys.contains(e.key)) e.key: _safeBookingDiagnostic(e.value, depth + 1)};
     }
     if (value is String) {
-      const words = 'INITIALISED CREATED PENDING PROCESSING RESERVING RESERVED TIMEOUT FAILED CANCELLED EXPIRED ERROR SUCCESS INVALID MISSING REQUIRED VALIDATION_ERROR INVALID_INPUT PRICE_CHANGED SOLD_OUT UNAVAILABLE RESERVATION_FAILED PAYMENT_REQUIRED REDIRECT NONE create status passengers booking chrome131 safari17_2_ios dict list str int float bool NoneType required missing invalid expired unavailable price timeout retry validation reservation pending captcha authentication payment passenger GET PUT POST http_response network_error Timeout ConnectTimeout ReadTimeout application/json text/html text/plain other';
+      const words = 'INITIALISED CREATED PENDING PROCESSING RESERVING RESERVED TIMEOUT FAILED CANCELLED EXPIRED ERROR SUCCESS INVALID MISSING REQUIRED VALIDATION_ERROR INVALID_INPUT PRICE_CHANGE PRICE_CHANGED SOLD_OUT UNAVAILABLE RESERVATION_FAILED PAYMENT_REQUIRED REDIRECT NONE create status passengers booking chrome131 safari17_2_ios dict list str int float bool NoneType required missing invalid expired unavailable price timeout retry validation reservation pending captcha authentication payment passenger GET PUT POST http_response network_error Timeout ConnectTimeout ReadTimeout application/json text/html text/plain other';
       if (words.split(' ').contains(value) || value == 'sold out') return value;
       if (RegExp(r'^[a-f0-9]{16}$').hasMatch(value)) return value;
       if (value.startsWith(r'$') && value.length < 300) {
@@ -326,8 +326,8 @@ class TravelService {
       if (data == null) throw const TravelException('response');
       if (route == '/v1/booking/status') {
         const states = ['INITIALISED', 'CREATED', 'RESERVING', 'PENDING',
-          'PROCESSING', 'RESERVED', 'TIMEOUT', 'FAILED', 'CANCELLED', 'EXPIRED'];
-        const phases = ['waiting', 'ready', 'unavailable', 'manual'];
+          'PROCESSING', 'RESERVED', 'PRICE_CHANGE', 'TIMEOUT', 'FAILED', 'CANCELLED', 'EXPIRED'];
+        const phases = ['waiting', 'ready', 'unavailable', 'manual', 'price_confirmation'];
         await _logger(
           '[Travel] booking status=${states.contains(data['status']) ? data['status'] : 'UNKNOWN'}'
           ' phase=${phases.contains(data['checkout_state']) ? data['checkout_state'] : 'legacy-or-unknown'}'

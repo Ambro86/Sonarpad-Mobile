@@ -1,23 +1,55 @@
 /// Complete travel UI catalogues. Provider fare descriptions remain provider-owned.
 const travelTranslations = <String, Map<String, String>>{
   "nl": {
+    "ferry": "Schepen en veerboten",
+    "ferryAccommodation": "Accommodatie aan boord",
+    "ferryCancel": "Annuleren",
+    "ferryReview": "Accommodatie en offerte controleren",
+    "ferrySupplement": "Totale accommodatietoeslag",
+    "ferryCar": "Auto aan dit traject toevoegen",
+    "ferryPriceNotice":
+        "Afzonderlijke prijzen en de totale toeslag kunnen overlappen: tel ze niet op. Omio toont het eindtotaal vóór betaling.",
+    "ferryConfirm": "Deze opties bevestigen",
+    "ferryAllocation":
+        "Wijs reizigers toe aan elke accommodatie, niet het aantal hutten. Wijs bij een verplichte keuze alle reizigers toe.",
+    "ferryCarHelp":
+        "Catalogusauto’s zonder accessoires of aanhanger. Beschikbaarheid geldt alleen voor dit traject.",
+    "ferryNoCar": "Geen auto beschikbaar voor dit traject.",
+    "ferryModels": "Merk en model zoeken",
+    "ferryPlate": "Kenteken",
+    "ferryDimensions":
+        "Ik bevestig de afmetingen en geen accessoires of aanhanger",
+    "ferrySelectionHelp":
+        "Vul de reizigerstoewijzing aan en voor een auto het model, kenteken en de bevestiging van afmetingen.",
+    "ferryPreview": "Beschikbaarheid en prijzen controleren",
+    "ferrySize": "Lengte × hoogte",
+    "ferryModelHelp":
+        "Zoek merk of model of laat leeg voor de hele catalogus. Controleer bouwjaar en afmetingen.",
+    "ferryPriceChanged": "De prijs is gewijzigd. Controleer het nieuwe totaal.",
+    "ferryAcceptPrice": "Nieuw totaal accepteren en doorgaan zonder te betalen",
     "seatChoice": "Stoelen kiezen of wijzigen",
-    "seatHelp": "Een stoel kiezen is optioneel. Omio toont beschikbaarheid en toeslag vóór bevestiging. Je kunt de automatische toewijzing behouden. Stoelen bevestigen koopt geen ticket.",
+    "seatHelp":
+        "Een stoel kiezen is optioneel. Omio toont beschikbaarheid en toeslag vóór bevestiging. Je kunt de automatische toewijzing behouden. Stoelen bevestigen koopt geen ticket.",
     "seatSelected": "geselecteerd",
-    "seatUnavailable": "Stoelkeuze is hier nog niet beschikbaar. Ga op de website verder met dezelfde boeking.",
+    "seatUnavailable":
+        "Stoelkeuze is hier nog niet beschikbaar. Ga op de website verder met dezelfde boeking.",
     "journeyDuration": "Reisduur",
     "durationHour": "uur",
     "durationHours": "uur",
     "durationMinute": "minuut",
     "durationMinutes": "minuten",
-    "bookingPreparing": "Omio bereidt de boeking voor. We controleren of de betaling klaarstaat zonder gegevens opnieuw te versturen.",
-    "bookingStillWaiting": "Omio heeft nog niet bevestigd dat de betaling klaarstaat. Controleer opnieuw of ga op Omio verder met dezelfde boeking. Verstuur de gegevens niet opnieuw.",
+    "bookingPreparing":
+        "Omio bereidt de boeking voor. We controleren of de betaling klaarstaat zonder gegevens opnieuw te versturen.",
+    "bookingStillWaiting":
+        "Omio heeft nog niet bevestigd dat de betaling klaarstaat. Controleer opnieuw of ga op Omio verder met dezelfde boeking. Verstuur de gegevens niet opnieuw.",
     "openSameBooking": "Verder met dezelfde boeking op Omio",
     "useDiscountCards": "Kortings- of klantenkaarten gebruiken",
     "discountCards": "Kortings- en klantenkaarten van reizigers",
     "noDiscountCard": "Geen kaart",
-    "noVerifiedCards": "Omio biedt geen kaarten aan voor dit vervoermiddel en deze leeftijd.",
-    "discountCardNotice": "Selecteer alleen kaarten die je bezit en die geldig zijn voor de reiziger en de aangegeven vervoerder. Volg de voorwaarden, ook voor begeleiders en groepen. Klantenkaarten garanderen geen korting.",
+    "noVerifiedCards":
+        "Omio biedt geen kaarten aan voor dit vervoermiddel en deze leeftijd.",
+    "discountCardNotice":
+        "Selecteer alleen kaarten die je bezit en die geldig zijn voor de reiziger en de aangegeven vervoerder. Volg de voorwaarden, ook voor begeleiders en groepen. Klantenkaarten garanderen geen korting.",
     "searchWithoutCards": "Zoeken zonder kortingskaarten",
     "departureTimeFilter": "Vertrektijd",
     "time_all": "De hele dag",
@@ -27,17 +59,24 @@ const travelTranslations = <String, Map<String, String>>{
     "time_night": "Nacht, 00:00–05:59",
     "timeEmpty": "Geen reizen in deze periode.",
     "showAllDay": "De hele dag tonen",
-    "italianOnly": "Reizen zoeken is momenteel alleen beschikbaar in de Italiaanse interface.",
+    "italianOnly":
+        "Reizen zoeken is momenteel alleen beschikbaar in de Italiaanse interface.",
     "title": "Reizen zoeken",
     "welcomeTitle": "Welkom bij Reizen zoeken",
-    "welcome1": "Welkom bij Reizen zoeken in Sonarpad. Zoek trein-, vlieg- en busreizen en koop via Omio, de dienst die Sonarpad gebruikt.",
-    "welcome2": "In overeenstemming met de dienstverlenende insteek van Sonarpad ontvangt de auteur geen commissie voor aankopen en gebruikt hij geen affiliatiecodes.",
-    "welcome3": "Sonarpad toont de prijzen van de dienst zonder toeslag. Prijzen en beschikbaarheid kunnen veranderen: controleer vóór betaling het eindbedrag op Omio, inclusief kosten en optionele diensten.",
-    "welcome4": "Sonarpad maakt zoeken en gegevens invoeren toegankelijker. Het verkoopt geen tickets en beheert geen aankopen. Neem voor hulp, wijzigingen, annuleringen of terugbetalingen contact op met de dienst of vervoerder op de bevestiging, volgens de tariefvoorwaarden.",
-    "welcome5": "Door te accepteren bevestig je dat je deze informatie hebt gelezen. Je keuze wordt op het apparaat opgeslagen. Bij weigering sluit Reizen zoeken.",
+    "welcome1":
+        "Welkom bij Reizen zoeken in Sonarpad. Zoek trein-, vlieg-, bus- en veerbootreizen en koop via Omio, de dienst die Sonarpad gebruikt.",
+    "welcome2":
+        "In overeenstemming met de dienstverlenende insteek van Sonarpad ontvangt de auteur geen commissie voor aankopen en gebruikt hij geen affiliatiecodes.",
+    "welcome3":
+        "Sonarpad toont de prijzen van de dienst zonder toeslag. Prijzen en beschikbaarheid kunnen veranderen: controleer vóór betaling het eindbedrag op Omio, inclusief kosten en optionele diensten.",
+    "welcome4":
+        "Sonarpad maakt zoeken en gegevens invoeren toegankelijker. Het verkoopt geen tickets en beheert geen aankopen. Neem voor hulp, wijzigingen, annuleringen of terugbetalingen contact op met de dienst of vervoerder op de bevestiging, volgens de tariefvoorwaarden.",
+    "welcome5":
+        "Door te accepteren bevestig je dat je deze informatie hebt gelezen. Je keuze wordt op het apparaat opgeslagen. Bij weigering sluit Reizen zoeken.",
     "accept": "Accepteren",
     "decline": "Weigeren",
-    "welcomeSaveError": "De keuze kan niet worden gelezen of opgeslagen. Probeer opnieuw te accepteren.",
+    "welcomeSaveError":
+        "De keuze kan niet worden gelezen of opgeslagen. Probeer opnieuw te accepteren.",
     "new": "Een nieuwe reis zoeken",
     "recent": "Recente reizen",
     "currency": "Valuta",
@@ -64,14 +103,17 @@ const travelTranslations = <String, Map<String, String>>{
     "filterNoResults": "Geen resultaten",
     "filterResults": "Beschikbare resultaten: {count}",
     "filterRetained": "Selectie behouden",
-    "cancelLoadingHelp": "Annuleren stopt het wachten. Gegevens die al naar Omio zijn verstuurd, worden niet ingetrokken.",
+    "cancelLoadingHelp":
+        "Annuleren stopt het wachten. Gegevens die al naar Omio zijn verstuurd, worden niet ingetrokken.",
     "chooseFrom": "Vertrekstad kiezen",
     "chooseTo": "Bestemmingsstad kiezen",
     "noCity": "Stad niet gevonden. Pas de naam aan en probeer opnieuw.",
-    "invalid": "Controleer steden en datums: vertrek mag niet in het verleden liggen en terugkeer mag niet vóór vertrek zijn.",
+    "invalid":
+        "Controleer steden en datums: vertrek mag niet in het verleden liggen en terugkeer mag niet vóór vertrek zijn.",
     "sameCity": "Kies twee verschillende steden.",
     "results": "Resultaten",
-    "partial": "Voorlopige resultaten. Selecteer een reis of vernieuw de zoekopdracht.",
+    "partial":
+        "Voorlopige resultaten. Selecteer een reis of vernieuw de zoekopdracht.",
     "empty": "Geen reizen beschikbaar.",
     "waiting": "De zoekopdracht loopt nog. Vernieuw de resultaten.",
     "refresh": "Resultaten vernieuwen",
@@ -85,55 +127,74 @@ const travelTranslations = <String, Map<String, String>>{
     "passengerData": "Reizigersgegevens",
     "chooseValue": "Een waarde kiezen",
     "forgetPassenger": "Opgeslagen reizigersgegevens wissen",
-    "passengerForgotten": "De opgeslagen reizigersgegevens zijn van het apparaat verwijderd.",
+    "passengerForgotten":
+        "De opgeslagen reizigersgegevens zijn van het apparaat verwijderd.",
     "notProvided": "Niet ingevuld",
     "passenger": "Reiziger",
     "nextField": "Verder",
     "optional": "Optioneel",
-    "optionalHint": "Vul de gegevens van deze reiziger in. Optionele velden mogen leeg blijven.",
-    "stateChooseCountry": "Kies eerst het land om staten of provincies te laden.",
+    "optionalHint":
+        "Vul de gegevens van deze reiziger in. Optionele velden mogen leeg blijven.",
+    "stateChooseCountry":
+        "Kies eerst het land om staten of provincies te laden.",
     "required": "Verplicht",
     "skip": "Veld overslaan",
-    "checkData": "Controleer de gegevens voordat je ze naar Omio verstuurt. Geen automatische betaling.",
+    "checkData":
+        "Controleer de gegevens voordat je ze naar Omio verstuurt. Geen automatische betaling.",
     "sendData": "Gegevens bevestigen en naar Omio versturen",
     "editData": "Gegevens wijzigen",
     "invalidField": "Controleer de waarde van dit veld.",
     "emptyField": "Let op! Het veld {field} is leeg.",
-    "ageMismatch": "De geboortedatum komt niet overeen met de leeftijd in de zoekopdracht.",
-    "unsupportedForm": "Dit veld vereist de website van Omio. Vul de gegevens daar aan.",
+    "ageMismatch":
+        "De geboortedatum komt niet overeen met de leeftijd in de zoekopdracht.",
+    "unsupportedForm":
+        "Dit veld vereist de website van Omio. Vul de gegevens daar aan.",
     "phonePrefix": "Internationaal landnummer, bijvoorbeeld +31",
     "phoneNumber": "Nationaal telefoonnummer",
     "phoneCountry": "Land van het telefoonnummer",
     "submitted": "Gegevens verstuurd. Voltooi de betaling zelf op Omio.",
-    "submitUncertain": "Verzending niet bevestigd. Controleer Omio zonder de gegevens opnieuw te versturen.",
+    "submitUncertain":
+        "Verzending niet bevestigd. Controleer Omio zonder de gegevens opnieuw te versturen.",
     "statusRefresh": "Controleren of de betaling klaarstaat",
     "openCheckout": "Omio-betaling openen",
     "paymentChoice": "Betaalmethode kiezen",
     "noProtection": "Geen reisbescherming toevoegen",
-    "noProtectionUnconfirmed": "De keuze zonder bescherming kon niet worden bevestigd. Controleer de bescherming op Omio vóór betaling.",
-    "paymentChoiceHelp": "Kies een methode die op Omio beschikbaar is. De pagina opent om bedrag en bescherming te controleren en te betalen. Geen automatische betaling.",
+    "noProtectionUnconfirmed":
+        "De keuze zonder bescherming kon niet worden bevestigd. Controleer de bescherming op Omio vóór betaling.",
+    "paymentChoiceHelp":
+        "Kies een methode die op Omio beschikbaar is. De pagina opent om bedrag en bescherming te controleren en te betalen. Geen automatische betaling.",
     "paymentCard": "Creditcard of betaalkaart",
-    "paymentUnavailable": "De betaalmethoden kunnen niet worden gelezen. Ga verder op de Omio-pagina.",
-    "paymentSelectOnSite": "Selectie niet bevestigd: controleer de methode op Omio.",
-    "paypalSelectedHint": "PayPal geselecteerd. Zoek voor betaling de PayPal-knop onderaan de pagina.",
+    "paymentUnavailable":
+        "De betaalmethoden kunnen niet worden gelezen. Ga verder op de Omio-pagina.",
+    "paymentSelectOnSite":
+        "Selectie niet bevestigd: controleer de methode op Omio.",
+    "paypalSelectedHint":
+        "PayPal geselecteerd. Zoek voor betaling de PayPal-knop onderaan de pagina.",
     "paymentOpenSite": "Volledige Omio-pagina openen",
     "omioBrowser": "Omio",
     "browserLoading": "Omio-pagina laden",
     "externalBrowser": "Openen in externe browser",
     "webBack": "Vorige pagina",
-    "browserError": "De pagina kan niet worden geopend. Gebruik eventueel een externe browser.",
-    "bookingUnavailable": "De boeking is verlopen of niet beschikbaar. Start een nieuwe zoekopdracht.",
+    "browserError":
+        "De pagina kan niet worden geopend. Gebruik eventueel een externe browser.",
+    "bookingUnavailable":
+        "De boeking is verlopen of niet beschikbaar. Start een nieuwe zoekopdracht.",
     "handoff": "Reisoverzicht",
-    "handoffInfo": "Verder maakt een tijdelijke boeking en opent de reizigersgegevens in Sonarpad. Controleer het eindbedrag op Omio. Geen automatische betaling.",
+    "handoffInfo":
+        "Verder maakt een tijdelijke boeking en opent de reizigersgegevens in Sonarpad. Controleer het eindbedrag op Omio. Geen automatische betaling.",
     "open": "Omio openen",
-    "bookingError": "Het resultaat kan niet worden bevestigd. Herhaal de boeking niet. Open deze alleen opnieuw als er een link beschikbaar is.",
+    "bookingError":
+        "Het resultaat kan niet worden bevestigd. Herhaal de boeking niet. Open deze alleen opnieuw als er een link beschikbaar is.",
     "error": "De dienst is niet beschikbaar. Probeer het later opnieuw.",
-    "expired": "De sessie is verlopen of toegang is geweigerd. Start een nieuwe zoekopdracht.",
-    "configuration": "De reisdienst is niet ingesteld in deze versie van de app.",
+    "expired":
+        "De sessie is verlopen of toegang is geweigerd. Start een nieuwe zoekopdracht.",
+    "configuration":
+        "De reisdienst is niet ingesteld in deze versie van de app.",
     "retry": "Opnieuw proberen",
     "noRecent": "Geen recente reizen.",
     "clear": "Recente reizen wissen",
-    "recentInfo": "Selecteer een reis om het formulier te openen en de datums te controleren. Prijzen en beschikbaarheid worden opnieuw opgezocht.",
+    "recentInfo":
+        "Selecteer een reis om het formulier te openen en de datums te controleren. Prijzen en beschikbaarheid worden opnieuw opgezocht.",
     "reference": "Referentie voor ondersteuning",
     "page": "Pagina",
     "priceUnavailable": "Prijs niet beschikbaar",
@@ -143,6 +204,33 @@ const travelTranslations = <String, Map<String, String>>{
     "seatPosition": "Voertuig {coach}, stoel {seat}",
   },
   "cs": {
+    "ferry": "Lodě a trajekty",
+    "ferryAccommodation": "Ubytování na palubě",
+    "ferryCancel": "Zrušit",
+    "ferryReview": "Ověřit ubytování a nabídku",
+    "ferrySupplement": "Celkový příplatek za ubytování",
+    "ferryCar": "Přidat auto na tento úsek",
+    "ferryPriceNotice":
+        "Ceny jednotlivých služeb a celkový příplatek se mohou překrývat: nesčítejte je. Omio zobrazí konečnou částku před platbou.",
+    "ferryConfirm": "Potvrdit tyto možnosti",
+    "ferryAllocation":
+        "Přiřaďte cestující k ubytování, nikoli počet kajut. Při povinném výběru přiřaďte všechny cestující.",
+    "ferryCarHelp":
+        "Auta z katalogu bez příslušenství a přívěsu. Dostupnost platí jen pro tento úsek.",
+    "ferryNoCar": "Auto pro tento úsek není dostupné.",
+    "ferryModels": "Hledat značku a model",
+    "ferryPlate": "Registrační značka",
+    "ferryDimensions":
+        "Potvrzuji rozměry a nepřítomnost příslušenství a přívěsu",
+    "ferrySelectionHelp":
+        "Dokončete přiřazení cestujících a u auta model, registrační značku a potvrzení rozměrů.",
+    "ferryPreview": "Ověřit dostupnost a ceny",
+    "ferrySize": "Délka × výška",
+    "ferryModelHelp":
+        "Hledejte značku či model nebo ponechte prázdné pro celý katalog. Ověřte rok a rozměry.",
+    "ferryPriceChanged":
+        "Cena se změnila. Před pokračováním ověřte novou částku.",
+    "ferryAcceptPrice": "Přijmout novou částku a pokračovat bez platby",
     "seatChoice": "Vybrat nebo změnit místa",
     "seatHelp":
         "Výběr je volitelný. Omio před potvrzením zobrazí dostupnost a příplatek. Můžete ponechat náhodné přidělení. Potvrzení míst nekupuje jízdenku.",
@@ -180,7 +268,7 @@ const travelTranslations = <String, Map<String, String>>{
     "title": "Vyhledávání cest",
     "welcomeTitle": "Vítejte ve vyhledávání cest",
     "welcome1":
-        "Vítejte ve vyhledávání cest Sonarpad. Hledejte vlakové, letecké a autobusové spoje a nakupujte přes Omio, službu používanou Sonarpadem.",
+        "Vítejte ve vyhledávání cest Sonarpad. Hledejte vlakové, letecké, autobusové a trajektové spoje a nakupujte přes Omio, službu používanou Sonarpadem.",
     "welcome2":
         "V souladu s duchem služby Sonarpad autor nedostává provize z nákupů a nepoužívá partnerské kódy.",
     "welcome3":
@@ -314,6 +402,33 @@ const travelTranslations = <String, Map<String, String>>{
     "seatPosition": "Vůz {coach}, místo {seat}",
   },
   "de": {
+    "ferry": "Schiffe und Fähren",
+    "ferryAccommodation": "Unterbringung an Bord",
+    "ferryCancel": "Abbrechen",
+    "ferryReview": "Unterbringung und Angebot prüfen",
+    "ferrySupplement": "Gesamter Unterbringungszuschlag",
+    "ferryCar": "Auto für diese Strecke hinzufügen",
+    "ferryPriceNotice":
+        "Einzelpreise und Gesamtzuschlag können sich überschneiden: nicht addieren. Omio zeigt den Endbetrag vor der Zahlung.",
+    "ferryConfirm": "Diese Optionen bestätigen",
+    "ferryAllocation":
+        "Ordnen Sie den Unterbringungen Fahrgäste zu, nicht die Anzahl der Kabinen. Bei Pflichtauswahl alle Fahrgäste zuordnen.",
+    "ferryCarHelp":
+        "Katalogautos ohne Zubehör oder Anhänger. Verfügbarkeit nur für diese Strecke.",
+    "ferryNoCar": "Keine Autos für diese Strecke verfügbar.",
+    "ferryModels": "Marke und Modell suchen",
+    "ferryPlate": "Kennzeichen",
+    "ferryDimensions": "Ich bestätige die Maße und kein Zubehör oder Anhänger",
+    "ferrySelectionHelp":
+        "Vervollständigen Sie die Zuordnung und beim Auto Modell, Kennzeichen und Maßbestätigung.",
+    "ferryPreview": "Verfügbarkeit und Preise prüfen",
+    "ferrySize": "Länge × Höhe",
+    "ferryModelHelp":
+        "Nach Marke oder Modell suchen oder für den ganzen Katalog leer lassen. Baujahr und Maße prüfen.",
+    "ferryPriceChanged":
+        "Der Preis hat sich geändert. Prüfen Sie den neuen Gesamtbetrag.",
+    "ferryAcceptPrice":
+        "Neuen Gesamtbetrag akzeptieren und ohne Zahlung fortfahren",
     "seatChoice": "Sitzplätze wählen oder ändern",
     "seatHelp":
         "Die Sitzplatzwahl ist optional. Omio zeigt Verfügbarkeit und Aufpreis vor der Bestätigung. Sie können die zufällige Zuweisung behalten. Die Sitzplatzbestätigung kauft kein Ticket.",
@@ -351,7 +466,7 @@ const travelTranslations = <String, Map<String, String>>{
     "title": "Reisesuche",
     "welcomeTitle": "Willkommen bei der Reisesuche",
     "welcome1":
-        "Willkommen bei der Sonarpad-Reisesuche. Suchen Sie Zug-, Flug- und Busreisen und kaufen Sie über Omio, den von Sonarpad verwendeten Dienst.",
+        "Willkommen bei der Sonarpad-Reisesuche. Suchen Sie Zug-, Flug-, Bus- und Fährreisen und kaufen Sie über Omio, den von Sonarpad verwendeten Dienst.",
     "welcome2":
         "Im Sinne des Dienstleistungsgedankens von Sonarpad erhält der Autor keine Provision für Ihre Käufe und verwendet keine Affiliate-Codes.",
     "welcome3":
@@ -492,6 +607,33 @@ const travelTranslations = <String, Map<String, String>>{
     "seatPosition": "Wagen {coach}, Sitz {seat}",
   },
   "es": {
+    "ferry": "Barcos y ferris",
+    "ferryAccommodation": "Alojamiento a bordo",
+    "ferryCancel": "Cancelar",
+    "ferryReview": "Revisar alojamiento y presupuesto",
+    "ferrySupplement": "Suplemento total de alojamiento",
+    "ferryCar": "Añadir un coche a este trayecto",
+    "ferryPriceNotice":
+        "Los precios individuales y el suplemento total pueden solaparse: no los sume. Omio mostrará el total final antes del pago.",
+    "ferryConfirm": "Confirmar estas opciones",
+    "ferryAllocation":
+        "Asigne pasajeros a cada alojamiento, no el número de camarotes. Asigne todos si la elección es obligatoria.",
+    "ferryCarHelp":
+        "Coches del catálogo sin accesorios ni remolque. Disponibilidad solo para este trayecto.",
+    "ferryNoCar": "Coche no disponible para este trayecto.",
+    "ferryModels": "Buscar marca y modelo",
+    "ferryPlate": "Matrícula",
+    "ferryDimensions":
+        "Confirmo las dimensiones y la ausencia de accesorios y remolque",
+    "ferrySelectionHelp":
+        "Complete la asignación y, para el coche, modelo, matrícula y confirmación de dimensiones.",
+    "ferryPreview": "Comprobar disponibilidad y precios",
+    "ferrySize": "Longitud × altura",
+    "ferryModelHelp":
+        "Busque marca o modelo o deje vacío para ver el catálogo. Compruebe año y dimensiones.",
+    "ferryPriceChanged":
+        "El precio ha cambiado. Compruebe el nuevo total antes de continuar.",
+    "ferryAcceptPrice": "Aceptar el nuevo total y continuar sin pagar",
     "seatChoice": "Elegir o cambiar asientos",
     "seatHelp":
         "La elección es opcional. Omio muestra disponibilidad y suplementos antes de confirmar. Puedes mantener la asignación aleatoria. Confirmar asientos no compra el billete.",
@@ -529,7 +671,7 @@ const travelTranslations = <String, Map<String, String>>{
     "title": "Buscar viajes",
     "welcomeTitle": "Bienvenido a la búsqueda de viajes",
     "welcome1":
-        "Bienvenido a la búsqueda de viajes de Sonarpad. Busca viajes en tren, avión y autobús y continúa la compra en Omio, el servicio que usa Sonarpad.",
+        "Bienvenido a la búsqueda de viajes de Sonarpad. Busca viajes en tren, avión, autobús y ferri y continúa la compra en Omio, el servicio que usa Sonarpad.",
     "welcome2":
         "Fiel al espíritu de servicio de Sonarpad, el autor no recibe comisiones por tus compras ni utiliza códigos de afiliación.",
     "welcome3":
@@ -670,6 +812,33 @@ const travelTranslations = <String, Map<String, String>>{
     "seatPosition": "Coche {coach}, asiento {seat}",
   },
   "fr": {
+    "ferry": "Bateaux et ferries",
+    "ferryAccommodation": "Installation à bord",
+    "ferryCancel": "Annuler",
+    "ferryReview": "Vérifier les options et le devis",
+    "ferrySupplement": "Supplément global d’installation",
+    "ferryCar": "Ajouter une voiture à ce trajet",
+    "ferryPriceNotice":
+        "Les prix individuels et le supplément global peuvent se recouper : ne les additionnez pas. Omio affichera le total final avant le paiement.",
+    "ferryConfirm": "Confirmer ces options",
+    "ferryAllocation":
+        "Répartissez les passagers entre les installations, pas le nombre de cabines. Affectez tous les passagers si le choix est obligatoire.",
+    "ferryCarHelp":
+        "Voitures du catalogue sans accessoires ni remorque. Disponibilité pour ce trajet uniquement.",
+    "ferryNoCar": "Voiture indisponible pour ce trajet.",
+    "ferryModels": "Rechercher marque et modèle",
+    "ferryPlate": "Immatriculation",
+    "ferryDimensions":
+        "Je confirme les dimensions et l’absence d’accessoires et de remorque",
+    "ferrySelectionHelp":
+        "Complétez la répartition et, pour une voiture, le modèle, l’immatriculation et la confirmation des dimensions.",
+    "ferryPreview": "Vérifier disponibilité et prix",
+    "ferrySize": "Longueur × hauteur",
+    "ferryModelHelp":
+        "Recherchez une marque ou un modèle, ou laissez vide pour tout le catalogue. Vérifiez l’année et les dimensions.",
+    "ferryPriceChanged":
+        "Le prix a changé. Vérifiez le nouveau total avant de continuer.",
+    "ferryAcceptPrice": "Accepter le nouveau total et continuer sans payer",
     "seatChoice": "Choisir ou modifier les places",
     "seatHelp":
         "Le choix est facultatif. Omio affiche les disponibilités et suppléments avant confirmation. Vous pouvez conserver l’attribution aléatoire. Confirmer les places n’achète pas le billet.",
@@ -707,7 +876,7 @@ const travelTranslations = <String, Map<String, String>>{
     "title": "Recherche de voyages",
     "welcomeTitle": "Bienvenue dans la recherche de voyages",
     "welcome1":
-        "Bienvenue dans la recherche de voyages Sonarpad. Recherchez des trajets en train, avion et bus, puis achetez sur Omio, le service utilisé par Sonarpad.",
+        "Bienvenue dans la recherche de voyages Sonarpad. Recherchez des trajets en train, avion, bus et ferry, puis achetez sur Omio, le service utilisé par Sonarpad.",
     "welcome2":
         "Fidèle à l’esprit de service de Sonarpad, l’auteur ne reçoit aucune commission sur vos achats et n’utilise aucun code d’affiliation.",
     "welcome3":
@@ -845,6 +1014,32 @@ const travelTranslations = <String, Map<String, String>>{
     "seatPosition": "Voiture {coach}, place {seat}",
   },
   "pl": {
+    "ferry": "Statki i promy",
+    "ferryAccommodation": "Zakwaterowanie na pokładzie",
+    "ferryCancel": "Anuluj",
+    "ferryReview": "Sprawdź zakwaterowanie i wycenę",
+    "ferrySupplement": "Łączna dopłata za zakwaterowanie",
+    "ferryCar": "Dodaj samochód do tego odcinka",
+    "ferryPriceNotice":
+        "Ceny usług i łączna dopłata mogą się pokrywać: nie sumuj ich. Omio pokaże końcową kwotę przed płatnością.",
+    "ferryConfirm": "Potwierdź te opcje",
+    "ferryAllocation":
+        "Przypisz pasażerów do miejsc zakwaterowania, a nie liczbę kabin. Przy obowiązkowym wyborze przypisz wszystkich.",
+    "ferryCarHelp":
+        "Samochody z katalogu bez akcesoriów i przyczepy. Dostępność tylko dla tego odcinka.",
+    "ferryNoCar": "Samochód niedostępny na tym odcinku.",
+    "ferryModels": "Szukaj marki i modelu",
+    "ferryPlate": "Numer rejestracyjny",
+    "ferryDimensions": "Potwierdzam wymiary oraz brak akcesoriów i przyczepy",
+    "ferrySelectionHelp":
+        "Uzupełnij przypisanie pasażerów, a dla samochodu model, numer rejestracyjny i potwierdzenie wymiarów.",
+    "ferryPreview": "Sprawdź dostępność i ceny",
+    "ferrySize": "Długość × wysokość",
+    "ferryModelHelp":
+        "Wyszukaj markę lub model albo pozostaw puste, aby przeglądać katalog. Sprawdź rok i wymiary.",
+    "ferryPriceChanged":
+        "Cena się zmieniła. Sprawdź nową kwotę przed kontynuowaniem.",
+    "ferryAcceptPrice": "Zaakceptuj nową kwotę i kontynuuj bez płacenia",
     "seatChoice": "Wybierz lub zmień miejsca",
     "seatHelp":
         "Wybór jest opcjonalny. Omio pokazuje dostępność i dopłaty przed potwierdzeniem. Możesz zachować losowy przydział. Potwierdzenie miejsc nie oznacza zakupu biletu.",
@@ -882,7 +1077,7 @@ const travelTranslations = <String, Map<String, String>>{
     "title": "Wyszukiwanie podróży",
     "welcomeTitle": "Witamy w wyszukiwaniu podróży",
     "welcome1":
-        "Witamy w wyszukiwaniu podróży Sonarpad. Szukaj połączeń kolejowych, lotniczych i autobusowych, a następnie kupuj przez Omio, serwis używany przez Sonarpad.",
+        "Witamy w wyszukiwaniu podróży Sonarpad. Szukaj połączeń kolejowych, lotniczych, autobusowych i promowych, a następnie kupuj przez Omio, serwis używany przez Sonarpad.",
     "welcome2":
         "Zgodnie z ideą służenia użytkownikom autor Sonarpad nie otrzymuje prowizji od zakupów ani nie korzysta z kodów afiliacyjnych.",
     "welcome3":
@@ -1018,6 +1213,33 @@ const travelTranslations = <String, Map<String, String>>{
     "seatPosition": "Wagon {coach}, miejsce {seat}",
   },
   "pt": {
+    "ferry": "Navios e ferries",
+    "ferryAccommodation": "Acomodação a bordo",
+    "ferryCancel": "Cancelar",
+    "ferryReview": "Verificar acomodação e orçamento",
+    "ferrySupplement": "Suplemento total de acomodação",
+    "ferryCar": "Adicionar carro a este percurso",
+    "ferryPriceNotice":
+        "Os preços individuais e o suplemento total podem sobrepor-se: não os some. A Omio mostrará o total final antes do pagamento.",
+    "ferryConfirm": "Confirmar estas opções",
+    "ferryAllocation":
+        "Distribua passageiros pelas acomodações, não o número de cabines. Atribua todos se a escolha for obrigatória.",
+    "ferryCarHelp":
+        "Carros do catálogo sem acessórios nem reboque. Disponibilidade apenas para este percurso.",
+    "ferryNoCar": "Carro indisponível neste percurso.",
+    "ferryModels": "Pesquisar marca e modelo",
+    "ferryPlate": "Matrícula",
+    "ferryDimensions":
+        "Confirmo as dimensões e a ausência de acessórios e reboque",
+    "ferrySelectionHelp":
+        "Complete a distribuição e, para o carro, modelo, matrícula e confirmação das dimensões.",
+    "ferryPreview": "Verificar disponibilidade e preços",
+    "ferrySize": "Comprimento × altura",
+    "ferryModelHelp":
+        "Pesquise marca ou modelo ou deixe vazio para ver o catálogo. Verifique ano e dimensões.",
+    "ferryPriceChanged":
+        "O preço mudou. Verifique o novo total antes de continuar.",
+    "ferryAcceptPrice": "Aceitar o novo total e continuar sem pagar",
     "seatChoice": "Escolher ou alterar lugares",
     "seatHelp":
         "A escolha é facultativa. A Omio mostra disponibilidade e suplementos antes da confirmação. Pode manter a atribuição aleatória. Confirmar lugares não compra o bilhete.",
@@ -1055,7 +1277,7 @@ const travelTranslations = <String, Map<String, String>>{
     "title": "Pesquisa de viagens",
     "welcomeTitle": "Bem-vindo à pesquisa de viagens",
     "welcome1":
-        "Bem-vindo à pesquisa de viagens do Sonarpad. Pesquise viagens de comboio, avião e autocarro e prossiga com a compra através da Omio, o serviço utilizado pelo Sonarpad.",
+        "Bem-vindo à pesquisa de viagens do Sonarpad. Pesquise viagens de comboio, avião, autocarro e ferry e prossiga com a compra através da Omio, o serviço utilizado pelo Sonarpad.",
     "welcome2":
         "Coerente com o espírito de serviço do Sonarpad, o autor não recebe comissões pelas suas compras nem utiliza códigos de afiliação.",
     "welcome3":
@@ -1193,6 +1415,33 @@ const travelTranslations = <String, Map<String, String>>{
     "seatPosition": "Carruagem {coach}, lugar {seat}",
   },
   "pt_BR": {
+    "ferry": "Navios e balsas",
+    "ferryAccommodation": "Acomodação a bordo",
+    "ferryCancel": "Cancelar",
+    "ferryReview": "Verificar acomodação e orçamento",
+    "ferrySupplement": "Suplemento total de acomodação",
+    "ferryCar": "Adicionar carro a este trecho",
+    "ferryPriceNotice":
+        "Os preços individuais e o suplemento total podem sobrepor-se: não os some. A Omio mostrará o total final antes do pagamento.",
+    "ferryConfirm": "Confirmar estas opções",
+    "ferryAllocation":
+        "Distribua passageiros pelas acomodações, não o número de cabines. Atribua todos se a escolha for obrigatória.",
+    "ferryCarHelp":
+        "Carros do catálogo sem acessórios nem reboque. Disponibilidade apenas para este trecho.",
+    "ferryNoCar": "Carro indisponível neste trecho.",
+    "ferryModels": "Pesquisar marca e modelo",
+    "ferryPlate": "Placa",
+    "ferryDimensions":
+        "Confirmo as dimensões e a ausência de acessórios e reboque",
+    "ferrySelectionHelp":
+        "Complete a distribuição e, para o carro, modelo, placa e confirmação das dimensões.",
+    "ferryPreview": "Verificar disponibilidade e preços",
+    "ferrySize": "Comprimento × altura",
+    "ferryModelHelp":
+        "Pesquise marca ou modelo ou deixe vazio para ver o catálogo. Verifique ano e dimensões.",
+    "ferryPriceChanged":
+        "O preço mudou. Verifique o novo total antes de continuar.",
+    "ferryAcceptPrice": "Aceitar o novo total e continuar sem pagar",
     "seatChoice": "Escolher ou alterar lugares",
     "seatHelp":
         "A escolha é opcional. A Omio mostra disponibilidade e suplementos antes da confirmação. Pode manter a atribuição aleatória. Confirmar lugares não compra o bilhete.",
@@ -1230,7 +1479,7 @@ const travelTranslations = <String, Map<String, String>>{
     "title": "Pesquisa de viagens",
     "welcomeTitle": "Bem-vindo à pesquisa de viagens",
     "welcome1":
-        "Bem-vindo à pesquisa de viagens do Sonarpad. Pesquise viagens de trem, avião e ônibus e prossiga com a compra através da Omio, o serviço utilizado pelo Sonarpad.",
+        "Bem-vindo à pesquisa de viagens do Sonarpad. Pesquise viagens de trem, avião, ônibus e balsa e prossiga com a compra através da Omio, o serviço utilizado pelo Sonarpad.",
     "welcome2":
         "Coerente com o espírito de serviço do Sonarpad, o autor não recebe comissões pelas suas compras nem utiliza códigos de afiliação.",
     "welcome3":
@@ -1368,6 +1617,33 @@ const travelTranslations = <String, Map<String, String>>{
     "seatPosition": "Vagão {coach}, assento {seat}",
   },
   "ro": {
+    "ferry": "Nave și feriboturi",
+    "ferryAccommodation": "Cazare la bord",
+    "ferryCancel": "Anulează",
+    "ferryReview": "Verifică opțiunile și oferta",
+    "ferrySupplement": "Supliment total pentru cazare",
+    "ferryCar": "Adaugă o mașină pe această rută",
+    "ferryPriceNotice":
+        "Prețurile individuale și suplimentul total se pot suprapune: nu le aduna. Omio va afișa totalul final înainte de plată.",
+    "ferryConfirm": "Confirmă aceste opțiuni",
+    "ferryAllocation":
+        "Repartizează pasagerii pe opțiunile de cazare, nu numărul de cabine. Repartizează-i pe toți când alegerea este obligatorie.",
+    "ferryCarHelp":
+        "Mașini din catalog fără accesorii sau remorcă. Disponibilitate doar pentru această rută.",
+    "ferryNoCar": "Mașină indisponibilă pentru această rută.",
+    "ferryModels": "Caută marca și modelul",
+    "ferryPlate": "Număr de înmatriculare",
+    "ferryDimensions":
+        "Confirm dimensiunile și absența accesoriilor și remorcii",
+    "ferrySelectionHelp":
+        "Completează repartizarea și, pentru mașină, modelul, numărul și confirmarea dimensiunilor.",
+    "ferryPreview": "Verifică disponibilitatea și prețurile",
+    "ferrySize": "Lungime × înălțime",
+    "ferryModelHelp":
+        "Caută marca sau modelul ori lasă gol pentru tot catalogul. Verifică anul și dimensiunile.",
+    "ferryPriceChanged":
+        "Prețul s-a schimbat. Verifică noul total înainte de a continua.",
+    "ferryAcceptPrice": "Acceptă noul total și continuă fără plată",
     "seatChoice": "Alege sau schimbă locurile",
     "seatHelp":
         "Alegerea este opțională. Omio afișează disponibilitatea și suplimentele înainte de confirmare. Poți păstra atribuirea aleatorie. Confirmarea locurilor nu cumpără biletul.",
@@ -1405,7 +1681,7 @@ const travelTranslations = <String, Map<String, String>>{
     "title": "Căutare călătorii",
     "welcomeTitle": "Bun venit la căutarea călătoriilor",
     "welcome1":
-        "Bun venit la căutarea călătoriilor Sonarpad. Caută călătorii cu trenul, avionul și autocarul, apoi cumpără prin Omio, serviciul folosit de Sonarpad.",
+        "Bun venit la căutarea călătoriilor Sonarpad. Caută călătorii cu trenul, avionul, autocarul și feribotul, apoi cumpără prin Omio, serviciul folosit de Sonarpad.",
     "welcome2":
         "În spiritul de serviciu al Sonarpad, autorul nu primește comisioane pentru cumpărături și nu folosește coduri de afiliere.",
     "welcome3":
@@ -1542,6 +1818,32 @@ const travelTranslations = <String, Map<String, String>>{
     "seatPosition": "Vagon {coach}, loc {seat}",
   },
   "tr": {
+    "ferry": "Gemiler ve feribotlar",
+    "ferryAccommodation": "Gemide konaklama",
+    "ferryCancel": "İptal",
+    "ferryReview": "Konaklama ve teklifi kontrol et",
+    "ferrySupplement": "Toplam konaklama ek ücreti",
+    "ferryCar": "Bu etaba otomobil ekle",
+    "ferryPriceNotice":
+        "Hizmet fiyatları ve toplam ek ücret örtüşebilir: bunları toplamayın. Omio ödeme öncesi son toplamı gösterecektir.",
+    "ferryConfirm": "Bu seçenekleri onayla",
+    "ferryAllocation":
+        "Kabin sayısını değil, her konaklamaya atanacak yolcuları belirtin. Seçim zorunluysa tüm yolcuları atayın.",
+    "ferryCarHelp":
+        "Aksesuar veya römork olmadan katalog otomobilleri desteklenir. Uygunluk yalnızca bu etap içindir.",
+    "ferryNoCar": "Bu etapta otomobil kullanılamıyor.",
+    "ferryModels": "Marka ve model ara",
+    "ferryPlate": "Plaka",
+    "ferryDimensions": "Boyutları, aksesuar ve römork olmadığını onaylıyorum",
+    "ferrySelectionHelp":
+        "Yolcu dağılımını ve otomobil için model, plaka ve boyut onayını tamamlayın.",
+    "ferryPreview": "Uygunluğu ve fiyatları kontrol et",
+    "ferrySize": "Uzunluk × yükseklik",
+    "ferryModelHelp":
+        "Marka veya model arayın ya da katalog için boş bırakın. Yıl ve boyutları kontrol edin.",
+    "ferryPriceChanged":
+        "Fiyat değişti. Devam etmeden önce yeni toplamı kontrol edin.",
+    "ferryAcceptPrice": "Yeni toplamı kabul et ve ödemeden devam et",
     "seatChoice": "Koltuk seç veya değiştir",
     "seatHelp":
         "Koltuk seçimi isteğe bağlıdır. Omio onaydan önce uygunluğu ve ek ücreti gösterir. Rastgele atamayı koruyabilirsiniz. Koltukları onaylamak bilet satın almaz.",
@@ -1578,7 +1880,7 @@ const travelTranslations = <String, Map<String, String>>{
     "title": "Seyahat arama",
     "welcomeTitle": "Seyahat aramasına hoş geldiniz",
     "welcome1":
-        "Sonarpad seyahat aramasına hoş geldiniz. Tren, uçak ve otobüs yolculuklarını arayıp Sonarpad tarafından kullanılan Omio üzerinden satın alabilirsiniz.",
+        "Sonarpad seyahat aramasına hoş geldiniz. Tren, uçak, otobüs ve feribot yolculuklarını arayıp Sonarpad tarafından kullanılan Omio üzerinden satın alabilirsiniz.",
     "welcome2":
         "Sonarpad hizmet anlayışına uygun olarak geliştirici alışverişlerinizden komisyon almaz ve satış ortaklığı kodları kullanmaz.",
     "welcome3":
@@ -1713,6 +2015,33 @@ const travelTranslations = <String, Map<String, String>>{
     "seatPosition": "Vagon {coach}, koltuk {seat}",
   },
   "uk": {
+    "ferry": "Судна та пороми",
+    "ferryAccommodation": "Розміщення на борту",
+    "ferryCancel": "Скасувати",
+    "ferryReview": "Перевірити розміщення та вартість",
+    "ferrySupplement": "Загальна доплата за розміщення",
+    "ferryCar": "Додати авто на цю ділянку",
+    "ferryPriceNotice":
+        "Ціни окремих послуг і загальна доплата можуть перекриватися: не додавайте їх. Omio покаже остаточну суму перед оплатою.",
+    "ferryConfirm": "Підтвердити ці варіанти",
+    "ferryAllocation":
+        "Розподіліть пасажирів за варіантами розміщення, а не кількість кают. За обов’язкового вибору розподіліть усіх.",
+    "ferryCarHelp":
+        "Авто з каталогу без аксесуарів і причепа. Доступність лише для цієї ділянки.",
+    "ferryNoCar": "Авто недоступне для цієї ділянки.",
+    "ferryModels": "Знайти марку та модель",
+    "ferryPlate": "Номерний знак",
+    "ferryDimensions":
+        "Підтверджую розміри та відсутність аксесуарів і причепа",
+    "ferrySelectionHelp":
+        "Завершіть розподіл, а для авто вкажіть модель, номерний знак і підтвердьте розміри.",
+    "ferryPreview": "Перевірити доступність і ціни",
+    "ferrySize": "Довжина × висота",
+    "ferryModelHelp":
+        "Знайдіть марку чи модель або залиште порожнім для всього каталогу. Перевірте рік і розміри.",
+    "ferryPriceChanged":
+        "Ціна змінилася. Перевірте нову суму перед продовженням.",
+    "ferryAcceptPrice": "Прийняти нову суму та продовжити без оплати",
     "seatChoice": "Вибрати або змінити місця",
     "seatHelp":
         "Вибір необов’язковий. Omio показує наявність і доплату до підтвердження. Можна залишити випадкове призначення. Підтвердження місць не купує квиток.",
@@ -1750,7 +2079,7 @@ const travelTranslations = <String, Map<String, String>>{
     "title": "Пошук подорожей",
     "welcomeTitle": "Вітаємо в пошуку подорожей",
     "welcome1":
-        "Вітаємо в пошуку подорожей Sonarpad. Шукайте поїздки потягом, літаком і автобусом та купуйте через Omio — сервіс, яким користується Sonarpad.",
+        "Вітаємо в пошуку подорожей Sonarpad. Шукайте поїздки потягом, літаком, автобусом і поромом та купуйте через Omio — сервіс, яким користується Sonarpad.",
     "welcome2":
         "Відповідно до принципу служіння користувачам автор Sonarpad не отримує комісій за покупки й не використовує партнерських кодів.",
     "welcome3":
@@ -1883,6 +2212,26 @@ const travelTranslations = <String, Map<String, String>>{
     "seatPosition": "Вагон {coach}, місце {seat}",
   },
   "zh": {
+    "ferry": "船舶和渡轮",
+    "ferryAccommodation": "船上舱位",
+    "ferryCancel": "取消",
+    "ferryReview": "核对舱位和报价",
+    "ferrySupplement": "舱位总附加费",
+    "ferryCar": "在此行程添加汽车",
+    "ferryPriceNotice": "单项服务价格与总附加费可能重叠，请勿相加。Omio 将在付款前显示最终总额。",
+    "ferryConfirm": "确认这些选项",
+    "ferryAllocation": "请分配每种舱位的乘客人数，而非船舱数量。必须选择时，请分配所有乘客。",
+    "ferryCarHelp": "支持目录中不带附件或拖车的汽车。可用情况仅适用于本段行程。",
+    "ferryNoCar": "此行程不支持汽车。",
+    "ferryModels": "搜索品牌和车型",
+    "ferryPlate": "车牌号码",
+    "ferryDimensions": "我确认所示尺寸且没有附件或拖车",
+    "ferrySelectionHelp": "请完成乘客分配；如添加汽车，还需选择车型、填写车牌并确认尺寸。",
+    "ferryPreview": "检查可用情况和价格",
+    "ferrySize": "长度 × 高度",
+    "ferryModelHelp": "搜索品牌或车型，或留空浏览全部目录。请核对车辆年份和尺寸。",
+    "ferryPriceChanged": "价格已变更。请核对新的总额后继续。",
+    "ferryAcceptPrice": "接受新总额并继续，不付款",
     "seatChoice": "选择或更改座位",
     "seatHelp": "选座是可选的。Omio 会在确认前显示可用座位及附加费用。您可以保留随机分配。确认座位不会购买车票。",
     "seatSelected": "已选择",
@@ -1914,7 +2263,7 @@ const travelTranslations = <String, Map<String, String>>{
     "title": "旅行搜索",
     "welcomeTitle": "欢迎使用旅行搜索",
     "welcome1":
-        "欢迎使用 Sonarpad 旅行搜索。您可以搜索火车、航班和巴士行程，然后通过 Sonarpad 使用的 Omio 服务购买。",
+        "欢迎使用 Sonarpad 旅行搜索。您可以搜索火车、航班、巴士和渡轮行程，然后通过 Sonarpad 使用的 Omio 服务购买。",
     "welcome2": "秉承 Sonarpad 的服务精神，作者不会从您的购买中收取佣金，也不使用推广佣金代码。",
     "welcome3":
         "Sonarpad 显示服务提供的价格，不加价。价格及余票可能变化：付款前请在 Omio 核对最终总额，包括手续费和可选服务。",

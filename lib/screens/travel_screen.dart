@@ -14,6 +14,7 @@ import '../widgets/universal_accessible_view.dart';
 import 'travel_browser_screen.dart';
 
 part 'travel_passengers.dart';
+part 'travel_ferry.dart';
 
 TravelStrings _strings(BuildContext context) => TravelStrings(
   AppLocalizations.of(context).localeName,
@@ -630,7 +631,7 @@ class _TravelSearchScreenState extends State<TravelSearchScreen> {
         },
       ),
       _picker('mode', t.t('mode'), q.mode, [
-        for (final m in ['train', 'flight', 'bus'])
+        for (final m in ['train', 'flight', 'bus', 'ferry'])
           AccessibleOption(value: m, label: t.t(m)),
       ], (v) => q.mode = v),
       ..._dateRows('outbound', q.departure, (v) => q.departure = v, t),
@@ -1081,6 +1082,7 @@ class _TravelFaresScreenState extends State<_TravelFaresScreen> {
   bool _onsite = false;
   final _passengerDraft = TravelPassengerDraft();
   bool _busy = false, _attempted = false;
+  bool _choosingFerry = false;
   final String _idempotencyKey = const Uuid().v4();
   Future<void> _enterPassengers() async {
     final screen = TravelPassengersScreen(
@@ -1112,7 +1114,31 @@ class _TravelFaresScreenState extends State<_TravelFaresScreen> {
   }
 
   Future<void> _continue() async {
-    if (_busy || _attempted) return;
+    if (_busy || _attempted || _choosingFerry) return;
+    final accommodations = <String, String>{};
+    if (widget.query.mode == 'ferry') {
+      _choosingFerry = true;
+      try {
+        for (var i = 0; i < _selected.length; i++) {
+          final offer = _selected[i]['offer_choice'] as String;
+          final choice = await Navigator.of(context).push<Map<String, String>>(
+            MaterialPageRoute(
+              builder: (_) => TravelFerryScreen(
+                service: widget.service,
+                query: widget.query,
+                offerChoice: offer,
+                group: i + 1,
+              ),
+            ),
+          );
+          if (!mounted || choice == null) return;
+          accommodations.addAll(choice);
+        }
+      } finally {
+        _choosingFerry = false;
+      }
+    }
+    if (!mounted) return;
     final t = _strings(context);
     setState(() {
       _busy = true;
@@ -1124,6 +1150,7 @@ class _TravelFaresScreenState extends State<_TravelFaresScreen> {
         '/v1/bookings',
         body: {
           'offers': _selected.map((o) => o['offer_choice']).toList(),
+          if (widget.query.mode == 'ferry') 'accommodations': accommodations,
           'confirm': true,
         },
         idempotencyKey: _idempotencyKey,
