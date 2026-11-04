@@ -21,6 +21,7 @@ import '../tts/edge_tts_retry.dart';
 import '../utils/app_logger.dart';
 import '../utils/country_name_helper.dart';
 import 'app_log_screen.dart';
+import 'cloud_sync_screen.dart';
 import 'home_customization_screen.dart';
 import 'sonartube_player_actions_settings_screen.dart';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -275,6 +276,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
     _tvSecretCodeController.dispose();
     unawaited(_audio.stop().whenComplete(_audio.dispose));
     super.dispose();
+  }
+
+  Future<void> _openCloudSync() async {
+    if (!await _confirmLeaveSettings() || !mounted) return;
+    await Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const CloudSyncScreen()));
+    if (mounted) await _load();
   }
 
   Future<void> _load() async {
@@ -1149,6 +1156,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
         .toList();
 
     final sections = <AccessibleListSection>[
+      AccessibleListSection(rows: [AccessibleListRow(
+        id: 'cloud_sync', title: l10n.cloudSyncTitle, kind: 'button',
+      )]),
       AccessibleListSection(
         rows: [
           AccessibleListRow(
@@ -1598,6 +1608,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
           _tvSecretCodeController.value = TextEditingValue(text: text, selection: TextSelection.collapsed(offset: text.length));
         } else if (event.type == 'activate') {
           switch (id) {
+            case 'cloud_sync':
+              await _openCloudSync();
+              break;
             case 'edge_multilingual_voices':
               await _openMultilingualEdgeVoicePicker();
               break;
@@ -1828,6 +1841,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   key: const PageStorageKey<String>('settings-list'),
                   padding: const EdgeInsets.all(16),
                   children: [
+                    ListTile(title: Text(l10n.cloudSyncTitle), leading: const Icon(Icons.cloud_sync),
+                      onTap: _openCloudSync),
                     DropdownButtonFormField<String>(
                       isExpanded: true,
                       initialValue: _appLanguage,

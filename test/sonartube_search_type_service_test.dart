@@ -6,6 +6,18 @@ import 'package:http/testing.dart';
 import 'package:sonarpad_mobile_starter/services/sonartube_service.dart';
 
 void main() {
+  test('videos selection sends the existing provider video filter', () async {
+    final service=SonarTubeService(client: MockClient((request) async {
+      final body=jsonDecode(request.body) as Map;
+      expect(body['params'],'EgIQAQ==');
+      return http.Response(jsonEncode({'contents':[
+        {'videoRenderer':{'videoId':'abcdefghijk','title':{'simpleText':'Video'},'viewCountText':{'simpleText':'100 views'}}},
+        {'playlistRenderer':{'playlistId':'PL_ignored','title':{'simpleText':'Playlist'}}},
+      ]}),200);
+    }));
+    final result=await service.search('test',type:SonarTubeSearchType.videos);
+    expect(result.items.single.kind,SonarTubeItemKind.video);
+  });
   for (final type in [
     SonarTubeSearchType.playlists,
     SonarTubeSearchType.channels,

@@ -9,6 +9,8 @@
     <uses-permission android:name="android.permission.READ_CALENDAR" />
     <uses-permission android:name="android.permission.WRITE_CALENDAR" />
     <application
+        android:fullBackupContent="@xml/cloud_sync_backup_rules"
+        android:dataExtractionRules="@xml/cloud_sync_data_extraction_rules"
         android:label="Sonarpad"
         android:name="${applicationName}"
         android:usesCleartextTraffic="true"

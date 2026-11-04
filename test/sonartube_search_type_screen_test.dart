@@ -87,6 +87,7 @@ void main() {
         'Canali',
         'Corsi',
         'Podcast',
+        'Video',
       ]);
       await list.onEvent!(
         const AccessibleListEvent(id: 'search_type', type: 'slider', value: 2),
@@ -103,6 +104,10 @@ void main() {
       tester.widget<Semantics>(selector).properties.onIncrease!();
       await tester.pump();
       expect(tester.widget<Semantics>(selector).properties.value, 'Podcast');
+      expect(tester.getSemantics(selector).id, originalNode);
+      tester.widget<Semantics>(selector).properties.onIncrease!();
+      await tester.pump();
+      expect(tester.widget<Semantics>(selector).properties.value, 'Video');
       expect(tester.getSemantics(selector).id, originalNode);
 
       final field = tester.widget<TextField>(

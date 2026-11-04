@@ -19,6 +19,7 @@ import 'news_sources/news_rss_source.dart';
 import 'news_sources/google_news_feed.dart';
 
 import 'html_reader_service.dart';
+import 'cloud_sync_state.dart';
 import 'news_sources/french_news_sources.dart';
 import 'news_sources/spanish_news_sources.dart';
 import 'news_sources/portuguese_news_sources.dart';
@@ -361,6 +362,94 @@ class NewsService {
         })
         .whereType<NewsRssSource>()
         .toList();
+  }
+
+  Future<CloudState> exportCloudCollections() async {
+    final prefs = await SharedPreferences.getInstance();
+    final sources = <Map<String, dynamic>>[];
+    final folders = <Map<String, dynamic>>[];
+    for (final language in NewsLanguage.values) {
+      final localFolders = await getFolders(language);
+      final byId = {for (final f in localFolders) f.id: f.name};
+      final storedPaths = jsonDecode(prefs.getString('news_cloud_folder_paths_${language.name}') ?? '{}') as Map;
+      List<dynamic> folderPath(String id, String name) {
+        final saved = storedPaths[id];
+        return saved is List && saved.join(' / ') == name ? saved : [name];
+      }
+      for (final folder in localFolders) {
+        final path = folderPath(folder.id, folder.name);
+        folders.add({'id': '${language.code}:${jsonEncode(path)}',
+          'data': {'language': language.code, 'path': path}});
+      }
+      final custom = await getCustomSources(language);
+      final ordered = <NewsRssSource>[];
+      for (final folderId in <String?>[null, ...localFolders.map((f) => f.id)]) {
+        final visible = await getOrderedSources(language, folderId: folderId);
+        ordered.addAll(visible.where((s) => !s.isFolder && custom.any((c) => c.uri == s.uri)));
+      }
+      // Preserve custom sources hidden by a local-only visibility preference.
+      for (final s in custom) { if (!ordered.any((o) => o.uri == s.uri)) ordered.add(s); }
+      for (final source in ordered) {
+        final path = byId[source.parentFolderId];
+        sources.add({'id': '${language.code}:${source.uri}', 'data': {
+          'language': language.code, 'title': source.name, 'url': source.uri.toString(),
+          'folder_path': path == null ? <String>[] : folderPath(source.parentFolderId!, path),
+        }});
+      }
+    }
+    return {'news_sources': sources, 'news_folders': folders};
+  }
+
+  Future<void> replaceCloudCollections(CloudState state) async {
+    final prefs = await SharedPreferences.getInstance();
+    for (final language in NewsLanguage.values) {
+      final oldFolders = await getFolders(language);
+      final folders = <NewsSourceFolder>[];
+      final folderIds = <String, String>{};
+      final cloudPaths = <String, List<dynamic>>{};
+      void addFolder(List<dynamic> path) {
+        if (path.isEmpty) return;
+        final name = path.join(' / ');
+        final existing = oldFolders.where((f) => f.name == name).firstOrNull;
+        final id = existing?.id ?? 'cloud_${base64Url.encode(utf8.encode(name))}';
+        if (!folderIds.containsKey(name)) folders.add(NewsSourceFolder(id: id, name: name));
+        folderIds[name] = id;
+        cloudPaths[id] = path;
+      }
+      for (final item in state['news_folders'] ?? <Map<String, dynamic>>[]) {
+        final data = item['data'] as Map<String, dynamic>;
+        if (data['language'] == language.code) addFolder(data['path'] as List);
+      }
+      final sources = <NewsRssSource>[];
+      for (final item in state['news_sources'] ?? <Map<String, dynamic>>[]) {
+        final data = item['data'] as Map<String, dynamic>;
+        if (data['language'] != language.code) continue;
+        final path = data['folder_path'] as List? ?? [];
+        addFolder(path);
+        sources.add(NewsRssSource(name: data['title'] as String,
+          uri: Uri.parse(data['url'] as String), isCustom: true,
+          parentFolderId: path.isEmpty ? null : folderIds[path.join(' / ')]));
+      }
+      await _saveFolders(language, folders);
+      await prefs.setString('news_cloud_folder_paths_${language.name}', jsonEncode(cloudPaths));
+      final assignments = await _getSourceFolderAssignments(language);
+      final oldCustom = await getCustomSources(language);
+      for (final source in oldCustom) { assignments.remove(source.name); }
+      assignments.removeWhere((_, id) => !folders.any((f) => f.id == id));
+      for (final source in sources) {
+        if (source.parentFolderId != null) assignments[source.name] = source.parentFolderId!;
+      }
+      await _saveSourceFolderAssignments(language, assignments);
+      await prefs.setStringList(_getCustomPrefsKey(language), sources.map((s) => jsonEncode(s.toJson())).toList());
+      for (final folderId in <String?>[null, ...folders.map((f) => f.id)]) {
+        final previous = await getOrderedSources(language, folderId: folderId);
+        final ordered = sources.where((s) => s.parentFolderId == folderId).toList();
+        await saveSourcesOrder(language, [
+          ...previous.where((s) => s.isFolder || !sources.any((v) => v.uri == s.uri)),
+          ...ordered,
+        ], folderId: folderId);
+      }
+    }
   }
 
   Future<List<NewsSourceFolder>> getFolders(NewsLanguage language) async {

@@ -6611,7 +6611,13 @@
   "mediaCutterSaveScope": "Cosa salvare",
   "mediaCutterSaveAll": "Salva tutto il file",
   "mediaCutterSaveOnlyPart": "Salva solo la parte {part}",
-  "@mediaCutterSaveOnlyPart": {"placeholders": {"part": {"type": "int"}}},
+  "@mediaCutterSaveOnlyPart": {
+    "placeholders": {
+      "part": {
+        "type": "int"
+      }
+    }
+  },
   "mediaCutterExportVideo": "Esporta audio come video",
   "mediaCutterAudioOnly": "Solo audio",
   "mediaCutterBlackVideo": "Video con immagine nera",
@@ -6625,5 +6631,42 @@
   "mediaCutterInsertMedia": "Inserisci un altro file…",
   "mediaCutterInsertBefore": "Inserisci prima di…",
   "mediaCutterAtEnd": "Alla fine",
-  "mediaCutterMediaInserted": "File inserito. I tagli e gli effetti esistenti sono conservati."
+  "mediaCutterMediaInserted": "File inserito. I tagli e gli effetti esistenti sono conservati.",
+  "cloudSyncTitle": "Sincronizzazione cloud",
+  "cloudSyncDescription": "Sincronizza radio, notizie, TV, podcast e SonarTube. I file e le password restano sul dispositivo.",
+  "cloudSyncCreate": "Inizia da questo dispositivo",
+  "cloudSyncJoin": "Collega con un codice",
+  "cloudSyncCode": "Codice di collegamento",
+  "cloudSyncNow": "Sincronizza ora",
+  "cloudSyncInvite": "Collega un altro dispositivo",
+  "cloudSyncCodeHelp": "Sull’altro dispositivo apri Sincronizzazione cloud, scegli Ho già un codice e inserisci questo codice. È monouso e vale 10 minuti.",
+  "cloudSyncDisconnect": "Scollega questo dispositivo",
+  "cloudSyncDisconnectConfirm": "Scollegare questo dispositivo? I preferiti rimangono disponibili qui.",
+  "cloudSyncReady": "Dispositivo collegato",
+  "cloudSyncDone": "Sincronizzazione completata",
+  "cloudSyncFailed": "Sincronizzazione non riuscita. I dati locali sono conservati. Controlla la connessione e riprova. Se il dispositivo è stato revocato, scollegalo e collegalo di nuovo.",
+  "cloudSyncBadCode": "Codice non valido o scaduto. Generane uno nuovo sull’altro dispositivo.",
+  "cloudSyncCollections": "Preferiti e raccolte",
+  "cloudSyncPreferences": "Preferenze dei moduli",
+  "sonarTubeSearchVideos": "Video",
+  "cloudSyncHaveCode": "Ho già un codice",
+  "cloudSyncOptions": "Opzioni di sincronizzazione",
+  "cloudSyncFirstHelp": "È il primo dispositivo? Scegli Inizia da questo dispositivo: riceverai un codice da inserire sugli altri. Se hai già un codice, scegli Ho già un codice.",
+  "cloudSyncConnectedHelp": "Scegli Sincronizza ora per aggiornare preferiti e preferenze. Per collegare un altro dispositivo, genera un codice.",
+  "cloudSyncOptionsHelp": "Qui puoi scegliere cosa sincronizzare o scollegare questo dispositivo. Normalmente non serve cambiare queste opzioni.",
+  "cloudSyncJoinHelp": "Inserisci il codice di 8 cifre generato sull’altro dispositivo.",
+  "cloudSyncWorking": "Sincronizzazione in corso…",
+  "cloudSyncPending": "Modifiche in attesa di sincronizzazione.",
+  "cloudSyncUpToDate": "Tutto sincronizzato.",
+  "cloudSyncRetrying": "Sincronizzazione in attesa. Riproverò automaticamente.",
+  "cloudSyncPaused": "Sincronizzazione disattivata nelle opzioni.",
+  "cloudSyncLastUpdate": "Ultima sincronizzazione: {dateTime}.",
+  "cloudSyncAutomaticHelp": "La sincronizzazione è automatica quando usi l’app. Puoi anche scegliere Sincronizza ora.",
+  "@cloudSyncLastUpdate": {
+    "placeholders": {
+      "dateTime": {
+        "type": "String"
+      }
+    }
+  }
 }

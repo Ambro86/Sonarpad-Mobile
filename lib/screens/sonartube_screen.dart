@@ -1460,6 +1460,7 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
     SonarTubeSearchType type,
   ) => switch (type) {
     SonarTubeSearchType.all => l10n.sonarTubeSearchAll,
+    SonarTubeSearchType.videos => l10n.sonarTubeSearchVideos,
     SonarTubeSearchType.playlists => l10n.sonarTubeSearchPlaylists,
     SonarTubeSearchType.channels => l10n.sonarTubeSearchChannels,
     SonarTubeSearchType.courses => l10n.sonarTubeChannelCourses,

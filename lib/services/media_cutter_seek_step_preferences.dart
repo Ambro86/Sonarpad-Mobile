@@ -3,6 +3,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// Persists the existing media cutter move-forward/backward interval.
 /// It does not change the media player's seeking behavior.
 class MediaCutterSeekStepPreferences {
+  static Future<String?> loadMode() async =>
+      (await SharedPreferences.getInstance()).getString('sonarpad_media_cutter_mode');
+
+  static Future<void> saveMode(String mode) async {
+    if (!['guided', 'advanced'].contains(mode)) throw ArgumentError.value(mode);
+    if (!await (await SharedPreferences.getInstance()).setString('sonarpad_media_cutter_mode', mode)) {
+      throw StateError('MEDIA_CUTTER_MODE_SAVE_FAILED');
+    }
+  }
   static const storageKey = 'sonarpad_media_cutter_seek_step_ms';
   static const defaultStep = Duration(seconds: 5);
   static const allowedSteps = <Duration>[

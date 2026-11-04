@@ -9,7 +9,7 @@ import '../l10n/app_localizations_lookup.dart';
 
 enum SonarTubeItemKind { video, channel, playlist }
 
-enum SonarTubeSearchType { all, playlists, channels, courses, podcasts }
+enum SonarTubeSearchType { all, playlists, channels, courses, podcasts, videos }
 
 enum SonarTubeChannelSort { newest, oldest, popular }
 
@@ -362,6 +362,7 @@ class SonarTubeService {
 
   String _searchRequestType(SonarTubeSearchType type) => switch (type) {
     SonarTubeSearchType.all => 'all',
+    SonarTubeSearchType.videos => 'video',
     SonarTubeSearchType.playlists => 'playlist',
     SonarTubeSearchType.channels => 'channel',
     SonarTubeSearchType.courses => 'course',
@@ -371,6 +372,7 @@ class SonarTubeService {
   bool _matchesSearchType(SonarTubeItem item, SonarTubeSearchType type) =>
       switch (type) {
         SonarTubeSearchType.all => true,
+        SonarTubeSearchType.videos => item.kind == SonarTubeItemKind.video,
         SonarTubeSearchType.playlists =>
           item.kind == SonarTubeItemKind.playlist,
         SonarTubeSearchType.channels => item.kind == SonarTubeItemKind.channel,

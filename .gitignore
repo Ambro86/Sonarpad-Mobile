@@ -160,7 +160,8 @@ tool/google_tts_local_probe.dart
 tinyfish_response.json
 tinyfish_response.md
 tinyfish_fetch_corriere.bat
-server/
+/server/*
+!/server/sonarpad_sync/
 
 # Local/generated development files
 .tmp_effect_reference/

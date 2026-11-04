@@ -4,10 +4,7 @@ import 'package:xml/xml.dart';
 
 import '../utils/app_logger.dart';
 
-enum DirectoryKind {
-  pagineBianche,
-  pagineGialle,
-}
+enum DirectoryKind { pagineBianche, pagineGialle }
 
 extension DirectoryKindExtension on DirectoryKind {
   String get label {
@@ -52,12 +49,14 @@ class SearchQuery {
   final String what;
   final String where;
   final int page;
+  final bool reverse;
 
   SearchQuery({
     required this.kind,
     required this.what,
     this.where = '',
     this.page = 1,
+    this.reverse = false,
   });
 }
 
@@ -135,13 +134,43 @@ String _decode(String encoded) {
   return utf8.decode(decoded);
 }
 
+String normalizeDirectoryPhone(String input) {
+  final trimmed = input.trim();
+  if (!RegExp(r'^\+?[0-9\s()./\-]+$').hasMatch(trimmed)) {
+    throw const FormatException(
+      'Inserisci un numero di telefono italiano valido.',
+    );
+  }
+  var value = trimmed.replaceAll(RegExp(r'[\s()./\-]'), '');
+  if (value.startsWith('+39')) {
+    value = value.substring(3);
+  } else if (value.startsWith('0039')) {
+    value = value.substring(4);
+  } else if (value.startsWith('+') || value.startsWith('00')) {
+    throw const FormatException(
+      'Inserisci un numero italiano, con prefisso +39 facoltativo.',
+    );
+  }
+  if (value.length < 5 || value.length > 15) {
+    throw const FormatException(
+      'Inserisci un numero di telefono completo di prefisso.',
+    );
+  }
+  return value;
+}
+
 class ItaliaOnlineService {
+  ItaliaOnlineService({http.Client? client}) : _httpClient = client;
+  final http.Client? _httpClient;
+  Future<http.Response> _get(Uri uri) => _httpClient?.get(uri) ?? http.get(uri);
   String get _baseUrl => _decode('BT9NUUx/HRUjWkodMRoTOlYsGzZeHTVfCiMeAT4c');
   String get _client => _decode('HSlUThQ5Xh0=');
   String get _version => _decode('XmUAD0M=');
 
   Future<SearchResponse> search(SearchQuery query) async {
-    final what = query.what.trim();
+    final what = query.reverse
+        ? normalizeDirectoryPhone(query.what)
+        : query.what.trim();
     if (what.isEmpty) {
       throw Exception('Il campo ${query.kind.primaryFieldLabel} è vuoto.');
     }
@@ -152,28 +181,33 @@ class ItaliaOnlineService {
       'version': _version,
       'what': mappedWhat,
     };
-    if (query.where.trim().isNotEmpty) {
+    if (!query.reverse && query.where.trim().isNotEmpty) {
       queryParams['where'] = query.where.trim();
     }
     if (query.page > 1) {
       queryParams['page'] = query.page.toString();
     }
 
-    final uri = Uri.parse('$_baseUrl${query.kind.searchEndpoint}')
-        .replace(queryParameters: queryParams);
+    final uri = Uri.parse(
+      '$_baseUrl${query.kind.searchEndpoint}',
+    ).replace(queryParameters: queryParams);
 
-    final response = await http.get(uri).timeout(const Duration(seconds: 45));
+    final response = await _get(uri).timeout(const Duration(seconds: 45));
     if (response.statusCode != 200) {
       if (response.statusCode == 500) {
         if (query.kind == DirectoryKind.pagineGialle) {
           try {
-            return await search(SearchQuery(
-              kind: DirectoryKind.pagineBianche,
-              what: what,
-              where: query.where,
-              page: query.page,
-            ));
+            return await search(
+              SearchQuery(
+                kind: DirectoryKind.pagineBianche,
+                what: what,
+                where: query.where,
+                page: query.page,
+                reverse: query.reverse,
+              ),
+            );
           } catch (e) {
+            if (query.reverse) rethrow;
             await AppLogger.log(
               'ItaliaOnlineService: fallback Pagine Bianche failed after '
               'Pagine Gialle returned 500: $e',
@@ -181,12 +215,37 @@ class ItaliaOnlineService {
             return _emptySearchResponse(DirectoryKind.pagineBianche);
           }
         }
+        if (query.reverse) {
+          throw Exception("Servizio temporaneamente non disponibile. Riprova.");
+        }
         return _emptySearchResponse(query.kind);
       }
       throw Exception('Errore di rete: ${response.statusCode}');
     }
 
-    return _parseSearchResponse(response.bodyBytes, query.kind);
+    final parsed = _parseSearchResponse(response.bodyBytes, query.kind);
+    if (!query.reverse) return parsed;
+    if (parsed.ambiguousPlaces != null) {
+      throw Exception('Ricerca per numero non disponibile. Verifica il numero e riprova.');
+    }
+    return SearchResponse(
+      displayWhere: parsed.displayWhere,
+      currentPage: parsed.currentPage,
+      isLastPage: parsed.isLastPage,
+      ambiguousPlaces: parsed.ambiguousPlaces,
+      actualKind: parsed.actualKind,
+      results: parsed.results
+          .where(
+            (r) => r.phones.any((phone) {
+              try {
+                return normalizeDirectoryPhone(phone) == what;
+              } catch (_) {
+                return false;
+              }
+            }),
+          )
+          .toList(),
+    );
   }
 
   String _mappedSearchTerm(DirectoryKind kind, String what) {
@@ -216,16 +275,19 @@ class ItaliaOnlineService {
       'client': _client,
       'version': _version,
       'id': trimmedId,
-      'what': query.what.trim(),
+      'what': query.reverse
+          ? normalizeDirectoryPhone(query.what)
+          : query.what.trim(),
     };
-    if (query.where.trim().isNotEmpty) {
+    if (!query.reverse && query.where.trim().isNotEmpty) {
       queryParams['where'] = query.where.trim();
     }
 
-    final uri = Uri.parse('$_baseUrl${query.kind.detailEndpoint}')
-        .replace(queryParameters: queryParams);
+    final uri = Uri.parse(
+      '$_baseUrl${query.kind.detailEndpoint}',
+    ).replace(queryParameters: queryParams);
 
-    final response = await http.get(uri).timeout(const Duration(seconds: 45));
+    final response = await _get(uri).timeout(const Duration(seconds: 45));
     if (response.statusCode != 200) {
       throw Exception('Errore di rete: ${response.statusCode}');
     }
@@ -251,7 +313,8 @@ class ItaliaOnlineService {
     final status = responseNode.getElement('status')?.innerText.trim();
     if (status == '302') {
       final placesNode = responseNode.getElement('places');
-      final places = placesNode
+      final places =
+          placesNode
               ?.findElements('place')
               .map((e) => e.getElement('address')?.innerText.trim() ?? '')
               .where((e) => e.isNotEmpty)
@@ -271,11 +334,15 @@ class ItaliaOnlineService {
     }
 
     final displayWhere = responseNode.getElement('where')?.innerText.trim();
-    final currentPage = int.tryParse(
-            responseNode.getElement('current_page')?.innerText.trim() ?? '1') ??
+    final currentPage =
+        int.tryParse(
+          responseNode.getElement('current_page')?.innerText.trim() ?? '1',
+        ) ??
         1;
-    final isLastPageStr =
-        responseNode.getElement('isLastPage')?.innerText.trim();
+    final isLastPageStr = responseNode
+        .getElement('isLastPage')
+        ?.innerText
+        .trim();
     bool isLastPage = isLastPageStr == '1';
 
     final resultsNode = responseNode.getElement('results');
@@ -303,15 +370,17 @@ class ItaliaOnlineService {
           }
         }
 
-        results.add(SearchResult(
-          id: id,
-          name: name,
-          address: address,
-          city: city,
-          province: province,
-          category: category,
-          phones: phones,
-        ));
+        results.add(
+          SearchResult(
+            id: id,
+            name: name,
+            address: address,
+            city: city,
+            province: province,
+            category: category,
+            phones: phones,
+          ),
+        );
       }
     }
 

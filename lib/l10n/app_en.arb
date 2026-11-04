@@ -4970,7 +4970,13 @@
   "mediaCutterSaveScope": "What to save",
   "mediaCutterSaveAll": "Save the entire file",
   "mediaCutterSaveOnlyPart": "Save only part {part}",
-  "@mediaCutterSaveOnlyPart": {"placeholders": {"part": {"type": "int"}}},
+  "@mediaCutterSaveOnlyPart": {
+    "placeholders": {
+      "part": {
+        "type": "int"
+      }
+    }
+  },
   "mediaCutterExportVideo": "Export audio as video",
   "mediaCutterAudioOnly": "Audio only",
   "mediaCutterBlackVideo": "Video with black image",
@@ -4984,5 +4990,42 @@
   "mediaCutterInsertMedia": "Insert another file…",
   "mediaCutterInsertBefore": "Insert before…",
   "mediaCutterAtEnd": "At the end",
-  "mediaCutterMediaInserted": "File inserted. Existing cuts and effects are preserved."
+  "mediaCutterMediaInserted": "File inserted. Existing cuts and effects are preserved.",
+  "cloudSyncTitle": "Cloud sync",
+  "cloudSyncDescription": "Sync radio, news, TV, podcasts and SonarTube. Files and passwords stay on this device.",
+  "cloudSyncCreate": "Start on this device",
+  "cloudSyncJoin": "Connect using a code",
+  "cloudSyncCode": "Connection code",
+  "cloudSyncNow": "Sync now",
+  "cloudSyncInvite": "Connect another device",
+  "cloudSyncCodeHelp": "On your other device, open Cloud sync, choose I already have a code and enter this code. Single-use, valid for 10 minutes.",
+  "cloudSyncDisconnect": "Disconnect this device",
+  "cloudSyncDisconnectConfirm": "Disconnect this device? Favorites remain available here.",
+  "cloudSyncReady": "Device connected",
+  "cloudSyncDone": "Sync completed",
+  "cloudSyncFailed": "Sync failed. Local data is preserved. Check your connection and retry. If this device was revoked, disconnect it and connect again.",
+  "cloudSyncBadCode": "Invalid or expired code. Generate a new code on the other device.",
+  "cloudSyncCollections": "Favorites and collections",
+  "cloudSyncPreferences": "Module preferences",
+  "sonarTubeSearchVideos": "Videos",
+  "cloudSyncHaveCode": "I already have a code",
+  "cloudSyncOptions": "Sync options",
+  "cloudSyncFirstHelp": "Is this your first device? Choose Start on this device to receive a code for your other devices. If you already have a code, choose I already have a code.",
+  "cloudSyncConnectedHelp": "Choose Sync now to update favorites and preferences. To connect another device, generate a code.",
+  "cloudSyncOptionsHelp": "Choose what to sync or disconnect this device. Usually these options need no changes.",
+  "cloudSyncJoinHelp": "Enter the 8-digit code generated on your other device.",
+  "cloudSyncWorking": "Syncing…",
+  "cloudSyncPending": "Changes waiting to sync.",
+  "cloudSyncUpToDate": "Everything synced.",
+  "cloudSyncRetrying": "Sync pending. Will retry automatically.",
+  "cloudSyncPaused": "Sync disabled in options.",
+  "cloudSyncLastUpdate": "Last sync: {dateTime}.",
+  "cloudSyncAutomaticHelp": "Sync runs automatically while you use the app. You can also choose Sync now.",
+  "@cloudSyncLastUpdate": {
+    "placeholders": {
+      "dateTime": {
+        "type": "String"
+      }
+    }
+  }
 }

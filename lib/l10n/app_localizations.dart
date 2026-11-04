@@ -10501,6 +10501,186 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'File inserito. I tagli e gli effetti esistenti sono conservati.'**
   String get mediaCutterMediaInserted;
+
+  /// No description provided for @cloudSyncTitle.
+  ///
+  /// In it, this message translates to:
+  /// **'Sincronizzazione cloud'**
+  String get cloudSyncTitle;
+
+  /// No description provided for @cloudSyncDescription.
+  ///
+  /// In it, this message translates to:
+  /// **'Sincronizza radio, notizie, TV, podcast e SonarTube. I file e le password restano sul dispositivo.'**
+  String get cloudSyncDescription;
+
+  /// No description provided for @cloudSyncCreate.
+  ///
+  /// In it, this message translates to:
+  /// **'Inizia da questo dispositivo'**
+  String get cloudSyncCreate;
+
+  /// No description provided for @cloudSyncJoin.
+  ///
+  /// In it, this message translates to:
+  /// **'Collega con un codice'**
+  String get cloudSyncJoin;
+
+  /// No description provided for @cloudSyncCode.
+  ///
+  /// In it, this message translates to:
+  /// **'Codice di collegamento'**
+  String get cloudSyncCode;
+
+  /// No description provided for @cloudSyncNow.
+  ///
+  /// In it, this message translates to:
+  /// **'Sincronizza ora'**
+  String get cloudSyncNow;
+
+  /// No description provided for @cloudSyncInvite.
+  ///
+  /// In it, this message translates to:
+  /// **'Collega un altro dispositivo'**
+  String get cloudSyncInvite;
+
+  /// No description provided for @cloudSyncCodeHelp.
+  ///
+  /// In it, this message translates to:
+  /// **'Sull’altro dispositivo apri Sincronizzazione cloud, scegli Ho già un codice e inserisci questo codice. È monouso e vale 10 minuti.'**
+  String get cloudSyncCodeHelp;
+
+  /// No description provided for @cloudSyncDisconnect.
+  ///
+  /// In it, this message translates to:
+  /// **'Scollega questo dispositivo'**
+  String get cloudSyncDisconnect;
+
+  /// No description provided for @cloudSyncDisconnectConfirm.
+  ///
+  /// In it, this message translates to:
+  /// **'Scollegare questo dispositivo? I preferiti rimangono disponibili qui.'**
+  String get cloudSyncDisconnectConfirm;
+
+  /// No description provided for @cloudSyncReady.
+  ///
+  /// In it, this message translates to:
+  /// **'Dispositivo collegato'**
+  String get cloudSyncReady;
+
+  /// No description provided for @cloudSyncDone.
+  ///
+  /// In it, this message translates to:
+  /// **'Sincronizzazione completata'**
+  String get cloudSyncDone;
+
+  /// No description provided for @cloudSyncFailed.
+  ///
+  /// In it, this message translates to:
+  /// **'Sincronizzazione non riuscita. I dati locali sono conservati. Controlla la connessione e riprova. Se il dispositivo è stato revocato, scollegalo e collegalo di nuovo.'**
+  String get cloudSyncFailed;
+
+  /// No description provided for @cloudSyncBadCode.
+  ///
+  /// In it, this message translates to:
+  /// **'Codice non valido o scaduto. Generane uno nuovo sull’altro dispositivo.'**
+  String get cloudSyncBadCode;
+
+  /// No description provided for @cloudSyncCollections.
+  ///
+  /// In it, this message translates to:
+  /// **'Preferiti e raccolte'**
+  String get cloudSyncCollections;
+
+  /// No description provided for @cloudSyncPreferences.
+  ///
+  /// In it, this message translates to:
+  /// **'Preferenze dei moduli'**
+  String get cloudSyncPreferences;
+
+  /// No description provided for @sonarTubeSearchVideos.
+  ///
+  /// In it, this message translates to:
+  /// **'Video'**
+  String get sonarTubeSearchVideos;
+
+  /// No description provided for @cloudSyncHaveCode.
+  ///
+  /// In it, this message translates to:
+  /// **'Ho già un codice'**
+  String get cloudSyncHaveCode;
+
+  /// No description provided for @cloudSyncOptions.
+  ///
+  /// In it, this message translates to:
+  /// **'Opzioni di sincronizzazione'**
+  String get cloudSyncOptions;
+
+  /// No description provided for @cloudSyncFirstHelp.
+  ///
+  /// In it, this message translates to:
+  /// **'È il primo dispositivo? Scegli Inizia da questo dispositivo: riceverai un codice da inserire sugli altri. Se hai già un codice, scegli Ho già un codice.'**
+  String get cloudSyncFirstHelp;
+
+  /// No description provided for @cloudSyncConnectedHelp.
+  ///
+  /// In it, this message translates to:
+  /// **'Scegli Sincronizza ora per aggiornare preferiti e preferenze. Per collegare un altro dispositivo, genera un codice.'**
+  String get cloudSyncConnectedHelp;
+
+  /// No description provided for @cloudSyncOptionsHelp.
+  ///
+  /// In it, this message translates to:
+  /// **'Qui puoi scegliere cosa sincronizzare o scollegare questo dispositivo. Normalmente non serve cambiare queste opzioni.'**
+  String get cloudSyncOptionsHelp;
+
+  /// No description provided for @cloudSyncJoinHelp.
+  ///
+  /// In it, this message translates to:
+  /// **'Inserisci il codice di 8 cifre generato sull’altro dispositivo.'**
+  String get cloudSyncJoinHelp;
+
+  /// No description provided for @cloudSyncWorking.
+  ///
+  /// In it, this message translates to:
+  /// **'Sincronizzazione in corso…'**
+  String get cloudSyncWorking;
+
+  /// No description provided for @cloudSyncPending.
+  ///
+  /// In it, this message translates to:
+  /// **'Modifiche in attesa di sincronizzazione.'**
+  String get cloudSyncPending;
+
+  /// No description provided for @cloudSyncUpToDate.
+  ///
+  /// In it, this message translates to:
+  /// **'Tutto sincronizzato.'**
+  String get cloudSyncUpToDate;
+
+  /// No description provided for @cloudSyncRetrying.
+  ///
+  /// In it, this message translates to:
+  /// **'Sincronizzazione in attesa. Riproverò automaticamente.'**
+  String get cloudSyncRetrying;
+
+  /// No description provided for @cloudSyncPaused.
+  ///
+  /// In it, this message translates to:
+  /// **'Sincronizzazione disattivata nelle opzioni.'**
+  String get cloudSyncPaused;
+
+  /// No description provided for @cloudSyncLastUpdate.
+  ///
+  /// In it, this message translates to:
+  /// **'Ultima sincronizzazione: {dateTime}.'**
+  String cloudSyncLastUpdate(String dateTime);
+
+  /// No description provided for @cloudSyncAutomaticHelp.
+  ///
+  /// In it, this message translates to:
+  /// **'La sincronizzazione è automatica quando usi l’app. Puoi anche scegliere Sincronizza ora.'**
+  String get cloudSyncAutomaticHelp;
 }
 
 class _AppLocalizationsDelegate

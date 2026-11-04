@@ -1,4 +1,5 @@
 import 'services/activation_link_service.dart';
+import 'services/cloud_sync_service.dart';
 import 'widgets/activation_link_dialog.dart';
 import 'dart:async';
 import 'dart:collection';
@@ -220,7 +221,9 @@ class SonarpadApp extends StatefulWidget {
   State<SonarpadApp> createState() => _SonarpadAppState();
 }
 
-class _SonarpadAppState extends State<SonarpadApp> {
+class _SonarpadAppState extends State<SonarpadApp> with WidgetsBindingObserver {
+  final _cloudSync = CloudSyncService();
+  Timer? _cloudSyncTimer;
   static const _sharedMediaChannel = MethodChannel('sonarpad/shared_media');
   static const _sharedMediaEvents =
       EventChannel('sonarpad/shared_media_events');
@@ -238,10 +241,30 @@ class _SonarpadAppState extends State<SonarpadApp> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _startCloudSync();
     unawaited(AppLogger.log('SonarpadApp initState'));
     _initAppLinks();
     _initSharedMediaIntents();
     unawaited(_loadStartupSettings());
+  }
+
+  void _startCloudSync() {
+    _cloudSyncTimer?.cancel();
+    _cloudSync.wake();
+    unawaited(_cloudSync.automaticTick());
+    _cloudSyncTimer = Timer.periodic(const Duration(seconds: 10), (_) {
+      unawaited(_cloudSync.automaticTick());
+    });
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _startCloudSync();
+    } else {
+      _cloudSyncTimer?.cancel();
+    }
   }
 
   Future<void> _loadStartupSettings() async {
@@ -522,6 +545,9 @@ class _SonarpadAppState extends State<SonarpadApp> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _cloudSyncTimer?.cancel();
+    _cloudSync.api.close();
     _linkSubscription?.cancel();
     _sharedMediaSubscription?.cancel();
     super.dispose();

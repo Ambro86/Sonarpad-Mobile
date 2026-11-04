@@ -554,8 +554,14 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     super.dispose();
   }
 
+  bool _modeChangedByUser = false;
+
   Future<void> _restoreMediaSeekStep() async {
     try {
+      final mode = await MediaCutterSeekStepPreferences.loadMode();
+      if (mounted && !_modeChangedByUser && _selectedMode == null && ['guided', 'advanced'].contains(mode)) {
+        setState(() => _selectedMode = mode == 'advanced' ? _MediaCutterMode.advanced : _MediaCutterMode.guided);
+      }
       final savedStep = await MediaCutterSeekStepPreferences.load();
       // Never override a choice made while preferences were still loading.
       if (!mounted ||
@@ -2009,6 +2015,10 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
   }
 
   void _selectMode(_MediaCutterMode mode) {
+    _modeChangedByUser = true;
+    unawaited(MediaCutterSeekStepPreferences.saveMode(mode.name).catchError((Object error) {
+      unawaited(_logMediaCutter('mode save failed: ${error.runtimeType}'));
+    }));
     setState(() {
       _selectedMode = mode;
       _guidedCutStart = null;

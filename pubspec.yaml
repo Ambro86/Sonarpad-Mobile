@@ -64,6 +64,7 @@ dependencies:
   sonarpad_audio_dsp:
     path: packages/sonarpad_audio_dsp
   record: 7.1.2
+  flutter_secure_storage: ^10.3.4
 
 dependency_overrides:
   epubx:

@@ -5857,6 +5857,108 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get mediaCutterMediaInserted =>
       'Ficheiro inserido. Os cortes e efeitos existentes são mantidos.';
+
+  @override
+  String get cloudSyncTitle => 'Cloud sync';
+
+  @override
+  String get cloudSyncDescription =>
+      'Sync radio, news, TV, podcasts and SonarTube. Files and passwords stay on this device.';
+
+  @override
+  String get cloudSyncCreate => 'Start on this device';
+
+  @override
+  String get cloudSyncJoin => 'Connect using a code';
+
+  @override
+  String get cloudSyncCode => 'Connection code';
+
+  @override
+  String get cloudSyncNow => 'Sync now';
+
+  @override
+  String get cloudSyncInvite => 'Connect another device';
+
+  @override
+  String get cloudSyncCodeHelp =>
+      'On your other device, open Cloud sync, choose I already have a code and enter this code. Single-use, valid for 10 minutes.';
+
+  @override
+  String get cloudSyncDisconnect => 'Disconnect this device';
+
+  @override
+  String get cloudSyncDisconnectConfirm =>
+      'Disconnect this device? Favorites remain available here.';
+
+  @override
+  String get cloudSyncReady => 'Device connected';
+
+  @override
+  String get cloudSyncDone => 'Sync completed';
+
+  @override
+  String get cloudSyncFailed =>
+      'Sync failed. Local data is preserved. Check your connection and retry. If this device was revoked, disconnect it and connect again.';
+
+  @override
+  String get cloudSyncBadCode =>
+      'Invalid or expired code. Generate a new code on the other device.';
+
+  @override
+  String get cloudSyncCollections => 'Favoritos e coleções';
+
+  @override
+  String get cloudSyncPreferences => 'Preferências dos módulos';
+
+  @override
+  String get sonarTubeSearchVideos => 'Vídeos';
+
+  @override
+  String get cloudSyncHaveCode => 'I already have a code';
+
+  @override
+  String get cloudSyncOptions => 'Sync options';
+
+  @override
+  String get cloudSyncFirstHelp =>
+      'Is this your first device? Choose Start on this device to receive a code for your other devices. If you already have a code, choose I already have a code.';
+
+  @override
+  String get cloudSyncConnectedHelp =>
+      'Choose Sync now to update favorites and preferences. To connect another device, generate a code.';
+
+  @override
+  String get cloudSyncOptionsHelp =>
+      'Choose what to sync or disconnect this device. Usually these options need no changes.';
+
+  @override
+  String get cloudSyncJoinHelp =>
+      'Enter the 8-digit code generated on your other device.';
+
+  @override
+  String get cloudSyncWorking => 'Syncing…';
+
+  @override
+  String get cloudSyncPending => 'Changes waiting to sync.';
+
+  @override
+  String get cloudSyncUpToDate => 'Everything synced.';
+
+  @override
+  String get cloudSyncRetrying => 'Sync pending. Will retry automatically.';
+
+  @override
+  String get cloudSyncPaused => 'Sync disabled in options.';
+
+  @override
+  String cloudSyncLastUpdate(String dateTime) {
+    return 'Last sync: $dateTime.';
+  }
+
+  @override
+  String get cloudSyncAutomaticHelp =>
+      'Sync runs automatically while you use the app. You can also choose Sync now.';
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
@@ -11704,4 +11806,106 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   @override
   String get mediaCutterMediaInserted =>
       'Arquivo inserido. Os cortes e efeitos existentes são mantidos.';
+
+  @override
+  String get cloudSyncTitle => 'Cloud sync';
+
+  @override
+  String get cloudSyncDescription =>
+      'Sync radio, news, TV, podcasts and SonarTube. Files and passwords stay on this device.';
+
+  @override
+  String get cloudSyncCreate => 'Start on this device';
+
+  @override
+  String get cloudSyncJoin => 'Connect using a code';
+
+  @override
+  String get cloudSyncCode => 'Connection code';
+
+  @override
+  String get cloudSyncNow => 'Sync now';
+
+  @override
+  String get cloudSyncInvite => 'Connect another device';
+
+  @override
+  String get cloudSyncCodeHelp =>
+      'On your other device, open Cloud sync, choose I already have a code and enter this code. Single-use, valid for 10 minutes.';
+
+  @override
+  String get cloudSyncDisconnect => 'Disconnect this device';
+
+  @override
+  String get cloudSyncDisconnectConfirm =>
+      'Disconnect this device? Favorites remain available here.';
+
+  @override
+  String get cloudSyncReady => 'Device connected';
+
+  @override
+  String get cloudSyncDone => 'Sync completed';
+
+  @override
+  String get cloudSyncFailed =>
+      'Sync failed. Local data is preserved. Check your connection and retry. If this device was revoked, disconnect it and connect again.';
+
+  @override
+  String get cloudSyncBadCode =>
+      'Invalid or expired code. Generate a new code on the other device.';
+
+  @override
+  String get cloudSyncCollections => 'Favoritos e coleções';
+
+  @override
+  String get cloudSyncPreferences => 'Preferências dos módulos';
+
+  @override
+  String get sonarTubeSearchVideos => 'Vídeos';
+
+  @override
+  String get cloudSyncHaveCode => 'I already have a code';
+
+  @override
+  String get cloudSyncOptions => 'Sync options';
+
+  @override
+  String get cloudSyncFirstHelp =>
+      'Is this your first device? Choose Start on this device to receive a code for your other devices. If you already have a code, choose I already have a code.';
+
+  @override
+  String get cloudSyncConnectedHelp =>
+      'Choose Sync now to update favorites and preferences. To connect another device, generate a code.';
+
+  @override
+  String get cloudSyncOptionsHelp =>
+      'Choose what to sync or disconnect this device. Usually these options need no changes.';
+
+  @override
+  String get cloudSyncJoinHelp =>
+      'Enter the 8-digit code generated on your other device.';
+
+  @override
+  String get cloudSyncWorking => 'Syncing…';
+
+  @override
+  String get cloudSyncPending => 'Changes waiting to sync.';
+
+  @override
+  String get cloudSyncUpToDate => 'Everything synced.';
+
+  @override
+  String get cloudSyncRetrying => 'Sync pending. Will retry automatically.';
+
+  @override
+  String get cloudSyncPaused => 'Sync disabled in options.';
+
+  @override
+  String cloudSyncLastUpdate(String dateTime) {
+    return 'Last sync: $dateTime.';
+  }
+
+  @override
+  String get cloudSyncAutomaticHelp =>
+      'Sync runs automatically while you use the app. You can also choose Sync now.';
 }

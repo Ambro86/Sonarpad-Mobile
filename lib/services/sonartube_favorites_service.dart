@@ -146,6 +146,17 @@ class SonarTubeFavoritesService {
     );
   }
 
+  Future<void> replaceCloudFavorites(List<Map<String, dynamic>> values) async {
+    final items = values.map(_fromJson).whereType<SonarTubeItem>().toList();
+    if (items.length != values.length) {
+      throw const FormatException('Invalid SonarTube cloud favorites');
+    }
+    await _save(items.map(_forFavoriteStorage).toList());
+  }
+
+  Future<List<Map<String, dynamic>>> exportCloudFavorites() async =>
+      (await loadFavorites()).map(_toJson).toList();
+
   Map<String, dynamic> _toJson(SonarTubeItem item) => {
     'kind': item.kind.name,
     'id': item.id,

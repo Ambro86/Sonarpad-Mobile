@@ -5851,4 +5851,107 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get mediaCutterMediaInserted =>
       'File inserito. I tagli e gli effetti esistenti sono conservati.';
+
+  @override
+  String get cloudSyncTitle => 'Sincronizzazione cloud';
+
+  @override
+  String get cloudSyncDescription =>
+      'Sincronizza radio, notizie, TV, podcast e SonarTube. I file e le password restano sul dispositivo.';
+
+  @override
+  String get cloudSyncCreate => 'Inizia da questo dispositivo';
+
+  @override
+  String get cloudSyncJoin => 'Collega con un codice';
+
+  @override
+  String get cloudSyncCode => 'Codice di collegamento';
+
+  @override
+  String get cloudSyncNow => 'Sincronizza ora';
+
+  @override
+  String get cloudSyncInvite => 'Collega un altro dispositivo';
+
+  @override
+  String get cloudSyncCodeHelp =>
+      'Sull’altro dispositivo apri Sincronizzazione cloud, scegli Ho già un codice e inserisci questo codice. È monouso e vale 10 minuti.';
+
+  @override
+  String get cloudSyncDisconnect => 'Scollega questo dispositivo';
+
+  @override
+  String get cloudSyncDisconnectConfirm =>
+      'Scollegare questo dispositivo? I preferiti rimangono disponibili qui.';
+
+  @override
+  String get cloudSyncReady => 'Dispositivo collegato';
+
+  @override
+  String get cloudSyncDone => 'Sincronizzazione completata';
+
+  @override
+  String get cloudSyncFailed =>
+      'Sincronizzazione non riuscita. I dati locali sono conservati. Controlla la connessione e riprova. Se il dispositivo è stato revocato, scollegalo e collegalo di nuovo.';
+
+  @override
+  String get cloudSyncBadCode =>
+      'Codice non valido o scaduto. Generane uno nuovo sull’altro dispositivo.';
+
+  @override
+  String get cloudSyncCollections => 'Preferiti e raccolte';
+
+  @override
+  String get cloudSyncPreferences => 'Preferenze dei moduli';
+
+  @override
+  String get sonarTubeSearchVideos => 'Video';
+
+  @override
+  String get cloudSyncHaveCode => 'Ho già un codice';
+
+  @override
+  String get cloudSyncOptions => 'Opzioni di sincronizzazione';
+
+  @override
+  String get cloudSyncFirstHelp =>
+      'È il primo dispositivo? Scegli Inizia da questo dispositivo: riceverai un codice da inserire sugli altri. Se hai già un codice, scegli Ho già un codice.';
+
+  @override
+  String get cloudSyncConnectedHelp =>
+      'Scegli Sincronizza ora per aggiornare preferiti e preferenze. Per collegare un altro dispositivo, genera un codice.';
+
+  @override
+  String get cloudSyncOptionsHelp =>
+      'Qui puoi scegliere cosa sincronizzare o scollegare questo dispositivo. Normalmente non serve cambiare queste opzioni.';
+
+  @override
+  String get cloudSyncJoinHelp =>
+      'Inserisci il codice di 8 cifre generato sull’altro dispositivo.';
+
+  @override
+  String get cloudSyncWorking => 'Sincronizzazione in corso…';
+
+  @override
+  String get cloudSyncPending => 'Modifiche in attesa di sincronizzazione.';
+
+  @override
+  String get cloudSyncUpToDate => 'Tutto sincronizzato.';
+
+  @override
+  String get cloudSyncRetrying =>
+      'Sincronizzazione in attesa. Riproverò automaticamente.';
+
+  @override
+  String get cloudSyncPaused => 'Sincronizzazione disattivata nelle opzioni.';
+
+  @override
+  String cloudSyncLastUpdate(String dateTime) {
+    return 'Ultima sincronizzazione: $dateTime.';
+  }
+
+  @override
+  String get cloudSyncAutomaticHelp =>
+      'La sincronizzazione è automatica quando usi l’app. Puoi anche scegliere Sincronizza ora.';
 }
