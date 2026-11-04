@@ -7518,7 +7518,9 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       key: ValueKey('media-cutter-choice-$id'),
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        ExcludeSemantics(child: Text('$title: ${choices[index].label}')),
+        ExcludeSemantics(
+          child: Text(_l10n.radioScheduleLabeledValue(title, choices[index].label)),
+        ),
         Semantics(
           key: ValueKey('media-cutter-choice-semantics-$id'),
           slider: true,

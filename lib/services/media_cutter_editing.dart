@@ -107,7 +107,7 @@ List<CutterSourceRange> cutterInsertionRanges({
   if (before < Duration.zero ||
       before > duration ||
       insertedDuration <= Duration.zero) {
-    throw ArgumentError('Invalid insertion boundaries');
+    throw ArgumentError();
   }
   return [
     if (before > Duration.zero)
