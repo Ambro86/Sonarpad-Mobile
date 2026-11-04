@@ -277,7 +277,11 @@ class _TravelFerryScreenState extends State<TravelFerryScreen> {
       value: '$value',
       valueLabel: '$value',
       options: [
-        for (var n = 0; n <= max; n++) AccessibleOption(value: n, label: '$n'),
+        for (var n = 0; n <= max; n++)
+          AccessibleOption(
+            value: n,
+            label: NumberFormat.decimalPattern(t.locale).format(n),
+          ),
       ],
       sliderValue: value.toDouble(),
       sliderMin: 0,
