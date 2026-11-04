@@ -1,3 +1,4 @@
+import '../l10n/italian_directory_labels.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:xml/xml.dart';
@@ -216,7 +217,7 @@ class ItaliaOnlineService {
           }
         }
         if (query.reverse) {
-          throw Exception("Servizio temporaneamente non disponibile. Riprova.");
+          throw Exception(ItalianDirectoryLabels.serviceUnavailable);
         }
         return _emptySearchResponse(query.kind);
       }
@@ -226,7 +227,7 @@ class ItaliaOnlineService {
     final parsed = _parseSearchResponse(response.bodyBytes, query.kind);
     if (!query.reverse) return parsed;
     if (parsed.ambiguousPlaces != null) {
-      throw Exception('Ricerca per numero non disponibile. Verifica il numero e riprova.');
+      throw Exception(ItalianDirectoryLabels.reverseUnavailable);
     }
     return SearchResponse(
       displayWhere: parsed.displayWhere,

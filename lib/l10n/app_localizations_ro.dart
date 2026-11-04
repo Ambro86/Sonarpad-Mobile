@@ -5855,51 +5855,51 @@ class AppLocalizationsRo extends AppLocalizations {
       'Fișier inserat. Tăieturile și efectele existente sunt păstrate.';
 
   @override
-  String get cloudSyncTitle => 'Cloud sync';
+  String get cloudSyncTitle => 'Sincronizare în cloud';
 
   @override
   String get cloudSyncDescription =>
-      'Sync radio, news, TV, podcasts and SonarTube. Files and passwords stay on this device.';
+      'Sincronizează radioul, știrile, televiziunea, podcasturile și SonarTube. Fișierele și parolele rămân pe acest dispozitiv.';
 
   @override
-  String get cloudSyncCreate => 'Start on this device';
+  String get cloudSyncCreate => 'Începe pe acest dispozitiv';
 
   @override
-  String get cloudSyncJoin => 'Connect using a code';
+  String get cloudSyncJoin => 'Conectează folosind un cod';
 
   @override
-  String get cloudSyncCode => 'Connection code';
+  String get cloudSyncCode => 'Cod de conectare';
 
   @override
-  String get cloudSyncNow => 'Sync now';
+  String get cloudSyncNow => 'Sincronizează acum';
 
   @override
-  String get cloudSyncInvite => 'Connect another device';
+  String get cloudSyncInvite => 'Conectează alt dispozitiv';
 
   @override
   String get cloudSyncCodeHelp =>
-      'On your other device, open Cloud sync, choose I already have a code and enter this code. Single-use, valid for 10 minutes.';
+      'Pe celălalt dispozitiv, deschide Sincronizare în cloud, alege Am deja un cod și introdu acest cod. Poate fi folosit o singură dată și este valabil 10 minute.';
 
   @override
-  String get cloudSyncDisconnect => 'Disconnect this device';
+  String get cloudSyncDisconnect => 'Deconectează acest dispozitiv';
 
   @override
   String get cloudSyncDisconnectConfirm =>
-      'Disconnect this device? Favorites remain available here.';
+      'Deconectezi acest dispozitiv? Favoritele rămân disponibile aici.';
 
   @override
-  String get cloudSyncReady => 'Device connected';
+  String get cloudSyncReady => 'Dispozitiv conectat';
 
   @override
-  String get cloudSyncDone => 'Sync completed';
+  String get cloudSyncDone => 'Sincronizare finalizată';
 
   @override
   String get cloudSyncFailed =>
-      'Sync failed. Local data is preserved. Check your connection and retry. If this device was revoked, disconnect it and connect again.';
+      'Sincronizarea a eșuat. Datele locale sunt păstrate. Verifică conexiunea și încearcă din nou. Dacă accesul dispozitivului a fost revocat, deconectează-l și conectează-l din nou.';
 
   @override
   String get cloudSyncBadCode =>
-      'Invalid or expired code. Generate a new code on the other device.';
+      'Cod nevalid sau expirat. Generează un cod nou pe celălalt dispozitiv.';
 
   @override
   String get cloudSyncCollections => 'Favorite și colecții';
@@ -5911,48 +5911,49 @@ class AppLocalizationsRo extends AppLocalizations {
   String get sonarTubeSearchVideos => 'Videoclipuri';
 
   @override
-  String get cloudSyncHaveCode => 'I already have a code';
+  String get cloudSyncHaveCode => 'Am deja un cod';
 
   @override
-  String get cloudSyncOptions => 'Sync options';
+  String get cloudSyncOptions => 'Opțiuni de sincronizare';
 
   @override
   String get cloudSyncFirstHelp =>
-      'Is this your first device? Choose Start on this device to receive a code for your other devices. If you already have a code, choose I already have a code.';
+      'Este primul dispozitiv? Alege Începe pe acest dispozitiv pentru a primi un cod pentru celelalte dispozitive. Dacă ai deja un cod, alege Am deja un cod.';
 
   @override
   String get cloudSyncConnectedHelp =>
-      'Choose Sync now to update favorites and preferences. To connect another device, generate a code.';
+      'Alege Sincronizează acum pentru a actualiza favoritele și preferințele. Pentru a conecta alt dispozitiv, generează un cod.';
 
   @override
   String get cloudSyncOptionsHelp =>
-      'Choose what to sync or disconnect this device. Usually these options need no changes.';
+      'Alege ce dorești să sincronizezi sau deconectează acest dispozitiv. De obicei, aceste opțiuni nu necesită modificări.';
 
   @override
   String get cloudSyncJoinHelp =>
-      'Enter the 8-digit code generated on your other device.';
+      'Introdu codul de 8 cifre generat pe celălalt dispozitiv.';
 
   @override
-  String get cloudSyncWorking => 'Syncing…';
+  String get cloudSyncWorking => 'Se sincronizează…';
 
   @override
-  String get cloudSyncPending => 'Changes waiting to sync.';
+  String get cloudSyncPending => 'Modificări în așteptarea sincronizării.';
 
   @override
-  String get cloudSyncUpToDate => 'Everything synced.';
+  String get cloudSyncUpToDate => 'Totul este sincronizat.';
 
   @override
-  String get cloudSyncRetrying => 'Sync pending. Will retry automatically.';
+  String get cloudSyncRetrying =>
+      'Sincronizare în așteptare. Se va reîncerca automat.';
 
   @override
-  String get cloudSyncPaused => 'Sync disabled in options.';
+  String get cloudSyncPaused => 'Sincronizarea este dezactivată în opțiuni.';
 
   @override
   String cloudSyncLastUpdate(String dateTime) {
-    return 'Last sync: $dateTime.';
+    return 'Ultima sincronizare: $dateTime.';
   }
 
   @override
   String get cloudSyncAutomaticHelp =>
-      'Sync runs automatically while you use the app. You can also choose Sync now.';
+      'Sincronizarea rulează automat în timp ce folosești aplicația. Poți alege și Sincronizează acum.';
 }

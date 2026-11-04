@@ -1,3 +1,4 @@
+import '../l10n/italian_directory_labels.dart';
 import 'package:flutter/material.dart';
 
 import '../services/italiaonline_service.dart';
@@ -85,7 +86,7 @@ class _ItaliaOnlineScreenState extends State<ItaliaOnlineScreen> {
                     ),
                     AccessibleListRow(
                       id: 'reverse',
-                      title: 'Cerca per numero di telefono',
+                      title: ItalianDirectoryLabels.reverseSearch,
                       kind: 'toggle',
                       toggleValue: _reverse,
                       onValueChanged: (value) =>
@@ -149,7 +150,7 @@ class _ItaliaOnlineScreenState extends State<ItaliaOnlineScreen> {
                   },
                 ),
                 SwitchListTile(
-                  title: const Text('Cerca per numero di telefono'),
+                  title: const Text(ItalianDirectoryLabels.reverseSearch),
                   value: _reverse,
                   onChanged: (value) => setState(() => _reverse = value),
                 ),

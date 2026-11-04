@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import '../l10n/app_localizations.dart';
 import '../services/cloud_sync_api.dart';
 import '../services/cloud_sync_service.dart';
+import '../widgets/universal_accessible_view.dart';
 
 class CloudSyncScreen extends StatefulWidget {
   const CloudSyncScreen({super.key, this.service});
@@ -143,7 +144,7 @@ class _CloudSyncScreenState extends State<CloudSyncScreen> {
   }
 
   Future<void> _join() async {
-    if (_code.text.length != 8) {
+    if (!RegExp(r'^\d{8}$').hasMatch(_code.text)) {
       setState(() => _status = AppLocalizations.of(context).cloudSyncBadCode);
       return;
     }
@@ -159,6 +160,125 @@ class _CloudSyncScreenState extends State<CloudSyncScreen> {
     _status = null;
   });
 
+  Widget _accessibleBody(AppLocalizations l10n, bool busy) {
+    AccessibleListRow text(String id, String title) => AccessibleListRow(
+      id: id,
+      title: title,
+      kind: 'text',
+      accessibilityButtonTrait: false,
+    );
+    AccessibleListRow button(String id, String title, VoidCallback action) =>
+        AccessibleListRow(
+          id: id,
+          title: title,
+          kind: 'button',
+          enabled: !busy,
+          onActivate: action,
+        );
+    return UniversalAccessibleList(
+      sections: [
+        AccessibleListSection(
+          rows: [
+            if (_busy) text('working', l10n.loading),
+            if (_status != null) text('status', _status!),
+            if (_page == _SyncPage.options) ...[
+              text('options_help', l10n.cloudSyncOptionsHelp),
+              AccessibleListRow(
+                id: 'collections',
+                title: l10n.cloudSyncCollections,
+                kind: 'toggle',
+                toggleValue: _collections,
+                enabled: !busy,
+                onValueChanged: (v) => _run(
+                  () =>
+                      _service.setScope(preferences: false, enabled: v == true),
+                ),
+              ),
+              AccessibleListRow(
+                id: 'preferences',
+                title: l10n.cloudSyncPreferences,
+                kind: 'toggle',
+                toggleValue: _preferences,
+                enabled: !busy,
+                onValueChanged: (v) => _run(
+                  () =>
+                      _service.setScope(preferences: true, enabled: v == true),
+                ),
+              ),
+              button('disconnect', l10n.cloudSyncDisconnect, _disconnect),
+            ] else if (_page == _SyncPage.join) ...[
+              text('join_help', l10n.cloudSyncJoinHelp),
+              AccessibleListRow(
+                id: 'code',
+                title: l10n.cloudSyncCode,
+                kind: 'textField',
+                value: _code.text,
+                enabled: !busy,
+                keyboardType: 'number',
+                textInputAction: 'done',
+                onSubmitted: (_) {
+                  if (!busy) _join();
+                },
+              ),
+              button('join', l10n.cloudSyncJoin, _join),
+            ] else if (_connected) ...[
+              text('sync_status', _syncStatus(l10n)),
+              text('automatic_help', l10n.cloudSyncAutomaticHelp),
+              button(
+                'sync',
+                l10n.cloudSyncNow,
+                () => _run(_service.synchronize),
+              ),
+              button(
+                'invite',
+                l10n.cloudSyncInvite,
+                () => _run(() async {
+                  _invitation = await _service.invitation();
+                }),
+              ),
+              if (_invitation != null) ...[
+                AccessibleListRow(
+                  id: 'invitation',
+                  title: _invitation!,
+                  kind: 'text',
+                  accessibilityButtonTrait: false,
+                  accessibilityLabel:
+                      '${l10n.cloudSyncCode}: ${_invitation!.split('').join(' ')}',
+                ),
+                text('code_help', l10n.cloudSyncCodeHelp),
+              ],
+              button(
+                'options',
+                l10n.cloudSyncOptions,
+                () => _showPage(_SyncPage.options),
+              ),
+            ] else ...[
+              text('first_help', l10n.cloudSyncFirstHelp),
+              button(
+                'create',
+                l10n.cloudSyncCreate,
+                () => _run(() async {
+                  await _service.connect();
+                  _invitation = await _service.invitation();
+                }),
+              ),
+              button(
+                'have_code',
+                l10n.cloudSyncHaveCode,
+                () => _showPage(_SyncPage.join),
+              ),
+            ],
+          ],
+        ),
+      ],
+      onEvent: (event) {
+        if (event.id == 'code' && event.type == 'textChanged') {
+          _code.text = event.value?.toString() ?? '';
+        }
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -171,7 +291,7 @@ class _CloudSyncScreenState extends State<CloudSyncScreen> {
         }
       },
       child: Scaffold(
-        appBar: AppBar(
+        appBar: SonarpadAppBar(
           title: Text(
             _page == _SyncPage.options
                 ? l10n.cloudSyncOptions
@@ -179,104 +299,117 @@ class _CloudSyncScreenState extends State<CloudSyncScreen> {
           ),
           leading: _page == _SyncPage.main
               ? null
-              : BackButton(
+              : SonarpadBackButton(
                   onPressed: _busy ? null : () => _showPage(_SyncPage.main),
                 ),
         ),
-        body: ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            if (_busy) LinearProgressIndicator(semanticsLabel: l10n.loading),
-            if (_status != null)
-              Semantics(liveRegion: true, child: Text(_status!)),
-            if (_page == _SyncPage.options) ...[
-              Text(l10n.cloudSyncOptionsHelp),
-              SwitchListTile(
-                title: Text(l10n.cloudSyncCollections),
-                value: _collections,
-                onChanged: busy
-                    ? null
-                    : (v) => _run(
-                        () => _service.setScope(preferences: false, enabled: v),
+        body: useSharedAccessibleViewModel
+            ? _accessibleBody(l10n, busy)
+            : ListView(
+                padding: const EdgeInsets.all(16),
+                children: [
+                  if (_busy)
+                    LinearProgressIndicator(semanticsLabel: l10n.loading),
+                  if (_status != null)
+                    Semantics(liveRegion: true, child: Text(_status!)),
+                  if (_page == _SyncPage.options) ...[
+                    Text(l10n.cloudSyncOptionsHelp),
+                    SwitchListTile(
+                      title: Text(l10n.cloudSyncCollections),
+                      value: _collections,
+                      onChanged: busy
+                          ? null
+                          : (v) => _run(
+                              () => _service.setScope(
+                                preferences: false,
+                                enabled: v,
+                              ),
+                            ),
+                    ),
+                    SwitchListTile(
+                      title: Text(l10n.cloudSyncPreferences),
+                      value: _preferences,
+                      onChanged: busy
+                          ? null
+                          : (v) => _run(
+                              () => _service.setScope(
+                                preferences: true,
+                                enabled: v,
+                              ),
+                            ),
+                    ),
+                    TextButton(
+                      onPressed: busy ? null : _disconnect,
+                      child: Text(l10n.cloudSyncDisconnect),
+                    ),
+                  ] else if (_page == _SyncPage.join) ...[
+                    Text(l10n.cloudSyncJoinHelp),
+                    TextField(
+                      controller: _code,
+                      autofocus: true,
+                      enabled: !_busy,
+                      keyboardType: TextInputType.number,
+                      textInputAction: TextInputAction.done,
+                      onSubmitted: _busy ? null : (_) => _join(),
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                        LengthLimitingTextInputFormatter(8),
+                      ],
+                      decoration: InputDecoration(
+                        labelText: l10n.cloudSyncCode,
                       ),
-              ),
-              SwitchListTile(
-                title: Text(l10n.cloudSyncPreferences),
-                value: _preferences,
-                onChanged: busy
-                    ? null
-                    : (v) => _run(
-                        () => _service.setScope(preferences: true, enabled: v),
+                    ),
+                    FilledButton(
+                      onPressed: busy ? null : _join,
+                      child: Text(l10n.cloudSyncJoin),
+                    ),
+                  ] else if (_connected) ...[
+                    Text(_syncStatus(l10n)),
+                    Text(l10n.cloudSyncAutomaticHelp),
+                    FilledButton(
+                      onPressed: busy ? null : () => _run(_service.synchronize),
+                      child: Text(l10n.cloudSyncNow),
+                    ),
+                    OutlinedButton(
+                      onPressed: busy
+                          ? null
+                          : () => _run(() async {
+                              _invitation = await _service.invitation();
+                            }),
+                      child: Text(l10n.cloudSyncInvite),
+                    ),
+                    if (_invitation != null) ...[
+                      SelectableText(
+                        _invitation!,
+                        semanticsLabel:
+                            '${l10n.cloudSyncCode}: ${_invitation!.split('').join(' ')}',
                       ),
-              ),
-              TextButton(
-                onPressed: busy ? null : _disconnect,
-                child: Text(l10n.cloudSyncDisconnect),
-              ),
-            ] else if (_page == _SyncPage.join) ...[
-              Text(l10n.cloudSyncJoinHelp),
-              TextField(
-                controller: _code,
-                autofocus: true,
-                enabled: !_busy,
-                keyboardType: TextInputType.number,
-                textInputAction: TextInputAction.done,
-                onSubmitted: _busy ? null : (_) => _join(),
-                inputFormatters: [
-                  FilteringTextInputFormatter.digitsOnly,
-                  LengthLimitingTextInputFormatter(8),
+                      Text(l10n.cloudSyncCodeHelp),
+                    ],
+                    TextButton(
+                      onPressed: _busy
+                          ? null
+                          : () => _showPage(_SyncPage.options),
+                      child: Text(l10n.cloudSyncOptions),
+                    ),
+                  ] else ...[
+                    Text(l10n.cloudSyncFirstHelp),
+                    FilledButton(
+                      onPressed: busy
+                          ? null
+                          : () => _run(() async {
+                              await _service.connect();
+                              _invitation = await _service.invitation();
+                            }),
+                      child: Text(l10n.cloudSyncCreate),
+                    ),
+                    OutlinedButton(
+                      onPressed: _busy ? null : () => _showPage(_SyncPage.join),
+                      child: Text(l10n.cloudSyncHaveCode),
+                    ),
+                  ],
                 ],
-                decoration: InputDecoration(labelText: l10n.cloudSyncCode),
               ),
-              FilledButton(
-                onPressed: busy ? null : _join,
-                child: Text(l10n.cloudSyncJoin),
-              ),
-            ] else if (_connected) ...[
-              Text(_syncStatus(l10n)),
-              Text(l10n.cloudSyncAutomaticHelp),
-              FilledButton(
-                onPressed: busy ? null : () => _run(_service.synchronize),
-                child: Text(l10n.cloudSyncNow),
-              ),
-              OutlinedButton(
-                onPressed: busy
-                    ? null
-                    : () => _run(() async {
-                        _invitation = await _service.invitation();
-                      }),
-                child: Text(l10n.cloudSyncInvite),
-              ),
-              if (_invitation != null) ...[
-                SelectableText(
-                  _invitation!,
-                  semanticsLabel:
-                      '${l10n.cloudSyncCode}: ${_invitation!.split('').join(' ')}',
-                ),
-                Text(l10n.cloudSyncCodeHelp),
-              ],
-              TextButton(
-                onPressed: _busy ? null : () => _showPage(_SyncPage.options),
-                child: Text(l10n.cloudSyncOptions),
-              ),
-            ] else ...[
-              Text(l10n.cloudSyncFirstHelp),
-              FilledButton(
-                onPressed: busy
-                    ? null
-                    : () => _run(() async {
-                        await _service.connect();
-                        _invitation = await _service.invitation();
-                      }),
-                child: Text(l10n.cloudSyncCreate),
-              ),
-              OutlinedButton(
-                onPressed: _busy ? null : () => _showPage(_SyncPage.join),
-                child: Text(l10n.cloudSyncHaveCode),
-              ),
-            ],
-          ],
-        ),
       ),
     );
   }
