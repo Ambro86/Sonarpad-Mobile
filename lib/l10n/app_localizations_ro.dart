@@ -5389,6 +5389,9 @@ class AppLocalizationsRo extends AppLocalizations {
   String get sonarMusicAlbum => 'Albume';
 
   @override
+  String get sonarMusicAllAlbums => 'Toate albumele';
+
+  @override
   String get sonarMusicArtist => 'Artiști';
 
   @override

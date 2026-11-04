@@ -133,6 +133,8 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
   int _raiNativeGeneration = 0;
   int _raiNativeAdCheckedGeneration = -1;
   int _raiNativeRestartCount = 0;
+  final _raiNativeStability = StreamPlaybackStability();
+  final _raiNativeRecoveryClock = Stopwatch()..start();
   Timer? _raiNativeStallTimer;
   bool _isVideoEnabled = false;
   bool _displayVideoInPortrait = false;
@@ -270,6 +272,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
 
   Future<void> _play({bool reconnecting = false}) async {
     if (!mounted) return;
+    _raiNativeStability.reset();
     final requestId = ++_playRequestId;
     final l10n = AppLocalizations.of(context);
     _raiDirectAudioFallbackTimer?.cancel();
@@ -456,7 +459,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         ? TvNativeStreamFormat.hls
         : await TvNativeStream.detect(masterUrl, headers: headers);
     if (!mounted || requestId != _playRequestId ||
-        generation != _raiNativeGeneration || (Platform.isAndroid && _streamUserPaused)) {
+        generation != _raiNativeGeneration || _streamUserPaused) {
       return;
     }
 
@@ -475,13 +478,13 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     _videoController = null;
     await _disposeMediaKitPlayer();
     if (!mounted || requestId != _playRequestId ||
-        generation != _raiNativeGeneration || (Platform.isAndroid && _streamUserPaused)) {
+        generation != _raiNativeGeneration || _streamUserPaused) {
       return;
     }
 
     _mediaKitVolume = await _settings.loadMediaVolume();
     if (!mounted || requestId != _playRequestId ||
-        generation != _raiNativeGeneration || (Platform.isAndroid && _streamUserPaused)) {
+        generation != _raiNativeGeneration || _streamUserPaused) {
       return;
     }
 
@@ -517,7 +520,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       await _mediaCommands.invokeMethod('setupMagicTap', widget.station.name);
     }
     if (!mounted || requestId != _playRequestId ||
-        generation != _raiNativeGeneration || (Platform.isAndroid && _streamUserPaused)) {
+        generation != _raiNativeGeneration || _streamUserPaused) {
       return;
     }
 
@@ -533,7 +536,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       );
     } catch (error) {
       if (!mounted || requestId != _playRequestId ||
-          generation != _raiNativeGeneration || (Platform.isAndroid && _streamUserPaused)) {
+          generation != _raiNativeGeneration || _streamUserPaused) {
         return;
       }
       diagnostics?.record(Platform.isAndroid ? 'native_exoplayer_open_error' : 'native_avplayer_open_error', {
@@ -548,7 +551,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       return;
     }
     if (!mounted || requestId != _playRequestId ||
-        generation != _raiNativeGeneration || (Platform.isAndroid && _streamUserPaused)) {
+        generation != _raiNativeGeneration || _streamUserPaused) {
       return;
     }
 
@@ -576,6 +579,9 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       final wasPlaying = _raiNativePlaying;
       _raiNativePlaying = playing;
       _raiNativeBuffering = buffering;
+      if (!playing || buffering || _streamUserPaused) {
+        _raiNativeStability.reset();
+      }
       if (Platform.isAndroid) {
         unawaited(_androidBackground.update(playing: playing, buffering: buffering));
       }
@@ -611,6 +617,20 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       final positionMs = (event['positionMs'] as num?)?.toInt() ?? 0;
       final durationMs = (event['durationMs'] as num?)?.toInt() ?? 0;
       final position = Duration(milliseconds: positionMs);
+      if (_raiNativeRestartCount > 0 && _raiNativeStability.observe(
+        elapsed: _raiNativeRecoveryClock.elapsed,
+        position: position,
+        playing: _raiNativePlaying,
+        buffering: _raiNativeBuffering,
+        paused: _streamUserPaused,
+      )) {
+        _raiNativeRestartCount = 0;
+        _raiNativeStability.reset();
+        _streamDiagnostics?.record('native_restart_budget_restored', {
+          'stage': _mediaKitStage,
+          'stableSeconds': 30,
+        });
+      }
       final previous = _mediaKitLastPosition ?? Duration.zero;
       _mediaKitLastPosition = position;
       _mediaKitLastDuration = Duration(milliseconds: durationMs);
@@ -663,6 +683,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     }
 
     if (type == 'stalled') {
+      _raiNativeStability.reset();
       if (!_raiNativeActive) {
         return;
       }
@@ -689,6 +710,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     }
 
     if (type == 'error') {
+      _raiNativeStability.reset();
       if (!_raiNativeActive || _raiNativeFallbackInProgress) {
         return;
       }
@@ -737,9 +759,10 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
 
   Future<void> _recoverRaiNative({required String reason}) async {
     if (!mounted || !_raiNativeActive || _raiNativeFallbackInProgress ||
-        (Platform.isAndroid && _streamUserPaused)) {
+        _streamUserPaused) {
       return;
     }
+    _raiNativeStability.reset();
     _raiNativeStallTimer?.cancel();
     _raiNativeStallTimer = null;
     if (!_requiresRaiAudioDescriptionMediaKitPlayback) {
@@ -759,6 +782,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         'RadioPlayer: native TV player restarting once with a fresh Mediapolis URL '
         'reason=$reason station="${widget.station.name}"',
       );
+      if (!mounted || requestId != _playRequestId || _streamUserPaused) return;
       await _play(reconnecting: true);
       return;
     }
@@ -767,7 +791,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
 
   Future<void> _activateRaiNativeFallback({required String reason}) async {
     if (!mounted || !_raiNativeActive || _raiNativeFallbackInProgress ||
-        !_requiresTvMediaKitPlayback) {
+        !_requiresTvMediaKitPlayback || _streamUserPaused) {
       return;
     }
     final requestId = _playRequestId;
@@ -787,11 +811,12 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         'RadioPlayer: native TV player fallback to existing MediaKit path '
         'reason=$reason station="${widget.station.name}"',
       );
+      if (!mounted || requestId != _playRequestId || _streamUserPaused) return;
       await _raiNativePlayer.dispose();
       _raiNativeActive = false;
       _raiNativePlaying = false;
       _raiNativeBuffering = false;
-      if (!mounted || requestId != _playRequestId) {
+      if (!mounted || requestId != _playRequestId || _streamUserPaused) {
         return;
       }
       if (_requiresRaiAudioDescriptionMediaKitPlayback) {
@@ -1965,6 +1990,9 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       }
       if (_raiNativePlaying) {
         _streamUserPaused = true;
+        _raiNativeStability.reset();
+        _raiNativeStallTimer?.cancel();
+        _raiNativeStallTimer = null;
         _streamDiagnostics?.record('user_pause', {'stage': _mediaKitStage});
         await _raiNativePlayer.pause();
         if (Platform.isIOS) {

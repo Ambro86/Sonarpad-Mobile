@@ -854,6 +854,42 @@ class StreamDiagnosticSegment {
 
 enum StreamConnectionPhase { idle, opening, reconnecting, playing, failed }
 
+/// Evidence of sustained playback, not merely a successful player.open call.
+/// The caller supplies monotonic elapsed time; this class never starts a player.
+class StreamPlaybackStability {
+  Duration? _startedAt;
+  Duration? _startedPosition;
+  Duration? _lastAt;
+  Duration? _lastPosition;
+
+  void reset() {
+    _startedAt = _startedPosition = _lastAt = _lastPosition = null;
+  }
+
+  bool observe({
+    required Duration elapsed,
+    required Duration position,
+    required bool playing,
+    required bool buffering,
+    required bool paused,
+  }) {
+    if (!playing || buffering || paused || position <= Duration.zero) {
+      reset();
+      return false;
+    }
+    if (_lastAt == null || elapsed <= _lastAt! ||
+        elapsed - _lastAt! > const Duration(seconds: 5) ||
+        position <= _lastPosition!) {
+      _startedAt = elapsed;
+      _startedPosition = position;
+    }
+    _lastAt = elapsed;
+    _lastPosition = position;
+    return elapsed - _startedAt! >= const Duration(seconds: 30) &&
+        position - _startedPosition! >= const Duration(seconds: 30);
+  }
+}
+
 /// UI state only: it deliberately cannot stop, open or replace any player.
 class StreamPlaybackRecoveryState {
   StreamConnectionPhase phase = StreamConnectionPhase.idle;

@@ -5373,6 +5373,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get sonarMusicAlbum => 'Albümler';
 
   @override
+  String get sonarMusicAllAlbums => 'Tüm albümler';
+
+  @override
   String get sonarMusicArtist => 'Sanatçılar';
 
   @override

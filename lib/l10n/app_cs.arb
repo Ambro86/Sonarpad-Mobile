@@ -4671,6 +4671,7 @@
     "description": "SonarMusic label for video, migrated from the existing language table."
   },
   "sonarMusicAlbum": "Alba",
+  "sonarMusicAllAlbums": "Všechna alba",
   "@sonarMusicAlbum": {
     "description": "SonarMusic label for album, migrated from the existing language table."
   },

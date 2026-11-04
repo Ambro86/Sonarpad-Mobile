@@ -5346,6 +5346,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sonarMusicAlbum => 'Albums';
 
   @override
+  String get sonarMusicAllAlbums => 'All albums';
+
+  @override
   String get sonarMusicArtist => 'Artists';
 
   @override

@@ -5363,6 +5363,9 @@ class AppLocalizationsCs extends AppLocalizations {
   String get sonarMusicAlbum => 'Alba';
 
   @override
+  String get sonarMusicAllAlbums => 'Všechna alba';
+
+  @override
   String get sonarMusicArtist => 'Umělci';
 
   @override

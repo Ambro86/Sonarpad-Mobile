@@ -1,9 +1,10 @@
 # Preferenze sincronizzate
 
-Inventario esplicito: 41 preferenze mobile e una preferenza specifica Mac. I valori non supportati da un client restano sul server e vengono recuperati dai client compatibili.
+Inventario esplicito: 41 preferenze mobile, l’attivazione Sonarpad e una preferenza specifica Mac. I valori non supportati da un client restano sul server e vengono recuperati dai client compatibili.
 
 | Identificatore | Mobile | Windows | Mac |
 | --- | --- | --- | --- |
+| `activation.code` | Sì | Sì | Sì |
 | `sonartube.search_type` | Sì | Sì | Sì |
 | `sonarmusic.search_type` | Sì | Sì | Sì |
 | `cutter.mode` | Sì | Sì | Sì |
@@ -54,7 +55,7 @@ Inventario esplicito: 41 preferenze mobile e una preferenza specifica Mac. I val
 - Scelte raccolte/preferenze separate. Una richiesta in sospeso mantiene le categorie iniziali finché non viene completata.
 - Primo collegamento: una preferenza già presente nel cloud prevale sui valori iniziali del nuovo dispositivo. Successivamente vengono trasferite le modifiche rispetto alla sincronizzazione precedente.
 - Solo valori compatti: fino a 128 preferenze, 2 KB per valore e 32 KB complessivi per la raccolta preferences. Metadati e registri di recupero delle richieste occupano spazio aggiuntivo.
-- Esclusi password, codici privati, token, percorsi locali, cronologie, cache, file multimediali e sovrascrittura degli originali. Nessuna copia dei contenuti nella raccolta delle preferenze.
+- Esclusi password, altri codici privati, token, percorsi locali, cronologie, cache, file multimediali e sovrascrittura degli originali. Nessuna copia dei contenuti nella raccolta delle preferenze.
 - Lo slider Video di SonarTube mobile usa il filtro di ricerca già disponibile; le altre posizioni del selettore restano invariate.
 
 ## Aggiornamento PHP
@@ -86,3 +87,5 @@ Non richiede modifiche PHP o un nuovo caricamento. I client riusano sync, la seq
 - Rete asincrona/mobile o su thread dedicato/desktop, timeout 30 secondi. Un’unica operazione alla volta, condivisa con la sincronizzazione manuale.
 - Errori automatici solo nei log; nessuna finestra, annuncio o spostamento del focus. Retry dopo 30, 60, 120, 240 e poi 300 secondi. Journal conservato e modifiche locali successive riapplicate prima del checkpoint.
 - Stato nella schermata cloud: sincronizzazione in corso, modifiche in attesa, attesa con tentativo automatico oppure tutto sincronizzato, con data/ora locale dell’ultimo successo. Se entrambe le categorie sono escluse, sincronizzazione automatica disattivata.
+
+L’attivazione Sonarpad è l’unica eccezione esplicita ai codici privati: viene validata localmente prima di esportarla e applicarla, trasferita via HTTPS e conservata nell’archivio privato compresso del gruppo (la compressione non è cifratura). Non è registrata nei log. Un codice assente o non valido non cancella quello locale; un codice locale già valido è preservato. Il trasferimento segue l’opzione delle preferenze e non modifica lingua o modalità sviluppatore. Non richiede aggiornamenti del backend.

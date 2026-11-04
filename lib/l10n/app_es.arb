@@ -4674,6 +4674,7 @@
     "description": "SonarMusic label for video, migrated from the existing language table."
   },
   "sonarMusicAlbum": "Álbumes",
+  "sonarMusicAllAlbums": "Todos los álbumes",
   "@sonarMusicAlbum": {
     "description": "SonarMusic label for album, migrated from the existing language table."
   },

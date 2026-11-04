@@ -190,7 +190,7 @@ Le raccolte sconosciute al client restano sul server.
 
 Limiti: 10 dispositivi per gruppo, 5.000 elementi per raccolta, richiesta 2 MiB,
 stato totale 4 MiB, 20 tentativi creazione/collegamento per IP all'ora e 600 altre
-richieste. Sono trasferiti metadati/preferiti, non file audio/video o credenziali.
+richieste. Sono trasferiti metadati/preferiti, non file audio/video o credenziali di altri servizi. L’attivazione Sonarpad è inclusa nelle preferenze.
 Trasporto HTTPS; **non è crittografia end-to-end**: il gestore del server può
 leggere le raccolte. Non è previsto recupero se si perdono tutti i dispositivi.
 
@@ -217,4 +217,4 @@ server vanno completate prima che la funzione sia disponibile agli utenti.
 
 ## Preferenze dei moduli
 
-La raccolta `preferences` sincronizza valori compatti con limiti dedicati e precedenza ai valori già nel cloud al primo collegamento. Vedere [inventario e aggiornamento](PREFERENZE.md). Sono esclusi credenziali, percorsi, cronologie e contenuti multimediali.
+La raccolta `preferences` sincronizza valori compatti con limiti dedicati e precedenza ai valori già nel cloud al primo collegamento. Vedere [inventario e aggiornamento](PREFERENZE.md). È inclusa l’attivazione Sonarpad; sono esclusi le altre credenziali, percorsi, cronologie e contenuti multimediali.

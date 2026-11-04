@@ -5157,6 +5157,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get sonarMusicAlbum => '专辑';
 
   @override
+  String get sonarMusicAllAlbums => '所有专辑';
+
+  @override
   String get sonarMusicArtist => '艺人';
 
   @override
@@ -10855,6 +10858,9 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get sonarMusicAlbum => '专辑';
+
+  @override
+  String get sonarMusicAllAlbums => '所有专辑';
 
   @override
   String get sonarMusicArtist => '艺人';

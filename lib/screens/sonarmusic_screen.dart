@@ -538,10 +538,19 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
     setState(() => _items = []);
   }
 
+  String _itemTitle(SonarMusicItem item) {
+    final l10n = AppLocalizations.of(context);
+    if (item.kind == 'collection' &&
+        item.title.toLowerCase() == l10n.sonarMusicAlbum.toLowerCase()) {
+      return l10n.sonarMusicAllAlbums;
+    }
+    return item.title;
+  }
+
   String _itemSubtitle(SonarMusicItem item) {
     final l10n = AppLocalizations.of(context);
     return sonarMusicItemSubtitle(
-      title: item.title,
+      title: _itemTitle(item),
       kind: item.kind,
       kindLabel: _label(item.kind),
       artist: item.artist,
@@ -585,7 +594,7 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
     };
     return Semantics(
       container: true, button: true,
-      label: [item.title, subtitle].where((value) => value.isNotEmpty).join(', '),
+      label: [_itemTitle(item), subtitle].where((value) => value.isNotEmpty).join(', '),
       onTap: !_busy ? () => _openItem(item) : null,
       customSemanticsActions: actions,
       child: ExcludeSemantics(child: Card(child: Column(children: [
@@ -593,7 +602,7 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
           leading: item.thumbnail != null ? Image.network(item.thumbnail!,
             width: 56, height: 56, errorBuilder: (context, error, stackTrace) =>
               const Icon(Icons.music_note)) : const Icon(Icons.music_note),
-          title: Text(item.title), subtitle: Text(subtitle),
+          title: Text(_itemTitle(item)), subtitle: Text(subtitle),
           onTap: !_busy ? () => _openItem(item) : null),
         Wrap(spacing: 4, children: [
           if (widget.libraryType == 'favorites') favoriteReorderButtons(AppLocalizations.of(context),i,_items.length,(a)=>_reorderFavorite(item,a)),
@@ -733,7 +742,7 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
     for (var i=0; i<_items.length; i++) {
       final item = _items[i];
       final isFav = _favorites.contains(item.key);
-      rows.add(AccessibleListRow(id: 'item_$i', title: item.title,
+      rows.add(AccessibleListRow(id: 'item_$i', title: _itemTitle(item),
         subtitle: _itemSubtitle(item),
         enabled: item.available && !_busy,
         actions: [

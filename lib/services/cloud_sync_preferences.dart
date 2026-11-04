@@ -1,8 +1,11 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'app_settings_service.dart';
+import 'activation_link_service.dart';
+import 'tv_service.dart';
 
 /// Explicit inventory. Never enumerate preferences: that would include account
-/// credentials, document history, local paths and cached API responses.
+/// unrelated credentials, document history, local paths and cached API responses.
 class CloudPreference {
   const CloudPreference(
     this.key,
@@ -239,6 +242,13 @@ class CloudSyncPreferences {
   static Future<List<Map<String, dynamic>>> read() async {
     final prefs = await SharedPreferences.getInstance();
     final items = <Map<String, dynamic>>[];
+    final code = await AppSettingsService().getTvSecretCode();
+    if (_validActivation(code)) {
+      items.add({
+        'id': 'activation.code',
+        'data': {'value': code.trim()},
+      });
+    }
     for (final entry in specs.entries) {
       final spec = entry.value;
       Object? value = prefs.get(spec.key);
@@ -264,6 +274,9 @@ class CloudSyncPreferences {
   static List<Map<String, dynamic>> project(List<Map<String, dynamic>> items) =>
       items
           .where((item) {
+            if (item['id'] == 'activation.code') {
+              return _validActivation((item['data'] as Map)['value']);
+            }
             final spec = specs[item['id']];
             if (spec == null) return false;
             if (!spec.accepts((item['data'] as Map)['value'])) {
@@ -278,6 +291,11 @@ class CloudSyncPreferences {
             },
           )
           .toList();
+
+  static bool _validActivation(Object? code) =>
+      code is String &&
+      code.length <= 256 &&
+      TvService().isSecretCodeValid(code);
 
   static Future<void> write(
     List<Map<String, dynamic>> items, {
@@ -295,6 +313,16 @@ class CloudSyncPreferences {
       ...baseline.map((item) => item['id']).where(specs.containsKey),
     };
     for (final id in ids) {
+      if (id == 'activation.code') {
+        final current = await AppSettingsService().getTvSecretCode();
+        if (!_validActivation(current) && _validActivation(byId[id])) {
+          await AppSettingsService().setTvSecretCode(
+            (byId[id] as String).trim(),
+          );
+          ActivationLinkService.changes.value++;
+        }
+        continue;
+      }
       final spec = specs[id]!;
       final value = byId[id];
       bool saved;

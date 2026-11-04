@@ -4668,6 +4668,7 @@
     "description": "SonarMusic label for video, migrated from the existing language table."
   },
   "sonarMusicAlbum": "专辑",
+  "sonarMusicAllAlbums": "所有专辑",
   "@sonarMusicAlbum": {
     "description": "SonarMusic label for album, migrated from the existing language table."
   },

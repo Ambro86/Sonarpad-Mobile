@@ -163,7 +163,9 @@ final class SonarpadRaiPlayerPlugin: NSObject, FlutterPlugin, FlutterStreamHandl
 
     let asset = AVURLAsset(url: url, options: options)
     let item = AVPlayerItem(asset: asset)
-    item.preferredForwardBufferDuration = 2
+    // Let AVPlayer choose its buffer for the current connection instead of
+    // requesting a short two-second buffer on weak or fluctuating networks.
+    item.preferredForwardBufferDuration = 0
     item.canUseNetworkResourcesForLiveStreamingWhilePaused = true
 
     let newPlayer = AVPlayer(playerItem: item)

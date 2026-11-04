@@ -5391,6 +5391,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get sonarMusicAlbum => 'Álbuns';
 
   @override
+  String get sonarMusicAllAlbums => 'Todos os álbuns';
+
+  @override
   String get sonarMusicArtist => 'Artistas';
 
   @override
@@ -11337,6 +11340,9 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get sonarMusicAlbum => 'Álbuns';
+
+  @override
+  String get sonarMusicAllAlbums => 'Todos os álbuns';
 
   @override
   String get sonarMusicArtist => 'Artistas';

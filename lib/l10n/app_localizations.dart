@@ -9658,6 +9658,12 @@ abstract class AppLocalizations {
   /// **'Album'**
   String get sonarMusicAlbum;
 
+  /// No description provided for @sonarMusicAllAlbums.
+  ///
+  /// In it, this message translates to:
+  /// **'Tutti gli album'**
+  String get sonarMusicAllAlbums;
+
   /// SonarMusic label for artist, migrated from the existing language table.
   ///
   /// In it, this message translates to:
