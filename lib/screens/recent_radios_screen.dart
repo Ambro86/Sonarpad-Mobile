@@ -56,7 +56,7 @@ class _RecentRadiosScreenState extends State<RecentRadiosScreen> {
     final next = exists
         ? _favorites.where((item) => item.streamUrl != station.streamUrl).toList()
         : [..._favorites, station];
-    await _service.saveFavorites(next);
+    await _service.saveFavorites(next, explicitlyRemoved: exists ? [station.streamUrl] : []);
     if (!mounted) return;
     setState(() => _favorites = next);
         showStatusMessage(context, exists

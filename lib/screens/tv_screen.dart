@@ -673,7 +673,7 @@ class _TvCategoryScreenState extends State<_TvCategoryScreen> {
                 !_service.isSameFavoriteChannel(favorite, channel))
             .toList()
         : [...favs, channel];
-    await _service.saveFavorites(next);
+    await _service.saveFavorites(next, explicitlyRemoved: wasFavorite ? favs.where((favorite) => _service.isSameFavoriteChannel(favorite, channel)).map((favorite) => favorite.name).toList() : []);
     if (!mounted) return;
     setState(() => _favorites = next);
     final message = wasFavorite
@@ -866,7 +866,7 @@ class _TvSearchResultsDialogState extends State<_TvSearchResultsDialog> {
                 !_service.isSameFavoriteChannel(favorite, channel))
             .toList()
         : [...favs, channel];
-    await _service.saveFavorites(next);
+    await _service.saveFavorites(next, explicitlyRemoved: wasFavorite ? favs.where((favorite) => _service.isSameFavoriteChannel(favorite, channel)).map((favorite) => favorite.name).toList() : []);
     if (!mounted) return;
     setState(() => _favorites = next);
     final message = wasFavorite

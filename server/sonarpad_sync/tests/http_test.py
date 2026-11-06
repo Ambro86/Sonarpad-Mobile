@@ -75,6 +75,16 @@ def main():
             status, response = call("sync", b, dict(sequence=3, baseline=pref("advanced"), state=pref("guided")))
             assert status == 200 and response["state"]["preferences"] == pref("guided")["preferences"]
 
+            assert call("health")[1]["deletion_guard"] == 2
+            before = call("state", b, {})[1]["state"]
+            proposed = dict(sequence=4, baseline=before, state={**before, "radio": before["radio"][:1]})
+            assert call("sync", b, proposed) == (409, {"error":"deletion_confirmation_required"})
+            assert call("state", b, {})[1]["state"] == before
+            assert call("confirm_deletions", b, proposed)[0] == 409
+            proposed["explicit_deletions"] = {"radio": [row["id"] for row in before["radio"][1:]]}
+            assert call("confirm_deletions", b, proposed)[1]["confirmed"]
+            assert len(call("sync", b, proposed)[1]["state"]["radio"]) == 1
+
             # Database and source code are outside the served document root.
             for path in ("/data/sync.sqlite", "/src/Sync.php", "/private/config.php"):
                 try:
@@ -84,7 +94,11 @@ def main():
                     assert error.code == 404
             log = (root / 'data/sync.log').read_text(encoding='utf-8')
             assert a not in log and b not in log and code not in log
+            assert 'preference_changed' in log and 'cutter.mode' in log
+            assert 'advanced' not in log and 'guided' not in log
             assert 'duration_ms' in log and 'request_id' in log
+            assert 'client_proposal' in log and 'write_verified' in log and 'item_sha256' in log
+            assert 'group_id' in log and 'device_id' in log and 'removed_count' in log
             print("OK: /synk deployment, HTTP health/auth/pairing/sync/retry/methods/private-path isolation and logs.")
         finally:
             process.terminate()

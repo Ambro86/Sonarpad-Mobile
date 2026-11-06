@@ -74,3 +74,15 @@ function merge_state(array $remote, array $base, array $local): array {
     if (isset($remote['preferences'])) validate_preferences($remote['preferences']);
     return $remote;
 }
+
+/** Missing collections mean unsupported scope, never permission to delete. */
+function removed_collection_items(array $before, array $after): array {
+    $removed = [];
+    foreach ($after as $name => $rows) {
+        $ids = array_column($rows, null, 'id');
+        foreach ($before[$name] ?? [] as $row) {
+            if (!isset($ids[$row['id']])) $removed[$name][] = $row['id'];
+        }
+    }
+    return $removed;
+}

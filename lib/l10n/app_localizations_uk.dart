@@ -9,6 +9,27 @@ class AppLocalizationsUk extends AppLocalizations {
   AppLocalizationsUk([String locale = 'uk']) : super(locale);
 
   @override
+  String get cloudSyncConfirmDeletions => 'Підтвердити видалення';
+
+  @override
+  String get cloudSyncDeleteOutgoing =>
+      'Видалити ці елементи з хмари та інших пристроїв? Виберіть Ні, якщо ви цього не запитували.';
+
+  @override
+  String get cloudSyncDeleteIncoming =>
+      'Видалити ці елементи з цього пристрою за даними хмари? Виберіть Ні, якщо ви цього не запитували.';
+
+  @override
+  String get cloudSyncDeletionPending =>
+      'Неочікуване видалення заблоковано. Видалення синхронізуються лише за явною командою.';
+
+  @override
+  String get cloudSyncFavoriteArticles => 'Улюблені статті';
+
+  @override
+  String get routeTransit => 'Громадський транспорт';
+
+  @override
   String get placesCategory => 'Категорія';
 
   @override

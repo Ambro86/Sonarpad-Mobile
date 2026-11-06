@@ -9,6 +9,27 @@ class AppLocalizationsRo extends AppLocalizations {
   AppLocalizationsRo([String locale = 'ro']) : super(locale);
 
   @override
+  String get cloudSyncConfirmDeletions => 'Confirmă ștergerile';
+
+  @override
+  String get cloudSyncDeleteOutgoing =>
+      'Ștergi aceste elemente din cloud și de pe celelalte dispozitive? Alege Nu dacă nu ai solicitat ștergerile.';
+
+  @override
+  String get cloudSyncDeleteIncoming =>
+      'Ștergi aceste elemente de pe acest dispozitiv conform cloudului? Alege Nu dacă nu ai solicitat ștergerile.';
+
+  @override
+  String get cloudSyncDeletionPending =>
+      'Ștergere neașteptată blocată. Ștergerile sunt propagate numai la o comandă explicită.';
+
+  @override
+  String get cloudSyncFavoriteArticles => 'Articole favorite';
+
+  @override
+  String get routeTransit => 'Transport public';
+
+  @override
   String get placesCategory => 'Categorie';
 
   @override

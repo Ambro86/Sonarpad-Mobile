@@ -9,6 +9,27 @@ class AppLocalizationsCs extends AppLocalizations {
   AppLocalizationsCs([String locale = 'cs']) : super(locale);
 
   @override
+  String get cloudSyncConfirmDeletions => 'Potvrdit odstranění';
+
+  @override
+  String get cloudSyncDeleteOutgoing =>
+      'Odstranit tyto položky z cloudu a ostatních zařízení? Pokud jste o odstranění nežádali, zvolte Ne.';
+
+  @override
+  String get cloudSyncDeleteIncoming =>
+      'Odstranit tyto položky z tohoto zařízení podle cloudu? Pokud jste o odstranění nežádali, zvolte Ne.';
+
+  @override
+  String get cloudSyncDeletionPending =>
+      'Neočekávané odstranění zablokováno. Odstranění se synchronizuje pouze na výslovný příkaz.';
+
+  @override
+  String get cloudSyncFavoriteArticles => 'Oblíbené články';
+
+  @override
+  String get routeTransit => 'Veřejná doprava';
+
+  @override
   String get placesCategory => 'Kategorie';
 
   @override

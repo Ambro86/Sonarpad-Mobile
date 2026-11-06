@@ -11,6 +11,7 @@ enum CloudSyncAction {
   code,
   state,
   sync,
+  confirmDeletions,
   devices,
   revoke,
   disconnect,
@@ -61,7 +62,13 @@ class CloudSyncApi {
       final request =
           http.Request(
               'POST',
-              endpoint.replace(queryParameters: {'action': action.name}),
+              endpoint.replace(
+                queryParameters: {
+                  'action': action == CloudSyncAction.confirmDeletions
+                      ? 'confirm_deletions'
+                      : action.name,
+                },
+              ),
             )
             ..followRedirects = false
             ..headers.addAll({
@@ -90,6 +97,7 @@ class CloudSyncApi {
       }
       if (status != 200) {
         const errors = {
+          'deletion_confirmation_required',
           'unauthorized',
           'invalid_or_expired_code',
           'invalid_code',

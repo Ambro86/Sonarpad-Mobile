@@ -9,6 +9,27 @@ class AppLocalizationsFr extends AppLocalizations {
   AppLocalizationsFr([String locale = 'fr']) : super(locale);
 
   @override
+  String get cloudSyncConfirmDeletions => 'Confirmer les suppressions';
+
+  @override
+  String get cloudSyncDeleteOutgoing =>
+      'Supprimer ces éléments du cloud et des autres appareils ? Choisissez Non si vous ne l’avez pas demandé.';
+
+  @override
+  String get cloudSyncDeleteIncoming =>
+      'Supprimer ces éléments de cet appareil selon le cloud ? Choisissez Non si vous ne l’avez pas demandé.';
+
+  @override
+  String get cloudSyncDeletionPending =>
+      'Suppression inattendue bloquée. Aucune suppression n’est propagée sans une commande explicite.';
+
+  @override
+  String get cloudSyncFavoriteArticles => 'Articles favoris';
+
+  @override
+  String get routeTransit => 'Transports en commun';
+
+  @override
   String get placesCategory => 'Catégorie';
 
   @override

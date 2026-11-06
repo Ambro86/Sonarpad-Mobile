@@ -1,3 +1,4 @@
+import 'cloud_sync_deletions.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -527,6 +528,7 @@ class NewsService {
   }
 
   Future<void> removeFolder(NewsLanguage language, String folderId) async {
+    final beforeCloud = await exportCloudCollections();
     final folders = await getFolders(language);
     folders.removeWhere((folder) => folder.id == folderId);
     await _saveFolders(language, folders);
@@ -551,6 +553,9 @@ class NewsService {
     assignments.removeWhere((_, value) => value == folderId);
     await _saveSourceFolderAssignments(language, assignments);
     await prefs.remove(_getFolderOrderPrefsKey(language, folderId));
+    final afterCloud = await exportCloudCollections();
+    final remaining = afterCloud['news_folders']!.map((row) => row['id']).toSet();
+    await CloudSyncDeletions.record('news_folders', beforeCloud['news_folders']!.where((row) => !remaining.contains(row['id'])).map((row) => row['id'] as String));
   }
 
   Future<void> moveSourceToFolder(
@@ -906,6 +911,7 @@ class NewsService {
     final prefs = await SharedPreferences.getInstance();
     final customSources = await getCustomSources(language);
 
+    await CloudSyncDeletions.record('news_sources', customSources.where((s) => s.name == name).map((s) => '${language.code}:${s.uri}'));
     customSources.removeWhere((s) => s.name == name);
     final stringList =
         customSources.map((s) => jsonEncode(s.toJson())).toList();

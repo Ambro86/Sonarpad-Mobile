@@ -122,6 +122,42 @@ abstract class AppLocalizations {
     Locale('zh', 'CN'),
   ];
 
+  /// No description provided for @cloudSyncConfirmDeletions.
+  ///
+  /// In it, this message translates to:
+  /// **'Conferma eliminazioni'**
+  String get cloudSyncConfirmDeletions;
+
+  /// No description provided for @cloudSyncDeleteOutgoing.
+  ///
+  /// In it, this message translates to:
+  /// **'Eliminare questi elementi dal cloud e dagli altri dispositivi? Scegli No se non hai richiesto queste rimozioni.'**
+  String get cloudSyncDeleteOutgoing;
+
+  /// No description provided for @cloudSyncDeleteIncoming.
+  ///
+  /// In it, this message translates to:
+  /// **'Eliminare questi elementi da questo dispositivo, come richiesto dal cloud? Scegli No se non hai richiesto queste rimozioni.'**
+  String get cloudSyncDeleteIncoming;
+
+  /// No description provided for @cloudSyncDeletionPending.
+  ///
+  /// In it, this message translates to:
+  /// **'Rimozione inattesa bloccata. Nessuna eliminazione viene propagata senza un comando esplicito.'**
+  String get cloudSyncDeletionPending;
+
+  /// No description provided for @cloudSyncFavoriteArticles.
+  ///
+  /// In it, this message translates to:
+  /// **'Articoli preferiti'**
+  String get cloudSyncFavoriteArticles;
+
+  /// No description provided for @routeTransit.
+  ///
+  /// In it, this message translates to:
+  /// **'Mezzi pubblici'**
+  String get routeTransit;
+
   /// No description provided for @placesCategory.
   ///
   /// In it, this message translates to:

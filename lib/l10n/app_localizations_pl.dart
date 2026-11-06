@@ -9,6 +9,27 @@ class AppLocalizationsPl extends AppLocalizations {
   AppLocalizationsPl([String locale = 'pl']) : super(locale);
 
   @override
+  String get cloudSyncConfirmDeletions => 'Potwierdź usunięcia';
+
+  @override
+  String get cloudSyncDeleteOutgoing =>
+      'Usunąć te elementy z chmury i innych urządzeń? Wybierz Nie, jeśli nie proszono o te usunięcia.';
+
+  @override
+  String get cloudSyncDeleteIncoming =>
+      'Usunąć te elementy z tego urządzenia zgodnie z chmurą? Wybierz Nie, jeśli nie proszono o te usunięcia.';
+
+  @override
+  String get cloudSyncDeletionPending =>
+      'Zablokowano nieoczekiwane usunięcie. Usunięcia są synchronizowane tylko po wyraźnym poleceniu.';
+
+  @override
+  String get cloudSyncFavoriteArticles => 'Ulubione artykuły';
+
+  @override
+  String get routeTransit => 'Transport publiczny';
+
+  @override
   String get placesCategory => 'Kategoria';
 
   @override

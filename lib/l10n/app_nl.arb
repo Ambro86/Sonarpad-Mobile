@@ -1,4 +1,11 @@
 {
+  "cloudSyncConfirmDeletions": "Verwijderingen bevestigen",
+  "cloudSyncDeleteOutgoing": "Deze items uit de cloud en van andere apparaten verwijderen? Kies Nee als u hier niet om hebt gevraagd.",
+  "cloudSyncDeleteIncoming": "Deze items volgens de cloud van dit apparaat verwijderen? Kies Nee als u hier niet om hebt gevraagd.",
+  "cloudSyncDeletionPending": "Onverwachte verwijdering geblokkeerd. Alleen expliciet aangevraagde verwijderingen worden gesynchroniseerd.",
+  "cloudSyncFavoriteArticles": "Favoriete artikelen",
+
+  "routeTransit": "Openbaar vervoer",
   "placesCategory": "Categorie",
   "placesAddress": "Adres",
   "placesPhone": "Telefoon",

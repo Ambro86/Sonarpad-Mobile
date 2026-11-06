@@ -1,9 +1,52 @@
+import 'package:sonarpad_mobile_starter/services/cloud_sync_deletions.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sonarpad_mobile_starter/services/sonartube_favorites_service.dart';
 import 'package:sonarpad_mobile_starter/services/sonartube_service.dart';
 
 void main() {
+  test(
+    'only an explicit toggle removal records intent; cloud writes do not',
+    () async {
+      SharedPreferences.setMockInitialValues({
+        'sonarpad_cloud_sync_v1': '{"group_id":"g"}',
+      });
+      final service = SonarTubeFavoritesService();
+      const item = SonarTubeItem(
+        kind: SonarTubeItemKind.video,
+        id: 'abcdefghijk',
+        title: 'Test',
+        url: 'https://youtu.be/abcdefghijk',
+      );
+      await service.toggleFavorite(item);
+      expect(await CloudSyncDeletions.read(), isEmpty);
+      await service.replaceCloudFavorites([]);
+      expect(await CloudSyncDeletions.read(), isEmpty);
+      await service.toggleFavorite(item);
+      await service.toggleFavorite(item);
+      final events = await CloudSyncDeletions.read();
+      expect(events, hasLength(1));
+      expect(
+        events.single['id'],
+        'https://www.youtube.com/watch?v=abcdefghijk',
+      );
+      expect(events.single['group_id'], 'g');
+    },
+  );
+
+  test(
+    'cloud export rejects corrupt storage instead of exporting an empty list',
+    () async {
+      SharedPreferences.setMockInitialValues({
+        'sonarpad_sonartube_favorites': ['not json'],
+      });
+      await expectLater(
+        SonarTubeFavoritesService().exportCloudFavorites(),
+        throwsFormatException,
+      );
+    },
+  );
+
   test('persists and removes video, channel and playlist favorites', () async {
     SharedPreferences.setMockInitialValues({});
     final service = SonarTubeFavoritesService();
@@ -42,28 +85,31 @@ void main() {
     expect(storedVideo.url, 'https://youtu.be/abcdefghijk?si=original');
 
     expect(await service.toggleFavorite(video), isFalse);
-    expect(
-      (await service.loadFavorites()).map((item) => item.title),
-      ['Canale preferito', 'Playlist preferita'],
-    );
+    expect((await service.loadFavorites()).map((item) => item.title), [
+      'Canale preferito',
+      'Playlist preferita',
+    ]);
   });
 
-  test('video favorites never persist a temporary resolved media URL', () async {
-    SharedPreferences.setMockInitialValues({});
-    final service = SonarTubeFavoritesService();
-    const video = SonarTubeItem(
-      kind: SonarTubeItemKind.video,
-      id: 'abcdefghijk',
-      title: 'Video',
-      url: 'https://temporary.example.invalid/resolved/audio-stream.m4a',
-    );
+  test(
+    'video favorites never persist a temporary resolved media URL',
+    () async {
+      SharedPreferences.setMockInitialValues({});
+      final service = SonarTubeFavoritesService();
+      const video = SonarTubeItem(
+        kind: SonarTubeItemKind.video,
+        id: 'abcdefghijk',
+        title: 'Video',
+        url: 'https://temporary.example.invalid/resolved/audio-stream.m4a',
+      );
 
-    expect(await service.toggleFavorite(video), isTrue);
-    final stored = (await service.loadFavorites()).single;
+      expect(await service.toggleFavorite(video), isTrue);
+      final stored = (await service.loadFavorites()).single;
 
-    expect(stored.url, 'https://www.youtube.com/watch?v=abcdefghijk');
-    expect(stored.url, isNot(contains('temporary.example.invalid')));
-  });
+      expect(stored.url, 'https://www.youtube.com/watch?v=abcdefghijk');
+      expect(stored.url, isNot(contains('temporary.example.invalid')));
+    },
+  );
 
   test('updates static metadata only for an existing favorite', () async {
     SharedPreferences.setMockInitialValues({});

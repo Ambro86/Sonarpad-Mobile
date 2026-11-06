@@ -9,6 +9,27 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get cloudSyncConfirmDeletions => 'Confirm deletions';
+
+  @override
+  String get cloudSyncDeleteOutgoing =>
+      'Delete these items from the cloud and your other devices? Choose No if you did not request these removals.';
+
+  @override
+  String get cloudSyncDeleteIncoming =>
+      'Delete these items from this device, as requested by the cloud? Choose No if you did not request these removals.';
+
+  @override
+  String get cloudSyncDeletionPending =>
+      'Unexpected removal blocked. Deletions are not propagated without an explicit removal command.';
+
+  @override
+  String get cloudSyncFavoriteArticles => 'Favorite articles';
+
+  @override
+  String get routeTransit => 'Public transport';
+
+  @override
   String get placesCategory => 'Category';
 
   @override

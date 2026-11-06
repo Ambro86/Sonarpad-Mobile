@@ -249,6 +249,7 @@ class _RouteScreenState extends State<RouteScreen> {
       RouteProfile.cycling => l10n.routeCycling,
       RouteProfile.driving => l10n.routeDriving,
       RouteProfile.wheelchair => l10n.routeWheelchair,
+      RouteProfile.transit => l10n.routeTransit,
     };
     final preferenceValueLabel = switch (_preference) {
       RoutePreference.fastest => l10n.routeFastest,
@@ -272,10 +273,12 @@ class _RouteScreenState extends State<RouteScreen> {
               AccessibleOption(value: RouteProfile.cycling.name, label: l10n.routeCycling),
               AccessibleOption(value: RouteProfile.driving.name, label: l10n.routeDriving),
               AccessibleOption(value: RouteProfile.wheelchair.name, label: l10n.routeWheelchair),
+              AccessibleOption(value: RouteProfile.transit.name, label: l10n.routeTransit),
             ],
           ),
           AccessibleListRow(
             id: 'preference',
+            enabled: _profile != RouteProfile.transit,
             title: l10n.routeType,
             kind: 'picker',
             value: _preference.name,
@@ -420,6 +423,7 @@ class _RouteScreenState extends State<RouteScreen> {
               DropdownMenuItem(
                   value: RouteProfile.wheelchair,
                   child: Text(l10n.routeWheelchair)),
+              DropdownMenuItem(value: RouteProfile.transit, child: Text(l10n.routeTransit)),
             ],
             onChanged: (val) {
               if (val != null) {
@@ -441,7 +445,7 @@ class _RouteScreenState extends State<RouteScreen> {
                   value: RoutePreference.shortest,
                   child: Text(l10n.routeShortest)),
             ],
-            onChanged: (val) {
+            onChanged: _profile == RouteProfile.transit ? null : (val) {
               if (val != null) {
                 setState(() => _preference = val);
                 _saveFormPreferences();

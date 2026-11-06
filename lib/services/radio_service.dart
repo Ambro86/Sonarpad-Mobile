@@ -1,3 +1,4 @@
+import 'cloud_sync_deletions.dart';
 import 'dart:async';
 import 'dart:convert';
 
@@ -166,8 +167,10 @@ class RadioService {
   Future<void> saveFavorites(
     List<RadioStation> favorites, {
     bool updateOrder = false,
+    List<String> explicitlyRemoved = const [],
   }) async {
     final prefs = await SharedPreferences.getInstance();
+    await CloudSyncDeletions.record('radio', explicitlyRemoved.map((id) => id.trim()));
     final normalized = _normalizeStations(favorites, sortByName: false);
 
     final currentRaw = prefs.getStringList(_favoritesPrefsKey) ?? const [];

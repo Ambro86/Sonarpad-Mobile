@@ -218,3 +218,39 @@ server vanno completate prima che la funzione sia disponibile agli utenti.
 ## Preferenze dei moduli
 
 La raccolta `preferences` sincronizza valori compatti con limiti dedicati e precedenza ai valori già nel cloud al primo collegamento. Vedere [inventario e aggiornamento](PREFERENZE.md). È inclusa l’attivazione Sonarpad; sono esclusi le altre credenziali, percorsi, cronologie e contenuti multimediali.
+
+## Protezione delle eliminazioni esplicite (6 novembre 2026)
+
+Le eliminazioni vengono propagate solo se originate da un comando esplicito
+su un dispositivo. I client registrano gli identificativi selezionati nei comandi
+Rimuovi, separatamente dal salvataggio ordinario e dal journal di sincronizzazione.
+Una diminuzione del conteggio, da sola, non autorizza alcuna cancellazione.
+Questo vale anche per sostituzioni con conteggio invariato e chiavi delle preferenze.
+I normali cambi di valore delle preferenze continuano a sincronizzarsi.
+
+La richiesta contiene `explicit_deletions`, limitato agli identificativi scelti
+nel gruppo corrente. `confirm_deletions` verifica questa dichiarazione e autorizza
+solo la richiesta esatta del dispositivo (sequenza e contenuto). Non e' piu' una
+conferma generica presentata all'utente dopo aver rilevato una lista vuota.
+Il server registra le rimozioni effettive in `sync_deletions` e restituisce
+`authorized_deletions`. Gli altri dispositivi applicano solo queste rimozioni,
+senza ulteriori domande. La reintroduzione di una voce invalida la prova precedente.
+I client consumano soltanto gli eventi inclusi nella richiesta completata;
+le eliminazioni eseguite mentre una richiesta e' in corso restano da sincronizzare.
+
+Una riduzione senza comando esplicito resta bloccata e viene diagnosticata.
+Non c'e' un pulsante generico per autorizzare lo svuotamento anomalo.
+Le collezioni omesse restano invariate. Richieste/risposte incomplete e letture
+fallite non sono trattate come liste vuote da accettare.
+
+Il server conserva gli ultimi 20 stati precedenti a eliminazioni effettive in
+`sync_recovery`, separata dalla pulizia degli snapshot del protocollo.
+I client conservano fino a 10 stati precedenti alle riduzioni. Queste copie limitate
+non sostituiscono un backup esterno. I log registrano fase, richiesta, gruppo,
+dispositivo, sequenza, conteggi e hash degli identificativi rimossi.
+`preference_changed` registra la chiave modificata, mai il valore.
+
+Aggiornare prima il backend (`src` e `public` nella cartella privata sonarpad_sync),
+conservando `private/config.php` e `data`, poi distribuire i client aggiornati.
+I vecchi client privi degli eventi espliciti non possono propagare eliminazioni.
+La risposta health espone `deletion_guard: 2` e `recovery_snapshots: 20`.

@@ -1,4 +1,11 @@
 {
+  "cloudSyncConfirmDeletions": "Silmeleri onayla",
+  "cloudSyncDeleteOutgoing": "Bu öğeler buluttan ve diğer cihazlardan silinsin mi? Bu silmeleri istemediyseniz Hayır seçin.",
+  "cloudSyncDeleteIncoming": "Buluta göre bu öğeler bu cihazdan silinsin mi? Bu silmeleri istemediyseniz Hayır seçin.",
+  "cloudSyncDeletionPending": "Beklenmeyen silme engellendi. Silmeler yalnızca açık bir silme komutuyla eşitlenir.",
+  "cloudSyncFavoriteArticles": "Favori makaleler",
+
+  "routeTransit": "Toplu taşıma",
   "placesCategory": "Kategori",
   "placesAddress": "Adres",
   "placesPhone": "Telefon",

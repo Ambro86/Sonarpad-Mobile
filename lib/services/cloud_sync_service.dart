@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'cloud_sync_api.dart';
 import 'cloud_sync_state.dart';
+import 'cloud_sync_deletions.dart';
 import 'cloud_sync_collections.dart';
 import '../utils/app_logger.dart';
 
@@ -224,16 +225,80 @@ class CloudSyncService {
         entry.key: entry.value,
   };
 
+  Future<void> _guardDeletions(
+    Map<String, dynamic> meta,
+    String direction,
+    CloudState before,
+    CloudState after,
+  ) async {
+    await logCloudReductions(before, after, direction);
+    final removed = removedCloudItems(before, after);
+    if (removed.isEmpty) return;
+    CloudState collectionsOnly(CloudState state) => {
+      for (final entry in state.entries) entry.key: entry.value,
+    };
+    final review = <String, dynamic>{
+      'direction': direction,
+      'before': collectionsOnly(before),
+      'after': collectionsOnly(after),
+    };
+    final recovery = List<dynamic>.from(meta['recovery'] as List? ?? []);
+    if (recovery.isEmpty ||
+        jsonEncode(recovery.last['state']) != jsonEncode(review['before'])) {
+      recovery.add({
+        'time': clock().toUtc().toIso8601String(),
+        'state': review['before'],
+      });
+      if (recovery.length > 10) recovery.removeAt(0);
+      meta['recovery'] = recovery;
+    }
+    final allowed = direction == 'outgoing'
+        ? ((meta['pending'] as Map?)?['explicit_deletions'])
+        : ((meta['response'] as Map?)?['authorized_deletions']);
+    if (allowed is Map &&
+        removed.entries.every(
+          (entry) => entry.value.every(
+            (row) => (allowed[entry.key] as List? ?? []).contains(row['id']),
+          ),
+        )) {
+      await _save(meta);
+      return;
+    }
+    meta['deletion_review'] = review;
+    if (direction == 'outgoing') meta['blocked_before_send'] = true;
+    await _save(meta);
+    await AppLogger.log(
+      '[CloudSync] deletion_blocked direction=$direction '
+      'counts=${jsonEncode({
+        for (final key in removed.keys) key: {"before": before[key]!.length, "after": after[key]!.length, "removed": removed[key]!.length},
+      })}',
+    );
+    throw const CloudSyncApiException('deletion_confirmation_required');
+  }
+
   Future<void> _sync(Map<String, dynamic> meta) async {
     if (meta['group_id'] == null) {
       throw const CloudSyncApiException('unauthorized');
     }
     final token = await _token();
+    if (meta['blocked_before_send'] == true && meta['response'] == null) {
+      meta.remove('pending');
+      meta.remove('blocked_before_send');
+    }
     var pending = meta['pending'] as Map?;
     if (pending == null) {
       final local = _selected(await collections.read(), meta);
       if (local.isEmpty) throw const CloudSyncApiException('empty_scope');
+      final events = (await CloudSyncDeletions.read())
+          .where((e) => e['group_id'] == meta['group_id'])
+          .toList();
+      final explicit = <String, List<String>>{};
+      for (final e in events) {
+        (explicit[e['collection'] as String] ??= []).add(e['id'] as String);
+      }
       pending = {
+        'explicit_deletions': explicit,
+        'deletion_events': events,
         'schema_version': 1,
         'sequence': (meta['sequence'] as int? ?? 0) + 1,
         'baseline': _selected(parseCloudState(meta['baseline'] ?? {}), meta),
@@ -241,6 +306,20 @@ class CloudSyncService {
       };
       meta['pending'] = pending;
       await _save(meta);
+    }
+    final before = parseCloudState(pending['baseline']);
+    final sent = parseCloudState(pending['state']);
+    await _guardDeletions(meta, 'outgoing', before, sent);
+    if (meta['response'] == null &&
+        removedCloudItems(before, sent).isNotEmpty) {
+      final approval = await api.request(
+        CloudSyncAction.confirmDeletions,
+        token,
+        Map<String, dynamic>.from(pending),
+      );
+      if (approval['confirmed'] != true) {
+        throw const CloudSyncApiException('invalid_response');
+      }
     }
     final response = meta['response'] is Map
         ? Map<String, dynamic>.from(meta['response'] as Map)
@@ -253,7 +332,10 @@ class CloudSyncService {
         response['sequence'] != pending['sequence']) {
       throw const CloudSyncApiException('invalid_response');
     }
-    final sent = parseCloudState(pending['state']);
+    final rawRemote = parseCloudState(response['state']);
+    if (sent.keys.any((key) => !rawRemote.containsKey(key))) {
+      throw const CloudSyncApiException('invalid_response');
+    }
     final projected = collections.project(parseCloudState(response['state']));
     final remote = <String, List<Map<String, dynamic>>>{
       for (final key in sent.keys) key: projected[key] ?? [],
@@ -271,12 +353,25 @@ class CloudSyncService {
       parseCloudState(pending['state']),
       current,
     );
+    await _guardDeletions(meta, 'incoming', current, applied);
     await collections.write(applied);
+    final persistedAll = await collections.read();
+    final persisted = <String, List<Map<String, dynamic>>>{
+      for (final key in applied.keys) key: persistedAll[key] ?? [],
+    };
+    await logCloudReductions(current, persisted, 'write_verified');
+    if (removedCloudItems(applied, persisted).isNotEmpty) {
+      throw const CloudSyncApiException('storage_error');
+    }
     meta.addAll({
       'sequence': response['sequence'],
       'baseline': {...parseCloudState(meta['baseline'] ?? {}), ...remote},
       'last_sync': clock().toUtc().toIso8601String(),
     });
+    await CloudSyncDeletions.consume(pending['deletion_events'] as List? ?? []);
+    meta.remove('approved_outgoing');
+    meta.remove('approved_incoming');
+    meta.remove('deletion_review');
     meta.remove('pending');
     meta.remove('response');
     await _save(meta);

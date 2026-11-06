@@ -4,10 +4,41 @@ require_once __DIR__ . '/bootstrap.php';
 require_once __DIR__ . '/schema.php';
 require_once __DIR__ . '/Merge.php';
 require_once __DIR__ . '/Storage.php';
+require_once __DIR__ . '/Log.php';
 
 final class SyncService {
     public function __construct(private PDO $pdo, private array $config) { init_schema($pdo); migrate_states($pdo); }
 
+    private function logReduction(string $stage, array $device, int $sequence, array $before, array $after): void {
+        if (!isset($this->config['log_path'])) return;
+        $previous = array_column($before['preferences'] ?? [], null, 'id');
+        foreach ($after['preferences'] ?? [] as $row) {
+            if (isset($previous[$row['id']]) && $previous[$row['id']]['data'] !== $row['data']) {
+                // Values may contain credentials; record only the preference key.
+                sync_log($this->config, 'preference_changed', [
+                    'request_id' => $this->config['request_id'] ?? '-', 'action' => 'sync',
+                    'stage' => $stage, 'group_id' => $device['group_id'], 'device_id' => $device['id'],
+                    'sequence' => $sequence, 'preference_id' => $row['id']]);
+            }
+        }
+        foreach (removed_collection_items($before, $after) as $collection => $ids) {
+            $metadata = ['request_id' => $this->config['request_id'] ?? '-', 'action' => 'sync',
+                'stage' => $stage, 'group_id' => $device['group_id'], 'device_id' => $device['id'],
+                'sequence' => $sequence, 'collection' => $collection,
+                'before_count' => count($before[$collection] ?? []), 'after_count' => count($after[$collection] ?? []), 'removed_count' => count($ids)];
+            sync_log($this->config, 'collection_reduction', $metadata);
+            foreach ($ids as $id) sync_log($this->config, 'removed_item', $metadata + ['item_sha256' => hash('sha256', (string)$id)]);
+        }
+    }
+    private function validateExplicitDeletions(array $body, array $removed): void {
+        $explicit = $body['explicit_deletions'] ?? [];
+        if (!is_array($explicit)) api_fail(400, 'invalid_deletions');
+        foreach ($removed as $collection => $ids) {
+            $allowed = $explicit[$collection] ?? [];
+            if (!is_array($allowed)) api_fail(400, 'invalid_deletions');
+            foreach ($ids as $id) if (!in_array((string)$id, $allowed, true)) api_fail(409, 'deletion_confirmation_required');
+        }
+    }
     private function row(string $sql, array $params): array|false {
         $q = $this->pdo->prepare($sql); $q->execute($params); return $q->fetch();
     }
@@ -31,7 +62,11 @@ final class SyncService {
     private function snapshot(array $device): array {
         $group = $this->row('SELECT * FROM sync_groups WHERE id=?', [$device['group_id']]);
         if (!$group) api_fail(401, 'unauthorized');
-        return ['schema_version' => 1, 'group_id' => $group['id'], 'device_id' => $device['id'],
+        $q = $this->pdo->prepare('SELECT collection,item_id FROM sync_deletions WHERE group_id=?');
+        $q->execute([$group['id']]);
+        $deletions = [];
+        foreach ($q as $row) $deletions[$row['collection']][] = $row['item_id'];
+        return ['authorized_deletions' => (object)$deletions, 'schema_version' => 1, 'group_id' => $group['id'], 'device_id' => $device['id'],
             'revision' => (int)$group['revision'], 'sequence' => (int)$device['sequence'],
             'state' => (object)load_state($this->pdo, $group['state_ref'], $group['state_json'])];
     }
@@ -106,15 +141,27 @@ final class SyncService {
                 collect_states($this->pdo, $hashes);
                 return ['ok' => true];
             }
-            if ($action !== 'sync') api_fail(404, 'not_found');
+            if (!in_array($action, ['sync', 'confirm_deletions'], true)) api_fail(404, 'not_found');
             $sequence = $body['sequence'] ?? null;
             if (!is_int($sequence) || $sequence < 1) api_fail(400, 'invalid_sequence');
             $requestHash = hash('sha256', json_encode($body, JSON_THROW_ON_ERROR));
+            if ($action === 'confirm_deletions') {
+                // Authorize only this authenticated device's exact, next request.
+                // A retry of an already committed request cannot authorize another one.
+                if ($sequence === (int)$device['sequence'] && hash_equals($device['request_hash'] ?? '', $requestHash)) return ['confirmed' => true];
+                if ($sequence !== (int)$device['sequence'] + 1) api_fail(409, 'sequence_conflict');
+                $base = validate_state($body['baseline'] ?? null);
+                $local = validate_state($body['state'] ?? null);
+                $this->validateExplicitDeletions($body, removed_collection_items($base, $local));
+                $this->execute('UPDATE sync_devices SET deletion_approval=? WHERE id=?', [$requestHash, $device['id']]);
+                return ['confirmed' => true];
+            }
             if ($sequence === (int)$device['sequence']) {
                 if (!hash_equals($device['request_hash'] ?? '', $requestHash)) api_fail(409, 'sequence_reused');
                 $cached = json_decode($device['response_json'], true, 32, JSON_THROW_ON_ERROR);
                 $cached['state'] = $device['response_state_ref'] !== null
                     ? (object)load_state($this->pdo, $device['response_state_ref']) : (object)$cached['state'];
+                if (isset($cached['authorized_deletions'])) $cached['authorized_deletions'] = (object)$cached['authorized_deletions'];
                 return $cached;
             }
             if ($sequence !== (int)$device['sequence'] + 1) api_fail(409, 'sequence_conflict');
@@ -123,16 +170,44 @@ final class SyncService {
             $r = $this->row('SELECT state_json,state_ref FROM sync_groups WHERE id=?', [$group]);
             $remote = load_state($this->pdo, $r['state_ref'], $r['state_json']);
             $merged = merge_state($remote, $base, $local);
+            $this->logReduction('client_proposal', $device, $sequence, $base, $local);
+            $this->logReduction('server_proposal', $device, $sequence, $remote, $merged);
+            $removed = removed_collection_items($remote, $merged);
+            $requested = removed_collection_items($base, $local);
+            $this->validateExplicitDeletions($body, $requested);
+            if (($removed || $requested) && !hash_equals($device['deletion_approval'] ?? '', $requestHash)) {
+                api_fail(409, 'deletion_confirmation_required');
+            }
+            if ($removed) {
+                // Independent recovery copy: normal snapshot GC cannot discard it.
+                $q = $this->pdo->prepare('INSERT OR IGNORE INTO sync_recovery(group_id,revision,created_at,payload) VALUES(?,?,?,?)');
+                $revision = (int)$this->row('SELECT revision FROM sync_groups WHERE id=?', [$group])['revision'];
+                $q->bindValue(1, $group); $q->bindValue(2, $revision, PDO::PARAM_INT);
+                $q->bindValue(3, time(), PDO::PARAM_INT);
+                $q->bindValue(4, compressed_json(state_json((object)$remote)), PDO::PARAM_LOB);
+                $q->execute();
+                $this->execute('DELETE FROM sync_recovery WHERE group_id=? AND revision NOT IN (SELECT revision FROM sync_recovery WHERE group_id=? ORDER BY revision DESC LIMIT 20)', [$group, $group]);
+            }
+            // Proofs are emitted only for removals accepted from an explicit user action.
+            foreach ($removed as $collection => $ids) foreach ($ids as $id) {
+                $this->execute('INSERT INTO sync_deletions(group_id,collection,item_id,revision) VALUES(?,?,?,?) ON CONFLICT(group_id,collection,item_id) DO UPDATE SET revision=excluded.revision', [$group,$collection,(string)$id,$revision + 1]);
+            }
+            // Re-adding an item invalidates its old deletion proof.
+            foreach ($merged as $collection => $rows) foreach ($rows as $row) {
+                $this->execute('DELETE FROM sync_deletions WHERE group_id=? AND collection=? AND item_id=?', [$group,$collection,$row['id']]);
+            }
             $hash = store_state($this->pdo, $merged);
+            if (load_state($this->pdo, $hash) != $merged) throw new RuntimeException('Snapshot roundtrip mismatch');
             $this->execute("UPDATE sync_groups SET state_json='{}',state_ref=?,revision=revision+1 WHERE id=?", [$hash, $group]);
             $device['sequence'] = $sequence;
             $result = $this->snapshot($device);
             $envelope = $result;
             unset($envelope['state']);
-            $this->execute('UPDATE sync_devices SET sequence=?,request_hash=?,response_json=?,response_state_ref=? WHERE id=?',
+            $this->execute('UPDATE sync_devices SET deletion_approval=NULL,sequence=?,request_hash=?,response_json=?,response_state_ref=? WHERE id=?',
                 [$sequence, $requestHash, json_encode($envelope, JSON_THROW_ON_ERROR), $hash, $device['id']]);
             collect_states($this->pdo, [$r['state_ref'], $device['response_state_ref']]);
             if ($r['state_ref'] !== $hash || $device['response_state_ref'] !== $hash) optimize_group_storage($this->pdo, $group);
+            $this->logReduction('write_verified', $device, $sequence, $remote, load_state($this->pdo, $hash));
             return $result;
         });
     }

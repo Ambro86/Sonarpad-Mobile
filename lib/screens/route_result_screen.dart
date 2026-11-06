@@ -38,8 +38,8 @@ class RouteResultScreen extends StatelessWidget {
                     for (var i = 0; i < result.paths.length; i++)
                       AccessibleListRow(
                         id: 'path_$i',
-                        title: '${l10n.routeDistance}: ${l10n.formatDistance(result.paths[i].distanceMeters)}',
-                        subtitle: '${l10n.routeDuration}: ${l10n.formatDuration(result.paths[i].durationSeconds)}',
+                        title: '${l10n.routeDistance}: ${result.paths[i].distanceLabel(l10n)}',
+                        subtitle: '${l10n.routeDuration}: ${result.paths[i].durationLabel(l10n)}',
                       ),
                   ],
                 ),
@@ -69,8 +69,8 @@ class RouteResultScreen extends StatelessWidget {
         separatorBuilder: (_, _) => const Divider(),
         itemBuilder: (context, index) {
           final path = result.paths[index];
-          final distanceStr = l10n.formatDistance(path.distanceMeters);
-          final durationStr = l10n.formatDuration(path.durationSeconds);
+          final distanceStr = path.distanceLabel(l10n);
+          final durationStr = path.durationLabel(l10n);
 
           return ListTile(
             title: Text('${l10n.routeDistance}: $distanceStr'),
@@ -151,7 +151,12 @@ class _RouteStepsScreenState extends State<RouteStepsScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     final l10n = AppLocalizations.of(context);
-    _items = _routeStepItems(widget.path, l10n);
+    _items = [
+      ..._routeStepItems(widget.path, l10n),
+      ...widget.path.notices.map((notice) => _RouteStepItem(
+        instruction: notice, distanceMeters: 0, showDistance: false,
+      )),
+    ];
   }
 
   @override
@@ -367,6 +372,7 @@ class _RouteStepsScreenState extends State<RouteStepsScreen> {
       RouteProfile.walking => 'walking',
       RouteProfile.cycling => 'bicycling',
       RouteProfile.wheelchair => 'walking',
+      RouteProfile.transit => 'transit',
     };
   }
 
@@ -376,6 +382,7 @@ class _RouteStepsScreenState extends State<RouteStepsScreen> {
       RouteProfile.walking => 'walking',
       RouteProfile.cycling => 'cycling',
       RouteProfile.wheelchair => 'walking',
+      RouteProfile.transit => 'transit',
     };
   }
 

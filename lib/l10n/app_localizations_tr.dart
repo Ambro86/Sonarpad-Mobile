@@ -9,6 +9,27 @@ class AppLocalizationsTr extends AppLocalizations {
   AppLocalizationsTr([String locale = 'tr']) : super(locale);
 
   @override
+  String get cloudSyncConfirmDeletions => 'Silmeleri onayla';
+
+  @override
+  String get cloudSyncDeleteOutgoing =>
+      'Bu öğeler buluttan ve diğer cihazlardan silinsin mi? Bu silmeleri istemediyseniz Hayır seçin.';
+
+  @override
+  String get cloudSyncDeleteIncoming =>
+      'Buluta göre bu öğeler bu cihazdan silinsin mi? Bu silmeleri istemediyseniz Hayır seçin.';
+
+  @override
+  String get cloudSyncDeletionPending =>
+      'Beklenmeyen silme engellendi. Silmeler yalnızca açık bir silme komutuyla eşitlenir.';
+
+  @override
+  String get cloudSyncFavoriteArticles => 'Favori makaleler';
+
+  @override
+  String get routeTransit => 'Toplu taşıma';
+
+  @override
   String get placesCategory => 'Kategori';
 
   @override

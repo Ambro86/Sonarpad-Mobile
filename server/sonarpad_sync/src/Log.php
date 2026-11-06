@@ -35,10 +35,11 @@ function sync_log(array $config, string $event, array $metadata = []): void {
             }
         }
         $row = ['time' => gmdate('c'), 'event' => preg_match('/^[a-z_]{1,40}$/D', $event) ? $event : 'unknown'];
-        foreach (['request_id', 'action', 'status', 'duration_ms', 'error', 'revision', 'collection_count', 'item_count'] as $key) {
+        foreach (['request_id', 'action', 'status', 'duration_ms', 'error', 'revision', 'collection_count', 'item_count', 'stage', 'group_id', 'device_id', 'sequence', 'collection', 'before_count', 'after_count', 'removed_count', 'item_sha256', 'preference_id'] as $key) {
             if (!isset($metadata[$key])) continue;
             $value = $metadata[$key];
-            if (is_int($value)) $row[$key] = $value;
+            if ($key === 'preference_id' && is_string($value) && preg_match('/^[a-z][a-z0-9_.]{1,79}$/D', $value)) $row[$key] = $value;
+            elseif (is_int($value)) $row[$key] = $value;
             elseif (is_string($value) && preg_match('/^[a-zA-Z0-9_-]{1,64}$/D', $value)) $row[$key] = $value;
         }
         $line = json_encode($row, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES) . "\n";

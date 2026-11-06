@@ -2113,7 +2113,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
               .where((item) => !service.isSameFavoriteChannel(item, channel))
               .toList()
           : [...favorites, channel];
-      await service.saveFavorites(next);
+      await service.saveFavorites(next, explicitlyRemoved: alreadyFavorite ? favorites.where((favorite) => service.isSameFavoriteChannel(favorite, channel)).map((favorite) => favorite.name).toList() : []);
       if (!mounted) return;
       setState(() => _isFavorite = !alreadyFavorite);
       showStatusMessage(
@@ -2134,7 +2134,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
             .where((item) => item.streamUrl != widget.station.streamUrl)
             .toList()
         : [...favorites, widget.station];
-    await service.saveFavorites(next);
+    await service.saveFavorites(next, explicitlyRemoved: alreadyFavorite ? [widget.station.streamUrl] : []);
     if (!mounted) return;
     setState(() => _isFavorite = !alreadyFavorite);
     showStatusMessage(

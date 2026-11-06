@@ -1,3 +1,4 @@
+import 'cloud_sync_deletions.dart';
 import 'dart:convert';
 import 'dart:io';
 
@@ -768,6 +769,7 @@ class PodcastService {
 
   Future<void> removeSubscription(PodcastSubscription subscription) async {
     final list = await loadSubscriptions();
+    await CloudSyncDeletions.record('podcasts', [subscription.feedUrl.trim()]);
     list.removeWhere((e) => e.feedUrl == subscription.feedUrl);
     await saveSubscriptions(list);
   }

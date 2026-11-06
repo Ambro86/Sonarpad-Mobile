@@ -34,6 +34,10 @@ SQL);
             $columns = array_column($pdo->query("PRAGMA table_info($table)")->fetchAll(), 'name');
             if (!in_array($column, $columns, true)) $pdo->exec("ALTER TABLE $table ADD COLUMN $column TEXT");
         }
+        $pdo->exec('CREATE TABLE IF NOT EXISTS sync_deletions(group_id TEXT NOT NULL REFERENCES sync_groups(id) ON DELETE CASCADE, collection TEXT NOT NULL, item_id TEXT NOT NULL, revision INTEGER NOT NULL, PRIMARY KEY(group_id,collection,item_id)) WITHOUT ROWID');
+        $deviceColumns = array_column($pdo->query('PRAGMA table_info(sync_devices)')->fetchAll(), 'name');
+        if (!in_array('deletion_approval', $deviceColumns, true)) $pdo->exec('ALTER TABLE sync_devices ADD COLUMN deletion_approval TEXT');
+        $pdo->exec('CREATE TABLE IF NOT EXISTS sync_recovery(group_id TEXT NOT NULL REFERENCES sync_groups(id) ON DELETE CASCADE, revision INTEGER NOT NULL, created_at INTEGER NOT NULL, payload BLOB NOT NULL, PRIMARY KEY(group_id,revision)) WITHOUT ROWID');
         $columns = array_column($pdo->query('PRAGMA table_info(sync_groups)')->fetchAll(), 'name');
         if (!in_array('storage_policy', $columns, true)) $pdo->exec('ALTER TABLE sync_groups ADD COLUMN storage_policy INTEGER NOT NULL DEFAULT 0');
         $pdo->exec('CREATE INDEX IF NOT EXISTS sync_groups_policy ON sync_groups(id) WHERE storage_policy=0');

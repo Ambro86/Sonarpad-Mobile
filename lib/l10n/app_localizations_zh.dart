@@ -9,6 +9,24 @@ class AppLocalizationsZh extends AppLocalizations {
   AppLocalizationsZh([String locale = 'zh']) : super(locale);
 
   @override
+  String get cloudSyncConfirmDeletions => '确认删除';
+
+  @override
+  String get cloudSyncDeleteOutgoing => '要从云端和其他设备删除这些项目吗？如果您没有要求删除，请选择“否”。';
+
+  @override
+  String get cloudSyncDeleteIncoming => '要按照云端数据从此设备删除这些项目吗？如果您没有要求删除，请选择“否”。';
+
+  @override
+  String get cloudSyncDeletionPending => '已阻止意外删除。只有明确执行删除操作后，才会同步删除。';
+
+  @override
+  String get cloudSyncFavoriteArticles => '收藏文章';
+
+  @override
+  String get routeTransit => '公共交通';
+
+  @override
   String get placesCategory => '类别';
 
   @override
@@ -5758,6 +5776,24 @@ class AppLocalizationsZh extends AppLocalizations {
 /// The translations for Chinese, as used in China (`zh_CN`).
 class AppLocalizationsZhCn extends AppLocalizationsZh {
   AppLocalizationsZhCn() : super('zh_CN');
+
+  @override
+  String get cloudSyncConfirmDeletions => '确认删除';
+
+  @override
+  String get cloudSyncDeleteOutgoing => '要从云端和其他设备删除这些项目吗？如果您没有要求删除，请选择“否”。';
+
+  @override
+  String get cloudSyncDeleteIncoming => '要按照云端数据从此设备删除这些项目吗？如果您没有要求删除，请选择“否”。';
+
+  @override
+  String get cloudSyncDeletionPending => '已阻止意外删除。只有明确执行删除操作后，才会同步删除。';
+
+  @override
+  String get cloudSyncFavoriteArticles => '收藏文章';
+
+  @override
+  String get routeTransit => '公共交通';
 
   @override
   String get placesCategory => '类别';

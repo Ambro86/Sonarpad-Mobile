@@ -1,4 +1,11 @@
 {
+  "cloudSyncConfirmDeletions": "Potwierdź usunięcia",
+  "cloudSyncDeleteOutgoing": "Usunąć te elementy z chmury i innych urządzeń? Wybierz Nie, jeśli nie proszono o te usunięcia.",
+  "cloudSyncDeleteIncoming": "Usunąć te elementy z tego urządzenia zgodnie z chmurą? Wybierz Nie, jeśli nie proszono o te usunięcia.",
+  "cloudSyncDeletionPending": "Zablokowano nieoczekiwane usunięcie. Usunięcia są synchronizowane tylko po wyraźnym poleceniu.",
+  "cloudSyncFavoriteArticles": "Ulubione artykuły",
+
+  "routeTransit": "Transport publiczny",
   "placesCategory": "Kategoria",
   "placesAddress": "Adres",
   "placesPhone": "Telefon",

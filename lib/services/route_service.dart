@@ -1,15 +1,18 @@
 import 'dart:convert';
+import '../utils/app_logger.dart';
 import 'dart:developer' as developer;
 import 'package:http/http.dart' as http;
 
 import '../l10n/app_localizations.dart';
+import '../l10n/localized_dynamic_labels.dart';
 import '../l10n/app_localizations_lookup.dart';
 
 enum RouteProfile {
   walking('foot-walking'),
   cycling('cycling-regular'),
   driving('driving-car'),
-  wheelchair('wheelchair');
+  wheelchair('wheelchair'),
+  transit('transit');
 
   final String apiValue;
   const RouteProfile(this.apiValue);
@@ -105,12 +108,24 @@ class RouteStep {
 }
 
 class RoutePath {
+  final List<String> notices;
+  final String? distanceText;
+  final String? durationText;
+
+  String distanceLabel(AppLocalizations l10n) =>
+      distanceText ?? l10n.formatDistance(distanceMeters);
+  String durationLabel(AppLocalizations l10n) =>
+      durationText ?? l10n.formatDuration(durationSeconds);
+
   final double distanceMeters;
   final double durationSeconds;
   final List<RouteStep> steps;
   final List<RouteMunicipalityChange> municipalityChanges;
 
   const RoutePath({
+    this.notices = const [],
+    this.distanceText,
+    this.durationText,
     required this.distanceMeters,
     required this.durationSeconds,
     required this.steps,
@@ -150,8 +165,9 @@ class RouteResult {
 
 class RouteService {
   static const _baseUrl = 'https://sonarpad.com/api';
-  static const _clientToken =
-      String.fromEnvironment('SONARPAD_ROUTE_CLIENT_TOKEN');
+  static const _clientToken = String.fromEnvironment(
+    'SONARPAD_ROUTE_CLIENT_TOKEN',
+  );
   static const _unauthorizedClientError = 'Client non autorizzato.';
 
   final http.Client _client;
@@ -159,10 +175,10 @@ class RouteService {
   RouteService({http.Client? client}) : _client = client ?? http.Client();
 
   Map<String, String> get _headers => {
-        'User-Agent': 'Sonarpad/1.0.0',
-        'Accept': 'application/json',
-        'X-Sonarpad-Route-Token': _clientToken,
-      };
+    'User-Agent': 'Sonarpad/1.0.0',
+    'Accept': 'application/json',
+    'X-Sonarpad-Route-Token': _clientToken,
+  };
 
   String _countryAlpha3(String countryCode) {
     switch (countryCode.toLowerCase()) {
@@ -264,15 +280,16 @@ class RouteService {
     required String language,
     required String countryCode,
   }) async {
-    final uri =
-        Uri.parse('$_baseUrl/ors_geocode.php').replace(queryParameters: {
-      'q': query,
-      'size': '20',
-      'layers': 'address,street,venue',
-      'sources': 'osm,oa',
-      'boundary.country': _countryAlpha3(countryCode),
-      'language': language,
-    });
+    final uri = Uri.parse('$_baseUrl/ors_geocode.php').replace(
+      queryParameters: {
+        'q': query,
+        'size': '20',
+        'layers': 'address,street,venue',
+        'sources': 'osm,oa',
+        'boundary.country': _countryAlpha3(countryCode),
+        'language': language,
+      },
+    );
 
     final response = await _client
         .get(uri, headers: _headers)
@@ -291,16 +308,20 @@ class RouteService {
   }
 
   bool _isAllCityFallback(
-      List<GeocodeCandidate> results, String originalQuery) {
+    List<GeocodeCandidate> results,
+    String originalQuery,
+  ) {
     if (results.isEmpty || _splitWords(originalQuery).length <= 1) {
       return false;
     }
 
-    return results.every((candidate) =>
-        candidate.postalcode.isEmpty &&
-        (candidate.name == candidate.locality ||
-            candidate.name == candidate.region ||
-            candidate.name == candidate.country));
+    return results.every(
+      (candidate) =>
+          candidate.postalcode.isEmpty &&
+          (candidate.name == candidate.locality ||
+              candidate.name == candidate.region ||
+              candidate.name == candidate.country),
+    );
   }
 
   String? _simplifyQuery(String query) {
@@ -415,6 +436,26 @@ class RouteService {
     required String language,
     required String countryCode,
   }) async {
+    if (profile != RouteProfile.wheelchair) {
+      try {
+        final result = await _primaryRoute(
+          from: from,
+          to: to,
+          profile: profile,
+          preference: preference,
+          includeMunicipalities: includeMunicipalities,
+          language: language,
+          countryCode: countryCode,
+        );
+        await AppLogger.log(
+          'route_result: provider=google fallback=false profile=${profile.apiValue} paths=${result.paths.length}',
+        );
+        return result;
+      } catch (error) {
+        if (profile == RouteProfile.transit) rethrow;
+        await AppLogger.log('route_fallback: from=google to=ors reason=$error');
+      }
+    }
     final uri = _routeEndpointUri({
       'from_lat': from.latitude.toString(),
       'from_lon': from.longitude.toString(),
@@ -448,8 +489,9 @@ class RouteService {
 
     List<RoutePath> paths = [];
     if (data['routes'] != null && (data['routes'] as List).isNotEmpty) {
-      paths =
-          (data['routes'] as List).map((e) => RoutePath.fromJson(e)).toList();
+      paths = (data['routes'] as List)
+          .map((e) => RoutePath.fromJson(e))
+          .toList();
     } else {
       paths = [
         RoutePath(
@@ -460,10 +502,94 @@ class RouteService {
               .map((e) => RouteStep.fromJson(e))
               .toList(),
           municipalityChanges: const [],
-        )
+        ),
       ];
     }
 
+    await AppLogger.log(
+      'route_result: provider=ors fallback=${profile != RouteProfile.wheelchair} profile=${profile.apiValue} paths=${paths.length}',
+    );
+    return RouteResult(
+      from: from,
+      to: to,
+      paths: paths,
+      profile: profile,
+      preference: preference,
+    );
+  }
+
+  Future<RouteResult> _primaryRoute({
+    required GeocodeCandidate from,
+    required GeocodeCandidate to,
+    required RouteProfile profile,
+    required RoutePreference preference,
+    required bool includeMunicipalities,
+    required String language,
+    required String countryCode,
+  }) async {
+    final response = await _client
+        .post(
+          Uri.parse('$_baseUrl/percorsi.php'),
+          headers: {..._headers, 'Content-Type': 'application/json'},
+          body: jsonEncode({
+            'da': '${from.latitude},${from.longitude}',
+            'a': '${to.latitude},${to.longitude}',
+            'mezzo': profile == RouteProfile.driving
+                ? 'auto'
+                : profile == RouteProfile.walking
+                ? 'piedi'
+                : profile == RouteProfile.cycling
+                ? 'bici'
+                : 'pullman',
+            'partenza': 'adesso',
+            'preferenza': profile == RouteProfile.transit
+                ? 'fastest'
+                : preference.apiValue,
+            'evita': '',
+            'includi_comuni': includeMunicipalities,
+            'paese': countryCode.toLowerCase(),
+            'lingua': language,
+          }),
+        )
+        .timeout(const Duration(seconds: 60));
+    if (response.statusCode != 200) {
+      throw Exception(_networkRouteError(language, response.statusCode));
+    }
+    final data = jsonDecode(response.body) as Map<String, dynamic>;
+    if (data['ok'] != true ||
+        data['data']?['preferenza'] !=
+            (profile == RouteProfile.transit
+                ? 'fastest'
+                : preference.apiValue) ||
+        data['data']?['evita'] != '' ||
+        (includeMunicipalities && data['data']?['includi_comuni'] != true)) {
+      throw Exception(_routeCalculationServerError(language));
+    }
+    final routes = data['data']?['percorsi'] as List<dynamic>? ?? [];
+    if (routes.isEmpty) throw Exception(_routeCalculationServerError(language));
+    final paths = routes.map((route) {
+      final instructions = (route['istruzioni'] as List).cast<String>();
+      if (instructions.isEmpty || instructions.any((s) => s.trim().isEmpty)) {
+        throw Exception(_routeCalculationServerError(language));
+      }
+      return RoutePath(
+        distanceMeters: (route['distanza_metri'] as num).toDouble(),
+        durationSeconds: (route['durata_secondi'] as num).toDouble(),
+        distanceText: route['distanza'] as String,
+        durationText: route['durata'] as String,
+        notices: (route['avvisi'] as List<dynamic>? ?? []).cast<String>(),
+        steps: instructions
+            .map(
+              (s) => RouteStep(
+                instruction: s,
+                distanceMeters: 0,
+                durationSeconds: 0,
+              ),
+            )
+            .toList(),
+        municipalityChanges: const [],
+      );
+    }).toList();
     return RouteResult(
       from: from,
       to: to,
@@ -483,13 +609,19 @@ class RouteService {
     required String countryCode,
   }) async {
     final fromCandidates = await geocode(
-        query: fromAddress, language: language, countryCode: countryCode);
+      query: fromAddress,
+      language: language,
+      countryCode: countryCode,
+    );
     if (fromCandidates.isEmpty) {
       throw Exception(_addressNotFound(language, true));
     }
 
     final toCandidates = await geocode(
-        query: toAddress, language: language, countryCode: countryCode);
+      query: toAddress,
+      language: language,
+      countryCode: countryCode,
+    );
     if (toCandidates.isEmpty) {
       throw Exception(_addressNotFound(language, false));
     }

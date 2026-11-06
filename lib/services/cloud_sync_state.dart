@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:crypto/crypto.dart';
+import '../utils/app_logger.dart';
 
 typedef CloudState = Map<String, List<Map<String, dynamic>>>;
 
@@ -112,4 +114,46 @@ String cloudYoutubeUrl(String input) {
     return 'https://www.youtube.com/channel/${segments[1]}';
   }
   return 'https://www.youtube.com${uri.path.replaceFirst(RegExp(r'/$'), '')}';
+}
+
+CloudState removedCloudItems(CloudState before, CloudState after) => {
+  for (final entry in after.entries)
+    entry.key: (before[entry.key] ?? [])
+        .where((row) => !entry.value.any((item) => item['id'] == row['id']))
+        .toList(),
+}..removeWhere((key, rows) => rows.isEmpty);
+
+Future<void> logCloudReductions(
+  CloudState before,
+  CloudState after,
+  String stage,
+) async {
+  final previous = {
+    for (final row in before['preferences'] ?? <Map<String, dynamic>>[])
+      row['id']: row,
+  };
+  for (final row in after['preferences'] ?? <Map<String, dynamic>>[]) {
+    final old = previous[row['id']];
+    if (old == null || jsonEncode(old['data']) == jsonEncode(row['data'])) {
+      continue;
+    }
+    final id = row['id'] as String;
+    if (!RegExp(r'^[a-z][a-z0-9_.]{1,79}$').hasMatch(id)) continue;
+    // Never include preference values or credentials in diagnostics.
+    await AppLogger.log(
+      '[CloudSync] preference_changed stage=$stage preference_id=$id',
+    );
+  }
+  for (final entry in removedCloudItems(before, after).entries) {
+    await AppLogger.log(
+      '[CloudSync] reduction stage=$stage collection=${entry.key} '
+      'before=${before[entry.key]!.length} after=${after[entry.key]!.length} removed=${entry.value.length}',
+    );
+    for (final row in entry.value) {
+      await AppLogger.log(
+        '[CloudSync] removed_item stage=$stage collection=${entry.key} '
+        'id_sha256=${sha256.convert(utf8.encode(row['id'] as String))}',
+      );
+    }
+  }
 }

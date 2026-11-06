@@ -1,4 +1,11 @@
 {
+  "cloudSyncConfirmDeletions": "Potvrdit odstranění",
+  "cloudSyncDeleteOutgoing": "Odstranit tyto položky z cloudu a ostatních zařízení? Pokud jste o odstranění nežádali, zvolte Ne.",
+  "cloudSyncDeleteIncoming": "Odstranit tyto položky z tohoto zařízení podle cloudu? Pokud jste o odstranění nežádali, zvolte Ne.",
+  "cloudSyncDeletionPending": "Neočekávané odstranění zablokováno. Odstranění se synchronizuje pouze na výslovný příkaz.",
+  "cloudSyncFavoriteArticles": "Oblíbené články",
+
+  "routeTransit": "Veřejná doprava",
   "placesCategory": "Kategorie",
   "placesAddress": "Adresa",
   "placesPhone": "Telefon",

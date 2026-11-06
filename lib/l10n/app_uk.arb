@@ -1,4 +1,11 @@
 {
+  "cloudSyncConfirmDeletions": "Підтвердити видалення",
+  "cloudSyncDeleteOutgoing": "Видалити ці елементи з хмари та інших пристроїв? Виберіть Ні, якщо ви цього не запитували.",
+  "cloudSyncDeleteIncoming": "Видалити ці елементи з цього пристрою за даними хмари? Виберіть Ні, якщо ви цього не запитували.",
+  "cloudSyncDeletionPending": "Неочікуване видалення заблоковано. Видалення синхронізуються лише за явною командою.",
+  "cloudSyncFavoriteArticles": "Улюблені статті",
+
+  "routeTransit": "Громадський транспорт",
   "placesCategory": "Категорія",
   "placesAddress": "Адреса",
   "placesPhone": "Телефон",

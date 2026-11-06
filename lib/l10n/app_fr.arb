@@ -1,4 +1,11 @@
 {
+  "cloudSyncConfirmDeletions": "Confirmer les suppressions",
+  "cloudSyncDeleteOutgoing": "Supprimer ces éléments du cloud et des autres appareils ? Choisissez Non si vous ne l’avez pas demandé.",
+  "cloudSyncDeleteIncoming": "Supprimer ces éléments de cet appareil selon le cloud ? Choisissez Non si vous ne l’avez pas demandé.",
+  "cloudSyncDeletionPending": "Suppression inattendue bloquée. Aucune suppression n’est propagée sans une commande explicite.",
+  "cloudSyncFavoriteArticles": "Articles favoris",
+
+  "routeTransit": "Transports en commun",
   "placesCategory": "Catégorie",
   "placesAddress": "Adresse",
   "placesPhone": "Téléphone",

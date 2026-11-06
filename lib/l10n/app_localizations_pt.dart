@@ -9,6 +9,27 @@ class AppLocalizationsPt extends AppLocalizations {
   AppLocalizationsPt([String locale = 'pt']) : super(locale);
 
   @override
+  String get cloudSyncConfirmDeletions => 'Confirmar exclusões';
+
+  @override
+  String get cloudSyncDeleteOutgoing =>
+      'Excluir estes itens da nuvem e dos outros dispositivos? Escolha Não se não solicitou estas exclusões.';
+
+  @override
+  String get cloudSyncDeleteIncoming =>
+      'Excluir estes itens deste dispositivo conforme a nuvem? Escolha Não se não solicitou estas exclusões.';
+
+  @override
+  String get cloudSyncDeletionPending =>
+      'Remoção inesperada bloqueada. Só são propagadas eliminações solicitadas explicitamente.';
+
+  @override
+  String get cloudSyncFavoriteArticles => 'Artigos favoritos';
+
+  @override
+  String get routeTransit => 'Transportes públicos';
+
+  @override
   String get placesCategory => 'Categoria';
 
   @override
@@ -6015,6 +6036,27 @@ class AppLocalizationsPt extends AppLocalizations {
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
 class AppLocalizationsPtBr extends AppLocalizationsPt {
   AppLocalizationsPtBr() : super('pt_BR');
+
+  @override
+  String get cloudSyncConfirmDeletions => 'Confirmar exclusões';
+
+  @override
+  String get cloudSyncDeleteOutgoing =>
+      'Excluir estes itens da nuvem e dos outros dispositivos? Escolha Não se não solicitou estas exclusões.';
+
+  @override
+  String get cloudSyncDeleteIncoming =>
+      'Excluir estes itens deste dispositivo conforme a nuvem? Escolha Não se não solicitou estas exclusões.';
+
+  @override
+  String get cloudSyncDeletionPending =>
+      'Remoção inesperada bloqueada. Só são propagadas eliminações solicitadas explicitamente.';
+
+  @override
+  String get cloudSyncFavoriteArticles => 'Artigos favoritos';
+
+  @override
+  String get routeTransit => 'Transporte público';
 
   @override
   String get placesCategory => 'Categoria';

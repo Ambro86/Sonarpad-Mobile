@@ -1,4 +1,11 @@
 {
+  "cloudSyncConfirmDeletions": "Löschungen bestätigen",
+  "cloudSyncDeleteOutgoing": "Diese Einträge aus der Cloud und von anderen Geräten löschen? Wählen Sie Nein, wenn Sie dies nicht angefordert haben.",
+  "cloudSyncDeleteIncoming": "Diese Einträge auf diesem Gerät gemäß der Cloud löschen? Wählen Sie Nein, wenn Sie dies nicht angefordert haben.",
+  "cloudSyncDeletionPending": "Unerwartetes Entfernen blockiert. Löschungen werden nur nach einem ausdrücklichen Löschbefehl übertragen.",
+  "cloudSyncFavoriteArticles": "Gespeicherte Artikel",
+
+  "routeTransit": "Öffentliche Verkehrsmittel",
   "placesCategory": "Kategorie",
   "placesAddress": "Adresse",
   "placesPhone": "Telefon",

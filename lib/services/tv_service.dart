@@ -1,3 +1,4 @@
+import 'cloud_sync_deletions.dart';
 import 'dart:convert';
 import 'dart:developer' as dev;
 import 'dart:io';
@@ -765,7 +766,8 @@ class TvService {
     }
   }
 
-  Future<void> saveFavorites(List<TvChannel> favorites) async {
+  Future<void> saveFavorites(List<TvChannel> favorites, {List<String> explicitlyRemoved = const []}) async {
+    await CloudSyncDeletions.record('tv', explicitlyRemoved.map((id) => id.trim().toLowerCase()));
     final prefs = await SharedPreferences.getInstance();
     await _writeFavoriteReferences(prefs, favorites);
   }

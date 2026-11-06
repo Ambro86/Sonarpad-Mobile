@@ -1,4 +1,11 @@
 {
+  "cloudSyncConfirmDeletions": "Confirmă ștergerile",
+  "cloudSyncDeleteOutgoing": "Ștergi aceste elemente din cloud și de pe celelalte dispozitive? Alege Nu dacă nu ai solicitat ștergerile.",
+  "cloudSyncDeleteIncoming": "Ștergi aceste elemente de pe acest dispozitiv conform cloudului? Alege Nu dacă nu ai solicitat ștergerile.",
+  "cloudSyncDeletionPending": "Ștergere neașteptată blocată. Ștergerile sunt propagate numai la o comandă explicită.",
+  "cloudSyncFavoriteArticles": "Articole favorite",
+
+  "routeTransit": "Transport public",
   "placesCategory": "Categorie",
   "placesAddress": "Adresă",
   "placesPhone": "Telefon",

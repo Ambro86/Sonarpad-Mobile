@@ -9,6 +9,27 @@ class AppLocalizationsEs extends AppLocalizations {
   AppLocalizationsEs([String locale = 'es']) : super(locale);
 
   @override
+  String get cloudSyncConfirmDeletions => 'Confirmar eliminaciones';
+
+  @override
+  String get cloudSyncDeleteOutgoing =>
+      '¿Eliminar estos elementos de la nube y de otros dispositivos? Elige No si no solicitaste estas eliminaciones.';
+
+  @override
+  String get cloudSyncDeleteIncoming =>
+      '¿Eliminar estos elementos de este dispositivo según la nube? Elige No si no solicitaste estas eliminaciones.';
+
+  @override
+  String get cloudSyncDeletionPending =>
+      'Eliminación inesperada bloqueada. Solo se propagan eliminaciones solicitadas explícitamente.';
+
+  @override
+  String get cloudSyncFavoriteArticles => 'Artículos favoritos';
+
+  @override
+  String get routeTransit => 'Transporte público';
+
+  @override
   String get placesCategory => 'Categoría';
 
   @override

@@ -9,6 +9,27 @@ class AppLocalizationsNl extends AppLocalizations {
   AppLocalizationsNl([String locale = 'nl']) : super(locale);
 
   @override
+  String get cloudSyncConfirmDeletions => 'Verwijderingen bevestigen';
+
+  @override
+  String get cloudSyncDeleteOutgoing =>
+      'Deze items uit de cloud en van andere apparaten verwijderen? Kies Nee als u hier niet om hebt gevraagd.';
+
+  @override
+  String get cloudSyncDeleteIncoming =>
+      'Deze items volgens de cloud van dit apparaat verwijderen? Kies Nee als u hier niet om hebt gevraagd.';
+
+  @override
+  String get cloudSyncDeletionPending =>
+      'Onverwachte verwijdering geblokkeerd. Alleen expliciet aangevraagde verwijderingen worden gesynchroniseerd.';
+
+  @override
+  String get cloudSyncFavoriteArticles => 'Favoriete artikelen';
+
+  @override
+  String get routeTransit => 'Openbaar vervoer';
+
+  @override
   String get placesCategory => 'Categorie';
 
   @override

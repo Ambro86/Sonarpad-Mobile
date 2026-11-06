@@ -1,4 +1,11 @@
 {
+  "cloudSyncConfirmDeletions": "Confirmar exclusões",
+  "cloudSyncDeleteOutgoing": "Excluir estes itens da nuvem e dos outros dispositivos? Escolha Não se não solicitou estas exclusões.",
+  "cloudSyncDeleteIncoming": "Excluir estes itens deste dispositivo conforme a nuvem? Escolha Não se não solicitou estas exclusões.",
+  "cloudSyncDeletionPending": "Remoção inesperada bloqueada. Só são propagadas eliminações solicitadas explicitamente.",
+  "cloudSyncFavoriteArticles": "Artigos favoritos",
+
+  "routeTransit": "Transportes públicos",
   "placesCategory": "Categoria",
   "placesAddress": "Morada",
   "placesPhone": "Telefone",

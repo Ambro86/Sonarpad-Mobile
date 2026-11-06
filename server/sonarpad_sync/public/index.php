@@ -15,6 +15,7 @@ try {
     $directory = rtrim(str_replace('\\', '/', dirname($script)), '/') . '/';
     if ($path !== $script && $path !== $directory) api_fail(404, 'not_found');
     $config = sync_config();
+    $config['request_id'] = $requestId;
     $https = !empty($_SERVER['HTTPS']) && strtolower((string)$_SERVER['HTTPS']) !== 'off';
     if ($config['require_https'] && !$https) api_fail(400, 'https_required');
     $service = new SyncService(db(), $config);
@@ -25,7 +26,7 @@ try {
         json_response(200, ['ok' => true, 'service' => 'Sonarpad Sync', 'schema_version' => 1,
             'collections' => SYNC_COLLECTIONS, 'preferences_max_bytes' => 32768,
             'storage_encoding' => 'gzip-9', 'storage_deduplication' => true,
-            'storage_layout' => 'adaptive-v3', 'log_retention_days' => 5]);
+            'deletion_guard' => 2, 'recovery_snapshots' => 20, 'storage_layout' => 'adaptive-v3', 'log_retention_days' => 5]);
     }
     if ($method !== 'POST') { header('Allow: POST'); api_fail(405, 'method_not_allowed'); }
     $service->rateLimit((string)($_SERVER['REMOTE_ADDR'] ?? 'unknown'), $action);

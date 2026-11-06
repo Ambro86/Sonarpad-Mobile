@@ -85,9 +85,10 @@ class _FavoriteTvsScreenState extends State<FavoriteTvsScreen> {
 
   Future<void> _removeFromFavorites(TvChannel channel) async {
     final favs = await _service.loadFavorites();
+    final removedNames = favs.where((favorite) => _service.isSameFavoriteChannel(favorite, channel)).map((favorite) => favorite.name).toList();
     favs.removeWhere((favorite) =>
         _service.isSameFavoriteChannel(favorite, channel));
-    await _service.saveFavorites(favs);
+    await _service.saveFavorites(favs, explicitlyRemoved: removedNames);
     if (!mounted) return;
     showStatusMessage(context, '${channel.name} rimosso dai preferiti');
     _load();

@@ -44,6 +44,7 @@ class _CloudSyncScreenState extends State<CloudSyncScreen> {
   }
 
   String _syncStatus(AppLocalizations l10n) {
+    if (_meta['deletion_review'] != null) return l10n.cloudSyncDeletionPending;
     final message = CloudSyncService.busy
         ? l10n.cloudSyncWorking
         : !_preferences && !_collections
@@ -90,7 +91,13 @@ class _CloudSyncScreenState extends State<CloudSyncScreen> {
     });
     final l10n = AppLocalizations.of(context);
     try {
-      await action();
+      try {
+        await action();
+      } on CloudSyncApiException catch (error) {
+        if (error.code != 'deletion_confirmation_required') rethrow;
+        if (mounted) setState(() => _status = l10n.cloudSyncDeletionPending);
+        return;
+      }
       if (mounted) setState(() => _status = l10n.cloudSyncDone);
     } catch (e) {
       if (mounted) {

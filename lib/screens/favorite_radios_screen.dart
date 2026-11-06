@@ -60,7 +60,7 @@ class _FavoriteRadiosScreenState extends State<FavoriteRadiosScreen> {
     final next = _favorites
         .where((item) => item.streamUrl != station.streamUrl)
         .toList();
-    await _service.saveFavorites(next);
+    await _service.saveFavorites(next, explicitlyRemoved: [station.streamUrl]);
     setState(() => _favorites = next);
 
     if (!mounted) return;

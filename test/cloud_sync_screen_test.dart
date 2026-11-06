@@ -3,15 +3,38 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:sonarpad_mobile_starter/l10n/app_localizations.dart';
 import 'package:sonarpad_mobile_starter/screens/cloud_sync_screen.dart';
 import 'package:sonarpad_mobile_starter/services/cloud_sync_service.dart';
+import 'package:sonarpad_mobile_starter/services/cloud_sync_api.dart';
 
 class FakeSync extends CloudSyncService {
   String? lastSync;
   bool connected = false;
   String? joinedCode;
   int connections = 0;
+  bool needsDeletionReview = false;
+  int approvals = 0;
+  final review = <String, dynamic>{
+    'direction': 'outgoing',
+    'before': {
+      'sonartube': [
+        {
+          'id': 'a',
+          'data': {'title': 'A'},
+        },
+      ],
+    },
+    'after': {'sonartube': []},
+  };
+  @override
+  Future<void> synchronize() async {
+    if (needsDeletionReview) {
+      throw const CloudSyncApiException('deletion_confirmation_required');
+    }
+  }
+
   @override
   Future<Map<String, dynamic>> metadata() async => {
     if (connected) 'group_id': 'test',
+    if (needsDeletionReview) 'deletion_review': review,
     if (lastSync != null) 'last_sync': lastSync,
   };
   @override
@@ -115,4 +138,17 @@ void main() {
       CloudSyncService.automaticFailed = false;
     },
   );
+  testWidgets('Unexpected loss stays blocked without an approval dialog', (
+    tester,
+  ) async {
+    final service = FakeSync()
+      ..connected = true
+      ..needsDeletionReview = true;
+    await open(tester, service);
+    await tester.tap(find.text('Sincronizza ora'));
+    await tester.pumpAndSettle();
+    expect(find.byType(AlertDialog), findsNothing);
+    expect(service.needsDeletionReview, isTrue);
+    expect(find.textContaining('Rimozione inattesa bloccata'), findsWidgets);
+  });
 }
