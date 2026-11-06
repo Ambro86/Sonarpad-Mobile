@@ -9,6 +9,54 @@ class AppLocalizationsRo extends AppLocalizations {
   AppLocalizationsRo([String locale = 'ro']) : super(locale);
 
   @override
+  String get placesCategory => 'Categorie';
+
+  @override
+  String get placesAddress => 'Adresă';
+
+  @override
+  String get placesPhone => 'Telefon';
+
+  @override
+  String get placesWebsite => 'Site web';
+
+  @override
+  String get placesRating => 'Evaluare: %stars% din 5 stele';
+
+  @override
+  String get placesReviews => ' (%count% recenzii)';
+
+  @override
+  String get placesUnavailable => 'indisponibil';
+
+  @override
+  String get placesStatus => 'Starea deschiderii';
+
+  @override
+  String get placesHours => 'Program';
+
+  @override
+  String get placesHoursMissing => 'Program indisponibil';
+
+  @override
+  String get placesToday => 'Astăzi';
+
+  @override
+  String get placesTomorrow => 'Mâine';
+
+  @override
+  String get placesRange => 'de la %start% la %end%';
+
+  @override
+  String get placesNextDay => ' în ziua următoare';
+
+  @override
+  String get placesQuery => 'Introdu un loc sau o firmă';
+
+  @override
+  String get placesLocation => 'Oraș / Adresă (opțional)';
+
+  @override
   String get appTitle => 'Sonarpad';
 
   @override
@@ -4456,7 +4504,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get homeOpeningHours => 'Program de funcționare';
 
   @override
-  String get homeDirectory => 'Pagini Albe și Pagini Aurii';
+  String get homeDirectory => 'Caută locuri și firme';
 
   @override
   String get treccaniTitle => 'Enciclopedia Treccani';

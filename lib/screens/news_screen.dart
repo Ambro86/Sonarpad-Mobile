@@ -615,10 +615,12 @@ class _CommunityNewsSourcesScreen extends StatefulWidget {
   const _CommunityNewsSourcesScreen({
     required this.language,
     this.parentFolderId,
+    this.searchQuery,
   });
 
   final NewsLanguage language;
   final String? parentFolderId;
+  final String? searchQuery;
 
   @override
   State<_CommunityNewsSourcesScreen> createState() =>
@@ -628,6 +630,9 @@ class _CommunityNewsSourcesScreen extends StatefulWidget {
 class _CommunityNewsSourcesScreenState
     extends State<_CommunityNewsSourcesScreen> {
   final _service = NewsService();
+  final _searchController = TextEditingController();
+  int _searchTextRevision = 0;
+  bool get _isSearchResults => widget.searchQuery != null;
   late Future<List<NewsRssSource>> _future;
   final Set<String> _addingUrls = {};
 
@@ -635,6 +640,58 @@ class _CommunityNewsSourcesScreenState
   void initState() {
     super.initState();
     _future = _service.fetchCommunityNewsSources(widget.language);
+  }
+
+  Future<void> _search() async {
+    final query = _searchController.text.trim();
+    if (query.isEmpty) return;
+    FocusManager.instance.primaryFocus?.unfocus();
+    await Navigator.of(context).push(MaterialPageRoute<void>(
+      builder: (_) => _CommunityNewsSourcesScreen(
+        language: widget.language, parentFolderId: widget.parentFolderId, searchQuery: query,
+      ),
+    ));
+    if (mounted) _reload();
+  }
+
+  List<AccessibleListRow> _searchRows(AppLocalizations l10n) => [
+    AccessibleListRow(
+      id: 'library_search_field', title: l10n.search, kind: 'textField',
+      value: _searchController.text, textInputAction: 'search',
+      textRevision: _searchTextRevision,
+      onValueChanged: (value) { _searchController.text = value?.toString() ?? ''; },
+      onSubmitted: (_) => _search(),
+      flutterChild: TextField(
+        key: const ValueKey('library_search_field'),
+        controller: _searchController,
+        decoration: InputDecoration(labelText: l10n.search),
+        textInputAction: TextInputAction.search,
+        onSubmitted: (_) => _search(),
+      ),
+    ),
+    AccessibleListRow(
+      id: 'library_search', title: l10n.search, kind: 'button',
+      onActivate: _search,
+      flutterChild: FilledButton(onPressed: _search, child: Text(l10n.search)),
+    ),
+    AccessibleListRow(
+      id: 'library_clear_search', title: l10n.clearSearch, kind: 'button',
+      onActivate: _clearSearch,
+      flutterChild: TextButton(onPressed: _clearSearch, child: Text(l10n.clearSearch)),
+    ),
+  ];
+
+  void _clearSearch() {
+    setState(() {
+      _searchController.clear();
+      _searchTextRevision++;
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   void _reload() {
@@ -653,6 +710,7 @@ class _CommunityNewsSourcesScreenState
         source.name,
         url,
         parentFolderId: widget.parentFolderId,
+        fromCommunity: true,
       );
       if (!mounted) return;
       showStatusMessage(
@@ -680,8 +738,9 @@ class _CommunityNewsSourcesScreenState
     final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: SonarpadAppBar(
-        title: Text(l10n.newsCommunitySourcesTitle),
-        actions: [
+        title: Text(_isSearchResults ? l10n.searchResults : l10n.newsCommunitySourcesTitle),
+        showHomeButton: !_isSearchResults,
+        actions: _isSearchResults ? [] : [
           IconButton(
             icon: const Icon(Icons.refresh),
             tooltip: l10n.update,
@@ -689,7 +748,12 @@ class _CommunityNewsSourcesScreenState
           ),
         ],
       ),
-      body: FutureBuilder<List<NewsRssSource>>(
+      body: SafeArea(child: Column(children: [
+        if (!_isSearchResults && !useSharedAccessibleViewModel)
+          Padding(padding: const EdgeInsets.all(16), child: Column(
+            children: _searchRows(l10n).map((row) => row.flutterChild!).toList(),
+          )),
+        Expanded(child: FutureBuilder<List<NewsRssSource>>(
         future: _future,
         builder: (context, snapshot) {
           if (snapshot.connectionState != ConnectionState.done) {
@@ -703,13 +767,19 @@ class _CommunityNewsSourcesScreenState
               ),
             );
           }
-          final sources = snapshot.data ?? const <NewsRssSource>[];
-          if (sources.isEmpty) {
-            return Center(child: Text(l10n.newsCommunitySourcesEmpty));
-          }
+          final query = widget.searchQuery?.trim().toLowerCase();
+          final sources = (snapshot.data ?? const <NewsRssSource>[])
+              .where((source) => query == null || source.name.toLowerCase().contains(query) ||
+                  source.uri.toString().toLowerCase().contains(query)).toList();
+          final emptyLabel = _isSearchResults
+              ? l10n.noDocumentSearchResults(widget.searchQuery!) : l10n.newsCommunitySourcesEmpty;
           if (useSharedAccessibleViewModel) {
             return UniversalAccessibleList(
               sections: [AccessibleListSection(rows: [
+                if (!_isSearchResults) ..._searchRows(l10n),
+                if (sources.isEmpty) AccessibleListRow(
+                  id: 'community_empty', title: emptyLabel, kind: 'label',
+                ),
                 for (var index = 0; index < sources.length; index++)
                   AccessibleListRow(
                     id: 'source_$index',
@@ -729,6 +799,7 @@ class _CommunityNewsSourcesScreenState
               },
             );
           }
+          if (sources.isEmpty) return Center(child: Text(emptyLabel));
           return ListView.separated(
             itemCount: sources.length,
             separatorBuilder: (_, _) => const Divider(height: 1),
@@ -762,7 +833,8 @@ class _CommunityNewsSourcesScreenState
             },
           );
         },
-      ),
+      )),
+      ])),
     );
   }
 }

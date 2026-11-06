@@ -628,7 +628,7 @@ class _SonarpadAppState extends State<SonarpadApp> with WidgetsBindingObserver {
         '/orari_apertura': (context) =>
             italianOnlyRoute(context, OrariAperturaSearchScreen()),
         '/italiaonline': (context) =>
-            italianOnlyRoute(context, const ItaliaOnlineScreen()),
+            const ItaliaOnlineScreen(),
         '/route': (_) => const RouteScreen(),
         '/travel': (_) => const TravelScreen(),
         '/concerts': (_) => const ConcertSearchScreen(),

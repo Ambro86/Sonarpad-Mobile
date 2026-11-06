@@ -21,7 +21,8 @@ class ItaliaOnlineDetailScreen extends StatefulWidget {
   const ItaliaOnlineDetailScreen({super.key, required this.detail});
 
   @override
-  State<ItaliaOnlineDetailScreen> createState() => _ItaliaOnlineDetailScreenState();
+  State<ItaliaOnlineDetailScreen> createState() =>
+      _ItaliaOnlineDetailScreenState();
 }
 
 class _ItaliaOnlineDetailScreenState extends State<ItaliaOnlineDetailScreen> {
@@ -48,6 +49,7 @@ class _ItaliaOnlineDetailScreenState extends State<ItaliaOnlineDetailScreen> {
   }
 
   Future<void> _speak() async {
+    final l10n = AppLocalizations.of(context);
     final token = ++_speechToken;
     await _audio.stop();
     await _tts.stop();
@@ -56,7 +58,7 @@ class _ItaliaOnlineDetailScreenState extends State<ItaliaOnlineDetailScreen> {
     try {
       final engine = await _settings.loadTtsEngine();
       final dictionaryEntries = await _voiceDictionary.loadEntries();
-      final text = _detailTextForSpeech(widget.detail);
+      final text = _detailTextForSpeech(widget.detail, l10n);
       final chunks = _edgeTts.splitTextForStreaming(text, maxChunkChars: 650);
       if (engine == 'system') {
         await _tts.awaitSpeakCompletion(true);
@@ -75,8 +77,10 @@ class _ItaliaOnlineDetailScreenState extends State<ItaliaOnlineDetailScreen> {
 
         for (final chunk in chunks) {
           if (!mounted || !_isPlaying) break;
-          final textToSpeak =
-              _voiceDictionary.applyToText(chunk, dictionaryEntries);
+          final textToSpeak = _voiceDictionary.applyToText(
+            chunk,
+            dictionaryEntries,
+          );
           await _tts.speak(textToSpeak);
         }
       } else {
@@ -84,15 +88,15 @@ class _ItaliaOnlineDetailScreenState extends State<ItaliaOnlineDetailScreen> {
         final files = <File>[];
         for (final chunk in chunks) {
           if (!mounted || !_isPlaying) break;
-          final textToSpeak =
-              _voiceDictionary.applyToText(chunk, dictionaryEntries);
+          final textToSpeak = _voiceDictionary.applyToText(
+            chunk,
+            dictionaryEntries,
+          );
           if (!EdgeTtsRetry.isTextUsable(textToSpeak)) continue;
           final file = await EdgeTtsRetry.run(
             retryUntilCancelled: true,
-            generate: () => _edgeTts.speakToFile(
-              text: textToSpeak,
-              voice: voice,
-            ),
+            generate: () =>
+                _edgeTts.speakToFile(text: textToSpeak, voice: voice),
             isActive: () => mounted && _isPlaying && token == _speechToken,
             onRetry: (retry, delay, error) => debugPrint(
               'ItaliaOnline: Edge TTS retry $retry tra '
@@ -102,14 +106,17 @@ class _ItaliaOnlineDetailScreenState extends State<ItaliaOnlineDetailScreen> {
           if (file == null) break;
           files.add(file);
         }
-        if (mounted && _isPlaying && token == _speechToken && files.isNotEmpty) {
+        if (mounted &&
+            _isPlaying &&
+            token == _speechToken &&
+            files.isNotEmpty) {
           await _audio.playFilesSequentially(files);
         }
       }
     } catch (e) {
       debugPrint('ItaliaOnline TTS error: $e');
       if (mounted && token == _speechToken) {
-                showStatusMessage(context, 'Errore durante la lettura: $e');
+        showStatusMessage(context, '${l10n.errorPrefix} $e');
       }
     } finally {
       if (mounted && token == _speechToken) {
@@ -161,6 +168,7 @@ class _ItaliaOnlineDetailScreenState extends State<ItaliaOnlineDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final detail = widget.detail;
     return Scaffold(
       appBar: SonarpadAppBar(
@@ -169,18 +177,18 @@ class _ItaliaOnlineDetailScreenState extends State<ItaliaOnlineDetailScreen> {
           if (!_isPlaying)
             IconButton(
               icon: const Icon(Icons.play_arrow),
-              tooltip: 'Avvia lettura',
+              tooltip: l10n.startReading,
               onPressed: _speak,
             )
           else
             IconButton(
               icon: const Icon(Icons.stop),
-              tooltip: 'Ferma lettura',
+              tooltip: l10n.stopReading,
               onPressed: _stop,
             ),
           IconButton(
             icon: const Icon(Icons.save),
-            tooltip: 'Salva nei documenti',
+            tooltip: l10n.saveInLibrary,
             onPressed: () async {
               try {
                 final doc = await DocumentLibraryService().createTextDocument(
@@ -192,11 +200,11 @@ class _ItaliaOnlineDetailScreenState extends State<ItaliaOnlineDetailScreen> {
                 await lib.load();
                 await lib.add(doc);
                 if (context.mounted) {
-                                    showStatusMessage(context, 'Salvato nei documenti!');
+                  showStatusMessage(context, l10n.docSavedInLibrary);
                 }
               } catch (e) {
                 if (context.mounted) {
-                                    showStatusMessage(context, 'Errore durante il salvataggio: $e');
+                  showStatusMessage(context, '${l10n.saveError}: $e');
                 }
               }
             },
@@ -206,42 +214,75 @@ class _ItaliaOnlineDetailScreenState extends State<ItaliaOnlineDetailScreen> {
       body: useSharedAccessibleViewModel
           ? UniversalAccessibleList(
               sections: [
-                AccessibleListSection(rows: [
-                  if (detail.description != null && detail.description!.isNotEmpty)
-                    AccessibleListRow(id: 'description', kind: 'text', title: detail.description!),
-                  if (detail.category != null && detail.category!.isNotEmpty)
-                    AccessibleListRow(id: 'category', kind: 'text', title: 'Categoria: ${detail.category}'),
-                  if (detail.address != null && detail.address!.isNotEmpty)
-                    AccessibleListRow(
-                      id: 'address',
-                      kind: 'button',
-                      title: detail.address!,
-                      subtitle: AppLocalizations.of(context).routeGoogleMapsAction,
-                      onActivate: _openDirections,
-                    ),
-                  if (detail.locality != null && detail.locality!.isNotEmpty)
-                    AccessibleListRow(
-                      id: 'locality',
-                      kind: 'button',
-                      title: detail.locality!,
-                      subtitle: AppLocalizations.of(context).routeGoogleMapsAction,
-                      onActivate: _openDirections,
-                    ),
-                  for (var i = 0; i < detail.phones.length; i++)
-                    AccessibleListRow(id: 'phone_$i', title: detail.phones[i], subtitle: 'Telefono'),
-                  for (var i = 0; i < detail.websites.length; i++)
-                    AccessibleListRow(id: 'website_$i', title: detail.websites[i], subtitle: 'Sito web'),
-                  for (var i = 0; i < detail.emails.length; i++)
-                    AccessibleListRow(id: 'email_$i', title: detail.emails[i], subtitle: 'Email'),
-                  if (detail.publicUrl != null && detail.publicUrl!.isNotEmpty)
-                    const AccessibleListRow(id: 'public', title: 'Apri scheda originale'),
-                ]),
+                AccessibleListSection(
+                  rows: [
+                    if (detail.description != null &&
+                        detail.description!.isNotEmpty)
+                      AccessibleListRow(
+                        id: 'description',
+                        kind: 'text',
+                        title: detail.description!,
+                      ),
+                    if (detail.category != null && detail.category!.isNotEmpty)
+                      AccessibleListRow(
+                        id: 'category',
+                        kind: 'text',
+                        title: '${l10n.placesCategory}: ${detail.category}',
+                      ),
+                    if (detail.address != null && detail.address!.isNotEmpty)
+                      AccessibleListRow(
+                        id: 'address',
+                        kind: 'button',
+                        title: detail.address!,
+                        subtitle: AppLocalizations.of(
+                          context,
+                        ).routeGoogleMapsAction,
+                        onActivate: _openDirections,
+                      ),
+                    if (detail.locality != null && detail.locality!.isNotEmpty)
+                      AccessibleListRow(
+                        id: 'locality',
+                        kind: 'button',
+                        title: detail.locality!,
+                        subtitle: AppLocalizations.of(
+                          context,
+                        ).routeGoogleMapsAction,
+                        onActivate: _openDirections,
+                      ),
+                    for (var i = 0; i < detail.phones.length; i++)
+                      AccessibleListRow(
+                        id: 'phone_$i',
+                        title: detail.phones[i],
+                        subtitle: l10n.placesPhone,
+                      ),
+                    for (var i = 0; i < detail.websites.length; i++)
+                      AccessibleListRow(
+                        id: 'website_$i',
+                        title: detail.websites[i],
+                        subtitle: l10n.placesWebsite,
+                      ),
+                    for (var i = 0; i < detail.emails.length; i++)
+                      AccessibleListRow(
+                        id: 'email_$i',
+                        title: detail.emails[i],
+                        subtitle: 'Email',
+                      ),
+                    if (detail.publicUrl != null &&
+                        detail.publicUrl!.isNotEmpty)
+                      const AccessibleListRow(
+                        id: 'public',
+                        title: 'Apri scheda originale',
+                      ),
+                  ],
+                ),
               ],
               onEvent: (event) {
                 if (event.type != 'activate' || event.id == null) return;
                 if (event.id!.startsWith('phone_')) {
                   final i = int.tryParse(event.id!.substring(6));
-                  if (i != null && i < detail.phones.length) _launchUrl('tel:${detail.phones[i]}');
+                  if (i != null && i < detail.phones.length) {
+                    _launchUrl('tel:${detail.phones[i]}');
+                  }
                 } else if (event.id!.startsWith('website_')) {
                   final i = int.tryParse(event.id!.substring(8));
                   if (i != null && i < detail.websites.length) {
@@ -251,105 +292,123 @@ class _ItaliaOnlineDetailScreenState extends State<ItaliaOnlineDetailScreen> {
                   }
                 } else if (event.id!.startsWith('email_')) {
                   final i = int.tryParse(event.id!.substring(6));
-                  if (i != null && i < detail.emails.length) _launchUrl('mailto:${detail.emails[i]}');
+                  if (i != null && i < detail.emails.length) {
+                    _launchUrl('mailto:${detail.emails[i]}');
+                  }
                 } else if (event.id == 'public' && detail.publicUrl != null) {
                   _launchUrl(detail.publicUrl!);
                 }
               },
             )
           : ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          if (detail.description != null && detail.description!.isNotEmpty) ...[
-            Text(
-              detail.description!,
-              style: Theme.of(context).textTheme.bodyLarge,
+              padding: const EdgeInsets.all(16),
+              children: [
+                if (detail.description != null &&
+                    detail.description!.isNotEmpty) ...[
+                  Text(
+                    detail.description!,
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                  const SizedBox(height: 16),
+                ],
+                if (detail.category != null && detail.category!.isNotEmpty) ...[
+                  Text(
+                    '${l10n.placesCategory}: ${detail.category}',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                ],
+                if (detail.address != null ||
+                    (detail.locality != null &&
+                        detail.locality!.isNotEmpty)) ...[
+                  Text(
+                    '${l10n.placesAddress}:',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  ListTile(
+                    title: Text(
+                      [detail.address, detail.locality]
+                          .whereType<String>()
+                          .where((value) => value.trim().isNotEmpty)
+                          .join(', '),
+                    ),
+                    subtitle: Text(
+                      AppLocalizations.of(context).routeGoogleMapsAction,
+                    ),
+                    leading: const Icon(Icons.directions),
+                    onTap: _openDirections,
+                  ),
+                  const SizedBox(height: 16),
+                ],
+                if (detail.phones.isNotEmpty) ...[
+                  Text(
+                    '${l10n.placesPhone}:',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  ...detail.phones.map(
+                    (p) => ListTile(
+                      leading: const Icon(Icons.phone),
+                      title: Text(p),
+                      onTap: () => _launchUrl('tel:$p'),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                ],
+                if (detail.websites.isNotEmpty) ...[
+                  Text(
+                    '${l10n.placesWebsite}:',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  ...detail.websites.map(
+                    (w) => ListTile(
+                      leading: const Icon(Icons.language),
+                      title: Text(w),
+                      onTap: () {
+                        var url = w;
+                        if (!url.startsWith('http')) {
+                          url = 'https://$url';
+                        }
+                        _launchUrl(url);
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                ],
+                if (detail.emails.isNotEmpty) ...[
+                  const Text(
+                    'Email:',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  ...detail.emails.map(
+                    (e) => ListTile(
+                      leading: const Icon(Icons.email),
+                      title: Text(e),
+                      onTap: () => _launchUrl('mailto:$e'),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                ],
+                if (detail.publicUrl != null &&
+                    detail.publicUrl!.isNotEmpty) ...[
+                  const Text(
+                    'Scheda web:',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.link),
+                    title: const Text('Apri scheda originale'),
+                    onTap: () => _launchUrl(detail.publicUrl!),
+                  ),
+                ],
+              ],
             ),
-            const SizedBox(height: 16),
-          ],
-          if (detail.category != null && detail.category!.isNotEmpty) ...[
-            Text(
-              'Categoria: ${detail.category}',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 16),
-          ],
-          if (detail.address != null || (detail.locality != null && detail.locality!.isNotEmpty)) ...[
-            const Text(
-              'Indirizzo:',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            ListTile(
-              title: Text([
-                detail.address,
-                detail.locality,
-              ].whereType<String>().where((value) => value.trim().isNotEmpty).join(', ')),
-              subtitle: Text(AppLocalizations.of(context).routeGoogleMapsAction),
-              leading: const Icon(Icons.directions),
-              onTap: _openDirections,
-            ),
-            const SizedBox(height: 16),
-          ],
-          if (detail.phones.isNotEmpty) ...[
-            const Text(
-              'Telefoni (tocca per chiamare):',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            ...detail.phones.map((p) => ListTile(
-                  leading: const Icon(Icons.phone),
-                  title: Text(p),
-                  onTap: () => _launchUrl('tel:$p'),
-                )),
-            const SizedBox(height: 16),
-          ],
-          if (detail.websites.isNotEmpty) ...[
-            const Text(
-              'Siti web (tocca per aprire):',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            ...detail.websites.map((w) => ListTile(
-                  leading: const Icon(Icons.language),
-                  title: Text(w),
-                  onTap: () {
-                    var url = w;
-                    if (!url.startsWith('http')) {
-                      url = 'https://$url';
-                    }
-                    _launchUrl(url);
-                  },
-                )),
-            const SizedBox(height: 16),
-          ],
-          if (detail.emails.isNotEmpty) ...[
-            const Text(
-              'Email:',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            ...detail.emails.map((e) => ListTile(
-                  leading: const Icon(Icons.email),
-                  title: Text(e),
-                  onTap: () => _launchUrl('mailto:$e'),
-                )),
-            const SizedBox(height: 16),
-          ],
-          if (detail.publicUrl != null && detail.publicUrl!.isNotEmpty) ...[
-            const Text(
-              'Scheda web:',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            ListTile(
-              leading: const Icon(Icons.link),
-              title: const Text('Apri scheda originale'),
-              onTap: () => _launchUrl(detail.publicUrl!),
-            ),
-          ],
-        ],
-      ),
     );
   }
 }
 
-String _detailTextForSpeech(DetailResponse detail) {
+String _detailTextForSpeech(DetailResponse detail, AppLocalizations l10n) {
   final lines = <String>[];
   final seen = <String>{};
 
@@ -368,18 +427,18 @@ String _detailTextForSpeech(DetailResponse detail) {
   }
 
   if (detail.category != null && detail.category!.isNotEmpty) {
-    addLine('Categoria: ${detail.category}');
+    addLine('${l10n.placesCategory}: ${detail.category}');
   }
 
   if ((detail.address != null && detail.address!.isNotEmpty) ||
       (detail.locality != null && detail.locality!.isNotEmpty)) {
-    addLine('Indirizzo:');
+    addLine('${l10n.placesAddress}:');
     addLine(detail.address);
     addLine(detail.locality);
   }
 
   if (detail.phones.isNotEmpty) {
-    addLine('Telefoni:');
+    addLine('${l10n.placesPhone}:');
     for (final phone in detail.phones) {
       addLine(phone);
     }
@@ -393,7 +452,7 @@ String _detailTextForSpeech(DetailResponse detail) {
   }
 
   if (detail.websites.isNotEmpty) {
-    addLine('Siti web:');
+    addLine('${l10n.placesWebsite}:');
     for (final website in detail.websites) {
       addLine(website);
     }

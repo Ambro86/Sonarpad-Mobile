@@ -277,6 +277,7 @@ class SonarpadAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.excludeHeaderSemantics = false,
     this.bottom,
     this.leadingIsBackNavigation = false,
+    this.showHomeButton = true,
   });
 
   final Widget? title;
@@ -290,6 +291,7 @@ class SonarpadAppBar extends StatelessWidget implements PreferredSizeWidget {
   /// therefore cannot be recognized by runtime type (for example a
   /// ValueListenableBuilder that temporarily hides Back semantics).
   final bool leadingIsBackNavigation;
+  final bool showHomeButton;
 
   @override
   Size get preferredSize => Size.fromHeight(
@@ -312,7 +314,7 @@ class SonarpadAppBar extends StatelessWidget implements PreferredSizeWidget {
 
     final effectiveActions = <Widget>[
       ...?actions,
-      if (hasBackNavigation) const SonarpadVisualHomeButton(),
+      if (hasBackNavigation && showHomeButton) const SonarpadVisualHomeButton(),
     ];
 
     return AppBar(

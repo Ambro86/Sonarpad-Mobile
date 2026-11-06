@@ -967,14 +967,29 @@ void main() {
         AdMediaFallbackStage.compatibility,
       );
     });
-    test('compatibility is last media fallback', () {
+    test('compatibility failure activates final H.264 fallback', () {
       expect(
         AudioDescriptionFallbacks.nextMediaStage(
           current: AdMediaFallbackStage.compatibility,
           failure: AdFailureKind.fileProcessingFailed,
         ),
-        AdMediaFallbackStage.none,
+        AdMediaFallbackStage.normalized,
       );
+    });
+    test('normalized fallback is bounded for every media failure', () {
+      for (final failure in [
+        AdFailureKind.invalidArgument,
+        AdFailureKind.fileProcessingFailed,
+        AdFailureKind.fileVerificationFailed,
+      ]) {
+        expect(
+          AudioDescriptionFallbacks.nextMediaStage(
+            current: AdMediaFallbackStage.normalized,
+            failure: failure,
+          ),
+          AdMediaFallbackStage.none,
+        );
+      }
     });
     test('credentials do not trigger media re-encode', () {
       expect(

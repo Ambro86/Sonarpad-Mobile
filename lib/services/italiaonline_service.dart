@@ -1,9 +1,72 @@
 import '../l10n/italian_directory_labels.dart';
 import 'dart:convert';
+import 'package:flutter/widgets.dart' show Locale;
+import '../l10n/app_localizations.dart';
 import 'package:http/http.dart' as http;
 import 'package:xml/xml.dart';
 
 import '../utils/app_logger.dart';
+
+AppLocalizations placeStrings(String language) {
+  final parts = language.replaceAll('-', '_').split('_');
+  final locale = Locale(parts.first, parts.length > 1 ? parts[1] : null);
+  if (!AppLocalizations.supportedLocales.any(
+    (l) => l.languageCode == locale.languageCode,
+  )) {
+    return lookupAppLocalizations(const Locale('en'));
+  }
+  return lookupAppLocalizations(locale);
+}
+
+String formatOpeningRange(String value, {String language = 'it'}) {
+  final text = placeStrings(language);
+  final match = RegExp(
+    r'^\s*(\d{1,2})(?::(\d{2}))?\s*[–-]\s*(\d{1,2})(?::(\d{2}))?\s*$',
+  ).firstMatch(value);
+  if (match == null) return value;
+  final h1 = int.parse(match[1]!);
+  final m1 = int.parse(match[2] ?? '0');
+  final h2 = int.parse(match[3]!);
+  final m2 = int.parse(match[4] ?? '0');
+  if (h1 > 24 ||
+      h2 > 24 ||
+      m1 > 59 ||
+      m2 > 59 ||
+      (h1 == 24 && m1 != 0) ||
+      (h2 == 24 && m2 != 0)) {
+    return value;
+  }
+  String time(int h, int m) =>
+      '${h.toString().padLeft(2, '0')}:${m.toString().padLeft(2, '0')}';
+  final end = h2 * 60 + m2;
+  final suffix = end == 0 || end == 1440
+      ? ''
+      : end < h1 * 60 + m1
+      ? text.placesNextDay
+      : '';
+  return text.placesRange
+          .replaceAll('%start%', time(h1, m1))
+          .replaceAll('%end%', time(h2 % 24, m2)) +
+      suffix;
+}
+
+String openingDayLabel(
+  String name,
+  String? date,
+  DateTime now, {
+  String language = 'it',
+}) {
+  final text = placeStrings(language);
+  final parsed = DateTime.tryParse(date ?? '');
+  if (parsed == null) return name;
+  final today = DateTime(now.year, now.month, now.day);
+  final day = DateTime(parsed.year, parsed.month, parsed.day);
+  if (day == today) return text.placesToday;
+  if (day == DateTime(now.year, now.month, now.day + 1)) {
+    return text.placesTomorrow;
+  }
+  return name;
+}
 
 enum DirectoryKind { pagineBianche, pagineGialle }
 
@@ -11,9 +74,9 @@ extension DirectoryKindExtension on DirectoryKind {
   String get label {
     switch (this) {
       case DirectoryKind.pagineBianche:
-        return 'Pagine Bianche';
+        return 'Ricerca nominativi';
       case DirectoryKind.pagineGialle:
-        return 'Pagine Gialle';
+        return 'Luoghi e attività';
     }
   }
 
@@ -40,7 +103,7 @@ extension DirectoryKindExtension on DirectoryKind {
       case DirectoryKind.pagineBianche:
         return 'Inserisci nome o cognome';
       case DirectoryKind.pagineGialle:
-        return 'Inserisci attività';
+        return 'Inserisci luogo o attività';
     }
   }
 }
@@ -51,6 +114,8 @@ class SearchQuery {
   final String where;
   final int page;
   final bool reverse;
+  final String country;
+  final String language;
 
   SearchQuery({
     required this.kind,
@@ -58,6 +123,8 @@ class SearchQuery {
     this.where = '',
     this.page = 1,
     this.reverse = false,
+    this.country = 'it',
+    this.language = 'it',
   });
 }
 
@@ -69,6 +136,8 @@ class SearchResult {
   final String? province;
   final String? category;
   final List<String> phones;
+  final DetailResponse? inlineDetail;
+  final String? ratingText;
 
   SearchResult({
     required this.id,
@@ -78,6 +147,8 @@ class SearchResult {
     this.province,
     this.category,
     required this.phones,
+    this.inlineDetail,
+    this.ratingText,
   });
 }
 
@@ -160,13 +231,253 @@ String normalizeDirectoryPhone(String input) {
   return value;
 }
 
+bool sameDirectoryPlace(SearchResult primary, SearchResult other) {
+  String normalize(String value) =>
+      value.toLowerCase().replaceAll(RegExp(r'[^a-z0-9àèéìòù]+'), ' ').trim();
+  if (normalize(primary.name) != normalize(other.name)) return false;
+  final address = normalize(primary.address ?? '');
+  final street = normalize(other.address ?? '');
+  if (address.isNotEmpty && street.isNotEmpty) {
+    final city = normalize(other.city ?? '');
+    return (address == street || address.startsWith('$street ')) &&
+        (city.isEmpty || address.contains(city));
+  }
+  String phone(String value) => value.replaceAll(RegExp(r'\D'), '');
+  return other.phones.any(
+    (p) =>
+        phone(p).isNotEmpty && primary.phones.any((n) => phone(n) == phone(p)),
+  );
+}
+
 class ItaliaOnlineService {
-  ItaliaOnlineService({http.Client? client}) : _httpClient = client;
+  ItaliaOnlineService({http.Client? client, String? clientToken})
+    : _httpClient = client,
+      _clientToken =
+          clientToken ??
+          const String.fromEnvironment('SONARPAD_ROUTE_CLIENT_TOKEN');
+  final String _clientToken;
   final http.Client? _httpClient;
   Future<http.Response> _get(Uri uri) => _httpClient?.get(uri) ?? http.get(uri);
   String get _baseUrl => _decode('BT9NUUx/HRUjWkodMRoTOlYsGzZeHTVfCiMeAT4c');
   String get _client => _decode('HSlUThQ5Xh0=');
   String get _version => _decode('XmUAD0M=');
+
+  Future<List<SearchResult>> _searchPlaces(SearchQuery query) async {
+    if (_clientToken.isEmpty) {
+      throw Exception('Ricerca luoghi non configurata.');
+    }
+    final uri = Uri.parse('https://sonarpad.com/api/luoghi.php');
+    final headers = {
+      'Content-Type': 'application/json',
+      'User-Agent': 'Sonarpad/Mobile',
+      'X-Sonarpad-Route-Token': _clientToken,
+    };
+    final body = jsonEncode({
+      'q': query.what,
+      'citta': query.where,
+      'paese': query.country,
+      'lingua': query.language,
+    });
+    final response =
+        await (_httpClient?.post(uri, headers: headers, body: body) ??
+                http.post(uri, headers: headers, body: body))
+            .timeout(const Duration(seconds: 40));
+    if (response.statusCode != 200) {
+      throw Exception('Ricerca luoghi non disponibile.');
+    }
+    final json =
+        jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
+    if (json['ok'] != true) throw Exception('Ricerca luoghi non riuscita.');
+    final results = (json['data'] as Map<String, dynamic>)['risultati'] as List;
+    final text = placeStrings(query.language);
+    return results.map((value) {
+      final p = value as Map<String, dynamic>;
+      final name = p['nome'] as String;
+      final address = p['indirizzo'] as String?;
+      final phones = List<String>.from(p['telefoni'] as List);
+      final categories = List<String>.from(p['categorie'] as List).join(', ');
+      final website = (p['sito_web'] as String?)?.trim();
+      final websites = [if (website != null && website.isNotEmpty) website];
+      final stars = p['stelle'] as num?;
+      final count = p['numero_recensioni'] as int?;
+      final rating = stars != null && stars.isFinite && stars >= 1 && stars <= 5
+          ? text.placesRating.replaceAll('%stars%', '$stars') +
+                (count == null
+                    ? ''
+                    : text.placesReviews.replaceAll('%count%', '$count'))
+          : null;
+      final status = p['stato_apertura'] as String?;
+      final hours = <String>[];
+      final now = DateTime.now();
+      for (final day in (p['orari_apertura'] as List? ?? const [])) {
+        if (day is! Map) continue;
+        final name = day['giorno'] as String? ?? '';
+        final date = day['data'] as String?;
+        final ranges = (day['fasce'] as List? ?? const [])
+            .whereType<String>()
+            .where((s) => s.trim().isNotEmpty)
+            .map((value) => formatOpeningRange(value, language: query.language))
+            .toList();
+        if (name.trim().isEmpty || ranges.isEmpty) continue;
+        hours.add(
+          '${openingDayLabel(name, date, now, language: query.language)}: ${ranges.join('; ')}',
+        );
+      }
+      final description = [
+        p['descrizione'] as String?,
+        rating,
+        if (status != null && status.trim().isNotEmpty)
+          '${text.placesStatus}: $status',
+        hours.isEmpty
+            ? text.placesHoursMissing
+            : '${text.placesHours}:\n${hours.join('\n')}',
+      ].whereType<String>().where((s) => s.isNotEmpty).join('\n');
+      final body = [
+        name,
+        if (categories.isNotEmpty) '${text.placesCategory}: $categories',
+        '${text.placesAddress}: ${address ?? text.placesUnavailable}',
+        '${text.placesPhone}: ${phones.isEmpty ? text.placesUnavailable : phones.join(' - ')}',
+        if (websites.isNotEmpty) '${text.placesWebsite}: ${websites.first}',
+        if (description.isNotEmpty) description,
+      ].join('\n\n');
+      return SearchResult(
+        id: 'place:${p['id'] as String}',
+        name: name,
+        address: address,
+        category: categories.isEmpty ? null : categories,
+        phones: phones,
+        ratingText: rating,
+        inlineDetail: DetailResponse(
+          title: name,
+          body: body,
+          address: address,
+          category: categories.isEmpty ? null : categories,
+          phones: phones,
+          description: description.isEmpty ? null : description,
+          websites: websites,
+        ),
+      );
+    }).toList();
+  }
+
+  Future<SearchResponse> searchActivities(
+    SearchQuery query, {
+    bool includeItalianDirectories = true,
+  }) async {
+    if (!includeItalianDirectories ||
+        (!query.reverse &&
+            query.kind == DirectoryKind.pagineGialle &&
+            query.country != 'it')) {
+      return SearchResponse(
+        displayWhere: query.where,
+        currentPage: 1,
+        isLastPage: true,
+        results: await _searchPlaces(query),
+        actualKind: DirectoryKind.pagineGialle,
+      );
+    }
+    if (query.reverse ||
+        query.kind != DirectoryKind.pagineGialle ||
+        query.page > 1) {
+      return search(query);
+    }
+    // Start both requests together; an unavailable source must not hide the other.
+    final primaryFuture = _searchPlaces(query).then<List<SearchResult>?>(
+      (items) => items,
+      onError: (Object _, StackTrace stackTrace) => null,
+    );
+    SearchResponse? legacy;
+    Object? legacyError;
+    try {
+      legacy = await search(query);
+    } catch (error) {
+      legacyError = error;
+    }
+    final primary = await primaryFuture;
+    if (primary == null || primary.isEmpty) {
+      if (legacy != null) return legacy;
+      throw legacyError ??
+          Exception('Ricerca temporaneamente non disponibile.');
+    }
+    if (legacy?.ambiguousPlaces?.isNotEmpty ?? false) return legacy!;
+    final source = legacy?.actualKind ?? DirectoryKind.pagineGialle;
+    final prefix = source == DirectoryKind.pagineBianche ? 'pb:' : 'pg:';
+    final results = [...primary];
+    for (final item in legacy?.results ?? <SearchResult>[]) {
+      if (primary.any((place) => sameDirectoryPlace(place, item))) continue;
+      results.add(
+        SearchResult(
+          id: '$prefix${item.id}',
+          name: item.name,
+          address: item.address,
+          city: item.city,
+          province: item.province,
+          category: item.category,
+          phones: item.phones,
+        ),
+      );
+    }
+    return SearchResponse(
+      displayWhere: legacy?.displayWhere ?? query.where,
+      currentPage: legacy?.currentPage ?? query.page,
+      isLastPage: legacy?.isLastPage ?? true,
+      results: results,
+      actualKind: source,
+    );
+  }
+
+  Future<SearchResponse> searchPhone(SearchQuery query) async {
+    final number = normalizeDirectoryPhone(query.what);
+    final results = <SearchResult>[];
+    final seen = <String>{};
+    final errors = <Object>[];
+    var succeeded = false;
+    var isLastPage = true;
+    for (final kind in DirectoryKind.values) {
+      try {
+        final response = await search(
+          SearchQuery(
+            kind: kind,
+            what: number,
+            page: query.page,
+            reverse: true,
+          ),
+        );
+        succeeded = true;
+        isLastPage = isLastPage && response.isLastPage;
+        final prefix = response.actualKind == DirectoryKind.pagineBianche
+            ? 'pb:'
+            : 'pg:';
+        for (final item in response.results) {
+          final id = '$prefix${item.id}';
+          if (seen.add(id)) {
+            results.add(
+              SearchResult(
+                id: id,
+                name: item.name,
+                address: item.address,
+                city: item.city,
+                province: item.province,
+                category: item.category,
+                phones: item.phones,
+              ),
+            );
+          }
+        }
+      } catch (error) {
+        errors.add(error);
+      }
+    }
+    if (!succeeded || (results.isEmpty && errors.isNotEmpty)) {
+      throw Exception(errors.join('\n'));
+    }
+    return SearchResponse(
+      currentPage: query.page,
+      isLastPage: isLastPage,
+      results: results,
+      actualKind: query.kind,
+    );
+  }
 
   Future<SearchResponse> search(SearchQuery query) async {
     final what = query.reverse
@@ -267,6 +578,21 @@ class ItaliaOnlineService {
   }
 
   Future<DetailResponse> loadDetail(SearchQuery query, String id) async {
+    if (id.startsWith('pb:') || id.startsWith('pg:')) {
+      return loadDetail(
+        SearchQuery(
+          kind: id.startsWith('pb:')
+              ? DirectoryKind.pagineBianche
+              : DirectoryKind.pagineGialle,
+          what: query.what,
+          where: query.reverse ? '' : query.where,
+          page: query.page,
+          reverse: query.reverse,
+        ),
+        id.substring(3),
+      );
+    }
+
     final trimmedId = id.trim();
     if (trimmedId.isEmpty) {
       throw Exception('Risultato non valido: identificativo mancante.');

@@ -9,6 +9,54 @@ class AppLocalizationsNl extends AppLocalizations {
   AppLocalizationsNl([String locale = 'nl']) : super(locale);
 
   @override
+  String get placesCategory => 'Categorie';
+
+  @override
+  String get placesAddress => 'Adres';
+
+  @override
+  String get placesPhone => 'Telefoon';
+
+  @override
+  String get placesWebsite => 'Website';
+
+  @override
+  String get placesRating => 'Beoordeling: %stars% van 5 sterren';
+
+  @override
+  String get placesReviews => ' (%count% recensies)';
+
+  @override
+  String get placesUnavailable => 'niet beschikbaar';
+
+  @override
+  String get placesStatus => 'Openingsstatus';
+
+  @override
+  String get placesHours => 'Openingstijden';
+
+  @override
+  String get placesHoursMissing => 'Openingstijden niet beschikbaar';
+
+  @override
+  String get placesToday => 'Vandaag';
+
+  @override
+  String get placesTomorrow => 'Morgen';
+
+  @override
+  String get placesRange => 'van %start% tot %end%';
+
+  @override
+  String get placesNextDay => ' de volgende dag';
+
+  @override
+  String get placesQuery => 'Voer een plaats of bedrijf in';
+
+  @override
+  String get placesLocation => 'Stad / Adres (optioneel)';
+
+  @override
   String get appTitle => 'Sonarpad';
 
   @override
@@ -4444,7 +4492,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get homeOpeningHours => 'Openingstijden';
 
   @override
-  String get homeDirectory => 'Telefoongids en Gouden Gids';
+  String get homeDirectory => 'Plaatsen en bedrijven zoeken';
 
   @override
   String get treccaniTitle => 'Treccani-encyclopedie';

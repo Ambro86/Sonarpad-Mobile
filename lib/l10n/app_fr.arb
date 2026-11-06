@@ -1,4 +1,21 @@
 {
+  "placesCategory": "Catégorie",
+  "placesAddress": "Adresse",
+  "placesPhone": "Téléphone",
+  "placesWebsite": "Site web",
+  "placesRating": "Note : %stars% sur 5 étoiles",
+  "placesReviews": " (%count% avis)",
+  "placesUnavailable": "non disponible",
+  "placesStatus": "État d’ouverture",
+  "placesHours": "Horaires d’ouverture",
+  "placesHoursMissing": "Horaires non disponibles",
+  "placesToday": "Aujourd’hui",
+  "placesTomorrow": "Demain",
+  "placesRange": "de %start% à %end%",
+  "placesNextDay": " le lendemain",
+
+  "placesQuery": "Saisissez un lieu ou une activité",
+  "placesLocation": "Ville / Adresse (facultative)",
   "@@locale": "fr",
   "appTitle": "Sonarpad",
   "appLanguage": "Langue de l'application",
@@ -3583,7 +3600,7 @@
   "homeLa7Play": "LA7 Play",
   "homeRaiPlaySound": "RaiPlay Sound",
   "homeOpeningHours": "Horaires d’ouverture",
-  "homeDirectory": "Pages blanches et jaunes",
+  "homeDirectory": "Rechercher des lieux et des activités",
   "treccaniTitle": "Encyclopédie Treccani",
   "@treccaniTitle": {
     "description": "Localized text for treccaniTitle."

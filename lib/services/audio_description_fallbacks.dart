@@ -1391,7 +1391,8 @@ class AudioDescriptionFallbacks {
     return switch (current) {
       AdMediaFallbackStage.normal => AdMediaFallbackStage.compact,
       AdMediaFallbackStage.compact => AdMediaFallbackStage.compatibility,
-      AdMediaFallbackStage.compatibility ||
+      AdMediaFallbackStage.compatibility => AdMediaFallbackStage.normalized,
+      AdMediaFallbackStage.normalized ||
       AdMediaFallbackStage.none => AdMediaFallbackStage.none,
     };
   }
@@ -1412,7 +1413,7 @@ enum AdFailureKind {
   malformedResponse,
 }
 
-enum AdMediaFallbackStage { normal, compact, compatibility, none }
+enum AdMediaFallbackStage { normal, compact, compatibility, normalized, none }
 
 class AdTimeRange {
   const AdTimeRange(this.start, this.end);

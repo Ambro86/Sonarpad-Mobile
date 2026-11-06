@@ -420,6 +420,7 @@ class NewsService {
         final data = item['data'] as Map<String, dynamic>;
         if (data['language'] == language.code) addFolder(data['path'] as List);
       }
+      final oldCustom = await getCustomSources(language);
       final sources = <NewsRssSource>[];
       for (final item in state['news_sources'] ?? <Map<String, dynamic>>[]) {
         final data = item['data'] as Map<String, dynamic>;
@@ -428,12 +429,12 @@ class NewsService {
         addFolder(path);
         sources.add(NewsRssSource(name: data['title'] as String,
           uri: Uri.parse(data['url'] as String), isCustom: true,
+          allowRepubblica: oldCustom.any((source) => source.uri.toString() == data['url'] && source.allowRepubblica),
           parentFolderId: path.isEmpty ? null : folderIds[path.join(' / ')]));
       }
       await _saveFolders(language, folders);
       await prefs.setString('news_cloud_folder_paths_${language.name}', jsonEncode(cloudPaths));
       final assignments = await _getSourceFolderAssignments(language);
-      final oldCustom = await getCustomSources(language);
       for (final source in oldCustom) { assignments.remove(source.name); }
       assignments.removeWhere((_, id) => !folders.any((f) => f.id == id));
       for (final source in sources) {
@@ -717,6 +718,7 @@ class NewsService {
     String name,
     String urlOrSearch, {
     String? parentFolderId,
+    bool fromCommunity = false,
   }) async {
     final prefs = await SharedPreferences.getInstance();
     final customSources = await getCustomSources(language);
@@ -841,6 +843,7 @@ class NewsService {
       name: finalName,
       uri: uri,
       isCustom: true,
+      allowRepubblica: fromCommunity && _isRepubblicaUrl(finalUrl),
       parentFolderId: parentFolderId,
     );
 
@@ -2065,6 +2068,7 @@ class NewsService {
     final fallbackSource = NewsRssSource(
       name: rssSource.name,
       uri: fallbackUri,
+      allowRepubblica: rssSource.allowRepubblica,
     );
 
     if (_sessionGoogleNewsFallbackSites.contains(sessionKey)) {
@@ -2146,21 +2150,22 @@ class NewsService {
     );
   }
 
+  bool _isRepubblicaUrl(String value) {
+    final raw = value.trim();
+    final uri = Uri.tryParse(raw.contains('://') ? raw : 'https://$raw');
+    final host = uri?.host.toLowerCase() ?? '';
+    return host == 'repubblica.it' || host.endsWith('.repubblica.it');
+  }
+
   bool _excludedGoogleNewsItem(XmlElement item) {
-    bool isRepubblicaUrl(String value) {
-      final raw = value.trim();
-      final uri = Uri.tryParse(raw.contains('://') ? raw : 'https://$raw');
-      final host = uri?.host.toLowerCase() ?? '';
-      return host == 'repubblica.it' || host.endsWith('.repubblica.it');
-    }
 
     // Google links are opaque redirects; RSS source metadata identifies the
     // publisher without resolving or downloading every article.
-    if (isRepubblicaUrl(_text(item, 'link'))) return true;
+    if (_isRepubblicaUrl(_text(item, 'link'))) return true;
     for (final source in item.findElements('source')) {
-      if (isRepubblicaUrl(source.getAttribute('url') ?? '')) return true;
+      if (_isRepubblicaUrl(source.getAttribute('url') ?? '')) return true;
       final name = _cleanFeedText(source.innerText).trim().toLowerCase();
-      if (isRepubblicaUrl(name) ||
+      if (_isRepubblicaUrl(name) ||
           name == 'la repubblica' ||
           name == 'repubblica' ||
           name.startsWith('la repubblica - ')) {
@@ -2169,6 +2174,9 @@ class NewsService {
     }
     return false;
   }
+
+  List<NewsArticle> _visibleSourceArticles(List<NewsArticle> articles, NewsRssSource source) =>
+      source.allowRepubblica ? articles : articles.where((article) => !_isRepubblicaUrl(article.link)).toList();
 
   Future<List<NewsArticle>> _fetchRssSourceDirect(
     NewsRssSource rssSource, {
@@ -2193,17 +2201,17 @@ class NewsService {
     try {
       final doc = XmlDocument.parse(decodedBody);
       if (doc.rootElement.name.local.toLowerCase() == 'html') {
-        return _extractArticlesFromHtml(decodedBody, rssSource);
+        return _visibleSourceArticles(_extractArticlesFromHtml(decodedBody, rssSource), rssSource);
       }
       final items = doc.findAllElements('item');
       if (items.isEmpty) {
-        return _articlesFromAtomEntries(doc, rssSource);
+        return _visibleSourceArticles(_articlesFromAtomEntries(doc, rssSource), rssSource);
       }
       var index = 0;
-      final visibleItems = _isGoogleNewsUri(rssSource.uri)
-          ? items.where((item) => !_excludedGoogleNewsItem(item))
-          : items;
-      return visibleItems.map((item) {
+      final visibleItems = rssSource.allowRepubblica
+          ? items
+          : items.where((item) => !_excludedGoogleNewsItem(item));
+      return _visibleSourceArticles(visibleItems.map((item) {
         index++;
         final title = _text(item, 'title');
         final rawLink = _text(item, 'link');
@@ -2240,9 +2248,9 @@ class NewsService {
           mediaLinks: mediaLinks,
           allowInternalMediaLinks: allowInternalMediaLinks,
         );
-      }).toList();
+      }).toList(), rssSource);
     } catch (_) {
-      return _extractArticlesFromHtml(decodedBody, rssSource);
+      return _visibleSourceArticles(_extractArticlesFromHtml(decodedBody, rssSource), rssSource);
     }
   }
 

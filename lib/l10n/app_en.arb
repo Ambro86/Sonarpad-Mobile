@@ -1,4 +1,21 @@
 {
+  "placesCategory": "Category",
+  "placesAddress": "Address",
+  "placesPhone": "Phone",
+  "placesWebsite": "Website",
+  "placesRating": "Rating: %stars% out of 5 stars",
+  "placesReviews": " (%count% reviews)",
+  "placesUnavailable": "not available",
+  "placesStatus": "Opening status",
+  "placesHours": "Opening hours",
+  "placesHoursMissing": "Opening hours not available",
+  "placesToday": "Today",
+  "placesTomorrow": "Tomorrow",
+  "placesRange": "from %start% to %end%",
+  "placesNextDay": " the following day",
+
+  "placesQuery": "Enter a place or business",
+  "placesLocation": "City / Address (optional)",
   "@@locale": "en",
   "appTitle": "Sonarpad",
   "appLanguage": "App language",
@@ -3577,7 +3594,7 @@
   "homeLa7Play": "LA7 Play",
   "homeRaiPlaySound": "RaiPlay Sound",
   "homeOpeningHours": "Opening hours",
-  "homeDirectory": "White and Yellow Pages",
+  "homeDirectory": "Find places and businesses",
   "treccaniTitle": "Treccani Encyclopedia",
   "@treccaniTitle": {
     "description": "Localized text for treccaniTitle."

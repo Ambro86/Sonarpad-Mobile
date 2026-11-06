@@ -9,6 +9,54 @@ class AppLocalizationsTr extends AppLocalizations {
   AppLocalizationsTr([String locale = 'tr']) : super(locale);
 
   @override
+  String get placesCategory => 'Kategori';
+
+  @override
+  String get placesAddress => 'Adres';
+
+  @override
+  String get placesPhone => 'Telefon';
+
+  @override
+  String get placesWebsite => 'Web sitesi';
+
+  @override
+  String get placesRating => 'Puan: 5 üzerinden %stars% yıldız';
+
+  @override
+  String get placesReviews => ' (%count% yorum)';
+
+  @override
+  String get placesUnavailable => 'mevcut değil';
+
+  @override
+  String get placesStatus => 'Açıklık durumu';
+
+  @override
+  String get placesHours => 'Çalışma saatleri';
+
+  @override
+  String get placesHoursMissing => 'Çalışma saatleri mevcut değil';
+
+  @override
+  String get placesToday => 'Bugün';
+
+  @override
+  String get placesTomorrow => 'Yarın';
+
+  @override
+  String get placesRange => '%start% ile %end% arası';
+
+  @override
+  String get placesNextDay => ' (ertesi gün)';
+
+  @override
+  String get placesQuery => 'Bir yer veya işletme girin';
+
+  @override
+  String get placesLocation => 'Şehir / Adres (isteğe bağlı)';
+
+  @override
   String get appTitle => 'Sonarpad';
 
   @override
@@ -4446,7 +4494,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get homeOpeningHours => 'Açılış saatleri';
 
   @override
-  String get homeDirectory => 'Beyaz ve Sarı Sayfalar';
+  String get homeDirectory => 'Yer ve işletme ara';
 
   @override
   String get treccaniTitle => 'Treccani Ansiklopedisi';

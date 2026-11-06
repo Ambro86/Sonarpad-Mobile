@@ -28,6 +28,7 @@ Set<String> availableHomeItemIds({
     HomeItemIds.translator,
     HomeItemIds.voiceDictionary,
     HomeItemIds.route,
+    HomeItemIds.directory,
     HomeItemIds.concerts,
     HomeItemIds.travel,
     HomeItemIds.settings,
@@ -49,7 +50,6 @@ Set<String> availableHomeItemIds({
     if (isRaiPlaySoundCodeValid) {
       ids.add(HomeItemIds.raiPlaySound);
       ids.add(HomeItemIds.audioDescriptions);
-      ids.add(HomeItemIds.directory);
     }
     if (isTvCodeValid || isRaiPlayValid || isRaiPlaySoundCodeValid) {
       ids.add(HomeItemIds.sonarpadAudioDescriptions);

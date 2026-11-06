@@ -1,4 +1,21 @@
 {
+  "placesCategory": "Kategori",
+  "placesAddress": "Adres",
+  "placesPhone": "Telefon",
+  "placesWebsite": "Web sitesi",
+  "placesRating": "Puan: 5 üzerinden %stars% yıldız",
+  "placesReviews": " (%count% yorum)",
+  "placesUnavailable": "mevcut değil",
+  "placesStatus": "Açıklık durumu",
+  "placesHours": "Çalışma saatleri",
+  "placesHoursMissing": "Çalışma saatleri mevcut değil",
+  "placesToday": "Bugün",
+  "placesTomorrow": "Yarın",
+  "placesRange": "%start% ile %end% arası",
+  "placesNextDay": " (ertesi gün)",
+
+  "placesQuery": "Bir yer veya işletme girin",
+  "placesLocation": "Şehir / Adres (isteğe bağlı)",
   "@@locale": "tr",
   "appTitle": "Sonarpad",
   "appLanguage": "Uygulama dili",
@@ -3577,7 +3594,7 @@
   "homeLa7Play": "LA7 Play",
   "homeRaiPlaySound": "RaiPlay Sound",
   "homeOpeningHours": "Açılış saatleri",
-  "homeDirectory": "Beyaz ve Sarı Sayfalar",
+  "homeDirectory": "Yer ve işletme ara",
   "treccaniTitle": "Treccani Ansiklopedisi",
   "@treccaniTitle": {
     "description": "Localized text for treccaniTitle."

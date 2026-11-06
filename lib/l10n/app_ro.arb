@@ -1,4 +1,21 @@
 {
+  "placesCategory": "Categorie",
+  "placesAddress": "Adresă",
+  "placesPhone": "Telefon",
+  "placesWebsite": "Site web",
+  "placesRating": "Evaluare: %stars% din 5 stele",
+  "placesReviews": " (%count% recenzii)",
+  "placesUnavailable": "indisponibil",
+  "placesStatus": "Starea deschiderii",
+  "placesHours": "Program",
+  "placesHoursMissing": "Program indisponibil",
+  "placesToday": "Astăzi",
+  "placesTomorrow": "Mâine",
+  "placesRange": "de la %start% la %end%",
+  "placesNextDay": " în ziua următoare",
+
+  "placesQuery": "Introdu un loc sau o firmă",
+  "placesLocation": "Oraș / Adresă (opțional)",
   "@@locale": "ro",
   "appTitle": "Sonarpad",
   "appLanguage": "Limba aplicației",
@@ -3577,7 +3594,7 @@
   "homeLa7Play": "LA7 Play",
   "homeRaiPlaySound": "RaiPlay Sound",
   "homeOpeningHours": "Program de funcționare",
-  "homeDirectory": "Pagini Albe și Pagini Aurii",
+  "homeDirectory": "Caută locuri și firme",
   "treccaniTitle": "Enciclopedia Treccani",
   "@treccaniTitle": {
     "description": "Localized text for treccaniTitle."

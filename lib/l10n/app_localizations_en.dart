@@ -9,6 +9,54 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get placesCategory => 'Category';
+
+  @override
+  String get placesAddress => 'Address';
+
+  @override
+  String get placesPhone => 'Phone';
+
+  @override
+  String get placesWebsite => 'Website';
+
+  @override
+  String get placesRating => 'Rating: %stars% out of 5 stars';
+
+  @override
+  String get placesReviews => ' (%count% reviews)';
+
+  @override
+  String get placesUnavailable => 'not available';
+
+  @override
+  String get placesStatus => 'Opening status';
+
+  @override
+  String get placesHours => 'Opening hours';
+
+  @override
+  String get placesHoursMissing => 'Opening hours not available';
+
+  @override
+  String get placesToday => 'Today';
+
+  @override
+  String get placesTomorrow => 'Tomorrow';
+
+  @override
+  String get placesRange => 'from %start% to %end%';
+
+  @override
+  String get placesNextDay => ' the following day';
+
+  @override
+  String get placesQuery => 'Enter a place or business';
+
+  @override
+  String get placesLocation => 'City / Address (optional)';
+
+  @override
   String get appTitle => 'Sonarpad';
 
   @override
@@ -4423,7 +4471,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeOpeningHours => 'Opening hours';
 
   @override
-  String get homeDirectory => 'White and Yellow Pages';
+  String get homeDirectory => 'Find places and businesses';
 
   @override
   String get treccaniTitle => 'Treccani Encyclopedia';

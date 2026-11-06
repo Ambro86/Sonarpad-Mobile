@@ -1,7 +1,9 @@
-import '../l10n/italian_directory_labels.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../utils/route_country_options.dart';
 
 import '../services/italiaonline_service.dart';
+import '../l10n/app_localizations.dart';
 import 'italiaonline_detail_screen.dart';
 import '../utils/status_message.dart';
 import '../widgets/universal_accessible_view.dart';
@@ -16,8 +18,40 @@ class ItaliaOnlineScreen extends StatefulWidget {
 class _ItaliaOnlineScreenState extends State<ItaliaOnlineScreen> {
   final _whatController = TextEditingController();
   final _whereController = TextEditingController();
-  DirectoryKind _kind = DirectoryKind.pagineBianche;
+  DirectoryKind _kind = DirectoryKind.pagineGialle;
   bool _reverse = false;
+  String? _country;
+  bool _countryEdited = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_country == null) {
+      final locale = AppLocalizations.of(context).localeName;
+      _country = locale.startsWith('en') ? 'us' : defaultRouteCountry(locale);
+      _restoreCountry();
+    }
+  }
+
+  Future<void> _restoreCountry() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (!mounted || _countryEdited) return;
+    final saved = prefs.getString('places_search_country');
+    if (routeCountryOptions(
+      AppLocalizations.of(context),
+    ).any((c) => c.value == saved)) {
+      setState(() => _country = saved);
+    }
+  }
+
+  Future<void> _selectCountry(String country) async {
+    setState(() {
+      _country = country;
+      _countryEdited = true;
+    });
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('places_search_country', country);
+  }
 
   @override
   void dispose() {
@@ -25,6 +59,8 @@ class _ItaliaOnlineScreenState extends State<ItaliaOnlineScreen> {
     _whereController.dispose();
     super.dispose();
   }
+
+  bool get _italian => Localizations.localeOf(context).languageCode == 'it';
 
   void _search() {
     var what = _whatController.text.trim();
@@ -46,80 +82,123 @@ class _ItaliaOnlineScreenState extends State<ItaliaOnlineScreen> {
       what: what,
       where: _reverse ? '' : _whereController.text.trim(),
       reverse: _reverse,
+      country: _country ?? 'it',
+      language: AppLocalizations.of(context).localeName,
     );
 
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => ItaliaOnlineResultsScreen(query: query),
+        builder: (_) => ItaliaOnlineResultsScreen(
+          query: query,
+          includeItalianDirectories: _italian,
+        ),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final countries = routeCountryOptions(l10n);
     return Scaffold(
-      appBar: SonarpadAppBar(title: const Text('Pagine Bianche e Gialle')),
+      appBar: SonarpadAppBar(
+        title: Text(AppLocalizations.of(context).homeDirectory),
+      ),
       body: useSharedAccessibleViewModel
           ? UniversalAccessibleList(
               sections: [
                 AccessibleListSection(
                   rows: [
                     AccessibleListRow(
-                      id: 'kind_pagine_bianche',
-                      title: 'Pagine Bianche',
-                      selected: _kind == DirectoryKind.pagineBianche,
-                      onActivate: () {
-                        if (_kind != DirectoryKind.pagineBianche) {
-                          setState(() => _kind = DirectoryKind.pagineBianche);
-                        }
-                      },
-                    ),
-                    AccessibleListRow(
                       id: 'kind_pagine_gialle',
-                      title: 'Pagine Gialle',
-                      selected: _kind == DirectoryKind.pagineGialle,
+                      title: _italian
+                          ? 'Luoghi e attività'
+                          : AppLocalizations.of(context).homeDirectory,
+                      selected:
+                          _kind == DirectoryKind.pagineGialle && !_reverse,
                       onActivate: () {
-                        if (_kind != DirectoryKind.pagineGialle) {
-                          setState(() => _kind = DirectoryKind.pagineGialle);
+                        if (_kind != DirectoryKind.pagineGialle || _reverse) {
+                          setState(() {
+                            _kind = DirectoryKind.pagineGialle;
+                            _reverse = false;
+                          });
                         }
                       },
                     ),
-                    AccessibleListRow(
-                      id: 'reverse',
-                      title: ItalianDirectoryLabels.reverseSearch,
-                      kind: 'toggle',
-                      toggleValue: _reverse,
-                      onValueChanged: (value) =>
-                          setState(() => _reverse = value == true),
-                    ),
+                    if (_italian)
+                      AccessibleListRow(
+                        id: 'kind_pagine_bianche',
+                        title: 'Ricerca nominativi',
+                        selected:
+                            _kind == DirectoryKind.pagineBianche && !_reverse,
+                        onActivate: () {
+                          if (_kind != DirectoryKind.pagineBianche ||
+                              _reverse) {
+                            setState(() {
+                              _kind = DirectoryKind.pagineBianche;
+                              _reverse = false;
+                            });
+                          }
+                        },
+                      ),
+                    if (_italian)
+                      AccessibleListRow(
+                        id: 'kind_phone',
+                        title: 'Cerca un numero di telefono',
+                        selected: _reverse,
+                        onActivate: () => setState(() => _reverse = true),
+                      ),
+                    if (!_reverse && _kind == DirectoryKind.pagineGialle)
+                      AccessibleListRow(
+                        id: 'country',
+                        title: l10n.routeCountry,
+                        kind: 'picker',
+                        value: _country,
+                        valueLabel: countries
+                            .firstWhere((c) => c.value == _country)
+                            .label,
+                        options: countries,
+                      ),
                     AccessibleListRow(
                       id: 'what',
                       title: _reverse
-                          ? 'Numero di telefono, completo di prefisso'
-                          : _kind.primaryFieldLabel,
+                          ? 'Inserisci il numero di telefono'
+                          : (_italian
+                                ? _kind.primaryFieldLabel
+                                : AppLocalizations.of(context).placesQuery),
                       kind: 'textField',
                       value: _whatController.text,
                       keyboardType: _reverse ? 'phone' : null,
+                      textInputAction: _reverse ? 'search' : 'next',
+                      onSubmitted: (_) {
+                        if (_reverse) _search();
+                      },
                     ),
                     if (!_reverse)
                       AccessibleListRow(
                         id: 'where',
-                        title: 'Località, indirizzo (opzionale)',
+                        title: _italian
+                            ? 'Località, indirizzo (opzionale)'
+                            : AppLocalizations.of(context).placesLocation,
                         kind: 'textField',
                         value: _whereController.text,
                         textInputAction: 'search',
                         onSubmitted: (_) => _search(),
                       ),
-                    const AccessibleListRow(
+                    AccessibleListRow(
                       id: 'search',
-                      title: 'Cerca',
+                      title: AppLocalizations.of(context).search,
                       kind: 'button',
                     ),
                   ],
                 ),
               ],
               onEvent: (event) {
-                if (event.id == 'what' && event.type == 'textChanged') {
+                if (event.id == 'country' &&
+                    event.type == 'picker' &&
+                    event.value != null) {
+                  _selectCountry(event.value.toString());
+                } else if (event.id == 'what' && event.type == 'textChanged') {
                   _whatController.text = event.value?.toString() ?? '';
                 } else if (event.id == 'where' && event.type == 'textChanged') {
                   _whereController.text = event.value?.toString() ?? '';
@@ -131,30 +210,45 @@ class _ItaliaOnlineScreenState extends State<ItaliaOnlineScreen> {
           : ListView(
               padding: const EdgeInsets.all(16),
               children: [
-                SegmentedButton<DirectoryKind>(
-                  segments: const [
-                    ButtonSegment(
-                      value: DirectoryKind.pagineBianche,
-                      label: Text('Pagine Bianche'),
-                    ),
-                    ButtonSegment(
-                      value: DirectoryKind.pagineGialle,
-                      label: Text('Pagine Gialle'),
-                    ),
-                  ],
-                  selected: {_kind},
-                  onSelectionChanged: (set) {
-                    setState(() {
-                      _kind = set.first;
-                    });
-                  },
-                ),
-                SwitchListTile(
-                  title: const Text(ItalianDirectoryLabels.reverseSearch),
-                  value: _reverse,
-                  onChanged: (value) => setState(() => _reverse = value),
-                ),
+                if (_italian)
+                  SegmentedButton<int>(
+                    segments: const [
+                      ButtonSegment(value: 1, label: Text('Luoghi e attività')),
+                      ButtonSegment(
+                        value: 0,
+                        label: Text('Ricerca nominativi'),
+                      ),
+                      ButtonSegment(
+                        value: 2,
+                        label: Text('Cerca un numero di telefono'),
+                      ),
+                    ],
+                    selected: {_reverse ? 2 : _kind.index},
+                    onSelectionChanged: (set) {
+                      setState(() {
+                        _reverse = set.first == 2;
+                        if (!_reverse) _kind = DirectoryKind.values[set.first];
+                      });
+                    },
+                  ),
                 const SizedBox(height: 24),
+                if (!_reverse && _kind == DirectoryKind.pagineGialle)
+                  DropdownButtonFormField<String>(
+                    key: ValueKey('places_country_$_country'),
+                    initialValue: _country,
+                    decoration: InputDecoration(labelText: l10n.routeCountry),
+                    items: countries
+                        .map(
+                          (c) => DropdownMenuItem(
+                            value: c.value.toString(),
+                            child: Text(c.label),
+                          ),
+                        )
+                        .toList(),
+                    onChanged: (value) {
+                      if (value != null) _selectCountry(value);
+                    },
+                  ),
                 TextField(
                   controller: _whatController,
                   keyboardType: _reverse
@@ -162,18 +256,27 @@ class _ItaliaOnlineScreenState extends State<ItaliaOnlineScreen> {
                       : TextInputType.text,
                   decoration: InputDecoration(
                     labelText: _reverse
-                        ? 'Numero di telefono, completo di prefisso'
-                        : _kind.primaryFieldLabel,
+                        ? 'Inserisci il numero di telefono'
+                        : (_italian
+                              ? _kind.primaryFieldLabel
+                              : AppLocalizations.of(context).placesQuery),
                     border: const OutlineInputBorder(),
                   ),
-                  textInputAction: TextInputAction.next,
+                  textInputAction: _reverse
+                      ? TextInputAction.search
+                      : TextInputAction.next,
+                  onSubmitted: (_) {
+                    if (_reverse) _search();
+                  },
                 ),
                 const SizedBox(height: 16),
                 if (!_reverse)
                   TextField(
                     controller: _whereController,
-                    decoration: const InputDecoration(
-                      labelText: 'Località, indirizzo (opzionale)',
+                    decoration: InputDecoration(
+                      labelText: _italian
+                          ? 'Località, indirizzo (opzionale)'
+                          : AppLocalizations.of(context).placesLocation,
                       border: OutlineInputBorder(),
                     ),
                     textInputAction: TextInputAction.search,
@@ -183,7 +286,7 @@ class _ItaliaOnlineScreenState extends State<ItaliaOnlineScreen> {
                 ElevatedButton.icon(
                   onPressed: _search,
                   icon: const Icon(Icons.search),
-                  label: const Text('Cerca'),
+                  label: Text(AppLocalizations.of(context).search),
                 ),
               ],
             ),
@@ -193,8 +296,13 @@ class _ItaliaOnlineScreenState extends State<ItaliaOnlineScreen> {
 
 class ItaliaOnlineResultsScreen extends StatefulWidget {
   final SearchQuery query;
+  final bool includeItalianDirectories;
 
-  const ItaliaOnlineResultsScreen({super.key, required this.query});
+  const ItaliaOnlineResultsScreen({
+    super.key,
+    required this.query,
+    this.includeItalianDirectories = true,
+  });
 
   @override
   State<ItaliaOnlineResultsScreen> createState() =>
@@ -236,16 +344,34 @@ class _ItaliaOnlineResultsScreenState extends State<ItaliaOnlineResultsScreen> {
     try {
       final query = SearchQuery(
         kind: loadMore ? _actualKind : widget.query.kind,
+        country: widget.query.country,
+        language: widget.query.language,
         what: widget.query.what,
         reverse: widget.query.reverse,
         where: widget.query.where,
         page: _currentPage,
       );
-      final res = await _service.search(query);
+      final res = await (query.reverse && widget.includeItalianDirectories
+          ? _service.searchPhone(query)
+          : _service.searchActivities(
+              query,
+              includeItalianDirectories: widget.includeItalianDirectories,
+            ));
       if (mounted) {
         setState(() {
           _response = res;
-          _results.addAll(res.results);
+          if (!widget.query.reverse &&
+              widget.query.kind == DirectoryKind.pagineGialle) {
+            _results.addAll(
+              res.results.where(
+                (item) => !_results.any(
+                  (existing) => sameDirectoryPlace(existing, item),
+                ),
+              ),
+            );
+          } else {
+            _results.addAll(res.results);
+          }
           if (loadMore) {
             _loadingMore = false;
           } else {
@@ -281,16 +407,20 @@ class _ItaliaOnlineResultsScreenState extends State<ItaliaOnlineResultsScreen> {
     );
 
     try {
-      final detail = await _service.loadDetail(
-        SearchQuery(
-          kind: _actualKind,
-          what: widget.query.what,
-          reverse: widget.query.reverse,
-          where: widget.query.where,
-          page: widget.query.page,
-        ),
-        result.id,
-      );
+      final detail =
+          result.inlineDetail ??
+          await _service.loadDetail(
+            SearchQuery(
+              kind: _actualKind,
+              country: widget.query.country,
+              language: widget.query.language,
+              what: widget.query.what,
+              reverse: widget.query.reverse,
+              where: widget.query.where,
+              page: widget.query.page,
+            ),
+            result.id,
+          );
       if (!mounted) return;
       Navigator.of(context).pop(); // Chiudi loading
 
@@ -311,7 +441,15 @@ class _ItaliaOnlineResultsScreenState extends State<ItaliaOnlineResultsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: SonarpadAppBar(title: Text('${_actualKind.label} - Risultati')),
+      appBar: SonarpadAppBar(
+        title: Text(
+          !widget.includeItalianDirectories
+              ? AppLocalizations.of(context).homeDirectory
+              : widget.query.reverse
+              ? 'Numero di telefono - Risultati'
+              : '${widget.query.kind.label} - Risultati',
+        ),
+      ),
       body: _buildBody(),
     );
   }
@@ -358,6 +496,8 @@ class _ItaliaOnlineResultsScreenState extends State<ItaliaOnlineResultsScreen> {
                 builder: (_) => ItaliaOnlineResultsScreen(
                   query: SearchQuery(
                     kind: _actualKind,
+                    country: widget.query.country,
+                    language: widget.query.language,
                     what: widget.query.what,
                     reverse: widget.query.reverse,
                     where: places[i],
@@ -387,6 +527,8 @@ class _ItaliaOnlineResultsScreenState extends State<ItaliaOnlineResultsScreen> {
                     builder: (_) => ItaliaOnlineResultsScreen(
                       query: SearchQuery(
                         kind: _actualKind,
+                        country: widget.query.country,
+                        language: widget.query.language,
                         what: widget.query.what,
                         reverse: widget.query.reverse,
                         where: place,
@@ -403,7 +545,9 @@ class _ItaliaOnlineResultsScreenState extends State<ItaliaOnlineResultsScreen> {
     }
 
     if (_results.isEmpty) {
-      return const Center(child: Text('Nessun risultato trovato.'));
+      return Center(
+        child: Text(AppLocalizations.of(context).sonarTubeNoResults),
+      );
     }
 
     if (useSharedAccessibleViewModel) {
@@ -419,14 +563,15 @@ class _ItaliaOnlineResultsScreenState extends State<ItaliaOnlineResultsScreen> {
                     if (_results[i].category != null) _results[i].category!,
                     if (_results[i].address != null) _results[i].address!,
                     if (_results[i].city != null) _results[i].city!,
+                    if (_results[i].ratingText != null) _results[i].ratingText!,
                   ].join(' - '),
                 ),
               if (!res.isLastPage)
                 AccessibleListRow(
                   id: 'more',
                   title: _loadingMore
-                      ? 'Caricamento...'
-                      : 'Carica altri risultati',
+                      ? AppLocalizations.of(context).loading
+                      : AppLocalizations.of(context).loadMore,
                   kind: 'button',
                   enabled: !_loadingMore,
                 ),
@@ -455,7 +600,7 @@ class _ItaliaOnlineResultsScreenState extends State<ItaliaOnlineResultsScreen> {
                 ? const Center(child: CircularProgressIndicator())
                 : ElevatedButton(
                     onPressed: _loadNextPage,
-                    child: const Text('Carica altri risultati'),
+                    child: Text(AppLocalizations.of(context).loadMore),
                   ),
           );
         }
@@ -465,6 +610,7 @@ class _ItaliaOnlineResultsScreenState extends State<ItaliaOnlineResultsScreen> {
           if (r.category != null) r.category,
           if (r.address != null) r.address,
           if (r.city != null) r.city,
+          if (r.ratingText != null) r.ratingText,
         ].join(' - ');
 
         return Card(

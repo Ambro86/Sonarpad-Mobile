@@ -1,27 +1,105 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sonarpad_mobile_starter/widgets/universal_accessible_view.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sonarpad_mobile_starter/l10n/app_localizations.dart';
 import 'package:sonarpad_mobile_starter/screens/italiaonline_screen.dart';
 
 void main() {
-  testWidgets('phone mode exposes phone entry and hides the irrelevant location', (tester) async {
-    await tester.pumpWidget(const MaterialApp(
-      locale: Locale('it'),
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: ItaliaOnlineScreen(),
-    ));
-    expect(find.text('Località, indirizzo (opzionale)'), findsOneWidget);
-    await tester.tap(find.text('Cerca per numero di telefono'));
+  testWidgets('saved place country is restored separately from routes', (
+    tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({'places_search_country': 'fr'});
+    await tester.pumpWidget(
+      const MaterialApp(
+        locale: Locale('it'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: ItaliaOnlineScreen(),
+      ),
+    );
     await tester.pumpAndSettle();
-    expect(find.text('Numero di telefono, completo di prefisso'), findsOneWidget);
-    expect(find.text('Località, indirizzo (opzionale)'), findsNothing);
-    final field = tester.widget<TextField>(find.byType(TextField).first);
-    expect(field.keyboardType, TextInputType.phone);
-    await tester.enterText(find.byType(TextField).first, 'abc');
-    await tester.tap(find.text('Cerca'));
+    final list = tester.widget<UniversalAccessibleList>(
+      find.byType(UniversalAccessibleList),
+    );
+    expect(
+      list.sections
+          .expand((s) => s.rows)
+          .firstWhere((r) => r.id == 'country')
+          .value,
+      'fr',
+    );
+    await tester.tap(find.text('Ricerca nominativi'));
     await tester.pumpAndSettle();
-    expect(find.byType(ItaliaOnlineResultsScreen), findsNothing);
-    expect(find.text('Inserisci un numero di telefono italiano valido.'), findsOneWidget);
+    final names = tester.widget<UniversalAccessibleList>(
+      find.byType(UniversalAccessibleList),
+    );
+    expect(
+      names.sections.expand((s) => s.rows).any((r) => r.id == 'country'),
+      isFalse,
+    );
   });
+
+  setUp(() => SharedPreferences.setMockInitialValues({}));
+  testWidgets(
+    'international interface offers only places without an access code',
+    (tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          locale: Locale('en'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: ItaliaOnlineScreen(),
+        ),
+      );
+      expect(find.text('Find places and businesses'), findsWidgets);
+      expect(find.text('Enter a place or business'), findsOneWidget);
+      expect(
+        tester
+            .widget<UniversalAccessibleList>(
+              find.byType(UniversalAccessibleList),
+            )
+            .sections
+            .expand((s) => s.rows)
+            .firstWhere((r) => r.id == 'country')
+            .value,
+        'us',
+      );
+      expect(find.text('Ricerca nominativi'), findsNothing);
+      expect(find.text('Cerca un numero di telefono'), findsNothing);
+      expect(find.byType(TextField), findsNWidgets(2));
+      expect(find.byType(SegmentedButton<int>), findsNothing);
+    },
+  );
+
+  testWidgets(
+    'phone mode exposes phone entry and hides the irrelevant location',
+    (tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          locale: Locale('it'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: ItaliaOnlineScreen(),
+        ),
+      );
+      expect(find.text('Località, indirizzo (opzionale)'), findsOneWidget);
+      await tester.tap(find.text('Cerca un numero di telefono'));
+      await tester.pumpAndSettle();
+      expect(find.text('Inserisci il numero di telefono'), findsOneWidget);
+      expect(find.text('Località, indirizzo (opzionale)'), findsNothing);
+      expect(find.byType(SwitchListTile), findsNothing);
+      expect(find.byType(Checkbox), findsNothing);
+      final field = tester.widget<TextField>(find.byType(TextField).first);
+      expect(field.keyboardType, TextInputType.phone);
+      await tester.enterText(find.byType(TextField).first, 'abc');
+      await tester.tap(find.text('Cerca'));
+      await tester.pumpAndSettle();
+      expect(find.byType(ItaliaOnlineResultsScreen), findsNothing);
+      expect(
+        find.text('Inserisci un numero di telefono italiano valido.'),
+        findsOneWidget,
+      );
+    },
+  );
 }

@@ -2256,8 +2256,10 @@ class AiAudioDescriptionService {
     }
 
     final isCompact = stage == AdMediaFallbackStage.compact;
-    final isCompatibility = stage == AdMediaFallbackStage.compatibility;
-    final includeAudio = hasAudio && !isCompatibility;
+    final isNormalized = stage == AdMediaFallbackStage.normalized;
+    final isCompatibility =
+        stage == AdMediaFallbackStage.compatibility || isNormalized;
+    final includeAudio = hasAudio && (!isCompatibility || isNormalized);
     final scale = isCompatibility ? 'scale=480:-2,fps=3' :
         isCompact ? 'scale=480:-2,fps=4' : 'scale=640:-2,fps=5';
     final videoBitrate = isCompatibility ? '170k' : isCompact ? '210k' : '300k';
@@ -2275,7 +2277,11 @@ class AiAudioDescriptionService {
       '-map', '0:v:0',
       if (audio) ...['-map', audioStreamIndex == null ? '0:a:0?' : '0:$audioStreamIndex'],
       '-vf', scale,
-      '-c:v', 'mpeg4', '-b:v', videoBitrate,
+      // Final fallback only: the bundled full-GPL FFmpeg includes libx264.
+      // Earlier stages retain their existing codec and preparation behavior.
+      '-c:v', isNormalized ? 'libx264' : 'mpeg4',
+      if (isNormalized) ...['-preset', 'superfast', '-pix_fmt', 'yuv420p'],
+      '-b:v', videoBitrate,
       '-maxrate', maxrate, '-bufsize', bufsize,
       if (audio) ...['-c:a', 'aac', '-b:a', isCompact ? '48k' : '64k'] else ...['-an'],
       '-avoid_negative_ts', 'make_zero',
@@ -2286,6 +2292,7 @@ class AiAudioDescriptionService {
     try {
       await _runFfmpeg(command(audio: includeAudio), 'visual chunk ${stage.name}');
     } catch (error) {
+      _checkCancel();
       // Windows retries chunk muxing without audio when the visual stream is
       // valid but the source audio header/timestamps break the temporary mux.
       if (!includeAudio) {
@@ -2307,6 +2314,7 @@ class AiAudioDescriptionService {
           'visual chunk ${stage.name} video only',
         );
       } catch (videoOnlyError) {
+        _checkCancel();
         throw _AdProviderException(
           AdFailureKind.fileProcessingFailed,
           'Prepared Gemini video-only fallback failed: $videoOnlyError',
@@ -2325,7 +2333,7 @@ class AiAudioDescriptionService {
     final limit = stage == AdMediaFallbackStage.normal
         ? AudioDescriptionFallbacks.preferredPreparedChunkBytes
         : AudioDescriptionFallbacks.compatibilityPreparedChunkBytes;
-    if (size > limit && stage != AdMediaFallbackStage.compatibility) {
+    if (size > limit && !isCompatibility) {
       throw _AdProviderException(
         AdFailureKind.fileProcessingFailed,
         'Prepared Gemini chunk exceeds target size: $size > $limit',

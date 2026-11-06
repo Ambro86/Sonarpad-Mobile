@@ -122,6 +122,102 @@ abstract class AppLocalizations {
     Locale('zh', 'CN'),
   ];
 
+  /// No description provided for @placesCategory.
+  ///
+  /// In it, this message translates to:
+  /// **'Categoria'**
+  String get placesCategory;
+
+  /// No description provided for @placesAddress.
+  ///
+  /// In it, this message translates to:
+  /// **'Indirizzo'**
+  String get placesAddress;
+
+  /// No description provided for @placesPhone.
+  ///
+  /// In it, this message translates to:
+  /// **'Telefono'**
+  String get placesPhone;
+
+  /// No description provided for @placesWebsite.
+  ///
+  /// In it, this message translates to:
+  /// **'Sito web'**
+  String get placesWebsite;
+
+  /// No description provided for @placesRating.
+  ///
+  /// In it, this message translates to:
+  /// **'Valutazione: %stars% su 5 stelle'**
+  String get placesRating;
+
+  /// No description provided for @placesReviews.
+  ///
+  /// In it, this message translates to:
+  /// **' (%count% recensioni)'**
+  String get placesReviews;
+
+  /// No description provided for @placesUnavailable.
+  ///
+  /// In it, this message translates to:
+  /// **'non disponibile'**
+  String get placesUnavailable;
+
+  /// No description provided for @placesStatus.
+  ///
+  /// In it, this message translates to:
+  /// **'Stato apertura'**
+  String get placesStatus;
+
+  /// No description provided for @placesHours.
+  ///
+  /// In it, this message translates to:
+  /// **'Orari di apertura'**
+  String get placesHours;
+
+  /// No description provided for @placesHoursMissing.
+  ///
+  /// In it, this message translates to:
+  /// **'Orari non disponibili'**
+  String get placesHoursMissing;
+
+  /// No description provided for @placesToday.
+  ///
+  /// In it, this message translates to:
+  /// **'Oggi'**
+  String get placesToday;
+
+  /// No description provided for @placesTomorrow.
+  ///
+  /// In it, this message translates to:
+  /// **'Domani'**
+  String get placesTomorrow;
+
+  /// No description provided for @placesRange.
+  ///
+  /// In it, this message translates to:
+  /// **'dalle %start% alle %end%'**
+  String get placesRange;
+
+  /// No description provided for @placesNextDay.
+  ///
+  /// In it, this message translates to:
+  /// **' del giorno successivo'**
+  String get placesNextDay;
+
+  /// No description provided for @placesQuery.
+  ///
+  /// In it, this message translates to:
+  /// **'Inserisci luogo o attività'**
+  String get placesQuery;
+
+  /// No description provided for @placesLocation.
+  ///
+  /// In it, this message translates to:
+  /// **'Città / Indirizzo (facoltativo)'**
+  String get placesLocation;
+
   /// Localized text for appTitle.
   ///
   /// In it, this message translates to:
@@ -7948,7 +8044,7 @@ abstract class AppLocalizations {
   /// No description provided for @homeDirectory.
   ///
   /// In it, this message translates to:
-  /// **'Pagine Bianche e Gialle'**
+  /// **'Cerca luoghi e attività'**
   String get homeDirectory;
 
   /// Localized text for treccaniTitle.

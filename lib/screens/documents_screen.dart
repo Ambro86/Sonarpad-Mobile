@@ -88,7 +88,8 @@ const Set<String> _localMediaDocumentExtensions = {
 /// e di sfogliarli / leggerli con TTS.
 class DocumentsScreen extends StatefulWidget {
   final String? folderId;
-  const DocumentsScreen({super.key, this.folderId});
+  final String? searchQuery;
+  const DocumentsScreen({super.key, this.folderId, this.searchQuery});
 
   @override
   State<DocumentsScreen> createState() => _DocumentsScreenState();
@@ -96,6 +97,9 @@ class DocumentsScreen extends StatefulWidget {
 
 class _DocumentsScreenState extends State<DocumentsScreen> {
   final _service = DocumentLibraryService();
+  final _searchController = TextEditingController();
+  int _searchTextRevision = 0;
+  bool get _isSearchResults => widget.searchQuery != null;
   final _accessibleListController =
       AccessibleListController(debugName: 'documents');
   final _photoImport = const PhotoLibraryImportService();
@@ -103,7 +107,63 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
   String? _errorMessage;
 
   List<DocumentItem> get _displayedDocs =>
+      _folderDocuments.where((d) => !_isSearchResults ||
+          d.displayName.toLowerCase().contains(widget.searchQuery!.trim().toLowerCase())).toList();
+
+  List<DocumentItem> get _folderDocuments =>
       _service.documents.where((d) => d.parentId == widget.folderId).toList();
+
+  Future<void> _search() async {
+    final query = _searchController.text.trim();
+    if (query.isEmpty) return;
+    FocusManager.instance.primaryFocus?.unfocus();
+    await Navigator.of(context).push(MaterialPageRoute<void>(
+      builder: (_) => DocumentsScreen(folderId: widget.folderId, searchQuery: query),
+    ));
+    if (mounted) await _load();
+  }
+
+  List<AccessibleListRow> _searchRows(AppLocalizations l10n) => [
+    AccessibleListRow(
+      id: 'library_search_field', title: l10n.search, kind: 'textField',
+      value: _searchController.text, textInputAction: 'search',
+      textRevision: _searchTextRevision,
+      onValueChanged: (value) { _searchController.text = value?.toString() ?? ''; },
+      onSubmitted: (_) => _search(),
+      flutterChild: TextField(
+        key: const ValueKey('library_search_field'),
+        controller: _searchController,
+        decoration: InputDecoration(labelText: l10n.search),
+        textInputAction: TextInputAction.search,
+        onSubmitted: (_) => _search(),
+      ),
+    ),
+    AccessibleListRow(
+      id: 'library_search', title: l10n.search, kind: 'button',
+      onActivate: _search,
+      flutterChild: FilledButton(onPressed: _search, child: Text(l10n.search)),
+    ),
+    AccessibleListRow(
+      id: 'library_clear_search', title: l10n.clearSearch, kind: 'button',
+      onActivate: _clearSearch,
+      flutterChild: TextButton(onPressed: _clearSearch, child: Text(l10n.clearSearch)),
+    ),
+  ];
+
+  void _clearSearch() {
+    setState(() {
+      _searchController.clear();
+      _searchTextRevision++;
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+
 
 
   static const _allowedExtensions = [
@@ -540,7 +600,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
 
   Future<void> _handleAction(_DocumentAction action, DocumentItem doc) async {
     final l10n = AppLocalizations.of(context);
-    final displayed = _displayedDocs;
+    final displayed = _folderDocuments;
     final currentIndex = displayed.indexWhere((d) => d.id == doc.id);
     if (currentIndex == -1) return;
 
@@ -1611,9 +1671,19 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
         '${dt.day.toString().padLeft(2, '0')}/'
         '${dt.month.toString().padLeft(2, '0')}/${dt.year}';
 
-    final rows = <AccessibleListRow>[];
+    final rows = <AccessibleListRow>[
+      if (!_isSearchResults) ..._searchRows(l10n),
+      if (docs.isEmpty) AccessibleListRow(
+        id: 'documents_empty', kind: 'label',
+        title: _isSearchResults ? l10n.noDocumentSearchResults(widget.searchQuery!) : l10n.noDocumentsInLibrary,
+        flutterChild: _isSearchResults
+            ? Text(l10n.noDocumentSearchResults(widget.searchQuery!)) : const _EmptyState(),
+      ),
+    ];
+    final folderDocs = _folderDocuments;
     for (var index = 0; index < docs.length; index++) {
       final doc = docs[index];
+      final folderIndex = folderDocs.indexWhere((item) => item.id == doc.id);
       final actions = <AccessibleCustomAction>[
         if (_canTranslateDocument(doc))
           AccessibleCustomAction(id: 'translate', label: l10n.translateDocument),
@@ -1634,9 +1704,9 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
           AccessibleCustomAction(id: 'share', label: l10n.share),
         if (!_isRemoteAudioDocument(doc) && !_isLocalMediaDocument(doc))
           AccessibleCustomAction(id: 'export', label: doc.isFolder ? l10n.exportFolderZip : l10n.exportDocument),
-        if (index > 0)
+        if (folderIndex > 0)
           AccessibleCustomAction(id: 'move_up', label: l10n.moveUp),
-        if (index < docs.length - 1)
+        if (folderIndex < folderDocs.length - 1)
           AccessibleCustomAction(id: 'move_down', label: l10n.moveDown),
         AccessibleCustomAction(
           id: 'move_position',
@@ -1727,8 +1797,9 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
 
     return Scaffold(
       appBar: SonarpadAppBar(
-        title: Text(currentFolderName),
-        actions: [
+        title: Text(_isSearchResults ? l10n.searchResults : currentFolderName),
+        showHomeButton: !_isSearchResults,
+        actions: _isSearchResults ? [] : [
           IconButton(
             key: const ValueKey('documents_select_action'),
             icon: const Icon(Icons.playlist_add_check),
@@ -1789,14 +1860,19 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
         ],
       ),
       body: SafeArea(
-        child: _loading
+        child: Column(children: [
+          if (!_isSearchResults && !useSharedAccessibleViewModel)
+            Padding(padding: const EdgeInsets.all(16), child: Column(
+              children: _searchRows(l10n).map((row) => row.flutterChild!).toList(),
+            )),
+          Expanded(child: _loading
             ? const Center(child: CircularProgressIndicator())
             : _errorMessage != null
                 ? _ErrorState(message: _errorMessage!)
-                : docs.isEmpty
-                    ? const _EmptyState()
-                    : useSharedAccessibleViewModel
-                        ? _buildSharedAccessibleDocumentsList(docs, l10n)
+                : useSharedAccessibleViewModel
+                    ? _buildSharedAccessibleDocumentsList(docs, l10n)
+                    : docs.isEmpty
+                        ? (_isSearchResults ? Center(child: Text(l10n.noDocumentSearchResults(widget.searchQuery!))) : const _EmptyState())
                         : ListView.separated(
                         key: PageStorageKey<String>(
                           'documents_${widget.folderId ?? 'root'}',
@@ -1816,8 +1892,10 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                         separatorBuilder: (_, _) => const SizedBox(height: 8),
                         itemBuilder: (context, index) {
                           final doc = docs[index];
-                          final isFirst = index == 0;
-                          final isLast = index == docs.length - 1;
+                          final folderDocs = _folderDocuments;
+                          final folderIndex = folderDocs.indexWhere((item) => item.id == doc.id);
+                          final isFirst = folderIndex == 0;
+                          final isLast = folderIndex == folderDocs.length - 1;
 
                           return _DocumentTile(
                             key: ValueKey<String>('document_item_${doc.id}'),
@@ -1843,9 +1921,10 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                             onAction: (action) => _handleAction(action, doc),
                           );
                         },
-                      ),
+                      )),
+        ]),
       ),
-      floatingActionButton: Semantics(
+      floatingActionButton: _isSearchResults ? null : Semantics(
         button: true,
         label: l10n.addDocumentToLibraryHint,
         excludeSemantics: true,

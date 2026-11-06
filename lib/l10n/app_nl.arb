@@ -1,4 +1,21 @@
 {
+  "placesCategory": "Categorie",
+  "placesAddress": "Adres",
+  "placesPhone": "Telefoon",
+  "placesWebsite": "Website",
+  "placesRating": "Beoordeling: %stars% van 5 sterren",
+  "placesReviews": " (%count% recensies)",
+  "placesUnavailable": "niet beschikbaar",
+  "placesStatus": "Openingsstatus",
+  "placesHours": "Openingstijden",
+  "placesHoursMissing": "Openingstijden niet beschikbaar",
+  "placesToday": "Vandaag",
+  "placesTomorrow": "Morgen",
+  "placesRange": "van %start% tot %end%",
+  "placesNextDay": " de volgende dag",
+
+  "placesQuery": "Voer een plaats of bedrijf in",
+  "placesLocation": "Stad / Adres (optioneel)",
   "@@locale": "nl",
   "appTitle": "Sonarpad",
   "@appTitle": {
@@ -5155,7 +5172,7 @@
   "homeLa7Play": "LA7 Play",
   "homeRaiPlaySound": "RaiPlay Sound",
   "homeOpeningHours": "Openingstijden",
-  "homeDirectory": "Telefoongids en Gouden Gids",
+  "homeDirectory": "Plaatsen en bedrijven zoeken",
   "treccaniTitle": "Treccani-encyclopedie",
   "@treccaniTitle": {
     "description": "Localized text for treccaniTitle."

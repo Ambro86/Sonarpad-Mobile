@@ -1,4 +1,21 @@
 {
+  "placesCategory": "Категорія",
+  "placesAddress": "Адреса",
+  "placesPhone": "Телефон",
+  "placesWebsite": "Вебсайт",
+  "placesRating": "Оцінка: %stars% із 5 зірок",
+  "placesReviews": " (відгуків: %count%)",
+  "placesUnavailable": "недоступно",
+  "placesStatus": "Стан роботи",
+  "placesHours": "Години роботи",
+  "placesHoursMissing": "Години роботи недоступні",
+  "placesToday": "Сьогодні",
+  "placesTomorrow": "Завтра",
+  "placesRange": "з %start% до %end%",
+  "placesNextDay": " наступного дня",
+
+  "placesQuery": "Введіть місце або підприємство",
+  "placesLocation": "Місто / Адреса (необов’язково)",
   "@@locale": "uk",
   "appTitle": "Sonarpad",
   "@appTitle": {
@@ -5155,7 +5172,7 @@
   "homeLa7Play": "LA7 Play",
   "homeRaiPlaySound": "RaiPlay Sound",
   "homeOpeningHours": "Години роботи",
-  "homeDirectory": "Білі та жовті сторінки",
+  "homeDirectory": "Пошук місць і підприємств",
   "treccaniTitle": "Енциклопедія Treccani",
   "@treccaniTitle": {
     "description": "Localized text for treccaniTitle."

@@ -9,6 +9,54 @@ class AppLocalizationsFr extends AppLocalizations {
   AppLocalizationsFr([String locale = 'fr']) : super(locale);
 
   @override
+  String get placesCategory => 'Catégorie';
+
+  @override
+  String get placesAddress => 'Adresse';
+
+  @override
+  String get placesPhone => 'Téléphone';
+
+  @override
+  String get placesWebsite => 'Site web';
+
+  @override
+  String get placesRating => 'Note : %stars% sur 5 étoiles';
+
+  @override
+  String get placesReviews => ' (%count% avis)';
+
+  @override
+  String get placesUnavailable => 'non disponible';
+
+  @override
+  String get placesStatus => 'État d’ouverture';
+
+  @override
+  String get placesHours => 'Horaires d’ouverture';
+
+  @override
+  String get placesHoursMissing => 'Horaires non disponibles';
+
+  @override
+  String get placesToday => 'Aujourd’hui';
+
+  @override
+  String get placesTomorrow => 'Demain';
+
+  @override
+  String get placesRange => 'de %start% à %end%';
+
+  @override
+  String get placesNextDay => ' le lendemain';
+
+  @override
+  String get placesQuery => 'Saisissez un lieu ou une activité';
+
+  @override
+  String get placesLocation => 'Ville / Adresse (facultative)';
+
+  @override
   String get appTitle => 'Sonarpad';
 
   @override
@@ -4481,7 +4529,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get homeOpeningHours => 'Horaires d’ouverture';
 
   @override
-  String get homeDirectory => 'Pages blanches et jaunes';
+  String get homeDirectory => 'Rechercher des lieux et des activités';
 
   @override
   String get treccaniTitle => 'Encyclopédie Treccani';

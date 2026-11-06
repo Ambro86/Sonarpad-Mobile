@@ -9,6 +9,54 @@ class AppLocalizationsUk extends AppLocalizations {
   AppLocalizationsUk([String locale = 'uk']) : super(locale);
 
   @override
+  String get placesCategory => 'Категорія';
+
+  @override
+  String get placesAddress => 'Адреса';
+
+  @override
+  String get placesPhone => 'Телефон';
+
+  @override
+  String get placesWebsite => 'Вебсайт';
+
+  @override
+  String get placesRating => 'Оцінка: %stars% із 5 зірок';
+
+  @override
+  String get placesReviews => ' (відгуків: %count%)';
+
+  @override
+  String get placesUnavailable => 'недоступно';
+
+  @override
+  String get placesStatus => 'Стан роботи';
+
+  @override
+  String get placesHours => 'Години роботи';
+
+  @override
+  String get placesHoursMissing => 'Години роботи недоступні';
+
+  @override
+  String get placesToday => 'Сьогодні';
+
+  @override
+  String get placesTomorrow => 'Завтра';
+
+  @override
+  String get placesRange => 'з %start% до %end%';
+
+  @override
+  String get placesNextDay => ' наступного дня';
+
+  @override
+  String get placesQuery => 'Введіть місце або підприємство';
+
+  @override
+  String get placesLocation => 'Місто / Адреса (необов’язково)';
+
+  @override
   String get appTitle => 'Sonarpad';
 
   @override
@@ -4429,7 +4477,7 @@ class AppLocalizationsUk extends AppLocalizations {
   String get homeOpeningHours => 'Години роботи';
 
   @override
-  String get homeDirectory => 'Білі та жовті сторінки';
+  String get homeDirectory => 'Пошук місць і підприємств';
 
   @override
   String get treccaniTitle => 'Енциклопедія Treccani';

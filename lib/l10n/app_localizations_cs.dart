@@ -9,6 +9,54 @@ class AppLocalizationsCs extends AppLocalizations {
   AppLocalizationsCs([String locale = 'cs']) : super(locale);
 
   @override
+  String get placesCategory => 'Kategorie';
+
+  @override
+  String get placesAddress => 'Adresa';
+
+  @override
+  String get placesPhone => 'Telefon';
+
+  @override
+  String get placesWebsite => 'Web';
+
+  @override
+  String get placesRating => 'Hodnocení: %stars% z 5 hvězdiček';
+
+  @override
+  String get placesReviews => ' (počet recenzí: %count%)';
+
+  @override
+  String get placesUnavailable => 'není k dispozici';
+
+  @override
+  String get placesStatus => 'Stav otevření';
+
+  @override
+  String get placesHours => 'Otevírací doba';
+
+  @override
+  String get placesHoursMissing => 'Otevírací doba není k dispozici';
+
+  @override
+  String get placesToday => 'Dnes';
+
+  @override
+  String get placesTomorrow => 'Zítra';
+
+  @override
+  String get placesRange => 'od %start% do %end%';
+
+  @override
+  String get placesNextDay => ' následujícího dne';
+
+  @override
+  String get placesQuery => 'Zadejte místo nebo firmu';
+
+  @override
+  String get placesLocation => 'Město / Adresa (nepovinné)';
+
+  @override
   String get appTitle => 'Sonarpad';
 
   @override
@@ -4432,7 +4480,7 @@ class AppLocalizationsCs extends AppLocalizations {
   String get homeOpeningHours => 'Otevírací doba';
 
   @override
-  String get homeDirectory => 'Bílé a žluté stránky';
+  String get homeDirectory => 'Hledat místa a firmy';
 
   @override
   String get treccaniTitle => 'Encyklopedie Treccani';

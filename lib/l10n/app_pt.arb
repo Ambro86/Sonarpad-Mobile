@@ -1,4 +1,21 @@
 {
+  "placesCategory": "Categoria",
+  "placesAddress": "Morada",
+  "placesPhone": "Telefone",
+  "placesWebsite": "Site",
+  "placesRating": "Classificação: %stars% de 5 estrelas",
+  "placesReviews": " (%count% avaliações)",
+  "placesUnavailable": "não disponível",
+  "placesStatus": "Estado de abertura",
+  "placesHours": "Horário de funcionamento",
+  "placesHoursMissing": "Horário não disponível",
+  "placesToday": "Hoje",
+  "placesTomorrow": "Amanhã",
+  "placesRange": "das %start% às %end%",
+  "placesNextDay": " do dia seguinte",
+
+  "placesQuery": "Introduza um local ou empresa",
+  "placesLocation": "Cidade / Morada (opcional)",
   "@@locale": "pt",
   "appTitle": "Sonarpad",
   "appLanguage": "Idioma da app",
@@ -3583,7 +3600,7 @@
   "homeLa7Play": "LA7 Play",
   "homeRaiPlaySound": "RaiPlay Sound",
   "homeOpeningHours": "Horários de abertura",
-  "homeDirectory": "Páginas Brancas e Amarelas",
+  "homeDirectory": "Pesquisar locais e empresas",
   "treccaniTitle": "Enciclopédia Treccani",
   "@treccaniTitle": {
     "description": "Localized text for treccaniTitle."

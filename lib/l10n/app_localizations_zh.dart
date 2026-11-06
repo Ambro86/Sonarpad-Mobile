@@ -9,6 +9,54 @@ class AppLocalizationsZh extends AppLocalizations {
   AppLocalizationsZh([String locale = 'zh']) : super(locale);
 
   @override
+  String get placesCategory => '类别';
+
+  @override
+  String get placesAddress => '地址';
+
+  @override
+  String get placesPhone => '电话';
+
+  @override
+  String get placesWebsite => '网站';
+
+  @override
+  String get placesRating => '评分：%stars% / 5 星';
+
+  @override
+  String get placesReviews => '（%count% 条评论）';
+
+  @override
+  String get placesUnavailable => '暂无信息';
+
+  @override
+  String get placesStatus => '营业状态';
+
+  @override
+  String get placesHours => '营业时间';
+
+  @override
+  String get placesHoursMissing => '暂无营业时间';
+
+  @override
+  String get placesToday => '今天';
+
+  @override
+  String get placesTomorrow => '明天';
+
+  @override
+  String get placesRange => '%start% 至 %end%';
+
+  @override
+  String get placesNextDay => '（次日）';
+
+  @override
+  String get placesQuery => '输入地点或商家';
+
+  @override
+  String get placesLocation => '城市 / 地址（可选）';
+
+  @override
   String get appTitle => 'Sonarpad';
 
   @override
@@ -4252,7 +4300,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get homeOpeningHours => '营业时间';
 
   @override
-  String get homeDirectory => '白页和黄页';
+  String get homeDirectory => '搜索地点和商家';
 
   @override
   String get treccaniTitle => '特雷卡尼百科全书';
@@ -5712,6 +5760,54 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
   AppLocalizationsZhCn() : super('zh_CN');
 
   @override
+  String get placesCategory => '类别';
+
+  @override
+  String get placesAddress => '地址';
+
+  @override
+  String get placesPhone => '电话';
+
+  @override
+  String get placesWebsite => '网站';
+
+  @override
+  String get placesRating => '评分：%stars% / 5 星';
+
+  @override
+  String get placesReviews => '（%count% 条评论）';
+
+  @override
+  String get placesUnavailable => '暂无信息';
+
+  @override
+  String get placesStatus => '营业状态';
+
+  @override
+  String get placesHours => '营业时间';
+
+  @override
+  String get placesHoursMissing => '暂无营业时间';
+
+  @override
+  String get placesToday => '今天';
+
+  @override
+  String get placesTomorrow => '明天';
+
+  @override
+  String get placesRange => '%start% 至 %end%';
+
+  @override
+  String get placesNextDay => '（次日）';
+
+  @override
+  String get placesQuery => '输入地点或商家';
+
+  @override
+  String get placesLocation => '城市 / 地址（可选）';
+
+  @override
   String get appTitle => 'Sonarpad';
 
   @override
@@ -9955,7 +10051,7 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
   String get homeOpeningHours => '营业时间';
 
   @override
-  String get homeDirectory => '白页和黄页';
+  String get homeDirectory => '搜索地点和商家';
 
   @override
   String get treccaniTitle => '特雷卡尼百科全书';

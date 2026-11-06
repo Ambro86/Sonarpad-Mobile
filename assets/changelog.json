@@ -20,7 +20,8 @@
       "15. PDF protetti da password: ora Sonarpad chiede la password in un campo accessibile, segnala eventuali password errate e apre il documento dopo la verifica.",
       "16. Aggiunto il pulsante Salva PDF senza password nella schermata di lettura: dopo aver aperto il PDF con la password corretta, puoi salvarne una copia in Sonarpad o condividerla, mantenendo impaginazione e contenuti e lasciando invariato l’originale.",
       "17. Migliorata l’estrazione del testo dai PDF: recuperate lettere che in alcuni documenti venivano omesse, rendendo più corretta la lettura e l’esportazione del testo.",
-      "18. Nella sezione Pagine Bianche aggiunta la ricerca per numero."
+      "18. Nella sezione Pagine Bianche aggiunta la ricerca per numero.",
+      "19. Cerca luoghi e attività è ora disponibile in tutte le lingue, con risultati internazionali, descrizioni, valutazioni, numero di recensioni, orari di apertura e sito web, quando disponibili. Nell’interfaccia italiana sostituisce Pagine Bianche e Gialle, mantenendone anche i risultati, la ricerca nominativi e la ricerca per numero di telefono. Nelle altre lingue è disponibile solo la ricerca di luoghi e attività."
     ],
     "en": [
       "Added cloud sync across Windows, Mac and mobile for favorite radio and TV stations, personal news sources and folders, podcasts and SonarTube favorites, with a temporary pairing code. Favorite articles are preserved where supported. Manual sync handles deletions and includes diagnostic logs. Compatible module preferences also sync, including search type, weather city and cutting mode, with separate controls for collections and preferences and a 32 KB preference limit. Simplified setup: first choose whether to start or enter a code; connected devices show sync actions. Options are kept on a separate page. Fixed sync failures caused by the internal Favorite articles entry, which now stays local and is not treated as an RSS feed. Automatic background sync at startup and while using the app, with batched updates after changes. The cloud window shows the status and last sync time. If the server is unavailable, the app stays usable: no automatic alerts, diagnostic logs and retries with increasing delays.",
@@ -38,7 +39,8 @@
       "Audio descriptions: recovery of phrases excluded for lack of space by checking the actual synthesized duration and, if needed, increasing the voice speed by 10% or at most 15%. Previously inserted descriptions and dialogue remain protected; the speed is saved in the project for each recovered phrase.",
       "Password-protected PDFs: Sonarpad now asks for the password in an accessible field, reports incorrect passwords and opens the document after verification.",
       "Added Save PDF without password to the reading screen: after opening the PDF with the correct password, you can save a copy in Sonarpad or share it, preserving its layout and contents and leaving the original unchanged.",
-      "Improved PDF text extraction: letters previously omitted in some documents are now recovered, improving text reading and export."
+      "Improved PDF text extraction: letters previously omitted in some documents are now recovered, improving text reading and export.",
+      "1. Added Find places and businesses in all languages, with international results, descriptions, ratings, review counts, opening hours and websites when available. In the Italian interface it replaces White and Yellow Pages while retaining their results, name search and phone-number search. Other languages offer place and business search only."
     ],
     "fr": [
       "Ajout de la synchronisation cloud entre Windows, Mac et mobile pour les favoris radio et TV, les sources et dossiers personnels d’actualités, les podcasts et les favoris SonarTube. Association par code temporaire. Les articles favoris sont conservés lorsque cette fonction est prise en charge. Synchronisation manuelle avec suppressions et journaux de diagnostic. Les préférences compatibles des modules sont également synchronisées : type de recherche, ville météo et mode de découpe. Commandes séparées pour les collections et les préférences, limitées à 32 Ko.",
@@ -56,7 +58,8 @@
       "Audiodescriptions : récupération des phrases exclues faute de place en vérifiant la durée réelle de la synthèse et, si nécessaire, en augmentant la vitesse de la voix de 10 % ou de 15 % au maximum. Les descriptions déjà insérées et les dialogues restent protégés ; la vitesse est enregistrée dans le projet pour chaque phrase récupérée.",
       "PDF protégés par mot de passe : Sonarpad demande désormais le mot de passe dans un champ accessible, signale les mots de passe incorrects et ouvre le document après vérification.",
       "Ajout du bouton Enregistrer le PDF sans mot de passe dans l’écran de lecture : après ouverture avec le bon mot de passe, vous pouvez enregistrer une copie dans Sonarpad ou la partager, en conservant sa mise en page et son contenu sans modifier l’original.",
-      "Amélioration de l’extraction du texte des PDF : récupération de lettres auparavant omises dans certains documents, pour une lecture et une exportation plus fidèles."
+      "Amélioration de l’extraction du texte des PDF : récupération de lettres auparavant omises dans certains documents, pour une lecture et une exportation plus fidèles.",
+      "1. Ajout de la recherche de lieux et d’activités dans toutes les langues, avec des résultats internationaux, descriptions, notes, nombre d’avis, horaires et sites web lorsqu’ils sont disponibles. Dans l’interface italienne, elle remplace les Pages blanches et jaunes tout en conservant leurs résultats et les recherches par nom ou numéro de téléphone. Les autres langues proposent uniquement la recherche de lieux et d’activités."
     ],
     "es": [
       "Añadida la sincronización en la nube entre Windows, Mac y móvil: favoritos de radio y TV, fuentes y carpetas personales de noticias, podcasts y favoritos de SonarTube. Conexión mediante código temporal. Los artículos favoritos se conservan donde son compatibles. Sincronización manual con eliminaciones y registros de diagnóstico. También se sincronizan las preferencias compatibles: tipo de búsqueda, ciudad del tiempo y modo de corte. Controles separados para colecciones y preferencias, con un límite de 32 KB para estas últimas.",
@@ -74,7 +77,8 @@
       "Audiodescripciones: recuperación de frases excluidas por falta de espacio comprobando la duración real de la síntesis y, si es necesario, aumentando la velocidad de la voz un 10 % o como máximo un 15 %. Las descripciones ya insertadas y los diálogos siguen protegidos; la velocidad se guarda en el proyecto para cada frase recuperada.",
       "PDF protegidos con contraseña: Sonarpad ahora solicita la contraseña en un campo accesible, indica si es incorrecta y abre el documento tras verificarla.",
       "Añadido el botón Guardar PDF sin contraseña en la pantalla de lectura: tras abrir el PDF con la contraseña correcta, puedes guardar una copia en Sonarpad o compartirla, conservando el diseño y el contenido sin modificar el original.",
-      "Mejorada la extracción de texto de los PDF: se recuperan letras que antes se omitían en algunos documentos, mejorando la lectura y la exportación del texto."
+      "Mejorada la extracción de texto de los PDF: se recuperan letras que antes se omitían en algunos documentos, mejorando la lectura y la exportación del texto.",
+      "1. Añadida la búsqueda de lugares y negocios en todos los idiomas, con resultados internacionales, descripciones, valoraciones, número de reseñas, horarios y sitios web cuando están disponibles. En la interfaz italiana sustituye a las Páginas Blancas y Amarillas, conservando sus resultados y las búsquedas por nombre y teléfono. En los demás idiomas solo se ofrece la búsqueda de lugares y negocios."
     ],
     "pt": [
       "Adicionada sincronização na nuvem entre Windows, Mac e dispositivos móveis: favoritos de rádio e TV, fontes e pastas pessoais de notícias, podcasts e favoritos do SonarTube. Ligação por código temporário. Os artigos favoritos são preservados quando suportados. Sincronização manual com eliminações e registos de diagnóstico. Também são sincronizadas as preferências compatíveis: tipo de pesquisa, cidade da meteorologia e modo de corte. Controlos separados para coleções e preferências, com um limite de 32 KB para estas últimas.",
@@ -92,7 +96,8 @@
       "Audiodescrições: recuperação de frases excluídas por falta de espaço, verificando a duração real da síntese e, se necessário, aumentando a velocidade da voz em 10% ou, no máximo, 15%. As descrições já inseridas e os diálogos continuam protegidos; a velocidade é guardada no projeto para cada frase recuperada.",
       "PDF protegidos por palavra-passe: o Sonarpad pede agora a palavra-passe num campo acessível, assinala palavras-passe incorretas e abre o documento após a verificação.",
       "Adicionado o botão Guardar PDF sem palavra-passe ao ecrã de leitura: após abrir o PDF com a palavra-passe correta, pode guardar uma cópia no Sonarpad ou partilhá-la, preservando a disposição e o conteúdo sem alterar o original.",
-      "Melhorada a extração de texto dos PDF: são recuperadas letras anteriormente omitidas em alguns documentos, melhorando a leitura e a exportação do texto."
+      "Melhorada a extração de texto dos PDF: são recuperadas letras anteriormente omitidas em alguns documentos, melhorando a leitura e a exportação do texto.",
+      "1. Adicionada a pesquisa de locais e empresas em todos os idiomas, com resultados internacionais, descrições, classificações, número de avaliações, horários e sites quando disponíveis. Na interface italiana substitui as Páginas Brancas e Amarelas, mantendo os seus resultados e as pesquisas por nome e telefone. Nos outros idiomas está disponível apenas a pesquisa de locais e empresas."
     ],
     "pt_BR": [
       "Adicionada sincronização na nuvem entre Windows, Mac e dispositivos móveis: favoritos de rádio e TV, fontes e pastas pessoais de notícias, podcasts e favoritos do SonarTube. Ligação por código temporário. Os artigos favoritos são preservados quando suportados. Sincronização manual com eliminações e registos de diagnóstico. Também são sincronizadas as preferências compatíveis: tipo de pesquisa, cidade da meteorologia e modo de corte. Controlos separados para coleções e preferências, com um limite de 32 KB para estas últimas.",
@@ -110,7 +115,8 @@
       "Audiodescrições: recuperação de frases excluídas por falta de espaço, verificando a duração real da síntese e, se necessário, aumentando a velocidade da voz em 10% ou, no máximo, 15%. As descrições já inseridas e os diálogos continuam protegidos; a velocidade é salva no projeto para cada frase recuperada.",
       "PDFs protegidos por senha: o Sonarpad agora solicita a senha em um campo acessível, informa quando ela está incorreta e abre o documento após a verificação.",
       "Adicionado o botão Salvar PDF sem senha à tela de leitura: após abrir o PDF com a senha correta, você pode salvar uma cópia no Sonarpad ou compartilhá-la, preservando a diagramação e o conteúdo sem alterar o original.",
-      "Melhorada a extração de texto dos PDFs: letras antes omitidas em alguns documentos são recuperadas, melhorando a leitura e a exportação do texto."
+      "Melhorada a extração de texto dos PDFs: letras antes omitidas em alguns documentos são recuperadas, melhorando a leitura e a exportação do texto.",
+      "1. Adicionada a busca de lugares e empresas em todos os idiomas, com resultados internacionais, descrições, notas, quantidade de avaliações, horários e sites quando disponíveis. Na interface italiana substitui as Páginas Brancas e Amarelas, mantendo seus resultados e as buscas por nome e telefone. Nos demais idiomas está disponível apenas a busca de lugares e empresas."
     ],
     "pl": [
       "Dodano synchronizację w chmurze między Windows, Mac i urządzeniami mobilnymi: ulubione radia i TV, własne źródła i foldery wiadomości, podcasty oraz ulubione SonarTube. Łączenie kodem tymczasowym. Ulubione artykuły są zachowywane tam, gdzie są obsługiwane. Synchronizacja ręczna uwzględnia usunięcia i dzienniki diagnostyczne. Synchronizowane są również zgodne preferencje modułów: typ wyszukiwania, miasto pogody i tryb przycinania. Oddzielne ustawienia dla kolekcji i preferencji, z limitem 32 KB dla preferencji.",
@@ -128,7 +134,8 @@
       "Audiodeskrypcja: odzyskiwanie zdań pominiętych z powodu braku miejsca przez sprawdzenie rzeczywistego czasu syntezy i, w razie potrzeby, zwiększenie prędkości głosu o 10% lub maksymalnie 15%. Wcześniej dodane opisy i dialogi pozostają chronione; prędkość jest zapisywana w projekcie dla każdego odzyskanego zdania.",
       "Pliki PDF chronione hasłem: Sonarpad prosi teraz o hasło w dostępnym polu, informuje o błędnym haśle i otwiera dokument po weryfikacji.",
       "Dodano przycisk Zapisz PDF bez hasła na ekranie czytania: po otwarciu PDF poprawnym hasłem można zapisać kopię w Sonarpad lub ją udostępnić, zachowując układ i zawartość bez zmieniania oryginału.",
-      "Ulepszono wyodrębnianie tekstu z plików PDF: odzyskiwane są litery pomijane wcześniej w niektórych dokumentach, co poprawia odczyt i eksport tekstu."
+      "Ulepszono wyodrębnianie tekstu z plików PDF: odzyskiwane są litery pomijane wcześniej w niektórych dokumentach, co poprawia odczyt i eksport tekstu.",
+      "1. Dodano wyszukiwanie miejsc i firm we wszystkich językach, z wynikami międzynarodowymi, opisami, ocenami, liczbą opinii, godzinami otwarcia i stronami internetowymi, gdy są dostępne. We włoskim interfejsie zastępuje ono Białe i Żółte Strony, zachowując ich wyniki oraz wyszukiwanie nazwisk i numerów telefonu. W pozostałych językach dostępne jest tylko wyszukiwanie miejsc i firm."
     ],
     "cs": [
       "Přidána cloudová synchronizace mezi Windows, Macem a mobilem pro oblíbená rádia a TV, vlastní zpravodajské zdroje a složky, podcasty a oblíbené položky SonarTube. Propojení dočasným kódem. Oblíbené články se zachovávají tam, kde jsou podporovány. Ruční synchronizace zahrnuje odstranění a diagnostické protokoly. Synchronizují se také kompatibilní předvolby modulů: typ hledání, město počasí a režim střihu. Samostatné ovládání sbírek a předvoleb s limitem 32 KB pro předvolby.",
@@ -146,7 +153,8 @@
       "Audiopopisy: obnovení vět vynechaných kvůli nedostatku místa ověřením skutečné délky syntézy a případným zvýšením rychlosti hlasu o 10 %, nejvýše o 15 %. Již vložené popisy a dialogy zůstávají chráněné; rychlost se v projektu ukládá pro každou obnovenou větu.",
       "PDF chráněné heslem: Sonarpad nyní požádá o heslo v přístupném poli, upozorní na nesprávné heslo a po ověření dokument otevře.",
       "Na obrazovku čtení přidáno tlačítko Uložit PDF bez hesla: po otevření správným heslem můžete uložit kopii do Sonarpadu nebo ji sdílet, se zachovaným rozložením a obsahem a beze změny originálu.",
-      "Vylepšeno získávání textu z PDF: obnovují se písmena dříve vynechávaná v některých dokumentech, takže čtení a export textu jsou přesnější."
+      "Vylepšeno získávání textu z PDF: obnovují se písmena dříve vynechávaná v některých dokumentech, takže čtení a export textu jsou přesnější.",
+      "1. Přidáno hledání míst a firem ve všech jazycích, s mezinárodními výsledky, popisy, hodnocením, počtem recenzí, otevírací dobou a weby, pokud jsou dostupné. V italském rozhraní nahrazuje Bílé a Zlaté stránky a zachovává jejich výsledky i hledání podle jména a telefonního čísla. V ostatních jazycích je dostupné pouze hledání míst a firem."
     ],
     "de": [
       "Cloud-Synchronisierung zwischen Windows, Mac und Mobilgeräten für Radio- und TV-Favoriten, eigene Nachrichtenquellen und Ordner, Podcasts und SonarTube-Favoriten hinzugefügt. Verbindung über einen temporären Code. Artikel-Favoriten bleiben erhalten, soweit unterstützt. Manuelle Synchronisierung mit Löschungen und Diagnoseprotokollen. Auch kompatible Moduleinstellungen werden synchronisiert, darunter Suchtyp, Wetterort und Schnittmodus. Separate Steuerung für Sammlungen und Einstellungen; Einstellungen sind auf 32 KB begrenzt.",
@@ -164,7 +172,8 @@
       "Audiodeskription: Wegen Platzmangels ausgeschlossene Sätze werden anhand der tatsächlichen Sprachausgabe überprüft und bei Bedarf mit einer um 10 % oder höchstens 15 % erhöhten Sprechgeschwindigkeit wiederhergestellt. Bereits eingefügte Beschreibungen und Dialoge bleiben geschützt; die Geschwindigkeit wird für jeden wiederhergestellten Satz im Projekt gespeichert.",
       "Passwortgeschützte PDFs: Sonarpad fragt das Passwort jetzt in einem barrierefreien Feld ab, meldet falsche Passwörter und öffnet das Dokument nach erfolgreicher Prüfung.",
       "Die Leseansicht bietet jetzt PDF ohne Passwort speichern: Nach dem Öffnen mit dem richtigen Passwort können Sie eine Kopie in Sonarpad speichern oder teilen. Layout und Inhalt bleiben erhalten, das Original bleibt unverändert.",
-      "Textextraktion aus PDFs verbessert: In manchen Dokumenten zuvor ausgelassene Buchstaben werden nun wiederhergestellt, wodurch das Lesen und Exportieren des Textes genauer wird."
+      "Textextraktion aus PDFs verbessert: In manchen Dokumenten zuvor ausgelassene Buchstaben werden nun wiederhergestellt, wodurch das Lesen und Exportieren des Textes genauer wird.",
+      "1. Die Suche nach Orten und Unternehmen ist jetzt in allen Sprachen verfügbar, mit internationalen Ergebnissen, Beschreibungen, Bewertungen, Anzahl der Rezensionen, Öffnungszeiten und Websites, soweit vorhanden. In der italienischen Oberfläche ersetzt sie die Weißen und Gelben Seiten; deren Ergebnisse sowie die Namens- und Telefonnummernsuche bleiben erhalten. In anderen Sprachen ist nur die Suche nach Orten und Unternehmen verfügbar."
     ],
     "zh_CN": [
       "新增 Windows、Mac 和移动端之间的云同步：电台和电视收藏、个人新闻来源和文件夹、播客及 SonarTube 收藏。使用临时代码关联设备。支持文章收藏的平台会保留文章收藏。手动同步支持删除操作和诊断日志。 现在也同步兼容的模块偏好设置，包括搜索类型、天气城市和剪切模式。集合与偏好设置可分别控制，偏好设置上限为 32 KB。",
@@ -182,7 +191,8 @@
       "音频描述：通过检查语音合成的实际时长，恢复因时间不足而被排除的句子；必要时将语速提高 10%，最多提高 15%。已插入的描述和对白不会受到影响；每个恢复句子的语速都会保存在项目中。",
       "受密码保护的 PDF：Sonarpad 现在通过无障碍输入框请求密码，提示密码错误，并在验证后打开文档。",
       "阅读界面新增“保存无密码 PDF”按钮：使用正确密码打开后，可以将副本保存到 Sonarpad 或分享，保留原有排版和内容，不修改原文件。",
-      "改进了 PDF 文本提取：恢复某些文档中此前遗漏的字母，提高文本阅读和导出的准确性。"
+      "改进了 PDF 文本提取：恢复某些文档中此前遗漏的字母，提高文本阅读和导出的准确性。",
+      "1. 新增所有语言均可使用的地点和商家搜索。支持国际搜索结果，并在可用时显示简介、评分、评论数量、营业时间和网站。在意大利语界面中，该功能取代白页和黄页，同时保留原有结果以及姓名和电话号码搜索。其他语言仅提供地点和商家搜索。"
     ],
     "uk": [
       "Додано хмарну синхронізацію між Windows, Mac і мобільними пристроями: улюблені радіо й ТБ, власні джерела та папки новин, подкасти й обране SonarTube. Підключення тимчасовим кодом. Улюблені статті зберігаються там, де підтримуються. Ручна синхронізація враховує видалення та веде діагностичні журнали. Також синхронізуються сумісні налаштування модулів: тип пошуку, місто погоди та режим обрізання. Окреме керування колекціями й налаштуваннями з лімітом 32 КБ для налаштувань.",
@@ -200,7 +210,8 @@
       "Аудіоопис: відновлення фраз, пропущених через брак часу, шляхом перевірки фактичної тривалості синтезу та, за потреби, збільшення швидкості голосу на 10% або щонайбільше на 15%. Уже вставлені описи й діалоги залишаються захищеними; швидкість зберігається в проєкті для кожної відновленої фрази.",
       "PDF, захищені паролем: Sonarpad тепер запитує пароль у доступному полі, повідомляє про неправильний пароль і відкриває документ після перевірки.",
       "На екрані читання додано кнопку Зберегти PDF без пароля: після відкриття правильним паролем можна зберегти копію в Sonarpad або поділитися нею, зберігаючи оформлення та вміст і не змінюючи оригінал.",
-      "Покращено видобування тексту з PDF: відновлюються літери, які раніше пропускалися в деяких документах, що покращує читання та експорт тексту."
+      "Покращено видобування тексту з PDF: відновлюються літери, які раніше пропускалися в деяких документах, що покращує читання та експорт тексту.",
+      "1. Додано пошук місць і підприємств усіма мовами, з міжнародними результатами, описами, оцінками, кількістю відгуків, годинами роботи та сайтами, коли вони доступні. В італійському інтерфейсі він замінює Білі та Жовті сторінки, зберігаючи їхні результати та пошук за ім’ям і телефоном. Іншими мовами доступний лише пошук місць і підприємств."
     ],
     "ro": [
       "Adăugată sincronizarea în cloud între Windows, Mac și mobil: favorite radio și TV, surse și dosare personale de știri, podcasturi și favorite SonarTube. Conectare prin cod temporar. Articolele favorite sunt păstrate unde sunt acceptate. Sincronizare manuală cu ștergeri și jurnale de diagnostic. Se sincronizează și preferințele compatibile: tipul căutării, orașul meteo și modul de tăiere. Comenzi separate pentru colecții și preferințe, cu o limită de 32 KB pentru preferințe.",
@@ -218,7 +229,8 @@
       "Descrieri audio: recuperarea frazelor excluse din lipsă de spațiu prin verificarea duratei reale a sintezei și, dacă este necesar, creșterea vitezei vocii cu 10% sau cel mult 15%. Descrierile deja inserate și dialogurile rămân protejate; viteza este salvată în proiect pentru fiecare frază recuperată.",
       "PDF-uri protejate prin parolă: Sonarpad solicită acum parola într-un câmp accesibil, semnalează parolele incorecte și deschide documentul după verificare.",
       "Adăugat butonul Salvează PDF fără parolă în ecranul de lectură: după deschiderea cu parola corectă, poți salva o copie în Sonarpad sau o poți partaja, păstrând aspectul și conținutul fără a modifica originalul.",
-      "Extragerea textului din PDF a fost îmbunătățită: sunt recuperate litere omise anterior în unele documente, pentru o citire și un export mai corecte."
+      "Extragerea textului din PDF a fost îmbunătățită: sunt recuperate litere omise anterior în unele documente, pentru o citire și un export mai corecte.",
+      "1. Adăugată căutarea locurilor și firmelor în toate limbile, cu rezultate internaționale, descrieri, evaluări, număr de recenzii, program și site-uri când sunt disponibile. În interfața italiană înlocuiește Paginile Albe și Aurii, păstrând rezultatele lor și căutarea după nume și telefon. În celelalte limbi este disponibilă doar căutarea locurilor și firmelor."
     ],
     "tr": [
       "Windows, Mac ve mobil arasında bulut eşitleme eklendi: favori radyo ve TV kanalları, kişisel haber kaynakları ve klasörleri, podcastler ve SonarTube favorileri. Geçici kodla bağlantı. Favori makaleler desteklenen yerlerde korunur. Elle eşitleme silmeleri ve tanılama günlüklerini içerir. Arama türü, hava durumu şehri ve kesme modu gibi uyumlu modül tercihleri de eşitlenir. Koleksiyonlar ve tercihler için ayrı kontroller; tercihler için 32 KB sınırı.",
@@ -236,7 +248,8 @@
       "Sesli betimleme: Yer olmadığı için dışlanan cümleler, sentezlenen sesin gerçek süresi kontrol edilerek ve gerekirse ses hızı %10 veya en fazla %15 artırılarak kurtarılır. Önceden eklenen betimlemeler ve diyaloglar korunur; hız, kurtarılan her cümle için projeye kaydedilir.",
       "Parola korumalı PDF’ler: Sonarpad artık parolayı erişilebilir bir alanda ister, yanlış parolaları bildirir ve doğrulama sonrasında belgeyi açar.",
       "Okuma ekranına PDF’yi parolasız kaydet düğmesi eklendi: PDF’yi doğru parolayla açtıktan sonra düzenini ve içeriğini koruyarak bir kopyasını Sonarpad’e kaydedebilir veya paylaşabilirsiniz. Özgün dosya değişmez.",
-      "PDF metin çıkarma iyileştirildi: bazı belgelerde önceden atlanan harfler artık kurtarılarak metnin okunması ve dışa aktarılması daha doğru hale getirildi."
+      "PDF metin çıkarma iyileştirildi: bazı belgelerde önceden atlanan harfler artık kurtarılarak metnin okunması ve dışa aktarılması daha doğru hale getirildi.",
+      "1. Tüm dillerde yer ve işletme araması eklendi. Uluslararası sonuçlar, açıklamalar, puanlar, yorum sayıları, çalışma saatleri ve web siteleri mevcut olduğunda gösterilir. İtalyanca arayüzde Beyaz ve Sarı Sayfaların yerini alır; eski sonuçlar, ad ve telefon numarası araması korunur. Diğer dillerde yalnızca yer ve işletme araması sunulur."
     ],
     "nl": [
       "Cloudsynchronisatie toegevoegd tussen Windows, Mac en mobiel voor radio- en tv-favorieten, eigen nieuwsbronnen en mappen, podcasts en SonarTube-favorieten. Koppelen via een tijdelijke code. Favoriete artikelen blijven behouden waar ondersteund. Handmatige synchronisatie met verwijderingen en diagnostische logboeken. Ook compatibele modulevoorkeuren worden gesynchroniseerd, waaronder zoektype, weerplaats en knipmodus. Aparte bediening voor verzamelingen en voorkeuren, met een limiet van 32 KB voor voorkeuren.",
@@ -254,7 +267,8 @@
       "Audiodescripties: zinnen die eerder wegens te weinig ruimte waren weggelaten, kunnen worden hersteld door de werkelijke duur van de spraaksynthese te controleren en zo nodig de spreeksnelheid met 10% of maximaal 15% te verhogen. Al ingevoegde beschrijvingen en dialogen blijven beschermd; de snelheid wordt per herstelde zin in het project opgeslagen.",
       "Met een wachtwoord beveiligde pdf's: Sonarpad vraagt het wachtwoord nu in een toegankelijk invoerveld, meldt onjuiste wachtwoorden en opent het document na verificatie.",
       "De knop Pdf zonder wachtwoord opslaan is toegevoegd aan het leesscherm: nadat je een pdf met het juiste wachtwoord hebt geopend, kun je een kopie in Sonarpad opslaan of delen, met behoud van de opmaak en inhoud en zonder het origineel te wijzigen.",
-      "Tekstextractie uit pdf's verbeterd: letters die in bepaalde documenten eerder ontbraken, worden nu teruggevonden, zodat lezen en exporteren nauwkeuriger verlopen."
+      "Tekstextractie uit pdf's verbeterd: letters die in bepaalde documenten eerder ontbraken, worden nu teruggevonden, zodat lezen en exporteren nauwkeuriger verlopen.",
+      "1. Zoeken naar plaatsen en bedrijven is nu beschikbaar in alle talen, met internationale resultaten, beschrijvingen, beoordelingen, aantallen recensies, openingstijden en websites waar beschikbaar. In de Italiaanse interface vervangt dit de telefoongids en Gouden Gids, met behoud van hun resultaten en zoeken op naam en telefoonnummer. Andere talen bieden alleen zoeken naar plaatsen en bedrijven."
     ]
   },
   {
