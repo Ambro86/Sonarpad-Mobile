@@ -111,9 +111,7 @@ class _ItaliaOnlineScreenState extends State<ItaliaOnlineScreen> {
                   rows: [
                     AccessibleListRow(
                       id: 'kind_pagine_gialle',
-                      title: _italian
-                          ? 'Luoghi e attività'
-                          : AppLocalizations.of(context).homeDirectory,
+                      title: l10n.homeDirectory,
                       selected:
                           _kind == DirectoryKind.pagineGialle && !_reverse,
                       onActivate: () {
@@ -128,7 +126,7 @@ class _ItaliaOnlineScreenState extends State<ItaliaOnlineScreen> {
                     if (_italian)
                       AccessibleListRow(
                         id: 'kind_pagine_bianche',
-                        title: 'Ricerca nominativi',
+                        title: l10n.placesPeopleSearch,
                         selected:
                             _kind == DirectoryKind.pagineBianche && !_reverse,
                         onActivate: () {
@@ -144,7 +142,7 @@ class _ItaliaOnlineScreenState extends State<ItaliaOnlineScreen> {
                     if (_italian)
                       AccessibleListRow(
                         id: 'kind_phone',
-                        title: 'Cerca un numero di telefono',
+                        title: l10n.placesPhoneSearch,
                         selected: _reverse,
                         onActivate: () => setState(() => _reverse = true),
                       ),
@@ -212,15 +210,15 @@ class _ItaliaOnlineScreenState extends State<ItaliaOnlineScreen> {
               children: [
                 if (_italian)
                   SegmentedButton<int>(
-                    segments: const [
-                      ButtonSegment(value: 1, label: Text('Luoghi e attività')),
+                    segments: [
+                      ButtonSegment(value: 1, label: Text(l10n.homeDirectory)),
                       ButtonSegment(
                         value: 0,
-                        label: Text('Ricerca nominativi'),
+                        label: Text(l10n.placesPeopleSearch),
                       ),
                       ButtonSegment(
                         value: 2,
-                        label: Text('Cerca un numero di telefono'),
+                        label: Text(l10n.placesPhoneSearch),
                       ),
                     ],
                     selected: {_reverse ? 2 : _kind.index},

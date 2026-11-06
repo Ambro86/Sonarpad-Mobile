@@ -9,6 +9,24 @@ class AppLocalizationsTr extends AppLocalizations {
   AppLocalizationsTr([String locale = 'tr']) : super(locale);
 
   @override
+  String get routeDeparture => 'Kalkış';
+
+  @override
+  String get routeLeaveNow => 'Şimdi hareket et';
+
+  @override
+  String get routeLeaveAt => 'Kalkış saati';
+
+  @override
+  String get routeDepartureTimeZone => 'Kalkış saat dilimi';
+
+  @override
+  String get placesPeopleSearch => 'Kişi ara';
+
+  @override
+  String get placesPhoneSearch => 'Telefon numarası ara';
+
+  @override
   String get cloudSyncConfirmDeletions => 'Silmeleri onayla';
 
   @override

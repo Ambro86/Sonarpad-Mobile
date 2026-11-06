@@ -185,7 +185,7 @@ class SonarTubeFavoritesService {
         '${_key}_recovery',
         jsonEncode(recovery),
       )) {
-        throw StateError('Unable to preserve SonarTube recovery');
+        throw StateError('sonartube_recovery_save_failed');
       }
       await AppLogger.log(
         '[CloudSync] sonartube_local_write caller=${StackTrace.current.toString().split('\n').take(5).join(' | ')}',
@@ -200,7 +200,7 @@ class SonarTubeFavoritesService {
       _key,
       favorites.map((item) => jsonEncode(_toJson(item))).toList(),
     );
-    if (!saved) throw StateError('Unable to save SonarTube favorites');
+    if (!saved) throw StateError('sonartube_favorites_save_failed');
   }
 
   Future<void> replaceCloudFavorites(List<Map<String, dynamic>> values) async {

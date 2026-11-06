@@ -9,6 +9,24 @@ class AppLocalizationsZh extends AppLocalizations {
   AppLocalizationsZh([String locale = 'zh']) : super(locale);
 
   @override
+  String get routeDeparture => '出发';
+
+  @override
+  String get routeLeaveNow => '立即出发';
+
+  @override
+  String get routeLeaveAt => '出发时间';
+
+  @override
+  String get routeDepartureTimeZone => '出发地时区';
+
+  @override
+  String get placesPeopleSearch => '查找人员';
+
+  @override
+  String get placesPhoneSearch => '查找电话号码';
+
+  @override
   String get cloudSyncConfirmDeletions => '确认删除';
 
   @override
@@ -5776,6 +5794,24 @@ class AppLocalizationsZh extends AppLocalizations {
 /// The translations for Chinese, as used in China (`zh_CN`).
 class AppLocalizationsZhCn extends AppLocalizationsZh {
   AppLocalizationsZhCn() : super('zh_CN');
+
+  @override
+  String get routeDeparture => '出发';
+
+  @override
+  String get routeLeaveNow => '立即出发';
+
+  @override
+  String get routeLeaveAt => '出发时间';
+
+  @override
+  String get routeDepartureTimeZone => '出发地时区';
+
+  @override
+  String get placesPeopleSearch => '查找人员';
+
+  @override
+  String get placesPhoneSearch => '查找电话号码';
 
   @override
   String get cloudSyncConfirmDeletions => '确认删除';

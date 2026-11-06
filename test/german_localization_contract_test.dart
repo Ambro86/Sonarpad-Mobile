@@ -66,7 +66,7 @@ void main() {
     final news = File('lib/services/news_service.dart').readAsStringSync();
     final weather = File('lib/screens/weather_screen.dart').readAsStringSync();
     final radio = File('lib/screens/radio_screen.dart').readAsStringSync();
-    final routes = File('lib/screens/route_screen.dart').readAsStringSync();
+    final routes = (File('lib/screens/route_screen.dart').readAsStringSync() + File('lib/utils/route_country_options.dart').readAsStringSync());
 
     expect(news, contains('NewsLanguage.german'));
     expect(news, contains('germanNewsSources'));

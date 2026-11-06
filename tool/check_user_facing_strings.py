@@ -32,6 +32,12 @@ def should_ignore(value: str) -> bool:
     text = value.strip()
     if not text:
         return True
+    # Localized labels combined with runtime values and punctuation contain no
+    # untranslated prose (e.g. ${l10n.placesCategory}: ${detail.category}).
+    if "${l10n." in text:
+        literal = re.sub(r"\$\{[^}]+\}", "", text)
+        if not re.search(r"[^\W_\d]", literal, re.UNICODE):
+            return True
     if text.startswith(("http://", "https://", "/")):
         return True
     if re.fullmatch(r"[A-Za-z0-9_.:/+%-]+", text) and not re.search(r"\s", text):

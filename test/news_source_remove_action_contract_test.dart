@@ -4,8 +4,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('each news source exposes one remove action with the correct behavior', () {
-    final screen = File('lib/screens/news_screen.dart').readAsStringSync();
-    final service = File('lib/services/news_service.dart').readAsStringSync();
+    final screen = File('lib/screens/news_screen.dart').readAsStringSync().replaceAll('\r\n', '\n');
+    final service = File('lib/services/news_service.dart').readAsStringSync().replaceAll('\r\n', '\n');
     final communityAddStart =
         screen.indexOf('Future<void> _addToLibrary(NewsRssSource source)');
     final communityBuildStart =
@@ -45,9 +45,9 @@ void main() {
   });
 
   test('the single Italian action is named Rimuovi', () {
-    final arb = File('lib/l10n/app_it.arb').readAsStringSync();
+    final arb = File('lib/l10n/app_it.arb').readAsStringSync().replaceAll('\r\n', '\n');
     final generated =
-        File('lib/l10n/app_localizations_it.dart').readAsStringSync();
+        File('lib/l10n/app_localizations_it.dart').readAsStringSync().replaceAll('\r\n', '\n');
 
     expect(arb, contains('"deleteNewsSource": "Rimuovi"'));
     expect(generated, contains("String get deleteNewsSource => 'Rimuovi';"));

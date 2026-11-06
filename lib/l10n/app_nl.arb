@@ -1,4 +1,11 @@
 {
+  "routeDeparture": "Vertrek",
+  "routeLeaveNow": "Nu vertrekken",
+  "routeLeaveAt": "Vertrekken om",
+  "routeDepartureTimeZone": "Tijdzone van vertrek",
+  "placesPeopleSearch": "Personen zoeken",
+  "placesPhoneSearch": "Een telefoonnummer zoeken",
+
   "cloudSyncConfirmDeletions": "Verwijderingen bevestigen",
   "cloudSyncDeleteOutgoing": "Deze items uit de cloud en van andere apparaten verwijderen? Kies Nee als u hier niet om hebt gevraagd.",
   "cloudSyncDeleteIncoming": "Deze items volgens de cloud van dit apparaat verwijderen? Kies Nee als u hier niet om hebt gevraagd.",

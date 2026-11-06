@@ -435,6 +435,8 @@ class RouteService {
     required bool includeMunicipalities,
     required String language,
     required String countryCode,
+    String? departureTime,
+    String? departureTimeZone,
   }) async {
     if (profile != RouteProfile.wheelchair) {
       try {
@@ -446,6 +448,8 @@ class RouteService {
           includeMunicipalities: includeMunicipalities,
           language: language,
           countryCode: countryCode,
+          departureTime: departureTime,
+          departureTimeZone: departureTimeZone,
         );
         await AppLogger.log(
           'route_result: provider=google fallback=false profile=${profile.apiValue} paths=${result.paths.length}',
@@ -526,6 +530,8 @@ class RouteService {
     required bool includeMunicipalities,
     required String language,
     required String countryCode,
+    String? departureTime,
+    String? departureTimeZone,
   }) async {
     final response = await _client
         .post(
@@ -541,7 +547,8 @@ class RouteService {
                 : profile == RouteProfile.cycling
                 ? 'bici'
                 : 'pullman',
-            'partenza': 'adesso',
+            'partenza': profile == RouteProfile.transit ? (departureTime ?? 'adesso') : 'adesso',
+            if (profile == RouteProfile.transit && departureTime != null && departureTimeZone != null) 'fuso': departureTimeZone,
             'preferenza': profile == RouteProfile.transit
                 ? 'fastest'
                 : preference.apiValue,

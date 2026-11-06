@@ -47,3 +47,24 @@ List<AccessibleOption> routeCountryOptions(AppLocalizations l10n) => [
   AccessibleOption(value: 'tr', label: l10n.radioCountryOptionTr),
   AccessibleOption(value: 'cn', label: l10n.chinaCountryName),
 ];
+
+// A visible, editable default: multi-zone countries can select the origin zone.
+String defaultRouteTimeZone(String country) => switch (country.toLowerCase()) {
+  'fr' => 'Europe/Paris',
+  'es' => 'Europe/Madrid',
+  'pt' => 'Europe/Lisbon',
+  'br' => 'America/Sao_Paulo',
+  'pl' => 'Europe/Warsaw',
+  'cz' => 'Europe/Prague',
+  'de' => 'Europe/Berlin',
+  'nl' => 'Europe/Amsterdam',
+  'gb' => 'Europe/London',
+  'us' => 'America/New_York',
+  'ca' => 'America/Toronto',
+  'au' => 'Australia/Sydney',
+  'ua' => 'Europe/Kyiv',
+  'ro' => 'Europe/Bucharest',
+  'tr' => 'Europe/Istanbul',
+  'cn' => 'Asia/Shanghai',
+  _ => 'Europe/Rome',
+};

@@ -9,6 +9,24 @@ class AppLocalizationsIt extends AppLocalizations {
   AppLocalizationsIt([String locale = 'it']) : super(locale);
 
   @override
+  String get routeDeparture => 'Partenza';
+
+  @override
+  String get routeLeaveNow => 'Partenza ora';
+
+  @override
+  String get routeLeaveAt => 'Parti alle';
+
+  @override
+  String get routeDepartureTimeZone => 'Fuso orario della partenza';
+
+  @override
+  String get placesPeopleSearch => 'Ricerca nominativi';
+
+  @override
+  String get placesPhoneSearch => 'Cerca un numero di telefono';
+
+  @override
   String get cloudSyncConfirmDeletions => 'Conferma eliminazioni';
 
   @override

@@ -14,12 +14,12 @@ void main() {
 
   test('Dutch choices exist in dictionary, routes and content catalogues', () {
     final dictionary = File('lib/screens/online_dictionary_screen.dart').readAsStringSync();
-    final routes = File('lib/screens/route_screen.dart').readAsStringSync();
+    final routes = (File('lib/screens/route_screen.dart').readAsStringSync() + File('lib/utils/route_country_options.dart').readAsStringSync());
     final wikipedia = File('lib/screens/wikipedia_screen.dart').readAsStringSync();
     final gutenberg = File('lib/screens/gutenberg_screen.dart').readAsStringSync();
     expect(dictionary, contains("    'nl',"));
     expect(routes, contains("AccessibleOption(value: 'nl', label: l10n.radioCountryOptionNl)"));
-    expect(routes, contains("value: 'nl', child: Text(l10n.radioCountryOptionNl)"));
+    expect(routes, contains('routeCountryOptions(l10n)'));
     expect(wikipedia, contains("'nl' => 'nl'"));
     expect(gutenberg, contains("    'nl',"));
   });

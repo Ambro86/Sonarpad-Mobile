@@ -37,7 +37,7 @@ void main() {
     );
     expect(
       favorites,
-      contains("Uri.https('www.youtube.com', '/playlist', {'list': item.id})"),
+      contains(RegExp(r"Uri\.https\(\s*'www\.youtube\.com',\s*'/playlist',\s*\{\s*'list':\s*item\.id,?\s*\}\)")),
     );
     expect(
       screen,

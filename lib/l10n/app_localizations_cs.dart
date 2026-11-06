@@ -9,6 +9,24 @@ class AppLocalizationsCs extends AppLocalizations {
   AppLocalizationsCs([String locale = 'cs']) : super(locale);
 
   @override
+  String get routeDeparture => 'Odjezd';
+
+  @override
+  String get routeLeaveNow => 'Odjet nyní';
+
+  @override
+  String get routeLeaveAt => 'Odjezd v';
+
+  @override
+  String get routeDepartureTimeZone => 'Časové pásmo odjezdu';
+
+  @override
+  String get placesPeopleSearch => 'Hledat osoby';
+
+  @override
+  String get placesPhoneSearch => 'Hledat telefonní číslo';
+
+  @override
   String get cloudSyncConfirmDeletions => 'Potvrdit odstranění';
 
   @override

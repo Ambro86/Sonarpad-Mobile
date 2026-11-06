@@ -9,6 +9,24 @@ class AppLocalizationsRo extends AppLocalizations {
   AppLocalizationsRo([String locale = 'ro']) : super(locale);
 
   @override
+  String get routeDeparture => 'Plecare';
+
+  @override
+  String get routeLeaveNow => 'Pleacă acum';
+
+  @override
+  String get routeLeaveAt => 'Pleacă la';
+
+  @override
+  String get routeDepartureTimeZone => 'Fusul orar al plecării';
+
+  @override
+  String get placesPeopleSearch => 'Caută persoane';
+
+  @override
+  String get placesPhoneSearch => 'Caută un număr de telefon';
+
+  @override
   String get cloudSyncConfirmDeletions => 'Confirmă ștergerile';
 
   @override

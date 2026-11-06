@@ -1,4 +1,11 @@
 {
+  "routeDeparture": "Plecare",
+  "routeLeaveNow": "Pleacă acum",
+  "routeLeaveAt": "Pleacă la",
+  "routeDepartureTimeZone": "Fusul orar al plecării",
+  "placesPeopleSearch": "Caută persoane",
+  "placesPhoneSearch": "Caută un număr de telefon",
+
   "cloudSyncConfirmDeletions": "Confirmă ștergerile",
   "cloudSyncDeleteOutgoing": "Ștergi aceste elemente din cloud și de pe celelalte dispozitive? Alege Nu dacă nu ai solicitat ștergerile.",
   "cloudSyncDeleteIncoming": "Ștergi aceste elemente de pe acest dispozitiv conform cloudului? Alege Nu dacă nu ai solicitat ștergerile.",

@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('news sharing prefers the final publisher URL over the RSS URL', () {
-    final source = File('lib/screens/news_webview_screen.dart').readAsStringSync();
+    final source = File('lib/screens/news_webview_screen.dart').readAsStringSync().replaceAll('\r\n', '\n');
 
     expect(source, contains('_resolvedArticleUrlForReader'));
     expect(source, contains('_allowedMainArticleUrl'));
@@ -16,7 +16,7 @@ void main() {
   });
 
   test('NewsService exposes a share resolver for Google News article links', () {
-    final source = File('lib/services/news_service.dart').readAsStringSync();
+    final source = File('lib/services/news_service.dart').readAsStringSync().replaceAll('\r\n', '\n');
 
     expect(source, contains('Future<String> resolveArticleUrlForSharing(String url)'));
     expect(source, contains('await _resolveArticleUrl(original)'));
@@ -24,7 +24,7 @@ void main() {
   });
 
   test('news article rows expose share before opening in shared and Flutter UI', () {
-    final source = File('lib/screens/news_screen.dart').readAsStringSync();
+    final source = File('lib/screens/news_screen.dart').readAsStringSync().replaceAll('\r\n', '\n');
 
     expect(source, contains("AccessibleCustomAction(\n                    id: 'share',\n                    label: l10n.shareArticle"));
     expect(source, contains("AccessibleVisualAction(\n                    id: 'share',\n                    label: l10n.shareArticle,\n                    icon: 'share'"));

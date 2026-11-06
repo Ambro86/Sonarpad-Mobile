@@ -147,7 +147,7 @@ void main() {
     expect(adapter, contains('action: () => goToSonarpadHome(context)'));
     expect(adapter, contains('Navigator.of(context, rootNavigator: true)'));
     expect(adapter, contains('navigator.popUntil((route) => route.isFirst)'));
-    expect(adapter, contains('if (hasBackNavigation) const SonarpadVisualHomeButton()'));
+    expect(adapter, contains('if (hasBackNavigation && showHomeButton) const SonarpadVisualHomeButton()'));
     expect(adapter, contains('class SonarpadVisualHomeButton'));
     expect(adapter, contains('return ExcludeSemantics('));
   });

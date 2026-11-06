@@ -7,12 +7,12 @@ void main() {
     'radio pagination stays adjustable while remote source totals remain unknown',
     () {
       final source =
-          File('lib/screens/radio_search_results_screen.dart').readAsStringSync();
-      final service = File('lib/services/radio_service.dart').readAsStringSync();
+          File('lib/screens/radio_search_results_screen.dart').readAsStringSync().replaceAll('\r\n', '\n');
+      final service = File('lib/services/radio_service.dart').readAsStringSync().replaceAll('\r\n', '\n');
       final adapter =
-          File('lib/widgets/universal_accessible_view.dart').readAsStringSync();
+          File('lib/widgets/universal_accessible_view.dart').readAsStringSync().replaceAll('\r\n', '\n');
       final native = File('ios/Runner/SonarpadNativeAccessibleView.swift')
-          .readAsStringSync();
+          .readAsStringSync().replaceAll('\r\n', '\n');
 
       final selectorStart = source.indexOf('Widget _buildPageSelector(');
       final buildStart = source.indexOf('@override\n  Widget build', selectorStart);

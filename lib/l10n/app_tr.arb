@@ -1,4 +1,11 @@
 {
+  "routeDeparture": "Kalkış",
+  "routeLeaveNow": "Şimdi hareket et",
+  "routeLeaveAt": "Kalkış saati",
+  "routeDepartureTimeZone": "Kalkış saat dilimi",
+  "placesPeopleSearch": "Kişi ara",
+  "placesPhoneSearch": "Telefon numarası ara",
+
   "cloudSyncConfirmDeletions": "Silmeleri onayla",
   "cloudSyncDeleteOutgoing": "Bu öğeler buluttan ve diğer cihazlardan silinsin mi? Bu silmeleri istemediyseniz Hayır seçin.",
   "cloudSyncDeleteIncoming": "Buluta göre bu öğeler bu cihazdan silinsin mi? Bu silmeleri istemediyseniz Hayır seçin.",

@@ -1,4 +1,11 @@
 {
+  "routeDeparture": "Відправлення",
+  "routeLeaveNow": "Вирушити зараз",
+  "routeLeaveAt": "Вирушити о",
+  "routeDepartureTimeZone": "Часовий пояс відправлення",
+  "placesPeopleSearch": "Пошук людей",
+  "placesPhoneSearch": "Пошук номера телефону",
+
   "cloudSyncConfirmDeletions": "Підтвердити видалення",
   "cloudSyncDeleteOutgoing": "Видалити ці елементи з хмари та інших пристроїв? Виберіть Ні, якщо ви цього не запитували.",
   "cloudSyncDeleteIncoming": "Видалити ці елементи з цього пристрою за даними хмари? Виберіть Ні, якщо ви цього не запитували.",

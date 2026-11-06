@@ -9,6 +9,24 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get routeDeparture => 'Departure';
+
+  @override
+  String get routeLeaveNow => 'Leave now';
+
+  @override
+  String get routeLeaveAt => 'Leave at';
+
+  @override
+  String get routeDepartureTimeZone => 'Departure time zone';
+
+  @override
+  String get placesPeopleSearch => 'Find people';
+
+  @override
+  String get placesPhoneSearch => 'Find a phone number';
+
+  @override
   String get cloudSyncConfirmDeletions => 'Confirm deletions';
 
   @override

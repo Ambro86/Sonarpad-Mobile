@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:timezone/timezone.dart' as tz;
 import 'package:flutter/semantics.dart';
 
 import '../l10n/app_localizations.dart';
@@ -27,6 +28,16 @@ class _RouteScreenState extends State<RouteScreen> {
   String? _countryCode;
   RouteProfile _profile = RouteProfile.driving;
   bool _formPreferencesLoaded = false;
+  bool _leaveNow = true;
+  TimeOfDay _departureTime = TimeOfDay.now();
+  String? _departureZoneOverride;
+  String get _departureZone =>
+      _departureZoneOverride ?? defaultRouteTimeZone(_countryCode ?? 'it');
+  String get _departureClock =>
+      '${_departureTime.hour.toString().padLeft(2, '0')}:${_departureTime.minute.toString().padLeft(2, '0')}';
+  List<String> get _departureZones =>
+      ({...tz.timeZoneDatabase.locations.keys, _departureZone}.toList()
+        ..sort());
 
   @override
   void didChangeDependencies() {
@@ -91,7 +102,7 @@ class _RouteScreenState extends State<RouteScreen> {
     final toAddress = _toController.text.trim();
 
     if (fromAddress.isEmpty || toAddress.isEmpty) {
-            showStatusMessage(context, l10n.routeErrorMissingFields);
+      showStatusMessage(context, l10n.routeErrorMissingFields);
       return;
     }
 
@@ -120,6 +131,12 @@ class _RouteScreenState extends State<RouteScreen> {
         includeMunicipalities: _includeMunicipalities,
         language: l10n.localeName,
         countryCode: _countryCode!,
+        departureTime: _profile == RouteProfile.transit && !_leaveNow
+            ? _departureClock
+            : null,
+        departureTimeZone: _profile == RouteProfile.transit && !_leaveNow
+            ? _departureZone
+            : null,
       );
 
       await _recentRoutes.addRecentRoute(
@@ -142,7 +159,7 @@ class _RouteScreenState extends State<RouteScreen> {
       );
     } catch (e) {
       if (!mounted) return;
-            showStatusMessage(context, l10n.routeError(l10n.technicalErrorGeneric));
+      showStatusMessage(context, l10n.routeError(l10n.technicalErrorGeneric));
     } finally {
       if (mounted) setState(() => _calculating = false);
     }
@@ -257,45 +274,153 @@ class _RouteScreenState extends State<RouteScreen> {
     };
     return UniversalAccessibleList(
       sections: [
-        AccessibleListSection(rows: [
-          AccessibleListRow(id: 'recent', title: l10n.routeRecentRoutes, enabled: !_calculating),
-          AccessibleListRow(id: 'from', title: l10n.routeFrom, kind: 'textField', value: _fromController.text),
-          AccessibleListRow(id: 'to', title: l10n.routeTo, kind: 'textField', value: _toController.text, textInputAction: 'done', onSubmitted: (_) { if (!_calculating) _calculateRoute(); }),
-          AccessibleListRow(id: 'country', title: l10n.routeCountry, kind: 'picker', value: _countryCode, valueLabel: countryValueLabel, options: countries),
-          AccessibleListRow(
-            id: 'profile',
-            title: l10n.routeVehicle,
-            kind: 'picker',
-            value: _profile.name,
-            valueLabel: profileValueLabel,
-            options: [
-              AccessibleOption(value: RouteProfile.walking.name, label: l10n.routeWalking),
-              AccessibleOption(value: RouteProfile.cycling.name, label: l10n.routeCycling),
-              AccessibleOption(value: RouteProfile.driving.name, label: l10n.routeDriving),
-              AccessibleOption(value: RouteProfile.wheelchair.name, label: l10n.routeWheelchair),
-              AccessibleOption(value: RouteProfile.transit.name, label: l10n.routeTransit),
+        AccessibleListSection(
+          rows: [
+            AccessibleListRow(
+              id: 'recent',
+              title: l10n.routeRecentRoutes,
+              enabled: !_calculating,
+            ),
+            AccessibleListRow(
+              id: 'from',
+              title: l10n.routeFrom,
+              kind: 'textField',
+              value: _fromController.text,
+            ),
+            AccessibleListRow(
+              id: 'to',
+              title: l10n.routeTo,
+              kind: 'textField',
+              value: _toController.text,
+              textInputAction: 'done',
+              onSubmitted: (_) {
+                if (!_calculating) _calculateRoute();
+              },
+            ),
+            AccessibleListRow(
+              id: 'country',
+              title: l10n.routeCountry,
+              kind: 'picker',
+              value: _countryCode,
+              valueLabel: countryValueLabel,
+              options: countries,
+            ),
+            AccessibleListRow(
+              id: 'profile',
+              title: l10n.routeVehicle,
+              kind: 'picker',
+              value: _profile.name,
+              valueLabel: profileValueLabel,
+              options: [
+                AccessibleOption(
+                  value: RouteProfile.walking.name,
+                  label: l10n.routeWalking,
+                ),
+                AccessibleOption(
+                  value: RouteProfile.cycling.name,
+                  label: l10n.routeCycling,
+                ),
+                AccessibleOption(
+                  value: RouteProfile.driving.name,
+                  label: l10n.routeDriving,
+                ),
+                AccessibleOption(
+                  value: RouteProfile.wheelchair.name,
+                  label: l10n.routeWheelchair,
+                ),
+                AccessibleOption(
+                  value: RouteProfile.transit.name,
+                  label: l10n.routeTransit,
+                ),
+              ],
+            ),
+            if (_profile == RouteProfile.transit) ...[
+              AccessibleListRow(
+                id: 'departure_mode',
+                title: l10n.routeDeparture,
+                kind: 'picker',
+                value: _leaveNow ? 'now' : 'at',
+                valueLabel: _leaveNow ? l10n.routeLeaveNow : l10n.routeLeaveAt,
+                options: [
+                  AccessibleOption(value: 'now', label: l10n.routeLeaveNow),
+                  AccessibleOption(value: 'at', label: l10n.routeLeaveAt),
+                ],
+              ),
+              if (!_leaveNow) ...[
+                AccessibleListRow(
+                  id: 'departure_hour',
+                  title: MaterialLocalizations.of(context).timePickerHourLabel,
+                  kind: 'picker',
+                  value: '${_departureTime.hour}',
+                  valueLabel: _departureTime.hour.toString().padLeft(2, '0'),
+                  options: List.generate(
+                    24,
+                    (i) => AccessibleOption(
+                      value: '$i',
+                      label: i.toString().padLeft(2, '0'),
+                    ),
+                  ),
+                ),
+                AccessibleListRow(
+                  id: 'departure_minute',
+                  title: MaterialLocalizations.of(
+                    context,
+                  ).timePickerMinuteLabel,
+                  kind: 'picker',
+                  value: '${_departureTime.minute}',
+                  valueLabel: _departureTime.minute.toString().padLeft(2, '0'),
+                  options: List.generate(
+                    60,
+                    (i) => AccessibleOption(
+                      value: '$i',
+                      label: i.toString().padLeft(2, '0'),
+                    ),
+                  ),
+                ),
+                AccessibleListRow(
+                  id: 'departure_zone',
+                  title: l10n.routeDepartureTimeZone,
+                  kind: 'picker',
+                  value: _departureZone,
+                  valueLabel: _departureZone,
+                  options: _departureZones
+                      .map((zone) => AccessibleOption(value: zone, label: zone))
+                      .toList(),
+                ),
+              ],
             ],
-          ),
-          AccessibleListRow(
-            id: 'preference',
-            enabled: _profile != RouteProfile.transit,
-            title: l10n.routeType,
-            kind: 'picker',
-            value: _preference.name,
-            valueLabel: preferenceValueLabel,
-            options: [
-              AccessibleOption(value: RoutePreference.fastest.name, label: l10n.routeFastest),
-              AccessibleOption(value: RoutePreference.shortest.name, label: l10n.routeShortest),
-            ],
-          ),
-          AccessibleListRow(id: 'municipalities', title: l10n.routeIncludeMunicipalities, kind: 'toggle', toggleValue: _includeMunicipalities),
-          AccessibleListRow(
-            id: 'calculate',
-            title: _calculating ? l10n.routeCalculating : l10n.routeCalculate,
-            kind: 'button',
-            enabled: !_calculating,
-          ),
-        ]),
+            AccessibleListRow(
+              id: 'preference',
+              enabled: _profile != RouteProfile.transit,
+              title: l10n.routeType,
+              kind: 'picker',
+              value: _preference.name,
+              valueLabel: preferenceValueLabel,
+              options: [
+                AccessibleOption(
+                  value: RoutePreference.fastest.name,
+                  label: l10n.routeFastest,
+                ),
+                AccessibleOption(
+                  value: RoutePreference.shortest.name,
+                  label: l10n.routeShortest,
+                ),
+              ],
+            ),
+            AccessibleListRow(
+              id: 'municipalities',
+              title: l10n.routeIncludeMunicipalities,
+              kind: 'toggle',
+              toggleValue: _includeMunicipalities,
+            ),
+            AccessibleListRow(
+              id: 'calculate',
+              title: _calculating ? l10n.routeCalculating : l10n.routeCalculate,
+              kind: 'button',
+              enabled: !_calculating,
+            ),
+          ],
+        ),
       ],
       onEvent: (event) async {
         final id = event.id;
@@ -305,8 +430,13 @@ class _RouteScreenState extends State<RouteScreen> {
           _fromController.text = event.value?.toString() ?? '';
         } else if (id == 'to' && event.type == 'textChanged') {
           _toController.text = event.value?.toString() ?? '';
-        } else if (id == 'country' && event.type == 'picker' && event.value != null) {
-          setState(() => _countryCode = event.value.toString());
+        } else if (id == 'country' &&
+            event.type == 'picker' &&
+            event.value != null) {
+          setState(() {
+            _countryCode = event.value.toString();
+            _departureZoneOverride = null;
+          });
           await _saveFormPreferences();
         } else if (id == 'profile' && event.type == 'picker') {
           final value = event.value?.toString();
@@ -315,6 +445,24 @@ class _RouteScreenState extends State<RouteScreen> {
             setState(() => _profile = found.first);
             await _saveFormPreferences();
           }
+        } else if (id == 'departure_mode' && event.type == 'picker') {
+          setState(() => _leaveNow = event.value == 'now');
+        } else if ((id == 'departure_hour' || id == 'departure_minute') &&
+            event.type == 'picker') {
+          final number = int.tryParse(event.value?.toString() ?? '');
+          if (number != null &&
+              number >= 0 &&
+              number < (id == 'departure_hour' ? 24 : 60)) {
+            setState(
+              () => _departureTime = id == 'departure_hour'
+                  ? TimeOfDay(hour: number, minute: _departureTime.minute)
+                  : TimeOfDay(hour: _departureTime.hour, minute: number),
+            );
+          }
+        } else if (id == 'departure_zone' &&
+            event.type == 'picker' &&
+            event.value != null) {
+          setState(() => _departureZoneOverride = event.value.toString());
         } else if (id == 'preference' && event.type == 'picker') {
           final value = event.value?.toString();
           final found = RoutePreference.values.where((e) => e.name == value);
@@ -325,7 +473,9 @@ class _RouteScreenState extends State<RouteScreen> {
         } else if (id == 'municipalities' && event.type == 'toggle') {
           setState(() => _includeMunicipalities = event.value == true);
           await _saveFormPreferences();
-        } else if (id == 'calculate' && event.type == 'activate' && !_calculating) {
+        } else if (id == 'calculate' &&
+            event.type == 'activate' &&
+            !_calculating) {
           await _calculateRoute();
         }
       },
@@ -338,142 +488,297 @@ class _RouteScreenState extends State<RouteScreen> {
 
     return Scaffold(
       appBar: SonarpadAppBar(title: Text(l10n.routeTitle)),
-      body: useSharedAccessibleViewModel ? _buildSharedAccessibleRouteForm(l10n) : ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          OutlinedButton.icon(
-            onPressed: _calculating ? null : _openRecentRoutes,
-            icon: const Icon(Icons.history),
-            label: Text(l10n.routeRecentRoutes),
-            style: OutlinedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 16),
+      body: useSharedAccessibleViewModel
+          ? _buildSharedAccessibleRouteForm(l10n)
+          : ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
+                OutlinedButton.icon(
+                  onPressed: _calculating ? null : _openRecentRoutes,
+                  icon: const Icon(Icons.history),
+                  label: Text(l10n.routeRecentRoutes),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: _fromController,
+                  decoration: InputDecoration(labelText: l10n.routeFrom),
+                  textInputAction: TextInputAction.next,
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: _toController,
+                  decoration: InputDecoration(labelText: l10n.routeTo),
+                  textInputAction: TextInputAction.done,
+                  onSubmitted: (_) => _calculating ? null : _calculateRoute(),
+                ),
+                const SizedBox(height: 16),
+                DropdownButtonFormField<String>(
+                  key: ValueKey('route_country_$_countryCode'),
+                  initialValue: _countryCode,
+                  decoration: InputDecoration(labelText: l10n.routeCountry),
+                  items: [
+                    DropdownMenuItem(
+                      value: 'it',
+                      child: Text(l10n.routeCountryItaly),
+                    ),
+                    DropdownMenuItem(
+                      value: 'fr',
+                      child: Text(l10n.routeCountryFrance),
+                    ),
+                    DropdownMenuItem(
+                      value: 'es',
+                      child: Text(l10n.routeCountrySpain),
+                    ),
+                    DropdownMenuItem(
+                      value: 'pt',
+                      child: Text(l10n.radioCountryOptionPt),
+                    ),
+                    DropdownMenuItem(
+                      value: 'br',
+                      child: Text(l10n.radioCountryOptionBr),
+                    ),
+                    DropdownMenuItem(
+                      value: 'pl',
+                      child: Text(l10n.radioCountryOptionPl),
+                    ),
+                    DropdownMenuItem(
+                      value: 'cz',
+                      child: Text(l10n.routeCountryCzechRepublic),
+                    ),
+                    DropdownMenuItem(
+                      value: 'au',
+                      child: Text(l10n.radioCountryOptionAu),
+                    ),
+                    DropdownMenuItem(
+                      value: 'ca',
+                      child: Text(l10n.radioCountryOptionCa),
+                    ),
+                    DropdownMenuItem(
+                      value: 'de',
+                      child: Text(l10n.radioCountryOptionDe),
+                    ),
+                    DropdownMenuItem(
+                      value: 'nl',
+                      child: Text(l10n.radioCountryOptionNl),
+                    ),
+                    DropdownMenuItem(
+                      value: 'gb',
+                      child: Text(l10n.radioCountryOptionGb),
+                    ),
+                    DropdownMenuItem(
+                      value: 'us',
+                      child: Text(l10n.radioCountryOptionUs),
+                    ),
+                    DropdownMenuItem(
+                      value: 'ua',
+                      child: Text(
+                        localizedCountryDisplayName(
+                          'UA',
+                          localeName: l10n.localeName,
+                        ),
+                      ),
+                    ),
+                    DropdownMenuItem(
+                      value: 'tr',
+                      child: Text(l10n.radioCountryOptionTr),
+                    ),
+                    DropdownMenuItem(
+                      value: 'cn',
+                      child: Text(l10n.chinaCountryName),
+                    ),
+                  ],
+                  onChanged: (val) {
+                    if (val != null) {
+                      setState(() {
+                        _countryCode = val;
+                        _departureZoneOverride = null;
+                      });
+                      _saveFormPreferences();
+                    }
+                  },
+                ),
+                const SizedBox(height: 16),
+                DropdownButtonFormField<RouteProfile>(
+                  key: ValueKey('route_profile_${_profile.name}'),
+                  initialValue: _profile,
+                  decoration: InputDecoration(labelText: l10n.routeVehicle),
+                  items: [
+                    DropdownMenuItem(
+                      value: RouteProfile.walking,
+                      child: Text(l10n.routeWalking),
+                    ),
+                    DropdownMenuItem(
+                      value: RouteProfile.cycling,
+                      child: Text(l10n.routeCycling),
+                    ),
+                    DropdownMenuItem(
+                      value: RouteProfile.driving,
+                      child: Text(l10n.routeDriving),
+                    ),
+                    DropdownMenuItem(
+                      value: RouteProfile.wheelchair,
+                      child: Text(l10n.routeWheelchair),
+                    ),
+                    DropdownMenuItem(
+                      value: RouteProfile.transit,
+                      child: Text(l10n.routeTransit),
+                    ),
+                  ],
+                  onChanged: (val) {
+                    if (val != null) {
+                      setState(() => _profile = val);
+                      _saveFormPreferences();
+                    }
+                  },
+                ),
+                const SizedBox(height: 16),
+                if (_profile == RouteProfile.transit) ...[
+                  DropdownButtonFormField<bool>(
+                    key: ValueKey('departure_mode_$_leaveNow'),
+                    initialValue: _leaveNow,
+                    decoration: InputDecoration(labelText: l10n.routeDeparture),
+                    items: [
+                      DropdownMenuItem(
+                        value: true,
+                        child: Text(l10n.routeLeaveNow),
+                      ),
+                      DropdownMenuItem(
+                        value: false,
+                        child: Text(l10n.routeLeaveAt),
+                      ),
+                    ],
+                    onChanged: (value) {
+                      if (value != null) setState(() => _leaveNow = value);
+                    },
+                  ),
+                  if (!_leaveNow) ...[
+                    DropdownButtonFormField<int>(
+                      key: ValueKey('departure_hour_${_departureTime.hour}'),
+                      initialValue: _departureTime.hour,
+                      decoration: InputDecoration(
+                        labelText: MaterialLocalizations.of(
+                          context,
+                        ).timePickerHourLabel,
+                      ),
+                      items: List.generate(
+                        24,
+                        (i) => DropdownMenuItem(
+                          value: i,
+                          child: Text(i.toString().padLeft(2, '0')),
+                        ),
+                      ),
+                      onChanged: (value) {
+                        if (value != null) {
+                          setState(
+                            () => _departureTime = TimeOfDay(
+                              hour: value,
+                              minute: _departureTime.minute,
+                            ),
+                          );
+                        }
+                      },
+                    ),
+                    DropdownButtonFormField<int>(
+                      key: ValueKey(
+                        'departure_minute_${_departureTime.minute}',
+                      ),
+                      initialValue: _departureTime.minute,
+                      decoration: InputDecoration(
+                        labelText: MaterialLocalizations.of(
+                          context,
+                        ).timePickerMinuteLabel,
+                      ),
+                      items: List.generate(
+                        60,
+                        (i) => DropdownMenuItem(
+                          value: i,
+                          child: Text(i.toString().padLeft(2, '0')),
+                        ),
+                      ),
+                      onChanged: (value) {
+                        if (value != null) {
+                          setState(
+                            () => _departureTime = TimeOfDay(
+                              hour: _departureTime.hour,
+                              minute: value,
+                            ),
+                          );
+                        }
+                      },
+                    ),
+                    DropdownButtonFormField<String>(
+                      key: ValueKey('departure_zone_$_departureZone'),
+                      initialValue: _departureZone,
+                      isExpanded: true,
+                      decoration: InputDecoration(
+                        labelText: l10n.routeDepartureTimeZone,
+                      ),
+                      items: _departureZones
+                          .map(
+                            (zone) => DropdownMenuItem(
+                              value: zone,
+                              child: Text(zone),
+                            ),
+                          )
+                          .toList(),
+                      onChanged: (value) {
+                        if (value != null) {
+                          setState(() => _departureZoneOverride = value);
+                        }
+                      },
+                    ),
+                  ],
+                  const SizedBox(height: 16),
+                ],
+                DropdownButtonFormField<RoutePreference>(
+                  key: ValueKey('route_preference_${_preference.name}'),
+                  initialValue: _preference,
+                  decoration: InputDecoration(labelText: l10n.routeType),
+                  items: [
+                    DropdownMenuItem(
+                      value: RoutePreference.fastest,
+                      child: Text(l10n.routeFastest),
+                    ),
+                    DropdownMenuItem(
+                      value: RoutePreference.shortest,
+                      child: Text(l10n.routeShortest),
+                    ),
+                  ],
+                  onChanged: _profile == RouteProfile.transit
+                      ? null
+                      : (val) {
+                          if (val != null) {
+                            setState(() => _preference = val);
+                            _saveFormPreferences();
+                          }
+                        },
+                ),
+                const SizedBox(height: 16),
+                CheckboxListTile(
+                  value: _includeMunicipalities,
+                  title: Text(l10n.routeIncludeMunicipalities),
+                  contentPadding: EdgeInsets.zero,
+                  onChanged: (value) {
+                    setState(() => _includeMunicipalities = value ?? false);
+                    _saveFormPreferences();
+                  },
+                ),
+                const SizedBox(height: 32),
+                FilledButton.icon(
+                  onPressed: _calculating ? null : _calculateRoute,
+                  icon: const Icon(Icons.directions),
+                  label: Text(
+                    _calculating ? l10n.routeCalculating : l10n.routeCalculate,
+                  ),
+                  style: FilledButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
+                ),
+              ],
             ),
-          ),
-          const SizedBox(height: 16),
-          TextField(
-            controller: _fromController,
-            decoration: InputDecoration(labelText: l10n.routeFrom),
-            textInputAction: TextInputAction.next,
-          ),
-          const SizedBox(height: 16),
-          TextField(
-            controller: _toController,
-            decoration: InputDecoration(labelText: l10n.routeTo),
-            textInputAction: TextInputAction.done,
-            onSubmitted: (_) => _calculating ? null : _calculateRoute(),
-          ),
-          const SizedBox(height: 16),
-          DropdownButtonFormField<String>(
-            key: ValueKey('route_country_$_countryCode'),
-            initialValue: _countryCode,
-            decoration: InputDecoration(labelText: l10n.routeCountry),
-            items: [
-              DropdownMenuItem(
-                  value: 'it', child: Text(l10n.routeCountryItaly)),
-              DropdownMenuItem(
-                  value: 'fr', child: Text(l10n.routeCountryFrance)),
-              DropdownMenuItem(
-                  value: 'es', child: Text(l10n.routeCountrySpain)),
-              DropdownMenuItem(
-                  value: 'pt', child: Text(l10n.radioCountryOptionPt)),
-              DropdownMenuItem(
-                  value: 'br', child: Text(l10n.radioCountryOptionBr)),
-              DropdownMenuItem(
-                  value: 'pl', child: Text(l10n.radioCountryOptionPl)),
-              DropdownMenuItem(
-                  value: 'cz', child: Text(l10n.routeCountryCzechRepublic)),
-              DropdownMenuItem(
-                  value: 'au', child: Text(l10n.radioCountryOptionAu)),
-              DropdownMenuItem(
-                  value: 'ca', child: Text(l10n.radioCountryOptionCa)),
-              DropdownMenuItem(
-                  value: 'de', child: Text(l10n.radioCountryOptionDe)),
-              DropdownMenuItem(
-                  value: 'nl', child: Text(l10n.radioCountryOptionNl)),
-              DropdownMenuItem(
-                  value: 'gb', child: Text(l10n.radioCountryOptionGb)),
-              DropdownMenuItem(
-                  value: 'us', child: Text(l10n.radioCountryOptionUs)),
-              DropdownMenuItem(
-                  value: 'ua', child: Text(localizedCountryDisplayName('UA', localeName: l10n.localeName))),
-              DropdownMenuItem(
-                  value: 'tr', child: Text(l10n.radioCountryOptionTr)),
-              DropdownMenuItem(
-                  value: 'cn', child: Text(l10n.chinaCountryName)),
-            ],
-            onChanged: (val) {
-              if (val != null) {
-                setState(() => _countryCode = val);
-                _saveFormPreferences();
-              }
-            },
-          ),
-          const SizedBox(height: 16),
-          DropdownButtonFormField<RouteProfile>(
-            key: ValueKey('route_profile_${_profile.name}'),
-            initialValue: _profile,
-            decoration: InputDecoration(labelText: l10n.routeVehicle),
-            items: [
-              DropdownMenuItem(
-                  value: RouteProfile.walking, child: Text(l10n.routeWalking)),
-              DropdownMenuItem(
-                  value: RouteProfile.cycling, child: Text(l10n.routeCycling)),
-              DropdownMenuItem(
-                  value: RouteProfile.driving, child: Text(l10n.routeDriving)),
-              DropdownMenuItem(
-                  value: RouteProfile.wheelchair,
-                  child: Text(l10n.routeWheelchair)),
-              DropdownMenuItem(value: RouteProfile.transit, child: Text(l10n.routeTransit)),
-            ],
-            onChanged: (val) {
-              if (val != null) {
-                setState(() => _profile = val);
-                _saveFormPreferences();
-              }
-            },
-          ),
-          const SizedBox(height: 16),
-          DropdownButtonFormField<RoutePreference>(
-            key: ValueKey('route_preference_${_preference.name}'),
-            initialValue: _preference,
-            decoration: InputDecoration(labelText: l10n.routeType),
-            items: [
-              DropdownMenuItem(
-                  value: RoutePreference.fastest,
-                  child: Text(l10n.routeFastest)),
-              DropdownMenuItem(
-                  value: RoutePreference.shortest,
-                  child: Text(l10n.routeShortest)),
-            ],
-            onChanged: _profile == RouteProfile.transit ? null : (val) {
-              if (val != null) {
-                setState(() => _preference = val);
-                _saveFormPreferences();
-              }
-            },
-          ),
-          const SizedBox(height: 16),
-          CheckboxListTile(
-            value: _includeMunicipalities,
-            title: Text(l10n.routeIncludeMunicipalities),
-            contentPadding: EdgeInsets.zero,
-            onChanged: (value) {
-              setState(() => _includeMunicipalities = value ?? false);
-              _saveFormPreferences();
-            },
-          ),
-          const SizedBox(height: 32),
-          FilledButton.icon(
-            onPressed: _calculating ? null : _calculateRoute,
-            icon: const Icon(Icons.directions),
-            label: Text(
-                _calculating ? l10n.routeCalculating : l10n.routeCalculate),
-            style: FilledButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }
@@ -538,7 +843,7 @@ class _RecentRoutesScreenState extends State<_RecentRoutesScreen> {
       );
     } catch (e) {
       if (!mounted) return;
-            showStatusMessage(context, l10n.routeError(l10n.technicalErrorGeneric));
+      showStatusMessage(context, l10n.routeError(l10n.technicalErrorGeneric));
     } finally {
       if (mounted) setState(() => _calculating = false);
     }
@@ -583,10 +888,16 @@ class _RecentRoutesScreenState extends State<_RecentRoutesScreen> {
                     for (var i = 0; i < routes.length; i++)
                       AccessibleListRow(
                         id: 'route_$i',
-                        title: '${routes[i].fromDisplayLabel} → ${routes[i].toDisplayLabel}',
+                        title:
+                            '${routes[i].fromDisplayLabel} → ${routes[i].toDisplayLabel}',
                         subtitle: _formattedDate(routes[i].createdAt),
                         enabled: !_calculating,
-                        actions: [AccessibleCustomAction(id: 'delete', label: l10n.deleteItem)],
+                        actions: [
+                          AccessibleCustomAction(
+                            id: 'delete',
+                            label: l10n.deleteItem,
+                          ),
+                        ],
                       ),
                   ],
                 ),
@@ -595,7 +906,9 @@ class _RecentRoutesScreenState extends State<_RecentRoutesScreen> {
                 final id = event.id;
                 if (id == null || !id.startsWith('route_')) return;
                 final index = int.tryParse(id.substring(6));
-                if (index == null || index >= routes.length || _calculating) return;
+                if (index == null || index >= routes.length || _calculating) {
+                  return;
+                }
                 if (event.type == 'customAction' && event.action == 'delete') {
                   await _deleteRoute(routes[index]);
                 } else if (event.type == 'activate') {
@@ -637,4 +950,3 @@ class _RecentRoutesScreenState extends State<_RecentRoutesScreen> {
     );
   }
 }
-

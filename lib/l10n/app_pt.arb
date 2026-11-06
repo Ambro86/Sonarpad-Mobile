@@ -1,4 +1,11 @@
 {
+  "routeDeparture": "Partida",
+  "routeLeaveNow": "Partir agora",
+  "routeLeaveAt": "Partir às",
+  "routeDepartureTimeZone": "Fuso horário da partida",
+  "placesPeopleSearch": "Pesquisar pessoas",
+  "placesPhoneSearch": "Pesquisar um número de telefone",
+
   "cloudSyncConfirmDeletions": "Confirmar exclusões",
   "cloudSyncDeleteOutgoing": "Excluir estes itens da nuvem e dos outros dispositivos? Escolha Não se não solicitou estas exclusões.",
   "cloudSyncDeleteIncoming": "Excluir estes itens deste dispositivo conforme a nuvem? Escolha Não se não solicitou estas exclusões.",

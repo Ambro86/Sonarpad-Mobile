@@ -9,6 +9,24 @@ class AppLocalizationsEs extends AppLocalizations {
   AppLocalizationsEs([String locale = 'es']) : super(locale);
 
   @override
+  String get routeDeparture => 'Salida';
+
+  @override
+  String get routeLeaveNow => 'Salir ahora';
+
+  @override
+  String get routeLeaveAt => 'Salir a las';
+
+  @override
+  String get routeDepartureTimeZone => 'Zona horaria de salida';
+
+  @override
+  String get placesPeopleSearch => 'Buscar personas';
+
+  @override
+  String get placesPhoneSearch => 'Buscar un número de teléfono';
+
+  @override
   String get cloudSyncConfirmDeletions => 'Confirmar eliminaciones';
 
   @override

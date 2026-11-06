@@ -1,4 +1,11 @@
 {
+  "routeDeparture": "出发",
+  "routeLeaveNow": "立即出发",
+  "routeLeaveAt": "出发时间",
+  "routeDepartureTimeZone": "出发地时区",
+  "placesPeopleSearch": "查找人员",
+  "placesPhoneSearch": "查找电话号码",
+
   "cloudSyncConfirmDeletions": "确认删除",
   "cloudSyncDeleteOutgoing": "要从云端和其他设备删除这些项目吗？如果您没有要求删除，请选择“否”。",
   "cloudSyncDeleteIncoming": "要按照云端数据从此设备删除这些项目吗？如果您没有要求删除，请选择“否”。",

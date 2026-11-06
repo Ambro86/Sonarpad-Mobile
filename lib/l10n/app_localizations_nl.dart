@@ -9,6 +9,24 @@ class AppLocalizationsNl extends AppLocalizations {
   AppLocalizationsNl([String locale = 'nl']) : super(locale);
 
   @override
+  String get routeDeparture => 'Vertrek';
+
+  @override
+  String get routeLeaveNow => 'Nu vertrekken';
+
+  @override
+  String get routeLeaveAt => 'Vertrekken om';
+
+  @override
+  String get routeDepartureTimeZone => 'Tijdzone van vertrek';
+
+  @override
+  String get placesPeopleSearch => 'Personen zoeken';
+
+  @override
+  String get placesPhoneSearch => 'Een telefoonnummer zoeken';
+
+  @override
   String get cloudSyncConfirmDeletions => 'Verwijderingen bevestigen';
 
   @override

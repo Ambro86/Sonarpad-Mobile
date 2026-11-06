@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  final source = File('lib/screens/route_screen.dart').readAsStringSync();
+  final source = File('lib/screens/route_screen.dart').readAsStringSync().replaceAll(RegExp(r'\s+'), ' ');
 
   test('route shared pickers expose localized selected values to UIKit', () {
     expect(source, contains('valueLabel: countryValueLabel'));

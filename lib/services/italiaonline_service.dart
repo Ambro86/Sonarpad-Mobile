@@ -264,7 +264,7 @@ class ItaliaOnlineService {
 
   Future<List<SearchResult>> _searchPlaces(SearchQuery query) async {
     if (_clientToken.isEmpty) {
-      throw Exception('Ricerca luoghi non configurata.');
+      throw Exception('places_not_configured');
     }
     final uri = Uri.parse('https://sonarpad.com/api/luoghi.php');
     final headers = {
@@ -283,11 +283,11 @@ class ItaliaOnlineService {
                 http.post(uri, headers: headers, body: body))
             .timeout(const Duration(seconds: 40));
     if (response.statusCode != 200) {
-      throw Exception('Ricerca luoghi non disponibile.');
+      throw Exception('places_unavailable');
     }
     final json =
         jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
-    if (json['ok'] != true) throw Exception('Ricerca luoghi non riuscita.');
+    if (json['ok'] != true) throw Exception('places_search_failed');
     final results = (json['data'] as Map<String, dynamic>)['risultati'] as List;
     final text = placeStrings(query.language);
     return results.map((value) {

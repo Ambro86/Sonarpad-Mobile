@@ -1,4 +1,11 @@
 {
+  "routeDeparture": "Departure",
+  "routeLeaveNow": "Leave now",
+  "routeLeaveAt": "Leave at",
+  "routeDepartureTimeZone": "Departure time zone",
+  "placesPeopleSearch": "Find people",
+  "placesPhoneSearch": "Find a phone number",
+
   "cloudSyncConfirmDeletions": "Confirm deletions",
   "cloudSyncDeleteOutgoing": "Delete these items from the cloud and your other devices? Choose No if you did not request these removals.",
   "cloudSyncDeleteIncoming": "Delete these items from this device, as requested by the cloud? Choose No if you did not request these removals.",

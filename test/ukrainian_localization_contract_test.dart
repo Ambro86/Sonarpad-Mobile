@@ -108,11 +108,11 @@ void main() {
   });
 
   test('Ukraine is the localized default for routes radio and podcasts', () {
-    final routes = File('lib/screens/route_screen.dart').readAsStringSync();
+    final routes = (File('lib/screens/route_screen.dart').readAsStringSync() + File('lib/utils/route_country_options.dart').readAsStringSync());
     final radio = File('lib/screens/radio_screen.dart').readAsStringSync();
     final podcasts = File('lib/screens/podcast_screen.dart').readAsStringSync();
     expect(routes, contains("'uk' => 'ua'"));
-    expect(routes, contains("AccessibleOption(value: 'ua'"));
+    expect(routes, contains("value: 'ua'"));
     expect(radio, contains("'uk' => 'ua'"));
     expect(podcasts, contains("case 'uk':"));
     expect(podcasts, contains("return 'ua';"));

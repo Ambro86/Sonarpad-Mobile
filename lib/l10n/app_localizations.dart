@@ -122,6 +122,42 @@ abstract class AppLocalizations {
     Locale('zh', 'CN'),
   ];
 
+  /// No description provided for @routeDeparture.
+  ///
+  /// In it, this message translates to:
+  /// **'Partenza'**
+  String get routeDeparture;
+
+  /// No description provided for @routeLeaveNow.
+  ///
+  /// In it, this message translates to:
+  /// **'Partenza ora'**
+  String get routeLeaveNow;
+
+  /// No description provided for @routeLeaveAt.
+  ///
+  /// In it, this message translates to:
+  /// **'Parti alle'**
+  String get routeLeaveAt;
+
+  /// No description provided for @routeDepartureTimeZone.
+  ///
+  /// In it, this message translates to:
+  /// **'Fuso orario della partenza'**
+  String get routeDepartureTimeZone;
+
+  /// No description provided for @placesPeopleSearch.
+  ///
+  /// In it, this message translates to:
+  /// **'Ricerca nominativi'**
+  String get placesPeopleSearch;
+
+  /// No description provided for @placesPhoneSearch.
+  ///
+  /// In it, this message translates to:
+  /// **'Cerca un numero di telefono'**
+  String get placesPhoneSearch;
+
   /// No description provided for @cloudSyncConfirmDeletions.
   ///
   /// In it, this message translates to:

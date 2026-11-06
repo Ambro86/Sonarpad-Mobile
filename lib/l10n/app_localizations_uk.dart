@@ -9,6 +9,24 @@ class AppLocalizationsUk extends AppLocalizations {
   AppLocalizationsUk([String locale = 'uk']) : super(locale);
 
   @override
+  String get routeDeparture => 'Відправлення';
+
+  @override
+  String get routeLeaveNow => 'Вирушити зараз';
+
+  @override
+  String get routeLeaveAt => 'Вирушити о';
+
+  @override
+  String get routeDepartureTimeZone => 'Часовий пояс відправлення';
+
+  @override
+  String get placesPeopleSearch => 'Пошук людей';
+
+  @override
+  String get placesPhoneSearch => 'Пошук номера телефону';
+
+  @override
   String get cloudSyncConfirmDeletions => 'Підтвердити видалення';
 
   @override

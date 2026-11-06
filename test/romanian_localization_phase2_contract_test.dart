@@ -36,7 +36,7 @@ void main() {
 
   test('Romanian routes use Romania and Romanian service messages', () {
     final route = File('lib/services/route_service.dart').readAsStringSync();
-    final screen = File('lib/screens/route_screen.dart').readAsStringSync();
+    final screen = (File('lib/screens/route_screen.dart').readAsStringSync() + File('lib/utils/route_country_options.dart').readAsStringSync());
 
     expect(screen, contains("'ro' => 'ro'"));
     expect(screen, contains("value: 'ro'"));

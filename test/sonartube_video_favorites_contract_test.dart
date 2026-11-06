@@ -44,7 +44,7 @@ void main() {
     expect(source, contains("host == 'youtu.be'"));
     expect(
       source,
-      contains("Uri.https('www.youtube.com', '/watch', {'v': item.id})"),
+      contains(RegExp(r"Uri\.https\(\s*'www\.youtube\.com',\s*'/watch',\s*\{\s*'v':\s*item\.id,?\s*\}\)")),
     );
   });
 

@@ -9,6 +9,24 @@ class AppLocalizationsPt extends AppLocalizations {
   AppLocalizationsPt([String locale = 'pt']) : super(locale);
 
   @override
+  String get routeDeparture => 'Partida';
+
+  @override
+  String get routeLeaveNow => 'Partir agora';
+
+  @override
+  String get routeLeaveAt => 'Partir às';
+
+  @override
+  String get routeDepartureTimeZone => 'Fuso horário da partida';
+
+  @override
+  String get placesPeopleSearch => 'Pesquisar pessoas';
+
+  @override
+  String get placesPhoneSearch => 'Pesquisar um número de telefone';
+
+  @override
   String get cloudSyncConfirmDeletions => 'Confirmar exclusões';
 
   @override
@@ -6036,6 +6054,24 @@ class AppLocalizationsPt extends AppLocalizations {
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
 class AppLocalizationsPtBr extends AppLocalizationsPt {
   AppLocalizationsPtBr() : super('pt_BR');
+
+  @override
+  String get routeDeparture => 'Partida';
+
+  @override
+  String get routeLeaveNow => 'Partir agora';
+
+  @override
+  String get routeLeaveAt => 'Partir às';
+
+  @override
+  String get routeDepartureTimeZone => 'Fuso horário da partida';
+
+  @override
+  String get placesPeopleSearch => 'Pesquisar pessoas';
+
+  @override
+  String get placesPhoneSearch => 'Pesquisar um número de telefone';
 
   @override
   String get cloudSyncConfirmDeletions => 'Confirmar exclusões';

@@ -40,7 +40,7 @@ void main() {
     expect(ids, isNot(contains(HomeItemIds.sonarpadAudioDescriptions)));
     expect(ids, isNot(contains(HomeItemIds.digitalLibrary)));
     expect(ids, isNot(contains(HomeItemIds.openingHours)));
-    expect(ids, isNot(contains(HomeItemIds.directory)));
+    expect(ids, contains(HomeItemIds.directory)); // Places search is now international.
     expect(ids, isNot(contains(HomeItemIds.pharmacy)));
 
     expect(ids, contains(HomeItemIds.documents));

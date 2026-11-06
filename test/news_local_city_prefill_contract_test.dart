@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('detected local-news city is pushed into the shared UIKit model immediately', () {
-    final source = File('lib/screens/news_screen.dart').readAsStringSync();
+    final source = File('lib/screens/news_screen.dart').readAsStringSync().replaceAll('\r\n', '\n');
 
     expect(source, contains("final detectedCity = loc?['city'] ?? '';"));
     expect(
@@ -18,7 +18,7 @@ void main() {
   });
 
   test('automatic geolocation remains dynamic unless the user explicitly updates the city', () {
-    final source = File('lib/screens/news_screen.dart').readAsStringSync();
+    final source = File('lib/screens/news_screen.dart').readAsStringSync().replaceAll('\r\n', '\n');
 
     expect(source, contains('await _settings.setNewsLocalCity(city);'));
     expect(source, contains('Future<void> _reloadLocalCategory() async'));

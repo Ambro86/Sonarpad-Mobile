@@ -77,7 +77,7 @@ void main() {
     final newsService = File('lib/services/news_service.dart').readAsStringSync();
     final podcasts = File('lib/screens/podcast_screen.dart').readAsStringSync();
     final radio = File('lib/screens/radio_screen.dart').readAsStringSync();
-    final routes = File('lib/screens/route_screen.dart').readAsStringSync();
+    final routes = (File('lib/screens/route_screen.dart').readAsStringSync() + File('lib/utils/route_country_options.dart').readAsStringSync());
     final routeService = File('lib/services/route_service.dart').readAsStringSync();
     final tmdb = File('lib/services/tmdb_service.dart').readAsStringSync();
     final wikipedia = File('lib/screens/wikipedia_screen.dart').readAsStringSync();

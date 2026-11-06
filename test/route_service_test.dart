@@ -152,6 +152,25 @@ void main() {
       );
     }
 
+    test('scheduled transit sends selected time and origin timezone to Google', () async {
+      final requests = <Map<String, dynamic>>[];
+      final service = RouteService(client: MockClient((request) async {
+        expect(request.url.path, '/api/percorsi.php');
+        requests.add(jsonDecode(request.body) as Map<String, dynamic>);
+        return http.Response(primaryBody, 200);
+      }));
+      for (final profile in [RouteProfile.transit, RouteProfile.driving]) {
+        await service.calculateRoute(from: from, to: to, profile: profile,
+          preference: RoutePreference.fastest, includeMunicipalities: false,
+          language: 'en', countryCode: 'gb', departureTime: '18:35', departureTimeZone: 'Europe/London');
+      }
+      expect(requests.first['partenza'], '18:35');
+      expect(requests.first['fuso'], 'Europe/London');
+      expect(requests.first['mezzo'], 'pullman');
+      expect(requests.last['partenza'], 'adesso');
+      expect(requests.last.containsKey('fuso'), isFalse);
+    });
+
     test('transit failure never becomes a walking ORS route', () async {
       final calls = <String>[];
       final service = RouteService(

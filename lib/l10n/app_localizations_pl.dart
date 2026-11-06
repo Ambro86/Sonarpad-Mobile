@@ -9,6 +9,24 @@ class AppLocalizationsPl extends AppLocalizations {
   AppLocalizationsPl([String locale = 'pl']) : super(locale);
 
   @override
+  String get routeDeparture => 'Odjazd';
+
+  @override
+  String get routeLeaveNow => 'Odjedź teraz';
+
+  @override
+  String get routeLeaveAt => 'Odjazd o';
+
+  @override
+  String get routeDepartureTimeZone => 'Strefa czasowa odjazdu';
+
+  @override
+  String get placesPeopleSearch => 'Szukaj osób';
+
+  @override
+  String get placesPhoneSearch => 'Szukaj numeru telefonu';
+
+  @override
   String get cloudSyncConfirmDeletions => 'Potwierdź usunięcia';
 
   @override

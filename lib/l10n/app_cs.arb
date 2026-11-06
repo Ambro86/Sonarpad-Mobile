@@ -1,4 +1,11 @@
 {
+  "routeDeparture": "Odjezd",
+  "routeLeaveNow": "Odjet nyní",
+  "routeLeaveAt": "Odjezd v",
+  "routeDepartureTimeZone": "Časové pásmo odjezdu",
+  "placesPeopleSearch": "Hledat osoby",
+  "placesPhoneSearch": "Hledat telefonní číslo",
+
   "cloudSyncConfirmDeletions": "Potvrdit odstranění",
   "cloudSyncDeleteOutgoing": "Odstranit tyto položky z cloudu a ostatních zařízení? Pokud jste o odstranění nežádali, zvolte Ne.",
   "cloudSyncDeleteIncoming": "Odstranit tyto položky z tohoto zařízení podle cloudu? Pokud jste o odstranění nežádali, zvolte Ne.",
