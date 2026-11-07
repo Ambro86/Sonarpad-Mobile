@@ -1,5 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
+// Supplied by flutter_test, like its simulated event loop.
+// ignore: depend_on_referenced_packages
+import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -11,6 +14,7 @@ import 'package:sonarpad_mobile_starter/services/cloud_sync_service.dart';
 import 'package:sonarpad_mobile_starter/services/cloud_sync_api.dart';
 import 'package:sonarpad_mobile_starter/services/cloud_sync_collections.dart';
 import 'package:sonarpad_mobile_starter/services/cloud_sync_state.dart';
+import 'package:sonarpad_mobile_starter/services/collection_storage.dart';
 import 'package:sonarpad_mobile_starter/services/app_settings_service.dart';
 import 'package:sonarpad_mobile_starter/services/radio_service.dart';
 import 'package:sonarpad_mobile_starter/services/tv_service.dart';
@@ -47,6 +51,37 @@ void main() {
   setUp(() {
     SharedPreferences.setMockInitialValues({});
     FlutterSecureStorage.setMockInitialValues({});
+  });
+  test('idle storage queue can leave a completed event loop', () async {
+    var completed = false;
+    fakeAsync((clock) {
+      CollectionStorage.run(() async => 1).then((_) => completed = true);
+      clock.flushMicrotasks();
+    });
+    expect(completed, isTrue);
+    expect(await CollectionStorage.run(() async => 2)
+        .timeout(const Duration(seconds: 1)), 2);
+  });
+  test('failed writes release the queue without bypassing waiting or nested writes', () async {
+    final order = <int>[];
+    final gate = Completer<void>();
+    final first = CollectionStorage.run(() async {
+      order.add(1);
+      await gate.future;
+      throw StateError('test write failure');
+    });
+    final failure = expectLater(first, throwsStateError);
+    final next = CollectionStorage.run(() async {
+      order.add(2);
+      return CollectionStorage.run(() async => 3);
+    });
+    await Future<void>.delayed(Duration.zero);
+    expect(order, [1]);
+    gate.complete();
+    await failure;
+    expect(await next, 3);
+    expect(order, [1, 2]);
+    expect(await CollectionStorage.run(() async => 4), 4);
   });
   test(
     'concurrent additions from different service instances both survive',

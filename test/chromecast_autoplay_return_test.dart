@@ -58,7 +58,7 @@ void main() {
   });
   testWidgets('Cast next item returns to the correct local source and bookmark', (tester) async {
     final settings = AppSettingsService();
-    await tester.runAsync(() => settings.setAutoBookmarkEnabled(true));
+    await settings.setAutoBookmarkEnabled(true);
     const first = PodcastEpisode(title: 'First', description: '',
       audioUrl: 'https://example.org/first.mp3', id: 'sonarmusic:first');
     const second = PodcastEpisode(title: 'Second', description: '',

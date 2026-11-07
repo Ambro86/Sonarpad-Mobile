@@ -118,11 +118,11 @@ Future<void> pumpTestPlayer(
       : const Size(480, 1000);
   addTearDown(tester.view.resetPhysicalSize);
   addTearDown(tester.view.resetDevicePixelRatio);
-  // Initialize preference writes and just_audio's idle streams outside FakeAsync.
+  await AppSettingsService().setDisplayVideoInPortrait(fullscreen);
+  await AppSettingsService().setAutoBookmarkEnabled(false);
+  // Initialize just_audio's asynchronous idle streams outside FakeAsync.
   // The speed gestures below use normal widget pumping.
   await tester.runAsync(() async {
-    await AppSettingsService().setDisplayVideoInPortrait(fullscreen);
-    await AppSettingsService().setAutoBookmarkEnabled(false);
     await tester.pumpWidget(
       MaterialApp(
         locale: const Locale('it'),

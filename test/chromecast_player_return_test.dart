@@ -60,7 +60,7 @@ void main() {
   });
   for (final enabled in [true, false]) {
     testWidgets('TV Cast respects the visibility setting: $enabled', (tester) async {
-      await tester.runAsync(() => AppSettingsService().setChromecastButtonEnabled(enabled));
+      await AppSettingsService().setChromecastButtonEnabled(enabled);
       await tester.runAsync(() async {
         await tester.pumpWidget(MaterialApp(
           locale: const Locale('en'),
