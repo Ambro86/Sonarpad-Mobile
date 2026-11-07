@@ -198,18 +198,30 @@ void main() {
   );
   testWidgets('tube favorite action persists order with secondary and visual controls', (tester) async {
     final library=SonarTubeFavoritesService();
-    await library.toggleFavorite(tube('Zeta'));await library.toggleFavorite(tube('Diego'));
-    await tester.pumpWidget(app(SonarTubeScreen(favoritesService:library)));
+    // Initialize storage and the route outside FakeAsync, then pump UI updates.
+    await tester.runAsync(() async {
+      await library.toggleFavorite(tube('Zeta'));
+      await library.toggleFavorite(tube('Diego'));
+      await tester.pumpWidget(app(SonarTubeScreen(favoritesService:library)));
+    });
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const ValueKey('sonartube_favorites_button')));
+    await tester.runAsync(() async {
+      await tester.tap(find.byKey(const ValueKey('sonartube_favorites_button')));
+      await tester.pump();
+      await library.loadFavorites();
+    });
     await tester.pumpAndSettle();
     final list=tester.widget<UniversalAccessibleList>(find.byType(UniversalAccessibleList).last);
     final row=list.sections.expand((s)=>s.rows).singleWhere((r)=>r.title=='Zeta');
     expect(row.actions.map((a)=>a.id),containsAll(['move_down','move_position','sort_favorites']));
     expect(row.visualActions.map((a)=>a.id),containsAll(['move_down','move_position','sort_favorites']));
-    list.onEvent!(AccessibleListEvent(type:'customAction',id:row.id,action:'move_down'));
+    await tester.runAsync(() async {
+      list.onEvent!(AccessibleListEvent(type:'customAction',id:row.id,action:'move_down'));
+      await Future<void>.delayed(Duration.zero);
+    });
     await tester.pumpAndSettle();
-    expect((await library.loadFavorites()).map((e)=>e.id),['Diego','Zeta']);
+    final saved = await tester.runAsync(library.loadFavorites);
+    expect(saved!.map((e)=>e.id),['Diego','Zeta']);
   });
 
 }
