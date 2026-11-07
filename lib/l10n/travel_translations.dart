@@ -16,6 +16,7 @@ const travelTranslations = <String, Map<String, String>>{
         "Catalogusauto’s zonder accessoires of aanhanger. Beschikbaarheid geldt alleen voor dit traject.",
     "ferryNoCar": "Geen auto beschikbaar voor dit traject.",
     "ferryModels": "Merk en model zoeken",
+    "ferryModelNotFound": "Geen automodel gevonden. Probeer een ander merk of model.",
     "ferryPlate": "Kenteken",
     "ferryDimensions":
         "Ik bevestig de afmetingen en geen accessoires of aanhanger",
@@ -219,6 +220,7 @@ const travelTranslations = <String, Map<String, String>>{
         "Auta z katalogu bez příslušenství a přívěsu. Dostupnost platí jen pro tento úsek.",
     "ferryNoCar": "Auto pro tento úsek není dostupné.",
     "ferryModels": "Hledat značku a model",
+    "ferryModelNotFound": "Nebyl nalezen žádný model auta. Zkuste jinou značku nebo model.",
     "ferryPlate": "Registrační značka",
     "ferryDimensions":
         "Potvrzuji rozměry a nepřítomnost příslušenství a přívěsu",
@@ -417,6 +419,7 @@ const travelTranslations = <String, Map<String, String>>{
         "Katalogautos ohne Zubehör oder Anhänger. Verfügbarkeit nur für diese Strecke.",
     "ferryNoCar": "Keine Autos für diese Strecke verfügbar.",
     "ferryModels": "Marke und Modell suchen",
+    "ferryModelNotFound": "Kein Automodell gefunden. Versuchen Sie eine andere Marke oder ein anderes Modell.",
     "ferryPlate": "Kennzeichen",
     "ferryDimensions": "Ich bestätige die Maße und kein Zubehör oder Anhänger",
     "ferrySelectionHelp":
@@ -622,6 +625,7 @@ const travelTranslations = <String, Map<String, String>>{
         "Coches del catálogo sin accesorios ni remolque. Disponibilidad solo para este trayecto.",
     "ferryNoCar": "Coche no disponible para este trayecto.",
     "ferryModels": "Buscar marca y modelo",
+    "ferryModelNotFound": "No se ha encontrado ningún modelo de coche. Prueba con otra marca o modelo.",
     "ferryPlate": "Matrícula",
     "ferryDimensions":
         "Confirmo las dimensiones y la ausencia de accesorios y remolque",
@@ -827,6 +831,7 @@ const travelTranslations = <String, Map<String, String>>{
         "Voitures du catalogue sans accessoires ni remorque. Disponibilité pour ce trajet uniquement.",
     "ferryNoCar": "Voiture indisponible pour ce trajet.",
     "ferryModels": "Rechercher marque et modèle",
+    "ferryModelNotFound": "Aucun modèle de voiture trouvé. Essayez une autre marque ou un autre modèle.",
     "ferryPlate": "Immatriculation",
     "ferryDimensions":
         "Je confirme les dimensions et l’absence d’accessoires et de remorque",
@@ -1029,6 +1034,7 @@ const travelTranslations = <String, Map<String, String>>{
         "Samochody z katalogu bez akcesoriów i przyczepy. Dostępność tylko dla tego odcinka.",
     "ferryNoCar": "Samochód niedostępny na tym odcinku.",
     "ferryModels": "Szukaj marki i modelu",
+    "ferryModelNotFound": "Nie znaleziono modelu samochodu. Spróbuj innej marki lub modelu.",
     "ferryPlate": "Numer rejestracyjny",
     "ferryDimensions": "Potwierdzam wymiary oraz brak akcesoriów i przyczepy",
     "ferrySelectionHelp":
@@ -1228,6 +1234,7 @@ const travelTranslations = <String, Map<String, String>>{
         "Carros do catálogo sem acessórios nem reboque. Disponibilidade apenas para este percurso.",
     "ferryNoCar": "Carro indisponível neste percurso.",
     "ferryModels": "Pesquisar marca e modelo",
+    "ferryModelNotFound": "Nenhum modelo de automóvel encontrado. Experimente outra marca ou modelo.",
     "ferryPlate": "Matrícula",
     "ferryDimensions":
         "Confirmo as dimensões e a ausência de acessórios e reboque",
@@ -1430,6 +1437,7 @@ const travelTranslations = <String, Map<String, String>>{
         "Carros do catálogo sem acessórios nem reboque. Disponibilidade apenas para este trecho.",
     "ferryNoCar": "Carro indisponível neste trecho.",
     "ferryModels": "Pesquisar marca e modelo",
+    "ferryModelNotFound": "Nenhum modelo de carro encontrado. Tente outra marca ou modelo.",
     "ferryPlate": "Placa",
     "ferryDimensions":
         "Confirmo as dimensões e a ausência de acessórios e reboque",
@@ -1632,6 +1640,7 @@ const travelTranslations = <String, Map<String, String>>{
         "Mașini din catalog fără accesorii sau remorcă. Disponibilitate doar pentru această rută.",
     "ferryNoCar": "Mașină indisponibilă pentru această rută.",
     "ferryModels": "Caută marca și modelul",
+    "ferryModelNotFound": "Nu s-a găsit niciun model de mașină. Încearcă altă marcă sau alt model.",
     "ferryPlate": "Număr de înmatriculare",
     "ferryDimensions":
         "Confirm dimensiunile și absența accesoriilor și remorcii",
@@ -1833,6 +1842,7 @@ const travelTranslations = <String, Map<String, String>>{
         "Aksesuar veya römork olmadan katalog otomobilleri desteklenir. Uygunluk yalnızca bu etap içindir.",
     "ferryNoCar": "Bu etapta otomobil kullanılamıyor.",
     "ferryModels": "Marka ve model ara",
+    "ferryModelNotFound": "Otomobil modeli bulunamadı. Başka bir marka veya model deneyin.",
     "ferryPlate": "Plaka",
     "ferryDimensions": "Boyutları, aksesuar ve römork olmadığını onaylıyorum",
     "ferrySelectionHelp":
@@ -2030,6 +2040,7 @@ const travelTranslations = <String, Map<String, String>>{
         "Авто з каталогу без аксесуарів і причепа. Доступність лише для цієї ділянки.",
     "ferryNoCar": "Авто недоступне для цієї ділянки.",
     "ferryModels": "Знайти марку та модель",
+    "ferryModelNotFound": "Модель автомобіля не знайдено. Спробуйте іншу марку або модель.",
     "ferryPlate": "Номерний знак",
     "ferryDimensions":
         "Підтверджую розміри та відсутність аксесуарів і причепа",
@@ -2224,6 +2235,7 @@ const travelTranslations = <String, Map<String, String>>{
     "ferryCarHelp": "支持目录中不带附件或拖车的汽车。可用情况仅适用于本段行程。",
     "ferryNoCar": "此行程不支持汽车。",
     "ferryModels": "搜索品牌和车型",
+    "ferryModelNotFound": "未找到车型。请尝试其他品牌或车型。",
     "ferryPlate": "车牌号码",
     "ferryDimensions": "我确认所示尺寸且没有附件或拖车",
     "ferrySelectionHelp": "请完成乘客分配；如添加汽车，还需选择车型、填写车牌并确认尺寸。",

@@ -378,7 +378,7 @@ class _TravelVehicleModelsScreenState
               () => Navigator.pop(context, Map<String, dynamic>.from(model)),
             ),
           if ((data['items'] as List? ?? []).isEmpty)
-            _info('empty', t.t('empty')),
+            _info('empty', t.t('ferryModelNotFound')),
           if (page < pages)
             _action('next', t.t('next'), () => _search(page + 1)),
           if (page > 1)

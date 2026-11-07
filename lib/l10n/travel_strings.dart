@@ -181,6 +181,7 @@ class TravelStrings {
         "Sono supportate auto del catalogo senza accessori o rimorchi. La disponibilità riguarda solo questa tratta.",
     "ferryNoCar": "Auto non disponibile per questa tratta.",
     "ferryModels": "Cerca marca e modello",
+    "ferryModelNotFound": "Auto non trovata. Prova con un’altra marca o modello.",
     "ferryPlate": "Targa",
     "ferryDimensions":
         "Confermo le dimensioni indicate e l’assenza di accessori e rimorchio",
@@ -388,6 +389,7 @@ class TravelStrings {
         "Catalogue cars without accessories or trailers are supported. Availability applies to this leg only.",
     "ferryNoCar": "Cars unavailable for this leg.",
     "ferryModels": "Search make and model",
+    "ferryModelNotFound": "No car model found. Try another make or model.",
     "ferryPlate": "Registration plate",
     "ferryDimensions":
         "I confirm the stated dimensions and no accessories or trailer",
