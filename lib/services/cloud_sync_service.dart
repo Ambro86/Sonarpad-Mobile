@@ -226,7 +226,7 @@ class CloudSyncService {
         entry.key: entry.value,
   };
 
-  Future<void> _guardDeletions(
+  Future<CloudState> _guardDeletions(
     Map<String, dynamic> meta,
     String direction,
     CloudState before,
@@ -234,7 +234,7 @@ class CloudSyncService {
   ) async {
     await logCloudReductions(before, after, direction);
     final removed = removedCloudItems(before, after);
-    if (removed.isEmpty) return;
+    if (removed.isEmpty) return after;
     CloudState collectionsOnly(CloudState state) => {
       for (final entry in state.entries) entry.key: entry.value,
     };
@@ -253,7 +253,13 @@ class CloudSyncService {
       if (recovery.length > 10) recovery.removeAt(0);
       meta['recovery'] = recovery;
     }
-    final allowed = direction == 'outgoing'
+    final allowed = direction == 'local_during_sync'
+        ? _explicitDeletions(
+            (await CloudSyncDeletions.read()).where(
+              (e) => e['group_id'] == meta['group_id'],
+            ),
+          )
+        : direction == 'outgoing'
         ? ((meta['pending'] as Map?)?['explicit_deletions'])
         : ((meta['response'] as Map?)?['authorized_deletions']);
     if (allowed is Map &&
@@ -263,18 +269,39 @@ class CloudSyncService {
           ),
         )) {
       await _save(meta);
-      return;
+      return after;
     }
-    meta['deletion_review'] = review;
-    if (direction == 'outgoing') meta['blocked_before_send'] = true;
+    // Cancel only removals without user intent; retain all other local edits.
+    final safe = parseCloudState(after);
+    final restoredCounts = <String, int>{};
+    for (final entry in removed.entries) {
+      final ids = allowed is Map ? allowed[entry.key] as List? ?? [] : [];
+      final restored = entry.value
+          .where((row) => !ids.contains(row['id']))
+          .toList();
+      if (restored.isEmpty) continue;
+      safe[entry.key]!.addAll(restored);
+      restoredCounts[entry.key] = restored.length;
+    }
+    meta['last_cancelled_deletions'] = review;
+    meta.remove('deletion_review');
     await _save(meta);
+    await logCloudReductions(safe, after, 'cancelled_$direction');
     await AppLogger.log(
-      '[CloudSync] deletion_blocked direction=$direction '
-      'counts=${jsonEncode({
-        for (final key in removed.keys) key: {"before": before[key]!.length, "after": after[key]!.length, "removed": removed[key]!.length},
-      })}',
+      '[CloudSync] deletion_cancelled direction=$direction '
+      'restored=${jsonEncode(restoredCounts)} sync_continues=true',
     );
-    throw const CloudSyncApiException('deletion_confirmation_required');
+    return safe;
+  }
+
+  Map<String, List<String>> _explicitDeletions(
+    Iterable<Map<String, dynamic>> events,
+  ) {
+    final explicit = <String, List<String>>{};
+    for (final e in events) {
+      (explicit[e['collection'] as String] ??= []).add(e['id'] as String);
+    }
+    return explicit;
   }
 
   Future<void> _sync(Map<String, dynamic> meta) async {
@@ -285,6 +312,7 @@ class CloudSyncService {
     if (meta['blocked_before_send'] == true && meta['response'] == null) {
       meta.remove('pending');
       meta.remove('blocked_before_send');
+      meta.remove('pending_local_state');
     }
     var pending = meta['pending'] as Map?;
     if (pending == null) {
@@ -293,12 +321,8 @@ class CloudSyncService {
       final events = (await CloudSyncDeletions.read())
           .where((e) => e['group_id'] == meta['group_id'])
           .toList();
-      final explicit = <String, List<String>>{};
-      for (final e in events) {
-        (explicit[e['collection'] as String] ??= []).add(e['id'] as String);
-      }
       pending = {
-        'explicit_deletions': explicit,
+        'explicit_deletions': _explicitDeletions(events),
         'deletion_events': events,
         'schema_version': 1,
         'sequence': (meta['sequence'] as int? ?? 0) + 1,
@@ -309,8 +333,17 @@ class CloudSyncService {
       await _save(meta);
     }
     final before = parseCloudState(pending['baseline']);
-    final sent = parseCloudState(pending['state']);
-    await _guardDeletions(meta, 'outgoing', before, sent);
+    // A repaired wire snapshot must not turn into a new local deletion during
+    // the response merge. Keep the original snapshot in the local journal only.
+    meta['pending_local_state'] ??= pending['state'];
+    final sent = await _guardDeletions(
+      meta,
+      'outgoing',
+      before,
+      parseCloudState(pending['state']),
+    );
+    pending['state'] = sent;
+    await _save(meta);
     if (meta['response'] == null &&
         removedCloudItems(before, sent).isNotEmpty) {
       final approval = await api.request(
@@ -348,15 +381,20 @@ class CloudSyncService {
     final pendingSnapshot = pending;
     await CollectionStorage.run(() async {
       final allCurrent = await collections.read();
-      final current = <String, List<Map<String, dynamic>>>{
+      final local = <String, List<Map<String, dynamic>>>{
         for (final key in sent.keys) key: allCurrent[key] ?? [],
       };
-      final applied = mergeCloudState(
-        remote,
-        parseCloudState(pendingSnapshot['state']),
-        current,
+      final base = parseCloudState(meta['pending_local_state']);
+      final current = await _guardDeletions(
+        meta,
+        'local_during_sync',
+        base,
+        local,
       );
-      await _guardDeletions(meta, 'incoming', current, applied);
+      final merged = mergeCloudState(remote, base, current);
+      // Include outgoing recoveries even when the local snapshot was empty.
+      final expected = mergeCloudState(sent, base, current);
+      final applied = await _guardDeletions(meta, 'incoming', expected, merged);
       await collections.write(applied);
       final persistedAll = await collections.read();
       final persisted = <String, List<Map<String, dynamic>>>{
@@ -377,6 +415,8 @@ class CloudSyncService {
       meta.remove('approved_outgoing');
       meta.remove('approved_incoming');
       meta.remove('deletion_review');
+      meta.remove('blocked_before_send');
+      meta.remove('pending_local_state');
       meta.remove('pending');
       meta.remove('response');
       await _save(meta);
