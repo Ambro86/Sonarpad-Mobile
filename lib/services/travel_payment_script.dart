@@ -1,11 +1,16 @@
 import 'dart:convert';
 
 /// Accept only the booking terms after the user chooses a payment method.
-const travelAcceptBookingTermsScript = r'''
+String travelBookingTermsScript({bool verifyOnly = false}) =>
+    _bookingTerms.replaceFirst('__VERIFY__', '$verifyOnly');
+
+const _bookingTerms = r'''
 (() => {
   if (location.protocol !== 'https:' || (location.port && location.port !== '443') ||
       !['omio.com', 'www.omio.com'].includes(location.hostname) ||
       !/\/checkout\/?$/.test(location.pathname)) return 'unavailable';
+  // WKWebView may still be attaching or Omio may not have rendered the terms.
+  if (innerWidth <= 0 || innerHeight <= 0) return 'not-ready';
   const visible = el => {
     const r = el.getBoundingClientRect(), s = getComputedStyle(el);
     return r.width > 0 && r.height > 0 && s.visibility !== 'hidden' &&
@@ -34,7 +39,7 @@ const travelAcceptBookingTermsScript = r'''
   if (matches.length !== 1) return 'ambiguous';
   const el = matches[0];
   const checked = () => el.checked === true || el.getAttribute('aria-checked') === 'true';
-  if (!checked()) {
+  if (!__VERIFY__ && !checked()) {
     if (el.disabled || el.getAttribute('aria-disabled') === 'true') return 'disabled';
     el.click();
   }
@@ -145,6 +150,8 @@ const _script = r'''
   }
   const methods = [...found].filter(([, els]) => els.length === 1).map(([id]) => id);
   if (requested === null) return result('ready', methods);
+  // Do not initialize a payment provider while WKWebView has a zero viewport.
+  if (innerWidth <= 0 || innerHeight <= 0) return result('not-ready', methods);
   if (!methods.includes(requested)) return result('unavailable', methods);
   const el = found.get(requested)[0];
   if (!(el.checked || el.getAttribute('aria-checked') === 'true')) el.click();

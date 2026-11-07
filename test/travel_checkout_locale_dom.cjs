@@ -33,7 +33,7 @@ for(const test of cases) {
 }
 
 // Terms are a separate prerequisite, not the PayPal payment action.
-const terms = source.split("const travelAcceptBookingTermsScript = r" + "'".repeat(3))[1].split("'".repeat(3) + ";")[0];
+const terms = source.split("const _bookingTerms = r" + "'".repeat(3))[1].split("'".repeat(3) + ";")[0];
 for (const text of ['Ho letto e accettato i termini e le condizioni di Omio.', 'I have read and accept the terms and conditions.']) {
  const dom=new JSDOM('<label><input id="terms" type="checkbox"><span id="terms-label"></span></label><label><input id="marketing" type="checkbox">Accetto le condizioni delle offerte marketing</label><label><input id="privacy" type="checkbox">Ho letto l’informativa sulla privacy</label><button id="pay" type="submit">PayPal</button>',{url:'https://www.omio.com/app/booking/test/checkout',runScripts:'outside-only'});
  const w=dom.window,d=w.document;
@@ -42,25 +42,59 @@ for (const text of ['Ho letto e accettato i termini e le condizioni di Omio.', '
  let payments=0, clicks=0;
  d.getElementById('pay').onclick=()=>payments++;
  const checkbox=d.getElementById('terms');checkbox.onclick=()=>clicks++;
- assert.equal(w.eval(terms),'selected');
+ assert.equal(w.eval(terms.replaceAll('__VERIFY__','false')),'selected');
  assert.equal(checkbox.checked,true);
- assert.equal(w.eval(terms),'selected');
+ assert.equal(w.eval(terms.replaceAll('__VERIFY__','false')),'selected');
  assert.equal(clicks,1,'An accepted checkbox must never be toggled off');
  assert.equal(d.getElementById('marketing').checked,false);
  assert.equal(d.getElementById('privacy').checked,false);
  assert.equal(payments,0);
  checkbox.checked=false;checkbox.disabled=true;
- assert.equal(w.eval(terms),'disabled');assert.equal(clicks,1);
+ assert.equal(w.eval(terms.replaceAll('__VERIFY__','false')),'disabled');assert.equal(clicks,1);
  checkbox.disabled=false;
  const modal=d.createElement('div');modal.setAttribute('aria-modal','true');d.body.append(modal);
- assert.equal(w.eval(terms),'blocked');assert.equal(clicks,1);modal.remove();
+ assert.equal(w.eval(terms.replaceAll('__VERIFY__','false')),'blocked');assert.equal(clicks,1);modal.remove();
  const duplicate=checkbox.parentElement.cloneNode(true);d.body.append(duplicate);
- assert.equal(w.eval(terms),'ambiguous');assert.equal(clicks,1);duplicate.remove();
+ assert.equal(w.eval(terms.replaceAll('__VERIFY__','false')),'ambiguous');assert.equal(clicks,1);duplicate.remove();
  checkbox.parentElement.style.display='none';checkbox.style.display='none';
- assert.equal(w.eval(terms),'not-found');assert.equal(clicks,1);
+ assert.equal(w.eval(terms.replaceAll('__VERIFY__','false')),'not-found');assert.equal(clicks,1);
  checkbox.parentElement.style.display='';checkbox.style.display='';
  dom.reconfigure({url:'https://www.paypal.com/checkout'});
- assert.equal(w.eval(terms),'unavailable');assert.equal(clicks,1);
+ assert.equal(w.eval(terms.replaceAll('__VERIFY__','false')),'unavailable');assert.equal(clicks,1);
  dom.window.close();
 }
 console.log('PASS booking terms: required checkbox only, idempotence, disabled/modal/ambiguous/hidden/provider guards');
+
+// Reproduce the report: zero viewport at selection, then a delayed terms control.
+// The PayPal button is a provider frame and must survive all of these operations.
+{
+ const dom=new JSDOM('<label for="paypal">PayPal</label><input id="paypal" type="radio" name="payment"><iframe id="paypal-button" title="PayPal" src="https://www.paypal.com/smart/buttons"></iframe><button id="pay" type="submit">Pay</button>',{url:'https://www.omio.com/app/booking/test/checkout',runScripts:'outside-only'});
+ const w=dom.window,d=w.document;
+ w.HTMLElement.prototype.getBoundingClientRect=function(){return {width:100,height:20}};
+ const frame=d.getElementById('paypal-button'), originalFrame=frame.outerHTML;
+ let payments=0, radioClicks=0, termsClicks=0;
+ d.getElementById('pay').onclick=()=>payments++;
+ d.getElementById('paypal').onclick=()=>radioClicks++;
+ const select=()=>JSON.parse(w.eval(payment.replace('__SELECTION__','"PayPal"'))).status;
+ const accept=(verifyOnly=false)=>w.eval(terms.replaceAll('__VERIFY__',String(verifyOnly)));
+ w.innerWidth=0;w.innerHeight=0;
+ assert.equal(select(),'not-ready');assert.equal(radioClicks,0);
+ assert.equal(accept(),'not-ready');
+ w.innerWidth=390;w.innerHeight=707;
+ assert.equal(select(),'selected');assert.equal(radioClicks,1);
+ assert.equal(accept(),'not-found');
+ d.body.insertAdjacentHTML('beforeend','<label for="late-terms">Ho letto e accettato i termini e le condizioni.</label><input id="late-terms" type="checkbox">');
+ const checkbox=d.getElementById('late-terms');
+ // Simulate a framework that commits the checked value asynchronously.
+ checkbox.onclick=e=>{termsClicks++;e.preventDefault();};
+ assert.equal(accept(),'unconfirmed');assert.equal(termsClicks,1);
+ assert.equal(accept(true),'unconfirmed');assert.equal(termsClicks,1);
+ checkbox.checked=true;
+ assert.equal(accept(true),'selected');assert.equal(termsClicks,1);
+ assert.equal(d.getElementById('paypal-button'),frame);
+ assert.equal(frame.outerHTML,originalFrame);
+ assert.notEqual(d.activeElement,frame);
+ assert.equal(payments,0);
+ dom.window.close();
+}
+console.log('PASS zero viewport, late terms, asynchronous confirmation; PayPal iframe preserved, no payment submitted');

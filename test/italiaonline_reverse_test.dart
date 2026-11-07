@@ -10,6 +10,15 @@ const fixture =
 <result><id>other</id><name>Risultato non pertinente</name><phones><phone><number>021234567</number></phone></phones></result>
 </results></response>''';
 
+const yellowFixture = '''<input id="numero" value="020202">
+<div class="search-itm" data-tr="listing-search-itm"><div class="search-itm__info">
+<a href="https://www.paginegialle.it/matching"><h2 class="search-itm__rag">Ente pubblico</h2></a>
+<div class="search-itm__adr">Via Roma, 12 - Milano</div>
+<span class="search-itm__phone-item">+39 02 0202</span></div></div>
+<div class="search-itm" data-tr="listing-search-itm"><div class="search-itm__info">
+<a href="https://www.paginegialle.it/sponsor"><h2 class="search-itm__rag">Sponsored</h2></a>
+<span class="search-itm__phone-item">021234567</span></div></div>''';
+
 void main() {
   test('international format keeps country codes and national zeroes', () {
     expect(normalizePlacePhone('0033 1 58 59 22 22'), '+33158592222');
@@ -62,7 +71,7 @@ void main() {
       final service = ItaliaOnlineService(
         client: MockClient((request) async {
           calls++;
-          if (request.url.path.endsWith('searchpg')) {
+          if (request.url.host == 'www.paginegialle.it') {
             return http.Response('', 500);
           }
           expect(request.url.path.endsWith('searchpb'), isTrue);
@@ -124,7 +133,13 @@ void main() {
       final paths = <String>[];
       final service = ItaliaOnlineService(
         client: MockClient((request) async {
-          paths.add(request.url.path.split('/').last);
+          final yellow = request.url.host == 'www.paginegialle.it';
+          paths.add(yellow ? 'pg-phone' : request.url.path.split('/').last);
+          if (yellow) {
+            expect(request.url.path, '/ricerca/telefono-020202/p-2');
+            expect(request.url.queryParameters, isEmpty);
+            return http.Response(yellowFixture, 200);
+          }
           expect(request.url.queryParameters['what'], '020202');
           expect(request.url.queryParameters.containsKey('where'), isFalse);
           if (request.url.path.contains('detail')) {
@@ -145,7 +160,7 @@ void main() {
         reverse: true,
       );
       final response = await service.searchPhone(query);
-      expect(paths, ['searchpb', 'searchpg']);
+      expect(paths, ['searchpb', 'pg-phone']);
       expect(response.results.map((item) => item.id), [
         'pb:matching',
         'pg:matching',
@@ -153,7 +168,7 @@ void main() {
       for (final item in response.results) {
         await service.loadDetail(query, item.id);
       }
-      expect(paths, ['searchpb', 'searchpg', 'detailpb', 'detailpg']);
+      expect(paths, ['searchpb', 'pg-phone', 'detailpb', 'detailpg']);
     },
   );
   test(
@@ -161,7 +176,7 @@ void main() {
     () async {
       final service = ItaliaOnlineService(
         client: MockClient(
-          (request) async => request.url.path.endsWith('searchpg')
+          (request) async => request.url.host == 'www.paginegialle.it'
               ? http.Response('', 500)
               : http.Response(fixture, 200),
         ),
@@ -183,7 +198,7 @@ void main() {
         client: MockClient(
           (request) async => request.url.path.endsWith('searchpb')
               ? http.Response('', 503)
-              : http.Response(fixture, 200),
+              : http.Response(yellowFixture, 200),
         ),
       );
       final response = await service.searchPhone(
@@ -196,6 +211,78 @@ void main() {
       expect(response.results.map((item) => item.id), ['pg:matching']);
     },
   );
+  test(
+    'yellow phone page filters sponsors and preserves pagination without sending API tokens',
+    () async {
+      final service = ItaliaOnlineService(
+        clientToken: 'private-test-token',
+        client: MockClient((request) async {
+          expect(
+            request.url.toString(),
+            'https://www.paginegialle.it/ricerca/telefono-020202',
+          );
+          expect(
+            request.headers.containsKey('X-Sonarpad-Route-Token'),
+            isFalse,
+          );
+          return http.Response(
+            '$yellowFixture<a class="next-page-btn" data-pageurl="/ricerca/telefono-020202/p-2"></a>',
+            200,
+          );
+        }),
+      );
+      final result = await service.search(
+        SearchQuery(
+          kind: DirectoryKind.pagineGialle,
+          what: '0039 (02) 0202',
+          where: 'ignored',
+          reverse: true,
+        ),
+      );
+      expect(result.results.single.id, 'matching');
+      expect(result.results.single.address, contains('Milano'));
+      expect(result.isLastPage, isFalse);
+    },
+  );
+
+  test(
+    'blocked yellow response is not confused with no matching phone',
+    () async {
+      for (final body in [
+        '<html>Access denied</html>',
+        '<input id="numero" value="011999999">',
+      ]) {
+        final service = ItaliaOnlineService(
+          client: MockClient((_) async => http.Response(body, 200)),
+        );
+        await expectLater(
+          service.search(
+            SearchQuery(
+              kind: DirectoryKind.pagineGialle,
+              what: '020202',
+              reverse: true,
+            ),
+          ),
+          throwsException,
+        );
+      }
+      final service = ItaliaOnlineService(
+        client: MockClient(
+          (_) async => http.Response('<input id="numero" value="020202">', 200),
+        ),
+      );
+      final result = await service.search(
+        SearchQuery(
+          kind: DirectoryKind.pagineGialle,
+          what: '020202',
+          reverse: true,
+        ),
+      );
+      expect(result.results, isEmpty);
+      expect(result.isLastPage, isTrue);
+    },
+  );
+
   test('live public Comune di Milano number through both directories', () async {
     // Public institutional contact: https://www.comune.milano.it/it/amministrazione/amministrazione-trasparente/organizzazione/telefono-e-posta-elettronica/il-comune-e...-pronto
     final service = ItaliaOnlineService();

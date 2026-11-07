@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/widgets.dart' show Locale;
 import '../l10n/app_localizations.dart';
 import 'package:http/http.dart' as http;
+import 'package:html/parser.dart' as html;
 import 'package:xml/xml.dart';
 
 import '../utils/app_logger.dart';
@@ -270,7 +271,9 @@ class ItaliaOnlineService {
           const String.fromEnvironment('SONARPAD_ROUTE_CLIENT_TOKEN');
   final String _clientToken;
   final http.Client? _httpClient;
-  Future<http.Response> _get(Uri uri) => _httpClient?.get(uri) ?? http.get(uri);
+  Future<http.Response> _get(Uri uri, {Map<String, String>? headers}) =>
+      _httpClient?.get(uri, headers: headers) ??
+      http.get(uri, headers: headers);
   String get _baseUrl => _decode('BT9NUUx/HRUjWkodMRoTOlYsGzZeHTVfCiMeAT4c');
   String get _client => _decode('HSlUThQ5Xh0=');
   String get _version => _decode('XmUAD0M=');
@@ -509,6 +512,9 @@ class ItaliaOnlineService {
       throw Exception('Il campo ${query.kind.primaryFieldLabel} è vuoto.');
     }
 
+    if (query.reverse && query.kind == DirectoryKind.pagineGialle) {
+      return _searchYellowPagesPhone(what, query.page);
+    }
     final mappedWhat = _mappedSearchTerm(query.kind, what);
     final queryParams = <String, String>{
       'client': _client,
@@ -579,6 +585,96 @@ class ItaliaOnlineService {
             }),
           )
           .toList(),
+    );
+  }
+
+  Future<SearchResponse> _searchYellowPagesPhone(
+    String number,
+    int page,
+  ) async {
+    final path = '/ricerca/telefono-$number${page > 1 ? '/p-$page' : ''}';
+    final response = await _get(
+      Uri.https('www.paginegialle.it', path),
+      headers: {'User-Agent': 'Mozilla/5.0'},
+    ).timeout(const Duration(seconds: 45));
+    if (response.statusCode == 500) {
+      return search(
+        SearchQuery(
+          kind: DirectoryKind.pagineBianche,
+          what: number,
+          page: page,
+          reverse: true,
+        ),
+      );
+    }
+    if (response.statusCode != 200) {
+      throw Exception(ItalianDirectoryLabels.serviceUnavailable);
+    }
+    final document = html.parse(utf8.decode(response.bodyBytes));
+    final input = document.querySelector('input#numero')?.attributes['value'];
+    bool matches(String? value) {
+      try {
+        return value != null && normalizeDirectoryPhone(value) == number;
+      } on FormatException {
+        return false;
+      }
+    }
+
+    if (!matches(input)) {
+      throw Exception(ItalianDirectoryLabels.reverseUnavailable);
+    }
+    String clean(String? value) =>
+        (value ?? '').replaceAll(RegExp(r'\s+'), ' ').trim();
+    final results = <SearchResult>[];
+    final seen = <String>{};
+    for (final card in document.querySelectorAll(
+      '.search-itm[data-tr="listing-search-itm"]',
+    )) {
+      final phones = card
+          .querySelectorAll('.search-itm__phone-item')
+          .map((item) => clean(item.text))
+          .where((value) => value.isNotEmpty)
+          .toList();
+      if (!phones.any(matches)) continue;
+      final name = clean(card.querySelector('.search-itm__rag')?.text);
+      String? id;
+      for (final link in card.querySelectorAll('.search-itm__info a[href]')) {
+        final uri = Uri.tryParse(link.attributes['href'] ?? '');
+        if (uri == null ||
+            !['www.paginegialle.it', 'paginegialle.it'].contains(uri.host)) {
+          continue;
+        }
+        final candidate = uri.path.replaceAll(RegExp(r'^/+|/+$'), '');
+        if (candidate.isNotEmpty && !candidate.startsWith('ricerca/')) {
+          id = candidate;
+          break;
+        }
+      }
+      if (name.isEmpty || id == null || !seen.add(id)) continue;
+      final address = clean(card.querySelector('.search-itm__adr')?.text);
+      final category = clean(card.querySelector('.search-itm__category')?.text);
+      results.add(
+        SearchResult(
+          id: id,
+          name: name,
+          address: address.isEmpty ? null : address,
+          category: category.isEmpty ? null : category,
+          phones: phones,
+        ),
+      );
+    }
+    final hasNext = document
+        .querySelectorAll('.next-page-btn[data-pageurl]')
+        .any(
+          (item) => (item.attributes['data-pageurl'] ?? '').startsWith(
+            '/ricerca/telefono-$number/p-',
+          ),
+        );
+    return SearchResponse(
+      currentPage: page,
+      isLastPage: !hasNext,
+      results: results,
+      actualKind: DirectoryKind.pagineGialle,
     );
   }
 

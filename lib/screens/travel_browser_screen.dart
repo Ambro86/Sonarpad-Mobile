@@ -494,6 +494,7 @@ class _TravelBrowserScreenState extends State<TravelBrowserScreen> {
 
   Future<void> _selectPayment(String method) async {
     if (_paymentBusy) return;
+    final generation = _generation;
     setState(() => _paymentBusy = true);
     var confirmed = false;
     var protectionConfirmed = !_noProtection;
@@ -532,29 +533,19 @@ class _TravelBrowserScreenState extends State<TravelBrowserScreen> {
         );
         await _captureCheckout('after-protection-click');
       }
-      final data = await _paymentScript(select: method);
+      var data = await _paymentScript(select: method);
+      if (data['status'] == 'not-ready') {
+        // No radio was clicked: attach and size the native view before retrying.
+        unawaited(_log('[TravelCheckout] payment_viewport_not_ready'));
+        if (!mounted || generation != _generation) return;
+        _revealBrowser();
+        await WidgetsBinding.instance.endOfFrame;
+        await Future<void>.delayed(const Duration(milliseconds: 250));
+        if (!mounted || generation != _generation) return;
+        data = await _paymentScript(select: method);
+      }
       confirmed = data['status'] == 'selected';
       await _captureCheckout('after-payment-click');
-      if (confirmed) {
-        final result = await _controller!.runJavaScriptReturningResult(
-          travelAcceptBookingTermsScript,
-        );
-        final status = result.toString().replaceAll('"', '');
-        const known = {
-          'selected',
-          'unconfirmed',
-          'not-found',
-          'ambiguous',
-          'blocked',
-          'disabled',
-          'unavailable',
-        };
-        unawaited(
-          _log(
-            '[TravelCheckout] booking_terms status=${known.contains(status) ? status : 'unknown'}',
-          ),
-        );
-      }
       if (_noProtection) {
         // Framework state may update asynchronously or replace the element.
         // Re-read the live DOM; never click again during verification.
@@ -599,11 +590,16 @@ class _TravelBrowserScreenState extends State<TravelBrowserScreen> {
         ),
       );
     }
-    if (!mounted) return;
+    if (!mounted || generation != _generation) return;
     _revealBrowser();
+    // The native web view must receive its actual screen size before inspecting
+    // controls that Omio mounts after payment selection.
+    await WidgetsBinding.instance.endOfFrame;
+    if (!mounted || generation != _generation) return;
     await _captureCheckout('browser-revealed');
-    if (!mounted) return;
+    if (!mounted || generation != _generation) return;
     _watchCheckout();
+    if (confirmed) unawaited(_acceptBookingTerms(generation));
     if (confirmed && method == 'PayPal') {
       announceStatusMessage(
         context,
@@ -620,6 +616,63 @@ class _TravelBrowserScreenState extends State<TravelBrowserScreen> {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(t.t('noProtectionUnconfirmed'))));
+    }
+  }
+
+  Future<void> _acceptBookingTerms(int generation) async {
+    var verifyOnly = false;
+    String? previousStatus;
+    try {
+      for (var attempt = 0; attempt < 20; attempt++) {
+        if (attempt > 0) {
+          await Future<void>.delayed(const Duration(milliseconds: 250));
+        }
+        if (!mounted || generation != _generation || !_showBrowser) return;
+        final result = await _controller!
+            .runJavaScriptReturningResult(
+              travelBookingTermsScript(verifyOnly: verifyOnly),
+            )
+            .timeout(const Duration(seconds: 2));
+        if (!mounted || generation != _generation) return;
+        final value = result.toString().replaceAll('"', '');
+        const known = {
+          'selected',
+          'unconfirmed',
+          'not-ready',
+          'not-found',
+          'ambiguous',
+          'blocked',
+          'disabled',
+          'unavailable',
+        };
+        final status = known.contains(value) ? value : 'unknown';
+        if (status != previousStatus) {
+          await _log(
+            '[TravelCheckout] booking_terms status=$status '
+            'attempt=$attempt verify_only=$verifyOnly',
+          );
+          previousStatus = status;
+        }
+        if (status == 'selected') {
+          await _captureCheckout('after-booking-terms');
+          return;
+        }
+        if (status == 'unconfirmed') {
+          // One click only. If Omio commits asynchronously, subsequent checks
+          // read the state and never toggle the checkbox again.
+          verifyOnly = true;
+        } else if (status != 'not-found' && status != 'not-ready') {
+          return;
+        }
+      }
+      await _log(
+        '[TravelCheckout] booking_terms status=timeout '
+        'last=$previousStatus verify_only=$verifyOnly',
+      );
+    } catch (error) {
+      await _log(
+        '[TravelCheckout] booking_terms exception=${error.runtimeType}',
+      );
     }
   }
 
@@ -773,15 +826,20 @@ class _TravelBrowserScreenState extends State<TravelBrowserScreen> {
                       excluding: !_showBrowser,
                       child: IgnorePointer(
                         ignoring: !_showBrowser,
-                        child: Opacity(
-                          opacity: _showBrowser ? 1 : 0,
-                          child:
-                              widget.browserBuilder?.call(_controller!) ??
-                              WebViewWidget(controller: _controller!),
-                        ),
+                        child:
+                            widget.browserBuilder?.call(_controller!) ??
+                            WebViewWidget(controller: _controller!),
                       ),
                     ),
                   ),
+                  // Keep WKWebView painted and sized while the native picker
+                  // covers it. Opacity(0) left its viewport at 0x0 on iOS and
+                  // PayPal could initialize without creating its final button.
+                  if (!_showBrowser)
+                    ColoredBox(
+                      key: const ValueKey('travel-native-cover'),
+                      color: Theme.of(context).scaffoldBackgroundColor,
+                    ),
                   if (!_showBrowser && _seatsOpen) _seatPanel(),
                   if (!_showBrowser && !_seatsOpen)
                     UniversalAccessibleList(

@@ -119,6 +119,13 @@ void main() {
             expect(jsonDecode(request.body)['telefono'], '01112345');
             return places();
           }
+          if (request.url.host == 'www.paginegialle.it') {
+            return http.Response('''<input id="numero" value="01112345">
+<div class="search-itm" data-tr="listing-search-itm"><div class="search-itm__info">
+<a href="https://www.paginegialle.it/extra"><h2 class="search-itm__rag">PG result</h2></a>
+<div class="search-itm__adr">Via Roma 120, Torino</div>
+<span class="search-itm__phone-item">01112345</span></div></div>''', 200);
+          }
           final prefix = request.url.path.endsWith('searchpb') ? 'PB' : 'PG';
           return http.Response(
             legacy
@@ -132,7 +139,14 @@ void main() {
         }),
       );
       final response = await service.searchPhone(query(reverse: true));
-      expect(calls, containsAll(['/api/luoghi.php', '/searchpb', '/searchpg']));
+      expect(
+        calls,
+        containsAll([
+          '/api/luoghi.php',
+          '/searchpb',
+          '/ricerca/telefono-01112345',
+        ]),
+      );
       expect(response.results.map((r) => r.id), [
         'place:new',
         'pb:extra',
@@ -151,6 +165,12 @@ void main() {
           client: MockClient((request) async {
             if (request.url.host == 'sonarpad.com') {
               return placesFail ? http.Response('', 503) : places();
+            }
+            if (placesFail && request.url.host == 'www.paginegialle.it') {
+              return http.Response('''<input id="numero" value="01112345">
+<div class="search-itm" data-tr="listing-search-itm"><div class="search-itm__info">
+<a href="https://www.paginegialle.it/duplicate"><h2 class="search-itm__rag">Bar Uno</h2></a>
+<span class="search-itm__phone-item">01112345</span></div></div>''', 200);
             }
             return placesFail
                 ? http.Response(legacy, 200)

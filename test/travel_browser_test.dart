@@ -50,6 +50,8 @@ class BrowserController extends Fake implements WebViewController {
   bool throwSeatAction = false;
   String bannerStatus = 'banner-closed';
   String paymentStatus = '{"status":"ready","methods":["PayPal","card"]}';
+  final paymentSelections = <String>[];
+  final bookingTermStatuses = <String>[];
   String current = 'https://www.omio.com/app/booking/test/checkout';
   @override
   Future<void> setJavaScriptMode(JavaScriptMode mode) async {}
@@ -80,10 +82,16 @@ class BrowserController extends Fake implements WebViewController {
         script == travelNoProtectionScript(verifyOnly: true)) {
       return 'selected';
     }
-    if (script == travelAcceptBookingTermsScript) return 'selected';
     if (script == travelPaymentScript()) return paymentStatus;
     if (script == travelPaymentScript(select: 'PayPal')) {
+      if (paymentSelections.isNotEmpty) return paymentSelections.removeAt(0);
       return '{"status":"selected","methods":["PayPal","card"]}';
+    }
+    if (script == travelBookingTermsScript() ||
+        script == travelBookingTermsScript(verifyOnly: true)) {
+      return bookingTermStatuses.isEmpty
+          ? 'selected'
+          : bookingTermStatuses.removeAt(0);
     }
     return script == travelCookieBannerStatusScript
         ? bannerStatus
@@ -95,6 +103,14 @@ class BrowserController extends Fake implements WebViewController {
     if (invocation.memberName == #loadRequest) return Future<void>.value();
     return super.noSuchMethod(invocation);
   }
+}
+
+class BrowserPaintProbe extends CustomPainter {
+  int paints = 0;
+  @override
+  void paint(Canvas canvas, Size size) => paints++;
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }
 
 void main() {
@@ -207,17 +223,96 @@ void main() {
     await tester.pumpAndSettle();
     await tester.pumpWidget(const SizedBox());
   });
-  testWidgets('native payment choice hides browser until explicit selection', (
+  testWidgets(
+    'native payment picker covers a painted browser until selection',
+    (tester) async {
+      final controller = BrowserController();
+      final logs = <String>[];
+      final paintProbe = BrowserPaintProbe();
+      await tester.pumpWidget(
+        app(
+          TravelBrowserScreen(
+            url: controller.current,
+            controllerFactory: () => controller,
+            browserBuilder: (_) => CustomPaint(
+              painter: paintProbe,
+              child: const Text('Provider page'),
+            ),
+            logger: (line) async {
+              logs.add(line);
+            },
+          ),
+        ),
+      );
+      await tester.pump();
+      controller.delegate!.onPageFinished!(controller.current);
+      await tester.pumpAndSettle();
+      expect(find.text('PayPal'), findsOneWidget);
+      final browserElement = tester.element(find.text('Provider page'));
+      expect(paintProbe.paints, greaterThan(0));
+      expect(find.byKey(const ValueKey('travel-native-cover')), findsOneWidget);
+      expect(tester.getSize(find.text('Provider page')).height, greaterThan(0));
+      final hidden = tester.widget<ExcludeSemantics>(
+        find
+            .ancestor(
+              of: find.text('Provider page'),
+              matching: find.byType(ExcludeSemantics),
+            )
+            .first,
+      );
+      expect(hidden.excluding, isTrue);
+      expect(row(tester, 'payment-no-protection').toggleValue, isTrue);
+      expect(controller.scripts, isNot(contains(travelNoProtectionScript())));
+      expect(controller.scripts, isNot(contains(travelBookingTermsScript())));
+      expect(
+        controller.scripts,
+        isNot(contains(travelPaymentScript(select: 'PayPal'))),
+      );
+      await tester.tap(find.text('PayPal'));
+      await tester.pumpAndSettle();
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(find.text('PayPal'), findsNothing);
+      expect(find.byKey(const ValueKey('travel-native-cover')), findsNothing);
+      expect(tester.element(find.text('Provider page')), same(browserElement));
+      expect(
+        controller.scripts
+            .where((s) => s == travelPaymentScript(select: 'PayPal'))
+            .length,
+        1,
+      );
+      expect(logs, contains('[Travel] payment_method_selected'));
+      expect(logs.any((s) => s.contains('stage=before-selection')), isTrue);
+      expect(
+        logs.any((s) => s.contains('stage=after-protection-click')),
+        isTrue,
+      );
+      expect(logs.any((s) => s.contains('stage=after-payment-click')), isTrue);
+      expect(logs.any((s) => s.contains('stage=browser-revealed')), isTrue);
+      expect(
+        controller.scripts,
+        containsAllInOrder([
+          travelNoProtectionScript(),
+          travelPaymentScript(select: 'PayPal'),
+          travelNoProtectionScript(verifyOnly: true),
+          travelBookingTermsScript(),
+        ]),
+      );
+      expect(logs.join(), isNot(contains(controller.current)));
+      await tester.pumpWidget(const SizedBox());
+    },
+  );
+  testWidgets('late booking terms are clicked once then only verified', (
     tester,
   ) async {
-    final controller = BrowserController();
+    final controller = BrowserController()
+      ..bookingTermStatuses.addAll(['not-found', 'unconfirmed', 'selected']);
     final logs = <String>[];
     await tester.pumpWidget(
       app(
         TravelBrowserScreen(
           url: controller.current,
           controllerFactory: () => controller,
-          browserBuilder: (_) => const Text('Provider page'),
+          browserBuilder: (_) => const SizedBox(),
           logger: (line) async {
             logs.add(line);
           },
@@ -227,49 +322,116 @@ void main() {
     await tester.pump();
     controller.delegate!.onPageFinished!(controller.current);
     await tester.pumpAndSettle();
-    expect(find.text('PayPal'), findsOneWidget);
-    final hidden = tester.widget<Opacity>(
-      find
-          .ancestor(
-            of: find.text('Provider page'),
-            matching: find.byType(Opacity),
-          )
-          .first,
-    );
-    expect(hidden.opacity, 0);
-    expect(row(tester, 'payment-no-protection').toggleValue, isTrue);
-    expect(controller.scripts, isNot(contains(travelNoProtectionScript())));
-    expect(controller.scripts, isNot(contains(travelAcceptBookingTermsScript)));
-    expect(
-      controller.scripts,
-      isNot(contains(travelPaymentScript(select: 'PayPal'))),
-    );
     await tester.tap(find.text('PayPal'));
     await tester.pumpAndSettle();
-    await tester.pump(const Duration(milliseconds: 300));
-    expect(find.text('PayPal'), findsNothing);
-    expect(
-      controller.scripts
-          .where((s) => s == travelPaymentScript(select: 'PayPal'))
-          .length,
-      1,
-    );
-    expect(logs, contains('[Travel] payment_method_selected'));
-    expect(logs, contains('[TravelCheckout] booking_terms status=selected'));
-    expect(logs.any((s) => s.contains('stage=before-selection')), isTrue);
-    expect(logs.any((s) => s.contains('stage=after-protection-click')), isTrue);
-    expect(logs.any((s) => s.contains('stage=after-payment-click')), isTrue);
-    expect(logs.any((s) => s.contains('stage=browser-revealed')), isTrue);
+    for (var i = 0; i < 3; i++) {
+      await tester.pump(const Duration(milliseconds: 250));
+    }
     expect(
       controller.scripts,
       containsAllInOrder([
-        travelNoProtectionScript(),
-        travelPaymentScript(select: 'PayPal'),
-        travelAcceptBookingTermsScript,
-        travelNoProtectionScript(verifyOnly: true),
+        travelBookingTermsScript(),
+        travelBookingTermsScript(),
+        travelBookingTermsScript(verifyOnly: true),
       ]),
     );
-    expect(logs.join(), isNot(contains(controller.current)));
+    expect(
+      logs.any(
+        (line) =>
+            line.contains('booking_terms status=selected') &&
+            line.contains('verify_only=true'),
+      ),
+      isTrue,
+    );
+    expect(
+      logs.indexWhere((line) => line.contains('stage=browser-revealed')),
+      lessThan(
+        logs.indexWhere((line) => line.contains('booking_terms status=')),
+      ),
+    );
+    expect(
+      logs.any((line) => line.contains('stage=after-booking-terms')),
+      isTrue,
+    );
+    final count = controller.scripts
+        .where(
+          (s) =>
+              s == travelBookingTermsScript() ||
+              s == travelBookingTermsScript(verifyOnly: true),
+        )
+        .length;
+    await tester.pump(const Duration(seconds: 2));
+    expect(
+      controller.scripts
+          .where(
+            (s) =>
+                s == travelBookingTermsScript() ||
+                s == travelBookingTermsScript(verifyOnly: true),
+          )
+          .length,
+      count,
+    );
+    await tester.pumpWidget(const SizedBox());
+  });
+  testWidgets(
+    'zero viewport retries selection only after revealing the browser',
+    (tester) async {
+      final controller = BrowserController()
+        ..paymentSelections.add('{"status":"not-ready","methods":["PayPal"]}');
+      await tester.pumpWidget(
+        app(
+          TravelBrowserScreen(
+            url: controller.current,
+            controllerFactory: () => controller,
+            browserBuilder: (_) => const SizedBox(),
+            logger: (_) async {},
+          ),
+        ),
+      );
+      await tester.pump();
+      controller.delegate!.onPageFinished!(controller.current);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('PayPal'));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const ValueKey('travel-native-cover')), findsNothing);
+      await tester.pump(const Duration(milliseconds: 250));
+      await tester.pumpAndSettle();
+      expect(
+        controller.scripts
+            .where((s) => s == travelPaymentScript(select: 'PayPal'))
+            .length,
+        2,
+      );
+      expect(controller.scripts, contains(travelBookingTermsScript()));
+      await tester.pump(const Duration(milliseconds: 300));
+      await tester.pumpWidget(const SizedBox());
+    },
+  );
+  testWidgets('pending booking terms checks stop when leaving checkout', (
+    tester,
+  ) async {
+    final controller = BrowserController()
+      ..bookingTermStatuses.addAll(List.filled(20, 'not-found'));
+    await tester.pumpWidget(
+      app(
+        TravelBrowserScreen(
+          url: controller.current,
+          controllerFactory: () => controller,
+          browserBuilder: (_) => const SizedBox(),
+          logger: (_) async {},
+        ),
+      ),
+    );
+    await tester.pump();
+    controller.delegate!.onPageFinished!(controller.current);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('PayPal'));
+    await tester.pumpAndSettle();
+    final remaining = controller.bookingTermStatuses.length;
+    expect(remaining, lessThan(20));
+    controller.delegate!.onPageStarted!('https://www.paypal.com/checkout');
+    await tester.pump(const Duration(milliseconds: 250));
+    expect(controller.bookingTermStatuses.length, remaining);
     await tester.pumpWidget(const SizedBox());
   });
   testWidgets('native seats preserve checkout and never replay confirmations', (
