@@ -138,17 +138,22 @@ void main() {
       CloudSyncService.automaticFailed = false;
     },
   );
-  testWidgets('Unexpected loss stays blocked without an approval dialog', (
-    tester,
-  ) async {
-    final service = FakeSync()
-      ..connected = true
-      ..needsDeletionReview = true;
-    await open(tester, service);
-    await tester.tap(find.text('Sincronizza ora'));
-    await tester.pumpAndSettle();
-    expect(find.byType(AlertDialog), findsNothing);
-    expect(service.needsDeletionReview, isTrue);
-    expect(find.textContaining('Rimozione inattesa bloccata'), findsWidgets);
-  });
+  testWidgets(
+    'Legacy removal review stays silent while protected sync retries',
+    (tester) async {
+      final service = FakeSync()
+        ..connected = true
+        ..needsDeletionReview = true;
+      await open(tester, service);
+      expect(find.textContaining('Rimozione inattesa bloccata'), findsNothing);
+      await tester.tap(find.text('Sincronizza ora'));
+      await tester.pumpAndSettle();
+      expect(find.byType(AlertDialog), findsNothing);
+      expect(service.needsDeletionReview, isTrue);
+      expect(find.textContaining('Rimozione inattesa bloccata'), findsNothing);
+      expect(find.textContaining('Riproverò automaticamente.'), findsWidgets);
+      expect(find.text('Sincronizza ora'), findsOneWidget);
+      expect(service.approvals, 0);
+    },
+  );
 }

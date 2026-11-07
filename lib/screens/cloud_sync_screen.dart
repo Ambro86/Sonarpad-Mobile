@@ -44,7 +44,8 @@ class _CloudSyncScreenState extends State<CloudSyncScreen> {
   }
 
   String _syncStatus(AppLocalizations l10n) {
-    if (_meta['deletion_review'] != null) return l10n.cloudSyncDeletionPending;
+    // Legacy removal reviews remain diagnostic data. The service repairs
+    // unproven removals automatically; they are not a user-facing status.
     final message = CloudSyncService.busy
         ? l10n.cloudSyncWorking
         : !_preferences && !_collections
@@ -95,7 +96,7 @@ class _CloudSyncScreenState extends State<CloudSyncScreen> {
         await action();
       } on CloudSyncApiException catch (error) {
         if (error.code != 'deletion_confirmation_required') rethrow;
-        if (mounted) setState(() => _status = l10n.cloudSyncDeletionPending);
+        if (mounted) setState(() => _status = l10n.cloudSyncRetrying);
         return;
       }
       if (mounted) setState(() => _status = l10n.cloudSyncDone);

@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sonarpad_mobile_starter/services/sonartube_favorites_service.dart';
 import 'package:sonarpad_mobile_starter/services/sonartube_service.dart';
+import 'package:sonarpad_mobile_starter/services/cloud_sync_state.dart';
 
 void main() {
   test(
@@ -131,14 +132,31 @@ void main() {
 
     expect(await service.updateFavoriteMetadata(refreshedChannel), isNull);
     expect(await service.toggleFavorite(oldChannel), isTrue);
+    final before = await service.exportCloudFavorites();
 
     final updated = await service.updateFavoriteMetadata(refreshedChannel);
     expect(updated, isNotNull);
     expect(updated!.handle, '@canalepreferito');
     expect(updated.subscribers, '123 mila iscritti');
+    expect(updated.url, oldChannel.url);
 
     final stored = (await service.loadFavorites()).single;
     expect(stored.handle, '@canalepreferito');
     expect(stored.subscribers, '123 mila iscritti');
+    expect(stored.url, oldChannel.url);
+    final after = await service.exportCloudFavorites();
+    CloudState state(List<Map<String, dynamic>> favorites) => {
+      'sonartube': [
+        for (final favorite in favorites)
+          {'id': cloudYoutubeUrl(favorite['url'] as String), 'data': favorite},
+      ],
+    };
+    expect(removedCloudItems(state(before), state(after)), isEmpty);
+    expect(await CloudSyncDeletions.read(), isEmpty);
+    final preferences = await SharedPreferences.getInstance();
+    expect(
+      preferences.getString('sonarpad_sonartube_favorites_recovery'),
+      isNull,
+    );
   });
 }

@@ -87,6 +87,13 @@ class SonarTubeFavoritesService {
 
         final existing = favorites[index];
         final updated = _forFavoriteStorage(_mergeFavorite(existing, item));
+        if (item.url.trim().isNotEmpty &&
+            cloudYoutubeUrl(item.url) != cloudYoutubeUrl(existing.url)) {
+          await AppLogger.log(
+            '[CloudSync] sonartube_metadata_url_preserved '
+            'kind=${existing.kind.name} identity_unchanged=true',
+          );
+        }
         if (jsonEncode(_toJson(existing)) != jsonEncode(_toJson(updated))) {
           favorites[index] = updated;
           await _save(favorites);
@@ -104,7 +111,9 @@ class SonarTubeFavoritesService {
       kind: existing.kind,
       id: existing.id,
       title: incoming.title.trim().isNotEmpty ? incoming.title : existing.title,
-      url: prefer(incoming.url, existing.url) ?? existing.url,
+      // The saved URL is also the cross-device identity. A metadata refresh
+      // (for example /channel/UC... -> /@handle) must never replace it.
+      url: existing.url,
       channel: prefer(incoming.channel, existing.channel),
       channelId: prefer(incoming.channelId, existing.channelId),
       thumbnailUrl: prefer(incoming.thumbnailUrl, existing.thumbnailUrl),
