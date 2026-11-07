@@ -73,6 +73,36 @@ AudioDescriptionEditableProject sampleProject(String path) =>
     );
 
 void main() {
+  test('dialogue overlap survives project reload without removing cue boundaries', () async {
+    final dir = await Directory.systemTemp.createTemp('sonarpad_dialogue_overlap_');
+    try {
+      final path = '${dir.path}/project.json';
+      final service = AiAudioDescriptionService();
+      final normal = sampleProject(path);
+      expect(normal.allowDialogueOverlap, isFalse);
+      expect(service.audioDescriptionProjectAvailableDuration(normal, 0), 8);
+      for (final flag in [null, false, true, 'true']) {
+        final map = normal.toJson()..remove('allow_dialogue_overlap');
+        if (flag != null) map['allow_dialogue_overlap'] = flag;
+        await File(path).writeAsString(jsonEncode(map));
+        final project = await service.loadEditableProject(path);
+        final enabled = flag == true;
+        expect(project.allowDialogueOverlap, enabled);
+        // First cue is at 2s, next at 22s. Only spoken intervals may be ignored.
+        expect(service.audioDescriptionProjectAvailableDuration(project, 0), enabled ? 20 : 8);
+        final copied = project.copyWith(ttsVoice: 'another voice');
+        expect(copied.allowDialogueOverlap, enabled);
+        if (enabled) expect(copied.toJson()['protected_intervals'], isEmpty);
+        await service.saveEditableProject(copied);
+        final restored = await service.loadEditableProject(path);
+        expect(restored.allowDialogueOverlap, enabled);
+        expect(service.audioDescriptionProjectAvailableDuration(restored, 0), enabled ? 20 : 8);
+      }
+    } finally {
+      await dir.delete(recursive: true);
+    }
+  });
+
   test('per-description native speed survives save, edit and reload', () async {
     final dir = await Directory.systemTemp.createTemp('ad_native_speed_');
     try {

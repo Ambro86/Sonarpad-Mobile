@@ -9,6 +9,17 @@ class AppLocalizationsUk extends AppLocalizations {
   AppLocalizationsUk([String locale = 'uk']) : super(locale);
 
   @override
+  String get audioDescriptionDialogueOverlap =>
+      'Дозволити аудіоописи під час діалогів і коментарів';
+
+  @override
+  String get placesPhoneQuery => 'Введіть номер телефону';
+
+  @override
+  String get placesPhoneInvalid =>
+      'Введіть дійсний номер телефону разом із кодом міста або країни.';
+
+  @override
   String get routeDeparture => 'Відправлення';
 
   @override

@@ -1,4 +1,7 @@
 {
+  "audioDescriptionDialogueOverlap": "Povolit audiopopis během dialogů a komentáře",
+  "placesPhoneQuery": "Zadejte telefonní číslo",
+  "placesPhoneInvalid": "Zadejte platné telefonní číslo včetně předvolby.",
   "routeDeparture": "Odjezd",
   "routeLeaveNow": "Odjet nyní",
   "routeLeaveAt": "Odjezd v",

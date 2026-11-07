@@ -9,6 +9,17 @@ class AppLocalizationsNl extends AppLocalizations {
   AppLocalizationsNl([String locale = 'nl']) : super(locale);
 
   @override
+  String get audioDescriptionDialogueOverlap =>
+      'Audiobeschrijvingen tijdens dialogen en commentaar toestaan';
+
+  @override
+  String get placesPhoneQuery => 'Voer het telefoonnummer in';
+
+  @override
+  String get placesPhoneInvalid =>
+      'Voer een geldig telefoonnummer in, inclusief netnummer of landcode.';
+
+  @override
   String get routeDeparture => 'Vertrek';
 
   @override

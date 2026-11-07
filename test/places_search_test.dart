@@ -65,6 +65,108 @@ SearchQuery query({
 
 void main() {
   test(
+    'international phone searches send normalized number and never use Italian directories',
+    () async {
+      for (final country in ['fr', 'it']) {
+        for (final fail in [false, true]) {
+          final calls = <Uri>[];
+          final service = ItaliaOnlineService(
+            clientToken: 'test-only',
+            client: MockClient((request) async {
+              calls.add(request.url);
+              expect(request.url.host, 'sonarpad.com');
+              final body = jsonDecode(request.body) as Map<String, dynamic>;
+              expect(body['telefono'], '+33158592222');
+              expect(body['q'], '+33158592222');
+              expect(body['paese'], country);
+              expect(body['lingua'], 'en');
+              expect(body['citta'], '');
+              return fail ? http.Response('', 503) : places();
+            }),
+          );
+          final result = service.searchPhone(
+            SearchQuery(
+              kind: DirectoryKind.pagineBianche,
+              what: '0033 1 58 59 22 22',
+              where: 'ignored',
+              country: country,
+              language: 'en',
+              reverse: true,
+            ),
+          );
+          if (fail) {
+            await expectLater(result, throwsException);
+          } else {
+            final response = await result;
+            expect(response.results.single.id, 'place:new');
+            expect(response.isLastPage, isTrue);
+          }
+          expect(calls, hasLength(1));
+        }
+      }
+    },
+  );
+
+  test(
+    'Italian phone searches merge three sources, prefer places and preserve legacy detail IDs',
+    () async {
+      final calls = <String>[];
+      final service = ItaliaOnlineService(
+        clientToken: 'test-only',
+        client: MockClient((request) async {
+          calls.add(request.url.path);
+          if (request.url.host == 'sonarpad.com') {
+            expect(jsonDecode(request.body)['telefono'], '01112345');
+            return places();
+          }
+          final prefix = request.url.path.endsWith('searchpb') ? 'PB' : 'PG';
+          return http.Response(
+            legacy
+                .replaceFirst('Bar Due', '$prefix result')
+                .replaceFirst(
+                  '<name>$prefix result</name>',
+                  '<name>$prefix result</name><phones><phone><number>01112345</number></phone></phones>',
+                ),
+            200,
+          );
+        }),
+      );
+      final response = await service.searchPhone(query(reverse: true));
+      expect(calls, containsAll(['/api/luoghi.php', '/searchpb', '/searchpg']));
+      expect(response.results.map((r) => r.id), [
+        'place:new',
+        'pb:extra',
+        'pg:extra',
+      ]);
+      expect(response.results.first.inlineDetail, isNotNull);
+    },
+  );
+
+  test(
+    'phone lookup keeps directory results when places fails and places results when directories fail',
+    () async {
+      for (final placesFail in [false, true]) {
+        final service = ItaliaOnlineService(
+          clientToken: 'test-only',
+          client: MockClient((request) async {
+            if (request.url.host == 'sonarpad.com') {
+              return placesFail ? http.Response('', 503) : places();
+            }
+            return placesFail
+                ? http.Response(legacy, 200)
+                : http.Response('', 503);
+          }),
+        );
+        final response = await service.searchPhone(query(reverse: true));
+        expect(
+          response.results.map((r) => r.id),
+          placesFail ? ['pb:duplicate', 'pg:duplicate'] : ['place:new'],
+        );
+      }
+    },
+  );
+
+  test(
     'English details localize labels and hours without translating fetched content',
     () async {
       final service = ItaliaOnlineService(
@@ -351,7 +453,7 @@ void main() {
     expect(response.results.single.id, 'place:new');
   });
 
-  test('name, phone and later pages do not call the new endpoint', () async {
+  test('name search and later pages do not call the new endpoint', () async {
     final service = ItaliaOnlineService(
       clientToken: 'test-only',
       client: MockClient((request) async {
@@ -360,7 +462,7 @@ void main() {
       }),
     );
     await service.searchActivities(query(kind: DirectoryKind.pagineBianche));
-    await service.searchActivities(query(reverse: true));
+    await service.searchActivities(query(reverse: true, page: 2));
     final response = await service.searchActivities(query(page: 2));
     expect(response.results.map((r) => r.id), ['duplicate', 'extra']);
   });

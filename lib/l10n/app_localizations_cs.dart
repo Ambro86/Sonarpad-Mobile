@@ -9,6 +9,17 @@ class AppLocalizationsCs extends AppLocalizations {
   AppLocalizationsCs([String locale = 'cs']) : super(locale);
 
   @override
+  String get audioDescriptionDialogueOverlap =>
+      'Povolit audiopopis během dialogů a komentáře';
+
+  @override
+  String get placesPhoneQuery => 'Zadejte telefonní číslo';
+
+  @override
+  String get placesPhoneInvalid =>
+      'Zadejte platné telefonní číslo včetně předvolby.';
+
+  @override
   String get routeDeparture => 'Odjezd';
 
   @override

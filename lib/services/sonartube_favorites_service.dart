@@ -1,3 +1,4 @@
+import 'collection_storage.dart';
 import 'cloud_sync_deletions.dart';
 import 'dart:convert';
 
@@ -10,7 +11,9 @@ import '../utils/app_logger.dart';
 class SonarTubeFavoritesService {
   static const _key = 'sonarpad_sonartube_favorites';
 
-  Future<List<SonarTubeItem>> loadFavorites({bool strict = false}) async {
+  Future<List<SonarTubeItem>> loadFavorites({
+    bool strict = false,
+  }) => CollectionStorage.run(() async {
     final preferences = await SharedPreferences.getInstance();
     final encoded = preferences.getStringList(_key) ?? const [];
     final favorites = <SonarTubeItem>[];
@@ -35,55 +38,61 @@ class SonarTubeFavoritesService {
       }
     }
     return favorites;
-  }
+  });
 
-  Future<void> reorderFavorites(List<String> keys) async {
-    final current = await loadFavorites();
-    final byKey = {for (final item in current) itemKey(item): item};
-    final ordered = <SonarTubeItem>[];
-    for (final key in keys) {
-      final item = byKey.remove(key);
-      if (item != null) ordered.add(item);
-    }
-    ordered.addAll(byKey.values);
-    await _save(ordered);
-  }
+  Future<void> reorderFavorites(List<String> keys) =>
+      CollectionStorage.run(() async {
+        final current = await loadFavorites(strict: true);
+        final byKey = {for (final item in current) itemKey(item): item};
+        final ordered = <SonarTubeItem>[];
+        for (final key in keys) {
+          final item = byKey.remove(key);
+          if (item != null) ordered.add(item);
+        }
+        ordered.addAll(byKey.values);
+        await _save(ordered);
+      });
 
-  Future<bool> toggleFavorite(SonarTubeItem item) async {
-    final favorites = await loadFavorites();
-    final key = itemKey(item);
-    final wasFavorite = favorites.any((favorite) => itemKey(favorite) == key);
-    if (wasFavorite) {
-      await CloudSyncDeletions.record(
-        'sonartube',
-        favorites
-            .where((favorite) => itemKey(favorite) == key)
-            .map((favorite) => cloudYoutubeUrl(favorite.url)),
-      );
-    }
-    favorites.removeWhere((favorite) => itemKey(favorite) == key);
-    if (!wasFavorite) favorites.add(_forFavoriteStorage(item));
-    await _save(favorites);
-    return !wasFavorite;
-  }
+  Future<bool> toggleFavorite(SonarTubeItem item) => CollectionStorage.run(
+    () async {
+      final favorites = await loadFavorites(strict: true);
+      final key = itemKey(item);
+      final wasFavorite = favorites.any((favorite) => itemKey(favorite) == key);
+      if (wasFavorite) {
+        await CloudSyncDeletions.record(
+          'sonartube',
+          favorites
+              .where((favorite) => itemKey(favorite) == key)
+              .map((favorite) => cloudYoutubeUrl(favorite.url)),
+        );
+      }
+      favorites.removeWhere((favorite) => itemKey(favorite) == key);
+      if (!wasFavorite) favorites.add(_forFavoriteStorage(item));
+      await _save(favorites);
+      return !wasFavorite;
+    },
+  );
 
   /// Aggiorna i metadati salvati di un preferito senza aggiungerlo se non
   /// esiste. I valori nuovi non vuoti vincono, mentre i dati gia' presenti
   /// vengono conservati quando [item] non li contiene.
-  Future<SonarTubeItem?> updateFavoriteMetadata(SonarTubeItem item) async {
-    final favorites = await loadFavorites();
-    final key = itemKey(item);
-    final index = favorites.indexWhere((favorite) => itemKey(favorite) == key);
-    if (index < 0) return null;
+  Future<SonarTubeItem?> updateFavoriteMetadata(SonarTubeItem item) =>
+      CollectionStorage.run(() async {
+        final favorites = await loadFavorites(strict: true);
+        final key = itemKey(item);
+        final index = favorites.indexWhere(
+          (favorite) => itemKey(favorite) == key,
+        );
+        if (index < 0) return null;
 
-    final existing = favorites[index];
-    final updated = _forFavoriteStorage(_mergeFavorite(existing, item));
-    if (jsonEncode(_toJson(existing)) != jsonEncode(_toJson(updated))) {
-      favorites[index] = updated;
-      await _save(favorites);
-    }
-    return updated;
-  }
+        final existing = favorites[index];
+        final updated = _forFavoriteStorage(_mergeFavorite(existing, item));
+        if (jsonEncode(_toJson(existing)) != jsonEncode(_toJson(updated))) {
+          favorites[index] = updated;
+          await _save(favorites);
+        }
+        return updated;
+      });
 
   SonarTubeItem _mergeFavorite(SonarTubeItem existing, SonarTubeItem incoming) {
     String? prefer(String? newer, String? older) {
@@ -160,7 +169,7 @@ class SonarTubeFavoritesService {
 
   Future<void> _save(List<SonarTubeItem> favorites) async {
     final preferences = await SharedPreferences.getInstance();
-    final before = await loadFavorites();
+    final before = await loadFavorites(strict: true);
     List<Map<String, dynamic>> rows(List<SonarTubeItem> items) => items
         .map(
           (item) => <String, dynamic>{
@@ -203,13 +212,14 @@ class SonarTubeFavoritesService {
     if (!saved) throw StateError('sonartube_favorites_save_failed');
   }
 
-  Future<void> replaceCloudFavorites(List<Map<String, dynamic>> values) async {
-    final items = values.map(_fromJson).whereType<SonarTubeItem>().toList();
-    if (items.length != values.length) {
-      throw const FormatException('Invalid SonarTube cloud favorites');
-    }
-    await _save(items.map(_forFavoriteStorage).toList());
-  }
+  Future<void> replaceCloudFavorites(List<Map<String, dynamic>> values) =>
+      CollectionStorage.run(() async {
+        final items = values.map(_fromJson).whereType<SonarTubeItem>().toList();
+        if (items.length != values.length) {
+          throw const FormatException('Invalid SonarTube cloud favorites');
+        }
+        await _save(items.map(_forFavoriteStorage).toList());
+      });
 
   Future<List<Map<String, dynamic>>> exportCloudFavorites() async =>
       (await loadFavorites(strict: true)).map(_toJson).toList();

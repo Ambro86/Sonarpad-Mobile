@@ -31,3 +31,36 @@ for(const test of cases) {
  assert.equal(w.eval(protection.replaceAll('__VERIFY__','false')),'ambiguous');assert.equal(clicks,1);
  dom.window.close();console.log('PASS',test.locale,'protection, payment, accessibility, unknown/ambiguous guards');
 }
+
+// Terms are a separate prerequisite, not the PayPal payment action.
+const terms = source.split("const travelAcceptBookingTermsScript = r" + "'".repeat(3))[1].split("'".repeat(3) + ";")[0];
+for (const text of ['Ho letto e accettato i termini e le condizioni di Omio.', 'I have read and accept the terms and conditions.']) {
+ const dom=new JSDOM('<label><input id="terms" type="checkbox"><span id="terms-label"></span></label><label><input id="marketing" type="checkbox">Accetto le condizioni delle offerte marketing</label><label><input id="privacy" type="checkbox">Ho letto l’informativa sulla privacy</label><button id="pay" type="submit">PayPal</button>',{url:'https://www.omio.com/app/booking/test/checkout',runScripts:'outside-only'});
+ const w=dom.window,d=w.document;
+ w.HTMLElement.prototype.getBoundingClientRect=function(){return {width:100,height:20}};
+ d.getElementById('terms-label').textContent=text;
+ let payments=0, clicks=0;
+ d.getElementById('pay').onclick=()=>payments++;
+ const checkbox=d.getElementById('terms');checkbox.onclick=()=>clicks++;
+ assert.equal(w.eval(terms),'selected');
+ assert.equal(checkbox.checked,true);
+ assert.equal(w.eval(terms),'selected');
+ assert.equal(clicks,1,'An accepted checkbox must never be toggled off');
+ assert.equal(d.getElementById('marketing').checked,false);
+ assert.equal(d.getElementById('privacy').checked,false);
+ assert.equal(payments,0);
+ checkbox.checked=false;checkbox.disabled=true;
+ assert.equal(w.eval(terms),'disabled');assert.equal(clicks,1);
+ checkbox.disabled=false;
+ const modal=d.createElement('div');modal.setAttribute('aria-modal','true');d.body.append(modal);
+ assert.equal(w.eval(terms),'blocked');assert.equal(clicks,1);modal.remove();
+ const duplicate=checkbox.parentElement.cloneNode(true);d.body.append(duplicate);
+ assert.equal(w.eval(terms),'ambiguous');assert.equal(clicks,1);duplicate.remove();
+ checkbox.parentElement.style.display='none';checkbox.style.display='none';
+ assert.equal(w.eval(terms),'not-found');assert.equal(clicks,1);
+ checkbox.parentElement.style.display='';checkbox.style.display='';
+ dom.reconfigure({url:'https://www.paypal.com/checkout'});
+ assert.equal(w.eval(terms),'unavailable');assert.equal(clicks,1);
+ dom.window.close();
+}
+console.log('PASS booking terms: required checkbox only, idempotence, disabled/modal/ambiguous/hidden/provider guards');

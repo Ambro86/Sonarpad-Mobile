@@ -1,17 +1,23 @@
+import 'collection_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Persists the existing media cutter move-forward/backward interval.
 /// It does not change the media player's seeking behavior.
 class MediaCutterSeekStepPreferences {
   static Future<String?> loadMode() async =>
-      (await SharedPreferences.getInstance()).getString('sonarpad_media_cutter_mode');
+      (await SharedPreferences.getInstance()).getString(
+        'sonarpad_media_cutter_mode',
+      );
 
-  static Future<void> saveMode(String mode) async {
+  static Future<void> saveMode(String mode) => CollectionStorage.run(() async {
     if (!['guided', 'advanced'].contains(mode)) throw ArgumentError.value(mode);
-    if (!await (await SharedPreferences.getInstance()).setString('sonarpad_media_cutter_mode', mode)) {
+    if (!await (await SharedPreferences.getInstance()).setString(
+      'sonarpad_media_cutter_mode',
+      mode,
+    )) {
       throw StateError('MEDIA_CUTTER_MODE_SAVE_FAILED');
     }
-  }
+  });
   static const storageKey = 'sonarpad_media_cutter_seek_step_ms';
   static const defaultStep = Duration(seconds: 5);
   static const allowedSteps = <Duration>[
@@ -36,7 +42,7 @@ class MediaCutterSeekStepPreferences {
     return defaultStep;
   }
 
-  static Future<void> save(Duration step) async {
+  static Future<void> save(Duration step) => CollectionStorage.run(() async {
     if (!allowedSteps.contains(step)) {
       throw ArgumentError.value(step, 'step', 'Unsupported media cutter step');
     }
@@ -45,5 +51,5 @@ class MediaCutterSeekStepPreferences {
     if (!saved) {
       throw StateError('MEDIA_CUTTER_STEP_SAVE_FAILED');
     }
-  }
+  });
 }

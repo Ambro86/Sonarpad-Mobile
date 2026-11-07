@@ -1,4 +1,7 @@
 {
+  "audioDescriptionDialogueOverlap": "Diyalog ve spiker anlatımı sırasında sesli betimlemeye izin ver",
+  "placesPhoneQuery": "Telefon numarasını girin",
+  "placesPhoneInvalid": "Alan veya ülke koduyla birlikte geçerli bir telefon numarası girin.",
   "routeDeparture": "Kalkış",
   "routeLeaveNow": "Şimdi hareket et",
   "routeLeaveAt": "Kalkış saati",

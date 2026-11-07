@@ -42,7 +42,7 @@ void main() {
 
   setUp(() => SharedPreferences.setMockInitialValues({}));
   testWidgets(
-    'international interface offers only places without an access code',
+    'international interface offers places and phone search with a country',
     (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
@@ -66,9 +66,19 @@ void main() {
         'us',
       );
       expect(find.text('Ricerca nominativi'), findsNothing);
-      expect(find.text('Cerca un numero di telefono'), findsNothing);
+      expect(find.text('Find a phone number'), findsOneWidget);
       expect(find.byType(TextField), findsNWidgets(2));
       expect(find.byType(SegmentedButton<int>), findsNothing);
+      await tester.tap(find.text('Find a phone number'));
+      await tester.pumpAndSettle();
+      expect(find.text('Enter the phone number'), findsOneWidget);
+      expect(find.byType(TextField), findsOneWidget);
+      final rows = tester
+          .widget<UniversalAccessibleList>(find.byType(UniversalAccessibleList))
+          .sections
+          .expand((s) => s.rows);
+      expect(rows.any((r) => r.id == 'country'), isTrue);
+      expect(rows.any((r) => r.id == 'kind_pagine_bianche'), isFalse);
     },
   );
 
@@ -97,7 +107,9 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byType(ItaliaOnlineResultsScreen), findsNothing);
       expect(
-        find.text('Inserisci un numero di telefono italiano valido.'),
+        find.text(
+          'Inserisci un numero di telefono valido, completo di prefisso.',
+        ),
         findsOneWidget,
       );
     },

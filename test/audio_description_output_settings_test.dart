@@ -30,6 +30,16 @@ const _settings = AiAudioDescriptionSettings(
 );
 
 void main() {
+  test('dialogue overlap is off by default and only persists an explicit choice', () async {
+    expect(_settings.allowDialogueOverlap, isFalse);
+    expect(_settings.copyWith(verbosity: 'short').allowDialogueOverlap, isFalse);
+    expect((await AiAudioDescriptionPreferences.load())['dialogueOverlap'], isFalse);
+    await AiAudioDescriptionPreferences.saveDialogueOverlap(true);
+    expect((await AiAudioDescriptionPreferences.load())['dialogueOverlap'], isTrue);
+    await AiAudioDescriptionPreferences.saveDialogueOverlap(false);
+    expect((await AiAudioDescriptionPreferences.load())['dialogueOverlap'], isFalse);
+  });
+
   TestWidgetsFlutterBinding.ensureInitialized();
 
   setUp(() => SharedPreferences.setMockInitialValues({}));

@@ -335,6 +335,17 @@ class SonarMusicService {
       channel: data['artist']?.toString() ?? song.artist);
   }
 
+  Future<SonarTubeResolvedMedia> recoverPlayback(SonarMusicItem song) {
+    if (!song.playable) throw const FormatException('Brano non riproducibile');
+    // The music endpoint has no HLS preference; use the existing video resolver.
+    final recovery = SonarTubeService(client: _client, clientToken: _clientToken,
+      endpoint: endpoint.replace(path: endpoint.path.replaceAll(
+        'youtube_music_resolve.php', 'youtube_resolve.php')));
+    return recovery.recoverPlayback(SonarTubeItem(kind: SonarTubeItemKind.video,
+      id: song.videoId!, title: song.title, channel: song.artist,
+      url: 'https://www.youtube.com/watch?v=${song.videoId}'));
+  }
+
   SonarMusicPage _fromServer(Map<String, dynamic> data, {bool collection = false}) {
     final result = <SonarMusicItem>[];
     final seen = <String>{};

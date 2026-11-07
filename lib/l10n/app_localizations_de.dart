@@ -9,6 +9,17 @@ class AppLocalizationsDe extends AppLocalizations {
   AppLocalizationsDe([String locale = 'de']) : super(locale);
 
   @override
+  String get audioDescriptionDialogueOverlap =>
+      'Audiodeskriptionen während Dialogen und Kommentaren zulassen';
+
+  @override
+  String get placesPhoneQuery => 'Telefonnummer eingeben';
+
+  @override
+  String get placesPhoneInvalid =>
+      'Geben Sie eine gültige Telefonnummer mit Vorwahl ein.';
+
+  @override
   String get routeDeparture => 'Abfahrt';
 
   @override

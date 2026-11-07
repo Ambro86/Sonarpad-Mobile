@@ -395,6 +395,30 @@ void main() {
     await temporary.delete(recursive: true);
   });
 
+  testWidgets('dialogue overlap checkbox is off by default and remembers explicit changes', (tester) async {
+    await _exerciseScreen(tester, () async {
+      final row = _row(tester, 'dialogue_overlap');
+      final l10n = AppLocalizations.of(tester.element(find.byKey(_formKey)));
+      expect(row.title, l10n.audioDescriptionDialogueOverlap);
+      expect(row.toggleValue, isFalse);
+      expect(row.enabled, isTrue);
+      for (final enabled in [true, false]) {
+        await tester.runAsync(() async {
+          await _form(tester).onEvent!(AccessibleListEvent(
+              type: 'toggle', id: 'dialogue_overlap', value: enabled));
+        });
+        await tester.pump();
+        expect(_row(tester, 'dialogue_overlap').toggleValue, enabled);
+        final stored = await AiAudioDescriptionPreferences.load();
+        expect(stored['dialogueOverlap'], enabled);
+      }
+    });
+    await AiAudioDescriptionPreferences.saveDialogueOverlap(true);
+    await _exerciseScreen(tester, () async {
+      expect(_row(tester, 'dialogue_overlap').toggleValue, isTrue);
+    });
+  }, variant: TargetPlatformVariant({TargetPlatform.android, TargetPlatform.iOS}));
+
   testWidgets('multi-track source asks which track and stores the selected row', (tester) async {
     try {
       await _mountScreen(tester, sourcePath: '/test/two-tracks.mkv', serviceFactory: () => _SourceTrackService([

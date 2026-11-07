@@ -1,3 +1,4 @@
+import 'collection_storage.dart';
 import 'cloud_sync_deletions.dart';
 import 'dart:async';
 import 'dart:convert';
@@ -14,7 +15,8 @@ class RadioService {
   static const _recentPrefsKey = 'sonarpad_radio_recent';
   static const _directoryLanguagesPrefsKey =
       'sonarpad_radio_directory_languages';
-  static const _directoryCountriesPrefsKey = 'sonarpad_radio_directory_countries';
+  static const _directoryCountriesPrefsKey =
+      'sonarpad_radio_directory_countries';
   static const _directoryCacheHours = 72;
   static const _communityUrl =
       'https://sonarpad.com/api/get_community_radios.php';
@@ -153,7 +155,7 @@ class RadioService {
     return _mergeCountryOptions([...countries, ...dynamicOptions]);
   }
 
-  Future<List<RadioStation>> loadFavorites() async {
+  Future<List<RadioStation>> loadFavorites() => CollectionStorage.run(() async {
     final prefs = await SharedPreferences.getInstance();
     final raw = prefs.getStringList(_favoritesPrefsKey) ?? const [];
     final normalized = _normalizeStations(
@@ -162,20 +164,41 @@ class RadioService {
     );
     final savedOrder = prefs.getStringList(_favoritesOrderPrefsKey) ?? const [];
     return _applyFavoriteOrder(normalized, savedOrder);
-  }
+  });
 
   Future<void> saveFavorites(
     List<RadioStation> favorites, {
     bool updateOrder = false,
+    bool fromCloud = false,
     List<String> explicitlyRemoved = const [],
-  }) async {
+  }) => CollectionStorage.run(() async {
     final prefs = await SharedPreferences.getInstance();
-    await CloudSyncDeletions.record('radio', explicitlyRemoved.map((id) => id.trim()));
+    await CloudSyncDeletions.record(
+      'radio',
+      explicitlyRemoved.map((id) => id.trim()),
+    );
+    if (!fromCloud) {
+      final current = await loadFavorites();
+      final ids = favorites.map((item) => item.streamUrl.trim()).toSet();
+      favorites =
+          [
+                ...favorites,
+                ...current.where(
+                  (item) => !ids.contains(item.streamUrl.trim()),
+                ),
+              ]
+              .where(
+                (item) => !explicitlyRemoved.contains(item.streamUrl.trim()),
+              )
+              .toList();
+    }
     final normalized = _normalizeStations(favorites, sortByName: false);
 
     final currentRaw = prefs.getStringList(_favoritesPrefsKey) ?? const [];
     final currentFavorites = _normalizeStations(
-      currentRaw.map((item) => RadioStation.fromJson(jsonDecode(item))).toList(),
+      currentRaw
+          .map((item) => RadioStation.fromJson(jsonDecode(item)))
+          .toList(),
       sortByName: false,
     );
     final persistedOrder = prefs.getStringList(_favoritesOrderPrefsKey);
@@ -193,7 +216,7 @@ class RadioService {
       orderedFavorites.map((item) => jsonEncode(item.toJson())).toList(),
     );
     await prefs.setStringList(_favoritesOrderPrefsKey, nextOrder);
-  }
+  });
 
   Future<List<RadioStation>> loadRecentRadios() async {
     final prefs = await SharedPreferences.getInstance();
@@ -211,7 +234,10 @@ class RadioService {
       station,
       ...recent.where((item) => item.streamUrl != station.streamUrl),
     ];
-    final limited = _normalizeStations(next, sortByName: false).take(50).toList();
+    final limited = _normalizeStations(
+      next,
+      sortByName: false,
+    ).take(50).toList();
     await prefs.setStringList(
       _recentPrefsKey,
       limited.map((item) => jsonEncode(item.toJson())).toList(),
@@ -243,13 +269,12 @@ class RadioService {
     required String languageCode,
     required RadioGenreOption genre,
     String query = '',
-  }) =>
-      RadioSearchSession._(
-        service: this,
-        languageCode: languageCode,
-        genre: genre,
-        query: query.trim(),
-      );
+  }) => RadioSearchSession._(
+    service: this,
+    languageCode: languageCode,
+    genre: genre,
+    query: query.trim(),
+  );
 
   Future<String> addCommunityRadio({
     required String name,
@@ -258,20 +283,22 @@ class RadioService {
     required String genre,
     String uiLanguage = 'it',
   }) async {
-    final response = await _client.post(
-      Uri.parse(_addCommunityUrl),
-      headers: const {
-        'User-Agent': 'SonarpadMobile/0.1 (https://sonarpad.com)',
-        'Accept': 'application/json',
-      },
-      body: {
-        'name': name,
-        'url': streamUrl,
-        'language': language,
-        'genre': genre,
-        'ui_language': uiLanguage,
-      },
-    ).timeout(const Duration(seconds: 12));
+    final response = await _client
+        .post(
+          Uri.parse(_addCommunityUrl),
+          headers: const {
+            'User-Agent': 'SonarpadMobile/0.1 (https://sonarpad.com)',
+            'Accept': 'application/json',
+          },
+          body: {
+            'name': name,
+            'url': streamUrl,
+            'language': language,
+            'genre': genre,
+            'ui_language': uiLanguage,
+          },
+        )
+        .timeout(const Duration(seconds: 12));
     final decoded = _decodeJsonMap(response.body);
     final message = (decoded['message'] ?? '').toString().trim();
     final error = (decoded['error'] ?? '').toString().trim();
@@ -374,10 +401,7 @@ class RadioService {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(
       prefsKey,
-      jsonEncode({
-        'savedAt': DateTime.now().toIso8601String(),
-        'items': items,
-      }),
+      jsonEncode({'savedAt': DateTime.now().toIso8601String(), 'items': items}),
     );
   }
 
@@ -391,7 +415,10 @@ class RadioService {
     return RadioLanguageOption(
       code,
       // Correct the directory's label without changing its search identifier.
-      label: name.replaceAll(RegExp(r'\bengilsh\b', caseSensitive: false), 'english'),
+      label: name.replaceAll(
+        RegExp(r'\bengilsh\b', caseSensitive: false),
+        'english',
+      ),
       stationCount: _intFromDynamic(item['stationcount']),
     );
   }
@@ -421,13 +448,13 @@ class RadioService {
         byCode[key] = option;
       }
     }
-    return byCode.values.toList()
-      ..sort((a, b) {
-        final priority = _preferredLanguagePriority(a.code)
-            .compareTo(_preferredLanguagePriority(b.code));
-        if (priority != 0) return priority;
-        return _languageSortLabel(a).compareTo(_languageSortLabel(b));
-      });
+    return byCode.values.toList()..sort((a, b) {
+      final priority = _preferredLanguagePriority(
+        a.code,
+      ).compareTo(_preferredLanguagePriority(b.code));
+      if (priority != 0) return priority;
+      return _languageSortLabel(a).compareTo(_languageSortLabel(b));
+    });
   }
 
   List<RadioCountryOption> _mergeCountryOptions(
@@ -442,23 +469,45 @@ class RadioService {
         byCode[key] = option;
       }
     }
-    return byCode.values.toList()
-      ..sort((a, b) {
-        final priority = _preferredCountryPriority(a.code)
-            .compareTo(_preferredCountryPriority(b.code));
-        if (priority != 0) return priority;
-        return a.code.compareTo(b.code);
-      });
+    return byCode.values.toList()..sort((a, b) {
+      final priority = _preferredCountryPriority(
+        a.code,
+      ).compareTo(_preferredCountryPriority(b.code));
+      if (priority != 0) return priority;
+      return a.code.compareTo(b.code);
+    });
   }
 
   int _preferredLanguagePriority(String code) {
-    const preferred = ['it', 'en', 'tr', 'de', 'es', 'fr', 'pt', 'pl', 'ro', 'zh'];
+    const preferred = [
+      'it',
+      'en',
+      'tr',
+      'de',
+      'es',
+      'fr',
+      'pt',
+      'pl',
+      'ro',
+      'zh',
+    ];
     final index = preferred.indexOf(code.toLowerCase());
     return index < 0 ? 1000 : index;
   }
 
   int _preferredCountryPriority(String code) {
-    const preferred = ['it', 'us', 'gb', 'tr', 'de', 'fr', 'es', 'pt', 'pl', 'cn'];
+    const preferred = [
+      'it',
+      'us',
+      'gb',
+      'tr',
+      'de',
+      'fr',
+      'es',
+      'pt',
+      'pl',
+      'cn',
+    ];
     final normalized = code.toLowerCase();
     final index = preferred.indexOf(normalized);
     return index < 0 ? 1000 : index;
@@ -521,9 +570,11 @@ class RadioService {
         );
       } catch (e) {
         lastError = e;
-        unawaited(AppLogger.log(
-          'Radio Browser search mirror failed mirror=$mirror page=${safePage + 1} error=$e',
-        ));
+        unawaited(
+          AppLogger.log(
+            'Radio Browser search mirror failed mirror=$mirror page=${safePage + 1} error=$e',
+          ),
+        );
       }
     }
     final error = lastError ?? 'Radio Browser non raggiungibile';
@@ -549,14 +600,18 @@ class RadioService {
     return items
         .map((raw) => _communityStation(languageCode, raw))
         .whereType<_CommunityRadioStation>()
-        .where((station) =>
-            globalSearch ||
-            wantedLanguage == null ||
-            station.language.trim().toLowerCase() ==
-                wantedLanguage.toLowerCase())
-        .where((station) =>
-            genreTag == null ||
-            station.genre.trim().toLowerCase() == genreTag.toLowerCase())
+        .where(
+          (station) =>
+              globalSearch ||
+              wantedLanguage == null ||
+              station.language.trim().toLowerCase() ==
+                  wantedLanguage.toLowerCase(),
+        )
+        .where(
+          (station) =>
+              genreTag == null ||
+              station.genre.trim().toLowerCase() == genreTag.toLowerCase(),
+        )
         .map((station) => station.toRadioStation())
         .where((station) => _matchesKeyword(station, query))
         .toList();
@@ -611,20 +666,25 @@ class RadioService {
         .whereType<RadioStation>()
         .toList(growable: false);
     final hasMore = decoded['has_more'] == true;
-    unawaited(AppLogger.log(
-      'RadioBOSS: pagina sorgente ${page + 1}, ${stations.length} risultati, altri=${hasMore ? "si" : "no"}',
-    ));
+    unawaited(
+      AppLogger.log(
+        'RadioBOSS: pagina sorgente ${page + 1}, ${stations.length} risultati, altri=${hasMore ? "si" : "no"}',
+      ),
+    );
     return _RadioSourcePage(stations: stations, hasMore: hasMore);
   }
 
   RadioStation? _radioBossStation(String fallbackLanguageCode, Object raw) {
     if (raw is! Map<String, dynamic>) return null;
-    final stream = (raw['stream'] ?? raw['stream_direct'] ?? '').toString().trim();
+    final stream = (raw['stream'] ?? raw['stream_direct'] ?? '')
+        .toString()
+        .trim();
     final name = (raw['name'] ?? '').toString().trim();
     if (stream.isEmpty || name.isEmpty) return null;
     final id = (raw['id'] ?? raw['path'] ?? '').toString().trim();
     final genre = (raw['genre'] ?? '').toString().trim();
-    final selectedLanguageCode = !_isCountryCode(fallbackLanguageCode) &&
+    final selectedLanguageCode =
+        !_isCountryCode(fallbackLanguageCode) &&
             !_isCityCode(fallbackLanguageCode)
         ? fallbackLanguageCode
         : 'custom';
@@ -701,7 +761,10 @@ class RadioService {
     );
   }
 
-  _CommunityRadioStation? _communityStation(String fallbackLanguageCode, Object raw) {
+  _CommunityRadioStation? _communityStation(
+    String fallbackLanguageCode,
+    Object raw,
+  ) {
     final item = raw as Map<String, dynamic>;
     final url = (item['url'] ?? '').toString().trim();
     if (url.isEmpty) return null;
@@ -720,7 +783,6 @@ class RadioService {
       tags: label.isEmpty ? genre : label,
     );
   }
-
 
   String _favoriteOrderId(RadioStation station) {
     final uuid = station.stationUuid.trim();
@@ -785,8 +847,10 @@ class RadioService {
       normalized.add(station.copyWith(name: name, streamUrl: url));
     }
     if (sortByName) {
-      normalized.sort((a, b) =>
-          _radioNamePriority(a.name).compareTo(_radioNamePriority(b.name)));
+      normalized.sort(
+        (a, b) =>
+            _radioNamePriority(a.name).compareTo(_radioNamePriority(b.name)),
+      );
     }
     return normalized;
   }
@@ -861,39 +925,43 @@ class RadioService {
 
   bool _isCityCode(String code) => code.startsWith('city:');
 
-  String _cityCode(String code) =>
-      code.substring('city:'.length);
+  String _cityCode(String code) => code.substring('city:'.length);
 
   String? _communityLanguageFromRadioCode(String code) => switch (code) {
-        'it' || 'country:it' => 'italian',
-        'en' || 'country:us' || 'country:gb' || 'country:ca' || 'country:au' || 'country:ie' => 'english',
-        'es' || 'country:es' || 'country:mx' || 'country:ar' => 'spanish',
-        'fr' || 'country:fr' || 'country:be' || 'country:ch' => 'french',
-        'pt' || 'country:pt' || 'country:br' => 'portuguese',
-        'sv' || 'country:se' => 'swedish',
-        'tr' || 'country:tr' => 'turkish',
-        'vi' => 'vietnamese',
-        'cs' => 'czech',
-        'pl' || 'country:pl' => 'polish',
-        'sr' => 'serbian',
-        'uk' => 'ukrainian',
-        'ro' || 'country:ro' => 'romanian',
-        'lt' => 'lithuanian',
-        'ru' => 'russian',
-        'zh' || 'country:cn' => 'chinese',
-        'hi' => 'hindi',
-        'country:de' || 'country:at' || 'de' => 'german',
-        'country:ua' || 'uk' => 'ukrainian',
-        _ => null,
-      };
+    'it' || 'country:it' => 'italian',
+    'en' ||
+    'country:us' ||
+    'country:gb' ||
+    'country:ca' ||
+    'country:au' ||
+    'country:ie' => 'english',
+    'es' || 'country:es' || 'country:mx' || 'country:ar' => 'spanish',
+    'fr' || 'country:fr' || 'country:be' || 'country:ch' => 'french',
+    'pt' || 'country:pt' || 'country:br' => 'portuguese',
+    'sv' || 'country:se' => 'swedish',
+    'tr' || 'country:tr' => 'turkish',
+    'vi' => 'vietnamese',
+    'cs' => 'czech',
+    'pl' || 'country:pl' => 'polish',
+    'sr' => 'serbian',
+    'uk' => 'ukrainian',
+    'ro' || 'country:ro' => 'romanian',
+    'lt' => 'lithuanian',
+    'ru' => 'russian',
+    'zh' || 'country:cn' => 'chinese',
+    'hi' => 'hindi',
+    'country:de' || 'country:at' || 'de' => 'german',
+    'country:ua' || 'uk' => 'ukrainian',
+    _ => null,
+  };
 
   String _cleanRadioName(String value) => _collapseWhitespace(
-        value
-            .replaceAll('&amp;', '&')
-            .replaceAll('&quot;', '"')
-            .replaceAll('&#39;', "'")
-            .replaceAll('&apos;', "'"),
-      );
+    value
+        .replaceAll('&amp;', '&')
+        .replaceAll('&quot;', '"')
+        .replaceAll('&#39;', "'")
+        .replaceAll('&apos;', "'"),
+  );
 
   String _cleanTags(String value) {
     final seen = <String>{};
@@ -912,7 +980,10 @@ class RadioService {
       _collapseWhitespace(value.toLowerCase());
 
   String _collapseWhitespace(String value) {
-    final words = value.trim().split(RegExp(r'\s+')).where((word) => word.isNotEmpty);
+    final words = value
+        .trim()
+        .split(RegExp(r'\s+'))
+        .where((word) => word.isNotEmpty);
     return words.join(' ');
   }
 
@@ -969,20 +1040,22 @@ class RadioService {
     final tier = query.isEmpty
         ? 3
         : normalized == query || compactName == compactQuery
-            ? 0
-            : normalized.startsWith(query) || compactName.startsWith(compactQuery)
-                ? 1
-                : normalized.contains(' $query')
-                    ? 2
-                    : 3;
+        ? 0
+        : normalized.startsWith(query) || compactName.startsWith(compactQuery)
+        ? 1
+        : normalized.contains(' $query')
+        ? 2
+        : 3;
     final selectedCountry = _isCountryCode(selectedLanguageCode)
         ? _countryCode(selectedLanguageCode)
         : '';
-    final countryBoost = selectedCountry.isNotEmpty &&
+    final countryBoost =
+        selectedCountry.isNotEmpty &&
             station.countryCode.toUpperCase() == selectedCountry
         ? 0
         : 1;
-    final languageBoost = !_isCountryCode(selectedLanguageCode) &&
+    final languageBoost =
+        !_isCountryCode(selectedLanguageCode) &&
             station.languageCode == selectedLanguageCode
         ? 0
         : 1;
@@ -1064,13 +1137,13 @@ class _CommunityRadioStation {
   });
 
   RadioStation toRadioStation() => RadioStation(
-        name: name,
-        streamUrl: streamUrl,
-        languageCode: languageCode,
-        language: language,
-        tags: tags,
-        source: 'Sonarpad Community',
-      );
+    name: name,
+    streamUrl: streamUrl,
+    languageCode: languageCode,
+    language: language,
+    tags: tags,
+    source: 'Sonarpad Community',
+  );
 }
 
 class RadioSearchPage {
@@ -1110,27 +1183,22 @@ class RadioSearchSession {
     required this.languageCode,
     required this.genre,
     required this.query,
-  })  : _service = service,
-        _effectiveGenreTag = genre.tag;
+  }) : _service = service,
+       _effectiveGenreTag = genre.tag;
 
   bool get _globalSearch => query.trim().isNotEmpty;
 
   bool get _hasSourceWork =>
       _communityPending || _radioBrowserHasMore || _radioBossHasMore;
 
-  Future<RadioSearchPage> loadPage(
-    int pageIndex, {
-    int pageSize = 25,
-  }) async {
+  Future<RadioSearchPage> loadPage(int pageIndex, {int pageSize = 25}) async {
     final safePage = pageIndex < 0 ? 0 : pageIndex;
     final safePageSize = pageSize.clamp(1, 100).toInt();
     final targetForLookahead = (safePage + 2) * safePageSize;
 
     await _ensureResults(targetForLookahead);
 
-    if (_ordered.isEmpty &&
-        !_usedGenreFallback &&
-        _effectiveGenreTag != null) {
+    if (_ordered.isEmpty && !_usedGenreFallback && _effectiveGenreTag != null) {
       _resetForGenreFallback();
       await _ensureResults(targetForLookahead);
     }
@@ -1150,9 +1218,11 @@ class RadioSearchSession {
     }
     final end = (start + safePageSize).clamp(0, _ordered.length).toInt();
     final items = List<RadioStation>.unmodifiable(_ordered.sublist(start, end));
-    unawaited(AppLogger.log(
-      'Radio ricerca: pagina Sonarpad ${safePage + 1}, ${items.length} risultati',
-    ));
+    unawaited(
+      AppLogger.log(
+        'Radio ricerca: pagina Sonarpad ${safePage + 1}, ${items.length} risultati',
+      ),
+    );
     return RadioSearchPage(
       items: items,
       pageIndex: safePage,
@@ -1188,9 +1258,11 @@ class RadioSearchSession {
     _seenNames.clear();
     _seenUrls.clear();
     _errors.clear();
-    unawaited(AppLogger.log(
-      'Radio search: nessun risultato col genere, nuovo tentativo senza genere',
-    ));
+    unawaited(
+      AppLogger.log(
+        'Radio search: nessun risultato col genere, nuovo tentativo senza genere',
+      ),
+    );
   }
 
   Future<void> _loadNextBatch() async {
@@ -1207,11 +1279,7 @@ class RadioSearchSession {
     // station, keep Radio Browser's structured metadata first, then Community,
     // then RadioBOSS. New batches are appended so pages already shown never
     // reorder when the next remote page is loaded.
-    final batch = <RadioStation>[
-      ...batches[0],
-      ...batches[1],
-      ...batches[2],
-    ];
+    final batch = <RadioStation>[...batches[0], ...batches[1], ...batches[2]];
     final unique = <RadioStation>[];
     for (final station in batch) {
       final name = _service._cleanRadioName(station.name);
@@ -1224,9 +1292,11 @@ class RadioSearchSession {
       _seenUrls.add(urlKey);
       unique.add(station.copyWith(name: name, streamUrl: url));
     }
-    unique.sort((a, b) => _service
-        ._radioSearchRank(a, query, languageCode)
-        .compareTo(_service._radioSearchRank(b, query, languageCode)));
+    unique.sort(
+      (a, b) => _service
+          ._radioSearchRank(a, query, languageCode)
+          .compareTo(_service._radioSearchRank(b, query, languageCode)),
+    );
     _ordered.addAll(unique);
   }
 

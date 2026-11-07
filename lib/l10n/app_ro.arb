@@ -1,4 +1,7 @@
 {
+  "audioDescriptionDialogueOverlap": "Permite audiodescrieri în timpul dialogurilor și comentariului sportiv",
+  "placesPhoneQuery": "Introdu numărul de telefon",
+  "placesPhoneInvalid": "Introdu un număr de telefon valid, inclusiv prefixul.",
   "routeDeparture": "Plecare",
   "routeLeaveNow": "Pleacă acum",
   "routeLeaveAt": "Pleacă la",

@@ -95,6 +95,7 @@ class _CreateAiAudiodescriptionScreenState
   String _verbosity = 'detailed';
   bool _extendedPauses = false;
   bool _nonverbalVocals = true;
+  bool _dialogueOverlap = false;
   bool _recognizeCharacters = true;
   bool _recognizeScreenText = true;
   bool _keepCharacterCatalog = false;
@@ -303,6 +304,7 @@ class _CreateAiAudiodescriptionScreenState
         };
         _extendedPauses = preferences['extended'] == true;
         _nonverbalVocals = preferences['nonverbal'] != false;
+        _dialogueOverlap = preferences['dialogueOverlap'] == true;
         _recognizeCharacters = preferences['characters'] != false;
         _recognizeScreenText = preferences['screenText'] != false;
         _keepCharacterCatalog = preferences['keepCatalog'] == true;
@@ -783,6 +785,7 @@ class _CreateAiAudiodescriptionScreenState
         verbosity: _verbosity,
         allowExtendedPauses: _extendedPauses && !_createVideoOutput,
         allowNonverbalVocals: _nonverbalVocals,
+        allowDialogueOverlap: _dialogueOverlap,
         recognizeCharacters: _recognizeCharacters,
         recognizeScreenText: _recognizeScreenText,
         keepCharacterCatalog: _recognizeCharacters && _keepCharacterCatalog,
@@ -1798,6 +1801,13 @@ class _CreateAiAudiodescriptionScreenState
                       ],
                     ),
                     AccessibleListRow(
+                      id: 'dialogue_overlap',
+                      title: l10n.audioDescriptionDialogueOverlap,
+                      kind: 'toggle',
+                      toggleValue: _dialogueOverlap,
+                      enabled: !_running,
+                    ),
+                    AccessibleListRow(
                       id: 'nonverbal_vocals',
                       title: l10n.audioDescriptionNonverbalVocals,
                       kind: 'toggle',
@@ -1816,22 +1826,6 @@ class _CreateAiAudiodescriptionScreenState
                       title: l10n.audioDescriptionCreateVideoOutput,
                       kind: 'toggle',
                       toggleValue: _createVideoOutput,
-                      enabled: !_running,
-                    ),
-                    AccessibleListRow(
-                      id: 'creation_voice_pitch',
-                      title: l10n.settingsVoicePitchLabel,
-                      kind: 'slider',
-                      value: '${_voicePitch.toStringAsFixed(1)}x',
-                      valueLabel: '${_voicePitch.toStringAsFixed(1)}x',
-                      sliderMin: 0.5,
-                      sliderMax: 2.0,
-                      sliderStep: 0.1,
-                      sliderValue: _voicePitch,
-                      sliderIncreasedValueLabel:
-                          '${(((_voicePitch + 0.1).clamp(0.5, 2.0) * 10).round() / 10).toStringAsFixed(1)}x',
-                      sliderDecreasedValueLabel:
-                          '${(((_voicePitch - 0.1).clamp(0.5, 2.0) * 10).round() / 10).toStringAsFixed(1)}x',
                       enabled: !_running,
                     ),
                     AccessibleListRow(
@@ -2042,6 +2036,22 @@ class _CreateAiAudiodescriptionScreenState
                       ),
                     ],
                     AccessibleListRow(
+                      id: 'creation_voice_pitch',
+                      title: l10n.settingsVoicePitchLabel,
+                      kind: 'slider',
+                      value: '${_voicePitch.toStringAsFixed(1)}x',
+                      valueLabel: '${_voicePitch.toStringAsFixed(1)}x',
+                      sliderMin: 0.5,
+                      sliderMax: 2.0,
+                      sliderStep: 0.1,
+                      sliderValue: _voicePitch,
+                      sliderIncreasedValueLabel:
+                          '${(((_voicePitch + 0.1).clamp(0.5, 2.0) * 10).round() / 10).toStringAsFixed(1)}x',
+                      sliderDecreasedValueLabel:
+                          '${(((_voicePitch - 0.1).clamp(0.5, 2.0) * 10).round() / 10).toStringAsFixed(1)}x',
+                      enabled: !_running,
+                    ),
+                    AccessibleListRow(
                       id: 'test_voice',
                       title: _testingVoice
                           ? l10n.audioDescriptionVoiceTesting
@@ -2215,6 +2225,9 @@ class _CreateAiAudiodescriptionScreenState
                       case 'extended':
                         _extendedPauses = value;
                         break;
+                      case 'dialogue_overlap':
+                        _dialogueOverlap = value;
+                        break;
                       case 'nonverbal_vocals':
                         _nonverbalVocals = value;
                         break;
@@ -2236,6 +2249,9 @@ class _CreateAiAudiodescriptionScreenState
                         break;
                     }
                   });
+                  if (id == 'dialogue_overlap') {
+                    await AiAudioDescriptionPreferences.saveDialogueOverlap(value);
+                  }
                   if (id == 'nonverbal_vocals') {
                     await AiAudioDescriptionPreferences.saveNonverbalVocals(value);
                   }

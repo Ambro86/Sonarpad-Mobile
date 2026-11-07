@@ -9,6 +9,15 @@ class AppLocalizationsZh extends AppLocalizations {
   AppLocalizationsZh([String locale = 'zh']) : super(locale);
 
   @override
+  String get audioDescriptionDialogueOverlap => '允许在对话和解说期间播放音频描述';
+
+  @override
+  String get placesPhoneQuery => '输入电话号码';
+
+  @override
+  String get placesPhoneInvalid => '请输入包含区号或国家代码的有效电话号码。';
+
+  @override
   String get routeDeparture => '出发';
 
   @override
@@ -5794,6 +5803,15 @@ class AppLocalizationsZh extends AppLocalizations {
 /// The translations for Chinese, as used in China (`zh_CN`).
 class AppLocalizationsZhCn extends AppLocalizationsZh {
   AppLocalizationsZhCn() : super('zh_CN');
+
+  @override
+  String get audioDescriptionDialogueOverlap => '允许在对话和解说期间播放音频描述';
+
+  @override
+  String get placesPhoneQuery => '输入电话号码';
+
+  @override
+  String get placesPhoneInvalid => '请输入包含区号或国家代码的有效电话号码。';
 
   @override
   String get routeDeparture => '出发';

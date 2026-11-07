@@ -1,5 +1,47 @@
 import 'dart:convert';
 
+/// Accept only the booking terms after the user chooses a payment method.
+const travelAcceptBookingTermsScript = r'''
+(() => {
+  if (location.protocol !== 'https:' || (location.port && location.port !== '443') ||
+      !['omio.com', 'www.omio.com'].includes(location.hostname) ||
+      !/\/checkout\/?$/.test(location.pathname)) return 'unavailable';
+  const visible = el => {
+    const r = el.getBoundingClientRect(), s = getComputedStyle(el);
+    return r.width > 0 && r.height > 0 && s.visibility !== 'hidden' &&
+      s.display !== 'none' && !el.closest('[inert], [aria-hidden="true"]');
+  };
+  if ([...document.querySelectorAll('[aria-modal="true"], dialog[open]')].some(visible)) return 'blocked';
+  const matches = [];
+  for (const el of document.querySelectorAll('input[type="checkbox"], [role="checkbox"]')) {
+    if (el.tagName === 'BUTTON' && el.type !== 'button') continue;
+    const labels = [...(el.labels || [])];
+    const refs = (el.getAttribute('aria-labelledby') || '').split(/\s+/)
+      .map(id => document.getElementById(id)).filter(Boolean);
+    const wrapper = el.closest('label') || el.parentElement;
+    if (!visible(el) && !labels.some(visible)) continue;
+    const texts = [el.getAttribute('aria-label'), el.textContent,
+      refs.map(x => x.textContent).join(' '), ...labels.map(x => x.textContent)];
+    if (wrapper?.querySelectorAll('input[type="checkbox"], [role="checkbox"]').length === 1) texts.push(wrapper.textContent);
+    if (texts.some(value => {
+      const text = (value || '').toLowerCase().replace(/\s+/g, ' ').trim();
+      return /\b(termini|condizioni|terms)\b/.test(text) &&
+        /\b(accetto|accettato|accettare|accept|accepted|agree)\b/.test(text) &&
+        !/\b(newsletter|marketing|offerte|offers|promozioni|promotions|assicurazione|insurance)\b/.test(text);
+    })) matches.push(el);
+  }
+  if (matches.length === 0) return 'not-found';
+  if (matches.length !== 1) return 'ambiguous';
+  const el = matches[0];
+  const checked = () => el.checked === true || el.getAttribute('aria-checked') === 'true';
+  if (!checked()) {
+    if (el.disabled || el.getAttribute('aria-disabled') === 'true') return 'disabled';
+    el.click();
+  }
+  return checked() ? 'selected' : 'unconfirmed';
+})()
+''';
+
 String travelNoProtectionScript({bool verifyOnly = false}) =>
     _noProtection.replaceFirst('__VERIFY__', '$verifyOnly');
 

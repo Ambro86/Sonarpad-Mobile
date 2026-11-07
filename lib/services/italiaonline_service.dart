@@ -206,6 +206,19 @@ String _decode(String encoded) {
   return utf8.decode(decoded);
 }
 
+String normalizePlacePhone(String input) {
+  final trimmed = input.trim();
+  if (!RegExp(r'^\+?[0-9\s()./\-]+$').hasMatch(trimmed)) {
+    throw const FormatException('Invalid phone number');
+  }
+  var value = trimmed.replaceAll(RegExp(r'[^0-9+]'), '');
+  if (value.startsWith('00')) value = '+${value.substring(2)}';
+  if (!RegExp(r'^\+?[0-9]{5,15}$').hasMatch(value)) {
+    throw const FormatException('Invalid phone number');
+  }
+  return value;
+}
+
 String normalizeDirectoryPhone(String input) {
   final trimmed = input.trim();
   if (!RegExp(r'^\+?[0-9\s()./\-]+$').hasMatch(trimmed)) {
@@ -273,8 +286,9 @@ class ItaliaOnlineService {
       'X-Sonarpad-Route-Token': _clientToken,
     };
     final body = jsonEncode({
-      'q': query.what,
-      'citta': query.where,
+      'q': query.reverse ? normalizePlacePhone(query.what) : query.what,
+      if (query.reverse) 'telefono': normalizePlacePhone(query.what),
+      'citta': query.reverse ? '' : query.where,
       'paese': query.country,
       'lingua': query.language,
     });
@@ -364,10 +378,14 @@ class ItaliaOnlineService {
     SearchQuery query, {
     bool includeItalianDirectories = true,
   }) async {
-    if (!includeItalianDirectories ||
-        (!query.reverse &&
-            query.kind == DirectoryKind.pagineGialle &&
-            query.country != 'it')) {
+    final phone = query.reverse ? normalizePlacePhone(query.what) : null;
+    final useItalianDirectories = query.reverse
+        ? query.country == 'it' &&
+              (!phone!.startsWith('+') || phone.startsWith('+39'))
+        : includeItalianDirectories &&
+              (query.kind != DirectoryKind.pagineGialle ||
+                  query.country == 'it');
+    if (!useItalianDirectories) {
       return SearchResponse(
         displayWhere: query.where,
         currentPage: 1,
@@ -376,10 +394,9 @@ class ItaliaOnlineService {
         actualKind: DirectoryKind.pagineGialle,
       );
     }
-    if (query.reverse ||
-        query.kind != DirectoryKind.pagineGialle ||
+    if ((!query.reverse && query.kind != DirectoryKind.pagineGialle) ||
         query.page > 1) {
-      return search(query);
+      return query.reverse ? _searchPhoneDirectories(query) : search(query);
     }
     // Start both requests together; an unavailable source must not hide the other.
     final primaryFuture = _searchPlaces(query).then<List<SearchResult>?>(
@@ -389,7 +406,9 @@ class ItaliaOnlineService {
     SearchResponse? legacy;
     Object? legacyError;
     try {
-      legacy = await search(query);
+      legacy = await (query.reverse
+          ? _searchPhoneDirectories(query)
+          : search(query));
     } catch (error) {
       legacyError = error;
     }
@@ -407,7 +426,7 @@ class ItaliaOnlineService {
       if (primary.any((place) => sameDirectoryPlace(place, item))) continue;
       results.add(
         SearchResult(
-          id: '$prefix${item.id}',
+          id: query.reverse ? item.id : '$prefix${item.id}',
           name: item.name,
           address: item.address,
           city: item.city,
@@ -426,7 +445,10 @@ class ItaliaOnlineService {
     );
   }
 
-  Future<SearchResponse> searchPhone(SearchQuery query) async {
+  Future<SearchResponse> searchPhone(SearchQuery query) =>
+      searchActivities(query);
+
+  Future<SearchResponse> _searchPhoneDirectories(SearchQuery query) async {
     final number = normalizeDirectoryPhone(query.what);
     final results = <SearchResult>[];
     final seen = <String>{};

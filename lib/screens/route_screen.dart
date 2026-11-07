@@ -12,14 +12,16 @@ import '../utils/route_country_options.dart';
 import '../widgets/universal_accessible_view.dart';
 
 class RouteScreen extends StatefulWidget {
-  const RouteScreen({super.key});
+  const RouteScreen({super.key, this.routeService});
+
+  final RouteService? routeService;
 
   @override
   State<RouteScreen> createState() => _RouteScreenState();
 }
 
 class _RouteScreenState extends State<RouteScreen> {
-  final _service = RouteService();
+  late final _service = widget.routeService ?? RouteService();
   final _recentRoutes = RecentRoutesService();
   final _formPreferences = RouteFormPreferencesService();
   final _fromController = TextEditingController();
@@ -106,6 +108,7 @@ class _RouteScreenState extends State<RouteScreen> {
       return;
     }
 
+    FocusScope.of(context).unfocus();
     setState(() => _calculating = true);
 
     try {
@@ -120,6 +123,7 @@ class _RouteScreenState extends State<RouteScreen> {
         query: toAddress,
         title: l10n.routeChooseTo,
         notFoundMessage: l10n.routeErrorToNotFound,
+        near: from,
       );
       if (to == null) return;
 
@@ -169,19 +173,21 @@ class _RouteScreenState extends State<RouteScreen> {
     required String query,
     required String title,
     required String notFoundMessage,
+    GeocodeCandidate? near,
   }) async {
     final l10n = AppLocalizations.of(context);
     final candidates = await _service.geocode(
       query: query,
       language: l10n.localeName,
       countryCode: _countryCode!,
+      near: near,
     );
 
     if (candidates.isEmpty) {
       throw Exception(notFoundMessage);
     }
 
-    if (candidates.length == 1) {
+    if (candidates.length == 1 && !candidates.first.requiresConfirmation) {
       return candidates.first;
     }
 
@@ -417,6 +423,7 @@ class _RouteScreenState extends State<RouteScreen> {
               id: 'calculate',
               title: _calculating ? l10n.routeCalculating : l10n.routeCalculate,
               kind: 'button',
+              finishEditingOnActivate: true,
               enabled: !_calculating,
             ),
           ],

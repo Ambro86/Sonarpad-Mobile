@@ -1,4 +1,7 @@
 {
+  "audioDescriptionDialogueOverlap": "Consenti audiodescrizioni durante i dialoghi e la telecronaca",
+  "placesPhoneQuery": "Inserisci il numero di telefono",
+  "placesPhoneInvalid": "Inserisci un numero di telefono valido, completo di prefisso.",
   "routeDeparture": "Partenza",
   "routeLeaveNow": "Partenza ora",
   "routeLeaveAt": "Parti alle",

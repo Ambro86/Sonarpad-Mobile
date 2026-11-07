@@ -1,4 +1,7 @@
 {
+  "audioDescriptionDialogueOverlap": "Audiodeskriptionen während Dialogen und Kommentaren zulassen",
+  "placesPhoneQuery": "Telefonnummer eingeben",
+  "placesPhoneInvalid": "Geben Sie eine gültige Telefonnummer mit Vorwahl ein.",
   "routeDeparture": "Abfahrt",
   "routeLeaveNow": "Jetzt abfahren",
   "routeLeaveAt": "Abfahrt um",

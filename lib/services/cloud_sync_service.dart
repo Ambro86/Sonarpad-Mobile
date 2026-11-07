@@ -1,3 +1,4 @@
+import 'collection_storage.dart';
 import 'dart:convert';
 import 'dart:async';
 import 'dart:io';
@@ -344,39 +345,44 @@ class CloudSyncService {
     await _save(meta);
     // Capture edits made during the request. Journal makes partial local writes
     // recoverable: on retry the same response and original snapshot are used.
-    final allCurrent = await collections.read();
-    final current = <String, List<Map<String, dynamic>>>{
-      for (final key in sent.keys) key: allCurrent[key] ?? [],
-    };
-    final applied = mergeCloudState(
-      remote,
-      parseCloudState(pending['state']),
-      current,
-    );
-    await _guardDeletions(meta, 'incoming', current, applied);
-    await collections.write(applied);
-    final persistedAll = await collections.read();
-    final persisted = <String, List<Map<String, dynamic>>>{
-      for (final key in applied.keys) key: persistedAll[key] ?? [],
-    };
-    await logCloudReductions(current, persisted, 'write_verified');
-    if (removedCloudItems(applied, persisted).isNotEmpty) {
-      throw const CloudSyncApiException('storage_error');
-    }
-    meta.addAll({
-      'sequence': response['sequence'],
-      'baseline': {...parseCloudState(meta['baseline'] ?? {}), ...remote},
-      'last_sync': clock().toUtc().toIso8601String(),
+    final pendingSnapshot = pending;
+    await CollectionStorage.run(() async {
+      final allCurrent = await collections.read();
+      final current = <String, List<Map<String, dynamic>>>{
+        for (final key in sent.keys) key: allCurrent[key] ?? [],
+      };
+      final applied = mergeCloudState(
+        remote,
+        parseCloudState(pendingSnapshot['state']),
+        current,
+      );
+      await _guardDeletions(meta, 'incoming', current, applied);
+      await collections.write(applied);
+      final persistedAll = await collections.read();
+      final persisted = <String, List<Map<String, dynamic>>>{
+        for (final key in applied.keys) key: persistedAll[key] ?? [],
+      };
+      await logCloudReductions(current, persisted, 'write_verified');
+      if (removedCloudItems(applied, persisted).isNotEmpty) {
+        throw const CloudSyncApiException('storage_error');
+      }
+      meta.addAll({
+        'sequence': response['sequence'],
+        'baseline': {...parseCloudState(meta['baseline'] ?? {}), ...remote},
+        'last_sync': clock().toUtc().toIso8601String(),
+      });
+      await CloudSyncDeletions.consume(
+        pendingSnapshot['deletion_events'] as List? ?? [],
+      );
+      meta.remove('approved_outgoing');
+      meta.remove('approved_incoming');
+      meta.remove('deletion_review');
+      meta.remove('pending');
+      meta.remove('response');
+      await _save(meta);
+      automaticPending = _fingerprint(applied) != _fingerprint(remote);
+      automaticFailed = false;
     });
-    await CloudSyncDeletions.consume(pending['deletion_events'] as List? ?? []);
-    meta.remove('approved_outgoing');
-    meta.remove('approved_incoming');
-    meta.remove('deletion_review');
-    meta.remove('pending');
-    meta.remove('response');
-    await _save(meta);
-    automaticPending = _fingerprint(applied) != _fingerprint(remote);
-    automaticFailed = false;
   }
 
   Future<String> invitation() => _exclusive(() async {

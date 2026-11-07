@@ -372,13 +372,15 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
     await _openItem(SonarMusicItem(kind: 'album', id: item.albumId!,
       browseId: item.albumId, title: item.album ?? _label('album')));
   }
-  Future<PodcastEpisode> _episode(SonarMusicItem item) async {
-    final media = await _service.resolve(item);
+  Future<PodcastEpisode> _episode(SonarMusicItem item, {bool afterPlaybackFailure = false}) async {
+    final media = afterPlaybackFailure
+        ? await _service.recoverPlayback(item)
+        : await _service.resolve(item);
     return PodcastEpisode(id: 'sonarmusic:${item.videoId}',
       title: media.title, description: media.channel ?? item.artist ?? '',
       audioUrl: media.audioUrl, videoUrl: media.videoUrl,
       audioTracks: media.audioTracks,
-      selectedAudioTrackId: media.selectedAudioTrackId);
+      selectedAudioTrackId: media.selectedAudioTrackId, isLive: media.isLive);
   }
   Future<void> _play(SonarMusicItem item, {bool shuffle = false, bool forceAutoplay = false}) async {
     if (_busy || !item.playable) return;
@@ -453,7 +455,7 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
           // Use the same initialization as SonarTube, regardless of search kind.
           isVideoSupported: true,
           startWithVideoThenRestorePreference: true,
-          refreshEpisode: () => _episode(currentItem()),
+          refreshEpisode: () => _episode(currentItem(), afterPlaybackFailure: true),
           navigateEpisode: queue.length > 1 ? navigate : null,
           hasPreviousEpisode: () => current > 0,
           hasNextEpisode: () => current + 1 < queue.length,

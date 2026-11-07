@@ -1,3 +1,4 @@
+import 'collection_storage.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'app_settings_service.dart';
@@ -239,37 +240,38 @@ class CloudSyncPreferences {
     ),
   };
 
-  static Future<List<Map<String, dynamic>>> read() async {
-    final prefs = await SharedPreferences.getInstance();
-    final items = <Map<String, dynamic>>[];
-    final code = await AppSettingsService().getTvSecretCode();
-    if (_validActivation(code)) {
-      items.add({
-        'id': 'activation.code',
-        'data': {'value': code.trim()},
-      });
-    }
-    for (final entry in specs.entries) {
-      final spec = entry.value;
-      Object? value = prefs.get(spec.key);
-      if (spec.field != null) {
-        try {
-          value = value is String
-              ? (jsonDecode(value) as Map)[spec.field]
-              : null;
-        } on FormatException {
-          value = null;
+  static Future<List<Map<String, dynamic>>> read() =>
+      CollectionStorage.run(() async {
+        final prefs = await SharedPreferences.getInstance();
+        final items = <Map<String, dynamic>>[];
+        final code = await AppSettingsService().getTvSecretCode();
+        if (_validActivation(code)) {
+          items.add({
+            'id': 'activation.code',
+            'data': {'value': code.trim()},
+          });
         }
-      }
-      if (value != null && spec.accepts(value)) {
-        items.add({
-          'id': entry.key,
-          'data': {'value': value},
-        });
-      }
-    }
-    return items;
-  }
+        for (final entry in specs.entries) {
+          final spec = entry.value;
+          Object? value = prefs.get(spec.key);
+          if (spec.field != null) {
+            try {
+              value = value is String
+                  ? (jsonDecode(value) as Map)[spec.field]
+                  : null;
+            } on FormatException {
+              value = null;
+            }
+          }
+          if (value != null && spec.accepts(value)) {
+            items.add({
+              'id': entry.key,
+              'data': {'value': value},
+            });
+          }
+        }
+        return items;
+      });
 
   static List<Map<String, dynamic>> project(List<Map<String, dynamic>> items) =>
       items
@@ -300,7 +302,7 @@ class CloudSyncPreferences {
   static Future<void> write(
     List<Map<String, dynamic>> items, {
     List<Map<String, dynamic>> baseline = const [],
-  }) async {
+  }) => CollectionStorage.run(() async {
     final selected = project(items);
     final prefs = await SharedPreferences.getInstance();
     final byId = {
@@ -351,5 +353,5 @@ class CloudSyncPreferences {
       }
       if (!saved) throw const FormatException('preferences_save_failed');
     }
-  }
+  });
 }

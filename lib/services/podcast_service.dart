@@ -1,3 +1,4 @@
+import 'collection_storage.dart';
 import 'cloud_sync_deletions.dart';
 import 'dart:convert';
 import 'dart:io';
@@ -13,12 +14,12 @@ import '../models/podcast.dart';
 import 'raiplay_sound_service.dart';
 import 'podcast_cache_service.dart';
 
-typedef EmbeddedPodcastChapterLoader = Future<List<PodcastChapter>> Function(
-  String mediaUrl,
-);
+typedef EmbeddedPodcastChapterLoader =
+    Future<List<PodcastChapter>> Function(String mediaUrl);
 
 class PodcastService {
-  String _getPlayedEpisodesKey(String feedUrl) => 'sonarpad_played_episodes_$feedUrl';
+  String _getPlayedEpisodesKey(String feedUrl) =>
+      'sonarpad_played_episodes_$feedUrl';
 
   Future<List<PodcastEpisode>> getPlayedEpisodes(String feedUrl) async {
     final prefs = await SharedPreferences.getInstance();
@@ -27,44 +28,55 @@ class PodcastService {
     for (final str in listStr) {
       try {
         final decoded = jsonDecode(str) as Map<String, dynamic>;
-        list.add(PodcastEpisode(
-          title: decoded['title'] ?? '',
-          description: decoded['description'] ?? '',
-          audioUrl: decoded['audioUrl'] ?? '',
-          publishedAt: decoded['publishedAt'] != null ? DateTime.parse(decoded['publishedAt']) : null,
-          chaptersUrl: decoded['chaptersUrl'] as String?,
-          chaptersType: decoded['chaptersType'] as String?,
-        ));
+        list.add(
+          PodcastEpisode(
+            title: decoded['title'] ?? '',
+            description: decoded['description'] ?? '',
+            audioUrl: decoded['audioUrl'] ?? '',
+            publishedAt: decoded['publishedAt'] != null
+                ? DateTime.parse(decoded['publishedAt'])
+                : null,
+            chaptersUrl: decoded['chaptersUrl'] as String?,
+            chaptersType: decoded['chaptersType'] as String?,
+          ),
+        );
       } catch (_) {}
     }
     return list;
   }
 
-  Future<void> markEpisodeAsPlayed(String feedUrl, PodcastEpisode episode) async {
+  Future<void> markEpisodeAsPlayed(
+    String feedUrl,
+    PodcastEpisode episode,
+  ) async {
     final prefs = await SharedPreferences.getInstance();
     final key = _getPlayedEpisodesKey(feedUrl);
     var current = await getPlayedEpisodes(feedUrl);
-    
+
     // Rimuovi se c'è già
     current.removeWhere((e) => e.audioUrl == episode.audioUrl);
-    
+
     // Aggiungi in cima
     current.insert(0, episode);
-    
+
     // Tieni massimo 100
     if (current.length > 100) {
       current = current.sublist(0, 100);
     }
-    
-    final encoded = current.map((e) => jsonEncode({
-      'title': e.title,
-      'description': e.description,
-      'audioUrl': e.audioUrl,
-      'publishedAt': e.publishedAt?.toIso8601String(),
-      'chaptersUrl': e.chaptersUrl,
-      'chaptersType': e.chaptersType,
-    })).toList();
-    
+
+    final encoded = current
+        .map(
+          (e) => jsonEncode({
+            'title': e.title,
+            'description': e.description,
+            'audioUrl': e.audioUrl,
+            'publishedAt': e.publishedAt?.toIso8601String(),
+            'chaptersUrl': e.chaptersUrl,
+            'chaptersType': e.chaptersType,
+          }),
+        )
+        .toList();
+
     await prefs.setStringList(key, encoded);
   }
 
@@ -309,21 +321,40 @@ class PodcastService {
   PodcastService({
     http.Client? client,
     EmbeddedPodcastChapterLoader? embeddedChapterLoader,
-  })  : _client = client ?? http.Client(),
-        _embeddedChapterLoader = embeddedChapterLoader;
+  }) : _client = client ?? http.Client(),
+       _embeddedChapterLoader = embeddedChapterLoader;
 
-  Future<List<PodcastSubscription>> loadSubscriptions() async {
-    final prefs = await SharedPreferences.getInstance();
-    final raw = prefs.getStringList(_prefsKey) ?? const [];
-    return raw.map((e) => PodcastSubscription.fromJson(jsonDecode(e))).toList();
-  }
+  Future<List<PodcastSubscription>> loadSubscriptions() =>
+      CollectionStorage.run(() async {
+        final prefs = await SharedPreferences.getInstance();
+        final raw = prefs.getStringList(_prefsKey) ?? const [];
+        return raw
+            .map((e) => PodcastSubscription.fromJson(jsonDecode(e)))
+            .toList();
+      });
 
   Future<void> saveSubscriptions(
-      List<PodcastSubscription> subscriptions) async {
+    List<PodcastSubscription> subscriptions, {
+    bool fromCloud = false,
+    List<String> explicitlyRemoved = const [],
+  }) => CollectionStorage.run(() async {
     final prefs = await SharedPreferences.getInstance();
+    if (!fromCloud) {
+      final current = await loadSubscriptions();
+      final ids = subscriptions.map((item) => item.feedUrl.trim()).toSet();
+      subscriptions =
+          [
+                ...subscriptions,
+                ...current.where((item) => !ids.contains(item.feedUrl.trim())),
+              ]
+              .where((item) => !explicitlyRemoved.contains(item.feedUrl.trim()))
+              .toList();
+    }
     await prefs.setStringList(
-        _prefsKey, subscriptions.map((e) => jsonEncode(e.toJson())).toList());
-  }
+      _prefsKey,
+      subscriptions.map((e) => jsonEncode(e.toJson())).toList(),
+    );
+  });
 
   Future<int> importSubscriptionsFromOpml(File file) async {
     final text = await file.readAsString();
@@ -336,10 +367,12 @@ class PodcastService {
       final titleAttr = _opmlAttribute(outline, 'title')?.trim();
       final textAttr = _opmlAttribute(outline, 'text')?.trim();
       final title = titleAttr?.isNotEmpty == true ? titleAttr : textAttr;
-      imported.add(PodcastSubscription(
-        title: title == null || title.isEmpty ? feedUrl : title,
-        feedUrl: feedUrl,
-      ));
+      imported.add(
+        PodcastSubscription(
+          title: title == null || title.isEmpty ? feedUrl : title,
+          feedUrl: feedUrl,
+        ),
+      );
     }
 
     if (imported.isEmpty) return 0;
@@ -401,8 +434,11 @@ class PodcastService {
         .replaceAll("'", '&apos;');
   }
 
-  Future<List<PodcastSearchResult>> searchPodcasts(String query,
-      {String? country = 'it', PodcastCategory? category}) async {
+  Future<List<PodcastSearchResult>> searchPodcasts(
+    String query, {
+    String? country = 'it',
+    PodcastCategory? category,
+  }) async {
     final q = query.trim();
     final genreId = category?.genreId;
     final topCountry = country ?? 'us';
@@ -419,9 +455,11 @@ class PodcastService {
     Object? topByGenreError;
     if (q.isEmpty) {
       try {
-        results.addAll(genreId == null
-            ? await _searchAppleTopByCountry(topCountry)
-            : await _searchAppleTopByGenre(genreId, topCountry));
+        results.addAll(
+          genreId == null
+              ? await _searchAppleTopByCountry(topCountry)
+              : await _searchAppleTopByGenre(genreId, topCountry),
+        );
       } catch (e) {
         topByGenreError = e;
       }
@@ -456,18 +494,24 @@ class PodcastService {
   }
 
   Future<List<PodcastSearchResult>> _searchApple(
-      Map<String, String> params) async {
+    Map<String, String> params,
+  ) async {
     final uri = Uri.https('itunes.apple.com', '/search', params);
     final results = await _fetchAppleItems(uri, 'Ricerca podcast non riuscita');
     return _appleItemsToResults(results);
   }
 
   Future<List<Map<String, dynamic>>> _fetchAppleItems(
-      Uri uri, String errorMessage) async {
-    final response = await _client.get(uri, headers: const {
-      'User-Agent': 'SonarpadMobile/0.1',
-      'Accept': 'application/json',
-    });
+    Uri uri,
+    String errorMessage,
+  ) async {
+    final response = await _client.get(
+      uri,
+      headers: const {
+        'User-Agent': 'SonarpadMobile/0.1',
+        'Accept': 'application/json',
+      },
+    );
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception('$errorMessage: ${response.statusCode}');
     }
@@ -477,14 +521,14 @@ class PodcastService {
   }
 
   List<PodcastSearchResult> _appleItemsToResults(
-      List<Map<String, dynamic>> results) {
+    List<Map<String, dynamic>> results,
+  ) {
     return results
         .map((item) {
           final feedUrl = (item['feedUrl'] ?? '').toString();
           if (feedUrl.isEmpty) return null;
           return PodcastSearchResult(
-            title:
-                (item['collectionName'] ?? 'Podcast').toString(),
+            title: (item['collectionName'] ?? 'Podcast').toString(),
             author: (item['artistName'] ?? '').toString(),
             feedUrl: feedUrl,
             artworkUrl: item['artworkUrl100']?.toString(),
@@ -495,16 +539,23 @@ class PodcastService {
   }
 
   Future<List<PodcastSearchResult>> _searchAppleTopByCountry(
-      String country) async {
-    final uri = Uri.parse('https://itunes.apple.com/$country/rss/toppodcasts/'
-        'limit=50/json');
-    final response = await _client.get(uri, headers: const {
-      'User-Agent': 'SonarpadMobile/0.1',
-      'Accept': 'application/json',
-    });
+    String country,
+  ) async {
+    final uri = Uri.parse(
+      'https://itunes.apple.com/$country/rss/toppodcasts/'
+      'limit=50/json',
+    );
+    final response = await _client.get(
+      uri,
+      headers: const {
+        'User-Agent': 'SonarpadMobile/0.1',
+        'Accept': 'application/json',
+      },
+    );
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception(
-          'Podcast per nazione non raggiungibili: ${response.statusCode}');
+        'Podcast per nazione non raggiungibili: ${response.statusCode}',
+      );
     }
     final decoded = jsonDecode(response.body) as Map<String, dynamic>;
     final feed = decoded['feed'] as Map<String, dynamic>? ?? const {};
@@ -512,8 +563,8 @@ class PodcastService {
     final entries = rawEntries is List
         ? rawEntries
         : rawEntries == null
-            ? const []
-            : [rawEntries];
+        ? const []
+        : [rawEntries];
     final ids = entries
         .map((raw) {
           final entry = raw as Map<String, dynamic>;
@@ -530,22 +581,32 @@ class PodcastService {
       'id': ids.join(','),
       'country': country,
     });
-    final lookup =
-        await _fetchAppleItems(lookupUri, 'Lookup podcast non riuscito');
+    final lookup = await _fetchAppleItems(
+      lookupUri,
+      'Lookup podcast non riuscito',
+    );
     return _appleItemsToResults(lookup);
   }
 
   Future<List<PodcastSearchResult>> _searchAppleTopByGenre(
-      int genreId, String country) async {
-    final uri = Uri.parse('https://itunes.apple.com/$country/rss/toppodcasts/'
-        'limit=50/genre=$genreId/json');
-    final response = await _client.get(uri, headers: const {
-      'User-Agent': 'SonarpadMobile/0.1',
-      'Accept': 'application/json',
-    });
+    int genreId,
+    String country,
+  ) async {
+    final uri = Uri.parse(
+      'https://itunes.apple.com/$country/rss/toppodcasts/'
+      'limit=50/genre=$genreId/json',
+    );
+    final response = await _client.get(
+      uri,
+      headers: const {
+        'User-Agent': 'SonarpadMobile/0.1',
+        'Accept': 'application/json',
+      },
+    );
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception(
-          'Categorie podcast non raggiungibili: ${response.statusCode}');
+        'Categorie podcast non raggiungibili: ${response.statusCode}',
+      );
     }
     final decoded = jsonDecode(response.body) as Map<String, dynamic>;
     final feed = decoded['feed'] as Map<String, dynamic>? ?? const {};
@@ -553,8 +614,8 @@ class PodcastService {
     final entries = rawEntries is List
         ? rawEntries
         : rawEntries == null
-            ? const []
-            : [rawEntries];
+        ? const []
+        : [rawEntries];
     final ids = entries
         .map((raw) {
           final entry = raw as Map<String, dynamic>;
@@ -571,10 +632,13 @@ class PodcastService {
       'id': ids.join(','),
       'country': country,
     });
-    final lookup =
-        await _fetchAppleItems(lookupUri, 'Lookup podcast non riuscito');
-    final filtered =
-        lookup.where((item) => _appleItemMatchesGenre(item, genreId)).toList();
+    final lookup = await _fetchAppleItems(
+      lookupUri,
+      'Lookup podcast non riuscito',
+    );
+    final filtered = lookup
+        .where((item) => _appleItemMatchesGenre(item, genreId))
+        .toList();
     return _appleItemsToResults(filtered.isEmpty ? lookup : filtered);
   }
 
@@ -587,19 +651,27 @@ class PodcastService {
     return false;
   }
 
-  String _podcastTitleKey(String title) => title.toLowerCase()
+  String _podcastTitleKey(String title) => title
+      .toLowerCase()
       .split(RegExp(r'[^\p{L}\p{N}]+', unicode: true))
-      .where((part) => part.isNotEmpty).join('-');
+      .where((part) => part.isNotEmpty)
+      .join('-');
 
   Future<List<PodcastSearchResult>> _searchSpreaker(String query) async {
     final q = query.trim();
     if (q.isEmpty) return const [];
     final errors = <Object>[];
     Future<List<PodcastSearchResult>> attempt(
-        Future<List<PodcastSearchResult>> Function() action) async {
-      try { return await action(); }
-      catch (error) { errors.add(error); return []; }
+      Future<List<PodcastSearchResult>> Function() action,
+    ) async {
+      try {
+        return await action();
+      } catch (error) {
+        errors.add(error);
+        return [];
+      }
     }
+
     final groups = await Future.wait([
       attempt(() => _searchSpreakerExact(q)),
       attempt(() => _searchSpreakerCatalog(q)),
@@ -612,9 +684,15 @@ class PodcastService {
     final key = _podcastTitleKey(query);
     if (key.isEmpty) return [];
     final uri = Uri.https('api.spreaker.com', '/v2/shows/$key');
-    final response = await _client.get(uri, headers: const {
-      'User-Agent': 'SonarpadMobile/0.1', 'Accept': 'application/json',
-    }).timeout(const Duration(seconds: 30));
+    final response = await _client
+        .get(
+          uri,
+          headers: const {
+            'User-Agent': 'SonarpadMobile/0.1',
+            'Accept': 'application/json',
+          },
+        )
+        .timeout(const Duration(seconds: 30));
     if (response.statusCode == 404) return [];
     _checkSpreakerResponse(response);
     final decoded = jsonDecode(response.body) as Map<String, dynamic>;
@@ -629,17 +707,28 @@ class PodcastService {
 
   Future<List<PodcastSearchResult>> _searchSpreakerCatalog(String query) async {
     final uri = Uri.https('api.spreaker.com', '/v2/search', {
-      'q': query, 'type': 'shows', 'limit': '20',
+      'q': query,
+      'type': 'shows',
+      'limit': '20',
     });
-    final response = await _client.get(uri, headers: const {
-      'User-Agent': 'SonarpadMobile/0.1', 'Accept': 'application/json',
-    }).timeout(const Duration(seconds: 30));
+    final response = await _client
+        .get(
+          uri,
+          headers: const {
+            'User-Agent': 'SonarpadMobile/0.1',
+            'Accept': 'application/json',
+          },
+        )
+        .timeout(const Duration(seconds: 30));
     _checkSpreakerResponse(response);
     final decoded = jsonDecode(response.body) as Map<String, dynamic>;
     final payload = decoded['response'] as Map<String, dynamic>? ?? const {};
     final results = payload['items'] as List<dynamic>? ?? const [];
-    return results.whereType<Map<String, dynamic>>()
-        .map(_spreakerResult).whereType<PodcastSearchResult>().toList();
+    return results
+        .whereType<Map<String, dynamic>>()
+        .map(_spreakerResult)
+        .whereType<PodcastSearchResult>()
+        .toList();
   }
 
   void _checkSpreakerResponse(http.Response response) {
@@ -654,10 +743,14 @@ class PodcastService {
     if (showId.isEmpty || title.trim().isEmpty) return null;
     final author = (item['author_name'] ?? '').toString();
     final nestedAuthor = item['author'];
-    final fallbackAuthor = nestedAuthor is Map ? nestedAuthor['fullname'] : null;
+    final fallbackAuthor = nestedAuthor is Map
+        ? nestedAuthor['fullname']
+        : null;
     return PodcastSearchResult(
       title: title,
-      author: author.trim().isNotEmpty ? author : (fallbackAuthor ?? '').toString(),
+      author: author.trim().isNotEmpty
+          ? author
+          : (fallbackAuthor ?? '').toString(),
       feedUrl: 'https://www.spreaker.com/show/$showId/episodes/feed',
       artworkUrl: (item['image_url'] ?? item['site_url'])?.toString(),
     );
@@ -666,12 +759,16 @@ class PodcastService {
   List<PodcastSearchResult> _dedupResults(List<PodcastSearchResult> results) {
     final seenFeedUrls = <String>{};
     // Identical titles can belong to different podcasts.
-    return results.where((result) =>
-        seenFeedUrls.add(result.feedUrl.trim().toLowerCase())).toList();
+    return results
+        .where(
+          (result) => seenFeedUrls.add(result.feedUrl.trim().toLowerCase()),
+        )
+        .toList();
   }
 
   Future<PodcastSubscription> addSearchResult(
-      PodcastSearchResult result) async {
+    PodcastSearchResult result,
+  ) async {
     final sub = PodcastSubscription(
       title: result.title,
       feedUrl: result.feedUrl,
@@ -710,13 +807,15 @@ class PodcastService {
               ?.innerText ??
           '',
     );
-    final author = channel
+    final author =
+        channel
             .findAllElements('author', namespace: '*')
             .firstOrNull
             ?.innerText
             .trim() ??
         result.author;
-    final artworkUrl = channel
+    final artworkUrl =
+        channel
             .findAllElements('image', namespace: '*')
             .firstOrNull
             ?.getAttribute('href') ??
@@ -767,15 +866,22 @@ class PodcastService {
     return sub;
   }
 
-  Future<void> removeSubscription(PodcastSubscription subscription) async {
-    final list = await loadSubscriptions();
-    await CloudSyncDeletions.record('podcasts', [subscription.feedUrl.trim()]);
-    list.removeWhere((e) => e.feedUrl == subscription.feedUrl);
-    await saveSubscriptions(list);
-  }
+  Future<void> removeSubscription(PodcastSubscription subscription) =>
+      CollectionStorage.run(() async {
+        final list = await loadSubscriptions();
+        await CloudSyncDeletions.record('podcasts', [
+          subscription.feedUrl.trim(),
+        ]);
+        list.removeWhere((e) => e.feedUrl == subscription.feedUrl);
+        await saveSubscriptions(
+          list,
+          explicitlyRemoved: [subscription.feedUrl.trim()],
+        );
+      });
 
   Future<List<PodcastEpisode>> fetchEpisodes(
-      PodcastSubscription subscription) async {
+    PodcastSubscription subscription,
+  ) async {
     if (_isRaiPlaySoundUrl(subscription.feedUrl)) {
       return _fetchRaiPlaySoundEpisodes(subscription.feedUrl);
     }
@@ -789,9 +895,11 @@ class PodcastService {
         .findAllElements('item')
         .map((item) {
           final enclosure = item.findElements('enclosure').firstOrNull;
-          final mediaContent =
-              item.findAllElements('content', namespace: '*').firstOrNull;
-          final audioUrl = enclosure?.getAttribute('url') ??
+          final mediaContent = item
+              .findAllElements('content', namespace: '*')
+              .firstOrNull;
+          final audioUrl =
+              enclosure?.getAttribute('url') ??
               mediaContent?.getAttribute('url') ??
               '';
           final chaptersLink = _extractPodcastChaptersLink(
@@ -799,13 +907,15 @@ class PodcastService {
             subscription.feedUrl,
           );
           return PodcastEpisode(
-            title: item.findElements('title').firstOrNull?.innerText.trim() ??
-                '—',
+            title:
+                item.findElements('title').firstOrNull?.innerText.trim() ?? '—',
             description: _cleanHtml(
-                item.findElements('description').firstOrNull?.innerText ?? ''),
+              item.findElements('description').firstOrNull?.innerText ?? '',
+            ),
             audioUrl: audioUrl,
             publishedAt: _parsePodcastDate(
-                item.findElements('pubDate').firstOrNull?.innerText ?? ''),
+              item.findElements('pubDate').firstOrNull?.innerText ?? '',
+            ),
             chaptersUrl: chaptersLink?.url,
             chaptersType: chaptersLink?.type,
           );
@@ -884,7 +994,8 @@ class PodcastService {
         var offset = Duration.zero;
         final numericZone = RegExp(r'^([+-])(\d{2})(\d{2})$').firstMatch(zone);
         if (numericZone != null) {
-          final minutes = int.parse(numericZone.group(2)!) * 60 +
+          final minutes =
+              int.parse(numericZone.group(2)!) * 60 +
               int.parse(numericZone.group(3)!);
           offset = Duration(
             minutes: numericZone.group(1) == '+' ? minutes : -minutes,
@@ -900,8 +1011,9 @@ class PodcastService {
     return null;
   }
 
-
-  Future<List<PodcastChapter>> fetchEpisodeChapters(PodcastEpisode episode) async {
+  Future<List<PodcastChapter>> fetchEpisodeChapters(
+    PodcastEpisode episode,
+  ) async {
     final candidates = <String>[];
     void addCandidate(String? url) {
       final trimmed = url?.trim();
@@ -1034,10 +1146,7 @@ class PodcastService {
       final url = element.getAttribute('url') ?? element.getAttribute('href');
       final resolved = _resolvePodcastUrl(feedUrl, url);
       if (resolved != null) {
-        return _PodcastChaptersLink(
-          resolved,
-          element.getAttribute('type'),
-        );
+        return _PodcastChaptersLink(resolved, element.getAttribute('type'));
       }
     }
 
@@ -1048,7 +1157,8 @@ class PodcastService {
       final type = link.getAttribute('type');
       final hrefLower = href.toLowerCase();
       final typeLower = (type ?? '').toLowerCase();
-      final looksLikeChapters = rel.contains('chapter') ||
+      final looksLikeChapters =
+          rel.contains('chapter') ||
           hrefLower.contains('/chapters/') ||
           hrefLower.contains('chapters.json') ||
           hrefLower.contains('chapter') ||
@@ -1088,12 +1198,14 @@ class PodcastService {
       if (title == null || title.isEmpty) continue;
       final url = raw['url']?.toString().trim();
       final image = (raw['img'] ?? raw['image'])?.toString().trim();
-      chapters.add(PodcastChapter(
-        start: start,
-        title: title,
-        url: url == null || url.isEmpty ? null : url,
-        imageUrl: image == null || image.isEmpty ? null : image,
-      ));
+      chapters.add(
+        PodcastChapter(
+          start: start,
+          title: title,
+          url: url == null || url.isEmpty ? null : url,
+          imageUrl: image == null || image.isEmpty ? null : image,
+        ),
+      );
     }
     chapters.sort((a, b) => a.start.compareTo(b.start));
     final deduped = <PodcastChapter>[];
@@ -1122,7 +1234,8 @@ class PodcastService {
         } else if (parts.length == 2) {
           totalSeconds = double.parse(parts[0]) * 60 + double.parse(parts[1]);
         } else if (parts.length == 3) {
-          totalSeconds = double.parse(parts[0]) * 3600 +
+          totalSeconds =
+              double.parse(parts[0]) * 3600 +
               double.parse(parts[1]) * 60 +
               double.parse(parts[2]);
         } else {

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math' as math;
 import '../utils/app_logger.dart';
 import 'dart:developer' as developer;
 import 'package:http/http.dart' as http;
@@ -35,6 +36,7 @@ class GeocodeCandidate {
   final String postalcode;
   final double latitude;
   final double longitude;
+  final bool requiresConfirmation;
 
   const GeocodeCandidate({
     required this.label,
@@ -45,6 +47,7 @@ class GeocodeCandidate {
     required this.postalcode,
     required this.latitude,
     required this.longitude,
+    this.requiresConfirmation = false,
   });
 
   factory GeocodeCandidate.fromJson(Map<String, dynamic> json) {
@@ -226,9 +229,25 @@ class RouteService {
     required String query,
     required String language, // es: 'it'
     required String countryCode, // es: 'it'
+    GeocodeCandidate? near,
   }) async {
     final q = query.trim();
     if (q.isEmpty) throw Exception(_invalidAddress(language));
+
+    try {
+      final suggestions = await _fetchGoogleGeocode(
+        query: q,
+        language: language,
+        countryCode: countryCode,
+      );
+      if (suggestions.isNotEmpty) {
+        await AppLogger.log('route_geocode: provider=google candidates=${suggestions.length} nearby=${near != null}');
+        return _nearbyFirst(suggestions, near);
+      }
+    } catch (error) {
+      developer.log('Route Google suggestions unavailable', error: error);
+    }
+    await AppLogger.log('route_geocode: provider=ors fallback=true');
 
     final results = await _fetchGeocode(
       query: q,
@@ -247,7 +266,7 @@ class RouteService {
           );
           if (fallbackResults.isNotEmpty &&
               !_isAllCityFallback(fallbackResults, simplified)) {
-            return fallbackResults;
+            return _nearbyFirst(fallbackResults, near);
           }
         } catch (error) {
           developer.log('Route geocode fallback failed', error: error);
@@ -264,7 +283,7 @@ class RouteService {
           );
           if (fallbackResults.isNotEmpty &&
               !_isAllCityFallback(fallbackResults, moreSimplified)) {
-            return fallbackResults;
+            return _nearbyFirst(fallbackResults, near);
           }
         } catch (error) {
           developer.log('Route geocode fallback failed', error: error);
@@ -272,7 +291,77 @@ class RouteService {
       }
     }
 
-    return results;
+    return _nearbyFirst(results, near);
+  }
+
+  Future<List<GeocodeCandidate>> _fetchGoogleGeocode({
+    required String query,
+    required String language,
+    required String countryCode,
+  }) async {
+    final response = await _client.post(
+      Uri.parse('$_baseUrl/percorsi.php'),
+      headers: {..._headers, 'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'azione': 'indirizzi',
+        'q': query,
+        'paese': countryCode.toLowerCase(),
+        'lingua': language,
+      }),
+    ).timeout(const Duration(seconds: 10));
+    if (response.statusCode != 200) {
+      throw Exception(_networkGeocodeError(language, response.statusCode));
+    }
+    final data = jsonDecode(response.body) as Map<String, dynamic>;
+    if (data['ok'] != true) throw Exception(_serverGenericError(language));
+    final alternatives = data['data']?['alternative'] as List<dynamic>? ?? [];
+    // Preserve the existing house-number lookup if Google only recognized a street.
+    if (alternatives.any((item) => item['civico_da_verificare'] == true)) {
+      return [];
+    }
+    final candidates = <GeocodeCandidate>[];
+    for (final item in alternatives) {
+      final latitude = item['latitude'];
+      final longitude = item['longitude'];
+      final label = (item['indirizzo'] as String? ?? '').trim();
+      // Ignore generic search suggestions and older servers without coordinates.
+      if (label.isEmpty || latitude is! num || longitude is! num ||
+          !latitude.isFinite || !longitude.isFinite ||
+          latitude.abs() > 90 || longitude.abs() > 180) {
+        continue;
+      }
+      candidates.add(GeocodeCandidate(
+        label: label,
+        name: item['nome'] as String? ?? label,
+        country: countryCode,
+        region: '',
+        locality: '',
+        postalcode: '',
+        latitude: latitude.toDouble(),
+        longitude: longitude.toDouble(),
+        requiresConfirmation: item['tipo'] != 'indirizzo',
+      ));
+    }
+    return candidates;
+  }
+
+  List<GeocodeCandidate> _nearbyFirst(
+    List<GeocodeCandidate> candidates,
+    GeocodeCandidate? near,
+  ) {
+    if (near == null || candidates.length < 2) return candidates;
+    double distance(GeocodeCandidate candidate) {
+      final latitude = candidate.latitude * math.pi / 180;
+      final originLatitude = near.latitude * math.pi / 180;
+      final lat = math.sin((latitude - originLatitude) / 2);
+      final lon = math.sin((candidate.longitude - near.longitude) * math.pi / 360);
+      return lat * lat + math.cos(latitude) * math.cos(originLatitude) * lon * lon;
+    }
+    final ordered = candidates.indexed.toList()..sort((a, b) {
+      final result = distance(a.$2).compareTo(distance(b.$2));
+      return result != 0 ? result : a.$1.compareTo(b.$1);
+    });
+    return ordered.map((item) => item.$2).toList();
   }
 
   Future<List<GeocodeCandidate>> _fetchGeocode({

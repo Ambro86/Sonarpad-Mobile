@@ -9,6 +9,17 @@ class AppLocalizationsFr extends AppLocalizations {
   AppLocalizationsFr([String locale = 'fr']) : super(locale);
 
   @override
+  String get audioDescriptionDialogueOverlap =>
+      'Autoriser les audiodescriptions pendant les dialogues et les commentaires';
+
+  @override
+  String get placesPhoneQuery => 'Saisissez le numéro de téléphone';
+
+  @override
+  String get placesPhoneInvalid =>
+      'Saisissez un numéro de téléphone valide avec son indicatif.';
+
+  @override
   String get routeDeparture => 'Départ';
 
   @override

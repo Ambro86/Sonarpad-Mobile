@@ -1,3 +1,4 @@
+import 'collection_storage.dart';
 import 'cloud_sync_deletions.dart';
 import 'dart:convert';
 import 'dart:developer' as dev;
@@ -42,30 +43,30 @@ class TvChannel {
       httpUserAgent.trim().isEmpty ? 'Sonarpad TV/1.0' : httpUserAgent.trim();
 
   Map<String, dynamic> toJson() => {
-        'name': name,
-        'url': url,
-        'category': category,
-        'stream_resolver': streamResolver,
-        'resolver_endpoint': resolverEndpoint,
-        'resolver_realm': resolverRealm,
-        'resolver_channel_id': resolverChannelId,
-        'tvg_id': tvgId,
-        'tvg_name': tvgName,
-        'http_user_agent': httpUserAgent,
-      };
+    'name': name,
+    'url': url,
+    'category': category,
+    'stream_resolver': streamResolver,
+    'resolver_endpoint': resolverEndpoint,
+    'resolver_realm': resolverRealm,
+    'resolver_channel_id': resolverChannelId,
+    'tvg_id': tvgId,
+    'tvg_name': tvgName,
+    'http_user_agent': httpUserAgent,
+  };
 
   factory TvChannel.fromJson(Map<String, dynamic> json) => TvChannel(
-        name: json['name'] as String,
-        url: json['url'] as String,
-        category: json['category'] as String? ?? 'Altri',
-        streamResolver: json['stream_resolver'] as String?,
-        resolverEndpoint: json['resolver_endpoint'] as String?,
-        resolverRealm: json['resolver_realm'] as String?,
-        resolverChannelId: json['resolver_channel_id'] as String?,
-        tvgId: json['tvg_id']?.toString() ?? '',
-        tvgName: json['tvg_name']?.toString() ?? '',
-        httpUserAgent: json['http_user_agent']?.toString() ?? '',
-      );
+    name: json['name'] as String,
+    url: json['url'] as String,
+    category: json['category'] as String? ?? 'Altri',
+    streamResolver: json['stream_resolver'] as String?,
+    resolverEndpoint: json['resolver_endpoint'] as String?,
+    resolverRealm: json['resolver_realm'] as String?,
+    resolverChannelId: json['resolver_channel_id'] as String?,
+    tvgId: json['tvg_id']?.toString() ?? '',
+    tvgName: json['tvg_name']?.toString() ?? '',
+    httpUserAgent: json['http_user_agent']?.toString() ?? '',
+  );
 }
 
 class RaiAudioDescriptionStreams {
@@ -125,15 +126,13 @@ class _CachedTvChannels {
   final List<TvChannel> channels;
   final DateTime? savedAt;
 
-  const _CachedTvChannels({
-    required this.channels,
-    this.savedAt,
-  });
+  const _CachedTvChannels({required this.channels, this.savedAt});
 }
 
 class TvService {
-  static const _routeClientToken =
-      String.fromEnvironment('SONARPAD_ROUTE_CLIENT_TOKEN');
+  static const _routeClientToken = String.fromEnvironment(
+    'SONARPAD_ROUTE_CLIENT_TOKEN',
+  );
 
   static const _prefsKey = 'sonarpad_tv_favorites';
   static const _staticKeyParts = ['sonar', 'pad-', 'SonarSecure-'];
@@ -203,15 +202,18 @@ class TvService {
 
     try {
       await AppLogger.log('TV: scaricamento lista canali dal server Sonarpad');
-      final response = await http.get(
-        Uri.parse(
-            'https://sonarpad.com/api/tv_channels_resolver.php?resolve=0'),
-        headers: {
-          'X-Sonarpad-TV-Token': _routeClientToken,
-          'X-Sonarpad-Route-Token': _routeClientToken,
-          'User-Agent': 'Sonarpad TV/1.0',
-        },
-      ).timeout(const Duration(seconds: 10));
+      final response = await http
+          .get(
+            Uri.parse(
+              'https://sonarpad.com/api/tv_channels_resolver.php?resolve=0',
+            ),
+            headers: {
+              'X-Sonarpad-TV-Token': _routeClientToken,
+              'X-Sonarpad-Route-Token': _routeClientToken,
+              'User-Agent': 'Sonarpad TV/1.0',
+            },
+          )
+          .timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
         final channels = _parseServerChannels(response.body);
@@ -226,7 +228,8 @@ class TvService {
         }
       }
       throw Exception(
-          'Nessun canale ricevuto dal server (status: ${response.statusCode})');
+        'Nessun canale ricevuto dal server (status: ${response.statusCode})',
+      );
     } catch (e) {
       dev.log('Failed to load channels from network: $e');
       await AppLogger.log(
@@ -250,9 +253,11 @@ class TvService {
         );
       }
       await AppLogger.log(
-          'TV: cache privata lista canali assente o non valida');
+        'TV: cache privata lista canali assente o non valida',
+      );
       throw Exception(
-          'Impossibile scaricare i canali. Verifica la connessione internet e riprova.');
+        'Impossibile scaricare i canali. Verifica la connessione internet e riprova.',
+      );
     }
   }
 
@@ -278,26 +283,26 @@ class TvService {
       final gt = raw['group_title']?.toString();
       final cat = (gt == null || gt.trim().isEmpty) ? 'Altri' : gt.trim();
 
-      channels.add(TvChannel(
-        name: name,
-        url: url,
-        category: cat,
-        streamResolver: raw['stream_resolver'] as String?,
-        resolverEndpoint: raw['resolver_endpoint'] as String?,
-        resolverRealm: raw['resolver_realm'] as String?,
-        resolverChannelId: raw['resolver_channel_id'] as String?,
-        tvgId: raw['tvg_id']?.toString() ?? '',
-        tvgName: raw['tvg_name']?.toString() ?? '',
-        httpUserAgent: raw['http_user_agent']?.toString() ?? '',
-      ));
+      channels.add(
+        TvChannel(
+          name: name,
+          url: url,
+          category: cat,
+          streamResolver: raw['stream_resolver'] as String?,
+          resolverEndpoint: raw['resolver_endpoint'] as String?,
+          resolverRealm: raw['resolver_realm'] as String?,
+          resolverChannelId: raw['resolver_channel_id'] as String?,
+          tvgId: raw['tvg_id']?.toString() ?? '',
+          tvgName: raw['tvg_name']?.toString() ?? '',
+          httpUserAgent: raw['http_user_agent']?.toString() ?? '',
+        ),
+      );
     }
     return channels;
   }
 
   Future<File> _channelsCacheFile() async {
-    final cacheDir = await AppCacheService.directory(
-      AppCacheService.tvFolder,
-    );
+    final cacheDir = await AppCacheService.directory(AppCacheService.tvFolder);
     return File('${cacheDir.path}/channels.json');
   }
 
@@ -311,7 +316,8 @@ class TvService {
       await file.writeAsString(jsonEncode(payload), flush: true);
     } catch (e) {
       await AppLogger.log(
-          'TV: impossibile salvare cache lista canali error=$e');
+        'TV: impossibile salvare cache lista canali error=$e',
+      );
     }
   }
 
@@ -477,16 +483,17 @@ class TvService {
     String secretKey, {
     List<TvChannel> channels = const [],
   }) async {
-    final template =
-        _decodePayload(_oggiInTvTimelineUrlPayloadJson, secretKey.trim());
+    final template = _decodePayload(
+      _oggiInTvTimelineUrlPayloadJson,
+      secretKey.trim(),
+    );
     final nowTime = DateTime.now();
     final date =
         '${nowTime.year}-${nowTime.month.toString().padLeft(2, '0')}-${nowTime.day.toString().padLeft(2, '0')}';
     final url = template.replaceAll('{date}', date);
-    final response = await http.get(
-      Uri.parse(url),
-      headers: {'User-Agent': 'Sonarpad TV/1.0'},
-    ).timeout(const Duration(seconds: 10));
+    final response = await http
+        .get(Uri.parse(url), headers: {'User-Agent': 'Sonarpad TV/1.0'})
+        .timeout(const Duration(seconds: 10));
 
     if (response.statusCode != 200) {
       throw Exception('HTTP ${response.statusCode}');
@@ -514,7 +521,9 @@ class TvService {
         final target = normalizeChannelName(guideChannel);
         if (target.isEmpty) continue;
         exactChannelNames.putIfAbsent(target, () => guideChannel);
-        programsByChannel.putIfAbsent(target, () => <TvProgram>[]).add(
+        programsByChannel
+            .putIfAbsent(target, () => <TvProgram>[])
+            .add(
               TvProgram(
                 title: title,
                 hour: item['hour']?.toString().trim() ?? '',
@@ -590,30 +599,34 @@ class TvService {
     // this code, with a small concurrency limit to avoid burdening either the
     // phone or the guide service.
     const maxConcurrentRequests = 4;
-    for (var start = 0;
-        start < pending.length;
-        start += maxConcurrentRequests) {
+    for (
+      var start = 0;
+      start < pending.length;
+      start += maxConcurrentRequests
+    ) {
       final requestedEnd = start + maxConcurrentRequests;
       final end = requestedEnd < pending.length ? requestedEnd : pending.length;
       final batch = pending.sublist(start, end);
-      final refreshed = await Future.wait(batch.map((entry) async {
-        try {
-          final exactName =
-              exactChannelNames[entry.key] ?? guideChannelName(entry.value);
-          final programs = await _loadChannelGuideForExactName(
-            exactName,
-            secretKey,
-            targetDate,
-          );
-          return MapEntry(entry.key, _currentProgramAt(programs, nowSec));
-        } catch (e) {
-          await AppLogger.log(
-            'TV: aggiornamento programma corrente fallito '
-            'canale=${entry.value.name} error=$e',
-          );
-          return MapEntry<String, TvProgram?>(entry.key, null);
-        }
-      }));
+      final refreshed = await Future.wait(
+        batch.map((entry) async {
+          try {
+            final exactName =
+                exactChannelNames[entry.key] ?? guideChannelName(entry.value);
+            final programs = await _loadChannelGuideForExactName(
+              exactName,
+              secretKey,
+              targetDate,
+            );
+            return MapEntry(entry.key, _currentProgramAt(programs, nowSec));
+          } catch (e) {
+            await AppLogger.log(
+              'TV: aggiornamento programma corrente fallito '
+              'canale=${entry.value.name} error=$e',
+            );
+            return MapEntry<String, TvProgram?>(entry.key, null);
+          }
+        }),
+      );
       for (final entry in refreshed) {
         final program = entry.value;
         if (program != null) {
@@ -648,21 +661,29 @@ class TvService {
     return null;
   }
 
-  Future<List<TvProgram>> loadChannelGuide(String channel, String secretKey,
-      {DateTime? targetDate}) async {
+  Future<List<TvProgram>> loadChannelGuide(
+    String channel,
+    String secretKey, {
+    DateTime? targetDate,
+  }) async {
     final dt = targetDate ?? DateTime.now();
 
     // 1. Resolve exact channel name from timeline API
     String? exactChannelName;
     try {
-      final timelineTemplate =
-          _decodePayload(_oggiInTvTimelineUrlPayloadJson, secretKey.trim());
+      final timelineTemplate = _decodePayload(
+        _oggiInTvTimelineUrlPayloadJson,
+        secretKey.trim(),
+      );
       final dateStr =
           '${dt.year}-${dt.month.toString().padLeft(2, '0')}-${dt.day.toString().padLeft(2, '0')}';
       final timelineUrl = timelineTemplate.replaceAll('{date}', dateStr);
-      final response = await http.get(Uri.parse(timelineUrl), headers: {
-        'User-Agent': 'Sonarpad TV/1.0'
-      }).timeout(const Duration(seconds: 10));
+      final response = await http
+          .get(
+            Uri.parse(timelineUrl),
+            headers: {'User-Agent': 'Sonarpad TV/1.0'},
+          )
+          .timeout(const Duration(seconds: 10));
       if (response.statusCode == 200) {
         final root = jsonDecode(response.body);
         if (root is List) {
@@ -684,11 +705,7 @@ class TvService {
     } catch (_) {}
 
     final targetChannelForApi = exactChannelName ?? channel;
-    return _loadChannelGuideForExactName(
-      targetChannelForApi,
-      secretKey,
-      dt,
-    );
+    return _loadChannelGuideForExactName(targetChannelForApi, secretKey, dt);
   }
 
   Future<List<TvProgram>> _loadChannelGuideForExactName(
@@ -697,8 +714,10 @@ class TvService {
     DateTime targetDate,
   ) async {
     // Fallback sulla URL specifica per canale
-    final template =
-        _decodePayload(_oggiInTvGuideUrlPayloadJson, secretKey.trim());
+    final template = _decodePayload(
+      _oggiInTvGuideUrlPayloadJson,
+      secretKey.trim(),
+    );
     final date =
         '${targetDate.year}-${targetDate.month.toString().padLeft(2, '0')}-${targetDate.day.toString().padLeft(2, '0')}';
 
@@ -706,10 +725,9 @@ class TvService {
         .replaceAll('{channel}', Uri.encodeComponent(channel))
         .replaceAll('{date}', date);
 
-    final response = await http.get(
-      Uri.parse(url),
-      headers: {'User-Agent': 'Sonarpad TV/1.0'},
-    ).timeout(const Duration(seconds: 10));
+    final response = await http
+        .get(Uri.parse(url), headers: {'User-Agent': 'Sonarpad TV/1.0'})
+        .timeout(const Duration(seconds: 10));
 
     if (response.statusCode != 200) {
       throw Exception('HTTP ${response.statusCode}');
@@ -718,13 +736,15 @@ class TvService {
     final List<dynamic> data = jsonDecode(response.body);
     final programs = <TvProgram>[];
     for (var item in data) {
-      programs.add(TvProgram(
-        title: item['title']?.toString().trim() ?? '',
-        hour: item['hour']?.toString().trim() ?? '',
-        startTime: _readInt(item, 'startTime', 'start_time'),
-        endTime: _readInt(item, 'endTime', 'end_time'),
-        description: item['description']?.toString().trim() ?? '',
-      ));
+      programs.add(
+        TvProgram(
+          title: item['title']?.toString().trim() ?? '',
+          hour: item['hour']?.toString().trim() ?? '',
+          startTime: _readInt(item, 'startTime', 'start_time'),
+          endTime: _readInt(item, 'endTime', 'end_time'),
+          description: item['description']?.toString().trim() ?? '',
+        ),
+      );
     }
 
     return programs.where((p) => p.title.isNotEmpty).toList();
@@ -732,7 +752,7 @@ class TvService {
 
   Future<List<TvChannel>> loadFavorites({
     List<TvChannel> currentChannels = const [],
-  }) async {
+  }) => CollectionStorage.run(() async {
     final prefs = await SharedPreferences.getInstance();
     final jsonStr = prefs.getString(_prefsKey);
     if (jsonStr == null || jsonStr.isEmpty) return [];
@@ -754,23 +774,49 @@ class TvService {
 
       if (currentChannels.isEmpty) return favorites;
       return favorites
-          .map((favorite) => _currentChannelForFavorite(
-                favorite,
-                currentChannels,
-              ))
+          .map(
+            (favorite) => _currentChannelForFavorite(favorite, currentChannels),
+          )
           .whereType<TvChannel>()
           .toList(growable: false);
     } catch (e) {
       dev.log('Errore caricamento canali tv preferiti: $e');
       return [];
     }
-  }
+  });
 
-  Future<void> saveFavorites(List<TvChannel> favorites, {List<String> explicitlyRemoved = const []}) async {
-    await CloudSyncDeletions.record('tv', explicitlyRemoved.map((id) => id.trim().toLowerCase()));
+  Future<void> saveFavorites(
+    List<TvChannel> favorites, {
+    List<String> explicitlyRemoved = const [],
+    bool fromCloud = false,
+  }) => CollectionStorage.run(() async {
+    await CloudSyncDeletions.record(
+      'tv',
+      explicitlyRemoved.map((id) => id.trim().toLowerCase()),
+    );
     final prefs = await SharedPreferences.getInstance();
+    if (!fromCloud) {
+      final current = await loadFavorites();
+      final ids = favorites
+          .map((item) => item.name.trim().toLowerCase())
+          .toSet();
+      final removed = explicitlyRemoved
+          .map((id) => id.trim().toLowerCase())
+          .toSet();
+      favorites =
+          [
+                ...favorites,
+                ...current.where(
+                  (item) => !ids.contains(item.name.trim().toLowerCase()),
+                ),
+              ]
+              .where(
+                (item) => !removed.contains(item.name.trim().toLowerCase()),
+              )
+              .toList();
+    }
     await _writeFavoriteReferences(prefs, favorites);
-  }
+  });
 
   Future<void> _writeFavoriteReferences(
     SharedPreferences prefs,
@@ -781,16 +827,16 @@ class TvService {
   }
 
   Map<String, dynamic> _favoriteReferenceToJson(TvChannel channel) => {
-        'name': channel.name,
-        if (channel.tvgId.trim().isNotEmpty) 'tvg_id': channel.tvgId,
-        if (channel.tvgName.trim().isNotEmpty) 'tvg_name': channel.tvgName,
-        if (channel.streamResolver?.trim().isNotEmpty ?? false)
-          'stream_resolver': channel.streamResolver,
-        if (channel.resolverRealm?.trim().isNotEmpty ?? false)
-          'resolver_realm': channel.resolverRealm,
-        if (channel.resolverChannelId?.trim().isNotEmpty ?? false)
-          'resolver_channel_id': channel.resolverChannelId,
-      };
+    'name': channel.name,
+    if (channel.tvgId.trim().isNotEmpty) 'tvg_id': channel.tvgId,
+    if (channel.tvgName.trim().isNotEmpty) 'tvg_name': channel.tvgName,
+    if (channel.streamResolver?.trim().isNotEmpty ?? false)
+      'stream_resolver': channel.streamResolver,
+    if (channel.resolverRealm?.trim().isNotEmpty ?? false)
+      'resolver_realm': channel.resolverRealm,
+    if (channel.resolverChannelId?.trim().isNotEmpty ?? false)
+      'resolver_channel_id': channel.resolverChannelId,
+  };
 
   TvChannel? _favoriteReferenceFromJson(Map<String, dynamic> json) {
     final name = json['name']?.toString().trim() ?? '';
@@ -869,12 +915,14 @@ class TvService {
     return channel.name;
   }
 
-  Future<String> resolveStreamUrl(TvChannel channel, {
+  Future<String> resolveStreamUrl(
+    TvChannel channel, {
     StreamDiagnosticsSession? diagnostics,
   }) async {
     var resolvedUrl = channel.url;
     await AppLogger.log(
-        'Inizio risoluzione stream per: ${channel.name} (URL base: ${StreamDiagnosticsSession.safeUrl(resolvedUrl)})');
+      'Inizio risoluzione stream per: ${channel.name} (URL base: ${StreamDiagnosticsSession.safeUrl(resolvedUrl)})',
+    );
     // --- AUTORESOLVER DISCOVERY ---
     var effResolver = channel.streamResolver;
     var effChannelId = channel.resolverChannelId;
@@ -923,10 +971,12 @@ class TvService {
                 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36',
             'X-disco-client': 'WEB:UNKNOWN:wbdatv:2.1.9',
             'X-disco-params': 'realm=$realm',
-            'X-Device-Info': 'STONEJS/1 (Unknown/Unknown; Windows/10; Unknown)'
+            'X-Device-Info': 'STONEJS/1 (Unknown/Unknown; Windows/10; Unknown)',
           };
-          final tokenResp =
-              await http.get(Uri.parse(tokenUrl), headers: baseHeaders);
+          final tokenResp = await http.get(
+            Uri.parse(tokenUrl),
+            headers: baseHeaders,
+          );
           if (tokenResp.statusCode == 200) {
             final tokenJson = jsonDecode(tokenResp.body);
             final token = tokenJson['data']?['attributes']?['token'];
@@ -951,12 +1001,15 @@ class TvService {
                   'platform': 'desktop',
                 },
               });
-              final pbResp = await http.post(Uri.parse(pbUrl),
-                  headers: pbHeaders, body: pbBody);
+              final pbResp = await http.post(
+                Uri.parse(pbUrl),
+                headers: pbHeaders,
+                body: pbBody,
+              );
               if (pbResp.statusCode == 200) {
                 final match = RegExp(
-                        'https?://[^\\s"\\\'<>\\\\]+?\\.m3u8[^\\s"\\\'<>\\\\]*')
-                    .firstMatch(pbResp.body);
+                  'https?://[^\\s"\\\'<>\\\\]+?\\.m3u8[^\\s"\\\'<>\\\\]*',
+                ).firstMatch(pbResp.body);
                 if (match != null) {
                   final m3u8Url = match.group(0)!.replaceAll('\\/', '/');
                   await AppLogger.log('Aurora risolto: $m3u8Url');
@@ -1001,20 +1054,29 @@ class TvService {
       final body = response.body.trim();
       if (body.startsWith('http')) {
         resolvedUrl = body;
-        await AppLogger.log('Relinker risolto in (output=54): ${StreamDiagnosticsSession.safeUrl(resolvedUrl)}');
+        await AppLogger.log(
+          'Relinker risolto in (output=54): ${StreamDiagnosticsSession.safeUrl(resolvedUrl)}',
+        );
       } else if (body.startsWith('#EXTM3U')) {
         await AppLogger.log(
-            'Il relinker ha risposto direttamente con un HLS (EXTM3U).');
+          'Il relinker ha risposto direttamente con un HLS (EXTM3U).',
+        );
         resolvedUrl = reqUrl;
       } else {
-        final match = RegExp(r'<url[^>]*type="content"[^>]*>([^<]+)</url>')
-                .firstMatch(body) ??
+        final match =
+            RegExp(
+              r'<url[^>]*type="content"[^>]*>([^<]+)</url>',
+            ).firstMatch(body) ??
             RegExp(r'<url[^>]*>([^<]+)</url>').firstMatch(body);
         if (match != null) {
           resolvedUrl = match.group(1)!.trim();
-          await AppLogger.log('Relinker risolto da XML: ${StreamDiagnosticsSession.safeUrl(resolvedUrl)}');
+          await AppLogger.log(
+            'Relinker risolto da XML: ${StreamDiagnosticsSession.safeUrl(resolvedUrl)}',
+          );
         } else {
-          await AppLogger.log('URL non trovato nel relinker: ${StreamDiagnosticsSession.redact(body)}');
+          await AppLogger.log(
+            'URL non trovato nel relinker: ${StreamDiagnosticsSession.redact(body)}',
+          );
           throw Exception('Stream TV non trovato nel relinker.');
         }
       }
@@ -1037,7 +1099,8 @@ class TvService {
       'userAgent': headers['User-Agent'],
     });
     try {
-      final response = await http.get(uri, headers: headers)
+      final response = await http
+          .get(uri, headers: headers)
           .timeout(const Duration(seconds: 10));
       diagnostics?.record('resolver_http_end', {
         'stage': stage,
@@ -1073,8 +1136,12 @@ class TvService {
     StreamDiagnosticsSession? diagnostics,
     String? resolvedMasterUrl,
   }) async {
-    final masterUrl = resolvedMasterUrl ?? await resolveStreamUrl(channel, diagnostics: diagnostics);
-    await AppLogger.log('Cerco traccia AD nel master URL: ${StreamDiagnosticsSession.safeUrl(masterUrl)}');
+    final masterUrl =
+        resolvedMasterUrl ??
+        await resolveStreamUrl(channel, diagnostics: diagnostics);
+    await AppLogger.log(
+      'Cerco traccia AD nel master URL: ${StreamDiagnosticsSession.safeUrl(masterUrl)}',
+    );
 
     try {
       final response = await _getRaiWithDiagnostics(
@@ -1086,7 +1153,8 @@ class TvService {
 
       if (response.statusCode != 200) {
         await AppLogger.log(
-            'Errore HTTP ${response.statusCode} scaricando master playlist.');
+          'Errore HTTP ${response.statusCode} scaricando master playlist.',
+        );
         return RaiAudioDescriptionStreams(
           videoUrl: masterUrl,
           audioUrl: masterUrl,
@@ -1108,7 +1176,8 @@ class TvService {
       final finalMasterUrl = response.request?.url.toString() ?? masterUrl;
       if (finalMasterUrl != masterUrl) {
         await AppLogger.log(
-            'Redirect rilevato!\nOriginale: ${StreamDiagnosticsSession.safeUrl(masterUrl)}\nFinale: ${StreamDiagnosticsSession.safeUrl(finalMasterUrl)}');
+          'Redirect rilevato!\nOriginale: ${StreamDiagnosticsSession.safeUrl(masterUrl)}\nFinale: ${StreamDiagnosticsSession.safeUrl(finalMasterUrl)}',
+        );
       }
 
       String? adUrl;
@@ -1118,8 +1187,9 @@ class TvService {
         final trimmed = line.trim();
         if (!trimmed.startsWith('#EXT-X-MEDIA:')) continue;
 
-        final attrs =
-            _parseHlsAttributes(trimmed.substring('#EXT-X-MEDIA:'.length));
+        final attrs = _parseHlsAttributes(
+          trimmed.substring('#EXT-X-MEDIA:'.length),
+        );
         if (attrs['TYPE'] != 'AUDIO') continue;
 
         final uri = attrs['URI'];
@@ -1129,13 +1199,15 @@ class TvService {
         final name = (attrs['NAME'] ?? '').toLowerCase();
         final characteristics = (attrs['CHARACTERISTICS'] ?? '').toLowerCase();
 
-        final isAudioDescription = language == 'des' ||
+        final isAudioDescription =
+            language == 'des' ||
             name.contains('audiodescri') ||
             characteristics.contains('describes-video');
 
         if (isAudioDescription) {
           await AppLogger.log(
-              'Trovata traccia DESC:\nURI=${StreamDiagnosticsSession.safeUrl(uri)}\nLang=$language\nName=$name');
+            'Trovata traccia DESC:\nURI=${StreamDiagnosticsSession.safeUrl(uri)}\nLang=$language\nName=$name',
+          );
           adUrl ??= _resolveHlsChildUrl(finalMasterUrl, uri);
           // Continuiamo a scorrere il master: la traccia ITA diretta serve
           // esclusivamente come secondo fallback se anche l'AD diretta non
@@ -1143,7 +1215,9 @@ class TvService {
         }
 
         if (language == 'ita' && itaUrl == null) {
-          await AppLogger.log('Trovata traccia ITA (fallback):\nURI=${StreamDiagnosticsSession.safeUrl(uri)}');
+          await AppLogger.log(
+            'Trovata traccia ITA (fallback):\nURI=${StreamDiagnosticsSession.safeUrl(uri)}',
+          );
           itaUrl = _resolveHlsChildUrl(finalMasterUrl, uri);
         }
       }
@@ -1168,7 +1242,9 @@ class TvService {
       );
     } catch (e) {
       dev.log('TvService: errore ricerca traccia AD: $e');
-      await AppLogger.log('Errore durante la ricerca della traccia AD: ${StreamDiagnosticsSession.redact(e.toString())}');
+      await AppLogger.log(
+        'Errore durante la ricerca della traccia AD: ${StreamDiagnosticsSession.redact(e.toString())}',
+      );
       return RaiAudioDescriptionStreams(
         videoUrl: masterUrl,
         audioUrl: masterUrl,
@@ -1186,13 +1262,20 @@ class TvService {
     StreamDiagnosticsSession? diagnostics,
   }) async {
     try {
-      final streams = await resolveAudioDescriptionStreams(channel,
-          resolvedMasterUrl: masterUrl, diagnostics: diagnostics);
+      final streams = await resolveAudioDescriptionStreams(
+        channel,
+        resolvedMasterUrl: masterUrl,
+        diagnostics: diagnostics,
+      );
       if (!streams.hasAudioDescription) return false;
       final response = await _getRaiWithDiagnostics(
         Uri.parse(streams.audioUrl),
-        headers: {'User-Agent': channel.playbackUserAgent, ...channel.playbackHeaders},
-        stage: 'ad_availability', diagnostics: diagnostics,
+        headers: {
+          'User-Agent': channel.playbackUserAgent,
+          ...channel.playbackHeaders,
+        },
+        stage: 'ad_availability',
+        diagnostics: diagnostics,
       );
       return response.statusCode == 404 || response.statusCode == 410;
     } catch (_) {
@@ -1222,7 +1305,9 @@ class TvService {
     }
 
     final finalUrl = resolvedUri.toString();
-    AppLogger.log('Risolto child URI:\nDa: ${StreamDiagnosticsSession.safeUrl(childUri)}\nA: ${StreamDiagnosticsSession.safeUrl(finalUrl)}');
+    AppLogger.log(
+      'Risolto child URI:\nDa: ${StreamDiagnosticsSession.safeUrl(childUri)}\nA: ${StreamDiagnosticsSession.safeUrl(finalUrl)}',
+    );
     return finalUrl;
   }
 

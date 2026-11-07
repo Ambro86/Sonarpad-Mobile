@@ -9,6 +9,17 @@ class AppLocalizationsRo extends AppLocalizations {
   AppLocalizationsRo([String locale = 'ro']) : super(locale);
 
   @override
+  String get audioDescriptionDialogueOverlap =>
+      'Permite audiodescrieri în timpul dialogurilor și comentariului sportiv';
+
+  @override
+  String get placesPhoneQuery => 'Introdu numărul de telefon';
+
+  @override
+  String get placesPhoneInvalid =>
+      'Introdu un număr de telefon valid, inclusiv prefixul.';
+
+  @override
   String get routeDeparture => 'Plecare';
 
   @override

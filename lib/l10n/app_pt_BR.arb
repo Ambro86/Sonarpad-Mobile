@@ -1,4 +1,7 @@
 {
+  "audioDescriptionDialogueOverlap": "Permitir audiodescrições durante diálogos e comentários",
+  "placesPhoneQuery": "Digite o número de telefone",
+  "placesPhoneInvalid": "Digite um número de telefone válido com DDD ou código do país.",
   "routeDeparture": "Partida",
   "routeLeaveNow": "Partir agora",
   "routeLeaveAt": "Partir às",

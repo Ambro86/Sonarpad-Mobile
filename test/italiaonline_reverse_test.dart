@@ -11,6 +11,15 @@ const fixture =
 </results></response>''';
 
 void main() {
+  test('international format keeps country codes and national zeroes', () {
+    expect(normalizePlacePhone('0033 1 58 59 22 22'), '+33158592222');
+    expect(normalizePlacePhone('+39 (02) 0202'), '+39020202');
+    expect(normalizePlacePhone('01 58 59 22 22'), '0158592222');
+    for (final value in ['', '123', 'abc', '02+0202', '+1234567890123456']) {
+      expect(() => normalizePlacePhone(value), throwsFormatException);
+    }
+  });
+
   test(
     'phone formats preserve the leading zero and reject text/other countries',
     () {
@@ -53,8 +62,9 @@ void main() {
       final service = ItaliaOnlineService(
         client: MockClient((request) async {
           calls++;
-          if (request.url.path.endsWith('searchpg'))
+          if (request.url.path.endsWith('searchpg')) {
             return http.Response('', 500);
+          }
           expect(request.url.path.endsWith('searchpb'), isTrue);
           return http.Response(fixture, 200);
         }),

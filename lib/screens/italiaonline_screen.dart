@@ -68,11 +68,13 @@ class _ItaliaOnlineScreenState extends State<ItaliaOnlineScreen> {
 
     if (_reverse) {
       try {
-        what = normalizeDirectoryPhone(what);
-      } on FormatException catch (error) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(error.message)));
+        what = normalizePlacePhone(what);
+      } on FormatException {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context).placesPhoneInvalid),
+          ),
+        );
         return;
       }
     }
@@ -139,14 +141,13 @@ class _ItaliaOnlineScreenState extends State<ItaliaOnlineScreen> {
                           }
                         },
                       ),
-                    if (_italian)
-                      AccessibleListRow(
-                        id: 'kind_phone',
-                        title: l10n.placesPhoneSearch,
-                        selected: _reverse,
-                        onActivate: () => setState(() => _reverse = true),
-                      ),
-                    if (!_reverse && _kind == DirectoryKind.pagineGialle)
+                    AccessibleListRow(
+                      id: 'kind_phone',
+                      title: l10n.placesPhoneSearch,
+                      selected: _reverse,
+                      onActivate: () => setState(() => _reverse = true),
+                    ),
+                    if (_reverse || _kind == DirectoryKind.pagineGialle)
                       AccessibleListRow(
                         id: 'country',
                         title: l10n.routeCountry,
@@ -160,7 +161,7 @@ class _ItaliaOnlineScreenState extends State<ItaliaOnlineScreen> {
                     AccessibleListRow(
                       id: 'what',
                       title: _reverse
-                          ? 'Inserisci il numero di telefono'
+                          ? l10n.placesPhoneQuery
                           : (_italian
                                 ? _kind.primaryFieldLabel
                                 : AppLocalizations.of(context).placesQuery),
@@ -208,29 +209,29 @@ class _ItaliaOnlineScreenState extends State<ItaliaOnlineScreen> {
           : ListView(
               padding: const EdgeInsets.all(16),
               children: [
-                if (_italian)
-                  SegmentedButton<int>(
-                    segments: [
-                      ButtonSegment(value: 1, label: Text(l10n.homeDirectory)),
+                SegmentedButton<int>(
+                  segments: [
+                    ButtonSegment(value: 1, label: Text(l10n.homeDirectory)),
+                    if (_italian)
                       ButtonSegment(
                         value: 0,
                         label: Text(l10n.placesPeopleSearch),
                       ),
-                      ButtonSegment(
-                        value: 2,
-                        label: Text(l10n.placesPhoneSearch),
-                      ),
-                    ],
-                    selected: {_reverse ? 2 : _kind.index},
-                    onSelectionChanged: (set) {
-                      setState(() {
-                        _reverse = set.first == 2;
-                        if (!_reverse) _kind = DirectoryKind.values[set.first];
-                      });
-                    },
-                  ),
+                    ButtonSegment(
+                      value: 2,
+                      label: Text(l10n.placesPhoneSearch),
+                    ),
+                  ],
+                  selected: {_reverse ? 2 : _kind.index},
+                  onSelectionChanged: (set) {
+                    setState(() {
+                      _reverse = set.first == 2;
+                      if (!_reverse) _kind = DirectoryKind.values[set.first];
+                    });
+                  },
+                ),
                 const SizedBox(height: 24),
-                if (!_reverse && _kind == DirectoryKind.pagineGialle)
+                if (_reverse || _kind == DirectoryKind.pagineGialle)
                   DropdownButtonFormField<String>(
                     key: ValueKey('places_country_$_country'),
                     initialValue: _country,
@@ -254,7 +255,7 @@ class _ItaliaOnlineScreenState extends State<ItaliaOnlineScreen> {
                       : TextInputType.text,
                   decoration: InputDecoration(
                     labelText: _reverse
-                        ? 'Inserisci il numero di telefono'
+                        ? l10n.placesPhoneQuery
                         : (_italian
                               ? _kind.primaryFieldLabel
                               : AppLocalizations.of(context).placesQuery),
@@ -349,7 +350,7 @@ class _ItaliaOnlineResultsScreenState extends State<ItaliaOnlineResultsScreen> {
         where: widget.query.where,
         page: _currentPage,
       );
-      final res = await (query.reverse && widget.includeItalianDirectories
+      final res = await (query.reverse
           ? _service.searchPhone(query)
           : _service.searchActivities(
               query,

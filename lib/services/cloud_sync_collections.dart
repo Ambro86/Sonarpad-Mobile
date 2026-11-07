@@ -1,3 +1,4 @@
+import 'collection_storage.dart';
 import '../models/radio_station.dart';
 import '../models/podcast.dart';
 import 'cloud_sync_state.dart';
@@ -14,7 +15,7 @@ class CloudSyncCollections {
     'data': data,
   };
 
-  Future<CloudState> read() async {
+  Future<CloudState> read() => CollectionStorage.run(() async {
     final radio = await RadioService().loadFavorites();
     final tv = await TvService().loadFavorites();
     final podcasts = await PodcastService().loadSubscriptions();
@@ -49,7 +50,7 @@ class CloudSyncCollections {
           .toList(),
       ...await NewsService().exportCloudCollections(),
     };
-  }
+  });
 
   /// Keep only fields this client can represent. Unhandled collections and
   /// metadata stay on the server and are never interpreted as local deletions.
@@ -69,7 +70,10 @@ class CloudSyncCollections {
     for (final name in fields.keys) {
       result[name] = (state[name] ?? [])
           .where((item) {
-            if (name == 'news_sources' && (item['data'] as Map)['url'] == 'sonarpad://rss/favorites') return false;
+            if (name == 'news_sources' &&
+                (item['data'] as Map)['url'] == 'sonarpad://rss/favorites') {
+              return false;
+            }
             if (!name.startsWith('news_')) return true;
             final data = item['data'] as Map<String, dynamic>;
             return NewsLanguage.values.any((l) => l.code == data['language']);
@@ -114,7 +118,7 @@ class CloudSyncCollections {
     return result;
   }
 
-  Future<void> write(CloudState state) async {
+  Future<void> write(CloudState state) => CollectionStorage.run(() async {
     final included = state.keys.toSet();
     final current = await read();
     state = project({
@@ -180,16 +184,30 @@ class CloudSyncCollections {
       };
     }).toList();
     if (included.contains('radio')) {
-      await RadioService().saveFavorites(radios, updateOrder: true);
+      await RadioService().saveFavorites(
+        radios,
+        updateOrder: true,
+        fromCloud: true,
+      );
     }
-    if (included.contains('tv')) { await TvService().saveFavorites(tv); }
-    if (included.contains('podcasts')) { await PodcastService().saveSubscriptions(podcasts); }
-    if (included.contains('sonartube')) { await SonarTubeFavoritesService().replaceCloudFavorites(videos); }
-    if (included.contains('news_sources') || included.contains('news_folders')) {
+    if (included.contains('tv')) {
+      await TvService().saveFavorites(tv, fromCloud: true);
+    }
+    if (included.contains('podcasts')) {
+      await PodcastService().saveSubscriptions(podcasts, fromCloud: true);
+    }
+    if (included.contains('sonartube')) {
+      await SonarTubeFavoritesService().replaceCloudFavorites(videos);
+    }
+    if (included.contains('news_sources') ||
+        included.contains('news_folders')) {
       await NewsService().replaceCloudCollections(state);
     }
     if (included.contains('preferences')) {
-      await CloudSyncPreferences.write(state['preferences']!, baseline: current['preferences']!);
+      await CloudSyncPreferences.write(
+        state['preferences']!,
+        baseline: current['preferences']!,
+      );
     }
-  }
+  });
 }

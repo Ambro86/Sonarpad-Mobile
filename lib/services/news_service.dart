@@ -1,3 +1,4 @@
+import 'collection_storage.dart';
 import 'cloud_sync_deletions.dart';
 import 'dart:async';
 import 'dart:convert';
@@ -60,74 +61,74 @@ class _TinyfishArticleFetchResult {
 
 extension NewsLanguageInfo on NewsLanguage {
   String get code => switch (this) {
-        NewsLanguage.italian => 'it',
-        NewsLanguage.english => 'en',
-        NewsLanguage.french => 'fr',
-        NewsLanguage.spanish => 'es',
-        NewsLanguage.portuguese => 'pt',
-        NewsLanguage.portugueseBrazil => 'pt-BR',
-        NewsLanguage.polish => 'pl',
-        NewsLanguage.czech => 'cs',
-        NewsLanguage.german => 'de',
-        NewsLanguage.dutch => 'nl',
-        NewsLanguage.chineseSimplified => 'zh-CN',
-        NewsLanguage.ukrainian => 'uk',
-        NewsLanguage.romanian => 'ro',
-        NewsLanguage.turkish => 'tr',
-      };
+    NewsLanguage.italian => 'it',
+    NewsLanguage.english => 'en',
+    NewsLanguage.french => 'fr',
+    NewsLanguage.spanish => 'es',
+    NewsLanguage.portuguese => 'pt',
+    NewsLanguage.portugueseBrazil => 'pt-BR',
+    NewsLanguage.polish => 'pl',
+    NewsLanguage.czech => 'cs',
+    NewsLanguage.german => 'de',
+    NewsLanguage.dutch => 'nl',
+    NewsLanguage.chineseSimplified => 'zh-CN',
+    NewsLanguage.ukrainian => 'uk',
+    NewsLanguage.romanian => 'ro',
+    NewsLanguage.turkish => 'tr',
+  };
 
   String get communityKey => switch (this) {
-        NewsLanguage.italian => 'italian',
-        NewsLanguage.english => 'english',
-        NewsLanguage.french => 'french',
-        NewsLanguage.spanish => 'spanish',
-        NewsLanguage.portuguese => 'portuguese',
-        NewsLanguage.portugueseBrazil => 'portuguese_brazil',
-        NewsLanguage.polish => 'polish',
-        NewsLanguage.czech => 'czech',
-        NewsLanguage.german => 'german',
-        NewsLanguage.dutch => 'dutch',
-        NewsLanguage.chineseSimplified => 'chinese_simplified',
-        NewsLanguage.ukrainian => 'ukrainian',
-        NewsLanguage.romanian => 'romanian',
-        NewsLanguage.turkish => 'turkish',
-      };
+    NewsLanguage.italian => 'italian',
+    NewsLanguage.english => 'english',
+    NewsLanguage.french => 'french',
+    NewsLanguage.spanish => 'spanish',
+    NewsLanguage.portuguese => 'portuguese',
+    NewsLanguage.portugueseBrazil => 'portuguese_brazil',
+    NewsLanguage.polish => 'polish',
+    NewsLanguage.czech => 'czech',
+    NewsLanguage.german => 'german',
+    NewsLanguage.dutch => 'dutch',
+    NewsLanguage.chineseSimplified => 'chinese_simplified',
+    NewsLanguage.ukrainian => 'ukrainian',
+    NewsLanguage.romanian => 'romanian',
+    NewsLanguage.turkish => 'turkish',
+  };
 
   String label(AppLocalizations l10n) => switch (this) {
-        NewsLanguage.italian => l10n.italian,
-        NewsLanguage.english => l10n.english,
-        NewsLanguage.french => l10n.french,
-        NewsLanguage.spanish => l10n.spanish,
-        NewsLanguage.portuguese =>
-          '${l10n.radioLanguagePt} (${l10n.radioCountryOptionPt})',
-        NewsLanguage.portugueseBrazil =>
-          '${l10n.radioLanguagePt} (${l10n.radioCountryOptionBr})',
-        NewsLanguage.polish => l10n.radioLanguagePl,
-        NewsLanguage.czech => l10n.radioLanguageCs,
-        NewsLanguage.german => l10n.german,
-        NewsLanguage.dutch => l10n.dutch,
-        NewsLanguage.chineseSimplified => l10n.simplifiedChineseLanguageName,
-        NewsLanguage.ukrainian => l10n.radioLanguageUk,
-        NewsLanguage.romanian => l10n.radioLanguageRo,
-        NewsLanguage.turkish => l10n.radioLanguageTr,
-      };
+    NewsLanguage.italian => l10n.italian,
+    NewsLanguage.english => l10n.english,
+    NewsLanguage.french => l10n.french,
+    NewsLanguage.spanish => l10n.spanish,
+    NewsLanguage.portuguese =>
+      '${l10n.radioLanguagePt} (${l10n.radioCountryOptionPt})',
+    NewsLanguage.portugueseBrazil =>
+      '${l10n.radioLanguagePt} (${l10n.radioCountryOptionBr})',
+    NewsLanguage.polish => l10n.radioLanguagePl,
+    NewsLanguage.czech => l10n.radioLanguageCs,
+    NewsLanguage.german => l10n.german,
+    NewsLanguage.dutch => l10n.dutch,
+    NewsLanguage.chineseSimplified => l10n.simplifiedChineseLanguageName,
+    NewsLanguage.ukrainian => l10n.radioLanguageUk,
+    NewsLanguage.romanian => l10n.radioLanguageRo,
+    NewsLanguage.turkish => l10n.radioLanguageTr,
+  };
 
   List<NewsRssSource> get rssSources => switch (this) {
-        NewsLanguage.italian => italianNewsSources,
-        NewsLanguage.english => englishNewsSources,
-        NewsLanguage.french => frenchNewsSources,
-        NewsLanguage.spanish => spanishNewsSources,
-        NewsLanguage.portuguese => portugueseNewsSources,
-        NewsLanguage.portugueseBrazil => brazilianPortugueseNewsSources,
-        NewsLanguage.polish => polishNewsSources,
-        NewsLanguage.czech => czechNewsSources,
-        NewsLanguage.german => germanNewsSources,
-        NewsLanguage.dutch => dutchNewsSources,
-        NewsLanguage.chineseSimplified => simplifiedChineseNewsSources,
-        NewsLanguage.ukrainian => ukrainianNewsSources,
-        NewsLanguage.romanian => romanianNewsSources,
-        NewsLanguage.turkish => turkishNewsSources,
-      };
+    NewsLanguage.italian => italianNewsSources,
+    NewsLanguage.english => englishNewsSources,
+    NewsLanguage.french => frenchNewsSources,
+    NewsLanguage.spanish => spanishNewsSources,
+    NewsLanguage.portuguese => portugueseNewsSources,
+    NewsLanguage.portugueseBrazil => brazilianPortugueseNewsSources,
+    NewsLanguage.polish => polishNewsSources,
+    NewsLanguage.czech => czechNewsSources,
+    NewsLanguage.german => germanNewsSources,
+    NewsLanguage.dutch => dutchNewsSources,
+    NewsLanguage.chineseSimplified => simplifiedChineseNewsSources,
+    NewsLanguage.ukrainian => ukrainianNewsSources,
+    NewsLanguage.romanian => romanianNewsSources,
+    NewsLanguage.turkish => turkishNewsSources,
+  };
 }
 
 enum _BrowserFetchProfile { chrome, iphone }
@@ -196,8 +197,8 @@ class NewsService {
   final http.Client _client;
   final bool _useBrowserClient;
   NewsService({http.Client? client})
-      : _client = client ?? http.Client(),
-        _useBrowserClient = client == null;
+    : _client = client ?? http.Client(),
+      _useBrowserClient = client == null;
 
   /// Restituisce true quando l'estrazione non contiene altro che il titolo.
   ///
@@ -240,10 +241,11 @@ class NewsService {
     return null;
   }
 
-  Future<void> saveSelectedLanguage(NewsLanguage language) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('news_selected_language', language.name);
-  }
+  Future<void> saveSelectedLanguage(NewsLanguage language) =>
+      CollectionStorage.run(() async {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('news_selected_language', language.name);
+      });
 
   String _getPrefsKey(NewsLanguage language) =>
       'news_sources_order_${language.name}';
@@ -257,23 +259,22 @@ class NewsService {
       'news_source_folder_assignments_${language.name}';
   String _getFolderOrderPrefsKey(NewsLanguage language, String? folderId) =>
       folderId == null
-          ? _getPrefsKey(language)
-          : 'news_sources_order_${language.name}_folder_$folderId';
+      ? _getPrefsKey(language)
+      : 'news_sources_order_${language.name}_folder_$folderId';
   String _getReadArticlesKey(NewsLanguage language, String sourceName) =>
       'news_read_articles_${language.name}_$sourceName';
 
   String _encodeReadArticle(NewsArticle article) => jsonEncode({
-        'id': article.id,
-        'title': article.title,
-        'link': article.link,
-        'summary': article.summary,
-        'source': article.source,
-        'publishedAt': article.publishedAt?.toIso8601String(),
-        if (article.allowInternalMediaLinks) 'allowInternalMediaLinks': true,
-        if (article.allowInternalMediaLinks && article.mediaLinks.isNotEmpty)
-          'mediaLinks':
-              article.mediaLinks.map((link) => link.toJson()).toList(),
-      });
+    'id': article.id,
+    'title': article.title,
+    'link': article.link,
+    'summary': article.summary,
+    'source': article.source,
+    'publishedAt': article.publishedAt?.toIso8601String(),
+    if (article.allowInternalMediaLinks) 'allowInternalMediaLinks': true,
+    if (article.allowInternalMediaLinks && article.mediaLinks.isNotEmpty)
+      'mediaLinks': article.mediaLinks.map((link) => link.toJson()).toList(),
+  });
 
   Future<List<NewsArticle>> getReadArticles(
     NewsLanguage language,
@@ -298,9 +299,9 @@ class NewsService {
               allowInternalMediaLinks: map['allowInternalMediaLinks'] == true,
               mediaLinks: map['allowInternalMediaLinks'] == true
                   ? (map['mediaLinks'] as List? ?? const [])
-                      .map(NewsArticleMediaLink.fromJson)
-                      .whereType<NewsArticleMediaLink>()
-                      .toList(growable: false)
+                        .map(NewsArticleMediaLink.fromJson)
+                        .whereType<NewsArticleMediaLink>()
+                        .toList(growable: false)
                   : const <NewsArticleMediaLink>[],
             );
           } catch (_) {
@@ -322,8 +323,9 @@ class NewsService {
     current.removeWhere((a) => a.id == article.id);
     current.insert(0, article);
     if (current.length > 50) {
-      current =
-          current.take(50).toList(); // Maximum 50 read articles per source
+      current = current
+          .take(50)
+          .toList(); // Maximum 50 read articles per source
     }
     final listStr = current.map(_encodeReadArticle).toList();
     await prefs.setStringList(key, listStr);
@@ -349,59 +351,88 @@ class NewsService {
     await prefs.remove(_getReadArticlesKey(language, sourceName));
   }
 
-  Future<List<NewsRssSource>> getCustomSources(NewsLanguage language) async {
-    final prefs = await SharedPreferences.getInstance();
-    final customListStr =
-        prefs.getStringList(_getCustomPrefsKey(language)) ?? [];
-    return customListStr
-        .map((s) {
-          try {
-            return NewsRssSource.fromJson(jsonDecode(s));
-          } catch (_) {
-            return null;
-          }
-        })
-        .whereType<NewsRssSource>()
-        .toList();
-  }
+  Future<List<NewsRssSource>> getCustomSources(NewsLanguage language) =>
+      CollectionStorage.run(() async {
+        final prefs = await SharedPreferences.getInstance();
+        final customListStr =
+            prefs.getStringList(_getCustomPrefsKey(language)) ?? [];
+        return customListStr
+            .map((s) {
+              try {
+                return NewsRssSource.fromJson(jsonDecode(s));
+              } catch (_) {
+                return null;
+              }
+            })
+            .whereType<NewsRssSource>()
+            .toList();
+      });
 
-  Future<CloudState> exportCloudCollections() async {
-    final prefs = await SharedPreferences.getInstance();
-    final sources = <Map<String, dynamic>>[];
-    final folders = <Map<String, dynamic>>[];
-    for (final language in NewsLanguage.values) {
-      final localFolders = await getFolders(language);
-      final byId = {for (final f in localFolders) f.id: f.name};
-      final storedPaths = jsonDecode(prefs.getString('news_cloud_folder_paths_${language.name}') ?? '{}') as Map;
-      List<dynamic> folderPath(String id, String name) {
-        final saved = storedPaths[id];
-        return saved is List && saved.join(' / ') == name ? saved : [name];
-      }
-      for (final folder in localFolders) {
-        final path = folderPath(folder.id, folder.name);
-        folders.add({'id': '${language.code}:${jsonEncode(path)}',
-          'data': {'language': language.code, 'path': path}});
-      }
-      final custom = await getCustomSources(language);
-      final ordered = <NewsRssSource>[];
-      for (final folderId in <String?>[null, ...localFolders.map((f) => f.id)]) {
-        final visible = await getOrderedSources(language, folderId: folderId);
-        ordered.addAll(visible.where((s) => !s.isFolder && custom.any((c) => c.uri == s.uri)));
-      }
-      // Preserve custom sources hidden by a local-only visibility preference.
-      for (final s in custom) { if (!ordered.any((o) => o.uri == s.uri)) ordered.add(s); }
-      for (final source in ordered) {
-        final path = byId[source.parentFolderId];
-        sources.add({'id': '${language.code}:${source.uri}', 'data': {
-          'language': language.code, 'title': source.name, 'url': source.uri.toString(),
-          'folder_path': path == null ? <String>[] : folderPath(source.parentFolderId!, path),
-        }});
-      }
-    }
-    return {'news_sources': sources, 'news_folders': folders};
-  }
+  Future<CloudState> exportCloudCollections() => CollectionStorage.run(
+    () async {
+      final prefs = await SharedPreferences.getInstance();
+      final sources = <Map<String, dynamic>>[];
+      final folders = <Map<String, dynamic>>[];
+      for (final language in NewsLanguage.values) {
+        final localFolders = await getFolders(language);
+        final byId = {for (final f in localFolders) f.id: f.name};
+        final storedPaths =
+            jsonDecode(
+                  prefs.getString('news_cloud_folder_paths_${language.name}') ??
+                      '{}',
+                )
+                as Map;
+        List<dynamic> folderPath(String id, String name) {
+          final saved = storedPaths[id];
+          return saved is List && saved.join(' / ') == name ? saved : [name];
+        }
 
-  Future<void> replaceCloudCollections(CloudState state) async {
+        for (final folder in localFolders) {
+          final path = folderPath(folder.id, folder.name);
+          folders.add({
+            'id': '${language.code}:${jsonEncode(path)}',
+            'data': {'language': language.code, 'path': path},
+          });
+        }
+        final custom = await getCustomSources(language);
+        final ordered = <NewsRssSource>[];
+        for (final folderId in <String?>[
+          null,
+          ...localFolders.map((f) => f.id),
+        ]) {
+          final visible = await getOrderedSources(language, folderId: folderId);
+          ordered.addAll(
+            visible.where(
+              (s) => !s.isFolder && custom.any((c) => c.uri == s.uri),
+            ),
+          );
+        }
+        // Preserve custom sources hidden by a local-only visibility preference.
+        for (final s in custom) {
+          if (!ordered.any((o) => o.uri == s.uri)) ordered.add(s);
+        }
+        for (final source in ordered) {
+          final path = byId[source.parentFolderId];
+          sources.add({
+            'id': '${language.code}:${source.uri}',
+            'data': {
+              'language': language.code,
+              'title': source.name,
+              'url': source.uri.toString(),
+              'folder_path': path == null
+                  ? <String>[]
+                  : folderPath(source.parentFolderId!, path),
+            },
+          });
+        }
+      }
+      return {'news_sources': sources, 'news_folders': folders};
+    },
+  );
+
+  Future<void> replaceCloudCollections(
+    CloudState state,
+  ) => CollectionStorage.run(() async {
     final prefs = await SharedPreferences.getInstance();
     for (final language in NewsLanguage.values) {
       final oldFolders = await getFolders(language);
@@ -412,11 +443,15 @@ class NewsService {
         if (path.isEmpty) return;
         final name = path.join(' / ');
         final existing = oldFolders.where((f) => f.name == name).firstOrNull;
-        final id = existing?.id ?? 'cloud_${base64Url.encode(utf8.encode(name))}';
-        if (!folderIds.containsKey(name)) folders.add(NewsSourceFolder(id: id, name: name));
+        final id =
+            existing?.id ?? 'cloud_${base64Url.encode(utf8.encode(name))}';
+        if (!folderIds.containsKey(name)) {
+          folders.add(NewsSourceFolder(id: id, name: name));
+        }
         folderIds[name] = id;
         cloudPaths[id] = path;
       }
+
       for (final item in state['news_folders'] ?? <Map<String, dynamic>>[]) {
         final data = item['data'] as Map<String, dynamic>;
         if (data['language'] == language.code) addFolder(data['path'] as List);
@@ -428,50 +463,75 @@ class NewsService {
         if (data['language'] != language.code) continue;
         final path = data['folder_path'] as List? ?? [];
         addFolder(path);
-        sources.add(NewsRssSource(name: data['title'] as String,
-          uri: Uri.parse(data['url'] as String), isCustom: true,
-          allowRepubblica: oldCustom.any((source) => source.uri.toString() == data['url'] && source.allowRepubblica),
-          parentFolderId: path.isEmpty ? null : folderIds[path.join(' / ')]));
+        sources.add(
+          NewsRssSource(
+            name: data['title'] as String,
+            uri: Uri.parse(data['url'] as String),
+            isCustom: true,
+            allowRepubblica: oldCustom.any(
+              (source) =>
+                  source.uri.toString() == data['url'] &&
+                  source.allowRepubblica,
+            ),
+            parentFolderId: path.isEmpty ? null : folderIds[path.join(' / ')],
+          ),
+        );
       }
       await _saveFolders(language, folders);
-      await prefs.setString('news_cloud_folder_paths_${language.name}', jsonEncode(cloudPaths));
+      await prefs.setString(
+        'news_cloud_folder_paths_${language.name}',
+        jsonEncode(cloudPaths),
+      );
       final assignments = await _getSourceFolderAssignments(language);
-      for (final source in oldCustom) { assignments.remove(source.name); }
+      for (final source in oldCustom) {
+        assignments.remove(source.name);
+      }
       assignments.removeWhere((_, id) => !folders.any((f) => f.id == id));
       for (final source in sources) {
-        if (source.parentFolderId != null) assignments[source.name] = source.parentFolderId!;
+        if (source.parentFolderId != null) {
+          assignments[source.name] = source.parentFolderId!;
+        }
       }
       await _saveSourceFolderAssignments(language, assignments);
-      await prefs.setStringList(_getCustomPrefsKey(language), sources.map((s) => jsonEncode(s.toJson())).toList());
+      await prefs.setStringList(
+        _getCustomPrefsKey(language),
+        sources.map((s) => jsonEncode(s.toJson())).toList(),
+      );
       for (final folderId in <String?>[null, ...folders.map((f) => f.id)]) {
         final previous = await getOrderedSources(language, folderId: folderId);
-        final ordered = sources.where((s) => s.parentFolderId == folderId).toList();
+        final ordered = sources
+            .where((s) => s.parentFolderId == folderId)
+            .toList();
         await saveSourcesOrder(language, [
-          ...previous.where((s) => s.isFolder || !sources.any((v) => v.uri == s.uri)),
+          ...previous.where(
+            (s) => s.isFolder || !sources.any((v) => v.uri == s.uri),
+          ),
           ...ordered,
         ], folderId: folderId);
       }
     }
-  }
+  });
 
-  Future<List<NewsSourceFolder>> getFolders(NewsLanguage language) async {
-    final prefs = await SharedPreferences.getInstance();
-    final listStr = prefs.getStringList(_getFoldersPrefsKey(language)) ?? [];
-    return listStr
-        .map((s) {
-          try {
-            final folder = NewsSourceFolder.fromJson(jsonDecode(s));
-            if (folder.id.trim().isEmpty || folder.name.trim().isEmpty) {
-              return null;
-            }
-            return folder;
-          } catch (_) {
-            return null;
-          }
-        })
-        .whereType<NewsSourceFolder>()
-        .toList();
-  }
+  Future<List<NewsSourceFolder>> getFolders(NewsLanguage language) =>
+      CollectionStorage.run(() async {
+        final prefs = await SharedPreferences.getInstance();
+        final listStr =
+            prefs.getStringList(_getFoldersPrefsKey(language)) ?? [];
+        return listStr
+            .map((s) {
+              try {
+                final folder = NewsSourceFolder.fromJson(jsonDecode(s));
+                if (folder.id.trim().isEmpty || folder.name.trim().isEmpty) {
+                  return null;
+                }
+                return folder;
+              } catch (_) {
+                return null;
+              }
+            })
+            .whereType<NewsSourceFolder>()
+            .toList();
+      });
 
   Future<void> _saveFolders(
     NewsLanguage language,
@@ -512,57 +572,63 @@ class NewsService {
     );
   }
 
-  Future<NewsSourceFolder> createFolder(
-    NewsLanguage language,
-    String name,
-  ) async {
-    final folders = await getFolders(language);
-    final knownNames = folders.map((folder) => folder.name).toSet();
-    final folder = NewsSourceFolder(
-      id: 'folder_${DateTime.now().microsecondsSinceEpoch}',
-      name: _uniqueSourceName(name, knownNames),
-    );
-    folders.add(folder);
-    await _saveFolders(language, folders);
-    return folder;
-  }
+  Future<NewsSourceFolder> createFolder(NewsLanguage language, String name) =>
+      CollectionStorage.run(() async {
+        final folders = await getFolders(language);
+        final knownNames = folders.map((folder) => folder.name).toSet();
+        final folder = NewsSourceFolder(
+          id: 'folder_${DateTime.now().microsecondsSinceEpoch}',
+          name: _uniqueSourceName(name, knownNames),
+        );
+        folders.add(folder);
+        await _saveFolders(language, folders);
+        return folder;
+      });
 
-  Future<void> removeFolder(NewsLanguage language, String folderId) async {
-    final beforeCloud = await exportCloudCollections();
-    final folders = await getFolders(language);
-    folders.removeWhere((folder) => folder.id == folderId);
-    await _saveFolders(language, folders);
+  Future<void> removeFolder(NewsLanguage language, String folderId) =>
+      CollectionStorage.run(() async {
+        final beforeCloud = await exportCloudCollections();
+        final folders = await getFolders(language);
+        folders.removeWhere((folder) => folder.id == folderId);
+        await _saveFolders(language, folders);
 
-    final customSources = await getCustomSources(language);
-    final updatedCustomSources = customSources
-        .map(
-          (source) => source.parentFolderId == folderId
-              ? source.copyWith(clearParentFolderId: true)
-              : source,
-        )
-        .toList();
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList(
-      _getCustomPrefsKey(language),
-      updatedCustomSources
-          .map((source) => jsonEncode(source.toJson()))
-          .toList(),
-    );
+        final customSources = await getCustomSources(language);
+        final updatedCustomSources = customSources
+            .map(
+              (source) => source.parentFolderId == folderId
+                  ? source.copyWith(clearParentFolderId: true)
+                  : source,
+            )
+            .toList();
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setStringList(
+          _getCustomPrefsKey(language),
+          updatedCustomSources
+              .map((source) => jsonEncode(source.toJson()))
+              .toList(),
+        );
 
-    final assignments = await _getSourceFolderAssignments(language);
-    assignments.removeWhere((_, value) => value == folderId);
-    await _saveSourceFolderAssignments(language, assignments);
-    await prefs.remove(_getFolderOrderPrefsKey(language, folderId));
-    final afterCloud = await exportCloudCollections();
-    final remaining = afterCloud['news_folders']!.map((row) => row['id']).toSet();
-    await CloudSyncDeletions.record('news_folders', beforeCloud['news_folders']!.where((row) => !remaining.contains(row['id'])).map((row) => row['id'] as String));
-  }
+        final assignments = await _getSourceFolderAssignments(language);
+        assignments.removeWhere((_, value) => value == folderId);
+        await _saveSourceFolderAssignments(language, assignments);
+        await prefs.remove(_getFolderOrderPrefsKey(language, folderId));
+        final afterCloud = await exportCloudCollections();
+        final remaining = afterCloud['news_folders']!
+            .map((row) => row['id'])
+            .toSet();
+        await CloudSyncDeletions.record(
+          'news_folders',
+          beforeCloud['news_folders']!
+              .where((row) => !remaining.contains(row['id']))
+              .map((row) => row['id'] as String),
+        );
+      });
 
   Future<void> moveSourceToFolder(
     NewsLanguage language,
     NewsRssSource source,
     String? folderId,
-  ) async {
+  ) => CollectionStorage.run(() async {
     if (source.isFolder) return;
     final prefs = await SharedPreferences.getInstance();
 
@@ -592,14 +658,14 @@ class NewsService {
     await _saveSourceFolderAssignments(language, assignments);
 
     for (final key in prefs.getKeys().where(
-          (key) => key.startsWith('news_sources_order_${language.name}'),
-        )) {
+      (key) => key.startsWith('news_sources_order_${language.name}'),
+    )) {
       final order = prefs.getStringList(key) ?? [];
       if (order.remove(_itemOrderKey(source)) || order.remove(source.name)) {
         await prefs.setStringList(key, order);
       }
     }
-  }
+  });
 
   Future<String> addCommunityNewsSource({
     required NewsLanguage language,
@@ -607,16 +673,18 @@ class NewsService {
     required String feedUrl,
     String? uiLanguageCode,
   }) async {
-    final response = await _client.post(
-      Uri.parse(_addCommunityNewsSourceUrl),
-      headers: _communityHeaders,
-      body: {
-        'name': name,
-        'url': feedUrl,
-        'language': language.communityKey,
-        'ui_language': uiLanguageCode ?? language.code,
-      },
-    ).timeout(const Duration(seconds: 15));
+    final response = await _client
+        .post(
+          Uri.parse(_addCommunityNewsSourceUrl),
+          headers: _communityHeaders,
+          body: {
+            'name': name,
+            'url': feedUrl,
+            'language': language.communityKey,
+            'ui_language': uiLanguageCode ?? language.code,
+          },
+        )
+        .timeout(const Duration(seconds: 15));
 
     final decoded = _decodeJsonMap(utf8.decode(response.bodyBytes));
     final message = (decoded['message'] ?? '').toString().trim();
@@ -648,8 +716,8 @@ class NewsService {
     final items = decoded is List
         ? decoded
         : decoded is Map
-            ? decoded['items']
-            : null;
+        ? decoded['items']
+        : null;
     if (items is! List) return const [];
 
     final currentCustomSources = await getCustomSources(language);
@@ -725,9 +793,6 @@ class NewsService {
     String? parentFolderId,
     bool fromCommunity = false,
   }) async {
-    final prefs = await SharedPreferences.getInstance();
-    final customSources = await getCustomSources(language);
-
     final originalInput = urlOrSearch.trim();
     String finalUrl = originalInput;
     final lowerInput = originalInput.toLowerCase();
@@ -819,11 +884,6 @@ class NewsService {
       }
     }
 
-    // Controlla se esiste già
-    if (customSources.any((s) => s.uri.toString() == finalUrl)) {
-      throw Exception('Sorgente già presente');
-    }
-
     final uri = Uri.parse(finalUrl);
     var finalName = name.trim();
     if (finalName.isEmpty) {
@@ -834,28 +894,36 @@ class NewsService {
         finalName = (isExplicitUrl || looksLikeDomain) && uri.host.isNotEmpty
             ? uri.host
             : originalInput.isNotEmpty
-                ? originalInput
-                : 'RSS';
+            ? originalInput
+            : 'RSS';
       }
-      final knownNames = <String>{
-        ...language.rssSources.map((source) => source.name),
-        ...customSources.map((source) => source.name),
-      };
-      finalName = _uniqueSourceName(finalName, knownNames);
     }
+    await CollectionStorage.run(() async {
+      final prefs = await SharedPreferences.getInstance();
+      final customSources = await getCustomSources(language);
+      if (customSources.any((source) => source.uri.toString() == finalUrl)) {
+        throw Exception('Sorgente già presente');
+      }
+      if (name.trim().isEmpty) {
+        finalName = _uniqueSourceName(finalName, {
+          ...language.rssSources.map((source) => source.name),
+          ...customSources.map((source) => source.name),
+        });
+      }
+      final newSource = NewsRssSource(
+        name: finalName,
+        uri: uri,
+        isCustom: true,
+        allowRepubblica: fromCommunity && _isRepubblicaUrl(finalUrl),
+        parentFolderId: parentFolderId,
+      );
 
-    final newSource = NewsRssSource(
-      name: finalName,
-      uri: uri,
-      isCustom: true,
-      allowRepubblica: fromCommunity && _isRepubblicaUrl(finalUrl),
-      parentFolderId: parentFolderId,
-    );
-
-    customSources.add(newSource);
-    final stringList =
-        customSources.map((s) => jsonEncode(s.toJson())).toList();
-    await prefs.setStringList(_getCustomPrefsKey(language), stringList);
+      customSources.add(newSource);
+      final stringList = customSources
+          .map((s) => jsonEncode(s.toJson()))
+          .toList();
+      await prefs.setStringList(_getCustomPrefsKey(language), stringList);
+    });
   }
 
   Future<String?> _fetchRssFeedTitle(
@@ -888,14 +956,20 @@ class NewsService {
         if (feedTitle != null && feedTitle.trim().isNotEmpty) {
           return _cleanFeedTitle(feedTitle);
         }
-        final title =
-            doc.findAllElements('title').firstOrNull?.innerText.trim();
+        final title = doc
+            .findAllElements('title')
+            .firstOrNull
+            ?.innerText
+            .trim();
         if (title != null && title.isNotEmpty) {
           return _cleanFeedTitle(title);
         }
       } catch (_) {
-        final title =
-            html_parser.parse(body).querySelector('title')?.text.trim();
+        final title = html_parser
+            .parse(body)
+            .querySelector('title')
+            ?.text
+            .trim();
         if (title != null && title.isNotEmpty) {
           return _cleanFeedTitle(title);
         }
@@ -907,40 +981,48 @@ class NewsService {
   String _cleanFeedTitle(String value) =>
       _cleanHtml(value).replaceAll(RegExp(r'\s+'), ' ').trim();
 
-  Future<void> removeCustomSource(NewsLanguage language, String name) async {
-    final prefs = await SharedPreferences.getInstance();
-    final customSources = await getCustomSources(language);
+  Future<void> removeCustomSource(NewsLanguage language, String name) =>
+      CollectionStorage.run(() async {
+        final prefs = await SharedPreferences.getInstance();
+        final customSources = await getCustomSources(language);
 
-    await CloudSyncDeletions.record('news_sources', customSources.where((s) => s.name == name).map((s) => '${language.code}:${s.uri}'));
-    customSources.removeWhere((s) => s.name == name);
-    final stringList =
-        customSources.map((s) => jsonEncode(s.toJson())).toList();
-    await prefs.setStringList(_getCustomPrefsKey(language), stringList);
+        await CloudSyncDeletions.record(
+          'news_sources',
+          customSources
+              .where((s) => s.name == name)
+              .map((s) => '${language.code}:${s.uri}'),
+        );
+        customSources.removeWhere((s) => s.name == name);
+        final stringList = customSources
+            .map((s) => jsonEncode(s.toJson()))
+            .toList();
+        await prefs.setStringList(_getCustomPrefsKey(language), stringList);
 
-    // Rimuovilo anche dai nascosti/ordinati
-    final hiddenNames = prefs.getStringList(_getHiddenPrefsKey(language)) ?? [];
-    if (hiddenNames.remove(name)) {
-      await prefs.setStringList(_getHiddenPrefsKey(language), hiddenNames);
-    }
-    final assignments = await _getSourceFolderAssignments(language);
-    if (assignments.remove(name) != null) {
-      await _saveSourceFolderAssignments(language, assignments);
-    }
-    for (final key in prefs.getKeys().where(
+        // Rimuovilo anche dai nascosti/ordinati
+        final hiddenNames =
+            prefs.getStringList(_getHiddenPrefsKey(language)) ?? [];
+        if (hiddenNames.remove(name)) {
+          await prefs.setStringList(_getHiddenPrefsKey(language), hiddenNames);
+        }
+        final assignments = await _getSourceFolderAssignments(language);
+        if (assignments.remove(name) != null) {
+          await _saveSourceFolderAssignments(language, assignments);
+        }
+        for (final key in prefs.getKeys().where(
           (key) => key.startsWith('news_sources_order_${language.name}'),
         )) {
-      final order = prefs.getStringList(key) ?? [];
-      if (order.remove('source:$name') || order.remove(name)) {
-        await prefs.setStringList(key, order);
-      }
-    }
-  }
+          final order = prefs.getStringList(key) ?? [];
+          if (order.remove('source:$name') || order.remove(name)) {
+            await prefs.setStringList(key, order);
+          }
+        }
+      });
 
   Future<int> importCustomSourcesFromOpml(
     NewsLanguage language,
     File file, {
     String? parentFolderId,
-  }) async {
+  }) => CollectionStorage.run(() async {
     final text = await file.readAsString();
     final document = XmlDocument.parse(text);
     final currentCustomSources = await getCustomSources(language);
@@ -997,8 +1079,8 @@ class NewsService {
         final baseName = titleAttr?.isNotEmpty == true
             ? titleAttr!
             : textAttr?.isNotEmpty == true
-                ? textAttr!
-                : fallbackName;
+            ? textAttr!
+            : fallbackName;
 
         toAdd.add(
           NewsRssSource(
@@ -1028,8 +1110,8 @@ class NewsService {
       final groupName = titleAttr?.isNotEmpty == true
           ? titleAttr!
           : textAttr?.isNotEmpty == true
-              ? textAttr!
-              : 'RSS';
+          ? textAttr!
+          : 'RSS';
       final nextPath = [...folderPath, groupName];
       final folder = ensureFolder(nextPath.join(' / '));
       for (final child in childOutlines) {
@@ -1055,7 +1137,7 @@ class NewsService {
     );
     await _saveFolders(language, folders);
     return toAdd.length;
-  }
+  });
 
   Future<String> exportCustomSourcesToOpml(NewsLanguage language) async {
     final customSources = await getCustomSources(language);
@@ -1157,8 +1239,9 @@ class NewsService {
     String? folderId,
   }) async {
     final prefs = await SharedPreferences.getInstance();
-    final folders =
-        folderId == null ? await getFolders(language) : <NewsSourceFolder>[];
+    final folders = folderId == null
+        ? await getFolders(language)
+        : <NewsSourceFolder>[];
     final defaultSources = language.rssSources;
     final customSources = await getCustomSources(language);
     final assignments = await _getSourceFolderAssignments(language);
@@ -1212,33 +1295,35 @@ class NewsService {
     NewsLanguage language,
     List<NewsRssSource> sources, {
     String? folderId,
-  }) async {
+  }) => CollectionStorage.run(() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setStringList(
       _getFolderOrderPrefsKey(language, folderId),
       sources.map(_itemOrderKey).toList(),
     );
-  }
+  });
 
   String _itemOrderKey(NewsRssSource source) =>
       source.isFolder ? 'folder:${source.folderId}' : 'source:${source.name}';
 
-  Future<void> hideSource(NewsLanguage language, NewsRssSource source) async {
-    final prefs = await SharedPreferences.getInstance();
-    final hidden = prefs.getStringList(_getHiddenPrefsKey(language)) ?? [];
-    if (!hidden.contains(source.name)) {
-      hidden.add(source.name);
-      await prefs.setStringList(_getHiddenPrefsKey(language), hidden);
-    }
-  }
+  Future<void> hideSource(NewsLanguage language, NewsRssSource source) =>
+      CollectionStorage.run(() async {
+        final prefs = await SharedPreferences.getInstance();
+        final hidden = prefs.getStringList(_getHiddenPrefsKey(language)) ?? [];
+        if (!hidden.contains(source.name)) {
+          hidden.add(source.name);
+          await prefs.setStringList(_getHiddenPrefsKey(language), hidden);
+        }
+      });
 
-  Future<void> restoreHiddenSources(NewsLanguage language) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_getHiddenPrefsKey(language));
-    await prefs.remove(
-      _getPrefsKey(language),
-    ); // Also reset order when restoring
-  }
+  Future<void> restoreHiddenSources(NewsLanguage language) =>
+      CollectionStorage.run(() async {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.remove(_getHiddenPrefsKey(language));
+        await prefs.remove(
+          _getPrefsKey(language),
+        ); // Also reset order when restoring
+      });
 
   Future<List<NewsArticle>> fetchTopNews(
     NewsLanguage language, {
@@ -1437,15 +1522,16 @@ class NewsService {
       final uri = Uri.parse(
         _tinyfishArticleFetchUrl,
       ).replace(queryParameters: {'policy': '1'});
-      final response = await _client.get(uri, headers: const {
-        'Accept': 'application/json'
-      }).timeout(_tinyfishPolicyTimeout);
+      final response = await _client
+          .get(uri, headers: const {'Accept': 'application/json'})
+          .timeout(_tinyfishPolicyTimeout);
       if (response.statusCode >= 200 && response.statusCode < 300) {
         final decoded = jsonDecode(
           utf8.decode(response.bodyBytes, allowMalformed: true),
         );
         if (decoded is Map) {
-          final fallbackOnly = decoded['tinyfish_fallback_only'] == true ||
+          final fallbackOnly =
+              decoded['tinyfish_fallback_only'] == true ||
               decoded['fallback_only'] == true ||
               decoded['mode']?.toString().toLowerCase() == 'fallback_only';
           _sessionTinyfishFallbackOnlyPolicy = fallbackOnly;
@@ -1801,9 +1887,9 @@ class NewsService {
           if (fallbackAttempt) 'fallback': '1',
         },
       );
-      final response = await _client.get(uri, headers: const {
-        'Accept': 'application/json'
-      }).timeout(_tinyfishArticleTimeout);
+      final response = await _client
+          .get(uri, headers: const {'Accept': 'application/json'})
+          .timeout(_tinyfishArticleTimeout);
       unawaited(AppLogger.log(articleReaderResponseLog(response, articleUrl)));
       if (response.statusCode < 200 || response.statusCode >= 300) {
         final disabled = _isTinyfishDisabledResponse(response);
@@ -1897,18 +1983,20 @@ class NewsService {
     final provider =
         metadata['provider'] ?? response.headers['x-sonarpad-provider'];
     final tinyfish = metadata['tinyfish_used'];
-    final tinyfishHeader =
-        response.headers['x-sonarpad-tinyfish']?.toUpperCase();
+    final tinyfishHeader = response.headers['x-sonarpad-tinyfish']
+        ?.toUpperCase();
     final cache = metadata['cache_hit'] ?? response.headers['x-sonarpad-cache'];
-    final engine = provider == 'tinyfish' ||
+    final engine =
+        provider == 'tinyfish' ||
             tinyfish == true ||
             tinyfishHeader == 'USED' ||
             tinyfishHeader == 'CACHED'
         ? 'Tinyfish'
         : provider == 'curl_impersonate'
-            ? 'Python (curl_cffi/BeautifulSoup)'
-            : 'non comunicato';
-    final failed = response.statusCode < 200 ||
+        ? 'Python (curl_cffi/BeautifulSoup)'
+        : 'non comunicato';
+    final failed =
+        response.statusCode < 200 ||
         response.statusCode >= 300 ||
         metadata['ok'] != true;
     return 'News reader server: HTTP ${response.statusCode} '
@@ -1925,8 +2013,8 @@ class NewsService {
 
   bool _isTinyfishDisabledResponse(http.Response response) {
     final header = response.headers['x-sonarpad-tinyfish']?.toLowerCase();
-    final policyHeader =
-        response.headers['x-sonarpad-tinyfish-policy']?.toLowerCase();
+    final policyHeader = response.headers['x-sonarpad-tinyfish-policy']
+        ?.toLowerCase();
     if (header == 'disabled') return true;
     if (policyHeader == 'fallback_only') return true;
     final body = utf8.decode(response.bodyBytes, allowMalformed: true);
@@ -1981,21 +2069,21 @@ class NewsService {
   }
 
   String _googleNewsCountry(NewsLanguage language) => switch (language) {
-        NewsLanguage.italian => 'IT',
-        NewsLanguage.english => 'US',
-        NewsLanguage.french => 'FR',
-        NewsLanguage.spanish => 'ES',
-        NewsLanguage.portuguese => 'PT',
-        NewsLanguage.portugueseBrazil => 'BR',
-        NewsLanguage.polish => 'PL',
-        NewsLanguage.czech => 'CZ',
-        NewsLanguage.german => 'DE',
-        NewsLanguage.dutch => 'NL',
-        NewsLanguage.chineseSimplified => 'CN',
-        NewsLanguage.ukrainian => 'UA',
-        NewsLanguage.romanian => 'RO',
-        NewsLanguage.turkish => 'TR',
-      };
+    NewsLanguage.italian => 'IT',
+    NewsLanguage.english => 'US',
+    NewsLanguage.french => 'FR',
+    NewsLanguage.spanish => 'ES',
+    NewsLanguage.portuguese => 'PT',
+    NewsLanguage.portugueseBrazil => 'BR',
+    NewsLanguage.polish => 'PL',
+    NewsLanguage.czech => 'CZ',
+    NewsLanguage.german => 'DE',
+    NewsLanguage.dutch => 'NL',
+    NewsLanguage.chineseSimplified => 'CN',
+    NewsLanguage.ukrainian => 'UA',
+    NewsLanguage.romanian => 'RO',
+    NewsLanguage.turkish => 'TR',
+  };
 
   bool _isGoogleNewsUri(Uri uri) => uri.host.toLowerCase() == 'news.google.com';
 
@@ -2164,7 +2252,6 @@ class NewsService {
   }
 
   bool _excludedGoogleNewsItem(XmlElement item) {
-
     // Google links are opaque redirects; RSS source metadata identifies the
     // publisher without resolving or downloading every article.
     if (_isRepubblicaUrl(_text(item, 'link'))) return true;
@@ -2181,8 +2268,12 @@ class NewsService {
     return false;
   }
 
-  List<NewsArticle> _visibleSourceArticles(List<NewsArticle> articles, NewsRssSource source) =>
-      source.allowRepubblica ? articles : articles.where((article) => !_isRepubblicaUrl(article.link)).toList();
+  List<NewsArticle> _visibleSourceArticles(
+    List<NewsArticle> articles,
+    NewsRssSource source,
+  ) => source.allowRepubblica
+      ? articles
+      : articles.where((article) => !_isRepubblicaUrl(article.link)).toList();
 
   Future<List<NewsArticle>> _fetchRssSourceDirect(
     NewsRssSource rssSource, {
@@ -2207,56 +2298,68 @@ class NewsService {
     try {
       final doc = XmlDocument.parse(decodedBody);
       if (doc.rootElement.name.local.toLowerCase() == 'html') {
-        return _visibleSourceArticles(_extractArticlesFromHtml(decodedBody, rssSource), rssSource);
+        return _visibleSourceArticles(
+          _extractArticlesFromHtml(decodedBody, rssSource),
+          rssSource,
+        );
       }
       final items = doc.findAllElements('item');
       if (items.isEmpty) {
-        return _visibleSourceArticles(_articlesFromAtomEntries(doc, rssSource), rssSource);
+        return _visibleSourceArticles(
+          _articlesFromAtomEntries(doc, rssSource),
+          rssSource,
+        );
       }
       var index = 0;
       final visibleItems = rssSource.allowRepubblica
           ? items
           : items.where((item) => !_excludedGoogleNewsItem(item));
-      return _visibleSourceArticles(visibleItems.map((item) {
-        index++;
-        final title = _text(item, 'title');
-        final rawLink = _text(item, 'link');
-        final link = rawLink.isEmpty
-            ? ''
-            : _resolveRelativeUrl(rawLink, rssSource.uri.toString());
-        final guid = _text(item, 'guid');
-        final rawDescription = _rssDescription(item);
-        final description = _cleanRssDescription(rawDescription);
-        final allowInternalMediaLinks = rssSource.isCustom;
-        final mediaLinks = allowInternalMediaLinks
-            ? _extractRssMediaLinks(
-                rawDescription,
-                baseUrl: link.isNotEmpty ? link : rssSource.uri.toString(),
-              )
-            : const <NewsArticleMediaLink>[];
-        final source = item.findElements('source').isNotEmpty
-            ? item.findElements('source').first.innerText.trim()
-            : rssSource.name;
-        final pubDateRaw = _text(item, 'pubDate');
-        return NewsArticle(
-          id: _stableArticleId(
-            rssSource,
-            externalId: guid,
+      return _visibleSourceArticles(
+        visibleItems.map((item) {
+          index++;
+          final title = _text(item, 'title');
+          final rawLink = _text(item, 'link');
+          final link = rawLink.isEmpty
+              ? ''
+              : _resolveRelativeUrl(rawLink, rssSource.uri.toString());
+          final guid = _text(item, 'guid');
+          final rawDescription = _rssDescription(item);
+          final description = _cleanRssDescription(rawDescription);
+          final allowInternalMediaLinks = rssSource.isCustom;
+          final mediaLinks = allowInternalMediaLinks
+              ? _extractRssMediaLinks(
+                  rawDescription,
+                  baseUrl: link.isNotEmpty ? link : rssSource.uri.toString(),
+                )
+              : const <NewsArticleMediaLink>[];
+          final source = item.findElements('source').isNotEmpty
+              ? item.findElements('source').first.innerText.trim()
+              : rssSource.name;
+          final pubDateRaw = _text(item, 'pubDate');
+          return NewsArticle(
+            id: _stableArticleId(
+              rssSource,
+              externalId: guid,
+              link: link,
+              fallback: '$title|$pubDateRaw|$index',
+            ),
+            title: _cleanGoogleTitle(title),
             link: link,
-            fallback: '$title|$pubDateRaw|$index',
-          ),
-          title: _cleanGoogleTitle(title),
-          link: link,
-          summary: description,
-          source: _cleanFeedText(source),
-          publishedAt:
-              DateTime.tryParse(pubDateRaw) ?? _parseRssDate(pubDateRaw),
-          mediaLinks: mediaLinks,
-          allowInternalMediaLinks: allowInternalMediaLinks,
-        );
-      }).toList(), rssSource);
+            summary: description,
+            source: _cleanFeedText(source),
+            publishedAt:
+                DateTime.tryParse(pubDateRaw) ?? _parseRssDate(pubDateRaw),
+            mediaLinks: mediaLinks,
+            allowInternalMediaLinks: allowInternalMediaLinks,
+          );
+        }).toList(),
+        rssSource,
+      );
     } catch (_) {
-      return _visibleSourceArticles(_extractArticlesFromHtml(decodedBody, rssSource), rssSource);
+      return _visibleSourceArticles(
+        _extractArticlesFromHtml(decodedBody, rssSource),
+        rssSource,
+      );
     }
   }
 
@@ -2435,12 +2538,20 @@ class NewsService {
     final host = uri.host.toLowerCase().replaceFirst(RegExp(r'^www\.'), '');
     final path = uri.path.replaceFirst(RegExp(r'/+$'), '');
     if ((host == 'iha.com.tr' && const ['', '/rss'].contains(path)) ||
-        (host == 'news.google.com' && uri.queryParameters['q'] == 'site:iha.com.tr')) {
-      return Uri.parse('https://news.google.com/rss/search?q=site%3Aiha.com.tr%20when%3A7d&hl=tr&gl=TR&ceid=TR%3Atr');
+        (host == 'news.google.com' &&
+            uri.queryParameters['q'] == 'site:iha.com.tr')) {
+      return Uri.parse(
+        'https://news.google.com/rss/search?q=site%3Aiha.com.tr%20when%3A7d&hl=tr&gl=TR&ceid=TR%3Atr',
+      );
     }
     // Repair known obsolete front-page feeds, including saved community URLs.
     if (host == 'turkiyegazetesi.com.tr' &&
-        const ['', '/rss', '/rss/manset', '/rss/son-dakika-haberleri'].contains(path)) {
+        const [
+          '',
+          '/rss',
+          '/rss/manset',
+          '/rss/son-dakika-haberleri',
+        ].contains(path)) {
       return Uri.parse('https://www.turkiyegazetesi.com.tr/rss');
     }
     if (host == 'tgrthaber.com' &&
@@ -2552,8 +2663,9 @@ class NewsService {
       return null;
     }
     final articleId = _extractGoogleNewsArticleId(url);
-    final articleNodes =
-        html_parser.parse(html).querySelectorAll('[data-n-a-id]');
+    final articleNodes = html_parser
+        .parse(html)
+        .querySelectorAll('[data-n-a-id]');
     final matchingNodes = articleNodes.where(
       (node) => node.attributes['data-n-a-id'] == articleId,
     );
@@ -2566,9 +2678,11 @@ class NewsService {
     final directUrl = _extractGoogleNewsDirectUrl(articleHtml);
     if (directUrl != null) return directUrl;
 
-    final signature = _extractBetween(articleHtml, 'data-n-a-sg="', '"') ??
+    final signature =
+        _extractBetween(articleHtml, 'data-n-a-sg="', '"') ??
         _extractBetween(articleHtml, "data-n-a-sg='", "'");
-    final timestamp = _extractBetween(articleHtml, 'data-n-a-ts="', '"') ??
+    final timestamp =
+        _extractBetween(articleHtml, 'data-n-a-ts="', '"') ??
         _extractBetween(articleHtml, "data-n-a-ts='", "'");
     if (articleId == null || signature == null || timestamp == null) {
       return null;
@@ -2615,7 +2729,8 @@ class NewsService {
   }
 
   String? _extractGoogleNewsDirectUrl(String html) {
-    final candidate = _extractBetween(html, 'data-n-au="', '"') ??
+    final candidate =
+        _extractBetween(html, 'data-n-au="', '"') ??
         _extractBetween(html, "data-n-au='", "'");
     if (candidate == null) return null;
     final uri = Uri.tryParse(candidate.trim());
@@ -2718,12 +2833,12 @@ class NewsService {
 
   static Future<http.Client> _browserClient(_BrowserFetchProfile profile) {
     return switch (profile) {
-      _BrowserFetchProfile.chrome => _chromeClientFuture ??=
-            rhttp.RhttpCompatibleClient.create(
+      _BrowserFetchProfile.chrome =>
+        _chromeClientFuture ??= rhttp.RhttpCompatibleClient.create(
           settings: _chromeClientSettings,
         ),
-      _BrowserFetchProfile.iphone => _iphoneClientFuture ??=
-            rhttp.RhttpCompatibleClient.create(
+      _BrowserFetchProfile.iphone =>
+        _iphoneClientFuture ??= rhttp.RhttpCompatibleClient.create(
           settings: _iphoneClientSettings,
         ),
     };
@@ -2737,7 +2852,7 @@ class NewsService {
   }
 
   Future<({http.Response response, _BrowserFetchProfile profile})>
-      _browserGetWithFallback(Uri uri, {Map<String, String>? headers}) async {
+  _browserGetWithFallback(Uri uri, {Map<String, String>? headers}) async {
     if (!_useBrowserClient) {
       return (
         response: await _client.get(uri, headers: headers),
@@ -3078,10 +3193,28 @@ class HttpDate {
   static DateTime parse(String value) {
     // RSS dates may use English or Turkish names. Never ignore the zone.
     const months = {
-      'jan': 1, 'feb': 2, 'mar': 3, 'apr': 4, 'may': 5, 'jun': 6,
-      'jul': 7, 'aug': 8, 'sep': 9, 'oct': 10, 'nov': 11, 'dec': 12,
-      'oca': 1, 'şub': 2, 'nis': 4, 'haz': 6, 'tem': 7, 'ağu': 8,
-      'eyl': 9, 'eki': 10, 'kas': 11, 'ara': 12,
+      'jan': 1,
+      'feb': 2,
+      'mar': 3,
+      'apr': 4,
+      'may': 5,
+      'jun': 6,
+      'jul': 7,
+      'aug': 8,
+      'sep': 9,
+      'oct': 10,
+      'nov': 11,
+      'dec': 12,
+      'oca': 1,
+      'şub': 2,
+      'nis': 4,
+      'haz': 6,
+      'tem': 7,
+      'ağu': 8,
+      'eyl': 9,
+      'eki': 10,
+      'kas': 11,
+      'ara': 12,
     };
     final match = RegExp(
       r'^(?:[^,]+,\s*)?(\d{1,2})\s+(\S+)\s+(\d{4})\s+(\d{2}):(\d{2})(?::(\d{2}))?\s+([+-]\d{2}:?\d{2}|GMT|UTC|UT|Z|EST|EDT|CST|CDT|MST|MDT|PST|PDT)$',
@@ -3096,14 +3229,28 @@ class HttpDate {
     final minute = int.parse(match[5]!);
     final second = int.parse(match[6] ?? '0');
     final date = DateTime.utc(year, month, day, hour, minute, second);
-    if (date.month != month || date.day != day || hour > 23 ||
-        minute > 59 || second > 59) {
+    if (date.month != month ||
+        date.day != day ||
+        hour > 23 ||
+        minute > 59 ||
+        second > 59) {
       throw const FormatException('Invalid RSS date components');
     }
     final zone = match[7]!.toUpperCase();
-    const zones = {'GMT': 0, 'UTC': 0, 'UT': 0, 'Z': 0,
-      'EST': -300, 'EDT': -240, 'CST': -360, 'CDT': -300,
-      'MST': -420, 'MDT': -360, 'PST': -480, 'PDT': -420};
+    const zones = {
+      'GMT': 0,
+      'UTC': 0,
+      'UT': 0,
+      'Z': 0,
+      'EST': -300,
+      'EDT': -240,
+      'CST': -360,
+      'CDT': -300,
+      'MST': -420,
+      'MDT': -360,
+      'PST': -480,
+      'PDT': -420,
+    };
     var offset = zones[zone];
     if (offset == null) {
       final digits = zone.substring(1).replaceAll(':', '');

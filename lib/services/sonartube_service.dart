@@ -1,5 +1,6 @@
 import '../models/media_audio_track.dart';
 import 'dart:convert';
+import 'dart:async';
 
 import 'package:http/http.dart' as http;
 
@@ -554,11 +555,17 @@ class SonarTubeService {
       throw ArgumentError(_strings.sonarTubeServiceOnlyVideo);
     }
     await AppLogger.log('SonarTube playback recovery id=${item.id} provider=server');
-    final media = await _resolveUrlServer(
+    Future<SonarTubeResolvedMedia> request() => _resolveUrlServer(
       item.url.isEmpty ? item.id : item.url,
-      fallbackTitle: item.title,
-      fallbackChannel: item.channel,
-    );
+      fallbackTitle: item.title, fallbackChannel: item.channel, preferHls: true,
+    ).timeout(const Duration(seconds: 30));
+    late SonarTubeResolvedMedia media;
+    try {
+      media = await request();
+    } on TimeoutException {
+      await AppLogger.log('SonarTube HLS recovery timed out; retrying once');
+      media = await request();
+    }
     await AppLogger.log('SonarTube playback recovery resolved id=${item.id} '
         'audioHost=${Uri.tryParse(media.audioUrl)?.host} '
         'videoHost=${Uri.tryParse(media.videoUrl ?? media.audioUrl)?.host}');
@@ -609,11 +616,12 @@ class SonarTubeService {
     String url, {
     required String fallbackTitle,
     String? fallbackChannel,
+    bool preferHls = false,
   }) async {
     final data = await _request({
       'url': url,
       'quality': 'best',
-      'prefer': 'auto',
+      'prefer': preferHls ? 'hls' : 'auto',
       'format': 'json',
     });
 

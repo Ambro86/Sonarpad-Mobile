@@ -45,6 +45,7 @@ class AiAudioDescriptionSettings {
     required this.verbosity,
     required this.allowExtendedPauses,
     this.allowNonverbalVocals = false,
+    this.allowDialogueOverlap = false,
     required this.recognizeCharacters,
     required this.recognizeScreenText,
     required this.keepCharacterCatalog,
@@ -71,6 +72,7 @@ class AiAudioDescriptionSettings {
   final String verbosity;
   final bool allowExtendedPauses;
   final bool allowNonverbalVocals;
+  final bool allowDialogueOverlap;
   final bool recognizeCharacters;
   final bool recognizeScreenText;
   final bool keepCharacterCatalog;
@@ -113,6 +115,7 @@ class AiAudioDescriptionSettings {
         verbosity: verbosity ?? this.verbosity,
         allowExtendedPauses: allowExtendedPauses,
         allowNonverbalVocals: allowNonverbalVocals,
+        allowDialogueOverlap: allowDialogueOverlap,
         recognizeCharacters: recognizeCharacters,
         recognizeScreenText: recognizeScreenText,
         keepCharacterCatalog: keepCharacterCatalog ?? this.keepCharacterCatalog,
@@ -294,6 +297,7 @@ class AudioDescriptionEditableProject {
     required this.verbosity,
     required this.allowExtendedPauses,
     this.allowNonverbalVocals = false,
+    this.allowDialogueOverlap = false,
     required this.recognizeCharacters,
     required this.recognizeScreenText,
     required this.geminiModel,
@@ -328,6 +332,7 @@ class AudioDescriptionEditableProject {
   final String verbosity;
   final bool allowExtendedPauses;
   final bool allowNonverbalVocals;
+  final bool allowDialogueOverlap;
   final bool recognizeCharacters;
   final bool recognizeScreenText;
   final String geminiModel;
@@ -345,6 +350,8 @@ class AudioDescriptionEditableProject {
   final double duckingDb;
   final int fadeMs;
   final List<AudioDescriptionProjectInterval> protectedIntervals;
+  List<AudioDescriptionProjectInterval> get effectiveProtectedIntervals =>
+      allowDialogueOverlap ? const [] : protectedIntervals;
   final List<AudioDescriptionProjectItem> descriptions;
   final List<Map<String, Object?>> excludedDescriptions;
   final List<Map<String, Object?>> characterGlossary;
@@ -385,6 +392,7 @@ class AudioDescriptionEditableProject {
         verbosity: verbosity,
         allowExtendedPauses: allowExtendedPauses,
         allowNonverbalVocals: allowNonverbalVocals,
+        allowDialogueOverlap: allowDialogueOverlap,
         recognizeCharacters: recognizeCharacters,
         recognizeScreenText: recognizeScreenText,
         geminiModel: geminiModel,
@@ -436,6 +444,7 @@ class AudioDescriptionEditableProject {
       'verbosity': verbosity,
       'allow_extended_pauses': allowExtendedPauses,
       'allow_nonverbal_vocals': allowNonverbalVocals,
+      'allow_dialogue_overlap': allowDialogueOverlap,
       'recognize_characters': recognizeCharacters,
       'recognize_screen_text': recognizeScreenText,
       'gemini_model': geminiModel,
@@ -449,7 +458,7 @@ class AudioDescriptionEditableProject {
       'source_volume': sourceVolume,
       'ducking_db': duckingDb,
       'fade_ms': fadeMs,
-      'protected_intervals': protectedIntervals.map((e) => e.toJson()).toList(),
+      'protected_intervals': effectiveProtectedIntervals.map((e) => e.toJson()).toList(),
       'descriptions': descriptions.map((e) => e.toJson()).toList(),
       'excluded_descriptions': excludedDescriptions,
       'character_glossary': characterGlossary,
@@ -535,6 +544,7 @@ class AiAudioDescriptionPreferences {
   static const _languageKey = 'ad_mobile_language';
   static const _verbosityKey = 'ad_mobile_verbosity';
   static const _extendedKey = 'ad_mobile_extended_v2';
+  static const _dialogueOverlapKey = 'ad_mobile_dialogue_overlap';
   static const _nonverbalKey = 'ad_mobile_nonverbal_vocals';
   static const _charactersKey = 'ad_mobile_characters';
   static const _screenTextKey = 'ad_mobile_screen_text';
@@ -564,6 +574,7 @@ class AiAudioDescriptionPreferences {
       'verbosity': prefs.getString(_verbosityKey) ?? 'detailed',
       'extended': prefs.getBool(_extendedKey) ?? false,
       'nonverbal': prefs.getBool(_nonverbalKey) ?? true,
+      'dialogueOverlap': prefs.getBool(_dialogueOverlapKey) ?? false,
       'characters': prefs.getBool(_charactersKey) ?? true,
       'screenText': prefs.getBool(_screenTextKey) ?? true,
       'keepCatalog': prefs.getBool(_keepCatalogKey) ?? false,
@@ -594,6 +605,11 @@ class AiAudioDescriptionPreferences {
     await prefs.setDouble(_creationPitchKey, normalized);
   }
 
+  static Future<void> saveDialogueOverlap(bool enabled) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_dialogueOverlapKey, enabled);
+  }
+
   static Future<void> saveNonverbalVocals(bool enabled) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_nonverbalKey, enabled);
@@ -613,6 +629,7 @@ class AiAudioDescriptionPreferences {
     await prefs.setString(_verbosityKey, settings.verbosity);
     await prefs.setBool(_extendedKey, settings.allowExtendedPauses);
     await prefs.setBool(_nonverbalKey, settings.allowNonverbalVocals);
+    await prefs.setBool(_dialogueOverlapKey, settings.allowDialogueOverlap);
     await prefs.setBool(_charactersKey, settings.recognizeCharacters);
     await prefs.setBool(_screenTextKey, settings.recognizeScreenText);
     await prefs.setBool(
@@ -743,6 +760,13 @@ typedef AiAudioDescriptionOverlapConsentCallback = Future<bool> Function();
 typedef AiAudioDescriptionResumeCallback = Future<bool> Function(String checkpointPath);
 
 class AiAudioDescriptionService {
+  static const _dialogueOverlapInstruction =
+      'EXPLICIT USER OPTION: Narration during dialogue and commentary is permitted. '
+      'This overrides only instructions to avoid or omit descriptions during speech. '
+      'The supplied authorized windows intentionally include spoken audio. Describe '
+      'visible action even during continuous commentary. Keep visual evidence, timing, '
+      'word budgets, spacing between descriptions and all other rules unchanged.';
+
   AiAudioDescriptionService({http.Client? httpClient})
       : _http = httpClient ?? http.Client();
 
@@ -1656,14 +1680,17 @@ class AiAudioDescriptionService {
       );
       _checkCancel();
 
-      var slots = _safeSlots(pyannote.durationSec, pyannote.protectedIntervals);
-      final nonverbalCandidates = settings.allowNonverbalVocals
+      final dialogueProtectedIntervals = settings.allowDialogueOverlap
+          ? const <PyannoteInterval>[] : pyannote.protectedIntervals;
+      var slots = _safeSlots(pyannote.durationSec, dialogueProtectedIntervals);
+      final nonverbalCandidates = settings.allowNonverbalVocals && !settings.allowDialogueOverlap
           ? pyannote.nonverbalCandidates
           : const <PyannoteNonverbalCandidate>[];
       final approvedNonverbalIds = <String>{};
       await AppLogger.log(
         'Audio description mobile: pyannote complete duration=${pyannote.durationSec.toStringAsFixed(3)} '
-        'protected=${pyannote.protectedIntervals.length} slots=${slots.length}',
+        'protected=${dialogueProtectedIntervals.length} slots=${slots.length} '
+        'dialogueOverlap=${settings.allowDialogueOverlap}',
       );
 
       final token = settings.provider == 'sonarpad'
@@ -1706,6 +1733,7 @@ class AiAudioDescriptionService {
         durationSec: pyannote.durationSec,
         chunkCount: chunkCount,
         allowNonverbalVocals: settings.allowNonverbalVocals,
+        allowDialogueOverlap: settings.allowDialogueOverlap,
       );
       if (requireCheckpoint && checkpoint == null) {
         throw const AudioDescriptionResumeUnavailableException();
@@ -1851,6 +1879,7 @@ class AiAudioDescriptionService {
           descriptions: descriptions,
           glossary: glossary,
           allowNonverbalVocals: settings.allowNonverbalVocals,
+          allowDialogueOverlap: settings.allowDialogueOverlap,
           approvedNonverbalIds: approvedNonverbalIds,
         );
       }
@@ -1864,7 +1893,9 @@ class AiAudioDescriptionService {
         throw StateError('AUDIO_DESCRIPTION_NO_DESCRIPTIONS');
       }
 
-      final effectiveProtectedIntervals = settings.allowNonverbalVocals
+      final effectiveProtectedIntervals = settings.allowDialogueOverlap
+          ? const <PyannoteInterval>[]
+          : settings.allowNonverbalVocals
           ? protectedIntervalsAfterVerifiedNonverbal(
               original: pyannote.protectedIntervals,
               candidates: nonverbalCandidates,
@@ -2435,6 +2466,7 @@ class AiAudioDescriptionService {
     required double durationSec,
     required int chunkCount,
     bool allowNonverbalVocals = false,
+    bool allowDialogueOverlap = false,
     int? audioStreamIndex,
   }) async {
     final file = await _checkpointFile(sourcePath);
@@ -2446,7 +2478,8 @@ class AiAudioDescriptionService {
       }
       // An old checkpoint or one from a different mode must not be reused:
       // the verified IDs and prompt behavior would no longer correspond.
-      if ((decoded['allow_nonverbal_vocals'] == true) != allowNonverbalVocals) {
+      if ((decoded['allow_nonverbal_vocals'] == true) != allowNonverbalVocals ||
+          (decoded['allow_dialogue_overlap'] == true) != allowDialogueOverlap) {
         await AppLogger.log('Audio description mobile: checkpoint mode mismatch; ignoring');
         return null;
       }
@@ -2518,6 +2551,7 @@ class AiAudioDescriptionService {
     required List<_GeneratedDescription> descriptions,
     required List<Map<String, Object?>> glossary,
     bool allowNonverbalVocals = false,
+    bool allowDialogueOverlap = false,
     int? audioStreamIndex,
     Set<String> approvedNonverbalIds = const <String>{},
   }) async {
@@ -2534,6 +2568,7 @@ class AiAudioDescriptionService {
         'completed_chunks': completedChunks,
         'gemini_model': geminiModel,
         'allow_nonverbal_vocals': allowNonverbalVocals,
+        'allow_dialogue_overlap': allowDialogueOverlap,
         'approved_nonverbal_ids': approvedNonverbalIds.toList(),
         'keep_character_catalog': keepCharacterCatalog,
         'character_catalog_name': characterCatalogName,
@@ -2781,7 +2816,7 @@ $groundingDirective
             'exceptions to normal dialogue protection; the others MUST remain '
             'protected. Never invent an ID. Prefer ordinary silence whenever possible.'
         : '';
-    final systemInstruction = '''
+    var systemInstruction = '''
 $systemMission
 
 **OUTPUT FORMAT (Strict JSON):**
@@ -2886,6 +2921,10 @@ $nonverbalInstruction''';
       );
     }
 
+    if (settings.allowDialogueOverlap) {
+      systemInstruction += '\n$_dialogueOverlapInstruction';
+      userPromptParts.add(_dialogueOverlapInstruction);
+    }
     return _GeminiPromptBundle(
       systemInstruction: systemInstruction,
       userPrompt: userPromptParts.join('\n'),
@@ -3086,6 +3125,10 @@ $nonverbalInstruction''';
     promptParts.add(
       'Return {"character_glossary":[],"audio_descriptions":[...]} and nothing else.',
     );
+    if (settings.allowDialogueOverlap) {
+      systemInstruction += '\n$_dialogueOverlapInstruction';
+      promptParts.add(_dialogueOverlapInstruction);
+    }
     return _GeminiPromptBundle(
       systemInstruction: systemInstruction,
       userPrompt: promptParts.join('\n'),
@@ -5513,6 +5556,7 @@ $nonverbalInstruction''';
       verbosity: settings.verbosity,
       allowExtendedPauses: settings.allowExtendedPauses,
       allowNonverbalVocals: settings.allowNonverbalVocals,
+      allowDialogueOverlap: settings.allowDialogueOverlap,
       recognizeCharacters: settings.recognizeCharacters,
       recognizeScreenText: settings.recognizeScreenText,
       geminiModel:
@@ -5737,6 +5781,7 @@ $nonverbalInstruction''';
       verbosity: string(map['verbosity'], 'detailed'),
       allowExtendedPauses: boolean(map['allow_extended_pauses'], true),
       allowNonverbalVocals: boolean(map['allow_nonverbal_vocals'], false),
+      allowDialogueOverlap: map['allow_dialogue_overlap'] == true,
       recognizeCharacters: boolean(map['recognize_characters'], true),
       recognizeScreenText: boolean(map['recognize_screen_text'], true),
       geminiModel: string(map['gemini_model'], 'gemini-3.5-flash-lite'),
@@ -5797,7 +5842,7 @@ $nonverbalInstruction''';
   ) {
     final current = project.descriptions[index];
     if (current.extendedPause) return null;
-    final intervals = List<AudioDescriptionProjectInterval>.of(project.protectedIntervals)
+    final intervals = List<AudioDescriptionProjectInterval>.of(project.effectiveProtectedIntervals)
       ..sort((a, b) => a.startSec.compareTo(b.startSec));
     final free = <AudioDescriptionProjectInterval>[];
     var cursor = 0.0;
@@ -6151,6 +6196,7 @@ $nonverbalInstruction''';
         verbosity: project.verbosity,
         allowExtendedPauses: project.allowExtendedPauses,
         allowNonverbalVocals: project.allowNonverbalVocals,
+        allowDialogueOverlap: project.allowDialogueOverlap,
         recognizeCharacters: project.recognizeCharacters,
         recognizeScreenText: project.recognizeScreenText,
         keepCharacterCatalog: false,
@@ -6312,7 +6358,7 @@ $nonverbalInstruction''';
       final start = item.sourceStartSec;
       final end = start + item.ttsDurationSec;
       if (end > endSec || end > project.sourceDurationSec ||
-          project.protectedIntervals.any((interval) => start < interval.endSec && end > interval.startSec) ||
+          project.effectiveProtectedIntervals.any((interval) => start < interval.endSec && end > interval.startSec) ||
           items.any((saved) => start < saved.sourceStartSec +
               (saved.extendedPause ? 1.0 : saved.ttsDurationSec) && end > saved.sourceStartSec)) {
         continue;
@@ -6379,7 +6425,7 @@ $nonverbalInstruction''';
     // Bound the existing slot builder to the selected segment; no second audio analysis.
     final protected = [
       if (start > 0) PyannoteInterval(0, start),
-      ...project.protectedIntervals.map((item) => PyannoteInterval(item.startSec, item.endSec)),
+      ...project.effectiveProtectedIntervals.map((item) => PyannoteInterval(item.startSec, item.endSec)),
       if (end < project.sourceDurationSec) PyannoteInterval(end, project.sourceDurationSec),
     ];
     final slots = _safeSlots(project.sourceDurationSec, protected);

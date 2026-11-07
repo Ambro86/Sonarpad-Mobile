@@ -1,4 +1,7 @@
 {
+  "audioDescriptionDialogueOverlap": "Дозволити аудіоописи під час діалогів і коментарів",
+  "placesPhoneQuery": "Введіть номер телефону",
+  "placesPhoneInvalid": "Введіть дійсний номер телефону разом із кодом міста або країни.",
   "routeDeparture": "Відправлення",
   "routeLeaveNow": "Вирушити зараз",
   "routeLeaveAt": "Вирушити о",

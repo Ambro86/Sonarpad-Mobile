@@ -535,6 +535,26 @@ class _TravelBrowserScreenState extends State<TravelBrowserScreen> {
       final data = await _paymentScript(select: method);
       confirmed = data['status'] == 'selected';
       await _captureCheckout('after-payment-click');
+      if (confirmed) {
+        final result = await _controller!.runJavaScriptReturningResult(
+          travelAcceptBookingTermsScript,
+        );
+        final status = result.toString().replaceAll('"', '');
+        const known = {
+          'selected',
+          'unconfirmed',
+          'not-found',
+          'ambiguous',
+          'blocked',
+          'disabled',
+          'unavailable',
+        };
+        unawaited(
+          _log(
+            '[TravelCheckout] booking_terms status=${known.contains(status) ? status : 'unknown'}',
+          ),
+        );
+      }
       if (_noProtection) {
         // Framework state may update asynchronously or replace the element.
         // Re-read the live DOM; never click again during verification.

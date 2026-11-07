@@ -80,6 +80,7 @@ class BrowserController extends Fake implements WebViewController {
         script == travelNoProtectionScript(verifyOnly: true)) {
       return 'selected';
     }
+    if (script == travelAcceptBookingTermsScript) return 'selected';
     if (script == travelPaymentScript()) return paymentStatus;
     if (script == travelPaymentScript(select: 'PayPal')) {
       return '{"status":"selected","methods":["PayPal","card"]}';
@@ -238,6 +239,7 @@ void main() {
     expect(hidden.opacity, 0);
     expect(row(tester, 'payment-no-protection').toggleValue, isTrue);
     expect(controller.scripts, isNot(contains(travelNoProtectionScript())));
+    expect(controller.scripts, isNot(contains(travelAcceptBookingTermsScript)));
     expect(
       controller.scripts,
       isNot(contains(travelPaymentScript(select: 'PayPal'))),
@@ -253,6 +255,7 @@ void main() {
       1,
     );
     expect(logs, contains('[Travel] payment_method_selected'));
+    expect(logs, contains('[TravelCheckout] booking_terms status=selected'));
     expect(logs.any((s) => s.contains('stage=before-selection')), isTrue);
     expect(logs.any((s) => s.contains('stage=after-protection-click')), isTrue);
     expect(logs.any((s) => s.contains('stage=after-payment-click')), isTrue);
@@ -262,6 +265,7 @@ void main() {
       containsAllInOrder([
         travelNoProtectionScript(),
         travelPaymentScript(select: 'PayPal'),
+        travelAcceptBookingTermsScript,
         travelNoProtectionScript(verifyOnly: true),
       ]),
     );
@@ -328,7 +332,15 @@ void main() {
     await tester.pumpAndSettle();
     expect(
       controller.scripts
-          .where((s) => s == travelSeatScript(action: 'seat-2', italian: true, labels: seatLabels))
+          .where(
+            (s) =>
+                s ==
+                travelSeatScript(
+                  action: 'seat-2',
+                  italian: true,
+                  labels: seatLabels,
+                ),
+          )
           .length,
       1,
     );

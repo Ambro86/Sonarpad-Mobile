@@ -1,4 +1,7 @@
 {
+  "audioDescriptionDialogueOverlap": "允许在对话和解说期间播放音频描述",
+  "placesPhoneQuery": "输入电话号码",
+  "placesPhoneInvalid": "请输入包含区号或国家代码的有效电话号码。",
   "routeDeparture": "出发",
   "routeLeaveNow": "立即出发",
   "routeLeaveAt": "出发时间",

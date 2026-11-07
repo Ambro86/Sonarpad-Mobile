@@ -1,3 +1,4 @@
+import 'collection_storage.dart';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
@@ -298,20 +299,20 @@ class AppSettingsService {
     return 'en';
   }
 
-  Future<void> saveAppLanguage(String languageCode) async {
+  Future<void> saveAppLanguage(String languageCode) => CollectionStorage.run(() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('sonarpad_app_language', languageCode);
-  }
+  });
 
   Future<String?> loadPodcastCountry() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('sonarpad_podcast_country');
   }
 
-  Future<void> savePodcastCountry(String country) async {
+  Future<void> savePodcastCountry(String country) => CollectionStorage.run(() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('sonarpad_podcast_country', country);
-  }
+  });
 
   Future<int?> loadPodcastCategoryGenreId() async {
     final prefs = await SharedPreferences.getInstance();
@@ -319,40 +320,40 @@ class AppSettingsService {
     return saved == null || saved <= 0 ? null : saved;
   }
 
-  Future<void> savePodcastCategoryGenreId(int? genreId) async {
+  Future<void> savePodcastCategoryGenreId(int? genreId) => CollectionStorage.run(() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt('sonarpad_podcast_category_genre_id', genreId ?? 0);
-  }
+  });
 
   Future<String?> loadRadioLanguage() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_radioLanguageKey);
   }
 
-  Future<void> saveRadioLanguage(String languageCode) async {
+  Future<void> saveRadioLanguage(String languageCode) => CollectionStorage.run(() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_radioLanguageKey, languageCode);
-  }
+  });
 
   Future<String?> loadRadioCountry() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_radioCountryKey);
   }
 
-  Future<void> saveRadioCountry(String countryCode) async {
+  Future<void> saveRadioCountry(String countryCode) => CollectionStorage.run(() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_radioCountryKey, countryCode);
-  }
+  });
 
   Future<String?> loadRadioGenre() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_radioGenreKey);
   }
 
-  Future<void> saveRadioGenre(String genreValue) async {
+  Future<void> saveRadioGenre(String genreValue) => CollectionStorage.run(() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_radioGenreKey, genreValue);
-  }
+  });
 
 
   Future<bool> includeEpubFootnotesInText() async {
@@ -360,10 +361,10 @@ class AppSettingsService {
     return prefs.getBool(_includeEpubFootnotesInTextKey) ?? false;
   }
 
-  Future<void> setIncludeEpubFootnotesInText(bool enabled) async {
+  Future<void> setIncludeEpubFootnotesInText(bool enabled) => CollectionStorage.run(() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_includeEpubFootnotesInTextKey, enabled);
-  }
+  });
 
   Future<SonarpadThemeMode> loadThemeMode() async {
     final prefs = await SharedPreferences.getInstance();
@@ -374,30 +375,30 @@ class AppSettingsService {
     );
   }
 
-  Future<void> saveThemeMode(SonarpadThemeMode mode) async {
+  Future<void> saveThemeMode(SonarpadThemeMode mode) => CollectionStorage.run(() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_themeModeKey, mode.value);
-  }
+  });
 
   Future<bool> isDeveloperModeEnabled() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool(_developerModeKey) ?? false;
   }
 
-  Future<void> setDeveloperModeEnabled(bool enabled) async {
+  Future<void> setDeveloperModeEnabled(bool enabled) => CollectionStorage.run(() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_developerModeKey, enabled);
-  }
+  });
 
   Future<bool> useFlutterAccessibleRendererOnIos() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool(_iosFlutterAccessibleRendererKey) ?? false;
   }
 
-  Future<void> setFlutterAccessibleRendererOnIos(bool enabled) async {
+  Future<void> setFlutterAccessibleRendererOnIos(bool enabled) => CollectionStorage.run(() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_iosFlutterAccessibleRendererKey, enabled);
-  }
+  });
 
 
   Future<Set<String>> loadSonarTubePlayerActions() async {
@@ -409,32 +410,32 @@ class AppSettingsService {
     return saved.where(sonarTubePlayerActionIds.contains).toSet();
   }
 
-  Future<void> saveSonarTubePlayerActions(Set<String> actions) async {
+  Future<void> saveSonarTubePlayerActions(Set<String> actions) => CollectionStorage.run(() async {
     final prefs = await SharedPreferences.getInstance();
     final normalized = actions.where(sonarTubePlayerActionIds.contains).toList()
       ..sort();
     await prefs.setStringList(_sonarTubePlayerActionsKey, normalized);
-  }
+  });
 
   Future<bool> isSonarTubeAutoplayEnabled() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool(_sonarTubeAutoplayKey) ?? false;
   }
 
-  Future<void> setSonarTubeAutoplayEnabled(bool enabled) async {
+  Future<void> setSonarTubeAutoplayEnabled(bool enabled) => CollectionStorage.run(() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_sonarTubeAutoplayKey, enabled);
-  }
+  });
 
   Future<String?> loadSonarTubeChannelSort() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_sonarTubeChannelSortKey);
   }
 
-  Future<void> saveSonarTubeChannelSort(String sortName) async {
+  Future<void> saveSonarTubeChannelSort(String sortName) => CollectionStorage.run(() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_sonarTubeChannelSortKey, sortName);
-  }
+  });
 
   Future<String> loadTtsLanguage() async {
     final prefs = await SharedPreferences.getInstance();
@@ -461,7 +462,7 @@ class AppSettingsService {
     return prefs.getString(_tvSecretCodeKey) ?? '';
   }
 
-  Future<void> setTvSecretCode(String value) async {
+  Future<void> setTvSecretCode(String value) => CollectionStorage.run(() async {
     final prefs = await SharedPreferences.getInstance();
     final saved = await prefs.setString(_tvSecretCodeKey, value);
     // Read back the persistent store, not the optimistic preferences cache.
@@ -469,37 +470,37 @@ class AppSettingsService {
     if (!saved || prefs.getString(_tvSecretCodeKey) != value) {
       throw StateError('activation_storage_failed');
     }
-  }
+  });
 
   Future<String> getBdCiechiUsername() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_bdciechiUsernameKey) ?? '';
   }
 
-  Future<void> setBdCiechiUsername(String value) async {
+  Future<void> setBdCiechiUsername(String value) => CollectionStorage.run(() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_bdciechiUsernameKey, value);
-  }
+  });
 
   Future<String> getBdCiechiPassword() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_bdciechiPasswordKey) ?? '';
   }
 
-  Future<void> setBdCiechiPassword(String value) async {
+  Future<void> setBdCiechiPassword(String value) => CollectionStorage.run(() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_bdciechiPasswordKey, value);
-  }
+  });
 
   Future<String> getWeatherCity() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_weatherCityKey) ?? '';
   }
 
-  Future<void> setWeatherCity(String value) async {
+  Future<void> setWeatherCity(String value) => CollectionStorage.run(() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_weatherCityKey, value);
-  }
+  });
 
   Future<WeatherTemperatureUnit> loadWeatherTemperatureUnit() async {
     final prefs = await SharedPreferences.getInstance();
@@ -510,10 +511,10 @@ class AppSettingsService {
     );
   }
 
-  Future<void> saveWeatherTemperatureUnit(WeatherTemperatureUnit unit) async {
+  Future<void> saveWeatherTemperatureUnit(WeatherTemperatureUnit unit) => CollectionStorage.run(() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_weatherTemperatureUnitKey, unit.value);
-  }
+  });
 
   static const _weatherRecentCitiesKey = 'sonarpad_weather_recent_cities';
 
@@ -522,7 +523,7 @@ class AppSettingsService {
     return prefs.getStringList(_weatherRecentCitiesKey) ?? [];
   }
 
-  Future<void> addWeatherRecentCity(String city) async {
+  Future<void> addWeatherRecentCity(String city) => CollectionStorage.run(() async {
     final prefs = await SharedPreferences.getInstance();
     var current = await getWeatherRecentCities();
     current.removeWhere((c) => c.toLowerCase() == city.toLowerCase());
@@ -531,30 +532,30 @@ class AppSettingsService {
       current = current.take(50).toList();
     }
     await prefs.setStringList(_weatherRecentCitiesKey, current);
-  }
+  });
 
 
-  Future<void> removeWeatherRecentCity(String city) async {
+  Future<void> removeWeatherRecentCity(String city) => CollectionStorage.run(() async {
     final prefs = await SharedPreferences.getInstance();
     final current = await getWeatherRecentCities();
     current.removeWhere((c) => c.toLowerCase() == city.toLowerCase());
     await prefs.setStringList(_weatherRecentCitiesKey, current);
-  }
+  });
 
-  Future<void> clearWeatherRecentCities() async {
+  Future<void> clearWeatherRecentCities() => CollectionStorage.run(() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_weatherRecentCitiesKey);
-  }
+  });
 
   Future<String> getNewsLocalCity() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_newsLocalCityKey) ?? '';
   }
 
-  Future<void> setNewsLocalCity(String value) async {
+  Future<void> setNewsLocalCity(String value) => CollectionStorage.run(() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_newsLocalCityKey, value);
-  }
+  });
 
   static const _ttsSpeedKey = 'sonarpad_tts_speed';
   static const _ttsPitchKey = 'sonarpad_tts_pitch';
@@ -564,29 +565,29 @@ class AppSettingsService {
     return prefs.getDouble(_ttsSpeedKey) ?? 1.0;
   }
 
-  Future<void> saveTtsSpeed(double value) async {
+  Future<void> saveTtsSpeed(double value) => CollectionStorage.run(() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setDouble(_ttsSpeedKey, value);
-  }
+  });
 
   Future<double> loadTtsPitch() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getDouble(_ttsPitchKey) ?? 1.0;
   }
 
-  Future<void> saveTtsPitch(double value) async {
+  Future<void> saveTtsPitch(double value) => CollectionStorage.run(() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setDouble(_ttsPitchKey, value);
-  }
+  });
 
   Future<void> saveTtsSettings({
     required String languageCode,
     required String voice,
-  }) async {
+  }) => CollectionStorage.run(() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_ttsLanguageKey, languageCode);
     await prefs.setString(_ttsVoiceKey, voice);
-  }
+  });
 
   static const _ttsEngineKey = 'sonarpad_tts_engine';
   static const _systemTtsLanguageKey = 'sonarpad_system_tts_language';
@@ -597,10 +598,10 @@ class AppSettingsService {
     return prefs.getString(_ttsEngineKey) ?? 'edge';
   }
 
-  Future<void> saveTtsEngine(String engine) async {
+  Future<void> saveTtsEngine(String engine) => CollectionStorage.run(() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_ttsEngineKey, engine);
-  }
+  });
 
   /// A content-language fallback must not replace either saved system TTS
   /// preference, including a voice saved without a language.
@@ -616,24 +617,24 @@ class AppSettingsService {
     return await loadAppLanguage() == 'tr' ? 'tr-TR' : 'it-IT';
   }
 
-  Future<void> saveSystemTtsLanguage(String language) async {
+  Future<void> saveSystemTtsLanguage(String language) => CollectionStorage.run(() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_systemTtsLanguageKey, language);
-  }
+  });
 
   Future<String?> loadSystemTtsVoice() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_systemTtsVoiceKey);
   }
 
-  Future<void> saveSystemTtsVoice(String? voice) async {
+  Future<void> saveSystemTtsVoice(String? voice) => CollectionStorage.run(() async {
     final prefs = await SharedPreferences.getInstance();
     if (voice == null) {
       await prefs.remove(_systemTtsVoiceKey);
     } else {
       await prefs.setString(_systemTtsVoiceKey, voice);
     }
-  }
+  });
 
   static Future<List<TtsVoiceOption>> loadEdgeVoices() async {
     try {
@@ -838,29 +839,29 @@ class AppSettingsService {
     return prefs.getBool(_autoBookmarkKey) ?? true;
   }
 
-  Future<void> setAutoBookmarkEnabled(bool value) async {
+  Future<void> setAutoBookmarkEnabled(bool value) => CollectionStorage.run(() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_autoBookmarkKey, value);
-  }
+  });
 
   Future<int?> getMediaBookmark(String id) async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getInt('bookmark_$id');
   }
 
-  Future<void> saveMediaBookmark(String id, int positionInSeconds) async {
+  Future<void> saveMediaBookmark(String id, int positionInSeconds) => CollectionStorage.run(() async {
     final prefs = await SharedPreferences.getInstance();
     if (positionInSeconds <= 0) {
       await prefs.remove('bookmark_$id');
     } else {
       await prefs.setInt('bookmark_$id', positionInSeconds);
     }
-  }
+  });
 
-  Future<void> removeMediaBookmark(String id) async {
+  Future<void> removeMediaBookmark(String id) => CollectionStorage.run(() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('bookmark_$id');
-  }
+  });
 
   // --- Slider di Riproduzione ---
 
@@ -871,10 +872,10 @@ class AppSettingsService {
     return prefs.getInt(_seekSliderStepKey) ?? 60;
   }
 
-  Future<void> saveSeekSliderStep(int value) async {
+  Future<void> saveSeekSliderStep(int value) => CollectionStorage.run(() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt(_seekSliderStepKey, value);
-  }
+  });
 
 
   Future<bool> multipleDocumentBookmarksEnabled() async {
@@ -882,10 +883,10 @@ class AppSettingsService {
     return prefs.getBool(_multipleDocumentBookmarksKey) ?? false;
   }
 
-  Future<void> setMultipleDocumentBookmarksEnabled(bool value) async {
+  Future<void> setMultipleDocumentBookmarksEnabled(bool value) => CollectionStorage.run(() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_multipleDocumentBookmarksKey, value);
-  }
+  });
 
   int _normalizeDocumentSliderStepPercent(int value) {
     if (documentSliderStepPercentOptions.contains(value)) return value;
@@ -908,13 +909,13 @@ class AppSettingsService {
     return _normalizeDocumentSliderStepPercent(value);
   }
 
-  Future<void> saveDocumentSliderStepPercent(int value) async {
+  Future<void> saveDocumentSliderStepPercent(int value) => CollectionStorage.run(() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt(
       _documentSliderStepPercentKey,
       _normalizeDocumentSliderStepPercent(value),
     );
-  }
+  });
 
   int _normalizeDocumentReadingSleepTimerMinutes(int value) {
     if (documentReadingSleepTimerMinutesOptions.contains(value)) return value;
@@ -937,13 +938,13 @@ class AppSettingsService {
     return _normalizeDocumentReadingSleepTimerMinutes(value);
   }
 
-  Future<void> saveDocumentReadingSleepTimerMinutes(int value) async {
+  Future<void> saveDocumentReadingSleepTimerMinutes(int value) => CollectionStorage.run(() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt(
       _documentReadingSleepTimerMinutesKey,
       _normalizeDocumentReadingSleepTimerMinutes(value),
     );
-  }
+  });
 
   // --- Recorded-media playback speed (enabled by default) ---
 
@@ -955,50 +956,50 @@ class AppSettingsService {
     return prefs.getString(music ? 'sonarpad_sonarmusic_search_type' : 'sonarpad_sonartube_search_type');
   }
 
-  Future<void> saveSonarSearchType(String type, {required bool music}) async {
+  Future<void> saveSonarSearchType(String type, {required bool music}) => CollectionStorage.run(() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(music ? 'sonarpad_sonarmusic_search_type' : 'sonarpad_sonartube_search_type', type);
-  }
+  });
 
   Future<bool> isCalendarSaintsHidden() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool('sonarpad_calendar_hide_saints') ?? false;
   }
 
-  Future<void> setCalendarSaintsHidden(bool hidden) async {
+  Future<void> setCalendarSaintsHidden(bool hidden) => CollectionStorage.run(() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('sonarpad_calendar_hide_saints', hidden);
-  }
+  });
 
   Future<bool> isChromecastButtonEnabled() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool('sonarpad_chromecast_button') ?? true;
   }
 
-  Future<void> setChromecastButtonEnabled(bool enabled) async {
+  Future<void> setChromecastButtonEnabled(bool enabled) => CollectionStorage.run(() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('sonarpad_chromecast_button', enabled);
-  }
+  });
 
   Future<bool> isMediaSpeedControlEnabled() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool(_mediaSpeedControlKey) ?? true;
   }
 
-  Future<void> setMediaSpeedControlEnabled(bool enabled) async {
+  Future<void> setMediaSpeedControlEnabled(bool enabled) => CollectionStorage.run(() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_mediaSpeedControlKey, enabled);
-  }
+  });
 
   Future<bool> preferRaiAudioDescription() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool(_preferRaiAudioDescriptionKey) ?? true;
   }
 
-  Future<void> setPreferRaiAudioDescription(bool enabled) async {
+  Future<void> setPreferRaiAudioDescription(bool enabled) => CollectionStorage.run(() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_preferRaiAudioDescriptionKey, enabled);
-  }
+  });
 
   Future<double> loadMediaPlaybackSpeed(MediaPlaybackSpeedCategory category) async {
     final prefs = await SharedPreferences.getInstance();
@@ -1009,13 +1010,13 @@ class AppSettingsService {
   Future<void> saveMediaPlaybackSpeed(
     MediaPlaybackSpeedCategory category,
     double speed,
-  ) async {
+  ) => CollectionStorage.run(() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setDouble(
       '$_mediaPlaybackSpeedPrefix${category.name}',
       normalizeMediaPlaybackSpeed(speed),
     );
-  }
+  });
 
   // --- Media Volume ---
 
@@ -1026,10 +1027,10 @@ class AppSettingsService {
     return prefs.getDouble(_mediaVolumeKey) ?? 1.0;
   }
 
-  Future<void> saveMediaVolume(double value) async {
+  Future<void> saveMediaVolume(double value) => CollectionStorage.run(() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setDouble(_mediaVolumeKey, value);
-  }
+  });
 
   // --- Video ---
 
@@ -1042,20 +1043,20 @@ class AppSettingsService {
     return prefs.getBool(_videoEnabledKey) ?? false;
   }
 
-  Future<void> setVideoEnabled(bool value) async {
+  Future<void> setVideoEnabled(bool value) => CollectionStorage.run(() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_videoEnabledKey, value);
-  }
+  });
 
   Future<bool> displayVideoInPortrait() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool(_displayVideoInPortraitKey) ?? false;
   }
 
-  Future<void> setDisplayVideoInPortrait(bool value) async {
+  Future<void> setDisplayVideoInPortrait(bool value) => CollectionStorage.run(() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_displayVideoInPortraitKey, value);
-  }
+  });
   // --- Grouping Home ---
 
   static const _homeGroupingEnabledKey = 'sonarpad_home_grouping_enabled';
@@ -1065,10 +1066,10 @@ class AppSettingsService {
     return prefs.getBool(_homeGroupingEnabledKey) ?? true;
   }
 
-  Future<void> setHomeGroupingEnabled(bool value) async {
+  Future<void> setHomeGroupingEnabled(bool value) => CollectionStorage.run(() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_homeGroupingEnabledKey, value);
-  }
+  });
 }
 
 extension _FirstOrNull<T> on Iterable<T> {

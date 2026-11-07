@@ -12,6 +12,7 @@ import '../l10n/localized_dynamic_labels.dart';
 import '../models/podcast.dart';
 import '../models/media_playback_speed.dart';
 import '../services/media_playback_rate_transaction.dart';
+import '../services/temporary_stream_recovery.dart';
 import '../utils/status_message.dart';
 import 'package:intl/intl.dart';
 import '../services/app_settings_service.dart';
@@ -162,6 +163,47 @@ class _PodcastEpisodePlayerScreenState
   bool _switchingVideoMode = false;
   bool _choosingAudioTrack = false;
   String? _autoAdvanceHandledMediaId;
+
+  TemporaryStreamRecovery _temporaryRecovery = TemporaryStreamRecovery();
+  bool _recoveringTemporaryStream = false;
+  bool _temporaryHlsTimeoutRetried = false;
+  int _temporaryPauseGeneration = 0;
+  bool get _isTemporaryYoutubeStream => widget.refreshEpisode != null &&
+      ((_episode.id ?? '').startsWith('sonartube:') ||
+       (_episode.id ?? '').startsWith('sonarmusic:'));
+
+  Future<void> _checkTemporaryStream({bool failed = false}) async {
+    if (!mounted || !_isTemporaryYoutubeStream || !_loaded || _loading ||
+        _casting || _castRouteOpen || _recoveringTemporaryStream ||
+        _switchingVideoMode || _changingPlaybackSpeed) {
+      return;
+    }
+    final video = _videoController?.value;
+    final position = video?.position ?? _audio.position;
+    final reason = _temporaryRecovery.observe(now: DateTime.now(),
+      position: position, duration: video?.duration ?? _accessibleAudioDuration,
+      playing: video?.isPlaying ?? _audio.isPlaying,
+      completed: video?.isCompleted ?? false,
+      failed: failed || (video?.hasError ?? false));
+    if (reason == null) { return; }
+    _recoveringTemporaryStream = true;
+    final pauseGeneration = _temporaryPauseGeneration;
+    setState(() => _loading = true);
+    try {
+      if (await _refreshEpisodeAfterPlaybackFailure(reason) && mounted) {
+        await _play(allowMediaRefresh: false, resumePosition: position,
+          shouldPlay: pauseGeneration == _temporaryPauseGeneration);
+        if (mounted && pauseGeneration != _temporaryPauseGeneration) {
+          await _pause(force: true);
+        }
+      }
+    } catch (error) {
+      await AppLogger.log('Temporary stream recovery failed: $error');
+    } finally {
+      _recoveringTemporaryStream = false;
+      if (mounted) { setState(() => _loading = false); }
+    }
+  }
 
   PodcastEpisode get _episode => _refreshedEpisode ?? widget.episode;
 
@@ -323,7 +365,11 @@ class _PodcastEpisodePlayerScreenState
         }
         AppLogger.log('PodcastPlayer: video initialize start, $_logSubject');
         final initializedVideo = _videoController!;
-        await initializedVideo.initialize();
+        if (_isTemporaryYoutubeStream) {
+          await initializedVideo.initialize().timeout(const Duration(seconds: 60));
+        } else {
+          await initializedVideo.initialize();
+        }
         if (!mounted || _videoController != initializedVideo) return;
         AppLogger.log('PodcastPlayer: video initialize completed, $_logSubject');
         _lastConfirmedVideoSpeed = 1.0;
@@ -361,7 +407,12 @@ class _PodcastEpisodePlayerScreenState
             }
           }
           if (value.isCompleted) {
-            unawaited(_handlePlaybackCompleted());
+            if (_isTemporaryYoutubeStream && value.duration > const Duration(seconds: 5) &&
+                value.position < const Duration(seconds: 1)) {
+              unawaited(_checkTemporaryStream(failed: true));
+            } else {
+              unawaited(_handlePlaybackCompleted());
+            }
           }
         });
 
@@ -470,13 +521,17 @@ class _PodcastEpisodePlayerScreenState
             AppLogger.log(
               'PodcastPlayer: audio play async error: $e, $_logSubject',
             );
+            unawaited(_checkTemporaryStream(failed: true));
           }));
         }
       }
       if (!mounted) return;
     } catch (e) {
       if (!mounted) return;
-      if (allowMediaRefresh && await _refreshEpisodeAfterPlaybackFailure(e)) {
+      final retryHlsTimeout = _isTemporaryYoutubeStream && !allowMediaRefresh &&
+          e is TimeoutException && !_temporaryHlsTimeoutRetried;
+      if (retryHlsTimeout) { _temporaryHlsTimeoutRetried = true; }
+      if ((allowMediaRefresh || retryHlsTimeout) && await _refreshEpisodeAfterPlaybackFailure(e)) {
         if (!mounted) return;
         setState(() {
           _loading = false;
@@ -590,6 +645,8 @@ class _PodcastEpisodePlayerScreenState
       _videoUsesExternalAudio = false;
       _detectedChapters = null;
       _lastVideoBookmarkSecond = -1;
+      _temporaryHlsTimeoutRetried = false;
+      _temporaryRecovery = TemporaryStreamRecovery();
       _refreshedEpisode = replacement;
       _autoAdvanceHandledMediaId = null;
       _restoreVideoOffAfterBootstrap = false;
@@ -894,6 +951,7 @@ class _PodcastEpisodePlayerScreenState
     if (_changingPlaybackSpeed && !force) {
       return;
     }
+    ++_temporaryPauseGeneration;
     if (Platform.isAndroid) ++_androidPauseGeneration;
     await _androidVideoBackground.pause();
     AppLogger.log(
@@ -1119,6 +1177,7 @@ class _PodcastEpisodePlayerScreenState
     _diagnosticHeartbeat?.cancel();
     _diagnosticHeartbeat = Timer.periodic(const Duration(seconds: 5), (_) {
       if (!mounted) return;
+      unawaited(_checkTemporaryStream());
       final route = ModalRoute.of(context);
       final focus = FocusManager.instance.primaryFocus;
       AppLogger.log(
@@ -1150,7 +1209,12 @@ class _PodcastEpisodePlayerScreenState
       });
     }
     _audioCompletionSubscription = _audio.completionStream.listen((_) {
-      unawaited(_handlePlaybackCompleted());
+      if (_isTemporaryYoutubeStream && _accessibleAudioDuration > const Duration(seconds: 5) &&
+          _audio.position < const Duration(seconds: 1)) {
+        unawaited(_checkTemporaryStream(failed: true));
+      } else {
+        unawaited(_handlePlaybackCompleted());
+      }
     });
     _accessiblePositionSubscription = _audio.positionStream.listen((position) {
       _accessibleAudioPosition = position;

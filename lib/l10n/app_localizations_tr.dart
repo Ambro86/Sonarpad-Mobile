@@ -9,6 +9,17 @@ class AppLocalizationsTr extends AppLocalizations {
   AppLocalizationsTr([String locale = 'tr']) : super(locale);
 
   @override
+  String get audioDescriptionDialogueOverlap =>
+      'Diyalog ve spiker anlatımı sırasında sesli betimlemeye izin ver';
+
+  @override
+  String get placesPhoneQuery => 'Telefon numarasını girin';
+
+  @override
+  String get placesPhoneInvalid =>
+      'Alan veya ülke koduyla birlikte geçerli bir telefon numarası girin.';
+
+  @override
   String get routeDeparture => 'Kalkış';
 
   @override

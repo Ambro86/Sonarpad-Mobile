@@ -9,6 +9,17 @@ class AppLocalizationsEs extends AppLocalizations {
   AppLocalizationsEs([String locale = 'es']) : super(locale);
 
   @override
+  String get audioDescriptionDialogueOverlap =>
+      'Permitir audiodescripciones durante los diálogos y los comentarios';
+
+  @override
+  String get placesPhoneQuery => 'Introduce el número de teléfono';
+
+  @override
+  String get placesPhoneInvalid =>
+      'Introduce un número de teléfono válido con su prefijo.';
+
+  @override
   String get routeDeparture => 'Salida';
 
   @override

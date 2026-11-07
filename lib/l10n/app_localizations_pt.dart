@@ -9,6 +9,17 @@ class AppLocalizationsPt extends AppLocalizations {
   AppLocalizationsPt([String locale = 'pt']) : super(locale);
 
   @override
+  String get audioDescriptionDialogueOverlap =>
+      'Permitir audiodescrições durante diálogos e comentários';
+
+  @override
+  String get placesPhoneQuery => 'Introduza o número de telefone';
+
+  @override
+  String get placesPhoneInvalid =>
+      'Introduza um número de telefone válido com indicativo.';
+
+  @override
   String get routeDeparture => 'Partida';
 
   @override
@@ -6054,6 +6065,17 @@ class AppLocalizationsPt extends AppLocalizations {
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
 class AppLocalizationsPtBr extends AppLocalizationsPt {
   AppLocalizationsPtBr() : super('pt_BR');
+
+  @override
+  String get audioDescriptionDialogueOverlap =>
+      'Permitir audiodescrições durante diálogos e comentários';
+
+  @override
+  String get placesPhoneQuery => 'Digite o número de telefone';
+
+  @override
+  String get placesPhoneInvalid =>
+      'Digite um número de telefone válido com DDD ou código do país.';
 
   @override
   String get routeDeparture => 'Partida';

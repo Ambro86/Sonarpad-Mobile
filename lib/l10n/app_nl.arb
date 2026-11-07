@@ -1,4 +1,7 @@
 {
+  "audioDescriptionDialogueOverlap": "Audiobeschrijvingen tijdens dialogen en commentaar toestaan",
+  "placesPhoneQuery": "Voer het telefoonnummer in",
+  "placesPhoneInvalid": "Voer een geldig telefoonnummer in, inclusief netnummer of landcode.",
   "routeDeparture": "Vertrek",
   "routeLeaveNow": "Nu vertrekken",
   "routeLeaveAt": "Vertrekken om",

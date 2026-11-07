@@ -122,6 +122,24 @@ abstract class AppLocalizations {
     Locale('zh', 'CN'),
   ];
 
+  /// No description provided for @audioDescriptionDialogueOverlap.
+  ///
+  /// In it, this message translates to:
+  /// **'Consenti audiodescrizioni durante i dialoghi e la telecronaca'**
+  String get audioDescriptionDialogueOverlap;
+
+  /// No description provided for @placesPhoneQuery.
+  ///
+  /// In it, this message translates to:
+  /// **'Inserisci il numero di telefono'**
+  String get placesPhoneQuery;
+
+  /// No description provided for @placesPhoneInvalid.
+  ///
+  /// In it, this message translates to:
+  /// **'Inserisci un numero di telefono valido, completo di prefisso.'**
+  String get placesPhoneInvalid;
+
   /// No description provided for @routeDeparture.
   ///
   /// In it, this message translates to:
