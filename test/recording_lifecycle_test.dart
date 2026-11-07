@@ -24,6 +24,7 @@ class NativeRecording extends FFmpegKitPlatform {
   late Map<String, Object?> session;
   late File file;
   bool cancelled = false;
+  Completer<void> cancellationRequested = Completer<void>();
   bool failJoin = false;
   int cancelCalls = 0;
   int? finishAfterCancel;
@@ -35,6 +36,7 @@ class NativeRecording extends FFmpegKitPlatform {
     arguments = List.of(args);
     code = null;
     cancelled = false;
+    cancellationRequested = Completer<void>();
     session = {
       'sessionId': ++id,
       'createTime': 0,
@@ -74,6 +76,7 @@ class NativeRecording extends FFmpegKitPlatform {
   Future<void> ffmpegKitCancelSession(int sessionId) async {
     expect(sessionId, id);
     cancelled = true;
+    if (!cancellationRequested.isCompleted) cancellationRequested.complete();
     cancelCalls++;
     if (cancelCalls == finishAfterCancel) finish(255);
   }
@@ -235,7 +238,9 @@ void main() {
       returned = true;
       return f;
     });
-    await Future<void>.delayed(const Duration(milliseconds: 20));
+    await native.cancellationRequested.future.timeout(
+      const Duration(seconds: 5),
+    );
     expect(native.cancelled, isTrue);
     expect(returned, isFalse);
     expect(service.isRecording, isTrue);
@@ -292,6 +297,7 @@ void main() {
       void onFinished() {
         if (!service.isRecording && !finished.isCompleted) finished.complete();
       }
+
       service.addListener(onFinished);
       native.finish(255);
       try {
@@ -324,7 +330,9 @@ void main() {
     },
   );
   Future<void> finishCancellation(Future<void> operation) async {
-    await Future<void>.delayed(const Duration(milliseconds: 20));
+    await native.cancellationRequested.future.timeout(
+      const Duration(seconds: 5),
+    );
     native.finish(255);
     await operation;
   }
@@ -368,7 +376,9 @@ void main() {
       expect(service.isPaused, isFalse);
       await native.file.writeAsBytes([4, 5]);
       final stopping = service.stop();
-      await Future<void>.delayed(const Duration(milliseconds: 20));
+      await native.cancellationRequested.future.timeout(
+        const Duration(seconds: 5),
+      );
       native.finish(255);
       final output = await stopping;
       expect(output!.path, original.path);
