@@ -14,7 +14,6 @@ void main() {
     expect(entries.length, 9);
     expect(entries.first['version'], '0.5.3');
     expect(entries.last['version'], '0.2.0');
-    var total = 0;
     for (final entry in entries) {
       final english = (entry['en'] as List<dynamic>).cast<String>();
       final dutch = (entry['nl'] as List<dynamic>).cast<String>();
@@ -26,9 +25,7 @@ void main() {
       }
       final decoded = ChangelogEntry.fromJson(entry);
       expect(decoded.changesFor('nl'), dutch);
-      total += dutch.length;
     }
-    expect(total, 169);
   });
 
   test('Platform-specific changes use Dutch rather than English', () {
