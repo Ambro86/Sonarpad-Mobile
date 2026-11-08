@@ -1411,9 +1411,9 @@ class _CreateAiAudiodescriptionScreenState
               text: importedFileDisplayName(result.mp3Path),
             ),
           );
-          if (shared.status == ShareResultStatus.dismissed) {
+          if (shared.status != ShareResultStatus.success) {
             await AppLogger.log(
-              'Audio description UI: share dismissed; keeping completed result',
+              'Audio description UI: share ${shared.status.name}; keeping completed result',
             );
             continue;
           }

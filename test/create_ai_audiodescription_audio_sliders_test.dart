@@ -420,7 +420,7 @@ void main() {
     await temporary.delete(recursive: true);
   });
 
-  for (final firstShare in ['dismissed', 'failed']) {
+  for (final firstShare in ['dismissed', 'failed', 'unavailable']) {
     testWidgets('completed audio survives $firstShare sharing and can be shared again', (tester) async {
       SharedPreferences.setMockInitialValues({
         'ad_mobile_gemini_api_key': 'fixture-key',
@@ -446,6 +446,7 @@ void main() {
         shares++;
         if (shares == 1) {
           if (firstShare == 'failed') throw PlatformException(code: 'share_failed');
+          if (firstShare == 'unavailable') return 'dev.fluttercommunity.plus/share/unavailable';
           return '';
         }
         return 'test.share.destination';
