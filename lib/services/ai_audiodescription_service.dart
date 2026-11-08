@@ -2124,6 +2124,10 @@ class AiAudioDescriptionService {
 
       await _deleteCheckpoint(sourcePath);
       _checkCancel();
+      await AppLogger.log(
+        'Audio description mobile: result ready path="$outputPath" '
+        'bytes=${await output.length()} project="$projectPath" storage=persistent',
+      );
       _emit(onProgress, 'completed', 1.0);
       return AiAudioDescriptionResult(
         mp3Path: outputPath,
@@ -7811,7 +7815,10 @@ $nonverbalInstruction''';
           }
           rethrow;
         }
-        await AppLogger.log('Audio description mobile: $label client retry $error');
+        await AppLogger.log(
+          'Audio description mobile: $label client retry ${error.message} '
+          'uri=${_safeUriForLog(uri)}',
+        );
         if (isSonarpadAi) {
           await _logSonarpadAi(
             '$trace EXCEPTION client retry label="$label" attempt=$attempt '
@@ -8116,20 +8123,18 @@ $nonverbalInstruction''';
     await AppLogger.log('Audio description mobile FFmpeg: $label complete');
   }
 
-  Future<Directory> _createOperationDirectory() async {
-    final base = await AppCacheService.directory(AppCacheService.mediaExportsFolder);
-    final dir = Directory(p.join(
-      base.path,
-      'audio_description_${DateTime.now().microsecondsSinceEpoch}',
-    ));
-    await dir.create(recursive: true);
-    return dir;
-  }
+  Future<Directory> _createOperationDirectory() =>
+      MediaExportDestinationService.createAudioDescriptionDirectory();
 
   static Future<void> cleanupResult(AiAudioDescriptionResult result) async {
     final parent = File(result.mp3Path).parent;
     try {
-      if (await parent.exists()) await parent.delete(recursive: true);
+      if (await parent.exists()) {
+        await parent.delete(recursive: true);
+        await AppLogger.log(
+          'Audio description mobile: exported result cleanup path="${parent.path}"',
+        );
+      }
     } catch (_) {}
   }
 

@@ -468,11 +468,6 @@ class NewsService {
             name: data['title'] as String,
             uri: Uri.parse(data['url'] as String),
             isCustom: true,
-            allowRepubblica: oldCustom.any(
-              (source) =>
-                  source.uri.toString() == data['url'] &&
-                  source.allowRepubblica,
-            ),
             parentFolderId: path.isEmpty ? null : folderIds[path.join(' / ')],
           ),
         );
@@ -791,7 +786,6 @@ class NewsService {
     String name,
     String urlOrSearch, {
     String? parentFolderId,
-    bool fromCommunity = false,
   }) async {
     final originalInput = urlOrSearch.trim();
     String finalUrl = originalInput;
@@ -914,7 +908,6 @@ class NewsService {
         name: finalName,
         uri: uri,
         isCustom: true,
-        allowRepubblica: fromCommunity && _isRepubblicaUrl(finalUrl),
         parentFolderId: parentFolderId,
       );
 
@@ -2162,7 +2155,6 @@ class NewsService {
     final fallbackSource = NewsRssSource(
       name: rssSource.name,
       uri: fallbackUri,
-      allowRepubblica: rssSource.allowRepubblica,
     );
 
     if (_sessionGoogleNewsFallbackSites.contains(sessionKey)) {
@@ -2270,10 +2262,7 @@ class NewsService {
 
   List<NewsArticle> _visibleSourceArticles(
     List<NewsArticle> articles,
-    NewsRssSource source,
-  ) => source.allowRepubblica
-      ? articles
-      : articles.where((article) => !_isRepubblicaUrl(article.link)).toList();
+  ) => articles.where((article) => !_isRepubblicaUrl(article.link)).toList();
 
   Future<List<NewsArticle>> _fetchRssSourceDirect(
     NewsRssSource rssSource, {
@@ -2300,20 +2289,16 @@ class NewsService {
       if (doc.rootElement.name.local.toLowerCase() == 'html') {
         return _visibleSourceArticles(
           _extractArticlesFromHtml(decodedBody, rssSource),
-          rssSource,
         );
       }
       final items = doc.findAllElements('item');
       if (items.isEmpty) {
         return _visibleSourceArticles(
           _articlesFromAtomEntries(doc, rssSource),
-          rssSource,
         );
       }
       var index = 0;
-      final visibleItems = rssSource.allowRepubblica
-          ? items
-          : items.where((item) => !_excludedGoogleNewsItem(item));
+      final visibleItems = items.where((item) => !_excludedGoogleNewsItem(item));
       return _visibleSourceArticles(
         visibleItems.map((item) {
           index++;
@@ -2353,12 +2338,10 @@ class NewsService {
             allowInternalMediaLinks: allowInternalMediaLinks,
           );
         }).toList(),
-        rssSource,
       );
     } catch (_) {
       return _visibleSourceArticles(
         _extractArticlesFromHtml(decodedBody, rssSource),
-        rssSource,
       );
     }
   }

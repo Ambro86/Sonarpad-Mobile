@@ -1400,13 +1400,23 @@ class _CreateAiAudiodescriptionScreenState
       try {
         final outputPaths = await _completedOutputPaths(result);
         final sourcePath = _sourcePath?.trim() ?? '';
+        await AppLogger.log(
+          'Audio description UI: final destination action=${action.name} '
+          'path="${result.mp3Path}" exists=${await File(result.mp3Path).exists()}',
+        );
         if (action == _DoneAction.share) {
-          await SharePlus.instance.share(
+          final shared = await SharePlus.instance.share(
             ShareParams(
               files: outputPaths.map((path) => XFile(path)).toList(),
               text: importedFileDisplayName(result.mp3Path),
             ),
           );
+          if (shared.status == ShareResultStatus.dismissed) {
+            await AppLogger.log(
+              'Audio description UI: share dismissed; keeping completed result',
+            );
+            continue;
+          }
         } else {
           for (final path in outputPaths) {
             if (sourcePath.isNotEmpty &&

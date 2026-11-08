@@ -24,6 +24,11 @@ class RouteResultScreen extends StatelessWidget {
 
   const RouteResultScreen({super.key, required this.result});
 
+  String _routeSubtitle(RoutePath path, AppLocalizations l10n) => [
+    '${l10n.routeDuration}: ${path.durationLabel(l10n)}',
+    ...path.transitDetails.where((text) => text.trim().isNotEmpty),
+  ].join('\n');
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -39,7 +44,7 @@ class RouteResultScreen extends StatelessWidget {
                       AccessibleListRow(
                         id: 'path_$i',
                         title: '${l10n.routeDistance}: ${result.paths[i].distanceLabel(l10n)}',
-                        subtitle: '${l10n.routeDuration}: ${result.paths[i].durationLabel(l10n)}',
+                        subtitle: _routeSubtitle(result.paths[i], l10n),
                       ),
                   ],
                 ),
@@ -70,11 +75,10 @@ class RouteResultScreen extends StatelessWidget {
         itemBuilder: (context, index) {
           final path = result.paths[index];
           final distanceStr = path.distanceLabel(l10n);
-          final durationStr = path.durationLabel(l10n);
 
           return ListTile(
             title: Text('${l10n.routeDistance}: $distanceStr'),
-            subtitle: Text('${l10n.routeDuration}: $durationStr'),
+            subtitle: Text(_routeSubtitle(path, l10n)),
             trailing: const Icon(Icons.chevron_right),
             onTap: () {
               Navigator.push(

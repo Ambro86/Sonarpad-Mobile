@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
@@ -64,122 +66,171 @@ void main() {
   });
 
   test(
-    'community Repubblica exception survives storage, rename and cloud refresh',
+    'community sources keep the exclusion after storage and cloud refresh',
     () async {
       final service = NewsService(
-        client: MockClient((_) async => http.Response(feed, 200)),
+        client: MockClient(
+          (request) async => http.Response(
+            request.url.path.endsWith('get_community_news_sources.php')
+                ? jsonEncode({
+                    'items': [
+                      {
+                        'name': 'Repubblica',
+                        'url':
+                            'https://www.repubblica.it/rss/homepage/rss2.0.xml',
+                        'language': 'it',
+                      },
+                    ],
+                  })
+                : feed,
+            200,
+          ),
+        ),
       );
+      final communitySource = (await service.fetchCommunityNewsSources(
+        NewsLanguage.italian,
+      )).single;
       await service.addCustomSource(
         NewsLanguage.italian,
-        'Repubblica',
-        'https://www.repubblica.it/rss/homepage/rss2.0.xml',
-        fromCommunity: true,
+        communitySource.name,
+        communitySource.uri.toString(),
       );
       var source = (await service.getCustomSources(
         NewsLanguage.italian,
       )).single;
-      expect(source.allowRepubblica, isTrue);
+      expect(source.name, 'Repubblica');
       expect(
         NewsRssSource.fromJson(
           source.copyWith(name: 'Il mio giornale').toJson(),
-        ).allowRepubblica,
-        isTrue,
+        ).toJson(),
+        isNot(contains('allowRepubblica')),
       );
       expect(
         await service.fetchSourceNews(source, language: NewsLanguage.italian),
-        hasLength(9),
+        hasLength(3),
       );
       final cloud = await service.exportCloudCollections();
       await service.replaceCloudCollections(cloud);
       source = (await service.getCustomSources(NewsLanguage.italian)).single;
-      expect(source.allowRepubblica, isTrue);
-      // The permission belongs to this source, never to general Google News.
+      expect(source.uri, communitySource.uri);
+      expect(
+        await service.fetchSourceNews(source, language: NewsLanguage.italian),
+        hasLength(3),
+      );
       expect(await titles('https://news.google.com/rss?hl=it'), hasLength(3));
     },
   );
 
   test(
-    'manual addition and other community publishers do not get the exception',
+    'legacy community permission cannot leak into aggregated news',
     () async {
+      SharedPreferences.setMockInitialValues({
+        'news_custom_sources_italian': [
+          jsonEncode({
+            'name': 'Repubblica',
+            'uri': 'https://www.repubblica.it/rss/homepage/rss2.0.xml',
+            'isCustom': true,
+            'allowRepubblica': true,
+          }),
+        ],
+      });
       final service = NewsService(
         client: MockClient((_) async => http.Response(feed, 200)),
-      );
-      await service.addCustomSource(
-        NewsLanguage.italian,
-        'Manuale',
-        'https://www.repubblica.it/feed.xml',
-      );
-      await service.addCustomSource(
-        NewsLanguage.italian,
-        'Altro',
-        'https://example.org/feed.xml',
-        fromCommunity: true,
-      );
-      await service.addCustomSource(
-        NewsLanguage.italian,
-        'Google',
-        'https://news.google.com/rss?hl=it',
-        fromCommunity: true,
-      );
-      for (final source in await service.getCustomSources(
-        NewsLanguage.italian,
-      )) {
-        expect(source.allowRepubblica, isFalse);
-        expect(
-          await service.fetchSourceNews(source, language: NewsLanguage.italian),
-          hasLength(3),
-        );
-      }
-      expect(
-        NewsRssSource.fromJson({
-          'name': 'Vecchia',
-          'uri': 'https://repubblica.it/rss',
-        }).allowRepubblica,
-        isFalse,
-      );
-    },
-  );
-
-  test(
-    'community exception follows only its source-specific Google fallback',
-    () async {
-      final requested = <Uri>[];
-      final service = NewsService(
-        client: MockClient((request) async {
-          requested.add(request.url);
-          return http.Response(
-            request.url.host == 'news.google.com'
-                ? feed
-                : '<rss><channel/></rss>',
-            200,
-          );
-        }),
-      );
-      await service.addCustomSource(
-        NewsLanguage.italian,
-        'Repubblica',
-        'https://www.repubblica.it/rss/homepage/rss2.0.xml',
-        fromCommunity: true,
       );
       final source = (await service.getCustomSources(
         NewsLanguage.italian,
       )).single;
+      expect(source.name, 'Repubblica');
+      expect(source.toJson(), isNot(contains('allowRepubblica')));
       expect(
         await service.fetchSourceNews(source, language: NewsLanguage.italian),
-        hasLength(9),
-      );
-      expect(requested.last.host, 'news.google.com');
-      expect(requested.last.queryParameters['q'], 'site:repubblica.it');
-      expect(
-        await service.fetchSourceNews(
-          NewsRssSource(
-            name: 'Google',
-            uri: Uri.parse('https://news.google.com/rss'),
-          ),
-          language: NewsLanguage.italian,
-        ),
         hasLength(3),
+      );
+      final articles = await service.fetchTopNews(NewsLanguage.italian);
+      expect(articles, isNotEmpty);
+      expect(
+        articles.map((article) => article.title),
+        everyElement(
+          isIn([
+            'La Repubblica mentioned by another paper',
+            'Similar domain',
+            'No source',
+          ]),
+        ),
       );
     },
   );
+
+  test('all manually added sources keep the publisher exclusion', () async {
+    final service = NewsService(
+      client: MockClient((_) async => http.Response(feed, 200)),
+    );
+    await service.addCustomSource(
+      NewsLanguage.italian,
+      'Manuale',
+      'https://www.repubblica.it/feed.xml',
+    );
+    await service.addCustomSource(
+      NewsLanguage.italian,
+      'Altro',
+      'https://example.org/feed.xml',
+    );
+    await service.addCustomSource(
+      NewsLanguage.italian,
+      'Google',
+      'https://news.google.com/rss?hl=it',
+    );
+    for (final source in await service.getCustomSources(NewsLanguage.italian)) {
+      expect(
+        await service.fetchSourceNews(source, language: NewsLanguage.italian),
+        hasLength(3),
+      );
+    }
+    expect(
+      NewsRssSource.fromJson({
+        'name': 'Vecchia',
+        'uri': 'https://repubblica.it/rss',
+      }).toJson(),
+      isNot(contains('allowRepubblica')),
+    );
+  });
+
+  test('source-specific Google fallback also excludes Repubblica', () async {
+    final requested = <Uri>[];
+    final service = NewsService(
+      client: MockClient((request) async {
+        requested.add(request.url);
+        return http.Response(
+          request.url.host == 'news.google.com'
+              ? feed
+              : '<rss><channel/></rss>',
+          200,
+        );
+      }),
+    );
+    await service.addCustomSource(
+      NewsLanguage.italian,
+      'Repubblica',
+      'https://www.repubblica.it/rss/homepage/rss2.0.xml',
+    );
+    final source = (await service.getCustomSources(
+      NewsLanguage.italian,
+    )).single;
+    expect(
+      await service.fetchSourceNews(source, language: NewsLanguage.italian),
+      hasLength(3),
+    );
+    expect(requested.last.host, 'news.google.com');
+    expect(requested.last.queryParameters['q'], 'site:repubblica.it');
+    expect(
+      await service.fetchSourceNews(
+        NewsRssSource(
+          name: 'Google',
+          uri: Uri.parse('https://news.google.com/rss'),
+        ),
+        language: NewsLanguage.italian,
+      ),
+      hasLength(3),
+    );
+  });
 }

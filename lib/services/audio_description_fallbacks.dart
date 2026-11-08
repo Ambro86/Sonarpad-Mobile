@@ -337,6 +337,8 @@ class AudioDescriptionFallbacks {
       'server disconnected',
       'failed to establish',
       'failed to connect',
+      'failed host lookup',
+      'no address associated with hostname',
       'name resolution',
       'getaddrinfo',
       'nodename nor servname',

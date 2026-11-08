@@ -63,7 +63,6 @@ class NewsRssSource {
   final Uri uri;
   final List<NewsRssCategory>? categories;
   final bool isCustom;
-  final bool allowRepubblica;
   final bool isFolder;
   final String? folderId;
   final String? parentFolderId;
@@ -73,7 +72,6 @@ class NewsRssSource {
     required this.uri,
     this.categories,
     this.isCustom = false,
-    this.allowRepubblica = false,
     this.isFolder = false,
     this.folderId,
     this.parentFolderId,
@@ -91,7 +89,6 @@ class NewsRssSource {
         'name': name,
         'uri': uri.toString(),
         'isCustom': isCustom,
-        if (allowRepubblica) 'allowRepubblica': true,
         if (parentFolderId != null) 'parentFolderId': parentFolderId,
       };
 
@@ -99,7 +96,6 @@ class NewsRssSource {
         name: json['name'],
         uri: Uri.parse(json['uri']),
         isCustom: json['isCustom'] ?? true,
-        allowRepubblica: json['allowRepubblica'] == true,
         parentFolderId: json['parentFolderId'],
       );
 
@@ -118,7 +114,6 @@ class NewsRssSource {
         uri: uri ?? this.uri,
         categories: categories ?? this.categories,
         isCustom: isCustom ?? this.isCustom,
-        allowRepubblica: allowRepubblica,
         isFolder: isFolder ?? this.isFolder,
         folderId: folderId ?? this.folderId,
         parentFolderId:

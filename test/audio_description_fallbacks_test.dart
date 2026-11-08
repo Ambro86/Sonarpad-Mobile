@@ -219,6 +219,8 @@ void main() {
       'connection refused',
       'network is unreachable',
       'temporary failure in name resolution',
+      "ClientException with SocketException: Failed host lookup: 'generativelanguage.googleapis.com' (OS Error: No address associated with hostname, errno = 7)",
+      'SocketException: No address associated with hostname',
       'failed to connect',
       'request timeout',
     ]) {

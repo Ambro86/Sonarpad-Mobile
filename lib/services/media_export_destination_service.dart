@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 
 import '../utils/app_logger.dart';
 import 'document_library_service.dart';
@@ -17,6 +18,19 @@ class MediaExportDestinationService {
       : _library = library ?? DocumentLibraryService();
 
   final DocumentLibraryService _library;
+
+  /// Audio descriptions can finish hours before the user saves them. Keep
+  /// their files outside disposable caches until the destination is confirmed.
+  static Future<Directory> createAudioDescriptionDirectory() async {
+    final support = await getApplicationSupportDirectory();
+    final directory = Directory(p.join(
+      support.path,
+      'audio_description_exports',
+      'audio_description_${DateTime.now().microsecondsSinceEpoch}',
+    ));
+    await directory.create(recursive: true);
+    return directory;
+  }
 
   Future<void> saveInSonarpadDocuments(
     String filePath, {

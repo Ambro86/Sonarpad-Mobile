@@ -13,6 +13,7 @@ import 'package:sonarpad_mobile_starter/screens/create_ai_audiodescription_scree
 import 'package:sonarpad_mobile_starter/services/ai_audiodescription_service.dart';
 import 'package:sonarpad_mobile_starter/services/audio_description_mix_preview_controller.dart';
 import 'package:sonarpad_mobile_starter/services/audio_player_service.dart';
+import 'package:sonarpad_mobile_starter/services/media_export_destination_service.dart';
 import 'package:sonarpad_mobile_starter/utils/app_logger.dart';
 import 'package:sonarpad_mobile_starter/widgets/universal_accessible_view.dart';
 // The public platform interface is supplied by the path_provider dependency.
@@ -23,25 +24,28 @@ class _Paths extends PathProviderPlatform {
   _Paths(this.root);
 
   final Directory root;
-  Completer<void>? cacheRequested;
-  Completer<String?>? cacheResponse;
+  Completer<void>? supportRequested;
+  Completer<String?>? supportResponse;
 
   @override
   Future<String?> getApplicationDocumentsPath() async =>
       '${root.path}/documents';
 
   @override
-  Future<String?> getApplicationSupportPath() async => '${root.path}/support';
+  Future<String?> getApplicationSupportPath() {
+    final requested = supportRequested;
+    if (requested != null && !requested.isCompleted) {
+      requested.complete();
+      return supportResponse!.future;
+    }
+    return Future.value('${root.path}/support');
+  }
 
   @override
   Future<String?> getTemporaryPath() async => '${root.path}/temporary';
 
   @override
-  Future<String?> getApplicationCachePath() {
-    final requested = cacheRequested;
-    if (requested != null && !requested.isCompleted) requested.complete();
-    return cacheResponse?.future ?? Future.value('${root.path}/cache');
-  }
+  Future<String?> getApplicationCachePath() async => '${root.path}/cache';
 }
 
 class _SourceTrackService extends AiAudioDescriptionService {
@@ -60,6 +64,27 @@ class _NoMixPreview extends AudioDescriptionMixPreviewController {
 
   @override
   Future<void> stop() async {}
+}
+
+class _CompletedDescriptionService extends _SourceTrackService {
+  _CompletedDescriptionService(this.result);
+  final AiAudioDescriptionResult result;
+
+  @override
+  Future<List<String>> fetchGeminiModels(String apiKey) async => ['gemini-test'];
+
+  @override
+  Future<AiAudioDescriptionResult> create({
+    required String sourcePath,
+    required AiAudioDescriptionSettings settings,
+    required void Function(AiAudioDescriptionProgress) onProgress,
+    AiAudioDescriptionHighDemandCallback? onHighDemand,
+    AiAudioDescriptionQuotaCallback? onQuota,
+    AiAudioDescriptionBriefRetryCallback? onBriefRetry,
+    AiAudioDescriptionOverlapConsentCallback? onOverlapConsent,
+    AiAudioDescriptionResumeCallback? onResumeCheckpoint,
+    bool requireCheckpoint = false,
+  }) async => result;
 }
 
 class _PreviewService extends Fake implements AiAudioDescriptionService {
@@ -395,6 +420,60 @@ void main() {
     await temporary.delete(recursive: true);
   });
 
+  for (final firstShare in ['dismissed', 'failed']) {
+    testWidgets('completed audio survives $firstShare sharing and can be shared again', (tester) async {
+      SharedPreferences.setMockInitialValues({
+        'ad_mobile_gemini_api_key': 'fixture-key',
+      });
+      late Directory directory;
+      late File output;
+      await tester.runAsync(() async {
+        directory = await MediaExportDestinationService.createAudioDescriptionDirectory();
+        output = await File('${directory.path}/completed.mp3').writeAsBytes([1, 2, 3]);
+      });
+      final service = _CompletedDescriptionService(AiAudioDescriptionResult(
+        mp3Path: output.path,
+        generatedDescriptions: 1,
+        insertedDescriptions: 1,
+        excludedDescriptions: 0,
+      ));
+      var shares = 0;
+      final messenger = TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+      const channel = MethodChannel('dev.fluttercommunity.plus/share');
+      messenger.setMockMethodCallHandler(channel, (call) async {
+        expect(call.method, 'share');
+        expect(call.arguments['paths'], [output.path]);
+        shares++;
+        if (shares == 1) {
+          if (firstShare == 'failed') throw PlatformException(code: 'share_failed');
+          return '';
+        }
+        return 'test.share.destination';
+      });
+      try {
+        await _mountScreen(tester, sourcePath: output.path, serviceFactory: () => service);
+        final l10n = AppLocalizations.of(tester.element(find.byKey(_formKey)));
+        await tester.runAsync(() async {
+          await _form(tester).onEvent!(const AccessibleListEvent(type: 'activate', id: 'create'));
+        });
+        await _waitForWidget(tester, find.text(l10n.mediaProcessingCompleted));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text(l10n.share));
+        // Let the old dialog finish closing before waiting for its replacement.
+        await tester.pumpAndSettle();
+        await _waitForWidget(tester, find.text(l10n.mediaProcessingCompleted));
+        expect(shares, 1);
+        expect(await tester.runAsync(output.exists), isTrue);
+        await tester.pumpAndSettle();
+        await tester.tap(find.text(l10n.share));
+        await _waitUntil(tester, () => shares == 2 && !directory.existsSync());
+      } finally {
+        messenger.setMockMethodCallHandler(channel, null);
+        await _unmountScreen(tester);
+      }
+    }, variant: TargetPlatformVariant({TargetPlatform.android, TargetPlatform.iOS}));
+  }
+
   testWidgets('dialogue overlap checkbox is off by default and remembers explicit changes', (tester) async {
     await _exerciseScreen(tester, () async {
       final row = _row(tester, 'dialogue_overlap');
@@ -678,8 +757,8 @@ void main() {
         'ad_mobile_language': 'en',
       });
       final source = File('${temporary.path}/movie.mp4')..writeAsBytesSync([0]);
-      final blockedCache = File('${temporary.path}/cache_is_a_file')
-        ..writeAsStringSync('This file cannot be used as a cache directory.');
+      final blockedSupport = File('${temporary.path}/support_is_a_file')
+        ..writeAsStringSync('This file cannot be used as a support directory.');
       await _exerciseScreen(tester, () async {
         expect(_row(tester, 'mp3_bitrate').valueLabel, '96 kbps');
         expect(_row(tester, 'source_volume').valueLabel, '1,25');
@@ -738,16 +817,16 @@ void main() {
         expect(_row(tester, 'api_key').value, 'fixture-key');
         expect(_row(tester, 'language').value, 'en');
 
-        // Exercise the real create/settings path. Hold its cache lookup after
+        // Exercise the real create/settings path. Hold its support lookup after
         // preferences are saved, then fail at local directory creation before
         // probing media, synthesizing speech, or making any AI request.
         await tester.runAsync(() async {
-          paths.cacheRequested = Completer<void>();
-          paths.cacheResponse = Completer<String?>();
+          paths.supportRequested = Completer<void>();
+          paths.supportResponse = Completer<String?>();
           await handler(
             const AccessibleListEvent(type: 'activate', id: 'create'),
           );
-          await paths.cacheRequested!.future.timeout(
+          await paths.supportRequested!.future.timeout(
             const Duration(seconds: 5),
           );
         });
@@ -774,7 +853,7 @@ void main() {
         expect(saved['apiKey'], 'fixture-key');
         expect(saved['language'], 'en');
 
-        paths.cacheResponse!.complete(blockedCache.path);
+        paths.supportResponse!.complete(blockedSupport.path);
         await _waitForWidget(tester, find.byKey(_formKey));
         await tester.pumpAndSettle();
         expect(_row(tester, 'mp3_bitrate').valueLabel, '256 kbps');
@@ -1123,7 +1202,6 @@ void main() {
         () async {
           await tester.runAsync(() async {
             preview.stopGate = Completer<void>();
-            paths.cacheRequested = Completer<void>();
             await _form(tester).onEvent!(
               const AccessibleListEvent(type: 'activate', id: 'create'),
             );
@@ -1147,11 +1225,11 @@ void main() {
           await tester.tap(find.widgetWithText(FilledButton, l10n.yes));
           await tester.pumpAndSettle();
           expect(preview.stops, greaterThanOrEqualTo(2));
-          expect(paths.cacheRequested!.isCompleted, isFalse);
+          expect((await SharedPreferences.getInstance()).containsKey('ad_mobile_provider'), isFalse);
           preview.stopGate!.complete();
           await _waitForWidget(tester, find.byKey(_formKey));
           await tester.pumpAndSettle();
-          expect(paths.cacheRequested!.isCompleted, isFalse);
+          expect((await SharedPreferences.getInstance()).containsKey('ad_mobile_provider'), isFalse);
           expect(_row(tester, 'status').value, l10n.audioDescriptionCancelled);
           final saved = await AiAudioDescriptionPreferences.load();
           expect(saved['bitrateKbps'], 192);

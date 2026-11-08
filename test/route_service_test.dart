@@ -39,6 +39,7 @@ void main() {
             'durata_secondi': 1200,
             'durata': '20 min',
             'istruzioni': ['Walk to the stop', 'Take Bus 12 at 12:30'],
+            'mezzi': ['Take Bus 12 at 12:30'],
           },
           {
             'distanza': '1.4 mi',
@@ -105,6 +106,8 @@ void main() {
         expect(result.paths, hasLength(2));
         expect(result.paths.first.distanceText, '1.2 mi');
         expect(result.paths.first.durationText, '20 min');
+        expect(result.paths.first.transitDetails, ['Take Bus 12 at 12:30']);
+        expect(result.paths.last.transitDetails, isEmpty);
         expect(
           result.paths.first.steps.last.instruction,
           'Take Bus 12 at 12:30',

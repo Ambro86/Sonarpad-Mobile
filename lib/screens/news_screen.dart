@@ -710,7 +710,6 @@ class _CommunityNewsSourcesScreenState
         source.name,
         url,
         parentFolderId: widget.parentFolderId,
-        fromCommunity: true,
       );
       if (!mounted) return;
       showStatusMessage(

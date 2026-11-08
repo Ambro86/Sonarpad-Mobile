@@ -112,6 +112,7 @@ class RouteStep {
 
 class RoutePath {
   final List<String> notices;
+  final List<String> transitDetails;
   final String? distanceText;
   final String? durationText;
 
@@ -127,6 +128,7 @@ class RoutePath {
 
   const RoutePath({
     this.notices = const [],
+    this.transitDetails = const [],
     this.distanceText,
     this.durationText,
     required this.distanceMeters,
@@ -674,6 +676,7 @@ class RouteService {
         distanceText: route['distanza'] as String,
         durationText: route['durata'] as String,
         notices: (route['avvisi'] as List<dynamic>? ?? []).cast<String>(),
+        transitDetails: (route['mezzi'] as List<dynamic>? ?? []).cast<String>(),
         steps: instructions
             .map(
               (s) => RouteStep(
