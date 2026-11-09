@@ -235,16 +235,19 @@ jobs:
         run: |
           # GitHub Releases can return transient HTTP errors for FFmpeg SwiftPM XCFrameworks.
           # Retry only network failures, and never silently ignore configuration errors.
-          for attempt in 1 2 3 4; do
+          set -o pipefail
+          attempt=1
+          while true; do
             if flutter build ios --config-only 2>&1 | tee "$RUNNER_TEMP/flutter-config-only.log"; then
               break
             fi
-            if [ "$attempt" -eq 4 ] || ! grep -Eq 'badResponseStatusCode\((429|500|502|503|504)\)|HTTP/[0-9.]+ (429|500|502|503|504)' "$RUNNER_TEMP/flutter-config-only.log"; then
-              echo "Flutter iOS configuration failed or retries exhausted."
+            if ! grep -Eq 'badResponseStatusCode\((429|500|502|503|504)\)|HTTP/[0-9.]+ (429|500|502|503|504)' "$RUNNER_TEMP/flutter-config-only.log"; then
+              echo "Flutter iOS configuration failed with a non-transient error."
               exit 1
             fi
-            echo "Transient SwiftPM failure; retrying configuration ($((attempt + 1))/4)"
-            sleep $((attempt * 20))
+            echo "Transient SwiftPM failure; retrying configuration indefinitely (attempt $((attempt + 1)))"
+            sleep $((attempt < 12 ? attempt * 20 : 240))
+            attempt=$((attempt + 1))
           done
           if [ -f "ios/Podfile" ]; then
             sed -i '' -e 's/flutter_additional_ios_build_settings(target)/flutter_additional_ios_build_settings(target)\n      target.build_configurations.each do |config|\n        config.build_settings["GCC_PREPROCESSOR_DEFINITIONS"] ||= ["$(inherited)", "PERMISSION_CAMERA=1"]\n      end/g' ios/Podfile
@@ -292,7 +295,9 @@ jobs:
 
       - name: Build signed IPA
         run: |
-          for attempt in 1 2 3 4; do
+          set -o pipefail
+          attempt=1
+          while true; do
             if flutter build ipa \
               --release \
               --build-number=${{ github.run_number }} \
@@ -301,12 +306,13 @@ jobs:
               2>&1 | tee "$RUNNER_TEMP/flutter-ipa-build.log"; then
               exit 0
             fi
-            if [ "$attempt" -eq 4 ] || ! grep -Eq 'badResponseStatusCode\((429|500|502|503|504)\)|HTTP/[0-9.]+ (429|500|502|503|504)' "$RUNNER_TEMP/flutter-ipa-build.log"; then
-              echo "Signed IPA build failed or retries exhausted."
+            if ! grep -Eq 'badResponseStatusCode\((429|500|502|503|504)\)|HTTP/[0-9.]+ (429|500|502|503|504)' "$RUNNER_TEMP/flutter-ipa-build.log"; then
+              echo "Signed IPA build failed with a non-transient error."
               exit 1
             fi
-            echo "Transient SwiftPM failure; retrying signed IPA build ($((attempt + 1))/4)"
-            sleep $((attempt * 20))
+            echo "Transient SwiftPM failure; retrying signed IPA build indefinitely (attempt $((attempt + 1)))"
+            sleep $((attempt < 12 ? attempt * 20 : 240))
+            attempt=$((attempt + 1))
           done
 
       - name: Verify ONNX Runtime MinimumOSVersion in IPA
