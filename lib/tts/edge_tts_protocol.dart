@@ -3,7 +3,7 @@
 /// The newer read-aloud service is preferred, but the earlier service is kept
 /// as a fallback. Never write the full request URL to diagnostic logs because
 /// it contains the client key and the time-dependent Sec-MS-GEC signature.
-enum EdgeTtsEndpoint { modern, legacy }
+enum EdgeTtsEndpoint { modernV2, modern, legacy }
 
 class EdgeTtsProtocol {
   EdgeTtsProtocol._();
@@ -13,8 +13,12 @@ class EdgeTtsProtocol {
       'wss://api.msedgeservices.com/tts/cognitiveservices/websocket/v1';
   static const legacyUrl =
       'wss://speech.platform.bing.com/consumer/speech/synthesize/readaloud/edge/v1';
+  static const modernV2Version = '2-157.0.4341.42';
   static const modernVersion = '1-155.0.4283.45';
   static const legacyVersion = '1-132.0.2917.39';
+  static const modernV2UserAgent =
+      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
+      '(KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36 Edg/157.0.0.0';
   static const modernUserAgent =
       'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
       '(KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36 Edg/155.0.4283.45';
@@ -23,27 +27,37 @@ class EdgeTtsProtocol {
       'AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 '
       'Mobile/15E148 Safari/604.1 Edg/132.0.0.0';
 
-  static String label(EdgeTtsEndpoint endpoint) =>
-      endpoint == EdgeTtsEndpoint.modern
-          ? 'Edge 155 (api.msedgeservices.com) [PRIMARY]'
-          : 'legacy (speech.platform.bing.com) [FALLBACK]';
+  static String label(EdgeTtsEndpoint endpoint) => switch (endpoint) {
+    EdgeTtsEndpoint.modernV2 =>
+      'Edge 157 v2 (api.msedgeservices.com) [PRIMARY]',
+    EdgeTtsEndpoint.modern => 'Edge 155 v1 (api.msedgeservices.com) [FALLBACK]',
+    EdgeTtsEndpoint.legacy => 'legacy (speech.platform.bing.com) [FALLBACK]',
+  };
 
-  static String userAgent(EdgeTtsEndpoint endpoint) =>
-      endpoint == EdgeTtsEndpoint.modern ? modernUserAgent : legacyUserAgent;
+  static String userAgent(EdgeTtsEndpoint endpoint) => switch (endpoint) {
+    EdgeTtsEndpoint.modernV2 => modernV2UserAgent,
+    EdgeTtsEndpoint.modern => modernUserAgent,
+    EdgeTtsEndpoint.legacy => legacyUserAgent,
+  };
 
   static Uri url({
     required EdgeTtsEndpoint endpoint,
     required String connectionId,
     required String signature,
   }) {
-    final modern = endpoint == EdgeTtsEndpoint.modern;
+    final modern = endpoint != EdgeTtsEndpoint.legacy;
+    final gecVersion = switch (endpoint) {
+      EdgeTtsEndpoint.modernV2 => modernV2Version,
+      EdgeTtsEndpoint.modern => modernVersion,
+      EdgeTtsEndpoint.legacy => legacyVersion,
+    };
     return Uri.parse(modern ? modernUrl : legacyUrl).replace(
       queryParameters: {
         if (modern) 'Ocp-Apim-Subscription-Key': clientToken,
         if (!modern) 'TrustedClientToken': clientToken,
         'ConnectionId': connectionId,
         'Sec-MS-GEC': signature,
-        'Sec-MS-GEC-Version': modern ? modernVersion : legacyVersion,
+        'Sec-MS-GEC-Version': gecVersion,
       },
     );
   }
@@ -59,8 +73,11 @@ class EdgeTtsTurn {
   int get audioBytes => _audio.length;
 
   void acceptText(String message) {
-    if (RegExp(r'^Path:turn\.end\s*$',
-            caseSensitive: false, multiLine: true).hasMatch(message)) {
+    if (RegExp(
+      r'^Path:turn\.end\s*$',
+      caseSensitive: false,
+      multiLine: true,
+    ).hasMatch(message)) {
       _ended = true;
     }
   }
@@ -77,8 +94,11 @@ class EdgeTtsTurn {
     }
     // Edge audio frames carry a two-byte big-endian text header length.
     final header = String.fromCharCodes(frame.sublist(2, headerLength + 2));
-    if (!RegExp(r'^Path:audio\s*$',
-            caseSensitive: false, multiLine: true).hasMatch(header)) {
+    if (!RegExp(
+      r'^Path:audio\s*$',
+      caseSensitive: false,
+      multiLine: true,
+    ).hasMatch(header)) {
       return;
     }
     if (headerLength + 2 < frame.length) {
@@ -88,7 +108,9 @@ class EdgeTtsTurn {
 
   List<int> completedAudio() {
     if (!_ended) {
-      throw StateError('Edge connection closed without turn.end; audio incomplete');
+      throw StateError(
+        'Edge connection closed without turn.end; audio incomplete',
+      );
     }
     if (_audio.length < 1000) {
       throw StateError('Edge TTS returned empty or incomplete audio');

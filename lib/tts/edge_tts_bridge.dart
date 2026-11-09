@@ -9,6 +9,7 @@ import 'package:crypto/crypto.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../utils/app_logger.dart';
 import 'edge_tts_protocol.dart';
+import 'edge_tts_gec_v2.dart';
 
 class EdgeTtsBridge {
   HttpClient? _activeClient;
@@ -51,12 +52,14 @@ class EdgeTtsBridge {
     // valori espliciti, per esempio dal pulsante "Test voce" delle
     // impostazioni, usiamo quelli subito senza aspettare il salvataggio.
     final prefs = await SharedPreferences.getInstance();
-    final effectiveSpeed = (speed ?? prefs.getDouble('sonarpad_tts_speed') ?? 1.0)
-        .clamp(0.5, 2.0)
-        .toDouble();
-    final effectivePitch = (pitch ?? prefs.getDouble('sonarpad_tts_pitch') ?? 1.0)
-        .clamp(0.5, 2.0)
-        .toDouble();
+    final effectiveSpeed =
+        (speed ?? prefs.getDouble('sonarpad_tts_speed') ?? 1.0)
+            .clamp(0.5, 2.0)
+            .toDouble();
+    final effectivePitch =
+        (pitch ?? prefs.getDouble('sonarpad_tts_pitch') ?? 1.0)
+            .clamp(0.5, 2.0)
+            .toDouble();
 
     await logFile.writeAsString(
       'params speed=$effectiveSpeed pitch=$effectivePitch\n',
@@ -70,8 +73,13 @@ class EdgeTtsBridge {
     final pitchStr = pitchPercent >= 0 ? '+$pitchPercent%' : '$pitchPercent%';
 
     try {
-      final audioData =
-          await _downloadAudio(text, voice, rateStr, pitchStr, logFile);
+      final audioData = await _downloadAudio(
+        text,
+        voice,
+        rateStr,
+        pitchStr,
+        logFile,
+      );
       _checkCancelled();
       if (audioData.isEmpty) {
         throw Exception("Edge TTS ha restituito audio vuoto");
@@ -87,8 +95,10 @@ class EdgeTtsBridge {
     } catch (e) {
       _checkCancelled();
       final safe = _safeError(e);
-      await logFile.writeAsString('Errore Edge TTS: $safe\n',
-          mode: FileMode.append);
+      await logFile.writeAsString(
+        'Errore Edge TTS: $safe\n',
+        mode: FileMode.append,
+      );
       throw Exception('Edge TTS error: $safe');
     }
   }
@@ -121,13 +131,16 @@ class EdgeTtsBridge {
 
     for (final p in paragraphs) {
       // Normalizziamo tutti gli spazi (inclusi singoli \n) all'interno del paragrafo
-      final cleaned =
-          p.replaceAll(RegExp(r'\s+'), ' ').replaceAll('...', '…').trim();
+      final cleaned = p
+          .replaceAll(RegExp(r'\s+'), ' ')
+          .replaceAll('...', '…')
+          .trim();
 
       if (cleaned.isEmpty) continue;
 
-      final sentenceMatches =
-          RegExp(r'[^.!?。！？]+[.!?。！？]?').allMatches(cleaned);
+      final sentenceMatches = RegExp(
+        r'[^.!?。！？]+[.!?。！？]?',
+      ).allMatches(cleaned);
       final sentences = sentenceMatches
           .map((m) => m.group(0)?.trim() ?? '')
           .where((s) => s.isNotEmpty)
@@ -175,44 +188,59 @@ class EdgeTtsBridge {
   // Try the current service first, then the previous service if needed.
   // The caller's existing retry loop controls further attempts and Stop:
   // the bridge must never spin forever after its reading session has ended.
-  Future<List<int>> _downloadAudio(String text, String voice, String rateStr,
-      String pitchStr, File logFile) async {
+  Future<List<int>> _downloadAudio(
+    String text,
+    String voice,
+    String rateStr,
+    String pitchStr,
+    File logFile,
+  ) async {
     Object? lastError;
-    Object? rateLimitedError;
     for (final endpoint in EdgeTtsEndpoint.values) {
       _checkCancelled();
       try {
         return await _downloadEndpointAudio(
-            text, voice, rateStr, pitchStr, logFile, endpoint);
+          text,
+          voice,
+          rateStr,
+          pitchStr,
+          logFile,
+          endpoint,
+        );
       } catch (error) {
         _checkCancelled();
         lastError = error;
-        if (error.toString().contains('429')) rateLimitedError = error;
+        if (error.toString().contains('429')) {
+          // Preserve caller-level rate-limit cooldown; do not immediately
+          // switch endpoints and multiply requests when Microsoft sends 429.
+          rethrow;
+        }
         final label = EdgeTtsProtocol.label(endpoint);
-        await _logEdge(logFile,
-            'Edge TTS: endpoint=$label failed: ${_safeError(error)}');
+        await _logEdge(
+          logFile,
+          'Edge TTS: endpoint=$label failed: ${_safeError(error)}',
+        );
         if (!_isTemporaryError(error)) rethrow;
       }
     }
-    // If either server asks us to slow down, preserve HTTP 429 so the
-    // caller uses a longer retry delay instead of hammering both servers.
-    throw rateLimitedError ??
-        lastError ??
-        StateError('Edge TTS: no endpoint available');
+    throw lastError ?? StateError('Edge TTS: no endpoint available');
   }
 
   Future<List<int>> _downloadEndpointAudio(
-      String text,
-      String voice,
-      String rateStr,
-      String pitchStr,
-      File logFile,
-      EdgeTtsEndpoint endpoint) async {
+    String text,
+    String voice,
+    String rateStr,
+    String pitchStr,
+    File logFile,
+    EdgeTtsEndpoint endpoint,
+  ) async {
     final requestId = const Uuid().v4().replaceAll('-', '');
     final url = EdgeTtsProtocol.url(
       endpoint: endpoint,
       connectionId: requestId,
-      signature: _generateSecMsGec(),
+      signature: endpoint == EdgeTtsEndpoint.modernV2
+          ? EdgeTtsGecV2.generate(clientToken: _trustedClientToken)
+          : _generateSecMsGec(),
     );
     final label = EdgeTtsProtocol.label(endpoint);
     WebSocket? ws;
@@ -236,8 +264,10 @@ class EdgeTtsBridge {
       ).timeout(const Duration(seconds: 20));
       _activeSocket = ws;
       _checkCancelled();
-      await _logEdge(logFile,
-          'Edge TTS: WebSocket connected (HTTP 101), endpoint=$label');
+      await _logEdge(
+        logFile,
+        'Edge TTS: WebSocket connected (HTTP 101), endpoint=$label',
+      );
 
       final dateString = _getDateString();
       final configMsg =
@@ -245,34 +275,44 @@ class EdgeTtsBridge {
           '{"context":{"synthesis":{"audio":{"metadataoptions":{"sentenceBoundaryEnabled":"false","wordBoundaryEnabled":"false"},"outputFormat":"audio-24khz-48kbitrate-mono-mp3"}}}}';
       ws.add(configMsg);
       final ssml = _mkssml(text, voice, rateStr, pitchStr);
-      ws.add('X-RequestId:$requestId\r\nContent-Type:application/ssml+xml\r\n'
-          'X-Timestamp:${dateString}Z\r\nPath:ssml\r\n\r\n$ssml');
+      ws.add(
+        'X-RequestId:$requestId\r\nContent-Type:application/ssml+xml\r\n'
+        'X-Timestamp:${dateString}Z\r\nPath:ssml\r\n\r\n$ssml',
+      );
 
       final turn = EdgeTtsTurn();
       final completed = Completer<void>();
-      final subscription = ws.listen((dynamic data) {
-        if (data is String) {
-          turn.acceptText(data);
-          if (turn.ended && !completed.isCompleted) completed.complete();
-        } else if (data is List<int>) {
-          turn.acceptBinary(data);
-        }
-      }, onError: (Object error, StackTrace stack) {
-        if (!completed.isCompleted) completed.completeError(error, stack);
-      }, onDone: () {
-        if (!completed.isCompleted) {
-          completed.completeError(
-              StateError('Edge connection closed without turn.end'));
-        }
-      }, cancelOnError: true);
+      final subscription = ws.listen(
+        (dynamic data) {
+          if (data is String) {
+            turn.acceptText(data);
+            if (turn.ended && !completed.isCompleted) completed.complete();
+          } else if (data is List<int>) {
+            turn.acceptBinary(data);
+          }
+        },
+        onError: (Object error, StackTrace stack) {
+          if (!completed.isCompleted) completed.completeError(error, stack);
+        },
+        onDone: () {
+          if (!completed.isCompleted) {
+            completed.completeError(
+              StateError('Edge connection closed without turn.end'),
+            );
+          }
+        },
+        cancelOnError: true,
+      );
 
       try {
         await completed.future.timeout(const Duration(seconds: 60));
         _checkCancelled();
         final audio = turn.completedAudio();
-        await _logEdge(logFile,
-            'Edge TTS: SYNTHESIS SUCCEEDED, endpoint=$label '
-            'audio_bytes=${audio.length} path=mobile');
+        await _logEdge(
+          logFile,
+          'Edge TTS: SYNTHESIS SUCCEEDED, endpoint=$label '
+          'audio_bytes=${audio.length} path=mobile',
+        );
         return audio;
       } finally {
         await subscription.cancel();
@@ -299,7 +339,9 @@ class EdgeTtsBridge {
     // Do not log an exception's full URL or any query-string credentials.
     final raw = error.toString();
     final scrubbed = raw.replaceAll(
-        RegExp(r'(wss?://|https?://)\S+', caseSensitive: false), '[url omitted]');
+      RegExp(r'(wss?://|https?://)\S+', caseSensitive: false),
+      '[url omitted]',
+    );
     return scrubbed.length > 240 ? scrubbed.substring(0, 240) : scrubbed;
   }
 
@@ -313,10 +355,24 @@ class EdgeTtsBridge {
     }
     final e = error.toString().toLowerCase();
     return const [
-      '403', '429', '500', '502', '503', '504', 'timeout',
-      'connection', 'socket', 'network', 'websocket', 'reset',
-      'broken pipe', 'turn.end', 'empty audio', 'incomplete audio',
-      'eof', 'audio vuoto',
+      '403',
+      '429',
+      '500',
+      '502',
+      '503',
+      '504',
+      'timeout',
+      'connection',
+      'socket',
+      'network',
+      'websocket',
+      'reset',
+      'broken pipe',
+      'turn.end',
+      'empty audio',
+      'incomplete audio',
+      'eof',
+      'audio vuoto',
     ].any(e.contains);
   }
 
@@ -324,7 +380,7 @@ class EdgeTtsBridge {
     const winEpoch = 11644473600;
     final ticks =
         (DateTime.now().toUtc().millisecondsSinceEpoch / 1000).truncate() +
-            winEpoch;
+        winEpoch;
     final roundedTicks = (ticks - (ticks % 300)) * 10000000;
     final strToHash = "$roundedTicks$_trustedClientToken";
     final bytes = utf8.encode(strToHash);
@@ -356,7 +412,7 @@ class EdgeTtsBridge {
       'Sep',
       'Oct',
       'Nov',
-      'Dec'
+      'Dec',
     ];
 
     final weekday = weekdays[now.weekday - 1];
@@ -372,8 +428,9 @@ class EdgeTtsBridge {
 
   String _mkssml(String text, String voice, String rateStr, String pitchStr) {
     final langParts = voice.split('-');
-    final lang =
-        langParts.length >= 2 ? "${langParts[0]}-${langParts[1]}" : "it-IT";
+    final lang = langParts.length >= 2
+        ? "${langParts[0]}-${langParts[1]}"
+        : "it-IT";
     final sanitizedText = _escapeXml(_sanitizeText(text));
     return "<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xml:lang='$lang'><voice name='$voice'><prosody pitch='$pitchStr' rate='$rateStr' volume='+0%'>$sanitizedText</prosody></voice></speak>";
   }
@@ -393,5 +450,4 @@ class EdgeTtsBridge {
         .replaceAll('"', '&quot;')
         .replaceAll("'", '&apos;');
   }
-
 }
