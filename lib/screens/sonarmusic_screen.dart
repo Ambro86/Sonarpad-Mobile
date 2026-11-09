@@ -398,13 +398,35 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
       final autoplay = await prefs.isSonarTubeAutoplayEnabled();
       if (!mounted) return;
       SonarMusicItem currentItem() => queue[current];
+      int? prefetchedIndex;
+      Future<PodcastEpisode?>? prefetchedEpisode;
+      Future<PodcastEpisode?> previewNext() async {
+        final target = current + 1;
+        if (target >= queue.length) return null;
+        if (prefetchedIndex != target || prefetchedEpisode == null) {
+          prefetchedIndex = target;
+          prefetchedEpisode = _episode(queue[target]);
+        }
+        try {
+          return await prefetchedEpisode!;
+        } catch (_) {
+          prefetchedIndex = null;
+          prefetchedEpisode = null;
+          rethrow;
+        }
+      }
       Future<PodcastEpisode?> navigate(int direction) async {
         final target = current + direction;
         if (target < 0 || target >= queue.length) return null;
         final next = queue[target];
-        final result = await _episode(next); // Never advance on a failed resolve.
+        final result = direction == 1 && prefetchedIndex == target && prefetchedEpisode != null
+            ? await prefetchedEpisode!
+            : await _episode(next); // Never advance on a failed resolve.
+        if (result == null) return null;
         await _library.remember(next.withResolvedTitle(result.title));
         current = target;
+        prefetchedIndex = null;
+        prefetchedEpisode = null;
         return result;
       }
       final extra = <PodcastPlayerExtraAction>[
@@ -457,6 +479,7 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
           startWithVideoThenRestorePreference: true,
           refreshEpisode: () => _episode(currentItem(), afterPlaybackFailure: true),
           navigateEpisode: queue.length > 1 ? navigate : null,
+          previewNextEpisode: queue.length > 1 ? previewNext : null,
           hasPreviousEpisode: () => current > 0,
           hasNextEpisode: () => current + 1 < queue.length,
           previousEpisodeLabel: l10n.sonarTubePreviousTrack,

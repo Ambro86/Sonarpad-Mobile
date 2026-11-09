@@ -1042,6 +1042,24 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
           ),
       ];
 
+      int? prefetchedIndex;
+      Future<PodcastEpisode?>? prefetchedEpisode;
+      Future<PodcastEpisode?> previewNextEpisode() async {
+        final target = navigationIndex + 1;
+        if (navigationIndex < 0 || target >= navigationItems.length) return null;
+        if (prefetchedIndex != target || prefetchedEpisode == null) {
+          prefetchedIndex = target;
+          prefetchedEpisode = _resolveEpisode(navigationItems[target]);
+        }
+        try {
+          return await prefetchedEpisode!;
+        } catch (_) {
+          prefetchedIndex = null;
+          prefetchedEpisode = null;
+          rethrow;
+        }
+      }
+
       Future<PodcastEpisode?> navigateEpisode(int direction) async {
         final targetIndex = navigationIndex + direction;
         if (navigationIndex < 0 ||
@@ -1050,9 +1068,14 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
           return null;
         }
         final targetItem = navigationItems[targetIndex];
-        final resolved = await _resolveEpisode(targetItem);
+        final resolved = direction == 1 && prefetchedIndex == targetIndex && prefetchedEpisode != null
+            ? await prefetchedEpisode!
+            : await _resolveEpisode(targetItem);
+        if (resolved == null) return null;
         await _historyService.addRecentVideo(targetItem.withResolvedTitle(resolved.title));
         navigationIndex = targetIndex;
+        prefetchedIndex = null;
+        prefetchedEpisode = null;
         return resolved;
       }
 
@@ -1072,6 +1095,7 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
               return _resolveEpisode(currentItem, afterPlaybackFailure: true);
             },
             navigateEpisode: navigationIndex >= 0 ? navigateEpisode : null,
+            previewNextEpisode: navigationIndex >= 0 ? previewNextEpisode : null,
             hasPreviousEpisode: navigationIndex >= 0
                 ? () => navigationIndex > 0
                 : null,

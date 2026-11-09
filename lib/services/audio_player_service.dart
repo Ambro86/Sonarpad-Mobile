@@ -136,6 +136,8 @@ class AudioPlayerService {
   StreamSubscription<Duration>? _positionSubscription;
   String? _currentMediaId;
   String? _currentTitle;
+  final Map<int, (String, String)> _queuedTrackMetadata = {};
+  StreamSubscription<int?>? _queuedTrackIndexSubscription;
   Duration? _currentDuration;
   final AppSettingsService _settings = AppSettingsService();
 
@@ -270,6 +272,51 @@ class AudioPlayerService {
   Stream<Duration> get positionStream => _player.positionStream;
 
   Stream<Duration?> get durationStream => _player.durationStream;
+  Stream<int?> get currentIndexStream => _player.currentIndexStream;
+  int? get currentIndex => _player.currentIndex;
+
+  /// Prepare one already-resolved successor on the native player. No change to
+  /// regular setUrl or other media readers. Native playback survives Dart
+  /// suspension at EOF on both iOS and Android.
+  Future<int?> queueNextUrl(String url, {
+    required String title,
+    required String mediaId,
+  }) async {
+    if (_disposed || _stopRequested) return null;
+    // The extra index listener belongs only to the opt-in native playlist.
+    // Keep ordinary audio readers and their lightweight test players intact.
+    _queuedTrackIndexSubscription ??= _player.currentIndexStream.listen((index) {
+      final metadata = index == null ? null : _queuedTrackMetadata[index];
+      if (metadata == null) return;
+      _currentMediaId = metadata.$1;
+      _currentTitle = metadata.$2;
+      _currentDuration = null;
+      _lastSavedBookmarkSecond = -1;
+    }, onError: (Object error, StackTrace stackTrace) {
+      AppLogger.log('Sonarpad audio: native queue index stream error=$error');
+    });
+    int? result;
+    await _withActivePlayer<void>(() async {
+      if (_disposed || _stopRequested ||
+          _player.processingState == ProcessingState.completed) {
+        return;
+      }
+      final index = _player.audioSources.length;
+      if (index == 0 || _player.currentIndex != index - 1) {
+        return;
+      }
+      _queuedTrackMetadata[index] = (mediaId, title);
+      try {
+        await _player.addAudioSource(AudioSource.uri(Uri.parse(url),
+          tag: MediaItem(id: mediaId, album: 'Sonarpad', title: title)));
+        result = index;
+      } catch (_) {
+        _queuedTrackMetadata.remove(index);
+        rethrow;
+      }
+    });
+    return result;
+  }
 
   Stream<void> get completionStream => _player.playerStateStream
       .where((state) => state.processingState == ProcessingState.completed)
@@ -426,6 +473,7 @@ class AudioPlayerService {
     _stopRequested = false;
     _currentMediaId = mediaId;
     _currentTitle = itemTitle;
+    _queuedTrackMetadata.clear();
     final stopwatch = Stopwatch()..start();
     AppLogger.log(
       'Sonarpad audio: setUrl start url=$url, mediaId=$mediaId, '
@@ -1004,6 +1052,7 @@ class AudioPlayerService {
     _stopRequested = true;
     AppLogger.log('Sonarpad audio: stop requested');
     await saveCurrentBookmark();
+    _queuedTrackMetadata.clear();
     await _voicePreviewControls;
     await _player.stop();
     await _player.setLoopMode(LoopMode.off);
@@ -1016,6 +1065,7 @@ class AudioPlayerService {
     _disposed = true;
     if (identical(_activeService, this)) _activeService = null;
     _cancelVoicePreview();
+    unawaited(_queuedTrackIndexSubscription?.cancel() ?? Future<void>.value());
     final completer = Completer<void>();
     _pendingDispose = completer.future;
 
@@ -1054,6 +1104,7 @@ class AudioPlayerService {
     _disposed = true;
     if (identical(_activeService, this)) _activeService = null;
     _cancelVoicePreview();
+    unawaited(_queuedTrackIndexSubscription?.cancel() ?? Future<void>.value());
     final completer = Completer<void>();
     _pendingDispose = completer.future;
 

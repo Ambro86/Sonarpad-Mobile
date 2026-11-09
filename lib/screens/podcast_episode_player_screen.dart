@@ -55,6 +55,7 @@ class PodcastEpisodePlayerScreen extends StatefulWidget {
     this.startWithVideoThenRestorePreference = false,
     this.refreshEpisode,
     this.navigateEpisode,
+    this.previewNextEpisode,
     this.hasPreviousEpisode,
     this.hasNextEpisode,
     this.previousEpisodeLabel,
@@ -84,6 +85,7 @@ class PodcastEpisodePlayerScreen extends StatefulWidget {
   /// video was opened from a channel or playlist. The callback resolves the
   /// adjacent item on demand and returns fresh playable URLs.
   final Future<PodcastEpisode?> Function(int direction)? navigateEpisode;
+  final Future<PodcastEpisode?> Function()? previewNextEpisode;
   final bool Function()? hasPreviousEpisode;
   final bool Function()? hasNextEpisode;
   final String? previousEpisodeLabel;
@@ -109,6 +111,7 @@ class _PodcastEpisodePlayerScreenState
   final _podcastService = PodcastService();
   StreamSubscription<dynamic>? _mediaEventsSubscription;
   StreamSubscription<void>? _audioCompletionSubscription;
+  StreamSubscription<int?>? _nativeQueueIndexSubscription;
   StreamSubscription<bool>? _externalAudioPlayingSubscription;
   int _androidPauseGeneration = 0;
 
@@ -163,6 +166,11 @@ class _PodcastEpisodePlayerScreenState
   bool _switchingVideoMode = false;
   bool _choosingAudioTrack = false;
   String? _autoAdvanceHandledMediaId;
+  PodcastEpisode? _nativeQueuedNext;
+  int? _nativeQueuedNextIndex;
+  bool _nativeQueuePreparing = false;
+  bool _nativeQueueAdvancing = false;
+  int _nativeQueueRevision = 0;
 
   TemporaryStreamRecovery _temporaryRecovery = TemporaryStreamRecovery();
   bool _recoveringTemporaryStream = false;
@@ -553,6 +561,11 @@ class _PodcastEpisodePlayerScreenState
       if (mounted) {
         setState(() => _loading = false);
         unawaited(_syncVideoBackground());
+        if (_lastLifecycleState == AppLifecycleState.paused ||
+            _lastLifecycleState == AppLifecycleState.inactive ||
+            _lastLifecycleState == AppLifecycleState.hidden) {
+          unawaited(_prepareNativeQueuedNext());
+        }
         AppLogger.log(
           'PodcastPlayer: _play complete. loading=false, loaded=$_loaded, '
           'isVideo=${_videoController != null}, $_logSubject',
@@ -774,6 +787,7 @@ class _PodcastEpisodePlayerScreenState
   }
 
   Future<bool> _refreshEpisodeAfterPlaybackFailure(Object error) async {
+    _invalidateNativeQueuedNext();
     final refresh = widget.refreshEpisode;
     if (refresh == null || _refreshingEpisode) return false;
     _refreshingEpisode = true;
@@ -825,9 +839,88 @@ class _PodcastEpisodePlayerScreenState
       widget.nextEpisodeLabel != null &&
       _hasNavigableNext;
 
+  void _invalidateNativeQueuedNext() {
+    ++_nativeQueueRevision;
+    _nativeQueuedNext = null;
+    _nativeQueuedNextIndex = null;
+  }
+
+  /// Screen-locked audio-only SonarTube/Music: queue before the current media
+  /// finishes, allowing the native audio engine to continue without Dart.
+  Future<void> _prepareNativeQueuedNext() async {
+    final preview = widget.previewNextEpisode;
+    if (!mounted || !widget.autoNavigateNext || preview == null ||
+        !_loaded || _loading || _isVideoEnabled || _videoController != null ||
+        _casting || _castRouteOpen || _nativeQueuePreparing ||
+        _nativeQueueAdvancing || _nativeQueuedNext != null || !_hasNavigableNext) {
+      return;
+    }
+    final revision = _nativeQueueRevision;
+    final previousId = _getStableId();
+    _nativeQueuePreparing = true;
+    try {
+      final next = await preview();
+      if (!mounted || revision != _nativeQueueRevision ||
+          previousId != _getStableId() || _isVideoEnabled ||
+          _videoController != null || !_hasNavigableNext || next == null) {
+        return;
+      }
+      final uri = Uri.parse(next.audioUrl);
+      final id = next.id ?? 'media:${uri.scheme}://${uri.host}${uri.path}';
+      final index = await _audio.queueNextUrl(next.audioUrl,
+        title: AppLocalizations.of(context).nowPlayingTitle(next.title),
+        mediaId: id);
+      if (!mounted || revision != _nativeQueueRevision || index == null) return;
+      _nativeQueuedNext = next;
+      _nativeQueuedNextIndex = index;
+      AppLogger.log('PodcastPlayer: lock-screen native next queued index=$index id=$id');
+      if (_audio.currentIndex == index) {
+        unawaited(_handleNativeQueuedAdvance(index));
+      }
+    } catch (error) {
+      AppLogger.log('PodcastPlayer: native next not ready, original autoplay retained: $error');
+    } finally {
+      _nativeQueuePreparing = false;
+    }
+  }
+
+  Future<void> _handleNativeQueuedAdvance(int index) async {
+    final next = _nativeQueuedNext;
+    if (!mounted || next == null || index != _nativeQueuedNextIndex ||
+        _nativeQueueAdvancing) {
+      return;
+    }
+    _nativeQueueAdvancing = true;
+    _invalidateNativeQueuedNext();
+    final previousId = _getStableId();
+    try {
+      // The native decoder is already playing; do not stop or reload it.
+      final committed = await widget.navigateEpisode?.call(1);
+      if (!mounted || committed == null) return;
+      setState(() {
+        _refreshedEpisode = next;
+        _autoAdvanceHandledMediaId = null;
+        _detectedChapters = null;
+        _temporaryRecovery = TemporaryStreamRecovery();
+        _temporaryHlsTimeoutRetried = false;
+      });
+      unawaited(_settings.saveMediaBookmark(previousId, 0));
+      unawaited(_detectChapters());
+      AppLogger.log('PodcastPlayer: native queue advanced index=$index');
+    } catch (error) {
+      AppLogger.log('PodcastPlayer: native queue metadata sync error=$error');
+    } finally {
+      _nativeQueueAdvancing = false;
+      if (mounted && _audio.currentIndex == index) {
+        unawaited(_prepareNativeQueuedNext());
+      }
+    }
+  }
+
   Future<void> _handlePlaybackCompleted() async {
     if (_castRouteOpen) return;
-    if (!widget.autoNavigateNext || !mounted || _changingPlaybackSpeed) {
+    if (!widget.autoNavigateNext || !mounted || _changingPlaybackSpeed ||
+        _nativeQueueAdvancing) {
       return;
     }
     final mediaId = _getStableId();
@@ -884,6 +977,7 @@ class _PodcastEpisodePlayerScreenState
     if (direction < 0 && !_hasNavigablePrevious) return;
     if (direction > 0 && !_hasNavigableNext) return;
     final pauseGeneration = _androidPauseGeneration;
+    _invalidateNativeQueuedNext();
 
     AppLogger.log(
       'PodcastPlayer: adjacent navigation start direction=$direction, $_logSubject',
@@ -1113,6 +1207,7 @@ class _PodcastEpisodePlayerScreenState
   }
 
   Future<void> _applyVideoSetting(bool enable) async {
+    _invalidateNativeQueuedNext();
     final pauseGeneration = _androidPauseGeneration;
     final previousVideoController = _videoController;
     final wasPlaying = previousVideoController?.value.isPlaying ??
@@ -1208,6 +1303,11 @@ class _PodcastEpisodePlayerScreenState
         unawaited(_syncExternalVideoToAudio(playing));
       });
     }
+    _nativeQueueIndexSubscription = _audio.currentIndexStream.listen((index) {
+      if (index != null && index == _nativeQueuedNextIndex) {
+        unawaited(_handleNativeQueuedAdvance(index));
+      }
+    });
     _audioCompletionSubscription = _audio.completionStream.listen((_) {
       if (_isTemporaryYoutubeStream && _accessibleAudioDuration > const Duration(seconds: 5) &&
           _audio.position < const Duration(seconds: 1)) {
@@ -1753,6 +1853,10 @@ class _PodcastEpisodePlayerScreenState
       _audio.saveCurrentBookmark();
     }
     _lastLifecycleState = state;
+    if (state == AppLifecycleState.inactive || state == AppLifecycleState.paused ||
+        state == AppLifecycleState.hidden) {
+      unawaited(_prepareNativeQueuedNext());
+    }
     AppLogger.log(
       'PodcastPlayer: lifecycle state=$state mounted=$mounted '
       'loaded=$_loaded loading=$_loading video=${_videoController != null}, '
@@ -1817,6 +1921,7 @@ class _PodcastEpisodePlayerScreenState
     _restoreSystemOrientation();
     unawaited(_mediaEventsSubscription?.cancel() ?? Future<void>.value());
     unawaited(_audioCompletionSubscription?.cancel() ?? Future<void>.value());
+    unawaited(_nativeQueueIndexSubscription?.cancel() ?? Future<void>.value());
     unawaited(_saveVideoBookmark());
     _videoController?.dispose();
     unawaited(_audio.stopAndDispose());

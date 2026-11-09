@@ -13,7 +13,7 @@ void main() {
     );
     expect(source, contains('var navigationIndex = navigationItems.indexWhere('));
     expect(source, contains('final targetItem = navigationItems[targetIndex];'));
-    expect(source, contains('final resolved = await _resolveEpisode(targetItem);'));
+    expect(source, contains('await _resolveEpisode(targetItem);'));
     expect(source, contains('navigationIndex = targetIndex;'));
   });
 
