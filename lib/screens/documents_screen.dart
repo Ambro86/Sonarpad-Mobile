@@ -128,6 +128,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
       id: 'library_search_field', title: l10n.search, kind: 'textField',
       value: _searchController.text, textInputAction: 'search',
       textRevision: _searchTextRevision,
+      stabilizeNativeTextFieldFocusOnBegin: true,
       onValueChanged: (value) { _searchController.text = value?.toString() ?? ''; },
       onSubmitted: (_) => _search(),
       flutterChild: TextField(
@@ -140,6 +141,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     ),
     AccessibleListRow(
       id: 'library_search', title: l10n.search, kind: 'button',
+      finishEditingOnActivate: true,
       onActivate: _search,
       flutterChild: FilledButton(onPressed: _search, child: Text(l10n.search)),
     ),
@@ -1665,15 +1667,24 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
 
   Widget _buildSharedAccessibleDocumentsList(
     List<DocumentItem> docs,
-    AppLocalizations l10n,
-  ) {
+    AppLocalizations l10n, {
+    String? statusMessage,
+  }) {
     String formattedDate(DateTime dt) =>
         '${dt.day.toString().padLeft(2, '0')}/'
         '${dt.month.toString().padLeft(2, '0')}/${dt.year}';
 
     final rows = <AccessibleListRow>[
       if (!_isSearchResults) ..._searchRows(l10n),
-      if (docs.isEmpty) AccessibleListRow(
+      if (statusMessage != null)
+        AccessibleListRow(
+          id: 'documents_status',
+          kind: 'label',
+          accessibilityButtonTrait: false,
+          title: statusMessage,
+          flutterChild: Text(statusMessage),
+        )
+      else if (docs.isEmpty) AccessibleListRow(
         id: 'documents_empty', kind: 'label',
         title: _isSearchResults ? l10n.noDocumentSearchResults(widget.searchQuery!) : l10n.noDocumentsInLibrary,
         flutterChild: _isSearchResults
@@ -1865,12 +1876,16 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
             Padding(padding: const EdgeInsets.all(16), child: Column(
               children: _searchRows(l10n).map((row) => row.flutterChild!).toList(),
             )),
-          Expanded(child: _loading
-            ? const Center(child: CircularProgressIndicator())
-            : _errorMessage != null
-                ? _ErrorState(message: _errorMessage!)
-                : useSharedAccessibleViewModel
-                    ? _buildSharedAccessibleDocumentsList(docs, l10n)
+          Expanded(child: useSharedAccessibleViewModel
+            ? _buildSharedAccessibleDocumentsList(
+                _loading || _errorMessage != null ? <DocumentItem>[] : docs,
+                l10n,
+                statusMessage: _loading ? l10n.loading : _errorMessage,
+              )
+            : _loading
+                ? const Center(child: CircularProgressIndicator())
+                : _errorMessage != null
+                    ? _ErrorState(message: _errorMessage!)
                     : docs.isEmpty
                         ? (_isSearchResults ? Center(child: Text(l10n.noDocumentSearchResults(widget.searchQuery!))) : const _EmptyState())
                         : ListView.separated(

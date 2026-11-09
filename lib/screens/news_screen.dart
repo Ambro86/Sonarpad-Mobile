@@ -659,6 +659,7 @@ class _CommunityNewsSourcesScreenState
       id: 'library_search_field', title: l10n.search, kind: 'textField',
       value: _searchController.text, textInputAction: 'search',
       textRevision: _searchTextRevision,
+      stabilizeNativeTextFieldFocusOnBegin: true,
       onValueChanged: (value) { _searchController.text = value?.toString() ?? ''; },
       onSubmitted: (_) => _search(),
       flutterChild: TextField(
@@ -671,6 +672,7 @@ class _CommunityNewsSourcesScreenState
     ),
     AccessibleListRow(
       id: 'library_search', title: l10n.search, kind: 'button',
+      finishEditingOnActivate: true,
       onActivate: _search,
       flutterChild: FilledButton(onPressed: _search, child: Text(l10n.search)),
     ),
@@ -732,6 +734,21 @@ class _CommunityNewsSourcesScreenState
     }
   }
 
+  Widget _accessibleSearchStatus(AppLocalizations l10n, String message) {
+    return UniversalAccessibleList(
+      sections: [AccessibleListSection(rows: [
+        if (!_isSearchResults) ..._searchRows(l10n),
+        AccessibleListRow(
+          id: 'community_status',
+          title: message,
+          kind: 'label',
+          accessibilityButtonTrait: false,
+          flutterChild: Text(message),
+        ),
+      ])],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -756,15 +773,18 @@ class _CommunityNewsSourcesScreenState
         future: _future,
         builder: (context, snapshot) {
           if (snapshot.connectionState != ConnectionState.done) {
-            return const Center(child: CircularProgressIndicator());
+            return useSharedAccessibleViewModel
+                ? _accessibleSearchStatus(l10n, l10n.loading)
+                : const Center(child: CircularProgressIndicator());
           }
           if (snapshot.hasError) {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Text(l10n.newsCommunitySourcesError(l10n.technicalErrorGeneric)),
-              ),
-            );
+            final message = l10n.newsCommunitySourcesError(l10n.technicalErrorGeneric);
+            return useSharedAccessibleViewModel
+                ? _accessibleSearchStatus(l10n, message)
+                : Center(child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Text(message),
+                  ));
           }
           final query = widget.searchQuery?.trim().toLowerCase();
           final sources = (snapshot.data ?? const <NewsRssSource>[])
