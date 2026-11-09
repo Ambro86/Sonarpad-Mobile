@@ -125,7 +125,16 @@ void main() {
     for (var i = 0; i < 50; i++) {
       await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 20)));
       await tester.pump(const Duration(milliseconds: 30));
-      if (tester.widgetList<DocumentsScreen>(find.byType(DocumentsScreen)).any((s) => s.folderId != null) && find.byType(CircularProgressIndicator).evaluate().isEmpty) break;
+      // The accessible list stays mounted during loading: await ZIP contents.
+      final folderOpened = tester.widgetList<DocumentsScreen>(
+        find.byType(DocumentsScreen),
+      ).any((screen) => screen.folderId != null);
+      final notesLoaded = tester.widgetList<UniversalAccessibleList>(
+        find.byType(UniversalAccessibleList),
+      ).any((view) => view.sections
+          .expand((section) => section.rows)
+          .any((row) => row.title.contains('notes')));
+      if (folderOpened && notesLoaded) break;
     }
     await tester.pumpAndSettle();
     expect(find.byType(DocumentReaderScreen), findsNothing);
