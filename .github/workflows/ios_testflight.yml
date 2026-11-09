@@ -233,7 +233,19 @@ jobs:
 
       - name: Install CocoaPods dependencies
         run: |
-          flutter build ios --config-only || true
+          # GitHub Releases can return transient HTTP errors for FFmpeg SwiftPM XCFrameworks.
+          # Retry only network failures, and never silently ignore configuration errors.
+          for attempt in 1 2 3 4; do
+            if flutter build ios --config-only 2>&1 | tee "$RUNNER_TEMP/flutter-config-only.log"; then
+              break
+            fi
+            if [ "$attempt" -eq 4 ] || ! grep -Eq 'badResponseStatusCode\((429|500|502|503|504)\)|HTTP/[0-9.]+ (429|500|502|503|504)' "$RUNNER_TEMP/flutter-config-only.log"; then
+              echo "Flutter iOS configuration failed or retries exhausted."
+              exit 1
+            fi
+            echo "Transient SwiftPM failure; retrying configuration ($((attempt + 1))/4)"
+            sleep $((attempt * 20))
+          done
           if [ -f "ios/Podfile" ]; then
             sed -i '' -e 's/flutter_additional_ios_build_settings(target)/flutter_additional_ios_build_settings(target)\n      target.build_configurations.each do |config|\n        config.build_settings["GCC_PREPROCESSOR_DEFINITIONS"] ||= ["$(inherited)", "PERMISSION_CAMERA=1"]\n      end/g' ios/Podfile
             cd ios
@@ -280,11 +292,22 @@ jobs:
 
       - name: Build signed IPA
         run: |
-          flutter build ipa \
-            --release \
-            --build-number=${{ github.run_number }} \
-            --dart-define=SONARPAD_ROUTE_CLIENT_TOKEN=${{ secrets.SONARPAD_ROUTE_CLIENT_TOKEN }} \
-            --export-options-plist=ios/ExportOptions.plist
+          for attempt in 1 2 3 4; do
+            if flutter build ipa \
+              --release \
+              --build-number=${{ github.run_number }} \
+              --dart-define=SONARPAD_ROUTE_CLIENT_TOKEN=${{ secrets.SONARPAD_ROUTE_CLIENT_TOKEN }} \
+              --export-options-plist=ios/ExportOptions.plist \
+              2>&1 | tee "$RUNNER_TEMP/flutter-ipa-build.log"; then
+              exit 0
+            fi
+            if [ "$attempt" -eq 4 ] || ! grep -Eq 'badResponseStatusCode\((429|500|502|503|504)\)|HTTP/[0-9.]+ (429|500|502|503|504)' "$RUNNER_TEMP/flutter-ipa-build.log"; then
+              echo "Signed IPA build failed or retries exhausted."
+              exit 1
+            fi
+            echo "Transient SwiftPM failure; retrying signed IPA build ($((attempt + 1))/4)"
+            sleep $((attempt * 20))
+          done
 
       - name: Verify ONNX Runtime MinimumOSVersion in IPA
         run: |
