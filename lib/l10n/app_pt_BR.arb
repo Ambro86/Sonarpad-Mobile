@@ -1710,6 +1710,8 @@
     }
   },
   "newsCommunitySourcesTitle": "Fontes da comunidade",
+  "searchDocuments": "Pesquisar documentos",
+  "searchSonarpadCommunitySources": "Pesquisar fontes de notícias da comunidade Sonarpad",
   "@newsCommunitySourcesTitle": {
     "description": "Localized text for newsCommunitySourcesTitle."
   },

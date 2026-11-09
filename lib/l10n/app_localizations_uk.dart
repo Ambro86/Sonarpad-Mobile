@@ -3351,6 +3351,13 @@ class AppLocalizationsUk extends AppLocalizations {
   String get newsCommunitySourcesTitle => 'Джерела спільноти';
 
   @override
+  String get searchDocuments => 'Пошук документів';
+
+  @override
+  String get searchSonarpadCommunitySources =>
+      'Пошук новинних джерел спільноти Sonarpad';
+
+  @override
   String get newsCommunitySourcesEmpty =>
       'Для цієї мови немає джерел спільноти.';
 

@@ -1707,6 +1707,8 @@
     }
   },
   "newsCommunitySourcesTitle": "Komunitní zdroje",
+  "searchDocuments": "Hledat dokumenty",
+  "searchSonarpadCommunitySources": "Hledat zpravodajské zdroje komunity Sonarpad",
   "@newsCommunitySourcesTitle": {
     "description": "Localized text for newsCommunitySourcesTitle."
   },

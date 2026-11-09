@@ -1704,6 +1704,8 @@
     }
   },
   "newsCommunitySourcesTitle": "社区新闻来源",
+  "searchDocuments": "搜索文档",
+  "searchSonarpadCommunitySources": "搜索 Sonarpad 社区新闻来源",
   "@newsCommunitySourcesTitle": {
     "description": "Localized text for newsCommunitySourcesTitle."
   },

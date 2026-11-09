@@ -56,6 +56,17 @@ void main() {
     });
     await tester.pumpWidget(app(const DocumentsScreen()));
     await tester.pumpAndSettle();
+    expect(rows(tester).firstWhere((r) => r.id == 'library_search_field').title,
+        'Search documents');
+    expect(find.byTooltip('Clear search'), findsNothing);
+    await tester.enterText(find.byKey(const ValueKey('library_search_field')), 'prova');
+    await tester.pump();
+    expect(find.byTooltip('Clear search'), findsOneWidget);
+    await tester.tap(find.byTooltip('Clear search'));
+    await tester.pumpAndSettle();
+    expect(find.byTooltip('Clear search'), findsNothing);
+    expect(tester.widget<TextField>(
+      find.byKey(const ValueKey('library_search_field'))).controller!.text, '');
     final original = rows(tester).firstWhere((r) => r.id == 'Alpine');
     await search(tester, '  AL  ');
     expectCleanResults(tester);
@@ -73,7 +84,10 @@ void main() {
     expect(stored.map((d) => d.id), ['Alpha', 'Alpine', 'Hidden']);
     await tester.tap(find.byType(SonarpadBackButton));
     await tester.pumpAndSettle();
-    await rows(tester).firstWhere((r) => r.id == 'library_clear_search').onActivate!();
+    expect(find.byTooltip('Clear search'), findsOneWidget);
+    await tester.tap(find.byTooltip('Clear search'));
+    await tester.pumpAndSettle();
+    expect(find.byTooltip('Clear search'), findsNothing);
     await tester.pumpAndSettle();
     expect(rows(tester).firstWhere((r) => r.id == 'library_search_field').value, '');
     await search(tester, 'missing');
@@ -91,12 +105,26 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.byTooltip('Community news sources'));
       await tester.pumpAndSettle();
+      expect(rows(tester).firstWhere((r) => r.id == 'library_search_field').title,
+          'Search Sonarpad community news sources');
+      expect(find.byTooltip('Clear search'), findsNothing);
+      await tester.enterText(find.byKey(const ValueKey('library_search_field')), 'prova');
+      await tester.pump();
+      expect(find.byTooltip('Clear search'), findsOneWidget);
+      await tester.tap(find.byTooltip('Clear search'));
+      await tester.pumpAndSettle();
+      expect(find.byTooltip('Clear search'), findsNothing);
+      expect(tester.widget<TextField>(
+        find.byKey(const ValueKey('library_search_field'))).controller!.text, '');
       await search(tester, ' ALPHA ');
       expectCleanResults(tester);
       expect(rows(tester).single.title, 'Alpha Gazette');
       await tester.tap(find.byType(SonarpadBackButton));
       await tester.pumpAndSettle();
-      await rows(tester).firstWhere((r) => r.id == 'library_clear_search').onActivate!();
+      expect(find.byTooltip('Clear search'), findsOneWidget);
+    await tester.tap(find.byTooltip('Clear search'));
+    await tester.pumpAndSettle();
+    expect(find.byTooltip('Clear search'), findsNothing);
       await tester.pumpAndSettle();
       expect(rows(tester).firstWhere((r) => r.id == 'library_search_field').value, '');
       await search(tester, 'beta.test');

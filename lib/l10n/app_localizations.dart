@@ -6083,6 +6083,18 @@ abstract class AppLocalizations {
   /// **'Testate della comunità'**
   String get newsCommunitySourcesTitle;
 
+  /// No description provided for @searchDocuments.
+  ///
+  /// In it, this message translates to:
+  /// **'Cerca documenti'**
+  String get searchDocuments;
+
+  /// No description provided for @searchSonarpadCommunitySources.
+  ///
+  /// In it, this message translates to:
+  /// **'Cerca testate della comunità di Sonarpad'**
+  String get searchSonarpadCommunitySources;
+
   /// Localized text for newsCommunitySourcesEmpty.
   ///
   /// In it, this message translates to:

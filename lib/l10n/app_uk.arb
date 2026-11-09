@@ -3906,6 +3906,8 @@
     }
   },
   "newsCommunitySourcesTitle": "Джерела спільноти",
+  "searchDocuments": "Пошук документів",
+  "searchSonarpadCommunitySources": "Пошук новинних джерел спільноти Sonarpad",
   "@newsCommunitySourcesTitle": {
     "description": "Localized text for newsCommunitySourcesTitle."
   },

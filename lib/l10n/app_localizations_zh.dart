@@ -3248,6 +3248,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get newsCommunitySourcesTitle => '社区新闻来源';
 
   @override
+  String get searchDocuments => '搜索文档';
+
+  @override
+  String get searchSonarpadCommunitySources => '搜索 Sonarpad 社区新闻来源';
+
+  @override
   String get newsCommunitySourcesEmpty => '此语言暂无社区新闻来源。';
 
   @override
@@ -9042,6 +9048,12 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get newsCommunitySourcesTitle => '社区新闻来源';
+
+  @override
+  String get searchDocuments => '搜索文档';
+
+  @override
+  String get searchSonarpadCommunitySources => '搜索 Sonarpad 社区新闻来源';
 
   @override
   String get newsCommunitySourcesEmpty => '此语言暂无社区新闻来源。';

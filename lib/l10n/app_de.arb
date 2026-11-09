@@ -3906,6 +3906,8 @@
     }
   },
   "newsCommunitySourcesTitle": "Nachrichtenquellen der Community",
+  "searchDocuments": "Dokumente suchen",
+  "searchSonarpadCommunitySources": "Nach Nachrichtenquellen der Sonarpad-Community suchen",
   "@newsCommunitySourcesTitle": {
     "description": "Localized text for newsCommunitySourcesTitle."
   },

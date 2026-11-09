@@ -3366,6 +3366,13 @@ class AppLocalizationsPt extends AppLocalizations {
   String get newsCommunitySourcesTitle => 'Fontes da comunidade';
 
   @override
+  String get searchDocuments => 'Pesquisar documentos';
+
+  @override
+  String get searchSonarpadCommunitySources =>
+      'Pesquisar fontes de notícias da comunidade Sonarpad';
+
+  @override
   String get newsCommunitySourcesEmpty =>
       'Não há fontes da comunidade disponíveis para este idioma.';
 
@@ -9418,6 +9425,13 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get newsCommunitySourcesTitle => 'Fontes da comunidade';
+
+  @override
+  String get searchDocuments => 'Pesquisar documentos';
+
+  @override
+  String get searchSonarpadCommunitySources =>
+      'Pesquisar fontes de notícias da comunidade Sonarpad';
 
   @override
   String get newsCommunitySourcesEmpty =>

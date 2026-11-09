@@ -3379,6 +3379,13 @@ class AppLocalizationsFr extends AppLocalizations {
   String get newsCommunitySourcesTitle => 'Sources de la communauté';
 
   @override
+  String get searchDocuments => 'Rechercher des documents';
+
+  @override
+  String get searchSonarpadCommunitySources =>
+      'Rechercher des sources d’actualités de la communauté Sonarpad';
+
+  @override
   String get newsCommunitySourcesEmpty =>
       'Aucune source de la communauté disponible pour cette langue.';
 

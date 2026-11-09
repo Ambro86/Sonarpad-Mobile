@@ -4,8 +4,8 @@ import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:path/path.dart' as p;
 import 'package:flutter/semantics.dart';
+import 'package:path/path.dart' as p;
 import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -631,6 +631,10 @@ class _CommunityNewsSourcesScreenState
     extends State<_CommunityNewsSourcesScreen> {
   final _service = NewsService();
   final _searchController = TextEditingController();
+  final _searchFocusNode = FocusNode();
+  final GlobalKey _searchSemanticsFocusKey = GlobalKey(
+    debugLabel: 'library_search_semantics_target',
+  );
   int _searchTextRevision = 0;
   bool get _isSearchResults => widget.searchQuery != null;
   late Future<List<NewsRssSource>> _future;
@@ -656,19 +660,13 @@ class _CommunityNewsSourcesScreenState
 
   List<AccessibleListRow> _searchRows(AppLocalizations l10n) => [
     AccessibleListRow(
-      id: 'library_search_field', title: l10n.search, kind: 'textField',
+      id: 'library_search_field', title: l10n.searchSonarpadCommunitySources, kind: 'textField',
       value: _searchController.text, textInputAction: 'search',
       textRevision: _searchTextRevision,
       stabilizeNativeTextFieldFocusOnBegin: true,
       onValueChanged: (value) { _searchController.text = value?.toString() ?? ''; },
       onSubmitted: (_) => _search(),
-      flutterChild: TextField(
-        key: const ValueKey('library_search_field'),
-        controller: _searchController,
-        decoration: InputDecoration(labelText: l10n.search),
-        textInputAction: TextInputAction.search,
-        onSubmitted: (_) => _search(),
-      ),
+      flutterChild: _buildSearchField(l10n),
     ),
     AccessibleListRow(
       id: 'library_search', title: l10n.search, kind: 'button',
@@ -676,23 +674,71 @@ class _CommunityNewsSourcesScreenState
       onActivate: _search,
       flutterChild: FilledButton(onPressed: _search, child: Text(l10n.search)),
     ),
-    AccessibleListRow(
-      id: 'library_clear_search', title: l10n.clearSearch, kind: 'button',
-      onActivate: _clearSearch,
-      flutterChild: TextButton(onPressed: _clearSearch, child: Text(l10n.clearSearch)),
-    ),
   ];
 
+  Widget _buildSearchField(AppLocalizations l10n) => Semantics(
+    container: true,
+    explicitChildNodes: true,
+    child: ValueListenableBuilder<TextEditingValue>(
+      valueListenable: _searchController,
+      builder: (context, value, _) => Row(
+        children: [
+          Expanded(
+            child: Semantics(
+              sortKey: const OrdinalSortKey(1),
+              child: KeyedSubtree(
+                key: _searchSemanticsFocusKey,
+                child: TextField(
+                  key: const ValueKey('library_search_field'),
+                  controller: _searchController,
+                  focusNode: _searchFocusNode,
+                  decoration: InputDecoration(
+                    labelText: l10n.searchSonarpadCommunitySources,
+                    prefixIcon: const Icon(Icons.search),
+                  ),
+                  textInputAction: TextInputAction.search,
+                  onSubmitted: (_) => _search(),
+                ),
+              ),
+            ),
+          ),
+          if (value.text.isNotEmpty) ...[
+            const SizedBox(width: 8),
+            Semantics(
+              sortKey: const OrdinalSortKey(2),
+              child: IconButton(
+                tooltip: l10n.clearSearch,
+                icon: const Icon(Icons.clear),
+                onPressed: _clearSearch,
+              ),
+            ),
+          ],
+        ],
+      ),
+    ),
+  );
+
   void _clearSearch() {
+    final previousValue = _searchController.text;
+    if (previousValue.isEmpty) return;
     setState(() {
       _searchController.clear();
       _searchTextRevision++;
+    });
+    announceClearedEditableText(context, previousValue);
+    _searchFocusNode.requestFocus();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _searchSemanticsFocusKey.currentContext
+          ?.findRenderObject()
+          ?.sendSemanticsEvent(const FocusSemanticEvent());
     });
   }
 
   @override
   void dispose() {
     _searchController.dispose();
+    _searchFocusNode.dispose();
     super.dispose();
   }
 

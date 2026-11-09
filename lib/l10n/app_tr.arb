@@ -1704,6 +1704,8 @@
     }
   },
   "newsCommunitySourcesTitle": "Topluluğun haber kaynakları",
+  "searchDocuments": "Belge ara",
+  "searchSonarpadCommunitySources": "Sonarpad topluluğunun haber kaynaklarını ara",
   "@newsCommunitySourcesTitle": {
     "description": "Localized text for newsCommunitySourcesTitle."
   },

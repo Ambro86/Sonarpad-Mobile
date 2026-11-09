@@ -3352,6 +3352,13 @@ class AppLocalizationsCs extends AppLocalizations {
   String get newsCommunitySourcesTitle => 'Komunitní zdroje';
 
   @override
+  String get searchDocuments => 'Hledat dokumenty';
+
+  @override
+  String get searchSonarpadCommunitySources =>
+      'Hledat zpravodajské zdroje komunity Sonarpad';
+
+  @override
   String get newsCommunitySourcesEmpty =>
       'Pro tento jazyk nejsou dostupné žádné komunitní zdroje.';
 

@@ -3365,6 +3365,13 @@ class AppLocalizationsRo extends AppLocalizations {
   String get newsCommunitySourcesTitle => 'Surse de știri ale comunității';
 
   @override
+  String get searchDocuments => 'Caută documente';
+
+  @override
+  String get searchSonarpadCommunitySources =>
+      'Caută surse de știri din comunitatea Sonarpad';
+
+  @override
   String get newsCommunitySourcesEmpty =>
       'Nu există surse de știri ale comunității pentru această limbă.';
 

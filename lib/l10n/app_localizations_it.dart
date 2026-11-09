@@ -3363,6 +3363,13 @@ class AppLocalizationsIt extends AppLocalizations {
   String get newsCommunitySourcesTitle => 'Testate della comunità';
 
   @override
+  String get searchDocuments => 'Cerca documenti';
+
+  @override
+  String get searchSonarpadCommunitySources =>
+      'Cerca testate della comunità di Sonarpad';
+
+  @override
   String get newsCommunitySourcesEmpty =>
       'Nessuna testata della comunità disponibile per questa lingua.';
 

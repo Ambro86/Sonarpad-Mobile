@@ -3363,6 +3363,13 @@ class AppLocalizationsTr extends AppLocalizations {
   String get newsCommunitySourcesTitle => 'Topluluğun haber kaynakları';
 
   @override
+  String get searchDocuments => 'Belge ara';
+
+  @override
+  String get searchSonarpadCommunitySources =>
+      'Sonarpad topluluğunun haber kaynaklarını ara';
+
+  @override
   String get newsCommunitySourcesEmpty =>
       'Bu dilde topluluğa ait haber kaynağı yok.';
 
