@@ -77,7 +77,7 @@ class _OrariAperturaResultsScreenState
                                 subtitle: [
                                   if (_results[i].address.isNotEmpty) _results[i].address,
                                   if (_results[i].status.isNotEmpty) _results[i].status,
-                                ].join(' - '),
+                                ].join('\n'),
                               ),
                           ],
                         ),

@@ -563,7 +563,7 @@ class _ItaliaOnlineResultsScreenState extends State<ItaliaOnlineResultsScreen> {
                     if (_results[i].address != null) _results[i].address!,
                     if (_results[i].city != null) _results[i].city!,
                     if (_results[i].ratingText != null) _results[i].ratingText!,
-                  ].join(' - '),
+                  ].join('\n'),
                 ),
               if (!res.isLastPage)
                 AccessibleListRow(
@@ -610,7 +610,7 @@ class _ItaliaOnlineResultsScreenState extends State<ItaliaOnlineResultsScreen> {
           if (r.address != null) r.address,
           if (r.city != null) r.city,
           if (r.ratingText != null) r.ratingText,
-        ].join(' - ');
+        ].join('\n');
 
         return Card(
           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
