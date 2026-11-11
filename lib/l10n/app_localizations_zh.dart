@@ -1746,6 +1746,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get errorOpening => '打开时出错';
 
   @override
+  String get recentSearches => '最近搜索';
+
+  @override
   String get recentArticles => '最近文章';
 
   @override
@@ -7546,6 +7549,9 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get errorOpening => '打开时出错';
+
+  @override
+  String get recentSearches => '最近搜索';
 
   @override
   String get recentArticles => '最近文章';

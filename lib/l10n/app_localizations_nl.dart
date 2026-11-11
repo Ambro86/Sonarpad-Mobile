@@ -1801,6 +1801,9 @@ class AppLocalizationsNl extends AppLocalizations {
   String get errorOpening => 'Fout bij openen';
 
   @override
+  String get recentSearches => 'Recente zoekopdrachten';
+
+  @override
   String get recentArticles => 'Recente artikelen';
 
   @override

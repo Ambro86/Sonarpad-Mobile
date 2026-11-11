@@ -701,6 +701,7 @@
   "noSupportedFilesInFolder": "No supported files in this folder.",
   "articleNotFound": "Article not found.",
   "errorOpening": "Error opening",
+  "recentSearches": "Recent searches",
   "recentArticles": "Recent articles",
   "clearHistory": "Clear history",
   "confirmClearHistory": "Do you really want to clear all recent searches?",

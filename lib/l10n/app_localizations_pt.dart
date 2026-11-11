@@ -1801,6 +1801,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get errorOpening => 'Erro ao abrir';
 
   @override
+  String get recentSearches => 'Pesquisas recentes';
+
+  @override
   String get recentArticles => 'Artigos recentes';
 
   @override
@@ -7860,6 +7863,9 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get errorOpening => 'Erro ao abrir';
+
+  @override
+  String get recentSearches => 'Pesquisas recentes';
 
   @override
   String get recentArticles => 'Artigos recentes';

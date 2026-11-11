@@ -1802,6 +1802,9 @@ class AppLocalizationsRo extends AppLocalizations {
   String get errorOpening => 'Eroare la deschidere';
 
   @override
+  String get recentSearches => 'Căutări recente';
+
+  @override
   String get recentArticles => 'Articole recente';
 
   @override

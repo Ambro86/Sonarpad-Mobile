@@ -1801,6 +1801,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get errorOpening => 'Açılırken hata oluştu';
 
   @override
+  String get recentSearches => 'Son aramalar';
+
+  @override
   String get recentArticles => 'Son görüntülenen makaleler';
 
   @override

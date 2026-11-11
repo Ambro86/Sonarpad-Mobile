@@ -698,6 +698,7 @@
   "noSupportedFilesInFolder": "V této složce nejsou žádné podporované soubory.",
   "articleNotFound": "Článek nebyl nalezen.",
   "errorOpening": "Chyba při otevírání",
+  "recentSearches": "Nedávná hledání",
   "recentArticles": "Nedávné články",
   "clearHistory": "Vymazat historii",
   "confirmClearHistory": "Opravdu chcete vymazat všechny nedávné položky?",

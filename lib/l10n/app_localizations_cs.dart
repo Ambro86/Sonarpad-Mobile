@@ -1796,6 +1796,9 @@ class AppLocalizationsCs extends AppLocalizations {
   String get errorOpening => 'Chyba při otevírání';
 
   @override
+  String get recentSearches => 'Nedávná hledání';
+
+  @override
   String get recentArticles => 'Nedávné články';
 
   @override

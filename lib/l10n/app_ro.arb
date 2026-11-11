@@ -701,6 +701,7 @@
   "noSupportedFilesInFolder": "Nu există fișiere compatibile în acest folder.",
   "articleNotFound": "Articolul nu a fost găsit.",
   "errorOpening": "Eroare la deschidere",
+  "recentSearches": "Căutări recente",
   "recentArticles": "Articole recente",
   "clearHistory": "Șterge istoricul",
   "confirmClearHistory": "Sigur vrei să ștergi toate căutările recente?",

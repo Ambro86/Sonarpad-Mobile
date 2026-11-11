@@ -1793,6 +1793,9 @@ class AppLocalizationsUk extends AppLocalizations {
   String get errorOpening => 'Помилка під час відкриття';
 
   @override
+  String get recentSearches => 'Нещодавні пошуки';
+
+  @override
   String get recentArticles => 'Недавні статті';
 
   @override

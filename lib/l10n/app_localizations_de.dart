@@ -1799,6 +1799,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get errorOpening => 'Fehler beim Öffnen';
 
   @override
+  String get recentSearches => 'Letzte Suchanfragen';
+
+  @override
   String get recentArticles => 'Letzte Artikel';
 
   @override

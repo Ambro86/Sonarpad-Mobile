@@ -3395,6 +3395,7 @@ $nonverbalInstruction''';
     AiAudioDescriptionHighDemandCallback? onHighDemand,
     AiAudioDescriptionQuotaCallback? onQuota,
     int prohibitedAttempts = AudioDescriptionFallbacks.prohibitedContentMaxAttempts,
+    bool allowSafetyResponse = false,
   }) {
     if (settings.provider == 'sonarpad') {
       if (sonarpadToken == null) throw StateError('SONARPAD_AI_TOKEN_REQUIRED');
@@ -3408,6 +3409,7 @@ $nonverbalInstruction''';
         enableThinking: enableThinking,
         onHighDemand: onHighDemand,
         prohibitedAttempts: prohibitedAttempts,
+        allowSafetyResponse: allowSafetyResponse,
       );
     }
     return _generateViaGemini(
@@ -3419,6 +3421,7 @@ $nonverbalInstruction''';
       onHighDemand: onHighDemand,
       onQuota: onQuota,
       prohibitedAttempts: prohibitedAttempts,
+      allowSafetyResponse: allowSafetyResponse,
     );
   }
 
@@ -3885,6 +3888,7 @@ $nonverbalInstruction''';
         chunksDir.path,
         'blocked_${parentChunkIndex.toString().padLeft(4, '0')}_${minuteIndex.toString().padLeft(2, '0')}.mp4',
       );
+      var safetyBlocked = false;
       try {
         await _prepareVisualChunk(
           sourcePath: sourcePath,
@@ -3896,29 +3900,50 @@ $nonverbalInstruction''';
           hasAudio: hasAudio,
           audioStreamIndex: settings.audioStreamIndex,
         );
-        final generated = await _generatePreparedChunk(
-          chunkPath: path,
-          settings: settings,
-          sonarpadToken: sonarpadToken,
-          activeGeminiModel: model,
-          prompt: _buildPrompt(
-            settings: settings,
-            chunkStart: minute.start,
-            chunkEnd: minute.end,
-            slots: minuteSlots,
-            nonverbalCandidates: minuteNonverbal,
-            glossary: <Map<String, Object?>>[...glossary, ...allGlossary],
-            recentDescriptions: <_GeneratedDescription>[
-              ...priorDescriptions,
-              ...allDescriptions,
-            ],
-            fallbackClipTimeline: true,
-          ),
-          idempotencyKey: 'ad-minute-${const Uuid().v4()}-$parentChunkIndex-$minuteIndex',
-          onHighDemand: onHighDemand,
-          onQuota: onQuota,
-          prohibitedAttempts: 1,
-        );
+        late _AiGenerationResult generated;
+        for (var blockedAttempt = 0; blockedAttempt < 2; blockedAttempt++) {
+          _checkCancel();
+          safetyBlocked = false;
+          try {
+            generated = await _generatePreparedChunk(
+              chunkPath: path,
+              settings: settings,
+              sonarpadToken: sonarpadToken,
+              activeGeminiModel: model,
+              prompt: _buildPrompt(
+                settings: settings,
+                chunkStart: minute.start,
+                chunkEnd: minute.end,
+                slots: minuteSlots,
+                nonverbalCandidates: minuteNonverbal,
+                glossary: <Map<String, Object?>>[...glossary, ...allGlossary],
+                recentDescriptions: <_GeneratedDescription>[
+                  ...priorDescriptions,
+                  ...allDescriptions,
+                ],
+                fallbackClipTimeline: true,
+              ),
+              idempotencyKey: 'ad-minute-${const Uuid().v4()}-$parentChunkIndex-$minuteIndex',
+              onHighDemand: onHighDemand,
+              onQuota: onQuota,
+              prohibitedAttempts: 1,
+              allowSafetyResponse: true,
+            );
+            safetyBlocked = _finishReason(generated.rawResponse).toUpperCase() == 'SAFETY';
+            if (safetyBlocked) {
+              throw _AdProviderException(AdFailureKind.prohibitedContent, 'Gemini SAFETY');
+            }
+            break;
+          } on _AdProviderException catch (error) {
+            if (error.kind != AdFailureKind.prohibitedContent || blockedAttempt == 1 ||
+                (!safetyBlocked && minute.duration > AudioDescriptionFallbacks.blockedMinuteSeconds)) {
+              rethrow;
+            }
+            await AppLogger.log(
+              'Audio description mobile: blocked minute ${minuteIndex + 1} retry 2/2',
+            );
+          }
+        }
         model = generated.model;
         var parsed = await _parseWithOptionalJsonRepair(
           generated: generated,
@@ -3949,7 +3974,7 @@ $nonverbalInstruction''';
         }
       } on _AdProviderException catch (error) {
         if (error.kind == AdFailureKind.prohibitedContent) {
-          if (clipRanges != null && minute.duration > AudioDescriptionFallbacks.blockedMinuteSeconds) {
+          if (!safetyBlocked && clipRanges != null && minute.duration > AudioDescriptionFallbacks.blockedMinuteSeconds) {
             final subranges = AudioDescriptionFallbacks.blockedMinuteRanges(minute.start, minute.end);
             minutes.insertAll(minuteIndex + 1, subranges);
             await AppLogger.log(
@@ -6886,6 +6911,7 @@ $nonverbalInstruction''';
     AiAudioDescriptionHighDemandCallback? onHighDemand,
     AiAudioDescriptionQuotaCallback? onQuota,
     int prohibitedAttempts = AudioDescriptionFallbacks.prohibitedContentMaxAttempts,
+    bool allowSafetyResponse = false,
   }) async {
     final key = apiKey.trim();
     if (key.isEmpty) throw StateError('GEMINI_API_KEY_REQUIRED');
@@ -7007,7 +7033,8 @@ $nonverbalInstruction''';
           continue;
         }
         return _AiGenerationResult(
-          text: _extractCandidateText(decoded),
+          text: allowSafetyResponse && _finishReason(decoded).toUpperCase() == 'SAFETY'
+              ? '' : _extractCandidateText(decoded),
           model: activeModel,
           rawResponse: decoded,
         );
@@ -7239,6 +7266,7 @@ $nonverbalInstruction''';
     bool enableThinking = true,
     AiAudioDescriptionHighDemandCallback? onHighDemand,
     int prohibitedAttempts = AudioDescriptionFallbacks.prohibitedContentMaxAttempts,
+    bool allowSafetyResponse = false,
     bool allowSessionReactivation = true,
   }) async {
     final trace = _nextSonarpadAiTrace('chunk');
@@ -7488,7 +7516,8 @@ $nonverbalInstruction''';
             await _cancelableDelay(AudioDescriptionFallbacks.transientRetryDelaySeconds);
             continue;
           }
-          final extractedText = _extractCandidateText(decoded);
+          final extractedText = allowSafetyResponse && _finishReason(decoded).toUpperCase() == 'SAFETY'
+              ? '' : _extractCandidateText(decoded);
           await _logSonarpadAi(
             '$trace GENERATE_SUCCESS textChars=${extractedText.length} '
             'textFingerprint=${_secretFingerprint(extractedText)}',
@@ -7557,6 +7586,7 @@ $nonverbalInstruction''';
           enableThinking: enableThinking,
           onHighDemand: onHighDemand,
           prohibitedAttempts: prohibitedAttempts,
+          allowSafetyResponse: allowSafetyResponse,
           allowSessionReactivation: false,
         );
       }

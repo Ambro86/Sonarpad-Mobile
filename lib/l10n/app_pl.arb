@@ -2282,6 +2282,7 @@
   "@errorOpening": {
     "description": "Localized text for errorOpening."
   },
+  "recentSearches": "Ostatnie wyszukiwania",
   "recentArticles": "Ostatnie artykuły",
   "@recentArticles": {
     "description": "Localized text for recentArticles."

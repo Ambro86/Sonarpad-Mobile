@@ -1,8 +1,11 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../utils/route_country_options.dart';
 
 import '../services/italiaonline_service.dart';
+import '../services/recent_searches_service.dart';
+import 'recent_searches_screen.dart';
 import '../l10n/app_localizations.dart';
 import 'italiaonline_detail_screen.dart';
 import '../utils/status_message.dart';
@@ -62,7 +65,50 @@ class _ItaliaOnlineScreenState extends State<ItaliaOnlineScreen> {
 
   bool get _italian => Localizations.localeOf(context).languageCode == 'it';
 
-  void _search() {
+  String _recentSearchLabel(String value) {
+    final saved = jsonDecode(value) as Map<String, dynamic>;
+    final l10n = AppLocalizations.of(context);
+    final kind = saved['reverse'] == true
+        ? l10n.placesPhoneSearch
+        : saved['kind'] == DirectoryKind.pagineBianche.name
+        ? l10n.placesPeopleSearch
+        : l10n.homeDirectory;
+    final country = routeCountryOptions(l10n)
+        .where((option) => option.value == saved['country'])
+        .map((option) => option.label)
+        .firstOrNull;
+    return [
+      saved['what'] as String,
+      if ((saved['where'] as String).isNotEmpty) saved['where'] as String,
+      kind,
+      ?country,
+    ].join(' – ');
+  }
+
+  Future<void> _openRecentSearches() async {
+    final selected = await Navigator.of(context).push<String>(
+      MaterialPageRoute(
+        builder: (_) => RecentSearchesScreen(
+          title: AppLocalizations.of(context).recentSearches,
+          domain: 'places',
+          searchLabel: _recentSearchLabel,
+        ),
+      ),
+    );
+    if (selected == null || !mounted) return;
+    final saved = jsonDecode(selected) as Map<String, dynamic>;
+    setState(() {
+      _whatController.text = saved['what'] as String;
+      _whereController.text = saved['where'] as String;
+      _kind = DirectoryKind.values.byName(saved['kind'] as String);
+      _reverse = saved['reverse'] as bool;
+      _country = saved['country'] as String;
+      _countryEdited = true;
+    });
+    await _search();
+  }
+
+  Future<void> _search() async {
     var what = _whatController.text.trim();
     if (what.isEmpty) return;
 
@@ -88,6 +134,17 @@ class _ItaliaOnlineScreenState extends State<ItaliaOnlineScreen> {
       language: AppLocalizations.of(context).localeName,
     );
 
+    await RecentSearchesService().addSearch(
+      'places',
+      jsonEncode({
+        'what': query.what,
+        'where': query.where,
+        'kind': (query.reverse ? DirectoryKind.pagineGialle : query.kind).name,
+        'reverse': query.reverse,
+        'country': query.country,
+      }),
+    );
+    if (!mounted) return;
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => ItaliaOnlineResultsScreen(
@@ -184,6 +241,12 @@ class _ItaliaOnlineScreenState extends State<ItaliaOnlineScreen> {
                         textInputAction: 'search',
                         onSubmitted: (_) => _search(),
                       ),
+                    AccessibleListRow(
+                      id: 'recent',
+                      title: l10n.recentSearches,
+                      kind: 'button',
+                      onActivate: _openRecentSearches,
+                    ),
                     AccessibleListRow(
                       id: 'search',
                       title: AppLocalizations.of(context).search,
@@ -282,6 +345,10 @@ class _ItaliaOnlineScreenState extends State<ItaliaOnlineScreen> {
                     onSubmitted: (_) => _search(),
                   ),
                 const SizedBox(height: 24),
+                TextButton(
+                  onPressed: _openRecentSearches,
+                  child: Text(l10n.recentSearches),
+                ),
                 ElevatedButton.icon(
                   onPressed: _search,
                   icon: const Icon(Icons.search),

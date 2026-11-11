@@ -701,6 +701,7 @@
   "noSupportedFilesInFolder": "Bu klasörde desteklenen dosya yok.",
   "articleNotFound": "Makale bulunamadı.",
   "errorOpening": "Açılırken hata oluştu",
+  "recentSearches": "Son aramalar",
   "recentArticles": "Son görüntülenen makaleler",
   "clearHistory": "Geçmişi temizle",
   "confirmClearHistory": "Son aramaların tümünü silmek istediğinizden emin misiniz?",

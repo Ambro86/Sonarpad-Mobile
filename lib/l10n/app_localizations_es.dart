@@ -1810,6 +1810,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get errorOpening => 'Error al abrir';
 
   @override
+  String get recentSearches => 'Búsquedas recientes';
+
+  @override
   String get recentArticles => 'Artículos recientes';
 
   @override

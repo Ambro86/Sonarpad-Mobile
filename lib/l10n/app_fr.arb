@@ -698,6 +698,7 @@
   "noSupportedFilesInFolder": "Aucun fichier pris en charge dans ce dossier.",
   "articleNotFound": "Article introuvable.",
   "errorOpening": "Erreur d'ouverture",
+  "recentSearches": "Recherches récentes",
   "recentArticles": "Articles récents",
   "clearHistory": "Effacer l'historique",
   "confirmClearHistory": "Voulez-vous vraiment effacer toutes les recherches récentes ?",

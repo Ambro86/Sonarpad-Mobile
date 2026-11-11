@@ -2298,6 +2298,7 @@
   "@errorOpening": {
     "description": "Localized text for errorOpening."
   },
+  "recentSearches": "Нещодавні пошуки",
   "recentArticles": "Недавні статті",
   "@recentArticles": {
     "description": "Localized text for recentArticles."

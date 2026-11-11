@@ -7,11 +7,13 @@ import '../widgets/universal_accessible_view.dart';
 class RecentSearchesScreen extends StatefulWidget {
   final String title;
   final String domain;
+  final String Function(String)? searchLabel;
 
   const RecentSearchesScreen({
     super.key,
     required this.title,
     required this.domain,
+    this.searchLabel,
   });
 
   @override
@@ -97,7 +99,9 @@ class _RecentSearchesScreenState extends State<RecentSearchesScreen> {
                               .entries
                               .map((entry) => AccessibleListRow(
                                     id: 'search_${entry.key}',
-                                    title: entry.value,
+                                    visualActionId: 'delete',
+                                    visualActionIcon: 'remove',
+                                    title: widget.searchLabel?.call(entry.value) ?? entry.value,
                                     actions: [
                                       AccessibleCustomAction(
                                         id: 'delete',
@@ -133,7 +137,7 @@ class _RecentSearchesScreenState extends State<RecentSearchesScreen> {
                         ): () => _deleteSearch(query),
                       },
                       child: ListTile(
-                        title: Text(query),
+                        title: Text(widget.searchLabel?.call(query) ?? query),
                         trailing: ExcludeSemantics(
                           child: IconButton(
                             icon: const Icon(Icons.delete_outline),

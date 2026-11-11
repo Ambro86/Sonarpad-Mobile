@@ -197,6 +197,52 @@ void main() {
 
   }
 
+  for (final recover in [true, false]) {
+    test('blocked minute SAFETY retry recovers=$recover and preserves other minutes', () async {
+      final source = await _video(root, 'safety-retry', duration: 80);
+      SharedPreferences.setMockInitialValues({'ad_mobile_gemini_api_key': 'test-only-not-a-key'});
+      final original = _project(root, source.path, sourceDuration: 80, cue: 2);
+      final data = original.toJson()
+        ..['protected_intervals'] = [
+          {'start_sec': 0, 'end_sec': 2},
+          {'start_sec': 5, 'end_sec': 8},
+          {'start_sec': 12, 'end_sec': 25},
+          {'start_sec': 30, 'end_sec': 45},
+          {'start_sec': 50, 'end_sec': 60},
+          {'start_sec': 65, 'end_sec': 80},
+        ];
+      await File(original.projectPath).writeAsString(jsonEncode(data));
+      final saved = await service.loadEditableProject(original.projectPath);
+      var generationCalls = 0;
+      final analyzer = AiAudioDescriptionService(httpClient: MockClient((request) async {
+        if (request.method == 'GET') {
+          return http.Response(jsonEncode({'supportedGenerationMethods': ['generateContent']}), 200);
+        }
+        generationCalls++;
+        if (generationCalls <= 2) {
+          return http.Response(jsonEncode({'promptFeedback': {'blockReason': 'PROHIBITED_CONTENT'}}), 200);
+        }
+        if (generationCalls == 3 || (!recover && generationCalls == 4)) {
+          // Same missing parts structure reported by the Windows user.
+          return http.Response(jsonEncode({'candidates': [{'finishReason': 'SAFETY', 'content': {}}]}), 200);
+        }
+        return http.Response(jsonEncode({'candidates': [{'finishReason': 'STOP', 'content': {'parts': [{'text': jsonEncode({
+          'audio_descriptions': [
+            {'start_time_mmss': '00:02.000', 'end_time_mmss': '00:04.000',
+             'visual_evidence_time_seconds': 2.5, 'description_text': generationCalls == 5
+                 ? 'Il ragazzo chiude la finestra.' : 'La ragazza apre la porta.'},
+          ],
+        })}]}}]}), 200);
+      }));
+      addTearDown(analyzer.dispose);
+      final result = await analyzer.reanalyzeProjectSegment(project: saved, segmentIndex: 0, onProgress: (_) {});
+      expect(generationCalls, 5);
+      expect(result.descriptions.map((entry) => entry.sourceStartSec).toList(), [2.0, 62.0]);
+      expect(result.descriptions.first.text, recover ? 'La ragazza apre la porta.' : _phrase);
+      expect(result.descriptions.last.text, 'Il ragazzo chiude la finestra.');
+    }, skip: skip);
+  }
+
   test('reanalyzing with unavailable credentials preserves original project bytes', () async {
     final source = await _twoTrackVideo(root);
     final project = _project(root, source.path, sourceDuration: 16, cue: 2);

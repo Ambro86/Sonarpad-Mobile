@@ -698,6 +698,7 @@
   "noSupportedFilesInFolder": "No hay archivos compatibles en esta carpeta.",
   "articleNotFound": "Artículo no encontrado.",
   "errorOpening": "Error al abrir",
+  "recentSearches": "Búsquedas recientes",
   "recentArticles": "Artículos recientes",
   "clearHistory": "Borrar historial",
   "confirmClearHistory": "¿Realmente deseas borrar todas las búsquedas recientes?",

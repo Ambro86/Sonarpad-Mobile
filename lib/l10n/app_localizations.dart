@@ -3325,6 +3325,12 @@ abstract class AppLocalizations {
   /// **'Errore durante l\'apertura'**
   String get errorOpening;
 
+  /// No description provided for @recentSearches.
+  ///
+  /// In it, this message translates to:
+  /// **'Ricerche recenti'**
+  String get recentSearches;
+
   /// Localized text for recentArticles.
   ///
   /// In it, this message translates to:

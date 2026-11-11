@@ -701,6 +701,7 @@
   "noSupportedFilesInFolder": "此文件夹中没有支持的文件。",
   "articleNotFound": "未找到文章。",
   "errorOpening": "打开时出错",
+  "recentSearches": "最近搜索",
   "recentArticles": "最近文章",
   "clearHistory": "清除历史记录",
   "confirmClearHistory": "确定要清除所有最近搜索吗？",

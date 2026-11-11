@@ -1787,6 +1787,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorOpening => 'Error opening';
 
   @override
+  String get recentSearches => 'Recent searches';
+
+  @override
   String get recentArticles => 'Recent articles';
 
   @override
