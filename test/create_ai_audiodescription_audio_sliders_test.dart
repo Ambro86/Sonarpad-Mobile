@@ -821,40 +821,51 @@ void main() {
         // Exercise the real create/settings path. Hold its support lookup after
         // preferences are saved, then fail at local directory creation before
         // probing media, synthesizing speech, or making any AI request.
-        await tester.runAsync(() async {
-          paths.supportRequested = Completer<void>();
-          paths.supportResponse = Completer<String?>();
+        try {
+          await tester.runAsync(() async {
+            // Logging uses Application Support too. Drain prior writes before
+            // pausing the creation lookup, otherwise logging can consume the gate.
+            await AppLogger.readLogs();
+            paths.supportRequested = Completer<void>();
+            paths.supportResponse = Completer<String?>();
+            await handler(
+              const AccessibleListEvent(type: 'activate', id: 'create'),
+            );
+            await paths.supportRequested!.future.timeout(
+              const Duration(seconds: 5),
+            );
+          });
+          await tester.pump();
+          expect(find.byKey(_runningKey), findsOneWidget);
+          expect(find.byKey(_formKey), findsNothing);
           await handler(
-            const AccessibleListEvent(type: 'activate', id: 'create'),
+            const AccessibleListEvent(
+              type: 'slider',
+              id: 'mp3_bitrate',
+              value: 0,
+            ),
           );
-          await paths.supportRequested!.future.timeout(
-            const Duration(seconds: 5),
+          await handler(
+            const AccessibleListEvent(
+              type: 'slider',
+              id: 'source_volume',
+              value: 0,
+            ),
           );
-        });
-        await tester.pump();
-        expect(find.byKey(_runningKey), findsOneWidget);
-        expect(find.byKey(_formKey), findsNothing);
-        await handler(
-          const AccessibleListEvent(
-            type: 'slider',
-            id: 'mp3_bitrate',
-            value: 0,
-          ),
-        );
-        await handler(
-          const AccessibleListEvent(
-            type: 'slider',
-            id: 'source_volume',
-            value: 0,
-          ),
-        );
-        final saved = await AiAudioDescriptionPreferences.load();
-        expect(saved['bitrateKbps'], 256);
-        expect(saved['sourceVolume'], 1.65);
-        expect(saved['apiKey'], 'fixture-key');
-        expect(saved['language'], 'en');
+          final saved = await AiAudioDescriptionPreferences.load();
+          expect(saved['bitrateKbps'], 256);
+          expect(saved['sourceVolume'], 1.65);
+          expect(saved['apiKey'], 'fixture-key');
+          expect(saved['language'], 'en');
 
-        paths.supportResponse!.complete(blockedSupport.path);
+        } finally {
+          // Release the lookup even when an assertion or readiness wait fails;
+          // cleanup reads the same logger queue and must never wait on this gate.
+          final response = paths.supportResponse;
+          if (response != null && !response.isCompleted) {
+            response.complete(blockedSupport.path);
+          }
+        }
         await _waitForWidget(tester, find.byKey(_formKey));
         await tester.pumpAndSettle();
         expect(_row(tester, 'mp3_bitrate').valueLabel, '256 kbps');
