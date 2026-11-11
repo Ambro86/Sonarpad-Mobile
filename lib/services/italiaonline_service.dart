@@ -347,7 +347,7 @@ class ItaliaOnlineService {
           '${text.placesStatus}: $status',
         hours.isEmpty
             ? text.placesHoursMissing
-            : '${text.placesHours}:\n${hours.join('\n')}',
+            : '${text.placesHours}: ${hours.join('\n')}',
       ].whereType<String>().where((s) => s.isNotEmpty).join('\n');
       final body = [
         name,

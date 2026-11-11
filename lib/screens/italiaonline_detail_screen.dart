@@ -170,6 +170,7 @@ class _ItaliaOnlineDetailScreenState extends State<ItaliaOnlineDetailScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final detail = widget.detail;
+    final descriptionParagraphs = placeDetailParagraphs(detail.description);
     return Scaffold(
       appBar: SonarpadAppBar(
         title: Text(detail.title),
@@ -216,12 +217,11 @@ class _ItaliaOnlineDetailScreenState extends State<ItaliaOnlineDetailScreen> {
               sections: [
                 AccessibleListSection(
                   rows: [
-                    if (detail.description != null &&
-                        detail.description!.isNotEmpty)
+                    for (var i = 0; i < descriptionParagraphs.length; i++)
                       AccessibleListRow(
-                        id: 'description',
+                        id: 'description_$i',
                         kind: 'text',
-                        title: detail.description!,
+                        title: descriptionParagraphs[i],
                       ),
                     if (detail.category != null && detail.category!.isNotEmpty)
                       AccessibleListRow(
@@ -303,14 +303,16 @@ class _ItaliaOnlineDetailScreenState extends State<ItaliaOnlineDetailScreen> {
           : ListView(
               padding: const EdgeInsets.all(16),
               children: [
-                if (detail.description != null &&
-                    detail.description!.isNotEmpty) ...[
-                  Text(
-                    detail.description!,
-                    style: Theme.of(context).textTheme.bodyLarge,
+                for (final paragraph in descriptionParagraphs)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: Text(
+                      paragraph,
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
                   ),
-                  const SizedBox(height: 16),
-                ],
+                if (descriptionParagraphs.isNotEmpty)
+                  const SizedBox(height: 8),
                 if (detail.category != null && detail.category!.isNotEmpty) ...[
                   Text(
                     '${l10n.placesCategory}: ${detail.category}',
@@ -406,6 +408,19 @@ class _ItaliaOnlineDetailScreenState extends State<ItaliaOnlineDetailScreen> {
             ),
     );
   }
+}
+
+// Ogni riga viene rappresentata da un paragrafo accessibile autonomo,
+// come avviene nella lettura dei documenti di Sonarpad.
+List<String> placeDetailParagraphs(String? description) {
+  if (description == null || description.trim().isEmpty) return const [];
+  return description
+      .replaceAll('\r\n', '\n')
+      .replaceAll('\r', '\n')
+      .split('\n')
+      .map((line) => line.trim())
+      .where((line) => line.isNotEmpty)
+      .toList(growable: false);
 }
 
 String _detailTextForSpeech(DetailResponse detail, AppLocalizations l10n) {
