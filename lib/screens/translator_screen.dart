@@ -87,9 +87,7 @@ class TranslatorScreen extends StatefulWidget {
 
 class _TranslatorScreenState extends State<TranslatorScreen> {
   final _text = TextEditingController();
-  final _languages = NewsLanguage.values
-      .where((l) => l != NewsLanguage.portugueseBrazil)
-      .toList();
+  final _languages = NewsLanguage.values;
   int _source = 0;
   int? _target;
   bool _languagesChanged = false;

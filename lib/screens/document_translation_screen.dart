@@ -49,9 +49,7 @@ class DocumentTranslationScreen extends StatefulWidget {
 }
 
 class _DocumentTranslationScreenState extends State<DocumentTranslationScreen> {
-  final _languages = NewsLanguage.values
-      .where((l) => l != NewsLanguage.portugueseBrazil)
-      .toList();
+  final _languages = NewsLanguage.values;
   int? _selected;
   NewsTranslationService? _job;
   NewsTranslation? _result;
