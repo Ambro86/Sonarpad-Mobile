@@ -1383,8 +1383,13 @@ final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITableViewDa
     // Keep travel controls distinct while scrolling. VoiceOver must not retain
     // a day cell that UITableView has recycled into the time-of-day slider.
     let isolatedTravelSlider = debugTag == "travel-search" && row.kind == "slider"
+    // This form inserts/removes provider and voice fields. Never recycle a
+    // retained VoiceOver object into another setting (e.g. provider -> language).
+    let isolatedAudioDescriptionSetting = debugTag == "audio-description-settings"
     let identifier = isDocumentParagraph ? "SonarpadDocumentParagraphCell" :
-      isolatedTravelSlider ? "SonarpadTravelSlider_\(row.id)" : "SonarpadAccessibleTableCell"
+      isolatedTravelSlider ? "SonarpadTravelSlider_\(row.id)" :
+      isolatedAudioDescriptionSetting ? "SonarpadAudioDescriptionSetting_\(row.id)_\(row.kind)" :
+      "SonarpadAccessibleTableCell"
     let cell: SonarpadAccessibleTableCell
     if isDocumentParagraph {
       cell = (tableView.dequeueReusableCell(withIdentifier: identifier) as? SonarpadDocumentParagraphCell)

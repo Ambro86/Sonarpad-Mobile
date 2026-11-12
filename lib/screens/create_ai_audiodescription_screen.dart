@@ -1652,6 +1652,7 @@ class _CreateAiAudiodescriptionScreenState
                 Expanded(
                   child: UniversalAccessibleList(
                     key: const ValueKey('audio_description_settings'),
+                    debugTag: 'audio-description-settings',
                     // Insert/remove conditional fields without recreating the
                     // focused native control (provider, voice, or other setting).
                     transientRowIds: const [

@@ -8,6 +8,23 @@ void main() {
     'lib/screens/create_ai_audiodescription_screen.dart',
   ).readAsStringSync().replaceAll('\r\n', '\n');
 
+  test('iOS settings cannot reuse a provider cell as a different control', () {
+    final native = File('ios/Runner/SonarpadNativeAccessibleView.swift')
+        .readAsStringSync().replaceAll('\r\n', '\n');
+    final start = native.indexOf('let isDocumentParagraph =');
+    final end = native.indexOf('configure(cell: cell, with: row', start);
+    final cells = native.substring(start, end);
+    expect(screen, contains("debugTag: 'audio-description-settings'"));
+    expect(cells, contains(
+        'let isolatedAudioDescriptionSetting = debugTag == "audio-description-settings"'));
+    expect(cells, contains(
+        r'isolatedAudioDescriptionSetting ? "SonarpadAudioDescriptionSetting_\(row.id)_\(row.kind)"'));
+    // Preserve the existing travel-specific isolation and the default path.
+    expect(cells, contains(
+        r'isolatedTravelSlider ? "SonarpadTravelSlider_\(row.id)"'));
+    expect(cells, contains('dequeueReusableCell(withIdentifier: identifier)'));
+  });
+
   test(
     'Gemini versus Sonarpad AI uses the same discrete accessible slider as speed',
     () {

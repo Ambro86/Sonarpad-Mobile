@@ -1262,6 +1262,7 @@ void main() {
       await http.runWithClient(
         () async {
           await _mountScreen(tester);
+          expect(_form(tester).debugTag, 'audio-description-settings');
           final initial = _row(tester, 'provider');
           expect(initial.kind, 'slider');
           expect(initial.accessibilityButtonTrait, isFalse);
