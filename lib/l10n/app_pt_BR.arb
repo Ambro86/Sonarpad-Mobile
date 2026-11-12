@@ -4970,7 +4970,7 @@
     }
   },
   "podcastRecorderTitle": "Gravar podcast",
-  "podcastRecorderHint": "Grave apenas o microfone. A música de fundo opcional é adicionada ao terminar. Os volumes se aplicam à gravação inteira. Use fones para não gravar o leitor de tela pelos alto-falantes. Ao mudar de aplicativo, a gravação é pausada.",
+  "podcastRecorderHint": "Grave apenas o microfone. A música de fundo opcional é adicionada ao terminar. Os volumes se aplicam à gravação inteira. Use fones para não gravar o leitor de tela pelos alto-falantes. Ative a gravação em segundo plano para mudar de aplicativo ou bloquear a tela; caso contrário, a gravação é pausada. O estéreo depende do microfone e do dispositivo.",
   "podcastRecorderMicVolume": "Volume do microfone",
   "podcastRecorderMusicVolume": "Volume da música de fundo",
   "podcastRecorderChooseMusic": "Escolher música de fundo (opcional)",
@@ -4989,6 +4989,7 @@
     "description": "Localized name of the Dutch language in menus."
   },
   "newsTranslateToInterface": "Traduzir para português",
+  "newsTranslationCompleted": "Tradução concluída",
   "newsTranslating": "Traduzindo",
   "newsShowOriginal": "Mostrar artigo original",
   "newsTranslationFailed": "Não foi possível traduzir. Tente novamente; o artigo original continua disponível.",
@@ -5075,5 +5076,9 @@
   "clearFavorites": "Limpar favoritos",
   "confirmClearFavorites": "Tem certeza de que deseja remover todos os favoritos desta seção?",
   "clearPodcastSubscriptions": "Remover todas as inscrições",
-  "confirmClearPodcastSubscriptions": "Tem certeza de que deseja remover todas as inscrições em podcasts? Os arquivos baixados não serão excluídos."
+  "confirmClearPodcastSubscriptions": "Tem certeza de que deseja remover todas as inscrições em podcasts? Os arquivos baixados não serão excluídos.",
+  "podcastRecorderChannels": "Canais de gravação",
+  "podcastRecorderMono": "Mono",
+  "podcastRecorderStereo": "Estéreo",
+  "podcastRecorderBackground": "Continuar gravando em segundo plano"
 }

@@ -5774,7 +5774,7 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get podcastRecorderHint =>
-      'Neem alleen de microfoon op. Je kunt later optioneel achtergrondmuziek toevoegen. Volumeniveaus gelden voor de hele opname. Gebruik een koptelefoon om te voorkomen dat de schermlezer via de luidsprekers wordt opgenomen. Als je naar een andere app overschakelt, wordt de opname gepauzeerd.';
+      'Neem alleen de microfoon op. Je kunt later optioneel achtergrondmuziek toevoegen. Volumeniveaus gelden voor de hele opname. Gebruik een koptelefoon om te voorkomen dat de schermlezer via de luidsprekers wordt opgenomen. Schakel achtergrondopname in om van app te wisselen of het scherm te vergrendelen; anders pauzeert de opname. Stereo hangt af van de microfoon en het apparaat.';
 
   @override
   String get podcastRecorderMicVolume => 'Microfoonvolume';
@@ -5826,6 +5826,9 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get newsTranslateToInterface => 'Vertalen naar het Nederlands';
+
+  @override
+  String get newsTranslationCompleted => 'Vertaling voltooid';
 
   @override
   String get newsTranslating => 'Bezig met vertalen';
@@ -6069,4 +6072,16 @@ class AppLocalizationsNl extends AppLocalizations {
   @override
   String get confirmClearPodcastSubscriptions =>
       'Weet je zeker dat je alle podcastabonnementen wilt verwijderen? Gedownloade bestanden worden niet verwijderd.';
+
+  @override
+  String get podcastRecorderChannels => 'Opnamekanalen';
+
+  @override
+  String get podcastRecorderMono => 'Mono';
+
+  @override
+  String get podcastRecorderStereo => 'Stereo';
+
+  @override
+  String get podcastRecorderBackground => 'Blijven opnemen op de achtergrond';
 }

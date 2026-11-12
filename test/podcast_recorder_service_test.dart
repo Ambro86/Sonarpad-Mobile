@@ -1,3 +1,4 @@
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -50,12 +51,21 @@ class FakeMicrophone implements PodcastMicrophone {
   bool allowed = true, failStart = false;
   int starts = 0, pauses = 0, resumes = 0, stops = 0;
   String? path;
+  int channels = 1;
+  bool background = false;
   @override
   Stream<RecordState> get states => events.stream;
   @override
   Future<bool> permission() async => allowed;
   @override
-  Future<void> start(String path) async {
+  Future<void> start(
+    String path, {
+    int channels = 1,
+    bool background = false,
+    String title = 'Sonarpad',
+  }) async {
+    this.channels = channels;
+    this.background = background;
     starts++;
     if (failStart) throw StateError('capture failed');
     this.path = path;
@@ -128,6 +138,7 @@ void main() {
   late PodcastRecorderService service;
   late List<bool> awake;
   setUp(() async {
+    SharedPreferences.setMockInitialValues({});
     root = await Directory.systemTemp.createTemp('sonarpad-recorder-test-');
     microphone = FakeMicrophone();
     mixer = FakeMixer();
@@ -165,6 +176,43 @@ void main() {
       expect(service.state, PodcastCaptureState.idle);
     },
   );
+  test(
+    'capture options persist independently and cannot change during a recording',
+    () async {
+      expect(service.stereo, isFalse);
+      expect(service.continueInBackground, isFalse);
+      await service.updateRecordingOptions(stereo: true);
+      expect(service.continueInBackground, isFalse);
+      await service.updateRecordingOptions(background: true);
+      await service.close();
+      microphone = FakeMicrophone();
+      service = PodcastRecorderService(
+        microphone: microphone,
+        mixer: mixer,
+        directory: () async => root,
+        keepAwake: (v) async {
+          awake.add(v);
+        },
+      );
+      await service.initialize();
+      expect(service.stereo, isTrue);
+      expect(service.continueInBackground, isTrue);
+      await service.start();
+      expect(microphone.channels, 2);
+      expect(microphone.background, isTrue);
+      expect(awake.last, isFalse);
+      await service.updateRecordingOptions(stereo: false, background: false);
+      expect(service.stereo, isTrue);
+      expect(service.continueInBackground, isTrue);
+      await service.stop();
+      await service.discard();
+      await service.updateRecordingOptions(stereo: false, background: false);
+      await service.start();
+      expect(microphone.channels, 1);
+      expect(microphone.background, isFalse);
+    },
+  );
+
   test('failed native start can be retried', () async {
     microphone.failStart = true;
     await expectLater(service.start(), throwsStateError);

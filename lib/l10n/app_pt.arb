@@ -4970,7 +4970,7 @@
     }
   },
   "podcastRecorderTitle": "Gravar podcast",
-  "podcastRecorderHint": "Grave apenas o microfone. A música de fundo opcional é adicionada no fim. Os volumes aplicam-se a toda a gravação. Use auscultadores para não gravar o leitor de ecrã pelos altifalantes. Ao mudar de aplicação, a gravação fica em pausa.",
+  "podcastRecorderHint": "Grave apenas o microfone. A música de fundo opcional é adicionada no fim. Os volumes aplicam-se a toda a gravação. Use auscultadores para não gravar o leitor de ecrã pelos altifalantes. Ative a gravação em segundo plano para mudar de aplicação ou bloquear o ecrã; caso contrário, a gravação fica em pausa. O estéreo depende do microfone e do dispositivo.",
   "podcastRecorderMicVolume": "Volume do microfone",
   "podcastRecorderMusicVolume": "Volume da música de fundo",
   "podcastRecorderChooseMusic": "Escolher música de fundo (opcional)",
@@ -4989,6 +4989,7 @@
     "description": "Localized name of the Dutch language in menus."
   },
   "newsTranslateToInterface": "Traduzir para português",
+  "newsTranslationCompleted": "Tradução concluída",
   "newsTranslating": "A traduzir",
   "newsShowOriginal": "Mostrar artigo original",
   "newsTranslationFailed": "A tradução falhou. Tente novamente; o artigo original continua disponível.",
@@ -5075,5 +5076,9 @@
   "clearFavorites": "Limpar favoritos",
   "confirmClearFavorites": "Tem a certeza de que pretende remover todos os favoritos desta secção?",
   "clearPodcastSubscriptions": "Remover todas as subscrições",
-  "confirmClearPodcastSubscriptions": "Tem a certeza de que pretende remover todas as subscrições de podcasts? Os ficheiros transferidos não serão eliminados."
+  "confirmClearPodcastSubscriptions": "Tem a certeza de que pretende remover todas as subscrições de podcasts? Os ficheiros transferidos não serão eliminados.",
+  "podcastRecorderChannels": "Canais de gravação",
+  "podcastRecorderMono": "Mono",
+  "podcastRecorderStereo": "Estéreo",
+  "podcastRecorderBackground": "Continuar a gravar em segundo plano"
 }

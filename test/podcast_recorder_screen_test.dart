@@ -1,3 +1,6 @@
+import 'package:flutter/services.dart';
+import 'package:record/record.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -28,7 +31,25 @@ void main() {
   late Directory root;
   late FakeMicrophone microphone;
   late PodcastRecorderService service;
+  final binding = TestWidgetsFlutterBinding.ensureInitialized();
+  final nativeChannels = <MethodChannel>[];
   setUp(() async {
+    binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      SystemChannels.platform_views,
+      (call) async {
+        if (call.method == 'create') {
+          final id = (call.arguments as Map)['id'];
+          final channel = MethodChannel('sonarpad/native_accessible_list/$id');
+          nativeChannels.add(channel);
+          binding.defaultBinaryMessenger.setMockMethodCallHandler(
+            channel,
+            (_) async => null,
+          );
+        }
+        return null;
+      },
+    );
+    SharedPreferences.setMockInitialValues({});
     root = await Directory.systemTemp.createTemp('recorder-ui-');
     microphone = FakeMicrophone();
     service = PodcastRecorderService(
@@ -41,6 +62,14 @@ void main() {
   tearDown(() async {
     await service.close();
     await root.delete(recursive: true);
+    binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      SystemChannels.platform_views,
+      null,
+    );
+    for (final channel in nativeChannels) {
+      binding.defaultBinaryMessenger.setMockMethodCallHandler(channel, null);
+    }
+    nativeChannels.clear();
   });
   Future<void> load(WidgetTester tester) async {
     await tester.pumpWidget(app(PodcastRecorderScreen(service: service)));
@@ -116,23 +145,69 @@ void main() {
     expect(microphone.starts, 0);
     await tester.runAsync(service.close);
   });
-  testWidgets('switching apps pauses capture instead of silently continuing', (
-    tester,
-  ) async {
-    await load(tester);
-    await tester.runAsync(() async {
-      await row(tester, 'record').onActivate!();
-    });
-    await tester.pumpAndSettle();
-    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
-    await tester.pumpAndSettle();
-    expect(service.state, PodcastCaptureState.paused);
-    expect(microphone.pauses, 1);
-    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
-    await tester.pumpAndSettle();
-    expect(service.state, PodcastCaptureState.paused);
-    await tester.runAsync(service.close);
-  });
+  testWidgets(
+    'switching apps pauses capture instead of silently continuing',
+    (tester) async {
+      await load(tester);
+      await tester.runAsync(() async {
+        await row(tester, 'record').onActivate!();
+      });
+      await tester.pumpAndSettle();
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+      await tester.pumpAndSettle();
+      expect(service.state, PodcastCaptureState.paused);
+      expect(microphone.pauses, 1);
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+      await tester.pumpAndSettle();
+      expect(service.state, PodcastCaptureState.paused);
+      await tester.runAsync(service.close);
+    },
+    variant: TargetPlatformVariant({
+      TargetPlatform.android,
+      TargetPlatform.iOS,
+    }),
+  );
+  testWidgets(
+    'background recording retains stereo capture and pauses on interruptions',
+    (tester) async {
+      await load(tester);
+      await tester.runAsync(() async {
+        await row(tester, 'channels').onValueChanged!('1');
+        await row(tester, 'background').onValueChanged!(true);
+      });
+      await tester.pumpAndSettle();
+      expect(row(tester, 'channels').valueLabel, 'Stereo');
+      expect(row(tester, 'background').toggleValue, isTrue);
+      await tester.runAsync(() async {
+        await row(tester, 'record').onActivate!();
+      });
+      await tester.pumpAndSettle();
+      expect(microphone.channels, 2);
+      expect(microphone.background, isTrue);
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.hidden);
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+      await tester.pump();
+      expect(service.state, PodcastCaptureState.recording);
+      expect(microphone.pauses, 0);
+      microphone.events.add(RecordState.pause);
+      await tester.pump();
+      expect(service.state, PodcastCaptureState.paused);
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+      await tester.pumpAndSettle();
+      expect(service.state, PodcastCaptureState.paused);
+      await tester.runAsync(() async {
+        await row(tester, 'stop').onActivate!();
+      });
+      await tester.pumpAndSettle();
+      expect(service.state, PodcastCaptureState.ready);
+      await tester.runAsync(service.close);
+    },
+    variant: TargetPlatformVariant({
+      TargetPlatform.android,
+      TargetPlatform.iOS,
+    }),
+  );
+
   testWidgets('discard requires confirmation and No preserves recording', (
     tester,
   ) async {

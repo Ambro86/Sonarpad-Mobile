@@ -5789,7 +5789,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get podcastRecorderHint =>
-      'Grave apenas o microfone. A música de fundo opcional é adicionada no fim. Os volumes aplicam-se a toda a gravação. Use auscultadores para não gravar o leitor de ecrã pelos altifalantes. Ao mudar de aplicação, a gravação fica em pausa.';
+      'Grave apenas o microfone. A música de fundo opcional é adicionada no fim. Os volumes aplicam-se a toda a gravação. Use auscultadores para não gravar o leitor de ecrã pelos altifalantes. Ative a gravação em segundo plano para mudar de aplicação ou bloquear o ecrã; caso contrário, a gravação fica em pausa. O estéreo depende do microfone e do dispositivo.';
 
   @override
   String get podcastRecorderMicVolume => 'Volume do microfone';
@@ -5841,6 +5841,9 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get newsTranslateToInterface => 'Traduzir para português';
+
+  @override
+  String get newsTranslationCompleted => 'Tradução concluída';
 
   @override
   String get newsTranslating => 'A traduzir';
@@ -6084,6 +6087,18 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get confirmClearPodcastSubscriptions =>
       'Tem a certeza de que pretende remover todas as subscrições de podcasts? Os ficheiros transferidos não serão eliminados.';
+
+  @override
+  String get podcastRecorderChannels => 'Canais de gravação';
+
+  @override
+  String get podcastRecorderMono => 'Mono';
+
+  @override
+  String get podcastRecorderStereo => 'Estéreo';
+
+  @override
+  String get podcastRecorderBackground => 'Continuar a gravar em segundo plano';
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
@@ -11863,7 +11878,7 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get podcastRecorderHint =>
-      'Grave apenas o microfone. A música de fundo opcional é adicionada ao terminar. Os volumes se aplicam à gravação inteira. Use fones para não gravar o leitor de tela pelos alto-falantes. Ao mudar de aplicativo, a gravação é pausada.';
+      'Grave apenas o microfone. A música de fundo opcional é adicionada ao terminar. Os volumes se aplicam à gravação inteira. Use fones para não gravar o leitor de tela pelos alto-falantes. Ative a gravação em segundo plano para mudar de aplicativo ou bloquear a tela; caso contrário, a gravação é pausada. O estéreo depende do microfone e do dispositivo.';
 
   @override
   String get podcastRecorderMicVolume => 'Volume do microfone';
@@ -11915,6 +11930,9 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get newsTranslateToInterface => 'Traduzir para português';
+
+  @override
+  String get newsTranslationCompleted => 'Tradução concluída';
 
   @override
   String get newsTranslating => 'Traduzindo';
@@ -12158,4 +12176,16 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   @override
   String get confirmClearPodcastSubscriptions =>
       'Tem certeza de que deseja remover todas as inscrições em podcasts? Os arquivos baixados não serão excluídos.';
+
+  @override
+  String get podcastRecorderChannels => 'Canais de gravação';
+
+  @override
+  String get podcastRecorderMono => 'Mono';
+
+  @override
+  String get podcastRecorderStereo => 'Estéreo';
+
+  @override
+  String get podcastRecorderBackground => 'Continuar gravando em segundo plano';
 }

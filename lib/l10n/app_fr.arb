@@ -4970,7 +4970,7 @@
     }
   },
   "podcastRecorderTitle": "Enregistrer un podcast",
-  "podcastRecorderHint": "Enregistrez uniquement le microphone. La musique de fond facultative est ajoutée ensuite. Les volumes s’appliquent à tout l’enregistrement. Utilisez un casque pour ne pas enregistrer le lecteur d’écran diffusé par les haut-parleurs. Le passage à une autre application met l’enregistrement en pause.",
+  "podcastRecorderHint": "Enregistrez uniquement le microphone. La musique de fond facultative est ajoutée ensuite. Les volumes s’appliquent à tout l’enregistrement. Utilisez un casque pour ne pas enregistrer le lecteur d’écran diffusé par les haut-parleurs. Activez l’enregistrement en arrière-plan pour changer d’application ou verrouiller l’écran ; sinon, l’enregistrement se met en pause. La stéréo dépend du microphone et de l’appareil.",
   "podcastRecorderMicVolume": "Volume du microphone",
   "podcastRecorderMusicVolume": "Volume de la musique de fond",
   "podcastRecorderChooseMusic": "Choisir une musique de fond (facultatif)",
@@ -4989,6 +4989,7 @@
     "description": "Localized name of the Dutch language in menus."
   },
   "newsTranslateToInterface": "Traduire en français",
+  "newsTranslationCompleted": "Traduction terminée",
   "newsTranslating": "Traduction en cours",
   "newsShowOriginal": "Afficher l’article original",
   "newsTranslationFailed": "La traduction a échoué. Réessayez : l’article original reste disponible.",
@@ -5075,5 +5076,9 @@
   "clearFavorites": "Vider les favoris",
   "confirmClearFavorites": "Voulez-vous vraiment supprimer tous les favoris de cette section ?",
   "clearPodcastSubscriptions": "Supprimer tous les abonnements",
-  "confirmClearPodcastSubscriptions": "Voulez-vous vraiment supprimer tous les abonnements aux podcasts ? Les fichiers téléchargés ne seront pas supprimés."
+  "confirmClearPodcastSubscriptions": "Voulez-vous vraiment supprimer tous les abonnements aux podcasts ? Les fichiers téléchargés ne seront pas supprimés.",
+  "podcastRecorderChannels": "Canaux d’enregistrement",
+  "podcastRecorderMono": "Mono",
+  "podcastRecorderStereo": "Stéréo",
+  "podcastRecorderBackground": "Continuer à enregistrer en arrière-plan"
 }

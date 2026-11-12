@@ -4970,7 +4970,7 @@
     }
   },
   "podcastRecorderTitle": "Grabar podcast",
-  "podcastRecorderHint": "Graba solo el micrófono. La música de fondo opcional se añade al terminar. Los volúmenes se aplican a toda la grabación. Usa auriculares para no grabar el lector de pantalla desde los altavoces. Al cambiar a otra aplicación, la grabación se pausa.",
+  "podcastRecorderHint": "Graba solo el micrófono. La música de fondo opcional se añade al terminar. Los volúmenes se aplican a toda la grabación. Usa auriculares para no grabar el lector de pantalla desde los altavoces. Activa la grabación en segundo plano para cambiar de aplicación o bloquear la pantalla; de lo contrario, se pausa. El estéreo depende del micrófono y del dispositivo.",
   "podcastRecorderMicVolume": "Volumen del micrófono",
   "podcastRecorderMusicVolume": "Volumen de la música de fondo",
   "podcastRecorderChooseMusic": "Elegir música de fondo (opcional)",
@@ -4989,6 +4989,7 @@
     "description": "Localized name of the Dutch language in menus."
   },
   "newsTranslateToInterface": "Traducir al español",
+  "newsTranslationCompleted": "Traducción completada",
   "newsTranslating": "Traduciendo",
   "newsShowOriginal": "Mostrar artículo original",
   "newsTranslationFailed": "No se pudo traducir. Inténtalo de nuevo; el artículo original sigue disponible.",
@@ -5075,5 +5076,9 @@
   "clearFavorites": "Vaciar favoritos",
   "confirmClearFavorites": "¿Seguro que quieres eliminar todos los favoritos de esta sección?",
   "clearPodcastSubscriptions": "Eliminar todas las suscripciones",
-  "confirmClearPodcastSubscriptions": "¿Seguro que quieres eliminar todas las suscripciones a podcasts? Los archivos descargados no se eliminarán."
+  "confirmClearPodcastSubscriptions": "¿Seguro que quieres eliminar todas las suscripciones a podcasts? Los archivos descargados no se eliminarán.",
+  "podcastRecorderChannels": "Canales de grabación",
+  "podcastRecorderMono": "Mono",
+  "podcastRecorderStereo": "Estéreo",
+  "podcastRecorderBackground": "Seguir grabando en segundo plano"
 }

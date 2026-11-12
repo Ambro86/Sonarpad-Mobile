@@ -5806,7 +5806,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get podcastRecorderHint =>
-      'Graba solo el micrófono. La música de fondo opcional se añade al terminar. Los volúmenes se aplican a toda la grabación. Usa auriculares para no grabar el lector de pantalla desde los altavoces. Al cambiar a otra aplicación, la grabación se pausa.';
+      'Graba solo el micrófono. La música de fondo opcional se añade al terminar. Los volúmenes se aplican a toda la grabación. Usa auriculares para no grabar el lector de pantalla desde los altavoces. Activa la grabación en segundo plano para cambiar de aplicación o bloquear la pantalla; de lo contrario, se pausa. El estéreo depende del micrófono y del dispositivo.';
 
   @override
   String get podcastRecorderMicVolume => 'Volumen del micrófono';
@@ -5857,6 +5857,9 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get newsTranslateToInterface => 'Traducir al español';
+
+  @override
+  String get newsTranslationCompleted => 'Traducción completada';
 
   @override
   String get newsTranslating => 'Traduciendo';
@@ -6101,4 +6104,16 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get confirmClearPodcastSubscriptions =>
       '¿Seguro que quieres eliminar todas las suscripciones a podcasts? Los archivos descargados no se eliminarán.';
+
+  @override
+  String get podcastRecorderChannels => 'Canales de grabación';
+
+  @override
+  String get podcastRecorderMono => 'Mono';
+
+  @override
+  String get podcastRecorderStereo => 'Estéreo';
+
+  @override
+  String get podcastRecorderBackground => 'Seguir grabando en segundo plano';
 }

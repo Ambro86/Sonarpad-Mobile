@@ -5814,7 +5814,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get podcastRecorderHint =>
-      'Enregistrez uniquement le microphone. La musique de fond facultative est ajoutée ensuite. Les volumes s’appliquent à tout l’enregistrement. Utilisez un casque pour ne pas enregistrer le lecteur d’écran diffusé par les haut-parleurs. Le passage à une autre application met l’enregistrement en pause.';
+      'Enregistrez uniquement le microphone. La musique de fond facultative est ajoutée ensuite. Les volumes s’appliquent à tout l’enregistrement. Utilisez un casque pour ne pas enregistrer le lecteur d’écran diffusé par les haut-parleurs. Activez l’enregistrement en arrière-plan pour changer d’application ou verrouiller l’écran ; sinon, l’enregistrement se met en pause. La stéréo dépend du microphone et de l’appareil.';
 
   @override
   String get podcastRecorderMicVolume => 'Volume du microphone';
@@ -5868,6 +5868,9 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get newsTranslateToInterface => 'Traduire en français';
+
+  @override
+  String get newsTranslationCompleted => 'Traduction terminée';
 
   @override
   String get newsTranslating => 'Traduction en cours';
@@ -6112,4 +6115,17 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get confirmClearPodcastSubscriptions =>
       'Voulez-vous vraiment supprimer tous les abonnements aux podcasts ? Les fichiers téléchargés ne seront pas supprimés.';
+
+  @override
+  String get podcastRecorderChannels => 'Canaux d’enregistrement';
+
+  @override
+  String get podcastRecorderMono => 'Mono';
+
+  @override
+  String get podcastRecorderStereo => 'Stéréo';
+
+  @override
+  String get podcastRecorderBackground =>
+      'Continuer à enregistrer en arrière-plan';
 }

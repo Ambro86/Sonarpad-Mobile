@@ -6542,7 +6542,7 @@
     }
   },
   "podcastRecorderTitle": "Podcast opnemen",
-  "podcastRecorderHint": "Neem alleen de microfoon op. Je kunt later optioneel achtergrondmuziek toevoegen. Volumeniveaus gelden voor de hele opname. Gebruik een koptelefoon om te voorkomen dat de schermlezer via de luidsprekers wordt opgenomen. Als je naar een andere app overschakelt, wordt de opname gepauzeerd.",
+  "podcastRecorderHint": "Neem alleen de microfoon op. Je kunt later optioneel achtergrondmuziek toevoegen. Volumeniveaus gelden voor de hele opname. Gebruik een koptelefoon om te voorkomen dat de schermlezer via de luidsprekers wordt opgenomen. Schakel achtergrondopname in om van app te wisselen of het scherm te vergrendelen; anders pauzeert de opname. Stereo hangt af van de microfoon en het apparaat.",
   "podcastRecorderMicVolume": "Microfoonvolume",
   "podcastRecorderMusicVolume": "Volume van achtergrondmuziek",
   "podcastRecorderChooseMusic": "Achtergrondmuziek kiezen (optioneel)",
@@ -6561,6 +6561,7 @@
     "description": "Localized name of the Dutch language in menus."
   },
   "newsTranslateToInterface": "Vertalen naar het Nederlands",
+  "newsTranslationCompleted": "Vertaling voltooid",
   "newsTranslating": "Bezig met vertalen",
   "newsShowOriginal": "Oorspronkelijk artikel tonen",
   "newsTranslationFailed": "Vertaling mislukt. Probeer het opnieuw; het oorspronkelijke artikel blijft beschikbaar.",
@@ -6647,5 +6648,9 @@
   "clearFavorites": "Favorieten wissen",
   "confirmClearFavorites": "Weet je zeker dat je alle favorieten in deze sectie wilt verwijderen?",
   "clearPodcastSubscriptions": "Alle abonnementen verwijderen",
-  "confirmClearPodcastSubscriptions": "Weet je zeker dat je alle podcastabonnementen wilt verwijderen? Gedownloade bestanden worden niet verwijderd."
+  "confirmClearPodcastSubscriptions": "Weet je zeker dat je alle podcastabonnementen wilt verwijderen? Gedownloade bestanden worden niet verwijderd.",
+  "podcastRecorderChannels": "Opnamekanalen",
+  "podcastRecorderMono": "Mono",
+  "podcastRecorderStereo": "Stereo",
+  "podcastRecorderBackground": "Blijven opnemen op de achtergrond"
 }

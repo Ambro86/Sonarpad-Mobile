@@ -5540,7 +5540,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get podcastRecorderHint =>
-      '仅录制麦克风。可选背景音乐会在结束后添加，音量设置应用于整段录音。请使用耳机，避免录入扬声器中的屏幕阅读器语音。切换到其他应用会暂停录音。';
+      '仅录制麦克风。可选背景音乐会在结束后添加，音量设置应用于整段录音。请使用耳机，避免录入扬声器中的屏幕阅读器语音。启用后台录音后，可以切换应用或锁定屏幕；否则录音将暂停。立体声效果取决于麦克风和设备。';
 
   @override
   String get podcastRecorderMicVolume => '麦克风音量';
@@ -5586,6 +5586,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get newsTranslateToInterface => '翻译成中文';
+
+  @override
+  String get newsTranslationCompleted => '翻译完成';
 
   @override
   String get newsTranslating => '正在翻译';
@@ -5819,6 +5822,18 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get confirmClearPodcastSubscriptions => '确定要移除所有播客订阅吗？已下载的文件不会被删除。';
+
+  @override
+  String get podcastRecorderChannels => '录音声道';
+
+  @override
+  String get podcastRecorderMono => '单声道';
+
+  @override
+  String get podcastRecorderStereo => '立体声';
+
+  @override
+  String get podcastRecorderBackground => '在后台继续录音';
 }
 
 /// The translations for Chinese, as used in China (`zh_CN`).
@@ -11357,7 +11372,7 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get podcastRecorderHint =>
-      '仅录制麦克风。可选背景音乐会在结束后添加，音量设置应用于整段录音。请使用耳机，避免录入扬声器中的屏幕阅读器语音。切换到其他应用会暂停录音。';
+      '仅录制麦克风。可选背景音乐会在结束后添加，音量设置应用于整段录音。请使用耳机，避免录入扬声器中的屏幕阅读器语音。启用后台录音后，可以切换应用或锁定屏幕；否则录音将暂停。立体声效果取决于麦克风和设备。';
 
   @override
   String get podcastRecorderMicVolume => '麦克风音量';
@@ -11403,6 +11418,9 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get newsTranslateToInterface => '翻译成中文';
+
+  @override
+  String get newsTranslationCompleted => '翻译完成';
 
   @override
   String get newsTranslating => '正在翻译';
@@ -11636,4 +11654,16 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get confirmClearPodcastSubscriptions => '确定要移除所有播客订阅吗？已下载的文件不会被删除。';
+
+  @override
+  String get podcastRecorderChannels => '录音声道';
+
+  @override
+  String get podcastRecorderMono => '单声道';
+
+  @override
+  String get podcastRecorderStereo => '立体声';
+
+  @override
+  String get podcastRecorderBackground => '在后台继续录音';
 }

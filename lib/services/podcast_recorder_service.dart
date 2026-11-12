@@ -6,9 +6,12 @@ import 'package:ffmpeg_kit_flutter_new/ffmpeg_kit.dart';
 import 'package:ffmpeg_kit_flutter_new/ffmpeg_session.dart';
 import 'package:ffmpeg_kit_flutter_new/return_code.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../utils/app_logger.dart';
 import 'protected_wakelock.dart';
@@ -24,7 +27,12 @@ class PodcastRecorderException implements Exception {
 abstract interface class PodcastMicrophone {
   Stream<RecordState> get states;
   Future<bool> permission();
-  Future<void> start(String path);
+  Future<void> start(
+    String path, {
+    int channels = 1,
+    bool background = false,
+    String title = 'Sonarpad',
+  });
   Future<void> pause();
   Future<void> resume();
   Future<String?> stop();
@@ -34,35 +42,87 @@ abstract interface class PodcastMicrophone {
 class NativePodcastMicrophone implements PodcastMicrophone {
   final _recorder = AudioRecorder();
   @override
-  Stream<RecordState> get states => _recorder.onStateChanged();
+  Stream<RecordState> get states => _recorder.onStateChanged().map((state) {
+    if (state == RecordState.stop) {
+      unawaited(
+        _stopBackground().catchError((Object error) {
+          unawaited(
+            AppLogger.log(
+              'Podcast background stop failed: ${error.runtimeType}',
+            ),
+          );
+        }),
+      );
+    }
+    return state;
+  });
   @override
   Future<bool> permission() => _recorder.hasPermission();
   @override
-  Future<void> start(String path) => _recorder.start(
-    const RecordConfig(
-      encoder: AudioEncoder.wav,
-      sampleRate: 44100,
-      numChannels: 1,
-      autoGain: false,
-      audioInterruption: AudioInterruptionMode.pause,
-      iosConfig: IosRecordConfig(
-        categoryOptions: [
-          IosAudioCategoryOption.defaultToSpeaker,
-          IosAudioCategoryOption.allowBluetooth,
-          IosAudioCategoryOption.mixWithOthers,
-        ],
-      ),
-    ),
-    path: path,
-  );
+  Future<void> start(
+    String path, {
+    int channels = 1,
+    bool background = false,
+    String title = 'Sonarpad',
+  }) async {
+    try {
+      if (background && Platform.isAndroid) {
+        await Permission.notification.request();
+        await _backgroundChannel.invokeMethod<void>('start', {'title': title});
+        _backgroundActive = true;
+      }
+      await _recorder.start(
+        RecordConfig(
+          encoder: AudioEncoder.wav,
+          sampleRate: 44100,
+          numChannels: channels,
+          autoGain: false,
+          audioInterruption: AudioInterruptionMode.pause,
+          iosConfig: const IosRecordConfig(
+            categoryOptions: [
+              IosAudioCategoryOption.defaultToSpeaker,
+              IosAudioCategoryOption.allowBluetooth,
+              IosAudioCategoryOption.mixWithOthers,
+            ],
+          ),
+        ),
+        path: path,
+      );
+    } catch (_) {
+      await _stopBackground();
+      rethrow;
+    }
+  }
+
+  static const _backgroundChannel = MethodChannel('sonarpad/podcast_recording');
+  bool _backgroundActive = false;
+  Future<void> _stopBackground() async {
+    if (!_backgroundActive) return;
+    _backgroundActive = false;
+    await _backgroundChannel.invokeMethod<void>('stop');
+  }
+
   @override
   Future<void> pause() => _recorder.pause();
   @override
   Future<void> resume() => _recorder.resume();
   @override
-  Future<String?> stop() => _recorder.stop();
+  Future<String?> stop() async {
+    try {
+      return await _recorder.stop();
+    } finally {
+      await _stopBackground();
+    }
+  }
+
   @override
-  Future<void> dispose() => _recorder.dispose();
+  Future<void> dispose() async {
+    try {
+      await _recorder.dispose();
+    } finally {
+      await _stopBackground();
+    }
+  }
 }
 
 abstract interface class PodcastMixer {
@@ -156,6 +216,8 @@ class PodcastRecorderService extends ChangeNotifier {
   bool saved = false;
   bool recovered = false;
   String name = '';
+  bool stereo = false;
+  bool continueInBackground = false;
   double microphoneVolume = 1;
   double musicVolume = .2;
   String? musicPath;
@@ -189,7 +251,25 @@ class PodcastRecorderService extends ChangeNotifier {
     }
   }
 
+  Future<void> updateRecordingOptions({bool? stereo, bool? background}) async {
+    if (busy || hasDraft) return;
+    if (stereo != null) this.stereo = stereo;
+    if (background != null) continueInBackground = background;
+    _notify();
+    final prefs = await SharedPreferences.getInstance();
+    if (stereo != null) {
+      await prefs.setBool('podcast_recorder_stereo', stereo);
+    }
+    if (background != null) {
+      await prefs.setBool('podcast_recorder_background', background);
+    }
+  }
+
   Future<void> initialize() async {
+    final prefs = await SharedPreferences.getInstance();
+    stereo = prefs.getBool('podcast_recorder_stereo') ?? false;
+    continueInBackground =
+        prefs.getBool('podcast_recorder_background') ?? false;
     _folder = await _directory();
     await _folder!.create(recursive: true);
     if (await File(_jinglePath(true)).exists()) introPath = _jinglePath(true);
@@ -266,13 +346,18 @@ class PodcastRecorderService extends ChangeNotifier {
         throw const PodcastRecorderException('permission');
       }
       await _persist();
-      await _microphone.start(_raw);
+      await _microphone.start(
+        _raw,
+        channels: stereo ? 2 : 1,
+        background: continueInBackground,
+        title: name.trim().isEmpty ? 'Sonarpad' : name,
+      );
       _clock.reset();
       _clock.start();
       saved = false;
       recovered = false;
       state = PodcastCaptureState.recording;
-      await _awake(true);
+      await _awake(!continueInBackground);
       _ticker = Timer.periodic(const Duration(seconds: 1), (_) => _notify());
       unawaited(AppLogger.log('Podcast recorder started; microphone only'));
     } finally {
@@ -306,7 +391,7 @@ class PodcastRecorderService extends ChangeNotifier {
       await _microphone.resume();
       _clock.start();
       state = PodcastCaptureState.recording;
-      await _awake(true);
+      await _awake(!continueInBackground);
     } finally {
       busy = false;
       _transition = false;

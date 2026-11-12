@@ -10385,7 +10385,7 @@ abstract class AppLocalizations {
   /// No description provided for @podcastRecorderHint.
   ///
   /// In it, this message translates to:
-  /// **'Registra solo il microfono. La base musicale facoltativa viene aggiunta al termine. I volumi si applicano a tutta la registrazione. Usa le cuffie per non registrare VoiceOver dagli altoparlanti. Passando a un’altra app, la registrazione va in pausa.'**
+  /// **'Registra solo il microfono. La base musicale facoltativa viene aggiunta al termine. I volumi si applicano a tutta la registrazione. Usa le cuffie per non registrare VoiceOver dagli altoparlanti. Con l’opzione background attiva puoi cambiare app o bloccare lo schermo; altrimenti la registrazione va in pausa. Lo stereo dipende dal microfono e dal dispositivo.'**
   String get podcastRecorderHint;
 
   /// No description provided for @podcastRecorderMicVolume.
@@ -10477,6 +10477,12 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Traduci in italiano'**
   String get newsTranslateToInterface;
+
+  /// No description provided for @newsTranslationCompleted.
+  ///
+  /// In it, this message translates to:
+  /// **'Traduzione completata'**
+  String get newsTranslationCompleted;
 
   /// News article Google translation: newsTranslating
   ///
@@ -10915,6 +10921,30 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Sei sicuro di voler rimuovere tutte le iscrizioni ai podcast? I file scaricati non verranno eliminati.'**
   String get confirmClearPodcastSubscriptions;
+
+  /// No description provided for @podcastRecorderChannels.
+  ///
+  /// In it, this message translates to:
+  /// **'Canali di registrazione'**
+  String get podcastRecorderChannels;
+
+  /// No description provided for @podcastRecorderMono.
+  ///
+  /// In it, this message translates to:
+  /// **'Mono'**
+  String get podcastRecorderMono;
+
+  /// No description provided for @podcastRecorderStereo.
+  ///
+  /// In it, this message translates to:
+  /// **'Stereo'**
+  String get podcastRecorderStereo;
+
+  /// No description provided for @podcastRecorderBackground.
+  ///
+  /// In it, this message translates to:
+  /// **'Continua a registrare in background'**
+  String get podcastRecorderBackground;
 }
 
 class _AppLocalizationsDelegate

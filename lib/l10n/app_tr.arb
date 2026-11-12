@@ -4964,7 +4964,7 @@
     }
   },
   "podcastRecorderTitle": "Podcast kaydet",
-  "podcastRecorderHint": "Yalnızca mikrofon kaydedilir. İsteğe bağlı fon müziği sonunda eklenir. Ses düzeyleri kaydın tamamına uygulanır. Ekran okuyucunun hoparlörden kayda girmemesi için kulaklık kullanın. Başka bir uygulamaya geçmek kaydı duraklatır.",
+  "podcastRecorderHint": "Yalnızca mikrofon kaydedilir. İsteğe bağlı fon müziği sonunda eklenir. Ses düzeyleri kaydın tamamına uygulanır. Ekran okuyucunun hoparlörden kayda girmemesi için kulaklık kullanın. Uygulama değiştirmek veya ekranı kilitlemek için arka planda kaydı etkinleştirin; aksi takdirde kayıt duraklatılır. Stereo, mikrofona ve cihaza bağlıdır.",
   "podcastRecorderMicVolume": "Mikrofon ses düzeyi",
   "podcastRecorderMusicVolume": "Fon müziği ses düzeyi",
   "podcastRecorderChooseMusic": "Fon müziği seç (isteğe bağlı)",
@@ -4983,6 +4983,7 @@
     "description": "Localized name of the Dutch language in menus."
   },
   "newsTranslateToInterface": "Türkçeye çevir",
+  "newsTranslationCompleted": "Çeviri tamamlandı",
   "newsTranslating": "Çevriliyor",
   "newsShowOriginal": "Orijinal makaleyi göster",
   "newsTranslationFailed": "Çeviri başarısız oldu. Tekrar deneyin; orijinal makale hâlâ kullanılabilir.",
@@ -5069,5 +5070,9 @@
   "clearFavorites": "Favorileri temizle",
   "confirmClearFavorites": "Bu bölümdeki tüm favorileri kaldırmak istediğinizden emin misiniz?",
   "clearPodcastSubscriptions": "Tüm abonelikleri kaldır",
-  "confirmClearPodcastSubscriptions": "Tüm podcast aboneliklerini kaldırmak istediğinizden emin misiniz? İndirilen dosyalar silinmez."
+  "confirmClearPodcastSubscriptions": "Tüm podcast aboneliklerini kaldırmak istediğinizden emin misiniz? İndirilen dosyalar silinmez.",
+  "podcastRecorderChannels": "Kayıt kanalları",
+  "podcastRecorderMono": "Mono",
+  "podcastRecorderStereo": "Stereo",
+  "podcastRecorderBackground": "Arka planda kayda devam et"
 }

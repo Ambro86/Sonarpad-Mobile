@@ -6542,7 +6542,7 @@
     }
   },
   "podcastRecorderTitle": "Podcast aufnehmen",
-  "podcastRecorderHint": "Nur das Mikrofon wird aufgenommen. Optionale Hintergrundmusik wird anschließend hinzugefügt. Die Lautstärken gelten für die gesamte Aufnahme. Verwenden Sie Kopfhörer, damit die Sprachausgabe nicht über die Lautsprecher mit aufgenommen wird. Beim Wechsel zu einer anderen App pausiert die Aufnahme.",
+  "podcastRecorderHint": "Nur das Mikrofon wird aufgenommen. Optionale Hintergrundmusik wird anschließend hinzugefügt. Die Lautstärken gelten für die gesamte Aufnahme. Verwenden Sie Kopfhörer, damit die Sprachausgabe nicht über die Lautsprecher mit aufgenommen wird. Aktivieren Sie die Hintergrundaufnahme, um Apps zu wechseln oder den Bildschirm zu sperren; andernfalls pausiert die Aufnahme. Stereo hängt vom Mikrofon und Gerät ab.",
   "podcastRecorderMicVolume": "Mikrofonlautstärke",
   "podcastRecorderMusicVolume": "Lautstärke der Hintergrundmusik",
   "podcastRecorderChooseMusic": "Hintergrundmusik auswählen (optional)",
@@ -6561,6 +6561,7 @@
     "description": "Localized name of the Dutch language in menus."
   },
   "newsTranslateToInterface": "Ins Deutsche übersetzen",
+  "newsTranslationCompleted": "Übersetzung abgeschlossen",
   "newsTranslating": "Übersetzung läuft",
   "newsShowOriginal": "Originalartikel anzeigen",
   "newsTranslationFailed": "Übersetzung fehlgeschlagen. Versuchen Sie es erneut; der Originalartikel ist weiterhin verfügbar.",
@@ -6647,5 +6648,9 @@
   "clearFavorites": "Favoriten leeren",
   "confirmClearFavorites": "Möchten Sie wirklich alle Favoriten in diesem Bereich entfernen?",
   "clearPodcastSubscriptions": "Alle Abonnements entfernen",
-  "confirmClearPodcastSubscriptions": "Möchten Sie wirklich alle Podcast-Abonnements entfernen? Heruntergeladene Dateien werden nicht gelöscht."
+  "confirmClearPodcastSubscriptions": "Möchten Sie wirklich alle Podcast-Abonnements entfernen? Heruntergeladene Dateien werden nicht gelöscht.",
+  "podcastRecorderChannels": "Aufnahmekanäle",
+  "podcastRecorderMono": "Mono",
+  "podcastRecorderStereo": "Stereo",
+  "podcastRecorderBackground": "Im Hintergrund weiter aufnehmen"
 }

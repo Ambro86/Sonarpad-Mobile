@@ -212,6 +212,13 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
         _translationJob = null;
         _status = null;
       });
+      final l10n = AppLocalizations.of(context);
+      showStatusMessage(
+        context,
+        result.isPartial
+            ? l10n.newsTranslationPartial
+            : l10n.newsTranslationCompleted,
+      );
       unawaited(
         AppLogger.log(
           'News translation: complete target=$target partial=${result.isPartial} '

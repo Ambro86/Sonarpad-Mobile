@@ -5769,7 +5769,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get podcastRecorderHint =>
-      'Yalnızca mikrofon kaydedilir. İsteğe bağlı fon müziği sonunda eklenir. Ses düzeyleri kaydın tamamına uygulanır. Ekran okuyucunun hoparlörden kayda girmemesi için kulaklık kullanın. Başka bir uygulamaya geçmek kaydı duraklatır.';
+      'Yalnızca mikrofon kaydedilir. İsteğe bağlı fon müziği sonunda eklenir. Ses düzeyleri kaydın tamamına uygulanır. Ekran okuyucunun hoparlörden kayda girmemesi için kulaklık kullanın. Uygulama değiştirmek veya ekranı kilitlemek için arka planda kaydı etkinleştirin; aksi takdirde kayıt duraklatılır. Stereo, mikrofona ve cihaza bağlıdır.';
 
   @override
   String get podcastRecorderMicVolume => 'Mikrofon ses düzeyi';
@@ -5820,6 +5820,9 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get newsTranslateToInterface => 'Türkçeye çevir';
+
+  @override
+  String get newsTranslationCompleted => 'Çeviri tamamlandı';
 
   @override
   String get newsTranslating => 'Çevriliyor';
@@ -6062,4 +6065,16 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get confirmClearPodcastSubscriptions =>
       'Tüm podcast aboneliklerini kaldırmak istediğinizden emin misiniz? İndirilen dosyalar silinmez.';
+
+  @override
+  String get podcastRecorderChannels => 'Kayıt kanalları';
+
+  @override
+  String get podcastRecorderMono => 'Mono';
+
+  @override
+  String get podcastRecorderStereo => 'Stereo';
+
+  @override
+  String get podcastRecorderBackground => 'Arka planda kayda devam et';
 }

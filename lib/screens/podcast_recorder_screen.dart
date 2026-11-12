@@ -57,7 +57,9 @@ class _PodcastRecorderScreenState extends State<PodcastRecorderScreen>
   void didChangeAppLifecycleState(AppLifecycleState state) {
     _background =
         state == AppLifecycleState.paused || state == AppLifecycleState.hidden;
-    if (_background && _recorder.state == PodcastCaptureState.recording) {
+    if (_background &&
+        !_recorder.continueInBackground &&
+        _recorder.state == PodcastCaptureState.recording) {
       unawaited(_run(_recorder.pause));
     }
   }
@@ -359,6 +361,42 @@ class _PodcastRecorderScreenState extends State<PodcastRecorderScreen>
           value: _recorder.name,
           onValueChanged: (v) => _recorder.name = '$v',
         ),
+        if (!ready) ...[
+          AccessibleListRow(
+            id: 'channels',
+            title: l10n.podcastRecorderChannels,
+            kind: 'slider',
+            value: _recorder.stereo ? '1' : '0',
+            valueLabel: _recorder.stereo
+                ? l10n.podcastRecorderStereo
+                : l10n.podcastRecorderMono,
+            sliderValue: _recorder.stereo ? 1 : 0,
+            sliderMin: 0,
+            sliderMax: 1,
+            sliderStep: 1,
+            sliderIncreasedValueLabel: l10n.podcastRecorderStereo,
+            sliderDecreasedValueLabel: l10n.podcastRecorderMono,
+            options: [
+              AccessibleOption(value: '0', label: l10n.podcastRecorderMono),
+              AccessibleOption(value: '1', label: l10n.podcastRecorderStereo),
+            ],
+            onValueChanged: (value) async {
+              final number = num.tryParse('$value');
+              if (number == null || !number.isFinite) return;
+              return _recorder.updateRecordingOptions(
+                stereo: number.round() >= 1,
+              );
+            },
+          ),
+          AccessibleListRow(
+            id: 'background',
+            title: l10n.podcastRecorderBackground,
+            kind: 'toggle',
+            toggleValue: _recorder.continueInBackground,
+            onValueChanged: (value) =>
+                _recorder.updateRecordingOptions(background: value == true),
+          ),
+        ],
         _volume(
           'microphone',
           l10n.podcastRecorderMicVolume,
@@ -424,7 +462,9 @@ class _PodcastRecorderScreenState extends State<PodcastRecorderScreen>
             onActivate: () => _run(() async {
               await _stopPreview();
               await _recorder.start();
-              if (_background) await _recorder.pause();
+              if (_background && !_recorder.continueInBackground) {
+                await _recorder.pause();
+              }
             }),
           ),
         if (ready) ...[

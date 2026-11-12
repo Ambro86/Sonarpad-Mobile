@@ -4964,7 +4964,7 @@
     }
   },
   "podcastRecorderTitle": "Înregistrează un podcast",
-  "podcastRecorderHint": "Se înregistrează doar microfonul. Muzica de fundal opțională este adăugată la final. Volumele se aplică întregii înregistrări. Folosiți căști pentru a nu înregistra cititorul de ecran din difuzoare. Trecerea la altă aplicație pune înregistrarea pe pauză.",
+  "podcastRecorderHint": "Se înregistrează doar microfonul. Muzica de fundal opțională este adăugată la final. Volumele se aplică întregii înregistrări. Folosiți căști pentru a nu înregistra cititorul de ecran din difuzoare. Activați înregistrarea în fundal pentru a schimba aplicația sau a bloca ecranul; altfel, înregistrarea se pune pe pauză. Stereo depinde de microfon și dispozitiv.",
   "podcastRecorderMicVolume": "Volumul microfonului",
   "podcastRecorderMusicVolume": "Volumul muzicii de fundal",
   "podcastRecorderChooseMusic": "Alege muzica de fundal (opțional)",
@@ -4983,6 +4983,7 @@
     "description": "Localized name of the Dutch language in menus."
   },
   "newsTranslateToInterface": "Tradu în română",
+  "newsTranslationCompleted": "Traducere finalizată",
   "newsTranslating": "Se traduce",
   "newsShowOriginal": "Arată articolul original",
   "newsTranslationFailed": "Traducerea a eșuat. Încearcă din nou; articolul original este încă disponibil.",
@@ -5069,5 +5070,9 @@
   "clearFavorites": "Golește favoritele",
   "confirmClearFavorites": "Sigur dorești să elimini toate favoritele din această secțiune?",
   "clearPodcastSubscriptions": "Elimină toate abonamentele",
-  "confirmClearPodcastSubscriptions": "Sigur dorești să elimini toate abonamentele la podcasturi? Fișierele descărcate nu vor fi șterse."
+  "confirmClearPodcastSubscriptions": "Sigur dorești să elimini toate abonamentele la podcasturi? Fișierele descărcate nu vor fi șterse.",
+  "podcastRecorderChannels": "Canale de înregistrare",
+  "podcastRecorderMono": "Mono",
+  "podcastRecorderStereo": "Stereo",
+  "podcastRecorderBackground": "Continuă înregistrarea în fundal"
 }

@@ -5760,7 +5760,7 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get podcastRecorderHint =>
-      'Nahrává se pouze mikrofon. Volitelný hudební podklad se přidá po dokončení. Hlasitosti platí pro celou nahrávku. Použijte sluchátka, aby se nenahrával hlas čtečky obrazovky z reproduktorů. Přepnutí do jiné aplikace nahrávání pozastaví.';
+      'Nahrává se pouze mikrofon. Volitelný hudební podklad se přidá po dokončení. Hlasitosti platí pro celou nahrávku. Použijte sluchátka, aby se nenahrával hlas čtečky obrazovky z reproduktorů. Zapněte nahrávání na pozadí, chcete-li přepínat aplikace nebo zamknout obrazovku; jinak se nahrávání pozastaví. Stereo závisí na mikrofonu a zařízení.';
 
   @override
   String get podcastRecorderMicVolume => 'Hlasitost mikrofonu';
@@ -5812,6 +5812,9 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get newsTranslateToInterface => 'Přeložit do češtiny';
+
+  @override
+  String get newsTranslationCompleted => 'Překlad dokončen';
 
   @override
   String get newsTranslating => 'Probíhá překlad';
@@ -6054,4 +6057,16 @@ class AppLocalizationsCs extends AppLocalizations {
   @override
   String get confirmClearPodcastSubscriptions =>
       'Opravdu chcete odstranit všechna předplatná podcastů? Stažené soubory nebudou odstraněny.';
+
+  @override
+  String get podcastRecorderChannels => 'Kanály nahrávání';
+
+  @override
+  String get podcastRecorderMono => 'Mono';
+
+  @override
+  String get podcastRecorderStereo => 'Stereo';
+
+  @override
+  String get podcastRecorderBackground => 'Pokračovat v nahrávání na pozadí';
 }

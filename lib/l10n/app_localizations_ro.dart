@@ -5785,7 +5785,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String get podcastRecorderHint =>
-      'Se înregistrează doar microfonul. Muzica de fundal opțională este adăugată la final. Volumele se aplică întregii înregistrări. Folosiți căști pentru a nu înregistra cititorul de ecran din difuzoare. Trecerea la altă aplicație pune înregistrarea pe pauză.';
+      'Se înregistrează doar microfonul. Muzica de fundal opțională este adăugată la final. Volumele se aplică întregii înregistrări. Folosiți căști pentru a nu înregistra cititorul de ecran din difuzoare. Activați înregistrarea în fundal pentru a schimba aplicația sau a bloca ecranul; altfel, înregistrarea se pune pe pauză. Stereo depinde de microfon și dispozitiv.';
 
   @override
   String get podcastRecorderMicVolume => 'Volumul microfonului';
@@ -5838,6 +5838,9 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String get newsTranslateToInterface => 'Tradu în română';
+
+  @override
+  String get newsTranslationCompleted => 'Traducere finalizată';
 
   @override
   String get newsTranslating => 'Se traduce';
@@ -6081,4 +6084,16 @@ class AppLocalizationsRo extends AppLocalizations {
   @override
   String get confirmClearPodcastSubscriptions =>
       'Sigur dorești să elimini toate abonamentele la podcasturi? Fișierele descărcate nu vor fi șterse.';
+
+  @override
+  String get podcastRecorderChannels => 'Canale de înregistrare';
+
+  @override
+  String get podcastRecorderMono => 'Mono';
+
+  @override
+  String get podcastRecorderStereo => 'Stereo';
+
+  @override
+  String get podcastRecorderBackground => 'Continuă înregistrarea în fundal';
 }

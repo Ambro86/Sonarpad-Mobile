@@ -5754,7 +5754,7 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get podcastRecorderHint =>
-      'Записується лише мікрофон. Необов’язкова фонова музика додається після завершення. Рівні гучності застосовуються до всього запису. Використовуйте навушники, щоб не записувати голос читача екрана з динаміків. Перехід до іншого застосунку призупиняє запис.';
+      'Записується лише мікрофон. Необов’язкова фонова музика додається після завершення. Рівні гучності застосовуються до всього запису. Використовуйте навушники, щоб не записувати голос читача екрана з динаміків. Увімкніть фоновий запис, щоб перемикати застосунки або блокувати екран; інакше запис призупиниться. Стерео залежить від мікрофона та пристрою.';
 
   @override
   String get podcastRecorderMicVolume => 'Гучність мікрофона';
@@ -5808,6 +5808,9 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get newsTranslateToInterface => 'Перекласти українською';
+
+  @override
+  String get newsTranslationCompleted => 'Переклад завершено';
 
   @override
   String get newsTranslating => 'Триває переклад';
@@ -6050,4 +6053,16 @@ class AppLocalizationsUk extends AppLocalizations {
   @override
   String get confirmClearPodcastSubscriptions =>
       'Ви впевнені, що хочете видалити всі підписки на подкасти? Завантажені файли не буде видалено.';
+
+  @override
+  String get podcastRecorderChannels => 'Канали запису';
+
+  @override
+  String get podcastRecorderMono => 'Моно';
+
+  @override
+  String get podcastRecorderStereo => 'Стерео';
+
+  @override
+  String get podcastRecorderBackground => 'Продовжувати запис у фоні';
 }

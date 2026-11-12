@@ -24,6 +24,9 @@ class MainActivity : AudioServiceActivity() {
         if (!flutterEngine.plugins.has(RaiAndroidPlayerPlugin::class.java)) {
             flutterEngine.plugins.add(RaiAndroidPlayerPlugin())
         }
+        if (!flutterEngine.plugins.has(PodcastRecordingPlugin::class.java)) {
+            flutterEngine.plugins.add(PodcastRecordingPlugin())
+        }
         cloudPicker.attach(flutterEngine)
         photoPicker.attach(flutterEngine)
 

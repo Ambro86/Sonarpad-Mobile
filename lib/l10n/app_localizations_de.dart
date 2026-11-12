@@ -5787,7 +5787,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get podcastRecorderHint =>
-      'Nur das Mikrofon wird aufgenommen. Optionale Hintergrundmusik wird anschließend hinzugefügt. Die Lautstärken gelten für die gesamte Aufnahme. Verwenden Sie Kopfhörer, damit die Sprachausgabe nicht über die Lautsprecher mit aufgenommen wird. Beim Wechsel zu einer anderen App pausiert die Aufnahme.';
+      'Nur das Mikrofon wird aufgenommen. Optionale Hintergrundmusik wird anschließend hinzugefügt. Die Lautstärken gelten für die gesamte Aufnahme. Verwenden Sie Kopfhörer, damit die Sprachausgabe nicht über die Lautsprecher mit aufgenommen wird. Aktivieren Sie die Hintergrundaufnahme, um Apps zu wechseln oder den Bildschirm zu sperren; andernfalls pausiert die Aufnahme. Stereo hängt vom Mikrofon und Gerät ab.';
 
   @override
   String get podcastRecorderMicVolume => 'Mikrofonlautstärke';
@@ -5839,6 +5839,9 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get newsTranslateToInterface => 'Ins Deutsche übersetzen';
+
+  @override
+  String get newsTranslationCompleted => 'Übersetzung abgeschlossen';
 
   @override
   String get newsTranslating => 'Übersetzung läuft';
@@ -6082,4 +6085,16 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get confirmClearPodcastSubscriptions =>
       'Möchten Sie wirklich alle Podcast-Abonnements entfernen? Heruntergeladene Dateien werden nicht gelöscht.';
+
+  @override
+  String get podcastRecorderChannels => 'Aufnahmekanäle';
+
+  @override
+  String get podcastRecorderMono => 'Mono';
+
+  @override
+  String get podcastRecorderStereo => 'Stereo';
+
+  @override
+  String get podcastRecorderBackground => 'Im Hintergrund weiter aufnehmen';
 }

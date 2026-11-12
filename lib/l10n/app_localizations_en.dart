@@ -5741,7 +5741,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get podcastRecorderHint =>
-      'Record the microphone only. Optional background music is added afterwards. Volume levels apply to the entire recording. Use headphones to avoid recording screen reader speech from the speakers. Switching to another app pauses recording.';
+      'Record the microphone only. Optional background music is added afterwards. Volume levels apply to the entire recording. Use headphones to avoid recording screen reader speech from the speakers. Enable background recording to switch apps or lock the screen; otherwise recording pauses. Stereo depends on the microphone and device.';
 
   @override
   String get podcastRecorderMicVolume => 'Microphone volume';
@@ -5792,6 +5792,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get newsTranslateToInterface => 'Translate into English';
+
+  @override
+  String get newsTranslationCompleted => 'Translation completed';
 
   @override
   String get newsTranslating => 'Translating';
@@ -6035,4 +6038,16 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get confirmClearPodcastSubscriptions =>
       'Are you sure you want to remove all podcast subscriptions? Downloaded files will not be deleted.';
+
+  @override
+  String get podcastRecorderChannels => 'Recording channels';
+
+  @override
+  String get podcastRecorderMono => 'Mono';
+
+  @override
+  String get podcastRecorderStereo => 'Stereo';
+
+  @override
+  String get podcastRecorderBackground => 'Keep recording in the background';
 }

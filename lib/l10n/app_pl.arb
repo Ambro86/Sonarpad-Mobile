@@ -6545,7 +6545,7 @@
     }
   },
   "podcastRecorderTitle": "Nagraj podcast",
-  "podcastRecorderHint": "Nagrywany jest tylko mikrofon. Opcjonalny podkład muzyczny jest dodawany na końcu. Poziomy głośności dotyczą całego nagrania. Używaj słuchawek, aby nie nagrywać głosu czytnika ekranu z głośników. Przełączenie do innej aplikacji wstrzymuje nagrywanie.",
+  "podcastRecorderHint": "Nagrywany jest tylko mikrofon. Opcjonalny podkład muzyczny jest dodawany na końcu. Poziomy głośności dotyczą całego nagrania. Używaj słuchawek, aby nie nagrywać głosu czytnika ekranu z głośników. Włącz nagrywanie w tle, aby zmieniać aplikacje lub blokować ekran; w przeciwnym razie nagrywanie zostanie wstrzymane. Stereo zależy od mikrofonu i urządzenia.",
   "podcastRecorderMicVolume": "Głośność mikrofonu",
   "podcastRecorderMusicVolume": "Głośność podkładu muzycznego",
   "podcastRecorderChooseMusic": "Wybierz podkład muzyczny (opcjonalnie)",
@@ -6564,6 +6564,7 @@
     "description": "Localized name of the Dutch language in menus."
   },
   "newsTranslateToInterface": "Przetłumacz na polski",
+  "newsTranslationCompleted": "Tłumaczenie zakończone",
   "newsTranslating": "Trwa tłumaczenie",
   "newsShowOriginal": "Pokaż oryginalny artykuł",
   "newsTranslationFailed": "Tłumaczenie nie powiodło się. Spróbuj ponownie; oryginalny artykuł jest nadal dostępny.",
@@ -6650,5 +6651,9 @@
   "clearFavorites": "Wyczyść ulubione",
   "confirmClearFavorites": "Czy na pewno chcesz usunąć wszystkie ulubione z tej sekcji?",
   "clearPodcastSubscriptions": "Usuń wszystkie subskrypcje",
-  "confirmClearPodcastSubscriptions": "Czy na pewno chcesz usunąć wszystkie subskrypcje podcastów? Pobrane pliki nie zostaną usunięte."
+  "confirmClearPodcastSubscriptions": "Czy na pewno chcesz usunąć wszystkie subskrypcje podcastów? Pobrane pliki nie zostaną usunięte.",
+  "podcastRecorderChannels": "Kanały nagrywania",
+  "podcastRecorderMono": "Mono",
+  "podcastRecorderStereo": "Stereo",
+  "podcastRecorderBackground": "Kontynuuj nagrywanie w tle"
 }
