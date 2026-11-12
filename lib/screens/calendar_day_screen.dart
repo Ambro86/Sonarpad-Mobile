@@ -112,6 +112,7 @@ class _CalendarDayScreenState extends State<CalendarDayScreen> {
     final l10n = AppLocalizations.of(context);
     final event = await showDialog<CalendarEvent>(
       context: context,
+      barrierDismissible: false,
       builder: (_) => CalendarReminderDialog(date: widget.date),
     );
     if (event == null || !mounted) return;

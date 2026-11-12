@@ -471,6 +471,7 @@ class _SonarpadAppState extends State<SonarpadApp> with WidgetsBindingObserver {
                       if (!playerContext.mounted) return;
                       await showDialog<void>(
                         context: playerContext,
+                        barrierDismissible: false,
                         builder: (dialogContext) => AlertDialog(
                           content: Text(l10n.exportSavedInSonarpad),
                           actions: [

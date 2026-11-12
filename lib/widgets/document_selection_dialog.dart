@@ -153,6 +153,7 @@ Future<DocumentSelectionResult?> showDocumentSelectionDialog(
                         : () async {
                             final confirmed = await showDialog<bool>(
                               context: dialogContext,
+                              barrierDismissible: false,
                               builder: (confirmationContext) => AlertDialog(
                                 title: Text(l10n.deleteItem),
                                 content: Text(

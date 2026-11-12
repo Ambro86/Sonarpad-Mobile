@@ -2313,6 +2313,25 @@ class SonarTubeService {
     }
 
     _walkYoutubeTree(root, (node) {
+      // Shorts-only playlists use these cards instead of playlistVideoRenderer.
+      // Adapt their fields to the existing video parser and playback path.
+      final shorts = _asMap(node['shortsLockupViewModel']);
+      if (shorts != null) {
+        final command = _asMap(_asMap(shorts['onTap'])?['innertubeCommand']);
+        final endpoint = _asMap(command?['reelWatchEndpoint']);
+        final metadata = _asMap(shorts['overlayMetadata']);
+        final image = _asMap(
+          _asMap(_asMap(shorts['thumbnailViewModel'])?['thumbnailViewModel'])?['image'],
+        );
+        addVideo({
+          'videoId': endpoint?['videoId'],
+          'title': {'simpleText': _asMap(metadata?['primaryText'])?['content']},
+          'viewCountText': {
+            'simpleText': _asMap(metadata?['secondaryText'])?['content'],
+          },
+          'thumbnail': {'thumbnails': image?['sources']},
+        });
+      }
       final videoRenderer = _asMap(node['videoRenderer']);
       if (videoRenderer != null) addVideo(videoRenderer);
       final compactVideoRenderer = _asMap(node['compactVideoRenderer']);

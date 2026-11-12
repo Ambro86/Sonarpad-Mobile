@@ -1,0 +1,118 @@
+{
+  "contents": [
+    {
+      "shortsLockupViewModel": {
+        "onTap": {
+          "innertubeCommand": {
+            "reelWatchEndpoint": {
+              "videoId": "t3M339KcKZA",
+              "playlistId": "PLA5MwkwfgUBM"
+            }
+          }
+        },
+        "overlayMetadata": {
+          "primaryText": {
+            "content": "01 Come la Vanità Distorce la Vera Sapienza"
+          },
+          "secondaryText": {
+            "content": "87 visualizzazioni"
+          }
+        },
+        "thumbnailViewModel": {
+          "thumbnailViewModel": {
+            "image": {
+              "sources": [
+                {
+                  "url": "https://i.ytimg.com/vi/t3M339KcKZA/oar2.jpg?sqp=-oaymwEkCJUDENAFSFqQAgHyq4qpAxMIARUAAAAAJQAAyEI9AICiQ3gB&rs=AOn4CLAQZR5RNfMEekUBp2hOkOb6T8AdxQ",
+                  "width": 405,
+                  "height": 720
+                },
+                {
+                  "url": "https://i.ytimg.com/vi/t3M339KcKZA/oar2.jpg?sqp=-oaymwEnCJUDEOAESFqQAgHyq4qpAxYIARUAAAAAJQAAyEI9AICiQ3gByAEB&rs=AOn4CLAvLspq-QiTO6fnj9bqeEoAdU6CSg",
+                  "width": 405,
+                  "height": 608
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "shortsLockupViewModel": {
+        "onTap": {
+          "innertubeCommand": {
+            "reelWatchEndpoint": {
+              "videoId": "4j4tljmTPb8",
+              "playlistId": "PLA5MwkwfgUBM"
+            }
+          }
+        },
+        "overlayMetadata": {
+          "primaryText": {
+            "content": "02 Come La Conoscenza Genera Superbia"
+          },
+          "secondaryText": {
+            "content": "41 visualizzazioni"
+          }
+        },
+        "thumbnailViewModel": {
+          "thumbnailViewModel": {
+            "image": {
+              "sources": [
+                {
+                  "url": "https://i.ytimg.com/vi/4j4tljmTPb8/oar2.jpg?sqp=-oaymwEkCJUDENAFSFqQAgHyq4qpAxMIARUAAAAAJQAAyEI9AICiQ3gB&rs=AOn4CLDy4OyzYrw-RL5Qu-r81Axw4WiiDw",
+                  "width": 405,
+                  "height": 720
+                },
+                {
+                  "url": "https://i.ytimg.com/vi/4j4tljmTPb8/oar2.jpg?sqp=-oaymwEnCJUDEOAESFqQAgHyq4qpAxYIARUAAAAAJQAAyEI9AICiQ3gByAEB&rs=AOn4CLBrJrudWclIYZvKfvrE61puY5Bu2A",
+                  "width": 405,
+                  "height": 608
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "shortsLockupViewModel": {
+        "onTap": {
+          "innertubeCommand": {
+            "reelWatchEndpoint": {
+              "videoId": "2xg9n79ocj8",
+              "playlistId": "PLA5MwkwfgUBM"
+            }
+          }
+        },
+        "overlayMetadata": {
+          "primaryText": {
+            "content": "03 Come l’Eccesso di Teoria Paralizza l’Azione"
+          },
+          "secondaryText": {
+            "content": "53 visualizzazioni"
+          }
+        },
+        "thumbnailViewModel": {
+          "thumbnailViewModel": {
+            "image": {
+              "sources": [
+                {
+                  "url": "https://i.ytimg.com/vi/2xg9n79ocj8/oar2.jpg?sqp=-oaymwEkCJUDENAFSFqQAgHyq4qpAxMIARUAAAAAJQAAyEI9AICiQ3gB&rs=AOn4CLC6seT8YZ1SW-gW82ueaJlb3XIUQg",
+                  "width": 405,
+                  "height": 720
+                },
+                {
+                  "url": "https://i.ytimg.com/vi/2xg9n79ocj8/oar2.jpg?sqp=-oaymwEnCJUDEOAESFqQAgHyq4qpAxYIARUAAAAAJQAAyEI9AICiQ3gByAEB&rs=AOn4CLABbGPTWTNRjdik4otHLgQNVtUdDw",
+                  "width": 405,
+                  "height": 608
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  ]
+}

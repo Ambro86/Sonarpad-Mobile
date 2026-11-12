@@ -746,6 +746,7 @@ class _WeatherRecentCitiesScreenState
     final l10n = AppLocalizations.of(context);
     final confirm = await showDialog<bool>(
       context: context,
+      barrierDismissible: false,
       builder: (context) => AlertDialog(
         title: Text(l10n.clearHistory),
         content: Text(l10n.confirmClearHistory),

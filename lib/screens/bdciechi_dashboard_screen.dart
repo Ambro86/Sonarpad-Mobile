@@ -200,6 +200,7 @@ class _BdCiechiDashboardScreenState extends State<BdCiechiDashboardScreen> {
   void _showPreviewDialog(String record, String content) {
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (_) => AlertDialog(
         title: Semantics(
           header: true,

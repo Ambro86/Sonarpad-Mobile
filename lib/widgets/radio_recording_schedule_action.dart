@@ -46,6 +46,7 @@ Future<TimeOfDay?> _showScheduledRecordingTimePicker({
 
   return showDialog<TimeOfDay>(
     context: context,
+    barrierDismissible: false,
     builder: (dialogContext) {
       return StatefulBuilder(
         builder: (context, setDialogState) {
@@ -187,6 +188,7 @@ Future<void> showRadioScheduleRecordingAction(
   try {
     final request = await showDialog<_RadioScheduledRecordingRequest>(
       context: context,
+      barrierDismissible: false,
       builder: (dialogContext) {
         return StatefulBuilder(
           builder: (context, setDialogState) {

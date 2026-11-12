@@ -643,6 +643,7 @@ class _RadioScreenState extends State<RadioScreen> {
             onTap: () async {
               final result = await showDialog<String>(
                 context: context,
+                barrierDismissible: false,
                 builder: (context) {
                   final controller = TextEditingController(text: _cityCode);
                   return AlertDialog(

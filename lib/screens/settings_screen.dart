@@ -738,6 +738,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final l10n = AppLocalizations.of(context);
     final confirm = await showDialog<bool>(
       context: context,
+      barrierDismissible: false,
       builder: (context) => AlertDialog(
         title: Text(l10n.confirmClearPodcastCacheTitle),
         content: Text(l10n.confirmClearPodcastCacheMessage),
@@ -1659,6 +1660,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final result =
         await showDialog<({String name, String email, String report})>(
           context: context,
+          barrierDismissible: false,
           builder: (dialogContext) => StatefulBuilder(
             builder: (dialogContext, setDialogState) => AlertDialog(
               title: Text(l10n.sendLogToDeveloper),

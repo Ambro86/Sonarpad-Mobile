@@ -35,6 +35,7 @@ class _VoiceDictionaryScreenState extends State<VoiceDictionaryScreen> {
   Future<void> _showAddEntryDialog() async {
     final entry = await showDialog<VoiceDictionaryEntry>(
       context: context,
+      barrierDismissible: false,
       builder: (_) => const _VoiceDictionaryEntryDialog(),
     );
     if (entry == null) return;

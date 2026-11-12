@@ -194,6 +194,7 @@ class _RouteScreenState extends State<RouteScreen> {
     if (!mounted) return null;
     return showDialog<GeocodeCandidate>(
       context: context,
+      barrierDismissible: false,
       builder: (dialogContext) {
         if (useSharedAccessibleViewModel) {
           return AlertDialog(

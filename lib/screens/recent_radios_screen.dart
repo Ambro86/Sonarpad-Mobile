@@ -68,6 +68,7 @@ class _RecentRadiosScreenState extends State<RecentRadiosScreen> {
     final l10n = AppLocalizations.of(context);
     final confirm = await showDialog<bool>(
       context: context,
+      barrierDismissible: false,
       builder: (ctx) => AlertDialog(
         title: Text(l10n.clearHistory),
         content: Text(l10n.confirmClearHistory),

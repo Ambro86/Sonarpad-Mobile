@@ -30,6 +30,7 @@ class _ClearFavoritesButtonState extends State<ClearFavoritesButton> {
     try {
       final confirmed = await showDialog<bool>(
         context: context,
+        barrierDismissible: false,
         builder: (context) => AlertDialog(
           title: Text(widget.label ?? l10n.clearFavorites),
           content: Text(widget.confirmation ?? l10n.confirmClearFavorites),

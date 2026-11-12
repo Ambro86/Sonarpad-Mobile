@@ -276,6 +276,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
           _docLog('DOC_PDF password required retry=${password != null}');
           password = await showDialog<String>(
             context: context,
+            barrierDismissible: false,
             builder: (_) => DocumentPasswordDialog(
               title: l10n.documentPasswordRequiredTitle,
               prompt: l10n.enterDocumentPasswordToOpen,
@@ -379,6 +380,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     final l10n = AppLocalizations.of(context);
     final action = await showDialog<bool>(
       context: context,
+      barrierDismissible: false,
       builder: (ctx) => AlertDialog(
         title: Text(l10n.savePdfWithoutPassword),
         content: Text(l10n.pdfUnprotectedCopyDescription),
@@ -1001,6 +1003,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
 
     final selected = await showDialog<int>(
       context: context,
+      barrierDismissible: false,
       builder: (dialogContext) => StatefulBuilder(
         builder: (dialogContext, dialogSetState) {
           return AlertDialog(
@@ -2003,6 +2006,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     final count = _selectedParagraphIndexes.length;
     final confirmed = await showDialog<bool>(
           context: context,
+          barrierDismissible: false,
           builder: (dialogContext) => AlertDialog(
             title: Text(l10n.documentDeleteSelectedParagraphs),
             content: Text(
@@ -2178,6 +2182,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
     final controller = TextEditingController(text: _chunks[index]);
     final edited = await showDialog<String>(
       context: context,
+      barrierDismissible: false,
       builder: (ctx) {
         return AlertDialog(
           title: Text(AppLocalizations.of(context).editParagraph),

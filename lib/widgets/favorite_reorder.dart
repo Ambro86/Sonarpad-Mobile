@@ -89,6 +89,7 @@ Future<List<T>?> reorderFavorites<T>(
     var position = index;
     target = await showDialog<int>(
       context: context,
+      barrierDismissible: false,
       builder: (dialog) => StatefulBuilder(
         builder: (dialog, setState) {
           final l = AppLocalizations.of(dialog);

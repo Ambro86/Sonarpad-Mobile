@@ -197,6 +197,7 @@ class _BdCiechiLoginScreenState extends State<BdCiechiLoginScreen> {
                       onPressed: () {
                         showDialog(
                           context: context,
+                          barrierDismissible: false,
                           builder: (context) => AlertDialog(
                             title: const Text('Iscrizione'),
                             content: const Text('Scegli dove vuoi iscriverti:'),

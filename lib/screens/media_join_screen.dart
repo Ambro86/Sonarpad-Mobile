@@ -551,6 +551,7 @@ class _MediaJoinScreenState extends State<MediaJoinScreen> {
     final l10n = AppLocalizations.of(context);
     final selected = await showDialog<MediaJoinOutputFormat>(
       context: context,
+      barrierDismissible: false,
       builder: (dialogContext) => AlertDialog(
         title: Text(l10n.joinMediaChooseFormat),
         content: Column(

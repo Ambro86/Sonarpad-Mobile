@@ -414,6 +414,7 @@ class _PodcastScreenState extends State<PodcastScreen> {
       list.insert(index, item);
       final newPos = await showDialog<int>(
         context: context,
+        barrierDismissible: false,
         builder: (_) => _PodcastPositionSliderDialog(
           currentIndex: index,
           subscriptions: list,

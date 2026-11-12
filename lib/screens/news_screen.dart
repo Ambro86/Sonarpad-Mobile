@@ -135,6 +135,7 @@ class _NewsScreenState extends State<NewsScreen> {
 
     final result = await showDialog<bool>(
       context: context,
+      barrierDismissible: false,
       builder: (context) => AlertDialog(
         title: Text(AppLocalizations.of(context).addRssSource),
         content: Column(
@@ -221,6 +222,7 @@ class _NewsScreenState extends State<NewsScreen> {
     final ctrl = TextEditingController();
     final name = await showDialog<String>(
       context: context,
+      barrierDismissible: false,
       builder: (ctx) => AlertDialog(
         title: Text(AppLocalizations.of(context).newFolder),
         content: TextField(
@@ -1311,6 +1313,7 @@ class _NewsSourceList extends StatelessWidget {
     if (!context.mounted || folders.isEmpty) return null;
     return showDialog<String>(
       context: context,
+      barrierDismissible: false,
       builder: (ctx) => AlertDialog(
         title: Text(l10n.selectFolder),
         content: SizedBox(
@@ -1411,6 +1414,7 @@ class _NewsSourceList extends StatelessWidget {
       } else if (action == _NewsSourceAction.moveToPosition) {
         final newPos = await showDialog<int>(
           context: context,
+          barrierDismissible: false,
           builder: (_) => _PositionSliderDialog(
             currentIndex: index,
             sources: sources,
@@ -2214,6 +2218,7 @@ class _ReadArticlesScreenState extends State<_ReadArticlesScreen> {
     final l10n = AppLocalizations.of(context);
     final confirm = await showDialog<bool>(
       context: context,
+      barrierDismissible: false,
       builder: (context) => AlertDialog(
         title: Text(l10n.clearHistory),
         content: Text(l10n.confirmClearHistory),

@@ -263,6 +263,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
       if (mounted) {
         await showDialog<void>(
           context: context,
+          barrierDismissible: false,
           builder: (context) => AlertDialog(
             title: Text(AppLocalizations.of(context).articleSavedSuccess),
             actions: [

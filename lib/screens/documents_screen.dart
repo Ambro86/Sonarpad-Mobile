@@ -686,6 +686,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
           .toList();
       final result = await showDialog<dynamic>(
         context: context,
+        barrierDismissible: false,
         builder: (_) => _DocumentPositionSliderDialog(
           currentIndex: currentIndex,
           documents: displayed,
@@ -716,6 +717,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
           if (!mounted) return;
           selectedFolderId = await showDialog<String?>(
             context: context,
+            barrierDismissible: false,
             builder: (ctx) => AlertDialog(
               title: Text(l10n.selectFolder),
               content: SizedBox(
@@ -782,6 +784,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     if (!mounted) return;
     await showDialog<void>(
       context: context,
+      barrierDismissible: false,
       builder: (ctx) => AlertDialog(
         content: Text(message),
         actions: [
@@ -804,6 +807,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     if (doc.isPasswordProtected) {
       final password = await showDialog<String>(
         context: context,
+        barrierDismissible: false,
         builder: (_) => _DocumentPasswordDialog(
           title: l10n.removeDocumentPasswordProtection,
           prompt: l10n.enterCurrentDocumentPassword,
@@ -834,6 +838,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
 
     final password = await showDialog<String>(
       context: context,
+      barrierDismissible: false,
       builder: (_) => _DocumentPasswordDialog(
         title: l10n.protectDocumentWithPassword,
         prompt: l10n.chooseDocumentPassword,
@@ -867,6 +872,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     final l10n = AppLocalizations.of(context);
     final password = await showDialog<String>(
       context: context,
+      barrierDismissible: false,
       builder: (_) => _DocumentPasswordDialog(
         title: l10n.documentPasswordRequiredTitle,
         prompt: l10n.enterDocumentPasswordToShare,
@@ -896,6 +902,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     final l10n = AppLocalizations.of(context);
     final password = await showDialog<String>(
       context: context,
+      barrierDismissible: false,
       builder: (_) => _DocumentPasswordDialog(
         title: l10n.documentPasswordRequiredTitle,
         prompt: l10n.enterDocumentPasswordToOpen,
@@ -1150,6 +1157,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     final l10n = AppLocalizations.of(context);
     final action = await showDialog<_ExportAction>(
       context: context,
+      barrierDismissible: false,
       builder: (ctx) => AlertDialog(
         title: Text(l10n.exportCompleteTitle),
         content: Text(l10n.exportCompleteMessage),
@@ -1241,7 +1249,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     String? password;
     while (requestPdfPassword && result.passwordRequired) {
       if (!mounted) throw StateError('Cancelled');
-      password = await showDialog<String>(context: context, builder: (_) => DocumentPasswordDialog(
+      password = await showDialog<String>(context: context, barrierDismissible: false, builder: (_) => DocumentPasswordDialog(
         title: l10n.documentPasswordRequiredTitle,
         prompt: l10n.enterDocumentPasswordToOpen,
         passwordLabel: l10n.documentPassword,
@@ -1874,6 +1882,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                 final ctrl = TextEditingController();
                 final name = await showDialog<String>(
                   context: context,
+                  barrierDismissible: false,
                   builder: (ctx) => AlertDialog(
                     title: Text(AppLocalizations.of(context).newFolder),
                     content: TextField(

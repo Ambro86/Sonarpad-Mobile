@@ -9,6 +9,7 @@ Future<SharedVideoAction?> showSharedVideoActionDialog(
   required String filename,
 }) => showDialog<SharedVideoAction>(
   context: context,
+  barrierDismissible: false,
   builder: (context) {
     final l10n = AppLocalizations.of(context);
     return SimpleDialog(

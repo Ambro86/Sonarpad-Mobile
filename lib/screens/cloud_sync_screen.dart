@@ -119,6 +119,7 @@ class _CloudSyncScreenState extends State<CloudSyncScreen> {
     final l10n = AppLocalizations.of(context);
     final confirmed = await showDialog<bool>(
       context: context,
+      barrierDismissible: false,
       builder: (context) => AlertDialog(
         title: Text(l10n.cloudSyncDisconnect),
         content: Text(l10n.cloudSyncDisconnectConfirm),

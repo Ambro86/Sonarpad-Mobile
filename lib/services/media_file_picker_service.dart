@@ -25,6 +25,7 @@ class MediaFilePicker {
     final l10n = AppLocalizations.of(context);
     final fromLibrary = await showDialog<bool>(
       context: context,
+      barrierDismissible: false,
       builder: (dialogContext) => AlertDialog(
         title: Text(title ?? l10n.openItem),
         actions: [

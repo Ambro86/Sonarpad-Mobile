@@ -612,6 +612,7 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
       if (mounted) {
         showDialog(
           context: context,
+          barrierDismissible: false,
           builder: (context) => AlertDialog(
             title: const Text('Informazioni Database'),
             content: Column(

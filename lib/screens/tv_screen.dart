@@ -209,6 +209,7 @@ class _TvScreenState extends State<TvScreen> {
 
     await showDialog<void>(
       context: context,
+      barrierDismissible: false,
       builder: (_) => _TvSearchResultsDialog(
         onOpenChannel: _openChannel,
         query: query,

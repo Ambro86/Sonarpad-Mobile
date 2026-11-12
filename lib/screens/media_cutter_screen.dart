@@ -2180,6 +2180,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     var editStep = _cutEditStepOptions.first;
     await showDialog<void>(
       context: context,
+      barrierDismissible: false,
       builder: (dialogContext) {
         return StatefulBuilder(
           builder: (dialogContext, setDialogState) {
@@ -2440,6 +2441,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     var editStep = _cutEditStepOptions.first;
     await showDialog<void>(
       context: context,
+      barrierDismissible: false,
       builder: (dialogContext) {
         return StatefulBuilder(
           builder: (dialogContext, setDialogState) {
@@ -3943,6 +3945,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     String? error;
     final target = await showDialog<Duration>(
       context: context,
+      barrierDismissible: false,
       builder: (dialogContext) => StatefulBuilder(
         builder: (context, update) => AlertDialog(
           title: Text(_l10n.mediaCutterGoToTime),
@@ -4069,6 +4072,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     final l10n = AppLocalizations.of(context);
     final result = await showDialog<bool>(
       context: context,
+      barrierDismissible: false,
       builder: (dialogContext) => AlertDialog(
         title: Text(l10n.mediaCutterUnsavedExitTitle),
         content: Text(

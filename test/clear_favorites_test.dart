@@ -189,6 +189,11 @@ void main() {
       await tester.pumpAndSettle();
       expect(clears, 0);
       expect(find.text(confirmation), findsOneWidget);
+      expect(find.bySemanticsLabel('Ignora'), findsNothing);
+      await tester.tapAt(const Offset(2, 2));
+      await tester.pumpAndSettle();
+      expect(find.text(confirmation), findsOneWidget);
+      expect(clears, 0);
       await tester.tap(find.text('Annulla'));
       await tester.pumpAndSettle();
       expect(clears, 0);

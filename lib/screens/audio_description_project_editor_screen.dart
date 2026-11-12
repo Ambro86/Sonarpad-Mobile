@@ -541,6 +541,7 @@ class _AudioDescriptionProjectEditorScreenState
     if (!mounted || _running) return;
     final confirmed = await showDialog<bool>(
       context: context,
+      barrierDismissible: false,
       builder: (dialogContext) => AlertDialog(
         title: Text(l10n.audioDescriptionProjectReanalyze),
         content: Text(l10n.audioDescriptionProjectReanalyzeConfirm),
@@ -598,6 +599,7 @@ class _AudioDescriptionProjectEditorScreenState
     }
     final confirmed = await showDialog<bool>(
           context: context,
+          barrierDismissible: false,
           builder: (dialogContext) => AlertDialog(
             content: Text(strings.deleteConfirm),
             actions: [

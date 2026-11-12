@@ -50,6 +50,7 @@ class _AudioDescriptionProjectPickerScreenState
     if (!document.isPasswordProtected) return true;
     final unlocked = await showDialog<bool>(
       context: context,
+      barrierDismissible: false,
       builder: (_) =>
           _ProjectPasswordDialog(library: _library, document: document),
     );

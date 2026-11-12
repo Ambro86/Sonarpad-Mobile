@@ -48,6 +48,7 @@ class _RecentSearchesScreenState extends State<RecentSearchesScreen> {
   Future<void> _clearAll() async {
     final conf = await showDialog<bool>(
       context: context,
+      barrierDismissible: false,
       builder: (ctx) => AlertDialog(
         title: Text(AppLocalizations.of(context).clearHistory),
         content: Text(AppLocalizations.of(context).confirmClearHistory),

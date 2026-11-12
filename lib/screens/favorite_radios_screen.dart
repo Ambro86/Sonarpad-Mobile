@@ -110,6 +110,7 @@ class _FavoriteRadiosScreenState extends State<FavoriteRadiosScreen> {
       list.insert(index, item);
       final newPos = await showDialog<int>(
         context: context,
+        barrierDismissible: false,
         builder: (_) => _RadioPositionSliderDialog(
           currentIndex: index,
           favorites: list,

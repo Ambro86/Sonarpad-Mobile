@@ -2224,6 +2224,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
 
     return showDialog<TimeOfDay>(
       context: context,
+      barrierDismissible: false,
       builder: (dialogContext) {
         return StatefulBuilder(
           builder: (context, setDialogState) {
@@ -2355,6 +2356,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     try {
       final request = await showDialog<_ScheduledRecordingRequest>(
         context: context,
+        barrierDismissible: false,
         builder: (dialogContext) {
           return StatefulBuilder(
             builder: (context, setDialogState) {

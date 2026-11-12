@@ -296,7 +296,7 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
   }
   Future<void> _openUrl() async {
     final controller = TextEditingController();
-    final url = await showDialog<String>(context: context, builder: (dialog) =>
+    final url = await showDialog<String>(context: context, barrierDismissible: false, builder: (dialog) =>
       AlertDialog(title: Text(_label('open')),
         content: TextField(controller: controller, autofocus: true,
           keyboardType: TextInputType.url, textInputAction: TextInputAction.done,
@@ -545,6 +545,7 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
     final l10n = AppLocalizations.of(context);
     final confirm = await showDialog<bool>(
       context: context,
+      barrierDismissible: false,
       builder: (dialogContext) => AlertDialog(
         title: Text(l10n.clearHistory),
         content: Text(l10n.sonarMusicRecent),

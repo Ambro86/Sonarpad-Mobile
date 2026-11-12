@@ -207,6 +207,7 @@ class _PodcastRecorderScreenState extends State<PodcastRecorderScreen>
     final l10n = AppLocalizations.of(context);
     return await showDialog<bool>(
           context: context,
+          barrierDismissible: false,
           builder: (ctx) => AlertDialog(
             content: Text(message),
             actions: [

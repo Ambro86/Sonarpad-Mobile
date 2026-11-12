@@ -163,6 +163,7 @@ class _TranslatorScreenState extends State<TranslatorScreen> {
     try {
       final fromLibrary = await showDialog<bool>(
         context: context,
+        barrierDismissible: false,
         builder: (context) => AlertDialog(
           title: Text(l10n.translationChooseFile),
           actions: [
@@ -229,6 +230,7 @@ class _TranslatorScreenState extends State<TranslatorScreen> {
         if (!mounted || generation != _fileGeneration) return;
         password = await showDialog<String>(
           context: context,
+          barrierDismissible: false,
           builder: (_) => DocumentPasswordDialog(
             title: l10n.documentPasswordRequiredTitle,
             prompt: l10n.enterDocumentPasswordToOpen,
@@ -412,6 +414,7 @@ class _TranslationDocumentPickerScreenState
         final l10n = AppLocalizations.of(context);
         final password = await showDialog<String>(
           context: context,
+          barrierDismissible: false,
           builder: (_) => DocumentPasswordDialog(
             title: l10n.documentPasswordRequiredTitle,
             prompt: l10n.enterDocumentPasswordToOpen,
@@ -600,6 +603,7 @@ class _TranslatorResultScreenState extends State<TranslatorResultScreen> {
     if (!share) {
       final choice = await showDialog<bool>(
         context: context,
+        barrierDismissible: false,
         builder: (context) => AlertDialog(
           title: Text(l10n.translationSave),
           actions: [

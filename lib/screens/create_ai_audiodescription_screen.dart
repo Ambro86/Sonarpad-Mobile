@@ -513,6 +513,7 @@ class _CreateAiAudiodescriptionScreenState
         final l10n = AppLocalizations.of(context);
         selected = await showDialog<int>(
           context: context,
+          barrierDismissible: false,
           builder: (dialogContext) => SimpleDialog(
             title: Text(l10n.selectAudioTrack),
             children: [
@@ -815,6 +816,7 @@ class _CreateAiAudiodescriptionScreenState
     final controller = TextEditingController();
     final value = await showDialog<String>(
       context: context,
+      barrierDismissible: false,
       builder: (dialogContext) => AlertDialog(
         title: Text(l10n.audioDescriptionCharacterCatalogNameTitle),
         content: TextField(
@@ -862,6 +864,7 @@ class _CreateAiAudiodescriptionScreenState
       if (!mounted) return;
       final selection = await showDialog<String>(
         context: context,
+        barrierDismissible: false,
         builder: (dialogContext) => AlertDialog(
           title: Text(l10n.audioDescriptionLoadCharacterCatalog),
           content: available.isEmpty

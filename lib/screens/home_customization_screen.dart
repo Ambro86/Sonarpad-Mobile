@@ -82,6 +82,7 @@ class _HomeCustomizationScreenState extends State<HomeCustomizationScreen> {
     final l10n = AppLocalizations.of(context);
     final confirmed = await showDialog<bool>(
       context: context,
+      barrierDismissible: false,
       builder: (dialogContext) => AlertDialog(
         title: Text(l10n.homeResetDefaultsConfirmTitle),
         content: Text(l10n.homeResetDefaultsConfirmMessage),
@@ -346,6 +347,7 @@ class _HomeReorderScreenState extends State<HomeReorderScreen> {
     if (currentIndex < 0) return;
     final result = await showDialog<int>(
       context: context,
+      barrierDismissible: false,
       builder: (_) => _HomePositionDialog(
         currentIndex: currentIndex,
         itemIds: visible,

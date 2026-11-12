@@ -121,6 +121,7 @@ Future<TimeOfDay?> _showScheduledRecordingTimePicker({
 
   return showDialog<TimeOfDay>(
     context: context,
+    barrierDismissible: false,
     builder: (dialogContext) {
       return StatefulBuilder(
         builder: (context, setDialogState) {
@@ -321,6 +322,7 @@ Future<void> showTvScheduleRecordingAction(
   try {
     final request = await showDialog<_TvScheduledRecordingRequest>(
       context: context,
+      barrierDismissible: false,
       builder: (dialogContext) {
         return StatefulBuilder(
           builder: (context, setDialogState) {

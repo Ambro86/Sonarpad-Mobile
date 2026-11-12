@@ -131,6 +131,7 @@ class _DocumentTranslationScreenState extends State<DocumentTranslationScreen> {
       if (_result!.isPartial) {
         await showDialog<void>(
           context: context,
+          barrierDismissible: false,
           builder: (context) => AlertDialog(
             title: Text(l10n.translateDocument),
             content: Text(l10n.documentTranslationPartial),

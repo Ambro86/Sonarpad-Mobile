@@ -188,6 +188,7 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
     final controller = TextEditingController();
     final url = await showDialog<String>(
       context: context,
+      barrierDismissible: false,
       builder: (dialogContext) => AlertDialog(
         title: Text(_openUrlLabel(l10n)),
         content: TextField(
@@ -3419,6 +3420,7 @@ class _SonarTubeRecentVideosScreenState
     final l10n = AppLocalizations.of(context);
     final confirm = await showDialog<bool>(
       context: context,
+      barrierDismissible: false,
       builder: (dialogContext) => AlertDialog(
         title: Text(l10n.clearHistory),
         content: Text(l10n.sonarTubeConfirmClearHistory),
