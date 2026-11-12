@@ -1652,7 +1652,20 @@ class _CreateAiAudiodescriptionScreenState
                 Expanded(
                   child: UniversalAccessibleList(
                     key: const ValueKey('audio_description_settings'),
-                    transientRowIds: const ['mix_preview', 'mix_preview_status'],
+                    // Insert/remove conditional fields without recreating the
+                    // focused native control (provider, voice, or other setting).
+                    transientRowIds: const [
+                      'source_audio_track',
+                      'api_key', 'get_api_key', 'model', 'refresh_models',
+                      'sonarpad_code', 'activate_sonarpad', 'sonarpad_balance',
+                      'sonarpad_model_info',
+                      'mix_preview', 'mix_preview_status',
+                      'load_character_catalog', 'keep_character_catalog',
+                      'character_catalog',
+                      'edge_language', 'edge_voice',
+                      'system_language', 'system_voice',
+                      'status', 'technical_error',
+                    ],
                     initialFocusId: 'choose_video',
               sections: [
                 AccessibleListSection(

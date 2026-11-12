@@ -1273,14 +1273,56 @@ void main() {
           final node = _control('provider');
           expect(node, findsOneWidget);
 
-          await _sliderEvent(tester, 'provider', 1);
-          expect(_row(tester, 'provider').sliderValue, 1);
-          expect(_row(tester, 'sonarpad_code').kind, 'textField');
-          await _sliderEvent(tester, 'provider', 0);
-          expect(_row(tester, 'provider').sliderValue, 0);
-          expect(_row(tester, 'api_key').kind, 'textField');
-          await _sliderEvent(tester, 'provider', 1);
-          await _sliderEvent(tester, 'provider', 0);
+          final semantics = tester.ensureSemantics();
+          await tester.pump();
+          final providerNodeId = tester.getSemantics(node).id;
+          final detail = _row(tester, 'verbosity').value;
+          final language = _row(tester, 'language').value;
+          final bitrate = _row(tester, 'mp3_bitrate').sliderValue;
+          final volume = _row(tester, 'source_volume').sliderValue;
+          final pitch = _row(tester, 'creation_voice_pitch').sliderValue;
+          for (final value in [1, 0, 1, 0]) {
+            final before = _form(tester).sections;
+            final semanticsNode = tester.getSemantics(node);
+            await tester.runAsync(() async {
+              semanticsNode.owner!.performAction(
+                semanticsNode.id,
+                value == 1 ? SemanticsAction.increase : SemanticsAction.decrease,
+              );
+            });
+            await tester.pump();
+            final after = _form(tester).sections;
+            // These are the conditions required by UIKit's existing in-place
+            // row update: retained rows keep their order/kind and all changed
+            // identities are explicitly transient. Otherwise it reloads the
+            // whole table, destroying VoiceOver's focused provider element.
+            expect(after.length, before.length);
+            for (var section = 0; section < before.length; section++) {
+              final oldRows = before[section].rows;
+              final newRows = after[section].rows;
+              final oldIds = oldRows.map((r) => r.id).toSet();
+              final newIds = newRows.map((r) => r.id).toSet();
+              final changed = oldIds.difference(newIds)
+                ..addAll(newIds.difference(oldIds));
+              expect(_form(tester).transientRowIds, containsAll(changed));
+              expect(
+                oldRows.where((r) => newIds.contains(r.id))
+                    .map((r) => '${r.id}:${r.kind}'),
+                newRows.where((r) => oldIds.contains(r.id))
+                    .map((r) => '${r.id}:${r.kind}'),
+              );
+            }
+            expect(tester.getSemantics(node).id, providerNodeId);
+            expect(_row(tester, 'provider').sliderValue, value);
+            expect(_row(tester, 'verbosity').value, detail);
+            expect(_row(tester, 'language').value, language);
+            expect(_row(tester, 'mp3_bitrate').sliderValue, bitrate);
+            expect(_row(tester, 'source_volume').sliderValue, volume);
+            expect(_row(tester, 'creation_voice_pitch').sliderValue, pitch);
+            expect(_row(tester, value == 1 ? 'sonarpad_code' : 'api_key').kind,
+                'textField');
+          }
+          semantics.dispose();
           expect(_row(tester, 'provider').sliderValue, 0);
           expect(_control('provider'), findsOneWidget);
           final preference = await AiAudioDescriptionPreferences.load();
