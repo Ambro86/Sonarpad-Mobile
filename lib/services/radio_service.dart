@@ -166,6 +166,11 @@ class RadioService {
     return _applyFavoriteOrder(normalized, savedOrder);
   });
 
+  Future<void> clearFavorites() => CollectionStorage.run(() async {
+    final current = await loadFavorites();
+    await saveFavorites([], explicitlyRemoved: current.map((item) => item.streamUrl).toList());
+  });
+
   Future<void> saveFavorites(
     List<RadioStation> favorites, {
     bool updateOrder = false,

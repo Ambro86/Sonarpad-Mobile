@@ -1,3 +1,4 @@
+import '../widgets/clear_favorites_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 
@@ -129,6 +130,13 @@ class _FavoriteRadiosScreenState extends State<FavoriteRadiosScreen> {
     return Scaffold(
       appBar: SonarpadAppBar(
         title: Text(l10n.radioFavoritesButton),
+        actions: [
+          if (!_loading && _favorites.isNotEmpty)
+            ClearFavoritesButton(onClear: () async {
+              await _service.clearFavorites();
+              if (mounted) await _loadFavorites();
+            }),
+        ],
       ),
       body: _loading
           ? Center(

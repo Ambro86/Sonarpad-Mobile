@@ -1,3 +1,4 @@
+import '../widgets/clear_favorites_button.dart';
 import '../models/media_playback_speed.dart';
 import 'dart:convert';
 import 'dart:io';
@@ -607,7 +608,20 @@ class _PodcastScreenState extends State<PodcastScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: SonarpadAppBar(title: Text(l10n.podcasts)),
+      appBar: SonarpadAppBar(
+        title: Text(l10n.podcasts),
+        actions: [
+          if (_subscriptions.isNotEmpty)
+            ClearFavoritesButton(
+              label: l10n.clearPodcastSubscriptions,
+              confirmation: l10n.confirmClearPodcastSubscriptions,
+              onClear: () async {
+                await _service.clearSubscriptions();
+                if (mounted) await _load();
+              },
+            ),
+        ],
+      ),
       body: useSharedAccessibleViewModel
           ? _buildSharedAccessiblePodcastHome(l10n)
           : ListView(

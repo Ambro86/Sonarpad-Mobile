@@ -5065,5 +5065,9 @@
         "type": "String"
       }
     }
-  }
+  },
+  "clearFavorites": "Golește favoritele",
+  "confirmClearFavorites": "Sigur dorești să elimini toate favoritele din această secțiune?",
+  "clearPodcastSubscriptions": "Elimină toate abonamentele",
+  "confirmClearPodcastSubscriptions": "Sigur dorești să elimini toate abonamentele la podcasturi? Fișierele descărcate nu vor fi șterse."
 }

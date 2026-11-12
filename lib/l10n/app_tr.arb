@@ -5065,5 +5065,9 @@
         "type": "String"
       }
     }
-  }
+  },
+  "clearFavorites": "Favorileri temizle",
+  "confirmClearFavorites": "Bu bölümdeki tüm favorileri kaldırmak istediğinizden emin misiniz?",
+  "clearPodcastSubscriptions": "Tüm abonelikleri kaldır",
+  "confirmClearPodcastSubscriptions": "Tüm podcast aboneliklerini kaldırmak istediğinizden emin misiniz? İndirilen dosyalar silinmez."
 }

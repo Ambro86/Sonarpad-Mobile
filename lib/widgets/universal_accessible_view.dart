@@ -445,6 +445,7 @@ class AccessibleListRow {
     this.onAccessibilityFocus,
     this.onSubmitted,
     this.textInputAction,
+    this.disableAutoCapitalization = false,
     this.keyboardType,
     this.clearAsSearch = false,
     this.stabilizeNativeTextFieldFocusOnBegin = false,
@@ -516,6 +517,7 @@ class AccessibleListRow {
   /// Supported values are `search`, `done` and `next`. When [onSubmitted]
   /// is provided, UIKit sends the same logical submit event that Flutter does.
   final String? textInputAction;
+  final bool disableAutoCapitalization;
   /// Commit and dismiss the editor before an explicitly opted-in form action.
   final bool finishEditingOnActivate;
   /// Optional keyboard layout; null preserves existing text fields.
@@ -566,6 +568,7 @@ class AccessibleListRow {
         'submitOnReturn': onSubmitted != null,
         'finishEditingOnActivate': finishEditingOnActivate,
         if (textInputAction != null) 'textInputAction': textInputAction,
+        'disableAutoCapitalization': disableAutoCapitalization,
         if (keyboardType != null) 'keyboardType': keyboardType,
         'clearAsSearch': usesSearchClearLabel,
         'stabilizeNativeTextFieldFocusOnBegin':

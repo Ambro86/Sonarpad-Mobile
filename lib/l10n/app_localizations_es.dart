@@ -6087,4 +6087,18 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get cloudSyncAutomaticHelp =>
       'Sync runs automatically while you use the app. You can also choose Sync now.';
+
+  @override
+  String get clearFavorites => 'Vaciar favoritos';
+
+  @override
+  String get confirmClearFavorites =>
+      '¿Seguro que quieres eliminar todos los favoritos de esta sección?';
+
+  @override
+  String get clearPodcastSubscriptions => 'Eliminar todas las suscripciones';
+
+  @override
+  String get confirmClearPodcastSubscriptions =>
+      '¿Seguro que quieres eliminar todas las suscripciones a podcasts? Los archivos descargados no se eliminarán.';
 }

@@ -6036,4 +6036,18 @@ class AppLocalizationsUk extends AppLocalizations {
   @override
   String get cloudSyncAutomaticHelp =>
       'Sync runs automatically while you use the app. You can also choose Sync now.';
+
+  @override
+  String get clearFavorites => 'Очистити обране';
+
+  @override
+  String get confirmClearFavorites =>
+      'Ви впевнені, що хочете видалити всі обрані елементи в цьому розділі?';
+
+  @override
+  String get clearPodcastSubscriptions => 'Видалити всі підписки';
+
+  @override
+  String get confirmClearPodcastSubscriptions =>
+      'Ви впевнені, що хочете видалити всі підписки на подкасти? Завантажені файли не буде видалено.';
 }

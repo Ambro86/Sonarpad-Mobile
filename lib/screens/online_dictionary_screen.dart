@@ -156,6 +156,7 @@ class _OnlineDictionaryScreenState extends State<OnlineDictionaryScreen> {
                 kind: 'textField',
                 value: _query,
                 textInputAction: 'search',
+                disableAutoCapitalization: true,
                 onValueChanged: (value) => _query = value?.toString() ?? '',
                 onSubmitted: (_) => _search(),
               ),

@@ -8,6 +8,8 @@ class SonarMusicLibraryService {
   static const historyKey = 'sonarpad_sonarmusic_history_v1';
 
   Future<List<SonarMusicItem>> favorites() => _load(favoritesKey);
+  Future<void> clearFavorites() => _save(favoritesKey, []);
+
   Future<void> reorderFavorites(List<String> keys) async {
     final current = await favorites();
     final byKey = {for (final item in current) item.key: item};

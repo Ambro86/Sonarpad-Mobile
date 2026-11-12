@@ -39,11 +39,13 @@ class NewsWebViewScreen extends StatefulWidget {
     required this.article,
     required this.language,
     this.readSourceName,
+    this.translateOnOpen = false,
   });
 
   final NewsArticle article;
   final NewsLanguage language;
   final String? readSourceName;
+  final bool translateOnOpen;
 
   @override
   State<NewsWebViewScreen> createState() => _NewsWebViewScreenState();
@@ -73,6 +75,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   String? _originalReaderTitle;
   String? _originalReaderText;
   NewsTranslation? _translation;
+  bool _autoTranslationStarted = false;
   NewsTranslationService? _translationJob;
   double _translationProgress = 0;
   String? get _readerTitle => _translation?.title ?? _originalReaderTitle;
@@ -146,7 +149,28 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
     unawaited(AppLogger.log('News translation: cancelled'));
   }
 
+  bool get _canTranslateArticle =>
+      !_readerPreparing && !_pureWebViewMode && !_paywallDetected &&
+      _originalReaderText?.isNotEmpty == true &&
+      NewsTranslationService.normalizeLanguage(widget.language.code) !=
+          Localizations.localeOf(context).languageCode;
+
+  void _scheduleTranslationOnOpen() {
+    if (!widget.translateOnOpen || _autoTranslationStarted ||
+        !_canTranslateArticle) {
+      return;
+    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || _autoTranslationStarted || !_canTranslateArticle ||
+          _translationJob != null || _translation != null) {
+        return;
+      }
+      unawaited(_translateArticle());
+    });
+  }
+
   Future<void> _translateArticle() async {
+    _autoTranslationStarted = true;
     if (_translationJob != null) return;
     if (_translation != null) {
       if (_speaking) await _stopReading();
@@ -2549,6 +2573,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    _scheduleTranslationOnOpen();
     return Scaffold(
       appBar: SonarpadAppBar(
         title: Text(l10n.article),
@@ -2574,11 +2599,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
               icon: const Icon(Icons.volume_up),
               tooltip: l10n.readWithEdgeTts,
             ),
-            if (_translation != null ||
-                (!_readerPreparing && !_pureWebViewMode && !_paywallDetected &&
-                    _readerText?.isNotEmpty == true &&
-                    NewsTranslationService.normalizeLanguage(widget.language.code) !=
-                        Localizations.localeOf(context).languageCode))
+            if (_translation != null || _canTranslateArticle)
               IconButton(
                 onPressed: _translateArticle,
                 icon: const Icon(Icons.translate),

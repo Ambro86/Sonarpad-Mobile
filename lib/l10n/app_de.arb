@@ -6643,5 +6643,9 @@
         "type": "String"
       }
     }
-  }
+  },
+  "clearFavorites": "Favoriten leeren",
+  "confirmClearFavorites": "Möchten Sie wirklich alle Favoriten in diesem Bereich entfernen?",
+  "clearPodcastSubscriptions": "Alle Abonnements entfernen",
+  "confirmClearPodcastSubscriptions": "Möchten Sie wirklich alle Podcast-Abonnements entfernen? Heruntergeladene Dateien werden nicht gelöscht."
 }

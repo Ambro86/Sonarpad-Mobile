@@ -6040,4 +6040,18 @@ class AppLocalizationsCs extends AppLocalizations {
   @override
   String get cloudSyncAutomaticHelp =>
       'Sync runs automatically while you use the app. You can also choose Sync now.';
+
+  @override
+  String get clearFavorites => 'Vymazat oblíbené';
+
+  @override
+  String get confirmClearFavorites =>
+      'Opravdu chcete odstranit všechny oblíbené položky v této sekci?';
+
+  @override
+  String get clearPodcastSubscriptions => 'Odstranit všechna předplatná';
+
+  @override
+  String get confirmClearPodcastSubscriptions =>
+      'Opravdu chcete odstranit všechna předplatná podcastů? Stažené soubory nebudou odstraněny.';
 }

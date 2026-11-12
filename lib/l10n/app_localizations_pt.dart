@@ -6070,6 +6070,20 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get cloudSyncAutomaticHelp =>
       'Sync runs automatically while you use the app. You can also choose Sync now.';
+
+  @override
+  String get clearFavorites => 'Limpar favoritos';
+
+  @override
+  String get confirmClearFavorites =>
+      'Tem a certeza de que pretende remover todos os favoritos desta secção?';
+
+  @override
+  String get clearPodcastSubscriptions => 'Remover todas as subscrições';
+
+  @override
+  String get confirmClearPodcastSubscriptions =>
+      'Tem a certeza de que pretende remover todas as subscrições de podcasts? Os ficheiros transferidos não serão eliminados.';
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
@@ -12130,4 +12144,18 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   @override
   String get cloudSyncAutomaticHelp =>
       'Sync runs automatically while you use the app. You can also choose Sync now.';
+
+  @override
+  String get clearFavorites => 'Limpar favoritos';
+
+  @override
+  String get confirmClearFavorites =>
+      'Tem certeza de que deseja remover todos os favoritos desta seção?';
+
+  @override
+  String get clearPodcastSubscriptions => 'Remover todas as inscrições';
+
+  @override
+  String get confirmClearPodcastSubscriptions =>
+      'Tem certeza de que deseja remover todas as inscrições em podcasts? Os arquivos baixados não serão excluídos.';
 }

@@ -5807,6 +5807,18 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get cloudSyncAutomaticHelp =>
       'Sync runs automatically while you use the app. You can also choose Sync now.';
+
+  @override
+  String get clearFavorites => '清空收藏';
+
+  @override
+  String get confirmClearFavorites => '确定要移除此部分的所有收藏吗？';
+
+  @override
+  String get clearPodcastSubscriptions => '移除所有订阅';
+
+  @override
+  String get confirmClearPodcastSubscriptions => '确定要移除所有播客订阅吗？已下载的文件不会被删除。';
 }
 
 /// The translations for Chinese, as used in China (`zh_CN`).
@@ -11612,4 +11624,16 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
   @override
   String get cloudSyncAutomaticHelp =>
       'Sync runs automatically while you use the app. You can also choose Sync now.';
+
+  @override
+  String get clearFavorites => '清空收藏';
+
+  @override
+  String get confirmClearFavorites => '确定要移除此部分的所有收藏吗？';
+
+  @override
+  String get clearPodcastSubscriptions => '移除所有订阅';
+
+  @override
+  String get confirmClearPodcastSubscriptions => '确定要移除所有播客订阅吗？已下载的文件不会被删除。';
 }

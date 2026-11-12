@@ -1,9 +1,11 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../l10n/app_localizations.dart';
 import '../models/document_item.dart';
 import '../services/document_library_service.dart';
@@ -54,14 +56,22 @@ class TranslationChoiceSlider extends StatelessWidget {
         ),
       ),
       Semantics(
+        key: const ValueKey('translation_choice_semantics'),
+        slider: true,
         label: title,
-        child: Slider(
-          value: value.toDouble(),
-          min: 0,
-          max: (labels.length - 1).toDouble(),
-          divisions: labels.length - 1,
-          semanticFormatterCallback: (v) => labels[v.round()],
-          onChanged: (v) => onChanged(v.round()),
+        value: labels[value],
+        increasedValue: labels[(value + 1).clamp(0, labels.length - 1)],
+        decreasedValue: labels[(value - 1).clamp(0, labels.length - 1)],
+        onIncrease: () => onChanged((value + 1).clamp(0, labels.length - 1)),
+        onDecrease: () => onChanged((value - 1).clamp(0, labels.length - 1)),
+        child: ExcludeSemantics(
+          child: Slider(
+            value: value.toDouble(),
+            min: 0,
+            max: (labels.length - 1).toDouble(),
+            divisions: labels.length - 1,
+            onChanged: (v) => onChanged(v.round()),
+          ),
         ),
       ),
     ],
@@ -82,6 +92,7 @@ class _TranslatorScreenState extends State<TranslatorScreen> {
       .toList();
   int _source = 0;
   int? _target;
+  bool _languagesChanged = false;
   int _fileGeneration = 0;
   bool _readingFile = false;
   bool _choosingFile = false;
@@ -90,12 +101,51 @@ class _TranslatorScreenState extends State<TranslatorScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _target ??= _languages.indexWhere(
+    if (_target != null) return;
+    _target = _languages.indexWhere(
       (l) =>
           NewsTranslationService.normalizeLanguage(l.code) ==
           Localizations.localeOf(context).languageCode,
     );
     if (_target! < 0) _target = 0;
+    unawaited(_loadLanguages());
+  }
+
+  Future<void> _loadLanguages() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (!mounted || _languagesChanged) return;
+    final source = prefs.getString('translator_source_language');
+    final target = prefs.getString('translator_target_language');
+    setState(() {
+      final sourceIndex = _languages.indexWhere((l) => l.code == source);
+      if (source == 'auto') {
+        _source = 0;
+      } else if (sourceIndex >= 0) {
+        _source = sourceIndex + 1;
+      }
+      final targetIndex = _languages.indexWhere((l) => l.code == target);
+      if (targetIndex >= 0) _target = targetIndex;
+    });
+  }
+
+  Future<void> _saveLanguages() async {
+    final source = _source == 0 ? 'auto' : _languages[_source - 1].code;
+    final target = _languages[_target!].code;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('translator_source_language', source);
+    await prefs.setString('translator_target_language', target);
+  }
+
+  void _changeLanguage(int value, {required bool source}) {
+    setState(() {
+      _languagesChanged = true;
+      if (source) {
+        _source = value;
+      } else {
+        _target = value;
+      }
+    });
+    unawaited(_saveLanguages());
   }
 
   @override
@@ -284,16 +334,18 @@ class _TranslatorScreenState extends State<TranslatorScreen> {
               padding: const EdgeInsets.all(16),
               children: [
                 TranslationChoiceSlider(
+                  key: const ValueKey('translator_source_language'),
                   title: l10n.translationSourceLanguage,
                   labels: [l10n.translationDetectLanguage, ...labels],
                   value: _source,
-                  onChanged: (v) => setState(() => _source = v),
+                  onChanged: (v) => _changeLanguage(v, source: true),
                 ),
                 TranslationChoiceSlider(
+                  key: const ValueKey('translator_target_language'),
                   title: l10n.translationTargetLanguage,
                   labels: labels,
                   value: _target!,
-                  onChanged: (v) => setState(() => _target = v),
+                  onChanged: (v) => _changeLanguage(v, source: false),
                 ),
                 TextField(
                   controller: _text,

@@ -44,6 +44,7 @@ private struct SonarpadNativeRow {
   var submitOnReturn: Bool
   var finishEditingOnActivate: Bool
   var textInputAction: String?
+  var disableAutoCapitalization: Bool
   var keyboardType: String?
   var clearAsSearch: Bool
   var stabilizeTextFieldFocusOnBegin: Bool
@@ -91,6 +92,7 @@ private struct SonarpadNativeRow {
     submitOnReturn = map["submitOnReturn"] as? Bool ?? false
     finishEditingOnActivate = map["finishEditingOnActivate"] as? Bool ?? false
     textInputAction = map["textInputAction"] as? String
+    disableAutoCapitalization = map["disableAutoCapitalization"] as? Bool ?? false
     keyboardType = map["keyboardType"] as? String
     clearAsSearch = map["clearAsSearch"] as? Bool ?? (textInputAction == "search")
     stabilizeTextFieldFocusOnBegin =
@@ -158,6 +160,7 @@ private func sonarpadRowsEqual(_ lhs: SonarpadNativeRow, _ rhs: SonarpadNativeRo
         lhs.submitOnReturn == rhs.submitOnReturn,
         lhs.finishEditingOnActivate == rhs.finishEditingOnActivate,
         lhs.textInputAction == rhs.textInputAction,
+        lhs.disableAutoCapitalization == rhs.disableAutoCapitalization,
         lhs.keyboardType == rhs.keyboardType,
         lhs.clearAsSearch == rhs.clearAsSearch,
         lhs.stabilizeTextFieldFocusOnBegin == rhs.stabilizeTextFieldFocusOnBegin,
@@ -1346,6 +1349,7 @@ final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITableViewDa
       if cell.field.isSecureTextEntry != row.secure { cell.field.isSecureTextEntry = row.secure }
       cell.field.textContentType = ["tv_secret_code", "ticketone_otp_code"].contains(row.id) ? .oneTimeCode : nil
       cell.field.isEnabled = row.enabled
+      cell.field.autocapitalizationType = row.disableAutoCapitalization ? .none : .sentences
       switch row.keyboardType {
       case "phone": cell.field.keyboardType = .phonePad
       case "number": cell.field.keyboardType = .numberPad
@@ -2081,6 +2085,7 @@ final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITableViewDa
         if cell.field.isSecureTextEntry != row.secure { cell.field.isSecureTextEntry = row.secure }
         cell.field.textContentType = ["tv_secret_code", "ticketone_otp_code"].contains(row.id) ? .oneTimeCode : nil
         cell.field.isEnabled = row.enabled
+        cell.field.autocapitalizationType = row.disableAutoCapitalization ? .none : .sentences
         switch row.keyboardType {
         case "phone": cell.field.keyboardType = .phonePad
         case "number": cell.field.keyboardType = .numberPad

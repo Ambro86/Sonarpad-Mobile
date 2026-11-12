@@ -5068,5 +5068,9 @@
         "type": "String"
       }
     }
-  }
+  },
+  "clearFavorites": "Vymazat oblíbené",
+  "confirmClearFavorites": "Opravdu chcete odstranit všechny oblíbené položky v této sekci?",
+  "clearPodcastSubscriptions": "Odstranit všechna předplatná",
+  "confirmClearPodcastSubscriptions": "Opravdu chcete odstranit všechna předplatná podcastů? Stažené soubory nebudou odstraněny."
 }

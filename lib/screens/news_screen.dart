@@ -14,6 +14,7 @@ import '../models/news_article.dart';
 import '../services/cloud_file_picker_service.dart';
 import '../services/app_settings_service.dart';
 import '../services/news_service.dart';
+import '../services/news_translation_service.dart';
 import '../services/news_sources/news_rss_source.dart';
 import 'news_webview_screen.dart';
 import '../utils/status_message.dart';
@@ -1712,8 +1713,9 @@ class _NewsArticleListState extends State<_NewsArticleList> {
 
   Future<void> _openArticle(
     NewsArticle article,
-    List<NewsArticle> visibleArticles,
-  ) async {
+    List<NewsArticle> visibleArticles, {
+    bool translateOnOpen = false,
+  }) async {
     final navigator = Navigator.of(context);
     final currentIndex = visibleArticles.indexWhere((a) => a.id == article.id);
     NewsArticle? scrollTarget;
@@ -1748,6 +1750,7 @@ class _NewsArticleListState extends State<_NewsArticleList> {
           article: article,
           language: widget.language,
           readSourceName: widget.sourceName,
+          translateOnOpen: translateOnOpen,
         ),
       ),
     );
@@ -1954,6 +1957,9 @@ class _NewsArticleListState extends State<_NewsArticleList> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final canTranslate =
+        NewsTranslationService.normalizeLanguage(widget.language.code) !=
+            Localizations.localeOf(context).languageCode;
     return FutureBuilder<List<NewsArticle>>(
       future: widget.future,
       builder: (context, snapshot) {
@@ -2007,12 +2013,23 @@ class _NewsArticleListState extends State<_NewsArticleList> {
                 subtitle: subtitleText,
                 kind: 'action',
                 actions: [
+                  if (canTranslate)
+                    AccessibleCustomAction(
+                      id: 'translate',
+                      label: l10n.newsTranslateToInterface,
+                    ),
                   AccessibleCustomAction(
                     id: 'share',
                     label: l10n.shareArticle,
                   ),
                 ],
                 visualActions: [
+                  if (canTranslate)
+                    AccessibleVisualAction(
+                      id: 'translate',
+                      label: l10n.newsTranslateToInterface,
+                      icon: 'translate',
+                    ),
                   AccessibleVisualAction(
                     id: 'share',
                     label: l10n.shareArticle,
@@ -2041,6 +2058,8 @@ class _NewsArticleListState extends State<_NewsArticleList> {
               final article = articles[index];
               if (event.type == 'customAction' && event.action == 'share') {
                 await _shareArticle(article);
+              } else if (event.type == 'customAction' && event.action == 'translate') {
+                await _openArticle(article, articles, translateOnOpen: true);
               } else if (event.type == 'activate') {
                 await _openArticle(article, articles);
               }
@@ -2086,6 +2105,9 @@ class _NewsArticleListState extends State<_NewsArticleList> {
               child: Semantics(
                 container: true,
                 customSemanticsActions: {
+                  if (canTranslate)
+                    CustomSemanticsAction(label: l10n.newsTranslateToInterface): () =>
+                        _openArticle(article, articles, translateOnOpen: true),
                   CustomSemanticsAction(label: l10n.shareArticle): () =>
                       _shareArticle(article),
                 },
@@ -2102,10 +2124,21 @@ class _NewsArticleListState extends State<_NewsArticleList> {
                     overflow: TextOverflow.ellipsis,
                   ),
                   trailing: ExcludeSemantics(
-                    child: IconButton(
-                      icon: const Icon(Icons.share),
-                      tooltip: l10n.shareArticle,
-                      onPressed: () => _shareArticle(article),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (canTranslate)
+                          IconButton(
+                            icon: const Icon(Icons.translate),
+                            tooltip: l10n.newsTranslateToInterface,
+                            onPressed: () => _openArticle(article, articles, translateOnOpen: true),
+                          ),
+                        IconButton(
+                          icon: const Icon(Icons.share),
+                          tooltip: l10n.shareArticle,
+                          onPressed: () => _shareArticle(article),
+                        ),
+                      ],
                     ),
                   ),
                   onTap: () => _openArticle(article, articles),
@@ -2147,6 +2180,25 @@ class _ReadArticlesScreenState extends State<_ReadArticlesScreen> {
       _articles = list;
       _loading = false;
     });
+  }
+
+  bool get _canTranslate =>
+      NewsTranslationService.normalizeLanguage(widget.language.code) !=
+          Localizations.localeOf(context).languageCode;
+
+  Future<void> _openArticle(NewsArticle article, {bool translateOnOpen = false}) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        settings: const RouteSettings(name: '/news/article'),
+        builder: (_) => NewsWebViewScreen(
+          article: article,
+          language: widget.language,
+          readSourceName: widget.sourceName,
+          translateOnOpen: translateOnOpen,
+        ),
+      ),
+    );
   }
 
   Future<void> _deleteArticle(NewsArticle article) async {
@@ -2205,7 +2257,13 @@ class _ReadArticlesScreenState extends State<_ReadArticlesScreen> {
         subtitle: subtitleText,
         kind: 'action',
         actions: [
+          if (_canTranslate)
+            AccessibleCustomAction(id: 'translate', label: l10n.newsTranslateToInterface),
           AccessibleCustomAction(id: 'delete', label: l10n.deleteItem),
+        ],
+        visualActions: [
+          if (_canTranslate)
+            AccessibleVisualAction(id: 'translate', label: l10n.newsTranslateToInterface, icon: 'translate'),
         ],
       );
     }).toList();
@@ -2220,19 +2278,11 @@ class _ReadArticlesScreenState extends State<_ReadArticlesScreen> {
         final article = _articles[index];
         if (event.type == 'customAction' && event.action == 'delete') {
           await _deleteArticle(article);
+        } else if (event.type == 'customAction' && event.action == 'translate') {
+          await _openArticle(article, translateOnOpen: true);
         } else if (event.type == 'activate') {
           if (!mounted) return;
-          await Navigator.push(
-            context,
-            MaterialPageRoute(
-              settings: const RouteSettings(name: '/news/article'),
-              builder: (_) => NewsWebViewScreen(
-                article: article,
-                language: widget.language,
-                readSourceName: widget.sourceName,
-              ),
-            ),
-          );
+          await _openArticle(article);
         }
       },
     );
@@ -2278,6 +2328,9 @@ class _ReadArticlesScreenState extends State<_ReadArticlesScreen> {
                       key: ValueKey('news_read_article_semantics_${article.id}'),
                       container: true,
                       customSemanticsActions: {
+                        if (_canTranslate)
+                          CustomSemanticsAction(label: l10n.newsTranslateToInterface): () =>
+                              _openArticle(article, translateOnOpen: true),
                         CustomSemanticsAction(label: l10n.deleteItem): () =>
                             _deleteArticle(article),
                       },
@@ -2294,23 +2347,24 @@ class _ReadArticlesScreenState extends State<_ReadArticlesScreen> {
                           overflow: TextOverflow.ellipsis,
                         ),
                         trailing: ExcludeSemantics(
-                          child: IconButton(
-                            icon: const Icon(Icons.delete_outline),
-                            tooltip: l10n.deleteItem,
-                            onPressed: () => _deleteArticle(article),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              if (_canTranslate)
+                                IconButton(
+                                  icon: const Icon(Icons.translate),
+                                  tooltip: l10n.newsTranslateToInterface,
+                                  onPressed: () => _openArticle(article, translateOnOpen: true),
+                                ),
+                              IconButton(
+                                icon: const Icon(Icons.delete_outline),
+                                tooltip: l10n.deleteItem,
+                                onPressed: () => _deleteArticle(article),
+                              ),
+                            ],
                           ),
                         ),
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            settings: const RouteSettings(name: '/news/article'),
-                            builder: (_) => NewsWebViewScreen(
-                              article: article,
-                              language: widget.language,
-                              readSourceName: widget.sourceName,
-                            ),
-                          ),
-                        ),
+                        onTap: () => _openArticle(article),
                       ),
                     );
                   },

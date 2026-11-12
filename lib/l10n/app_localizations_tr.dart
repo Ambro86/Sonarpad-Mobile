@@ -6048,4 +6048,18 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get cloudSyncAutomaticHelp =>
       'Sync runs automatically while you use the app. You can also choose Sync now.';
+
+  @override
+  String get clearFavorites => 'Favorileri temizle';
+
+  @override
+  String get confirmClearFavorites =>
+      'Bu bölümdeki tüm favorileri kaldırmak istediğinizden emin misiniz?';
+
+  @override
+  String get clearPodcastSubscriptions => 'Tüm abonelikleri kaldır';
+
+  @override
+  String get confirmClearPodcastSubscriptions =>
+      'Tüm podcast aboneliklerini kaldırmak istediğinizden emin misiniz? İndirilen dosyalar silinmez.';
 }

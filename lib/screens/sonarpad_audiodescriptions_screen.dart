@@ -1,3 +1,4 @@
+import '../widgets/clear_favorites_button.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -868,7 +869,16 @@ class _SonarpadAudiodescriptionsFavoritesScreenState
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: SonarpadAppBar(title: Text(l10n.sonarTubeFavorites)),
+      appBar: SonarpadAppBar(
+        title: Text(l10n.sonarTubeFavorites),
+        actions: [
+          if (!_loading && !_changing && _items.isNotEmpty)
+            ClearFavoritesButton(onClear: () async {
+              await _favoritesService.clearFavorites();
+              if (mounted) await _load();
+            }),
+        ],
+      ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _items.isEmpty

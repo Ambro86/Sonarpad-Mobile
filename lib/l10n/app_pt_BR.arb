@@ -5071,5 +5071,9 @@
         "type": "String"
       }
     }
-  }
+  },
+  "clearFavorites": "Limpar favoritos",
+  "confirmClearFavorites": "Tem certeza de que deseja remover todos os favoritos desta seção?",
+  "clearPodcastSubscriptions": "Remover todas as inscrições",
+  "confirmClearPodcastSubscriptions": "Tem certeza de que deseja remover todas as inscrições em podcasts? Os arquivos baixados não serão excluídos."
 }

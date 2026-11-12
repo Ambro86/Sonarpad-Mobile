@@ -40,6 +40,11 @@ class SonarpadAudiodescriptionsFavoritesService {
     return favorites;
   }
 
+  Future<void> clearFavorites() async {
+    final preferences = await SharedPreferences.getInstance();
+    await preferences.setStringList(storageKey, []);
+  }
+
   Future<bool> toggle(SonarpadAudiodescriptionItem item) async {
     if (item.path.trim().isEmpty) {
       return false;

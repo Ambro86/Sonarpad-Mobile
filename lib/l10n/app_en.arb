@@ -5065,5 +5065,9 @@
         "type": "String"
       }
     }
-  }
+  },
+  "clearFavorites": "Clear favorites",
+  "confirmClearFavorites": "Are you sure you want to remove all favorites in this section?",
+  "clearPodcastSubscriptions": "Remove all subscriptions",
+  "confirmClearPodcastSubscriptions": "Are you sure you want to remove all podcast subscriptions? Downloaded files will not be deleted."
 }

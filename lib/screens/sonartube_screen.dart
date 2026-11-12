@@ -1,3 +1,4 @@
+import '../widgets/clear_favorites_button.dart';
 import '../widgets/favorite_reorder.dart';
 import 'package:intl/intl.dart';
 import '../services/favorite_channel_videos_service.dart';
@@ -4154,6 +4155,13 @@ class _SonarTubeFavoritesScreenState extends State<_SonarTubeFavoritesScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(l10n.sonarTubeFavorites),
+        actions: [
+          if (!_loading && _favorites.isNotEmpty)
+            ClearFavoritesButton(onClear: () async {
+              await widget.favoritesService.clearFavorites();
+              if (mounted) await _load();
+            }),
+        ],
       ),
       body: SafeArea(
         child: Column(children: [

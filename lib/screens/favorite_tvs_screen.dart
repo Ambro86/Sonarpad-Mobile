@@ -1,3 +1,4 @@
+import '../widgets/clear_favorites_button.dart';
 import 'dart:async';
 import '../utils/tv_return_focus.dart';
 import 'package:flutter/material.dart';
@@ -98,7 +99,16 @@ class _FavoriteTvsScreenState extends State<FavoriteTvsScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: SonarpadAppBar(title: const Text('TV preferite')),
+      appBar: SonarpadAppBar(
+        title: const Text('TV preferite'),
+        actions: [
+          if (!_loading && _favorites.isNotEmpty)
+            ClearFavoritesButton(onClear: () async {
+              await _service.clearFavorites();
+              if (mounted) await _load();
+            }),
+        ],
+      ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _favorites.isEmpty

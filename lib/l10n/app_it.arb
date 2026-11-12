@@ -6706,5 +6706,9 @@
         "type": "String"
       }
     }
-  }
+  },
+  "clearFavorites": "Svuota preferiti",
+  "confirmClearFavorites": "Sei sicuro di voler rimuovere tutti i preferiti di questa sezione?",
+  "clearPodcastSubscriptions": "Rimuovi tutte le iscrizioni",
+  "confirmClearPodcastSubscriptions": "Sei sicuro di voler rimuovere tutte le iscrizioni ai podcast? I file scaricati non verranno eliminati."
 }

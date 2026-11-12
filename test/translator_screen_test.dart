@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:ui' show SemanticsAction;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -53,6 +54,50 @@ Widget app(Widget home) => MaterialApp(
 );
 
 void main() {
+  testWidgets('language sliders keep independent semantics and saved choices', (
+    tester,
+  ) async {
+    final semantics = tester.ensureSemantics();
+    await tester.pumpWidget(app(const TranslatorScreen()));
+    await tester.pumpAndSettle();
+    final source = find.byKey(const ValueKey('translator_source_language'));
+    final target = find.byKey(const ValueKey('translator_target_language'));
+    Finder node(Finder slider) => find.descendant(
+      of: slider,
+      matching: find.byKey(const ValueKey('translation_choice_semantics')),
+    );
+    final sourceId = tester.getSemantics(node(source)).id;
+    final targetId = tester.getSemantics(node(target)).id;
+    expect(sourceId, isNot(targetId));
+    final owner = tester.getSemantics(node(source)).owner!;
+    for (var i = 1; i <= 3; i++) {
+      owner.performAction(sourceId, SemanticsAction.increase);
+      await tester.pumpAndSettle();
+      expect(tester.widget<TranslationChoiceSlider>(source).value, i);
+      expect(tester.widget<TranslationChoiceSlider>(target).value, 0);
+      expect(tester.getSemantics(node(source)).id, sourceId);
+      expect(tester.getSemantics(node(target)).id, targetId);
+    }
+    owner.performAction(targetId, SemanticsAction.increase);
+    await tester.pumpAndSettle();
+    expect(tester.widget<TranslationChoiceSlider>(source).value, 3);
+    expect(tester.widget<TranslationChoiceSlider>(target).value, 1);
+    expect(tester.getSemantics(node(source)).id, sourceId);
+    expect(tester.getSemantics(node(target)).id, targetId);
+    await tester.pumpWidget(const SizedBox());
+    await tester.pumpWidget(app(const TranslatorScreen()));
+    await tester.pumpAndSettle();
+    expect(tester.widget<TranslationChoiceSlider>(source).value, 3);
+    expect(tester.widget<TranslationChoiceSlider>(target).value, 1);
+    tester.widget<TranslationChoiceSlider>(source).onChanged(0);
+    await tester.pumpAndSettle();
+    await tester.pumpWidget(const SizedBox());
+    await tester.pumpWidget(app(const TranslatorScreen()));
+    await tester.pumpAndSettle();
+    expect(tester.widget<TranslationChoiceSlider>(source).value, 0);
+    expect(tester.widget<TranslationChoiceSlider>(target).value, 1);
+    semantics.dispose();
+  });
   testWidgets(
     'media join offers existing library and browse choices and cancels cleanly',
     (tester) async {

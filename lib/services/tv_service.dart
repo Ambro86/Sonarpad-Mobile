@@ -785,6 +785,11 @@ class TvService {
     }
   });
 
+  Future<void> clearFavorites() => CollectionStorage.run(() async {
+    final current = await loadFavorites();
+    await saveFavorites([], explicitlyRemoved: current.map((item) => item.name).toList());
+  });
+
   Future<void> saveFavorites(
     List<TvChannel> favorites, {
     List<String> explicitlyRemoved = const [],

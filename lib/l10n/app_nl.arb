@@ -6643,5 +6643,9 @@
         "type": "String"
       }
     }
-  }
+  },
+  "clearFavorites": "Favorieten wissen",
+  "confirmClearFavorites": "Weet je zeker dat je alle favorieten in deze sectie wilt verwijderen?",
+  "clearPodcastSubscriptions": "Alle abonnementen verwijderen",
+  "confirmClearPodcastSubscriptions": "Weet je zeker dat je alle podcastabonnementen wilt verwijderen? Gedownloade bestanden worden niet verwijderd."
 }

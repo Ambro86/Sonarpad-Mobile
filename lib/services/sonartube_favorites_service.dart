@@ -40,6 +40,14 @@ class SonarTubeFavoritesService {
     return favorites;
   });
 
+  Future<void> clearFavorites() => CollectionStorage.run(() async {
+    final current = await loadFavorites(strict: true);
+    await CloudSyncDeletions.record(
+      'sonartube', current.map((item) => cloudYoutubeUrl(item.url)),
+    );
+    await _save([]);
+  });
+
   Future<void> reorderFavorites(List<String> keys) =>
       CollectionStorage.run(() async {
         final current = await loadFavorites(strict: true);

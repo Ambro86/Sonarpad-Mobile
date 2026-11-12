@@ -866,6 +866,13 @@ class PodcastService {
     return sub;
   }
 
+  Future<void> clearSubscriptions() => CollectionStorage.run(() async {
+    final subscriptions = await loadSubscriptions();
+    final removed = subscriptions.map((item) => item.feedUrl.trim()).toList();
+    await CloudSyncDeletions.record('podcasts', removed);
+    await saveSubscriptions([], explicitlyRemoved: removed);
+  });
+
   Future<void> removeSubscription(PodcastSubscription subscription) =>
       CollectionStorage.run(() async {
         final list = await loadSubscriptions();

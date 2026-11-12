@@ -1,3 +1,4 @@
+import '../widgets/clear_favorites_button.dart';
 import '../widgets/favorite_reorder.dart';
 import '../services/favorite_channel_videos_service.dart';
 import 'package:intl/intl.dart';
@@ -855,7 +856,16 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
         )
       : SonarpadAppBar(title: Text(_home ? 'SonarMusic'
           : widget.libraryType != null ? _label(widget.libraryType!)
-          : _isCollection ? (_title ?? widget.collection!.title) : 'SonarMusic')),
+          : _isCollection ? (_title ?? widget.collection!.title) : 'SonarMusic'),
+          actions: [
+            if (widget.libraryType == 'favorites' && !_loading && _items.isNotEmpty)
+              ClearFavoritesButton(onClear: () async {
+                await _library.clearFavorites();
+                if (!mounted) return;
+                await _refreshFavorites();
+                if (mounted) await _load();
+              }),
+          ]),
     body: SafeArea(child: _buildList()));
 }
 

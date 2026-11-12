@@ -6067,4 +6067,18 @@ class AppLocalizationsRo extends AppLocalizations {
   @override
   String get cloudSyncAutomaticHelp =>
       'Sincronizarea rulează automat în timp ce folosești aplicația. Poți alege și Sincronizează acum.';
+
+  @override
+  String get clearFavorites => 'Golește favoritele';
+
+  @override
+  String get confirmClearFavorites =>
+      'Sigur dorești să elimini toate favoritele din această secțiune?';
+
+  @override
+  String get clearPodcastSubscriptions => 'Elimină toate abonamentele';
+
+  @override
+  String get confirmClearPodcastSubscriptions =>
+      'Sigur dorești să elimini toate abonamentele la podcasturi? Fișierele descărcate nu vor fi șterse.';
 }

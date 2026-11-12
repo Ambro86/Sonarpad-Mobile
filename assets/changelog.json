@@ -1,5 +1,93 @@
 [
   {
+    "version": "0.5.4",
+    "date": "2026-11-12",
+    "it": [
+      "Dizionario su iOS: disattivata la maiuscola automatica nel campo di ricerca, per evitare che parole come «gabbia» non vengano trovate. È sempre possibile inserire manualmente le maiuscole.",
+      "Traduttore: migliorata la stabilità del focus di VoiceOver quando si cambiano le lingue con gli slider. Lingua di origine e destinazione sono indipendenti e vengono ricordate alla riapertura.",
+      "Notizie: aggiunta nell’elenco degli articoli, anche già letti, l’azione Traduci nella lingua dell’interfaccia, disponibile nel rotore di VoiceOver e come pulsante visibile escluso da VoiceOver. Apre l’articolo con la procedura normale e avvia automaticamente la traduzione appena il testo è pronto.",
+      "Aggiunto Svuota preferiti in radio, TV, SonarTube, SonarMusic e audiodescrizioni Sonarpad: un pulsante accessibile a VoiceOver con conferma, che rimuove solo i preferiti della sezione corrente. Nei podcast aggiunto Rimuovi tutte le iscrizioni, sempre con conferma e senza eliminare i file scaricati."
+    ],
+    "en": [
+      "Dictionary on iOS: disabled automatic capitalization in the search field to prevent words such as “gabbia” from not being found. Uppercase letters can still be entered manually.",
+      "Translator: improved VoiceOver focus stability when changing languages with the sliders. Source and target languages are independent and remembered when reopening the screen.",
+      "News: added Translate into the interface language to article lists, including read articles, as a VoiceOver rotor action and a visible button excluded from VoiceOver. It opens the article normally and starts translation automatically once the text is ready.",
+      "Added Clear favorites to radio, TV, SonarTube, SonarMusic and Sonarpad audio descriptions: a VoiceOver-accessible button with confirmation that removes only the current section’s favorites. Podcasts now offer Remove all subscriptions, also with confirmation, without deleting downloaded files."
+    ],
+    "fr": [
+      "Dictionnaire sur iOS : désactivation de la majuscule automatique dans le champ de recherche pour éviter que des mots comme « gabbia » restent introuvables. Les majuscules peuvent toujours être saisies manuellement.",
+      "Traducteur : meilleure stabilité du focus VoiceOver lors du changement de langue avec les curseurs. Les langues source et cible sont indépendantes et mémorisées à la réouverture.",
+      "Actualités : ajout de Traduire dans la langue de l’interface aux listes d’articles, y compris les articles lus, comme action du rotor VoiceOver et bouton visible exclu de VoiceOver. L’article s’ouvre normalement et la traduction démarre automatiquement dès que le texte est prêt.",
+      "Ajout de Vider les favoris dans les radios, la TV, SonarTube, SonarMusic et les audiodescriptions Sonarpad : un bouton accessible à VoiceOver avec confirmation, qui supprime uniquement les favoris de la section actuelle. Les podcasts proposent Supprimer tous les abonnements, également avec confirmation, sans supprimer les fichiers téléchargés."
+    ],
+    "es": [
+      "Diccionario en iOS: desactivada la mayúscula automática en el campo de búsqueda para evitar que palabras como «gabbia» no se encuentren. Las mayúsculas se pueden seguir introduciendo manualmente.",
+      "Traductor: mejorada la estabilidad del foco de VoiceOver al cambiar de idioma con los deslizadores. Los idiomas de origen y destino son independientes y se recuerdan al volver a abrir la pantalla.",
+      "Noticias: añadida Traducir al idioma de la interfaz en las listas de artículos, incluidos los leídos, como acción del rotor de VoiceOver y botón visible excluido de VoiceOver. Abre el artículo normalmente e inicia la traducción automáticamente cuando el texto está listo.",
+      "Añadido Vaciar favoritos en radio, TV, SonarTube, SonarMusic y audiodescripciones Sonarpad: un botón accesible con VoiceOver y confirmación que elimina solo los favoritos de la sección actual. En podcasts se añade Eliminar todas las suscripciones, también con confirmación y sin eliminar los archivos descargados."
+    ],
+    "pt": [
+      "Dicionário no iOS: desativada a maiúscula automática no campo de pesquisa para evitar que palavras como «gabbia» não sejam encontradas. Continua a ser possível introduzir maiúsculas manualmente.",
+      "Tradutor: melhorada a estabilidade do foco do VoiceOver ao mudar de idioma com os controlos deslizantes. Os idiomas de origem e destino são independentes e ficam guardados ao reabrir o ecrã.",
+      "Notícias: adicionada a ação Traduzir para o idioma da interface nas listas de artigos, incluindo os já lidos, no rotor do VoiceOver e como botão visível excluído do VoiceOver. Abre o artigo normalmente e inicia automaticamente a tradução quando o texto está pronto.",
+      "Adicionado Limpar favoritos em rádio, TV, SonarTube, SonarMusic e audiodescrições Sonarpad: um botão acessível ao VoiceOver com confirmação, que remove apenas os favoritos da secção atual. Nos podcasts, adicionado Remover todas as subscrições, também com confirmação e sem eliminar os ficheiros transferidos."
+    ],
+    "pt_BR": [
+      "Dicionário no iOS: desativada a maiúscula automática no campo de pesquisa para evitar que palavras como “gabbia” não sejam encontradas. Ainda é possível inserir maiúsculas manualmente.",
+      "Tradutor: melhorada a estabilidade do foco do VoiceOver ao mudar de idioma com os controles deslizantes. Os idiomas de origem e destino são independentes e ficam salvos ao reabrir a tela.",
+      "Notícias: adicionada a ação Traduzir para o idioma da interface nas listas de artigos, incluindo os já lidos, no rotor do VoiceOver e como botão visível excluído do VoiceOver. Abre o artigo normalmente e inicia a tradução automaticamente quando o texto está pronto.",
+      "Adicionado Limpar favoritos em rádio, TV, SonarTube, SonarMusic e audiodescrições Sonarpad: um botão acessível ao VoiceOver com confirmação, que remove apenas os favoritos da seção atual. Nos podcasts, adicionado Remover todas as inscrições, também com confirmação e sem excluir os arquivos baixados."
+    ],
+    "pl": [
+      "Słownik w iOS: wyłączono automatyczne wpisywanie wielkiej litery w polu wyszukiwania, aby można było znaleźć słowa takie jak „gabbia”. Wielkie litery nadal można wpisywać ręcznie.",
+      "Tłumacz: poprawiono stabilność fokusu VoiceOver podczas zmiany języków suwakami. Język źródłowy i docelowy są niezależne i zapamiętywane po ponownym otwarciu ekranu.",
+      "Wiadomości: na listach artykułów, także przeczytanych, dodano tłumaczenie na język interfejsu jako czynność pokrętła VoiceOver i widoczny przycisk pomijany przez VoiceOver. Artykuł otwiera się standardowo, a tłumaczenie rozpoczyna się automatycznie po przygotowaniu tekstu.",
+      "Dodano Wyczyść ulubione w radiu, TV, SonarTube, SonarMusic i audiodeskrypcjach Sonarpad: przycisk dostępny dla VoiceOver z potwierdzeniem, usuwający tylko ulubione z bieżącej sekcji. W podcastach dodano Usuń wszystkie subskrypcje, również z potwierdzeniem i bez usuwania pobranych plików."
+    ],
+    "cs": [
+      "Slovník v iOS: vypnuto automatické psaní velkého počátečního písmene ve vyhledávacím poli, aby bylo možné najít slova jako „gabbia“. Velká písmena lze nadále zadávat ručně.",
+      "Překladač: zlepšena stabilita zaměření VoiceOver při změně jazyků pomocí posuvníků. Zdrojový a cílový jazyk jsou nezávislé a při opětovném otevření obrazovky se obnoví.",
+      "Zprávy: do seznamů článků, včetně přečtených, přidán překlad do jazyka rozhraní jako akce rotoru VoiceOver a viditelné tlačítko vynechané z navigace VoiceOver. Článek se otevře běžným postupem a překlad se automaticky spustí, jakmile je text připraven.",
+      "Přidáno Vymazat oblíbené pro rádio, TV, SonarTube, SonarMusic a audiopopisy Sonarpad: tlačítko přístupné přes VoiceOver s potvrzením, které odstraní pouze oblíbené položky aktuální sekce. U podcastů přidáno Odstranit všechna předplatná, také s potvrzením a bez odstranění stažených souborů."
+    ],
+    "de": [
+      "Wörterbuch unter iOS: Die automatische Großschreibung im Suchfeld wurde deaktiviert, damit Wörter wie „gabbia“ gefunden werden. Großbuchstaben können weiterhin manuell eingegeben werden.",
+      "Übersetzer: stabilerer VoiceOver-Fokus beim Ändern der Sprachen mit den Schiebereglern. Ausgangs- und Zielsprache sind unabhängig und werden beim erneuten Öffnen wiederhergestellt.",
+      "Nachrichten: In Artikellisten, auch bei gelesenen Artikeln, steht nun In die Sprache der Benutzeroberfläche übersetzen als VoiceOver-Rotoraktion und als sichtbare, von VoiceOver ausgeschlossene Schaltfläche zur Verfügung. Der Artikel wird wie gewohnt geöffnet und automatisch übersetzt, sobald der Text bereit ist.",
+      "Favoriten leeren wurde für Radio, TV, SonarTube, SonarMusic und Sonarpad-Audiodeskriptionen hinzugefügt: eine mit VoiceOver zugängliche Schaltfläche mit Bestätigung, die nur die Favoriten des aktuellen Bereichs entfernt. Podcasts bieten Alle Abonnements entfernen, ebenfalls mit Bestätigung und ohne heruntergeladene Dateien zu löschen."
+    ],
+    "zh_CN": [
+      "iOS 词典：已关闭搜索框的自动首字母大写，避免出现无法找到“gabbia”等单词的问题。仍可手动输入大写字母。",
+      "翻译器：改善了使用滑块切换语言时 VoiceOver 焦点的稳定性。源语言和目标语言互不影响，并会在重新打开界面时保留。",
+      "新闻：在文章列表（包括已读文章）中添加了翻译为界面语言的操作，可通过 VoiceOver 转子或不参与 VoiceOver 导航的可见按钮使用。文章按正常流程打开，文本准备好后自动开始翻译。",
+      "为广播、电视、SonarTube、SonarMusic 和 Sonarpad 音频描述添加了清空收藏按钮：支持 VoiceOver，操作前要求确认，仅移除当前部分的收藏。播客中添加了移除所有订阅，同样需要确认，且不会删除已下载的文件。"
+    ],
+    "uk": [
+      "Словник в iOS: вимкнено автоматичне введення великої літери в полі пошуку, щоб можна було знаходити слова на кшталт «gabbia». Великі літери й надалі можна вводити вручну.",
+      "Перекладач: покращено стабільність фокуса VoiceOver під час зміни мов повзунками. Мова оригіналу та мова перекладу незалежні й зберігаються для наступного відкриття екрана.",
+      "Новини: у списках статей, зокрема прочитаних, додано переклад мовою інтерфейсу як дію ротора VoiceOver і видиму кнопку, виключену з навігації VoiceOver. Стаття відкривається звичайним способом, а переклад починається автоматично, щойно текст готовий.",
+      "Додано Очистити обране для радіо, TV, SonarTube, SonarMusic та аудіоописів Sonarpad: доступну для VoiceOver кнопку з підтвердженням, яка видаляє лише обрані елементи поточного розділу. У подкастах додано Видалити всі підписки, також із підтвердженням і без видалення завантажених файлів."
+    ],
+    "ro": [
+      "Dicționar pe iOS: dezactivată scrierea automată cu majusculă în câmpul de căutare, pentru a evita situațiile în care cuvinte precum „gabbia” nu sunt găsite. Majusculele pot fi introduse în continuare manual.",
+      "Traducător: îmbunătățită stabilitatea focalizării VoiceOver la schimbarea limbilor cu ajutorul glisoarelor. Limba sursă și limba țintă sunt independente și sunt memorate la redeschiderea ecranului.",
+      "Știri: adăugată traducerea în limba interfeței în listele de articole, inclusiv cele citite, ca acțiune în rotorul VoiceOver și buton vizibil exclus din VoiceOver. Articolul se deschide prin procedura normală, iar traducerea pornește automat când textul este pregătit.",
+      "Adăugat Golește favoritele pentru radio, TV, SonarTube, SonarMusic și audiodescrierile Sonarpad: un buton accesibil cu VoiceOver, cu confirmare, care elimină doar favoritele secțiunii curente. La podcasturi s-a adăugat Elimină toate abonamentele, tot cu confirmare și fără a șterge fișierele descărcate."
+    ],
+    "tr": [
+      "iOS sözlüğü: “gabbia” gibi sözcüklerin bulunamamasını önlemek için arama alanında otomatik büyük harf kullanımı kapatıldı. Büyük harfler yine elle girilebilir.",
+      "Çevirmen: kaydırıcılarla dil değiştirirken VoiceOver odağının kararlılığı iyileştirildi. Kaynak ve hedef diller birbirinden bağımsızdır ve ekran yeniden açıldığında hatırlanır.",
+      "Haberler: okunmuş olanlar dahil makale listelerine arayüz diline çevirme eklendi. VoiceOver rotor eylemi ve VoiceOver gezinmesinden hariç tutulan görünür bir düğme olarak kullanılabilir. Makale normal şekilde açılır ve metin hazır olduğunda çeviri otomatik başlar.",
+      "Radyo, TV, SonarTube, SonarMusic ve Sonarpad sesli betimlemelerine Favorileri temizle eklendi: VoiceOver ile erişilebilen, onay isteyen ve yalnızca mevcut bölümün favorilerini kaldıran bir düğme. Podcastlere de onay isteyen ve indirilen dosyaları silmeyen Tüm abonelikleri kaldır eklendi."
+    ],
+    "nl": [
+      "Woordenboek op iOS: automatische hoofdletters in het zoekveld uitgeschakeld, zodat woorden zoals ‘gabbia’ worden gevonden. Hoofdletters kunnen nog steeds handmatig worden ingevoerd.",
+      "Vertaler: de VoiceOver-focus blijft stabieler bij het wijzigen van talen met de schuifregelaars. Bron- en doeltaal zijn onafhankelijk en worden onthouden wanneer het scherm opnieuw wordt geopend.",
+      "Nieuws: Vertalen naar de interfacetaal toegevoegd aan artikellijsten, ook voor gelezen artikelen, als VoiceOver-rotoractie en als zichtbare knop die is uitgesloten van VoiceOver. Het artikel wordt normaal geopend en de vertaling start automatisch zodra de tekst klaar is.",
+      "Favorieten wissen toegevoegd aan radio, TV, SonarTube, SonarMusic en Sonarpad-audiobeschrijvingen: een voor VoiceOver toegankelijke knop met bevestiging die alleen de favorieten van de huidige sectie verwijdert. Podcasts bieden Alle abonnementen verwijderen, eveneens met bevestiging en zonder gedownloade bestanden te verwijderen."
+    ]
+  },
+  {
     "version": "0.5.3",
     "date": "2026-11-10",
     "it": [

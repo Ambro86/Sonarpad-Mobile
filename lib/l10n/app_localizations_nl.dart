@@ -6055,4 +6055,18 @@ class AppLocalizationsNl extends AppLocalizations {
   @override
   String get cloudSyncAutomaticHelp =>
       'Sync runs automatically while you use the app. You can also choose Sync now.';
+
+  @override
+  String get clearFavorites => 'Favorieten wissen';
+
+  @override
+  String get confirmClearFavorites =>
+      'Weet je zeker dat je alle favorieten in deze sectie wilt verwijderen?';
+
+  @override
+  String get clearPodcastSubscriptions => 'Alle abonnementen verwijderen';
+
+  @override
+  String get confirmClearPodcastSubscriptions =>
+      'Weet je zeker dat je alle podcastabonnementen wilt verwijderen? Gedownloade bestanden worden niet verwijderd.';
 }

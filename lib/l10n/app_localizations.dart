@@ -10891,6 +10891,30 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'La sincronizzazione è automatica quando usi l’app. Puoi anche scegliere Sincronizza ora.'**
   String get cloudSyncAutomaticHelp;
+
+  /// No description provided for @clearFavorites.
+  ///
+  /// In it, this message translates to:
+  /// **'Svuota preferiti'**
+  String get clearFavorites;
+
+  /// No description provided for @confirmClearFavorites.
+  ///
+  /// In it, this message translates to:
+  /// **'Sei sicuro di voler rimuovere tutti i preferiti di questa sezione?'**
+  String get confirmClearFavorites;
+
+  /// No description provided for @clearPodcastSubscriptions.
+  ///
+  /// In it, this message translates to:
+  /// **'Rimuovi tutte le iscrizioni'**
+  String get clearPodcastSubscriptions;
+
+  /// No description provided for @confirmClearPodcastSubscriptions.
+  ///
+  /// In it, this message translates to:
+  /// **'Sei sicuro di voler rimuovere tutte le iscrizioni ai podcast? I file scaricati non verranno eliminati.'**
+  String get confirmClearPodcastSubscriptions;
 }
 
 class _AppLocalizationsDelegate

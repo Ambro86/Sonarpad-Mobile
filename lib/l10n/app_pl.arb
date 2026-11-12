@@ -6646,5 +6646,9 @@
         "type": "String"
       }
     }
-  }
+  },
+  "clearFavorites": "Wyczyść ulubione",
+  "confirmClearFavorites": "Czy na pewno chcesz usunąć wszystkie ulubione z tej sekcji?",
+  "clearPodcastSubscriptions": "Usuń wszystkie subskrypcje",
+  "confirmClearPodcastSubscriptions": "Czy na pewno chcesz usunąć wszystkie subskrypcje podcastów? Pobrane pliki nie zostaną usunięte."
 }
