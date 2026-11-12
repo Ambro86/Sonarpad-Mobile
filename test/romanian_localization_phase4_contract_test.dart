@@ -99,6 +99,9 @@ void main() {
       'podcastCategoryManagement',
       'podcastCategoryMarketing',
       'podcastCategoryRugby',
+      // Mono and Stereo are also the standard Romanian audio labels.
+      'podcastRecorderMono',
+      'podcastRecorderStereo',
     };
 
     final identical = <String>{
