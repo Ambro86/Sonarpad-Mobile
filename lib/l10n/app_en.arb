@@ -5074,5 +5074,6 @@
   "podcastRecorderChannels": "Recording channels",
   "podcastRecorderMono": "Mono",
   "podcastRecorderStereo": "Stereo",
-  "podcastRecorderBackground": "Keep recording in the background"
+  "podcastRecorderBackground": "Keep recording in the background",
+  "alphabeticalSortCompleted": "Alphabetical sorting completed."
 }

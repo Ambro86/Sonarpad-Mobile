@@ -6050,4 +6050,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get podcastRecorderBackground => 'Keep recording in the background';
+
+  @override
+  String get alphabeticalSortCompleted => 'Alphabetical sorting completed.';
 }

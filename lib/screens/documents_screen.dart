@@ -666,7 +666,10 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
         if (ids.contains(globalList[i].id)) globalList[i] = sorted[next++];
       }
       await _service.saveAll(globalList);
-      if (mounted) setState(() {});
+      if (mounted) {
+        setState(() {});
+        showStatusMessage(context, l10n.alphabeticalSortCompleted);
+      }
     } else if (action == _DocumentAction.moveUp && currentIndex > 0) {
       final targetDoc = displayed[currentIndex - 1];
       final globalTargetIndex =

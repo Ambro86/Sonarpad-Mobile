@@ -5080,5 +5080,6 @@
   "podcastRecorderChannels": "Canales de grabación",
   "podcastRecorderMono": "Mono",
   "podcastRecorderStereo": "Estéreo",
-  "podcastRecorderBackground": "Seguir grabando en segundo plano"
+  "podcastRecorderBackground": "Seguir grabando en segundo plano",
+  "alphabeticalSortCompleted": "Ordenación alfabética completada."
 }

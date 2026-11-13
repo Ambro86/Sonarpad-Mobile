@@ -6655,5 +6655,6 @@
   "podcastRecorderChannels": "Kanały nagrywania",
   "podcastRecorderMono": "Mono",
   "podcastRecorderStereo": "Stereo",
-  "podcastRecorderBackground": "Kontynuuj nagrywanie w tle"
+  "podcastRecorderBackground": "Kontynuuj nagrywanie w tle",
+  "alphabeticalSortCompleted": "Sortowanie alfabetyczne zakończone."
 }

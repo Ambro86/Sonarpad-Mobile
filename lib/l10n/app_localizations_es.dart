@@ -6116,4 +6116,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get podcastRecorderBackground => 'Seguir grabando en segundo plano';
+
+  @override
+  String get alphabeticalSortCompleted => 'Ordenación alfabética completada.';
 }

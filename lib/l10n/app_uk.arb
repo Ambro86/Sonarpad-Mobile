@@ -6652,5 +6652,6 @@
   "podcastRecorderChannels": "Канали запису",
   "podcastRecorderMono": "Моно",
   "podcastRecorderStereo": "Стерео",
-  "podcastRecorderBackground": "Продовжувати запис у фоні"
+  "podcastRecorderBackground": "Продовжувати запис у фоні",
+  "alphabeticalSortCompleted": "Сортування за абеткою завершено."
 }

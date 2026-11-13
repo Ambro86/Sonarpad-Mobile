@@ -158,6 +158,49 @@ void main() {
     await root.delete(recursive: true);
   });
   test(
+    'export defaults, independent options, rerender and persistence',
+    () async {
+      expect(service.outputFormat, PodcastOutputFormat.mp3);
+      expect(service.bitrateKbps, 192);
+      await service.start();
+      await service.stop();
+      final original = await File(microphone.path!).readAsBytes();
+      expect(await service.render(), endsWith('.mp3'));
+      expect(mixer.arguments, contains('libmp3lame'));
+      expect(mixer.arguments, contains('192k'));
+      expect(mixer.arguments, isNot(contains('-movflags')));
+      await service.updateExportOptions(bitrate: 128);
+      expect(service.output, isNull);
+      expect(service.outputFormat, PodcastOutputFormat.mp3);
+      await service.render();
+      expect(mixer.arguments, contains('128k'));
+      await service.updateExportOptions(format: PodcastOutputFormat.m4a);
+      expect(service.bitrateKbps, 128);
+      expect(service.output, isNull);
+      expect(await service.render(), endsWith('.m4a'));
+      expect(mixer.arguments, contains('aac'));
+      expect(mixer.arguments, contains('-movflags'));
+      expect(mixer.arguments, isNot(contains('libmp3lame')));
+      expect(await File(microphone.path!).readAsBytes(), original);
+      await service.close();
+      final reopened = PodcastRecorderService(
+        microphone: FakeMicrophone(),
+        mixer: FakeMixer(),
+        directory: () async => root,
+        keepAwake: (_) async {},
+      );
+      try {
+        await reopened.initialize();
+        expect(reopened.outputFormat, PodcastOutputFormat.m4a);
+        expect(reopened.bitrateKbps, 128);
+        expect(reopened.recovered, true);
+      } finally {
+        await reopened.close();
+      }
+    },
+  );
+
+  test(
     'permission refusal never starts capture and releases busy state',
     () async {
       microphone.allowed = false;
@@ -179,7 +222,7 @@ void main() {
   test(
     'capture options persist independently and cannot change during a recording',
     () async {
-      expect(service.stereo, isFalse);
+      expect(service.stereo, isTrue);
       expect(service.continueInBackground, isFalse);
       await service.updateRecordingOptions(stereo: true);
       expect(service.continueInBackground, isFalse);
@@ -212,6 +255,26 @@ void main() {
       expect(microphone.background, isFalse);
     },
   );
+
+  test('stereo is the default but saved mono is respected', () async {
+    await service.start();
+    expect(microphone.channels, 2);
+    await service.stop();
+    await service.discard();
+    await service.updateRecordingOptions(stereo: false);
+    await service.close();
+    microphone = FakeMicrophone();
+    service = PodcastRecorderService(
+      microphone: microphone,
+      mixer: mixer,
+      directory: () async => root,
+      keepAwake: (_) async {},
+    );
+    await service.initialize();
+    expect(service.stereo, isFalse);
+    await service.start();
+    expect(microphone.channels, 1);
+  });
 
   test('failed native start can be retried', () async {
     microphone.failStart = true;
@@ -327,7 +390,7 @@ void main() {
       expect(service.output, isNull);
       expect(await File(microphone.path!).exists(), true);
       mixer.waiting = null;
-      expect(await service.render(), endsWith('.m4a'));
+      expect(await service.render(), endsWith('.mp3'));
     },
   );
   test(
@@ -424,6 +487,46 @@ void main() {
   try {
     hasFfmpeg = Process.runSync('ffmpeg', ['-version']).exitCode == 0;
   } catch (_) {}
+  test('real audio: MP3 and M4A exports at every offered bitrate', () async {
+    final voice = '${root.path}/voice.wav';
+    await writeTone(voice);
+    for (final format in PodcastOutputFormat.values) {
+      for (final bitrate in podcastBitrates) {
+        final destination = '${root.path}/export-$bitrate.${format.name}';
+        await ProcessMixer().render(
+          PodcastRecorderService.mixArguments(
+            voice: voice,
+            destination: destination,
+            microphone: 1,
+            music: 0,
+            format: format,
+            bitrateKbps: bitrate,
+          ),
+        );
+        final probe = await Process.run('ffprobe', [
+          '-v',
+          'error',
+          '-show_entries',
+          'stream=codec_name,channels,bit_rate',
+          '-of',
+          'json',
+          destination,
+        ]);
+        expect(probe.exitCode, 0);
+        final stream =
+            (jsonDecode(probe.stdout as String)['streams'] as List).first;
+        expect(
+          stream['codec_name'],
+          format == PodcastOutputFormat.mp3 ? 'mp3' : 'aac',
+        );
+        expect(stream['channels'], 2);
+        if (format == PodcastOutputFormat.mp3) {
+          expect(int.parse(stream['bit_rate'] as String), bitrate * 1000);
+        }
+      }
+    }
+  }, skip: !hasFfmpeg ? 'Requires FFmpeg' : false);
+
   test('real audio: gains, looping music, silence and duration', () async {
     final voice = '${root.path}/voice.wav', bed = '${root.path}/bed.wav';
     await writeTone(voice);

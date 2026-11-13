@@ -874,7 +874,10 @@ class _SonarpadAudiodescriptionsFavoritesScreenState
           'sort_favorites', (item) => item.title);
       if (sorted == null) return;
       await _favoritesService.save(sorted);
-      if (mounted) setState(() => _items = sorted);
+      if (mounted) {
+        setState(() => _items = sorted);
+        showStatusMessage(context, AppLocalizations.of(context).alphabeticalSortCompleted);
+      }
     } finally {
       _changing = false;
     }

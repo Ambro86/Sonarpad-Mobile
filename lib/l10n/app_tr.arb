@@ -5074,5 +5074,6 @@
   "podcastRecorderChannels": "Kayıt kanalları",
   "podcastRecorderMono": "Mono",
   "podcastRecorderStereo": "Stereo",
-  "podcastRecorderBackground": "Arka planda kayda devam et"
+  "podcastRecorderBackground": "Arka planda kayda devam et",
+  "alphabeticalSortCompleted": "Alfabetik sıralama tamamlandı."
 }

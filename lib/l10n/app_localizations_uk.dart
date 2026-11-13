@@ -6065,4 +6065,7 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get podcastRecorderBackground => 'Продовжувати запис у фоні';
+
+  @override
+  String get alphabeticalSortCompleted => 'Сортування за абеткою завершено.';
 }

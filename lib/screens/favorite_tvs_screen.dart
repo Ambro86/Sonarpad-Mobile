@@ -91,7 +91,10 @@ class _FavoriteTvsScreenState extends State<FavoriteTvsScreen> {
         'sort_favorites', (item) => item.name);
     if (sorted == null) return;
     await _service.saveFavorites(sorted);
-    if (mounted) setState(() => _favorites = sorted);
+    if (mounted) {
+      setState(() => _favorites = sorted);
+      showStatusMessage(context, AppLocalizations.of(context).alphabeticalSortCompleted);
+    }
   }
 
   Future<void> _removeFromFavorites(TvChannel channel) async {

@@ -6097,4 +6097,8 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get podcastRecorderBackground => 'Im Hintergrund weiter aufnehmen';
+
+  @override
+  String get alphabeticalSortCompleted =>
+      'Alphabetische Sortierung abgeschlossen.';
 }

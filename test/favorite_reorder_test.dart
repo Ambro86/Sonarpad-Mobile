@@ -194,6 +194,18 @@ void main() {
       );
       await tester.pumpAndSettle();
       expect((await library.favorites()).map((e) => e.id), ['Zeta', 'Diego']);
+      tester.takeAnnouncements();
+      final sortList = tester.widget<UniversalAccessibleList>(find.byType(UniversalAccessibleList).last);
+      final sortRow = sortList.sections.expand((s) => s.rows)
+          .firstWhere((r) => r.actions.any((a) => a.id == 'sort_favorites'));
+      sortList.onEvent!(AccessibleListEvent(type: 'customAction', id: sortRow.id, action: 'sort_favorites'));
+      await tester.pumpAndSettle();
+      for (var i = 0; i < 12; i++) {
+        await tester.pump(const Duration(milliseconds: 100));
+      }
+      expect(tester.takeAnnouncements().map((a) => a.message), ['Ordinamento alfabetico completato.']);
+      await tester.pump(const Duration(seconds: 2));
+
     },
   );
   testWidgets('tube favorite action persists order with secondary and visual controls', (tester) async {
@@ -210,6 +222,18 @@ void main() {
     list.onEvent!(AccessibleListEvent(type:'customAction',id:row.id,action:'move_down'));
     await tester.pumpAndSettle();
     expect((await library.loadFavorites()).map((e)=>e.id),['Diego','Zeta']);
+      tester.takeAnnouncements();
+      final sortList = tester.widget<UniversalAccessibleList>(find.byType(UniversalAccessibleList).last);
+      final sortRow = sortList.sections.expand((s) => s.rows)
+          .firstWhere((r) => r.actions.any((a) => a.id == 'sort_favorites'));
+      sortList.onEvent!(AccessibleListEvent(type: 'customAction', id: sortRow.id, action: 'sort_favorites'));
+      await tester.pumpAndSettle();
+      for (var i = 0; i < 12; i++) {
+        await tester.pump(const Duration(milliseconds: 100));
+      }
+      expect(tester.takeAnnouncements().map((a) => a.message), ['Ordinamento alfabetico completato.']);
+      await tester.pump(const Duration(seconds: 2));
+
   });
 
 }

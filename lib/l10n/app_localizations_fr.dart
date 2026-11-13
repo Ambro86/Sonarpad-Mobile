@@ -6128,4 +6128,7 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get podcastRecorderBackground =>
       'Continuer à enregistrer en arrière-plan';
+
+  @override
+  String get alphabeticalSortCompleted => 'Tri alphabétique terminé.';
 }

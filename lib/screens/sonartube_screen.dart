@@ -3805,6 +3805,9 @@ class _SonarTubeFavoritesScreenState extends State<_SonarTubeFavoritesScreen> {
     await widget.favoritesService.reorderFavorites(reordered.map(widget.favoritesService.itemKey).toList());
     await _load();
     await _restoreFavoriteFocus(item);
+    if (mounted && action == 'sort_favorites') {
+      showStatusMessage(context, AppLocalizations.of(context).alphabeticalSortCompleted);
+    }
   }
 
   Future<void> _remove(SonarTubeItem item) async {

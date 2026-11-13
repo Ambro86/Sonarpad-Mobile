@@ -6099,6 +6099,9 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get podcastRecorderBackground => 'Continuar a gravar em segundo plano';
+
+  @override
+  String get alphabeticalSortCompleted => 'Ordenação alfabética concluída.';
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
@@ -12188,4 +12191,7 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get podcastRecorderBackground => 'Continuar gravando em segundo plano';
+
+  @override
+  String get alphabeticalSortCompleted => 'Ordenação alfabética concluída.';
 }

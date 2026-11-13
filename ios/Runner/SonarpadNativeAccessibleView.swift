@@ -1386,7 +1386,9 @@ final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITableViewDa
     // This form inserts/removes provider and voice fields. Never recycle a
     // retained VoiceOver object into another setting (e.g. provider -> language).
     let isolatedAudioDescriptionSetting = debugTag == "audio-description-settings"
+    let isolatedPodcastSlider = debugTag == "podcast-recorder" && row.kind == "slider"
     let identifier = isDocumentParagraph ? "SonarpadDocumentParagraphCell" :
+      isolatedPodcastSlider ? "SonarpadPodcastSlider_\(row.id)" :
       isolatedTravelSlider ? "SonarpadTravelSlider_\(row.id)" :
       isolatedAudioDescriptionSetting ? "SonarpadAudioDescriptionSetting_\(row.id)_\(row.kind)" :
       "SonarpadAccessibleTableCell"

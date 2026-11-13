@@ -150,7 +150,7 @@ class _PodcastRecorderScreenState extends State<PodcastRecorderScreen>
       RegExp(r'[\\/:*?"<>|\x00-\x1f]'),
       '_',
     );
-    return '${clean.isEmpty ? 'Podcast' : clean}.m4a';
+    return '${clean.isEmpty ? 'Podcast' : clean}.${_recorder.outputFormat.name}';
   }
 
   Future<void> _save() => _run(() async {
@@ -271,6 +271,39 @@ class _PodcastRecorderScreenState extends State<PodcastRecorderScreen>
       },
     );
   }
+
+  AccessibleListRow _exportChoice({
+    required String id,
+    required String title,
+    required List<String> labels,
+    required int index,
+    required Future<void> Function(int) change,
+  }) => AccessibleListRow(
+    id: id,
+    title: title,
+    kind: 'slider',
+    accessibilityButtonTrait: false,
+    value: '$index',
+    valueLabel: labels[index],
+    sliderMin: 0,
+    sliderMax: (labels.length - 1).toDouble(),
+    sliderStep: 1,
+    sliderValue: index.toDouble(),
+    sliderIncreasedValueLabel: labels[(index + 1).clamp(0, labels.length - 1)],
+    sliderDecreasedValueLabel: labels[(index - 1).clamp(0, labels.length - 1)],
+    options: [
+      for (var i = 0; i < labels.length; i++)
+        AccessibleOption(value: i, label: labels[i]),
+    ],
+    onValueChanged: (raw) async {
+      final number = num.tryParse('$raw');
+      if (number == null || !number.isFinite) return;
+      final selected = number.round().clamp(0, labels.length - 1);
+      if (selected == index) return;
+      await _stopPreview();
+      await change(selected);
+    },
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -398,6 +431,23 @@ class _PodcastRecorderScreenState extends State<PodcastRecorderScreen>
                 _recorder.updateRecordingOptions(background: value == true),
           ),
         ],
+        _exportChoice(
+          id: 'output-format',
+          title: l10n.sonarTubeSaveFormatPrompt,
+          labels: const ['MP3', 'M4A'],
+          index: _recorder.outputFormat.index,
+          change: (index) => _recorder.updateExportOptions(
+            format: PodcastOutputFormat.values[index],
+          ),
+        ),
+        _exportChoice(
+          id: 'output-bitrate',
+          title: l10n.convertMediaBitrate,
+          labels: [for (final bitrate in podcastBitrates) '$bitrate kbps'],
+          index: podcastBitrates.indexOf(_recorder.bitrateKbps),
+          change: (index) =>
+              _recorder.updateExportOptions(bitrate: podcastBitrates[index]),
+        ),
         _volume(
           'microphone',
           l10n.podcastRecorderMicVolume,
@@ -515,6 +565,7 @@ class _PodcastRecorderScreenState extends State<PodcastRecorderScreen>
           leading: SonarpadBackButton(onPressed: _leave),
         ),
         body: UniversalAccessibleList(
+          debugTag: 'podcast-recorder',
           key: ValueKey(
             'recorder-${waiting
                 ? 'loading'

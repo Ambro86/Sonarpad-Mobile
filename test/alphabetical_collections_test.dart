@@ -178,6 +178,7 @@ void main() {
           row.visualActions.where((a) => a.id == 'sort_favorites'),
           hasLength(1),
         );
+        tester.takeAnnouncements();
         await tester.runAsync(() async {
           await list.onEvent!(
             AccessibleListEvent(
@@ -186,12 +187,19 @@ void main() {
               action: 'sort_favorites',
             ),
           );
+          await Future<void>.delayed(const Duration(milliseconds: 400));
         });
         await tester.pumpAndSettle();
         expect(
           rows().where((r) => names.contains(r.title)).map((r) => r.title),
           ['anna', 'Beta', 'Zeta'],
         );
+        final expectedMessage = collection == 'radio'
+            ? 'Radio preferite ordinate alfabeticamente.'
+            : collection == 'podcasts'
+                ? 'Podcast ordinati alfabeticamente.'
+                : 'Ordinamento alfabetico completato.';
+        expect(tester.takeAnnouncements().map((a) => a.message), [expectedMessage]);
         expect(await tester.runAsync(savedNames), ['anna', 'Beta', 'Zeta']);
         await tester.pumpWidget(const SizedBox());
       },

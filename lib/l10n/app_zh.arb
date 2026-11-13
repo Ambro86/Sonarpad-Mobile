@@ -5074,5 +5074,6 @@
   "podcastRecorderChannels": "录音声道",
   "podcastRecorderMono": "单声道",
   "podcastRecorderStereo": "立体声",
-  "podcastRecorderBackground": "在后台继续录音"
+  "podcastRecorderBackground": "在后台继续录音",
+  "alphabeticalSortCompleted": "按字母顺序排序已完成。"
 }

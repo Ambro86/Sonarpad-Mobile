@@ -6069,4 +6069,7 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get podcastRecorderBackground => 'Pokračovat v nahrávání na pozadí';
+
+  @override
+  String get alphabeticalSortCompleted => 'Abecední řazení dokončeno.';
 }

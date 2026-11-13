@@ -6084,4 +6084,7 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get podcastRecorderBackground => 'Blijven opnemen op de achtergrond';
+
+  @override
+  String get alphabeticalSortCompleted => 'Alfabetisch sorteren voltooid.';
 }

@@ -1,3 +1,4 @@
+import '../utils/status_message.dart';
 import '../widgets/clear_favorites_button.dart';
 import '../widgets/favorite_reorder.dart';
 import '../services/favorite_channel_videos_service.dart';
@@ -280,6 +281,9 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
     if (!mounted) return;
     final newIndex=_items.indexWhere((e)=>e.key==item.key);
     if (newIndex>=0) await _accessible.focusAccessibleRow('item_$newIndex',mode:AccessibleFocusMode.routeReturnJump,animated:false);
+    if (mounted && action == 'sort_favorites') {
+      showStatusMessage(context, AppLocalizations.of(context).alphabeticalSortCompleted);
+    }
   }
 
   Future<void> _refreshFavorites() async {

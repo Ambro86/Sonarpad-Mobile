@@ -6077,4 +6077,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get podcastRecorderBackground => 'Arka planda kayda devam et';
+
+  @override
+  String get alphabeticalSortCompleted => 'Alfabetik sıralama tamamlandı.';
 }

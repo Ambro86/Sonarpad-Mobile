@@ -5834,6 +5834,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get podcastRecorderBackground => '在后台继续录音';
+
+  @override
+  String get alphabeticalSortCompleted => '按字母顺序排序已完成。';
 }
 
 /// The translations for Chinese, as used in China (`zh_CN`).
@@ -11666,4 +11669,7 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get podcastRecorderBackground => '在后台继续录音';
+
+  @override
+  String get alphabeticalSortCompleted => '按字母顺序排序已完成。';
 }

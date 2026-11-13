@@ -85,6 +85,48 @@ void main() {
   }
 
   testWidgets(
+    'format and bitrate sliders stay independent',
+    (tester) async {
+      await load(tester);
+      final list = tester.widget<UniversalAccessibleList>(
+        find.byType(UniversalAccessibleList),
+      );
+      expect(list.debugTag, 'podcast-recorder');
+      expect(row(tester, 'output-format').valueLabel, 'MP3');
+      expect(row(tester, 'output-bitrate').valueLabel, '192 kbps');
+      expect(row(tester, 'output-format').kind, 'slider');
+      expect(row(tester, 'output-bitrate').kind, 'slider');
+      await tester.runAsync(() async {
+        await row(tester, 'output-format').onValueChanged!('1');
+      });
+      await tester.pumpAndSettle();
+      expect(row(tester, 'output-format').valueLabel, 'M4A');
+      expect(row(tester, 'output-bitrate').valueLabel, '192 kbps');
+      expect(row(tester, 'channels').sliderValue, 1);
+      expect(row(tester, 'microphone').sliderValue, 1);
+      await tester.runAsync(() async {
+        await row(tester, 'output-bitrate').onValueChanged!(
+          podcastBitrates.indexOf(128).toString(),
+        );
+      });
+      await tester.pumpAndSettle();
+      expect(row(tester, 'output-format').valueLabel, 'M4A');
+      expect(row(tester, 'output-bitrate').valueLabel, '128 kbps');
+      expect(
+        row(tester, 'output-bitrate').sliderIncreasedValueLabel,
+        '160 kbps',
+      );
+      expect(row(tester, 'channels').sliderValue, 1);
+      expect(row(tester, 'microphone').sliderValue, 1);
+      await tester.runAsync(service.close);
+    },
+    variant: TargetPlatformVariant({
+      TargetPlatform.android,
+      TargetPlatform.iOS,
+    }),
+  );
+
+  testWidgets(
     'accessible setup has name, microphone slider and optional music',
     (tester) async {
       await load(tester);

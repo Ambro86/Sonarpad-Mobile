@@ -6082,4 +6082,7 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get podcastRecorderBackground => 'Kontynuuj nagrywanie w tle';
+
+  @override
+  String get alphabeticalSortCompleted => 'Sortowanie alfabetyczne zakończone.';
 }

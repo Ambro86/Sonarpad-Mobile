@@ -10945,6 +10945,12 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Continua a registrare in background'**
   String get podcastRecorderBackground;
+
+  /// No description provided for @alphabeticalSortCompleted.
+  ///
+  /// In it, this message translates to:
+  /// **'Ordinamento alfabetico completato.'**
+  String get alphabeticalSortCompleted;
 }
 
 class _AppLocalizationsDelegate

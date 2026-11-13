@@ -16,6 +16,10 @@ import 'package:permission_handler/permission_handler.dart';
 import '../utils/app_logger.dart';
 import 'protected_wakelock.dart';
 
+enum PodcastOutputFormat { mp3, m4a }
+
+const podcastBitrates = <int>[64, 80, 96, 112, 128, 160, 192, 224, 256, 320];
+
 enum PodcastCaptureState { idle, recording, paused, ready }
 
 class PodcastRecorderException implements Exception {
@@ -216,7 +220,9 @@ class PodcastRecorderService extends ChangeNotifier {
   bool saved = false;
   bool recovered = false;
   String name = '';
-  bool stereo = false;
+  PodcastOutputFormat outputFormat = PodcastOutputFormat.mp3;
+  int bitrateKbps = 192;
+  bool stereo = true;
   bool continueInBackground = false;
   double microphoneVolume = 1;
   double musicVolume = .2;
@@ -265,9 +271,42 @@ class PodcastRecorderService extends ChangeNotifier {
     }
   }
 
+  Future<void> updateExportOptions({
+    PodcastOutputFormat? format,
+    int? bitrate,
+  }) async {
+    if (busy ||
+        state == PodcastCaptureState.recording ||
+        state == PodcastCaptureState.paused) {
+      return;
+    }
+    if (bitrate != null && !podcastBitrates.contains(bitrate)) return;
+    if ((format == null || format == outputFormat) &&
+        (bitrate == null || bitrate == bitrateKbps)) {
+      return;
+    }
+    if (format != null) outputFormat = format;
+    if (bitrate != null) bitrateKbps = bitrate;
+    output = null;
+    saved = false;
+    _notify();
+    final prefs = await SharedPreferences.getInstance();
+    if (format != null) {
+      await prefs.setString('podcast_recorder_format', format.name);
+    }
+    if (bitrate != null) {
+      await prefs.setInt('podcast_recorder_bitrate', bitrate);
+    }
+  }
+
   Future<void> initialize() async {
     final prefs = await SharedPreferences.getInstance();
-    stereo = prefs.getBool('podcast_recorder_stereo') ?? false;
+    outputFormat = prefs.getString('podcast_recorder_format') == 'm4a'
+        ? PodcastOutputFormat.m4a
+        : PodcastOutputFormat.mp3;
+    final savedBitrate = prefs.getInt('podcast_recorder_bitrate');
+    bitrateKbps = podcastBitrates.contains(savedBitrate) ? savedBitrate! : 192;
+    stereo = prefs.getBool('podcast_recorder_stereo') ?? true;
     continueInBackground =
         prefs.getBool('podcast_recorder_background') ?? false;
     _folder = await _directory();
@@ -520,6 +559,8 @@ class PodcastRecorderService extends ChangeNotifier {
     String? background,
     String? intro,
     String? outro,
+    PodcastOutputFormat format = PodcastOutputFormat.m4a,
+    int bitrateKbps = 192,
   }) {
     final mic = microphone.clamp(0, 2).toStringAsFixed(3);
     final bed = music.clamp(0, 1).toStringAsFixed(3);
@@ -560,15 +601,15 @@ class PodcastRecorderService extends ChangeNotifier {
       '[out]',
       '-vn',
       '-c:a',
-      'aac',
+      format == PodcastOutputFormat.mp3 ? 'libmp3lame' : 'aac',
       '-b:a',
-      '192k',
+      '${bitrateKbps}k',
       '-ar',
       '44100',
       '-ac',
       '2',
-      '-movflags',
-      '+faststart',
+      if (format == PodcastOutputFormat.m4a) ...['-movflags', '+faststart'],
+      if (format == PodcastOutputFormat.mp3) ...['-id3v2_version', '3'],
       destination,
     ];
   }
@@ -581,12 +622,14 @@ class PodcastRecorderService extends ChangeNotifier {
     busy = true;
     _cancelMix = false;
     _notify();
-    final destination = p.join(_folder!.path, 'podcast.m4a');
+    final destination = p.join(_folder!.path, 'podcast.${outputFormat.name}');
     try {
       await _persist();
       await _mixer.render(
         mixArguments(
           voice: _raw,
+          format: outputFormat,
+          bitrateKbps: bitrateKbps,
           destination: destination,
           microphone: microphoneVolume,
           music: musicVolume,

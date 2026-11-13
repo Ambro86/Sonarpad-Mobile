@@ -6652,5 +6652,6 @@
   "podcastRecorderChannels": "Opnamekanalen",
   "podcastRecorderMono": "Mono",
   "podcastRecorderStereo": "Stereo",
-  "podcastRecorderBackground": "Blijven opnemen op de achtergrond"
+  "podcastRecorderBackground": "Blijven opnemen op de achtergrond",
+  "alphabeticalSortCompleted": "Alfabetisch sorteren voltooid."
 }

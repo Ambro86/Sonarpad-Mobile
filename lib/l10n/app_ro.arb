@@ -5074,5 +5074,6 @@
   "podcastRecorderChannels": "Canale de înregistrare",
   "podcastRecorderMono": "Mono",
   "podcastRecorderStereo": "Stereo",
-  "podcastRecorderBackground": "Continuă înregistrarea în fundal"
+  "podcastRecorderBackground": "Continuă înregistrarea în fundal",
+  "alphabeticalSortCompleted": "Sortarea alfabetică s-a încheiat."
 }

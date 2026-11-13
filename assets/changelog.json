@@ -9,7 +9,8 @@
       "Aggiunto Svuota preferiti in radio, TV, SonarTube, SonarMusic e audiodescrizioni Sonarpad: un pulsante accessibile a VoiceOver con conferma, che rimuove solo i preferiti della sezione corrente. Nei podcast aggiunto Rimuovi tutte le iscrizioni, sempre con conferma e senza eliminare i file scaricati.",
       "Registra podcast: aggiunte la scelta mono/stereo e l’opzione per continuare a registrare in background o a schermo bloccato su iOS e Android. Entrambe le preferenze vengono ricordate. Lo stereo dipende dal microfono e dal dispositivo; la registrazione non continua se si forza la chiusura dell’app.",
       "SonarTube: corretto il problema per cui le playlist composte da Shorts, aperte dalle playlist di un canale, potevano mostrare «Nessun video» pur contenendo video.",
-      "Aggiunta l’azione Ordina alfabeticamente nei documenti, nei preferiti radio e nelle iscrizioni podcast, disponibile nel rotore di VoiceOver e come pulsante visibile escluso da VoiceOver. L’ordine viene salvato; nei documenti viene ordinata solo la cartella aperta."
+      "Aggiunta l’azione Ordina alfabeticamente nei documenti, nei preferiti radio e nelle iscrizioni podcast, disponibile nel rotore di VoiceOver e come pulsante visibile escluso da VoiceOver. L’ordine viene salvato; nei documenti viene ordinata solo la cartella aperta.",
+      "Registra podcast: aggiunta la scelta tra MP3 e M4A, con MP3 predefinito, e la regolazione della qualità tramite bitrate da 64 a 320 kbps. Formato e bitrate si scelgono con slider indipendenti e vengono ricordati."
     ],
     "en": [
       "Dictionary on iOS: disabled automatic capitalization in the search field to prevent words such as “gabbia” from not being found. Uppercase letters can still be entered manually.",
@@ -18,7 +19,8 @@
       "Added Clear favorites to radio, TV, SonarTube, SonarMusic and Sonarpad audio descriptions: a VoiceOver-accessible button with confirmation that removes only the current section’s favorites. Podcasts now offer Remove all subscriptions, also with confirmation, without deleting downloaded files.",
       "Record podcast: added mono/stereo selection and an option to keep recording in the background or with the screen locked on iOS and Android. Both preferences are remembered. Stereo depends on the microphone and device; recording does not continue if the app is force-closed.",
       "SonarTube: fixed an issue where Shorts-only playlists opened from a channel’s playlists could show “No videos” even though they contained videos.",
-      "Added Sort alphabetically to documents, radio favorites and podcast subscriptions, available as a VoiceOver rotor action and a visible button excluded from VoiceOver. The order is saved; in documents, only the open folder is sorted."
+      "Added Sort alphabetically to documents, radio favorites and podcast subscriptions, available as a VoiceOver rotor action and a visible button excluded from VoiceOver. The order is saved; in documents, only the open folder is sorted.",
+      "Record podcast: added a choice between MP3 and M4A, with MP3 as the default, and adjustable quality using bitrates from 64 to 320 kbps. Format and bitrate use independent sliders and are remembered."
     ],
     "fr": [
       "Dictionnaire sur iOS : désactivation de la majuscule automatique dans le champ de recherche pour éviter que des mots comme « gabbia » restent introuvables. Les majuscules peuvent toujours être saisies manuellement.",
@@ -27,7 +29,8 @@
       "Ajout de Vider les favoris dans les radios, la TV, SonarTube, SonarMusic et les audiodescriptions Sonarpad : un bouton accessible à VoiceOver avec confirmation, qui supprime uniquement les favoris de la section actuelle. Les podcasts proposent Supprimer tous les abonnements, également avec confirmation, sans supprimer les fichiers téléchargés.",
       "Enregistrer un podcast : ajout du choix mono/stéréo et d’une option pour poursuivre l’enregistrement en arrière-plan ou écran verrouillé sur iOS et Android. Les deux préférences sont mémorisées. La stéréo dépend du microphone et de l’appareil ; l’enregistrement ne continue pas si l’application est fermée de force.",
       "SonarTube : correction d’un problème où les playlists composées de Shorts, ouvertes depuis les playlists d’une chaîne, pouvaient afficher « Aucune vidéo » alors qu’elles contenaient des vidéos.",
-      "Ajout de Trier par ordre alphabétique dans les documents, les radios favorites et les abonnements aux podcasts, comme action du rotor VoiceOver et bouton visible exclu de VoiceOver. L’ordre est enregistré ; dans les documents, seul le dossier ouvert est trié."
+      "Ajout de Trier par ordre alphabétique dans les documents, les radios favorites et les abonnements aux podcasts, comme action du rotor VoiceOver et bouton visible exclu de VoiceOver. L’ordre est enregistré ; dans les documents, seul le dossier ouvert est trié.",
+      "Enregistrer un podcast : ajout du choix entre MP3 et M4A, avec MP3 par défaut, et du réglage de la qualité par un débit de 64 à 320 kbps. Le format et le débit se règlent avec des curseurs indépendants et sont mémorisés."
     ],
     "es": [
       "Diccionario en iOS: desactivada la mayúscula automática en el campo de búsqueda para evitar que palabras como «gabbia» no se encuentren. Las mayúsculas se pueden seguir introduciendo manualmente.",
@@ -36,7 +39,8 @@
       "Añadido Vaciar favoritos en radio, TV, SonarTube, SonarMusic y audiodescripciones Sonarpad: un botón accesible con VoiceOver y confirmación que elimina solo los favoritos de la sección actual. En podcasts se añade Eliminar todas las suscripciones, también con confirmación y sin eliminar los archivos descargados.",
       "Grabar podcast: añadida la selección mono/estéreo y una opción para seguir grabando en segundo plano o con la pantalla bloqueada en iOS y Android. Ambas preferencias se recuerdan. El estéreo depende del micrófono y del dispositivo; la grabación no continúa si se fuerza el cierre de la aplicación.",
       "SonarTube: corregido un problema por el que las listas compuestas por Shorts, abiertas desde las listas de un canal, podían mostrar «No hay vídeos» aunque contuvieran vídeos.",
-      "Añadida la acción Ordenar alfabéticamente en documentos, radios favoritas y suscripciones a podcasts, disponible en el rotor de VoiceOver y como botón visible excluido de VoiceOver. El orden se guarda; en documentos solo se ordena la carpeta abierta."
+      "Añadida la acción Ordenar alfabéticamente en documentos, radios favoritas y suscripciones a podcasts, disponible en el rotor de VoiceOver y como botón visible excluido de VoiceOver. El orden se guarda; en documentos solo se ordena la carpeta abierta.",
+      "Grabar podcast: añadida la elección entre MP3 y M4A, con MP3 como predeterminado, y el ajuste de calidad mediante una tasa de bits de 64 a 320 kbps. El formato y la tasa de bits se eligen con deslizadores independientes y se recuerdan."
     ],
     "pt": [
       "Dicionário no iOS: desativada a maiúscula automática no campo de pesquisa para evitar que palavras como «gabbia» não sejam encontradas. Continua a ser possível introduzir maiúsculas manualmente.",
@@ -45,7 +49,8 @@
       "Adicionado Limpar favoritos em rádio, TV, SonarTube, SonarMusic e audiodescrições Sonarpad: um botão acessível ao VoiceOver com confirmação, que remove apenas os favoritos da secção atual. Nos podcasts, adicionado Remover todas as subscrições, também com confirmação e sem eliminar os ficheiros transferidos.",
       "Gravar podcast: adicionada a seleção mono/estéreo e uma opção para continuar a gravar em segundo plano ou com o ecrã bloqueado no iOS e Android. Ambas as preferências ficam guardadas. O estéreo depende do microfone e do dispositivo; a gravação não continua se a aplicação for encerrada à força.",
       "SonarTube: corrigido um problema em que as listas compostas por Shorts, abertas a partir das listas de um canal, podiam mostrar «Nenhum vídeo» apesar de conterem vídeos.",
-      "Adicionada a ação Ordenar alfabeticamente nos documentos, nas rádios favoritas e nas subscrições de podcasts, disponível no rotor do VoiceOver e como botão visível excluído do VoiceOver. A ordem é guardada; nos documentos, apenas a pasta aberta é ordenada."
+      "Adicionada a ação Ordenar alfabeticamente nos documentos, nas rádios favoritas e nas subscrições de podcasts, disponível no rotor do VoiceOver e como botão visível excluído do VoiceOver. A ordem é guardada; nos documentos, apenas a pasta aberta é ordenada.",
+      "Gravar podcast: adicionada a escolha entre MP3 e M4A, com MP3 por predefinição, e o ajuste da qualidade através de uma taxa de bits entre 64 e 320 kbps. O formato e a taxa de bits usam controlos deslizantes independentes e são memorizados."
     ],
     "pt_BR": [
       "Dicionário no iOS: desativada a maiúscula automática no campo de pesquisa para evitar que palavras como “gabbia” não sejam encontradas. Ainda é possível inserir maiúsculas manualmente.",
@@ -54,7 +59,8 @@
       "Adicionado Limpar favoritos em rádio, TV, SonarTube, SonarMusic e audiodescrições Sonarpad: um botão acessível ao VoiceOver com confirmação, que remove apenas os favoritos da seção atual. Nos podcasts, adicionado Remover todas as inscrições, também com confirmação e sem excluir os arquivos baixados.",
       "Gravar podcast: adicionada a seleção mono/estéreo e uma opção para continuar gravando em segundo plano ou com a tela bloqueada no iOS e Android. Ambas as preferências são lembradas. O estéreo depende do microfone e do dispositivo; a gravação não continua se o aplicativo for encerrado à força.",
       "SonarTube: corrigido um problema em que playlists compostas por Shorts, abertas a partir das playlists de um canal, podiam mostrar «Nenhum vídeo» mesmo contendo vídeos.",
-      "Adicionada a ação Ordenar alfabeticamente nos documentos, nas rádios favoritas e nas inscrições de podcasts, disponível no rotor do VoiceOver e como botão visível excluído do VoiceOver. A ordem fica salva; nos documentos, apenas a pasta aberta é ordenada."
+      "Adicionada a ação Ordenar alfabeticamente nos documentos, nas rádios favoritas e nas inscrições de podcasts, disponível no rotor do VoiceOver e como botão visível excluído do VoiceOver. A ordem fica salva; nos documentos, apenas a pasta aberta é ordenada.",
+      "Gravar podcast: adicionada a escolha entre MP3 e M4A, com MP3 como padrão, e o ajuste de qualidade pela taxa de bits de 64 a 320 kbps. O formato e a taxa de bits usam controles deslizantes independentes e ficam salvos."
     ],
     "pl": [
       "Słownik w iOS: wyłączono automatyczne wpisywanie wielkiej litery w polu wyszukiwania, aby można było znaleźć słowa takie jak „gabbia”. Wielkie litery nadal można wpisywać ręcznie.",
@@ -63,7 +69,8 @@
       "Dodano Wyczyść ulubione w radiu, TV, SonarTube, SonarMusic i audiodeskrypcjach Sonarpad: przycisk dostępny dla VoiceOver z potwierdzeniem, usuwający tylko ulubione z bieżącej sekcji. W podcastach dodano Usuń wszystkie subskrypcje, również z potwierdzeniem i bez usuwania pobranych plików.",
       "Nagrywanie podcastu: dodano wybór mono/stereo oraz opcję kontynuowania nagrywania w tle lub przy zablokowanym ekranie w iOS i Androidzie. Oba ustawienia są zapamiętywane. Stereo zależy od mikrofonu i urządzenia; nagrywanie nie jest kontynuowane po wymuszonym zamknięciu aplikacji.",
       "SonarTube: naprawiono problem, przez który playlisty złożone z Shorts, otwierane z listy playlist kanału, mogły wyświetlać komunikat „Brak filmów”, mimo że zawierały filmy.",
-      "Dodano czynność Sortuj alfabetycznie w dokumentach, ulubionych stacjach radiowych i subskrypcjach podcastów, dostępną w pokrętle VoiceOver oraz jako widoczny przycisk pomijany przez VoiceOver. Kolejność jest zapisywana; w dokumentach sortowany jest tylko otwarty folder."
+      "Dodano czynność Sortuj alfabetycznie w dokumentach, ulubionych stacjach radiowych i subskrypcjach podcastów, dostępną w pokrętle VoiceOver oraz jako widoczny przycisk pomijany przez VoiceOver. Kolejność jest zapisywana; w dokumentach sortowany jest tylko otwarty folder.",
+      "Nagrywanie podcastu: dodano wybór między MP3 i M4A, z MP3 jako formatem domyślnym, oraz regulację jakości przez przepływność od 64 do 320 kbps. Format i przepływność mają niezależne suwaki, a ustawienia są zapamiętywane."
     ],
     "cs": [
       "Slovník v iOS: vypnuto automatické psaní velkého počátečního písmene ve vyhledávacím poli, aby bylo možné najít slova jako „gabbia“. Velká písmena lze nadále zadávat ručně.",
@@ -72,7 +79,8 @@
       "Přidáno Vymazat oblíbené pro rádio, TV, SonarTube, SonarMusic a audiopopisy Sonarpad: tlačítko přístupné přes VoiceOver s potvrzením, které odstraní pouze oblíbené položky aktuální sekce. U podcastů přidáno Odstranit všechna předplatná, také s potvrzením a bez odstranění stažených souborů.",
       "Nahrávání podcastu: přidána volba mono/stereo a možnost pokračovat v nahrávání na pozadí nebo se zamčenou obrazovkou na iOS a Androidu. Obě předvolby se ukládají. Stereo závisí na mikrofonu a zařízení; po vynuceném ukončení aplikace nahrávání nepokračuje.",
       "SonarTube: opravena chyba, kvůli které seznamy složené z videí Shorts otevřené ze seznamů kanálu mohly zobrazovat „Žádná videa“, přestože videa obsahovaly.",
-      "Do dokumentů, oblíbených rádií a předplatných podcastů přidána akce Seřadit abecedně, dostupná v rotoru VoiceOver a jako viditelné tlačítko vynechané z navigace VoiceOver. Pořadí se ukládá; v dokumentech se řadí pouze otevřená složka."
+      "Do dokumentů, oblíbených rádií a předplatných podcastů přidána akce Seřadit abecedně, dostupná v rotoru VoiceOver a jako viditelné tlačítko vynechané z navigace VoiceOver. Pořadí se ukládá; v dokumentech se řadí pouze otevřená složka.",
+      "Nahrávání podcastu: přidána volba mezi MP3 a M4A, s výchozím formátem MP3, a nastavení kvality pomocí datového toku od 64 do 320 kbps. Formát a datový tok mají nezávislé posuvníky a jejich volby se ukládají."
     ],
     "de": [
       "Wörterbuch unter iOS: Die automatische Großschreibung im Suchfeld wurde deaktiviert, damit Wörter wie „gabbia“ gefunden werden. Großbuchstaben können weiterhin manuell eingegeben werden.",
@@ -81,7 +89,8 @@
       "Favoriten leeren wurde für Radio, TV, SonarTube, SonarMusic und Sonarpad-Audiodeskriptionen hinzugefügt: eine mit VoiceOver zugängliche Schaltfläche mit Bestätigung, die nur die Favoriten des aktuellen Bereichs entfernt. Podcasts bieten Alle Abonnements entfernen, ebenfalls mit Bestätigung und ohne heruntergeladene Dateien zu löschen.",
       "Podcast aufnehmen: Mono/Stereo-Auswahl und eine Option zum Weiteraufnehmen im Hintergrund oder bei gesperrtem Bildschirm unter iOS und Android hinzugefügt. Beide Einstellungen werden gespeichert. Stereo hängt vom Mikrofon und Gerät ab; nach erzwungenem Schließen der App wird nicht weiter aufgenommen.",
       "SonarTube: Ein Fehler wurde behoben, durch den reine Shorts-Playlists beim Öffnen über die Playlists eines Kanals „Keine Videos“ anzeigen konnten, obwohl sie Videos enthielten.",
-      "Alphabetisch sortieren wurde für Dokumente, Radiofavoriten und Podcast-Abonnements ergänzt, als VoiceOver-Rotoraktion und als sichtbare, von VoiceOver ausgeschlossene Schaltfläche. Die Reihenfolge wird gespeichert; bei Dokumenten wird nur der geöffnete Ordner sortiert."
+      "Alphabetisch sortieren wurde für Dokumente, Radiofavoriten und Podcast-Abonnements ergänzt, als VoiceOver-Rotoraktion und als sichtbare, von VoiceOver ausgeschlossene Schaltfläche. Die Reihenfolge wird gespeichert; bei Dokumenten wird nur der geöffnete Ordner sortiert.",
+      "Podcast aufnehmen: Auswahl zwischen MP3 und M4A hinzugefügt, mit MP3 als Standard, sowie eine Qualitätseinstellung über Bitraten von 64 bis 320 kbps. Format und Bitrate haben unabhängige Schieberegler und werden gespeichert."
     ],
     "zh_CN": [
       "iOS 词典：已关闭搜索框的自动首字母大写，避免出现无法找到“gabbia”等单词的问题。仍可手动输入大写字母。",
@@ -90,7 +99,8 @@
       "为广播、电视、SonarTube、SonarMusic 和 Sonarpad 音频描述添加了清空收藏按钮：支持 VoiceOver，操作前要求确认，仅移除当前部分的收藏。播客中添加了移除所有订阅，同样需要确认，且不会删除已下载的文件。",
       "录制播客：在 iOS 和 Android 上添加单声道/立体声选择，以及在后台或锁屏时继续录音的选项。两项设置均会保存。立体声取决于麦克风和设备；强制关闭应用后录音不会继续。",
       "SonarTube：修复了从频道的播放列表中打开仅包含 Shorts 短视频的播放列表时，明明有视频却显示“没有视频”的问题。",
-      "文档、收藏的电台和订阅的播客新增“按字母顺序排序”，可通过 VoiceOver 转子操作或不纳入 VoiceOver 导航的可见按钮使用。排序结果会保存；文档中仅对当前打开的文件夹排序。"
+      "文档、收藏的电台和订阅的播客新增“按字母顺序排序”，可通过 VoiceOver 转子操作或不纳入 VoiceOver 导航的可见按钮使用。排序结果会保存；文档中仅对当前打开的文件夹排序。",
+      "录制播客：新增 MP3 和 M4A 格式选择，默认使用 MP3，并可通过 64 至 320 kbps 的比特率调节音质。格式和比特率使用独立滑块，所选设置会被记住。"
     ],
     "uk": [
       "Словник в iOS: вимкнено автоматичне введення великої літери в полі пошуку, щоб можна було знаходити слова на кшталт «gabbia». Великі літери й надалі можна вводити вручну.",
@@ -99,7 +109,8 @@
       "Додано Очистити обране для радіо, TV, SonarTube, SonarMusic та аудіоописів Sonarpad: доступну для VoiceOver кнопку з підтвердженням, яка видаляє лише обрані елементи поточного розділу. У подкастах додано Видалити всі підписки, також із підтвердженням і без видалення завантажених файлів.",
       "Запис подкасту: додано вибір моно/стерео та можливість продовжувати запис у фоні або із заблокованим екраном на iOS та Android. Обидва налаштування зберігаються. Стерео залежить від мікрофона й пристрою; після примусового закриття застосунку запис не продовжується.",
       "SonarTube: виправлено проблему, через яку списки відтворення лише з Shorts, відкриті зі списків відтворення каналу, могли показувати «Немає відео», хоча містили відео.",
-      "Додано дію «Сортувати за абеткою» в документах, улюблених радіостанціях і підписках на подкасти, доступну в роторі VoiceOver та як видиму кнопку, виключену з навігації VoiceOver. Порядок зберігається; у документах сортується лише відкрита папка."
+      "Додано дію «Сортувати за абеткою» в документах, улюблених радіостанціях і підписках на подкасти, доступну в роторі VoiceOver та як видиму кнопку, виключену з навігації VoiceOver. Порядок зберігається; у документах сортується лише відкрита папка.",
+      "Запис подкасту: додано вибір між MP3 і M4A, з MP3 за замовчуванням, та налаштування якості через бітрейт від 64 до 320 kbps. Формат і бітрейт мають незалежні повзунки, а вибрані значення зберігаються."
     ],
     "ro": [
       "Dicționar pe iOS: dezactivată scrierea automată cu majusculă în câmpul de căutare, pentru a evita situațiile în care cuvinte precum „gabbia” nu sunt găsite. Majusculele pot fi introduse în continuare manual.",
@@ -108,7 +119,8 @@
       "Adăugat Golește favoritele pentru radio, TV, SonarTube, SonarMusic și audiodescrierile Sonarpad: un buton accesibil cu VoiceOver, cu confirmare, care elimină doar favoritele secțiunii curente. La podcasturi s-a adăugat Elimină toate abonamentele, tot cu confirmare și fără a șterge fișierele descărcate.",
       "Înregistrare podcast: adăugate selectarea mono/stereo și opțiunea de a continua înregistrarea în fundal sau cu ecranul blocat pe iOS și Android. Ambele preferințe sunt memorate. Stereo depinde de microfon și dispozitiv; înregistrarea nu continuă dacă aplicația este închisă forțat.",
       "SonarTube: remediată o problemă din cauza căreia playlisturile alcătuite din Shorts, deschise din playlisturile unui canal, puteau afișa „Niciun videoclip”, deși conțineau videoclipuri.",
-      "Adăugată acțiunea Ordonează alfabetic în documente, posturile radio favorite și abonamentele la podcasturi, disponibilă în rotorul VoiceOver și ca buton vizibil exclus din navigarea VoiceOver. Ordinea este salvată; în documente se sortează doar dosarul deschis."
+      "Adăugată acțiunea Ordonează alfabetic în documente, posturile radio favorite și abonamentele la podcasturi, disponibilă în rotorul VoiceOver și ca buton vizibil exclus din navigarea VoiceOver. Ordinea este salvată; în documente se sortează doar dosarul deschis.",
+      "Înregistrare podcast: adăugată alegerea între MP3 și M4A, cu MP3 implicit, și reglarea calității prin bitrate de la 64 la 320 kbps. Formatul și bitrate-ul au glisoare independente, iar alegerile sunt memorate."
     ],
     "tr": [
       "iOS sözlüğü: “gabbia” gibi sözcüklerin bulunamamasını önlemek için arama alanında otomatik büyük harf kullanımı kapatıldı. Büyük harfler yine elle girilebilir.",
@@ -117,7 +129,8 @@
       "Radyo, TV, SonarTube, SonarMusic ve Sonarpad sesli betimlemelerine Favorileri temizle eklendi: VoiceOver ile erişilebilen, onay isteyen ve yalnızca mevcut bölümün favorilerini kaldıran bir düğme. Podcastlere de onay isteyen ve indirilen dosyaları silmeyen Tüm abonelikleri kaldır eklendi.",
       "Podcast kaydı: iOS ve Android’de mono/stereo seçimi ve arka planda veya ekran kilitliyken kayda devam etme seçeneği eklendi. Her iki tercih de hatırlanır. Stereo, mikrofona ve cihaza bağlıdır; uygulama zorla kapatılırsa kayıt devam etmez.",
       "SonarTube: bir kanalın oynatma listelerinden açılan, yalnızca Shorts içeren listelerin video içermelerine rağmen “Video yok” gösterebilmesine neden olan sorun düzeltildi.",
-      "Belgelere, favori radyolara ve podcast aboneliklerine Alfabetik sırala eylemi eklendi. VoiceOver rotorundan veya VoiceOver gezinmesine dahil edilmeyen görünür düğmeden kullanılabilir. Sıralama kaydedilir; belgelerde yalnızca açık klasör sıralanır."
+      "Belgelere, favori radyolara ve podcast aboneliklerine Alfabetik sırala eylemi eklendi. VoiceOver rotorundan veya VoiceOver gezinmesine dahil edilmeyen görünür düğmeden kullanılabilir. Sıralama kaydedilir; belgelerde yalnızca açık klasör sıralanır.",
+      "Podcast kaydı: varsayılan MP3 olmak üzere MP3 ve M4A arasında seçim ve 64 ile 320 kbps arasında bit hızıyla kalite ayarı eklendi. Biçim ve bit hızı bağımsız kaydırıcılarla seçilir ve tercihler hatırlanır."
     ],
     "nl": [
       "Woordenboek op iOS: automatische hoofdletters in het zoekveld uitgeschakeld, zodat woorden zoals ‘gabbia’ worden gevonden. Hoofdletters kunnen nog steeds handmatig worden ingevoerd.",
@@ -126,7 +139,8 @@
       "Favorieten wissen toegevoegd aan radio, TV, SonarTube, SonarMusic en Sonarpad-audiobeschrijvingen: een voor VoiceOver toegankelijke knop met bevestiging die alleen de favorieten van de huidige sectie verwijdert. Podcasts bieden Alle abonnementen verwijderen, eveneens met bevestiging en zonder gedownloade bestanden te verwijderen.",
       "Podcast opnemen: keuze tussen mono en stereo toegevoegd, plus een optie om op iOS en Android op de achtergrond of met vergrendeld scherm door te blijven opnemen. Beide voorkeuren worden onthouden. Stereo hangt af van de microfoon en het apparaat; de opname gaat niet door als de app geforceerd wordt gesloten.",
       "SonarTube: een probleem opgelost waarbij afspeellijsten met alleen Shorts, geopend via de afspeellijsten van een kanaal, “Geen video’s” konden tonen terwijl ze wel video’s bevatten.",
-      "Alfabetisch sorteren toegevoegd aan documenten, favoriete radiozenders en podcastabonnementen, als VoiceOver-rotoractie en als zichtbare knop die buiten de VoiceOver-navigatie valt. De volgorde wordt opgeslagen; bij documenten wordt alleen de geopende map gesorteerd."
+      "Alfabetisch sorteren toegevoegd aan documenten, favoriete radiozenders en podcastabonnementen, als VoiceOver-rotoractie en als zichtbare knop die buiten de VoiceOver-navigatie valt. De volgorde wordt opgeslagen; bij documenten wordt alleen de geopende map gesorteerd.",
+      "Podcast opnemen: keuze tussen MP3 en M4A toegevoegd, met MP3 als standaard, en instelbare kwaliteit via bitrates van 64 tot 320 kbps. Formaat en bitrate hebben onafhankelijke schuifregelaars en worden onthouden."
     ]
   },
   {
