@@ -10951,6 +10951,12 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Ordinamento alfabetico completato.'**
   String get alphabeticalSortCompleted;
+
+  /// No description provided for @weatherDailySituation.
+  ///
+  /// In it, this message translates to:
+  /// **'Previsioni della giornata'**
+  String get weatherDailySituation;
 }
 
 class _AppLocalizationsDelegate

@@ -6080,4 +6080,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get alphabeticalSortCompleted => 'Alfabetik sıralama tamamlandı.';
+
+  @override
+  String get weatherDailySituation => 'Günlük hava tahmini';
 }

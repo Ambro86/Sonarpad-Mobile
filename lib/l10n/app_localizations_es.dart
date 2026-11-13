@@ -6119,4 +6119,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get alphabeticalSortCompleted => 'Ordenación alfabética completada.';
+
+  @override
+  String get weatherDailySituation => 'Previsión del día';
 }

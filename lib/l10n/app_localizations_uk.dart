@@ -6068,4 +6068,7 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get alphabeticalSortCompleted => 'Сортування за абеткою завершено.';
+
+  @override
+  String get weatherDailySituation => 'Прогноз на день';
 }

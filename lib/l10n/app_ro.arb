@@ -5075,5 +5075,6 @@
   "podcastRecorderMono": "Mono",
   "podcastRecorderStereo": "Stereo",
   "podcastRecorderBackground": "Continuă înregistrarea în fundal",
-  "alphabeticalSortCompleted": "Sortarea alfabetică s-a încheiat."
+  "alphabeticalSortCompleted": "Sortarea alfabetică s-a încheiat.",
+  "weatherDailySituation": "Prognoza zilei"
 }

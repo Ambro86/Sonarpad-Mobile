@@ -6099,4 +6099,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String get alphabeticalSortCompleted => 'Sortarea alfabetică s-a încheiat.';
+
+  @override
+  String get weatherDailySituation => 'Prognoza zilei';
 }

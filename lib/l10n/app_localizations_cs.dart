@@ -6072,4 +6072,7 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get alphabeticalSortCompleted => 'Abecední řazení dokončeno.';
+
+  @override
+  String get weatherDailySituation => 'Předpověď na celý den';
 }

@@ -6102,6 +6102,9 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get alphabeticalSortCompleted => 'Ordenação alfabética concluída.';
+
+  @override
+  String get weatherDailySituation => 'Previsão do dia';
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
@@ -12194,4 +12197,7 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get alphabeticalSortCompleted => 'Ordenação alfabética concluída.';
+
+  @override
+  String get weatherDailySituation => 'Previsão do dia';
 }

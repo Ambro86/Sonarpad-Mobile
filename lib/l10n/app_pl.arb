@@ -6656,5 +6656,6 @@
   "podcastRecorderMono": "Mono",
   "podcastRecorderStereo": "Stereo",
   "podcastRecorderBackground": "Kontynuuj nagrywanie w tle",
-  "alphabeticalSortCompleted": "Sortowanie alfabetyczne zakończone."
+  "alphabeticalSortCompleted": "Sortowanie alfabetyczne zakończone.",
+  "weatherDailySituation": "Prognoza na cały dzień"
 }

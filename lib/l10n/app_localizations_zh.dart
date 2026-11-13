@@ -5837,6 +5837,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get alphabeticalSortCompleted => '按字母顺序排序已完成。';
+
+  @override
+  String get weatherDailySituation => '当天天气预报';
 }
 
 /// The translations for Chinese, as used in China (`zh_CN`).
@@ -11672,4 +11675,7 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get alphabeticalSortCompleted => '按字母顺序排序已完成。';
+
+  @override
+  String get weatherDailySituation => '当天天气预报';
 }

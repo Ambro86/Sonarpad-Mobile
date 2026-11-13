@@ -6653,5 +6653,6 @@
   "podcastRecorderMono": "Моно",
   "podcastRecorderStereo": "Стерео",
   "podcastRecorderBackground": "Продовжувати запис у фоні",
-  "alphabeticalSortCompleted": "Сортування за абеткою завершено."
+  "alphabeticalSortCompleted": "Сортування за абеткою завершено.",
+  "weatherDailySituation": "Прогноз на день"
 }

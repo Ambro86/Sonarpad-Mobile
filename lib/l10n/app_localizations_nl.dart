@@ -6087,4 +6087,7 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get alphabeticalSortCompleted => 'Alfabetisch sorteren voltooid.';
+
+  @override
+  String get weatherDailySituation => 'Dagverwachting';
 }

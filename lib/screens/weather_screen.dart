@@ -485,6 +485,14 @@ class _WeatherForecastView extends StatelessWidget {
     return int.tryParse(value?.toString() ?? '');
   }
 
+  String _dailySituation(AppLocalizations l10n, int day) {
+    final values = _dailyValues('weather_code');
+    if (day < 0 || day >= values.length) return '-';
+    final value = values[day];
+    final code = value is num ? value.toInt() : int.tryParse('$value');
+    return code == null ? '-' : weatherConditionLabel(l10n, code);
+  }
+
   String _currentSituation(AppLocalizations l10n) {
     final code = _currentWeatherCode();
     if (code == null) return '-';
@@ -533,6 +541,8 @@ class _WeatherForecastView extends StatelessWidget {
                 AccessibleListRow(id: 'situation', kind: 'text', title: l10n.weatherCurrentSituation, valueLabel: _currentSituation(l10n)),
               if (day == 0)
                 AccessibleListRow(id: 'current_temp', kind: 'text', title: l10n.weatherCurrentTemperature, valueLabel: _formatTemperature(forecast.current['temperature_2m'])),
+              AccessibleListRow(id: 'daily_situation', kind: 'text', title: l10n.weatherDailySituation, valueLabel: _dailySituation(l10n, day)),
+              AccessibleListRow(id: 'rain_probability', kind: 'text', title: l10n.weatherPrecipitationProbability, valueLabel: _value('precipitation_probability_max', day, '%')),
               AccessibleListRow(id: 'max_temp', kind: 'text', title: l10n.weatherMaxTemperature, valueLabel: _temperatureValue('temperature_2m_max', day)),
               AccessibleListRow(id: 'min_temp', kind: 'text', title: l10n.weatherMinTemperature, valueLabel: _temperatureValue('temperature_2m_min', day)),
               AccessibleListRow(id: 'rain', kind: 'text', title: l10n.weatherPrecipitation, valueLabel: _value('precipitation_sum', day, 'mm')),
@@ -608,6 +618,12 @@ class _WeatherForecastView extends StatelessWidget {
                 ),
               ),
             ),
+          Card(
+            child: ListTile(
+              title: Text(l10n.weatherDailySituation),
+              trailing: Text(_dailySituation(l10n, day)),
+            ),
+          ),
           Card(
             child: ListTile(
               title: Text(l10n.weatherMaxTemperature),

@@ -6131,4 +6131,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get alphabeticalSortCompleted => 'Tri alphabétique terminé.';
+
+  @override
+  String get weatherDailySituation => 'Prévisions de la journée';
 }

@@ -5078,5 +5078,6 @@
   "podcastRecorderMono": "Mono",
   "podcastRecorderStereo": "Stereo",
   "podcastRecorderBackground": "Pokračovat v nahrávání na pozadí",
-  "alphabeticalSortCompleted": "Abecední řazení dokončeno."
+  "alphabeticalSortCompleted": "Abecední řazení dokončeno.",
+  "weatherDailySituation": "Předpověď na celý den"
 }

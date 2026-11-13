@@ -197,6 +197,7 @@ class OpenMeteoWeatherService {
       'weather_code',
     ];
     const dailyFields = [
+      'weather_code',
       'temperature_2m_max',
       'temperature_2m_min',
       'precipitation_probability_max',

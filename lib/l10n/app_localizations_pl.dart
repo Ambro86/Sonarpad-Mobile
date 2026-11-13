@@ -6085,4 +6085,7 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get alphabeticalSortCompleted => 'Sortowanie alfabetyczne zakończone.';
+
+  @override
+  String get weatherDailySituation => 'Prognoza na cały dzień';
 }
