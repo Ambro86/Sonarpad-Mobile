@@ -476,13 +476,6 @@ class _PodcastScreenState extends State<PodcastScreen> {
     ];
 
     final subscriptionRows = <AccessibleListRow>[];
-    if (_subscriptions.length > 1) {
-      subscriptionRows.add(AccessibleListRow(
-        id: 'sort_subscriptions',
-        title: l10n.sortPodcastsAlphabetically,
-        kind: 'button',
-      ));
-    }
     if (_subscriptions.isEmpty) {
       subscriptionRows.add(AccessibleListRow(
         id: 'no_subscriptions',
@@ -495,7 +488,9 @@ class _PodcastScreenState extends State<PodcastScreen> {
         subscriptionRows.add(AccessibleListRow(
           id: 'subscription_$i',
           title: subscription.title,
+          visualActions: [if (_subscriptions.length > 1) AccessibleVisualAction(id: 'sort_favorites', label: l10n.favoritesSortAlphabetically, icon: 'list')],
           actions: [
+            if (_subscriptions.length > 1) AccessibleCustomAction(id: 'sort_favorites', label: l10n.favoritesSortAlphabetically),
             AccessibleCustomAction(id: 'remove', label: l10n.removePodcast),
             if (i > 0) AccessibleCustomAction(id: 'move_up', label: l10n.moveUp),
             if (i < _subscriptions.length - 1)
@@ -548,6 +543,7 @@ class _PodcastScreenState extends State<PodcastScreen> {
           final index = int.tryParse(event.id!.substring(13));
           if (index == null || index < 0 || index >= _subscriptions.length) return;
           switch (event.action) {
+            case 'sort_favorites': await _sortSubscriptionsAlphabetically(); return;
             case 'remove':
               await _removeSubscription(_subscriptions[index]);
               return;
@@ -681,11 +677,11 @@ class _PodcastScreenState extends State<PodcastScreen> {
               style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 8),
           if (_subscriptions.length > 1) ...[
-            FilledButton.icon(
+            ExcludeSemantics(child: FilledButton.icon(
               onPressed: _sortSubscriptionsAlphabetically,
               icon: const Icon(Icons.sort_by_alpha),
               label: Text(l10n.sortPodcastsAlphabetically),
-            ),
+            )),
             const SizedBox(height: 8),
           ],
           if (_subscriptions.isNotEmpty) ...[
@@ -704,6 +700,8 @@ class _PodcastScreenState extends State<PodcastScreen> {
                         'podcast_subscription_semantics_${subscription.feedUrl}'),
                     container: true,
                     customSemanticsActions: {
+                      if (_subscriptions.length > 1)
+                        CustomSemanticsAction(label: l10n.favoritesSortAlphabetically): _sortSubscriptionsAlphabetically,
                       CustomSemanticsAction(label: l10n.removePodcast): () =>
                           _removeSubscription(subscription),
                       if (!isFirst)

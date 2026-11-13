@@ -150,12 +150,6 @@ class _FavoriteRadiosScreenState extends State<FavoriteRadiosScreen> {
                       sections: [
                         AccessibleListSection(
                           rows: [
-                            if (_favorites.length > 1)
-                              AccessibleListRow(
-                                id: '__sort__',
-                                title: l10n.sortRadioFavoritesAlphabetically,
-                                kind: 'button',
-                              ),
                             ..._favorites.asMap().entries.map((entry) {
                               final index = entry.key;
                               final station = entry.value;
@@ -166,6 +160,7 @@ class _FavoriteRadiosScreenState extends State<FavoriteRadiosScreen> {
                                 accessibilityLabel: station.accessibilityLabel,
                                 kind: 'action',
                                 actions: [
+                                  if (_favorites.length > 1) AccessibleCustomAction(id: 'sort_favorites', label: l10n.favoritesSortAlphabetically),
                                   AccessibleCustomAction(id: 'favorite', label: l10n.radioRemoveFavorite),
                                   if (index > 0) AccessibleCustomAction(id: 'move_up', label: l10n.moveUp),
                                   if (index < _favorites.length - 1) AccessibleCustomAction(id: 'move_down', label: l10n.moveDown),
@@ -182,6 +177,7 @@ class _FavoriteRadiosScreenState extends State<FavoriteRadiosScreen> {
                                     ),
                                 ],
                                 visualActions: [
+                                  if (_favorites.length > 1) AccessibleVisualAction(id: 'sort_favorites', label: l10n.favoritesSortAlphabetically, icon: 'list'),
                                   if (widget.recordingFeatureUnlocked)
                                     AccessibleVisualAction(
                                       id: 'play_record',
@@ -214,6 +210,7 @@ class _FavoriteRadiosScreenState extends State<FavoriteRadiosScreen> {
                           await _play(station);
                         } else if (event.type == 'customAction') {
                           switch (event.action) {
+                            case 'sort_favorites': await _sortFavoritesAlphabetically(); break;
                             case 'favorite': await _toggleFavorite(station); break;
                             case 'move_up': await _handleAction(_RadioAction.moveUp, index); break;
                             case 'move_down': await _handleAction(_RadioAction.moveDown, index); break;
@@ -236,11 +233,11 @@ class _FavoriteRadiosScreenState extends State<FavoriteRadiosScreen> {
                   padding: const EdgeInsets.all(16),
                   children: [
                     if (_favorites.length > 1) ...[
-                      FilledButton.icon(
+                      ExcludeSemantics(child: FilledButton.icon(
                         onPressed: _sortFavoritesAlphabetically,
                         icon: const Icon(Icons.sort_by_alpha),
                         label: Text(l10n.sortRadioFavoritesAlphabetically),
-                      ),
+                      )),
                       const SizedBox(height: 8),
                     ],
                     ..._favorites.asMap().entries.map((entry) {
@@ -260,6 +257,8 @@ class _FavoriteRadiosScreenState extends State<FavoriteRadiosScreen> {
                           onPlay: () => _play(station),
                           onToggleFavorite: () => _toggleFavorite(station),
                           extraSemanticsActions: {
+                            if (_favorites.length > 1)
+                              CustomSemanticsAction(label: l10n.favoritesSortAlphabetically): _sortFavoritesAlphabetically,
                             if (!isFirst)
                               CustomSemanticsAction(label: l10n.moveUp): () =>
                                   _handleAction(_RadioAction.moveUp, index),

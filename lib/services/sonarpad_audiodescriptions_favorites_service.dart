@@ -56,6 +56,11 @@ class SonarpadAudiodescriptionsFavoritesService {
     if (!existed) {
       favorites.insert(0, item);
     }
+    await save(favorites);
+    return !existed;
+  }
+
+  Future<void> save(List<SonarpadAudiodescriptionItem> favorites) async {
     final preferences = await SharedPreferences.getInstance();
     await preferences.setStringList(
       storageKey,
@@ -71,6 +76,5 @@ class SonarpadAudiodescriptionsFavoritesService {
         // Intentionally no stream_url / download_url: they can expire.
       })).toList(growable: false),
     );
-    return !existed;
   }
 }

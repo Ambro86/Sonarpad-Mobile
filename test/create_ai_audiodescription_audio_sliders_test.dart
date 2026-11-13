@@ -55,6 +55,11 @@ class _SourceTrackService extends AiAudioDescriptionService {
   Future<List<AudioDescriptionSourceTrack>> sourceAudioTracks(String path) async => tracks;
 }
 
+class _ChoiceService extends _SourceTrackService {
+  @override
+  Future<List<String>> listCharacterCatalogs() async => ['Serie A', 'Serie B'];
+}
+
 class _NoMixPreview extends AudioDescriptionMixPreviewController {
   @override
   void schedule(AudioDescriptionMixPreviewRenderer render) {}
@@ -1256,6 +1261,67 @@ void main() {
       TargetPlatform.iOS,
     }),
   );
+  testWidgets('choice sliders keep separate values, labels and accessibility nodes', (tester) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(900, 6000);
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final semantics = tester.ensureSemantics();
+    try {
+      await _mountScreen(tester, serviceFactory: _ChoiceService.new);
+      await tester.runAsync(() async {
+        await _form(tester).onEvent!(const AccessibleListEvent(
+          type: 'toggle', id: 'keep_character_catalog', value: true));
+      });
+      await tester.pump();
+      for (final id in ['language', 'verbosity', 'character_catalog',
+          'edge_language', 'edge_voice', 'tts_engine', 'system_language', 'system_voice']) {
+        final row = _row(tester, id);
+        expect(row.kind, 'slider', reason: id);
+        expect(row.accessibilityButtonTrait, isFalse, reason: id);
+        expect(row.sliderStep, 1);
+        expect(row.options.map((o) => o.value),
+            List.generate(row.options.length, (i) => i));
+        final before = {for (final section in _form(tester).sections)
+          for (final r in section.rows) r.id: r.value};
+        final target = _control(id);
+        await tester.ensureVisible(target);
+        await tester.pump();
+        final node = tester.getSemantics(target);
+        final nodeId = node.id;
+        final increase = row.sliderValue < row.sliderMax;
+        final expectedLabel = increase ? row.sliderIncreasedValueLabel : row.sliderDecreasedValueLabel;
+        if (row.enabled) {
+          await tester.runAsync(() async {
+            node.owner!.performAction(nodeId,
+                increase ? SemanticsAction.increase : SemanticsAction.decrease);
+          });
+          await tester.pump();
+          expect(_row(tester, id).valueLabel, expectedLabel, reason: id);
+        }
+        expect(tester.getSemantics(target).id, nodeId, reason: id);
+        for (final section in _form(tester).sections) {
+          for (final other in section.rows) {
+            if (other.id == id || !before.containsKey(other.id)) continue;
+            if (id == 'edge_language' && other.id == 'edge_voice') continue;
+            if (id == 'system_language' && other.id == 'system_voice') continue;
+            expect(other.value, before[other.id], reason: '$id changed ${other.id}');
+          }
+        }
+      }
+      final pitch = _row(tester, 'creation_voice_pitch').sliderValue;
+      final voice = _row(tester, 'system_voice');
+      await voice.onValueChanged!(double.nan);
+      await voice.onValueChanged!('invalid');
+      await tester.pump();
+      expect(_row(tester, 'system_voice').value, voice.value);
+      expect(_row(tester, 'creation_voice_pitch').sliderValue, pitch);
+    } finally {
+      semantics.dispose();
+      await _unmountScreen(tester);
+    }
+  }, variant: TargetPlatformVariant({TargetPlatform.android, TargetPlatform.iOS}));
+
   testWidgets(
     'provider is a two-position accessible slider and rapid flicks preserve the selection',
     (tester) async {

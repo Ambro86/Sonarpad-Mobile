@@ -1,3 +1,4 @@
+import '../widgets/favorite_reorder.dart';
 import '../widgets/clear_favorites_button.dart';
 import 'dart:async';
 
@@ -865,6 +866,20 @@ class _SonarpadAudiodescriptionsFavoritesScreenState
     }
   }
 
+  Future<void> _sortFavoritesAlphabetically() async {
+    if (_changing || _items.length < 2) return;
+    _changing = true;
+    try {
+      final sorted = await reorderFavorites(context, _items, 0,
+          'sort_favorites', (item) => item.title);
+      if (sorted == null) return;
+      await _favoritesService.save(sorted);
+      if (mounted) setState(() => _items = sorted);
+    } finally {
+      _changing = false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -893,6 +908,7 @@ class _SonarpadAudiodescriptionsFavoritesScreenState
                               'favorite_${entry.key}',
                               entry.value,
                               isFavorite: true,
+                              canSort: _items.length > 1,
                             ),
                           ).toList(growable: false),
                         ),
@@ -908,7 +924,9 @@ class _SonarpadAudiodescriptionsFavoritesScreenState
                           return;
                         }
                         final item = _items[index];
-                        if (event.type == 'activate' ||
+                        if (event.type == 'customAction' && event.action == 'sort_favorites') {
+                          await _sortFavoritesAlphabetically();
+                        } else if (event.type == 'activate' ||
                             (event.type == 'customAction' &&
                                 event.action == 'open')) {
                           await _open(item);
@@ -931,6 +949,7 @@ class _SonarpadAudiodescriptionsFavoritesScreenState
                         onOpen: _open,
                         onPreserve: _preserve,
                         onToggleFavorite: _toggleFavorite,
+                        onSort: _items.length > 1 ? _sortFavoritesAlphabetically : null,
                         isFavorite: true,
                       ),
                     ),
@@ -957,6 +976,7 @@ AccessibleListRow _sharedCatalogRow(
   String id,
   SonarpadAudiodescriptionItem item, {
   required bool isFavorite,
+  bool canSort = false,
 }) {
   final l10n = AppLocalizations.of(context);
   final favoriteLabel = isFavorite ? l10n.radioRemoveFavorite : l10n.radioAddFavorite;
@@ -966,10 +986,12 @@ AccessibleListRow _sharedCatalogRow(
     subtitle: _sonarpadAudiodescriptionSubtitle(item, l10n),
     actions: item.isFolder
         ? [
+            if (canSort) AccessibleCustomAction(id: 'sort_favorites', label: l10n.favoritesSortAlphabetically),
             AccessibleCustomAction(id: 'open', label: l10n.openItem),
             AccessibleCustomAction(id: 'favorite', label: favoriteLabel),
           ]
         : [
+            if (canSort) AccessibleCustomAction(id: 'sort_favorites', label: l10n.favoritesSortAlphabetically),
             AccessibleCustomAction(id: 'open', label: l10n.openItem),
             AccessibleCustomAction(
               id: 'preserve_media',
@@ -979,6 +1001,7 @@ AccessibleListRow _sharedCatalogRow(
           ],
     visualActions: item.isFolder
         ? [
+            if (canSort) AccessibleVisualAction(id: 'sort_favorites', label: l10n.favoritesSortAlphabetically, icon: 'list'),
             AccessibleVisualAction(id: 'open', label: l10n.openItem, icon: 'open'),
             AccessibleVisualAction(
               id: 'favorite', label: favoriteLabel,
@@ -986,6 +1009,7 @@ AccessibleListRow _sharedCatalogRow(
             ),
           ]
         : [
+            if (canSort) AccessibleVisualAction(id: 'sort_favorites', label: l10n.favoritesSortAlphabetically, icon: 'list'),
             AccessibleVisualAction(id: 'open', label: l10n.openItem, icon: 'play'),
             AccessibleVisualAction(
               id: 'preserve_media',
@@ -1007,10 +1031,12 @@ Widget _legacyCatalogItem(
   required Future<void> Function(SonarpadAudiodescriptionItem item) onPreserve,
   required Future<void> Function(SonarpadAudiodescriptionItem item) onToggleFavorite,
   required bool isFavorite,
+  VoidCallback? onSort,
 }) {
   final l10n = AppLocalizations.of(context);
   final subtitle = _sonarpadAudiodescriptionSubtitle(item, l10n);
   final actions = <CustomSemanticsAction, VoidCallback>{
+    CustomSemanticsAction(label: l10n.favoritesSortAlphabetically): ?onSort,
     CustomSemanticsAction(label: l10n.openItem): () => unawaited(onOpen(item)),
     CustomSemanticsAction(
       label: isFavorite ? l10n.radioRemoveFavorite : l10n.radioAddFavorite,
@@ -1030,6 +1056,11 @@ Widget _legacyCatalogItem(
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
+            if (onSort != null) IconButton(
+              tooltip: l10n.favoritesSortAlphabetically,
+              icon: const Icon(Icons.sort_by_alpha),
+              onPressed: onSort,
+            ),
             TextButton(onPressed: () => onOpen(item), child: Text(l10n.openItem)),
             if (!item.isFolder)
               TextButton(

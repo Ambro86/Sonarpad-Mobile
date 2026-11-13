@@ -1613,6 +1613,96 @@ class _CreateAiAudiodescriptionScreenState
     );
   }
 
+  Future<void> _changeChoice(String id, String value) async {
+    if (_running || !mounted) return;
+    setState(() {
+      switch (id) {
+        case 'language':
+          _language = value;
+          break;
+        case 'verbosity':
+          _verbosity = value;
+          break;
+        case 'character_catalog':
+          _characterCatalogName = value.isEmpty ? null : value;
+          break;
+        case 'tts_engine':
+          _ttsEngine = value;
+          break;
+        case 'edge_language':
+          _edgeLanguage = value;
+          _edgeVoice = AppSettingsService.defaultVoiceForLanguageFrom(
+            _edgeVoices,
+            value,
+          );
+          break;
+        case 'edge_voice':
+          _edgeVoice = value;
+          break;
+        case 'system_language':
+          _systemLanguage = value;
+          _systemVoice = null;
+          break;
+        case 'system_voice':
+          _systemVoice = value.isEmpty ? null : value;
+          break;
+      }
+    });
+    if (const {
+      'tts_engine', 'edge_language', 'edge_voice',
+      'system_language', 'system_voice',
+    }.contains(id)) {
+      unawaited(_stopPreviews());
+    }
+    if (id == 'character_catalog') {
+      await _persistCharacterCatalogPreference();
+    }
+  }
+
+  AccessibleListRow _choiceSlider({
+    required String id,
+    required String title,
+    required String value,
+    required String valueLabel,
+    required bool enabled,
+    required List<AccessibleOption> options,
+  }) {
+    // Preserve a saved selection while voice/catalog options are loading.
+    final choices = [...options];
+    var index = choices.indexWhere((option) => option.value == value);
+    if (index < 0) {
+      choices.add(AccessibleOption(value: value, label: valueLabel));
+      index = choices.length - 1;
+    }
+    final last = choices.length - 1;
+    return AccessibleListRow(
+      id: id,
+      title: title,
+      kind: 'slider',
+      accessibilityButtonTrait: false,
+      value: value,
+      valueLabel: choices[index].label,
+      enabled: enabled && choices.length > 1,
+      sliderMin: 0,
+      sliderMax: last.toDouble(),
+      sliderStep: 1,
+      sliderValue: index.toDouble(),
+      sliderIncreasedValueLabel: choices[(index + 1).clamp(0, last)].label,
+      sliderDecreasedValueLabel: choices[(index - 1).clamp(0, last)].label,
+      options: [
+        for (var i = 0; i < choices.length; i++)
+          AccessibleOption(value: i, label: choices[i].label),
+      ],
+      onValueChanged: (raw) async {
+        if (!enabled || _running) return;
+        final number = raw is num ? raw.toDouble() : double.tryParse('$raw');
+        if (number == null || !number.isFinite) return;
+        final selected = choices[number.round().clamp(0, last)].value.toString();
+        if (selected != value) await _changeChoice(id, selected);
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -1792,19 +1882,17 @@ class _CreateAiAudiodescriptionScreenState
                         accessibilityButtonTrait: false,
                       ),
                     ],
-                    AccessibleListRow(
+                    _choiceSlider(
                       id: 'language',
                       title: l10n.audioDescriptionLanguage,
-                      kind: 'picker',
                       value: _language,
                       valueLabel: _languageLabel(l10n, _language),
                       enabled: !_running,
                       options: _languageOptions(l10n),
                     ),
-                    AccessibleListRow(
+                    _choiceSlider(
                       id: 'verbosity',
                       title: l10n.audioDescriptionDetailLevel,
-                      kind: 'picker',
                       value: _verbosity,
                       valueLabel: switch (_verbosity) {
                         'short' => l10n.audioDescriptionDetailConcise,
@@ -1948,10 +2036,9 @@ class _CreateAiAudiodescriptionScreenState
                         enabled: !_running,
                       ),
                     if (_recognizeCharacters && _keepCharacterCatalog)
-                      AccessibleListRow(
+                      _choiceSlider(
                         id: 'character_catalog',
                         title: l10n.audioDescriptionCharacterCatalogChoose,
-                        kind: 'picker',
                         value: _characterCatalogName ?? '',
                         valueLabel: _characterCatalogName ??
                             l10n.audioDescriptionCharacterCatalogNew,
@@ -1980,10 +2067,9 @@ class _CreateAiAudiodescriptionScreenState
                 ),
                 AccessibleListSection(
                   rows: [
-                    AccessibleListRow(
+                    _choiceSlider(
                       id: 'tts_engine',
                       title: l10n.settingsReadingEngine,
-                      kind: 'picker',
                       value: _ttsEngine,
                       valueLabel: _ttsEngine == 'system'
                           ? l10n.settingsSystemVoices
@@ -2001,10 +2087,9 @@ class _CreateAiAudiodescriptionScreenState
                       ],
                     ),
                     if (_ttsEngine == 'edge') ...[
-                      AccessibleListRow(
+                      _choiceSlider(
                         id: 'edge_language',
                         title: l10n.ttsVoiceLanguage,
-                        kind: 'picker',
                         value: _edgeLanguage,
                         valueLabel: _edgeLanguageLabel(l10n, _edgeLanguage),
                         enabled: !_running,
@@ -2019,10 +2104,9 @@ class _CreateAiAudiodescriptionScreenState
                                 ))
                             .toList(),
                       ),
-                      AccessibleListRow(
+                      _choiceSlider(
                         id: 'edge_voice',
                         title: l10n.ttsVoice,
-                        kind: 'picker',
                         value: _edgeVoice,
                         valueLabel: _edgeVoiceLabel(_edgeVoice),
                         enabled: !_running,
@@ -2038,10 +2122,9 @@ class _CreateAiAudiodescriptionScreenState
                       ),
                     ] else ...[
                       if (_systemLanguageOptions(l10n).isNotEmpty)
-                        AccessibleListRow(
+                        _choiceSlider(
                           id: 'system_language',
                           title: l10n.settingsSystemLanguage,
-                          kind: 'picker',
                           value: _systemLanguage,
                           valueLabel: _localizedTurkishTtsLanguageLabel(
                             l10n,
@@ -2051,10 +2134,9 @@ class _CreateAiAudiodescriptionScreenState
                           enabled: !_running,
                           options: _systemLanguageOptions(l10n),
                         ),
-                      AccessibleListRow(
+                      _choiceSlider(
                         id: 'system_voice',
                         title: l10n.settingsSystemVoice,
-                        kind: 'picker',
                         value: _systemVoice ?? '',
                         valueLabel:
                             _systemVoice ?? l10n.settingsDefaultVoice,
@@ -2202,49 +2284,7 @@ class _CreateAiAudiodescriptionScreenState
                     }
                   }
                 } else if (event.type == 'picker') {
-                  final value = event.value?.toString() ?? '';
-                  setState(() {
-                    switch (id) {
-                      case 'language':
-                        _language = value;
-                        break;
-                      case 'verbosity':
-                        _verbosity = value;
-                        break;
-                      case 'character_catalog':
-                        _characterCatalogName = value.isEmpty ? null : value;
-                        break;
-                      case 'tts_engine':
-                        _ttsEngine = value;
-                        break;
-                      case 'edge_language':
-                        _edgeLanguage = value;
-                        _edgeVoice = AppSettingsService.defaultVoiceForLanguageFrom(
-                          _edgeVoices,
-                          value,
-                        );
-                        break;
-                      case 'edge_voice':
-                        _edgeVoice = value;
-                        break;
-                      case 'system_language':
-                        _systemLanguage = value;
-                        _systemVoice = null;
-                        break;
-                      case 'system_voice':
-                        _systemVoice = value.isEmpty ? null : value;
-                        break;
-                    }
-                  });
-                  if (const {
-                    'tts_engine', 'edge_language', 'edge_voice',
-                    'system_language', 'system_voice',
-                  }.contains(id)) {
-                    unawaited(_stopPreviews());
-                  }
-                  if (id == 'character_catalog') {
-                    await _persistCharacterCatalogPreference();
-                  }
+                  await _changeChoice(id, event.value?.toString() ?? '');
                 } else if (event.type == 'toggle') {
                   final value = event.value == true;
                   setState(() {

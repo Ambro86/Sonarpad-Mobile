@@ -1,3 +1,4 @@
+import '../widgets/favorite_reorder.dart';
 import '../widgets/clear_favorites_button.dart';
 import 'dart:async';
 import '../utils/tv_return_focus.dart';
@@ -84,6 +85,15 @@ class _FavoriteTvsScreenState extends State<FavoriteTvsScreen> {
     });
   }
 
+  Future<void> _sortFavoritesAlphabetically() async {
+    if (_favorites.length < 2) return;
+    final sorted = await reorderFavorites(context, _favorites, 0,
+        'sort_favorites', (item) => item.name);
+    if (sorted == null) return;
+    await _service.saveFavorites(sorted);
+    if (mounted) setState(() => _favorites = sorted);
+  }
+
   Future<void> _removeFromFavorites(TvChannel channel) async {
     final favs = await _service.loadFavorites();
     final removedNames = favs.where((favorite) => _service.isSameFavoriteChannel(favorite, channel)).map((favorite) => favorite.name).toList();
@@ -134,6 +144,7 @@ class _FavoriteTvsScreenState extends State<FavoriteTvsScreen> {
                               hint: 'Tocca per aprire il canale TV',
                               kind: 'action',
                               actions: [
+                                if (_favorites.length > 1) AccessibleCustomAction(id: 'sort_favorites', label: l10n.favoritesSortAlphabetically),
                                 AccessibleCustomAction(
                                   id: 'play_live',
                                   label: l10n.tvPlayLive,
@@ -154,6 +165,7 @@ class _FavoriteTvsScreenState extends State<FavoriteTvsScreen> {
                                   ),
                               ],
                               visualActions: [
+                                if (_favorites.length > 1) AccessibleVisualAction(id: 'sort_favorites', label: l10n.favoritesSortAlphabetically, icon: 'list'),
                                 AccessibleVisualAction(
                                   id: 'play_live',
                                   label: l10n.tvPlayLive,
@@ -182,7 +194,9 @@ class _FavoriteTvsScreenState extends State<FavoriteTvsScreen> {
                         final index = _favorites.indexWhere((e) => e.name == id);
                         if (index < 0) return;
                         final channel = _favorites[index];
-                        if (event.type == 'activate') {
+                        if (event.type == 'customAction' && event.action == 'sort_favorites') {
+                          await _sortFavoritesAlphabetically();
+                        } else if (event.type == 'activate') {
                           await _openAndRestore(channel, widget.onOpenChannel);
                         } else if (event.type == 'customAction' &&
                             event.action == 'play_live') {
@@ -225,6 +239,8 @@ class _FavoriteTvsScreenState extends State<FavoriteTvsScreen> {
                           hint: 'Tocca per aprire il canale TV',
                           onTap: () => _openAndRestore(channel, widget.onOpenChannel),
                           customSemanticsActions: {
+                            if (_favorites.length > 1)
+                              CustomSemanticsAction(label: l10n.favoritesSortAlphabetically): _sortFavoritesAlphabetically,
                             CustomSemanticsAction(
                               label: l10n.tvPlayLive,
                             ): () => _openAndRestore(channel, widget.onPlayLive),
@@ -246,6 +262,11 @@ class _FavoriteTvsScreenState extends State<FavoriteTvsScreen> {
                           child: ExcludeSemantics(
                             child: Row(
                               children: [
+                                if (_favorites.length > 1) IconButton(
+                                  tooltip: l10n.favoritesSortAlphabetically,
+                                  icon: const Icon(Icons.sort_by_alpha),
+                                  onPressed: _sortFavoritesAlphabetically,
+                                ),
                                 Expanded(
                                   child: FilledButton(
                                     style: FilledButton.styleFrom(

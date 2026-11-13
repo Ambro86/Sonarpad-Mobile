@@ -1,3 +1,4 @@
+import '../widgets/favorite_reorder.dart';
 import '../widgets/document_password_dialog.dart';
 import '../services/text_document_export_service.dart';
 import 'dart:async';
@@ -655,7 +656,18 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     final globalList = List<DocumentItem>.from(_service.documents);
     final globalCurrentIndex = globalList.indexWhere((d) => d.id == doc.id);
 
-    if (action == _DocumentAction.moveUp && currentIndex > 0) {
+    if (action == _DocumentAction.sortAlphabetically) {
+      final sorted = await reorderFavorites(context, displayed, currentIndex,
+          'sort_favorites', (item) => item.displayName);
+      if (sorted == null) return;
+      final ids = displayed.map((item) => item.id).toSet();
+      var next = 0;
+      for (var i = 0; i < globalList.length; i++) {
+        if (ids.contains(globalList[i].id)) globalList[i] = sorted[next++];
+      }
+      await _service.saveAll(globalList);
+      if (mounted) setState(() {});
+    } else if (action == _DocumentAction.moveUp && currentIndex > 0) {
       final targetDoc = displayed[currentIndex - 1];
       final globalTargetIndex =
           globalList.indexWhere((d) => d.id == targetDoc.id);
@@ -1750,6 +1762,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
       final doc = docs[index];
       final folderIndex = folderDocs.indexWhere((item) => item.id == doc.id);
       final actions = <AccessibleCustomAction>[
+        if (folderDocs.length > 1) AccessibleCustomAction(id: 'sort_favorites', label: l10n.favoritesSortAlphabetically),
         if (_canTranslateDocument(doc))
           AccessibleCustomAction(id: 'translate', label: l10n.translateDocument),
         AccessibleCustomAction(
@@ -1793,6 +1806,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
         kind: 'action',
         actions: actions,
         visualActions: [
+          if (folderDocs.length > 1) AccessibleVisualAction(id: 'sort_favorites', label: l10n.favoritesSortAlphabetically, icon: 'list'),
           if (_canTranslateDocument(doc))
             AccessibleVisualAction(id: 'translate', label: l10n.translateDocument, icon: 'translate'),
           if (!doc.isFolder)
@@ -1834,6 +1848,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
           await _openDocument(doc);
         } else if (event.type == 'customAction') {
           switch (event.action) {
+            case 'sort_favorites': await _handleAction(_DocumentAction.sortAlphabetically, doc); break;
             case 'translate': await _translateDocument(doc); break;
             case 'select': await _selectDocuments(initialDocumentId: doc.id); break;
             case 'remove': await _remove(doc.id); break;
@@ -2114,6 +2129,8 @@ class _DocumentTile extends StatelessWidget {
       button: true,
       onTap: onOpen,
       customSemanticsActions: {
+          if (!isFirst || !isLast)
+            CustomSemanticsAction(label: l10n.favoritesSortAlphabetically): () => onAction(_DocumentAction.sortAlphabetically),
           CustomSemanticsAction(label: l10n.translateDocument): ?onTranslate,
           CustomSemanticsAction(
               label: doc.isFolder
@@ -2246,6 +2263,12 @@ class _DocumentTile extends StatelessWidget {
                       icon: const Icon(Icons.translate), tooltip: l10n.translateDocument,
                       onPressed: onTranslate,
                     )),
+                  if (!isFirst || !isLast)
+                    IconButton(
+                      tooltip: l10n.favoritesSortAlphabetically,
+                      icon: const Icon(Icons.sort_by_alpha),
+                      onPressed: () => onAction(_DocumentAction.sortAlphabetically),
+                    ),
                   // Pulsante rimuovi
                   ExcludeSemantics(
                     child: Semantics(
@@ -2284,7 +2307,7 @@ class _AudiobookExportProgressUi {
   final double? value;
 }
 
-enum _DocumentAction { moveUp, moveDown, moveToPosition }
+enum _DocumentAction { moveUp, moveDown, moveToPosition, sortAlphabetically }
 
 enum _ExportAction { saveInSonarpad, share, close }
 
