@@ -1,3 +1,4 @@
+import '../utils/edge_language_label.dart';
 import 'dart:async';
 import 'dart:io';
 
@@ -1531,11 +1532,9 @@ class _CreateAiAudiodescriptionScreenState
 
   String _edgeLanguageLabel(AppLocalizations l10n, String code) {
     final language = _edgeLanguages.where((item) => item.code == code);
-    return _localizedTurkishTtsLanguageLabel(
-      l10n,
-      code,
-      language.isEmpty ? code : language.first.label,
-    );
+    return language.isEmpty
+        ? l10n.languageLabel(code)
+        : localizedEdgeLanguageLabel(language.first, l10n);
   }
 
   String _edgeVoiceLabel(String voice) {
@@ -2096,11 +2095,7 @@ class _CreateAiAudiodescriptionScreenState
                         options: _edgeLanguages
                             .map((item) => AccessibleOption(
                                   value: item.code,
-                                  label: _localizedTurkishTtsLanguageLabel(
-                                    l10n,
-                                    item.code,
-                                    item.label,
-                                  ),
+                                  label: localizedEdgeLanguageLabel(item, l10n),
                                 ))
                             .toList(),
                       ),

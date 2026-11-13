@@ -22,9 +22,9 @@ void main() {
   });
 
   test('Edge language labels use localized country names instead of locale codes', () {
-    final settings = File('lib/screens/settings_screen.dart').readAsStringSync();
+    final settings = File('lib/utils/edge_language_label.dart').readAsStringSync();
 
-    expect(settings, contains("import '../utils/country_name_helper.dart';"));
+    expect(settings, contains("import 'country_name_helper.dart';"));
     expect(settings, contains('localizedCountryDisplayName('));
     expect(settings, contains('localeName: l10n.localeName'));
     expect(settings, contains("return '\$localizedLanguage (\$country)';"));

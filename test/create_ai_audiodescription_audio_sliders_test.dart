@@ -1269,6 +1269,11 @@ void main() {
     final semantics = tester.ensureSemantics();
     try {
       await _mountScreen(tester, serviceFactory: _ChoiceService.new);
+      final languageLabels = _row(tester, 'edge_language').options.map((o) => o.label);
+      expect(languageLabels, contains('Italiano (Italia)'));
+      expect(languageLabels.any((label) => label.startsWith('Inglese (')), isTrue);
+      expect(languageLabels.any((label) => label.startsWith('Italian (') || label.startsWith('English (')), isFalse);
+      expect(_row(tester, 'edge_language').valueLabel, 'Italiano (Italia)');
       await tester.runAsync(() async {
         await _form(tester).onEvent!(const AccessibleListEvent(
           type: 'toggle', id: 'keep_character_catalog', value: true));

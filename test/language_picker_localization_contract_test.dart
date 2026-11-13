@@ -50,7 +50,9 @@ void main() {
 
     expect(source, contains("import '../l10n/localized_dynamic_labels.dart';"));
     expect(source, contains('_localizedEdgeLanguageLabel'));
-    expect(source, contains('l10n.languageLabel(language.code)'));
+    expect(source, contains('localizedEdgeLanguageLabel(language, l10n)'));
+    expect(File('lib/utils/edge_language_label.dart').readAsStringSync(),
+        contains('l10n.languageLabel(language.code)'));
     expect(
       source,
       matches(
