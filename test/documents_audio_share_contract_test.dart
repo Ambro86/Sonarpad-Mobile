@@ -7,8 +7,8 @@ void main() {
     final source = File('lib/screens/documents_screen.dart').readAsStringSync();
 
     // Audio now shares the same local-media path used by video files.
-    expect(source, contains('Future<void> _shareLocalMediaDocument('));
-    expect(source, contains('if (!_isLocalMediaDocument(doc)) return;'));
+    expect(source, contains('Future<void> _shareDocument('));
+    expect(source, contains('if (!_canShareDocument(doc)) return;'));
     expect(source, contains('SharePlus.instance.share('));
     expect(source, contains('files: [XFile(file.path)]'));
     expect(
@@ -17,9 +17,9 @@ void main() {
     );
     expect(
       source,
-      contains("case 'share': await _shareLocalMediaDocument(doc);"),
+      contains("case 'share': await _shareDocument(doc);"),
     );
-    expect(source, contains('canShare: _isLocalMediaDocument(doc)'));
+    expect(source, contains('canShare: _canShareDocument(doc)'));
     expect(source, contains('CustomSemanticsAction(label: l10n.share): onShare'));
     expect(source, contains("'mp3'"));
   });

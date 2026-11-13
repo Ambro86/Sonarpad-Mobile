@@ -105,10 +105,12 @@ void main() {
         expect(removed, hasLength(2), reason: collection);
         expect(removed.map((e) => e['id']).toSet(), hasLength(2));
       }
+      expect(events.where((e) => e['collection'] == 'sonarmusic').map((e) => e['id']), ['song:song1']);
       await radio.clearFavorites();
       await tv.clearFavorites();
       await tube.clearFavorites();
-      expect(await CloudSyncDeletions.read(), hasLength(6));
+      await music.clearFavorites();
+      expect(await CloudSyncDeletions.read(), hasLength(7));
     },
   );
 
