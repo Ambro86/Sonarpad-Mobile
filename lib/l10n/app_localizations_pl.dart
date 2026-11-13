@@ -6088,4 +6088,10 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get weatherDailySituation => 'Prognoza na cały dzień';
+
+  @override
+  String get podcastBookmarks => 'Zakładki podcastów';
+
+  @override
+  String get podcastNoBookmarks => 'Brak zakładek podcastów.';
 }

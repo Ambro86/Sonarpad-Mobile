@@ -6654,5 +6654,7 @@
   "podcastRecorderStereo": "Stereo",
   "podcastRecorderBackground": "Im Hintergrund weiter aufnehmen",
   "alphabeticalSortCompleted": "Alphabetische Sortierung abgeschlossen.",
-  "weatherDailySituation": "Tagesvorhersage"
+  "weatherDailySituation": "Tagesvorhersage",
+  "podcastBookmarks": "Podcast-Lesezeichen",
+  "podcastNoBookmarks": "Keine Podcast-Lesezeichen."
 }

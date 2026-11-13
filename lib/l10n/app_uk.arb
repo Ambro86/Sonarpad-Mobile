@@ -6654,5 +6654,7 @@
   "podcastRecorderStereo": "Стерео",
   "podcastRecorderBackground": "Продовжувати запис у фоні",
   "alphabeticalSortCompleted": "Сортування за абеткою завершено.",
-  "weatherDailySituation": "Прогноз на день"
+  "weatherDailySituation": "Прогноз на день",
+  "podcastBookmarks": "Закладки подкастів",
+  "podcastNoBookmarks": "Немає закладок подкастів."
 }

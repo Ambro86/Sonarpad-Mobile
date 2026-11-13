@@ -5076,5 +5076,7 @@
   "podcastRecorderStereo": "Stereo",
   "podcastRecorderBackground": "Keep recording in the background",
   "alphabeticalSortCompleted": "Alphabetical sorting completed.",
-  "weatherDailySituation": "Daily forecast"
+  "weatherDailySituation": "Daily forecast",
+  "podcastBookmarks": "Podcast bookmarks",
+  "podcastNoBookmarks": "No podcast bookmarks."
 }

@@ -6071,4 +6071,10 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get weatherDailySituation => 'Прогноз на день';
+
+  @override
+  String get podcastBookmarks => 'Закладки подкастів';
+
+  @override
+  String get podcastNoBookmarks => 'Немає закладок подкастів.';
 }

@@ -6105,6 +6105,12 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get weatherDailySituation => 'Previsão do dia';
+
+  @override
+  String get podcastBookmarks => 'Marcadores de podcasts';
+
+  @override
+  String get podcastNoBookmarks => 'Nenhum marcador de podcast.';
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
@@ -12200,4 +12206,10 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get weatherDailySituation => 'Previsão do dia';
+
+  @override
+  String get podcastBookmarks => 'Marcadores de podcasts';
+
+  @override
+  String get podcastNoBookmarks => 'Nenhum marcador de podcast.';
 }

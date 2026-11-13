@@ -6122,4 +6122,10 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get weatherDailySituation => 'Previsión del día';
+
+  @override
+  String get podcastBookmarks => 'Marcadores de podcasts';
+
+  @override
+  String get podcastNoBookmarks => 'No hay marcadores de podcasts.';
 }

@@ -6654,5 +6654,7 @@
   "podcastRecorderStereo": "Stereo",
   "podcastRecorderBackground": "Blijven opnemen op de achtergrond",
   "alphabeticalSortCompleted": "Alfabetisch sorteren voltooid.",
-  "weatherDailySituation": "Dagverwachting"
+  "weatherDailySituation": "Dagverwachting",
+  "podcastBookmarks": "Podcastbladwijzers",
+  "podcastNoBookmarks": "Geen podcastbladwijzers."
 }

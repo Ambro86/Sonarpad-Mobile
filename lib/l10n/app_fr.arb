@@ -5082,5 +5082,7 @@
   "podcastRecorderStereo": "Stéréo",
   "podcastRecorderBackground": "Continuer à enregistrer en arrière-plan",
   "alphabeticalSortCompleted": "Tri alphabétique terminé.",
-  "weatherDailySituation": "Prévisions de la journée"
+  "weatherDailySituation": "Prévisions de la journée",
+  "podcastBookmarks": "Signets des podcasts",
+  "podcastNoBookmarks": "Aucun signet de podcast."
 }

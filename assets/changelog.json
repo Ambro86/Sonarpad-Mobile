@@ -11,7 +11,10 @@
       "SonarTube: corretto il problema per cui le playlist composte da Shorts, aperte dalle playlist di un canale, potevano mostrare «Nessun video» pur contenendo video.",
       "Aggiunta l’azione Ordina alfabeticamente nei documenti, nei preferiti radio e nelle iscrizioni podcast, disponibile nel rotore di VoiceOver e come pulsante visibile escluso da VoiceOver. L’ordine viene salvato; nei documenti viene ordinata solo la cartella aperta.",
       "Registra podcast: aggiunta la scelta tra MP3 e M4A, con MP3 predefinito, e la regolazione della qualità tramite bitrate da 64 a 320 kbps. Formato e bitrate si scelgono con slider indipendenti e vengono ricordati.",
-      "Meteo: aggiunta la descrizione delle condizioni previste per oggi e per i giorni successivi, mantenendo separata la situazione attuale. La probabilità di precipitazioni è ora disponibile anche nella vista accessibile."
+      "Meteo: aggiunta la descrizione delle condizioni previste per oggi e per i giorni successivi, mantenendo separata la situazione attuale. La probabilità di precipitazioni è ora disponibile anche nella vista accessibile.",
+      "Progetti audiodescrizione: corretta l’esportazione del testo dai Documenti nei formati disponibili. Aggiunta l’azione Condividi sul progetto salvato; i file di progetto modificati esternamente possono essere reimportati, riconosciuti nell’elenco dei progetti e aperti nell’editor audiodescrizioni.",
+      "Sincronizzazione cloud: aggiunti i preferiti SonarMusic tra Windows, Mac e mobile, inclusi brani, album, artisti e playlist. Le liste esistenti vengono unite e le rimozioni esplicite vengono sincronizzate.",
+      "Podcast: aggiunta la sincronizzazione dei segnalibri automatici e del punto di ascolto tra Windows, Mac e mobile, anche quando Windows riproduce un episodio dalla cache. Le posizioni più vecchie non sovrascrivono quelle più recenti; anche il completamento e la rimozione di un segnalibro vengono sincronizzati. Aggiunto il gestore Segnalibri podcast su iOS e Android: mostra i punti di ascolto salvati, permette di riaprire gli episodi e di rimuovere un segnalibro con conferma, anche tramite azione accessibile."
     ],
     "en": [
       "Dictionary on iOS: disabled automatic capitalization in the search field to prevent words such as “gabbia” from not being found. Uppercase letters can still be entered manually.",
@@ -22,7 +25,10 @@
       "SonarTube: fixed an issue where Shorts-only playlists opened from a channel’s playlists could show “No videos” even though they contained videos.",
       "Added Sort alphabetically to documents, radio favorites and podcast subscriptions, available as a VoiceOver rotor action and a visible button excluded from VoiceOver. The order is saved; in documents, only the open folder is sorted.",
       "Record podcast: added a choice between MP3 and M4A, with MP3 as the default, and adjustable quality using bitrates from 64 to 320 kbps. Format and bitrate use independent sliders and are remembered.",
-      "Weather: added a description of forecast conditions for today and subsequent days, separate from current conditions. Precipitation probability is now also available in the accessible view."
+      "Weather: added a description of forecast conditions for today and subsequent days, separate from current conditions. Precipitation probability is now also available in the accessible view.",
+      "Audio description projects: fixed text export from Documents to the available formats. Added a Share action for saved projects; project files edited externally can be reimported, recognized in the project list and opened in the audio description editor.",
+      "Cloud sync: added SonarMusic favorites across Windows, Mac and mobile, including songs, albums, artists and playlists. Existing lists are merged and explicit removals are synchronized.",
+      "Podcasts: automatic bookmarks and listening positions now sync between Windows, Mac and mobile, including episodes played from the Windows cache. Older positions cannot overwrite newer ones; completion and bookmark removal also sync. Added a Podcast bookmarks manager on iOS and Android to view saved listening positions, reopen episodes and remove bookmarks with confirmation, also through an accessibility action."
     ],
     "fr": [
       "Dictionnaire sur iOS : désactivation de la majuscule automatique dans le champ de recherche pour éviter que des mots comme « gabbia » restent introuvables. Les majuscules peuvent toujours être saisies manuellement.",
@@ -33,7 +39,10 @@
       "SonarTube : correction d’un problème où les playlists composées de Shorts, ouvertes depuis les playlists d’une chaîne, pouvaient afficher « Aucune vidéo » alors qu’elles contenaient des vidéos.",
       "Ajout de Trier par ordre alphabétique dans les documents, les radios favorites et les abonnements aux podcasts, comme action du rotor VoiceOver et bouton visible exclu de VoiceOver. L’ordre est enregistré ; dans les documents, seul le dossier ouvert est trié.",
       "Enregistrer un podcast : ajout du choix entre MP3 et M4A, avec MP3 par défaut, et du réglage de la qualité par un débit de 64 à 320 kbps. Le format et le débit se règlent avec des curseurs indépendants et sont mémorisés.",
-      "Météo : ajout des conditions prévues pour aujourd’hui et les jours suivants, distinctes de la situation actuelle. La probabilité de précipitations est désormais disponible aussi dans la vue accessible."
+      "Météo : ajout des conditions prévues pour aujourd’hui et les jours suivants, distinctes de la situation actuelle. La probabilité de précipitations est désormais disponible aussi dans la vue accessible.",
+      "Projets d’audiodescription : correction de l’exportation du texte depuis Documents dans les formats disponibles. Ajout de l’action Partager sur les projets enregistrés ; les fichiers de projet modifiés ailleurs peuvent être réimportés, reconnus dans la liste des projets et ouverts dans l’éditeur d’audiodescriptions.",
+      "Synchronisation cloud : ajout des favoris SonarMusic entre Windows, Mac et mobile, y compris les titres, albums, artistes et playlists. Les listes existantes sont fusionnées et les suppressions explicites sont synchronisées.",
+      "Podcasts : les signets automatiques et la position d’écoute sont désormais synchronisés entre Windows, Mac et mobile, y compris pour les épisodes lus depuis le cache Windows. Les anciennes positions ne remplacent pas les plus récentes ; la fin de lecture et la suppression des signets sont également synchronisées. Ajout du gestionnaire de signets des podcasts sur iOS et Android pour consulter les positions enregistrées, rouvrir les épisodes et supprimer un signet avec confirmation, également via une action d’accessibilité."
     ],
     "es": [
       "Diccionario en iOS: desactivada la mayúscula automática en el campo de búsqueda para evitar que palabras como «gabbia» no se encuentren. Las mayúsculas se pueden seguir introduciendo manualmente.",
@@ -44,7 +53,10 @@
       "SonarTube: corregido un problema por el que las listas compuestas por Shorts, abiertas desde las listas de un canal, podían mostrar «No hay vídeos» aunque contuvieran vídeos.",
       "Añadida la acción Ordenar alfabéticamente en documentos, radios favoritas y suscripciones a podcasts, disponible en el rotor de VoiceOver y como botón visible excluido de VoiceOver. El orden se guarda; en documentos solo se ordena la carpeta abierta.",
       "Grabar podcast: añadida la elección entre MP3 y M4A, con MP3 como predeterminado, y el ajuste de calidad mediante una tasa de bits de 64 a 320 kbps. El formato y la tasa de bits se eligen con deslizadores independientes y se recuerdan.",
-      "Tiempo: añadida la descripción de las condiciones previstas para hoy y los próximos días, separada de la situación actual. La probabilidad de precipitaciones también está disponible en la vista accesible."
+      "Tiempo: añadida la descripción de las condiciones previstas para hoy y los próximos días, separada de la situación actual. La probabilidad de precipitaciones también está disponible en la vista accesible.",
+      "Proyectos de audiodescripción: corregida la exportación del texto desde Documentos a los formatos disponibles. Añadida la acción Compartir en los proyectos guardados; los archivos de proyecto modificados externamente pueden reimportarse, reconocerse en la lista de proyectos y abrirse en el editor de audiodescripciones.",
+      "Sincronización en la nube: añadidos los favoritos de SonarMusic entre Windows, Mac y móvil, incluidas canciones, álbumes, artistas y listas. Las listas existentes se combinan y las eliminaciones explícitas se sincronizan.",
+      "Podcasts: los marcadores automáticos y la posición de escucha se sincronizan entre Windows, Mac y móvil, incluso al reproducir episodios desde la caché de Windows. Las posiciones antiguas no sustituyen a las más recientes; también se sincronizan el final de la reproducción y la eliminación de marcadores. Añadido un gestor de marcadores de podcasts en iOS y Android para consultar las posiciones guardadas, reabrir episodios y eliminar marcadores con confirmación, también mediante una acción de accesibilidad."
     ],
     "pt": [
       "Dicionário no iOS: desativada a maiúscula automática no campo de pesquisa para evitar que palavras como «gabbia» não sejam encontradas. Continua a ser possível introduzir maiúsculas manualmente.",
@@ -55,7 +67,10 @@
       "SonarTube: corrigido um problema em que as listas compostas por Shorts, abertas a partir das listas de um canal, podiam mostrar «Nenhum vídeo» apesar de conterem vídeos.",
       "Adicionada a ação Ordenar alfabeticamente nos documentos, nas rádios favoritas e nas subscrições de podcasts, disponível no rotor do VoiceOver e como botão visível excluído do VoiceOver. A ordem é guardada; nos documentos, apenas a pasta aberta é ordenada.",
       "Gravar podcast: adicionada a escolha entre MP3 e M4A, com MP3 por predefinição, e o ajuste da qualidade através de uma taxa de bits entre 64 e 320 kbps. O formato e a taxa de bits usam controlos deslizantes independentes e são memorizados.",
-      "Meteorologia: adicionada a descrição das condições previstas para hoje e os dias seguintes, separada da situação atual. A probabilidade de precipitação está agora disponível também na vista acessível."
+      "Meteorologia: adicionada a descrição das condições previstas para hoje e os dias seguintes, separada da situação atual. A probabilidade de precipitação está agora disponível também na vista acessível.",
+      "Projetos de audiodescrição: corrigida a exportação do texto a partir de Documentos nos formatos disponíveis. Adicionada a ação Partilhar nos projetos guardados; os ficheiros de projeto editados externamente podem ser reimportados, reconhecidos na lista de projetos e abertos no editor de audiodescrições.",
+      "Sincronização na nuvem: adicionados os favoritos SonarMusic entre Windows, Mac e dispositivos móveis, incluindo músicas, álbuns, artistas e listas de reprodução. As listas existentes são unidas e as remoções explícitas são sincronizadas.",
+      "Podcasts: os marcadores automáticos e a posição de reprodução são sincronizados entre Windows, Mac e dispositivos móveis, incluindo episódios reproduzidos a partir da cache do Windows. As posições antigas não substituem as mais recentes; a conclusão e a remoção de marcadores também são sincronizadas. Adicionado um gestor de marcadores de podcasts no iOS e Android para consultar posições guardadas, reabrir episódios e remover marcadores com confirmação, também através de uma ação de acessibilidade."
     ],
     "pt_BR": [
       "Dicionário no iOS: desativada a maiúscula automática no campo de pesquisa para evitar que palavras como “gabbia” não sejam encontradas. Ainda é possível inserir maiúsculas manualmente.",
@@ -66,7 +81,10 @@
       "SonarTube: corrigido um problema em que playlists compostas por Shorts, abertas a partir das playlists de um canal, podiam mostrar «Nenhum vídeo» mesmo contendo vídeos.",
       "Adicionada a ação Ordenar alfabeticamente nos documentos, nas rádios favoritas e nas inscrições de podcasts, disponível no rotor do VoiceOver e como botão visível excluído do VoiceOver. A ordem fica salva; nos documentos, apenas a pasta aberta é ordenada.",
       "Gravar podcast: adicionada a escolha entre MP3 e M4A, com MP3 como padrão, e o ajuste de qualidade pela taxa de bits de 64 a 320 kbps. O formato e a taxa de bits usam controles deslizantes independentes e ficam salvos.",
-      "Clima: adicionada a descrição das condições previstas para hoje e os próximos dias, separada da situação atual. A probabilidade de precipitação também está disponível na visualização acessível."
+      "Clima: adicionada a descrição das condições previstas para hoje e os próximos dias, separada da situação atual. A probabilidade de precipitação também está disponível na visualização acessível.",
+      "Projetos de audiodescrição: corrigida a exportação do texto pelos Documentos nos formatos disponíveis. Adicionada a ação Compartilhar nos projetos salvos; os arquivos de projeto editados externamente podem ser reimportados, reconhecidos na lista de projetos e abertos no editor de audiodescrições.",
+      "Sincronização na nuvem: adicionados os favoritos do SonarMusic entre Windows, Mac e dispositivos móveis, incluindo músicas, álbuns, artistas e playlists. As listas existentes são unidas e as remoções explícitas são sincronizadas.",
+      "Podcasts: os marcadores automáticos e a posição de reprodução são sincronizados entre Windows, Mac e dispositivos móveis, incluindo episódios reproduzidos pelo cache do Windows. Posições antigas não substituem as mais recentes; a conclusão e a remoção de marcadores também são sincronizadas. Adicionado um gerenciador de marcadores de podcasts no iOS e Android para consultar posições salvas, reabrir episódios e remover marcadores com confirmação, também por uma ação de acessibilidade."
     ],
     "pl": [
       "Słownik w iOS: wyłączono automatyczne wpisywanie wielkiej litery w polu wyszukiwania, aby można było znaleźć słowa takie jak „gabbia”. Wielkie litery nadal można wpisywać ręcznie.",
@@ -77,7 +95,10 @@
       "SonarTube: naprawiono problem, przez który playlisty złożone z Shorts, otwierane z listy playlist kanału, mogły wyświetlać komunikat „Brak filmów”, mimo że zawierały filmy.",
       "Dodano czynność Sortuj alfabetycznie w dokumentach, ulubionych stacjach radiowych i subskrypcjach podcastów, dostępną w pokrętle VoiceOver oraz jako widoczny przycisk pomijany przez VoiceOver. Kolejność jest zapisywana; w dokumentach sortowany jest tylko otwarty folder.",
       "Nagrywanie podcastu: dodano wybór między MP3 i M4A, z MP3 jako formatem domyślnym, oraz regulację jakości przez przepływność od 64 do 320 kbps. Format i przepływność mają niezależne suwaki, a ustawienia są zapamiętywane.",
-      "Pogoda: dodano opis prognozowanych warunków na dziś i kolejne dni, oddzielony od bieżącej sytuacji. Prawdopodobieństwo opadów jest teraz dostępne również w widoku dostępnym dla czytnika ekranu."
+      "Pogoda: dodano opis prognozowanych warunków na dziś i kolejne dni, oddzielony od bieżącej sytuacji. Prawdopodobieństwo opadów jest teraz dostępne również w widoku dostępnym dla czytnika ekranu.",
+      "Projekty audiodeskrypcji: naprawiono eksport tekstu z Dokumentów do dostępnych formatów. Dodano czynność Udostępnij dla zapisanych projektów; pliki projektu zmodyfikowane poza aplikacją można ponownie zaimportować, odnaleźć na liście projektów i otworzyć w edytorze audiodeskrypcji.",
+      "Synchronizacja w chmurze: dodano ulubione SonarMusic między Windows, Mac i urządzeniami mobilnymi, w tym utwory, albumy, wykonawców i playlisty. Istniejące listy są łączone, a świadome usunięcia synchronizowane.",
+      "Podcasty: automatyczne zakładki i pozycja odtwarzania są synchronizowane między Windows, Mac i urządzeniami mobilnymi, także przy odtwarzaniu odcinków z pamięci podręcznej Windows. Starsze pozycje nie nadpisują nowszych; zakończenie odtwarzania i usunięcie zakładki również są synchronizowane. Dodano menedżer zakładek podcastów w iOS i Androidzie: przeglądanie zapisanych pozycji, ponowne otwieranie odcinków i usuwanie zakładek z potwierdzeniem, także przez działanie dostępności."
     ],
     "cs": [
       "Slovník v iOS: vypnuto automatické psaní velkého počátečního písmene ve vyhledávacím poli, aby bylo možné najít slova jako „gabbia“. Velká písmena lze nadále zadávat ručně.",
@@ -88,7 +109,10 @@
       "SonarTube: opravena chyba, kvůli které seznamy složené z videí Shorts otevřené ze seznamů kanálu mohly zobrazovat „Žádná videa“, přestože videa obsahovaly.",
       "Do dokumentů, oblíbených rádií a předplatných podcastů přidána akce Seřadit abecedně, dostupná v rotoru VoiceOver a jako viditelné tlačítko vynechané z navigace VoiceOver. Pořadí se ukládá; v dokumentech se řadí pouze otevřená složka.",
       "Nahrávání podcastu: přidána volba mezi MP3 a M4A, s výchozím formátem MP3, a nastavení kvality pomocí datového toku od 64 do 320 kbps. Formát a datový tok mají nezávislé posuvníky a jejich volby se ukládají.",
-      "Počasí: přidán popis předpovídaných podmínek pro dnešek a následující dny, oddělený od aktuálního stavu. Pravděpodobnost srážek je nyní dostupná také v přístupném zobrazení."
+      "Počasí: přidán popis předpovídaných podmínek pro dnešek a následující dny, oddělený od aktuálního stavu. Pravděpodobnost srážek je nyní dostupná také v přístupném zobrazení.",
+      "Projekty audiopopisu: opravena možnost exportovat text z Dokumentů do dostupných formátů. U uložených projektů přidána akce Sdílet; soubory projektů upravené mimo aplikaci lze znovu importovat, rozpoznat v seznamu projektů a otevřít v editoru audiopopisu.",
+      "Cloudová synchronizace: přidány oblíbené položky SonarMusic mezi Windows, Macem a mobilními zařízeními, včetně skladeb, alb, interpretů a playlistů. Existující seznamy se sloučí a výslovná odstranění se synchronizují.",
+      "Podcasty: automatické záložky a pozice přehrávání se synchronizují mezi Windows, Macem a mobilními zařízeními, i při přehrávání epizod z mezipaměti Windows. Starší pozice nepřepíšou novější; synchronizuje se také dokončení přehrávání a odstranění záložek. Přidán správce záložek podcastů pro iOS a Android: zobrazení uložených pozic, otevření epizod a odstranění záložek s potvrzením, také pomocí akce zpřístupnění."
     ],
     "de": [
       "Wörterbuch unter iOS: Die automatische Großschreibung im Suchfeld wurde deaktiviert, damit Wörter wie „gabbia“ gefunden werden. Großbuchstaben können weiterhin manuell eingegeben werden.",
@@ -99,7 +123,10 @@
       "SonarTube: Ein Fehler wurde behoben, durch den reine Shorts-Playlists beim Öffnen über die Playlists eines Kanals „Keine Videos“ anzeigen konnten, obwohl sie Videos enthielten.",
       "Alphabetisch sortieren wurde für Dokumente, Radiofavoriten und Podcast-Abonnements ergänzt, als VoiceOver-Rotoraktion und als sichtbare, von VoiceOver ausgeschlossene Schaltfläche. Die Reihenfolge wird gespeichert; bei Dokumenten wird nur der geöffnete Ordner sortiert.",
       "Podcast aufnehmen: Auswahl zwischen MP3 und M4A hinzugefügt, mit MP3 als Standard, sowie eine Qualitätseinstellung über Bitraten von 64 bis 320 kbps. Format und Bitrate haben unabhängige Schieberegler und werden gespeichert.",
-      "Wetter: Beschreibung der vorhergesagten Bedingungen für heute und die folgenden Tage ergänzt, getrennt von den aktuellen Bedingungen. Die Niederschlagswahrscheinlichkeit ist nun auch in der barrierefreien Ansicht verfügbar."
+      "Wetter: Beschreibung der vorhergesagten Bedingungen für heute und die folgenden Tage ergänzt, getrennt von den aktuellen Bedingungen. Die Niederschlagswahrscheinlichkeit ist nun auch in der barrierefreien Ansicht verfügbar.",
+      "Audiodeskriptionsprojekte: Textexport aus Dokumente in die verfügbaren Formate korrigiert. Gespeicherte Projekte bieten nun die Aktion Teilen; extern bearbeitete Projektdateien können erneut importiert, in der Projektliste erkannt und im Audiodeskriptionseditor geöffnet werden.",
+      "Cloud-Synchronisierung: SonarMusic-Favoriten werden jetzt zwischen Windows, Mac und Mobilgeräten synchronisiert, einschließlich Songs, Alben, Künstlern und Playlists. Bestehende Listen werden zusammengeführt und ausdrückliche Löschungen synchronisiert.",
+      "Podcasts: Automatische Lesezeichen und Wiedergabepositionen werden zwischen Windows, Mac und Mobilgeräten synchronisiert, auch bei Episoden aus dem Windows-Cache. Ältere Positionen überschreiben keine neueren; auch das Wiedergabeende und das Entfernen von Lesezeichen werden synchronisiert. Neue Podcast-Lesezeichenverwaltung für iOS und Android: gespeicherte Positionen anzeigen, Episoden erneut öffnen und Lesezeichen nach Bestätigung entfernen, auch über eine Bedienungshilfe-Aktion."
     ],
     "zh_CN": [
       "iOS 词典：已关闭搜索框的自动首字母大写，避免出现无法找到“gabbia”等单词的问题。仍可手动输入大写字母。",
@@ -110,7 +137,10 @@
       "SonarTube：修复了从频道的播放列表中打开仅包含 Shorts 短视频的播放列表时，明明有视频却显示“没有视频”的问题。",
       "文档、收藏的电台和订阅的播客新增“按字母顺序排序”，可通过 VoiceOver 转子操作或不纳入 VoiceOver 导航的可见按钮使用。排序结果会保存；文档中仅对当前打开的文件夹排序。",
       "录制播客：新增 MP3 和 M4A 格式选择，默认使用 MP3，并可通过 64 至 320 kbps 的比特率调节音质。格式和比特率使用独立滑块，所选设置会被记住。",
-      "天气：新增今天及随后几天的天气状况预报，与当前天气分开显示。无障碍视图现在也提供降水概率。"
+      "天气：新增今天及随后几天的天气状况预报，与当前天气分开显示。无障碍视图现在也提供降水概率。",
+      "音频描述项目：修复了从“文档”导出文本到可用格式的问题。已保存的项目新增“分享”操作；在外部修改的项目文件可以重新导入，在项目列表中被识别，并在音频描述编辑器中打开。",
+      "云同步：新增 Windows、Mac 和移动端之间的 SonarMusic 收藏同步，包括歌曲、专辑、艺术家和播放列表。现有列表会合并，明确执行的删除操作也会同步。",
+      "播客：自动书签和播放进度现在可在 Windows、Mac 和移动设备间同步，包括从 Windows 缓存播放的节目。旧进度不会覆盖新进度；播放完成和删除书签也会同步。 iOS 和 Android 新增播客书签管理器，可查看保存的播放进度、重新打开节目，并在确认后删除书签，也可通过辅助功能操作删除。"
     ],
     "uk": [
       "Словник в iOS: вимкнено автоматичне введення великої літери в полі пошуку, щоб можна було знаходити слова на кшталт «gabbia». Великі літери й надалі можна вводити вручну.",
@@ -121,7 +151,10 @@
       "SonarTube: виправлено проблему, через яку списки відтворення лише з Shorts, відкриті зі списків відтворення каналу, могли показувати «Немає відео», хоча містили відео.",
       "Додано дію «Сортувати за абеткою» в документах, улюблених радіостанціях і підписках на подкасти, доступну в роторі VoiceOver та як видиму кнопку, виключену з навігації VoiceOver. Порядок зберігається; у документах сортується лише відкрита папка.",
       "Запис подкасту: додано вибір між MP3 і M4A, з MP3 за замовчуванням, та налаштування якості через бітрейт від 64 до 320 kbps. Формат і бітрейт мають незалежні повзунки, а вибрані значення зберігаються.",
-      "Погода: додано опис прогнозованих умов на сьогодні та наступні дні окремо від поточної ситуації. Імовірність опадів тепер доступна також у поданні для читача екрана."
+      "Погода: додано опис прогнозованих умов на сьогодні та наступні дні окремо від поточної ситуації. Імовірність опадів тепер доступна також у поданні для читача екрана.",
+      "Проєкти аудіоопису: виправлено експорт тексту з Документів у доступні формати. Для збережених проєктів додано дію Поділитися; файли проєктів, змінені поза застосунком, можна повторно імпортувати, розпізнати у списку проєктів і відкрити в редакторі аудіоопису.",
+      "Хмарна синхронізація: додано обране SonarMusic між Windows, Mac і мобільними пристроями, зокрема пісні, альбоми, виконавців і списки відтворення. Наявні списки об’єднуються, а явні видалення синхронізуються.",
+      "Подкасти: автоматичні закладки та позиція прослуховування синхронізуються між Windows, Mac і мобільними пристроями, зокрема для епізодів із кешу Windows. Старіші позиції не перезаписують новіші; завершення відтворення та видалення закладок також синхронізуються. Додано менеджер закладок подкастів для iOS і Android: перегляд збережених позицій, відкриття епізодів і видалення закладок із підтвердженням, також через дію доступності."
     ],
     "ro": [
       "Dicționar pe iOS: dezactivată scrierea automată cu majusculă în câmpul de căutare, pentru a evita situațiile în care cuvinte precum „gabbia” nu sunt găsite. Majusculele pot fi introduse în continuare manual.",
@@ -132,7 +165,10 @@
       "SonarTube: remediată o problemă din cauza căreia playlisturile alcătuite din Shorts, deschise din playlisturile unui canal, puteau afișa „Niciun videoclip”, deși conțineau videoclipuri.",
       "Adăugată acțiunea Ordonează alfabetic în documente, posturile radio favorite și abonamentele la podcasturi, disponibilă în rotorul VoiceOver și ca buton vizibil exclus din navigarea VoiceOver. Ordinea este salvată; în documente se sortează doar dosarul deschis.",
       "Înregistrare podcast: adăugată alegerea între MP3 și M4A, cu MP3 implicit, și reglarea calității prin bitrate de la 64 la 320 kbps. Formatul și bitrate-ul au glisoare independente, iar alegerile sunt memorate.",
-      "Meteo: adăugată descrierea condițiilor prognozate pentru azi și zilele următoare, separat de situația actuală. Probabilitatea precipitațiilor este acum disponibilă și în vizualizarea accesibilă."
+      "Meteo: adăugată descrierea condițiilor prognozate pentru azi și zilele următoare, separat de situația actuală. Probabilitatea precipitațiilor este acum disponibilă și în vizualizarea accesibilă.",
+      "Proiecte de audiodescriere: corectat exportul textului din Documente în formatele disponibile. Adăugată acțiunea Partajare pentru proiectele salvate; fișierele de proiect modificate extern pot fi reimportate, recunoscute în lista de proiecte și deschise în editorul de audiodescrieri.",
+      "Sincronizare în cloud: adăugate favoritele SonarMusic între Windows, Mac și dispozitive mobile, inclusiv melodii, albume, artiști și liste de redare. Listele existente sunt îmbinate, iar eliminările explicite sunt sincronizate.",
+      "Podcasturi: marcajele automate și poziția de ascultare se sincronizează între Windows, Mac și dispozitivele mobile, inclusiv pentru episoadele redate din memoria cache Windows. Pozițiile vechi nu le înlocuiesc pe cele recente; finalizarea redării și eliminarea marcajelor se sincronizează de asemenea. Adăugat un gestionar de marcaje pentru podcasturi pe iOS și Android: afișează pozițiile salvate, redeschide episoade și elimină marcaje cu confirmare, inclusiv printr-o acțiune de accesibilitate."
     ],
     "tr": [
       "iOS sözlüğü: “gabbia” gibi sözcüklerin bulunamamasını önlemek için arama alanında otomatik büyük harf kullanımı kapatıldı. Büyük harfler yine elle girilebilir.",
@@ -143,7 +179,10 @@
       "SonarTube: bir kanalın oynatma listelerinden açılan, yalnızca Shorts içeren listelerin video içermelerine rağmen “Video yok” gösterebilmesine neden olan sorun düzeltildi.",
       "Belgelere, favori radyolara ve podcast aboneliklerine Alfabetik sırala eylemi eklendi. VoiceOver rotorundan veya VoiceOver gezinmesine dahil edilmeyen görünür düğmeden kullanılabilir. Sıralama kaydedilir; belgelerde yalnızca açık klasör sıralanır.",
       "Podcast kaydı: varsayılan MP3 olmak üzere MP3 ve M4A arasında seçim ve 64 ile 320 kbps arasında bit hızıyla kalite ayarı eklendi. Biçim ve bit hızı bağımsız kaydırıcılarla seçilir ve tercihler hatırlanır.",
-      "Hava durumu: mevcut koşullardan ayrı olarak bugün ve sonraki günler için tahmin edilen koşulların açıklaması eklendi. Yağış olasılığı artık erişilebilir görünümde de sunuluyor."
+      "Hava durumu: mevcut koşullardan ayrı olarak bugün ve sonraki günler için tahmin edilen koşulların açıklaması eklendi. Yağış olasılığı artık erişilebilir görünümde de sunuluyor.",
+      "Sesli betimleme projeleri: Belgeler üzerinden kullanılabilir biçimlere metin dışa aktarma düzeltildi. Kaydedilmiş projelere Paylaş eylemi eklendi; uygulama dışında düzenlenen proje dosyaları yeniden içe aktarılabilir, proje listesinde tanınabilir ve sesli betimleme düzenleyicisinde açılabilir.",
+      "Bulut eşitleme: şarkılar, albümler, sanatçılar ve çalma listeleri dahil SonarMusic favorilerinin Windows, Mac ve mobil cihazlar arasında eşitlenmesi eklendi. Mevcut listeler birleştirilir ve açıkça yapılan silme işlemleri eşitlenir.",
+      "Podcastler: otomatik yer imleri ve dinleme konumları Windows, Mac ve mobil cihazlar arasında, Windows önbelleğinden oynatılan bölümler dahil, eşitlenir. Eski konumlar yenilerin üzerine yazılmaz; oynatma tamamlandığında ve yer imleri kaldırıldığında da eşitleme yapılır. iOS ve Android için podcast yer imi yöneticisi eklendi: kayıtlı konumları görüntüleme, bölümleri yeniden açma ve erişilebilirlik eylemiyle de kullanılabilen onaylı yer imi kaldırma."
     ],
     "nl": [
       "Woordenboek op iOS: automatische hoofdletters in het zoekveld uitgeschakeld, zodat woorden zoals ‘gabbia’ worden gevonden. Hoofdletters kunnen nog steeds handmatig worden ingevoerd.",
@@ -154,7 +193,10 @@
       "SonarTube: een probleem opgelost waarbij afspeellijsten met alleen Shorts, geopend via de afspeellijsten van een kanaal, “Geen video’s” konden tonen terwijl ze wel video’s bevatten.",
       "Alfabetisch sorteren toegevoegd aan documenten, favoriete radiozenders en podcastabonnementen, als VoiceOver-rotoractie en als zichtbare knop die buiten de VoiceOver-navigatie valt. De volgorde wordt opgeslagen; bij documenten wordt alleen de geopende map gesorteerd.",
       "Podcast opnemen: keuze tussen MP3 en M4A toegevoegd, met MP3 als standaard, en instelbare kwaliteit via bitrates van 64 tot 320 kbps. Formaat en bitrate hebben onafhankelijke schuifregelaars en worden onthouden.",
-      "Weer: beschrijving van de verwachte omstandigheden voor vandaag en de volgende dagen toegevoegd, los van de actuele situatie. De neerslagkans is nu ook beschikbaar in de toegankelijke weergave."
+      "Weer: beschrijving van de verwachte omstandigheden voor vandaag en de volgende dagen toegevoegd, los van de actuele situatie. De neerslagkans is nu ook beschikbaar in de toegankelijke weergave.",
+      "Audiodescriptieprojecten: tekstexport vanuit Documenten naar de beschikbare formaten hersteld. De actie Delen is toegevoegd aan opgeslagen projecten; extern bewerkte projectbestanden kunnen opnieuw worden geïmporteerd, in de projectlijst worden herkend en in de audiodescriptie-editor worden geopend.",
+      "Cloudsynchronisatie: SonarMusic-favorieten worden nu gesynchroniseerd tussen Windows, Mac en mobiele apparaten, inclusief nummers, albums, artiesten en afspeellijsten. Bestaande lijsten worden samengevoegd en expliciete verwijderingen worden gesynchroniseerd.",
+      "Podcasts: automatische bladwijzers en afspeelposities worden gesynchroniseerd tussen Windows, Mac en mobiele apparaten, ook voor afleveringen uit de Windows-cache. Oudere posities overschrijven geen nieuwere; ook voltooide afleveringen en verwijderde bladwijzers worden gesynchroniseerd. Nieuwe beheerfunctie voor podcastbladwijzers op iOS en Android: opgeslagen posities bekijken, afleveringen opnieuw openen en bladwijzers na bevestiging verwijderen, ook via een toegankelijkheidsactie."
     ]
   },
   {

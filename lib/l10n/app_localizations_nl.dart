@@ -6090,4 +6090,10 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get weatherDailySituation => 'Dagverwachting';
+
+  @override
+  String get podcastBookmarks => 'Podcastbladwijzers';
+
+  @override
+  String get podcastNoBookmarks => 'Geen podcastbladwijzers.';
 }

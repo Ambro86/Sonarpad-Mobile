@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-const SYNC_COLLECTIONS = ['radio', 'news_sources', 'news_folders', 'news_articles', 'tv', 'podcasts', 'sonartube', 'preferences'];
+const SYNC_COLLECTIONS = ['radio', 'news_sources', 'news_folders', 'news_articles', 'tv', 'podcasts', 'sonartube', 'sonarmusic', 'podcast_bookmarks', 'preferences'];
 
 function validate_preferences(array $items): void {
     if (count($items) > 128 || strlen(json_encode($items, JSON_THROW_ON_ERROR)) > 32768) api_fail(413, 'preferences_limit');
@@ -26,6 +26,17 @@ function validate_state(mixed $state): array {
                 isset($ids[$item['id']])) api_fail(400, 'invalid_item');
             $ids[$item['id']] = true;
         }
+        if ($name === 'podcast_bookmarks') {
+            foreach ($items as $item) {
+                $d = $item['data'];
+                $url = $d['url'] ?? null;
+                if (!is_string($url) || $url !== trim($url) || $item['id'] !== $url ||
+                    !in_array(strtolower(parse_url($url, PHP_URL_SCHEME) ?: ''), ['http', 'https'], true) ||
+                    !parse_url($url, PHP_URL_HOST) || !is_string($d['title'] ?? null) ||
+                    !is_int($d['position_seconds'] ?? null) || $d['position_seconds'] < 0 || $d['position_seconds'] > 2147483647 ||
+                    !is_int($d['updated_at'] ?? null) || $d['updated_at'] < 0 || $d['updated_at'] > 9007199254740991) api_fail(400, 'invalid_podcast_bookmark');
+            }
+        }
         if ($name === 'preferences') validate_preferences($items);
     }
     return $state;
@@ -43,6 +54,15 @@ function merge_state(array $remote, array $base, array $local): array {
             if (!isset($after[$id])) unset($current[$id]);
         }
         foreach ($after as $id => $item) {
+            if ($name === 'podcast_bookmarks') {
+                if (isset($current[$id])) {
+                    if (($before[$id]['data'] ?? null) !== $item['data'] &&
+                        $item['data']['updated_at'] > $current[$id]['data']['updated_at']) {
+                        $current[$id] = $item;
+                    }
+                } elseif (!isset($before[$id])) { $current[$id] = $item; }
+                continue;
+            }
             if (isset($before[$id])) {
                 if (!isset($current[$id])) continue;
                 foreach ($item['data'] as $key => $value) {

@@ -17,6 +17,7 @@ void main() {
     'tv',
     'podcasts',
     'sonartube',
+    'sonarmusic',
     'news_sources',
     'news_folders',
     'news_articles',

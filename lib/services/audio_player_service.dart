@@ -135,6 +135,7 @@ class AudioPlayerService {
   // ignore: unused_field
   StreamSubscription<Duration>? _positionSubscription;
   String? _currentMediaId;
+  int? _lastPodcastBookmarkPosition;
   String? _currentTitle;
   final Map<int, (String, String)> _queuedTrackMetadata = {};
   StreamSubscription<int?>? _queuedTrackIndexSubscription;
@@ -227,6 +228,8 @@ class AudioPlayerService {
     }
 
     final pos = _player.position;
+    final isPodcast = mediaId.startsWith('podcast:');
+    if (isPodcast && _lastPodcastBookmarkPosition == pos.inSeconds) return;
     if (pos.inSeconds < 3) {
       return; // Abbassato per permettere test rapidi
     }
@@ -236,6 +239,7 @@ class AudioPlayerService {
     );
 
     if (await _settings.isAutoBookmarkEnabled()) {
+      if (isPodcast) _lastPodcastBookmarkPosition = pos.inSeconds;
       bool isFinished = false;
 
       if (sourceDuration != null && sourceDuration.inSeconds > 0) {
@@ -472,6 +476,7 @@ class AudioPlayerService {
     _yieldedToAnotherPlayer = false;
     _stopRequested = false;
     _currentMediaId = mediaId;
+    _lastPodcastBookmarkPosition = null;
     _currentTitle = itemTitle;
     _queuedTrackMetadata.clear();
     final stopwatch = Stopwatch()..start();
@@ -509,6 +514,7 @@ class AudioPlayerService {
         'Sonarpad audio: bookmark lookup start mediaId=$_currentMediaId title="$itemTitle"',
       );
       final savedPos = await _settings.getMediaBookmark(_currentMediaId!);
+      if (_currentMediaId!.startsWith('podcast:')) _lastPodcastBookmarkPosition = savedPos;
       AppLogger.log(
         'Sonarpad audio: bookmark lookup completed savedPos=$savedPos title="$itemTitle"',
       );

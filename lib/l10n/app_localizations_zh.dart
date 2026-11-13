@@ -5840,6 +5840,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get weatherDailySituation => '当天天气预报';
+
+  @override
+  String get podcastBookmarks => '播客书签';
+
+  @override
+  String get podcastNoBookmarks => '没有播客书签。';
 }
 
 /// The translations for Chinese, as used in China (`zh_CN`).
@@ -11678,4 +11684,10 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get weatherDailySituation => '当天天气预报';
+
+  @override
+  String get podcastBookmarks => '播客书签';
+
+  @override
+  String get podcastNoBookmarks => '没有播客书签。';
 }

@@ -1,3 +1,4 @@
+import 'podcast_bookmarks_screen.dart';
 import '../widgets/clear_favorites_button.dart';
 import '../models/media_playback_speed.dart';
 import 'dart:convert';
@@ -608,6 +609,12 @@ class _PodcastScreenState extends State<PodcastScreen> {
       appBar: SonarpadAppBar(
         title: Text(l10n.podcasts),
         actions: [
+          IconButton(
+            tooltip: l10n.podcastBookmarks,
+            icon: const Icon(Icons.bookmarks),
+            onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(
+              builder: (_) => const PodcastBookmarksScreen())),
+          ),
           if (_subscriptions.isNotEmpty)
             ClearFavoritesButton(
               label: l10n.clearPodcastSubscriptions,

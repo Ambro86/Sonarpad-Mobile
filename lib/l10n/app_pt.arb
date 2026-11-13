@@ -5082,5 +5082,7 @@
   "podcastRecorderStereo": "Estéreo",
   "podcastRecorderBackground": "Continuar a gravar em segundo plano",
   "alphabeticalSortCompleted": "Ordenação alfabética concluída.",
-  "weatherDailySituation": "Previsão do dia"
+  "weatherDailySituation": "Previsão do dia",
+  "podcastBookmarks": "Marcadores de podcasts",
+  "podcastNoBookmarks": "Nenhum marcador de podcast."
 }

@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'package:sonarpad_mobile_starter/services/cloud_sync_collections.dart';
+import 'package:sonarpad_mobile_starter/services/podcast_bookmarks_service.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:just_audio/just_audio.dart';
@@ -8,6 +11,15 @@ import 'audio_voice_preview_test.dart' show PreviewPlayer;
 
 class BookmarkPlayer extends PreviewPlayer {
   bool failLoad = false;
+  final durations = StreamController<Duration?>.broadcast(sync: true);
+  @override
+  Stream<Duration?> get durationStream => durations.stream;
+  @override
+  Future<void> dispose() async {
+    await durations.close();
+    await super.dispose();
+  }
+
   @override
   Duration get duration => const Duration(minutes: 10);
   @override
@@ -94,6 +106,39 @@ void main() {
       expect(player.position, const Duration(seconds: 42));
     },
   );
+  for (final android in [true, false]) {
+    test('podcast resume, paused sync and completion android=$android', () async {
+      await service.dispose();
+      player = BookmarkPlayer();
+      service = AudioPlayerService(player: player, isAndroid: android);
+      const url = 'https://example.org/podcast.mp3';
+      const id = 'podcast:$url';
+      final bookmarks = PodcastBookmarksService();
+      await bookmarks.register(url, 'Episode', 'legacy');
+      await settings.saveMediaBookmark(id, 123);
+      await service.setUrl(url, mediaId: id);
+      expect(player.position, const Duration(seconds: 123));
+      player.currentPosition = const Duration(seconds: 180);
+      await service.saveCurrentBookmark();
+      expect(await settings.getMediaBookmark(id), 180);
+      // Simulate a newer iPhone/Mac point arriving while this player is paused.
+      final rows = await bookmarks.read();
+      rows.single['data']['position_seconds'] = 240;
+      rows.single['data']['updated_at'] += 1000;
+      await CloudSyncCollections().write({'podcast_bookmarks': rows});
+      await service.saveCurrentBookmark();
+      expect(await settings.getMediaBookmark(id), 240);
+      await service.setUrl(url, mediaId: id);
+      expect(player.position, const Duration(seconds: 240));
+      player.durations.add(const Duration(minutes: 10));
+      // Finish, and ensure replay starts at zero rather than reviving the point.
+      player.currentPosition = const Duration(seconds: 599);
+      await service.saveCurrentBookmark();
+      expect(await settings.getMediaBookmark(id), 0);
+      await service.setUrl(url, mediaId: id);
+      expect(player.position, Duration.zero);
+    });
+  }
   test('disabled bookmarks keep playback at the beginning', () async {
     await settings.setAutoBookmarkEnabled(false);
     await settings.saveMediaBookmark('next', 42);

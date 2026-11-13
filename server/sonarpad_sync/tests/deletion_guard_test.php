@@ -13,6 +13,7 @@ foreach (SYNC_COLLECTIONS as $collection) {
     $token = str_repeat('a',64); $s->handle('create',$token,[]);
     $rows = array_map(fn($i)=>['id'=>(string)$i,'data'=>['title'=>'Item '.$i]],range(1,30));
     if ($collection === 'preferences') $rows = array_map(fn($i)=>['id'=>'test.pref'.$i,'data'=>['value'=>$i]],range(1,30));
+    if ($collection === 'podcast_bookmarks') $rows = array_map(fn($i)=>['id'=>'https://example.org/'.$i.'.mp3','data'=>['url'=>'https://example.org/'.$i.'.mp3','title'=>'Episode '.$i,'position_seconds'=>$i,'updated_at'=>1000]],range(1,30));
     $before = [$collection=>$rows];
     $s->handle('sync',$token,['sequence'=>1,'baseline'=>[],'state'=>$before]);
     $after = [$collection=>array_slice($rows,0,25)];
@@ -32,6 +33,7 @@ foreach (SYNC_COLLECTIONS as $collection) {
     $backup=$pdo->query('SELECT payload FROM sync_recovery')->fetchColumn();
     guard_check(json_decode(gzdecode($backup),true)==$before, 'Recovery retains full pre-deletion state');
     $replacement=$after; $replacement[$collection][0]=['id'=>'replacement','data'=>$collection === 'preferences' ? ['value'=>42] : ['title'=>'New']];
+    if ($collection === 'podcast_bookmarks') $replacement[$collection][0]=['id'=>'https://example.org/new.mp3','data'=>['url'=>'https://example.org/new.mp3','title'=>'New','position_seconds'=>1,'updated_at'=>1000]];
     blocked(fn()=>$s->handle('sync',$token,['sequence'=>3,'baseline'=>$after,'state'=>$replacement]));
     blocked(fn()=>$s->handle('sync',$token,['sequence'=>3,'baseline'=>$after,'state'=>[$collection=>[]]]));
     $other=str_repeat('b',64); $group=$s->handle('create',$other,[])['group_id'];

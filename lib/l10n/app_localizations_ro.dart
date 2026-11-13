@@ -6102,4 +6102,11 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String get weatherDailySituation => 'Prognoza zilei';
+
+  @override
+  String get podcastBookmarks => 'Semne de carte pentru podcasturi';
+
+  @override
+  String get podcastNoBookmarks =>
+      'Nu există semne de carte pentru podcasturi.';
 }

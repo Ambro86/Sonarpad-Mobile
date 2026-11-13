@@ -6056,4 +6056,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get weatherDailySituation => 'Daily forecast';
+
+  @override
+  String get podcastBookmarks => 'Podcast bookmarks';
+
+  @override
+  String get podcastNoBookmarks => 'No podcast bookmarks.';
 }

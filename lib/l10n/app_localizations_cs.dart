@@ -6075,4 +6075,10 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get weatherDailySituation => 'Předpověď na celý den';
+
+  @override
+  String get podcastBookmarks => 'Záložky podcastů';
+
+  @override
+  String get podcastNoBookmarks => 'Žádné záložky podcastů.';
 }

@@ -1,4 +1,7 @@
+import 'podcast_bookmarks_service.dart';
 import 'collection_storage.dart';
+import 'sonarmusic_library_service.dart';
+import 'sonarmusic_service.dart';
 import '../models/radio_station.dart';
 import '../models/podcast.dart';
 import 'cloud_sync_state.dart';
@@ -10,6 +13,31 @@ import 'news_service.dart';
 import 'cloud_sync_preferences.dart';
 
 class CloudSyncCollections {
+  static const musicFields = [
+    'kind',
+    'id',
+    'title',
+    'video_id',
+    'browse_id',
+    'browse_params',
+    'artist',
+    'duration',
+    'subtitle',
+    'available',
+  ];
+  static String musicId(Map<String, dynamic> data) {
+    final params = data['browse_params'] as String? ?? '';
+    return '${data['kind']}:${data['id']}${params.isEmpty ? '' : ':$params'}';
+  }
+
+  static Map<String, dynamic> musicData(SonarMusicItem item) {
+    final data = item.toJson();
+    return {
+      for (final key in musicFields)
+        key: key == 'available' ? item.available : (data[key] ?? ''),
+    };
+  }
+
   Map<String, dynamic> _item(String id, Map<String, dynamic> data) => {
     'id': id,
     'data': data,
@@ -20,7 +48,13 @@ class CloudSyncCollections {
     final tv = await TvService().loadFavorites();
     final podcasts = await PodcastService().loadSubscriptions();
     final videos = await SonarTubeFavoritesService().exportCloudFavorites();
+    final music = await SonarMusicLibraryService().favorites();
     return {
+      'sonarmusic': music.map((v) {
+        final data = musicData(v);
+        return _item(musicId(data), data);
+      }).toList(),
+      'podcast_bookmarks': await PodcastBookmarksService().read(),
       'preferences': await CloudSyncPreferences.read(),
       'radio': radio
           .map(
@@ -56,6 +90,8 @@ class CloudSyncCollections {
   /// metadata stay on the server and are never interpreted as local deletions.
   CloudState project(CloudState state) {
     const fields = {
+      'sonarmusic': musicFields,
+      'podcast_bookmarks': PodcastBookmarksService.fields,
       'radio': ['name', 'stream_url', 'language_code'],
       'tv': ['name'],
       'podcasts': ['title', 'url'],
@@ -88,6 +124,17 @@ class CloudSyncCollections {
               if (!projected.containsKey(key)) {
                 throw const FormatException('Missing cloud field');
               }
+              if (name == 'podcast_bookmarks' &&
+                  {'position_seconds', 'updated_at'}.contains(key)) {
+                if (projected[key] is! int) throw const FormatException('Invalid podcast number');
+                continue;
+              }
+              if (name == 'sonarmusic' && key == 'available') {
+                if (projected[key] is! bool) {
+                  throw const FormatException('Invalid music availability');
+                }
+                continue;
+              }
               if (key != 'path' &&
                   key != 'folder_path' &&
                   projected[key] is! String) {
@@ -111,6 +158,13 @@ class CloudSyncCollections {
                 }
               }
             }
+            if (name == 'sonarmusic' &&
+                (projected['id'] == '' ||
+                    projected['kind'] == '' ||
+                    musicId(projected) != item['id'])) {
+              throw const FormatException('Invalid SonarMusic identity');
+            }
+            if (name == 'podcast_bookmarks') PodcastBookmarksService.validate(_item(item['id'] as String, projected));
             return _item(item['id'] as String, projected);
           })
           .toList();
@@ -183,6 +237,23 @@ class CloudSyncCollections {
         'id': id,
       };
     }).toList();
+    if (included.contains('sonarmusic')) {
+      final musicLibrary = SonarMusicLibraryService();
+      final oldMusic = {
+        for (final v in await musicLibrary.favorites())
+          musicId(musicData(v)): v,
+      };
+      await musicLibrary.replaceCloudFavorites([
+        for (final row in state['sonarmusic']!)
+          SonarMusicItem.fromJson({
+            ...?oldMusic[row['id']]?.toJson(),
+            ...row['data'] as Map<String, dynamic>,
+          }),
+      ]);
+    }
+    if (included.contains('podcast_bookmarks')) {
+      await PodcastBookmarksService().replace(state['podcast_bookmarks']!);
+    }
     if (included.contains('radio')) {
       await RadioService().saveFavorites(
         radios,

@@ -6657,5 +6657,7 @@
   "podcastRecorderStereo": "Stereo",
   "podcastRecorderBackground": "Kontynuuj nagrywanie w tle",
   "alphabeticalSortCompleted": "Sortowanie alfabetyczne zakończone.",
-  "weatherDailySituation": "Prognoza na cały dzień"
+  "weatherDailySituation": "Prognoza na cały dzień",
+  "podcastBookmarks": "Zakładki podcastów",
+  "podcastNoBookmarks": "Brak zakładek podcastów."
 }

@@ -5076,5 +5076,7 @@
   "podcastRecorderStereo": "立体声",
   "podcastRecorderBackground": "在后台继续录音",
   "alphabeticalSortCompleted": "按字母顺序排序已完成。",
-  "weatherDailySituation": "当天天气预报"
+  "weatherDailySituation": "当天天气预报",
+  "podcastBookmarks": "播客书签",
+  "podcastNoBookmarks": "没有播客书签。"
 }

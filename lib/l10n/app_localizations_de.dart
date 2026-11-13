@@ -6104,4 +6104,10 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get weatherDailySituation => 'Tagesvorhersage';
+
+  @override
+  String get podcastBookmarks => 'Podcast-Lesezeichen';
+
+  @override
+  String get podcastNoBookmarks => 'Keine Podcast-Lesezeichen.';
 }

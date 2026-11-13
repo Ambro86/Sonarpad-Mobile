@@ -1,3 +1,4 @@
+import '../services/podcast_bookmarks_service.dart';
 import '../models/chromecast_media.dart';
 import 'chromecast_screen.dart';
 import 'dart:async';
@@ -64,9 +65,11 @@ class PodcastEpisodePlayerScreen extends StatefulWidget {
     this.showNextEpisodeAction = true,
     this.autoNavigateNext = false,
     this.extraActions = const <PodcastPlayerExtraAction>[],
+    this.initialPlaybackPosition,
   });
 
   final PodcastEpisode episode;
+  final Duration? initialPlaybackPosition;
   final MediaPlaybackSpeedCategory speedCategory;
   final bool isVideoSupported;
   final bool startWithVideo;
@@ -106,6 +109,7 @@ class _PodcastEpisodePlayerScreenState
   static const _mediaEvents = EventChannel('sonarpad/tts_events');
 
   final _audio = AudioPlayerService();
+  bool _initialPlaybackPositionApplied = false;
   final _androidVideoBackground = AndroidVideoPlaybackService();
   final _settings = AppSettingsService();
   final _podcastService = PodcastService();
@@ -220,6 +224,10 @@ class _PodcastEpisodePlayerScreenState
       'stableId=${_getStableId()}';
 
   String _getStableId() {
+    if (widget.speedCategory == MediaPlaybackSpeedCategory.podcasts &&
+        PodcastBookmarksService.isUrl(_episode.audioUrl)) {
+      return PodcastBookmarksService.prefix + _episode.audioUrl.trim();
+    }
     if (_episode.id != null) {
       return _episode.id!;
     }
@@ -679,6 +687,12 @@ class _PodcastEpisodePlayerScreenState
 
   Future<void> _loadEpisodeAudio(AppLocalizations l10n) async {
     final episode = _episode;
+    if (widget.speedCategory == MediaPlaybackSpeedCategory.podcasts &&
+        PodcastBookmarksService.isUrl(episode.audioUrl)) {
+      final uri = Uri.parse(episode.audioUrl);
+      await PodcastBookmarksService().register(episode.audioUrl.trim(), episode.title,
+          episode.id ?? 'media:${uri.scheme}://${uri.host}${uri.path}');
+    }
     final tracks = episode.audioTracks.where(
       (track) => track.id == episode.selectedAudioTrackId,
     );
@@ -690,6 +704,10 @@ class _PodcastEpisodePlayerScreenState
       try {
         await _audio.setUrl(urls[index],
           title: l10n.nowPlayingTitle(episode.title), mediaId: _getStableId());
+        if (!_initialPlaybackPositionApplied && widget.initialPlaybackPosition != null) {
+          await _audio.seek(widget.initialPlaybackPosition!);
+          _initialPlaybackPositionApplied = true;
+        }
         if (index > 0 && mounted) {
           _refreshedEpisode = episode.withAudioTrack(
             episode.selectedAudioTrackId!, playbackUrl: urls[index]);

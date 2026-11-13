@@ -10957,6 +10957,18 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Previsioni della giornata'**
   String get weatherDailySituation;
+
+  /// No description provided for @podcastBookmarks.
+  ///
+  /// In it, this message translates to:
+  /// **'Segnalibri podcast'**
+  String get podcastBookmarks;
+
+  /// No description provided for @podcastNoBookmarks.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun segnalibro podcast.'**
+  String get podcastNoBookmarks;
 }
 
 class _AppLocalizationsDelegate

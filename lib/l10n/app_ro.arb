@@ -5076,5 +5076,7 @@
   "podcastRecorderStereo": "Stereo",
   "podcastRecorderBackground": "Continuă înregistrarea în fundal",
   "alphabeticalSortCompleted": "Sortarea alfabetică s-a încheiat.",
-  "weatherDailySituation": "Prognoza zilei"
+  "weatherDailySituation": "Prognoza zilei",
+  "podcastBookmarks": "Semne de carte pentru podcasturi",
+  "podcastNoBookmarks": "Nu există semne de carte pentru podcasturi."
 }

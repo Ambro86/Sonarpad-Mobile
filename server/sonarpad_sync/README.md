@@ -167,7 +167,7 @@ Il server conserva solo il relativo SHA-256.
   Al primo collegamento baseline è vuota, anche se `join` restituisce dati.
   Ogni raccolta è una lista ordinata di `{ "id": "identità stabile", "data": {...} }`.
   Raccolte: `radio`, `news_sources`, `news_folders`, `news_articles`, `tv`,
-  `podcasts`, `sonartube`. Omettere le raccolte non supportate; non inviarle vuote.
+  `podcasts`, `sonartube`, `sonarmusic`, `podcast_bookmarks`, `preferences`. Omettere le raccolte non supportate; non inviarle vuote.
   La risposta contiene l'intero stato unificato. La sequenza parte da 1 e cresce
   di uno per dispositivo. Ripetere la stessa richiesta dopo un timeout restituisce
   la risposta originale; riusare una sequenza con contenuto diverso viene rifiutato.

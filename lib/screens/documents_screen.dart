@@ -226,6 +226,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     'md',
     'html',
     'htm',
+    'json',
     'zip',
     'mp3',
     'm4a',
@@ -933,8 +934,11 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     return password != null;
   }
 
-  Future<void> _shareLocalMediaDocument(DocumentItem doc) async {
-    if (!_isLocalMediaDocument(doc)) return;
+  bool _canShareDocument(DocumentItem doc) =>
+      _isLocalMediaDocument(doc) || (!doc.isFolder && doc.extension.toLowerCase() == 'json');
+
+  Future<void> _shareDocument(DocumentItem doc) async {
+    if (!_canShareDocument(doc)) return;
     if (!await _authorizeDocumentShare(doc)) return;
     if (!mounted) return;
     final l10n = AppLocalizations.of(context);
@@ -1781,7 +1785,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                 ? l10n.removeDocumentPasswordProtection
                 : l10n.protectDocumentWithPassword,
           ),
-        if (_isLocalMediaDocument(doc))
+        if (_canShareDocument(doc))
           AccessibleCustomAction(id: 'share', label: l10n.share),
         if (!_isRemoteAudioDocument(doc) && !_isLocalMediaDocument(doc))
           AccessibleCustomAction(id: 'export', label: doc.isFolder ? l10n.exportFolderZip : l10n.exportDocument),
@@ -1857,7 +1861,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
             case 'remove': await _remove(doc.id); break;
             case 'rename': await _renameDocument(doc); break;
             case 'password_protection': await _toggleDocumentPasswordProtection(doc); break;
-            case 'share': await _shareLocalMediaDocument(doc); break;
+            case 'share': await _shareDocument(doc); break;
             case 'export': await _exportDocument(doc); break;
             case 'move_up': await _handleAction(_DocumentAction.moveUp, doc); break;
             case 'move_down': await _handleAction(_DocumentAction.moveDown, doc); break;
@@ -2003,8 +2007,8 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                                 _canPasswordProtectDocument(doc),
                             onPasswordProtection: () =>
                                 _toggleDocumentPasswordProtection(doc),
-                            canShare: _isLocalMediaDocument(doc),
-                            onShare: () => _shareLocalMediaDocument(doc),
+                            canShare: _canShareDocument(doc),
+                            onShare: () => _shareDocument(doc),
                             onExport: () => _exportDocument(doc),
                             onAction: (action) => _handleAction(action, doc),
                           );

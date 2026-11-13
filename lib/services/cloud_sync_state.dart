@@ -51,6 +51,18 @@ CloudState mergeCloudState(
     for (final item in after.entries) {
       final id = item.key;
       final data = item.value['data'] as Map<String, dynamic>;
+      if (entry.key == 'podcast_bookmarks') {
+        final currentRow = current[id];
+        if (currentRow != null) {
+          if (jsonEncode(before[id]?['data']) != jsonEncode(data) &&
+              (data['updated_at'] as int) > (currentRow['data']['updated_at'] as int)) {
+            current[id] = {'id': id, 'data': {...data}};
+          }
+        } else if (!before.containsKey(id)) {
+          current[id] = {'id': id, 'data': {...data}};
+        }
+        continue;
+      }
       if (before.containsKey(id)) {
         if (!current.containsKey(id)) continue;
         final old = before[id]!['data'] as Map<String, dynamic>;

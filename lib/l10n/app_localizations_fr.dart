@@ -6134,4 +6134,10 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get weatherDailySituation => 'Prévisions de la journée';
+
+  @override
+  String get podcastBookmarks => 'Signets des podcasts';
+
+  @override
+  String get podcastNoBookmarks => 'Aucun signet de podcast.';
 }

@@ -5076,5 +5076,7 @@
   "podcastRecorderStereo": "Stereo",
   "podcastRecorderBackground": "Arka planda kayda devam et",
   "alphabeticalSortCompleted": "Alfabetik sıralama tamamlandı.",
-  "weatherDailySituation": "Günlük hava tahmini"
+  "weatherDailySituation": "Günlük hava tahmini",
+  "podcastBookmarks": "Podcast yer imleri",
+  "podcastNoBookmarks": "Podcast yer imi yok."
 }

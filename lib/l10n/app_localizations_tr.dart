@@ -6083,4 +6083,10 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get weatherDailySituation => 'Günlük hava tahmini';
+
+  @override
+  String get podcastBookmarks => 'Podcast yer imleri';
+
+  @override
+  String get podcastNoBookmarks => 'Podcast yer imi yok.';
 }

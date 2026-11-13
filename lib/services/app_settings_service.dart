@@ -1,3 +1,4 @@
+import 'podcast_bookmarks_service.dart';
 import 'collection_storage.dart';
 import 'dart:convert';
 
@@ -845,11 +846,18 @@ class AppSettingsService {
   });
 
   Future<int?> getMediaBookmark(String id) async {
+    if (id.startsWith(PodcastBookmarksService.prefix)) {
+      return PodcastBookmarksService().position(id.substring(PodcastBookmarksService.prefix.length));
+    }
     final prefs = await SharedPreferences.getInstance();
     return prefs.getInt('bookmark_$id');
   }
 
   Future<void> saveMediaBookmark(String id, int positionInSeconds) => CollectionStorage.run(() async {
+    if (id.startsWith(PodcastBookmarksService.prefix)) {
+      await PodcastBookmarksService().save(id.substring(PodcastBookmarksService.prefix.length), positionInSeconds);
+      return;
+    }
     final prefs = await SharedPreferences.getInstance();
     if (positionInSeconds <= 0) {
       await prefs.remove('bookmark_$id');
@@ -859,6 +867,10 @@ class AppSettingsService {
   });
 
   Future<void> removeMediaBookmark(String id) => CollectionStorage.run(() async {
+    if (id.startsWith(PodcastBookmarksService.prefix)) {
+      await PodcastBookmarksService().save(id.substring(PodcastBookmarksService.prefix.length), 0, reset: true);
+      return;
+    }
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('bookmark_$id');
   });

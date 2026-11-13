@@ -16,6 +16,7 @@ import 'package:path/path.dart' as p;
 
 import '../utils/document_unicode_normalizer.dart';
 import 'pdf_password_service.dart';
+import 'ai_audiodescription_service.dart';
 
 /// Risultato dell'estrazione testo da un documento.
 class ExtractionResult {
@@ -636,6 +637,19 @@ class DocumentTextExtractor {
         case 'txt':
         case 'md':
           return ExtractionResult(text: await _readTextFileSafe(path));
+
+        case 'json':
+          final service = AiAudioDescriptionService();
+          try {
+            final project = await service.loadEditableProject(path);
+            return ExtractionResult(
+              text: normalizeDocumentUnicode(
+                project.descriptions.map((item) => item.text).join('\n\n'),
+              ),
+            );
+          } finally {
+            service.dispose();
+          }
 
         case 'rtf':
           return ExtractionResult(text: await _readRtfFileSafe(path));
