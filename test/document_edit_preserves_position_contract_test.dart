@@ -5,7 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   test('document bookmark focus is consumed after the initial accessibility focus', () {
     final source =
-        File('lib/screens/document_reader_screen.dart').readAsStringSync();
+        File('lib/screens/document_reader_screen.dart').readAsStringSync().replaceAll('\r\n', '\n');
 
     expect(
       source,
@@ -26,7 +26,7 @@ void main() {
 
   test('paragraph editing disarms bookmark focus and restores the edited paragraph', () {
     final source =
-        File('lib/screens/document_reader_screen.dart').readAsStringSync();
+        File('lib/screens/document_reader_screen.dart').readAsStringSync().replaceAll('\r\n', '\n');
     final start = source.indexOf('Future<void> _editParagraph(int index) async');
     final end = source.indexOf('Future<void> _togglePlayPause()', start);
     expect(start, greaterThanOrEqualTo(0));
@@ -55,7 +55,7 @@ void main() {
 
   test('paragraph editing refreshes the UIKit row before restoring focus', () {
     final source =
-        File('lib/screens/document_reader_screen.dart').readAsStringSync();
+        File('lib/screens/document_reader_screen.dart').readAsStringSync().replaceAll('\r\n', '\n');
     final start = source.indexOf('Future<void> _editParagraph(int index) async');
     final end = source.indexOf('Future<void> _togglePlayPause()', start);
     expect(start, greaterThanOrEqualTo(0));
@@ -119,7 +119,7 @@ void main() {
 
   test('paragraph newline edits keep the same UIKit list and use traversal-safe return focus', () {
     final source =
-        File('lib/screens/document_reader_screen.dart').readAsStringSync();
+        File('lib/screens/document_reader_screen.dart').readAsStringSync().replaceAll('\r\n', '\n');
     final start = source.indexOf('Future<void> _editParagraph(int index) async');
     final end = source.indexOf('Future<void> _togglePlayPause()', start);
     expect(start, greaterThanOrEqualTo(0));
@@ -215,7 +215,7 @@ void main() {
 
   test('deleting a paragraph follows the next surviving stable paragraph id', () {
     final source =
-        File('lib/screens/document_reader_screen.dart').readAsStringSync();
+        File('lib/screens/document_reader_screen.dart').readAsStringSync().replaceAll('\r\n', '\n');
     final start = source.indexOf('Future<void> _editParagraph(int index) async');
     final end = source.indexOf('Future<void> _togglePlayPause()', start);
     expect(start, greaterThanOrEqualTo(0));

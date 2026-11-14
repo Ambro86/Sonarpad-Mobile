@@ -5031,7 +5031,7 @@ $nonverbalInstruction''';
   Future<double> _accelerateGeminiAudio(File original, File target, double factor) async {
     _checkCancel();
     if (!factor.isFinite || factor < 1 || factor > 1.200001) {
-      throw StateError('Invalid Gemini audio tempo');
+      throw GeminiTtsException('invalid_audio_tempo');
     }
     final output = File('${target.path}.tempo.wav');
     try {
