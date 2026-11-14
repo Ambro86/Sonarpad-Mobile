@@ -9,6 +9,7 @@ import 'package:path/path.dart' as p;
 import 'protected_wakelock.dart';
 
 import '../tts/edge_tts_bridge.dart';
+import '../tts/edge_tts_text.dart';
 import '../utils/app_logger.dart';
 import 'app_cache_service.dart';
 import 'app_settings_service.dart';
@@ -87,7 +88,9 @@ class AudiobookExportService {
       'textLength=${text.length} output="${output.path}"',
     );
 
-    final normalizedText = _normalizeText(text);
+    final engine = await _settings.loadTtsEngine();
+    final normalizedText = engine == 'edge'
+        ? EdgeTtsText.audiobook(_normalizeText(text)) : _normalizeText(text);
     if (normalizedText.trim().isEmpty) {
       await AppLogger.log('Audiobook export: abort, no exportable text');
       throw Exception('Nessun testo esportabile per l\'audiolibro.');
@@ -102,7 +105,6 @@ class AudiobookExportService {
       throw Exception('Nessun blocco audio generabile.');
     }
 
-    final engine = await _settings.loadTtsEngine();
     final speed = await _settings.loadTtsSpeed();
     final pitch = await _settings.loadTtsPitch();
     final dictionaryEntries = await _voiceDictionary.loadEntries();
@@ -258,7 +260,10 @@ class AudiobookExportService {
           if (await target.exists()) {
             await target.delete();
           }
-          final file = await _edgeTts.speakToFile(text: textToSpeak, voice: voice);
+          final file = await _edgeTts.speakToFile(
+            text: GeminiTtsBridge.voices.contains(voice) ? textToSpeak : EdgeTtsText.audiobook(textToSpeak),
+            voice: voice,
+          );
           await file.copy(target.path);
           final size = await target.length();
           if (size < 512) {

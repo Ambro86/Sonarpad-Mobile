@@ -1,4 +1,5 @@
 import 'gemini_tts_bridge.dart';
+import 'edge_tts_text.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -453,7 +454,7 @@ class EdgeTtsBridge {
   }
 
   String _sanitizeText(String text) {
-    return text
+    return EdgeTtsText.sanitize(text)
         .replaceAll(RegExp(r'[\x00-\x1F\x7F]'), ' ')
         .replaceAll(RegExp(r'\s+'), ' ')
         .trim();
