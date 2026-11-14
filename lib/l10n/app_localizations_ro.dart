@@ -6109,4 +6109,13 @@ class AppLocalizationsRo extends AppLocalizations {
   @override
   String get podcastNoBookmarks =>
       'Nu există semne de carte pentru podcasturi.';
+
+  @override
+  String audioDescriptionRepairText(
+    String time,
+    String actual,
+    String available,
+  ) {
+    return 'Descrierea de la $time durează $actual s; timpul disponibil este de $available s. Doriți să scurtați textul?';
+  }
 }

@@ -979,6 +979,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
 
   @override
   void dispose() {
+    _tts.cancelGeminiSpeech();
     _translationJob?.close();
     _tgcomVideoService.dispose();
     _readingToken += 1;
@@ -2553,6 +2554,7 @@ class _NewsWebViewScreenState extends State<NewsWebViewScreen> {
   }
 
   Future<void> _stopReading() async {
+    _tts.cancelGeminiSpeech();
     if (!_speaking) return;
     final previousToken = _readingToken;
     _readingToken += 1;

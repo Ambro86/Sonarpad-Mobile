@@ -6140,4 +6140,13 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get podcastNoBookmarks => 'Aucun signet de podcast.';
+
+  @override
+  String audioDescriptionRepairText(
+    String time,
+    String actual,
+    String available,
+  ) {
+    return 'La description à $time dure $actual s ; le temps disponible est de $available s. Voulez-vous raccourcir le texte ?';
+  }
 }

@@ -5078,5 +5078,7 @@
   "alphabeticalSortCompleted": "按字母顺序排序已完成。",
   "weatherDailySituation": "当天天气预报",
   "podcastBookmarks": "播客书签",
-  "podcastNoBookmarks": "没有播客书签。"
+  "podcastNoBookmarks": "没有播客书签。",
+  "audioDescriptionRepairText": "{time} 处的描述时长为 {actual} 秒，可用时间为 {available} 秒。要缩短文本吗？",
+  "@audioDescriptionRepairText": {"placeholders": {"time": {"type": "String"}, "actual": {"type": "String"}, "available": {"type": "String"}}}
 }

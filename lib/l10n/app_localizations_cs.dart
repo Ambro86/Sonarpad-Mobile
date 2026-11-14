@@ -6081,4 +6081,13 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get podcastNoBookmarks => 'Žádné záložky podcastů.';
+
+  @override
+  String audioDescriptionRepairText(
+    String time,
+    String actual,
+    String available,
+  ) {
+    return 'Popis v čase $time trvá $actual s; k dispozici je $available s. Chcete text zkrátit?';
+  }
 }

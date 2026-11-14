@@ -1,3 +1,4 @@
+import '../tts/gemini_tts_bridge.dart';
 import 'podcast_bookmarks_service.dart';
 import 'collection_storage.dart';
 import 'dart:convert';
@@ -447,7 +448,26 @@ class AppSettingsService {
 
   /// A content-language fallback applies only when neither Edge preference
   /// is stored. Explicit values, including an empty value, keep their priority.
+  Future<String> loadGeminiTtsLanguage() async =>
+      (await SharedPreferences.getInstance()).getString(GeminiTtsBridge.languagePreference) ?? '';
+
+  Future<void> saveGeminiTtsLanguage(String language) => CollectionStorage.run(() async {
+    await (await SharedPreferences.getInstance()).setString(GeminiTtsBridge.languagePreference, language);
+  });
+
+  Future<String> loadGeminiTtsVoice() async =>
+      (await SharedPreferences.getInstance()).getString('sonarpad_gemini_tts_voice') ?? 'Kore';
+
+  Future<void> saveGeminiTtsVoice(String voice) => CollectionStorage.run(() async {
+    await (await SharedPreferences.getInstance()).setString('sonarpad_gemini_tts_voice', voice);
+  });
+
   Future<String> loadTtsVoice({String? fallbackLanguageCode}) async {
+    if (await loadTtsEngine() == 'gemini') return loadGeminiTtsVoice();
+    return loadEdgeTtsVoice(fallbackLanguageCode: fallbackLanguageCode);
+  }
+
+  Future<String> loadEdgeTtsVoice({String? fallbackLanguageCode}) async {
     final prefs = await SharedPreferences.getInstance();
     if (fallbackLanguageCode != null &&
         !prefs.containsKey(_ttsVoiceKey) &&

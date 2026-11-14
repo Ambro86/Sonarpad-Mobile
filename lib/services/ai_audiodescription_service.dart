@@ -1,3 +1,4 @@
+import '../tts/gemini_tts_bridge.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -480,10 +481,12 @@ class AudioDescriptionProjectPreview {
     required this.path,
     required this.durationSec,
     required this.availableSec,
+    this.ttsSpeedOverride,
   });
   final String path;
   final double durationSec;
   final double? availableSec;
+  final double? ttsSpeedOverride;
 }
 
 /// A temporary sample rendered by the same mixer as the exported film.
@@ -538,7 +541,7 @@ class AiAudioDescriptionPreferences {
   AiAudioDescriptionPreferences._();
 
   static const _providerKey = 'ad_mobile_provider';
-  static const _apiKeyKey = 'ad_mobile_gemini_api_key';
+  static const _apiKeyKey = GeminiTtsBridge.apiKeyPreference;
   static const _sonarpadCodeKey = 'ad_mobile_sonarpad_access_code';
   static const _modelKey = 'ad_mobile_gemini_model';
   static const _languageKey = 'ad_mobile_language';
@@ -587,6 +590,7 @@ class AiAudioDescriptionPreferences {
       'ttsEngine': prefs.getString(_ttsEngineKey),
       'edgeLanguage': prefs.getString(_edgeLanguageKey),
       'edgeVoice': prefs.getString(_edgeVoiceKey),
+      'geminiVoice': prefs.getString('ad_mobile_gemini_voice'),
       'systemLanguage': prefs.getString(_systemLanguageKey),
       'systemVoice': prefs.getString(_systemVoiceKey),
     };
@@ -651,7 +655,7 @@ class AiAudioDescriptionPreferences {
     }
     await prefs.setString(_ttsEngineKey, settings.ttsEngine);
     await prefs.setString(_edgeLanguageKey, settings.edgeLanguage);
-    await prefs.setString(_edgeVoiceKey, settings.edgeVoice);
+    await prefs.setString(settings.ttsEngine == 'gemini' ? 'ad_mobile_gemini_voice' : _edgeVoiceKey, settings.edgeVoice);
     await prefs.setString(_systemLanguageKey, settings.systemLanguage);
     if (settings.systemVoice == null || settings.systemVoice!.trim().isEmpty) {
       await prefs.remove(_systemVoiceKey);
@@ -805,7 +809,7 @@ class AiAudioDescriptionService {
 
   http.Client _http;
   bool _httpClosed = false;
-  EdgeTtsBridge? _activeEdgeTts;
+  final _activeEdgeTts = <EdgeTtsBridge>{};
   FlutterTts? _activeSystemTts;
   final Set<String> _validatedGeminiModels = <String>{};
   bool _cancelRequested = false;
@@ -1032,7 +1036,7 @@ class AiAudioDescriptionService {
     unawaited(AppLogger.log('Audio description mobile: cancellation requested'));
     _http.close();
     _httpClosed = true;
-    _activeEdgeTts?.cancel();
+    for (final bridge in _activeEdgeTts) { bridge.cancel(); }
     final tts = _activeSystemTts;
     if (tts != null) {
       unawaited(tts.stop().catchError((Object error) {
@@ -1052,7 +1056,7 @@ class AiAudioDescriptionService {
     if (!_cancelRequested) {
       _cancelRequested = true;
       _cancelSignal.complete();
-      _activeEdgeTts?.cancel();
+      for (final bridge in _activeEdgeTts) { bridge.cancel(); }
       final tts = _activeSystemTts;
       if (tts != null) {
         _mixPreviewTtsStop = tts
@@ -2150,7 +2154,7 @@ class AiAudioDescriptionService {
       _checkCancel();
       rethrow;
     } finally {
-      _activeEdgeTts = null;
+      _activeEdgeTts.clear();
       _activeSystemTts = null;
       if (oldWakelock != null) {
         try {
@@ -4785,6 +4789,18 @@ $nonverbalInstruction''';
 
     for (var i = 0; i < ordered.length; i++) {
       _checkCancel();
+      if (settings.ttsEngine == 'gemini' && i % GeminiTtsBridge.maxParallelRequests == 0) {
+        await Future.wait([
+          for (var j = i; j < math.min(i + GeminiTtsBridge.maxParallelRequests, ordered.length); j++)
+            _synthesizeTtsWithFallback(
+              settings: settings, flutterTts: flutterTts,
+              text: AudioDescriptionFallbacks.normalizePronunciationText(
+                voiceDictionary.applyToText(ordered[j].text, dictionaryEntries)),
+              target: File(p.join(ttsDir.path, 'tts_${j.toString().padLeft(4, '0')}.wav')),
+              speed: speed, pitch: pitch,
+            ),
+        ]);
+      }
       final item = ordered[i];
       _emit(
         onProgress,
@@ -4792,7 +4808,7 @@ $nonverbalInstruction''';
         0.62 + (i / math.max(1, ordered.length)) * 0.22,
         detail: '${i + 1}/${ordered.length}',
       );
-      final ext = settings.ttsEngine == 'system' && Platform.isIOS
+      final ext = settings.ttsEngine == 'gemini' ? 'wav' : settings.ttsEngine == 'system' && Platform.isIOS
           ? 'caf'
           : settings.ttsEngine == 'system'
               ? 'wav'
@@ -4804,7 +4820,8 @@ $nonverbalInstruction''';
         voiceDictionary.applyToText(item.text, dictionaryEntries),
       );
       try {
-        await _synthesizeTtsWithFallback(
+        if (settings.ttsEngine != 'gemini') {
+          await _synthesizeTtsWithFallback(
           settings: settings,
           flutterTts: flutterTts,
           text: spokenText,
@@ -4812,6 +4829,7 @@ $nonverbalInstruction''';
           speed: speed,
           pitch: pitch,
         );
+        }
         // Unlike the desktop bridge, Mobile has no estimated-duration filter:
         // every parsed cue reaches real TTS before placement. Keep this order
         // so brief cues are not lost before the native-speed fallback below.
@@ -4900,12 +4918,16 @@ $nonverbalInstruction''';
         }
 
         result.add(_Placement.excluded(item, 'no_safe_space_after_exact_tts', duration));
-        try {
-          await target.delete();
-        } catch (_) {}
+        // Gemini recovery needs this exact recording; do not delete it before
+        // the local tempo attempts below. The job cache owns its cleanup.
+        if (settings.ttsEngine != 'gemini') {
+          try {
+            await target.delete();
+          } catch (_) {}
+        }
       } catch (error) {
         _checkCancel();
-        if (AudioDescriptionFallbacks.isPermanentTtsError(error.toString())) {
+        if (error is GeminiTtsException || AudioDescriptionFallbacks.isPermanentTtsError(error.toString())) {
           rethrow;
         }
         await AppLogger.log(
@@ -4926,11 +4948,13 @@ $nonverbalInstruction''';
         if (rejected.reason != 'no_safe_space_after_exact_tts') continue;
         _checkCancel();
         final item = rejected.description;
-        final ext = settings.ttsEngine == 'system'
+        final ext = settings.ttsEngine == 'gemini' ? 'wav' : settings.ttsEngine == 'system'
             ? (Platform.isIOS ? 'caf' : 'wav') : 'mp3';
         final target = File(p.join(ttsDir.path, 'retry_$i.$ext'));
         try {
-          final recovery = await AudioDescriptionFallbacks.recoverNativeTts(
+          final recovery = await _recoverDescriptionTiming(
+            engine: settings.ttsEngine, target: target,
+            source: File(p.join(ttsDir.path, 'tts_${i.toString().padLeft(4, '0')}.$ext')),
             baseSpeed: speed,
             originalDuration: rejected.ttsDuration,
             chooseStart: (duration) => _chooseWindowsStylePlacement(
@@ -4974,12 +4998,66 @@ $nonverbalInstruction''';
     return result;
   }
 
+  // Every attempt starts from the same original, never from an accelerated retry.
+  Future<({double speed, double duration, double start})?> _recoverDescriptionTiming({
+    required String engine,
+    required File source,
+    required File target,
+    required double baseSpeed,
+    required double originalDuration,
+    required double? Function(double) chooseStart,
+    required Future<double> Function(double) synthesize,
+  }) async {
+    if (engine != 'gemini') {
+      return AudioDescriptionFallbacks.recoverNativeTts(
+        baseSpeed: baseSpeed, originalDuration: originalDuration,
+        chooseStart: chooseStart, synthesize: synthesize,
+      );
+    }
+    final original = await source.copy('${target.path}.tempo-original.wav');
+    try {
+      final recovery = await AudioDescriptionFallbacks.recoverNativeTts(
+        baseSpeed: baseSpeed, originalDuration: originalDuration,
+        chooseStart: chooseStart, synthesize: synthesize,
+        accelerate: (factor) => _accelerateGeminiAudio(original, target, factor),
+      );
+      if (recovery == null && source.path == target.path) await original.copy(target.path);
+      return recovery;
+    } finally {
+      if (await original.exists()) await original.delete();
+    }
+  }
+
+  Future<double> _accelerateGeminiAudio(File original, File target, double factor) async {
+    _checkCancel();
+    if (!factor.isFinite || factor < 1 || factor > 1.200001) {
+      throw StateError('Invalid Gemini audio tempo');
+    }
+    final output = File('${target.path}.tempo.wav');
+    try {
+      await _runFfmpeg([
+        '-y', '-i', original.path, '-vn', '-af', 'atempo=${factor.toStringAsFixed(8)}',
+        '-c:a', 'pcm_s16le', output.path,
+      ], 'Gemini audio tempo');
+      _checkCancel();
+      final duration = await _audioDuration(output.path);
+      if (duration <= 0 || !await _ttsFileHasAudibleSignal(output.path)) {
+        throw StateError('TTS_EMPTY_OUTPUT');
+      }
+      await output.copy(target.path);
+      return duration;
+    } finally {
+      if (await output.exists()) await output.delete();
+    }
+  }
+
   Future<void> _synthesizeTtsWithFallback({
     required AiAudioDescriptionSettings settings,
     required FlutterTts flutterTts,
     required String text,
     required File target,
     required double speed,
+    double? baseSpeed,
     required double pitch,
   }) async {
     while (true) {
@@ -4990,20 +5068,22 @@ $nonverbalInstruction''';
           await _synthesizeSystem(flutterTts, text, target);
         } else {
           final bridge = EdgeTtsBridge();
-          _activeEdgeTts = bridge;
-          final edge = await bridge.speakToFile(
+          _activeEdgeTts.add(bridge);
+          late File edge;
+          try {
+          edge = await bridge.speakToFile(
             text: text,
             voice: settings.edgeVoice,
-            speed: speed,
+            speed: settings.ttsEngine == 'gemini' ? (baseSpeed ?? speed) : speed,
             pitch: pitch,
           );
-          _activeEdgeTts = null;
+          } finally { _activeEdgeTts.remove(bridge); }
           _checkCancel();
           await edge.copy(target.path);
           try {
             await edge.delete();
           } catch (_) {}
-          await _trimEdgeTrailingSilenceBestEffort(target.path);
+          if (settings.ttsEngine == 'edge') await _trimEdgeTrailingSilenceBestEffort(target.path);
         }
         _checkCancel();
         if (!await target.exists() || await target.length() <= 512) {
@@ -5015,10 +5095,18 @@ $nonverbalInstruction''';
         if (await _audioDuration(target.path) <= 0) {
           throw StateError('TTS_DURATION_INVALID');
         }
+        if (settings.ttsEngine == 'gemini' && baseSpeed != null && speed > baseSpeed) {
+          final original = await target.copy('${target.path}.tempo-original.wav');
+          try {
+            await _accelerateGeminiAudio(original, target, (speed / baseSpeed).clamp(1.0, 1.2));
+          } finally {
+            if (await original.exists()) await original.delete();
+          }
+        }
         return;
       } catch (error) {
         _checkCancel();
-        if (AudioDescriptionFallbacks.isPermanentTtsError(error.toString())) {
+        if (error is GeminiTtsException || AudioDescriptionFallbacks.isPermanentTtsError(error.toString())) {
           rethrow;
         }
         await AppLogger.log(
@@ -5565,7 +5653,7 @@ $nonverbalInstruction''';
         : settings.languageCode == 'zh_CN'
             ? 'zh_CN'
             : settings.languageCode;
-    final voice = settings.ttsEngine == 'edge'
+    final voice = settings.ttsEngine != 'system'
         ? settings.edgeVoice
         : (settings.systemVoice ?? '');
     final project = AudioDescriptionEditableProject(
@@ -5932,7 +6020,7 @@ $nonverbalInstruction''';
       if (normalized.isEmpty) {
         throw StateError('AUDIO_DESCRIPTION_PROJECT_EMPTY_TEXT');
       }
-      if (settings.ttsEngine != 'edge' && settings.ttsEngine != 'system') {
+      if (settings.ttsEngine != 'edge' && settings.ttsEngine != 'system' && settings.ttsEngine != 'gemini') {
         throw StateError('AUDIO_DESCRIPTION_PROJECT_UNSUPPORTED_TTS_ENGINE');
       }
       final source = File(sourcePath.trim());
@@ -5959,6 +6047,7 @@ $nonverbalInstruction''';
         stat.modified.microsecondsSinceEpoch,
         spoken,
         settings.ttsEngine,
+        if (settings.ttsEngine == 'gemini') await appSettings.loadGeminiTtsLanguage(),
         settings.edgeLanguage,
         settings.edgeVoice,
         settings.systemLanguage,
@@ -6041,7 +6130,7 @@ $nonverbalInstruction''';
       try {
         await _mixPreviewTtsStop;
       } finally {
-        _activeEdgeTts = null;
+        _activeEdgeTts.clear();
         _activeSystemTts = null;
         _mixPreviewTtsStop = null;
         _mixPreviewCompletion = null;
@@ -6119,7 +6208,7 @@ $nonverbalInstruction''';
           await flutterTts.setLanguage(settings.systemLanguage);
         }
       }
-      final extension = settings.ttsEngine == 'system' && Platform.isIOS
+      final extension = settings.ttsEngine == 'gemini' ? 'wav' : settings.ttsEngine == 'system' && Platform.isIOS
           ? 'caf'
           : settings.ttsEngine == 'system'
           ? 'wav'
@@ -6207,7 +6296,7 @@ $nonverbalInstruction''';
         }
       }
       _activeSystemTts = null;
-      _activeEdgeTts = null;
+      _activeEdgeTts.clear();
       if (!prepared && await dir.exists()) await dir.delete(recursive: true);
     }
   }
@@ -6254,7 +6343,7 @@ $nonverbalInstruction''';
     if (index < 0 || index >= project.descriptions.length) {
       throw RangeError.index(index, project.descriptions);
     }
-    if (project.ttsEngine != 'edge' && project.ttsEngine != 'system') {
+    if (project.ttsEngine != 'edge' && project.ttsEngine != 'system' && project.ttsEngine != 'gemini') {
       throw StateError('AUDIO_DESCRIPTION_PROJECT_UNSUPPORTED_TTS_ENGINE');
     }
     final dir = Directory(p.join(
@@ -6262,7 +6351,7 @@ $nonverbalInstruction''';
       'sonarpad_ad_project_preview',
     ));
     await dir.create(recursive: true);
-    final extension = project.ttsEngine == 'system' && Platform.isIOS
+    final extension = project.ttsEngine == 'gemini' ? 'wav' : project.ttsEngine == 'system' && Platform.isIOS
         ? 'caf'
         : project.ttsEngine == 'system'
             ? 'wav'
@@ -6294,10 +6383,28 @@ $nonverbalInstruction''';
         text: spoken,
         target: target,
         speed: (project.descriptions[index].ttsSpeedOverride ?? project.ttsSpeed),
+        baseSpeed: project.ttsSpeed,
         pitch: project.ttsPitch,
       );
-      final duration = await _audioDuration(target.path);
+      var duration = await _audioDuration(target.path);
       final available = audioDescriptionProjectAvailableDuration(project, index);
+      var recoveredSpeed = project.descriptions[index].ttsSpeedOverride;
+      if (available != null && duration > available + 0.010 && recoveredSpeed == null) {
+        final recovery = await _recoverDescriptionTiming(
+          engine: project.ttsEngine, target: target, source: target,
+          baseSpeed: project.ttsSpeed, originalDuration: duration,
+          chooseStart: (value) => value <= available + 0.010 ? 0.0 : null,
+          synthesize: (speed) async {
+            if (project.ttsEngine == 'system') await flutterTts.setSpeechRate(speed * 0.5);
+            await _synthesizeTtsWithFallback(
+              settings: _projectTtsSettings(project), flutterTts: flutterTts,
+              text: spoken, target: target, speed: speed, pitch: project.ttsPitch,
+            );
+            return _audioDuration(target.path);
+          },
+        );
+        if (recovery != null) { duration = recovery.duration; recoveredSpeed = recovery.speed; }
+            }
       if (available != null && duration > available + 0.010) {
         throw AudioDescriptionProjectTooLongException(
           index: index,
@@ -6309,6 +6416,7 @@ $nonverbalInstruction''';
         path: target.path,
         durationSec: duration,
         availableSec: available,
+        ttsSpeedOverride: recoveredSpeed,
       );
     } finally {
       await flutterTts.stop();
@@ -6428,7 +6536,7 @@ $nonverbalInstruction''';
     required void Function(AiAudioDescriptionProgress) onProgress,
   }) async {
     _resetCancellation();
-    if (project.ttsEngine != 'edge' && project.ttsEngine != 'system') {
+    if (project.ttsEngine != 'edge' && project.ttsEngine != 'system' && project.ttsEngine != 'gemini') {
       throw StateError('AUDIO_DESCRIPTION_PROJECT_UNSUPPORTED_TTS_ENGINE');
     }
     final (start, end) = projectSegmentRange(project, segmentIndex);
@@ -6560,10 +6668,11 @@ $nonverbalInstruction''';
     required double speed,
     required double pitch,
     void Function(double progress)? onProgress,
+    Future<String?> Function(AudioDescriptionProjectItem item, AudioDescriptionProjectTooLongException error)? repairText,
   }) async {
     _resetCancellation();
-    final voice = ttsEngine == 'edge' ? edgeVoice : (systemVoice ?? '');
-    final candidate = project.copyWith(
+    final voice = ttsEngine != 'system' ? edgeVoice : (systemVoice ?? '');
+    var candidate = project.copyWith(
       descriptions: project.descriptions.map((item) => item.copyWith(clearTtsSpeedOverride: true)).toList(),
       ttsEngine: ttsEngine,
       ttsVoice: voice,
@@ -6577,12 +6686,30 @@ $nonverbalInstruction''';
     );
     for (var i = 0; i < candidate.descriptions.length; i++) {
       _checkCancel();
-      await previewProjectDescription(
-        project: candidate,
-        index: i,
-        text: candidate.descriptions[i].text,
-        resetCancellation: false,
-      );
+      while (true) {
+        _checkCancel();
+        final item = candidate.descriptions[i];
+        try {
+          final preview = await previewProjectDescription(
+            project: candidate, index: i, text: item.text, resetCancellation: false,
+          );
+          final items = List<AudioDescriptionProjectItem>.of(candidate.descriptions);
+          items[i] = item.copyWith(ttsDurationSec: preview.durationSec,
+            ttsSpeedOverride: preview.ttsSpeedOverride, clearTtsSpeedOverride: preview.ttsSpeedOverride == null);
+          candidate = candidate.copyWith(descriptions: items);
+          break;
+        } on AudioDescriptionProjectTooLongException catch (error) {
+          if (repairText == null) rethrow;
+          final edited = await repairText(item, error);
+          _checkCancel();
+          if (edited == null) throw StateError('AUDIO_DESCRIPTION_CANCELLED');
+          if (edited.trim().isEmpty) continue;
+          final items = List<AudioDescriptionProjectItem>.of(candidate.descriptions);
+          items[i] = item.copyWith(text: edited.trim(), renderedText: edited.trim(),
+            modified: edited.trim() != item.originalText, clearTtsSpeedOverride: true);
+          candidate = candidate.copyWith(descriptions: items);
+        }
+      }
       onProgress?.call((i + 1) / candidate.descriptions.length);
     }
     await saveEditableProject(candidate);
@@ -6601,7 +6728,7 @@ $nonverbalInstruction''';
     if (sourcePath.isEmpty || !await File(sourcePath).exists()) {
       throw StateError('AUDIO_DESCRIPTION_PROJECT_SOURCE_REQUIRED');
     }
-    if (project.ttsEngine != 'edge' && project.ttsEngine != 'system') {
+    if (project.ttsEngine != 'edge' && project.ttsEngine != 'system' && project.ttsEngine != 'gemini') {
       throw StateError('AUDIO_DESCRIPTION_PROJECT_UNSUPPORTED_TTS_ENGINE');
     }
     final probe = await _probe(sourcePath, audioStreamIndex: project.audioStreamIndex);
@@ -6637,13 +6764,27 @@ $nonverbalInstruction''';
       final dictionary = await VoiceDictionaryService().loadEntries();
       for (var i = 0; i < project.descriptions.length; i++) {
         _checkCancel();
+        if (project.ttsEngine == 'gemini' && i % GeminiTtsBridge.maxParallelRequests == 0) {
+          await Future.wait([
+            for (var j = i; j < math.min(i + GeminiTtsBridge.maxParallelRequests, project.descriptions.length); j++)
+              _synthesizeTtsWithFallback(
+                settings: _projectTtsSettings(project), flutterTts: flutterTts,
+                text: AudioDescriptionFallbacks.normalizePronunciationText(
+                  VoiceDictionaryService().applyToText(project.descriptions[j].text, dictionary)),
+                target: File(p.join(ttsDir.path, 'project_${j.toString().padLeft(4, '0')}.wav')),
+                speed: project.descriptions[j].ttsSpeedOverride ?? project.ttsSpeed,
+                baseSpeed: project.ttsSpeed,
+                pitch: project.ttsPitch,
+              ),
+          ]);
+        }
         onProgress?.call(AiAudioDescriptionProgress(
           'project_tts',
           0.05 + (i / math.max(1, project.descriptions.length)) * 0.60,
           detail: '${i + 1}/${project.descriptions.length}',
         ));
         final item = project.descriptions[i];
-        final ext = project.ttsEngine == 'system' && Platform.isIOS
+        final ext = project.ttsEngine == 'gemini' ? 'wav' : project.ttsEngine == 'system' && Platform.isIOS
             ? 'caf'
             : project.ttsEngine == 'system'
                 ? 'wav'
@@ -6657,7 +6798,8 @@ $nonverbalInstruction''';
           await flutterTts.setSpeechRate(itemSpeed * 0.5);
           currentSystemSpeed = itemSpeed;
         }
-        await _synthesizeTtsWithFallback(
+        if (project.ttsEngine != 'gemini') {
+          await _synthesizeTtsWithFallback(
           settings: _projectTtsSettings(project),
           flutterTts: flutterTts,
           text: spoken,
@@ -6665,8 +6807,27 @@ $nonverbalInstruction''';
           speed: item.ttsSpeedOverride ?? project.ttsSpeed,
           pitch: project.ttsPitch,
         );
-        final duration = await _audioDuration(target.path);
+        }
+        var duration = await _audioDuration(target.path);
         final available = audioDescriptionProjectAvailableDuration(project, i);
+        var recoveredSpeed = item.ttsSpeedOverride;
+        if (available != null && duration > available + 0.010 && recoveredSpeed == null) {
+          final recovery = await _recoverDescriptionTiming(
+            engine: project.ttsEngine, target: target, source: target,
+            baseSpeed: project.ttsSpeed, originalDuration: duration,
+            chooseStart: (value) => value <= available + 0.010 ? 0.0 : null,
+            synthesize: (speed) async {
+              if (project.ttsEngine == 'system') await flutterTts.setSpeechRate(speed * 0.5);
+              await _synthesizeTtsWithFallback(
+                settings: _projectTtsSettings(project), flutterTts: flutterTts,
+                text: spoken, target: target, speed: speed, pitch: project.ttsPitch,
+              );
+              return _audioDuration(target.path);
+            },
+          );
+          if (recovery != null) { duration = recovery.duration; recoveredSpeed = recovery.speed; }
+          if (project.ttsEngine == 'system') await flutterTts.setSpeechRate(currentSystemSpeed * 0.5);
+        }
         if (available != null && duration > available + 0.010) {
           throw AudioDescriptionProjectTooLongException(
             index: i,
@@ -6691,7 +6852,7 @@ $nonverbalInstruction''';
           originalStart: item.sourceStartSec,
           extraPause: item.extendedPause ? duration : 0.0,
         ));
-        updatedItems.add(item.copyWith(ttsDurationSec: duration));
+        updatedItems.add(item.copyWith(ttsDurationSec: duration, ttsSpeedOverride: recoveredSpeed));
       }
 
       onProgress?.call(const AiAudioDescriptionProgress('project_export', 0.70));

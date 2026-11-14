@@ -6719,5 +6719,7 @@
   "alphabeticalSortCompleted": "Ordinamento alfabetico completato.",
   "weatherDailySituation": "Previsioni della giornata",
   "podcastBookmarks": "Segnalibri podcast",
-  "podcastNoBookmarks": "Nessun segnalibro podcast."
+  "podcastNoBookmarks": "Nessun segnalibro podcast.",
+  "audioDescriptionRepairText": "La descrizione a {time} dura {actual} s; lo spazio disponibile è {available} s. Vuoi accorciare il testo?",
+  "@audioDescriptionRepairText": {"placeholders": {"time": {"type": "String"}, "actual": {"type": "String"}, "available": {"type": "String"}}}
 }

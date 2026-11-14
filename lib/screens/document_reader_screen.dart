@@ -1,3 +1,4 @@
+import 'gemini_tts_key_navigation.dart';
 import '../services/accessible_reading_tts.dart';
 import 'dart:async';
 import 'dart:convert';
@@ -171,6 +172,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
 
   @override
   void dispose() {
+    _tts.cancelGeminiSpeech();
     _pdfPassword = null;
     if (Platform.isIOS) {
       _ttsCommands.invokeMethod('clearMagicTap').catchError((_) {});
@@ -1616,6 +1618,9 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
 
     try {
       final engine = await _settings.loadTtsEngine();
+      if (!mounted) return;
+      if (engine == 'gemini' && !await ensureGeminiTtsKey(context)) return;
+      if (!mounted || readingToken != _readingToken) return;
       final dictionaryEntries = await _voiceDictionary.loadEntries();
       _activeTtsEngine = engine;
       _startReadingSleepTimerIfNeeded(restart: restartSleepTimer);
@@ -1847,6 +1852,7 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   }
 
   Future<void> _stopReading({bool fromSleepTimer = false}) async {
+    _tts.cancelGeminiSpeech();
     _readingToken += 1;
     if (!fromSleepTimer) {
       _cancelReadingSleepTimer();

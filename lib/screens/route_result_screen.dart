@@ -165,6 +165,7 @@ class _RouteStepsScreenState extends State<RouteStepsScreen> {
 
   @override
   void dispose() {
+    _edgeTts.cancelGeminiSpeech();
     _readingToken += 1;
     final edgeController = _edgeFileController;
     _edgeFileController = null;
@@ -202,6 +203,7 @@ class _RouteStepsScreenState extends State<RouteStepsScreen> {
   }
 
   Future<void> _stopReading() async {
+    _edgeTts.cancelGeminiSpeech();
     _readingToken += 1;
     final edgeController = _edgeFileController;
     _edgeFileController = null;

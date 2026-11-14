@@ -205,6 +205,7 @@ class _CalendarDayScreenState extends State<CalendarDayScreen> {
   }
 
   void _stopReading() {
+    _tts.cancelGeminiSpeech();
     _readingToken += 1;
     _flutterTts.stop();
     _audio.stop();
@@ -277,6 +278,7 @@ class _CalendarDayScreenState extends State<CalendarDayScreen> {
 
   @override
   void dispose() {
+    _tts.cancelGeminiSpeech();
     _readingToken += 1;
     _flutterTts.stop();
     _audio.stop();

@@ -10969,6 +10969,16 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Nessun segnalibro podcast.'**
   String get podcastNoBookmarks;
+
+  /// No description provided for @audioDescriptionRepairText.
+  ///
+  /// In it, this message translates to:
+  /// **'La descrizione a {time} dura {actual} s; lo spazio disponibile è {available} s. Vuoi accorciare il testo?'**
+  String audioDescriptionRepairText(
+    String time,
+    String actual,
+    String available,
+  );
 }
 
 class _AppLocalizationsDelegate

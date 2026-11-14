@@ -1,3 +1,5 @@
+import '../tts/gemini_tts_bridge.dart';
+import 'gemini_tts_key_navigation.dart';
 import 'dart:async';
 import 'dart:io';
 
@@ -68,6 +70,7 @@ class _AudioDescriptionProjectEditorScreenState
   String _status = '';
   String? _technicalError;
 
+  String _geminiVoice = 'Kore';
   String _ttsEngine = 'edge';
   List<TtsVoiceOption> _edgeVoices = const [];
   List<TtsVoiceLanguage> _edgeLanguages = const [];
@@ -147,7 +150,7 @@ class _AudioDescriptionProjectEditorScreenState
     if (project == null) return null;
     return project.copyWith(
       ttsEngine: _ttsEngine,
-      ttsVoice: _ttsEngine == 'edge' ? _edgeVoice : (_systemVoice ?? ''),
+      ttsVoice: _ttsEngine == 'gemini' ? _geminiVoice : _ttsEngine == 'edge' ? _edgeVoice : (_systemVoice ?? ''),
       edgeLanguage: _edgeLanguage,
       systemLanguage: _systemLanguage,
       systemVoice: _systemVoice,
@@ -343,11 +346,12 @@ class _AudioDescriptionProjectEditorScreenState
   }
 
   void _applyProjectVoiceToUi(AudioDescriptionEditableProject project) {
-    _ttsEngine = (project.ttsEngine == 'edge' || project.ttsEngine == 'system')
+    _ttsEngine = (['edge', 'system', 'gemini'].contains(project.ttsEngine))
         ? project.ttsEngine
         : 'edge';
+    if (project.ttsEngine == 'gemini') _geminiVoice = project.ttsVoice;
     _edgeLanguage = project.edgeLanguage;
-    _edgeVoice = project.ttsVoice.isNotEmpty
+    _edgeVoice = project.ttsEngine != 'gemini' && project.ttsVoice.isNotEmpty
         ? project.ttsVoice
         : AppSettingsService.defaultVoiceForLanguageFrom(
             _edgeVoices,
@@ -650,7 +654,40 @@ class _AudioDescriptionProjectEditorScreenState
     }
   }
 
+  Future<String?> _repairVoiceText(AudioDescriptionProjectItem item,
+      AudioDescriptionProjectTooLongException error, int operation) async {
+    _checkOperation(operation);
+    final strings = AudioDescriptionProjectStrings.of(context);
+    final l10n = AppLocalizations.of(context);
+    final seconds = item.sourceStartSec.floor();
+    final time = '${(seconds ~/ 3600).toString().padLeft(2, '0')}:${((seconds ~/ 60) % 60).toString().padLeft(2, '0')}:${(seconds % 60).toString().padLeft(2, '0')}';
+    final question = l10n.audioDescriptionRepairText(time,
+      error.actualSec.toStringAsFixed(3), error.availableSec.toStringAsFixed(3));
+    final confirm = await showDialog<bool>(context: context, barrierDismissible: false,
+      builder: (ctx) => AlertDialog(title: Text(strings.changeVoice), content: Text(question), actions: [
+        TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(strings.cancel)),
+        FilledButton(onPressed: () => Navigator.pop(ctx, true), child: Text(strings.apply)),
+      ]));
+    _checkOperation(operation);
+    if (!mounted || confirm != true) return null;
+    final controller = TextEditingController(text: item.text);
+    try {
+      return await showDialog<String>(context: context, barrierDismissible: false,
+        builder: (ctx) => AlertDialog(title: Text(strings.text),
+          content: TextField(controller: controller, autofocus: true,
+            minLines: 3, maxLines: 8, decoration: InputDecoration(labelText: strings.text)),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(ctx), child: Text(strings.cancel)),
+            FilledButton(onPressed: () {
+              if (controller.text.trim().isNotEmpty) Navigator.pop(ctx, controller.text.trim());
+            }, child: const Text('OK')),
+          ]));
+    } finally { controller.dispose(); }
+  }
+
   Future<void> _changeVoice() async {
+    if (_ttsEngine == 'gemini' && !await ensureGeminiTtsKey(context)) return;
+    if (!mounted) return;
     final project = _project;
     if (project == null || _running) return;
     final operation = ++_operationRevision;
@@ -671,11 +708,12 @@ class _AudioDescriptionProjectEditorScreenState
             project: project,
             ttsEngine: _ttsEngine,
             edgeLanguage: _edgeLanguage,
-            edgeVoice: _edgeVoice,
+            edgeVoice: _ttsEngine == 'gemini' ? _geminiVoice : _edgeVoice,
             systemLanguage: _systemLanguage,
             systemVoice: _systemVoice,
             speed: speed,
             pitch: pitch,
+            repairText: (item, error) => _repairVoiceText(item, error, operation),
             onProgress: (value) {
               if (!mounted) return;
               setState(() => _progress = value.clamp(0.0, 1.0).toDouble());
@@ -685,6 +723,7 @@ class _AudioDescriptionProjectEditorScreenState
       if (!mounted) return;
       setState(() {
         _project = updated;
+        _editText = updated.descriptions[_selectedIndex].text;
         _progress = 1;
         _status = strings.voiceChanged;
       });
@@ -694,6 +733,10 @@ class _AudioDescriptionProjectEditorScreenState
       if (!mounted) return;
       setState(() => _status = _tooLongMessage(strings, error));
     } catch (error, stackTrace) {
+      if (error.toString().contains('AUDIO_DESCRIPTION_CANCELLED')) {
+        if (mounted) setState(() { _applyProjectVoiceToUi(project); _status = strings.ready; });
+        return;
+      }
       await AppLogger.log('Audio description project voice change failed $error\n$stackTrace');
       if (!mounted) return;
       setState(() {
@@ -1070,11 +1113,12 @@ class _AudioDescriptionProjectEditorScreenState
                       title: strings.engine,
                       kind: 'picker',
                       value: _ttsEngine,
-                      valueLabel: _ttsEngine == 'system' ? strings.system : strings.edge,
+                      valueLabel: _ttsEngine == 'gemini' ? 'Gemini' : _ttsEngine == 'system' ? strings.system : strings.edge,
                       enabled: !_running,
                       options: [
                         AccessibleOption(value: 'edge', label: strings.edge),
                         AccessibleOption(value: 'system', label: strings.system),
+                        const AccessibleOption(value: 'gemini', label: 'Gemini'),
                       ],
                     ),
                     if (_ttsEngine == 'edge') ...[
@@ -1099,6 +1143,12 @@ class _AudioDescriptionProjectEditorScreenState
                         valueLabel: _edgeVoice,
                         enabled: !_running,
                         options: _edgeVoiceOptions(),
+                      ),
+                    ] else if (_ttsEngine == 'gemini') ...[
+                      AccessibleListRow(
+                        id: 'gemini_voice', title: strings.voice, kind: 'picker',
+                        value: _geminiVoice, valueLabel: _geminiVoice, enabled: !_running,
+                        options: GeminiTtsBridge.voices.map((voice) => AccessibleOption(value: voice, label: voice)).toList(),
                       ),
                     ] else ...[
                       if (_systemLanguageOptions(l10n).isNotEmpty)
@@ -1252,6 +1302,8 @@ class _AudioDescriptionProjectEditorScreenState
                   await _setAudioSetting(event);
                 } else if (event.type == 'picker') {
                   final value = event.value?.toString() ?? '';
+                  if (id == 'tts_engine' && value == 'gemini' && !await ensureGeminiTtsKey(context)) return;
+                  if (!mounted) return;
                   setState(() {
                     switch (id) {
                       case 'description':
@@ -1261,6 +1313,9 @@ class _AudioDescriptionProjectEditorScreenState
                         break;
                       case 'reanalyze_segment_selection':
                         _segmentIndex = int.tryParse(value) ?? 0;
+                        break;
+                      case 'gemini_voice':
+                        _geminiVoice = value;
                         break;
                       case 'tts_engine':
                         _ttsEngine = value;

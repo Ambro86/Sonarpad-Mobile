@@ -6111,6 +6111,15 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get podcastNoBookmarks => 'Nenhum marcador de podcast.';
+
+  @override
+  String audioDescriptionRepairText(
+    String time,
+    String actual,
+    String available,
+  ) {
+    return 'A descrição em $time dura $actual s; o espaço disponível é de $available s. Quer encurtar o texto?';
+  }
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
@@ -12212,4 +12221,13 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get podcastNoBookmarks => 'Nenhum marcador de podcast.';
+
+  @override
+  String audioDescriptionRepairText(
+    String time,
+    String actual,
+    String available,
+  ) {
+    return 'A descrição em $time dura $actual s; o espaço disponível é de $available s. Deseja encurtar o texto?';
+  }
 }

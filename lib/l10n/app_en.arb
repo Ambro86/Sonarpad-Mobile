@@ -5078,5 +5078,7 @@
   "alphabeticalSortCompleted": "Alphabetical sorting completed.",
   "weatherDailySituation": "Daily forecast",
   "podcastBookmarks": "Podcast bookmarks",
-  "podcastNoBookmarks": "No podcast bookmarks."
+  "podcastNoBookmarks": "No podcast bookmarks.",
+  "audioDescriptionRepairText": "The description at {time} lasts {actual} s; the available space is {available} s. Would you like to shorten the text?",
+  "@audioDescriptionRepairText": {"placeholders": {"time": {"type": "String"}, "actual": {"type": "String"}, "available": {"type": "String"}}}
 }

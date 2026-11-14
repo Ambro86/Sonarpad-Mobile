@@ -6656,5 +6656,7 @@
   "alphabeticalSortCompleted": "Сортування за абеткою завершено.",
   "weatherDailySituation": "Прогноз на день",
   "podcastBookmarks": "Закладки подкастів",
-  "podcastNoBookmarks": "Немає закладок подкастів."
+  "podcastNoBookmarks": "Немає закладок подкастів.",
+  "audioDescriptionRepairText": "Опис о {time} триває {actual} с; доступний час — {available} с. Бажаєте скоротити текст?",
+  "@audioDescriptionRepairText": {"placeholders": {"time": {"type": "String"}, "actual": {"type": "String"}, "available": {"type": "String"}}}
 }

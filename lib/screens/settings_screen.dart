@@ -1,3 +1,5 @@
+import '../tts/gemini_tts_bridge.dart';
+import 'gemini_tts_key_navigation.dart';
 import '../widgets/request_code_dialog.dart';
 import '../services/activation_link_service.dart';
 import '../services/persistent_form_preferences.dart';
@@ -58,6 +60,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
   String _voice = AppSettingsService.defaultVoiceForLanguage('it');
   List<TtsVoiceLanguage> _edgeLanguages = AppSettingsService.ttsLanguages;
   List<TtsVoiceOption> _edgeVoices = AppSettingsService.ttsVoices;
+  EdgeTtsBridge? _previewBridge;
+  String _geminiLanguage = '';
+  String _savedGeminiLanguage = '';
+  String _geminiVoice = 'Kore';
+  String _savedGeminiVoice = 'Kore';
   String _ttsEngine = 'edge';
   String _systemTtsLanguage = 'it-IT';
   String? _systemTtsVoice;
@@ -267,6 +274,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   void dispose() {
+    _previewBridge?.cancelGeminiSpeech();
     _edgeMultilingualVoiceFocusNode.dispose();
     _edgeLanguageFocusNode.dispose();
     _edgeVoiceFocusNode.dispose();
@@ -290,7 +298,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final themeMode = await _settings.loadThemeMode();
     final weatherTemperatureUnit = await _settings.loadWeatherTemperatureUnit();
     final language = await _settings.loadTtsLanguage();
-    final voice = await _settings.loadTtsVoice();
+    final voice = await _settings.loadEdgeTtsVoice();
+    final geminiVoice = await _settings.loadGeminiTtsVoice();
+    final geminiLanguage = await _settings.loadGeminiTtsLanguage();
     final speed = await _settings.loadTtsSpeed();
     final pitch = await _settings.loadTtsPitch();
     var tvSecretCode = await _settings.getTvSecretCode();
@@ -359,6 +369,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _savedTtsPitch = pitch;
       _tvSecretCodeController.text = tvSecretCode;
       _savedTvSecretCode = tvSecretCode;
+      _geminiLanguage = geminiLanguage;
+      _savedGeminiLanguage = geminiLanguage;
+      _geminiVoice = geminiVoice;
+      _savedGeminiVoice = geminiVoice;
       _ttsEngine = ttsEngine;
       _savedTtsEngine = ttsEngine;
       _systemTtsLanguage = sysLang;
@@ -450,6 +464,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final ttsSettingsChanged = ttsEngineChanged ||
         _languageCode != _savedLanguageCode ||
         _voice != _savedVoice ||
+        _geminiVoice != _savedGeminiVoice ||
+        _geminiLanguage != _savedGeminiLanguage ||
         _systemTtsLanguage != _savedSystemTtsLanguage ||
         _systemTtsVoice != _savedSystemTtsVoice ||
         _ttsSpeed != _savedTtsSpeed ||
@@ -586,7 +602,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       // sistema non deve restare con una shared session attiva. La protezione
       // viene applicata anche se è cambiata una qualsiasi altra impostazione,
       // non solo quando cambia voce o motore TTS.
-      if (Platform.isIOS && _ttsEngine == 'edge') {
+      if (Platform.isIOS && _ttsEngine != 'system') {
         await _flutterTts.autoStopSharedSession(true);
         await _flutterTts.setSharedInstance(false);
       }
@@ -630,6 +646,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     _savedWeatherTemperatureUnit = _weatherTemperatureUnit;
     _savedLanguageCode = _languageCode;
     _savedVoice = _voice;
+    _savedGeminiVoice = _geminiVoice;
+    _savedGeminiLanguage = _geminiLanguage;
     _savedTtsEngine = _ttsEngine;
     _savedSystemTtsLanguage = _systemTtsLanguage;
     _savedSystemTtsVoice = _systemTtsVoice;
@@ -658,6 +676,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
         _weatherTemperatureUnit != _savedWeatherTemperatureUnit ||
         _languageCode != _savedLanguageCode ||
         _voice != _savedVoice ||
+        _geminiVoice != _savedGeminiVoice ||
+        _geminiLanguage != _savedGeminiLanguage ||
         _ttsEngine != _savedTtsEngine ||
         _systemTtsLanguage != _savedSystemTtsLanguage ||
         _systemTtsVoice != _savedSystemTtsVoice ||
@@ -777,6 +797,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Future<void> _testVoice() async {
     if (_testingVoice) return;
+    if (_ttsEngine == 'gemini' && !await ensureGeminiTtsKey(context)) return;
+    if (!mounted) return;
     final l10n = AppLocalizations.of(context);
     setState(() => _testingVoice = true);
     try {
@@ -801,10 +823,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
         // For simplicity, we just trigger speak.
       } else {
         final tts = EdgeTtsBridge();
+        _previewBridge = tts;
         final file = await EdgeTtsRetry.run(
           generate: () => tts.speakToFile(
             text: l10n.settingsVoiceTestText,
-            voice: _voice,
+            voice: _ttsEngine == 'gemini' ? _geminiVoice : _voice,
+            geminiLanguage: _geminiLanguage,
             speed: previewSpeed,
             pitch: previewPitch,
           ),
@@ -824,8 +848,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
+  String _geminiLanguageLabel(AppLocalizations l10n, String code) => switch (code) {
+    '' => l10n.translationDetectLanguage,
+    'pt' => '${l10n.radioLanguagePt} (${l10n.radioCountryOptionPt})',
+    'pt_BR' => '${l10n.radioLanguagePt} (${l10n.radioCountryOptionBr})',
+    'zh_CN' => l10n.simplifiedChineseLanguageName,
+    _ => l10n.languageLabel(code),
+  };
+
   Future<void> _saveTtsSelection() async {
     await _settings.saveTtsEngine(_ttsEngine);
+    await _settings.saveGeminiTtsVoice(_geminiVoice);
+    await _settings.saveGeminiTtsLanguage(_geminiLanguage);
     await _settings.saveTtsSettings(
       languageCode: _languageCode,
       voice: _voice,
@@ -1190,12 +1224,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
             title: l10n.settingsReadingEngine,
             kind: 'picker',
             value: _ttsEngine,
-            valueLabel: _ttsEngine == 'edge'
+            valueLabel: _ttsEngine == 'gemini' ? 'Gemini' : _ttsEngine == 'edge'
                 ? l10n.settingsEdgeTtsQuality
                 : l10n.settingsSystemVoices,
             options: [
               AccessibleOption(value: 'edge', label: l10n.settingsEdgeTtsQuality),
               AccessibleOption(value: 'system', label: l10n.settingsSystemVoices),
+              const AccessibleOption(value: 'gemini', label: 'Gemini'),
             ],
           ),
           if (_ttsEngine == 'edge') ...[
@@ -1231,6 +1266,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         label: e.label,
                       ))
                   .toList(),
+            ),
+          ] else if (_ttsEngine == 'gemini') ...[
+            AccessibleListRow(
+              id: 'gemini_language', title: l10n.ttsVoiceLanguage, kind: 'picker',
+              value: _geminiLanguage, valueLabel: _geminiLanguageLabel(l10n, _geminiLanguage),
+              options: [
+                AccessibleOption(value: '', label: l10n.translationDetectLanguage),
+                for (final code in GeminiTtsBridge.languageInstructions.keys)
+                  AccessibleOption(value: code, label: _geminiLanguageLabel(l10n, code)),
+              ],
+            ),
+            AccessibleListRow(
+              id: 'gemini_voice', title: l10n.ttsVoice, kind: 'picker',
+              value: _geminiVoice, valueLabel: _geminiVoice,
+              options: GeminiTtsBridge.voices.map((voice) => AccessibleOption(value: voice, label: voice)).toList(),
             ),
           ] else ...[
             if (systemLocales.isNotEmpty)
@@ -1492,7 +1542,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
             case 'temperature_unit':
               setState(() => _weatherTemperatureUnit = WeatherTemperatureUnit.values.firstWhere((e) => e.value == value, orElse: () => WeatherTemperatureUnit.celsius));
               break;
+            case 'gemini_language':
+              setState(() => _geminiLanguage = value);
+              break;
+            case 'gemini_voice':
+              setState(() => _geminiVoice = value);
+              break;
             case 'tts_engine':
+              if (value == 'gemini' && !await ensureGeminiTtsKey(context)) return;
+              if (!mounted) return;
               setState(() => _ttsEngine = value);
               break;
             case 'edge_language':

@@ -63,6 +63,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
   }
 
   Future<void> _stopReading() async {
+    _tts.cancelGeminiSpeech();
     if (!_speaking) return;
     _readingToken += 1;
     final edgeController = _edgeFileController;
@@ -114,6 +115,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
 
   @override
   void dispose() {
+    _tts.cancelGeminiSpeech();
     _readingToken += 1;
     final edgeController = _edgeFileController;
     _edgeFileController = null;

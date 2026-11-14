@@ -2,10 +2,39 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:sonarpad_mobile_starter/services/audio_description_fallbacks.dart';
 
 void main() {
+  test('Gemini accelerates original audio without native synthesis or stacked rates', () async {
+    final factors = <double>[];
+    var nativeCalls = 0;
+    final recovered = await AudioDescriptionFallbacks.recoverNativeTts(
+      baseSpeed: 1.0, originalDuration: 3.2,
+      chooseStart: (duration) => duration <= 3.0 ? 0.0 : null,
+      synthesize: (_) async { nativeCalls++; return 2.0; },
+      accelerate: (factor) async {
+        factors.add(factor);
+        // First render is too long; next attempt still uses the original.
+        return factors.length == 1 ? 3.01 : 3.2 / factor;
+      },
+    );
+    expect(nativeCalls, 0);
+    expect(factors, [1.1, 1.15]);
+    expect(recovered?.speed, 1.15);
+    expect(recovered?.duration, closeTo(3.2 / 1.15, 0.001));
+    factors.clear();
+    final rejected = await AudioDescriptionFallbacks.recoverNativeTts(
+      baseSpeed: 1.0, originalDuration: 3.7,
+      chooseStart: (duration) => duration <= 3.0 ? 0.0 : null,
+      synthesize: (_) async => throw StateError('No new Gemini request'),
+      accelerate: (factor) async { factors.add(factor); return 3.7 / factor; },
+    );
+    expect(rejected, isNull);
+    // Even an impossible estimate must reach the real +20% audio render.
+    expect(factors, [1.1, 1.15, 1.2]);
+  });
+
   group('native TTS speed recovery', () {
     for (final c in <(double, double, double?, bool)>[
       (3.2, 2.9, 1.1, true), (3.4, 2.95, 1.15, true),
-      (3.5, 2.9, null, false), (3.2, 3.1, 1.1, false),
+      (3.5, 2.9, 1.2, true), (3.7, 2.9, null, false), (3.2, 3.1, 1.1, false),
       (3.2, 0, 1.1, false), (3.2, double.nan, 1.1, false),
     ]) {
       test('original=${c.$1} actual=${c.$2}', () async {
@@ -15,7 +44,7 @@ void main() {
           chooseStart: (duration) => duration <= 3 ? 1 : null,
           synthesize: (speed) async { calls.add(speed); return c.$2; },
         );
-        expect(calls, c.$3 == null ? isEmpty : [c.$3]);
+        expect(calls, c.$3 == null ? isEmpty : c.$4 ? [c.$3] : [1.1, 1.15, 1.2]);
         expect(recovered != null, c.$4);
         if (recovered != null) {
           expect(recovered.speed, c.$3);
@@ -24,6 +53,33 @@ void main() {
         }
       });
     }
+    test('real duration can require twenty percent after slower retries fail', () async {
+      final calls = <double>[];
+      final result = await AudioDescriptionFallbacks.recoverNativeTts(
+        baseSpeed: 1, originalDuration: 6.32,
+        chooseStart: (duration) => duration <= 6.061 ? 252.804 : null,
+        synthesize: (speed) async {
+          calls.add(speed);
+          return speed < 1.2 ? 6.44 : 5.92;
+        },
+      );
+      expect(calls, [1.1, 1.15, 1.2]);
+      expect(result?.speed, 1.2);
+      expect(result?.duration, 5.92);
+    });
+    test('twenty percent still too long stops without exceeding the limit', () async {
+      final calls = <double>[];
+      final result = await AudioDescriptionFallbacks.recoverNativeTts(
+        baseSpeed: 1, originalDuration: 7.04,
+        chooseStart: (duration) => duration <= 6.061 ? 252.804 : null,
+        synthesize: (speed) async {
+          calls.add(speed);
+          return speed <= 1.2 ? 6.12 : 5.92;
+        },
+      );
+      expect(calls, [1.2]);
+      expect(result, isNull);
+    });
     test('maximum native speed avoids a useless retry', () async {
       expect(await AudioDescriptionFallbacks.recoverNativeTts(
         baseSpeed: 2, originalDuration: 3.2,

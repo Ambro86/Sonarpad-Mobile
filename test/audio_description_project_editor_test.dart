@@ -73,6 +73,29 @@ AudioDescriptionEditableProject sampleProject(String path) =>
     );
 
 void main() {
+  test('Gemini project voice survives desktop import and mobile round trip', () async {
+    final dir = await Directory.systemTemp.createTemp('sonarpad_gemini_project_');
+    try {
+      final path = '${dir.path}/project.json';
+      final original = sampleProject(path).copyWith(ttsEngine: 'gemini', ttsVoice: 'Leda');
+      final desktop = original.toJson()
+        ..remove('mobile_tts_engine')
+        ..remove('mobile_tts_voice');
+      await File(path).writeAsString(jsonEncode(desktop));
+      final service = AiAudioDescriptionService();
+      final imported = await service.loadEditableProject(path);
+      expect(imported.ttsEngine, 'gemini');
+      expect(imported.ttsVoice, 'Leda');
+      await service.saveEditableProject(imported);
+      final restored = await service.loadEditableProject(path);
+      expect(restored.ttsEngine, 'gemini');
+      expect(restored.ttsVoice, 'Leda');
+      expect(restored.descriptions.length, original.descriptions.length);
+    } finally {
+      await dir.delete(recursive: true);
+    }
+  });
+
   test('dialogue overlap survives project reload without removing cue boundaries', () async {
     final dir = await Directory.systemTemp.createTemp('sonarpad_dialogue_overlap_');
     try {

@@ -597,8 +597,26 @@ class SonarMusicTubeAdapter extends SonarTubeService {
   SonarMusicTubeAdapter(this.music);
   final SonarMusicService music;
   @override
-  Future<SonarTubeResolvedMedia> resolve(SonarTubeItem item) =>
-    music.resolve(SonarMusicItem(kind: 'song', id: item.id,
+  Future<SonarTubeResolvedMedia> resolve(SonarTubeItem item) async {
+    final media = await music.resolve(SonarMusicItem(kind: 'song', id: item.id,
       videoId: item.id, title: item.title, artist: item.channel,
       url: item.url, duration: item.duration));
+    // Music catalog titles and artists are separate; the shared exporter uses
+    // the resolved title as the filename for every format and destination.
+    final catalogTitle = item.title.trim();
+    final title = catalogTitle.isNotEmpty && catalogTitle != item.id &&
+        catalogTitle != 'YouTube Music' ? catalogTitle : media.title.trim();
+    final catalogArtist = item.channel?.trim() ?? '';
+    final artist = catalogArtist.isNotEmpty
+        ? catalogArtist : (media.channel?.trim() ?? '');
+    final alreadyNamed = artist.isNotEmpty && (
+      title.toLowerCase() == artist.toLowerCase() ||
+      RegExp('^${RegExp.escape(artist)}\\s*[-–—:|]|[-–—:|]\\s*${RegExp.escape(artist)}' r'$',
+        caseSensitive: false).hasMatch(title));
+    final exportTitle = artist.isEmpty || alreadyNamed ? title
+        : title.isEmpty ? artist : '$artist - $title';
+    return SonarTubeResolvedMedia(title: exportTitle, audioUrl: media.audioUrl,
+      videoUrl: media.videoUrl, channel: media.channel, isLive: media.isLive,
+      audioTracks: media.audioTracks, selectedAudioTrackId: media.selectedAudioTrackId);
+  }
 }

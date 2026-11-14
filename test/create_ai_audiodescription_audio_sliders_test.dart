@@ -247,6 +247,7 @@ Future<void> _waitUntil(WidgetTester tester, bool Function() done) async {
 Future<void> _mountScreen(
   WidgetTester tester, {
   String? sourcePath,
+  bool focusGeminiApiKey = false,
   AudioDescriptionMixPreviewController Function()? previewFactory,
   AiAudioDescriptionService Function()? serviceFactory,
 }) async {
@@ -258,6 +259,7 @@ Future<void> _mountScreen(
         supportedLocales: AppLocalizations.supportedLocales,
         home: CreateAiAudiodescriptionScreen(
           initialSourcePath: sourcePath,
+          focusGeminiApiKey: focusGeminiApiKey,
           audioDescriptionServiceFactory: serviceFactory ?? _SourceTrackService.new,
           mixPreviewControllerFactory: previewFactory ?? _NoMixPreview.new,
         ),
@@ -424,6 +426,59 @@ void main() {
     PathProviderPlatform.instance = originalPaths;
     await temporary.delete(recursive: true);
   });
+
+  testWidgets('Gemini credential entry focuses the selected Sonarpad provider', (tester) async {
+    SharedPreferences.setMockInitialValues({'ad_mobile_provider': 'sonarpad'});
+    await _mountScreen(tester, focusGeminiApiKey: true);
+    try {
+      expect(_form(tester).initialFocusId, 'sonarpad_code');
+      expect(_form(tester).sections.expand((s) => s.rows).where((r) => r.id == 'api_key'), isEmpty);
+      expect(_row(tester, 'sonarpad_code').id, 'sonarpad_code');
+      expect(_row(tester, 'sonarpad_model_info').id, 'sonarpad_model_info');
+      expect(_form(tester).sections.expand((s) => s.rows).where((r) => r.id == 'model'), isEmpty);
+      await tester.runAsync(() async {
+        await _form(tester).onEvent!(const AccessibleListEvent(
+          type: 'textChanged', id: 'sonarpad_code', value: 'sp_fixture',
+        ));
+        await Future<void>.delayed(Duration.zero);
+        expect(await AiAudioDescriptionPreferences.loadSonarpadCode(), 'sp_fixture');
+        expect((await AiAudioDescriptionPreferences.load())['provider'], 'sonarpad');
+      });
+    } finally {
+      await _unmountScreen(tester);
+    }
+  }, variant: TargetPlatformVariant({TargetPlatform.android, TargetPlatform.iOS}));
+
+  testWidgets('Gemini voice slider is independent and keeps its accessibility node', (tester) async {
+    SharedPreferences.setMockInitialValues({'ad_mobile_gemini_api_key': 'fixture-key'});
+    final semantics = tester.ensureSemantics();
+    Future<void> change(String id, num value) async {
+      await tester.runAsync(() async { await _row(tester, id).onValueChanged!(value); });
+      await tester.pump();
+    }
+    try {
+    await _exerciseScreen(tester, () async {
+      final edgeVoice = _row(tester, 'edge_voice').value;
+      final language = _row(tester, 'language').value;
+      final detail = _row(tester, 'verbosity').value;
+      await change('tts_engine', 2);
+      expect(_row(tester, 'tts_engine').valueLabel, 'Gemini');
+      expect(_row(tester, 'gemini_voice').valueLabel, 'Kore');
+      await tester.ensureVisible(_control('gemini_voice'));
+      await tester.pumpAndSettle();
+      final node = tester.getSemantics(_control('gemini_voice')).id;
+      await change('gemini_voice', 5);
+      expect(_row(tester, 'gemini_voice').valueLabel, 'Leda');
+      expect(tester.getSemantics(_control('gemini_voice')).id, node);
+      expect(_row(tester, 'language').value, language);
+      expect(_row(tester, 'verbosity').value, detail);
+      await change('tts_engine', 0);
+      expect(_row(tester, 'edge_voice').value, edgeVoice);
+      await change('tts_engine', 2);
+      expect(_row(tester, 'gemini_voice').valueLabel, 'Leda');
+    });
+    } finally { semantics.dispose(); }
+  }, variant: TargetPlatformVariant({TargetPlatform.android, TargetPlatform.iOS}));
 
   for (final firstShare in ['dismissed', 'failed', 'unavailable']) {
     testWidgets('completed audio survives $firstShare sharing and can be shared again', (tester) async {

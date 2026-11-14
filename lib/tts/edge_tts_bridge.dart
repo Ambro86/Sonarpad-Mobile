@@ -1,3 +1,4 @@
+import 'gemini_tts_bridge.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -12,12 +13,18 @@ import 'edge_tts_protocol.dart';
 import 'edge_tts_gec_v2.dart';
 
 class EdgeTtsBridge {
+  final _gemini = <GeminiTtsBridge>{};
   HttpClient? _activeClient;
   WebSocket? _activeSocket;
   bool _cancelled = false;
 
+  void cancelGeminiSpeech() {
+    for (final bridge in _gemini) { bridge.cancel(); }
+  }
+
   void cancel() {
     _cancelled = true;
+    cancelGeminiSpeech();
     _activeClient?.close(force: true);
     unawaited(_activeSocket?.close());
   }
@@ -36,8 +43,18 @@ class EdgeTtsBridge {
     String voice = 'it-IT-IsabellaNeural',
     double? speed,
     double? pitch,
+    String? geminiLanguage,
   }) async {
     _checkCancelled();
+    if (GeminiTtsBridge.voices.contains(voice)) {
+      final gemini = GeminiTtsBridge();
+      _gemini.add(gemini);
+      try {
+        return await gemini.speakToFile(text: text, voice: voice, speed: speed, pitch: pitch, language: geminiLanguage);
+      } finally {
+        _gemini.remove(gemini);
+      }
+    }
     final dir = await getTemporaryDirectory();
     final outPath = p.join(
       dir.path,

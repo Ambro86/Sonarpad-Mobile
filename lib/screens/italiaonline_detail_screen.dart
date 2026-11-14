@@ -36,6 +36,7 @@ class _ItaliaOnlineDetailScreenState extends State<ItaliaOnlineDetailScreen> {
 
   @override
   void dispose() {
+    _edgeTts.cancelGeminiSpeech();
     _speechToken += 1;
     unawaited(_tts.stop());
     unawaited(_audio.stopAndDispose());
@@ -126,6 +127,7 @@ class _ItaliaOnlineDetailScreenState extends State<ItaliaOnlineDetailScreen> {
   }
 
   Future<void> _stop() async {
+    _edgeTts.cancelGeminiSpeech();
     _speechToken += 1;
     await _audio.stop();
     await _tts.stop();

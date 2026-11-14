@@ -6077,4 +6077,13 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get podcastNoBookmarks => 'Немає закладок подкастів.';
+
+  @override
+  String audioDescriptionRepairText(
+    String time,
+    String actual,
+    String available,
+  ) {
+    return 'Опис о $time триває $actual с; доступний час — $available с. Бажаєте скоротити текст?';
+  }
 }

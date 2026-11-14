@@ -6659,5 +6659,7 @@
   "alphabeticalSortCompleted": "Sortowanie alfabetyczne zakończone.",
   "weatherDailySituation": "Prognoza na cały dzień",
   "podcastBookmarks": "Zakładki podcastów",
-  "podcastNoBookmarks": "Brak zakładek podcastów."
+  "podcastNoBookmarks": "Brak zakładek podcastów.",
+  "audioDescriptionRepairText": "Opis w {time} trwa {actual} s; dostępny czas to {available} s. Czy chcesz skrócić tekst?",
+  "@audioDescriptionRepairText": {"placeholders": {"time": {"type": "String"}, "actual": {"type": "String"}, "available": {"type": "String"}}}
 }

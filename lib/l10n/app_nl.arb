@@ -6656,5 +6656,7 @@
   "alphabeticalSortCompleted": "Alfabetisch sorteren voltooid.",
   "weatherDailySituation": "Dagverwachting",
   "podcastBookmarks": "Podcastbladwijzers",
-  "podcastNoBookmarks": "Geen podcastbladwijzers."
+  "podcastNoBookmarks": "Geen podcastbladwijzers.",
+  "audioDescriptionRepairText": "De beschrijving op {time} duurt {actual} s; er is {available} s beschikbaar. Wilt u de tekst inkorten?",
+  "@audioDescriptionRepairText": {"placeholders": {"time": {"type": "String"}, "actual": {"type": "String"}, "available": {"type": "String"}}}
 }

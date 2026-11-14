@@ -1,3 +1,4 @@
+import '../tts/gemini_tts_bridge.dart';
 import '../utils/edge_language_label.dart';
 import 'dart:async';
 import 'dart:io';
@@ -35,6 +36,7 @@ class CreateAiAudiodescriptionScreen extends StatefulWidget {
   const CreateAiAudiodescriptionScreen({
     super.key,
     this.initialSourcePath,
+    this.focusGeminiApiKey = false,
     this.includeSourceVideoWithProjectOutput = false,
     this.mixPreviewControllerFactory,
     this.audioDescriptionServiceFactory,
@@ -42,6 +44,7 @@ class CreateAiAudiodescriptionScreen extends StatefulWidget {
 
   final AiAudioDescriptionService Function()? audioDescriptionServiceFactory;
   final String? initialSourcePath;
+  final bool focusGeminiApiKey;
   final bool includeSourceVideoWithProjectOutput;
   final AudioDescriptionMixPreviewController Function()? mixPreviewControllerFactory;
 
@@ -108,6 +111,8 @@ class _CreateAiAudiodescriptionScreenState
   double _sourceVolume = audioDescriptionDefaultSourceVolume;
   double _voicePitch = 1.0;
 
+  final _formController = AccessibleListController(debugName: 'create-ad');
+  String _geminiVoice = 'Kore';
   String _ttsEngine = 'edge';
   List<TtsVoiceOption> _edgeVoices = const [];
   List<TtsVoiceLanguage> _edgeLanguages = const [];
@@ -247,7 +252,7 @@ class _CreateAiAudiodescriptionScreenState
       final edgeLanguages = AppSettingsService.languagesForVoices(edgeVoices);
       final settingEngine = await _settings.loadTtsEngine();
       final settingEdgeLanguage = await _settings.loadTtsLanguage();
-      final settingEdgeVoice = await _settings.loadTtsVoice();
+      final settingEdgeVoice = await _settings.loadEdgeTtsVoice();
       final settingSystemLanguage = await _settings.loadSystemTtsLanguage();
       final settingSystemVoice = await _settings.loadSystemTtsVoice();
       final settingVoicePitch = await _settings.loadTtsPitch();
@@ -291,6 +296,7 @@ class _CreateAiAudiodescriptionScreenState
       setState(() {
         _provider = preferences['provider']?.toString() ?? 'gemini';
         _apiKey = preferences['apiKey']?.toString() ?? '';
+        _geminiVoice = preferences['geminiVoice']?.toString() ?? 'Kore';
         _sonarpadCode = preferences['sonarpadCode']?.toString() ?? '';
         _model = preferences['model']?.toString() ?? 'gemini-3.5-flash-lite';
         _models = <String>{_model, 'gemini-3.5-flash-lite'}.toList();
@@ -551,13 +557,13 @@ class _CreateAiAudiodescriptionScreenState
     await launchUrl(uri, mode: LaunchMode.externalApplication);
   }
 
-  Future<void> _pasteAiCredential() async {
+  Future<void> _pasteAiCredential({bool geminiKey = false}) async {
     if (_running) return;
-    final provider = _provider;
+    final provider = geminiKey ? 'gemini' : _provider;
     final data = await Clipboard.getData(Clipboard.kTextPlain);
     final raw = data?.text;
     final text = raw?.trim();
-    if (text == null || text.isEmpty || !mounted || _running || _provider != provider) return;
+    if (text == null || text.isEmpty || !mounted || _running || (!geminiKey && _provider != provider)) return;
 
     setState(() {
       _credentialTextRevision++;
@@ -575,6 +581,8 @@ class _CreateAiAudiodescriptionScreenState
     ));
     if (provider == 'gemini') {
       await AiAudioDescriptionPreferences.saveGeminiApiKey(text);
+    } else {
+      await AiAudioDescriptionPreferences.saveSonarpadCode(text);
     }
   }
 
@@ -699,6 +707,18 @@ class _CreateAiAudiodescriptionScreenState
 
   Future<void> _testVoice() async {
     if (_testingVoice || _running) return;
+    if (_ttsEngine == 'gemini' && (_provider == 'sonarpad' ? _sonarpadCode.trim().isEmpty : _apiKey.trim().isEmpty)) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) unawaited(_formController.focusToReturnAfterStructureChange(_provider == 'sonarpad' ? 'sonarpad_code' : 'api_key'));
+      });
+      return;
+    }
+    if (_ttsEngine == 'gemini') {
+      await AiAudioDescriptionPreferences.saveProvider(_provider);
+      await AiAudioDescriptionPreferences.saveGeminiApiKey(_apiKey);
+      await AiAudioDescriptionPreferences.saveSonarpadCode(_sonarpadCode);
+    }
+    if (!mounted) return;
     final revision = ++_voiceTestRevision;
     final l10n = AppLocalizations.of(context);
     final settings = _currentSettings();
@@ -798,7 +818,7 @@ class _CreateAiAudiodescriptionScreenState
         sourceVolume: _sourceVolume,
         ttsEngine: _ttsEngine,
         edgeLanguage: _edgeLanguage,
-        edgeVoice: _edgeVoice,
+        edgeVoice: _ttsEngine == 'gemini' ? _geminiVoice : _edgeVoice,
         systemLanguage: _systemLanguage,
         systemVoice: _systemVoice,
         ttsPitch: _voicePitch,
@@ -1625,6 +1645,9 @@ class _CreateAiAudiodescriptionScreenState
         case 'character_catalog':
           _characterCatalogName = value.isEmpty ? null : value;
           break;
+        case 'gemini_voice':
+          _geminiVoice = value;
+          break;
         case 'tts_engine':
           _ttsEngine = value;
           break;
@@ -1648,10 +1671,15 @@ class _CreateAiAudiodescriptionScreenState
       }
     });
     if (const {
-      'tts_engine', 'edge_language', 'edge_voice',
+      'tts_engine', 'gemini_voice', 'edge_language', 'edge_voice',
       'system_language', 'system_voice',
     }.contains(id)) {
       unawaited(_stopPreviews());
+    }
+    if (id == 'tts_engine' && value == 'gemini' && (_provider == 'sonarpad' ? _sonarpadCode.trim().isEmpty : _apiKey.trim().isEmpty)) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) unawaited(_formController.focusToReturnAfterStructureChange(_provider == 'sonarpad' ? 'sonarpad_code' : 'api_key'));
+      });
     }
     if (id == 'character_catalog') {
       await _persistCharacterCatalogPreference();
@@ -1746,17 +1774,18 @@ class _CreateAiAudiodescriptionScreenState
                     // focused native control (provider, voice, or other setting).
                     transientRowIds: const [
                       'source_audio_track',
-                      'api_key', 'get_api_key', 'model', 'refresh_models',
+                      'api_key', 'get_api_key', 'paste_gemini_key', 'model', 'refresh_models',
                       'sonarpad_code', 'activate_sonarpad', 'sonarpad_balance',
                       'sonarpad_model_info',
                       'mix_preview', 'mix_preview_status',
                       'load_character_catalog', 'keep_character_catalog',
                       'character_catalog',
-                      'edge_language', 'edge_voice',
+                      'edge_language', 'edge_voice', 'gemini_voice',
                       'system_language', 'system_voice',
                       'status', 'technical_error',
                     ],
-                    initialFocusId: 'choose_video',
+                    controller: _formController,
+                    initialFocusId: widget.focusGeminiApiKey ? (_provider == 'sonarpad' ? 'sonarpad_code' : 'api_key') : 'choose_video',
               sections: [
                 AccessibleListSection(
                   rows: [
@@ -1807,7 +1836,7 @@ class _CreateAiAudiodescriptionScreenState
                         enabled: !_running,
                       ),
                       AccessibleListRow(
-                        id: 'paste_ai_credential',
+                        id: _provider == 'gemini' ? 'paste_ai_credential' : 'paste_gemini_key',
                         title: l10n.settingsPasteCode,
                         enabled: !_running,
                       ),
@@ -1816,6 +1845,8 @@ class _CreateAiAudiodescriptionScreenState
                         title: l10n.audioDescriptionGetGeminiKey,
                         enabled: !_running,
                       ),
+                    ],
+                    if (_provider == 'gemini') ...[
                       AccessibleListRow(
                         id: 'model',
                         title: l10n.audioDescriptionGeminiModel,
@@ -2070,7 +2101,7 @@ class _CreateAiAudiodescriptionScreenState
                       id: 'tts_engine',
                       title: l10n.settingsReadingEngine,
                       value: _ttsEngine,
-                      valueLabel: _ttsEngine == 'system'
+                      valueLabel: _ttsEngine == 'gemini' ? 'Gemini' : _ttsEngine == 'system'
                           ? l10n.settingsSystemVoices
                           : l10n.settingsEdgeTtsQuality,
                       enabled: !_running,
@@ -2083,6 +2114,7 @@ class _CreateAiAudiodescriptionScreenState
                           value: 'system',
                           label: l10n.settingsSystemVoices,
                         ),
+                        const AccessibleOption(value: 'gemini', label: 'Gemini'),
                       ],
                     ),
                     if (_ttsEngine == 'edge') ...[
@@ -2114,6 +2146,12 @@ class _CreateAiAudiodescriptionScreenState
                                   label: item.label,
                                 ))
                             .toList(),
+                      ),
+                    ] else if (_ttsEngine == 'gemini') ...[
+                      _choiceSlider(
+                        id: 'gemini_voice', title: l10n.ttsVoice,
+                        value: _geminiVoice, valueLabel: _geminiVoice, enabled: !_running,
+                        options: GeminiTtsBridge.voices.map((voice) => AccessibleOption(value: voice, label: voice)).toList(),
                       ),
                     ] else ...[
                       if (_systemLanguageOptions(l10n).isNotEmpty)
@@ -2335,11 +2373,16 @@ class _CreateAiAudiodescriptionScreenState
                   });
                   if (id == 'api_key' && value.trim().isNotEmpty) {
                     unawaited(AiAudioDescriptionPreferences.saveGeminiApiKey(value));
+                  } else if (id == 'sonarpad_code' && value.trim().isNotEmpty) {
+                    await AiAudioDescriptionPreferences.saveSonarpadCode(value);
                   }
                 } else if (event.type == 'activate') {
                   switch (id) {
                     case 'choose_video':
                       await _chooseVideo();
+                      break;
+                    case 'paste_gemini_key':
+                      await _pasteAiCredential(geminiKey: true);
                       break;
                     case 'paste_ai_credential':
                       await _pasteAiCredential();

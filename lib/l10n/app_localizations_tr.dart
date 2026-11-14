@@ -6089,4 +6089,13 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get podcastNoBookmarks => 'Podcast yer imi yok.';
+
+  @override
+  String audioDescriptionRepairText(
+    String time,
+    String actual,
+    String available,
+  ) {
+    return '$time konumundaki açıklama $actual sn sürüyor; kullanılabilir süre $available sn. Metni kısaltmak ister misiniz?';
+  }
 }

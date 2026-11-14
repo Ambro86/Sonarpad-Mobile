@@ -6094,4 +6094,13 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get podcastNoBookmarks => 'Brak zakładek podcastów.';
+
+  @override
+  String audioDescriptionRepairText(
+    String time,
+    String actual,
+    String available,
+  ) {
+    return 'Opis w $time trwa $actual s; dostępny czas to $available s. Czy chcesz skrócić tekst?';
+  }
 }

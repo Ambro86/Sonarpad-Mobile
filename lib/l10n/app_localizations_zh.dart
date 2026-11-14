@@ -5846,6 +5846,15 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get podcastNoBookmarks => '没有播客书签。';
+
+  @override
+  String audioDescriptionRepairText(
+    String time,
+    String actual,
+    String available,
+  ) {
+    return '$time 处的描述时长为 $actual 秒，可用时间为 $available 秒。要缩短文本吗？';
+  }
 }
 
 /// The translations for Chinese, as used in China (`zh_CN`).
@@ -11690,4 +11699,13 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get podcastNoBookmarks => '没有播客书签。';
+
+  @override
+  String audioDescriptionRepairText(
+    String time,
+    String actual,
+    String available,
+  ) {
+    return '$time 处的描述时长为 $actual 秒，可用时间为 $available 秒。要缩短文本吗？';
+  }
 }

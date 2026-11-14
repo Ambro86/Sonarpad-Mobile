@@ -1,3 +1,4 @@
+import '../tts/gemini_tts_bridge.dart';
 import 'dart:async';
 import 'dart:io';
 
@@ -214,35 +215,36 @@ class AudiobookExportService {
     final voice = await _settings.loadTtsVoice();
     await AppLogger.log('Audiobook export Edge: voice=$voice');
     final files = <File>[];
+    var completed = 0;
 
-    for (var i = 0; i < chunks.length; i++) {
+    Future<File> generateChunk(int i) async {
       await _notifyProgress(
         onProgress,
         AudiobookExportProgress(
           stage: AudiobookExportProgressStage.generating,
-          current: i,
+          current: completed,
           total: chunks.length,
-          value: chunks.isEmpty ? null : (i / chunks.length) * 0.85,
+          value: chunks.isEmpty ? null : (completed / chunks.length) * 0.85,
         ),
       );
       final textToSpeak = _voiceDictionary.applyToText(chunks[i], dictionaryEntries);
-      final target = File(p.join(tempDir.path, 'chunk_${i.toString().padLeft(5, '0')}.mp3'));
+      final target = File(p.join(tempDir.path, 'chunk_${i.toString().padLeft(5, '0')}.${GeminiTtsBridge.voices.contains(voice) ? 'wav' : 'mp3'}'));
       final existingSize = await _validAudioSize(target);
       if (existingSize != null) {
         await AppLogger.log(
           'Audiobook export Edge: resume chunk ${i + 1}/${chunks.length} already exists file="${target.path}" bytes=$existingSize',
         );
-        files.add(target);
+        completed++;
         await _notifyProgress(
           onProgress,
           AudiobookExportProgress(
             stage: AudiobookExportProgressStage.generating,
-            current: i + 1,
+            current: completed,
             total: chunks.length,
-            value: ((i + 1) / chunks.length) * 0.85,
+            value: (completed / chunks.length) * 0.85,
           ),
         );
-        continue;
+        return target;
       }
 
       await AppLogger.log(
@@ -251,6 +253,7 @@ class AudiobookExportService {
       await _retryChunk(
         label: 'Edge chunk ${i + 1}/${chunks.length}',
         maxAttempts: _edgeChunkMaxAttempts,
+        retryEmptyMediaForever: GeminiTtsBridge.voices.contains(voice),
         action: () async {
           if (await target.exists()) {
             await target.delete();
@@ -266,16 +269,25 @@ class AudiobookExportService {
           );
         },
       );
-      files.add(target);
+      completed++;
       await _notifyProgress(
         onProgress,
         AudiobookExportProgress(
           stage: AudiobookExportProgressStage.generating,
-          current: i + 1,
+          current: completed,
           total: chunks.length,
-          value: ((i + 1) / chunks.length) * 0.85,
+          value: (completed / chunks.length) * 0.85,
         ),
       );
+      return target;
+    }
+
+    final parallelism = GeminiTtsBridge.voices.contains(voice) ? GeminiTtsBridge.maxParallelRequests : 1;
+    for (var start = 0; start < chunks.length; start += parallelism) {
+      final end = (start + parallelism).clamp(0, chunks.length);
+      files.addAll(await Future.wait([
+        for (var i = start; i < end; i++) generateChunk(i),
+      ]));
     }
 
     return files;
@@ -385,12 +397,13 @@ class AudiobookExportService {
   Future<void> _retryChunk({
     required String label,
     required int maxAttempts,
+    bool retryEmptyMediaForever = false,
     required Future<void> Function() action,
   }) async {
     Object? lastError;
     StackTrace? lastStack;
 
-    for (var attempt = 1; attempt <= maxAttempts; attempt++) {
+    for (var attempt = 1; ; attempt++) {
       try {
         if (attempt > 1) {
           await AppLogger.log(
@@ -405,12 +418,14 @@ class AudiobookExportService {
         }
         return;
       } catch (error, stack) {
+        if (error is GeminiTtsException) rethrow;
         lastError = error;
         lastStack = stack;
         await AppLogger.log(
           'Audiobook export retry: $label failed attempt $attempt/$maxAttempts: $error',
         );
-        if (attempt >= maxAttempts) break;
+        final emptyMedia = error.toString().contains('File Edge troppo piccolo');
+        if (attempt >= maxAttempts && !(retryEmptyMediaForever && emptyMedia)) break;
         await Future.delayed(_retryDelay(attempt));
       }
     }
@@ -418,13 +433,10 @@ class AudiobookExportService {
     await AppLogger.log(
       'Audiobook export retry: $label giving up after $maxAttempts attempts',
     );
-    if (lastStack != null) {
-      Error.throwWithStackTrace(
+    Error.throwWithStackTrace(
         Exception('Errore durante $label dopo $maxAttempts tentativi. Ultimo errore: $lastError'),
         lastStack,
       );
-    }
-    throw Exception('Errore durante $label dopo $maxAttempts tentativi. Ultimo errore: $lastError');
   }
 
   Duration _retryDelay(int failedAttempt) {
@@ -679,7 +691,8 @@ class AudiobookExportService {
       voicePart = 'system|$language|${voice ?? 'default'}';
     } else {
       final voice = await _settings.loadTtsVoice();
-      voicePart = 'edge|$voice';
+      voicePart = '$engine|$voice';
+      if (engine == 'gemini') voicePart += '|${await _settings.loadGeminiTtsLanguage()}';
     }
     final dictionaryPart = dictionaryEntries
         .map((entry) => '${entry.original}\t${entry.replacement}\t${entry.matchCase}')

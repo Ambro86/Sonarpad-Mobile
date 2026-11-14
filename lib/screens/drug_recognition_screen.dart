@@ -734,6 +734,7 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
   }
 
   Future<void> _stopCurrentSpeech({bool invalidateRequest = true}) async {
+    _edgeTts.cancelGeminiSpeech();
     if (invalidateRequest) _speechToken += 1;
     try {
       await _flutterTts.stop();
@@ -809,6 +810,7 @@ class _DrugRecognitionScreenState extends State<DrugRecognitionScreen> {
 
   @override
   void dispose() {
+    _edgeTts.cancelGeminiSpeech();
     _speechToken += 1;
     _instructionTimer?.cancel();
     _cameraController?.stopImageStream();
