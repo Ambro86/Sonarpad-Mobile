@@ -5080,5 +5080,8 @@
   "podcastBookmarks": "Semne de carte pentru podcasturi",
   "podcastNoBookmarks": "Nu există semne de carte pentru podcasturi.",
   "audioDescriptionRepairText": "Descrierea de la {time} durează {actual} s; timpul disponibil este de {available} s. Doriți să scurtați textul?",
-  "@audioDescriptionRepairText": {"placeholders": {"time": {"type": "String"}, "actual": {"type": "String"}, "available": {"type": "String"}}}
+  "@audioDescriptionRepairText": {"placeholders": {"time": {"type": "String"}, "actual": {"type": "String"}, "available": {"type": "String"}}},
+  "mediaCutterAudioCutMode": "Mod de tăiere audio",
+  "mediaCutterAudioCutAuto": "Automat: fără recodificare când este posibil",
+  "mediaCutterAudioCutPrecise": "Tăiere precisă cu recodificare"
 }

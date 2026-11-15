@@ -15,7 +15,7 @@ void main() {
     ).readAsStringSync();
 
     // Native rows expose discrete slider events and localized options.
-    for (final id in ['seek_step', 'rotation', 'save_scope', 'audio_video']) {
+    for (final id in ['seek_step', 'rotation', 'save_scope', 'audio_video', 'audio_cut_mode']) {
       expect(
         source,
         contains("id: '$id'"),
@@ -24,7 +24,7 @@ void main() {
       expect(source, contains("id: '$id',"), reason: 'Missing slider row $id');
     }
     // The Android/Flutter fallback has one stable semantics control per choice.
-    for (final id in ['seek_step', 'rotation', 'save_scope', 'audio_video']) {
+    for (final id in ['seek_step', 'rotation', 'save_scope', 'audio_video', 'audio_cut_mode']) {
       expect(
         source,
         contains("id: '$id',"),

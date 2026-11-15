@@ -1,3 +1,5 @@
+import '../services/tmdb_character_service.dart';
+import '../services/tmdb_character_strings.dart';
 import '../tts/gemini_tts_bridge.dart';
 import '../utils/edge_language_label.dart';
 import 'dart:async';
@@ -102,6 +104,8 @@ class _CreateAiAudiodescriptionScreenState
   bool _dialogueOverlap = false;
   bool _recognizeCharacters = true;
   bool _recognizeScreenText = true;
+  String _tmdbTitle = '';
+  String _tmdbYear = '';
   bool _keepCharacterCatalog = false;
   String? _characterCatalogName;
   List<String> _characterCatalogs = const [];
@@ -978,6 +982,21 @@ class _CreateAiAudiodescriptionScreenState
     }
   }
 
+  String _tmdbLabel(String key) => TmdbCharacterStrings.get(Localizations.localeOf(context).toLanguageTag(), key);
+
+  Future<int?> _chooseTmdb(String key, List<String> options) async {
+    if (!mounted || _cancelling) return null;
+    final l10n = AppLocalizations.of(context);
+    return showDialog<int>(context: context, builder: (dialogContext) => SimpleDialog(
+      title: Text(_tmdbLabel(key)),
+      children: [
+        for (var index = 0; index < options.length; index++)
+          SimpleDialogOption(onPressed: () => Navigator.pop(dialogContext, index), child: Text(options[index])),
+        SimpleDialogOption(onPressed: () => Navigator.pop(dialogContext), child: Text(l10n.cancel)),
+      ],
+    ));
+  }
+
   Future<void> _create({bool resumeOnly = false}) async {
     if (_running) return;
     final l10n = AppLocalizations.of(context);
@@ -1029,6 +1048,12 @@ class _CreateAiAudiodescriptionScreenState
       });
       await _persistCharacterCatalogPreference();
     }
+    if (!mounted) return;
+    if (!resumeOnly && _tmdbTitle.trim().isNotEmpty && _tmdbYear.trim().isNotEmpty
+        && !RegExp(r'^\d{4}$').hasMatch(_tmdbYear.trim())) {
+      showStatusMessage(context, _tmdbLabel('invalid_year'));
+      return;
+    }
     setState(() {
       _running = true;
       _generationActive = true;
@@ -1040,6 +1065,33 @@ class _CreateAiAudiodescriptionScreenState
     });
     try {
       await _stopPreviews();
+      var tmdbCharacters = <Map<String, Object?>>[];
+      if (!resumeOnly && _recognizeCharacters && _tmdbTitle.trim().isNotEmpty) {
+        if (!mounted) return;
+        setState(() => _stage = _tmdbLabel('searching'));
+        try {
+          final result = await TmdbCharacterService(language: Localizations.localeOf(context).toLanguageTag())
+              .resolve(_tmdbTitle.trim(), _tmdbYear.trim(), _chooseTmdb);
+          if (!mounted) return;
+          if (_cancelling || result == null) throw StateError('AUDIO_DESCRIPTION_CANCELLED');
+          tmdbCharacters = result;
+          if (result.any((item) => (item['tmdb'] as Map?)?['animation'] == true)) {
+            await showDialog<void>(context: context, builder: (dialogContext) => AlertDialog(
+              title: const Text('TMDB'), content: Text(_tmdbLabel('animation')),
+              actions: [TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text(l10n.ok))],
+            ));
+          }
+        } catch (error) {
+          if (!mounted) return;
+          if (_cancelling || error.toString().contains('AUDIO_DESCRIPTION_CANCELLED')) rethrow;
+          final proceed = await showDialog<bool>(context: context, builder: (dialogContext) => AlertDialog(
+            title: const Text('TMDB'), content: Text('${_tmdbLabel('continue_without')}\n\n$error'),
+            actions: [TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text(l10n.no)),
+              TextButton(onPressed: () => Navigator.pop(dialogContext, true), child: Text(l10n.yes))],
+          ));
+          if (proceed != true) return;
+        }
+      }
       if (_provider == 'sonarpad') {
         await AppLogger.log(
           'SONARPAD_AI_DIAG UI create dispatch provider=sonarpad language=$_language verbosity=$_verbosity '
@@ -1069,6 +1121,7 @@ class _CreateAiAudiodescriptionScreenState
         onOverlapConsent: _askOverlapFallback,
         onResumeCheckpoint: _askResumeCheckpoint,
         requireCheckpoint: resumeOnly,
+        tmdbCharacters: tmdbCharacters,
       );
       _generationActive = false;
       if (!mounted) return;
@@ -1779,7 +1832,7 @@ class _CreateAiAudiodescriptionScreenState
                       'sonarpad_model_info',
                       'mix_preview', 'mix_preview_status',
                       'load_character_catalog', 'keep_character_catalog',
-                      'character_catalog',
+                      'character_catalog', 'tmdb_title', 'tmdb_year',
                       'edge_language', 'edge_voice', 'gemini_voice',
                       'system_language', 'system_voice',
                       'status', 'technical_error',
@@ -2044,6 +2097,12 @@ class _CreateAiAudiodescriptionScreenState
                       toggleValue: _recognizeCharacters,
                       enabled: !_running,
                     ),
+                    if (_recognizeCharacters) ...[
+                      AccessibleListRow(id: 'tmdb_title', title: _tmdbLabel('title'),
+                        kind: 'textField', value: _tmdbTitle, enabled: !_running),
+                      AccessibleListRow(id: 'tmdb_year', title: _tmdbLabel('year'),
+                        kind: 'textField', value: _tmdbYear, enabled: !_running),
+                    ],
                     if (_recognizeCharacters)
                       AccessibleListRow(
                         id: 'load_character_catalog',
@@ -2362,6 +2421,12 @@ class _CreateAiAudiodescriptionScreenState
                   final value = event.value?.toString() ?? '';
                   setState(() {
                     switch (id) {
+                      case 'tmdb_title':
+                        _tmdbTitle = value;
+                        break;
+                      case 'tmdb_year':
+                        _tmdbYear = value;
+                        break;
                       case 'api_key':
                         _apiKey = value;
                         break;

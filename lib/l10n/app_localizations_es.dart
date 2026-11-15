@@ -6137,4 +6137,14 @@ class AppLocalizationsEs extends AppLocalizations {
   ) {
     return 'La descripción en $time dura $actual s; el espacio disponible es de $available s. ¿Quieres acortar el texto?';
   }
+
+  @override
+  String get mediaCutterAudioCutMode => 'Modo de corte de audio';
+
+  @override
+  String get mediaCutterAudioCutAuto =>
+      'Automático: sin recodificar cuando sea posible';
+
+  @override
+  String get mediaCutterAudioCutPrecise => 'Corte preciso con recodificación';
 }

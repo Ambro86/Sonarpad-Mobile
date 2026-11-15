@@ -1024,6 +1024,18 @@ class AudioDescriptionFallbacks {
     List<Map<String, Object?>> incoming, {
     int maxCharacters = 96,
   }) {
+    final references = <String, Map<String, Object?>>{};
+    for (final item in [...established, ...incoming]) {
+      if (item['tmdb'] is Map) references['${item['id']}'] = Map<String, Object?>.from(item);
+    }
+    if (references.isNotEmpty) {
+      final regular = mergeCharacterCatalog(
+        established.where((item) => item['tmdb'] is! Map).toList(),
+        incoming.where((item) => item['tmdb'] is! Map).toList(),
+        maxCharacters: maxCharacters,
+      );
+      return [...regular, ...references.values.take(96)];
+    }
     final merged = <Map<String, Object?>>[];
 
     Map<String, Object?>? normalize(Map<String, Object?> raw) {
@@ -1039,6 +1051,7 @@ class AudioDescriptionFallbacks {
         'id': id,
         'name': name,
         'description': description,
+        if (raw['provisional'] == true) 'provisional': true,
       };
     }
 
@@ -1048,6 +1061,7 @@ class AudioDescriptionFallbacks {
       final index = _findCharacterMatch(merged, candidate);
       if (index >= 0) {
         final current = merged[index];
+        if (current['provisional'] == true) { merged[index] = candidate; continue; }
         merged[index] = <String, Object?>{
           'id':
               '${current['id'] ?? ''}'.trim().isEmpty &&
@@ -1072,6 +1086,7 @@ class AudioDescriptionFallbacks {
       final index = _findCharacterMatch(merged, candidate);
       if (index >= 0) {
         final current = merged[index];
+        if (current['provisional'] == true) { merged[index] = candidate; continue; }
         final mayFillId =
             index >= authoritativeCount &&
             '${current['id'] ?? ''}'.trim().isEmpty &&
@@ -1377,6 +1392,7 @@ class AudioDescriptionFallbacks {
 
   static String mimeTypeForPath(String path) {
     final lower = path.toLowerCase();
+    if (lower.endsWith('.jpg') || lower.endsWith('.jpeg')) return 'image/jpeg';
     if (lower.endsWith('.mkv')) return 'video/x-matroska';
     if (lower.endsWith('.webm')) return 'video/webm';
     if (lower.endsWith('.mov')) return 'video/quicktime';

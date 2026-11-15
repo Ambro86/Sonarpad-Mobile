@@ -6658,5 +6658,8 @@
   "podcastBookmarks": "Podcast-Lesezeichen",
   "podcastNoBookmarks": "Keine Podcast-Lesezeichen.",
   "audioDescriptionRepairText": "Die Beschreibung bei {time} dauert {actual} s; verfügbar sind {available} s. Möchten Sie den Text kürzen?",
-  "@audioDescriptionRepairText": {"placeholders": {"time": {"type": "String"}, "actual": {"type": "String"}, "available": {"type": "String"}}}
+  "@audioDescriptionRepairText": {"placeholders": {"time": {"type": "String"}, "actual": {"type": "String"}, "available": {"type": "String"}}},
+  "mediaCutterAudioCutMode": "Audio-Schnittmodus",
+  "mediaCutterAudioCutAuto": "Automatisch: möglichst ohne Neukodierung",
+  "mediaCutterAudioCutPrecise": "Präziser Schnitt mit Neukodierung"
 }

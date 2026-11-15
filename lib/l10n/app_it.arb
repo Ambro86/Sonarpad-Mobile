@@ -6721,5 +6721,8 @@
   "podcastBookmarks": "Segnalibri podcast",
   "podcastNoBookmarks": "Nessun segnalibro podcast.",
   "audioDescriptionRepairText": "La descrizione a {time} dura {actual} s; lo spazio disponibile è {available} s. Vuoi accorciare il testo?",
-  "@audioDescriptionRepairText": {"placeholders": {"time": {"type": "String"}, "actual": {"type": "String"}, "available": {"type": "String"}}}
+  "@audioDescriptionRepairText": {"placeholders": {"time": {"type": "String"}, "actual": {"type": "String"}, "available": {"type": "String"}}},
+  "mediaCutterAudioCutMode": "Modalità taglio audio",
+  "mediaCutterAudioCutAuto": "Automatico: senza ricodifica quando possibile",
+  "mediaCutterAudioCutPrecise": "Taglio preciso con ricodifica"
 }

@@ -126,6 +126,37 @@ void main() {
     },
   );
 
+  test(
+    'audio copy is only enabled for unprocessed audio and can be disabled',
+    () {
+      bool eligible({
+        bool precise = false,
+        bool video = false,
+        bool audio = true,
+        bool edits = false,
+        bool inserted = false,
+        bool track = false,
+        bool makeVideo = false,
+      }) => cutterCanCopyAudio(
+        precise: precise,
+        hasVideo: video,
+        hasAudio: audio,
+        hasEdits: edits,
+        hasInsertedMedia: inserted,
+        hasAddedTrack: track,
+        makesVideo: makeVideo,
+      );
+      expect(eligible(), isTrue);
+      expect(eligible(precise: true), isFalse);
+      expect(eligible(video: true), isFalse);
+      expect(eligible(audio: false), isFalse);
+      expect(eligible(edits: true), isFalse);
+      expect(eligible(inserted: true), isFalse);
+      expect(eligible(track: true), isFalse);
+      expect(eligible(makeVideo: true), isFalse);
+    },
+  );
+
   bool available;
   try {
     available =
@@ -183,6 +214,109 @@ void main() {
     expect(result.exitCode, 0, reason: '${result.stderr}');
     return result.stdout as List<int>;
   }
+
+  test(
+    'real mono AAC cuts preserve encoded packets, size and audio properties',
+    () async {
+      final input = '${root.path}/recording.m4a';
+      await ffmpeg([
+        '-y',
+        '-f',
+        'lavfi',
+        '-i',
+        'sine=frequency=440:duration=12',
+        '-c:a',
+        'aac',
+        '-b:a',
+        '48k',
+        '-ar',
+        '48000',
+        '-ac',
+        '1',
+        input,
+      ]);
+      Future<List<String>> hashes(String path) async {
+        final result = await Process.run('ffprobe', [
+          '-v',
+          'error',
+          '-select_streams',
+          'a:0',
+          '-show_packets',
+          '-show_data_hash',
+          'sha256',
+          '-show_entries',
+          'packet=data_hash',
+          '-of',
+          'json',
+          path,
+        ]);
+        expect(result.exitCode, 0);
+        return (jsonDecode(result.stdout as String)['packets'] as List)
+            .map((p) => p['data_hash'] as String)
+            .toList();
+      }
+
+      final originals = (await hashes(input)).toSet();
+      final segments = <String>[];
+      for (final start in [1.125, 8.375]) {
+        final output = '${root.path}/cut$start.m4a';
+        final begin = Duration(microseconds: (start * 1000000).round());
+        await ffmpeg(
+          cutterAudioCopyArguments(
+            range: CutterSourceRange(
+              input,
+              begin,
+              begin + const Duration(seconds: 2),
+            ),
+            output: output,
+            audioMap: '0:0',
+          ),
+        );
+        final packets = await hashes(output);
+        expect(packets, isNotEmpty);
+        expect(
+          packets.every(originals.contains),
+          isTrue,
+          reason: 'No AAC packets should be re-encoded',
+        );
+        segments.add(output);
+      }
+      final list = File('${root.path}/concat.txt');
+      await list.writeAsString(
+        segments.map((p) => "file '${p.replaceAll('\\', '/')}'").join('\n'),
+      );
+      final output = '${root.path}/result.m4a';
+      await ffmpeg([
+        '-y',
+        '-fflags',
+        '+genpts',
+        '-f',
+        'concat',
+        '-safe',
+        '0',
+        '-i',
+        list.path,
+        '-c',
+        'copy',
+        '-avoid_negative_ts',
+        'make_zero',
+        output,
+      ]);
+      final info = await probe(output);
+      final stream = (info['streams'] as List).first;
+      expect(stream['codec_name'], 'aac');
+      expect(stream['channels'], 1);
+      expect(stream['sample_rate'], '48000');
+      expect(double.parse(info['format']['duration']), closeTo(4, 0.15));
+      expect(
+        await File(output).length(),
+        lessThan((await File(input).length()) * 0.45),
+      );
+      expect((await hashes(output)).every(originals.contains), isTrue);
+      await ffmpeg(['-i', output, '-f', 'null', '-']);
+    },
+    skip: skip,
+  );
 
   test(
     'real audio exports to black video and chosen image with audio and correct duration',

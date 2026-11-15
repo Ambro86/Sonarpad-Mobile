@@ -5083,5 +5083,8 @@
   "podcastBookmarks": "Záložky podcastů",
   "podcastNoBookmarks": "Žádné záložky podcastů.",
   "audioDescriptionRepairText": "Popis v čase {time} trvá {actual} s; k dispozici je {available} s. Chcete text zkrátit?",
-  "@audioDescriptionRepairText": {"placeholders": {"time": {"type": "String"}, "actual": {"type": "String"}, "available": {"type": "String"}}}
+  "@audioDescriptionRepairText": {"placeholders": {"time": {"type": "String"}, "actual": {"type": "String"}, "available": {"type": "String"}}},
+  "mediaCutterAudioCutMode": "Režim střihu zvuku",
+  "mediaCutterAudioCutAuto": "Automaticky: pokud možno bez překódování",
+  "mediaCutterAudioCutPrecise": "Přesný střih s překódováním"
 }

@@ -434,6 +434,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
   String _inputPath = '';
   String? _savePartKey;
   _AudioVideoExport _audioVideoExport = _AudioVideoExport.audio;
+  bool _preciseAudioCut = false;
   String? _exportImage;
   final Set<String> _insertedWorkFiles = {};
 
@@ -4725,6 +4726,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     _MediaCutterExportController exportController,
     AppLocalizations l10n, {
     List<CutterSourceRange>? inputRanges,
+    bool forceReencode = false,
   }) async {
     final input = _inputPath;
     var source =
@@ -4759,6 +4761,18 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         inputRanges == null &&
         !source.hasVideo &&
         _audioVideoExport != _AudioVideoExport.audio;
+    final copyAudio = cutterCanCopyAudio(
+      precise: _preciseAudioCut || forceReencode,
+      hasVideo: source.hasVideo,
+      hasAudio: source.hasAudio,
+      hasEdits: keptParts.any(
+        (part) =>
+            part.volumePercent != 100 || _activeEffectSlots(part).isNotEmpty,
+      ),
+      hasInsertedMedia: inputRanges != null,
+      hasAddedTrack: _addedTrackSettings != null,
+      makesVideo: makeStillVideo,
+    );
     final sourceSnapshots = <String, FileStat>{
       for (final path in probes.keys) path: await File(path).stat(),
     };
@@ -4906,7 +4920,15 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                   : _normalizeAudioFilter(selectedRawAudioFilter))
             : null;
         final args = <String>[];
-        if (inputRanges != null) {
+        if (copyAudio) {
+          args.addAll(
+            cutterAudioCopyArguments(
+              range: CutterSourceRange(segmentInput, part.start, part.end),
+              output: segment,
+              audioMap: _inputStreamMap(source, video: false),
+            ),
+          );
+        } else if (inputRanges != null) {
           args.addAll(
             cutterInsertionSegmentArguments(
               range: inputRanges[i],
@@ -5126,7 +5148,7 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
             deepDecode: false,
           );
         } catch (error) {
-          if (error is _MediaCutterExportCancelled) rethrow;
+          if (error is _MediaCutterExportCancelled || copyAudio) rethrow;
           needsReencode = true;
           await AppLogger.log(
             'Media cutter: concat stream copy rejected; '
@@ -5262,6 +5284,24 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
           'export production completed output="$output" '
           'segments=${segmentPaths.length} source=${source.logSummary}',
         ),
+      );
+    } catch (error) {
+      if (!copyAudio ||
+          error is _MediaCutterExportCancelled ||
+          error is _MediaCutterOutputWriteException ||
+          exportController.cancelled) {
+        rethrow;
+      }
+      await AppLogger.log(
+        'Media cutter: original audio copy failed; retrying precise export: $error',
+      );
+      await _exportKeptParts(
+        keptParts,
+        output,
+        exportController,
+        l10n,
+        inputRanges: inputRanges,
+        forceReencode: true,
       );
     } finally {
       await _deleteFileIfExists(File(pendingOutput), 'pending output');
@@ -5553,6 +5593,11 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
     }
     return candidate;
   }
+
+  List<AccessibleOption> _audioCutChoices(AppLocalizations l10n) => [
+    AccessibleOption(value: 'auto', label: l10n.mediaCutterAudioCutAuto),
+    AccessibleOption(value: 'precise', label: l10n.mediaCutterAudioCutPrecise),
+  ];
 
   String _outputExtension(String inputPath) {
     final currentProbe = inputPath == _inputPath ? _inputProbe : null;
@@ -7810,6 +7855,13 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
       ),
       if (!_isVideo && _inputPath.isNotEmpty) ...[
         _choiceSliderRow(
+          id: 'audio_cut_mode',
+          title: l10n.mediaCutterAudioCutMode,
+          value: _preciseAudioCut ? 'precise' : 'auto',
+          choices: _audioCutChoices(l10n),
+          enabled: canUseMedia,
+        ),
+        _choiceSliderRow(
           id: 'audio_video',
           title: l10n.mediaCutterExportVideo,
           value: _audioVideoExport.name,
@@ -7858,6 +7910,9 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
               () => _savePartKey = options[selectedIndex].value.toString(),
             );
           }
+        } else if (id == 'audio_cut_mode' && event.type == 'slider') {
+          final index = _choiceSliderIndex(event.value, 2);
+          if (index != null) setState(() => _preciseAudioCut = index == 1);
         } else if (id == 'audio_video' && event.type == 'slider') {
           final selectedIndex = _choiceSliderIndex(
             event.value,
@@ -8197,6 +8252,16 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
                           setState(() => _savePartKey = value),
                     ),
                     if (!_isVideo && _inputPath.isNotEmpty) ...[
+                      _buildFlutterChoiceSlider(
+                        id: 'audio_cut_mode',
+                        title: l10n.mediaCutterAudioCutMode,
+                        selectedValue: _preciseAudioCut ? 'precise' : 'auto',
+                        choices: _audioCutChoices(l10n),
+                        enabled: canUseMedia,
+                        onChanged: (value) => setState(
+                          () => _preciseAudioCut = value == 'precise',
+                        ),
+                      ),
                       _buildFlutterChoiceSlider(
                         id: 'audio_video',
                         title: l10n.mediaCutterExportVideo,

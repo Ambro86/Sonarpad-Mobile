@@ -10979,6 +10979,24 @@ abstract class AppLocalizations {
     String actual,
     String available,
   );
+
+  /// No description provided for @mediaCutterAudioCutMode.
+  ///
+  /// In it, this message translates to:
+  /// **'Modalità taglio audio'**
+  String get mediaCutterAudioCutMode;
+
+  /// No description provided for @mediaCutterAudioCutAuto.
+  ///
+  /// In it, this message translates to:
+  /// **'Automatico: senza ricodifica quando possibile'**
+  String get mediaCutterAudioCutAuto;
+
+  /// No description provided for @mediaCutterAudioCutPrecise.
+  ///
+  /// In it, this message translates to:
+  /// **'Taglio preciso con ricodifica'**
+  String get mediaCutterAudioCutPrecise;
 }
 
 class _AppLocalizationsDelegate

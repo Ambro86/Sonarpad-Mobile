@@ -6105,4 +6105,14 @@ class AppLocalizationsNl extends AppLocalizations {
   ) {
     return 'De beschrijving op $time duurt $actual s; er is $available s beschikbaar. Wilt u de tekst inkorten?';
   }
+
+  @override
+  String get mediaCutterAudioCutMode => 'Audioknipmodus';
+
+  @override
+  String get mediaCutterAudioCutAuto =>
+      'Automatisch: zonder hercodering waar mogelijk';
+
+  @override
+  String get mediaCutterAudioCutPrecise => 'Nauwkeurig knippen met hercodering';
 }

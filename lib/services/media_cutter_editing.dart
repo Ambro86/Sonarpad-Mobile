@@ -185,3 +185,49 @@ List<String> cutterStillVideoArguments({
   '+faststart',
   output,
 ];
+
+/// Effects and mixed sources still use the established normalized exporter.
+bool cutterCanCopyAudio({
+  required bool precise,
+  required bool hasVideo,
+  required bool hasAudio,
+  required bool hasEdits,
+  required bool hasInsertedMedia,
+  required bool hasAddedTrack,
+  required bool makesVideo,
+}) =>
+    !precise &&
+    !hasVideo &&
+    hasAudio &&
+    !hasEdits &&
+    !hasInsertedMedia &&
+    !hasAddedTrack &&
+    !makesVideo;
+
+List<String> cutterAudioCopyArguments({
+  required CutterSourceRange range,
+  required String output,
+  required String audioMap,
+}) => [
+  '-y',
+  '-ss',
+  (range.start.inMicroseconds / 1000000).toStringAsFixed(6),
+  '-i',
+  range.path,
+  '-t',
+  (range.duration.inMicroseconds / 1000000).toStringAsFixed(6),
+  '-map',
+  audioMap,
+  '-vn',
+  '-sn',
+  '-dn',
+  '-c:a',
+  'copy',
+  '-map_metadata',
+  '0',
+  '-map_chapters',
+  '-1',
+  '-avoid_negative_ts',
+  'make_zero',
+  output,
+];

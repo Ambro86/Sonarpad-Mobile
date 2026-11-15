@@ -6090,4 +6090,14 @@ class AppLocalizationsCs extends AppLocalizations {
   ) {
     return 'Popis v čase $time trvá $actual s; k dispozici je $available s. Chcete text zkrátit?';
   }
+
+  @override
+  String get mediaCutterAudioCutMode => 'Režim střihu zvuku';
+
+  @override
+  String get mediaCutterAudioCutAuto =>
+      'Automaticky: pokud možno bez překódování';
+
+  @override
+  String get mediaCutterAudioCutPrecise => 'Přesný střih s překódováním';
 }

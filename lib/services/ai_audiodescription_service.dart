@@ -1,3 +1,4 @@
+import 'tmdb_character_service.dart';
 import '../tts/gemini_tts_bridge.dart';
 import 'dart:async';
 import 'dart:convert';
@@ -764,6 +765,66 @@ typedef AiAudioDescriptionOverlapConsentCallback = Future<bool> Function();
 typedef AiAudioDescriptionResumeCallback = Future<bool> Function(String checkpointPath);
 
 class AiAudioDescriptionService {
+  static const _subjectClarityRule = 'SUBJECT CLARITY FOR LISTENERS: Always make it clear who performs each action. Use the recognized character name, or a concise identifying visual description when the identity is unknown. A pronoun or omitted subject is allowed only when the referent is immediately and unambiguously clear from the spoken descriptions alone, without seeing the video. Repeat the explicit subject after a scene change, a change of acting character, an intervening description of someone else, or a pause that makes the reference unclear. When several people are present, name or identify the acting person whenever a pronoun could refer to more than one of them. Clarity takes priority over avoiding repetition: repeating a name is preferable to an ambiguous subject. Do not mechanically omit a name just because it appeared in the previous description. Do not invent an identity or add words that violate the available timing budget.';
+
+  final List<Object?> _tmdbParts = [];
+  final List<Map<String, Object?>> _tmdbCandidates = [];
+  final List<String> _tmdbUploadIds = [];
+
+  Future<void> _prepareTmdbReferences(List<Map<String, Object?>> glossary,
+      AiAudioDescriptionSettings settings, String? token) async {
+    _tmdbCandidates.addAll(glossary.where((item) => item['tmdb'] is Map).take(96));
+    if (_tmdbCandidates.isEmpty) return;
+    _tmdbParts.add({'text': '${TmdbCharacterService.identityRule} Target language: ${settings.languageCode}.\nCAST CANDIDATES (not verified identities in the video):\n${jsonEncode(_tmdbCandidates)}'});
+    final seen = <String>{};
+    for (final item in _tmdbCandidates) {
+      _checkCancel();
+      final metadata = item['tmdb'] as Map;
+      final url = metadata['profile_image_url']?.toString() ?? '';
+      if (metadata['animation'] == true || !TmdbCharacterService.validImageUrl(url) || !seen.add(url)) continue;
+      try {
+        final file = await TmdbCharacterService.downloadImage(url);
+        _checkCancel();
+        Map<String, Object?> image;
+        if (settings.provider == 'sonarpad') {
+          final activeToken = await AiAudioDescriptionPreferences.loadSonarpadToken() ?? token;
+          if (activeToken == null) throw StateError('Missing Sonarpad AI session');
+          final uploaded = await _uploadViaSonarpadAi(chunkPath: file.path,
+              activeToken: activeToken, trace: _nextSonarpadAiTrace('tmdb'), optionalReference: true);
+          image = {'fileData': {'mimeType': 'image/jpeg', 'fileUri': uploaded.fileUri}};
+        } else {
+          image = {'inlineData': {'mimeType': 'image/jpeg', 'data': base64Encode(await file.readAsBytes())}};
+        }
+        _tmdbParts.add({'text': 'Reference portrait of actor ${metadata['actor_name']}; candidate role: ${item['name']}. Not a video frame or a confirmed match.'});
+        _tmdbParts.add(image);
+      } catch (error) {
+        _checkCancel();
+        await AppLogger.log('Optional TMDB portrait unavailable (${error.runtimeType}); continuing with text.');
+      }
+    }
+    await AppLogger.log('TMDB references: ${_tmdbCandidates.length} candidates, ${(_tmdbParts.length - 1) ~/ 2} portraits attached.');
+  }
+
+  Future<void> _cleanupTmdbReferences() async {
+    final ids = List<String>.from(_tmdbUploadIds);
+    _tmdbUploadIds.clear(); _tmdbParts.clear(); _tmdbCandidates.clear();
+    if (ids.isEmpty) return;
+    final cleanupClient = http.Client();
+    try {
+      final token = await AiAudioDescriptionPreferences.loadSonarpadToken();
+      for (final id in ids) {
+        try {
+          await cleanupClient.post(Uri.parse('$_sonarpadAiBase/upload/delete'),
+            headers: {'Authorization': 'Bearer $token', 'Content-Type': _sonarpadAiJsonContentType,
+              'User-Agent': _sonarpadAiUserAgent}, body: jsonEncode({'upload_id': id}))
+              .timeout(const Duration(seconds: 15));
+        } catch (_) { await AppLogger.log('Optional TMDB remote portrait cleanup failed.'); }
+      }
+    } catch (_) {
+      await AppLogger.log('Optional TMDB remote portrait cleanup unavailable.');
+    } finally { cleanupClient.close(); }
+  }
+
   static const _dialogueOverlapInstruction =
       'EXPLICIT USER OPTION: Narration during dialogue and commentary is permitted. '
       'This overrides only instructions to avoid or omit descriptions during speech. '
@@ -1572,6 +1633,8 @@ class AiAudioDescriptionService {
         'id': raw['id']?.toString().trim() ?? '',
         'name': name,
         'description': description,
+        if (raw['tmdb'] is Map) 'tmdb': Map<String, Object?>.from(raw['tmdb'] as Map),
+        if (raw['provisional'] == true) 'provisional': true,
       });
     }
     return AudioDescriptionFallbacks.mergeCharacterCatalog(
@@ -1586,7 +1649,8 @@ class AiAudioDescriptionService {
     List<Map<String, Object?>> incoming,
   ) {
     return AudioDescriptionFallbacks.mergeCharacterCatalog(
-      _normalizeCatalogCharacters(established),
+      _normalizeCatalogCharacters(incoming.any((item) => item['tmdb'] is Map)
+          ? established.where((item) => item['tmdb'] is! Map).toList() : established),
       _normalizeCatalogCharacters(incoming),
       maxCharacters: 96,
     );
@@ -1607,8 +1671,12 @@ class AiAudioDescriptionService {
     AiAudioDescriptionOverlapConsentCallback? onOverlapConsent,
     AiAudioDescriptionResumeCallback? onResumeCheckpoint,
     bool requireCheckpoint = false,
+    List<Map<String, Object?>> tmdbCharacters = const [],
   }) async {
     _resetCancellation();
+    _tmdbParts.clear();
+    _tmdbCandidates.clear();
+    _tmdbUploadIds.clear();
     final source = File(sourcePath);
     if (!await source.exists()) throw StateError('AUDIO_DESCRIPTION_SOURCE_MISSING');
     if (settings.provider == 'sonarpad') {
@@ -1718,6 +1786,10 @@ class AiAudioDescriptionService {
               effectiveCharacterCatalogName.isNotEmpty
           ? await loadCharacterCatalog(effectiveCharacterCatalogName)
           : <Map<String, Object?>>[];
+      if (tmdbCharacters.isNotEmpty && settings.recognizeCharacters) {
+        loadedGlossary.removeWhere((item) => item['tmdb'] is Map);
+        loadedGlossary.addAll(tmdbCharacters);
+      }
       // Windows parity: the established character continuity collection stays
       // mutable for the whole generation. A catalog loaded from JSON must not
       // become a fixed-length Dart list, because every accepted chunk can add
@@ -1788,6 +1860,9 @@ class AiAudioDescriptionService {
         );
       }
 
+      if (settings.recognizeCharacters) {
+        await _prepareTmdbReferences(glossary, settings, token);
+      }
       for (var chunkIndex = startChunk; chunkIndex < chunkCount; chunkIndex++) {
         _checkCancel();
         final chunkStart = chunkIndex * _visualChunkSeconds;
@@ -1891,7 +1966,9 @@ class AiAudioDescriptionService {
       _checkCancel();
       var normalized = _dedupeDescriptions(descriptions);
       if (settings.recognizeCharacters) {
-        normalized = _suppressRepeatedLeadingCharacterNames(normalized, glossary);
+        normalized = _suppressRepeatedLeadingCharacterNames(
+          normalized, glossary, languageCode: settings.languageCode,
+        );
       }
       if (normalized.isEmpty) {
         throw StateError('AUDIO_DESCRIPTION_NO_DESCRIPTIONS');
@@ -2154,6 +2231,7 @@ class AiAudioDescriptionService {
       _checkCancel();
       rethrow;
     } finally {
+      await _cleanupTmdbReferences();
       _activeEdgeTts.clear();
       _activeSystemTts = null;
       if (oldWakelock != null) {
@@ -2630,7 +2708,7 @@ class AiAudioDescriptionService {
       localChunkDurationSec: chunkEnd - chunkStart,
     );
     final characterContinuityText = enableGlossary && glossary.isNotEmpty
-        ? jsonEncode(glossary)
+        ? jsonEncode(glossary.where((item) => item['tmdb'] is! Map).toList())
         : '';
     final recentDescriptionsText = _formatWindowsRecentDescriptions(
       recentDescriptions,
@@ -2648,20 +2726,18 @@ class AiAudioDescriptionService {
           'catalog is authoritative. Reuse an established catalog name and ID when the '
           'person is confidently recognized, even if that name is not spoken again in this '
           'clip. For a genuinely new character, use a proper name only after it is clearly '
-          'revealed in dialogue. Do not invent names or duplicate an established identity.';
-      subjectRepetitionDirective =
-          "7.  **AVOID REPEATING THE SUBJECT'S NAME:** When immediately consecutive "
-          'descriptions clearly keep the same character as their subject, write the full '
-          'name only in the first description. Then use a natural pronoun or omit the subject '
-          'when the target language allows it. Repeat the name after a scene or subject change, '
-          'a long gap, or whenever omission could be unclear.';
+          'revealed in dialogue and clearly linked to that person. A name merely mentioned '
+          'in dialogue does not identify the person on screen. If the link between a name '
+          'and a person is uncertain, use a concise visual label rather than forcing a name. '
+          'Do not invent names or duplicate an established identity.';
+      subjectRepetitionDirective = '7.  **MAKE THE ACTING SUBJECT CLEAR:** $_subjectClarityRule';
       systemMission =
           'You are an expert Audio Describer. Analyze the provided video and generate '
           'a character glossary plus timed audio descriptions in one JSON object.';
       glossarySchema = '''1.  **"character_glossary":** An array of objects, where each object represents a distinct character. Each character object must contain:
     *   `"id"`: The permanent identity key. If the character matches an established saved-catalog entry, return EXACTLY that existing ID, character-for-character. Never shorten it, regenerate it from the visible/spoken name, or create an alias ID. Only a genuinely new character may receive a new unique descriptive ID (e.g., "man_in_red_shirt").
     *   `"description"`: For a genuinely new character, provide a definitive physical description in $targetLanguageName. For an ESTABLISHED catalog character, do NOT rewrite, summarize, correct, or paraphrase the saved biography. Return only genuinely NEW visual appearance information observed in this clip (for example a new outfit, hat, bandage, glasses, injury, or other distinguishing visible detail). If there is no genuinely new visual fact, repeat the established description exactly rather than inventing a variation. Never add or alter relationships, names, ages, roles, backstory, or other non-visual facts for an established character.
-    *   `"name"`: For an established character, keep the established catalog name. For a genuinely new character, use a proper name only if it is spoken clearly in the video; otherwise use a concise visual label.''';
+    *   `"name"`: For an established character, keep the established catalog name. For a genuinely new character, use a proper name only if it is spoken clearly in the video and unambiguously linked to that person; a mere mention is not enough. Otherwise use a concise visual label.''';
       exampleGlossaryJson = jsonEncode(<Map<String, Object?>>[
         <String, Object?>{
           'id': 'man_in_suit',
@@ -2675,9 +2751,8 @@ class AiAudioDescriptionService {
           'do not infer identity across clips, and use concise generic visual references '
           'such as the man, the woman, the child, or the driver.';
       subjectRepetitionDirective =
-          '7.  **AVOID REPETITIVE SUBJECT LABELS:** When consecutive descriptions clearly '
-          'keep the same person as their subject, use a pronoun or omit the subject when this '
-          'remains clear. Do not introduce a name or infer identity across clips.';
+          '7.  **MAKE THE ACTING SUBJECT CLEAR:** $_subjectClarityRule '
+          'Do not introduce a name or infer identity across clips; use clear generic visual references.';
       systemMission =
           'You are an expert Audio Describer. Analyze the provided video and generate '
           'timed audio descriptions only. Character recognition and glossary creation are disabled.';
@@ -2857,7 +2932,7 @@ $nonverbalInstruction''';
       if (settings.recognizeScreenText)
         'Printed end-credit names may still be read under the selected-credits rule.',
       '\n**Current Task Specifications:**',
-      '*   **Target language for every natural-language output field (`description_text` and `character_glossary[].description`):** $targetLanguageName. Names and JSON keys must remain unchanged.',
+      '*   **Target language for every natural-language output field (`description_text` and `character_glossary[].description`):** $targetLanguageName. IDs and JSON keys must remain unchanged; character names follow the TMDB localization rule when supplied, otherwise remain unchanged.',
       '*   **Verbosity Level:** $verbosityInstruction',
     ];
     if (settings.allowNonverbalVocals && nonverbalCandidates.isNotEmpty) {
@@ -2920,7 +2995,7 @@ $nonverbalInstruction''';
     if (recentDescriptionsText.isNotEmpty) {
       userPromptParts.addAll(<String>[
         '*   **RECENT DESCRIPTIONS IMMEDIATELY BEFORE THIS CLIP:** $recentDescriptionsText',
-        '*   These entries are context only and must not be returned again. If this clip directly continues the same scene with the same clear subject, follow the rule against repeating that subject\'s name. After a scene or subject change, restore an explicit name whenever needed for clarity.',
+        '*   These entries are context only and must not be returned again. Prioritize subject clarity for listeners over avoiding repeated names. Repeat the explicit subject whenever the acting person could be ambiguous, including after a scene change or a pause.',
       ]);
     }
     if (fallbackClipTimeline) {
@@ -2933,7 +3008,14 @@ $nonverbalInstruction''';
       systemInstruction += '\n$_dialogueOverlapInstruction';
       userPromptParts.add(_dialogueOverlapInstruction);
     }
+    if (_tmdbCandidates.isNotEmpty && settings.recognizeCharacters) {
+      systemInstruction += '\n${TmdbCharacterService.identityRule} Target language: ${settings.languageCode}.';
+    }
+    if (characterContinuityText.contains('"provisional":true')) {
+      userPromptParts.add('Entries marked provisional are hypotheses, not authoritative identities. Reassess and correct them using the current video.');
+    }
     return _GeminiPromptBundle(
+      characterReferences: _tmdbCandidates.isNotEmpty && settings.recognizeCharacters,
       systemInstruction: systemInstruction,
       userPrompt: userPromptParts.join('\n'),
     );
@@ -3060,12 +3142,8 @@ $nonverbalInstruction''';
   }) {
     final enableGlossary = settings.recognizeCharacters;
     final recoverySubjectRule = enableGlossary
-        ? 'When consecutive descriptions keep the same character as their clear subject, use '
-            'the character\'s full name only in the first one; then use a natural pronoun or omit '
-            'the subject when the target language allows it. Repeat the name after a scene or '
-            'subject change, a long interval, or whenever omission could be ambiguous. '
-        : 'Do not identify or name characters and do not infer identity across clips. Use concise '
-            'generic visual references, with pronouns or omitted subjects only when they remain clear. ';
+        ? '$_subjectClarityRule '
+        : '$_subjectClarityRule Do not identify or name characters and do not infer identity across clips; use clear generic visual references. ';
     var systemInstruction =
         'You recover missing coverage in long-form audio description. Inspect only the explicitly '
         'listed missing ranges in the attached video. Describe the important visible actions and '
@@ -3124,7 +3202,7 @@ $nonverbalInstruction''';
     }
     if (enableGlossary && glossary.isNotEmpty) {
       promptParts.add(
-        'Established named characters from earlier clips: ${jsonEncode(glossary)}',
+        'Character observations from earlier clips (provisional identities may be corrected): ${jsonEncode(glossary.where((item) => item['tmdb'] is! Map).toList())}',
       );
       promptParts.add(
         'Reuse an established name only when the visible person\'s identity and stable physical appearance match; otherwise use a generic label.',
@@ -3138,7 +3216,10 @@ $nonverbalInstruction''';
       promptParts.add(_dialogueOverlapInstruction);
     }
     return _GeminiPromptBundle(
-      systemInstruction: systemInstruction,
+      characterReferences: _tmdbCandidates.isNotEmpty && enableGlossary,
+      systemInstruction: _tmdbCandidates.isNotEmpty && enableGlossary
+          ? '$systemInstruction\n${TmdbCharacterService.identityRule} Target language: ${settings.languageCode}.'
+          : systemInstruction,
       userPrompt: promptParts.join('\n'),
     );
   }
@@ -3569,7 +3650,10 @@ $nonverbalInstruction''';
       sonarpadToken: sonarpadToken,
       activeGeminiModel: model,
       prompt: _GeminiPromptBundle(
-        systemInstruction: systemInstruction,
+        characterReferences: _tmdbCandidates.isNotEmpty && settings.recognizeCharacters,
+        systemInstruction: _tmdbCandidates.isNotEmpty && settings.recognizeCharacters
+            ? '$systemInstruction\n${TmdbCharacterService.identityRule} Target language: ${settings.languageCode}.'
+            : systemInstruction,
         userPrompt: userPrompt,
       ),
       idempotencyKey: 'ad-repair-${const Uuid().v4()}',
@@ -4543,7 +4627,10 @@ $nonverbalInstruction''';
   ) {
     final merged = AudioDescriptionFallbacks.mergeCharacterCatalog(
       current,
-      incoming,
+      [for (final item in incoming) {
+        ...item,
+        if (_tmdbCandidates.isNotEmpty) 'provisional': true,
+      }],
       // Windows generate_descriptions_chunked keeps up to 96 established and
       // newly observed characters throughout the episode/series continuity.
       maxCharacters: 96,
@@ -4586,8 +4673,12 @@ $nonverbalInstruction''';
   List<_GeneratedDescription> _suppressRepeatedLeadingCharacterNames(
     List<_GeneratedDescription> descriptions,
     List<Map<String, Object?>> glossary, {
+    required String languageCode,
     double maxGapSec = 20.0,
   }) {
+    if (AudioDescriptionFallbacks.normalizeLanguageCode(languageCode) != 'it') {
+      return List<_GeneratedDescription>.of(descriptions);
+    }
     final names = _characterNamesFromGlossary(glossary);
     if (descriptions.isEmpty || names.isEmpty) {
       return List<_GeneratedDescription>.of(descriptions);
@@ -7087,6 +7178,7 @@ $nonverbalInstruction''';
     final preferInline = AudioDescriptionFallbacks.shouldUseInlineVideo(bytes);
 
     Future<_AiGenerationResult> runWithParts(List<Object?> parts) async {
+      if (prompt.characterReferences) parts = [...parts, ..._tmdbParts];
       var prohibitedCount = 0;
       var malformedCount = 0;
       while (true) {
@@ -7417,46 +7509,18 @@ $nonverbalInstruction''';
     } catch (_) {}
   }
 
-  Future<_AiGenerationResult> _generateViaSonarpadAi({
-    required String chunkPath,
-    required String token,
-    required String sonarpadCode,
-    required String modelHint,
-    required _GeminiPromptBundle prompt,
-    required String idempotencyKey,
-    bool enableThinking = true,
+  Future<({String uploadId, String fileUri})> _uploadViaSonarpadAi({
+    required String chunkPath, required String activeToken, required String trace,
+    bool optionalReference = false,
     AiAudioDescriptionHighDemandCallback? onHighDemand,
-    int prohibitedAttempts = AudioDescriptionFallbacks.prohibitedContentMaxAttempts,
-    bool allowSafetyResponse = false,
-    bool allowSessionReactivation = true,
   }) async {
-    final trace = _nextSonarpadAiTrace('chunk');
     final file = File(chunkPath);
     final length = await file.length();
-    final savedToken = await AiAudioDescriptionPreferences.loadSonarpadToken();
-    var activeToken = savedToken ?? token;
     final mime = AudioDescriptionFallbacks.mimeTypeForPath(chunkPath);
-    await _logSonarpadAi(
-      '$trace START chunk=${p.basename(chunkPath)} bytes=$length mime=$mime '
-      'modelHint=$modelHint enableThinking=$enableThinking idempotencyKey=$idempotencyKey '
-      'allowSessionReactivation=$allowSessionReactivation prohibitedAttempts=$prohibitedAttempts '
-      'inputTokenDiag=${_tokenDiagnostics(token)} savedTokenPresent=${savedToken != null} '
-      'activeTokenSource=${savedToken != null ? 'saved' : 'argument'} '
-      'activeTokenDiag=${_tokenDiagnostics(activeToken)} '
-      'code={${_sonarpadCodeDiagnostics(sonarpadCode)}} '
-      'systemInstructionChars=${prompt.systemInstruction.length} '
-      'systemInstructionFingerprint=${_secretFingerprint(prompt.systemInstruction)} '
-      'userPromptChars=${prompt.userPrompt.length} userPromptFingerprint=${_secretFingerprint(prompt.userPrompt)}',
-    );
-
-    Future<_AiGenerationResult> attempt() async {
-      await _logSonarpadAi('$trace ATTEMPT begin activeToken=${_tokenDiagnostics(activeToken)}');
-      Map<String, String> headers() => <String, String>{
-        'Authorization': 'Bearer $activeToken',
-        'Content-Type': _sonarpadAiJsonContentType,
-        'Accept': 'application/json',
-        'User-Agent': _sonarpadAiUserAgent,
-      };
+    Map<String, String> headers() => {
+      'Authorization': 'Bearer $activeToken', 'Content-Type': _sonarpadAiJsonContentType,
+      'Accept': 'application/json', 'User-Agent': _sonarpadAiUserAgent,
+    };
       final start = await _postJsonWithRetry(
         Uri.parse('$_sonarpadAiBase/upload/start'),
         headers: headers(),
@@ -7468,6 +7532,7 @@ $nonverbalInstruction''';
         timeout: const Duration(seconds: 60),
         label: 'Sonarpad AI upload/start',
         onHighDemand: onHighDemand,
+        maxAttempts: optionalReference ? 1 : null,
       );
       if (start.statusCode == 401 || start.statusCode == 403) {
         throw _AdProviderException(
@@ -7503,6 +7568,7 @@ $nonverbalInstruction''';
         throw StateError('SONARPAD_AI_UPLOAD_START_INVALID');
       }
 
+      if (optionalReference) _tmdbUploadIds.add(uploadId);
       final uploaded = await _streamFileUpload(
         uploadUrl,
         file,
@@ -7544,6 +7610,7 @@ $nonverbalInstruction''';
         timeout: const Duration(minutes: 3),
         label: 'Sonarpad AI upload/complete',
         onHighDemand: onHighDemand,
+        maxAttempts: optionalReference ? 1 : null,
         boundFileVerificationFailures: true,
       );
       if (complete.statusCode == 401 || complete.statusCode == 403) {
@@ -7582,6 +7649,54 @@ $nonverbalInstruction''';
         throw StateError('SONARPAD_AI_FILE_URI_MISSING');
       }
 
+    return (uploadId: uploadId, fileUri: fileUri);
+  }
+
+  Future<_AiGenerationResult> _generateViaSonarpadAi({
+    required String chunkPath,
+    required String token,
+    required String sonarpadCode,
+    required String modelHint,
+    required _GeminiPromptBundle prompt,
+    required String idempotencyKey,
+    bool enableThinking = true,
+    AiAudioDescriptionHighDemandCallback? onHighDemand,
+    int prohibitedAttempts = AudioDescriptionFallbacks.prohibitedContentMaxAttempts,
+    bool allowSafetyResponse = false,
+    bool allowSessionReactivation = true,
+  }) async {
+    final trace = _nextSonarpadAiTrace('chunk');
+    final file = File(chunkPath);
+    final length = await file.length();
+    final savedToken = await AiAudioDescriptionPreferences.loadSonarpadToken();
+    var activeToken = savedToken ?? token;
+    final mime = AudioDescriptionFallbacks.mimeTypeForPath(chunkPath);
+    await _logSonarpadAi(
+      '$trace START chunk=${p.basename(chunkPath)} bytes=$length mime=$mime '
+      'modelHint=$modelHint enableThinking=$enableThinking idempotencyKey=$idempotencyKey '
+      'allowSessionReactivation=$allowSessionReactivation prohibitedAttempts=$prohibitedAttempts '
+      'inputTokenDiag=${_tokenDiagnostics(token)} savedTokenPresent=${savedToken != null} '
+      'activeTokenSource=${savedToken != null ? 'saved' : 'argument'} '
+      'activeTokenDiag=${_tokenDiagnostics(activeToken)} '
+      'code={${_sonarpadCodeDiagnostics(sonarpadCode)}} '
+      'systemInstructionChars=${prompt.systemInstruction.length} '
+      'systemInstructionFingerprint=${_secretFingerprint(prompt.systemInstruction)} '
+      'userPromptChars=${prompt.userPrompt.length} userPromptFingerprint=${_secretFingerprint(prompt.userPrompt)}',
+    );
+
+    Future<_AiGenerationResult> attempt() async {
+      await _logSonarpadAi('$trace ATTEMPT begin activeToken=${_tokenDiagnostics(activeToken)}');
+      Map<String, String> headers() => <String, String>{
+        'Authorization': 'Bearer $activeToken',
+        'Content-Type': _sonarpadAiJsonContentType,
+        'Accept': 'application/json',
+        'User-Agent': _sonarpadAiUserAgent,
+      };
+      final upload = await _uploadViaSonarpadAi(chunkPath: chunkPath,
+          activeToken: activeToken, trace: trace, onHighDemand: onHighDemand);
+      final uploadId = upload.uploadId;
+      final fileUri = upload.fileUri;
+
       var prohibitedCount = 0;
       var malformedCount = 0;
       try {
@@ -7600,6 +7715,7 @@ $nonverbalInstruction''';
                 <String, Object?>{
                   'role': 'user',
                   'parts': <Object?>[
+                    if (prompt.characterReferences) ..._tmdbParts,
                     <String, Object?>{'text': prompt.userPrompt},
                     <String, Object?>{
                       'fileData': <String, Object?>{
@@ -7852,6 +7968,7 @@ $nonverbalInstruction''';
     required String label,
     AiAudioDescriptionHighDemandCallback? onHighDemand,
     bool boundFileVerificationFailures = false,
+    int? maxAttempts,
   }) async {
     var highDemandFailures = 0;
     var highDemandDecisionTaken = false;
@@ -7862,6 +7979,7 @@ $nonverbalInstruction''';
     while (true) {
       _checkCancel();
       attempt++;
+      if (maxAttempts != null && attempt > maxAttempts) throw StateError('OPTIONAL_REFERENCE_UPLOAD_FAILED');
       final encodedBody = jsonEncode(body);
       if (isSonarpadAi) {
         await _logSonarpadAi(
@@ -8071,7 +8189,7 @@ $nonverbalInstruction''';
       // direct Google upload before BODY_STREAMED was ever logged.
       final sendFuture = _http
           .send(request)
-          .timeout(const Duration(minutes: 8));
+          .timeout(mimeType == 'image/jpeg' ? const Duration(seconds: 30) : const Duration(minutes: 8));
       // Attach an error listener immediately so cancellation via _http.close()
       // cannot surface as an unhandled asynchronous error while the file body
       // is still being streamed. The same Future is awaited below afterwards.
@@ -8657,8 +8775,10 @@ class _GeminiPromptBundle {
   const _GeminiPromptBundle({
     required this.systemInstruction,
     required this.userPrompt,
+    this.characterReferences = false,
   });
 
+  final bool characterReferences;
   final String systemInstruction;
   final String userPrompt;
 }

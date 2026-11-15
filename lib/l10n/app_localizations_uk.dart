@@ -6086,4 +6086,14 @@ class AppLocalizationsUk extends AppLocalizations {
   ) {
     return 'Опис о $time триває $actual с; доступний час — $available с. Бажаєте скоротити текст?';
   }
+
+  @override
+  String get mediaCutterAudioCutMode => 'Режим обрізання аудіо';
+
+  @override
+  String get mediaCutterAudioCutAuto =>
+      'Автоматично: без перекодування, якщо можливо';
+
+  @override
+  String get mediaCutterAudioCutPrecise => 'Точне обрізання з перекодуванням';
 }

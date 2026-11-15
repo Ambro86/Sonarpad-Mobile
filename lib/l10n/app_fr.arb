@@ -5086,5 +5086,8 @@
   "podcastBookmarks": "Signets des podcasts",
   "podcastNoBookmarks": "Aucun signet de podcast.",
   "audioDescriptionRepairText": "La description à {time} dure {actual} s ; le temps disponible est de {available} s. Voulez-vous raccourcir le texte ?",
-  "@audioDescriptionRepairText": {"placeholders": {"time": {"type": "String"}, "actual": {"type": "String"}, "available": {"type": "String"}}}
+  "@audioDescriptionRepairText": {"placeholders": {"time": {"type": "String"}, "actual": {"type": "String"}, "available": {"type": "String"}}},
+  "mediaCutterAudioCutMode": "Mode de découpe audio",
+  "mediaCutterAudioCutAuto": "Automatique : sans réencodage si possible",
+  "mediaCutterAudioCutPrecise": "Découpe précise avec réencodage"
 }

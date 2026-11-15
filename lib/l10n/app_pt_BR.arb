@@ -5086,5 +5086,8 @@
   "podcastBookmarks": "Marcadores de podcasts",
   "podcastNoBookmarks": "Nenhum marcador de podcast.",
   "audioDescriptionRepairText": "A descrição em {time} dura {actual} s; o espaço disponível é de {available} s. Deseja encurtar o texto?",
-  "@audioDescriptionRepairText": {"placeholders": {"time": {"type": "String"}, "actual": {"type": "String"}, "available": {"type": "String"}}}
+  "@audioDescriptionRepairText": {"placeholders": {"time": {"type": "String"}, "actual": {"type": "String"}, "available": {"type": "String"}}},
+  "mediaCutterAudioCutMode": "Modo de corte de áudio",
+  "mediaCutterAudioCutAuto": "Automático: sem recodificação quando possível",
+  "mediaCutterAudioCutPrecise": "Corte preciso com recodificação"
 }

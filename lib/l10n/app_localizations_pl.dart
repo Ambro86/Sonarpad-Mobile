@@ -6103,4 +6103,15 @@ class AppLocalizationsPl extends AppLocalizations {
   ) {
     return 'Opis w $time trwa $actual s; dostępny czas to $available s. Czy chcesz skrócić tekst?';
   }
+
+  @override
+  String get mediaCutterAudioCutMode => 'Tryb przycinania dźwięku';
+
+  @override
+  String get mediaCutterAudioCutAuto =>
+      'Automatycznie: bez ponownego kodowania, jeśli możliwe';
+
+  @override
+  String get mediaCutterAudioCutPrecise =>
+      'Dokładne przycinanie z ponownym kodowaniem';
 }

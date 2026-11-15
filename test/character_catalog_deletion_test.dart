@@ -56,6 +56,25 @@ void main() {
     expect(await File('${root.path}/Audiodescriptions/Catalogs/First.json').exists(), isTrue);
   });
 
+  test('TMDB catalog persists photo links and reloads them without image data', () async {
+    const cast = <Map<String, Object?>>[
+      {'id': 'tmdb_1981_1_credit', 'name': 'Prue', 'description': 'Cast candidate',
+        'provisional': true, 'tmdb': <String, Object?>{
+          'actor_name': 'Actor', 'person_id': 1, 'production_id': 1981,
+          'profile_image_url': 'https://image.tmdb.org/t/p/w185/portrait.jpg',
+          'animation': false,
+        }},
+    ];
+    await service.saveCharacterCatalog('TMDB', cast);
+    final reopened = await AiAudioDescriptionService().loadCharacterCatalog('TMDB');
+    expect(reopened.single['tmdb'], cast.single['tmdb']);
+    expect(reopened.single['provisional'], isTrue);
+    final raw = await File('${root.path}/Audiodescriptions/Catalogs/TMDB.json').readAsString();
+    expect(raw, contains('https://image.tmdb.org/t/p/w185/portrait.jpg'));
+    expect(raw, isNot(contains('inlineData')));
+    expect(raw, isNot(contains('base64')));
+  });
+
   test('deleting Catalogs or its parent also hides old copies on next launch', () async {
     for (final folder in ['Catalogs', 'Audiodescriptions']) {
       await service.saveCharacterCatalog('First', characters);

@@ -6118,4 +6118,14 @@ class AppLocalizationsRo extends AppLocalizations {
   ) {
     return 'Descrierea de la $time durează $actual s; timpul disponibil este de $available s. Doriți să scurtați textul?';
   }
+
+  @override
+  String get mediaCutterAudioCutMode => 'Mod de tăiere audio';
+
+  @override
+  String get mediaCutterAudioCutAuto =>
+      'Automat: fără recodificare când este posibil';
+
+  @override
+  String get mediaCutterAudioCutPrecise => 'Tăiere precisă cu recodificare';
 }

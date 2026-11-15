@@ -3,6 +3,27 @@ import 'package:http/http.dart' as http;
 import '../models/tmdb_movie.dart';
 
 class TmdbService {
+  Future<Map<String, dynamic>> characterLookup(
+    String action,
+    Map<String, String> parameters, {
+    String languageCode = 'it',
+  }) async {
+    final uri = Uri.parse(_baseUrl).replace(
+      queryParameters: {
+        'action': action,
+        'language': _tmdbLanguage(languageCode),
+        ...parameters,
+      },
+    );
+    final response = await http
+        .get(uri, headers: _headers)
+        .timeout(const Duration(seconds: 25));
+    if (response.statusCode != 200) {
+      throw Exception('TMDB HTTP ${response.statusCode}');
+    }
+    return Map<String, dynamic>.from(jsonDecode(response.body) as Map);
+  }
+
   // Usa il proxy PHP per nascondere la chiave API
   static const String _baseUrl = 'https://sonarpad.com/api/tmdb.php';
   

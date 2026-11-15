@@ -5080,5 +5080,8 @@
   "podcastBookmarks": "Podcast yer imleri",
   "podcastNoBookmarks": "Podcast yer imi yok.",
   "audioDescriptionRepairText": "{time} konumundaki açıklama {actual} sn sürüyor; kullanılabilir süre {available} sn. Metni kısaltmak ister misiniz?",
-  "@audioDescriptionRepairText": {"placeholders": {"time": {"type": "String"}, "actual": {"type": "String"}, "available": {"type": "String"}}}
+  "@audioDescriptionRepairText": {"placeholders": {"time": {"type": "String"}, "actual": {"type": "String"}, "available": {"type": "String"}}},
+  "mediaCutterAudioCutMode": "Ses kesme modu",
+  "mediaCutterAudioCutAuto": "Otomatik: mümkünse yeniden kodlamadan",
+  "mediaCutterAudioCutPrecise": "Yeniden kodlayarak hassas kesim"
 }

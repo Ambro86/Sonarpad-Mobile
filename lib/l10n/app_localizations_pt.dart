@@ -6120,6 +6120,16 @@ class AppLocalizationsPt extends AppLocalizations {
   ) {
     return 'A descrição em $time dura $actual s; o espaço disponível é de $available s. Quer encurtar o texto?';
   }
+
+  @override
+  String get mediaCutterAudioCutMode => 'Modo de corte de áudio';
+
+  @override
+  String get mediaCutterAudioCutAuto =>
+      'Automático: sem recodificação quando possível';
+
+  @override
+  String get mediaCutterAudioCutPrecise => 'Corte preciso com recodificação';
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
@@ -12230,4 +12240,14 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   ) {
     return 'A descrição em $time dura $actual s; o espaço disponível é de $available s. Deseja encurtar o texto?';
   }
+
+  @override
+  String get mediaCutterAudioCutMode => 'Modo de corte de áudio';
+
+  @override
+  String get mediaCutterAudioCutAuto =>
+      'Automático: sem recodificação quando possível';
+
+  @override
+  String get mediaCutterAudioCutPrecise => 'Corte preciso com recodificação';
 }

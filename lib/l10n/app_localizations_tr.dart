@@ -6098,4 +6098,13 @@ class AppLocalizationsTr extends AppLocalizations {
   ) {
     return '$time konumundaki açıklama $actual sn sürüyor; kullanılabilir süre $available sn. Metni kısaltmak ister misiniz?';
   }
+
+  @override
+  String get mediaCutterAudioCutMode => 'Ses kesme modu';
+
+  @override
+  String get mediaCutterAudioCutAuto => 'Otomatik: mümkünse yeniden kodlamadan';
+
+  @override
+  String get mediaCutterAudioCutPrecise => 'Yeniden kodlayarak hassas kesim';
 }
