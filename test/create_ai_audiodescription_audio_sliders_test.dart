@@ -89,6 +89,7 @@ class _CompletedDescriptionService extends _SourceTrackService {
     AiAudioDescriptionOverlapConsentCallback? onOverlapConsent,
     AiAudioDescriptionResumeCallback? onResumeCheckpoint,
     bool requireCheckpoint = false,
+    List<Map<String, Object?>> tmdbCharacters = const [],
   }) async => result;
 }
 

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/tmdb_movie.dart';
+import '../utils/app_logger.dart';
 
 class TmdbService {
   Future<Map<String, dynamic>> characterLookup(
@@ -19,7 +20,8 @@ class TmdbService {
         .get(uri, headers: _headers)
         .timeout(const Duration(seconds: 25));
     if (response.statusCode != 200) {
-      throw Exception('TMDB HTTP ${response.statusCode}');
+      await AppLogger.log('TMDB lookup HTTP status=${response.statusCode}');
+      throw StateError('TMDB_LOOKUP_FAILED');
     }
     return Map<String, dynamic>.from(jsonDecode(response.body) as Map);
   }

@@ -788,7 +788,7 @@ class AiAudioDescriptionService {
         Map<String, Object?> image;
         if (settings.provider == 'sonarpad') {
           final activeToken = await AiAudioDescriptionPreferences.loadSonarpadToken() ?? token;
-          if (activeToken == null) throw StateError('Missing Sonarpad AI session');
+          if (activeToken == null) throw StateError('SONARPAD_AI_TOKEN_MISSING');
           final uploaded = await _uploadViaSonarpadAi(chunkPath: file.path,
               activeToken: activeToken, trace: _nextSonarpadAiTrace('tmdb'), optionalReference: true);
           image = {'fileData': {'mimeType': 'image/jpeg', 'fileUri': uploaded.fileUri}};

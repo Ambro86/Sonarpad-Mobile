@@ -5857,13 +5857,13 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get mediaCutterAudioCutMode => '音訊剪輯模式';
+  String get mediaCutterAudioCutMode => '音频剪辑模式';
 
   @override
-  String get mediaCutterAudioCutAuto => '自動：盡可能不重新編碼';
+  String get mediaCutterAudioCutAuto => '自动：尽可能不重新编码';
 
   @override
-  String get mediaCutterAudioCutPrecise => '重新編碼以精確剪輯';
+  String get mediaCutterAudioCutPrecise => '重新编码以精确剪辑';
 }
 
 /// The translations for Chinese, as used in China (`zh_CN`).

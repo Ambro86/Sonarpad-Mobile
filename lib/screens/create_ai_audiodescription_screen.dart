@@ -1084,8 +1084,9 @@ class _CreateAiAudiodescriptionScreenState
         } catch (error) {
           if (!mounted) return;
           if (_cancelling || error.toString().contains('AUDIO_DESCRIPTION_CANCELLED')) rethrow;
+          unawaited(AppLogger.log('TMDB lookup failed: $error'));
           final proceed = await showDialog<bool>(context: context, builder: (dialogContext) => AlertDialog(
-            title: const Text('TMDB'), content: Text('${_tmdbLabel('continue_without')}\n\n$error'),
+            title: const Text('TMDB'), content: Text(_tmdbLabel('continue_without')),
             actions: [TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text(l10n.no)),
               TextButton(onPressed: () => Navigator.pop(dialogContext, true), child: Text(l10n.yes))],
           ));

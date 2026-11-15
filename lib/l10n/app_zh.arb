@@ -5081,7 +5081,7 @@
   "podcastNoBookmarks": "没有播客书签。",
   "audioDescriptionRepairText": "{time} 处的描述时长为 {actual} 秒，可用时间为 {available} 秒。要缩短文本吗？",
   "@audioDescriptionRepairText": {"placeholders": {"time": {"type": "String"}, "actual": {"type": "String"}, "available": {"type": "String"}}},
-  "mediaCutterAudioCutMode": "音訊剪輯模式",
-  "mediaCutterAudioCutAuto": "自動：盡可能不重新編碼",
-  "mediaCutterAudioCutPrecise": "重新編碼以精確剪輯"
+  "mediaCutterAudioCutMode": "音频剪辑模式",
+  "mediaCutterAudioCutAuto": "自动：尽可能不重新编码",
+  "mediaCutterAudioCutPrecise": "重新编码以精确剪辑"
 }
