@@ -144,11 +144,13 @@ void main() {
 
     expect(adapter, contains("const String sonarpadGoHomeActionId = 'go_to_home'"));
     expect(adapter, contains('CustomSemanticsAction(label: l10n.goToHome)'));
-    expect(adapter, contains('action: () => goToSonarpadHome(context)'));
+    expect(adapter, contains('action: _goHome'));
     expect(adapter, contains('Navigator.of(context, rootNavigator: true)'));
     expect(adapter, contains('navigator.popUntil((route) => route.isFirst)'));
-    expect(adapter, contains('if (hasBackNavigation && showHomeButton) const SonarpadVisualHomeButton()'));
+    expect(adapter, contains('if (hasBackNavigation && showHomeButton)'));
     expect(adapter, contains('class SonarpadVisualHomeButton'));
+    expect(adapter, contains('widget.onGoHome!()'));
+    expect(adapter, contains('effectiveLeading.onGoHome'));
     expect(adapter, contains('return ExcludeSemantics('));
   });
 

@@ -1,3 +1,4 @@
+import 'package:sonarpad_mobile_starter/tts/gemini_tts_bridge.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -54,16 +55,18 @@ void main() {
     AccessibleListRow row(String id) => form().sections.expand((section) => section.rows).singleWhere((row) => row.id == id);
     expect(row('gemini_language').options, hasLength(15));
     expect(row('gemini_language').options.first.label, 'Detect automatically');
-    expect(row('gemini_language').options.any((option) => option.value == 'pt_BR'), isTrue);
+    expect(row('gemini_language').kind, 'slider');
+    expect(row('gemini_language').options.any((option) => option.label.contains('Brazil')), isTrue);
     final voice = row('gemini_voice').value;
-    await form().onEvent!(const AccessibleListEvent(type: 'picker', id: 'gemini_language', value: 'it'));
+    await row('gemini_language').onValueChanged!(
+      (GeminiTtsBridge.languageInstructions.keys.toList().indexOf('it') + 1).toDouble());
     await tester.pumpAndSettle();
     expect(row('gemini_voice').value, voice);
     expect(row('gemini_language').valueLabel, 'Italian');
-    await form().onEvent!(const AccessibleListEvent(type: 'picker', id: 'tts_engine', value: 'edge'));
+    await row('tts_engine').onValueChanged!(0.0);
     await tester.pumpAndSettle();
     await tester.runAsync(() async {
-      await form().onEvent!(const AccessibleListEvent(type: 'picker', id: 'tts_engine', value: 'gemini'));
+      await row('tts_engine').onValueChanged!(2.0);
     });
     await tester.pumpAndSettle();
     expect(row('gemini_language').value, 'it');
