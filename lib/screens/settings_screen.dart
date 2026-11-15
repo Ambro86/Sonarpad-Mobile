@@ -1185,10 +1185,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
               AccessibleOption(value: 'tr', label: l10n.languageLabel('tr')),
             ],
           ),
-          AccessibleListRow(
+          _voiceChoiceSlider(
             id: 'theme',
             title: l10n.settingsTheme,
-            kind: 'picker',
             value: _themeMode.value,
             valueLabel: switch (_themeMode) {
               SonarpadThemeMode.light => l10n.settingsThemeLight,
@@ -1201,10 +1200,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
               AccessibleOption(value: 'dark', label: l10n.settingsThemeDark),
             ],
           ),
-          AccessibleListRow(
+          _voiceChoiceSlider(
             id: 'temperature_unit',
             title: l10n.settingsWeatherTemperatureUnit,
-            kind: 'picker',
             value: _weatherTemperatureUnit.value,
             valueLabel: _weatherTemperatureUnit == WeatherTemperatureUnit.celsius
                 ? l10n.weatherTemperatureCelsius
@@ -1465,9 +1463,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
         ],
       ),
-      if (showItalianOnlySettings)
-        AccessibleListSection(
-          rows: [
+      // Keep section indices stable when the pending app language changes.
+      AccessibleListSection(
+          rows: [if (showItalianOnlySettings) ...[
             AccessibleListRow(
               id: 'seek_step',
               title: l10n.settingsSeekStep,
@@ -1492,7 +1490,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             AccessibleListRow(id: 'paste_secret_code', title: l10n.settingsPasteCode, kind: 'button'),
             AccessibleListRow(id: 'request_secret_code', title: l10n.settingsRequestCode, kind: 'button'),
-          ],
+          ]],
         ),
       if (_developerModeEnabled && canChooseAccessibleRendererAtRuntime)
         AccessibleListSection(
@@ -1531,6 +1529,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       transientRowIds: const [
         'edge_multilingual_voices', 'edge_language', 'edge_voice',
         'gemini_language', 'gemini_voice', 'system_language', 'system_voice',
+        'seek_step', 'tv_secret_code', 'paste_secret_code', 'request_secret_code',
       ],
       sections: sections,
       onEvent: (event) async {
@@ -1777,6 +1776,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Future<void> _changeVoiceChoice(String id, String value) async {
     if (_loading || _isSaving || !mounted) return;
     switch (id) {
+      case 'theme':
+        setState(() => _themeMode = SonarpadThemeMode.values.firstWhere(
+          (mode) => mode.value == value, orElse: () => SonarpadThemeMode.system));
+        break;
+      case 'temperature_unit':
+        setState(() => _weatherTemperatureUnit = WeatherTemperatureUnit.values.firstWhere(
+          (unit) => unit.value == value, orElse: () => WeatherTemperatureUnit.celsius));
+        break;
       case 'app_language':
         if (value.isNotEmpty) setState(() => _appLanguage = value);
         break;

@@ -71,7 +71,7 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             navigatorKey: nav,
-            locale: const Locale('en'),
+            locale: const Locale('it'),
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
             home: const Scaffold(body: Text('Home')),
@@ -137,7 +137,23 @@ void main() {
         final l10n = AppLocalizations.of(
           tester.element(find.byType(SettingsScreen)),
         );
+        final initialTheme = row('theme');
+        final initialTemperature = row('temperature_unit');
+        for (final theme in [1.0, 2.0, 0.0]) {
+          await choose('theme', theme);
+          expect(row('temperature_unit').value, initialTemperature.value);
+          expect(row('tts_engine').value, 'edge');
+        }
+        for (final unit in [1.0, 0.0, 1.0]) {
+          await choose('temperature_unit', unit);
+          expect(row('theme').value, 'system');
+          expect(row('tts_engine').value, 'edge');
+        }
+        await choose('theme', initialTheme.sliderValue);
+        await choose('temperature_unit', initialTemperature.sliderValue);
         final initialAppLanguage = row('app_language');
+        await choose('app_language', 0);
+        expect(row('seek_step').kind, 'slider');
         await choose('app_language', 3);
         expect(row('app_language').value, 'es');
         expect(row('tts_engine').value, 'edge');
@@ -161,6 +177,11 @@ void main() {
         expect(row('tts_engine').value, 'gemini');
         expect(tester.getSemantics(engineFinder).id, engineNodeId);
         final geminiVoice = row('gemini_voice').value;
+        for (final index in [0.0, 1.0, 0.0, 2.0, 0.0]) {
+          await choose('app_language', index);
+          expect(row('gemini_voice').value, geminiVoice);
+          expect(row('tts_engine').value, 'gemini');
+        }
         await choose('gemini_language', 1);
         expect(row('gemini_voice').value, geminiVoice);
         final chosenLanguage = row('gemini_language').value;
