@@ -562,7 +562,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     setState(() => _isSaving = false);
 
     // Evita di ricostruire inutilmente tutto il MaterialApp quando l'utente
-    // salva solo il motore/voce TTS. Su iOS questa ricostruzione può far
+    // salva solo il motore/voce TTS. Su iOS questa ricostruzione puÃƒÂ² far
     // perdere temporaneamente il focus e l'albero semantico a VoiceOver.
     if (themeChanged) {
       widget.onThemeModeChanged?.call(_themeMode);
@@ -591,16 +591,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
         'savedSystemVoice=$_savedSystemTtsVoice newSystemVoice=$_systemTtsVoice',
       );
 
-      // Qualunque impostazione venga salvata può lasciare attive sessioni
+      // Qualunque impostazione venga salvata puÃƒÂ² lasciare attive sessioni
       // audio di prova o una sessione TTS inizializzata mentre l'utente era
       // nella schermata impostazioni. Prima di restituire il focus a
       // VoiceOver/TalkBack le fermiamo sempre.
       await _audio.stop();
       await _flutterTts.stop();
 
-      // La parte più delicata è iOS: se il motore finale è Edge, il TTS di
+      // La parte piÃƒÂ¹ delicata ÃƒÂ¨ iOS: se il motore finale ÃƒÂ¨ Edge, il TTS di
       // sistema non deve restare con una shared session attiva. La protezione
-      // viene applicata anche se è cambiata una qualsiasi altra impostazione,
+      // viene applicata anche se ÃƒÂ¨ cambiata una qualsiasi altra impostazione,
       // non solo quando cambia voce o motore TTS.
       if (Platform.isIOS && _ttsEngine != 'system') {
         await _flutterTts.autoStopSharedSession(true);
@@ -930,7 +930,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     if (!mounted) return;
     focusNode.requestFocus();
 
-    // VoiceOver può ricevere il nuovo albero semantico con qualche istante di
+    // VoiceOver puÃƒÂ² ricevere il nuovo albero semantico con qualche istante di
     // ritardo dopo la rimozione di una route. Un secondo aggancio al controllo
     // reale evita che il focus resti sul nodo ormai eliminato del selettore.
     await Future<void>.delayed(const Duration(milliseconds: 320));
@@ -1219,10 +1219,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ),
       AccessibleListSection(
         rows: [
-          AccessibleListRow(
+          _voiceChoiceSlider(
             id: 'tts_engine',
             title: l10n.settingsReadingEngine,
-            kind: 'picker',
+
             value: _ttsEngine,
             valueLabel: _ttsEngine == 'gemini' ? 'Gemini' : _ttsEngine == 'edge'
                 ? l10n.settingsEdgeTtsQuality
@@ -1239,10 +1239,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
               title: l10n.settingsShowOnlyMultilingualEdgeVoices,
               kind: 'button',
             ),
-            AccessibleListRow(
+            _voiceChoiceSlider(
               id: 'edge_language',
               title: l10n.ttsVoiceLanguage,
-              kind: 'picker',
+
               value: _languageCode,
               valueLabel: _selectedEdgeLanguage == null
                   ? _languageCode
@@ -1254,10 +1254,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ))
                   .toList(),
             ),
-            AccessibleListRow(
+            _voiceChoiceSlider(
               id: 'edge_voice',
               title: l10n.ttsVoice,
-              kind: 'picker',
+
               value: _voice,
               valueLabel: _selectedEdgeVoiceLabel,
               options: edgeVoices
@@ -1268,8 +1268,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   .toList(),
             ),
           ] else if (_ttsEngine == 'gemini') ...[
-            AccessibleListRow(
-              id: 'gemini_language', title: l10n.ttsVoiceLanguage, kind: 'picker',
+            _voiceChoiceSlider(
+              id: 'gemini_language', title: l10n.ttsVoiceLanguage,
               value: _geminiLanguage, valueLabel: _geminiLanguageLabel(l10n, _geminiLanguage),
               options: [
                 AccessibleOption(value: '', label: l10n.translationDetectLanguage),
@@ -1277,27 +1277,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   AccessibleOption(value: code, label: _geminiLanguageLabel(l10n, code)),
               ],
             ),
-            AccessibleListRow(
-              id: 'gemini_voice', title: l10n.ttsVoice, kind: 'picker',
+            _voiceChoiceSlider(
+              id: 'gemini_voice', title: l10n.ttsVoice,
               value: _geminiVoice, valueLabel: _geminiVoice,
               options: GeminiTtsBridge.voices.map((voice) => AccessibleOption(value: voice, label: voice)).toList(),
             ),
           ] else ...[
             if (systemLocales.isNotEmpty)
-              AccessibleListRow(
+              _voiceChoiceSlider(
                 id: 'system_language',
                 title: l10n.settingsSystemLanguage,
-                kind: 'picker',
+
                 value: _systemTtsLanguage,
                 valueLabel: _systemTtsLanguage,
                 options: systemLocales
                     .map((e) => AccessibleOption(value: e, label: e))
                     .toList(),
               ),
-            AccessibleListRow(
+            _voiceChoiceSlider(
               id: 'system_voice',
               title: l10n.settingsSystemVoice,
-              kind: 'picker',
+
               value: _systemTtsVoice ?? '',
               valueLabel: _systemTtsVoice ?? l10n.settingsDefaultVoice,
               options: [
@@ -1543,32 +1543,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
               setState(() => _weatherTemperatureUnit = WeatherTemperatureUnit.values.firstWhere((e) => e.value == value, orElse: () => WeatherTemperatureUnit.celsius));
               break;
             case 'gemini_language':
-              setState(() => _geminiLanguage = value);
-              break;
             case 'gemini_voice':
-              setState(() => _geminiVoice = value);
-              break;
             case 'tts_engine':
-              if (value == 'gemini' && !await ensureGeminiTtsKey(context)) return;
-              if (!mounted) return;
-              setState(() => _ttsEngine = value);
-              break;
             case 'edge_language':
-              if (value != _languageCode) {
-                setState(() {
-                  _languageCode = value;
-                  _voice = AppSettingsService.defaultVoiceForLanguageFrom(_edgeVoices, value);
-                });
-              }
-              break;
             case 'edge_voice':
-              setState(() => _voice = value);
-              break;
             case 'system_language':
-              setState(() { _systemTtsLanguage = value; _systemTtsVoice = null; });
-              break;
             case 'system_voice':
-              setState(() => _systemTtsVoice = value.isEmpty ? null : value);
+              await _changeVoiceChoice(id!, value);
               break;
           }
         } else if (event.type == 'toggle') {
@@ -1788,6 +1769,78 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
+  Future<void> _changeVoiceChoice(String id, String value) async {
+    if (_loading || _isSaving || !mounted) return;
+    switch (id) {
+      case 'gemini_language':
+        setState(() => _geminiLanguage = value);
+        break;
+      case 'gemini_voice':
+        setState(() => _geminiVoice = value);
+        break;
+      case 'tts_engine':
+        if (value == 'gemini' && !await ensureGeminiTtsKey(context)) return;
+        if (!mounted) return;
+        setState(() => _ttsEngine = value);
+        break;
+      case 'edge_language':
+        if (value != _languageCode) {
+          setState(() {
+            _languageCode = value;
+            _voice = AppSettingsService.defaultVoiceForLanguageFrom(_edgeVoices, value);
+          });
+        }
+        break;
+      case 'edge_voice':
+        setState(() => _voice = value);
+        break;
+      case 'system_language':
+        setState(() { _systemTtsLanguage = value; _systemTtsVoice = null; });
+        break;
+      case 'system_voice':
+        setState(() => _systemTtsVoice = value.isEmpty ? null : value);
+        break;
+    }
+  }
+
+  AccessibleListRow _voiceChoiceSlider({
+    required String id,
+    required String title,
+    required String value,
+    required String valueLabel,
+    required List<AccessibleOption> options,
+  }) {
+    // Same per-row callbacks and stable IDs as Create AI audio description.
+    final choices = [...options];
+    var index = choices.indexWhere((option) => option.value == value);
+    if (index < 0) {
+      choices.add(AccessibleOption(value: value, label: valueLabel));
+      index = choices.length - 1;
+    }
+    final last = choices.length - 1;
+    return AccessibleListRow(
+      id: id, title: title, kind: 'slider',
+      accessibilityButtonTrait: false,
+      value: value, valueLabel: choices[index].label,
+      enabled: !_isSaving && choices.length > 1,
+      sliderMin: 0, sliderMax: last.toDouble(), sliderStep: 1,
+      sliderValue: index.toDouble(),
+      sliderIncreasedValueLabel: choices[(index + 1).clamp(0, last)].label,
+      sliderDecreasedValueLabel: choices[(index - 1).clamp(0, last)].label,
+      options: [
+        for (var i = 0; i < choices.length; i++)
+          AccessibleOption(value: i, label: choices[i].label),
+      ],
+      onValueChanged: (raw) async {
+        if (_loading || _isSaving) return;
+        final number = raw is num ? raw.toDouble() : double.tryParse('$raw');
+        if (number == null || !number.isFinite) return;
+        final selected = choices[number.round().clamp(0, last)].value.toString();
+        if (selected != value) await _changeVoiceChoice(id, selected);
+      },
+    );
+  }
+
   Future<void> _saveAndClose() async {
     if (_loading || _isSaving) return;
     await _save(showConfirmation: false);
@@ -1802,14 +1855,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
     Navigator.of(context).pop(_appLanguage);
   }
 
-  Future<void> _requestLeaveSettings() async {
+  Future<void> _requestLeaveSettings({bool goHome = false}) async {
     if (_confirmingExit || _loading || _isSaving) return;
     _confirmingExit = true;
     try {
       if (!await _confirmLeaveSettings() || !mounted) return;
       // Keep VoiceOver focus intact until the previous route is restored.
       await Future<void>.delayed(Duration.zero);
-      if (mounted) Navigator.of(context).pop(_appLanguage);
+      if (mounted) {
+        final navigator = Navigator.of(context);
+        navigator.pop(_appLanguage);
+        if (goHome) navigator.popUntil((route) => route.isFirst);
+      }
     } finally {
       _confirmingExit = false;
     }
@@ -1829,7 +1886,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
       child: Scaffold(
         appBar: SonarpadAppBar(
           title: Text(l10n.settings),
-          leading: SonarpadBackButton(onPressed: _requestLeaveSettings),
+          leading: SonarpadBackButton(
+            onPressed: _requestLeaveSettings,
+            onGoHome: () => _requestLeaveSettings(goHome: true),
+          ),
           actions: [
             Semantics(
               button: true,

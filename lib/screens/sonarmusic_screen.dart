@@ -396,7 +396,8 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
       var current = queue.indexWhere((i) => i.key == item.key);
       if (current < 0) { queue = [item]; current = 0; }
       final first = await _episode(item);
-      await _library.remember(item.withResolvedTitle(first.title));
+      queue[current] = item.withResolvedTitle(first.title);
+      await _library.remember(queue[current]);
       if (!mounted) return;
       final l10n = AppLocalizations.of(context);
       final prefs = AppSettingsService();
@@ -428,7 +429,8 @@ class _SonarMusicScreenState extends State<SonarMusicScreen> {
             ? await prefetchedEpisode!
             : await _episode(next); // Never advance on a failed resolve.
         if (result == null) return null;
-        await _library.remember(next.withResolvedTitle(result.title));
+        queue[target] = next.withResolvedTitle(result.title);
+        await _library.remember(queue[target]);
         current = target;
         prefetchedIndex = null;
         prefetchedEpisode = null;

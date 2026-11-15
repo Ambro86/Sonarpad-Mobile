@@ -123,11 +123,13 @@ class SonarpadBackSemantics extends StatefulWidget {
     required this.onBack,
     required this.child,
     this.label,
+    this.onGoHome,
   });
 
   final VoidCallback onBack;
   final Widget child;
   final String? label;
+  final VoidCallback? onGoHome;
 
   @override
   State<SonarpadBackSemantics> createState() => _SonarpadBackSemanticsState();
@@ -135,6 +137,10 @@ class SonarpadBackSemantics extends StatefulWidget {
 
 class _SonarpadBackSemanticsState extends State<SonarpadBackSemantics> {
   bool _secondaryActionsOpen = false;
+
+  void _goHome() => widget.onGoHome != null
+      ? widget.onGoHome!()
+      : goToSonarpadHome(context);
 
   Future<void> _showSecondaryActions() async {
     // A screen reader can deliver the gesture through semantics or direct
@@ -159,7 +165,7 @@ class _SonarpadBackSemanticsState extends State<SonarpadBackSemantics> {
       _secondaryActionsOpen = false;
     }
     if (mounted && actionId == sonarpadGoHomeActionId) {
-      goToSonarpadHome(context);
+      _goHome();
     }
   }
 
@@ -175,7 +181,7 @@ class _SonarpadBackSemanticsState extends State<SonarpadBackSemantics> {
       onTap: widget.onBack,
       onLongPress: onLongPress,
       customSemanticsActions: <CustomSemanticsAction, VoidCallback>{
-        action: () => goToSonarpadHome(context),
+        action: _goHome,
       },
       excludeSemantics: true,
       child: TooltipTheme(
@@ -205,10 +211,12 @@ class SonarpadBackButton extends StatelessWidget {
   const SonarpadBackButton({
     super.key,
     this.onPressed,
+    this.onGoHome,
     this.color,
   });
 
   final VoidCallback? onPressed;
+  final VoidCallback? onGoHome;
   final Color? color;
 
   void _handleBack(BuildContext context) {
@@ -225,6 +233,7 @@ class SonarpadBackButton extends StatelessWidget {
     void onBack() => _handleBack(context);
     return SonarpadBackSemantics(
       onBack: onBack,
+      onGoHome: onGoHome,
       child: BackButton(
         color: color,
         onPressed: onBack,
@@ -241,10 +250,12 @@ class SonarpadVisualHomeButton extends StatelessWidget {
   const SonarpadVisualHomeButton({
     super.key,
     this.color,
+    this.onPressed,
     this.compact = false,
   });
 
   final Color? color;
+  final VoidCallback? onPressed;
   final bool compact;
 
   @override
@@ -256,7 +267,7 @@ class SonarpadVisualHomeButton extends StatelessWidget {
         color: color,
         visualDensity: compact ? VisualDensity.compact : null,
         icon: const Icon(Icons.home_outlined),
-        onPressed: () => goToSonarpadHome(context),
+        onPressed: onPressed ?? () => goToSonarpadHome(context),
       ),
     );
   }
@@ -314,7 +325,11 @@ class SonarpadAppBar extends StatelessWidget implements PreferredSizeWidget {
 
     final effectiveActions = <Widget>[
       ...?actions,
-      if (hasBackNavigation && showHomeButton) const SonarpadVisualHomeButton(),
+      if (hasBackNavigation && showHomeButton)
+        SonarpadVisualHomeButton(
+          onPressed: effectiveLeading is SonarpadBackButton
+              ? effectiveLeading.onGoHome : null,
+        ),
     ];
 
     return AppBar(
