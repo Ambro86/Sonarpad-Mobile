@@ -3,7 +3,7 @@
     "version": "0.5.4",
     "date": "2026-11-12",
     "it": [
-      "Novità: voci Gemini in tutto Sonarpad! Voci naturali ed espressive, vicine alla voce umana, per creare audiolibri e audiodescrizioni, leggere notizie, libri e documenti e usare la sintesi vocale nelle funzioni del programma. Puoi scegliere Sonarpad AI con il tuo codice di accesso oppure la tua chiave API Gemini personale: non servono entrambe.",
+      "Voci Gemini in tutto Sonarpad! Voci naturali ed espressive, vicine alla voce umana, per creare audiolibri e audiodescrizioni, leggere notizie, libri e documenti e usare la sintesi vocale nelle funzioni del programma. Puoi scegliere Sonarpad AI con il tuo codice di accesso oppure la tua chiave API Gemini personale: non servono entrambe.",
       "SonarMusic: corretto il salvataggio nei preferiti dei video aperti tramite URL, che ora usa il titolo effettivo anziché un nome generico.",
       "Dizionario su iOS: disattivata la maiuscola automatica nel campo di ricerca, per evitare che parole come «gabbia» non vengano trovate. È sempre possibile inserire manualmente le maiuscole.",
       "Traduttore: migliorata la stabilità del focus di VoiceOver quando si cambiano le lingue con gli slider. Lingua di origine e destinazione sono indipendenti e vengono ricordate alla riapertura.",
@@ -19,7 +19,7 @@
       "Podcast: aggiunta la sincronizzazione dei segnalibri automatici e del punto di ascolto tra Windows, Mac e mobile, anche quando Windows riproduce un episodio dalla cache. Le posizioni più vecchie non sovrascrivono quelle più recenti; anche il completamento e la rimozione di un segnalibro vengono sincronizzati. Aggiunto il gestore Segnalibri podcast su iOS e Android: mostra i punti di ascolto salvati, permette di riaprire gli episodi e di rimuovere un segnalibro con conferma, anche tramite azione accessibile."
     ],
     "en": [
-      "New: Gemini voices throughout Sonarpad! Natural, expressive voices with a human-like sound for creating audiobooks and audio descriptions, reading news, books and documents, and using text-to-speech across the application. Choose Sonarpad AI with your access code or your personal Gemini API key: you do not need both.",
+      "Gemini voices throughout Sonarpad! Natural, expressive voices with a human-like sound for creating audiobooks and audio descriptions, reading news, books and documents, and using text-to-speech across the application. Choose Sonarpad AI with your access code or your personal Gemini API key: you do not need both.",
       "SonarMusic: videos opened via URL are now saved to favorites with their actual title instead of a generic name.",
       "Dictionary on iOS: disabled automatic capitalization in the search field to prevent words such as “gabbia” from not being found. Uppercase letters can still be entered manually.",
       "Translator: improved VoiceOver focus stability when changing languages with the sliders. Source and target languages are independent and remembered when reopening the screen.",
@@ -35,7 +35,7 @@
       "Podcasts: automatic bookmarks and listening positions now sync between Windows, Mac and mobile, including episodes played from the Windows cache. Older positions cannot overwrite newer ones; completion and bookmark removal also sync. Added a Podcast bookmarks manager on iOS and Android to view saved listening positions, reopen episodes and remove bookmarks with confirmation, also through an accessibility action."
     ],
     "fr": [
-      "Nouveauté : les voix Gemini dans tout Sonarpad ! Des voix naturelles et expressives, proches de la voix humaine, pour créer des livres audio et des audiodescriptions, lire les actualités, les livres et les documents et utiliser la synthèse vocale dans les fonctions du programme. Choisissez Sonarpad AI avec votre code d’accès ou votre clé API Gemini personnelle : les deux ne sont pas nécessaires.",
+      "Les voix Gemini dans tout Sonarpad ! Des voix naturelles et expressives, proches de la voix humaine, pour créer des livres audio et des audiodescriptions, lire les actualités, les livres et les documents et utiliser la synthèse vocale dans les fonctions du programme. Choisissez Sonarpad AI avec votre code d’accès ou votre clé API Gemini personnelle : les deux ne sont pas nécessaires.",
       "SonarMusic : les vidéos ouvertes via une URL sont désormais enregistrées dans les favoris avec leur véritable titre au lieu d’un nom générique.",
       "Dictionnaire sur iOS : désactivation de la majuscule automatique dans le champ de recherche pour éviter que des mots comme « gabbia » restent introuvables. Les majuscules peuvent toujours être saisies manuellement.",
       "Traducteur : meilleure stabilité du focus VoiceOver lors du changement de langue avec les curseurs. Les langues source et cible sont indépendantes et mémorisées à la réouverture.",
@@ -51,7 +51,7 @@
       "Podcasts : les signets automatiques et la position d’écoute sont désormais synchronisés entre Windows, Mac et mobile, y compris pour les épisodes lus depuis le cache Windows. Les anciennes positions ne remplacent pas les plus récentes ; la fin de lecture et la suppression des signets sont également synchronisées. Ajout du gestionnaire de signets des podcasts sur iOS et Android pour consulter les positions enregistrées, rouvrir les épisodes et supprimer un signet avec confirmation, également via une action d’accessibilité."
     ],
     "es": [
-      "¡Novedad: voces Gemini en todo Sonarpad! Voces naturales y expresivas, cercanas a la voz humana, para crear audiolibros y audiodescripciones, leer noticias, libros y documentos y utilizar la síntesis de voz en las funciones del programa. Puedes elegir Sonarpad AI con tu código de acceso o tu clave API Gemini personal: no necesitas ambos.",
+      "¡Voces Gemini en todo Sonarpad! Voces naturales y expresivas, cercanas a la voz humana, para crear audiolibros y audiodescripciones, leer noticias, libros y documentos y utilizar la síntesis de voz en las funciones del programa. Puedes elegir Sonarpad AI con tu código de acceso o tu clave API Gemini personal: no necesitas ambos.",
       "SonarMusic: los vídeos abiertos mediante una URL ahora se guardan en favoritos con su título real en lugar de un nombre genérico.",
       "Diccionario en iOS: desactivada la mayúscula automática en el campo de búsqueda para evitar que palabras como «gabbia» no se encuentren. Las mayúsculas se pueden seguir introduciendo manualmente.",
       "Traductor: mejorada la estabilidad del foco de VoiceOver al cambiar de idioma con los deslizadores. Los idiomas de origen y destino son independientes y se recuerdan al volver a abrir la pantalla.",
@@ -67,7 +67,7 @@
       "Podcasts: los marcadores automáticos y la posición de escucha se sincronizan entre Windows, Mac y móvil, incluso al reproducir episodios desde la caché de Windows. Las posiciones antiguas no sustituyen a las más recientes; también se sincronizan el final de la reproducción y la eliminación de marcadores. Añadido un gestor de marcadores de podcasts en iOS y Android para consultar las posiciones guardadas, reabrir episodios y eliminar marcadores con confirmación, también mediante una acción de accesibilidad."
     ],
     "pt": [
-      "Novidade: vozes Gemini em todo o Sonarpad! Vozes naturais e expressivas, próximas da voz humana, para criar audiolivros e audiodescrições, ler notícias, livros e documentos e utilizar a síntese de voz nas funções do programa. Pode escolher Sonarpad AI com o seu código de acesso ou a sua chave API Gemini pessoal: não precisa de ambos.",
+      "Vozes Gemini em todo o Sonarpad! Vozes naturais e expressivas, próximas da voz humana, para criar audiolivros e audiodescrições, ler notícias, livros e documentos e utilizar a síntese de voz nas funções do programa. Pode escolher Sonarpad AI com o seu código de acesso ou a sua chave API Gemini pessoal: não precisa de ambos.",
       "SonarMusic: os vídeos abertos através de um URL são agora guardados nos favoritos com o título real em vez de um nome genérico.",
       "Dicionário no iOS: desativada a maiúscula automática no campo de pesquisa para evitar que palavras como «gabbia» não sejam encontradas. Continua a ser possível introduzir maiúsculas manualmente.",
       "Tradutor: melhorada a estabilidade do foco do VoiceOver ao mudar de idioma com os controlos deslizantes. Os idiomas de origem e destino são independentes e ficam guardados ao reabrir o ecrã.",
@@ -83,7 +83,7 @@
       "Podcasts: os marcadores automáticos e a posição de reprodução são sincronizados entre Windows, Mac e dispositivos móveis, incluindo episódios reproduzidos a partir da cache do Windows. As posições antigas não substituem as mais recentes; a conclusão e a remoção de marcadores também são sincronizadas. Adicionado um gestor de marcadores de podcasts no iOS e Android para consultar posições guardadas, reabrir episódios e remover marcadores com confirmação, também através de uma ação de acessibilidade."
     ],
     "pt_BR": [
-      "Novidade: vozes Gemini em todo o Sonarpad! Vozes naturais e expressivas, próximas da voz humana, para criar audiolivros e audiodescrições, ler notícias, livros e documentos e usar a síntese de voz nas funções do programa. Você pode escolher Sonarpad AI com seu código de acesso ou sua chave API Gemini pessoal: não precisa dos dois.",
+      "Vozes Gemini em todo o Sonarpad! Vozes naturais e expressivas, próximas da voz humana, para criar audiolivros e audiodescrições, ler notícias, livros e documentos e usar a síntese de voz nas funções do programa. Você pode escolher Sonarpad AI com seu código de acesso ou sua chave API Gemini pessoal: não precisa dos dois.",
       "SonarMusic: vídeos abertos por URL agora são salvos nos favoritos com o título real em vez de um nome genérico.",
       "Dicionário no iOS: desativada a maiúscula automática no campo de pesquisa para evitar que palavras como “gabbia” não sejam encontradas. Ainda é possível inserir maiúsculas manualmente.",
       "Tradutor: melhorada a estabilidade do foco do VoiceOver ao mudar de idioma com os controles deslizantes. Os idiomas de origem e destino são independentes e ficam salvos ao reabrir a tela.",
@@ -99,7 +99,7 @@
       "Podcasts: os marcadores automáticos e a posição de reprodução são sincronizados entre Windows, Mac e dispositivos móveis, incluindo episódios reproduzidos pelo cache do Windows. Posições antigas não substituem as mais recentes; a conclusão e a remoção de marcadores também são sincronizadas. Adicionado um gerenciador de marcadores de podcasts no iOS e Android para consultar posições salvas, reabrir episódios e remover marcadores com confirmação, também por uma ação de acessibilidade."
     ],
     "pl": [
-      "Nowość: głosy Gemini w całym Sonarpad! Naturalne i ekspresyjne głosy, zbliżone do ludzkiego głosu, do tworzenia audiobooków i audiodeskrypcji, czytania wiadomości, książek i dokumentów oraz korzystania z syntezy mowy w funkcjach programu. Wybierz Sonarpad AI ze swoim kodem dostępu lub osobisty klucz API Gemini: nie potrzebujesz obu.",
+      "Głosy Gemini w całym Sonarpad! Naturalne i ekspresyjne głosy, zbliżone do ludzkiego głosu, do tworzenia audiobooków i audiodeskrypcji, czytania wiadomości, książek i dokumentów oraz korzystania z syntezy mowy w funkcjach programu. Wybierz Sonarpad AI ze swoim kodem dostępu lub osobisty klucz API Gemini: nie potrzebujesz obu.",
       "SonarMusic: filmy otwierane przez adres URL są teraz zapisywane w ulubionych z właściwym tytułem zamiast nazwy ogólnej.",
       "Słownik w iOS: wyłączono automatyczne wpisywanie wielkiej litery w polu wyszukiwania, aby można było znaleźć słowa takie jak „gabbia”. Wielkie litery nadal można wpisywać ręcznie.",
       "Tłumacz: poprawiono stabilność fokusu VoiceOver podczas zmiany języków suwakami. Język źródłowy i docelowy są niezależne i zapamiętywane po ponownym otwarciu ekranu.",
@@ -115,7 +115,7 @@
       "Podcasty: automatyczne zakładki i pozycja odtwarzania są synchronizowane między Windows, Mac i urządzeniami mobilnymi, także przy odtwarzaniu odcinków z pamięci podręcznej Windows. Starsze pozycje nie nadpisują nowszych; zakończenie odtwarzania i usunięcie zakładki również są synchronizowane. Dodano menedżer zakładek podcastów w iOS i Androidzie: przeglądanie zapisanych pozycji, ponowne otwieranie odcinków i usuwanie zakładek z potwierdzeniem, także przez działanie dostępności."
     ],
     "cs": [
-      "Novinka: hlasy Gemini v celém Sonarpadu! Přirozené a výrazné hlasy blízké lidskému hlasu pro tvorbu audioknih a audiopopisů, čtení zpráv, knih a dokumentů a hlasový výstup ve funkcích programu. Můžete zvolit Sonarpad AI se svým přístupovým kódem nebo osobní klíč Gemini API: nepotřebujete obojí.",
+      "Hlasy Gemini v celém Sonarpadu! Přirozené a výrazné hlasy blízké lidskému hlasu pro tvorbu audioknih a audiopopisů, čtení zpráv, knih a dokumentů a hlasový výstup ve funkcích programu. Můžete zvolit Sonarpad AI se svým přístupovým kódem nebo osobní klíč Gemini API: nepotřebujete obojí.",
       "SonarMusic: videa otevřená pomocí URL se nyní ukládají do oblíbených se skutečným názvem namísto obecného označení.",
       "Slovník v iOS: vypnuto automatické psaní velkého počátečního písmene ve vyhledávacím poli, aby bylo možné najít slova jako „gabbia“. Velká písmena lze nadále zadávat ručně.",
       "Překladač: zlepšena stabilita zaměření VoiceOver při změně jazyků pomocí posuvníků. Zdrojový a cílový jazyk jsou nezávislé a při opětovném otevření obrazovky se obnoví.",
@@ -131,7 +131,7 @@
       "Podcasty: automatické záložky a pozice přehrávání se synchronizují mezi Windows, Macem a mobilními zařízeními, i při přehrávání epizod z mezipaměti Windows. Starší pozice nepřepíšou novější; synchronizuje se také dokončení přehrávání a odstranění záložek. Přidán správce záložek podcastů pro iOS a Android: zobrazení uložených pozic, otevření epizod a odstranění záložek s potvrzením, také pomocí akce zpřístupnění."
     ],
     "de": [
-      "Neu: Gemini-Stimmen in ganz Sonarpad! Natürliche, ausdrucksstarke Stimmen, die der menschlichen Stimme nahekommen, zum Erstellen von Hörbüchern und Audiodeskriptionen, zum Vorlesen von Nachrichten, Büchern und Dokumenten sowie für die Sprachausgabe in den Programmfunktionen. Wählen Sie Sonarpad AI mit Ihrem Zugangscode oder Ihren persönlichen Gemini-API-Schlüssel: Beides zusammen ist nicht erforderlich.",
+      "Gemini-Stimmen in ganz Sonarpad! Natürliche, ausdrucksstarke Stimmen, die der menschlichen Stimme nahekommen, zum Erstellen von Hörbüchern und Audiodeskriptionen, zum Vorlesen von Nachrichten, Büchern und Dokumenten sowie für die Sprachausgabe in den Programmfunktionen. Wählen Sie Sonarpad AI mit Ihrem Zugangscode oder Ihren persönlichen Gemini-API-Schlüssel: Beides zusammen ist nicht erforderlich.",
       "SonarMusic: Über eine URL geöffnete Videos werden jetzt mit ihrem tatsächlichen Titel statt einer allgemeinen Bezeichnung in den Favoriten gespeichert.",
       "Wörterbuch unter iOS: Die automatische Großschreibung im Suchfeld wurde deaktiviert, damit Wörter wie „gabbia“ gefunden werden. Großbuchstaben können weiterhin manuell eingegeben werden.",
       "Übersetzer: stabilerer VoiceOver-Fokus beim Ändern der Sprachen mit den Schiebereglern. Ausgangs- und Zielsprache sind unabhängig und werden beim erneuten Öffnen wiederhergestellt.",
@@ -147,7 +147,7 @@
       "Podcasts: Automatische Lesezeichen und Wiedergabepositionen werden zwischen Windows, Mac und Mobilgeräten synchronisiert, auch bei Episoden aus dem Windows-Cache. Ältere Positionen überschreiben keine neueren; auch das Wiedergabeende und das Entfernen von Lesezeichen werden synchronisiert. Neue Podcast-Lesezeichenverwaltung für iOS und Android: gespeicherte Positionen anzeigen, Episoden erneut öffnen und Lesezeichen nach Bestätigung entfernen, auch über eine Bedienungshilfe-Aktion."
     ],
     "zh_CN": [
-      "新功能：在整个 Sonarpad 中使用 Gemini 语音！自然、富有表现力、接近真人的声音，可用于制作有声书和音频描述、朗读新闻、书籍和文档，以及使用程序各项功能中的语音合成。可以使用访问码通过 Sonarpad AI 接入，也可以使用个人 Gemini API 密钥，无需同时具备两者。",
+      "在整个 Sonarpad 中使用 Gemini 语音！自然、富有表现力、接近真人的声音，可用于制作有声书和音频描述、朗读新闻、书籍和文档，以及使用程序各项功能中的语音合成。可以使用访问码通过 Sonarpad AI 接入，也可以使用个人 Gemini API 密钥，无需同时具备两者。",
       "SonarMusic：修复了通过 URL 打开的视频收藏后显示通用名称的问题，现在会显示视频的实际标题。",
       "iOS 词典：已关闭搜索框的自动首字母大写，避免出现无法找到“gabbia”等单词的问题。仍可手动输入大写字母。",
       "翻译器：改善了使用滑块切换语言时 VoiceOver 焦点的稳定性。源语言和目标语言互不影响，并会在重新打开界面时保留。",
@@ -163,7 +163,7 @@
       "播客：自动书签和播放进度现在可在 Windows、Mac 和移动设备间同步，包括从 Windows 缓存播放的节目。旧进度不会覆盖新进度；播放完成和删除书签也会同步。 iOS 和 Android 新增播客书签管理器，可查看保存的播放进度、重新打开节目，并在确认后删除书签，也可通过辅助功能操作删除。"
     ],
     "uk": [
-      "Новинка: голоси Gemini в усьому Sonarpad! Природні й виразні голоси, близькі до людського голосу, для створення аудіокниг та аудіоописів, читання новин, книг і документів та використання синтезу мовлення у функціях програми. Виберіть Sonarpad AI зі своїм кодом доступу або особистий ключ API Gemini: обидва не потрібні.",
+      "Голоси Gemini в усьому Sonarpad! Природні й виразні голоси, близькі до людського голосу, для створення аудіокниг та аудіоописів, читання новин, книг і документів та використання синтезу мовлення у функціях програми. Виберіть Sonarpad AI зі своїм кодом доступу або особистий ключ API Gemini: обидва не потрібні.",
       "SonarMusic: відео, відкриті за URL, тепер зберігаються в обраному зі справжньою назвою замість загальної.",
       "Словник в iOS: вимкнено автоматичне введення великої літери в полі пошуку, щоб можна було знаходити слова на кшталт «gabbia». Великі літери й надалі можна вводити вручну.",
       "Перекладач: покращено стабільність фокуса VoiceOver під час зміни мов повзунками. Мова оригіналу та мова перекладу незалежні й зберігаються для наступного відкриття екрана.",
@@ -179,7 +179,7 @@
       "Подкасти: автоматичні закладки та позиція прослуховування синхронізуються між Windows, Mac і мобільними пристроями, зокрема для епізодів із кешу Windows. Старіші позиції не перезаписують новіші; завершення відтворення та видалення закладок також синхронізуються. Додано менеджер закладок подкастів для iOS і Android: перегляд збережених позицій, відкриття епізодів і видалення закладок із підтвердженням, також через дію доступності."
     ],
     "ro": [
-      "Noutate: voci Gemini în întregul Sonarpad! Voci naturale și expresive, apropiate de vocea umană, pentru crearea de cărți audio și audiodescrieri, citirea știrilor, cărților și documentelor și folosirea sintezei vocale în funcțiile programului. Alegeți Sonarpad AI cu propriul cod de acces sau cheia API Gemini personală: nu aveți nevoie de ambele.",
+      "Voci Gemini în întregul Sonarpad! Voci naturale și expresive, apropiate de vocea umană, pentru crearea de cărți audio și audiodescrieri, citirea știrilor, cărților și documentelor și folosirea sintezei vocale în funcțiile programului. Alegeți Sonarpad AI cu propriul cod de acces sau cheia API Gemini personală: nu aveți nevoie de ambele.",
       "SonarMusic: videoclipurile deschise prin URL sunt acum salvate în favorite cu titlul real, în locul unui nume generic.",
       "Dicționar pe iOS: dezactivată scrierea automată cu majusculă în câmpul de căutare, pentru a evita situațiile în care cuvinte precum „gabbia” nu sunt găsite. Majusculele pot fi introduse în continuare manual.",
       "Traducător: îmbunătățită stabilitatea focalizării VoiceOver la schimbarea limbilor cu ajutorul glisoarelor. Limba sursă și limba țintă sunt independente și sunt memorate la redeschiderea ecranului.",
@@ -195,7 +195,7 @@
       "Podcasturi: marcajele automate și poziția de ascultare se sincronizează între Windows, Mac și dispozitivele mobile, inclusiv pentru episoadele redate din memoria cache Windows. Pozițiile vechi nu le înlocuiesc pe cele recente; finalizarea redării și eliminarea marcajelor se sincronizează de asemenea. Adăugat un gestionar de marcaje pentru podcasturi pe iOS și Android: afișează pozițiile salvate, redeschide episoade și elimină marcaje cu confirmare, inclusiv printr-o acțiune de accesibilitate."
     ],
     "tr": [
-      "Yeni: Sonarpad genelinde Gemini sesleri! Sesli kitap ve sesli betimleme oluşturmak, haberleri, kitapları ve belgeleri okumak ve programın işlevlerinde konuşma sentezini kullanmak için insan sesine yakın, doğal ve etkileyici sesler. Erişim kodunuzla Sonarpad AI veya kişisel Gemini API anahtarınızı seçebilirsiniz: ikisine birden gerek yoktur.",
+      "Sonarpad genelinde Gemini sesleri! Sesli kitap ve sesli betimleme oluşturmak, haberleri, kitapları ve belgeleri okumak ve programın işlevlerinde konuşma sentezini kullanmak için insan sesine yakın, doğal ve etkileyici sesler. Erişim kodunuzla Sonarpad AI veya kişisel Gemini API anahtarınızı seçebilirsiniz: ikisine birden gerek yoktur.",
       "SonarMusic: URL üzerinden açılan videolar artık genel bir ad yerine gerçek başlıklarıyla favorilere kaydediliyor.",
       "iOS sözlüğü: “gabbia” gibi sözcüklerin bulunamamasını önlemek için arama alanında otomatik büyük harf kullanımı kapatıldı. Büyük harfler yine elle girilebilir.",
       "Çevirmen: kaydırıcılarla dil değiştirirken VoiceOver odağının kararlılığı iyileştirildi. Kaynak ve hedef diller birbirinden bağımsızdır ve ekran yeniden açıldığında hatırlanır.",
@@ -211,7 +211,7 @@
       "Podcastler: otomatik yer imleri ve dinleme konumları Windows, Mac ve mobil cihazlar arasında, Windows önbelleğinden oynatılan bölümler dahil, eşitlenir. Eski konumlar yenilerin üzerine yazılmaz; oynatma tamamlandığında ve yer imleri kaldırıldığında da eşitleme yapılır. iOS ve Android için podcast yer imi yöneticisi eklendi: kayıtlı konumları görüntüleme, bölümleri yeniden açma ve erişilebilirlik eylemiyle de kullanılabilen onaylı yer imi kaldırma."
     ],
     "nl": [
-      "Nieuw: Gemini-stemmen in heel Sonarpad! Natuurlijke, expressieve stemmen die de menselijke stem benaderen, voor het maken van luisterboeken en audiobeschrijvingen, het voorlezen van nieuws, boeken en documenten en het gebruiken van spraaksynthese in de functies van het programma. Kies Sonarpad AI met je toegangscode of je persoonlijke Gemini API-sleutel: je hebt niet beide nodig.",
+      "Gemini-stemmen in heel Sonarpad! Natuurlijke, expressieve stemmen die de menselijke stem benaderen, voor het maken van luisterboeken en audiobeschrijvingen, het voorlezen van nieuws, boeken en documenten en het gebruiken van spraaksynthese in de functies van het programma. Kies Sonarpad AI met je toegangscode of je persoonlijke Gemini API-sleutel: je hebt niet beide nodig.",
       "SonarMusic: video’s die via een URL worden geopend, worden nu met hun werkelijke titel in plaats van een algemene naam aan de favorieten toegevoegd.",
       "Woordenboek op iOS: automatische hoofdletters in het zoekveld uitgeschakeld, zodat woorden zoals ‘gabbia’ worden gevonden. Hoofdletters kunnen nog steeds handmatig worden ingevoerd.",
       "Vertaler: de VoiceOver-focus blijft stabieler bij het wijzigen van talen met de schuifregelaars. Bron- en doeltaal zijn onafhankelijk en worden onthouden wanneer het scherm opnieuw wordt geopend.",

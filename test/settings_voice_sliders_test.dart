@@ -100,25 +100,57 @@ void main() {
             .sections
             .expand((s) => s.rows)
             .singleWhere((r) => r.id == id);
+        UniversalAccessibleList currentList() => tester.widget<UniversalAccessibleList>(
+          find.byType(UniversalAccessibleList),
+        );
+        void expectIncrementalUpdate(UniversalAccessibleList before) {
+          final after = currentList();
+          expect(after.sections.length, before.sections.length);
+          for (var section = 0; section < before.sections.length; section++) {
+            final oldRows = before.sections[section].rows;
+            final newRows = after.sections[section].rows;
+            final oldIds = oldRows.map((r) => r.id).toSet();
+            final newIds = newRows.map((r) => r.id).toSet();
+            for (final id in {...oldIds.difference(newIds), ...newIds.difference(oldIds)}) {
+              expect(after.transientRowIds, contains(id),
+                reason: '$id must change without reloading the focused native cell');
+            }
+            expect(oldRows.where((r) => newIds.contains(r.id)).map((r) => '${r.id}:${r.kind}'),
+              newRows.where((r) => oldIds.contains(r.id)).map((r) => '${r.id}:${r.kind}'));
+          }
+        }
         Future<void> choose(String id, double index) async {
+          final before = currentList();
+          final pitch = row('tts_pitch').sliderValue;
+          final speed = row('tts_speed').sliderValue;
           final r = row(id);
           expect(r.kind, 'slider');
           expect(r.accessibilityButtonTrait, false);
           await r.onValueChanged!(index);
           await tester.pumpAndSettle();
+          expectIncrementalUpdate(before);
+          expect(row('tts_pitch').sliderValue, pitch);
+          expect(row('tts_speed').sliderValue, speed);
         }
 
         await open();
         final l10n = AppLocalizations.of(
           tester.element(find.byType(SettingsScreen)),
         );
+        final initialAppLanguage = row('app_language');
+        await choose('app_language', 3);
+        expect(row('app_language').value, 'es');
+        expect(row('tts_engine').value, 'edge');
+        await choose('app_language', initialAppLanguage.sliderValue);
         final edgeLanguage = row('edge_language').value;
         final edgeVoice = row('edge_voice').value;
         final engineFinder = find.bySemanticsLabel(l10n.settingsReadingEngine);
         final engineNode = tester.getSemantics(engineFinder);
         final engineNodeId = engineNode.id;
+        final beforeEngine = currentList();
         engineNode.owner!.performAction(engineNodeId, SemanticsAction.increase);
         await tester.pumpAndSettle();
+        expectIncrementalUpdate(beforeEngine);
         expect(row('tts_engine').value, 'system');
         expect(tester.getSemantics(engineFinder).id, engineNodeId);
         await choose('system_voice', 1);

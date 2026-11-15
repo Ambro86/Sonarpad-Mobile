@@ -1148,10 +1148,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
       )]),
       AccessibleListSection(
         rows: [
-          AccessibleListRow(
+          _voiceChoiceSlider(
             id: 'app_language',
             title: l10n.appLanguage,
-            kind: 'picker',
             value: _appLanguage,
             valueLabel: switch (_appLanguage) {
               'en' => l10n.english,
@@ -1527,6 +1526,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return UniversalAccessibleList(
       key: const ValueKey('settings-shared-accessible-list'),
       debugTag: 'settings',
+      // Keep the focused engine cell alive while only its dependent rows change,
+      // using the same native incremental updates as Create AI audio description.
+      transientRowIds: const [
+        'edge_multilingual_voices', 'edge_language', 'edge_voice',
+        'gemini_language', 'gemini_voice', 'system_language', 'system_voice',
+      ],
       sections: sections,
       onEvent: (event) async {
         final id = event.id;
@@ -1772,6 +1777,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Future<void> _changeVoiceChoice(String id, String value) async {
     if (_loading || _isSaving || !mounted) return;
     switch (id) {
+      case 'app_language':
+        if (value.isNotEmpty) setState(() => _appLanguage = value);
+        break;
       case 'gemini_language':
         setState(() => _geminiLanguage = value);
         break;

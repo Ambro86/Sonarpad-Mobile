@@ -147,17 +147,30 @@ class _ItaliaOnlineDetailScreenState extends State<ItaliaOnlineDetailScreen> {
     }
   }
 
-  Future<void> _openDirections() async {
-    final destination = [widget.detail.address, widget.detail.locality]
+  String get _mapsDestination => [widget.detail.address, widget.detail.locality]
         .whereType<String>()
         .map((value) => value.trim())
         .where((value) => value.isNotEmpty)
         .join(', ');
+
+  Future<void> _openDirections() async {
+    final destination = _mapsDestination;
     if (destination.isEmpty) return;
     final uri = Uri.https('www.google.com', '/maps/dir/', {
       'api': '1',
       'destination': destination,
     });
+    if (Platform.isIOS) {
+      final query = Uri(queryParameters: {'daddr': destination}).query;
+      try {
+        if (await launchUrl(Uri.parse('comgooglemaps://?$query'),
+            mode: LaunchMode.externalApplication)) {
+          return;
+        }
+      } catch (_) {
+        // Use the existing web directions when the Google Maps app is absent.
+      }
+    }
     try {
       if (await launchUrl(uri, mode: LaunchMode.externalApplication)) return;
     } catch (e) {
@@ -249,6 +262,13 @@ class _ItaliaOnlineDetailScreenState extends State<ItaliaOnlineDetailScreen> {
                         subtitle: AppLocalizations.of(
                           context,
                         ).routeGoogleMapsAction,
+                        onActivate: _openDirections,
+                      ),
+                    if (_mapsDestination.isNotEmpty)
+                      AccessibleListRow(
+                        id: 'google_maps',
+                        kind: 'button',
+                        title: l10n.routeGoogleMapsAction,
                         onActivate: _openDirections,
                       ),
                     for (var i = 0; i < detail.phones.length; i++)
@@ -346,6 +366,12 @@ class _ItaliaOnlineDetailScreenState extends State<ItaliaOnlineDetailScreen> {
                   ),
                   const SizedBox(height: 16),
                 ],
+                if (_mapsDestination.isNotEmpty)
+                  ListTile(
+                    leading: const Icon(Icons.directions),
+                    title: Text(l10n.routeGoogleMapsAction),
+                    onTap: _openDirections,
+                  ),
                 if (detail.phones.isNotEmpty) ...[
                   Text(
                     '${l10n.placesPhone}:',
