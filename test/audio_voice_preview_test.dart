@@ -9,6 +9,8 @@ import 'package:sonarpad_mobile_starter/services/audio_player_service.dart';
 
 class PreviewPlayer extends Fake implements AudioPlayer {
   final states = StreamController<PlayerState>.broadcast(sync: true);
+  @override
+  Stream<PlayerException> get errorStream => const Stream.empty();
   final started = Completer<void>();
   final loading = Completer<void>();
   final pausing = Completer<void>();

@@ -108,6 +108,7 @@ Future<void> pumpTestPlayer(
   bool fullscreen = false,
   bool audioOnly = false,
   bool remote = false,
+  bool live = false,
   List<MediaAudioTrack> tracks = const [],
   String? selectedTrackId = 'it',
   List<PodcastPlayerExtraAction> extraActions = const [],
@@ -132,6 +133,7 @@ Future<void> pumpTestPlayer(
           extraActions: extraActions,
           episode: PodcastEpisode(
             title: 'Prova velocità',
+            isLive: live,
             description: '',
             audioUrl: remote
                 ? 'https://example.org/video.mp4'
@@ -342,6 +344,35 @@ void main() {
     await form(tester).onEvent!(AccessibleListEvent(type: 'activate', id: id));
     await tester.pumpAndSettle();
   }
+
+  testWidgets('live video/audio transitions skip old timeline while recordings retain it', (tester) async {
+    for (final live in [false, true]) {
+      await pumpTestPlayer(tester, live: live);
+      await form(tester).onEvent!(const AccessibleListEvent(
+        type: 'slider', id: 'accessible_position', value: 123.0));
+      await tester.pumpAndSettle();
+      await tester.runAsync(() async {
+        await form(tester).onEvent!(const AccessibleListEvent(type: 'toggle', id: 'video', value: false));
+        await tester.pump();
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+      });
+      await tester.pumpAndSettle();
+      expect(audio.latest, isNotNull);
+      expect(audio.latest!.position, live ? Duration.zero : const Duration(seconds: 123));
+      audio.latest!.position = const Duration(seconds: 77);
+      audio.latest!.notify();
+      await tester.pump();
+      video.position = Duration.zero;
+      await tester.runAsync(() async {
+        await form(tester).onEvent!(const AccessibleListEvent(type: 'toggle', id: 'video', value: true));
+        await tester.pump();
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+      });
+      await tester.pumpAndSettle();
+      expect(video.position.inMilliseconds, live ? 0 : closeTo(77000, 300));
+      await disposeTestPlayer(tester);
+    }
+  });
 
   test('YouTube language tags are extracted without assuming unknown IDs', () {
     for (final entry in {'tr.4': 'tr', 'en-US.4': 'en-us', 'it': 'it', 'audio_12': null, '': null}.entries) {

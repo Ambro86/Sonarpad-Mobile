@@ -12,6 +12,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/document_item.dart';
 import '../utils/app_logger.dart';
 import '../utils/document_unicode_normalizer.dart';
+import 'rar_document_archive.dart';
 
 class DocumentRenameConflictException implements Exception {
   const DocumentRenameConflictException();
@@ -145,11 +146,33 @@ class DocumentLibraryService {
       folderName: document.displayName, parentId: document.id);
   }
 
+  Future<DocumentItem> openRar(DocumentItem document, {String? password}) async {
+    await load();
+    for (final folder in _documents) {
+      if (folder.isFolder && folder.parentId == document.id) return folder;
+    }
+    return importRar(File(await resolveFilePath(document)),
+      folderName: document.displayName, parentId: document.id, password: password);
+  }
+
+  Future<DocumentItem> importRar(File rarFile,
+      {String? folderName, String? parentId, String? password}) async {
+    final archive = await RarDocumentArchive.list(rarFile.path, password: password);
+    return _importArchive(archive,
+      folderName ?? p.basenameWithoutExtension(rarFile.path), parentId: parentId,
+      readContent: (entry) => RarDocumentArchive.read(rarFile.path, entry, password: password));
+  }
+
   Future<DocumentItem> importZip(File zipFile,
       {String? folderName, String? parentId}) async {
     final bytes = await zipFile.readAsBytes();
     final archive = ZipDecoder().decodeBytes(bytes, verify: true);
     final name = folderName ?? p.basenameWithoutExtension(zipFile.path);
+    return _importArchive(archive, name, parentId: parentId);
+  }
+
+  Future<DocumentItem> _importArchive(Archive archive, String name,
+      {String? parentId, Future<List<int>> Function(ArchiveFile)? readContent}) async {
     final entries = <({ArchiveFile file, List<String> parts})>[];
     for (final file in archive) {
       final path = file.name.replaceAll('\\', '/');
@@ -193,7 +216,8 @@ class DocumentLibraryService {
         if (!entry.file.isFile) continue;
         // Never extract an archive-supplied path onto the filesystem.
         final temp = File(p.join(work.path, 'entry'));
-        await temp.writeAsBytes(entry.file.content as List<int>);
+        await temp.writeAsBytes(readContent == null
+          ? entry.file.content as List<int> : await readContent(entry.file));
         final document = await importFile(temp, originalName: parts.last, parentId: parent.id);
         copiedFiles.add(await resolveFilePath(document));
         // Preserve the archive's user-facing name even if storage needs a suffix.

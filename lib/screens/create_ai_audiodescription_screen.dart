@@ -33,6 +33,7 @@ import '../tts/edge_tts_retry.dart';
 import '../utils/app_logger.dart';
 import '../utils/status_message.dart';
 import '../widgets/universal_accessible_view.dart';
+import '../widgets/tmdb_selection_dialog.dart';
 
 class CreateAiAudiodescriptionScreen extends StatefulWidget {
   const CreateAiAudiodescriptionScreen({
@@ -986,15 +987,13 @@ class _CreateAiAudiodescriptionScreenState
 
   Future<int?> _chooseTmdb(String key, List<String> options) async {
     if (!mounted || _cancelling) return null;
-    final l10n = AppLocalizations.of(context);
-    return showDialog<int>(context: context, builder: (dialogContext) => SimpleDialog(
-      title: Text(_tmdbLabel(key)),
-      children: [
-        for (var index = 0; index < options.length; index++)
-          SimpleDialogOption(onPressed: () => Navigator.pop(dialogContext, index), child: Text(options[index])),
-        SimpleDialogOption(onPressed: () => Navigator.pop(dialogContext), child: Text(l10n.cancel)),
-      ],
-    ));
+    await AppLogger.log('TMDB selection kind=$key options=${options.length}');
+    if (!mounted || _cancelling) return null;
+    final selected = await showTmdbSelectionDialog(
+      context, title: _tmdbLabel(key), options: options,
+    );
+    await AppLogger.log('TMDB selection kind=$key selectedIndex=$selected');
+    return selected;
   }
 
   Future<void> _create({bool resumeOnly = false}) async {

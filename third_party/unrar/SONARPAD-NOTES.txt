@@ -1,0 +1,4 @@
+Source: https://pub.dev/packages/unrar/versions/0.2.0 (https://github.com/maistho/dart_unrar).
+Vendored to retain compatibility with Sonarpad native build dependencies: code_assets 1.2, hooks 2.0, native_toolchain_c 0.19.1. No changes to UnRAR or extraction code.
+Licenses: LICENSE (Dart wrapper), third_party/unrar/license.txt (UnRAR).
+Android build defines UNIX_TIME_NS to use utimensat on API 24 instead of lutimes (API 26+).

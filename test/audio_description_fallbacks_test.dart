@@ -118,10 +118,17 @@ void main() {
         AudioDescriptionFallbacks.narrationRestartRanges(pauses, start, end)
             .map((r) => <double>[r.start, r.end]).toList();
 
-    test('45 seconds without usable narration space', () {
+    test('Capri 36 second gap restarts before the boat description', () {
+      expect(ranges(const [AdTimeRange(1080.664, 1147.216),
+        AdTimeRange(1183.840, 1261.511)], start:1080.664,end:1261.511),
+        [[1080.664,1183.840],[1183.840,1261.511]]);
+    });
+    test('35 seconds without usable narration space', () {
+      expect(ranges(const [AdTimeRange(0, 10), AdTimeRange(45, 180)]),
+          [[0, 45], [45, 180]]);
       expect(ranges(const [AdTimeRange(0, 10), AdTimeRange(55, 180)]),
           [[0, 55], [55, 180]]);
-      expect(ranges(const [AdTimeRange(0, 10), AdTimeRange(54.99, 180)]), isEmpty);
+      expect(ranges(const [AdTimeRange(0, 10), AdTimeRange(44.99, 180)]), isEmpty);
     });
     test('short pauses do not reset the gap', () {
       expect(ranges(const [AdTimeRange(0,10), AdTimeRange(30,31),
@@ -142,7 +149,7 @@ void main() {
     });
     test('actual problematic cartoon interval', () {
       expect(ranges(const [AdTimeRange(400,410), AdTimeRange(425,431.800625), AdTimeRange(484.7256875,489.9)],
-        start:360.65,end:541.983), [[360.65,484.7256875],[484.7256875,541.983]]);
+        start:360.65,end:541.983), [[360.65,400],[400,484.7256875],[484.7256875,541.983]]);
     });
     test('short laughter pauses restart after the long dialogue', () {
       expect(ranges(const [AdTimeRange(183.56,225.335),

@@ -62,6 +62,16 @@ void main() {
   });
   tearDown(() => service.dispose());
 
+  test('live source ignores saved bookmark and does not overwrite it', () async {
+    const id = 'sonartube:live';
+    await settings.saveMediaBookmark(id, 42);
+    await service.setUrl('https://example.org/live.m3u8', mediaId: id, isLive: true);
+    expect(player.currentPosition, Duration.zero);
+    player.currentPosition = const Duration(seconds: 90);
+    await service.saveCurrentBookmark();
+    expect(await settings.getMediaBookmark(id), 42);
+  });
+
   for (final category in ['sonarmusic', 'sonartube']) {
     for (final saved in [null, 42]) {
       test(

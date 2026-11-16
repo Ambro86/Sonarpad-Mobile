@@ -21,6 +21,7 @@ import '../services/app_settings_service.dart';
 import '../services/audio_description_project_library.dart';
 import '../services/audiobook_export_service.dart';
 import '../services/document_library_service.dart';
+import '../services/rar_document_archive.dart';
 import '../services/document_folder_export_service.dart';
 import '../services/document_text_extractor.dart';
 import '../services/docx_export_service.dart';
@@ -90,7 +91,8 @@ const Set<String> _localMediaDocumentExtensions = {
 class DocumentsScreen extends StatefulWidget {
   final String? folderId;
   final String? searchQuery;
-  const DocumentsScreen({super.key, this.folderId, this.searchQuery});
+  final DocumentItem? initialArchive;
+  const DocumentsScreen({super.key, this.folderId, this.searchQuery, this.initialArchive});
 
   @override
   State<DocumentsScreen> createState() => _DocumentsScreenState();
@@ -228,6 +230,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     'htm',
     'json',
     'zip',
+    'rar',
     'mp3',
     'm4a',
     'm4b',
@@ -256,7 +259,13 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
   @override
   void initState() {
     super.initState();
-    _load();
+    _load().then((_) {
+      if (mounted && widget.initialArchive != null) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) _openDocument(widget.initialArchive!);
+        });
+      }
+    });
   }
 
   Future<void> _load() async {
@@ -373,6 +382,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
       return;
     }
 
+    var importedAny = false;
     for (final file in result.files) {
       final path = file.path;
       if (path == null) {
@@ -393,11 +403,27 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
         continue;
       }
 
+      if (f.path.toLowerCase().endsWith('.rar')) {
+        try {
+          final folder = await _withRarPassword((password) => _service.importRar(f,
+            parentId: widget.folderId, password: password,
+            folderName: p.basenameWithoutExtension(file.name.isNotEmpty ? file.name : path)));
+          importedAny = folder != null || importedAny;
+        } catch (error) {
+          await AppLogger.log('Documents: RAR import failed: ${error.runtimeType}');
+          if (mounted) {
+            _showSnack(AppLocalizations.of(context).fileOpenError(
+              AppLocalizations.of(context).technicalErrorGeneric));
+          }
+        }
+        continue;
+      }
       if (f.path.toLowerCase().endsWith('.zip')) {
         try {
           await _service.importZip(f, parentId: widget.folderId,
             folderName: p.basenameWithoutExtension(file.name.isNotEmpty ? file.name : path));
           await AppLogger.log('Zip importato: ${p.basename(path)}');
+          importedAny = true;
         } catch (e) {
           dev.log('DocumentsScreen: errore importazione zip: $e');
           await AppLogger.log('DocumentsScreen: errore importazione zip: $e');
@@ -416,6 +442,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
         );
         await _service.add(doc);
         await AppLogger.log('File importato: ${doc.displayName}');
+        importedAny = true;
       } catch (e) {
         dev.log('DocumentsScreen: errore aggiunta documento: $e');
         await AppLogger.log('DocumentsScreen: errore aggiunta documento: $e');
@@ -428,8 +455,10 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
 
     if (mounted) {
       setState(() {});
-      await _showImportCompleteDialog(
-          AppLocalizations.of(context).documentsAdded);
+      if (importedAny) {
+        await _showImportCompleteDialog(
+            AppLocalizations.of(context).documentsAdded);
+      }
     }
   }
 
@@ -1459,6 +1488,35 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     }
   }
 
+  Future<DocumentItem?> _withRarPassword(
+      Future<DocumentItem> Function(String?) operation) async {
+    String? password;
+    while (mounted) {
+      try {
+        return await operation(password);
+      } catch (error) {
+        if (!RarDocumentArchive.needsPassword(error)) rethrow;
+        if (!mounted) return null;
+        final l10n = AppLocalizations.of(context);
+        password = await showDialog<String>(
+          context: context, barrierDismissible: false,
+          builder: (_) => DocumentPasswordDialog(
+            title: l10n.documentPassword,
+            prompt: l10n.enterCurrentDocumentPassword,
+            passwordLabel: l10n.documentPassword,
+            confirmPasswordLabel: l10n.confirmDocumentPassword,
+            requiredMessage: l10n.documentPasswordRequired,
+            mismatchMessage: l10n.documentPasswordsDoNotMatch,
+            invalidMessage: l10n.incorrectDocumentPassword,
+            initialError: password == null ? null : l10n.incorrectDocumentPassword,
+          ),
+        );
+        if (password == null) return null;
+      }
+    }
+    return null;
+  }
+
   Future<void> _openDocument(DocumentItem doc) async {
     if (doc.isFolder) {
       await Navigator.of(context).push(
@@ -1476,16 +1534,18 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     if (!await _authorizeDocumentOpen(doc)) return;
     if (!mounted) return;
 
-    if (doc.extension.toLowerCase() == 'zip') {
+    if (const ['zip', 'rar'].contains(doc.extension.toLowerCase())) {
       if (_loading) return;
       setState(() => _loading = true);
       DocumentItem? folder;
       try {
-        folder = await _service.openZip(doc);
+        folder = doc.extension.toLowerCase() == 'rar'
+          ? await _withRarPassword((password) => _service.openRar(doc, password: password))
+          : await _service.openZip(doc);
       } catch (error) {
-        await AppLogger.log('Documents: ZIP opening failed: ${error.runtimeType}');
+        await AppLogger.log('Documents: archive opening failed: ${error.runtimeType}');
         if (mounted) {
-          _showSnack(AppLocalizations.of(context).importZipError(
+          _showSnack(AppLocalizations.of(context).fileOpenError(
             AppLocalizations.of(context).technicalErrorGeneric));
         }
       } finally {

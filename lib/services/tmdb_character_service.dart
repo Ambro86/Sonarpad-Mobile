@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'tmdb_service.dart';
+import '../utils/app_logger.dart';
 import 'tmdb_character_strings.dart';
 
 typedef TmdbChoose = Future<int?> Function(String key, List<String> options);
@@ -42,9 +43,14 @@ class TmdbCharacterService {
         'query': title,
         'year': year,
       });
-      productions.addAll(
-        rows(result, 'results').map((item) => {...item, 'media_type': kind}),
+      final matches = rows(result, 'results');
+      unawaited(
+        AppLogger.log(
+          'TMDB search kind=$kind results=${matches.length} '
+          'total=${result['total_results']} pages=${result['total_pages']}',
+        ),
       );
+      productions.addAll(matches.map((item) => {...item, 'media_type': kind}));
     }
     if (productions.isEmpty) {
       throw StateError(TmdbCharacterStrings.get(language, 'no_results'));

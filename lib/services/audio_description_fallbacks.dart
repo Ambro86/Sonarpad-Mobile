@@ -421,7 +421,7 @@ class AudioDescriptionFallbacks {
     return null;
   }
 
-  /// Same 45-second trigger as desktop; the existing interval fallback does the work.
+  /// Same 35-second trigger as desktop; the existing interval fallback does the work.
   static List<AdTimeRange> narrationRestartRanges(
     Iterable<AdTimeRange> usablePauses,
     double chunkStart,
@@ -431,8 +431,8 @@ class AudioDescriptionFallbacks {
     var previousEnd = 0.0;
     for (final pause in usablePauses) {
       if (pause.duration < minMandatorySlotSeconds) continue;
-      if (pause.start - previousEnd >= 45.0 &&
-          pause.start - chunkStart >= 45.0 &&
+      if (pause.start - previousEnd >= 35.0 &&
+          pause.start - chunkStart >= 35.0 &&
           chunkEnd - pause.start >= minMandatorySlotSeconds) {
         cuts.add(pause.start);
       }

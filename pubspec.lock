@@ -1534,6 +1534,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.0"
+  unrar:
+    dependency: "direct main"
+    description:
+      path: "third_party/unrar"
+      relative: true
+    source: path
+    version: "0.2.0"
   uri_parser:
     dependency: transitive
     description:

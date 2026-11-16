@@ -124,6 +124,7 @@ class AudioPlayerService {
   }
 
   final AudioPlayer _player;
+  StreamSubscription<PlayerException>? _nativeErrorSubscription;
   final bool _isAndroid;
   Completer<void>? _voicePreviewCancelled;
   Future<void> Function(bool paused)? _voicePreviewPauseControl;
@@ -162,6 +163,16 @@ class AudioPlayerService {
   int _lastSavedBookmarkSecond = -1;
 
   void _initBookmarkListener() {
+    _nativeErrorSubscription = _player.errorStream.listen((error) {
+      // URLs may contain signed credentials: log only safe playback metadata.
+      final message = (error.message ?? '').replaceAll(
+        RegExp(r'https?://[^\s]+'), '[URL]');
+      unawaited(AppLogger.log(
+        'Sonarpad audio: native player error code=${error.code} '
+        'message=$message state=${_player.processingState} '
+        'positionMs=${_player.position.inMilliseconds}',
+      ));
+    });
     _player.durationStream.listen(
       (d) {
         AppLogger.log('Sonarpad audio: durationStream emitted $d');
@@ -458,6 +469,7 @@ class AudioPlayerService {
     String? title,
     String? mediaId,
     Map<String, String>? headers,
+    bool isLive = false,
   }) async {
     if (_pendingDispose != null) {
       AppLogger.log(
@@ -507,7 +519,7 @@ class AudioPlayerService {
       'duration=$duration state=$_playerDebugState',
     );
 
-    if (sessionType == AudioSessionType.playback &&
+    if (!isLive && sessionType == AudioSessionType.playback &&
         _currentMediaId != null &&
         await _settings.isAutoBookmarkEnabled()) {
       AppLogger.log(
@@ -542,7 +554,7 @@ class AudioPlayerService {
       }
     }
     if (!_disposed && !_stopRequested) {
-      _bookmarkSourceReady = true;
+      _bookmarkSourceReady = !isLive;
     }
   }
 
@@ -1069,6 +1081,8 @@ class AudioPlayerService {
   Future<void> stopAndDispose() async {
     if (_disposed) return;
     _disposed = true;
+    await _nativeErrorSubscription?.cancel();
+    _nativeErrorSubscription = null;
     if (identical(_activeService, this)) _activeService = null;
     _cancelVoicePreview();
     unawaited(_queuedTrackIndexSubscription?.cancel() ?? Future<void>.value());
@@ -1108,6 +1122,8 @@ class AudioPlayerService {
   Future<void> dispose() async {
     if (_disposed) return;
     _disposed = true;
+    await _nativeErrorSubscription?.cancel();
+    _nativeErrorSubscription = null;
     if (identical(_activeService, this)) _activeService = null;
     _cancelVoicePreview();
     unawaited(_queuedTrackIndexSubscription?.cancel() ?? Future<void>.value());

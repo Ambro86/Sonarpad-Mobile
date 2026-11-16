@@ -433,7 +433,7 @@ class _PodcastEpisodePlayerScreenState
         });
 
         final stableId = _getStableId();
-        if (resumePosition != null) {
+        if (resumePosition != null && !_episode.isLive) {
           await _videoController!.seekTo(resumePosition);
           if (useExternalAudio) {
             await _audio.seek(resumePosition);
@@ -442,7 +442,7 @@ class _PodcastEpisodePlayerScreenState
             'PodcastPlayer: video transition restored position='
             '${resumePosition.inMilliseconds}ms, $_logSubject',
           );
-        } else if (await _settings.isAutoBookmarkEnabled()) {
+        } else if (!_episode.isLive && await _settings.isAutoBookmarkEnabled()) {
           final savedPos = await _settings.getMediaBookmark(stableId);
           if (savedPos != null && savedPos >= 3) {
             final dur = _videoController!.value.duration;
@@ -521,7 +521,7 @@ class _PodcastEpisodePlayerScreenState
           );
         }
         // A cast handoff retains the loaded player. Restore its position too.
-        if (resumePosition != null) {
+        if (resumePosition != null && !_episode.isLive) {
           await _audio.seek(resumePosition);
           AppLogger.log('PodcastPlayer: audio transition restored position=${resumePosition.inMilliseconds}ms');
         }
@@ -702,9 +702,9 @@ class _PodcastEpisodePlayerScreenState
     }.toList();
     for (var index = 0; index < urls.length; index++) {
       try {
-        await _audio.setUrl(urls[index],
+        await _audio.setUrl(urls[index], isLive: episode.isLive,
           title: l10n.nowPlayingTitle(episode.title), mediaId: _getStableId());
-        if (!_initialPlaybackPositionApplied && widget.initialPlaybackPosition != null) {
+        if (!_initialPlaybackPositionApplied && !episode.isLive && widget.initialPlaybackPosition != null) {
           await _audio.seek(widget.initialPlaybackPosition!);
           _initialPlaybackPositionApplied = true;
         }
@@ -1261,8 +1261,13 @@ class _PodcastEpisodePlayerScreenState
 
       await _settings.setVideoEnabled(enable);
       _loaded = false; // Force a reload only after the old engine is stopped.
+      // A live HLS position belongs to the old player's sliding window.
+      // Let the new engine choose its current live position instead.
+      if (_episode.isLive) {
+        AppLogger.log('PodcastPlayer: live mode transition keeps default live position');
+      }
       await _play(
-        resumePosition: resumePosition,
+        resumePosition: _episode.isLive ? null : resumePosition,
         shouldPlay: wasPlaying && (!Platform.isAndroid ||
             pauseGeneration == _androidPauseGeneration),
       );

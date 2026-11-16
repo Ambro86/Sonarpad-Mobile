@@ -504,6 +504,17 @@ class _SonarpadAppState extends State<SonarpadApp> with WidgetsBindingObserver {
       final doc = await lib.importFile(originalFile, originalName: displayName);
       await lib.add(doc);
 
+      if (doc.extension.toLowerCase() == 'rar') {
+        navigator.pushAndRemoveUntil(
+          MaterialPageRoute<void>(
+            settings: const RouteSettings(name: '/documents'),
+            builder: (_) => DocumentsScreen(initialArchive: doc),
+          ),
+          (route) => route.isFirst,
+        );
+        return;
+      }
+
       navigator.pushAndRemoveUntil(
         MaterialPageRoute<void>(
           settings: const RouteSettings(name: '/documents'),

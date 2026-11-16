@@ -7,6 +7,43 @@ import 'package:sonarpad_mobile_starter/services/tmdb_character_service.dart';
 import 'package:sonarpad_mobile_starter/services/audio_description_fallbacks.dart';
 
 void main() {
+  test(
+    'Capri 2006 remains selectable after the complete first movie page',
+    () async {
+      final service = TmdbCharacterService(
+        language: 'it',
+        lookup: (action, params) async {
+          expect(params, {'query': 'capri', 'year': ''});
+          return {
+            'results': action == 'search_movie'
+                ? [
+                    for (var i = 0; i < 20; i++)
+                      {
+                        'id': i + 1,
+                        'title': 'Film $i',
+                        'release_date': '2008-01-01',
+                      },
+                  ]
+                : [
+                    {
+                      'id': 32206,
+                      'name': 'Capri',
+                      'first_air_date': '2006-10-15',
+                    },
+                  ],
+          };
+        },
+      );
+      final result = await service.resolve('capri', '', (key, options) async {
+        expect(key, 'production');
+        expect(options.length, 21);
+        expect(options[20], contains('Capri (2006)'));
+        return null;
+      });
+      expect(result, isNull);
+    },
+  );
+
   Map<String, dynamic> credits() => {
     'cast': [
       {
@@ -139,28 +176,47 @@ void main() {
     },
   );
 
-  test('checkpoint restore retains TMDB references and same-ID observations', () {
-    final cast = TmdbCharacterService.catalogFromCredits(credits(), details(), kind: 'tv');
-    final observed = <String, Object?>{
-      'id': cast.first['id'], 'name': 'Nome localizzato',
-      'description': 'Giacca rossa vista nel video', 'provisional': true,
-    };
-    final before = AudioDescriptionFallbacks.mergeCharacterCatalog(cast, [observed]);
-    final saved = jsonDecode(jsonEncode({'glossary': before})) as Map;
-    final restored = AudioDescriptionFallbacks.mergeCharacterCatalog(
-      [], [for (final entry in saved['glossary'] as List) Map<String, Object?>.from(entry as Map)],
-    );
-    final references = restored.where((item) => item['tmdb'] is Map).toList();
-    final observations = restored.where((item) => item['tmdb'] is! Map).toList();
-    expect(references, cast);
-    expect(observations.single, observed);
-    final corrected = AudioDescriptionFallbacks.mergeCharacterCatalog(restored, [
-      {...observed, 'description': 'Giacca blu verificata dopo la ripresa'},
-    ]);
-    expect(corrected.where((item) => item['tmdb'] is Map).toList(), cast);
-    expect(corrected.where((item) => item['tmdb'] is! Map).single['description'],
-        'Giacca blu verificata dopo la ripresa');
-  });
+  test(
+    'checkpoint restore retains TMDB references and same-ID observations',
+    () {
+      final cast = TmdbCharacterService.catalogFromCredits(
+        credits(),
+        details(),
+        kind: 'tv',
+      );
+      final observed = <String, Object?>{
+        'id': cast.first['id'],
+        'name': 'Nome localizzato',
+        'description': 'Giacca rossa vista nel video',
+        'provisional': true,
+      };
+      final before = AudioDescriptionFallbacks.mergeCharacterCatalog(cast, [
+        observed,
+      ]);
+      final saved = jsonDecode(jsonEncode({'glossary': before})) as Map;
+      final restored = AudioDescriptionFallbacks.mergeCharacterCatalog([], [
+        for (final entry in saved['glossary'] as List)
+          Map<String, Object?>.from(entry as Map),
+      ]);
+      final references = restored.where((item) => item['tmdb'] is Map).toList();
+      final observations = restored
+          .where((item) => item['tmdb'] is! Map)
+          .toList();
+      expect(references, cast);
+      expect(observations.single, observed);
+      final corrected = AudioDescriptionFallbacks.mergeCharacterCatalog(
+        restored,
+        [
+          {...observed, 'description': 'Giacca blu verificata dopo la ripresa'},
+        ],
+      );
+      expect(corrected.where((item) => item['tmdb'] is Map).toList(), cast);
+      expect(
+        corrected.where((item) => item['tmdb'] is! Map).single['description'],
+        'Giacca blu verificata dopo la ripresa',
+      );
+    },
+  );
 
   test('provisional identities can change; user identities stay stable', () {
     final provisional = <String, Object?>{

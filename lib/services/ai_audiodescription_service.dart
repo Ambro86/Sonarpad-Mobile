@@ -4683,11 +4683,27 @@ $nonverbalInstruction''';
     if (descriptions.isEmpty || names.isEmpty) {
       return List<_GeneratedDescription>.of(descriptions);
     }
+    // Match a unique first name while retaining the full catalog identity.
+    final firstNames = <String, List<String>>{};
+    for (final name in names) {
+      firstNames.putIfAbsent(name.split(' ').first.toLowerCase(), () => []).add(name);
+    }
+    final aliases = <String, String>{for (final name in names) name: name};
+    for (final entry in firstNames.entries) {
+      if (entry.value.length == 1) {
+        final name = entry.value.single;
+        aliases.putIfAbsent(name.split(' ').first, () => name);
+      } else {
+        aliases.removeWhere((alias, _) => alias.toLowerCase() == entry.key);
+      }
+    }
+    final orderedAliases = aliases.keys.toList()
+      ..sort((a, b) => b.length.compareTo(a.length));
     final patterns = <(String, RegExp)>[
-      for (final name in names)
+      for (final alias in orderedAliases)
         (
-          name,
-          RegExp('^(${RegExp.escape(name)})(?=\\s|,)', caseSensitive: false),
+          aliases[alias]!,
+          RegExp('^(${RegExp.escape(alias)})(?=\\s|,)', caseSensitive: false),
         ),
     ];
     final cleaned = <_GeneratedDescription>[];
