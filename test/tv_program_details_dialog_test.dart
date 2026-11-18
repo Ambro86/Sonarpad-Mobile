@@ -25,6 +25,9 @@ void main() {
     DateTime? selected;
     await tester.pumpWidget(
       MaterialApp(
+        locale: const Locale('it'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         home: Builder(
           builder: (context) => FilledButton(
             onPressed: () async {
@@ -49,7 +52,7 @@ void main() {
     await tester.tap(find.text('Scegli giorno'));
     await tester.pumpAndSettle();
     expect(find.text('Conferma'), findsNothing);
-    expect(find.text('Annulla'), findsNothing);
+    expect(find.text('Annulla'), findsOneWidget);
 
     await tester.tap(find.text('Domani'));
     await tester.pumpAndSettle();
@@ -64,6 +67,9 @@ void main() {
     final today = DateTime(2026, 8, 24);
     await tester.pumpWidget(
       MaterialApp(
+        locale: const Locale('it'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         home: Builder(
           builder: (context) => FilledButton(
             onPressed: () => showTvDaySelectionDialog(
