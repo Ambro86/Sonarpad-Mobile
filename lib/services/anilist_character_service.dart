@@ -27,7 +27,7 @@ class AniListCharacterService {
     final cached = _cache[body];
     if (cached != null) return cached.$2;
     if (_retryAfter?.isAfter(now) == true) {
-      throw StateError('AniList rate limit');
+      throw StateError('ANILIST_RATE_LIMIT');
     }
     final client = http.Client();
     try {
@@ -44,10 +44,10 @@ class AniListCharacterService {
         _retryAfter = now.add(Duration(seconds: seconds.clamp(1, 86400)));
       }
       if (response.statusCode != 200) {
-        throw StateError('AniList HTTP ${response.statusCode}');
+        throw StateError('ANILIST_HTTP_ERROR');
       }
       final payload = jsonDecode(utf8.decode(response.bodyBytes)) as Map;
-      if (payload['errors'] != null) throw StateError('AniList GraphQL error');
+      if (payload['errors'] != null) throw StateError('ANILIST_GRAPHQL_ERROR');
       final data = payload['data'] as Map<String, dynamic>;
       if (_cache.length >= 16) _cache.remove(_cache.keys.first);
       _cache[body] = (now, data);
