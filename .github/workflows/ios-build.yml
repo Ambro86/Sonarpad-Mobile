@@ -10,7 +10,7 @@ on:
 jobs:
   build:
     name: Build Sonarpad iOS App
-    runs-on: macos-latest
+    runs-on: xcode-27
 
     env:
       APP_NAME: Sonarpad

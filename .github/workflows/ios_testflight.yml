@@ -6,7 +6,7 @@ on:
 jobs:
   build:
     name: Build and Upload Sonarpad iOS Signed
-    runs-on: macos-26
+    runs-on: xcode-27
 
     env:
       APP_NAME: Sonarpad
