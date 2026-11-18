@@ -6661,5 +6661,8 @@
   "@audioDescriptionRepairText": {"placeholders": {"time": {"type": "String"}, "actual": {"type": "String"}, "available": {"type": "String"}}},
   "mediaCutterAudioCutMode": "Audio-Schnittmodus",
   "mediaCutterAudioCutAuto": "Automatisch: möglichst ohne Neukodierung",
-  "mediaCutterAudioCutPrecise": "Präziser Schnitt mit Neukodierung"
+  "mediaCutterAudioCutPrecise": "Präziser Schnitt mit Neukodierung",
+  "recordingScheduleMissed": "Die geplante Aufnahme von „{title}“ wurde nicht abgeschlossen: Sonarpad wurde nach Ende der Sendung wieder geöffnet.",
+  "manageAllBookmarks": "Alle Lesezeichen verwalten",
+  "noSavedBookmarks": "Keine gespeicherten Lesezeichen."
 }

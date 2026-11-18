@@ -5864,6 +5864,17 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get mediaCutterAudioCutPrecise => '重新编码以精确剪辑';
+
+  @override
+  String recordingScheduleMissed(String title) {
+    return '“$title”的定时录制未完成：重新打开 Sonarpad 时，节目已结束。';
+  }
+
+  @override
+  String get manageAllBookmarks => '管理所有书签';
+
+  @override
+  String get noSavedBookmarks => '没有已保存的书签。';
 }
 
 /// The translations for Chinese, as used in China (`zh_CN`).
@@ -11726,4 +11737,15 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get mediaCutterAudioCutPrecise => '重新编码以精确剪辑';
+
+  @override
+  String recordingScheduleMissed(String title) {
+    return '“$title”的定时录制未完成：重新打开 Sonarpad 时，节目已结束。';
+  }
+
+  @override
+  String get manageAllBookmarks => '管理所有书签';
+
+  @override
+  String get noSavedBookmarks => '没有已保存的书签。';
 }

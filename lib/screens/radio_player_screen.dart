@@ -2477,13 +2477,13 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
         },
       );
       if (request == null || !mounted) return;
-      _scheduleRecording(request);
+      await _scheduleRecording(request);
     } finally {
       titleController.dispose();
     }
   }
 
-  void _scheduleRecording(_ScheduledRecordingRequest request) {
+  Future<void> _scheduleRecording(_ScheduledRecordingRequest request) async {
     final l10n = AppLocalizations.of(context);
     final now = DateTime.now();
     var start = DateTime(
@@ -2509,16 +2509,18 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
 
     final title = request.title.trim().isEmpty ? null : request.title.trim();
     try {
-      _recordingService.schedule(
+      await _recordingService.schedule(
         target: _recordingTarget,
         start: start,
         end: end,
         title: title,
       );
     } catch (error) {
+      if (!mounted) return;
       showStatusMessage(context, l10n.radioScheduledRecordingError(l10n.technicalErrorGeneric));
       return;
     }
+    if (!mounted) return;
     showStatusMessage(
       context,
       l10n.radioScheduledRecordingRange(

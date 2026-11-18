@@ -821,7 +821,7 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
 
     final hasHandle = prepared.handle?.trim().isNotEmpty ?? false;
     final hasSubscribers = prepared.subscribers?.trim().isNotEmpty ?? false;
-    if (!hasHandle || !hasSubscribers) {
+    if (!hasHandle || !hasSubscribers || prepared.canonicalChannelId == null) {
       prepared = await _service.refreshChannelMetadata(prepared);
       await _favoritesService.updateFavoriteMetadata(prepared);
     }
@@ -3848,7 +3848,7 @@ class _SonarTubeFavoritesScreenState extends State<_SonarTubeFavoritesScreen> {
         await widget.favoritesService.updateFavoriteMetadata(channel) ?? channel;
     final hasHandle = prepared.handle?.trim().isNotEmpty ?? false;
     final hasSubscribers = prepared.subscribers?.trim().isNotEmpty ?? false;
-    if (!hasHandle || !hasSubscribers) {
+    if (!hasHandle || !hasSubscribers || prepared.canonicalChannelId == null) {
       prepared = await widget.service.refreshChannelMetadata(prepared);
       await widget.favoritesService.updateFavoriteMetadata(prepared);
     }

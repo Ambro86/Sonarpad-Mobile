@@ -865,6 +865,23 @@ class AppSettingsService {
     await prefs.setBool(_autoBookmarkKey, value);
   });
 
+  /// Enumerate the existing positions, including legacy and unavailable media.
+  /// Titles are optional: older versions stored only an ID and a position.
+  Future<List<({String id, String title, int seconds})>> mediaBookmarks() async {
+    final prefs = await SharedPreferences.getInstance();
+    final result = <({String id, String title, int seconds})>[];
+    for (final key in prefs.getKeys()) {
+      if (!key.startsWith('bookmark_')) continue;
+      final value = prefs.get(key);
+      if (value is! int || value <= 0) continue;
+      final id = key.substring('bookmark_'.length);
+      if (id.isEmpty) continue;
+      result.add((id: id, title: prefs.getString('media_bookmark_title_$id') ?? id, seconds: value));
+    }
+    result.sort((a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()));
+    return result;
+  }
+
   Future<int?> getMediaBookmark(String id) async {
     if (id.startsWith(PodcastBookmarksService.prefix)) {
       return PodcastBookmarksService().position(id.substring(PodcastBookmarksService.prefix.length));
@@ -873,7 +890,7 @@ class AppSettingsService {
     return prefs.getInt('bookmark_$id');
   }
 
-  Future<void> saveMediaBookmark(String id, int positionInSeconds) => CollectionStorage.run(() async {
+  Future<void> saveMediaBookmark(String id, int positionInSeconds, {String? title}) => CollectionStorage.run(() async {
     if (id.startsWith(PodcastBookmarksService.prefix)) {
       await PodcastBookmarksService().save(id.substring(PodcastBookmarksService.prefix.length), positionInSeconds);
       return;
@@ -881,8 +898,12 @@ class AppSettingsService {
     final prefs = await SharedPreferences.getInstance();
     if (positionInSeconds <= 0) {
       await prefs.remove('bookmark_$id');
+      await prefs.remove('media_bookmark_title_$id');
     } else {
       await prefs.setInt('bookmark_$id', positionInSeconds);
+      if (title != null && title.trim().isNotEmpty && prefs.getString('media_bookmark_title_$id') != title) {
+        await prefs.setString('media_bookmark_title_$id', title);
+      }
     }
   });
 
@@ -893,6 +914,7 @@ class AppSettingsService {
     }
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('bookmark_$id');
+      await prefs.remove('media_bookmark_title_$id');
   });
 
   // --- Slider di Riproduzione ---

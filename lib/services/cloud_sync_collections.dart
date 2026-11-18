@@ -219,9 +219,13 @@ class CloudSyncCollections {
     final videos = state['sonartube']!.map((item) {
       final d = item['data'] as Map<String, dynamic>;
       final uri = Uri.parse(d['url'] as String);
+      final previousId = oldVideos[item['id']]?['id']?.toString();
+      final savedChannelId = previousId != null && RegExp(r'^UC[A-Za-z0-9_-]{20,}$').hasMatch(previousId)
+          ? previousId : null;
       final id =
           uri.queryParameters['v'] ??
           uri.queryParameters['list'] ??
+          savedChannelId ??
           uri.pathSegments.lastOrNull;
       if (id == null || id.isEmpty) {
         throw const FormatException('Invalid SonarTube favorite');

@@ -6115,4 +6115,15 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get mediaCutterAudioCutPrecise => 'Nauwkeurig knippen met hercodering';
+
+  @override
+  String recordingScheduleMissed(String title) {
+    return 'De geplande opname van ‘$title’ is niet voltooid: Sonarpad werd na het einde van het programma opnieuw geopend.';
+  }
+
+  @override
+  String get manageAllBookmarks => 'Alle bladwijzers beheren';
+
+  @override
+  String get noSavedBookmarks => 'Geen opgeslagen bladwijzers.';
 }

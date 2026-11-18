@@ -41,8 +41,9 @@ import '../widgets/document_password_dialog.dart';
 /// - Supporta flick/scroll iOS con [BouncingScrollPhysics].
 class DocumentReaderScreen extends StatefulWidget {
   final DocumentItem document;
+  final int? initialParagraphIndex;
 
-  const DocumentReaderScreen({super.key, required this.document});
+  const DocumentReaderScreen({super.key, required this.document, this.initialParagraphIndex});
 
   @override
   State<DocumentReaderScreen> createState() => _DocumentReaderScreenState();
@@ -329,8 +330,12 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
         _rebuildRemainingReadingEstimateCache();
         _focusedChunkIndex = -1;
         _refreshBookmarkStateForCurrentMode();
+        final requestedIndex = widget.initialParagraphIndex;
+        if (requestedIndex != null && requestedIndex >= 0 && requestedIndex < _chunks.length) {
+          _bookmarkIndex = requestedIndex;
+        }
         _initialBookmarkFocusIndex =
-            _bookmarkIndex > 0 && _bookmarkIndex < _chunks.length
+            (_bookmarkIndex > 0 || requestedIndex == 0) && _bookmarkIndex < _chunks.length
                 ? _bookmarkIndex
                 : -1;
         _docLog('DOC_BOOKMARK extraction complete chunks=${_chunks.length} multiple=$_multipleDocumentBookmarksEnabled bookmarkIndex=$_bookmarkIndex bookmarkIndexes=$_bookmarkIndexes hasBookmark=$_hasBookmark initialFocusIndex=$_initialBookmarkFocusIndex');

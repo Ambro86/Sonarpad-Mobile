@@ -277,7 +277,7 @@ class AudioPlayerService {
         AppLogger.log(
           'Sonarpad audio: saveCurrentBookmark() saving ${pos.inSeconds}',
         );
-        await _settings.saveMediaBookmark(mediaId, pos.inSeconds);
+        await _settings.saveMediaBookmark(mediaId, pos.inSeconds, title: _currentTitle);
       }
     }
   }

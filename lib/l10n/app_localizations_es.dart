@@ -6147,4 +6147,15 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get mediaCutterAudioCutPrecise => 'Corte preciso con recodificación';
+
+  @override
+  String recordingScheduleMissed(String title) {
+    return 'La grabación programada de «$title» no se completó: Sonarpad se volvió a abrir después de finalizar el programa.';
+  }
+
+  @override
+  String get manageAllBookmarks => 'Gestionar todos los marcadores';
+
+  @override
+  String get noSavedBookmarks => 'No hay marcadores guardados.';
 }

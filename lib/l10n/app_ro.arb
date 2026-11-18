@@ -5083,5 +5083,8 @@
   "@audioDescriptionRepairText": {"placeholders": {"time": {"type": "String"}, "actual": {"type": "String"}, "available": {"type": "String"}}},
   "mediaCutterAudioCutMode": "Mod de tăiere audio",
   "mediaCutterAudioCutAuto": "Automat: fără recodificare când este posibil",
-  "mediaCutterAudioCutPrecise": "Tăiere precisă cu recodificare"
+  "mediaCutterAudioCutPrecise": "Tăiere precisă cu recodificare",
+  "recordingScheduleMissed": "Înregistrarea programată pentru „{title}” nu a fost finalizată: Sonarpad a fost redeschis după încheierea programului.",
+  "manageAllBookmarks": "Gestionează toate marcajele",
+  "noSavedBookmarks": "Nu există marcaje salvate."
 }

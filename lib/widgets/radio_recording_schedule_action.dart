@@ -351,7 +351,7 @@ Future<void> showRadioScheduleRecordingAction(
 
     final title = request.title.trim().isEmpty ? null : request.title.trim();
     try {
-      recordingService.schedule(
+      await recordingService.schedule(
         target: GlobalRecordingTarget(
           id: 'radio:${station.streamUrl}',
           stationName: station.name,

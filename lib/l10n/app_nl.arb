@@ -6661,5 +6661,8 @@
   "@audioDescriptionRepairText": {"placeholders": {"time": {"type": "String"}, "actual": {"type": "String"}, "available": {"type": "String"}}},
   "mediaCutterAudioCutMode": "Audioknipmodus",
   "mediaCutterAudioCutAuto": "Automatisch: zonder hercodering waar mogelijk",
-  "mediaCutterAudioCutPrecise": "Nauwkeurig knippen met hercodering"
+  "mediaCutterAudioCutPrecise": "Nauwkeurig knippen met hercodering",
+  "recordingScheduleMissed": "De geplande opname van ‘{title}’ is niet voltooid: Sonarpad werd na het einde van het programma opnieuw geopend.",
+  "manageAllBookmarks": "Alle bladwijzers beheren",
+  "noSavedBookmarks": "Geen opgeslagen bladwijzers."
 }

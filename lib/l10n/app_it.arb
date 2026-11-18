@@ -6724,5 +6724,9 @@
   "@audioDescriptionRepairText": {"placeholders": {"time": {"type": "String"}, "actual": {"type": "String"}, "available": {"type": "String"}}},
   "mediaCutterAudioCutMode": "Modalità taglio audio",
   "mediaCutterAudioCutAuto": "Automatico: senza ricodifica quando possibile",
-  "mediaCutterAudioCutPrecise": "Taglio preciso con ricodifica"
+  "mediaCutterAudioCutPrecise": "Taglio preciso con ricodifica",
+  "recordingScheduleMissed": "La registrazione programmata di «{title}» non è stata completata: Sonarpad è stato riaperto dopo la fine del programma.",
+  "@recordingScheduleMissed": {"placeholders": {"title": {"type": "String"}}},
+  "manageAllBookmarks": "Gestisci tutti i segnalibri",
+  "noSavedBookmarks": "Nessun segnalibro salvato."
 }

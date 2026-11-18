@@ -6096,4 +6096,15 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get mediaCutterAudioCutPrecise => 'Точне обрізання з перекодуванням';
+
+  @override
+  String recordingScheduleMissed(String title) {
+    return 'Запланований запис «$title» не завершено: Sonarpad знову відкрито після закінчення програми.';
+  }
+
+  @override
+  String get manageAllBookmarks => 'Керувати всіма закладками';
+
+  @override
+  String get noSavedBookmarks => 'Немає збережених закладок.';
 }

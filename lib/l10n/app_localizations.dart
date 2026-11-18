@@ -10997,6 +10997,24 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Taglio preciso con ricodifica'**
   String get mediaCutterAudioCutPrecise;
+
+  /// No description provided for @recordingScheduleMissed.
+  ///
+  /// In it, this message translates to:
+  /// **'La registrazione programmata di «{title}» non è stata completata: Sonarpad è stato riaperto dopo la fine del programma.'**
+  String recordingScheduleMissed(String title);
+
+  /// No description provided for @manageAllBookmarks.
+  ///
+  /// In it, this message translates to:
+  /// **'Gestisci tutti i segnalibri'**
+  String get manageAllBookmarks;
+
+  /// No description provided for @noSavedBookmarks.
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun segnalibro salvato.'**
+  String get noSavedBookmarks;
 }
 
 class _AppLocalizationsDelegate

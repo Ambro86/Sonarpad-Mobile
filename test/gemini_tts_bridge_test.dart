@@ -354,7 +354,11 @@ void main() {
         }
         await request.response.close();
       });
+      final logs = <String>[];
       final bridge = GeminiTtsBridge(
+        logger: (line) async {
+          logs.add(line);
+        },
         endpoint: Uri.parse('http://127.0.0.1:${server.port}/tts'),
         retryDelay: Duration.zero,
       );
@@ -366,6 +370,16 @@ void main() {
       expect(bytes, orderedEquals(wav()));
       expect(attempts, 2);
       expect(bodies[0], bodies[1]);
+      await Future<void>.delayed(Duration.zero);
+      final diagnostic = logs.join('\n');
+      expect(diagnostic, contains('provider=gemini'));
+      expect(diagnostic, contains('reading_response http=503'));
+      expect(diagnostic, contains('code=http_503 retryable=true'));
+      expect(diagnostic, contains('retry_scheduled'));
+      expect(diagnostic, contains('success audio_bytes='));
+      expect(diagnostic, isNot(contains('test-key')));
+      expect(diagnostic, isNot(contains('Ciao')));
+      expect(diagnostic, isNot(contains(base64Encode(wav()))));
     },
   );
   test('Authentication errors are permanent and sanitized', () async {

@@ -5086,5 +5086,8 @@
   "@audioDescriptionRepairText": {"placeholders": {"time": {"type": "String"}, "actual": {"type": "String"}, "available": {"type": "String"}}},
   "mediaCutterAudioCutMode": "Režim střihu zvuku",
   "mediaCutterAudioCutAuto": "Automaticky: pokud možno bez překódování",
-  "mediaCutterAudioCutPrecise": "Přesný střih s překódováním"
+  "mediaCutterAudioCutPrecise": "Přesný střih s překódováním",
+  "recordingScheduleMissed": "Plánované nahrávání pořadu „{title}“ nebylo dokončeno: Sonarpad byl znovu otevřen až po skončení pořadu.",
+  "manageAllBookmarks": "Spravovat všechny záložky",
+  "noSavedBookmarks": "Žádné uložené záložky."
 }

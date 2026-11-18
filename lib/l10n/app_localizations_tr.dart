@@ -6107,4 +6107,15 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get mediaCutterAudioCutPrecise => 'Yeniden kodlayarak hassas kesim';
+
+  @override
+  String recordingScheduleMissed(String title) {
+    return '“$title” için zamanlanmış kayıt tamamlanmadı: Sonarpad program bittikten sonra yeniden açıldı.';
+  }
+
+  @override
+  String get manageAllBookmarks => 'Tüm yer işaretlerini yönet';
+
+  @override
+  String get noSavedBookmarks => 'Kayıtlı yer işareti yok.';
 }

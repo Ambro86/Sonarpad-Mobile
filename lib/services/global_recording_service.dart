@@ -1,5 +1,8 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'protected_wakelock.dart';
 
 import 'package:flutter/foundation.dart';
 
@@ -42,6 +45,76 @@ enum GlobalRecordingOutputState {
 class GlobalRecordingService extends ChangeNotifier {
   GlobalRecordingService._();
 
+  @visibleForTesting
+  GlobalRecordingService.forTesting({
+    required this.wakeLock,
+    this.startRecording,
+  });
+  WakeLockCoordinator wakeLock = WakelockPlus.coordinator;
+  Future<File> Function(GlobalRecordingTarget, String?)? startRecording;
+  static const scheduleStorageKey = 'sonarpad_pending_recording';
+  Future<void> _storageWork = Future.value();
+  Future<String?>? _restoreWork;
+  int _scheduleGeneration = 0;
+
+  Future<void> _storeSchedule(String? value) {
+    final next = _storageWork.then((_) async {
+      final prefs = await SharedPreferences.getInstance();
+      final saved = value == null
+          ? await prefs.remove(scheduleStorageKey)
+          : await prefs.setString(scheduleStorageKey, value);
+      if (!saved) throw StateError('Could not save recording schedule');
+    });
+    _storageWork = next.catchError((Object error) {
+      AppLogger.log(
+        'Global recording: schedule storage failed ${error.runtimeType}',
+      );
+    });
+    return next;
+  }
+
+  Future<String?> restoreSchedule() => _restoreWork ??= _restoreSchedule();
+
+  Future<String?> _restoreSchedule() async {
+    final generation = _scheduleGeneration;
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      if (generation != _scheduleGeneration || hasAnySchedule) return null;
+      final raw = prefs.getString(scheduleStorageKey);
+      if (raw == null) return null;
+      final data = jsonDecode(raw) as Map<String, dynamic>;
+      final title = (data['title'] ?? data['stationName']) as String;
+      final start = DateTime.parse(data['start'] as String);
+      final end = DateTime.parse(data['end'] as String);
+      if (!end.isAfter(DateTime.now())) {
+        await _storeSchedule(null);
+        return title;
+      }
+      await schedule(
+        target: GlobalRecordingTarget(
+          id: data['id'] as String,
+          stationName: data['stationName'] as String,
+          streamUrl: data['streamUrl'] as String,
+          includeVideo: data['includeVideo'] as bool,
+          tvChannel: data['tvChannel'] == null
+              ? null
+              : TvChannel.fromJson(data['tvChannel'] as Map<String, dynamic>),
+        ),
+        start: start,
+        end: end,
+        title: data['title'] as String?,
+      );
+      await AppLogger.log(
+        'Global recording: restored schedule start=$start end=$end',
+      );
+    } catch (error) {
+      await AppLogger.log(
+        'Global recording: restore failed ${error.runtimeType}',
+      );
+    }
+    return null;
+  }
+
   static final GlobalRecordingService instance = GlobalRecordingService._();
 
   RadioRecordingService? _recordingService;
@@ -58,7 +131,8 @@ class GlobalRecordingService extends ChangeNotifier {
 
   bool get isRecording => _recordingService?.isRecording ?? false;
   bool get isPaused => _recordingService?.isPaused ?? false;
-  bool get isRecordingTransitioning => _recordingService?.isTransitioning ?? false;
+  bool get isRecordingTransitioning =>
+      _recordingService?.isTransitioning ?? false;
   Future<void> toggleRecordingPause() async {
     final service = _recordingService;
     if (service == null || service.isTransitioning) return;
@@ -68,6 +142,7 @@ class GlobalRecordingService extends ChangeNotifier {
       await service.pause();
     }
   }
+
   bool get isStarting => _starting;
   bool hasRecordingIssueFor(String id) =>
       _activeTarget?.id == id &&
@@ -158,12 +233,12 @@ class GlobalRecordingService extends ChangeNotifier {
     return _lastOutputByTarget[targetId];
   }
 
-  void schedule({
+  Future<void> schedule({
     required GlobalRecordingTarget target,
     required DateTime start,
     required DateTime end,
     String? title,
-  }) {
+  }) async {
     if (hasAnyActiveRecording) {
       throw StateError('A recording is already active.');
     }
@@ -180,6 +255,27 @@ class GlobalRecordingService extends ChangeNotifier {
         ? null
         : trimmedTitle;
 
+    final generation = _scheduleGeneration;
+    try {
+      await wakeLock.acquire(this);
+      if (generation != _scheduleGeneration) return;
+      await _storeSchedule(
+        jsonEncode({
+          'id': target.id,
+          'stationName': target.stationName,
+          'streamUrl': target.streamUrl,
+          'includeVideo': target.includeVideo,
+          'tvChannel': target.tvChannel?.toJson(),
+          'start': start.toIso8601String(),
+          'end': end.toIso8601String(),
+          'title': _scheduledTitle,
+        }),
+      );
+    } catch (_) {
+      if (generation == _scheduleGeneration) _cancelScheduleInternal();
+      rethrow;
+    }
+    if (generation != _scheduleGeneration) return;
     final delay = start.difference(DateTime.now());
     _scheduledStartTimer = Timer(
       delay <= Duration.zero ? Duration.zero : delay,
@@ -395,6 +491,12 @@ class GlobalRecordingService extends ChangeNotifier {
     _scheduledStartTimer = null;
     notifyListeners();
     if (target == null) return;
+    // A delayed callback must not record a different, later programme.
+    if (end != null && !end.isAfter(DateTime.now())) {
+      _cancelScheduleInternal();
+      notifyListeners();
+      return;
+    }
 
     try {
       if (hasAnyActiveRecording) {
@@ -411,7 +513,12 @@ class GlobalRecordingService extends ChangeNotifier {
         'Global recording: scheduled start target="${target.stationName}" '
         'title=${title ?? ''} end=$end',
       );
-      await startNow(target, titleOverride: title);
+      final starter = startRecording;
+      if (starter == null) {
+        await startNow(target, titleOverride: title);
+      } else {
+        await starter(target, title);
+      }
 
       if (end == null) {
         _cancelScheduleInternal();
@@ -459,6 +566,15 @@ class GlobalRecordingService extends ChangeNotifier {
   }
 
   void _cancelScheduleInternal() {
+    _scheduleGeneration++;
+    unawaited(_storeSchedule(null).catchError((Object _) {}));
+    unawaited(
+      wakeLock.release(this).catchError((Object error) {
+        AppLogger.log(
+          'Global recording: schedule screen release failed ${error.runtimeType}',
+        );
+      }),
+    );
     _scheduledStartTimer?.cancel();
     _scheduledStopTimer?.cancel();
     _scheduledStartTimer = null;

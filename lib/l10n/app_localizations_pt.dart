@@ -6130,6 +6130,17 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get mediaCutterAudioCutPrecise => 'Corte preciso com recodificação';
+
+  @override
+  String recordingScheduleMissed(String title) {
+    return 'A gravação agendada de «$title» não foi concluída: o Sonarpad foi reaberto após o fim do programa.';
+  }
+
+  @override
+  String get manageAllBookmarks => 'Gerir todos os marcadores';
+
+  @override
+  String get noSavedBookmarks => 'Nenhum marcador guardado.';
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
@@ -12250,4 +12261,15 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get mediaCutterAudioCutPrecise => 'Corte preciso com recodificação';
+
+  @override
+  String recordingScheduleMissed(String title) {
+    return 'A gravação agendada de “$title” não foi concluída: o Sonarpad foi reaberto após o fim do programa.';
+  }
+
+  @override
+  String get manageAllBookmarks => 'Gerenciar todos os marcadores';
+
+  @override
+  String get noSavedBookmarks => 'Nenhum marcador salvo.';
 }

@@ -5083,5 +5083,9 @@
   "@audioDescriptionRepairText": {"placeholders": {"time": {"type": "String"}, "actual": {"type": "String"}, "available": {"type": "String"}}},
   "mediaCutterAudioCutMode": "Audio cutting mode",
   "mediaCutterAudioCutAuto": "Automatic: no re-encoding when possible",
-  "mediaCutterAudioCutPrecise": "Precise cutting with re-encoding"
+  "mediaCutterAudioCutPrecise": "Precise cutting with re-encoding",
+  "recordingScheduleMissed": "The scheduled recording of “{title}” was not completed: Sonarpad was reopened after the programme ended.",
+  "@recordingScheduleMissed": {"placeholders": {"title": {"type": "String"}}},
+  "manageAllBookmarks": "Manage all bookmarks",
+  "noSavedBookmarks": "No saved bookmarks."
 }

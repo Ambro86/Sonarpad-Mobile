@@ -5083,5 +5083,8 @@
   "@audioDescriptionRepairText": {"placeholders": {"time": {"type": "String"}, "actual": {"type": "String"}, "available": {"type": "String"}}},
   "mediaCutterAudioCutMode": "Ses kesme modu",
   "mediaCutterAudioCutAuto": "Otomatik: mümkünse yeniden kodlamadan",
-  "mediaCutterAudioCutPrecise": "Yeniden kodlayarak hassas kesim"
+  "mediaCutterAudioCutPrecise": "Yeniden kodlayarak hassas kesim",
+  "recordingScheduleMissed": "“{title}” için zamanlanmış kayıt tamamlanmadı: Sonarpad program bittikten sonra yeniden açıldı.",
+  "manageAllBookmarks": "Tüm yer işaretlerini yönet",
+  "noSavedBookmarks": "Kayıtlı yer işareti yok."
 }

@@ -33,7 +33,8 @@ class DocumentItem {
   });
 
   bool get isPasswordProtected =>
-      (passwordSalt?.isNotEmpty ?? false) && (passwordHash?.isNotEmpty ?? false);
+      (passwordSalt?.isNotEmpty ?? false) &&
+      (passwordHash?.isNotEmpty ?? false);
 
   String get displayName {
     final suffix = '.${extension.toLowerCase()}';
@@ -44,6 +45,8 @@ class DocumentItem {
   }
 
   DocumentItem copyWith({
+    int? bookmarkIndex,
+    List<int>? bookmarkIndexes,
     String? name,
     String? path,
     String? parentId,
@@ -58,53 +61,58 @@ class DocumentItem {
       path: path ?? this.path,
       extension: extension,
       addedAt: addedAt,
-      bookmarkIndex: bookmarkIndex,
-      bookmarkIndexes: List<int>.unmodifiable(bookmarkIndexes),
+      bookmarkIndex: bookmarkIndex ?? this.bookmarkIndex,
+      bookmarkIndexes: List<int>.unmodifiable(
+        bookmarkIndexes ?? this.bookmarkIndexes,
+      ),
       editedTextPath: editedTextPath,
       isTemporary: isTemporary,
       isFolder: isFolder,
       parentId: clearParentId ? null : (parentId ?? this.parentId),
-      passwordSalt:
-          clearPasswordProtection ? null : (passwordSalt ?? this.passwordSalt),
-      passwordHash:
-          clearPasswordProtection ? null : (passwordHash ?? this.passwordHash),
+      passwordSalt: clearPasswordProtection
+          ? null
+          : (passwordSalt ?? this.passwordSalt),
+      passwordHash: clearPasswordProtection
+          ? null
+          : (passwordHash ?? this.passwordHash),
     );
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'name': name,
-        'path': path,
-        'extension': extension,
-        'addedAt': addedAt.toIso8601String(),
-        'bookmarkIndex': bookmarkIndex,
-        if (bookmarkIndexes.isNotEmpty) 'bookmarkIndexes': bookmarkIndexes,
-        if (editedTextPath != null) 'editedTextPath': editedTextPath,
-        'isTemporary': isTemporary,
-        'isFolder': isFolder,
-        if (parentId != null) 'parentId': parentId,
-        if (passwordSalt != null) 'passwordSalt': passwordSalt,
-        if (passwordHash != null) 'passwordHash': passwordHash,
-      };
+    'id': id,
+    'name': name,
+    'path': path,
+    'extension': extension,
+    'addedAt': addedAt.toIso8601String(),
+    'bookmarkIndex': bookmarkIndex,
+    if (bookmarkIndexes.isNotEmpty) 'bookmarkIndexes': bookmarkIndexes,
+    if (editedTextPath != null) 'editedTextPath': editedTextPath,
+    'isTemporary': isTemporary,
+    'isFolder': isFolder,
+    if (parentId != null) 'parentId': parentId,
+    if (passwordSalt != null) 'passwordSalt': passwordSalt,
+    if (passwordHash != null) 'passwordHash': passwordHash,
+  };
 
   factory DocumentItem.fromJson(Map<String, dynamic> json) => DocumentItem(
-        id: json['id'] as String,
-        name: json['name'] as String,
-        path: json['path'] as String,
-        extension: json['extension'] as String,
-        addedAt: DateTime.parse(json['addedAt'] as String),
-        bookmarkIndex: json['bookmarkIndex'] as int? ?? 0,
-        bookmarkIndexes: (json['bookmarkIndexes'] as List?)
-                ?.whereType<int>()
-                .toList(growable: false) ??
-            const <int>[],
-        editedTextPath: json['editedTextPath'] as String?,
-        isTemporary: json['isTemporary'] as bool? ?? false,
-        isFolder: json['isFolder'] as bool? ?? false,
-        parentId: json['parentId'] as String?,
-        passwordSalt: json['passwordSalt'] as String?,
-        passwordHash: json['passwordHash'] as String?,
-      );
+    id: json['id'] as String,
+    name: json['name'] as String,
+    path: json['path'] as String,
+    extension: json['extension'] as String,
+    addedAt: DateTime.parse(json['addedAt'] as String),
+    bookmarkIndex: json['bookmarkIndex'] as int? ?? 0,
+    bookmarkIndexes:
+        (json['bookmarkIndexes'] as List?)?.whereType<int>().toList(
+          growable: false,
+        ) ??
+        const <int>[],
+    editedTextPath: json['editedTextPath'] as String?,
+    isTemporary: json['isTemporary'] as bool? ?? false,
+    isFolder: json['isFolder'] as bool? ?? false,
+    parentId: json['parentId'] as String?,
+    passwordSalt: json['passwordSalt'] as String?,
+    passwordHash: json['passwordHash'] as String?,
+  );
 
   static DocumentItem? tryFromJson(Map<String, dynamic> json) {
     try {

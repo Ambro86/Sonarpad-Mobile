@@ -6128,4 +6128,15 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String get mediaCutterAudioCutPrecise => 'Tăiere precisă cu recodificare';
+
+  @override
+  String recordingScheduleMissed(String title) {
+    return 'Înregistrarea programată pentru „$title” nu a fost finalizată: Sonarpad a fost redeschis după încheierea programului.';
+  }
+
+  @override
+  String get manageAllBookmarks => 'Gestionează toate marcajele';
+
+  @override
+  String get noSavedBookmarks => 'Nu există marcaje salvate.';
 }

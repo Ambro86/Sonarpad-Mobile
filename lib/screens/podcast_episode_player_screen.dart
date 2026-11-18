@@ -306,7 +306,7 @@ class _PodcastEpisodePlayerScreenState
       if (isFinished) {
         await _settings.saveMediaBookmark(stableId, 0);
       } else {
-        await _settings.saveMediaBookmark(stableId, pos.inSeconds);
+        await _settings.saveMediaBookmark(stableId, pos.inSeconds, title: _episode.title);
       }
     }
   }
@@ -625,7 +625,7 @@ class _PodcastEpisodePlayerScreenState
             onPosition: (position) async {
               final mediaId = _getStableId();
               if (bookmarkEnabled && !_episode.isLive) {
-                await _settings.saveMediaBookmark(mediaId, position.inSeconds);
+                await _settings.saveMediaBookmark(mediaId, position.inSeconds, title: _episode.title);
               }
             },
           )));

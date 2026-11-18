@@ -6661,5 +6661,8 @@
   "@audioDescriptionRepairText": {"placeholders": {"time": {"type": "String"}, "actual": {"type": "String"}, "available": {"type": "String"}}},
   "mediaCutterAudioCutMode": "Режим обрізання аудіо",
   "mediaCutterAudioCutAuto": "Автоматично: без перекодування, якщо можливо",
-  "mediaCutterAudioCutPrecise": "Точне обрізання з перекодуванням"
+  "mediaCutterAudioCutPrecise": "Точне обрізання з перекодуванням",
+  "recordingScheduleMissed": "Запланований запис «{title}» не завершено: Sonarpad знову відкрито після закінчення програми.",
+  "manageAllBookmarks": "Керувати всіма закладками",
+  "noSavedBookmarks": "Немає збережених закладок."
 }

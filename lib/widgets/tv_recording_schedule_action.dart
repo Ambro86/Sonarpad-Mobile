@@ -513,7 +513,7 @@ Future<void> showTvScheduleRecordingAction(
 
     final title = request.title.trim().isEmpty ? null : request.title.trim();
     try {
-      recordingService.schedule(
+      await recordingService.schedule(
         target: tvRecordingTargetForChannel(channel),
         start: scheduledStart,
         end: scheduledEnd,

@@ -1,5 +1,6 @@
 import 'services/activation_link_service.dart';
 import 'services/cloud_sync_service.dart';
+import 'services/global_recording_service.dart';
 import 'widgets/activation_link_dialog.dart';
 import 'dart:async';
 import 'dart:collection';
@@ -268,6 +269,7 @@ class _SonarpadAppState extends State<SonarpadApp> with WidgetsBindingObserver {
   }
 
   Future<void> _loadStartupSettings() async {
+    final restoreRecording = GlobalRecordingService.instance.restoreSchedule();
     final settings = AppSettingsService();
     final lang = await settings.loadAppLanguage();
     final themeMode = await settings.loadThemeMode();
@@ -279,6 +281,18 @@ class _SonarpadAppState extends State<SonarpadApp> with WidgetsBindingObserver {
     });
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await _showChangelogIfNeeded(lang);
+      final missedRecording = await restoreRecording;
+      final dialogContext = _navigatorKey.currentState?.overlay?.context;
+      if (missedRecording != null && dialogContext != null && dialogContext.mounted) {
+        final l10n = AppLocalizations.of(dialogContext);
+        await showDialog<void>(
+          context: dialogContext,
+          builder: (context) => AlertDialog(
+            content: Text(l10n.recordingScheduleMissed(missedRecording)),
+            actions: [TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.ok))],
+          ),
+        );
+      }
       _startupDialogsComplete = true;
       unawaited(_drainSharedFiles());
     });

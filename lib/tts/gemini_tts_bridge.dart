@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
+import '../utils/app_logger.dart';
 
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -15,7 +16,9 @@ class GeminiTtsBridge {
     Uri? endpoint,
     Uri? sonarpadBase,
     this.retryDelay = const Duration(seconds: 5),
-  }) : sonarpadBase =
+    Future<void> Function(String)? logger,
+  }) : _logger = logger ?? AppLogger.log,
+       sonarpadBase =
            sonarpadBase ?? Uri.parse('https://sonarpad.com/sonarpad-ai/v1/'),
        endpoint =
            endpoint ??
@@ -23,6 +26,16 @@ class GeminiTtsBridge {
              'generativelanguage.googleapis.com',
              '/v1beta/models/gemini-3.8-flash-tts:generateContent',
            );
+
+  final Future<void> Function(String) _logger;
+  void _log(String message) {
+    // Only controlled metadata: no text, keys, URLs or raw error bodies.
+    unawaited(
+      Future<void>.sync(
+        () => _logger('[Gemini TTS] $message'),
+      ).catchError((Object _) {}),
+    );
+  }
 
   static const apiKeyPreference = 'ad_mobile_gemini_api_key';
   static const languagePreference = 'sonarpad_gemini_tts_language';
@@ -183,68 +196,111 @@ class GeminiTtsBridge {
     double pitch = 1,
     String language = '',
   }) async {
-    final paid = sonarpadCode != null;
-    if (paid ? sonarpadCode.trim().isEmpty : apiKey.trim().isEmpty) {
-      throw GeminiTtsException(
-        paid ? 'missing_sonarpad_code' : 'missing_api_key',
+    final operation = const Uuid().v4();
+    final watch = Stopwatch()..start();
+    var stage = 'validation';
+    var attempt = 0;
+    void trace(String event) {
+      stage = event;
+      _log(
+        'operation=$operation attempt=$attempt elapsed_ms=${watch.elapsedMilliseconds} $event',
       );
     }
-    final requestKey = 'speech-${const Uuid().v4()}';
-    var refreshed = false;
-    if (!voices.contains(voice)) throw GeminiTtsException('unknown_voice');
-    while (true) {
-      _check();
-      while (_activeRequests >= maxParallelRequests) {
+
+    final paid = sonarpadCode != null;
+    trace(
+      'begin provider=${paid ? "sonarpad" : "gemini"} chars=${text.length} voice=${voices.contains(voice) ? voice : "unknown"}',
+    );
+    final heartbeat = Timer.periodic(const Duration(seconds: 30), (_) {
+      _log(
+        'operation=$operation attempt=$attempt waiting elapsed_ms=${watch.elapsedMilliseconds} stage=$stage',
+      );
+    });
+    try {
+      if (paid ? sonarpadCode.trim().isEmpty : apiKey.trim().isEmpty) {
+        throw GeminiTtsException(
+          paid ? 'missing_sonarpad_code' : 'missing_api_key',
+        );
+      }
+      final requestKey = 'speech-${const Uuid().v4()}';
+      var refreshed = false;
+      if (!voices.contains(voice)) throw GeminiTtsException('unknown_voice');
+      while (true) {
+        _check();
+        trace('queue active=$_activeRequests');
+        while (_activeRequests >= maxParallelRequests) {
+          await Future.any<void>([
+            Future<void>.delayed(const Duration(milliseconds: 25)),
+            _cancelled.future,
+          ]);
+          _check();
+        }
+        _activeRequests++;
+        attempt++;
+        trace('request_started');
+        final client = HttpClient();
+        _clients.add(client);
+        try {
+          final audio = await Future.any<Uint8List>([
+            _request(
+              client,
+              text,
+              voice,
+              apiKey,
+              speed,
+              pitch,
+              language,
+              sonarpadCode: sonarpadCode,
+              deviceId: deviceId,
+              requestKey: requestKey,
+              trace: trace,
+              refreshSession: () {
+                if (refreshed) return false;
+                refreshed = true;
+                return true;
+              },
+            ).timeout(const Duration(minutes: 8)),
+            _cancelled.future.then<Uint8List>(
+              (_) => throw StateError('AUDIO_DESCRIPTION_CANCELLED'),
+            ),
+          ]);
+          trace('success audio_bytes=${audio.length}');
+          return audio;
+        } on GeminiTtsException catch (error) {
+          trace(
+            'response_error code=${error.code} retryable=${error.retryable}',
+          );
+          if (!error.retryable) rethrow;
+        } on TimeoutException {
+          trace('request_error code=timeout');
+          _check();
+        } on SocketException {
+          trace('request_error code=connection');
+          _check();
+        } on HttpException {
+          trace('request_error code=transport');
+          _check();
+        } finally {
+          client.close(force: true);
+          _clients.remove(client);
+          _activeRequests--;
+        }
+        trace('retry_scheduled delay_ms=${retryDelay.inMilliseconds}');
         await Future.any<void>([
-          Future<void>.delayed(const Duration(milliseconds: 25)),
+          Future<void>.delayed(retryDelay),
           _cancelled.future,
         ]);
         _check();
       }
-      _activeRequests++;
-      final client = HttpClient();
-      _clients.add(client);
-      try {
-        return await Future.any<Uint8List>([
-          _request(
-            client,
-            text,
-            voice,
-            apiKey,
-            speed,
-            pitch,
-            language,
-            sonarpadCode: sonarpadCode,
-            deviceId: deviceId,
-            requestKey: requestKey,
-            refreshSession: () {
-              if (refreshed) return false;
-              refreshed = true;
-              return true;
-            },
-          ).timeout(const Duration(minutes: 8)),
-          _cancelled.future.then<Uint8List>(
-            (_) => throw StateError('AUDIO_DESCRIPTION_CANCELLED'),
-          ),
-        ]);
-      } on GeminiTtsException catch (error) {
-        if (!error.retryable) rethrow;
-      } on TimeoutException {
-        _check();
-      } on SocketException {
-        _check();
-      } on HttpException {
-        _check();
-      } finally {
-        client.close(force: true);
-        _clients.remove(client);
-        _activeRequests--;
-      }
-      await Future.any<void>([
-        Future<void>.delayed(retryDelay),
-        _cancelled.future,
-      ]);
-      _check();
+    } catch (error) {
+      trace(
+        _cancelled.isCompleted
+            ? 'cancelled'
+            : 'failed type=${error.runtimeType}${error is GeminiTtsException ? " code=${error.code}" : ""}',
+      );
+      rethrow;
+    } finally {
+      heartbeat.cancel();
     }
   }
 
@@ -260,15 +316,17 @@ class GeminiTtsBridge {
     String deviceId = '',
     String requestKey = '',
     required bool Function() refreshSession,
+    required void Function(String) trace,
   }) async {
     final paid = sonarpadCode != null;
     final sessionKey = '$sonarpadBase|$sonarpadCode|$deviceId';
     Future<String>? session;
     String? token;
     if (paid) {
+      trace('session_wait');
       session = _sessions.putIfAbsent(
         sessionKey,
-        () => _activate(client, sonarpadCode.trim(), deviceId),
+        () => _activate(client, sonarpadCode.trim(), deviceId, trace),
       );
       try {
         token = await session;
@@ -280,6 +338,7 @@ class GeminiTtsBridge {
       }
     }
     _check();
+    trace('connecting');
     final request = await client.postUrl(
       paid ? sonarpadBase.resolve('generate') : endpoint,
     );
@@ -293,8 +352,11 @@ class GeminiTtsBridge {
     request.write(
       jsonEncode(requestBody(text, voice, speed, pitch, language: language)),
     );
+    trace('awaiting_headers');
     final response = await request.close();
+    trace('reading_response http=${response.statusCode}');
     final raw = await utf8.decoder.bind(response).join();
+    trace('response_received http=${response.statusCode}');
     if (paid && response.statusCode == 401 && refreshSession()) {
       if (identical(_sessions[sessionKey], session)) {
         _sessions.remove(sessionKey);
@@ -356,7 +418,9 @@ class GeminiTtsBridge {
     HttpClient client,
     String code,
     String deviceId,
+    void Function(String) trace,
   ) async {
+    trace('session_activation_started');
     final request = await client.postUrl(sonarpadBase.resolve('activate'));
     request.headers.contentType = ContentType.json;
     request.write(
@@ -367,6 +431,7 @@ class GeminiTtsBridge {
       }),
     );
     final response = await request.close();
+    trace('session_activation_response http=${response.statusCode}');
     final raw = await utf8.decoder.bind(response).join();
     if (response.statusCode != 200) {
       throw _sonarpadError(response.statusCode, raw);

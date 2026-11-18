@@ -64,6 +64,30 @@ class SonarTubeItem {
   final String? collectionType;
   final bool isLive;
 
+  String? get canonicalChannelId {
+    final directId = id.trim();
+    if (RegExp(r'^UC[A-Za-z0-9_-]{20,}$').hasMatch(directId)) {
+      return directId;
+    }
+    final channelId = this.channelId?.trim();
+    if (channelId != null &&
+        RegExp(r'^UC[A-Za-z0-9_-]{20,}$').hasMatch(channelId)) {
+      return channelId;
+    }
+    final uri = Uri.tryParse(url);
+    if (uri != null) {
+      final segments = uri.pathSegments;
+      final channelIndex = segments.indexOf('channel');
+      if (channelIndex >= 0 && channelIndex + 1 < segments.length) {
+        final fromUrl = segments[channelIndex + 1].trim();
+        if (RegExp(r'^UC[A-Za-z0-9_-]{20,}$').hasMatch(fromUrl)) {
+          return fromUrl;
+        }
+      }
+    }
+    return null;
+  }
+
   SonarTubeItem withResolvedTitle(String resolvedTitle) {
     final updated = resolvedTitle.trim();
     if (updated.isEmpty || updated == title) return this;
@@ -394,7 +418,8 @@ class SonarTubeService {
     final fallbackQuery = <String, String>{
       'hl': _youtubeLanguage,
       'gl': _youtubeRegion,
-      'browse': collection.id,
+      'browse': collection.kind == SonarTubeItemKind.channel
+          ? collection.canonicalChannelId ?? collection.id : collection.id,
       'kind': collection.kind.name,
       'title': collection.title,
       'format': 'json',
@@ -434,7 +459,7 @@ class SonarTubeService {
     return _loadServerPage({
       'hl': _youtubeLanguage,
       'gl': _youtubeRegion,
-      'browse': channel.id,
+      'browse': channel.canonicalChannelId ?? channel.id,
       'kind': 'channel_playlists',
       'title': channel.title,
       'format': 'json',
@@ -454,7 +479,7 @@ class SonarTubeService {
     return _loadServerPage({
       'hl': _youtubeLanguage,
       'gl': _youtubeRegion,
-      'browse': channel.id,
+      'browse': channel.canonicalChannelId ?? channel.id,
       'kind': 'channel_courses',
       'title': channel.title,
       'format': 'json',
@@ -474,7 +499,7 @@ class SonarTubeService {
     return _loadServerPage({
       'hl': _youtubeLanguage,
       'gl': _youtubeRegion,
-      'browse': channel.id,
+      'browse': channel.canonicalChannelId ?? channel.id,
       'kind': 'channel_podcasts',
       'title': channel.title,
       'format': 'json',
@@ -494,7 +519,7 @@ class SonarTubeService {
     return _loadServerPage({
       'hl': _youtubeLanguage,
       'gl': _youtubeRegion,
-      'browse': channel.id,
+      'browse': channel.canonicalChannelId ?? channel.id,
       'kind': 'channel_shorts',
       'title': channel.title,
       'format': 'json',
@@ -940,6 +965,7 @@ class SonarTubeService {
         refreshed = _exactChannelFromItems(
           _extractNavigationItems(data),
           item.id,
+          reference: item,
         );
       } catch (error) {
         await AppLogger.log(
@@ -959,7 +985,7 @@ class SonarTubeService {
           'format': 'json',
           'page': '1',
         });
-        refreshed = _exactChannelFromItems(page.items, item.id);
+        refreshed = _exactChannelFromItems(page.items, item.id, reference: item);
       } catch (error) {
         await AppLogger.log(
           'SonarTube: channel metadata server refresh failed id=${item.id} '
@@ -973,16 +999,28 @@ class SonarTubeService {
   }
 
   bool _hasCompleteChannelMetadata(SonarTubeItem item) =>
+      item.canonicalChannelId != null &&
       (item.handle?.trim().isNotEmpty ?? false) &&
       (item.subscribers?.trim().isNotEmpty ?? false);
 
   SonarTubeItem? _exactChannelFromItems(
     Iterable<SonarTubeItem> items,
-    String channelId,
-  ) {
+    String channelId, {
+    SonarTubeItem? reference,
+  }) {
+    String? handleOf(SonarTubeItem item) {
+      final segments = Uri.tryParse(item.url)?.pathSegments ?? const <String>[];
+      final handle = item.handle ?? (item.id.startsWith('@') ? item.id :
+          (segments.isNotEmpty && segments.first.startsWith('@') ? segments.first : null));
+      final normalized = handle?.trim().toLowerCase().replaceFirst(RegExp(r'^/?@'), '');
+      return normalized == null || normalized.isEmpty ? null : normalized;
+    }
+    final expectedHandle = reference == null ? null : handleOf(reference);
     for (final candidate in items) {
       if (candidate.kind == SonarTubeItemKind.channel &&
-          candidate.id == channelId) {
+          (candidate.id == channelId ||
+              (reference?.canonicalChannelId != null && candidate.canonicalChannelId == reference!.canonicalChannelId) ||
+              (reference?.canonicalChannelId == null && expectedHandle != null && handleOf(candidate) == expectedHandle))) {
         return candidate;
       }
     }
@@ -1006,7 +1044,7 @@ class SonarTubeService {
           : existing.title,
       url: prefer(refreshed.url, existing.url) ?? existing.url,
       channel: prefer(refreshed.channel, existing.channel),
-      channelId: prefer(refreshed.channelId, existing.channelId),
+      channelId: prefer(refreshed.canonicalChannelId, existing.channelId),
       thumbnailUrl: prefer(refreshed.thumbnailUrl, existing.thumbnailUrl),
       duration: existing.duration,
       published: existing.published,
@@ -1810,29 +1848,7 @@ class SonarTubeService {
     return const <SonarTubeChannelSort, String>{};
   }
 
-  String? _channelBrowseId(SonarTubeItem collection) {
-    final directId = collection.id.trim();
-    if (RegExp(r'^UC[A-Za-z0-9_-]{20,}$').hasMatch(directId)) {
-      return directId;
-    }
-    final channelId = collection.channelId?.trim();
-    if (channelId != null &&
-        RegExp(r'^UC[A-Za-z0-9_-]{20,}$').hasMatch(channelId)) {
-      return channelId;
-    }
-    final uri = Uri.tryParse(collection.url);
-    if (uri != null) {
-      final segments = uri.pathSegments;
-      final channelIndex = segments.indexOf('channel');
-      if (channelIndex >= 0 && channelIndex + 1 < segments.length) {
-        final fromUrl = segments[channelIndex + 1].trim();
-        if (RegExp(r'^UC[A-Za-z0-9_-]{20,}$').hasMatch(fromUrl)) {
-          return fromUrl;
-        }
-      }
-    }
-    return null;
-  }
+  String? _channelBrowseId(SonarTubeItem collection) => collection.canonicalChannelId;
 
   String _logValue(String? value) {
     final text = value?.replaceAll(RegExp(r'\s+'), ' ').trim() ?? '';

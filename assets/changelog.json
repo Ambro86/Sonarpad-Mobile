@@ -1,5 +1,65 @@
 [
   {
+    "version": "0.5.5",
+    "date": "2026-11-18",
+    "it": [
+      "SonarTube: corretto il caso in cui un canale aperto dai preferiti mostrava «Nessun video» dopo la sincronizzazione. Ora viene conservato l’ID corretto del canale e vengono recuperati i preferiti già interessati dal problema, indipendentemente dalla lingua dell’interfaccia.",
+      "Impostazioni: aggiunto Gestisci tutti i segnalibri, con i segnalibri dei documenti, dei podcast e di tutti i file multimediali. Ogni voce mostra la posizione salvata e può essere eliminata con conferma tramite azione accessibile o pulsante visibile escluso da VoiceOver. Per i nuovi segnalibri multimediali viene conservato anche il titolo."
+    ],
+    "en": [
+      "SonarTube: fixed channels opened from favorites showing “No videos” after syncing. The correct channel ID is now preserved, and affected existing favorites are recovered regardless of the interface language.",
+      "Settings: added Manage all bookmarks for documents, podcasts and all media files. Each entry shows the saved position and can be deleted with confirmation using an accessibility action or a visible button excluded from VoiceOver. New media bookmarks also retain the title."
+    ],
+    "fr": [
+      "SonarTube : correction des chaînes ouvertes depuis les favoris affichant « Aucune vidéo » après la synchronisation. L’identifiant correct de la chaîne est désormais conservé et les favoris déjà concernés sont récupérés, quelle que soit la langue de l’interface.",
+      "Réglages : ajout de Gérer tous les signets pour les documents, podcasts et tous les fichiers multimédias. Chaque entrée affiche la position enregistrée et peut être supprimée après confirmation via une action accessible ou un bouton visible exclu de VoiceOver. Les nouveaux signets multimédias conservent aussi le titre."
+    ],
+    "es": [
+      "SonarTube: corregidos los canales que mostraban «No hay vídeos» al abrirlos desde favoritos tras la sincronización. Ahora se conserva el identificador correcto del canal y se recuperan los favoritos afectados, independientemente del idioma de la interfaz.",
+      "Ajustes: añadido Gestionar todos los marcadores para documentos, podcasts y todos los archivos multimedia. Cada entrada muestra la posición guardada y permite eliminarla con confirmación mediante una acción accesible o un botón visible excluido de VoiceOver. Los nuevos marcadores multimedia también conservan el título."
+    ],
+    "pt": [
+      "SonarTube: corrigidos os canais que mostravam «Nenhum vídeo» ao abrir a partir dos favoritos após a sincronização. O identificador correto do canal é agora preservado e os favoritos afetados são recuperados, independentemente do idioma da interface.",
+      "Definições: adicionado Gerir todos os marcadores para documentos, podcasts e todos os ficheiros multimédia. Cada entrada mostra a posição guardada e permite eliminar com confirmação através de uma ação acessível ou de um botão visível excluído do VoiceOver. Os novos marcadores multimédia também guardam o título."
+    ],
+    "pt_BR": [
+      "SonarTube: corrigidos os canais que exibiam “Nenhum vídeo” ao abrir pelos favoritos após a sincronização. O identificador correto do canal agora é preservado e os favoritos afetados são recuperados, independentemente do idioma da interface.",
+      "Configurações: adicionado Gerenciar todos os marcadores para documentos, podcasts e todos os arquivos de mídia. Cada entrada mostra a posição salva e permite excluir com confirmação por uma ação acessível ou um botão visível excluído do VoiceOver. Os novos marcadores de mídia também guardam o título."
+    ],
+    "pl": [
+      "SonarTube: naprawiono wyświetlanie „Brak filmów” po otwarciu kanału z ulubionych po synchronizacji. Prawidłowy identyfikator kanału jest teraz zachowywany, a istniejące ulubione objęte problemem są odzyskiwane niezależnie od języka interfejsu.",
+      "Ustawienia: dodano zarządzanie wszystkimi zakładkami dokumentów, podcastów i plików multimedialnych. Każda pozycja pokazuje zapisane miejsce i umożliwia usunięcie po potwierdzeniu za pomocą dostępnej akcji lub widocznego przycisku wyłączonego z VoiceOver. Nowe zakładki multimedialne zachowują także tytuł."
+    ],
+    "cs": [
+      "SonarTube: opraveno zobrazování „Žádná videa“ při otevření kanálu z oblíbených po synchronizaci. Nyní se zachovává správný identifikátor kanálu a opravují se již dotčené oblíbené položky bez ohledu na jazyk rozhraní.",
+      "Nastavení: přidána správa všech záložek dokumentů, podcastů a multimediálních souborů. Každá položka zobrazuje uloženou pozici a lze ji po potvrzení odstranit pomocí přístupné akce nebo viditelného tlačítka vyloučeného z VoiceOver. Nové multimediální záložky uchovávají také název."
+    ],
+    "de": [
+      "SonarTube: Kanäle aus den Favoriten zeigen nach der Synchronisierung nicht mehr fälschlich „Keine Videos“ an. Die korrekte Kanal-ID bleibt erhalten und bereits betroffene Favoriten werden unabhängig von der Sprache der Oberfläche wiederhergestellt.",
+      "Einstellungen: Alle Lesezeichen verwalten für Dokumente, Podcasts und sämtliche Mediendateien hinzugefügt. Jeder Eintrag zeigt die gespeicherte Position und lässt sich nach Bestätigung über eine barrierefreie Aktion oder eine sichtbare, von VoiceOver ausgeschlossene Schaltfläche löschen. Neue Medienlesezeichen speichern auch den Titel."
+    ],
+    "zh_CN": [
+      "SonarTube：修复同步后从收藏夹打开频道时显示“没有视频”的问题。现在会保留正确的频道 ID，并恢复已受影响的收藏项，不受界面语言影响。",
+      "设置：新增管理所有书签，包含文档、播客和所有媒体文件的书签。每项显示保存的位置，可通过无障碍操作或不由 VoiceOver 朗读的可见按钮确认删除。新的媒体书签还会保存标题。"
+    ],
+    "uk": [
+      "SonarTube: виправлено появу повідомлення «Немає відео» під час відкриття каналу з обраного після синхронізації. Тепер зберігається правильний ідентифікатор каналу, а вже пошкоджені записи обраного відновлюються незалежно від мови інтерфейсу.",
+      "Налаштування: додано керування всіма закладками документів, подкастів і мультимедійних файлів. Кожен запис показує збережену позицію та дозволяє видалення з підтвердженням через доступну дію або видиму кнопку, виключену з VoiceOver. Нові мультимедійні закладки також зберігають назву."
+    ],
+    "ro": [
+      "SonarTube: corectată afișarea mesajului „Niciun videoclip” la deschiderea unui canal din favorite după sincronizare. Identificatorul corect al canalului este acum păstrat, iar favoritele deja afectate sunt recuperate indiferent de limba interfeței.",
+      "Setări: adăugată gestionarea tuturor marcajelor pentru documente, podcasturi și toate fișierele media. Fiecare intrare arată poziția salvată și poate fi ștearsă cu confirmare printr-o acțiune accesibilă sau un buton vizibil exclus din VoiceOver. Noile marcaje media păstrează și titlul."
+    ],
+    "tr": [
+      "SonarTube: eşitlemeden sonra favorilerden açılan kanallarda “Video yok” görünmesi düzeltildi. Artık doğru kanal kimliği korunur ve etkilenen mevcut favoriler arayüz dilinden bağımsız olarak kurtarılır.",
+      "Ayarlar: belgeler, podcastler ve tüm medya dosyaları için tüm yer işaretlerini yönetme eklendi. Her kayıt, kaydedilen konumu gösterir ve erişilebilir bir eylem veya VoiceOver dışında tutulan görünür bir düğme ile onay alınarak silinebilir. Yeni medya yer işaretleri başlığı da saklar."
+    ],
+    "nl": [
+      "SonarTube: opgelost dat kanalen uit favorieten na synchronisatie “Geen video’s” toonden. De juiste kanaal-ID blijft nu behouden en bestaande getroffen favorieten worden hersteld, ongeacht de interfacetaal.",
+      "Instellingen: Alle bladwijzers beheren toegevoegd voor documenten, podcasts en alle mediabestanden. Elk item toont de opgeslagen positie en kan na bevestiging worden verwijderd via een toegankelijkheidsactie of een zichtbare knop die van VoiceOver is uitgesloten. Nieuwe mediabladwijzers bewaren ook de titel."
+    ]
+  },
+  {
     "version": "0.5.4",
     "date": "2026-11-16",
     "it": [

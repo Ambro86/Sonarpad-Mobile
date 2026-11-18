@@ -1,3 +1,4 @@
+import 'podcast_bookmarks_screen.dart';
 import '../tts/gemini_tts_bridge.dart';
 import 'gemini_tts_key_navigation.dart';
 import '../widgets/request_code_dialog.dart';
@@ -1371,6 +1372,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
             valueLabel: toggleLabel(_multipleDocumentBookmarks),
           ),
           AccessibleListRow(
+            id: 'manage_bookmarks',
+            title: l10n.manageAllBookmarks,
+            kind: 'button',
+          ),
+          AccessibleListRow(
             id: 'reading_sleep_timer',
             title: l10n.settingsReadingSleepTimer,
             subtitle: l10n.settingsReadingSleepTimerHint,
@@ -1604,6 +1610,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
           _tvSecretCodeController.value = TextEditingValue(text: text, selection: TextSelection.collapsed(offset: text.length));
         } else if (event.type == 'activate') {
           switch (id) {
+            case 'manage_bookmarks':
+              await _openAllBookmarks();
+              break;
             case 'cloud_sync':
               await _openCloudSync();
               break;
@@ -1631,6 +1640,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
         }
       },
     );
+  }
+
+  Future<void> _openAllBookmarks() async {
+    await Navigator.of(context).push(MaterialPageRoute<void>(
+      builder: (_) => const PodcastBookmarksScreen(includeDocuments: true),
+    ));
   }
 
   Future<void> _sendDeveloperReport() async {
@@ -2269,6 +2284,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       onChanged: (val) => setState(
                         () => _includeEpubFootnotesInText = val,
                       ),
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                    ListTile(
+                      title: Text(l10n.manageAllBookmarks),
+                      onTap: _openAllBookmarks,
                       contentPadding: EdgeInsets.zero,
                     ),
                     SwitchListTile(

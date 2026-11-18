@@ -6081,4 +6081,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get mediaCutterAudioCutPrecise => 'Precise cutting with re-encoding';
+
+  @override
+  String recordingScheduleMissed(String title) {
+    return 'The scheduled recording of “$title” was not completed: Sonarpad was reopened after the programme ended.';
+  }
+
+  @override
+  String get manageAllBookmarks => 'Manage all bookmarks';
+
+  @override
+  String get noSavedBookmarks => 'No saved bookmarks.';
 }

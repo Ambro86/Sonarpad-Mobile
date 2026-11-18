@@ -5083,5 +5083,8 @@
   "@audioDescriptionRepairText": {"placeholders": {"time": {"type": "String"}, "actual": {"type": "String"}, "available": {"type": "String"}}},
   "mediaCutterAudioCutMode": "音频剪辑模式",
   "mediaCutterAudioCutAuto": "自动：尽可能不重新编码",
-  "mediaCutterAudioCutPrecise": "重新编码以精确剪辑"
+  "mediaCutterAudioCutPrecise": "重新编码以精确剪辑",
+  "recordingScheduleMissed": "“{title}”的定时录制未完成：重新打开 Sonarpad 时，节目已结束。",
+  "manageAllBookmarks": "管理所有书签",
+  "noSavedBookmarks": "没有已保存的书签。"
 }

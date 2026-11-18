@@ -6100,4 +6100,15 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get mediaCutterAudioCutPrecise => 'Přesný střih s překódováním';
+
+  @override
+  String recordingScheduleMissed(String title) {
+    return 'Plánované nahrávání pořadu „$title“ nebylo dokončeno: Sonarpad byl znovu otevřen až po skončení pořadu.';
+  }
+
+  @override
+  String get manageAllBookmarks => 'Spravovat všechny záložky';
+
+  @override
+  String get noSavedBookmarks => 'Žádné uložené záložky.';
 }

@@ -123,7 +123,7 @@ class SonarTubeFavoritesService {
       // (for example /channel/UC... -> /@handle) must never replace it.
       url: existing.url,
       channel: prefer(incoming.channel, existing.channel),
-      channelId: prefer(incoming.channelId, existing.channelId),
+      channelId: prefer(incoming.kind == SonarTubeItemKind.channel ? incoming.canonicalChannelId : incoming.channelId, existing.channelId),
       thumbnailUrl: prefer(incoming.thumbnailUrl, existing.thumbnailUrl),
       duration: prefer(incoming.duration, existing.duration),
       published: prefer(incoming.published, existing.published),
@@ -144,7 +144,7 @@ class SonarTubeFavoritesService {
       title: item.title,
       url: publicUrl,
       channel: item.channel,
-      channelId: item.channelId,
+      channelId: item.kind == SonarTubeItemKind.channel ? item.canonicalChannelId : item.channelId,
       thumbnailUrl: item.thumbnailUrl,
       duration: item.duration,
       published: item.published,
