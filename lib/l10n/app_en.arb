@@ -5087,5 +5087,7 @@
   "recordingScheduleMissed": "The scheduled recording of “{title}” was not completed: Sonarpad was reopened after the programme ended.",
   "@recordingScheduleMissed": {"placeholders": {"title": {"type": "String"}}},
   "manageAllBookmarks": "Manage all bookmarks",
-  "noSavedBookmarks": "No saved bookmarks."
+  "noSavedBookmarks": "No saved bookmarks.",
+  "deleteAllBookmarks": "Delete all bookmarks",
+  "deleteAllBookmarksConfirmation": "Delete all bookmarks? Documents and media files will not be deleted."
 }

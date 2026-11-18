@@ -5875,6 +5875,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get noSavedBookmarks => '没有已保存的书签。';
+
+  @override
+  String get deleteAllBookmarks => '删除所有书签';
+
+  @override
+  String get deleteAllBookmarksConfirmation => '删除所有书签？文档和媒体文件不会被删除。';
 }
 
 /// The translations for Chinese, as used in China (`zh_CN`).
@@ -11748,4 +11754,10 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get noSavedBookmarks => '没有已保存的书签。';
+
+  @override
+  String get deleteAllBookmarks => '删除所有书签';
+
+  @override
+  String get deleteAllBookmarksConfirmation => '删除所有书签？文档和媒体文件不会被删除。';
 }

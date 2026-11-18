@@ -292,6 +292,7 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
     if (!_isChannelCollection || _loading || _loadingMore) return;
     final l10n = AppLocalizations.of(context);
     final selected = await showDialog<SonarTubeChannelSort>(
+      barrierDismissible: false,
       context: context,
       builder: (dialogContext) => RadioGroup<SonarTubeChannelSort>(
         groupValue: _channelSort,
@@ -301,6 +302,7 @@ class _SonarTubeScreenState extends State<SonarTubeScreen> {
         child: SimpleDialog(
           title: Text(l10n.sonarTubeSortVideos),
           children: [
+          TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text(AppLocalizations.of(dialogContext).cancel)),
             for (final sort in SonarTubeChannelSort.values)
               RadioListTile<SonarTubeChannelSort>(
                 value: sort,

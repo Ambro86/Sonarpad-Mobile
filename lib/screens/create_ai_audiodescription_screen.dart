@@ -422,10 +422,12 @@ class _CreateAiAudiodescriptionScreenState
       if (!mounted || _running) return;
       final l10n = AppLocalizations.of(context);
       final source = await showDialog<String>(
+        barrierDismissible: false,
         context: context,
         builder: (ctx) => SimpleDialog(
           title: Text(l10n.audioDescriptionChooseVideo),
           children: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(AppLocalizations.of(ctx).cancel)),
             SimpleDialogOption(
               onPressed: () => Navigator.pop(ctx, 'files'),
               child: Text(_chooseFromFilesLabel(l10n)),
@@ -1075,7 +1077,7 @@ class _CreateAiAudiodescriptionScreenState
           if (_cancelling || result == null) throw StateError('AUDIO_DESCRIPTION_CANCELLED');
           tmdbCharacters = result;
           if (result.any((item) => (item['tmdb'] as Map?)?['animation'] == true)) {
-            await showDialog<void>(context: context, builder: (dialogContext) => AlertDialog(
+            await showDialog<void>(barrierDismissible: false,context: context, builder: (dialogContext) => AlertDialog(
               title: const Text('TMDB'), content: Text(_tmdbLabel('animation')),
               actions: [TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text(l10n.ok))],
             ));
@@ -1084,7 +1086,7 @@ class _CreateAiAudiodescriptionScreenState
           if (!mounted) return;
           if (_cancelling || error.toString().contains('AUDIO_DESCRIPTION_CANCELLED')) rethrow;
           unawaited(AppLogger.log('TMDB lookup failed: $error'));
-          final proceed = await showDialog<bool>(context: context, builder: (dialogContext) => AlertDialog(
+          final proceed = await showDialog<bool>(barrierDismissible: false,context: context, builder: (dialogContext) => AlertDialog(
             title: const Text('TMDB'), content: Text(_tmdbLabel('continue_without')),
             actions: [TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text(l10n.no)),
               TextButton(onPressed: () => Navigator.pop(dialogContext, true), child: Text(l10n.yes))],

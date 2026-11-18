@@ -6141,6 +6141,13 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get noSavedBookmarks => 'Nenhum marcador guardado.';
+
+  @override
+  String get deleteAllBookmarks => 'Eliminar todos os marcadores';
+
+  @override
+  String get deleteAllBookmarksConfirmation =>
+      'Eliminar todos os marcadores? Os documentos e ficheiros multimédia não serão eliminados.';
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
@@ -12272,4 +12279,11 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get noSavedBookmarks => 'Nenhum marcador salvo.';
+
+  @override
+  String get deleteAllBookmarks => 'Excluir todos os marcadores';
+
+  @override
+  String get deleteAllBookmarksConfirmation =>
+      'Excluir todos os marcadores? Os documentos e arquivos de mídia não serão excluídos.';
 }

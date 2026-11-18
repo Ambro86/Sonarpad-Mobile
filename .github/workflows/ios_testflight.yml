@@ -17,6 +17,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Verify iOS scene lifecycle configuration
+        run: python3 tools/verify_ios_scene_manifest.py
+
       - name: Show Xcode version
         run: |
           xcode-select -p
@@ -348,6 +351,7 @@ jobs:
             echo "Nessun IPA trovato"
             exit 1
           fi
+          python3 tools/verify_ios_scene_manifest.py "$IPA_PATH"
           echo "IPA generato: $IPA_PATH"
 
       - name: Install fastlane

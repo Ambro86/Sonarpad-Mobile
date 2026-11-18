@@ -82,8 +82,10 @@ Future<DateTime?> showTvRecordingDaySelectionDialog(
   required DateTime today,
 }) {
   return showDialog<DateTime>(
+    barrierDismissible: false,
     context: context,
     builder: (dialogContext) => AlertDialog(
+      actions: [TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text(AppLocalizations.of(dialogContext).cancel)),],
       title: Text(AppLocalizations.of(dialogContext).tvRecordingChooseDay),
       content: RadioGroup<DateTime>(
         groupValue: _dateOnly(selectedDate),

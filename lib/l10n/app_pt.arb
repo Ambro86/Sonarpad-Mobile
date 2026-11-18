@@ -5093,5 +5093,7 @@
   "recordingScheduleMissed": "A gravação agendada de «{title}» não foi concluída: o Sonarpad foi reaberto após o fim do programa.",
   "manageAllBookmarks": "Gerir todos os marcadores",
   "noSavedBookmarks": "Nenhum marcador guardado.",
-  "@recordingScheduleMissed": {"placeholders": {"title": {"type": "String"}}}
+  "@recordingScheduleMissed": {"placeholders": {"title": {"type": "String"}}},
+  "deleteAllBookmarks": "Eliminar todos os marcadores",
+  "deleteAllBookmarksConfirmation": "Eliminar todos os marcadores? Os documentos e ficheiros multimédia não serão eliminados."
 }

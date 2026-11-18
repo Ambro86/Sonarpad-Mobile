@@ -6665,5 +6665,7 @@
   "recordingScheduleMissed": "Die geplante Aufnahme von „{title}“ wurde nicht abgeschlossen: Sonarpad wurde nach Ende der Sendung wieder geöffnet.",
   "manageAllBookmarks": "Alle Lesezeichen verwalten",
   "noSavedBookmarks": "Keine gespeicherten Lesezeichen.",
-  "@recordingScheduleMissed": {"placeholders": {"title": {"type": "String"}}}
+  "@recordingScheduleMissed": {"placeholders": {"title": {"type": "String"}}},
+  "deleteAllBookmarks": "Alle Lesezeichen löschen",
+  "deleteAllBookmarksConfirmation": "Alle Lesezeichen löschen? Dokumente und Mediendateien werden nicht gelöscht."
 }

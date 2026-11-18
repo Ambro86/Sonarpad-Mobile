@@ -3731,10 +3731,12 @@ class _MediaCutterScreenState extends State<MediaCutterScreen> {
         if (_parts[i].keep) MapEntry(i, _parts[i]),
     ];
     final before = await showDialog<Duration>(
+      barrierDismissible: false,
       context: context,
       builder: (dialogContext) => SimpleDialog(
         title: Text(l10n.mediaCutterInsertBefore),
         children: [
+          TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text(AppLocalizations.of(dialogContext).cancel)),
           for (var i = 0; i < choices.length; i++)
             SimpleDialogOption(
               onPressed: () =>

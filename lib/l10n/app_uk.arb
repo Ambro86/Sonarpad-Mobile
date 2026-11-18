@@ -6665,5 +6665,7 @@
   "recordingScheduleMissed": "Запланований запис «{title}» не завершено: Sonarpad знову відкрито після закінчення програми.",
   "manageAllBookmarks": "Керувати всіма закладками",
   "noSavedBookmarks": "Немає збережених закладок.",
-  "@recordingScheduleMissed": {"placeholders": {"title": {"type": "String"}}}
+  "@recordingScheduleMissed": {"placeholders": {"title": {"type": "String"}}},
+  "deleteAllBookmarks": "Видалити всі закладки",
+  "deleteAllBookmarksConfirmation": "Видалити всі закладки? Документи та мультимедійні файли не буде видалено."
 }

@@ -6136,4 +6136,11 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get noSavedBookmarks => 'Nessun segnalibro salvato.';
+
+  @override
+  String get deleteAllBookmarks => 'Elimina tutti i segnalibri';
+
+  @override
+  String get deleteAllBookmarksConfirmation =>
+      'Vuoi eliminare tutti i segnalibri? I documenti e i file multimediali non saranno eliminati.';
 }

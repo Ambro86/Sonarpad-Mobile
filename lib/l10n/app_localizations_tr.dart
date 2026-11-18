@@ -6118,4 +6118,11 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get noSavedBookmarks => 'Kayıtlı yer işareti yok.';
+
+  @override
+  String get deleteAllBookmarks => 'Tüm yer işaretlerini sil';
+
+  @override
+  String get deleteAllBookmarksConfirmation =>
+      'Tüm yer işaretleri silinsin mi? Belgeler ve medya dosyaları silinmeyecek.';
 }

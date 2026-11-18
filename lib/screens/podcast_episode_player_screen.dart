@@ -727,10 +727,12 @@ class _PodcastEpisodePlayerScreenState
     final source = _episode;
     try {
       final selected = await showDialog<String>(
+        barrierDismissible: false,
         context: context,
         builder: (context) => SimpleDialog(
           title: Text(AppLocalizations.of(context).selectAudioTrack),
-          children: [for (final track in source.audioTracks)
+          children: [
+          TextButton(onPressed: () => Navigator.pop(context), child: Text(AppLocalizations.of(context).cancel)),for (final track in source.audioTracks)
             Semantics(
               selected: track.id == source.selectedAudioTrackId,
               child: SimpleDialogOption(

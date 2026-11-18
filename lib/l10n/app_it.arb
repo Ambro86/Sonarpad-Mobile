@@ -6728,5 +6728,7 @@
   "recordingScheduleMissed": "La registrazione programmata di «{title}» non è stata completata: Sonarpad è stato riaperto dopo la fine del programma.",
   "@recordingScheduleMissed": {"placeholders": {"title": {"type": "String"}}},
   "manageAllBookmarks": "Gestisci tutti i segnalibri",
-  "noSavedBookmarks": "Nessun segnalibro salvato."
+  "noSavedBookmarks": "Nessun segnalibro salvato.",
+  "deleteAllBookmarks": "Elimina tutti i segnalibri",
+  "deleteAllBookmarksConfirmation": "Vuoi eliminare tutti i segnalibri? I documenti e i file multimediali non saranno eliminati."
 }

@@ -6092,4 +6092,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noSavedBookmarks => 'No saved bookmarks.';
+
+  @override
+  String get deleteAllBookmarks => 'Delete all bookmarks';
+
+  @override
+  String get deleteAllBookmarksConfirmation =>
+      'Delete all bookmarks? Documents and media files will not be deleted.';
 }

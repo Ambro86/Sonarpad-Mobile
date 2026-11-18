@@ -150,9 +150,11 @@ class _SonarpadBackSemanticsState extends State<SonarpadBackSemantics> {
     String? actionId;
     try {
       actionId = await showDialog<String>(
+        barrierDismissible: false,
         context: context,
         builder: (dialogContext) => SimpleDialog(
           children: [
+          TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text(AppLocalizations.of(dialogContext).cancel)),
             SimpleDialogOption(
               onPressed: () =>
                   Navigator.of(dialogContext).pop(sonarpadGoHomeActionId),
@@ -1696,10 +1698,12 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
     }
 
     final actionId = await showDialog<String>(
+      barrierDismissible: false,
       context: context,
       builder: (dialogContext) => SimpleDialog(
         title: Text(MaterialLocalizations.of(dialogContext).moreButtonTooltip),
         children: [
+          TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text(AppLocalizations.of(dialogContext).cancel)),
           for (final action in row.actions)
             SimpleDialogOption(
               onPressed: () => Navigator.of(dialogContext).pop(action.id),

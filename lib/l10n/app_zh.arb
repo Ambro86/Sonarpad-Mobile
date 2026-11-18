@@ -5087,5 +5087,7 @@
   "recordingScheduleMissed": "“{title}”的定时录制未完成：重新打开 Sonarpad 时，节目已结束。",
   "manageAllBookmarks": "管理所有书签",
   "noSavedBookmarks": "没有已保存的书签。",
-  "@recordingScheduleMissed": {"placeholders": {"title": {"type": "String"}}}
+  "@recordingScheduleMissed": {"placeholders": {"title": {"type": "String"}}},
+  "deleteAllBookmarks": "删除所有书签",
+  "deleteAllBookmarksConfirmation": "删除所有书签？文档和媒体文件不会被删除。"
 }

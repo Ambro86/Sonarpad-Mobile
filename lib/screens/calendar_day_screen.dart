@@ -245,10 +245,12 @@ class _CalendarDayScreenState extends State<CalendarDayScreen> {
     var includeReminders = false;
     if (_events.isNotEmpty) {
       final choice = await showDialog<bool>(
+        barrierDismissible: false,
         context: context,
         builder: (context) => AlertDialog(
           title: Text(l10n.shareCalendarDayOptions),
           actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: Text(AppLocalizations.of(context).cancel)),
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
               child: Text(l10n.shareCalendarDayOnly),

@@ -27,8 +27,10 @@ Future<DateTime?> showTvDaySelectionDialog(
   required String Function(DateTime date) labelForDate,
 }) {
   return showDialog<DateTime>(
+    barrierDismissible: false,
     context: context,
     builder: (dialogContext) => AlertDialog(
+      actions: [TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text(AppLocalizations.of(dialogContext).cancel)),],
       title: const Text('Scegli giorno'),
       content: RadioGroup<DateTime>(
         groupValue: selectedDate,

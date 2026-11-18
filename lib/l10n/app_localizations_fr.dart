@@ -6170,4 +6170,11 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get noSavedBookmarks => 'Aucun signet enregistré.';
+
+  @override
+  String get deleteAllBookmarks => 'Supprimer tous les signets';
+
+  @override
+  String get deleteAllBookmarksConfirmation =>
+      'Supprimer tous les signets ? Les documents et fichiers multimédias ne seront pas supprimés.';
 }

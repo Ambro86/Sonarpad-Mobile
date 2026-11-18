@@ -5090,5 +5090,7 @@
   "recordingScheduleMissed": "Plánované nahrávání pořadu „{title}“ nebylo dokončeno: Sonarpad byl znovu otevřen až po skončení pořadu.",
   "manageAllBookmarks": "Spravovat všechny záložky",
   "noSavedBookmarks": "Žádné uložené záložky.",
-  "@recordingScheduleMissed": {"placeholders": {"title": {"type": "String"}}}
+  "@recordingScheduleMissed": {"placeholders": {"title": {"type": "String"}}},
+  "deleteAllBookmarks": "Odstranit všechny záložky",
+  "deleteAllBookmarksConfirmation": "Odstranit všechny záložky? Dokumenty ani multimediální soubory nebudou odstraněny."
 }

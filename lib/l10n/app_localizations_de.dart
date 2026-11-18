@@ -6140,4 +6140,11 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get noSavedBookmarks => 'Keine gespeicherten Lesezeichen.';
+
+  @override
+  String get deleteAllBookmarks => 'Alle Lesezeichen löschen';
+
+  @override
+  String get deleteAllBookmarksConfirmation =>
+      'Alle Lesezeichen löschen? Dokumente und Mediendateien werden nicht gelöscht.';
 }

@@ -6668,5 +6668,7 @@
   "recordingScheduleMissed": "Zaplanowane nagranie „{title}” nie zostało ukończone: Sonarpad ponownie otwarto po zakończeniu programu.",
   "manageAllBookmarks": "Zarządzaj wszystkimi zakładkami",
   "noSavedBookmarks": "Brak zapisanych zakładek.",
-  "@recordingScheduleMissed": {"placeholders": {"title": {"type": "String"}}}
+  "@recordingScheduleMissed": {"placeholders": {"title": {"type": "String"}}},
+  "deleteAllBookmarks": "Usuń wszystkie zakładki",
+  "deleteAllBookmarksConfirmation": "Usunąć wszystkie zakładki? Dokumenty i pliki multimedialne nie zostaną usunięte."
 }

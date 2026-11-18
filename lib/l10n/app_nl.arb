@@ -6665,5 +6665,7 @@
   "recordingScheduleMissed": "De geplande opname van ‘{title}’ is niet voltooid: Sonarpad werd na het einde van het programma opnieuw geopend.",
   "manageAllBookmarks": "Alle bladwijzers beheren",
   "noSavedBookmarks": "Geen opgeslagen bladwijzers.",
-  "@recordingScheduleMissed": {"placeholders": {"title": {"type": "String"}}}
+  "@recordingScheduleMissed": {"placeholders": {"title": {"type": "String"}}},
+  "deleteAllBookmarks": "Alle bladwijzers verwijderen",
+  "deleteAllBookmarksConfirmation": "Alle bladwijzers verwijderen? Documenten en mediabestanden worden niet verwijderd."
 }

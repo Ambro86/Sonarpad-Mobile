@@ -23,6 +23,7 @@ class _AifaConfezioniScreenState extends State<AifaConfezioniScreen> {
 
   void _showReadingOptions(AifaConfezione conf) {
     showModalBottomSheet(
+      isDismissible: false,
       context: context,
       barrierLabel: 'Chiudi opzioni farmaco',
       routeSettings: const RouteSettings(name: '/aifa/reading_options'),

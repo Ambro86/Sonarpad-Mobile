@@ -10,6 +10,31 @@ import 'package:sonarpad_mobile_starter/screens/podcast_bookmarks_screen.dart';
 import 'package:sonarpad_mobile_starter/services/podcast_bookmarks_service.dart';
 import 'package:sonarpad_mobile_starter/widgets/universal_accessible_view.dart';
 
+void expectOnlyDeletionDialogActions(WidgetTester tester) {
+  final dialog = find.byType(AlertDialog);
+  expect(
+    find.descendant(of: dialog, matching: find.byType(TextButton)),
+    findsNWidgets(2),
+  );
+  expect(
+    find.descendant(of: dialog, matching: find.text('Annulla')),
+    findsOneWidget,
+  );
+  expect(
+    find.descendant(of: dialog, matching: find.text('Elimina')),
+    findsOneWidget,
+  );
+  expect(find.bySemanticsLabel('Ignora'), findsNothing);
+  expect(find.bySemanticsLabel('Conferma'), findsNothing);
+  expect(find.bySemanticsLabel('Dismiss'), findsNothing);
+  expect(
+    tester
+        .widgetList<ModalBarrier>(find.byType(ModalBarrier))
+        .every((barrier) => !barrier.dismissible),
+    isTrue,
+  );
+}
+
 void main() {
   test(
     'media bookmark titles persist, old positions remain visible, removal cleans metadata',
@@ -39,6 +64,7 @@ void main() {
       'all bookmarks removes only the chosen document position $platform',
       (tester) async {
         debugDefaultTargetPlatformOverride = platform;
+        final semantics = tester.ensureSemantics();
         configureAccessibleRendererRuntime(useFlutterOnIos: true);
         final document = DocumentItem(
           id: 'book',
@@ -82,7 +108,9 @@ void main() {
             )
             .sections
             .single
-            .rows;
+            .rows
+            .where((row) => row.id != 'delete_all_bookmarks')
+            .toList();
         expect(find.text('Gestisci tutti i segnalibri'), findsOneWidget);
         expect(
           rows(),
@@ -108,6 +136,7 @@ void main() {
         expect(row.visualActions.single.id, 'remove');
         final removal = row.onCustomAction!('remove');
         await tester.pumpAndSettle();
+        expectOnlyDeletionDialogActions(tester);
         await tester.tap(find.text('Elimina'));
         await tester.pumpAndSettle();
         await removal;
@@ -123,6 +152,7 @@ void main() {
         expect(media.visualActions.single.id, 'remove');
         final removeMedia = media.onCustomAction!('remove');
         await tester.pumpAndSettle();
+        expectOnlyDeletionDialogActions(tester);
         await tester.tap(find.text('Elimina'));
         await tester.pumpAndSettle();
         await removeMedia;
@@ -134,7 +164,42 @@ void main() {
         );
         expect(await podcasts.position(url), 90);
         expect(rows(), hasLength(5));
+        AccessibleListRow clearButton() => tester
+            .widget<UniversalAccessibleList>(
+              find.byType(UniversalAccessibleList),
+            )
+            .sections
+            .single
+            .rows
+            .first;
+        expect(clearButton().id, 'delete_all_bookmarks');
+        final cancelAll = clearButton().onActivate!();
+        await tester.pumpAndSettle();
+        expectOnlyDeletionDialogActions(tester);
+        await tester.tap(find.text('Annulla'));
+        await tester.pumpAndSettle();
+        await cancelAll;
+        expect(rows(), hasLength(5));
+        expect(await podcasts.position(url), 90);
+        final clearAll = clearButton().onActivate!();
+        await tester.pumpAndSettle();
+        expectOnlyDeletionDialogActions(tester);
+        await tester.tap(find.text('Elimina'));
+        await tester.pumpAndSettle();
+        await clearAll;
+        expect(rows().single.id, 'empty');
+        expect(await settings.mediaBookmarks(), isEmpty);
+        await library.load();
+        expect(library.documents.single.id, document.id);
+        expect(library.documents.single.bookmarkIndex, 0);
+        expect(library.documents.single.bookmarkIndexes, isEmpty);
+        expect(await podcasts.position(url), 0);
+        expect(
+          (await podcasts.read()).single['data']['updated_at'],
+          greaterThan(0),
+        );
         await tester.pumpWidget(const SizedBox());
+        semantics.dispose();
         debugDefaultTargetPlatformOverride = null;
         configureAccessibleRendererRuntime(useFlutterOnIos: false);
       },
@@ -143,6 +208,7 @@ void main() {
       'bookmark manager has independent entries and confirmed removal $platform',
       (tester) async {
         debugDefaultTargetPlatformOverride = platform;
+        final semantics = tester.ensureSemantics();
         configureAccessibleRendererRuntime(useFlutterOnIos: true);
         addTearDown(() {
           debugDefaultTargetPlatformOverride = null;
@@ -171,7 +237,9 @@ void main() {
             )
             .sections
             .single
-            .rows;
+            .rows
+            .where((row) => row.id != 'delete_all_bookmarks')
+            .toList();
         final firstRow = rows().singleWhere((r) => r.id == first);
         expect(firstRow.subtitle, '0:02:03');
         expect(firstRow.onActivate, isNotNull);
@@ -179,12 +247,14 @@ void main() {
         expect(firstRow.visualActions.single.id, 'remove');
         final cancel = firstRow.onCustomAction!('remove');
         await tester.pumpAndSettle();
+        expectOnlyDeletionDialogActions(tester);
         await tester.tap(find.text('Annulla'));
         await tester.pumpAndSettle();
         await cancel;
         expect(await service.position(first), 123);
         final remove = firstRow.onCustomAction!('remove');
         await tester.pumpAndSettle();
+        expectOnlyDeletionDialogActions(tester);
         await tester.tap(find.text('Elimina'));
         await tester.pumpAndSettle();
         await remove;
@@ -192,6 +262,7 @@ void main() {
         expect(await service.position(first), 0);
         expect(await service.position(second), 456);
         await tester.pumpWidget(const SizedBox());
+        semantics.dispose();
         debugDefaultTargetPlatformOverride = null;
         configureAccessibleRendererRuntime(useFlutterOnIos: false);
       },

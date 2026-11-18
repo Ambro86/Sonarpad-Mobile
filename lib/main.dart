@@ -286,6 +286,7 @@ class _SonarpadAppState extends State<SonarpadApp> with WidgetsBindingObserver {
       if (missedRecording != null && dialogContext != null && dialogContext.mounted) {
         final l10n = AppLocalizations.of(dialogContext);
         await showDialog<void>(
+          barrierDismissible: false,
           context: dialogContext,
           builder: (context) => AlertDialog(
             content: Text(l10n.recordingScheduleMissed(missedRecording)),

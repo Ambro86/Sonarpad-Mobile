@@ -247,6 +247,7 @@ class _BdCiechiDashboardScreenState extends State<BdCiechiDashboardScreen> {
 
   void _onWorkTapped(String record) {
     showDialog(
+      barrierDismissible: false,
       context: context,
       builder: (_) => AlertDialog(
         title: Semantics(
@@ -256,6 +257,7 @@ class _BdCiechiDashboardScreenState extends State<BdCiechiDashboardScreen> {
         ),
         content: Text('Scegli un\'azione per:\n$record'),
         actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: Text(AppLocalizations.of(context).cancel)),
           TextButton(
             onPressed: () {
               Navigator.pop(context); // chiude dialog scelte

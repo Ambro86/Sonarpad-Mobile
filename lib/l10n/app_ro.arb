@@ -5087,5 +5087,7 @@
   "recordingScheduleMissed": "Înregistrarea programată pentru „{title}” nu a fost finalizată: Sonarpad a fost redeschis după încheierea programului.",
   "manageAllBookmarks": "Gestionează toate marcajele",
   "noSavedBookmarks": "Nu există marcaje salvate.",
-  "@recordingScheduleMissed": {"placeholders": {"title": {"type": "String"}}}
+  "@recordingScheduleMissed": {"placeholders": {"title": {"type": "String"}}},
+  "deleteAllBookmarks": "Șterge toate marcajele",
+  "deleteAllBookmarksConfirmation": "Ștergi toate marcajele? Documentele și fișierele media nu vor fi șterse."
 }

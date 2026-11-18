@@ -6158,4 +6158,11 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get noSavedBookmarks => 'No hay marcadores guardados.';
+
+  @override
+  String get deleteAllBookmarks => 'Eliminar todos los marcadores';
+
+  @override
+  String get deleteAllBookmarksConfirmation =>
+      '¿Eliminar todos los marcadores? No se eliminarán los documentos ni los archivos multimedia.';
 }

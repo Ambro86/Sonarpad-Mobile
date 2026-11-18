@@ -134,6 +134,7 @@ class _PodcastBookmarksScreenState extends State<PodcastBookmarksScreen> {
     final l10n = AppLocalizations.of(context);
     final confirmed = await showDialog<bool>(
       context: context,
+      barrierDismissible: false,
       builder: (context) => AlertDialog(
         title: Text(l10n.documentDeleteBookmarkAction),
         content: Text(row['data']['title'] as String),
@@ -151,6 +152,21 @@ class _PodcastBookmarksScreenState extends State<PodcastBookmarksScreen> {
     );
     if (confirmed != true) return;
     final oldIndex = _rows!.indexWhere((item) => item['id'] == row['id']);
+    await _deleteRow(row);
+    await _load();
+    if (!mounted) return;
+    announceStatusMessage(context, l10n.bookmarkRemoved);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final rows = _rows!;
+      final target = rows.isEmpty
+          ? 'empty'
+          : rows[oldIndex.clamp(0, rows.length - 1)]['id'] as String;
+      _listController.focusToReturnAfterStructureChange(target);
+    });
+  }
+
+  Future<void> _deleteRow(Map<String, dynamic> row) async {
     final document = row['document'] as DocumentItem?;
     if (row['mediaId'] != null) {
       await _settings.removeMediaBookmark(row['mediaId'] as String);
@@ -174,16 +190,38 @@ class _PodcastBookmarksScreenState extends State<PodcastBookmarksScreen> {
         break;
       }
     }
+  }
+
+  Future<void> _removeAll() async {
+    final l10n = AppLocalizations.of(context);
+    final confirmed = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.deleteAllBookmarks),
+        content: Text(l10n.deleteAllBookmarksConfirmation),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text(l10n.cancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: Text(l10n.deleteItem),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+    await _load();
+    for (final row in List<Map<String, dynamic>>.of(_rows!)) {
+      await _deleteRow(row);
+    }
     await _load();
     if (!mounted) return;
-    announceStatusMessage(context, l10n.bookmarkRemoved);
+    announceStatusMessage(context, l10n.noSavedBookmarks);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      final rows = _rows!;
-      final target = rows.isEmpty
-          ? 'empty'
-          : rows[oldIndex.clamp(0, rows.length - 1)]['id'] as String;
-      _listController.focusToReturnAfterStructureChange(target);
+      if (mounted) _listController.focusToReturnAfterStructureChange('empty');
     });
   }
 
@@ -213,6 +251,13 @@ class _PodcastBookmarksScreenState extends State<PodcastBookmarksScreen> {
               sections: [
                 AccessibleListSection(
                   rows: [
+                    if (rows.isNotEmpty)
+                      AccessibleListRow(
+                        id: 'delete_all_bookmarks',
+                        title: l10n.deleteAllBookmarks,
+                        kind: 'button',
+                        onActivate: _removeAll,
+                      ),
                     if (rows.isEmpty)
                       AccessibleListRow(
                         id: 'empty',

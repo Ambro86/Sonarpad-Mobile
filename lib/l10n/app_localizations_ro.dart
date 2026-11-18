@@ -6139,4 +6139,11 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String get noSavedBookmarks => 'Nu există marcaje salvate.';
+
+  @override
+  String get deleteAllBookmarks => 'Șterge toate marcajele';
+
+  @override
+  String get deleteAllBookmarksConfirmation =>
+      'Ștergi toate marcajele? Documentele și fișierele media nu vor fi șterse.';
 }

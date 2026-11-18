@@ -5093,5 +5093,7 @@
   "recordingScheduleMissed": "L’enregistrement programmé de « {title} » n’a pas été terminé : Sonarpad a été rouvert après la fin du programme.",
   "manageAllBookmarks": "Gérer tous les signets",
   "noSavedBookmarks": "Aucun signet enregistré.",
-  "@recordingScheduleMissed": {"placeholders": {"title": {"type": "String"}}}
+  "@recordingScheduleMissed": {"placeholders": {"title": {"type": "String"}}},
+  "deleteAllBookmarks": "Supprimer tous les signets",
+  "deleteAllBookmarksConfirmation": "Supprimer tous les signets ? Les documents et fichiers multimédias ne seront pas supprimés."
 }

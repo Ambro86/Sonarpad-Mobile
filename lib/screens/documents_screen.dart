@@ -298,10 +298,12 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     }
     final l10n = AppLocalizations.of(context);
     final source = await showDialog<String>(
+      barrierDismissible: false,
       context: context,
       builder: (ctx) => SimpleDialog(
         title: Text(l10n.addToLibrary),
         children: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(AppLocalizations.of(ctx).cancel)),
           SimpleDialogOption(
             onPressed: () => Navigator.pop(ctx, 'files'),
             child: Text(_importFromFilesLabel(l10n)),
@@ -481,11 +483,13 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
   Future<bool?> _askImportSelectionMode() {
     final l10n = AppLocalizations.of(context);
     return showDialog<bool>(
+      barrierDismissible: false,
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(l10n.addToLibrary),
         content: Text(l10n.documentImportSelectionMode),
         actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(AppLocalizations.of(ctx).cancel)),
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
             child: Text(l10n.documentImportSingle),
@@ -1075,11 +1079,13 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
       return;
     }
     String? format = await showDialog<String>(
+      barrierDismissible: false,
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(AppLocalizations.of(context).exportDocument),
         content: Text(AppLocalizations.of(context).exportFormatPrompt),
         actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(AppLocalizations.of(ctx).cancel)),
           TextButton(
             onPressed: () => Navigator.pop(ctx, 'txt'),
             child: Text(AppLocalizations.of(context).textFormat),
@@ -1675,10 +1681,12 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     }
 
     final source = await showDialog<String>(
+      barrierDismissible: false,
       context: context,
       builder: (ctx) => SimpleDialog(
         title: Text(l10n.importExternalSourcesTitle),
         children: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(AppLocalizations.of(ctx).cancel)),
           if (Platform.isIOS)
             sourceOption(
               value: 'itunes',

@@ -11015,6 +11015,18 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Nessun segnalibro salvato.'**
   String get noSavedBookmarks;
+
+  /// No description provided for @deleteAllBookmarks.
+  ///
+  /// In it, this message translates to:
+  /// **'Elimina tutti i segnalibri'**
+  String get deleteAllBookmarks;
+
+  /// No description provided for @deleteAllBookmarksConfirmation.
+  ///
+  /// In it, this message translates to:
+  /// **'Vuoi eliminare tutti i segnalibri? I documenti e i file multimediali non saranno eliminati.'**
+  String get deleteAllBookmarksConfirmation;
 }
 
 class _AppLocalizationsDelegate

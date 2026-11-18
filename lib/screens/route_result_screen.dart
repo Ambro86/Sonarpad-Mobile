@@ -470,6 +470,7 @@ class _RouteStepsScreenState extends State<RouteStepsScreen> {
     }
 
     await showCupertinoModalPopup<void>(
+      semanticsDismissible: false,
       context: context,
       builder: (sheetContext) => CupertinoActionSheet(
         title: Text(l10n.routeOpenAction),

@@ -6126,4 +6126,11 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get noSavedBookmarks => 'Geen opgeslagen bladwijzers.';
+
+  @override
+  String get deleteAllBookmarks => 'Alle bladwijzers verwijderen';
+
+  @override
+  String get deleteAllBookmarksConfirmation =>
+      'Alle bladwijzers verwijderen? Documenten en mediabestanden worden niet verwijderd.';
 }

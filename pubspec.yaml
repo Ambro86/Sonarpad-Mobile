@@ -86,6 +86,7 @@ dev_dependencies:
   golden_toolkit: ^0.15.0
   sqflite_common_ffi: ^2.4.0+3
   flutter_launcher_icons: ^0.14.4
+  analyzer: ^14.7.0
 
 flutter:
   generate: true

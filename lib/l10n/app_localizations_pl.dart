@@ -6125,4 +6125,11 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get noSavedBookmarks => 'Brak zapisanych zakładek.';
+
+  @override
+  String get deleteAllBookmarks => 'Usuń wszystkie zakładki';
+
+  @override
+  String get deleteAllBookmarksConfirmation =>
+      'Usunąć wszystkie zakładki? Dokumenty i pliki multimedialne nie zostaną usunięte.';
 }

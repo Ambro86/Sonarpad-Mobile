@@ -6107,4 +6107,11 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get noSavedBookmarks => 'Немає збережених закладок.';
+
+  @override
+  String get deleteAllBookmarks => 'Видалити всі закладки';
+
+  @override
+  String get deleteAllBookmarksConfirmation =>
+      'Видалити всі закладки? Документи та мультимедійні файли не буде видалено.';
 }

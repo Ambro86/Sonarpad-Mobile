@@ -6111,4 +6111,11 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get noSavedBookmarks => 'Žádné uložené záložky.';
+
+  @override
+  String get deleteAllBookmarks => 'Odstranit všechny záložky';
+
+  @override
+  String get deleteAllBookmarksConfirmation =>
+      'Odstranit všechny záložky? Dokumenty ani multimediální soubory nebudou odstraněny.';
 }
