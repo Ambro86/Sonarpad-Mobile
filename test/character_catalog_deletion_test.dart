@@ -56,6 +56,13 @@ void main() {
     expect(await File('${root.path}/Audiodescriptions/Catalogs/First.json').exists(), isTrue);
   });
 
+  test('AniList catalog reopens with its illustration URL and provisional identity', () async {
+    const entry = {'id':'anilist_813_1','name':'Goku','description':'Candidate','provisional':true,
+      'anilist':{'media_id':813,'image_urls':['https://s4.anilist.co/file/anilistcdn/character/large/goku.jpg']}};
+    await service.saveCharacterCatalog('Anime', [entry]);
+    expect(await AiAudioDescriptionService().loadCharacterCatalog('Anime'), [entry]);
+  });
+
   test('TMDB catalog persists photo links and reloads them without image data', () async {
     const cast = <Map<String, Object?>>[
       {'id': 'tmdb_1981_1_credit', 'name': 'Prue', 'description': 'Cast candidate',

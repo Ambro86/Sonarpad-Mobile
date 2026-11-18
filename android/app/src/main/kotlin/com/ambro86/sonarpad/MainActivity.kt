@@ -14,6 +14,7 @@ import java.util.UUID
 class MainActivity : AudioServiceActivity() {
     private val cloudPicker = SonarpadCloudFilePicker(this)
     private val photoPicker = SonarpadPhotoLibraryPicker(this)
+    private val dropboxAuth = SonarpadDropboxAuth(this)
     private val methodChannelName = "sonarpad/shared_media"
     private val eventChannelName = "sonarpad/shared_media_events"
     private var eventSink: EventChannel.EventSink? = null
@@ -29,6 +30,7 @@ class MainActivity : AudioServiceActivity() {
         }
         cloudPicker.attach(flutterEngine)
         photoPicker.attach(flutterEngine)
+        dropboxAuth.attach(flutterEngine)
 
         if (!flutterEngine.plugins.has(MediaKitBackgroundPlugin::class.java)) {
             flutterEngine.plugins.add(MediaKitBackgroundPlugin())
@@ -65,6 +67,21 @@ class MainActivity : AudioServiceActivity() {
         })
 
         handleSharedIntent(intent)
+    }
+
+    override fun onPause() {
+        dropboxAuth.onPause()
+        super.onPause()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        dropboxAuth.onResume()
+    }
+
+    override fun onDestroy() {
+        dropboxAuth.dispose()
+        super.onDestroy()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

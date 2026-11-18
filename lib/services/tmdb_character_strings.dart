@@ -10,6 +10,7 @@ class TmdbCharacterStrings {
 
   static const Map<String, Map<String, String>> _labels = {
     "cs": {
+      "unavailable": "Obrázky postav nejsou dostupné. Pokračuje standardní audiopopis.",
       "title": "Film nebo seriál (volitelné)",
       "year": "Rok (volitelné)",
       "production": "Vyberte film nebo seriál",
@@ -28,6 +29,7 @@ class TmdbCharacterStrings {
           "Jde o animovaný obsah. Fotografie herců nepomáhají identifikovat animované postavy a nebudou odeslány. Audiopopis bude pokračovat normálně.",
     },
     "de": {
+      "unavailable": "Keine Figurenbilder verfügbar. Die normale Audiodeskription wird fortgesetzt.",
       "title": "Film oder Serie (optional)",
       "year": "Jahr (optional)",
       "production": "Film oder Serie auswählen",
@@ -47,6 +49,7 @@ class TmdbCharacterStrings {
           "Dies ist animierter Inhalt. Schauspielerfotos helfen nicht bei der Erkennung animierter Figuren und werden nicht gesendet. Die Audiodeskription wird normal fortgesetzt.",
     },
     "en": {
+      "unavailable": "Character reference images unavailable. Continuing with standard audio description.",
       "title": "Film or series (optional)",
       "year": "Year (optional)",
       "production": "Choose film or series",
@@ -65,6 +68,7 @@ class TmdbCharacterStrings {
           "This is animated content. Actor portraits cannot identify animated characters and will not be sent. Audio description will continue normally.",
     },
     "es": {
+      "unavailable": "Imágenes de personajes no disponibles. Continúa la audiodescripción estándar.",
       "title": "Película o serie (opcional)",
       "year": "Año (opcional)",
       "production": "Elegir película o serie",
@@ -84,6 +88,7 @@ class TmdbCharacterStrings {
           "Este contenido es animado. Las fotos de los actores no identifican a los personajes animados y no se enviarán. La audiodescripción continuará normalmente.",
     },
     "fr": {
+      "unavailable": "Images des personnages indisponibles. L’audiodescription standard continue.",
       "title": "Film ou série (facultatif)",
       "year": "Année (facultatif)",
       "production": "Choisir le film ou la série",
@@ -103,6 +108,7 @@ class TmdbCharacterStrings {
           "Ce contenu est animé. Les photos des acteurs ne permettent pas d’identifier les personnages animés et ne seront pas envoyées. L’audiodescription continuera normalement.",
     },
     "hi": {
+      "unavailable": "पात्रों के चित्र उपलब्ध नहीं हैं। सामान्य ऑडियो विवरण जारी रहेगा।",
       "title": "फ़िल्म या सीरीज़ (वैकल्पिक)",
       "year": "वर्ष (वैकल्पिक)",
       "production": "फ़िल्म या सीरीज़ चुनें",
@@ -121,6 +127,7 @@ class TmdbCharacterStrings {
           "यह एनिमेशन है। कलाकारों की तस्वीरें एनिमेटेड पात्रों की पहचान नहीं करतीं और नहीं भेजी जाएँगी। ऑडियो विवरण सामान्य रूप से जारी रहेगा।",
     },
     "id": {
+      "unavailable": "Gambar karakter tidak tersedia. Deskripsi audio standar dilanjutkan.",
       "title": "Film atau serial (opsional)",
       "year": "Tahun (opsional)",
       "production": "Pilih film atau serial",
@@ -139,6 +146,7 @@ class TmdbCharacterStrings {
           "Ini adalah konten animasi. Foto pemeran tidak mengidentifikasi karakter animasi dan tidak akan dikirim. Deskripsi audio akan berlanjut seperti biasa.",
     },
     "it": {
+      "unavailable": "Immagini dei personaggi non disponibili. Proseguo con l’audiodescrizione standard.",
       "title": "Film o serie (facoltativo)",
       "year": "Anno (facoltativo)",
       "production": "Scegli il film o la serie",
@@ -158,6 +166,7 @@ class TmdbCharacterStrings {
           "Questo contenuto è animato. Le foto degli attori non identificano i personaggi animati e non saranno inviate. L’audiodescrizione continuerà normalmente.",
     },
     "lt": {
+      "unavailable": "Veikėjų vaizdų nėra. Tęsiamas įprastas garsinis vaizdavimas.",
       "title": "Filmas arba serialas (nebūtina)",
       "year": "Metai (nebūtina)",
       "production": "Pasirinkite filmą arba serialą",
@@ -177,6 +186,7 @@ class TmdbCharacterStrings {
           "Tai animacinis turinys. Aktorių nuotraukos nepadeda atpažinti animacinių personažų ir nebus siunčiamos. Garsinis vaizdavimas bus tęsiamas įprastai.",
     },
     "pl": {
+      "unavailable": "Brak ilustracji postaci. Standardowa audiodeskrypcja będzie kontynuowana.",
       "title": "Film lub serial (opcjonalnie)",
       "year": "Rok (opcjonalnie)",
       "production": "Wybierz film lub serial",
@@ -195,6 +205,7 @@ class TmdbCharacterStrings {
           "To treść animowana. Zdjęcia aktorów nie identyfikują animowanych postaci i nie zostaną wysłane. Audiodeskrypcja będzie kontynuowana normalnie.",
     },
     "pt-br": {
+      "unavailable": "Imagens das personagens indisponíveis. A audiodescrição normal continua.",
       "title": "Filme ou série (opcional)",
       "year": "Ano (opcional)",
       "production": "Escolher filme ou série",
@@ -214,6 +225,7 @@ class TmdbCharacterStrings {
           "Este conteúdo é animado. As fotos dos atores não identificam personagens animados e não serão enviadas. A audiodescrição continuará normalmente.",
     },
     "pt": {
+      "unavailable": "Imagens das personagens indisponíveis. A audiodescrição normal continua.",
       "title": "Filme ou série (opcional)",
       "year": "Ano (opcional)",
       "production": "Escolher filme ou série",
@@ -233,6 +245,7 @@ class TmdbCharacterStrings {
           "Este conteúdo é animado. As fotografias dos atores não identificam personagens animados e não serão enviadas. A audiodescrição continuará normalmente.",
     },
     "ru": {
+      "unavailable": "Изображения персонажей недоступны. Продолжается обычная тифлокомментированная версия.",
       "title": "Фильм или сериал (необязательно)",
       "year": "Год (необязательно)",
       "production": "Выберите фильм или сериал",
@@ -251,6 +264,7 @@ class TmdbCharacterStrings {
           "Это анимация. Фотографии актёров не позволяют распознать анимационных персонажей и не будут отправлены. Аудиоописание продолжится в обычном режиме.",
     },
     "sr": {
+      "unavailable": "Слике ликова нису доступне. Наставља се стандардни аудио-опис.",
       "title": "Film ili serija (opciono)",
       "year": "Godina (opciono)",
       "production": "Izaberite film ili seriju",
@@ -270,6 +284,7 @@ class TmdbCharacterStrings {
           "Ovo je animirani sadržaj. Fotografije glumaca ne identifikuju animirane likove i neće biti poslate. Audio-opis će se nastaviti normalno.",
     },
     "sv": {
+      "unavailable": "Figurbilder saknas. Standardiserad syntolkning fortsätter.",
       "title": "Film eller serie (valfritt)",
       "year": "År (valfritt)",
       "production": "Välj film eller serie",
@@ -288,6 +303,7 @@ class TmdbCharacterStrings {
           "Detta är animerat innehåll. Skådespelarfoton identifierar inte animerade figurer och skickas inte. Syntolkningen fortsätter som vanligt.",
     },
     "uk": {
+      "unavailable": "Зображення персонажів недоступні. Продовжується звичайний аудіоопис.",
       "title": "Фільм або серіал (необов’язково)",
       "year": "Рік (необов’язково)",
       "production": "Виберіть фільм або серіал",
@@ -306,6 +322,7 @@ class TmdbCharacterStrings {
           "Це анімація. Фотографії акторів не ідентифікують анімованих персонажів і не будуть надіслані. Аудіоопис продовжиться у звичайному режимі.",
     },
     "vi": {
+      "unavailable": "Không có hình ảnh nhân vật. Tiếp tục mô tả âm thanh thông thường.",
       "title": "Phim hoặc loạt phim (tùy chọn)",
       "year": "Năm (tùy chọn)",
       "production": "Chọn phim hoặc loạt phim",
@@ -324,6 +341,7 @@ class TmdbCharacterStrings {
           "Đây là nội dung hoạt hình. Ảnh diễn viên không giúp nhận diện nhân vật hoạt hình và sẽ không được gửi. Mô tả âm thanh vẫn tiếp tục bình thường.",
     },
     "zh": {
+      "unavailable": "没有可用的角色图片。将继续标准音频描述。",
       "title": "电影或剧集（可选）",
       "year": "年份（可选）",
       "production": "选择电影或剧集",
@@ -340,6 +358,7 @@ class TmdbCharacterStrings {
       "animation": "这是动画内容。演员照片无法用于识别动画角色，因此不会发送。音频描述将正常继续。",
     },
     "nl": {
+      "unavailable": "Geen referentiebeelden van personages beschikbaar. De standaard audiodescriptie gaat verder.",
       "title": "Film of serie (optioneel)",
       "year": "Jaar (optioneel)",
       "production": "Kies film of serie",
@@ -359,6 +378,7 @@ class TmdbCharacterStrings {
           "Dit is animatie. Acteursfoto’s identificeren geen animatiefiguren en worden niet verzonden. De audiobeschrijving gaat normaal verder.",
     },
     "ro": {
+      "unavailable": "Imaginile de referință ale personajelor nu sunt disponibile. Audiodescrierea continuă în modul standard.",
       "title": "Film sau serial (opțional)",
       "year": "An (opțional)",
       "production": "Alegeți filmul sau serialul",
@@ -378,6 +398,7 @@ class TmdbCharacterStrings {
           "Acesta este conținut animat. Fotografiile actorilor nu identifică personajele animate și nu vor fi trimise. Audiodescrierea va continua normal.",
     },
     "tr": {
+      "unavailable": "Karakter görselleri kullanılamıyor. Standart sesli betimleme devam ediyor.",
       "title": "Film veya dizi (isteğe bağlı)",
       "year": "Yıl (isteğe bağlı)",
       "production": "Film veya dizi seçin",

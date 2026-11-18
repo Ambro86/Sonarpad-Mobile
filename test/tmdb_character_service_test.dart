@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:image/image.dart' as img;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
@@ -7,6 +8,23 @@ import 'package:sonarpad_mobile_starter/services/tmdb_character_service.dart';
 import 'package:sonarpad_mobile_starter/services/audio_description_fallbacks.dart';
 
 void main() {
+  test('AniList PNG is cached as a JPEG accepted by Sonarpad AI', () async {
+    final directory = await Directory.systemTemp.createTemp('anilist-test');
+    addTearDown(() => directory.delete(recursive: true));
+    const url = 'https://s4.anilist.co/file/anilistcdn/character/large/goku.png';
+    var requests = 0;
+    final client = MockClient((_) async {
+      requests++;
+      return http.Response.bytes(img.encodePng(img.Image(width: 2, height: 2)), 200);
+    });
+    for (var i = 0; i < 2; i++) {
+      final file = await TmdbCharacterService.downloadImage(url, cacheDirectory: directory, client: client);
+      expect(AudioDescriptionFallbacks.mimeTypeForPath(file.path), 'image/jpeg');
+      expect(img.decodeJpg(await file.readAsBytes()), isNotNull);
+    }
+    expect(requests, 1);
+  });
+
   test(
     'Capri 2006 remains selectable after the complete first movie page',
     () async {

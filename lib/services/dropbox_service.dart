@@ -5,8 +5,11 @@ import 'package:http/http.dart' as http;
 import 'package:crypto/crypto.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 
 class DropboxService {
+  static const _nativeAuth = MethodChannel('sonarpad/dropbox_auth');
   static const _clientId = 'q39vgbb6gks3474';
   static const _redirectUri = 'sonarpad://dropbox';
   static const _tokenKey = 'dropbox_access_token';
@@ -38,6 +41,16 @@ class DropboxService {
 
   Future<bool> authenticate() async {
     try {
+      if (!kIsWeb &&
+          (defaultTargetPlatform == TargetPlatform.android ||
+              defaultTargetPlatform == TargetPlatform.iOS)) {
+        final credential = await _nativeAuth.invokeMapMethod<String, dynamic>(
+          'authenticate',
+        );
+        if (credential == null) return false;
+        await _storeCredential(credential);
+        return true;
+      }
       final codeVerifier = _generateCodeVerifier();
       final codeChallenge = _generateCodeChallenge(codeVerifier);
 
@@ -71,17 +84,7 @@ class DropboxService {
 
       if (tokenResponse.statusCode == 200) {
         final data = jsonDecode(tokenResponse.body);
-        _accessToken = data['access_token'] as String?;
-        _refreshToken = data['refresh_token'] as String?;
-        if (_accessToken == null) {
-          throw Exception('Token Dropbox non ricevuto');
-        }
-
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString(_tokenKey, _accessToken!);
-        if (_refreshToken != null && _refreshToken!.isNotEmpty) {
-          await prefs.setString(_refreshTokenKey, _refreshToken!);
-        }
+        await _storeCredential(data as Map<String, dynamic>);
         return true;
       } else {
         throw Exception('Errore nel login Dropbox: ${tokenResponse.body}');
@@ -90,6 +93,24 @@ class DropboxService {
       dev.log('Dropbox auth error: $e');
       return false;
     }
+  }
+
+  Future<void> _storeCredential(Map<String, dynamic> data) async {
+    final accessToken = data['access_token'] as String?;
+    if (accessToken == null || accessToken.isEmpty) {
+      throw Exception('Token Dropbox non ricevuto');
+    }
+    final refreshToken = data['refresh_token'] as String?;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_tokenKey, accessToken);
+    if (refreshToken != null && refreshToken.isNotEmpty) {
+      await prefs.setString(_refreshTokenKey, refreshToken);
+    } else {
+      // Never retain a refresh token belonging to a previously connected account.
+      await prefs.remove(_refreshTokenKey);
+    }
+    _accessToken = accessToken;
+    _refreshToken = refreshToken;
   }
 
   String _generateCodeVerifier() {
@@ -112,10 +133,7 @@ class DropboxService {
           'Authorization': 'Bearer $_accessToken',
           'Content-Type': 'application/json',
         },
-        body: jsonEncode({
-          'path': path,
-          'limit': 1000,
-        }),
+        body: jsonEncode({'path': path, 'limit': 1000}),
       ),
     );
 

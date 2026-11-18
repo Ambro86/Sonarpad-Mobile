@@ -1,6 +1,9 @@
+import 'anilist_character_service.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
+import 'package:image/image.dart' as img;
 import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as p;
@@ -66,6 +69,32 @@ class TmdbCharacterService {
       kind == 'movie' ? 'movie_id' : 'series_id': '${production['id']}',
     };
     final details = await _lookup('${kind}_details', params);
+    if (rows(details, 'genres').any((item) => item['id'] == 16)) {
+      try {
+        return await AniListCharacterService.resolve(
+          [
+            for (final key in [
+              'title',
+              'name',
+              'original_title',
+              'original_name',
+            ])
+              if (details[key] is String) details[key] as String,
+          ],
+          (details['release_date'] ?? details['first_air_date'] ?? year)
+              .toString()
+              .split('-')
+              .first,
+          kind,
+          choose,
+        );
+      } catch (error) {
+        await AppLogger.log(
+          'Optional AniList lookup unavailable (${error.runtimeType})',
+        );
+        return [];
+      }
+    }
     int? season;
     int? episode;
     var action = '${kind}_credits';
@@ -182,7 +211,7 @@ class TmdbCharacterService {
     Directory? cacheDirectory,
     http.Client? client,
   }) async {
-    if (!validImageUrl(url)) {
+    if (!validImageUrl(url) && !AniListCharacterService.validImageUrl(url)) {
       throw const FormatException('Invalid TMDB portrait URL');
     }
     final directory =
@@ -194,6 +223,7 @@ class TmdbCharacterService {
           ),
         );
     await directory.create(recursive: true);
+    final png = url.endsWith('.png');
     final file = File(
       p.join(directory.path, '${sha256.convert(utf8.encode(url))}.jpg'),
     );
@@ -228,6 +258,19 @@ class TmdbCharacterService {
         if (data.length > 1024 * 1024) {
           throw const FormatException('Oversized TMDB portrait');
         }
+      }
+      // Sonarpad AI accepts JPEG references. Convert PNG illustrations once in the cache.
+      if (png) {
+        final bytes = Uint8List.fromList(data);
+        final info = img.PngDecoder().startDecode(bytes);
+        if (info == null || info.width * info.height > 8000000) {
+          throw const FormatException('Invalid character illustration');
+        }
+        final decoded = img.decodePng(bytes);
+        if (decoded == null) throw const FormatException('Invalid PNG');
+        data
+          ..clear()
+          ..addAll(img.encodeJpg(decoded, quality: 85));
       }
       if (!valid(data)) throw const FormatException('Invalid JPEG portrait');
       await file.writeAsBytes(data, flush: true);

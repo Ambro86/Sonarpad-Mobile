@@ -61,6 +61,8 @@
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>comgooglemaps</string>
+		<string>dbapi-2</string>
+		<string>dbapi-8-emm</string>
 	</array>
 
 	<key>UILaunchStoryboardName</key>
@@ -132,6 +134,7 @@
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>sonarpad</string>
+				<string>db-q39vgbb6gks3474</string>
 			</array>
 		</dict>
 	</array>

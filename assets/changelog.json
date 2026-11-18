@@ -4,59 +4,87 @@
     "date": "2026-11-18",
     "it": [
       "SonarTube: corretto il caso in cui un canale aperto dai preferiti mostrava «Nessun video» dopo la sincronizzazione. Ora viene conservato l’ID corretto del canale e vengono recuperati i preferiti già interessati dal problema, indipendentemente dalla lingua dell’interfaccia.",
-      "Impostazioni: aggiunto Gestisci tutti i segnalibri, con i segnalibri dei documenti, dei podcast e di tutti i file multimediali. Ogni voce mostra la posizione salvata e può essere eliminata con conferma tramite azione accessibile o pulsante visibile escluso da VoiceOver. Per i nuovi segnalibri multimediali viene conservato anche il titolo."
+      "Impostazioni: aggiunto Gestisci tutti i segnalibri, con i segnalibri dei documenti, dei podcast e di tutti i file multimediali. Ogni voce mostra la posizione salvata e può essere eliminata con conferma tramite azione accessibile o pulsante visibile escluso da VoiceOver. Per i nuovi segnalibri multimediali viene conservato anche il titolo.",
+      "Dropbox: su Android e iPhone, l’accesso per importare documenti può utilizzare l’app Dropbox installata, con autenticazione web come alternativa. Dopo l’autorizzazione, la scelta e l’importazione dei documenti continuano dentro Sonarpad.",
+      "Quando TMDB riconosce un film o una serie di animazione, Sonarpad cerca automaticamente il titolo su AniList. Gemini usa le illustrazioni dei personaggi per riconoscere chi appare in scena. Se il titolo è incerto o mancano le immagini, l’audiodescrizione prosegue normalmente."
     ],
     "en": [
       "SonarTube: fixed channels opened from favorites showing “No videos” after syncing. The correct channel ID is now preserved, and affected existing favorites are recovered regardless of the interface language.",
-      "Settings: added Manage all bookmarks for documents, podcasts and all media files. Each entry shows the saved position and can be deleted with confirmation using an accessibility action or a visible button excluded from VoiceOver. New media bookmarks also retain the title."
+      "Settings: added Manage all bookmarks for documents, podcasts and all media files. Each entry shows the saved position and can be deleted with confirmation using an accessibility action or a visible button excluded from VoiceOver. New media bookmarks also retain the title.",
+      "Dropbox: on Android and iPhone, signing in to import documents can use the installed Dropbox app, with web authentication as an alternative. After authorization, documents are still selected and imported within Sonarpad.",
+      "When TMDB identifies an animated film or series, Sonarpad automatically searches AniList. Gemini uses character illustrations to help identify who is on screen. If no reliable match or images are available, audio description continues as usual."
     ],
     "fr": [
       "SonarTube : correction des chaînes ouvertes depuis les favoris affichant « Aucune vidéo » après la synchronisation. L’identifiant correct de la chaîne est désormais conservé et les favoris déjà concernés sont récupérés, quelle que soit la langue de l’interface.",
-      "Réglages : ajout de Gérer tous les signets pour les documents, podcasts et tous les fichiers multimédias. Chaque entrée affiche la position enregistrée et peut être supprimée après confirmation via une action accessible ou un bouton visible exclu de VoiceOver. Les nouveaux signets multimédias conservent aussi le titre."
+      "Réglages : ajout de Gérer tous les signets pour les documents, podcasts et tous les fichiers multimédias. Chaque entrée affiche la position enregistrée et peut être supprimée après confirmation via une action accessible ou un bouton visible exclu de VoiceOver. Les nouveaux signets multimédias conservent aussi le titre.",
+      "Dropbox : sur Android et iPhone, la connexion pour importer des documents peut utiliser l’application Dropbox installée, avec l’authentification web comme alternative. Après autorisation, la sélection et l’importation des documents se poursuivent dans Sonarpad.",
+      "Lorsque TMDB identifie un film ou une série d’animation, Sonarpad recherche automatiquement le titre sur AniList. Les illustrations aident Gemini à reconnaître les personnages à l’écran. En l’absence de correspondance fiable ou d’images, l’audiodescription se poursuit comme d’habitude."
     ],
     "es": [
       "SonarTube: corregidos los canales que mostraban «No hay vídeos» al abrirlos desde favoritos tras la sincronización. Ahora se conserva el identificador correcto del canal y se recuperan los favoritos afectados, independientemente del idioma de la interfaz.",
-      "Ajustes: añadido Gestionar todos los marcadores para documentos, podcasts y todos los archivos multimedia. Cada entrada muestra la posición guardada y permite eliminarla con confirmación mediante una acción accesible o un botón visible excluido de VoiceOver. Los nuevos marcadores multimedia también conservan el título."
+      "Ajustes: añadido Gestionar todos los marcadores para documentos, podcasts y todos los archivos multimedia. Cada entrada muestra la posición guardada y permite eliminarla con confirmación mediante una acción accesible o un botón visible excluido de VoiceOver. Los nuevos marcadores multimedia también conservan el título.",
+      "Dropbox: en Android y iPhone, el acceso para importar documentos puede utilizar la aplicación Dropbox instalada, con la autenticación web como alternativa. Tras la autorización, los documentos se siguen seleccionando e importando dentro de Sonarpad.",
+      "Cuando TMDB identifica una película o serie de animación, Sonarpad busca el título automáticamente en AniList. Las ilustraciones de los personajes ayudan a Gemini a reconocer quién aparece en escena. Si no hay una coincidencia fiable o faltan imágenes, la audiodescripción continúa como de costumbre."
     ],
     "pt": [
       "SonarTube: corrigidos os canais que mostravam «Nenhum vídeo» ao abrir a partir dos favoritos após a sincronização. O identificador correto do canal é agora preservado e os favoritos afetados são recuperados, independentemente do idioma da interface.",
-      "Definições: adicionado Gerir todos os marcadores para documentos, podcasts e todos os ficheiros multimédia. Cada entrada mostra a posição guardada e permite eliminar com confirmação através de uma ação acessível ou de um botão visível excluído do VoiceOver. Os novos marcadores multimédia também guardam o título."
+      "Definições: adicionado Gerir todos os marcadores para documentos, podcasts e todos os ficheiros multimédia. Cada entrada mostra a posição guardada e permite eliminar com confirmação através de uma ação acessível ou de um botão visível excluído do VoiceOver. Os novos marcadores multimédia também guardam o título.",
+      "Dropbox: no Android e no iPhone, o início de sessão para importar documentos pode utilizar a aplicação Dropbox instalada, com autenticação na web como alternativa. Após a autorização, a seleção e a importação dos documentos continuam no Sonarpad.",
+      "Quando o TMDB identifica um filme ou uma série de animação, o Sonarpad procura automaticamente o título no AniList. As ilustrações das personagens ajudam o Gemini a reconhecer quem aparece em cena. Se não houver uma correspondência fiável ou faltarem imagens, a audiodescrição prossegue normalmente."
     ],
     "pt_BR": [
       "SonarTube: corrigidos os canais que exibiam “Nenhum vídeo” ao abrir pelos favoritos após a sincronização. O identificador correto do canal agora é preservado e os favoritos afetados são recuperados, independentemente do idioma da interface.",
-      "Configurações: adicionado Gerenciar todos os marcadores para documentos, podcasts e todos os arquivos de mídia. Cada entrada mostra a posição salva e permite excluir com confirmação por uma ação acessível ou um botão visível excluído do VoiceOver. Os novos marcadores de mídia também guardam o título."
+      "Configurações: adicionado Gerenciar todos os marcadores para documentos, podcasts e todos os arquivos de mídia. Cada entrada mostra a posição salva e permite excluir com confirmação por uma ação acessível ou um botão visível excluído do VoiceOver. Os novos marcadores de mídia também guardam o título.",
+      "Dropbox: no Android e no iPhone, o acesso para importar documentos pode usar o aplicativo Dropbox instalado, com autenticação pela web como alternativa. Após a autorização, a seleção e a importação dos documentos continuam dentro do Sonarpad.",
+      "Quando o TMDB identifica um filme ou uma série de animação, o Sonarpad busca o título automaticamente no AniList. As ilustrações dos personagens ajudam o Gemini a reconhecer quem aparece em cena. Se não houver uma correspondência confiável ou faltarem imagens, a audiodescrição continua normalmente."
     ],
     "pl": [
       "SonarTube: naprawiono wyświetlanie „Brak filmów” po otwarciu kanału z ulubionych po synchronizacji. Prawidłowy identyfikator kanału jest teraz zachowywany, a istniejące ulubione objęte problemem są odzyskiwane niezależnie od języka interfejsu.",
-      "Ustawienia: dodano zarządzanie wszystkimi zakładkami dokumentów, podcastów i plików multimedialnych. Każda pozycja pokazuje zapisane miejsce i umożliwia usunięcie po potwierdzeniu za pomocą dostępnej akcji lub widocznego przycisku wyłączonego z VoiceOver. Nowe zakładki multimedialne zachowują także tytuł."
+      "Ustawienia: dodano zarządzanie wszystkimi zakładkami dokumentów, podcastów i plików multimedialnych. Każda pozycja pokazuje zapisane miejsce i umożliwia usunięcie po potwierdzeniu za pomocą dostępnej akcji lub widocznego przycisku wyłączonego z VoiceOver. Nowe zakładki multimedialne zachowują także tytuł.",
+      "Dropbox: na Androidzie i iPhonie logowanie w celu importowania dokumentów może korzystać z zainstalowanej aplikacji Dropbox, z uwierzytelnianiem w przeglądarce jako alternatywą. Po autoryzacji wybieranie i importowanie dokumentów nadal odbywa się w Sonarpad.",
+      "Gdy TMDB rozpozna film lub serial animowany, Sonarpad automatycznie wyszukuje tytuł w AniList. Ilustracje postaci pomagają Gemini rozpoznać, kto pojawia się w scenie. Jeśli nie uda się wiarygodnie dopasować tytułu lub brakuje ilustracji, tworzenie audiodeskrypcji przebiega jak zwykle."
     ],
     "cs": [
       "SonarTube: opraveno zobrazování „Žádná videa“ při otevření kanálu z oblíbených po synchronizaci. Nyní se zachovává správný identifikátor kanálu a opravují se již dotčené oblíbené položky bez ohledu na jazyk rozhraní.",
-      "Nastavení: přidána správa všech záložek dokumentů, podcastů a multimediálních souborů. Každá položka zobrazuje uloženou pozici a lze ji po potvrzení odstranit pomocí přístupné akce nebo viditelného tlačítka vyloučeného z VoiceOver. Nové multimediální záložky uchovávají také název."
+      "Nastavení: přidána správa všech záložek dokumentů, podcastů a multimediálních souborů. Každá položka zobrazuje uloženou pozici a lze ji po potvrzení odstranit pomocí přístupné akce nebo viditelného tlačítka vyloučeného z VoiceOver. Nové multimediální záložky uchovávají také název.",
+      "Dropbox: na Androidu a iPhonu lze při přihlášení pro import dokumentů využít nainstalovanou aplikaci Dropbox, případně ověření na webu. Po autorizaci výběr a import dokumentů nadále probíhají v Sonarpadu.",
+      "Když TMDB označí film nebo seriál jako animovaný, Sonarpad automaticky vyhledá titul na AniListu. Gemini využije ilustrace postav jako pomůcku při jejich rozpoznávání ve scéně. Pokud titul nelze spolehlivě určit nebo chybějí obrázky, tvorba audiopopisu pokračuje jako obvykle."
     ],
     "de": [
       "SonarTube: Kanäle aus den Favoriten zeigen nach der Synchronisierung nicht mehr fälschlich „Keine Videos“ an. Die korrekte Kanal-ID bleibt erhalten und bereits betroffene Favoriten werden unabhängig von der Sprache der Oberfläche wiederhergestellt.",
-      "Einstellungen: Alle Lesezeichen verwalten für Dokumente, Podcasts und sämtliche Mediendateien hinzugefügt. Jeder Eintrag zeigt die gespeicherte Position und lässt sich nach Bestätigung über eine barrierefreie Aktion oder eine sichtbare, von VoiceOver ausgeschlossene Schaltfläche löschen. Neue Medienlesezeichen speichern auch den Titel."
+      "Einstellungen: Alle Lesezeichen verwalten für Dokumente, Podcasts und sämtliche Mediendateien hinzugefügt. Jeder Eintrag zeigt die gespeicherte Position und lässt sich nach Bestätigung über eine barrierefreie Aktion oder eine sichtbare, von VoiceOver ausgeschlossene Schaltfläche löschen. Neue Medienlesezeichen speichern auch den Titel.",
+      "Dropbox: Unter Android und auf dem iPhone kann die Anmeldung zum Importieren von Dokumenten die installierte Dropbox-App verwenden. Alternativ ist die Anmeldung im Web möglich. Nach der Autorisierung werden Dokumente weiterhin in Sonarpad ausgewählt und importiert.",
+      "Erkennt TMDB einen Animationsfilm oder eine animierte Serie, sucht Sonarpad den Titel automatisch bei AniList. Die Figurenbilder helfen Gemini dabei, die Figuren in einer Szene zu erkennen. Fehlt ein eindeutiger Treffer oder sind keine Bilder verfügbar, läuft die Audiodeskription wie gewohnt weiter."
     ],
     "zh_CN": [
       "SonarTube：修复同步后从收藏夹打开频道时显示“没有视频”的问题。现在会保留正确的频道 ID，并恢复已受影响的收藏项，不受界面语言影响。",
-      "设置：新增管理所有书签，包含文档、播客和所有媒体文件的书签。每项显示保存的位置，可通过无障碍操作或不由 VoiceOver 朗读的可见按钮确认删除。新的媒体书签还会保存标题。"
+      "设置：新增管理所有书签，包含文档、播客和所有媒体文件的书签。每项显示保存的位置，可通过无障碍操作或不由 VoiceOver 朗读的可见按钮确认删除。新的媒体书签还会保存标题。",
+      "Dropbox：在 Android 和 iPhone 上，导入文档时可通过已安装的 Dropbox 应用登录，也可使用网页授权。授权完成后，仍在 Sonarpad 内选择和导入文档。",
+      "当 TMDB 将影片或剧集识别为动画作品时，Sonarpad 会自动在 AniList 上查找该作品。Gemini 会借助角色插图识别画面中的人物。如果找不到可靠匹配或没有可用图片，音频描述仍会照常生成。"
     ],
     "uk": [
       "SonarTube: виправлено появу повідомлення «Немає відео» під час відкриття каналу з обраного після синхронізації. Тепер зберігається правильний ідентифікатор каналу, а вже пошкоджені записи обраного відновлюються незалежно від мови інтерфейсу.",
-      "Налаштування: додано керування всіма закладками документів, подкастів і мультимедійних файлів. Кожен запис показує збережену позицію та дозволяє видалення з підтвердженням через доступну дію або видиму кнопку, виключену з VoiceOver. Нові мультимедійні закладки також зберігають назву."
+      "Налаштування: додано керування всіма закладками документів, подкастів і мультимедійних файлів. Кожен запис показує збережену позицію та дозволяє видалення з підтвердженням через доступну дію або видиму кнопку, виключену з VoiceOver. Нові мультимедійні закладки також зберігають назву.",
+      "Dropbox: на Android та iPhone для входу й імпорту документів можна використовувати встановлений застосунок Dropbox, а вебавторизація залишається альтернативою. Після авторизації вибір та імпорт документів і надалі відбуваються в Sonarpad.",
+      "Коли TMDB визначає, що фільм або серіал є анімаційним, Sonarpad автоматично шукає його в AniList. Ілюстрації допомагають Gemini розпізнавати персонажів у кадрі. Якщо назву не вдалося надійно зіставити або зображень немає, створення аудіоопису триває як зазвичай."
     ],
     "ro": [
       "SonarTube: corectată afișarea mesajului „Niciun videoclip” la deschiderea unui canal din favorite după sincronizare. Identificatorul corect al canalului este acum păstrat, iar favoritele deja afectate sunt recuperate indiferent de limba interfeței.",
-      "Setări: adăugată gestionarea tuturor marcajelor pentru documente, podcasturi și toate fișierele media. Fiecare intrare arată poziția salvată și poate fi ștearsă cu confirmare printr-o acțiune accesibilă sau un buton vizibil exclus din VoiceOver. Noile marcaje media păstrează și titlul."
+      "Setări: adăugată gestionarea tuturor marcajelor pentru documente, podcasturi și toate fișierele media. Fiecare intrare arată poziția salvată și poate fi ștearsă cu confirmare printr-o acțiune accesibilă sau un buton vizibil exclus din VoiceOver. Noile marcaje media păstrează și titlul.",
+      "Dropbox: pe Android și iPhone, autentificarea pentru importarea documentelor poate folosi aplicația Dropbox instalată, cu autentificarea web ca alternativă. După autorizare, selectarea și importarea documentelor continuă în Sonarpad.",
+      "Când TMDB identifică un film sau un serial de animație, Sonarpad caută automat titlul pe AniList. Ilustrațiile ajută Gemini să recunoască personajele din scenă. Dacă titlul nu poate fi identificat cu încredere sau lipsesc imaginile, audiodescrierea continuă normal."
     ],
     "tr": [
       "SonarTube: eşitlemeden sonra favorilerden açılan kanallarda “Video yok” görünmesi düzeltildi. Artık doğru kanal kimliği korunur ve etkilenen mevcut favoriler arayüz dilinden bağımsız olarak kurtarılır.",
-      "Ayarlar: belgeler, podcastler ve tüm medya dosyaları için tüm yer işaretlerini yönetme eklendi. Her kayıt, kaydedilen konumu gösterir ve erişilebilir bir eylem veya VoiceOver dışında tutulan görünür bir düğme ile onay alınarak silinebilir. Yeni medya yer işaretleri başlığı da saklar."
+      "Ayarlar: belgeler, podcastler ve tüm medya dosyaları için tüm yer işaretlerini yönetme eklendi. Her kayıt, kaydedilen konumu gösterir ve erişilebilir bir eylem veya VoiceOver dışında tutulan görünür bir düğme ile onay alınarak silinebilir. Yeni medya yer işaretleri başlığı da saklar.",
+      "Dropbox: Android ve iPhone’da belge içe aktarmak için oturum açarken yüklü Dropbox uygulaması kullanılabilir; web üzerinden kimlik doğrulama da alternatif olarak kullanılabilir. Yetkilendirmeden sonra belgeleri seçme ve içe aktarma işlemleri Sonarpad içinde devam eder.",
+      "TMDB bir filmi veya diziyi animasyon olarak tanımladığında Sonarpad, yapımı otomatik olarak AniList’te arar. Karakter çizimleri Gemini’nin sahnede kimin göründüğünü tanımasına yardımcı olur. Güvenilir bir eşleşme bulunamazsa veya görsel yoksa sesli betimleme her zamanki gibi devam eder."
     ],
     "nl": [
       "SonarTube: opgelost dat kanalen uit favorieten na synchronisatie “Geen video’s” toonden. De juiste kanaal-ID blijft nu behouden en bestaande getroffen favorieten worden hersteld, ongeacht de interfacetaal.",
-      "Instellingen: Alle bladwijzers beheren toegevoegd voor documenten, podcasts en alle mediabestanden. Elk item toont de opgeslagen positie en kan na bevestiging worden verwijderd via een toegankelijkheidsactie of een zichtbare knop die van VoiceOver is uitgesloten. Nieuwe mediabladwijzers bewaren ook de titel."
+      "Instellingen: Alle bladwijzers beheren toegevoegd voor documenten, podcasts en alle mediabestanden. Elk item toont de opgeslagen positie en kan na bevestiging worden verwijderd via een toegankelijkheidsactie of een zichtbare knop die van VoiceOver is uitgesloten. Nieuwe mediabladwijzers bewaren ook de titel.",
+      "Dropbox: op Android en iPhone kan het aanmelden voor het importeren van documenten via de geïnstalleerde Dropbox-app verlopen, met aanmelding via het web als alternatief. Na toestemming worden documenten nog steeds binnen Sonarpad geselecteerd en geïmporteerd.",
+      "Als TMDB een animatiefilm of -serie herkent, zoekt Sonarpad de titel automatisch op in AniList. Afbeeldingen helpen Gemini de personages in beeld te herkennen. Zonder betrouwbare overeenkomst of afbeeldingen gaat de audiodescriptie gewoon verder."
     ]
   },
   {

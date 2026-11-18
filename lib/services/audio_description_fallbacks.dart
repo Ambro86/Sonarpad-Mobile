@@ -1019,6 +1019,8 @@ class AudioDescriptionFallbacks {
     return false;
   }
 
+  static bool hasCharacterReference(Map item) => item['tmdb'] is Map || item['anilist'] is Map;
+
   static List<Map<String, Object?>> mergeCharacterCatalog(
     List<Map<String, Object?>> established,
     List<Map<String, Object?>> incoming, {
@@ -1026,12 +1028,12 @@ class AudioDescriptionFallbacks {
   }) {
     final references = <String, Map<String, Object?>>{};
     for (final item in [...established, ...incoming]) {
-      if (item['tmdb'] is Map) references['${item['id']}'] = Map<String, Object?>.from(item);
+      if (hasCharacterReference(item)) references['${item['id']}'] = Map<String, Object?>.from(item);
     }
     if (references.isNotEmpty) {
       final regular = mergeCharacterCatalog(
-        established.where((item) => item['tmdb'] is! Map).toList(),
-        incoming.where((item) => item['tmdb'] is! Map).toList(),
+        established.where((item) => !hasCharacterReference(item)).toList(),
+        incoming.where((item) => !hasCharacterReference(item)).toList(),
         maxCharacters: maxCharacters,
       );
       return [...regular, ...references.values.take(96)];
@@ -1392,6 +1394,7 @@ class AudioDescriptionFallbacks {
 
   static String mimeTypeForPath(String path) {
     final lower = path.toLowerCase();
+    if (lower.endsWith('.png')) return 'image/png';
     if (lower.endsWith('.jpg') || lower.endsWith('.jpeg')) return 'image/jpeg';
     if (lower.endsWith('.mkv')) return 'video/x-matroska';
     if (lower.endsWith('.webm')) return 'video/webm';

@@ -378,6 +378,7 @@ class SonarpadPhotoLibraryImportPlugin: NSObject, FlutterPlugin, PHPickerViewCon
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
+    SonarpadDropboxAuth.setup()
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 
@@ -386,6 +387,7 @@ class SonarpadPhotoLibraryImportPlugin: NSObject, FlutterPlugin, PHPickerViewCon
     open url: URL,
     options: [UIApplication.OpenURLOptionsKey : Any] = [:]
   ) -> Bool {
+    if SonarpadDropboxAuth.shared.handleRedirect(url) { return true }
     if url.isFileURL {
       SonarpadSharedMediaPlugin.shared.handleSharedUrl(url)
       return true
@@ -395,6 +397,7 @@ class SonarpadPhotoLibraryImportPlugin: NSObject, FlutterPlugin, PHPickerViewCon
 
   func didInitializeImplicitFlutterEngine(_ engineBridge: FlutterImplicitEngineBridge) {
     GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
+    SonarpadDropboxAuth.register(with: engineBridge.pluginRegistry.registrar(forPlugin: "SonarpadDropboxAuth")!)
     SonarpadTravelFocusPlugin.register(with: engineBridge.pluginRegistry.registrar(forPlugin: "SonarpadTravelFocusPlugin")!)
     SonarpadTTSPlugin.register(with: engineBridge.pluginRegistry.registrar(forPlugin: "SonarpadTTSPlugin")!)
     SonarpadRaiPlayerPlugin.register(with: engineBridge.pluginRegistry.registrar(forPlugin: "SonarpadRaiPlayerPlugin")!)

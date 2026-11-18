@@ -1066,7 +1066,7 @@ class _CreateAiAudiodescriptionScreenState
     });
     try {
       await _stopPreviews();
-      var tmdbCharacters = <Map<String, Object?>>[];
+      List<Map<String, Object?>>? tmdbCharacters;
       if (!resumeOnly && _recognizeCharacters && _tmdbTitle.trim().isNotEmpty) {
         if (!mounted) return;
         setState(() => _stage = _tmdbLabel('searching'));
@@ -1076,12 +1076,7 @@ class _CreateAiAudiodescriptionScreenState
           if (!mounted) return;
           if (_cancelling || result == null) throw StateError('AUDIO_DESCRIPTION_CANCELLED');
           tmdbCharacters = result;
-          if (result.any((item) => (item['tmdb'] as Map?)?['animation'] == true)) {
-            await showDialog<void>(barrierDismissible: false,context: context, builder: (dialogContext) => AlertDialog(
-              title: const Text('TMDB'), content: Text(_tmdbLabel('animation')),
-              actions: [TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text(l10n.ok))],
-            ));
-          }
+          if (result.isEmpty) showStatusMessage(context, _tmdbLabel('unavailable'));
         } catch (error) {
           if (!mounted) return;
           if (_cancelling || error.toString().contains('AUDIO_DESCRIPTION_CANCELLED')) rethrow;

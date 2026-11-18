@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		DBA00001DBA00001DBA00001 /* SonarpadDropboxAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA00002DBA00002DBA00002 /* SonarpadDropboxAuth.swift */; };
+		DBA00003DBA00003DBA00003 /* SwiftyDropbox in Frameworks */ = {isa = PBXBuildFile; productRef = DBA00004DBA00004DBA00004 /* SwiftyDropbox */; };
 		C10DF11EC10DF11EC10DF11E /* SonarpadCloudFilePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10DF12EC10DF12EC10DF12E /* SonarpadCloudFilePicker.swift */; };
 		1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */ = {isa = PBXBuildFile; fileRef = 1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */; };
 		331C808B294A63AB00263BE5 /* RunnerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 331C807B294A618700263BE5 /* RunnerTests.swift */; };
@@ -45,6 +47,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		DBA00002DBA00002DBA00002 /* SonarpadDropboxAuth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SonarpadDropboxAuth.swift; sourceTree = "<group>"; };
 		C10DF12EC10DF12EC10DF12E /* SonarpadCloudFilePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SonarpadCloudFilePicker.swift; sourceTree = "<group>"; };
 		1498D2321E8E86230040F4C2 /* GeneratedPluginRegistrant.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GeneratedPluginRegistrant.h; sourceTree = "<group>"; };
 		1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GeneratedPluginRegistrant.m; sourceTree = "<group>"; };
@@ -79,6 +82,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DBA00003DBA00003DBA00003 /* SwiftyDropbox in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -126,6 +130,7 @@
 		97C146F01CF9000F007C117D /* Runner */ = {
 			isa = PBXGroup;
 			children = (
+				DBA00002DBA00002DBA00002 /* SonarpadDropboxAuth.swift */,
 				97C146FA1CF9000F007C117D /* Main.storyboard */,
 				97C146FD1CF9000F007C117D /* Assets.xcassets */,
 				97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */,
@@ -179,6 +184,9 @@
 			dependencies = (
 			);
 			name = Runner;
+			packageProductDependencies = (
+				DBA00004DBA00004DBA00004 /* SwiftyDropbox */,
+			);
 			productName = Runner;
 			productReference = 97C146EE1CF9000F007C117D /* Runner.app */;
 			productType = "com.apple.product-type.application";
@@ -220,6 +228,9 @@
 				Base,
 			);
 			mainGroup = 97C146E51CF9000F007C117D;
+			packageReferences = (
+				DBA00005DBA00005DBA00005 /* XCRemoteSwiftPackageReference "SwiftyDropbox" */,
+			);
 			productRefGroup = 97C146EF1CF9000F007C117D /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -299,6 +310,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DBA00001DBA00001DBA00001 /* SonarpadDropboxAuth.swift in Sources */,
 				74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */,
 				1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */,
 				7884E8682EC3CC0700C636F2 /* SceneDelegate.swift in Sources */,
@@ -664,6 +676,22 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		DBA00005DBA00005DBA00005 /* XCRemoteSwiftPackageReference "SwiftyDropbox" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/dropbox/SwiftyDropbox.git";
+			requirement = {kind = exactVersion; version = 10.2.4; };
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		DBA00004DBA00004DBA00004 /* SwiftyDropbox */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DBA00005DBA00005DBA00005 /* XCRemoteSwiftPackageReference "SwiftyDropbox" */;
+			productName = SwiftyDropbox;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 97C146E61CF9000F007C117D /* Project object */;
 }

@@ -1,3 +1,4 @@
+import 'anilist_character_service.dart';
 import 'tmdb_character_service.dart';
 import '../tts/gemini_tts_bridge.dart';
 import 'dart:async';
@@ -771,38 +772,49 @@ class AiAudioDescriptionService {
   final List<Map<String, Object?>> _tmdbCandidates = [];
   final List<String> _tmdbUploadIds = [];
 
+  String get _referenceRule => _tmdbCandidates.any((item) => item['anilist'] is Map)
+      ? 'AniList illustrations depict characters, not scenes. Use the character name only when supported by a confident visual match in the video. Account for transformations, costumes and art styles. Use a neutral description when uncertain. Earlier guesses are provisional. Ignore plot information in metadata.'
+      : TmdbCharacterService.identityRule;
+
   Future<void> _prepareTmdbReferences(List<Map<String, Object?>> glossary,
       AiAudioDescriptionSettings settings, String? token) async {
-    _tmdbCandidates.addAll(glossary.where((item) => item['tmdb'] is Map).take(96));
+    _tmdbCandidates.addAll(glossary.where((item) => AudioDescriptionFallbacks.hasCharacterReference(item)).take(96));
     if (_tmdbCandidates.isEmpty) return;
-    _tmdbParts.add({'text': '${TmdbCharacterService.identityRule} Target language: ${settings.languageCode}.\nCAST CANDIDATES (not verified identities in the video):\n${jsonEncode(_tmdbCandidates)}'});
+    final anime = _tmdbCandidates.any((item) => item['anilist'] is Map);
+    if (anime) _tmdbCandidates.removeWhere((item) => item['anilist'] is! Map);
+    if (!anime) _tmdbParts.add({'text': '$_referenceRule Target language: ${settings.languageCode}.\nCAST CANDIDATES (not verified identities in the video):\n${jsonEncode(_tmdbCandidates)}'});
     final seen = <String>{};
     for (final item in _tmdbCandidates) {
       _checkCancel();
-      final metadata = item['tmdb'] as Map;
-      final url = metadata['profile_image_url']?.toString() ?? '';
-      if (metadata['animation'] == true || !TmdbCharacterService.validImageUrl(url) || !seen.add(url)) continue;
-      try {
-        final file = await TmdbCharacterService.downloadImage(url);
-        _checkCancel();
-        Map<String, Object?> image;
-        if (settings.provider == 'sonarpad') {
-          final activeToken = await AiAudioDescriptionPreferences.loadSonarpadToken() ?? token;
-          if (activeToken == null) throw StateError('SONARPAD_AI_TOKEN_MISSING');
-          final uploaded = await _uploadViaSonarpadAi(chunkPath: file.path,
-              activeToken: activeToken, trace: _nextSonarpadAiTrace('tmdb'), optionalReference: true);
-          image = {'fileData': {'mimeType': 'image/jpeg', 'fileUri': uploaded.fileUri}};
-        } else {
-          image = {'inlineData': {'mimeType': 'image/jpeg', 'data': base64Encode(await file.readAsBytes())}};
+      final metadata = (anime ? item['anilist'] : item['tmdb']) as Map;
+      final urls = anime ? (metadata['image_urls'] as List? ?? []).whereType<String>() : [metadata['profile_image_url']?.toString() ?? ''];
+      for (final url in urls) {
+        final valid = anime ? AniListCharacterService.validImageUrl(url) : TmdbCharacterService.validImageUrl(url);
+        if (metadata['animation'] == true || !valid || !seen.add(url)) continue;
+        try {
+          final file = await TmdbCharacterService.downloadImage(url);
+          _checkCancel();
+          final mime = AudioDescriptionFallbacks.mimeTypeForPath(file.path);
+          Map<String, Object?> image;
+          if (settings.provider == 'sonarpad') {
+            final activeToken = await AiAudioDescriptionPreferences.loadSonarpadToken() ?? token;
+            if (activeToken == null) throw StateError('SONARPAD_AI_TOKEN_MISSING');
+            final uploaded = await _uploadViaSonarpadAi(chunkPath: file.path,
+                activeToken: activeToken, trace: _nextSonarpadAiTrace('tmdb'), optionalReference: true);
+            image = {'fileData': {'mimeType': mime, 'fileUri': uploaded.fileUri}};
+          } else {
+            image = {'inlineData': {'mimeType': mime, 'data': base64Encode(await file.readAsBytes())}};
+          }
+          _tmdbParts.add({'text': anime ? jsonEncode(item) : 'Reference portrait of actor ${metadata['actor_name']}; candidate role: ${item['name']}. Not a video frame or a confirmed match.'});
+          _tmdbParts.add(image);
+        } catch (error) {
+          _checkCancel();
+          await AppLogger.log('Optional TMDB portrait unavailable (${error.runtimeType}); continuing with text.');
         }
-        _tmdbParts.add({'text': 'Reference portrait of actor ${metadata['actor_name']}; candidate role: ${item['name']}. Not a video frame or a confirmed match.'});
-        _tmdbParts.add(image);
-      } catch (error) {
-        _checkCancel();
-        await AppLogger.log('Optional TMDB portrait unavailable (${error.runtimeType}); continuing with text.');
       }
     }
-    await AppLogger.log('TMDB references: ${_tmdbCandidates.length} candidates, ${(_tmdbParts.length - 1) ~/ 2} portraits attached.');
+    if (anime && _tmdbParts.isEmpty) _tmdbCandidates.clear();
+    await AppLogger.log('Character references: ${_tmdbCandidates.length} candidates, ${_tmdbParts.whereType<Map>().where((part) => !part.containsKey('text')).length} images attached.');
   }
 
   Future<void> _cleanupTmdbReferences() async {
@@ -1633,6 +1645,7 @@ class AiAudioDescriptionService {
         'id': raw['id']?.toString().trim() ?? '',
         'name': name,
         'description': description,
+        if (raw['anilist'] is Map) 'anilist': Map<String, Object?>.from(raw['anilist'] as Map),
         if (raw['tmdb'] is Map) 'tmdb': Map<String, Object?>.from(raw['tmdb'] as Map),
         if (raw['provisional'] == true) 'provisional': true,
       });
@@ -1649,8 +1662,8 @@ class AiAudioDescriptionService {
     List<Map<String, Object?>> incoming,
   ) {
     return AudioDescriptionFallbacks.mergeCharacterCatalog(
-      _normalizeCatalogCharacters(incoming.any((item) => item['tmdb'] is Map)
-          ? established.where((item) => item['tmdb'] is! Map).toList() : established),
+      _normalizeCatalogCharacters(incoming.any((item) => AudioDescriptionFallbacks.hasCharacterReference(item))
+          ? established.where((item) => !AudioDescriptionFallbacks.hasCharacterReference(item)).toList() : established),
       _normalizeCatalogCharacters(incoming),
       maxCharacters: 96,
     );
@@ -1671,7 +1684,7 @@ class AiAudioDescriptionService {
     AiAudioDescriptionOverlapConsentCallback? onOverlapConsent,
     AiAudioDescriptionResumeCallback? onResumeCheckpoint,
     bool requireCheckpoint = false,
-    List<Map<String, Object?>> tmdbCharacters = const [],
+    List<Map<String, Object?>>? tmdbCharacters,
   }) async {
     _resetCancellation();
     _tmdbParts.clear();
@@ -1786,8 +1799,8 @@ class AiAudioDescriptionService {
               effectiveCharacterCatalogName.isNotEmpty
           ? await loadCharacterCatalog(effectiveCharacterCatalogName)
           : <Map<String, Object?>>[];
-      if (tmdbCharacters.isNotEmpty && settings.recognizeCharacters) {
-        loadedGlossary.removeWhere((item) => item['tmdb'] is Map);
+      if (tmdbCharacters != null && settings.recognizeCharacters) {
+        loadedGlossary.removeWhere((item) => AudioDescriptionFallbacks.hasCharacterReference(item));
         loadedGlossary.addAll(tmdbCharacters);
       }
       // Windows parity: the established character continuity collection stays
@@ -2708,7 +2721,7 @@ class AiAudioDescriptionService {
       localChunkDurationSec: chunkEnd - chunkStart,
     );
     final characterContinuityText = enableGlossary && glossary.isNotEmpty
-        ? jsonEncode(glossary.where((item) => item['tmdb'] is! Map).toList())
+        ? jsonEncode(glossary.where((item) => !AudioDescriptionFallbacks.hasCharacterReference(item)).toList())
         : '';
     final recentDescriptionsText = _formatWindowsRecentDescriptions(
       recentDescriptions,
@@ -3009,7 +3022,7 @@ $nonverbalInstruction''';
       userPromptParts.add(_dialogueOverlapInstruction);
     }
     if (_tmdbCandidates.isNotEmpty && settings.recognizeCharacters) {
-      systemInstruction += '\n${TmdbCharacterService.identityRule} Target language: ${settings.languageCode}.';
+      systemInstruction += '\n$_referenceRule Target language: ${settings.languageCode}.';
     }
     if (characterContinuityText.contains('"provisional":true')) {
       userPromptParts.add('Entries marked provisional are hypotheses, not authoritative identities. Reassess and correct them using the current video.');
@@ -3202,7 +3215,7 @@ $nonverbalInstruction''';
     }
     if (enableGlossary && glossary.isNotEmpty) {
       promptParts.add(
-        'Character observations from earlier clips (provisional identities may be corrected): ${jsonEncode(glossary.where((item) => item['tmdb'] is! Map).toList())}',
+        'Character observations from earlier clips (provisional identities may be corrected): ${jsonEncode(glossary.where((item) => !AudioDescriptionFallbacks.hasCharacterReference(item)).toList())}',
       );
       promptParts.add(
         'Reuse an established name only when the visible person\'s identity and stable physical appearance match; otherwise use a generic label.',
@@ -3218,7 +3231,7 @@ $nonverbalInstruction''';
     return _GeminiPromptBundle(
       characterReferences: _tmdbCandidates.isNotEmpty && enableGlossary,
       systemInstruction: _tmdbCandidates.isNotEmpty && enableGlossary
-          ? '$systemInstruction\n${TmdbCharacterService.identityRule} Target language: ${settings.languageCode}.'
+          ? '$systemInstruction\n$_referenceRule Target language: ${settings.languageCode}.'
           : systemInstruction,
       userPrompt: promptParts.join('\n'),
     );
@@ -3652,7 +3665,7 @@ $nonverbalInstruction''';
       prompt: _GeminiPromptBundle(
         characterReferences: _tmdbCandidates.isNotEmpty && settings.recognizeCharacters,
         systemInstruction: _tmdbCandidates.isNotEmpty && settings.recognizeCharacters
-            ? '$systemInstruction\n${TmdbCharacterService.identityRule} Target language: ${settings.languageCode}.'
+            ? '$systemInstruction\n$_referenceRule Target language: ${settings.languageCode}.'
             : systemInstruction,
         userPrompt: userPrompt,
       ),
@@ -8205,7 +8218,7 @@ $nonverbalInstruction''';
       // direct Google upload before BODY_STREAMED was ever logged.
       final sendFuture = _http
           .send(request)
-          .timeout(mimeType == 'image/jpeg' ? const Duration(seconds: 30) : const Duration(minutes: 8));
+          .timeout(mimeType.startsWith('image/') ? const Duration(seconds: 30) : const Duration(minutes: 8));
       // Attach an error listener immediately so cancellation via _http.close()
       // cannot surface as an unhandled asynchronous error while the file body
       // is still being streamed. The same Future is awaited below afterwards.
