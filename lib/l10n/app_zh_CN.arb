@@ -5086,5 +5086,6 @@
   "mediaCutterAudioCutPrecise": "重新编码以精确剪辑",
   "recordingScheduleMissed": "“{title}”的定时录制未完成：重新打开 Sonarpad 时，节目已结束。",
   "manageAllBookmarks": "管理所有书签",
-  "noSavedBookmarks": "没有已保存的书签。"
+  "noSavedBookmarks": "没有已保存的书签。",
+  "@recordingScheduleMissed": {"placeholders": {"title": {"type": "String"}}}
 }

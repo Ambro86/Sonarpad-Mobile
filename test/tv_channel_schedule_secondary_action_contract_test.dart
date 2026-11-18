@@ -9,13 +9,13 @@ void main() {
   test(
     'TV channel rows expose the same schedule recording label as player',
     () {
-      final tvScreen = File('lib/screens/tv_screen.dart').readAsStringSync();
+      final tvScreen = File('lib/screens/tv_screen.dart').readAsStringSync().replaceAll('\r\n', '\n');
       final favorites = File(
         'lib/screens/favorite_tvs_screen.dart',
-      ).readAsStringSync();
+      ).readAsStringSync().replaceAll('\r\n', '\n');
       final player = File(
         'lib/screens/radio_player_screen.dart',
-      ).readAsStringSync();
+      ).readAsStringSync().replaceAll('\r\n', '\n');
 
       expect(tvScreen, contains("id: 'schedule_recording'"));
       expect(tvScreen, contains('l10n.radioScheduleDialogTitle'));
@@ -28,7 +28,7 @@ void main() {
   test('TV schedule secondary action uses global recording service', () {
     final action = File(
       'lib/widgets/tv_recording_schedule_action.dart',
-    ).readAsStringSync();
+    ).readAsStringSync().replaceAll('\r\n', '\n');
 
     expect(action, contains('GlobalRecordingService.instance'));
     expect(action, contains('recordingService.schedule('));
@@ -41,7 +41,7 @@ void main() {
     () {
       final channel = File(
         'lib/screens/tv_channel_screen.dart',
-      ).readAsStringSync();
+      ).readAsStringSync().replaceAll('\r\n', '\n');
 
       expect(channel, contains("id: 'schedule_recording'"));
       expect(channel, contains("icon: 'record'"));
@@ -84,10 +84,10 @@ void main() {
     () {
       final action = File(
         'lib/widgets/tv_recording_schedule_action.dart',
-      ).readAsStringSync();
+      ).readAsStringSync().replaceAll('\r\n', '\n');
       final player = File(
         'lib/screens/radio_player_screen.dart',
-      ).readAsStringSync();
+      ).readAsStringSync().replaceAll('\r\n', '\n');
 
       expect(action, contains("return 'tv:tvg:\$tvgId';"));
       expect(action, contains("return 'tv:resolver:\$resolver:\$resolverId';"));
@@ -103,7 +103,7 @@ void main() {
     () {
       final action = File(
         'lib/widgets/tv_recording_schedule_action.dart',
-      ).readAsStringSync();
+      ).readAsStringSync().replaceAll('\r\n', '\n');
 
       expect(action, contains('String _formatScheduledTime(DateTime value)'));
       expect(action, contains("return '\$hour:\$minute';"));
@@ -166,7 +166,7 @@ void main() {
   test('TV guide hides schedule recording from ended program rows', () {
     final channel = File(
       'lib/screens/tv_channel_screen.dart',
-    ).readAsStringSync();
+    ).readAsStringSync().replaceAll('\r\n', '\n');
 
     expect(channel, contains('final canScheduleRecording ='));
     expect(channel, contains('if (canScheduleRecording)'));
@@ -179,7 +179,7 @@ void main() {
   });
 
   test('past TV guide rows retain an iOS VoiceOver activation action', () {
-    final source = File('lib/screens/tv_channel_screen.dart').readAsStringSync();
+    final source = File('lib/screens/tv_channel_screen.dart').readAsStringSync().replaceAll('\r\n', '\n');
 
     // The rotor keeps one action for ended programmes, but never schedules
     // a recording there. Normal row activation and the Flutter fallback both

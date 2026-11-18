@@ -5092,5 +5092,6 @@
   "mediaCutterAudioCutPrecise": "Corte preciso com recodificação",
   "recordingScheduleMissed": "A gravação agendada de «{title}» não foi concluída: o Sonarpad foi reaberto após o fim do programa.",
   "manageAllBookmarks": "Gerir todos os marcadores",
-  "noSavedBookmarks": "Nenhum marcador guardado."
+  "noSavedBookmarks": "Nenhum marcador guardado.",
+  "@recordingScheduleMissed": {"placeholders": {"title": {"type": "String"}}}
 }

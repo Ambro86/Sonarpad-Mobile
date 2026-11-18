@@ -11,8 +11,8 @@ void main() {
       .cast<Map<String, dynamic>>();
 
   test('Every English release note also exists in Dutch', () {
-    expect(entries.length, 10);
-    expect(entries.first['version'], '0.5.4');
+    expect(entries.length, 11);
+    expect(entries.first['version'], '0.5.5');
     expect(entries.last['version'], '0.2.0');
     for (final entry in entries) {
       final english = (entry['en'] as List<dynamic>).cast<String>();

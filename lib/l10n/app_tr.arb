@@ -5086,5 +5086,6 @@
   "mediaCutterAudioCutPrecise": "Yeniden kodlayarak hassas kesim",
   "recordingScheduleMissed": "“{title}” için zamanlanmış kayıt tamamlanmadı: Sonarpad program bittikten sonra yeniden açıldı.",
   "manageAllBookmarks": "Tüm yer işaretlerini yönet",
-  "noSavedBookmarks": "Kayıtlı yer işareti yok."
+  "noSavedBookmarks": "Kayıtlı yer işareti yok.",
+  "@recordingScheduleMissed": {"placeholders": {"title": {"type": "String"}}}
 }

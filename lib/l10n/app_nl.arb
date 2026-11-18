@@ -6664,5 +6664,6 @@
   "mediaCutterAudioCutPrecise": "Nauwkeurig knippen met hercodering",
   "recordingScheduleMissed": "De geplande opname van ‘{title}’ is niet voltooid: Sonarpad werd na het einde van het programma opnieuw geopend.",
   "manageAllBookmarks": "Alle bladwijzers beheren",
-  "noSavedBookmarks": "Geen opgeslagen bladwijzers."
+  "noSavedBookmarks": "Geen opgeslagen bladwijzers.",
+  "@recordingScheduleMissed": {"placeholders": {"title": {"type": "String"}}}
 }

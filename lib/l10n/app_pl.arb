@@ -6667,5 +6667,6 @@
   "mediaCutterAudioCutPrecise": "Dokładne przycinanie z ponownym kodowaniem",
   "recordingScheduleMissed": "Zaplanowane nagranie „{title}” nie zostało ukończone: Sonarpad ponownie otwarto po zakończeniu programu.",
   "manageAllBookmarks": "Zarządzaj wszystkimi zakładkami",
-  "noSavedBookmarks": "Brak zapisanych zakładek."
+  "noSavedBookmarks": "Brak zapisanych zakładek.",
+  "@recordingScheduleMissed": {"placeholders": {"title": {"type": "String"}}}
 }

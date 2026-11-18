@@ -5092,5 +5092,6 @@
   "mediaCutterAudioCutPrecise": "Découpe précise avec réencodage",
   "recordingScheduleMissed": "L’enregistrement programmé de « {title} » n’a pas été terminé : Sonarpad a été rouvert après la fin du programme.",
   "manageAllBookmarks": "Gérer tous les signets",
-  "noSavedBookmarks": "Aucun signet enregistré."
+  "noSavedBookmarks": "Aucun signet enregistré.",
+  "@recordingScheduleMissed": {"placeholders": {"title": {"type": "String"}}}
 }

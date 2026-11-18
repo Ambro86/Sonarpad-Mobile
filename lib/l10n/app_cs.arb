@@ -5089,5 +5089,6 @@
   "mediaCutterAudioCutPrecise": "Přesný střih s překódováním",
   "recordingScheduleMissed": "Plánované nahrávání pořadu „{title}“ nebylo dokončeno: Sonarpad byl znovu otevřen až po skončení pořadu.",
   "manageAllBookmarks": "Spravovat všechny záložky",
-  "noSavedBookmarks": "Žádné uložené záložky."
+  "noSavedBookmarks": "Žádné uložené záložky.",
+  "@recordingScheduleMissed": {"placeholders": {"title": {"type": "String"}}}
 }

@@ -63,7 +63,7 @@ class GlobalRecordingService extends ChangeNotifier {
       final saved = value == null
           ? await prefs.remove(scheduleStorageKey)
           : await prefs.setString(scheduleStorageKey, value);
-      if (!saved) throw StateError('Could not save recording schedule');
+      if (!saved) throw StateError('recording_schedule_save_failed');
     });
     _storageWork = next.catchError((Object error) {
       AppLogger.log(

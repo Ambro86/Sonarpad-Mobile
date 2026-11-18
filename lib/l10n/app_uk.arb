@@ -6664,5 +6664,6 @@
   "mediaCutterAudioCutPrecise": "Точне обрізання з перекодуванням",
   "recordingScheduleMissed": "Запланований запис «{title}» не завершено: Sonarpad знову відкрито після закінчення програми.",
   "manageAllBookmarks": "Керувати всіма закладками",
-  "noSavedBookmarks": "Немає збережених закладок."
+  "noSavedBookmarks": "Немає збережених закладок.",
+  "@recordingScheduleMissed": {"placeholders": {"title": {"type": "String"}}}
 }

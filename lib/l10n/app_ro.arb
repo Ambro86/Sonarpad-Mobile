@@ -5086,5 +5086,6 @@
   "mediaCutterAudioCutPrecise": "Tăiere precisă cu recodificare",
   "recordingScheduleMissed": "Înregistrarea programată pentru „{title}” nu a fost finalizată: Sonarpad a fost redeschis după încheierea programului.",
   "manageAllBookmarks": "Gestionează toate marcajele",
-  "noSavedBookmarks": "Nu există marcaje salvate."
+  "noSavedBookmarks": "Nu există marcaje salvate.",
+  "@recordingScheduleMissed": {"placeholders": {"title": {"type": "String"}}}
 }
