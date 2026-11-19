@@ -9,6 +9,12 @@ class AppLocalizationsPl extends AppLocalizations {
   AppLocalizationsPl([String locale = 'pl']) : super(locale);
 
   @override
+  String get hideVideoControls => 'Ukryj elementy sterujące wideo';
+
+  @override
+  String get showVideoControls => 'Pokaż elementy sterujące wideo';
+
+  @override
   String get audioDescriptionDialogueOverlap =>
       'Zezwalaj na audiodeskrypcję podczas dialogów i komentarza';
 

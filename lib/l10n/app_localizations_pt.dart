@@ -9,6 +9,12 @@ class AppLocalizationsPt extends AppLocalizations {
   AppLocalizationsPt([String locale = 'pt']) : super(locale);
 
   @override
+  String get hideVideoControls => 'Ocultar controlos de vídeo';
+
+  @override
+  String get showVideoControls => 'Mostrar controlos de vídeo';
+
+  @override
   String get audioDescriptionDialogueOverlap =>
       'Permitir audiodescrições durante diálogos e comentários';
 
@@ -6153,6 +6159,12 @@ class AppLocalizationsPt extends AppLocalizations {
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
 class AppLocalizationsPtBr extends AppLocalizationsPt {
   AppLocalizationsPtBr() : super('pt_BR');
+
+  @override
+  String get hideVideoControls => 'Ocultar controles de vídeo';
+
+  @override
+  String get showVideoControls => 'Mostrar controles de vídeo';
 
   @override
   String get audioDescriptionDialogueOverlap =>

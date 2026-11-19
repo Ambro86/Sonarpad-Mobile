@@ -9,6 +9,12 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get hideVideoControls => 'Hide video controls';
+
+  @override
+  String get showVideoControls => 'Show video controls';
+
+  @override
   String get audioDescriptionDialogueOverlap =>
       'Allow audio descriptions during dialogue and commentary';
 

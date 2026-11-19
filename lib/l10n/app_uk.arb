@@ -1,4 +1,6 @@
 {
+  "hideVideoControls": "Приховати елементи керування відео",
+  "showVideoControls": "Показати елементи керування відео",
   "audioDescriptionDialogueOverlap": "Дозволити аудіоописи під час діалогів і коментарів",
   "placesPhoneQuery": "Введіть номер телефону",
   "placesPhoneInvalid": "Введіть дійсний номер телефону разом із кодом міста або країни.",

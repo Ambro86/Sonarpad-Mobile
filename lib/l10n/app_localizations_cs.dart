@@ -9,6 +9,12 @@ class AppLocalizationsCs extends AppLocalizations {
   AppLocalizationsCs([String locale = 'cs']) : super(locale);
 
   @override
+  String get hideVideoControls => 'Skrýt ovládání videa';
+
+  @override
+  String get showVideoControls => 'Zobrazit ovládání videa';
+
+  @override
   String get audioDescriptionDialogueOverlap =>
       'Povolit audiopopis během dialogů a komentáře';
 

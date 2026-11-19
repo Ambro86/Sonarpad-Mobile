@@ -1,4 +1,6 @@
 {
+  "hideVideoControls": "Masquer les commandes vidéo",
+  "showVideoControls": "Afficher les commandes vidéo",
   "audioDescriptionDialogueOverlap": "Autoriser les audiodescriptions pendant les dialogues et les commentaires",
   "placesPhoneQuery": "Saisissez le numéro de téléphone",
   "placesPhoneInvalid": "Saisissez un numéro de téléphone valide avec son indicatif.",

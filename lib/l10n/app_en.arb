@@ -1,4 +1,6 @@
 {
+  "hideVideoControls": "Hide video controls",
+  "showVideoControls": "Show video controls",
   "audioDescriptionDialogueOverlap": "Allow audio descriptions during dialogue and commentary",
   "placesPhoneQuery": "Enter the phone number",
   "placesPhoneInvalid": "Enter a valid phone number, including its area or country code.",

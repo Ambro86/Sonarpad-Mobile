@@ -9,6 +9,12 @@ class AppLocalizationsUk extends AppLocalizations {
   AppLocalizationsUk([String locale = 'uk']) : super(locale);
 
   @override
+  String get hideVideoControls => 'Приховати елементи керування відео';
+
+  @override
+  String get showVideoControls => 'Показати елементи керування відео';
+
+  @override
   String get audioDescriptionDialogueOverlap =>
       'Дозволити аудіоописи під час діалогів і коментарів';
 

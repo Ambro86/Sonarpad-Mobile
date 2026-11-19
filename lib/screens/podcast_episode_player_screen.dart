@@ -1,3 +1,4 @@
+import '../widgets/landscape_video_player.dart';
 import '../services/podcast_bookmarks_service.dart';
 import '../models/chromecast_media.dart';
 import 'chromecast_screen.dart';
@@ -2143,64 +2144,45 @@ class _PodcastEpisodePlayerScreenState
             child: _buildVideoPlayerFullscreenSurface(_videoController!),
           );
 
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: Stack(
-        children: [
-          Positioned.fill(child: surface),
-          SafeArea(
-            child: Align(
-              alignment: Alignment.topLeft,
-              child: Padding(
-                padding: const EdgeInsets.all(8),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Material(
-                      color: Colors.black54,
-                      shape: const CircleBorder(),
-                      child: SonarpadBackSemantics(
-                        onBack: () {
-                          AppLogger.log(
-                            'PodcastPlayer: fullscreen back pressed, $_logSubject',
-                          );
-                          Navigator.pop(context);
-                        },
-                        child: IconButton(
-                          color: Colors.white,
-                          tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-                          icon: const Icon(Icons.arrow_back),
-                          onPressed: () {
-                            AppLogger.log(
-                              'PodcastPlayer: fullscreen back pressed, $_logSubject',
-                            );
-                            Navigator.pop(context);
-                          },
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    const Material(
-                      color: Colors.black54,
-                      shape: CircleBorder(),
-                      child: SonarpadVisualHomeButton(
-                        color: Colors.white,
-                        compact: true,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+    return LandscapeVideoPlayer(
+      surface: surface,
+      controller: _videoController,
+      playing: _videoController!.value.isPlaying,
+      controls: _buildLandscapeFullscreenControls(l10n, canSeek),
+      navigation: [
+        Material(
+          color: Colors.black54,
+          shape: const CircleBorder(),
+          child: SonarpadBackSemantics(
+            onBack: () {
+              AppLogger.log(
+                'PodcastPlayer: fullscreen back pressed, $_logSubject',
+              );
+              Navigator.pop(context);
+            },
+            child: IconButton(
+              color: Colors.white,
+              tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () {
+                AppLogger.log(
+                  'PodcastPlayer: fullscreen back pressed, $_logSubject',
+                );
+                Navigator.pop(context);
+              },
             ),
           ),
-          SafeArea(
-            child: Align(
-              alignment: Alignment.bottomCenter,
-              child: _buildLandscapeFullscreenControls(l10n, canSeek),
-            ),
+        ),
+        const SizedBox(width: 4),
+        const Material(
+          color: Colors.black54,
+          shape: CircleBorder(),
+          child: SonarpadVisualHomeButton(
+            color: Colors.white,
+            compact: true,
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 

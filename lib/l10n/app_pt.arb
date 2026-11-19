@@ -1,4 +1,6 @@
 {
+  "hideVideoControls": "Ocultar controlos de vídeo",
+  "showVideoControls": "Mostrar controlos de vídeo",
   "audioDescriptionDialogueOverlap": "Permitir audiodescrições durante diálogos e comentários",
   "placesPhoneQuery": "Introduza o número de telefone",
   "placesPhoneInvalid": "Introduza um número de telefone válido com indicativo.",

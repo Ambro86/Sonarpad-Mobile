@@ -1,3 +1,4 @@
+import '../widgets/landscape_video_player.dart';
 import '../models/chromecast_media.dart';
 import '../models/podcast.dart';
 import 'chromecast_screen.dart';
@@ -3057,55 +3058,36 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
             ? _buildVideoPlayerFullscreenSurface(_videoController!)
             : _buildMediaKitVideoFullscreenSurface());
 
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: Stack(
-        children: [
-          Positioned.fill(child: videoSurface),
-          SafeArea(
-            child: Align(
-              alignment: Alignment.topLeft,
-              child: Padding(
-                padding: const EdgeInsets.all(8),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Material(
-                      color: Colors.black54,
-                      shape: const CircleBorder(),
-                      child: SonarpadBackSemantics(
-                        onBack: _requestPlayerExit,
-                        child: IconButton(
-                          color: Colors.white,
-                          tooltip:
-                              MaterialLocalizations.of(context).backButtonTooltip,
-                          icon: const Icon(Icons.arrow_back),
-                          onPressed: _requestPlayerExit,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    const Material(
-                      color: Colors.black54,
-                      shape: CircleBorder(),
-                      child: SonarpadVisualHomeButton(
-                        color: Colors.white,
-                        compact: true,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+    return LandscapeVideoPlayer(
+      surface: videoSurface,
+      controller: _raiNativeActive || _mediaKitPlayer != null ? null : _videoController,
+      playing: _isVideoPlaying,
+      controls: _buildLandscapeFullscreenControls(l10n),
+      navigation: [
+        Material(
+          color: Colors.black54,
+          shape: const CircleBorder(),
+          child: SonarpadBackSemantics(
+            onBack: _requestPlayerExit,
+            child: IconButton(
+              color: Colors.white,
+              tooltip:
+                  MaterialLocalizations.of(context).backButtonTooltip,
+              icon: const Icon(Icons.arrow_back),
+              onPressed: _requestPlayerExit,
             ),
           ),
-          SafeArea(
-            child: Align(
-              alignment: Alignment.bottomCenter,
-              child: _buildLandscapeFullscreenControls(l10n),
-            ),
+        ),
+        const SizedBox(width: 4),
+        const Material(
+          color: Colors.black54,
+          shape: CircleBorder(),
+          child: SonarpadVisualHomeButton(
+            color: Colors.white,
+            compact: true,
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 

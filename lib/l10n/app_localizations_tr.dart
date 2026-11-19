@@ -9,6 +9,12 @@ class AppLocalizationsTr extends AppLocalizations {
   AppLocalizationsTr([String locale = 'tr']) : super(locale);
 
   @override
+  String get hideVideoControls => 'Video denetimlerini gizle';
+
+  @override
+  String get showVideoControls => 'Video denetimlerini göster';
+
+  @override
   String get audioDescriptionDialogueOverlap =>
       'Diyalog ve spiker anlatımı sırasında sesli betimlemeye izin ver';
 

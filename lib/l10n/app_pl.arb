@@ -1,4 +1,6 @@
 {
+  "hideVideoControls": "Ukryj elementy sterujące wideo",
+  "showVideoControls": "Pokaż elementy sterujące wideo",
   "audioDescriptionDialogueOverlap": "Zezwalaj na audiodeskrypcję podczas dialogów i komentarza",
   "placesPhoneQuery": "Wpisz numer telefonu",
   "placesPhoneInvalid": "Wpisz prawidłowy numer telefonu wraz z numerem kierunkowym.",

@@ -122,6 +122,18 @@ abstract class AppLocalizations {
     Locale('zh', 'CN'),
   ];
 
+  /// No description provided for @hideVideoControls.
+  ///
+  /// In it, this message translates to:
+  /// **'Nascondi controlli video'**
+  String get hideVideoControls;
+
+  /// No description provided for @showVideoControls.
+  ///
+  /// In it, this message translates to:
+  /// **'Mostra controlli video'**
+  String get showVideoControls;
+
   /// No description provided for @audioDescriptionDialogueOverlap.
   ///
   /// In it, this message translates to:

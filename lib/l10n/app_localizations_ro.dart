@@ -9,6 +9,12 @@ class AppLocalizationsRo extends AppLocalizations {
   AppLocalizationsRo([String locale = 'ro']) : super(locale);
 
   @override
+  String get hideVideoControls => 'Ascunde comenzile video';
+
+  @override
+  String get showVideoControls => 'Afișează comenzile video';
+
+  @override
   String get audioDescriptionDialogueOverlap =>
       'Permite audiodescrieri în timpul dialogurilor și comentariului sportiv';
 

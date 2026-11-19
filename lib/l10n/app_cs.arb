@@ -1,4 +1,6 @@
 {
+  "hideVideoControls": "Skrýt ovládání videa",
+  "showVideoControls": "Zobrazit ovládání videa",
   "audioDescriptionDialogueOverlap": "Povolit audiopopis během dialogů a komentáře",
   "placesPhoneQuery": "Zadejte telefonní číslo",
   "placesPhoneInvalid": "Zadejte platné telefonní číslo včetně předvolby.",

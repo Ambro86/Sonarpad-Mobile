@@ -9,6 +9,12 @@ class AppLocalizationsDe extends AppLocalizations {
   AppLocalizationsDe([String locale = 'de']) : super(locale);
 
   @override
+  String get hideVideoControls => 'Videosteuerung ausblenden';
+
+  @override
+  String get showVideoControls => 'Videosteuerung einblenden';
+
+  @override
   String get audioDescriptionDialogueOverlap =>
       'Audiodeskriptionen während Dialogen und Kommentaren zulassen';
 

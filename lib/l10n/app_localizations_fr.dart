@@ -9,6 +9,12 @@ class AppLocalizationsFr extends AppLocalizations {
   AppLocalizationsFr([String locale = 'fr']) : super(locale);
 
   @override
+  String get hideVideoControls => 'Masquer les commandes vidéo';
+
+  @override
+  String get showVideoControls => 'Afficher les commandes vidéo';
+
+  @override
   String get audioDescriptionDialogueOverlap =>
       'Autoriser les audiodescriptions pendant les dialogues et les commentaires';
 

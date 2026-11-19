@@ -1,4 +1,6 @@
 {
+  "hideVideoControls": "Nascondi controlli video",
+  "showVideoControls": "Mostra controlli video",
   "audioDescriptionDialogueOverlap": "Consenti audiodescrizioni durante i dialoghi e la telecronaca",
   "placesPhoneQuery": "Inserisci il numero di telefono",
   "placesPhoneInvalid": "Inserisci un numero di telefono valido, completo di prefisso.",

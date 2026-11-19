@@ -9,6 +9,12 @@ class AppLocalizationsZh extends AppLocalizations {
   AppLocalizationsZh([String locale = 'zh']) : super(locale);
 
   @override
+  String get hideVideoControls => '隐藏视频控件';
+
+  @override
+  String get showVideoControls => '显示视频控件';
+
+  @override
   String get audioDescriptionDialogueOverlap => '允许在对话和解说期间播放音频描述';
 
   @override
@@ -5886,6 +5892,12 @@ class AppLocalizationsZh extends AppLocalizations {
 /// The translations for Chinese, as used in China (`zh_CN`).
 class AppLocalizationsZhCn extends AppLocalizationsZh {
   AppLocalizationsZhCn() : super('zh_CN');
+
+  @override
+  String get hideVideoControls => '隐藏视频控件';
+
+  @override
+  String get showVideoControls => '显示视频控件';
 
   @override
   String get audioDescriptionDialogueOverlap => '允许在对话和解说期间播放音频描述';

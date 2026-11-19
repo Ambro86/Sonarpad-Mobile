@@ -9,6 +9,12 @@ class AppLocalizationsNl extends AppLocalizations {
   AppLocalizationsNl([String locale = 'nl']) : super(locale);
 
   @override
+  String get hideVideoControls => 'Videobediening verbergen';
+
+  @override
+  String get showVideoControls => 'Videobediening tonen';
+
+  @override
   String get audioDescriptionDialogueOverlap =>
       'Audiobeschrijvingen tijdens dialogen en commentaar toestaan';
 
