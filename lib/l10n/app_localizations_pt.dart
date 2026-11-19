@@ -1760,6 +1760,11 @@ class AppLocalizationsPt extends AppLocalizations {
   String get nowPlaying => 'A reproduzir';
 
   @override
+  String openImportedDocument(String name) {
+    return 'Quer abrir «$name»?';
+  }
+
+  @override
   String get fileImported => 'Ficheiro importado';
 
   @override
@@ -7906,6 +7911,11 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get nowPlaying => 'Reproduzindo';
+
+  @override
+  String openImportedDocument(String name) {
+    return 'Deseja abrir “$name”?';
+  }
 
   @override
   String get fileImported => 'Arquivo importado';

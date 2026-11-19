@@ -1760,6 +1760,11 @@ class AppLocalizationsTr extends AppLocalizations {
   String get nowPlaying => 'Şimdi oynatılıyor';
 
   @override
+  String openImportedDocument(String name) {
+    return '“$name” açılsın mı?';
+  }
+
+  @override
   String get fileImported => 'Dosya içe aktarıldı';
 
   @override

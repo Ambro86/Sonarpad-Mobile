@@ -690,6 +690,7 @@
   "visitSonarpadSite": "Vizitează site-ul Sonarpad",
   "visitSonarpadSiteWithUrl": "Vizitează site-ul Sonarpad: {url}",
   "nowPlaying": "În redare",
+  "openImportedDocument": "Doriți să deschideți „{name}”?",
   "fileImported": "Fișier importat",
   "importZipError": "Eroare la importul ZIP: {error}",
   "dropboxLoginPrompt": "Autentifică-te în Dropbox pentru a importa documentele.",

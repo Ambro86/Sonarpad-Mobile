@@ -3259,6 +3259,12 @@ abstract class AppLocalizations {
   /// **'In riproduzione'**
   String get nowPlaying;
 
+  /// No description provided for @openImportedDocument.
+  ///
+  /// In it, this message translates to:
+  /// **'Vuoi aprire «{name}»?'**
+  String openImportedDocument(String name);
+
   /// Localized text for fileImported.
   ///
   /// In it, this message translates to:

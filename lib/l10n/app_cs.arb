@@ -687,6 +687,7 @@
   "visitSonarpadSite": "Navštívit web Sonarpad",
   "visitSonarpadSiteWithUrl": "Navštívit web Sonarpad: {url}",
   "nowPlaying": "Právě se přehrává",
+  "openImportedDocument": "Chcete otevřít „{name}“?",
   "fileImported": "Soubor importován",
   "importZipError": "Chyba importu ZIP: {error}",
   "dropboxLoginPrompt": "Přihlaste se k Dropboxu, abyste mohli importovat dokumenty.",

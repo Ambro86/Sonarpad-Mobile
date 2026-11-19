@@ -1755,6 +1755,11 @@ class AppLocalizationsCs extends AppLocalizations {
   String get nowPlaying => 'Právě se přehrává';
 
   @override
+  String openImportedDocument(String name) {
+    return 'Chcete otevřít „$name“?';
+  }
+
+  @override
   String get fileImported => 'Soubor importován';
 
   @override

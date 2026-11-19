@@ -1731,14 +1731,16 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
         setState(() {});
       }
     } else if (source == 'dropbox') {
-      await Navigator.of(context).push(
-        MaterialPageRoute(
+      final imported = await Navigator.of(context).push<DocumentItem>(
+        MaterialPageRoute<DocumentItem>(
           builder: (_) => DropboxBrowserScreen(documentService: _service),
         ),
       );
       if (mounted) {
         await _load();
+        if (!mounted) return;
         setState(() {});
+        if (imported != null) await _openDocument(imported);
       }
     } else if (source == 'gutenberg') {
       await Navigator.of(context).push(

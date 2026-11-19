@@ -1,4 +1,6 @@
 import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/testing.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -16,6 +18,25 @@ void main() {
   tearDown(() {
     debugDefaultTargetPlatformOverride = null;
     messenger.setMockMethodCallHandler(channel, null);
+  });
+
+  test('first folder listing retries a temporary server error', () async {
+    SharedPreferences.setMockInitialValues({
+      'dropbox_access_token': 'test-token',
+    });
+    final service = DropboxService();
+    await service.init();
+    var calls = 0;
+    final entries = await http.runWithClient(
+      () => service.listFolder(''),
+      () => MockClient((request) async {
+        expect(request.url.path, '/2/files/list_folder');
+        if (++calls == 1) return http.Response('', 503);
+        return http.Response('{"entries":[{"name":"Example"}]}', 200);
+      }),
+    );
+    expect(calls, 2);
+    expect(entries.single['name'], 'Example');
   });
 
   for (final platform in [TargetPlatform.android, TargetPlatform.iOS]) {
@@ -66,6 +87,21 @@ void main() {
             ),
             'existing',
           );
+        },
+      );
+
+      test(
+        'temporary login failure retries once and stores the credential',
+        () async {
+          var calls = 0;
+          messenger.setMockMethodCallHandler(channel, (_) async {
+            if (++calls == 1) throw PlatformException(code: 'auth_unavailable');
+            return {'access_token': 'after-retry'};
+          });
+          final service = DropboxService();
+          expect(await service.authenticate(), isTrue);
+          expect(service.isAuthenticated, isTrue);
+          expect(calls, 2);
         },
       );
 

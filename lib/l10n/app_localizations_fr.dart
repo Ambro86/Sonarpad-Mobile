@@ -1770,6 +1770,11 @@ class AppLocalizationsFr extends AppLocalizations {
   String get nowPlaying => 'En lecture';
 
   @override
+  String openImportedDocument(String name) {
+    return 'Voulez-vous ouvrir « $name » ?';
+  }
+
+  @override
   String get fileImported => 'Fichier importé';
 
   @override

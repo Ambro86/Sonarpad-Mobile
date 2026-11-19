@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:developer' as dev;
 import 'dart:math' as math;
@@ -7,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import '../utils/app_logger.dart';
 
 class DropboxService {
   static const _nativeAuth = MethodChannel('sonarpad/dropbox_auth');
@@ -44,9 +46,19 @@ class DropboxService {
       if (!kIsWeb &&
           (defaultTargetPlatform == TargetPlatform.android ||
               defaultTargetPlatform == TargetPlatform.iOS)) {
-        final credential = await _nativeAuth.invokeMapMethod<String, dynamic>(
-          'authenticate',
-        );
+        Future<Map<String, dynamic>?> connect() =>
+            _nativeAuth.invokeMapMethod<String, dynamic>('authenticate');
+        Map<String, dynamic>? credential;
+        try {
+          credential = await connect();
+        } on PlatformException catch (error) {
+          if (error.code != 'auth_unavailable' && error.code != 'auth_failed') {
+            rethrow;
+          }
+          await AppLogger.log('Dropbox: retrying native login (${error.code})');
+          await Future<void>.delayed(const Duration(milliseconds: 700));
+          credential = await connect();
+        }
         if (credential == null) return false;
         await _storeCredential(credential);
         return true;
@@ -90,7 +102,9 @@ class DropboxService {
         throw Exception('Errore nel login Dropbox: ${tokenResponse.body}');
       }
     } catch (e) {
-      dev.log('Dropbox auth error: $e');
+      await AppLogger.log(
+        'Dropbox: login failed (${e is PlatformException ? e.code : e.runtimeType})',
+      );
       return false;
     }
   }
@@ -126,16 +140,33 @@ class DropboxService {
   }
 
   Future<List<Map<String, dynamic>>> listFolder(String path) async {
-    final response = await _sendDropboxRequestWithRefresh(
-      () => http.post(
-        Uri.https('api.dropboxapi.com', '/2/files/list_folder'),
-        headers: {
-          'Authorization': 'Bearer $_accessToken',
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode({'path': path, 'limit': 1000}),
-      ),
+    Future<http.Response> list() => _sendDropboxRequestWithRefresh(
+      () => http
+          .post(
+            Uri.https('api.dropboxapi.com', '/2/files/list_folder'),
+            headers: {
+              'Authorization': 'Bearer $_accessToken',
+              'Content-Type': 'application/json',
+            },
+            body: jsonEncode({'path': path, 'limit': 1000}),
+          )
+          .timeout(const Duration(seconds: 20)),
     );
+
+    late http.Response response;
+    try {
+      response = await list();
+      if (response.statusCode >= 500 && response.statusCode <= 599) {
+        throw http.ClientException('Dropbox HTTP ${response.statusCode}');
+      }
+    } on Exception catch (error) {
+      if (error is! TimeoutException && error is! http.ClientException) rethrow;
+      await AppLogger.log(
+        'Dropbox: retrying folder request (${error.runtimeType})',
+      );
+      await Future<void>.delayed(const Duration(milliseconds: 700));
+      response = await list();
+    }
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);

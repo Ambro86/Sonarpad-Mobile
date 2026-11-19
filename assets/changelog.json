@@ -1,7 +1,7 @@
 [
   {
     "version": "0.5.5",
-    "date": "2026-11-18",
+    "date": "2026-11-20",
     "it": [
       "SonarTube: corretto il caso in cui un canale aperto dai preferiti mostrava «Nessun video» dopo la sincronizzazione. Ora viene conservato l’ID corretto del canale e vengono recuperati i preferiti già interessati dal problema, indipendentemente dalla lingua dell’interfaccia.",
       "Impostazioni: aggiunto Gestisci tutti i segnalibri, con i segnalibri dei documenti, dei podcast e di tutti i file multimediali. Ogni voce mostra la posizione salvata e può essere eliminata con conferma tramite azione accessibile o pulsante visibile escluso da VoiceOver. Per i nuovi segnalibri multimediali viene conservato anche il titolo.",

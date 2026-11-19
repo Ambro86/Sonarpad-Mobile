@@ -1761,6 +1761,11 @@ class AppLocalizationsRo extends AppLocalizations {
   String get nowPlaying => 'În redare';
 
   @override
+  String openImportedDocument(String name) {
+    return 'Doriți să deschideți „$name”?';
+  }
+
+  @override
   String get fileImported => 'Fișier importat';
 
   @override

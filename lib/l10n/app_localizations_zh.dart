@@ -1707,6 +1707,11 @@ class AppLocalizationsZh extends AppLocalizations {
   String get nowPlaying => '正在播放';
 
   @override
+  String openImportedDocument(String name) {
+    return '要打开“$name”吗？';
+  }
+
+  @override
   String get fileImported => '文件已导入';
 
   @override
@@ -7590,6 +7595,11 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get nowPlaying => '正在播放';
+
+  @override
+  String openImportedDocument(String name) {
+    return '要打开“$name”吗？';
+  }
 
   @override
   String get fileImported => '文件已导入';

@@ -7,7 +7,6 @@ import 'package:path/path.dart' as p;
 import '../l10n/app_localizations.dart';
 import '../services/dropbox_service.dart';
 import '../services/document_library_service.dart';
-import '../utils/status_message.dart';
 import '../widgets/universal_accessible_view.dart';
 
 const Set<String> _dropboxImportExtensions = {
@@ -54,6 +53,7 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
   bool _loading = true;
   String? _error;
   String _currentPath = "";
+  String? _failedFolder;
   String _searchQuery = "";
   List<Map<String, dynamic>> _entries = [];
   bool _isAuthenticating = false;
@@ -101,6 +101,7 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
 
   Future<void> _init() async {
     await _dropbox.init();
+    if (!mounted) return;
     if (_dropbox.isAuthenticated) {
       await _loadFolder("");
     } else {
@@ -134,11 +135,16 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
     final l10n = AppLocalizations.of(context);
     setState(() {
       _loading = true;
+      _failedFolder = null;
       _error = null;
     });
 
+    final transition = path != _currentPath
+        ? Future<void>.delayed(const Duration(milliseconds: 700))
+        : Future<void>.value();
     try {
       final entries = await _dropbox.listFolder(path);
+      await transition;
       // Mostra cartelle, documenti e i formati video già supportati
       // dalla libreria Documenti.
       final filtered = entries.where((e) {
@@ -182,6 +188,7 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
     } catch (e) {
       if (mounted) {
         setState(() {
+          _failedFolder = path;
           _error = l10n.dropboxLoadFolderError(l10n.technicalErrorGeneric);
           _loading = false;
           _isAuthenticating = false;
@@ -191,7 +198,7 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
   }
 
   Future<void> _goBack() async {
-    if (_currentPath.isNotEmpty) {
+    if (_currentPath.isNotEmpty && !_loading) {
       final parent = p.posix.dirname(_currentPath);
       await _loadFolder(parent == '/' || parent == '.' ? '' : parent);
       return;
@@ -223,10 +230,20 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
       await widget.documentService.add(doc);
 
       if (mounted) {
-        showStatusMessage(context, '${l10n.fileImported}: $name');
-        setState(() {
-          _loading = false;
-        });
+        setState(() => _loading = false);
+        final open = await showDialog<bool>(
+          context: context,
+          barrierDismissible: false,
+          builder: (dialogContext) => AlertDialog(
+            title: Text(l10n.fileImported),
+            content: Text(l10n.openImportedDocument(name)),
+            actions: [
+              TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text(l10n.no)),
+              FilledButton(onPressed: () => Navigator.pop(dialogContext, true), child: Text(l10n.yes)),
+            ],
+          ),
+        );
+        if (open == true && mounted) Navigator.pop(context, doc);
       }
     } on DropboxAuthRequiredException {
       await _dropbox.logout();
@@ -265,8 +282,9 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
             IconButton(
               icon: const Icon(Icons.logout),
               tooltip: AppLocalizations.of(context).logoutFromDropbox,
-              onPressed: () async {
+              onPressed: _loading || _isAuthenticating ? null : () async {
                 await _dropbox.logout();
+                if (!mounted) return;
                 setState(() {
                   _entries = [];
                   _currentPath = "";
@@ -286,7 +304,7 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
     final visibleEntries = _visibleEntries;
     if (_loading || _isAuthenticating) {
       return Center(
-        child: CircularProgressIndicator(semanticsLabel: l10n.loading),
+        child: Semantics(liveRegion: true, label: l10n.loading, child: const ExcludeSemantics(child: CircularProgressIndicator())),
       );
     }
 
@@ -325,7 +343,7 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
             ),
             const SizedBox(height: 16),
             ElevatedButton(
-              onPressed: () => _loadFolder(_currentPath),
+              onPressed: () => _loadFolder(_failedFolder ?? _currentPath),
               child: Text(l10n.retry),
             ),
           ],
@@ -335,6 +353,7 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
 
     if (useSharedAccessibleViewModel) {
       final rows = <AccessibleListRow>[
+        AccessibleListRow(id: 'folder_heading', kind: 'header', title: _currentPath.isEmpty ? 'Dropbox' : p.posix.basename(_currentPath)),
         AccessibleListRow(
           id: 'search',
           title: l10n.search,
@@ -361,6 +380,8 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
             ),
       ];
       return UniversalAccessibleList(
+        key: ValueKey(_currentPath),
+        initialFocusId: 'folder_heading',
         sections: [AccessibleListSection(rows: rows)],
         onEvent: (event) async {
           if (event.id == 'search' && event.type == 'textChanged') {

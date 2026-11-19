@@ -2233,6 +2233,8 @@
   "@nowPlaying": {
     "description": "Localized text for nowPlaying."
   },
+  "openImportedDocument": "Vuoi aprire «{name}»?",
+  "@openImportedDocument": {"placeholders": {"name": {"type": "String"}}},
   "fileImported": "File importato",
   "@fileImported": {
     "description": "Localized text for fileImported."

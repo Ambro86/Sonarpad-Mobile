@@ -1747,6 +1747,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get nowPlaying => 'Now playing';
 
   @override
+  String openImportedDocument(String name) {
+    return 'Would you like to open “$name”?';
+  }
+
+  @override
   String get fileImported => 'File imported';
 
   @override

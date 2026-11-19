@@ -1755,6 +1755,11 @@ class AppLocalizationsPl extends AppLocalizations {
   String get nowPlaying => 'Teraz odtwarzane';
 
   @override
+  String openImportedDocument(String name) {
+    return 'Czy chcesz otworzyć „$name”?';
+  }
+
+  @override
   String get fileImported => 'Plik zaimportowany';
 
   @override

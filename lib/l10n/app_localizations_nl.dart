@@ -1760,6 +1760,11 @@ class AppLocalizationsNl extends AppLocalizations {
   String get nowPlaying => 'Wordt afgespeeld';
 
   @override
+  String openImportedDocument(String name) {
+    return 'Wil je ‘$name’ openen?';
+  }
+
+  @override
   String get fileImported => 'Bestand geïmporteerd';
 
   @override

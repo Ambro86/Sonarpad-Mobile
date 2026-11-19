@@ -2233,6 +2233,7 @@
   "@nowPlaying": {
     "description": "Localized text for nowPlaying."
   },
+  "openImportedDocument": "Wil je ‘{name}’ openen?",
   "fileImported": "Bestand geïmporteerd",
   "@fileImported": {
     "description": "Localized text for fileImported."

@@ -1752,6 +1752,11 @@ class AppLocalizationsUk extends AppLocalizations {
   String get nowPlaying => 'Відтворюється';
 
   @override
+  String openImportedDocument(String name) {
+    return 'Відкрити «$name»?';
+  }
+
+  @override
   String get fileImported => 'Файл імпортовано';
 
   @override

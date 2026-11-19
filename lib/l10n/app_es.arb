@@ -687,6 +687,7 @@
   "visitSonarpadSite": "Visitar el sitio de Sonarpad",
   "visitSonarpadSiteWithUrl": "Visitar el sitio de Sonarpad: {url}",
   "nowPlaying": "Reproduciendo",
+  "openImportedDocument": "¿Quieres abrir «{name}»?",
   "fileImported": "Archivo importado",
   "importZipError": "Error al importar ZIP: {error}",
   "dropboxLoginPrompt": "Inicia sesión en Dropbox para importar tus documentos.",
