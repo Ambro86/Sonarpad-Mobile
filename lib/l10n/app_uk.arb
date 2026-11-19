@@ -2234,6 +2234,7 @@
     "description": "Localized text for nowPlaying."
   },
   "openImportedDocument": "Відкрити «{name}»?",
+  "@openImportedDocument": {"placeholders": {"name": {"type": "String"}}},
   "fileImported": "Файл імпортовано",
   "@fileImported": {
     "description": "Localized text for fileImported."

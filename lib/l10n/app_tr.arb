@@ -691,6 +691,7 @@
   "visitSonarpadSiteWithUrl": "Sonarpad web sitesini ziyaret et: {url}",
   "nowPlaying": "Şimdi oynatılıyor",
   "openImportedDocument": "“{name}” açılsın mı?",
+  "@openImportedDocument": {"placeholders": {"name": {"type": "String"}}},
   "fileImported": "Dosya içe aktarıldı",
   "importZipError": "ZIP içe aktarma hatası: {error}",
   "dropboxLoginPrompt": "Belgelerinizi içe aktarmak için Dropbox’ta oturum açın.",

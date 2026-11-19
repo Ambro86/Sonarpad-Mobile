@@ -691,6 +691,7 @@
   "visitSonarpadSiteWithUrl": "访问 Sonarpad 网站：{url}",
   "nowPlaying": "正在播放",
   "openImportedDocument": "要打开“{name}”吗？",
+  "@openImportedDocument": {"placeholders": {"name": {"type": "String"}}},
   "fileImported": "文件已导入",
   "importZipError": "ZIP 导入错误：{error}",
   "dropboxLoginPrompt": "登录 Dropbox 以导入你的文档。",
