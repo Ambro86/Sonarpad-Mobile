@@ -152,7 +152,7 @@ class _LandscapeVideoPlayerState extends State<LandscapeVideoPlayer> {
                     Expanded(
                       child: Align(
                         alignment: Alignment.bottomCenter,
-                        child: SingleChildScrollView(child: widget.controls),
+                        child: widget.controls,
                       ),
                     ),
                   ],

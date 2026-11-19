@@ -3062,7 +3062,9 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       surface: videoSurface,
       controller: _raiNativeActive || _mediaKitPlayer != null ? null : _videoController,
       playing: _isVideoPlaying,
-      controls: _buildLandscapeFullscreenControls(l10n),
+      controls: SingleChildScrollView(
+        child: _buildLandscapeFullscreenControls(l10n),
+      ),
       navigation: [
         Material(
           color: Colors.black54,

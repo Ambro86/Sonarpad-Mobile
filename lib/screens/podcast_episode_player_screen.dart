@@ -2148,7 +2148,9 @@ class _PodcastEpisodePlayerScreenState
       surface: surface,
       controller: _videoController,
       playing: _videoController!.value.isPlaying,
-      controls: _buildLandscapeFullscreenControls(l10n, canSeek),
+      controls: SingleChildScrollView(
+        child: _buildLandscapeFullscreenControls(l10n, canSeek),
+      ),
       navigation: [
         Material(
           color: Colors.black54,
