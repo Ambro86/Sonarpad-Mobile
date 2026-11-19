@@ -5,6 +5,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 
 import '../l10n/app_localizations.dart';
+import '../models/document_item.dart';
 import '../services/dropbox_service.dart';
 import '../services/document_library_service.dart';
 import '../widgets/universal_accessible_view.dart';
@@ -36,8 +37,13 @@ const Set<String> _dropboxImportExtensions = {
 
 class DropboxBrowserScreen extends StatefulWidget {
   final DocumentLibraryService documentService;
+  final Future<void> Function(DocumentItem) onOpenDocument;
 
-  const DropboxBrowserScreen({super.key, required this.documentService});
+  const DropboxBrowserScreen({
+    super.key,
+    required this.documentService,
+    required this.onOpenDocument,
+  });
 
   @override
   State<DropboxBrowserScreen> createState() => _DropboxBrowserScreenState();
@@ -243,7 +249,7 @@ class _DropboxBrowserScreenState extends State<DropboxBrowserScreen> {
             ],
           ),
         );
-        if (open == true && mounted) Navigator.pop(context, doc);
+        if (open == true && mounted) await widget.onOpenDocument(doc);
       }
     } on DropboxAuthRequiredException {
       await _dropbox.logout();
