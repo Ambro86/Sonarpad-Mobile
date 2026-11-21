@@ -1877,7 +1877,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
             ? l10n.documentAddedOn(formattedDate(doc.addedAt))
             : '${doc.extension.toUpperCase()} · ${l10n.documentAddedOn(formattedDate(doc.addedAt))}',
         accessibilityLabel:
-            '${doc.isFolder ? l10n.folderTypeLabel : l10n.documentTypeLabel} ${doc.displayName}, '
+            '${doc.isFolder ? '${l10n.folderTypeLabel} ' : ''}${doc.displayName}, '
             '${doc.isFolder ? '' : '${l10n.documentTypeDescription(doc.extension.toUpperCase())}, '}'
             '${l10n.documentAddedOn(formattedDate(doc.addedAt))}'
             '${doc.isPasswordProtected ? ', ${l10n.documentPasswordProtectedStatus}' : ''}',
@@ -2239,7 +2239,7 @@ class _DocumentTile extends StatelessWidget {
               onAction(_DocumentAction.moveToPosition),
       },
       label:
-          '${doc.isFolder ? l10n.folderTypeLabel : l10n.documentTypeLabel} $displayName, ${doc.isFolder ? '' : '${l10n.documentTypeDescription(doc.extension.toUpperCase())}, '}${l10n.documentAddedOn(_formattedDate(doc.addedAt))}${doc.isPasswordProtected ? ', ${l10n.documentPasswordProtectedStatus}' : ''}',
+          '${doc.isFolder ? '${l10n.folderTypeLabel} ' : ''}$displayName, ${doc.isFolder ? '' : '${l10n.documentTypeDescription(doc.extension.toUpperCase())}, '}${l10n.documentAddedOn(_formattedDate(doc.addedAt))}${doc.isPasswordProtected ? ', ${l10n.documentPasswordProtectedStatus}' : ''}',
       hint: doc.isFolder ? l10n.openFolderHint : l10n.openDocumentHint,
       child: ExcludeSemantics(
         child: Card(

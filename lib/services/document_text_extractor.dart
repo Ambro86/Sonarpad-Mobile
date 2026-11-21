@@ -18,6 +18,8 @@ import '../utils/document_unicode_normalizer.dart';
 import 'pdf_password_service.dart';
 import 'ai_audiodescription_service.dart';
 
+part 'binary_word_document.dart';
+
 /// Risultato dell'estrazione testo da un documento.
 class ExtractionResult {
   /// Testo estratto. Vuoto se l'estrazione non è riuscita.
@@ -90,7 +92,8 @@ Future<void> _epubTableOfContentsIsolateMain(
 /// - RTF         → parsing RTF e conversione in testo leggibile
 /// - HTML, HTM    → strip tag HTML
 /// - PDF          → [syncfusion_flutter_pdf] PdfTextExtractor
-/// - DOCX / DOC   → unzip (archive) + parsing XML word/document.xml
+/// - DOC binario   → testo Word 97–2003 dalla tabella dei segmenti
+/// - DOCX         → unzip (archive) + parsing XML word/document.xml
 /// - EPUB         → [epubx] EpubReader + strip HTML dei capitoli
 class DocumentTextExtractor {
   final Expando<List<String>> _epubNormalizedChunkCache =
@@ -664,9 +667,17 @@ class DocumentTextExtractor {
         case 'pdf':
           return await _extractPdf(path, password: pdfPassword);
 
-        case 'docx':
         case 'doc':
-          return await _extractDocx(path);
+        case 'docx':
+          final bytes = await File(path).readAsBytes();
+          if (extension.toLowerCase() == 'doc' &&
+              bytes.length >= 8 &&
+              ByteData.sublistView(bytes).getUint32(0) == 0xd0cf11e0 &&
+              ByteData.sublistView(bytes).getUint32(4) == 0xa1b11ae1) {
+            final text = await Isolate.run(() => _readBinaryWord(bytes));
+            return ExtractionResult(text: normalizeDocumentUnicode(text));
+          }
+          return _extractDocx(bytes);
 
         case 'epub':
           return await _extractEpub(
@@ -830,8 +841,7 @@ class DocumentTextExtractor {
   // DOCX — archive + xml
   // ---------------------------------------------------------------------------
 
-  Future<ExtractionResult> _extractDocx(String path) async {
-    final bytes = await File(path).readAsBytes();
+  ExtractionResult _extractDocx(Uint8List bytes) {
     // DOCX è un archivio ZIP: il testo principale è in word/document.xml
     final archive = ZipDecoder().decodeBytes(bytes);
     final docEntry = archive.findFile('word/document.xml');
