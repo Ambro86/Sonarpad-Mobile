@@ -36,6 +36,9 @@ jobs:
       - name: Install Flutter dependencies
         run: flutter pub get
 
+      - name: Prepare ONNX Runtime 1.15.1 for SwiftPM
+        run: python3 scripts/prepare_onnxruntime_ios.py
+
       - name: Patch flutter_tts iOS synthesizeToFile Int16 crash
         run: bash scripts/patch_flutter_tts_ios_int16.sh
 

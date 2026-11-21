@@ -34,6 +34,9 @@ jobs:
       - name: Install Flutter dependencies
         run: flutter pub get
 
+      - name: Prepare ONNX Runtime 1.15.1 for SwiftPM
+        run: python3 scripts/prepare_onnxruntime_ios.py
+
       - name: Patch flutter_tts iOS synthesizeToFile Int16 crash
         run: bash scripts/patch_flutter_tts_ios_int16.sh
 
@@ -332,8 +335,16 @@ jobs:
 
           ONNX_PLIST=$(find "$TMP_DIR/Payload" -path "*/Frameworks/onnxruntime.framework/Info.plist" | head -1)
           if [ -z "$ONNX_PLIST" ]; then
-            echo "onnxruntime.framework/Info.plist non trovato nell'IPA"
-            exit 1
+            # Microsoft ships the NuGet iOS framework as a static library.
+            # Dart FFI resolves its symbols from the application process.
+            APP=$(find "$TMP_DIR/Payload" -maxdepth 1 -name '*.app' -type d | head -1)
+            EXEC=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' "$APP/Info.plist")
+            xcrun nm -gU "$APP/$EXEC" > "$TMP_DIR/app-symbols"
+            for symbol in _OrtGetApiBase _OrtSessionOptionsAppendExecutionProvider_CoreML; do
+              grep -Eq "[[:space:]]${symbol}$" "$TMP_DIR/app-symbols" || exit 1
+            done
+            echo "Static ONNX Runtime symbols verified in the signed application."
+            exit 0
           fi
 
           MIN_OS=$(/usr/libexec/PlistBuddy -c "Print :MinimumOSVersion" "$ONNX_PLIST" 2>/dev/null || true)
