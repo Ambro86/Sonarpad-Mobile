@@ -174,6 +174,7 @@ class _WordCompoundFile {
       pending.add(directory.getUint32(at + 68, Endian.little));
       pending.add(directory.getUint32(at + 72, Endian.little));
     }
-    throw FormatException('Missing Word stream: $name');
+    dev.log('Missing Word stream: $name', name: 'DocumentTextExtractor');
+    throw const FormatException();
   }
 }
