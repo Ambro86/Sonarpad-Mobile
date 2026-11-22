@@ -24,7 +24,10 @@ AccessibleListRow row(WidgetTester tester, String id) =>
 class FakeTravel extends TravelService {
   FakeTravel() : super(clientToken: 'test', logger: (_) async {});
   int reads = 0, searches = 0, bookings = 0;
-  String? selectedCity;
+  String? selectedCity, selectedArrival;
+  List<TravelCity> palermoCities = [
+    const TravelCity('palermo', 'Palermo', 'IT', 'Sicilia'),
+  ];
   Map<String, dynamic>? bookingBody;
   String? bookingKey;
   bool bookingSucceeds = false;
@@ -39,10 +42,11 @@ class FakeTravel extends TravelService {
           const TravelCity('wrong', 'Torino', 'XX', ''),
           const TravelCity('true-turin', 'Torino', 'IT', 'Piemonte'),
         ]
-      : [const TravelCity('palermo', 'Palermo', 'IT', 'Sicilia')];
+      : palermoCities;
   @override
   Future<void> search(TravelQuery q, TravelCity from, TravelCity to) async {
     selectedCity = from.id;
+    selectedArrival = to.id;
     searches++;
   }
 
@@ -299,6 +303,50 @@ void main() {
       await tester.pumpAndSettle();
     },
   );
+  testWidgets('swap cities exchanges text and the selected city IDs', (
+    tester,
+  ) async {
+    final service = FakeTravel()
+      ..palermoCities = [
+        const TravelCity('other-palermo', 'Palermo', 'XX', ''),
+        const TravelCity('selected-palermo', 'Palermo', 'IT', 'Sicilia'),
+      ];
+    await tester.pumpWidget(
+      app(
+        TravelSearchScreen(
+          initial: TravelQuery(
+            from: 'Torino',
+            to: 'Palermo',
+            departureCity: const TravelCity(
+              'true-turin',
+              'Torino',
+              'IT',
+              'Piemonte',
+            ),
+            arrivalCity: const TravelCity(
+              'selected-palermo',
+              'Palermo',
+              'IT',
+              'Sicilia',
+            ),
+          ),
+          serviceFactory: () => service,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final swap = row(tester, 'swap-cities');
+    expect(swap.kind, 'button');
+    expect(swap.title, 'Inverti città di partenza e città di arrivo');
+    await swap.onActivate!();
+    await tester.pumpAndSettle();
+    expect(row(tester, 'from').value, 'Palermo');
+    expect(row(tester, 'to').value, 'Torino');
+    row(tester, 'search').onActivate!();
+    await tester.pumpAndSettle();
+    expect(service.selectedCity, 'selected-palermo');
+    expect(service.selectedArrival, 'true-turin');
+  });
   testWidgets(
     'remembered city ID avoids disambiguation and partial results are selectable',
     (tester) async {

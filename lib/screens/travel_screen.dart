@@ -630,6 +630,20 @@ class _TravelSearchScreenState extends State<TravelSearchScreen> {
           if (q.to.trim() != q.arrivalCity?.name) q.arrivalCity = null;
         },
       ),
+      _action(
+        'swap-cities',
+        t.t('swapCities'),
+        () => setState(() {
+          final previousFrom = q.from;
+          final previousDepartureCity = q.departureCity;
+          q.from = q.to;
+          q.departureCity = q.arrivalCity;
+          q.to = previousFrom;
+          q.arrivalCity = previousDepartureCity;
+        }),
+        enabled: !_busy,
+        finishEditingOnActivate: true,
+      ),
       _picker('mode', t.t('mode'), q.mode, [
         for (final m in ['train', 'flight', 'bus', 'ferry'])
           AccessibleOption(value: m, label: t.t(m)),

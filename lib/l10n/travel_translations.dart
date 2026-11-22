@@ -1,6 +1,7 @@
 /// Complete travel UI catalogues. Provider fare descriptions remain provider-owned.
 const travelTranslations = <String, Map<String, String>>{
   "nl": {
+    "swapCities": "Vertrekstad en aankomststad omwisselen",
     "ferry": "Schepen en veerboten",
     "ferryAccommodation": "Accommodatie aan boord",
     "ferryCancel": "Annuleren",
@@ -205,6 +206,7 @@ const travelTranslations = <String, Map<String, String>>{
     "seatPosition": "Voertuig {coach}, stoel {seat}",
   },
   "cs": {
+    "swapCities": "Prohodit město odjezdu a město příjezdu",
     "ferry": "Lodě a trajekty",
     "ferryAccommodation": "Ubytování na palubě",
     "ferryCancel": "Zrušit",
@@ -404,6 +406,7 @@ const travelTranslations = <String, Map<String, String>>{
     "seatPosition": "Vůz {coach}, místo {seat}",
   },
   "de": {
+    "swapCities": "Abfahrtsort und Ankunftsort tauschen",
     "ferry": "Schiffe und Fähren",
     "ferryAccommodation": "Unterbringung an Bord",
     "ferryCancel": "Abbrechen",
@@ -610,6 +613,7 @@ const travelTranslations = <String, Map<String, String>>{
     "seatPosition": "Wagen {coach}, Sitz {seat}",
   },
   "es": {
+    "swapCities": "Intercambiar ciudad de salida y ciudad de llegada",
     "ferry": "Barcos y ferris",
     "ferryAccommodation": "Alojamiento a bordo",
     "ferryCancel": "Cancelar",
@@ -816,6 +820,7 @@ const travelTranslations = <String, Map<String, String>>{
     "seatPosition": "Coche {coach}, asiento {seat}",
   },
   "fr": {
+    "swapCities": "Inverser la ville de départ et la ville d’arrivée",
     "ferry": "Bateaux et ferries",
     "ferryAccommodation": "Installation à bord",
     "ferryCancel": "Annuler",
@@ -1019,6 +1024,7 @@ const travelTranslations = <String, Map<String, String>>{
     "seatPosition": "Voiture {coach}, place {seat}",
   },
   "pl": {
+    "swapCities": "Zamień miejscami miasto wyjazdu i miasto przyjazdu",
     "ferry": "Statki i promy",
     "ferryAccommodation": "Zakwaterowanie na pokładzie",
     "ferryCancel": "Anuluj",
@@ -1219,6 +1225,7 @@ const travelTranslations = <String, Map<String, String>>{
     "seatPosition": "Wagon {coach}, miejsce {seat}",
   },
   "pt": {
+    "swapCities": "Trocar a cidade de partida e a cidade de chegada",
     "ferry": "Navios e ferries",
     "ferryAccommodation": "Acomodação a bordo",
     "ferryCancel": "Cancelar",
@@ -1422,6 +1429,7 @@ const travelTranslations = <String, Map<String, String>>{
     "seatPosition": "Carruagem {coach}, lugar {seat}",
   },
   "pt_BR": {
+    "swapCities": "Trocar a cidade de partida e a cidade de chegada",
     "ferry": "Navios e balsas",
     "ferryAccommodation": "Acomodação a bordo",
     "ferryCancel": "Cancelar",
@@ -1625,6 +1633,7 @@ const travelTranslations = <String, Map<String, String>>{
     "seatPosition": "Vagão {coach}, assento {seat}",
   },
   "ro": {
+    "swapCities": "Inversează orașul de plecare și orașul de sosire",
     "ferry": "Nave și feriboturi",
     "ferryAccommodation": "Cazare la bord",
     "ferryCancel": "Anulează",
@@ -1827,6 +1836,7 @@ const travelTranslations = <String, Map<String, String>>{
     "seatPosition": "Vagon {coach}, loc {seat}",
   },
   "tr": {
+    "swapCities": "Kalkış ve varış şehirlerini değiştir",
     "ferry": "Gemiler ve feribotlar",
     "ferryAccommodation": "Gemide konaklama",
     "ferryCancel": "İptal",
@@ -2025,6 +2035,7 @@ const travelTranslations = <String, Map<String, String>>{
     "seatPosition": "Vagon {coach}, koltuk {seat}",
   },
   "uk": {
+    "swapCities": "Поміняти місцями міста відправлення та прибуття",
     "ferry": "Судна та пороми",
     "ferryAccommodation": "Розміщення на борту",
     "ferryCancel": "Скасувати",
@@ -2223,6 +2234,7 @@ const travelTranslations = <String, Map<String, String>>{
     "seatPosition": "Вагон {coach}, місце {seat}",
   },
   "zh": {
+    "swapCities": "交换出发城市和到达城市",
     "ferry": "船舶和渡轮",
     "ferryAccommodation": "船上舱位",
     "ferryCancel": "取消",
