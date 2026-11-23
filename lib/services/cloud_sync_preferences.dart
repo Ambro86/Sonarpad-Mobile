@@ -138,6 +138,11 @@ class CloudSyncPreferences {
       min: 10,
       max: 300,
     ),
+    'playback.seek_seconds_extra': CloudPreference(
+      'sonarpad_seek_slider_step',
+      'int',
+      max: 7200,
+    ),
     'playback.speed_control': CloudPreference(
       'sonarpad_media_speed_control',
       'bool',
@@ -254,6 +259,14 @@ class CloudSyncPreferences {
         for (final entry in specs.entries) {
           final spec = entry.value;
           Object? value = prefs.get(spec.key);
+          if (entry.key == 'playback.seek_seconds' ||
+              entry.key == 'playback.seek_seconds_extra') {
+            if (value is! int || value < 1 || value > 7200) continue;
+            final legacy = value.clamp(10, 300);
+            value = entry.key == 'playback.seek_seconds'
+                ? legacy
+                : (legacy == value ? 0 : value);
+          }
           if (spec.field != null) {
             try {
               value = value is String
@@ -281,7 +294,12 @@ class CloudSyncPreferences {
             }
             final spec = specs[item['id']];
             if (spec == null) return false;
-            if (!spec.accepts((item['data'] as Map)['value'])) {
+            final value = (item['data'] as Map)['value'];
+            if (!spec.accepts(value) ||
+                (item['id'] == 'playback.seek_seconds_extra' &&
+                    value is int &&
+                    value >= 10 &&
+                    value <= 300)) {
               throw const FormatException('invalid_preference');
             }
             return true;
@@ -326,7 +344,14 @@ class CloudSyncPreferences {
         continue;
       }
       final spec = specs[id]!;
-      final value = byId[id];
+      if (id == 'playback.seek_seconds_extra') continue;
+      var value = byId[id];
+      if (id == 'playback.seek_seconds') {
+        final extra = byId['playback.seek_seconds_extra'];
+        if (extra is int && extra > 0 && extra.clamp(10, 300) == value) {
+          value = extra;
+        }
+      }
       bool saved;
       if (spec.field != null) {
         final data = Map<String, dynamic>.from(

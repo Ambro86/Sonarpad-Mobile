@@ -1122,7 +1122,9 @@ class DocumentTextExtractor {
   }
 
   String? _findEpubOpfPath(Archive archive) {
-    final containerText = _readArchiveText(archive, 'META-INF/container.xml');
+    final entry = RootFilePathReader.findContainerFile(archive);
+    if (entry == null) return null;
+    final containerText = _readArchiveText(archive, entry.name);
     if (containerText == null || containerText.trim().isEmpty) return null;
     final container = xml_pkg.XmlDocument.parse(containerText);
     for (final rootfile in container.findAllElements('rootfile')) {

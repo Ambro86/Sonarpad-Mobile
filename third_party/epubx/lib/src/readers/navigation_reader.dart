@@ -44,6 +44,10 @@ class NavigationReader {
             (EpubManifestItem? item) => item!.Id!.toLowerCase() == tocId.toLowerCase(),
             orElse: () => null,
           );
+      // Some EPUB 2 generators use a stale spine TOC ID despite declaring one NCX.
+      tocManifestItem ??= package.Manifest!.Items!
+          .where((item) => item.MediaType == 'application/x-dtbncx+xml')
+          .singleOrNull;
       if (tocManifestItem == null) {
         throw Exception('EPUB parsing error: TOC item $tocId not found in EPUB manifest.');
       }

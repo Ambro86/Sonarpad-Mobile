@@ -129,6 +129,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
   String get _multipleDocumentBookmarksHint =>
       AppLocalizations.of(context).settingsMultipleDocumentBookmarksHint;
 
+  List<int> get _seekSteps => ({
+    for (var n = 1; n <= 10; n++) n,
+    for (var n = 20; n <= 300; n += 10) n,
+    15, 45, 600, 900, 1800, 3600, 7200,
+    _seekSliderStep,
+  }.toList()..sort());
+  int get _seekStepIndex => _seekSteps.indexOf(_seekSliderStep);
+  int _seekAt(int index) {
+    final options = _seekSteps;
+    return options[index.clamp(0, options.length - 1)];
+  }
+
   String _formatTime(int totalSeconds) {
     final l10n = AppLocalizations.of(context);
     if (totalSeconds < 60) {
@@ -1478,14 +1490,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
               kind: 'slider',
               value: _formatTime(_seekSliderStep),
               valueLabel: _formatTime(_seekSliderStep),
-              sliderValue: _seekSliderStep.toDouble(),
-              sliderMin: 10,
-              sliderMax: 300,
-              sliderStep: 10,
+              sliderValue: _seekStepIndex.toDouble(),
+              sliderMin: 0,
+              sliderMax: (_seekSteps.length - 1).toDouble(),
+              sliderStep: 1,
               sliderIncreasedValueLabel:
-                  _formatTime((_seekSliderStep + 10).clamp(10, 300)),
+                  _formatTime(_seekAt(_seekStepIndex + 1)),
               sliderDecreasedValueLabel:
-                  _formatTime((_seekSliderStep - 10).clamp(10, 300)),
+                  _formatTime(_seekAt(_seekStepIndex - 1)),
             ),
             AccessibleListRow(
               id: 'tv_secret_code',
@@ -1599,7 +1611,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             case 'tts_pitch': _setTtsPitch(value); break;
             case 'reading_sleep_timer': _setDocumentReadingSleepTimerByIndex(value); break;
             case 'document_slider_step': _setDocumentSliderStepByIndex(value); break;
-            case 'seek_step': setState(() => _seekSliderStep = value.round().clamp(10, 300).toInt()); break;
+            case 'seek_step': setState(() => _seekSliderStep = _seekAt(value.round())); break;
           }
           unawaited(AppLogger.log(
             'Settings slider dart end id=$id value=$value '
@@ -2542,29 +2554,29 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             label: l10n.settingsSeekStep,
                             value: _formatTime(_seekSliderStep),
                             increasedValue: _formatTime(
-                                (_seekSliderStep + 10).clamp(10, 300)),
+                                _seekAt(_seekStepIndex + 1)),
                             decreasedValue: _formatTime(
-                                (_seekSliderStep - 10).clamp(10, 300)),
+                                _seekAt(_seekStepIndex - 1)),
                             onIncrease: () {
                               setState(() {
                                 _seekSliderStep =
-                                    (_seekSliderStep + 10).clamp(10, 300);
+                                    _seekAt(_seekStepIndex + 1);
                               });
                             },
                             onDecrease: () {
                               setState(() {
                                 _seekSliderStep =
-                                    (_seekSliderStep - 10).clamp(10, 300);
+                                    _seekAt(_seekStepIndex - 1);
                               });
                             },
                             child: ExcludeSemantics(
                               child: Slider(
-                                value: _seekSliderStep.toDouble(),
-                                min: 10,
-                                max: 300,
-                                divisions: 29,
+                                value: _seekStepIndex.toDouble(),
+                                min: 0,
+                                max: (_seekSteps.length - 1).toDouble(),
+                                divisions: _seekSteps.length - 1,
                                 onChanged: (val) => setState(
-                                    () => _seekSliderStep = val.toInt()),
+                                    () => _seekSliderStep = _seekAt(val.round())),
                               ),
                             ),
                           ),

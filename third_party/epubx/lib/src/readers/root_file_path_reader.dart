@@ -6,14 +6,22 @@ import 'package:collection/collection.dart' show IterableExtension;
 import 'package:xml/xml.dart' as xml;
 
 class RootFilePathReader {
-  static Future<String?> getRootFilePath(Archive epubArchive) async {
-    const EPUB_CONTAINER_FILE_PATH = 'META-INF/container.xml';
+  static const containerPath = 'META-INF/container.xml';
 
-    var containerFileEntry = epubArchive.files.firstWhereOrNull(
-        (ArchiveFile file) => file.name == EPUB_CONTAINER_FILE_PATH);
+  static ArchiveFile? findContainerFile(Archive archive) {
+    final exact = archive.findFile(containerPath);
+    if (exact != null) return exact;
+    return archive.files
+        .where((file) =>
+            file.isFile && file.name.toLowerCase() == 'meta-inf/container.xml')
+        .singleOrNull;
+  }
+
+  static Future<String?> getRootFilePath(Archive epubArchive) async {
+    final containerFileEntry = findContainerFile(epubArchive);
     if (containerFileEntry == null) {
       throw Exception(
-          'EPUB parsing error: $EPUB_CONTAINER_FILE_PATH file not found in archive.');
+          'EPUB parsing error: $containerPath file not found in archive.');
     }
 
     var containerDocument =

@@ -8,6 +8,23 @@ import 'package:sonarpad_mobile_starter/services/media_cutter_seek_step_preferen
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   setUp(() => SharedPreferences.setMockInitialValues({}));
+  test('seek interval sync preserves exact and legacy values', () async {
+    final prefs = await SharedPreferences.getInstance();
+    for (final seconds in [1, 5, 10, 90, 300, 600, 7200]) {
+      await prefs.setInt('sonarpad_seek_slider_step', seconds);
+      final rows = await CloudSyncPreferences.read();
+      final legacy = rows.singleWhere(
+        (r) => r['id'] == 'playback.seek_seconds',
+      );
+      expect(legacy['data']['value'], seconds.clamp(10, 300));
+      await prefs.remove('sonarpad_seek_slider_step');
+      await CloudSyncPreferences.write(rows.reversed.toList());
+      expect(prefs.getInt('sonarpad_seek_slider_step'), seconds);
+      legacy['data']['value'] = 30;
+      await CloudSyncPreferences.write(rows);
+      expect(prefs.getInt('sonarpad_seek_slider_step'), 30);
+    }
+  });
   test(
     'only explicit preferences are exported, converter destination stays local',
     () async {

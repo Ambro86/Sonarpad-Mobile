@@ -3,6 +3,7 @@ library epubx;
 export 'src/utils/enum_from_string.dart';
 
 export 'src/epub_reader.dart';
+export 'src/readers/root_file_path_reader.dart' show RootFilePathReader;
 export 'src/epub_writer.dart';
 export 'src/ref_entities/epub_book_ref.dart';
 export 'src/ref_entities/epub_chapter_ref.dart';

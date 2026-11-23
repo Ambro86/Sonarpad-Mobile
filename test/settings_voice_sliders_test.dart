@@ -154,6 +154,12 @@ void main() {
         final initialAppLanguage = row('app_language');
         await choose('app_language', 0);
         expect(row('seek_step').kind, 'slider');
+        final seek = row('seek_step');
+        await currentList().onEvent!(const AccessibleListEvent(type: 'slider', id: 'seek_step', value: 4.0));
+        await tester.pumpAndSettle();
+        expect(row('seek_step').valueLabel, startsWith('5 '));
+        await currentList().onEvent!(AccessibleListEvent(type: 'slider', id: 'seek_step', value: seek.sliderValue));
+        await tester.pumpAndSettle();
         await choose('app_language', 3);
         expect(row('app_language').value, 'es');
         expect(row('tts_engine').value, 'edge');
