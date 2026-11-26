@@ -57,7 +57,7 @@ void main() {
     final tv=File('lib/screens/tv_screen.dart').readAsStringSync();
     final favorites=File('lib/screens/favorite_tvs_screen.dart').readAsStringSync();
     for(final source in [tv,favorites]) {
-      expect(source,contains('FutureOr<void> Function(TvChannel) onOpenChannel'));
+      expect(source,contains('FutureOr<void> Function(TvChannel, List<TvChannel>) onOpenChannel'));
       expect(source,contains('controller: _returnFocus'));
       expect(source,contains('await _openAndRestore(channel, widget.onOpenChannel)'));
       expect(source,contains('await _openAndRestore(channel, widget.onPlayLive)'));

@@ -2115,6 +2115,12 @@ class AppLocalizationsUk extends AppLocalizations {
   String get radioPlay => 'Відтворити';
 
   @override
+  String get tvPreviousChannel => 'Попередній канал';
+
+  @override
+  String get tvNextChannel => 'Наступний канал';
+
+  @override
   String get tvPlayLive => 'Відтворити наживо';
 
   @override

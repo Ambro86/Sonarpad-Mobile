@@ -839,6 +839,8 @@
   "radioCommunityAdded": "Stanice byla úspěšně přidána do komunity Sonarpad.",
   "radioCommunityAddError": "Chyba při přidávání stanice: {error}",
   "radioPlay": "Přehrát",
+  "tvPreviousChannel": "Předchozí kanál",
+  "tvNextChannel": "Další kanál",
   "tvPlayLive": "Přehrát živé vysílání",
   "@tvPlayLive": {
     "description": "Secondary action that plays a TV channel live without opening its guide."

@@ -21,6 +21,8 @@ class ReceiverSocket extends Stream<Uint8List> implements Socket {
   String content = '';
   bool destroyed = false;
   @override
+  InternetAddress get address => InternetAddress.loopbackIPv4;
+  @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
   @override
   StreamSubscription<Uint8List> listen(
@@ -104,6 +106,45 @@ class ReceiverSocket extends Stream<Uint8List> implements Socket {
 
 void main() {
   const device = ChromecastDevice('id', 'Receiver', 'localhost', 8009);
+  test('local document LOAD streams the selected file and stops serving on close', () async {
+    final dir = await Directory.systemTemp.createTemp('cast_test');
+    addTearDown(() => dir.delete(recursive: true));
+    final file = File('${dir.path}/caffè test.mp3');
+    await file.writeAsBytes([10, 20, 30, 40]);
+    final receiver = ReceiverSocket();
+    final session = ChromecastSession(socketFactory: (_) async => receiver);
+    addTearDown(session.close);
+    await session.connect(device);
+    await session.load(url: file.uri.toString(), mime: 'audio/mpeg', title: 'Local',
+        position: Duration.zero);
+    final url = Uri.parse(receiver.content);
+    expect(url.scheme, 'http');
+    final client = HttpClient()..findProxy = (_) => 'DIRECT';
+    addTearDown(() => client.close(force: true));
+    final head = await (await client.openUrl('HEAD', url)).close();
+    expect(head.contentLength, 4);
+    expect(head.headers.contentType?.mimeType, 'audio/mpeg');
+    await head.drain<void>();
+    for (final (range, status, bytes) in [
+      (null, 200, [10, 20, 30, 40]),
+      ('bytes=1-2', 206, [20, 30]),
+      ('bytes=-1', 206, [40]),
+      ('bytes=2-', 206, [30, 40]),
+      ('bytes=9-', 416, <int>[]),
+    ]) {
+      final request = await client.getUrl(url);
+      if (range != null) request.headers.set('Range', range);
+      final response = await request.close();
+      expect(response.statusCode, status);
+      expect(await response.expand((b) => b).toList(), bytes);
+    }
+    final other = await (await client.getUrl(url.replace(path: '/other'))).close();
+    expect(other.statusCode, 404);
+    await other.drain<void>();
+    await session.close();
+    await expectLater((() async => (await client.getUrl(url)).close())(),
+        throwsA(isA<IOException>()));
+  });
   for (final ignore in [false, true]) {
     test('LOAD at 40 seconds: receiver ignores position=$ignore', () async {
       final receiver = ReceiverSocket()..ignoreLoadPosition = ignore;

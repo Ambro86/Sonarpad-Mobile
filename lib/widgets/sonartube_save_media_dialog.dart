@@ -26,6 +26,7 @@ Future<void> saveSonarTubeMediaWithDestination(
   Map<String, String> requestHeaders = const {},
   SonarTubeService? mp3Service,
   SonarTubeService? describedService,
+  SonarTubeMediaExportService? exportService,
 }) async {
   if (item.kind != SonarTubeItemKind.video || item.isLive) return;
 
@@ -62,7 +63,7 @@ Future<void> saveSonarTubeMediaWithDestination(
   );
   if (!context.mounted || format == null) return;
 
-  final exporter = SonarTubeMediaExportService(requestHeaders: requestHeaders);
+  final exporter = exportService ?? SonarTubeMediaExportService(requestHeaders: requestHeaders);
   final exportController = SonarTubeMediaExportController();
   final progress = ValueNotifier<double>(0.0);
   final cancelling = ValueNotifier<bool>(false);
@@ -112,6 +113,7 @@ Future<void> saveSonarTubeMediaWithDestination(
                         cancelled = true;
                         cancelling.value = true;
                         unawaited(exportController.cancel());
+                        Navigator.of(dialogContext).pop();
                       },
                 child: Text(l10n.cancel),
               ),
@@ -152,7 +154,7 @@ Future<void> saveSonarTubeMediaWithDestination(
     await AppLogger.log('SonarTube save media: export stack $stack');
   } finally {
     final dialogContext = progressContext;
-    if (dialogContext != null && dialogContext.mounted) {
+    if (!cancelling.value && dialogContext != null && dialogContext.mounted) {
       try {
         Navigator.of(dialogContext).pop();
       } catch (_) {}
@@ -193,6 +195,10 @@ Future<void> saveSonarTubeMediaWithDestination(
           content: Text(l10n.mediaProcessingCompleted),
           actions: [
             TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: Text(l10n.cancel),
+            ),
+            TextButton(
               onPressed: () => Navigator.pop(
                 dialogContext,
                 _SonarTubeDoneAction.share,
@@ -210,7 +216,10 @@ Future<void> saveSonarTubeMediaWithDestination(
         ),
       ),
     );
-    if (!context.mounted || action == null) continue;
+    if (!context.mounted || action == null) {
+      await exporter.cleanup(filePath);
+      return;
+    }
 
     if (action == _SonarTubeDoneAction.share) {
       try {

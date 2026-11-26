@@ -8,7 +8,7 @@ void main() {
     final player =
         File('lib/screens/radio_player_screen.dart').readAsStringSync();
 
-    expect(player, contains('Future<void> _requestPlayerExit() async'));
+    expect(player, contains('Future<void> _requestPlayerExit({_LiveChannel? switchTo}) async'));
     expect(player, contains('if (!_recording)'));
     expect(player, contains('barrierDismissible: false'));
     expect(player, contains('content: Text(l10n.recordingExitPrompt)'));

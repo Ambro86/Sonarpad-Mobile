@@ -7,6 +7,7 @@ import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:record/record.dart';
+import 'package:sonarpad_mobile_starter/services/podcast_capture_channels.dart';
 import 'package:sonarpad_mobile_starter/services/podcast_recorder_service.dart';
 
 Future<void> writeTone(
@@ -131,6 +132,27 @@ class ProcessMixer implements PodcastMixer {
 }
 
 void main() {
+  test('raw microphone diagnostics distinguish mono, silence, duplicated and different channels', () async {
+    final dir = await Directory.systemTemp.createTemp();
+    addTearDown(() => dir.delete(recursive: true));
+    final file = File('${dir.path}/voice.wav');
+    await writeTone(file.path);
+    expect(await podcastCaptureChannelInfo(file), contains('sourceChannels=1'));
+    final bytes = await file.readAsBytes();
+    final wav = ByteData.sublistView(bytes);
+    wav.setUint16(22, 2, Endian.little);
+    wav.setUint16(32, 4, Endian.little);
+    wav.setUint32(28, 176400, Endian.little);
+    for (final (right, expected) in [(0, 'silent'), (100, 'identical'), (-100, 'different')]) {
+      for (var i = 44; i + 4 <= bytes.length; i += 4) {
+        wav.setInt16(i, right == 0 ? 0 : 100, Endian.little);
+        wav.setInt16(i + 2, right, Endian.little);
+      }
+      await file.writeAsBytes(bytes);
+      expect(await podcastCaptureChannelInfo(file), contains('sourceChannels=2 bits=16 sampledLR=$expected'));
+    }
+  });
+
   TestWidgetsFlutterBinding.ensureInitialized();
   late Directory root;
   late FakeMicrophone microphone;

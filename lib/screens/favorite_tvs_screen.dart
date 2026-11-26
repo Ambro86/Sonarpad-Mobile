@@ -25,9 +25,9 @@ class FavoriteTvsScreen extends StatefulWidget {
 
   final List<TvChannel> channels;
   final Map<String, TvProgram> currentPrograms;
-  final FutureOr<void> Function(TvChannel) onOpenChannel;
-  final FutureOr<void> Function(TvChannel) onPlayLive;
-  final FutureOr<void> Function(TvChannel) onPlayAndRecord;
+  final FutureOr<void> Function(TvChannel, List<TvChannel>) onOpenChannel;
+  final FutureOr<void> Function(TvChannel, List<TvChannel>) onPlayLive;
+  final FutureOr<void> Function(TvChannel, List<TvChannel>) onPlayAndRecord;
   final bool recordingFeatureUnlocked;
 
   @override
@@ -38,11 +38,11 @@ class _FavoriteTvsScreenState extends State<FavoriteTvsScreen> {
   final _returnFocus = AccessibleListController(debugName: 'tv-channel-return');
   bool _openingChannel = false;
 
-  Future<void> _openAndRestore(TvChannel channel, FutureOr<void> Function(TvChannel) action) async {
+  Future<void> _openAndRestore(TvChannel channel, FutureOr<void> Function(TvChannel, List<TvChannel>) action) async {
     if (_openingChannel) return;
     _openingChannel = true;
     try {
-      await restoreTvRowAfterAction(context, _returnFocus, channel.name, () => action(channel));
+      await restoreTvRowAfterAction(context, _returnFocus, channel.name, () => action(channel, _favorites));
     } finally {
       _openingChannel = false;
     }

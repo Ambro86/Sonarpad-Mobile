@@ -1625,6 +1625,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
             settings: const RouteSettings(name: '/documents/media_player'),
             builder: (_) => PodcastEpisodePlayerScreen(
               episode: episode,
+              localDocument: true,
               isVideoSupported: isVideo,
               startWithVideo: isVideo,
             ),

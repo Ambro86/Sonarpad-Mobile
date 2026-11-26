@@ -2118,6 +2118,12 @@ class AppLocalizationsCs extends AppLocalizations {
   String get radioPlay => 'Přehrát';
 
   @override
+  String get tvPreviousChannel => 'Předchozí kanál';
+
+  @override
+  String get tvNextChannel => 'Další kanál';
+
+  @override
   String get tvPlayLive => 'Přehrát živé vysílání';
 
   @override

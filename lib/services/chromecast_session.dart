@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import '../utils/app_logger.dart';
+import 'chromecast_local_file.dart';
 
 // Pinned protocol codec; transport lifetime is owned here so sockets are destroyed.
 // ignore: implementation_imports
@@ -67,6 +68,7 @@ class ChromecastSession {
   final _updates = StreamController<ChromecastStatus>.broadcast();
   final _pending = <int, Completer<Map<String, dynamic>>>{};
   Socket? _socket;
+  ChromecastLocalFile? _localFile;
   StreamSubscription<CastMessage>? _messages;
   Timer? _poll;
   bool _polling = false, _closed = false;
@@ -227,6 +229,7 @@ class ChromecastSession {
 
   void _lost() {
     if (_closed || status.disconnected) return;
+    unawaited(_closeLocalFile());
     AppLogger.log(
       'Cast: connection lost state=${status.state} positionMs=${status.position.inMilliseconds} pending=${_pending.length}',
     );
@@ -304,7 +307,22 @@ class ChromecastSession {
     bool autoplay = true,
   }) async {
     positionRestoreFailed = false;
-    _expectedContentId = url;
+    await _closeLocalFile();
+    if (_closed || status.disconnected) throw StateError('cast_disconnected');
+    var contentId = url;
+    final uri = Uri.parse(url);
+    if (uri.isScheme('file')) {
+      final local = await ChromecastLocalFile.open(
+        File.fromUri(uri), mime, _socket!.address,
+      );
+      if (_closed || status.disconnected) {
+        await local.close();
+        throw StateError('cast_disconnected');
+      }
+      _localFile = local;
+      contentId = local.url.toString();
+    }
+    _expectedContentId = contentId;
     AppLogger.log(
       'Cast: load requested positionMs=${position.inMilliseconds} live=$live',
     );
@@ -315,7 +333,7 @@ class ChromecastSession {
       'autoplay': autoplay,
       'currentTime': live ? 0 : position.inMilliseconds / 1000,
       'media': {
-        'contentId': url,
+        'contentId': contentId,
         'contentType': mime,
         'streamType': live ? 'LIVE' : 'BUFFERED',
         'metadata': {'metadataType': 0, 'title': title},
@@ -436,6 +454,12 @@ class ChromecastSession {
 
   Future<void> close({bool stop = true}) => _closing ??= _close(stop);
 
+  Future<void> _closeLocalFile() async {
+    final local = _localFile;
+    _localFile = null;
+    await local?.close();
+  }
+
   Future<void> _close(bool stop) async {
     _poll?.cancel();
     // Send STOP without waiting for an acknowledgement before cancelling the
@@ -463,6 +487,7 @@ class ChromecastSession {
       /* Best effort delivery before closing the connection. */
     }
     _socket?.destroy();
+    await _closeLocalFile();
     AppLogger.log('Cast: transport closed stop=$stop');
     await _messages?.cancel();
     await _updates.close();

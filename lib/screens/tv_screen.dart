@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 
 import '../l10n/app_localizations.dart';
-import '../models/radio_station.dart';
 import '../services/app_settings_service.dart';
 import '../services/recording_feature_access.dart';
 import '../services/tv_service.dart';
@@ -94,7 +93,7 @@ class _TvScreenState extends State<TvScreen> {
   }
 
   Future<void> _openChannel(
-    TvChannel channel, {
+    TvChannel channel, List<TvChannel> channels, {
     bool autoPlay = false,
     bool autoStartRecording = false,
   }) async {
@@ -104,6 +103,7 @@ class _TvScreenState extends State<TvScreen> {
         settings: const RouteSettings(name: '/tv/channel'),
         builder: (_) => TvChannelScreen(
           channel: channel,
+          channels: channels,
           autoPlay: autoPlay,
           autoStartRecording: autoStartRecording,
         ),
@@ -111,7 +111,7 @@ class _TvScreenState extends State<TvScreen> {
     );
   }
 
-  Future<void> _playLiveChannel(TvChannel channel) async {
+  Future<void> _playLiveChannel(TvChannel channel, List<TvChannel> channels) async {
     final itemKey = channel.tvgId.trim().isNotEmpty
         ? channel.tvgId.trim()
         : '${channel.name}|${channel.url}';
@@ -126,22 +126,7 @@ class _TvScreenState extends State<TvScreen> {
     try {
       final resolvedUrl = await _service.resolveStreamUrl(channel);
       if (!mounted) return;
-      final station = RadioStation(
-        name: channel.name,
-        streamUrl: resolvedUrl,
-        languageCode: 'it',
-      );
-      await Navigator.push(
-        context,
-        MaterialPageRoute(
-          settings: const RouteSettings(name: '/tv/channel/player'),
-          builder: (_) => RadioPlayerScreen(
-            station: station,
-            isVideoSupported: true,
-            tvChannel: channel,
-          ),
-        ),
-      );
+      await openTvLivePlayer(context, channel, resolvedUrl, channels);
     } catch (_) {
       if (!mounted) return;
       showStatusMessage(
@@ -164,8 +149,8 @@ class _TvScreenState extends State<TvScreen> {
           currentPrograms: _currentPrograms,
           onOpenChannel: _openChannel,
           onPlayLive: _playLiveChannel,
-          onPlayAndRecord: (channel) => _openChannel(
-            channel,
+          onPlayAndRecord: (channel, channels) => _openChannel(
+            channel, channels,
             autoPlay: true,
             autoStartRecording: true,
           ),
@@ -187,8 +172,8 @@ class _TvScreenState extends State<TvScreen> {
           currentPrograms: _currentPrograms,
           onOpenChannel: _openChannel,
           onPlayLive: _playLiveChannel,
-          onPlayAndRecord: (channel) => _openChannel(
-            channel,
+          onPlayAndRecord: (channel, channels) => _openChannel(
+            channel, channels,
             autoPlay: true,
             autoStartRecording: true,
           ),
@@ -216,8 +201,8 @@ class _TvScreenState extends State<TvScreen> {
         channels: results,
         currentPrograms: _currentPrograms,
         onPlayLive: _playLiveChannel,
-        onPlayAndRecord: (channel) => _openChannel(
-          channel,
+        onPlayAndRecord: (channel, channels) => _openChannel(
+          channel, channels,
           autoPlay: true,
           autoStartRecording: true,
         ),
@@ -345,8 +330,8 @@ class _TvScreenState extends State<TvScreen> {
                   currentPrograms: _currentPrograms,
                   onOpenChannel: _openChannel,
                   onPlayLive: _playLiveChannel,
-                  onPlayAndRecord: (channel) => _openChannel(
-                    channel,
+                  onPlayAndRecord: (channel, channels) => _openChannel(
+                    channel, channels,
                     autoPlay: true,
                     autoStartRecording: true,
                   ),
@@ -481,8 +466,8 @@ class _TvScreenState extends State<TvScreen> {
                   currentPrograms: _currentPrograms,
                   onOpenChannel: _openChannel,
                   onPlayLive: _playLiveChannel,
-                  onPlayAndRecord: (channel) => _openChannel(
-                    channel,
+                  onPlayAndRecord: (channel, channels) => _openChannel(
+                    channel, channels,
                     autoPlay: true,
                     autoStartRecording: true,
                   ),
@@ -529,9 +514,9 @@ class _TvRegionalScreen extends StatelessWidget {
 
   final Map<String, List<TvChannel>> regions;
   final Map<String, TvProgram> currentPrograms;
-  final FutureOr<void> Function(TvChannel) onOpenChannel;
-  final FutureOr<void> Function(TvChannel) onPlayLive;
-  final FutureOr<void> Function(TvChannel) onPlayAndRecord;
+  final FutureOr<void> Function(TvChannel, List<TvChannel>) onOpenChannel;
+  final FutureOr<void> Function(TvChannel, List<TvChannel>) onPlayLive;
+  final FutureOr<void> Function(TvChannel, List<TvChannel>) onPlayAndRecord;
   final bool recordingFeatureUnlocked;
 
   void _openRegion(BuildContext context, String region) {
@@ -618,9 +603,9 @@ class _TvCategoryScreen extends StatefulWidget {
   final String category;
   final List<TvChannel> channels;
   final Map<String, TvProgram> currentPrograms;
-  final FutureOr<void> Function(TvChannel) onOpenChannel;
-  final FutureOr<void> Function(TvChannel) onPlayLive;
-  final FutureOr<void> Function(TvChannel) onPlayAndRecord;
+  final FutureOr<void> Function(TvChannel, List<TvChannel>) onOpenChannel;
+  final FutureOr<void> Function(TvChannel, List<TvChannel>) onPlayLive;
+  final FutureOr<void> Function(TvChannel, List<TvChannel>) onPlayAndRecord;
   final bool recordingFeatureUnlocked;
 
   @override
@@ -631,11 +616,11 @@ class _TvCategoryScreenState extends State<_TvCategoryScreen> {
   final _returnFocus = AccessibleListController(debugName: 'tv-channel-return');
   bool _openingChannel = false;
 
-  Future<void> _openAndRestore(TvChannel channel, FutureOr<void> Function(TvChannel) action) async {
+  Future<void> _openAndRestore(TvChannel channel, FutureOr<void> Function(TvChannel, List<TvChannel>) action) async {
     if (_openingChannel) return;
     _openingChannel = true;
     try {
-      await restoreTvRowAfterAction(context, _returnFocus, channel.name, () => action(channel));
+      await restoreTvRowAfterAction(context, _returnFocus, channel.name, () => action(channel, widget.channels));
     } finally {
       _openingChannel = false;
     }
@@ -811,9 +796,9 @@ class _TvSearchResultsDialog extends StatefulWidget {
   final String query;
   final List<TvChannel> channels;
   final Map<String, TvProgram> currentPrograms;
-  final FutureOr<void> Function(TvChannel) onOpenChannel;
-  final FutureOr<void> Function(TvChannel) onPlayLive;
-  final FutureOr<void> Function(TvChannel) onPlayAndRecord;
+  final FutureOr<void> Function(TvChannel, List<TvChannel>) onOpenChannel;
+  final FutureOr<void> Function(TvChannel, List<TvChannel>) onPlayLive;
+  final FutureOr<void> Function(TvChannel, List<TvChannel>) onPlayAndRecord;
   final bool recordingFeatureUnlocked;
 
   @override
@@ -824,11 +809,11 @@ class _TvSearchResultsDialogState extends State<_TvSearchResultsDialog> {
   final _returnFocus = AccessibleListController(debugName: 'tv-channel-return');
   bool _openingChannel = false;
 
-  Future<void> _openAndRestore(TvChannel channel, FutureOr<void> Function(TvChannel) action) async {
+  Future<void> _openAndRestore(TvChannel channel, FutureOr<void> Function(TvChannel, List<TvChannel>) action) async {
     if (_openingChannel) return;
     _openingChannel = true;
     try {
-      await restoreTvRowAfterAction(context, _returnFocus, channel.name, () => action(channel));
+      await restoreTvRowAfterAction(context, _returnFocus, channel.name, () => action(channel, widget.channels));
     } finally {
       _openingChannel = false;
     }

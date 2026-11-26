@@ -15,6 +15,7 @@ import 'package:permission_handler/permission_handler.dart';
 
 import '../utils/app_logger.dart';
 import 'protected_wakelock.dart';
+import 'podcast_capture_channels.dart';
 
 enum PodcastOutputFormat { mp3, m4a }
 
@@ -368,6 +369,7 @@ class PodcastRecorderService extends ChangeNotifier {
       _ticker?.cancel();
       state = PodcastCaptureState.ready;
       unawaited(_awake(false));
+      unawaited(_logCaptureChannels());
       _notify();
       unawaited(
         AppLogger.log('Podcast recorder stopped by platform; retain draft'),
@@ -398,7 +400,7 @@ class PodcastRecorderService extends ChangeNotifier {
       state = PodcastCaptureState.recording;
       await _awake(!continueInBackground);
       _ticker = Timer.periodic(const Duration(seconds: 1), (_) => _notify());
-      unawaited(AppLogger.log('Podcast recorder started; microphone only'));
+      unawaited(AppLogger.log('Podcast recorder started; microphone only requestedChannels=${stereo ? 2 : 1}'));
     } finally {
       busy = false;
       _transition = false;
@@ -438,6 +440,15 @@ class PodcastRecorderService extends ChangeNotifier {
     }
   }
 
+  Future<void> _logCaptureChannels() async {
+    try {
+      final info = await podcastCaptureChannelInfo(File(_raw));
+      unawaited(AppLogger.log('Podcast recorder microphone WAV: $info'));
+    } catch (error) {
+      unawaited(AppLogger.log('Podcast recorder microphone WAV: unavailable ${error.runtimeType}'));
+    }
+  }
+
   Future<void> stop() async {
     if (busy ||
         (state != PodcastCaptureState.recording &&
@@ -455,6 +466,7 @@ class PodcastRecorderService extends ChangeNotifier {
       if (!await File(_raw).exists() || await File(_raw).length() <= 44) {
         throw const PodcastRecorderException('empty');
       }
+      await _logCaptureChannels();
       await _persist();
       unawaited(
         AppLogger.log(

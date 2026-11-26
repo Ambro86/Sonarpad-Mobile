@@ -2062,6 +2062,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get radioPlay => '播放';
 
   @override
+  String get tvPreviousChannel => '上一个频道';
+
+  @override
+  String get tvNextChannel => '下一个频道';
+
+  @override
   String get tvPlayLive => '播放直播';
 
   @override
@@ -7950,6 +7956,12 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get radioPlay => '播放';
+
+  @override
+  String get tvPreviousChannel => '上一个频道';
+
+  @override
+  String get tvNextChannel => '下一个频道';
 
   @override
   String get tvPlayLive => '播放直播';

@@ -2283,7 +2283,7 @@ class NewsService {
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception('Errore RSS ${rssSource.name}: ${response.statusCode}');
     }
-    final decodedBody = utf8.decode(response.bodyBytes, allowMalformed: true);
+    final decodedBody = _decodeHtmlResponse(response);
     try {
       final doc = XmlDocument.parse(decodedBody);
       if (doc.rootElement.name.local.toLowerCase() == 'html') {
@@ -2528,6 +2528,9 @@ class NewsService {
       );
     }
     // Repair known obsolete front-page feeds, including saved community URLs.
+    if (host == 'hwupgrade.it' && path == '/rss/news.xml') {
+      return Uri.parse('https://feeds.hwupgrade.it/rss_hwup.xml');
+    }
     if (host == 'turkiyegazetesi.com.tr' &&
         const [
           '',

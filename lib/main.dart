@@ -238,11 +238,21 @@ class _SonarpadAppState extends State<SonarpadApp> with WidgetsBindingObserver {
   SonarpadThemeMode? _themeMode;
   bool _changelogChecked = false;
   bool _startupDialogsComplete = false;
+  bool _pendingRecordingAnnouncement = false;
+
+  void _announceScheduledRecording() {
+    final context = _navigatorKey.currentState?.overlay?.context;
+    _pendingRecordingAnnouncement = context == null;
+    if (context != null) {
+      announceStatusMessage(context, AppLocalizations.of(context).radioScheduledRecordingStarted);
+    }
+  }
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    GlobalRecordingService.instance.onScheduledRecordingStarted = _announceScheduledRecording;
     _startCloudSync();
     unawaited(AppLogger.log('SonarpadApp initState'));
     _initAppLinks();
@@ -280,6 +290,7 @@ class _SonarpadAppState extends State<SonarpadApp> with WidgetsBindingObserver {
       _themeMode = themeMode;
     });
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (mounted && _pendingRecordingAnnouncement) _announceScheduledRecording();
       await _showChangelogIfNeeded(lang);
       final missedRecording = await restoreRecording;
       final dialogContext = _navigatorKey.currentState?.overlay?.context;
@@ -572,6 +583,7 @@ class _SonarpadAppState extends State<SonarpadApp> with WidgetsBindingObserver {
 
   @override
   void dispose() {
+    GlobalRecordingService.instance.onScheduledRecordingStarted = null;
     WidgetsBinding.instance.removeObserver(this);
     _cloudSyncTimer?.cancel();
     _cloudSync.api.close();

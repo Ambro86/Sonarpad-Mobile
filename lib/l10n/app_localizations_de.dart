@@ -2123,6 +2123,12 @@ class AppLocalizationsDe extends AppLocalizations {
   String get radioPlay => 'Abspielen';
 
   @override
+  String get tvPreviousChannel => 'Vorheriger Sender';
+
+  @override
+  String get tvNextChannel => 'Nächster Sender';
+
+  @override
   String get tvPlayLive => 'Live-Sendung abspielen';
 
   @override

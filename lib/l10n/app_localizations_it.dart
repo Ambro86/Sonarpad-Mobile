@@ -2125,6 +2125,12 @@ class AppLocalizationsIt extends AppLocalizations {
   String get radioPlay => 'Riproduci';
 
   @override
+  String get tvPreviousChannel => 'Canale precedente';
+
+  @override
+  String get tvNextChannel => 'Canale successivo';
+
+  @override
   String get tvPlayLive => 'Riproduci diretta';
 
   @override

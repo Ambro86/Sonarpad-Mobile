@@ -2125,6 +2125,12 @@ class AppLocalizationsRo extends AppLocalizations {
   String get radioPlay => 'Redă';
 
   @override
+  String get tvPreviousChannel => 'Canalul anterior';
+
+  @override
+  String get tvNextChannel => 'Canalul următor';
+
+  @override
   String get tvPlayLive => 'Redă transmisia în direct';
 
   @override

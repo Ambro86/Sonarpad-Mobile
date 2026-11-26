@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 
 import '../l10n/app_localizations.dart';
-import '../models/radio_station.dart';
 import '../services/app_settings_service.dart';
 import '../services/recording_feature_access.dart';
 import '../services/tv_service.dart';
@@ -168,12 +167,14 @@ bool tvProgramHasEnded(TvProgram program, DateTime now) {
 
 class TvChannelScreen extends StatefulWidget {
   final TvChannel channel;
+  final List<TvChannel> channels;
   final bool autoPlay;
   final bool autoStartRecording;
 
   const TvChannelScreen({
     super.key,
     required this.channel,
+    this.channels = const [],
     this.autoPlay = false,
     this.autoStartRecording = false,
   });
@@ -341,24 +342,8 @@ class _TvChannelScreenState extends State<TvChannelScreen> {
         return;
       }
 
-      final station = RadioStation(
-        name: widget.channel.name,
-        streamUrl: resolvedUrl,
-        languageCode: 'it',
-      );
-
-      await Navigator.push(
-        context,
-        MaterialPageRoute(
-          settings: const RouteSettings(name: '/tv/channel/player'),
-          builder: (_) => RadioPlayerScreen(
-            station: station,
-            isVideoSupported: true,
-            tvChannel: widget.channel,
-            autoStartRecording: widget.autoStartRecording,
-          ),
-        ),
-      );
+      await openTvLivePlayer(context, widget.channel, resolvedUrl, widget.channels,
+          autoStartRecording: widget.autoStartRecording);
     } catch (e) {
       if (!mounted) return;
       showStatusMessage(context, 'Impossibile avviare la diretta: $e');

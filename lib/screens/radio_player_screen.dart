@@ -31,16 +31,48 @@ import '../utils/status_message.dart';
 import '../widgets/tv_recording_schedule_action.dart';
 import '../widgets/universal_accessible_view.dart';
 
+typedef _LiveChannel = ({TvChannel channel, String url});
+
+Future<void> openTvLivePlayer(BuildContext context, TvChannel first, String url,
+    List<TvChannel> channels, {bool autoStartRecording = false}) async {
+  final lineup = List<TvChannel>.unmodifiable(channels);
+  final navigator = Navigator.of(context);
+  _LiveChannel? selected = (channel: first, url: url);
+  while (selected != null && context.mounted) {
+    final current = selected;
+    final index = lineup.indexOf(current.channel);
+    final record = autoStartRecording;
+    final route = MaterialPageRoute<_LiveChannel>(
+      settings: const RouteSettings(name: '/tv/channel/player'),
+      builder: (_) => RadioPlayerScreen(
+        station: RadioStation(name: current.channel.name, streamUrl: current.url, languageCode: 'it'),
+        tvChannel: current.channel,
+        previousChannel: index > 0 ? lineup[index - 1] : null,
+        nextChannel: index >= 0 && index + 1 < lineup.length ? lineup[index + 1] : null,
+        isVideoSupported: true,
+        autoStartRecording: record,
+      ),
+    );
+    selected = await navigator.push(route);
+    if (selected != null) await route.completed;
+    autoStartRecording = false;
+  }
+}
+
 class RadioPlayerScreen extends StatefulWidget {
   final RadioStation station;
   final bool isVideoSupported;
   final TvChannel? tvChannel;
+  final TvChannel? previousChannel;
+  final TvChannel? nextChannel;
   final bool autoStartRecording;
   const RadioPlayerScreen({
     super.key,
     required this.station,
     this.isVideoSupported = false,
     this.tvChannel,
+    this.previousChannel,
+    this.nextChannel,
     this.autoStartRecording = false,
   });
 
@@ -2653,10 +2685,41 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
     ));
   }
 
-  Future<void> _requestPlayerExit() async {
+  bool _changingChannel = false;
+
+  Future<void> _switchChannel(TvChannel channel) async {
+    if (_changingChannel || _recordingExitPromptOpen) return;
+    _changingChannel = true;
+    try {
+      final url = await TvService().resolveStreamUrl(channel);
+      if (!mounted || ModalRoute.of(context)?.isCurrent != true) return;
+      await _requestPlayerExit(switchTo: (channel: channel, url: url));
+    } catch (_) {
+      if (mounted) showStatusMessage(context, AppLocalizations.of(context).technicalErrorGeneric);
+    } finally {
+      _changingChannel = false;
+    }
+  }
+
+  Iterable<AccessibleListRow> _channelActions(AppLocalizations l10n) sync* {
+    if (widget.previousChannel case final channel?) {
+      yield AccessibleListRow(id: 'previous_channel', title: l10n.tvPreviousChannel,
+          kind: 'button', onActivate: () => _switchChannel(channel));
+    }
+    if (widget.nextChannel case final channel?) {
+      yield AccessibleListRow(id: 'next_channel', title: l10n.tvNextChannel,
+          kind: 'button', onActivate: () => _switchChannel(channel));
+    }
+  }
+
+  Iterable<Widget> _channelButtons(AppLocalizations l10n) =>
+      _channelActions(l10n).map((row) =>
+          OutlinedButton(onPressed: row.onActivate, child: Text(row.title)));
+
+  Future<void> _requestPlayerExit({_LiveChannel? switchTo}) async {
     if (!mounted || _recordingExitPromptOpen) return;
     if (!_recording) {
-      Navigator.of(context).pop();
+      Navigator.of(context).pop(switchTo);
       return;
     }
 
@@ -2702,14 +2765,14 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
       if (!mounted) return;
       setState(() => _allowExitWithActiveRecording = true);
       await WidgetsBinding.instance.endOfFrame;
-      if (mounted) Navigator.of(context).pop();
+      if (mounted) Navigator.of(context).pop(switchTo);
     } finally {
       _recordingExitPromptOpen = false;
     }
   }
 
   Widget _withRecordingExitGuard(Widget child) {
-    return PopScope<void>(
+    return PopScope<Object?>(
       canPop: !_recording || _allowExitWithActiveRecording,
       onPopInvokedWithResult: (didPop, result) {
         if (didPop || _allowExitWithActiveRecording) return;
@@ -3044,6 +3107,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
                   onChanged: _setMediaKitVolume,
                 ),
               ],
+              ..._channelButtons(l10n),
             ],
           ),
         ),
@@ -3142,6 +3206,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
           title: _isFavorite ? l10n.radioRemoveFavorite : l10n.radioAddFavorite,
           kind: 'button',
         ),
+        ..._channelActions(l10n),
       ];
       return UniversalAccessibleList(
         sections: [AccessibleListSection(rows: rows)],
@@ -3399,6 +3464,7 @@ class _RadioPlayerScreenState extends State<RadioPlayerScreen> {
               _isFavorite ? l10n.radioRemoveFavorite : l10n.radioAddFavorite,
             ),
           ),
+          ..._channelButtons(l10n),
         ],
       ),
     ));

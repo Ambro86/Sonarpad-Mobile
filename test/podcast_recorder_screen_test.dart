@@ -171,6 +171,14 @@ void main() {
         containsAll(['preview', 'save', 'share', 'discard']),
       );
       expect(rows(tester).any((r) => r.id == 'record'), false);
+      expect(rows(tester).map((r) => r.id), [
+        'intro', 'name', 'edit-mix', 'preview', 'save', 'share', 'discard',
+      ]);
+      await row(tester, 'edit-mix').onValueChanged!(true);
+      await tester.pumpAndSettle();
+      expect(row(tester, 'output-format').valueLabel, 'MP3');
+      expect(row(tester, 'microphone').kind, 'slider');
+      expect(rows(tester).any((r) => r.id == 'channels'), false);
       await tester.runAsync(service.close);
     },
   );

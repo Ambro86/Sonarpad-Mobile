@@ -2111,6 +2111,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get radioPlay => 'Play';
 
   @override
+  String get tvPreviousChannel => 'Previous channel';
+
+  @override
+  String get tvNextChannel => 'Next channel';
+
+  @override
   String get tvPlayLive => 'Play live broadcast';
 
   @override

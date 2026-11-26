@@ -26,11 +26,13 @@ void main() {
   test('direct TV playback resolves the stream and opens the player', () {
     final tv = File('lib/screens/tv_screen.dart').readAsStringSync();
 
-    expect(tv, contains('Future<void> _playLiveChannel(TvChannel channel)'));
+    expect(tv, contains('Future<void> _playLiveChannel(TvChannel channel, List<TvChannel> channels)'));
     expect(tv, contains('_service.resolveStreamUrl(channel)'));
-    expect(tv, contains("RouteSettings(name: '/tv/channel/player')"));
-    expect(tv, contains('RadioPlayerScreen('));
-    expect(tv, contains('tvChannel: channel'));
+    expect(tv, contains('openTvLivePlayer(context, channel, resolvedUrl, channels)'));
+    final player = File('lib/screens/radio_player_screen.dart').readAsStringSync();
+    expect(player, contains("RouteSettings(name: '/tv/channel/player')"));
+    expect(player, contains('RadioPlayerScreen('));
+    expect(player, contains('tvChannel: current.channel'));
   });
 
   test('live-play visual controls stay hidden from screen readers', () {

@@ -296,6 +296,25 @@ void main() {
       expect(articles.single.title, 'Notizia aggiornata');
     });
 
+    test('opens the full HWUpgrade feed for an old saved source', () async {
+      final current = italianNewsSources.firstWhere((s) => s.name == 'HWUpgrade');
+      final service = NewsService(client: MockClient((request) async {
+        expect(request.url, current.uri);
+        expect(request.url.toString(), 'https://feeds.hwupgrade.it/rss_hwup.xml');
+        return http.Response.bytes(
+          latin1.encode('<?xml version="1.0" encoding="ISO-8859-1"?>'
+              '<rss><channel><item><title>Novità</title>'
+              '<link>https://www.hwupgrade.it/news/1</link></item></channel></rss>'),
+          200,
+        );
+      }));
+      final articles = await service.fetchSourceNews(NewsRssSource(
+        name: 'HWUpgrade',
+        uri: Uri.parse('https://www.hwupgrade.it/rss/news.xml'),
+      ));
+      expect(articles.single.title, 'Novità');
+    });
+
     test('returns every article from a single RSS source', () async {
       final items = List.generate(
         75,

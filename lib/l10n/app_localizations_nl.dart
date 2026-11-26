@@ -2125,6 +2125,12 @@ class AppLocalizationsNl extends AppLocalizations {
   String get radioPlay => 'Afspelen';
 
   @override
+  String get tvPreviousChannel => 'Vorige zender';
+
+  @override
+  String get tvNextChannel => 'Volgende zender';
+
+  @override
   String get tvPlayLive => 'Live-uitzending afspelen';
 
   @override

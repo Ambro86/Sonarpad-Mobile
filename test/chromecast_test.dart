@@ -161,6 +161,11 @@ void main() {
       videoUrl: 'https://example.org/video.mp4',
     );
     expect(ChromecastMedia.fromEpisode(split, video: true), isNull);
+    const local = PodcastEpisode(
+      title: 'Document', description: '', audioUrl: 'file:///Documents/video.mp4',
+    );
+    expect(ChromecastMedia.fromEpisode(local, video: true, localDocument: true)?.mime,
+        'video/mp4');
     expect(
       ChromecastMedia.fromEpisode(split, video: false)!.url,
       split.audioUrl,

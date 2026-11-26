@@ -836,6 +836,8 @@
   "radioCommunityAdded": "Radio successfully added to Sonarpad community.",
   "radioCommunityAddError": "Error adding radio: {error}",
   "radioPlay": "Play",
+  "tvPreviousChannel": "Previous channel",
+  "tvNextChannel": "Next channel",
   "tvPlayLive": "Play live broadcast",
   "@tvPlayLive": {
     "description": "Secondary action that plays a TV channel live without opening its guide."

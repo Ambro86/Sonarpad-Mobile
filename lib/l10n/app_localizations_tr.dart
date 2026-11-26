@@ -2125,6 +2125,12 @@ class AppLocalizationsTr extends AppLocalizations {
   String get radioPlay => 'Oynat';
 
   @override
+  String get tvPreviousChannel => 'Önceki kanal';
+
+  @override
+  String get tvNextChannel => 'Sonraki kanal';
+
+  @override
   String get tvPlayLive => 'Canlı yayını oynat';
 
   @override

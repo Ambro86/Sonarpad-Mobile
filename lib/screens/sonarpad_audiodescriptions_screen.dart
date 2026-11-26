@@ -204,6 +204,12 @@ class _SonarpadAudiodescriptionsScreenState
                               onSubmitted: _search,
                             ),
                             AccessibleListRow(
+                              id: 'search',
+                              title: AppLocalizations.of(context).search,
+                              kind: 'button',
+                              onActivate: () => _search(_searchController.text),
+                            ),
+                            AccessibleListRow(
                               id: 'all',
                               title: AppLocalizations.of(context).sonarpadAudiodescriptionsAll,
                             ),
@@ -267,7 +273,7 @@ class _SonarpadAudiodescriptionsScreenState
   Widget _legacyHome() {
     return ListView.separated(
       padding: const EdgeInsets.all(16),
-      itemCount: _items.length + 3,
+      itemCount: _items.length + 4,
       separatorBuilder: (_, _) => const Divider(),
       itemBuilder: (context, index) {
         if (index == 0) {
@@ -282,20 +288,26 @@ class _SonarpadAudiodescriptionsScreenState
           );
         }
         if (index == 1) {
+          return FilledButton(
+            onPressed: () => _search(_searchController.text),
+            child: Text(AppLocalizations.of(context).search),
+          );
+        }
+        if (index == 2) {
           return ListTile(
             title: Text(AppLocalizations.of(context).sonarpadAudiodescriptionsAll),
             trailing: const Icon(Icons.chevron_right),
             onTap: _openAll,
           );
         }
-        if (index == 2) {
+        if (index == 3) {
           return ListTile(
             title: Text(AppLocalizations.of(context).sonarTubeFavorites),
             trailing: const Icon(Icons.favorite_border),
             onTap: _openFavorites,
           );
         }
-        final item = _items[index - 3];
+        final item = _items[index - 4];
         return _legacyItem(item);
       },
     );

@@ -30,6 +30,7 @@ class RadioRecordingService extends ChangeNotifier with WidgetsBindingObserver {
   bool _stopping = false, _checking = false, _holdingAwake = false;
   bool stoppedUnexpectedly = false;
   int _mediaMs = 0;
+  VoidCallback? _onFirstMedia;
   bool _paused = false;
   Completer<void>? _transition;
   File? _finalOutput;
@@ -166,8 +167,10 @@ class RadioRecordingService extends ChangeNotifier with WidgetsBindingObserver {
     String? videoStreamUrl,
     String? audioStreamUrl,
     String? httpUserAgent,
+    VoidCallback? onFirstMedia,
   }) async {
     if (isRecording) throw StateError('recording_already_active');
+    _onFirstMedia = onFirstMedia;
     _parts.clear();
     _finalOutput = null;
     _partsDirectory = null;
@@ -283,6 +286,11 @@ class RadioRecordingService extends ChangeNotifier with WidgetsBindingObserver {
         },
         (statistics) {
           _mediaMs = statistics.getTime().round();
+          if (_mediaMs > 0 && !_stopping) {
+            final callback = _onFirstMedia;
+            _onFirstMedia = null;
+            callback?.call();
+          }
         },
       );
       _session = _completion!.isCompleted ? null : startedSession;

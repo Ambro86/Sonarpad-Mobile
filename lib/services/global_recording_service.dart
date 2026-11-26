@@ -51,7 +51,8 @@ class GlobalRecordingService extends ChangeNotifier {
     this.startRecording,
   });
   WakeLockCoordinator wakeLock = WakelockPlus.coordinator;
-  Future<File> Function(GlobalRecordingTarget, String?)? startRecording;
+  Future<File> Function(GlobalRecordingTarget, String?, VoidCallback)? startRecording;
+  VoidCallback? onScheduledRecordingStarted;
   static const scheduleStorageKey = 'sonarpad_pending_recording';
   Future<void> _storageWork = Future.value();
   Future<String?>? _restoreWork;
@@ -308,6 +309,7 @@ class GlobalRecordingService extends ChangeNotifier {
   Future<File> startNow(
     GlobalRecordingTarget target, {
     String? titleOverride,
+    VoidCallback? onFirstMedia,
   }) async {
     if (hasAnyActiveRecording) {
       throw StateError('A recording is already active.');
@@ -377,6 +379,7 @@ class GlobalRecordingService extends ChangeNotifier {
 
       final trimmedTitle = titleOverride?.trim();
       final file = await recordingService.start(
+        onFirstMedia: onFirstMedia,
         stationName: trimmedTitle == null || trimmedTitle.isEmpty
             ? target.stationName
             : trimmedTitle,
@@ -514,10 +517,14 @@ class GlobalRecordingService extends ChangeNotifier {
         'title=${title ?? ''} end=$end',
       );
       final starter = startRecording;
+      final generation = _scheduleGeneration;
+      void onFirstMedia() {
+        if (generation == _scheduleGeneration) onScheduledRecordingStarted?.call();
+      }
       if (starter == null) {
-        await startNow(target, titleOverride: title);
+        await startNow(target, titleOverride: title, onFirstMedia: onFirstMedia);
       } else {
-        await starter(target, title);
+        await starter(target, title, onFirstMedia);
       }
 
       if (end == null) {

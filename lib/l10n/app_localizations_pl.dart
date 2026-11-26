@@ -2120,6 +2120,12 @@ class AppLocalizationsPl extends AppLocalizations {
   String get radioPlay => 'Odtwórz';
 
   @override
+  String get tvPreviousChannel => 'Poprzedni kanał';
+
+  @override
+  String get tvNextChannel => 'Następny kanał';
+
+  @override
   String get tvPlayLive => 'Odtwórz transmisję na żywo';
 
   @override

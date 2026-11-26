@@ -126,7 +126,7 @@ final italianNewsSources = [
   ),
   NewsRssSource(
     name: 'HWUpgrade',
-    uri: Uri.parse('https://www.hwupgrade.it/rss/news.xml'),
+    uri: Uri.parse('https://feeds.hwupgrade.it/rss_hwup.xml'),
   ),
   NewsRssSource(
     name: 'iPhone Italia',

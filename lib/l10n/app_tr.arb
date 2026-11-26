@@ -836,6 +836,8 @@
   "radioCommunityAdded": "Radyo Sonarpad topluluğuna başarıyla eklendi.",
   "radioCommunityAddError": "Radyo ekleme hatası: {error}",
   "radioPlay": "Oynat",
+  "tvPreviousChannel": "Önceki kanal",
+  "tvNextChannel": "Sonraki kanal",
   "tvPlayLive": "Canlı yayını oynat",
   "@tvPlayLive": {
     "description": "Secondary action that plays a TV channel live without opening its guide."

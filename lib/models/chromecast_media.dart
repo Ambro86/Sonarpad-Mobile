@@ -1,3 +1,5 @@
+import 'package:mime/mime.dart';
+
 import 'podcast.dart';
 
 class ChromecastMedia {
@@ -7,6 +9,7 @@ class ChromecastMedia {
   static ChromecastMedia? fromEpisode(
     PodcastEpisode episode, {
     required bool video,
+    bool localDocument = false,
   }) {
     // Separate tracks need muxing; never silently drop the selected audio.
     if (video &&
@@ -16,6 +19,14 @@ class ChromecastMedia {
     }
     final url = video ? episode.videoUrl ?? episode.audioUrl : episode.audioUrl;
     final uri = Uri.tryParse(url);
+    if (localDocument && uri != null && uri.isScheme('file') &&
+        uri.host.isEmpty && uri.hasAbsolutePath) {
+      final path = uri.path.toLowerCase();
+      final mime = path.endsWith('.m4b') || path.endsWith('.m4a')
+          ? 'audio/mp4'
+          : lookupMimeType(path);
+      return ChromecastMedia(url, mime ?? 'application/octet-stream');
+    }
     if (uri == null ||
         !['http', 'https'].contains(uri.scheme) ||
         uri.host.isEmpty) {

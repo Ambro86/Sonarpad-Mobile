@@ -51,6 +51,7 @@ class PodcastEpisodePlayerScreen extends StatefulWidget {
   const PodcastEpisodePlayerScreen({
     super.key,
     required this.episode,
+    this.localDocument = false,
     this.speedCategory = MediaPlaybackSpeedCategory.media,
     this.isVideoSupported = false,
     this.startWithVideo = false,
@@ -70,6 +71,7 @@ class PodcastEpisodePlayerScreen extends StatefulWidget {
   });
 
   final PodcastEpisode episode;
+  final bool localDocument;
   final Duration? initialPlaybackPosition;
   final MediaPlaybackSpeedCategory speedCategory;
   final bool isVideoSupported;
@@ -147,7 +149,7 @@ class _PodcastEpisodePlayerScreenState
   double _playbackSpeedAtIndex(int index) =>
       mediaPlaybackSpeeds[index.clamp(0, mediaPlaybackSpeeds.length - 1).toInt()];
 
-  bool _showCast = true;
+  bool _showCast = false; // Wait for the saved preference before exposing the button.
   bool _castRouteOpen = false;
   bool _casting = false;
   bool _loaded = false;
@@ -584,7 +586,7 @@ class _PodcastEpisodePlayerScreenState
   }
 
   ChromecastMedia? get _castMedia => ChromecastMedia.fromEpisode(_episode,
-      video: widget.isVideoSupported);
+      video: widget.isVideoSupported, localDocument: widget.localDocument);
 
   bool get _showCastButton => _showCast && _castMedia != null;
 

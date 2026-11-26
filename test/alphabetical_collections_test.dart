@@ -105,9 +105,9 @@ void main() {
             screen = FavoriteTvsScreen(
               channels: channels,
               currentPrograms: {},
-              onOpenChannel: (_) {},
-              onPlayLive: (_) {},
-              onPlayAndRecord: (_) {},
+              onOpenChannel: (_, _) {},
+              onPlayLive: (_, _) {},
+              onPlayAndRecord: (_, _) {},
             );
             savedNames = () async =>
                 (await tv.loadFavorites()).map((e) => e.name).toList();

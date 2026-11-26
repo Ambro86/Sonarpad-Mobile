@@ -58,6 +58,47 @@ void main() {
     JustAudioPlatform.instance = originalAudio;
     configureAccessibleRendererRuntime(useFlutterOnIos: false);
   });
+  testWidgets('live channel buttons follow the source list and Back leaves the player', (tester) async {
+    final channels = [
+      for (final name in ['B', 'A', 'C'])
+        TvChannel(name: name, url: 'https://example.org/$name.m3u8', category: 'Test'),
+    ];
+    await tester.pumpWidget(MaterialApp(
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: Builder(builder: (context) => TextButton(
+        onPressed: () => openTvLivePlayer(context, channels.first, channels.first.url, channels),
+        child: const Text('Open'),
+      )),
+    ));
+    await tester.tap(find.text('Open'));
+    Future<void> settlePlayer() async {
+      await tester.pumpAndSettle();
+      await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 100)));
+      await tester.pumpAndSettle();
+    }
+    List<AccessibleListRow> actions() => tester.widget<UniversalAccessibleList>(
+      find.byType(UniversalAccessibleList).first,
+    ).sections.expand((section) => section.rows).where((row) => row.id.endsWith('_channel')).toList();
+    Future<void> change(String id) async {
+      final action = actions().singleWhere((row) => row.id == id);
+      await tester.runAsync(() async => await action.onActivate!());
+      await settlePlayer();
+    }
+    await settlePlayer();
+    expect(actions().map((row) => row.id), ['next_channel']);
+    await change('next_channel');
+    expect(tester.widget<RadioPlayerScreen>(find.byType(RadioPlayerScreen)).station.name, 'A');
+    expect(actions().map((row) => row.id), ['previous_channel', 'next_channel']);
+    await change('next_channel');
+    expect(actions().map((row) => row.id), ['previous_channel']);
+    await change('previous_channel');
+    expect(tester.widget<RadioPlayerScreen>(find.byType(RadioPlayerScreen)).station.name, 'A');
+    await tester.pageBack();
+    await settlePlayer();
+    expect(find.text('Open'), findsOneWidget);
+    await disposeTestPlayer(tester);
+  });
   for (final enabled in [true, false]) {
     testWidgets('TV Cast respects the visibility setting: $enabled', (tester) async {
       await AppSettingsService().setChromecastButtonEnabled(enabled);

@@ -836,6 +836,8 @@
   "radioCommunityAdded": "Postul a fost adăugat cu succes în comunitatea Sonarpad.",
   "radioCommunityAddError": "Eroare la adăugarea postului: {error}",
   "radioPlay": "Redă",
+  "tvPreviousChannel": "Canalul anterior",
+  "tvNextChannel": "Canalul următor",
   "tvPlayLive": "Redă transmisia în direct",
   "@tvPlayLive": {
     "description": "Secondary action that plays a TV channel live without opening its guide."

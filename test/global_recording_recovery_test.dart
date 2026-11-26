@@ -125,20 +125,29 @@ void main() {
         GlobalRecordingService.scheduleStorageKey: jsonEncode(data),
       });
       var starts = 0;
+      var announcements = 0;
+      late void Function() firstMedia;
       final restored = GlobalRecordingService.forTesting(
         wakeLock: wakeLock,
-        startRecording: (target, title) async {
+        startRecording: (target, title, onFirstMedia) async {
+          firstMedia = onFirstMedia;
           starts++;
           expect(target.tvChannel!.tvgId, 'Tv8.it');
           expect(title, 'Programme');
           return File('test-recording.mp4');
         },
       );
+      restored.onScheduledRecordingStarted = () => announcements++;
       await restored.restoreSchedule();
       await restored.restoreSchedule();
       await settle();
       expect(starts, 1);
+      expect(announcements, 0);
+      firstMedia();
+      expect(announcements, 1);
       restored.cancelSchedule();
+      firstMedia();
+      expect(announcements, 1);
       await settle();
       data['end'] = now.subtract(const Duration(minutes: 1)).toIso8601String();
       SharedPreferences.setMockInitialValues({
@@ -146,7 +155,7 @@ void main() {
       });
       final expired = GlobalRecordingService.forTesting(
         wakeLock: wakeLock,
-        startRecording: (_, _) async {
+        startRecording: (_, _, _) async {
           starts++;
           return File('unexpected.mp4');
         },

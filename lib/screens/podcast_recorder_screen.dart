@@ -30,6 +30,7 @@ class _PodcastRecorderScreenState extends State<PodcastRecorderScreen>
   bool _background = false;
   bool _operationActive = false;
   bool _initialized = false;
+  bool _editMix = false;
   String? _error;
   @override
   void initState() {
@@ -50,6 +51,7 @@ class _PodcastRecorderScreenState extends State<PodcastRecorderScreen>
   });
 
   void _changed() {
+    if (_recorder.state != PodcastCaptureState.ready) _editMix = false;
     if (mounted) setState(() {});
   }
 
@@ -431,78 +433,88 @@ class _PodcastRecorderScreenState extends State<PodcastRecorderScreen>
                 _recorder.updateRecordingOptions(background: value == true),
           ),
         ],
-        _exportChoice(
-          id: 'output-format',
-          title: l10n.sonarTubeSaveFormatPrompt,
-          labels: const ['MP3', 'M4A'],
-          index: _recorder.outputFormat.index,
-          change: (index) => _recorder.updateExportOptions(
-            format: PodcastOutputFormat.values[index],
-          ),
-        ),
-        _exportChoice(
-          id: 'output-bitrate',
-          title: l10n.convertMediaBitrate,
-          labels: [for (final bitrate in podcastBitrates) '$bitrate kbps'],
-          index: podcastBitrates.indexOf(_recorder.bitrateKbps),
-          change: (index) =>
-              _recorder.updateExportOptions(bitrate: podcastBitrates[index]),
-        ),
-        _volume(
-          'microphone',
-          l10n.podcastRecorderMicVolume,
-          _recorder.microphoneVolume,
-          2,
-          (v) => _recorder.updateMix(microphone: v),
-        ),
-        AccessibleListRow(
-          id: 'music',
-          title: l10n.podcastRecorderChooseMusic,
-          subtitle: _recorder.musicPath == null
-              ? null
-              : p.basename(_recorder.musicPath!),
-          kind: 'button',
-          onActivate: () => _chooseMusic(),
-        ),
-        if (_recorder.musicPath != null) ...[
-          _volume(
-            'music-volume',
-            l10n.podcastRecorderMusicVolume,
-            _recorder.musicVolume,
-            1,
-            (v) => _recorder.updateMix(music: v),
-          ),
+        if (ready)
           AccessibleListRow(
-            id: 'remove-music',
-            title: l10n.podcastRecorderRemoveMusic,
-            kind: 'button',
-            onActivate: () async {
-              await _stopPreview();
-              await _recorder.updateMix(removeMusic: true);
-            },
+            id: 'edit-mix',
+            title: l10n.edit,
+            kind: 'toggle',
+            toggleValue: _editMix,
+            onValueChanged: (value) => setState(() => _editMix = value == true),
           ),
-        ],
-        for (final intro in [true, false]) ...[
-          AccessibleListRow(
-            id: intro ? 'intro-jingle' : 'outro-jingle',
-            title: intro
-                ? l10n.podcastRecorderChooseIntro
-                : l10n.podcastRecorderChooseOutro,
-            kind: 'button',
-            onActivate: () => _chooseMusic(intro: intro),
-          ),
-          if ((intro ? _recorder.introPath : _recorder.outroPath) != null)
-            AccessibleListRow(
-              id: intro ? 'remove-intro' : 'remove-outro',
-              title: intro
-                  ? l10n.podcastRecorderRemoveIntro
-                  : l10n.podcastRecorderRemoveOutro,
-              kind: 'button',
-              onActivate: () => _run(() async {
-                await _stopPreview();
-                await _recorder.chooseJingle(null, intro: intro);
-              }),
+        if (!ready || _editMix) ...[
+          _exportChoice(
+            id: 'output-format',
+            title: l10n.sonarTubeSaveFormatPrompt,
+            labels: const ['MP3', 'M4A'],
+            index: _recorder.outputFormat.index,
+            change: (index) => _recorder.updateExportOptions(
+              format: PodcastOutputFormat.values[index],
             ),
+          ),
+          _exportChoice(
+            id: 'output-bitrate',
+            title: l10n.convertMediaBitrate,
+            labels: [for (final bitrate in podcastBitrates) '$bitrate kbps'],
+            index: podcastBitrates.indexOf(_recorder.bitrateKbps),
+            change: (index) =>
+                _recorder.updateExportOptions(bitrate: podcastBitrates[index]),
+          ),
+          _volume(
+            'microphone',
+            l10n.podcastRecorderMicVolume,
+            _recorder.microphoneVolume,
+            2,
+            (v) => _recorder.updateMix(microphone: v),
+          ),
+          AccessibleListRow(
+            id: 'music',
+            title: l10n.podcastRecorderChooseMusic,
+            subtitle: _recorder.musicPath == null
+                ? null
+                : p.basename(_recorder.musicPath!),
+            kind: 'button',
+            onActivate: () => _chooseMusic(),
+          ),
+          if (_recorder.musicPath != null) ...[
+            _volume(
+              'music-volume',
+              l10n.podcastRecorderMusicVolume,
+              _recorder.musicVolume,
+              1,
+              (v) => _recorder.updateMix(music: v),
+            ),
+            AccessibleListRow(
+              id: 'remove-music',
+              title: l10n.podcastRecorderRemoveMusic,
+              kind: 'button',
+              onActivate: () async {
+                await _stopPreview();
+                await _recorder.updateMix(removeMusic: true);
+              },
+            ),
+          ],
+          for (final intro in [true, false]) ...[
+            AccessibleListRow(
+              id: intro ? 'intro-jingle' : 'outro-jingle',
+              title: intro
+                  ? l10n.podcastRecorderChooseIntro
+                  : l10n.podcastRecorderChooseOutro,
+              kind: 'button',
+              onActivate: () => _chooseMusic(intro: intro),
+            ),
+            if ((intro ? _recorder.introPath : _recorder.outroPath) != null)
+              AccessibleListRow(
+                id: intro ? 'remove-intro' : 'remove-outro',
+                title: intro
+                    ? l10n.podcastRecorderRemoveIntro
+                    : l10n.podcastRecorderRemoveOutro,
+                kind: 'button',
+                onActivate: () => _run(() async {
+                  await _stopPreview();
+                  await _recorder.chooseJingle(null, intro: intro);
+                }),
+              ),
+          ],
         ],
         if (!ready)
           AccessibleListRow(

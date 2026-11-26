@@ -3913,6 +3913,18 @@ abstract class AppLocalizations {
   /// **'Riproduci'**
   String get radioPlay;
 
+  /// No description provided for @tvPreviousChannel.
+  ///
+  /// In it, this message translates to:
+  /// **'Canale precedente'**
+  String get tvPreviousChannel;
+
+  /// No description provided for @tvNextChannel.
+  ///
+  /// In it, this message translates to:
+  /// **'Canale successivo'**
+  String get tvNextChannel;
+
   /// Secondary action that plays a TV channel live without opening its guide.
   ///
   /// In it, this message translates to:

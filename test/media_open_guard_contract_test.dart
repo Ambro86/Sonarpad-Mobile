@@ -25,13 +25,13 @@ void main() {
         'source=tv-live',
         '_mediaOpenGuard.tryAcquire(itemKey)',
         'resolveStreamUrl(channel)',
-        "RouteSettings(name: '/tv/channel/player')",
+        'openTvLivePlayer(context,',
       ],
       'lib/screens/tv_channel_screen.dart': [
         'source=tv-channel',
         '_mediaOpenGuard.tryAcquire(itemKey)',
         'resolveStreamUrl(widget.channel)',
-        "RouteSettings(name: '/tv/channel/player')",
+        'openTvLivePlayer(context,',
       ],
       'lib/screens/raiplay_screen.dart': [
         'source=raiplay',

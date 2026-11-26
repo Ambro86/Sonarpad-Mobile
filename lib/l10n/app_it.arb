@@ -2691,6 +2691,8 @@
     }
   },
   "radioPlay": "Riproduci",
+  "tvPreviousChannel": "Canale precedente",
+  "tvNextChannel": "Canale successivo",
   "tvPlayLive": "Riproduci diretta",
   "@tvPlayLive": {
     "description": "Secondary action that plays a TV channel live without opening its guide."
