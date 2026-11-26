@@ -5095,5 +5095,14 @@
   "manageAllBookmarks": "Manage all bookmarks",
   "noSavedBookmarks": "No saved bookmarks.",
   "deleteAllBookmarks": "Delete all bookmarks",
-  "deleteAllBookmarksConfirmation": "Delete all bookmarks? Documents and media files will not be deleted."
+  "deleteAllBookmarksConfirmation": "Delete all bookmarks? Documents and media files will not be deleted.",
+  "splitDocument": "Split document",
+  "splitMethod": "Split method",
+  "splitByParts": "Split into parts",
+  "splitByCharacters": "Split by character count",
+  "splitPartCount": "Number of parts",
+  "splitCharacterCount": "Characters per part",
+  "splitCustom": "Custom",
+  "splitRange": "Enter a number between 1 and {max}.",
+  "splitSaved": "Parts saved in Documents: {count}."
 }

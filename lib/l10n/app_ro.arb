@@ -5095,5 +5095,14 @@
   "noSavedBookmarks": "Nu există marcaje salvate.",
   "@recordingScheduleMissed": {"placeholders": {"title": {"type": "String"}}},
   "deleteAllBookmarks": "Șterge toate marcajele",
-  "deleteAllBookmarksConfirmation": "Ștergi toate marcajele? Documentele și fișierele media nu vor fi șterse."
+  "deleteAllBookmarksConfirmation": "Ștergi toate marcajele? Documentele și fișierele media nu vor fi șterse.",
+  "splitDocument": "Împarte documentul",
+  "splitMethod": "Metoda de împărțire",
+  "splitByParts": "Împarte în părți",
+  "splitByCharacters": "Împarte după numărul de caractere",
+  "splitPartCount": "Număr de părți",
+  "splitCharacterCount": "Caractere pe parte",
+  "splitCustom": "Personalizat",
+  "splitRange": "Introdu un număr între 1 și {max}.",
+  "splitSaved": "Părți salvate în Documente: {count}."
 }

@@ -5101,5 +5101,14 @@
   "noSavedBookmarks": "Nenhum marcador salvo.",
   "@recordingScheduleMissed": {"placeholders": {"title": {"type": "String"}}},
   "deleteAllBookmarks": "Excluir todos os marcadores",
-  "deleteAllBookmarksConfirmation": "Excluir todos os marcadores? Os documentos e arquivos de mídia não serão excluídos."
+  "deleteAllBookmarksConfirmation": "Excluir todos os marcadores? Os documentos e arquivos de mídia não serão excluídos.",
+  "splitDocument": "Dividir documento",
+  "splitMethod": "Método de divisão",
+  "splitByParts": "Dividir em partes",
+  "splitByCharacters": "Dividir por número de caracteres",
+  "splitPartCount": "Número de partes",
+  "splitCharacterCount": "Caracteres por parte",
+  "splitCustom": "Personalizado",
+  "splitRange": "Insira um número entre 1 e {max}.",
+  "splitSaved": "Partes salvas em Documentos: {count}."
 }

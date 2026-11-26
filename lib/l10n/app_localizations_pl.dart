@@ -6149,4 +6149,35 @@ class AppLocalizationsPl extends AppLocalizations {
   @override
   String get deleteAllBookmarksConfirmation =>
       'Usunąć wszystkie zakładki? Dokumenty i pliki multimedialne nie zostaną usunięte.';
+
+  @override
+  String get splitDocument => 'Podziel dokument';
+
+  @override
+  String get splitMethod => 'Metoda podziału';
+
+  @override
+  String get splitByParts => 'Podziel na części';
+
+  @override
+  String get splitByCharacters => 'Podziel według liczby znaków';
+
+  @override
+  String get splitPartCount => 'Liczba części';
+
+  @override
+  String get splitCharacterCount => 'Znaki na część';
+
+  @override
+  String get splitCustom => 'Własna wartość';
+
+  @override
+  String splitRange(int max) {
+    return 'Wpisz liczbę od 1 do $max.';
+  }
+
+  @override
+  String splitSaved(int count) {
+    return 'Liczba części zapisanych w Dokumentach: $count.';
+  }
 }

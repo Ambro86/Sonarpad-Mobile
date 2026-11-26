@@ -6736,5 +6736,28 @@
   "manageAllBookmarks": "Gestisci tutti i segnalibri",
   "noSavedBookmarks": "Nessun segnalibro salvato.",
   "deleteAllBookmarks": "Elimina tutti i segnalibri",
-  "deleteAllBookmarksConfirmation": "Vuoi eliminare tutti i segnalibri? I documenti e i file multimediali non saranno eliminati."
+  "deleteAllBookmarksConfirmation": "Vuoi eliminare tutti i segnalibri? I documenti e i file multimediali non saranno eliminati.",
+  "splitDocument": "Dividi documento",
+  "splitMethod": "Metodo di divisione",
+  "splitByParts": "Dividi in parti",
+  "splitByCharacters": "Dividi in base ai caratteri",
+  "splitPartCount": "Numero di parti",
+  "splitCharacterCount": "Caratteri per parte",
+  "splitCustom": "Personalizzato",
+  "splitRange": "Inserisci un numero tra 1 e {max}.",
+  "splitSaved": "Parti salvate in Documenti: {count}.",
+  "@splitRange": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "@splitSaved": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

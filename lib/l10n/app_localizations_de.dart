@@ -6164,4 +6164,35 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get deleteAllBookmarksConfirmation =>
       'Alle Lesezeichen löschen? Dokumente und Mediendateien werden nicht gelöscht.';
+
+  @override
+  String get splitDocument => 'Dokument teilen';
+
+  @override
+  String get splitMethod => 'Teilungsmethode';
+
+  @override
+  String get splitByParts => 'In Teile aufteilen';
+
+  @override
+  String get splitByCharacters => 'Nach Zeichenanzahl teilen';
+
+  @override
+  String get splitPartCount => 'Anzahl der Teile';
+
+  @override
+  String get splitCharacterCount => 'Zeichen pro Teil';
+
+  @override
+  String get splitCustom => 'Benutzerdefiniert';
+
+  @override
+  String splitRange(int max) {
+    return 'Gib eine Zahl zwischen 1 und $max ein.';
+  }
+
+  @override
+  String splitSaved(int count) {
+    return 'In Dokumente gespeicherte Teile: $count.';
+  }
 }

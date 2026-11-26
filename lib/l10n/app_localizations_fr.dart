@@ -6194,4 +6194,35 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get deleteAllBookmarksConfirmation =>
       'Supprimer tous les signets ? Les documents et fichiers multimédias ne seront pas supprimés.';
+
+  @override
+  String get splitDocument => 'Diviser le document';
+
+  @override
+  String get splitMethod => 'Méthode de division';
+
+  @override
+  String get splitByParts => 'Diviser en parties';
+
+  @override
+  String get splitByCharacters => 'Diviser par nombre de caractères';
+
+  @override
+  String get splitPartCount => 'Nombre de parties';
+
+  @override
+  String get splitCharacterCount => 'Caractères par partie';
+
+  @override
+  String get splitCustom => 'Personnalisé';
+
+  @override
+  String splitRange(int max) {
+    return 'Saisissez un nombre entre 1 et $max.';
+  }
+
+  @override
+  String splitSaved(int count) {
+    return 'Parties enregistrées dans Documents : $count.';
+  }
 }

@@ -6131,4 +6131,35 @@ class AppLocalizationsUk extends AppLocalizations {
   @override
   String get deleteAllBookmarksConfirmation =>
       'Видалити всі закладки? Документи та мультимедійні файли не буде видалено.';
+
+  @override
+  String get splitDocument => 'Розділити документ';
+
+  @override
+  String get splitMethod => 'Спосіб поділу';
+
+  @override
+  String get splitByParts => 'Розділити на частини';
+
+  @override
+  String get splitByCharacters => 'Розділити за кількістю символів';
+
+  @override
+  String get splitPartCount => 'Кількість частин';
+
+  @override
+  String get splitCharacterCount => 'Символів на частину';
+
+  @override
+  String get splitCustom => 'Власне значення';
+
+  @override
+  String splitRange(int max) {
+    return 'Введіть число від 1 до $max.';
+  }
+
+  @override
+  String splitSaved(int count) {
+    return 'Частин збережено в Документах: $count.';
+  }
 }

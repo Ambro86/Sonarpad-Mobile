@@ -6673,5 +6673,14 @@
   "noSavedBookmarks": "Keine gespeicherten Lesezeichen.",
   "@recordingScheduleMissed": {"placeholders": {"title": {"type": "String"}}},
   "deleteAllBookmarks": "Alle Lesezeichen löschen",
-  "deleteAllBookmarksConfirmation": "Alle Lesezeichen löschen? Dokumente und Mediendateien werden nicht gelöscht."
+  "deleteAllBookmarksConfirmation": "Alle Lesezeichen löschen? Dokumente und Mediendateien werden nicht gelöscht.",
+  "splitDocument": "Dokument teilen",
+  "splitMethod": "Teilungsmethode",
+  "splitByParts": "In Teile aufteilen",
+  "splitByCharacters": "Nach Zeichenanzahl teilen",
+  "splitPartCount": "Anzahl der Teile",
+  "splitCharacterCount": "Zeichen pro Teil",
+  "splitCustom": "Benutzerdefiniert",
+  "splitRange": "Gib eine Zahl zwischen 1 und {max} ein.",
+  "splitSaved": "In Dokumente gespeicherte Teile: {count}."
 }

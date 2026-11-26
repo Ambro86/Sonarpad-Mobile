@@ -6163,4 +6163,35 @@ class AppLocalizationsRo extends AppLocalizations {
   @override
   String get deleteAllBookmarksConfirmation =>
       'Ștergi toate marcajele? Documentele și fișierele media nu vor fi șterse.';
+
+  @override
+  String get splitDocument => 'Împarte documentul';
+
+  @override
+  String get splitMethod => 'Metoda de împărțire';
+
+  @override
+  String get splitByParts => 'Împarte în părți';
+
+  @override
+  String get splitByCharacters => 'Împarte după numărul de caractere';
+
+  @override
+  String get splitPartCount => 'Număr de părți';
+
+  @override
+  String get splitCharacterCount => 'Caractere pe parte';
+
+  @override
+  String get splitCustom => 'Personalizat';
+
+  @override
+  String splitRange(int max) {
+    return 'Introdu un număr între 1 și $max.';
+  }
+
+  @override
+  String splitSaved(int count) {
+    return 'Părți salvate în Documente: $count.';
+  }
 }

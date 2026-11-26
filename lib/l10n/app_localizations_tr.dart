@@ -6142,4 +6142,35 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get deleteAllBookmarksConfirmation =>
       'Tüm yer işaretleri silinsin mi? Belgeler ve medya dosyaları silinmeyecek.';
+
+  @override
+  String get splitDocument => 'Belgeyi böl';
+
+  @override
+  String get splitMethod => 'Bölme yöntemi';
+
+  @override
+  String get splitByParts => 'Parçalara böl';
+
+  @override
+  String get splitByCharacters => 'Karakter sayısına göre böl';
+
+  @override
+  String get splitPartCount => 'Parça sayısı';
+
+  @override
+  String get splitCharacterCount => 'Parça başına karakter';
+
+  @override
+  String get splitCustom => 'Özel';
+
+  @override
+  String splitRange(int max) {
+    return '1 ile $max arasında bir sayı girin.';
+  }
+
+  @override
+  String splitSaved(int count) {
+    return 'Belgelere kaydedilen parça sayısı: $count.';
+  }
 }

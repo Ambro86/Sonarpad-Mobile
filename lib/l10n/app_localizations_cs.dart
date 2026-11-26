@@ -6135,4 +6135,35 @@ class AppLocalizationsCs extends AppLocalizations {
   @override
   String get deleteAllBookmarksConfirmation =>
       'Odstranit všechny záložky? Dokumenty ani multimediální soubory nebudou odstraněny.';
+
+  @override
+  String get splitDocument => 'Rozdělit dokument';
+
+  @override
+  String get splitMethod => 'Způsob rozdělení';
+
+  @override
+  String get splitByParts => 'Rozdělit na části';
+
+  @override
+  String get splitByCharacters => 'Rozdělit podle počtu znaků';
+
+  @override
+  String get splitPartCount => 'Počet částí';
+
+  @override
+  String get splitCharacterCount => 'Znaků na část';
+
+  @override
+  String get splitCustom => 'Vlastní';
+
+  @override
+  String splitRange(int max) {
+    return 'Zadejte číslo od 1 do $max.';
+  }
+
+  @override
+  String splitSaved(int count) {
+    return 'Počet částí uložených do Dokumentů: $count.';
+  }
 }

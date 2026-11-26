@@ -6165,6 +6165,37 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get deleteAllBookmarksConfirmation =>
       'Eliminar todos os marcadores? Os documentos e ficheiros multimédia não serão eliminados.';
+
+  @override
+  String get splitDocument => 'Dividir documento';
+
+  @override
+  String get splitMethod => 'Método de divisão';
+
+  @override
+  String get splitByParts => 'Dividir em partes';
+
+  @override
+  String get splitByCharacters => 'Dividir por número de caracteres';
+
+  @override
+  String get splitPartCount => 'Número de partes';
+
+  @override
+  String get splitCharacterCount => 'Caracteres por parte';
+
+  @override
+  String get splitCustom => 'Personalizado';
+
+  @override
+  String splitRange(int max) {
+    return 'Introduza um número entre 1 e $max.';
+  }
+
+  @override
+  String splitSaved(int count) {
+    return 'Partes guardadas em Documentos: $count.';
+  }
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
@@ -12320,4 +12351,35 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   @override
   String get deleteAllBookmarksConfirmation =>
       'Excluir todos os marcadores? Os documentos e arquivos de mídia não serão excluídos.';
+
+  @override
+  String get splitDocument => 'Dividir documento';
+
+  @override
+  String get splitMethod => 'Método de divisão';
+
+  @override
+  String get splitByParts => 'Dividir em partes';
+
+  @override
+  String get splitByCharacters => 'Dividir por número de caracteres';
+
+  @override
+  String get splitPartCount => 'Número de partes';
+
+  @override
+  String get splitCharacterCount => 'Caracteres por parte';
+
+  @override
+  String get splitCustom => 'Personalizado';
+
+  @override
+  String splitRange(int max) {
+    return 'Insira um número entre 1 e $max.';
+  }
+
+  @override
+  String splitSaved(int count) {
+    return 'Partes salvas em Documentos: $count.';
+  }
 }

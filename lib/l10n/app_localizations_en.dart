@@ -6116,4 +6116,35 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get deleteAllBookmarksConfirmation =>
       'Delete all bookmarks? Documents and media files will not be deleted.';
+
+  @override
+  String get splitDocument => 'Split document';
+
+  @override
+  String get splitMethod => 'Split method';
+
+  @override
+  String get splitByParts => 'Split into parts';
+
+  @override
+  String get splitByCharacters => 'Split by character count';
+
+  @override
+  String get splitPartCount => 'Number of parts';
+
+  @override
+  String get splitCharacterCount => 'Characters per part';
+
+  @override
+  String get splitCustom => 'Custom';
+
+  @override
+  String splitRange(int max) {
+    return 'Enter a number between 1 and $max.';
+  }
+
+  @override
+  String splitSaved(int count) {
+    return 'Parts saved in Documents: $count.';
+  }
 }

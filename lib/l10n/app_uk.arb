@@ -6673,5 +6673,14 @@
   "noSavedBookmarks": "Немає збережених закладок.",
   "@recordingScheduleMissed": {"placeholders": {"title": {"type": "String"}}},
   "deleteAllBookmarks": "Видалити всі закладки",
-  "deleteAllBookmarksConfirmation": "Видалити всі закладки? Документи та мультимедійні файли не буде видалено."
+  "deleteAllBookmarksConfirmation": "Видалити всі закладки? Документи та мультимедійні файли не буде видалено.",
+  "splitDocument": "Розділити документ",
+  "splitMethod": "Спосіб поділу",
+  "splitByParts": "Розділити на частини",
+  "splitByCharacters": "Розділити за кількістю символів",
+  "splitPartCount": "Кількість частин",
+  "splitCharacterCount": "Символів на частину",
+  "splitCustom": "Власне значення",
+  "splitRange": "Введіть число від 1 до {max}.",
+  "splitSaved": "Частин збережено в Документах: {count}."
 }

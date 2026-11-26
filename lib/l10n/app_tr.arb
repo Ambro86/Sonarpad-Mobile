@@ -5095,5 +5095,14 @@
   "noSavedBookmarks": "Kayıtlı yer işareti yok.",
   "@recordingScheduleMissed": {"placeholders": {"title": {"type": "String"}}},
   "deleteAllBookmarks": "Tüm yer işaretlerini sil",
-  "deleteAllBookmarksConfirmation": "Tüm yer işaretleri silinsin mi? Belgeler ve medya dosyaları silinmeyecek."
+  "deleteAllBookmarksConfirmation": "Tüm yer işaretleri silinsin mi? Belgeler ve medya dosyaları silinmeyecek.",
+  "splitDocument": "Belgeyi böl",
+  "splitMethod": "Bölme yöntemi",
+  "splitByParts": "Parçalara böl",
+  "splitByCharacters": "Karakter sayısına göre böl",
+  "splitPartCount": "Parça sayısı",
+  "splitCharacterCount": "Parça başına karakter",
+  "splitCustom": "Özel",
+  "splitRange": "1 ile {max} arasında bir sayı girin.",
+  "splitSaved": "Belgelere kaydedilen parça sayısı: {count}."
 }

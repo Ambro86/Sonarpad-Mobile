@@ -6673,5 +6673,14 @@
   "noSavedBookmarks": "Geen opgeslagen bladwijzers.",
   "@recordingScheduleMissed": {"placeholders": {"title": {"type": "String"}}},
   "deleteAllBookmarks": "Alle bladwijzers verwijderen",
-  "deleteAllBookmarksConfirmation": "Alle bladwijzers verwijderen? Documenten en mediabestanden worden niet verwijderd."
+  "deleteAllBookmarksConfirmation": "Alle bladwijzers verwijderen? Documenten en mediabestanden worden niet verwijderd.",
+  "splitDocument": "Document splitsen",
+  "splitMethod": "Splitsmethode",
+  "splitByParts": "In delen splitsen",
+  "splitByCharacters": "Op aantal tekens splitsen",
+  "splitPartCount": "Aantal delen",
+  "splitCharacterCount": "Tekens per deel",
+  "splitCustom": "Aangepast",
+  "splitRange": "Voer een getal tussen 1 en {max} in.",
+  "splitSaved": "Delen opgeslagen in Documenten: {count}."
 }

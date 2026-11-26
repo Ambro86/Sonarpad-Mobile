@@ -5898,6 +5898,37 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get deleteAllBookmarksConfirmation => '删除所有书签？文档和媒体文件不会被删除。';
+
+  @override
+  String get splitDocument => '拆分文档';
+
+  @override
+  String get splitMethod => '拆分方式';
+
+  @override
+  String get splitByParts => '按份数拆分';
+
+  @override
+  String get splitByCharacters => '按字符数拆分';
+
+  @override
+  String get splitPartCount => '份数';
+
+  @override
+  String get splitCharacterCount => '每份字符数';
+
+  @override
+  String get splitCustom => '自定义';
+
+  @override
+  String splitRange(int max) {
+    return '请输入 1 到 $max 之间的数字。';
+  }
+
+  @override
+  String splitSaved(int count) {
+    return '已在文档中保存 $count 份。';
+  }
 }
 
 /// The translations for Chinese, as used in China (`zh_CN`).
@@ -11794,4 +11825,35 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get deleteAllBookmarksConfirmation => '删除所有书签？文档和媒体文件不会被删除。';
+
+  @override
+  String get splitDocument => '拆分文档';
+
+  @override
+  String get splitMethod => '拆分方式';
+
+  @override
+  String get splitByParts => '按份数拆分';
+
+  @override
+  String get splitByCharacters => '按字符数拆分';
+
+  @override
+  String get splitPartCount => '份数';
+
+  @override
+  String get splitCharacterCount => '每份字符数';
+
+  @override
+  String get splitCustom => '自定义';
+
+  @override
+  String splitRange(int max) {
+    return '请输入 1 到 $max 之间的数字。';
+  }
+
+  @override
+  String splitSaved(int count) {
+    return '已在文档中保存 $count 份。';
+  }
 }

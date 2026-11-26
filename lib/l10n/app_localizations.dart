@@ -11057,6 +11057,60 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Vuoi eliminare tutti i segnalibri? I documenti e i file multimediali non saranno eliminati.'**
   String get deleteAllBookmarksConfirmation;
+
+  /// No description provided for @splitDocument.
+  ///
+  /// In it, this message translates to:
+  /// **'Dividi documento'**
+  String get splitDocument;
+
+  /// No description provided for @splitMethod.
+  ///
+  /// In it, this message translates to:
+  /// **'Metodo di divisione'**
+  String get splitMethod;
+
+  /// No description provided for @splitByParts.
+  ///
+  /// In it, this message translates to:
+  /// **'Dividi in parti'**
+  String get splitByParts;
+
+  /// No description provided for @splitByCharacters.
+  ///
+  /// In it, this message translates to:
+  /// **'Dividi in base ai caratteri'**
+  String get splitByCharacters;
+
+  /// No description provided for @splitPartCount.
+  ///
+  /// In it, this message translates to:
+  /// **'Numero di parti'**
+  String get splitPartCount;
+
+  /// No description provided for @splitCharacterCount.
+  ///
+  /// In it, this message translates to:
+  /// **'Caratteri per parte'**
+  String get splitCharacterCount;
+
+  /// No description provided for @splitCustom.
+  ///
+  /// In it, this message translates to:
+  /// **'Personalizzato'**
+  String get splitCustom;
+
+  /// No description provided for @splitRange.
+  ///
+  /// In it, this message translates to:
+  /// **'Inserisci un numero tra 1 e {max}.'**
+  String splitRange(int max);
+
+  /// No description provided for @splitSaved.
+  ///
+  /// In it, this message translates to:
+  /// **'Parti salvate in Documenti: {count}.'**
+  String splitSaved(int count);
 }
 
 class _AppLocalizationsDelegate

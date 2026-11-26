@@ -5,6 +5,7 @@ import 'dart:math';
 
 import 'package:archive/archive_io.dart';
 import 'package:crypto/crypto.dart';
+import 'package:flutter/widgets.dart' show StringCharacters;
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -260,6 +261,51 @@ class DocumentLibraryService {
       isTemporary: isTemporary,
       parentId: parentId,
     );
+  }
+
+  Future<int> saveSplitDocument(
+    DocumentItem source,
+    String text, {
+    required bool byParts,
+    required int value,
+  }) async {
+    final characters = text.characters;
+    final length = characters.length;
+    if (value < 1 || length == 0 || (byParts && value > length)) {
+      throw ArgumentError.value(value);
+    }
+    final count = byParts ? value : 1 + (length - 1) ~/ value;
+    final iterator = characters.iterator;
+    final pending = <DocumentItem>[];
+    try {
+      var remaining = length;
+      for (var i = 0; i < count; i++) {
+        final size = byParts
+            ? length ~/ count + (i < length % count ? 1 : 0)
+            : min(value, remaining);
+        iterator.moveNext(size);
+        final number = (i + 1).toString().padLeft(count.toString().length, '0');
+        final part = await createTextDocument(
+          name: '${p.basename(source.displayName)} - $number.txt',
+          content: iterator.current,
+          parentId: source.parentId,
+        );
+        pending.add(part.copyWith(passwordHash: source.passwordHash,
+            passwordSalt: source.passwordSalt));
+        remaining -= size;
+      }
+      await load();
+      await _persistPlacementsFor(pending);
+      _documents = [...pending, ..._documents];
+      await _save();
+      return count;
+    } catch (_) {
+      for (final part in pending) {
+        final file = File(await resolveFilePath(part));
+        if (await file.exists()) await file.delete();
+      }
+      rethrow;
+    }
   }
 
   Future<int> recoverVisibleDocuments(List<String> allowedExtensions) async {

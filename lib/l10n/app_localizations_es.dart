@@ -6182,4 +6182,35 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get deleteAllBookmarksConfirmation =>
       '¿Eliminar todos los marcadores? No se eliminarán los documentos ni los archivos multimedia.';
+
+  @override
+  String get splitDocument => 'Dividir documento';
+
+  @override
+  String get splitMethod => 'Método de división';
+
+  @override
+  String get splitByParts => 'Dividir en partes';
+
+  @override
+  String get splitByCharacters => 'Dividir por caracteres';
+
+  @override
+  String get splitPartCount => 'Número de partes';
+
+  @override
+  String get splitCharacterCount => 'Caracteres por parte';
+
+  @override
+  String get splitCustom => 'Personalizado';
+
+  @override
+  String splitRange(int max) {
+    return 'Introduce un número entre 1 y $max.';
+  }
+
+  @override
+  String splitSaved(int count) {
+    return 'Partes guardadas en Documentos: $count.';
+  }
 }

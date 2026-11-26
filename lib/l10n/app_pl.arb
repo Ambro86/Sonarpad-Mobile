@@ -6676,5 +6676,14 @@
   "noSavedBookmarks": "Brak zapisanych zakładek.",
   "@recordingScheduleMissed": {"placeholders": {"title": {"type": "String"}}},
   "deleteAllBookmarks": "Usuń wszystkie zakładki",
-  "deleteAllBookmarksConfirmation": "Usunąć wszystkie zakładki? Dokumenty i pliki multimedialne nie zostaną usunięte."
+  "deleteAllBookmarksConfirmation": "Usunąć wszystkie zakładki? Dokumenty i pliki multimedialne nie zostaną usunięte.",
+  "splitDocument": "Podziel dokument",
+  "splitMethod": "Metoda podziału",
+  "splitByParts": "Podziel na części",
+  "splitByCharacters": "Podziel według liczby znaków",
+  "splitPartCount": "Liczba części",
+  "splitCharacterCount": "Znaki na część",
+  "splitCustom": "Własna wartość",
+  "splitRange": "Wpisz liczbę od 1 do {max}.",
+  "splitSaved": "Liczba części zapisanych w Dokumentach: {count}."
 }

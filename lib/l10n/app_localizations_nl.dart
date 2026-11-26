@@ -6150,4 +6150,35 @@ class AppLocalizationsNl extends AppLocalizations {
   @override
   String get deleteAllBookmarksConfirmation =>
       'Alle bladwijzers verwijderen? Documenten en mediabestanden worden niet verwijderd.';
+
+  @override
+  String get splitDocument => 'Document splitsen';
+
+  @override
+  String get splitMethod => 'Splitsmethode';
+
+  @override
+  String get splitByParts => 'In delen splitsen';
+
+  @override
+  String get splitByCharacters => 'Op aantal tekens splitsen';
+
+  @override
+  String get splitPartCount => 'Aantal delen';
+
+  @override
+  String get splitCharacterCount => 'Tekens per deel';
+
+  @override
+  String get splitCustom => 'Aangepast';
+
+  @override
+  String splitRange(int max) {
+    return 'Voer een getal tussen 1 en $max in.';
+  }
+
+  @override
+  String splitSaved(int count) {
+    return 'Delen opgeslagen in Documenten: $count.';
+  }
 }

@@ -5098,5 +5098,14 @@
   "noSavedBookmarks": "Žádné uložené záložky.",
   "@recordingScheduleMissed": {"placeholders": {"title": {"type": "String"}}},
   "deleteAllBookmarks": "Odstranit všechny záložky",
-  "deleteAllBookmarksConfirmation": "Odstranit všechny záložky? Dokumenty ani multimediální soubory nebudou odstraněny."
+  "deleteAllBookmarksConfirmation": "Odstranit všechny záložky? Dokumenty ani multimediální soubory nebudou odstraněny.",
+  "splitDocument": "Rozdělit dokument",
+  "splitMethod": "Způsob rozdělení",
+  "splitByParts": "Rozdělit na části",
+  "splitByCharacters": "Rozdělit podle počtu znaků",
+  "splitPartCount": "Počet částí",
+  "splitCharacterCount": "Znaků na část",
+  "splitCustom": "Vlastní",
+  "splitRange": "Zadejte číslo od 1 do {max}.",
+  "splitSaved": "Počet částí uložených do Dokumentů: {count}."
 }
