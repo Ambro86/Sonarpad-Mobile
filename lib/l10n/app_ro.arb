@@ -5104,5 +5104,19 @@
   "splitCharacterCount": "Caractere pe parte",
   "splitCustom": "Personalizat",
   "splitRange": "Introdu un număr între 1 și {max}.",
-  "splitSaved": "Părți salvate în Documente: {count}."
+  "splitSaved": "Părți salvate în Documente: {count}.",
+  "@splitRange": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "@splitSaved": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

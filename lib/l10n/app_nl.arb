@@ -6682,5 +6682,19 @@
   "splitCharacterCount": "Tekens per deel",
   "splitCustom": "Aangepast",
   "splitRange": "Voer een getal tussen 1 en {max} in.",
-  "splitSaved": "Delen opgeslagen in Documenten: {count}."
+  "splitSaved": "Delen opgeslagen in Documenten: {count}.",
+  "@splitRange": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "@splitSaved": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

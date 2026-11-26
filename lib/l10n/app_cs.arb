@@ -5107,5 +5107,19 @@
   "splitCharacterCount": "Znaků na část",
   "splitCustom": "Vlastní",
   "splitRange": "Zadejte číslo od 1 do {max}.",
-  "splitSaved": "Počet částí uložených do Dokumentů: {count}."
+  "splitSaved": "Počet částí uložených do Dokumentů: {count}.",
+  "@splitRange": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "@splitSaved": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

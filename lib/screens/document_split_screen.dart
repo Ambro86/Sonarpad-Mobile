@@ -102,7 +102,7 @@ class _DocumentSplitScreenState extends State<DocumentSplitScreen> {
     return PopScope(
       canPop: !_saving,
       child: Scaffold(
-        appBar: AppBar(title: Text(l.splitDocument)),
+        appBar: SonarpadAppBar(title: Text(l.splitDocument)),
         body: SafeArea(
           child: UniversalAccessibleList(
             transientRowIds: const [
@@ -138,7 +138,7 @@ class _DocumentSplitScreenState extends State<DocumentSplitScreen> {
                     AccessibleListRow(
                       id: _byParts ? 'custom-parts' : 'custom-characters',
                       kind: 'textField',
-                      title: '$label (${l.splitCustom})',
+                      title: l.splitCustom,
                       keyboardType: 'number',
                       enabled: !_saving,
                       textInputAction: 'done',

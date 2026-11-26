@@ -6682,5 +6682,19 @@
   "splitCharacterCount": "Zeichen pro Teil",
   "splitCustom": "Benutzerdefiniert",
   "splitRange": "Gib eine Zahl zwischen 1 und {max} ein.",
-  "splitSaved": "In Dokumente gespeicherte Teile: {count}."
+  "splitSaved": "In Dokumente gespeicherte Teile: {count}.",
+  "@splitRange": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "@splitSaved": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

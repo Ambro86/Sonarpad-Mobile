@@ -369,7 +369,7 @@ class PodcastRecorderService extends ChangeNotifier {
       _ticker?.cancel();
       state = PodcastCaptureState.ready;
       unawaited(_awake(false));
-      unawaited(_logCaptureChannels());
+      _captureChannelRead = _logCaptureChannels();
       _notify();
       unawaited(
         AppLogger.log('Podcast recorder stopped by platform; retain draft'),
@@ -439,6 +439,8 @@ class PodcastRecorderService extends ChangeNotifier {
       _notify();
     }
   }
+
+  Future<void>? _captureChannelRead;
 
   Future<void> _logCaptureChannels() async {
     try {
@@ -702,6 +704,7 @@ class PodcastRecorderService extends ChangeNotifier {
     _clock.stop();
     try {
       await _subscription?.cancel();
+      await _captureChannelRead;
       await _mixer.cancel();
       if (state == PodcastCaptureState.recording ||
           state == PodcastCaptureState.paused) {

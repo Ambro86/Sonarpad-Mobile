@@ -6685,5 +6685,19 @@
   "splitCharacterCount": "Znaki na część",
   "splitCustom": "Własna wartość",
   "splitRange": "Wpisz liczbę od 1 do {max}.",
-  "splitSaved": "Liczba części zapisanych w Dokumentach: {count}."
+  "splitSaved": "Liczba części zapisanych w Dokumentach: {count}.",
+  "@splitRange": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "@splitSaved": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

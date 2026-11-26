@@ -5104,5 +5104,19 @@
   "splitCharacterCount": "Parça başına karakter",
   "splitCustom": "Özel",
   "splitRange": "1 ile {max} arasında bir sayı girin.",
-  "splitSaved": "Belgelere kaydedilen parça sayısı: {count}."
+  "splitSaved": "Belgelere kaydedilen parça sayısı: {count}.",
+  "@splitRange": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "@splitSaved": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

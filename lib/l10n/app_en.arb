@@ -5104,5 +5104,19 @@
   "splitCharacterCount": "Characters per part",
   "splitCustom": "Custom",
   "splitRange": "Enter a number between 1 and {max}.",
-  "splitSaved": "Parts saved in Documents: {count}."
+  "splitSaved": "Parts saved in Documents: {count}.",
+  "@splitRange": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "@splitSaved": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

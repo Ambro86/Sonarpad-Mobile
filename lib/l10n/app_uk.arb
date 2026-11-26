@@ -6682,5 +6682,19 @@
   "splitCharacterCount": "Символів на частину",
   "splitCustom": "Власне значення",
   "splitRange": "Введіть число від 1 до {max}.",
-  "splitSaved": "Частин збережено в Документах: {count}."
+  "splitSaved": "Частин збережено в Документах: {count}.",
+  "@splitRange": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "@splitSaved": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }
