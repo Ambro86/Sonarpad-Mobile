@@ -1845,6 +1845,7 @@ class _UniversalAccessibleListState extends State<UniversalAccessibleList> {
         'move_down' => Icons.arrow_downward,
         'edit' => Icons.edit_outlined,
         'translate' => Icons.translate,
+        'split' => Icons.call_split,
         'lock' => Icons.lock_outline,
         'lock_open' => Icons.lock_open_outlined,
         'play' => Icons.play_arrow,

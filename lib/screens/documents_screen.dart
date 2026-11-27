@@ -38,6 +38,7 @@ import '../widgets/universal_accessible_view.dart';
 import 'document_editor_screen.dart';
 import 'audio_description_project_editor_screen.dart';
 import 'document_reader_screen.dart';
+import 'document_split_screen.dart';
 import 'document_rename_screen.dart';
 import 'document_translation_screen.dart';
 import 'dropbox_browser_screen.dart';
@@ -1494,6 +1495,32 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     }
   }
 
+  bool _openingSplit = false;
+
+  Future<void> _splitDocument(DocumentItem doc) async {
+    if (_openingSplit) return;
+    _openingSplit = true;
+    try {
+      if (!await _authorizeDocumentOpen(doc) || !mounted) return;
+      final text = await _exportTextForDocument(doc, requestPdfPassword: true);
+      if (!mounted || ModalRoute.of(context)?.isCurrent != true) return;
+      final count = await Navigator.of(context).push<int>(MaterialPageRoute(
+        builder: (_) => DocumentSplitScreen(document: doc, text: text),
+      ));
+      if (count == null || !mounted) return;
+      await _service.load();
+      if (!mounted) return;
+      setState(() {});
+      _showSnack(AppLocalizations.of(context).splitSaved(count));
+    } catch (error) {
+      if (mounted && !(error is StateError && error.message == 'Cancelled')) {
+        _showSnack(AppLocalizations.of(context).noExportableTextFound);
+      }
+    } finally {
+      _openingSplit = false;
+    }
+  }
+
   Future<DocumentItem?> _withRarPassword(
       Future<DocumentItem> Function(String?) operation) async {
     String? password;
@@ -1845,6 +1872,8 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
         if (folderDocs.length > 1) AccessibleCustomAction(id: 'sort_favorites', label: l10n.favoritesSortAlphabetically),
         if (_canTranslateDocument(doc))
           AccessibleCustomAction(id: 'translate', label: l10n.translateDocument),
+        if (_canTranslateDocument(doc))
+          AccessibleCustomAction(id: 'split_document', label: l10n.splitDocument),
         AccessibleCustomAction(
           id: 'remove',
           label: doc.isFolder ? l10n.removeFolder : l10n.removeDocument,
@@ -1889,6 +1918,8 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
           if (folderDocs.length > 1) AccessibleVisualAction(id: 'sort_favorites', label: l10n.favoritesSortAlphabetically, icon: 'list'),
           if (_canTranslateDocument(doc))
             AccessibleVisualAction(id: 'translate', label: l10n.translateDocument, icon: 'translate'),
+          if (_canTranslateDocument(doc))
+            AccessibleVisualAction(id: 'split_document', label: l10n.splitDocument, icon: 'split'),
           if (!doc.isFolder)
             AccessibleVisualAction(
               id: 'select',
@@ -1930,6 +1961,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
           switch (event.action) {
             case 'sort_favorites': await _handleAction(_DocumentAction.sortAlphabetically, doc); break;
             case 'translate': await _translateDocument(doc); break;
+            case 'split_document': await _splitDocument(doc); break;
             case 'select': await _selectDocuments(initialDocumentId: doc.id); break;
             case 'remove': await _remove(doc.id); break;
             case 'rename': await _renameDocument(doc); break;
@@ -2076,6 +2108,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                             onRemove: () => _remove(doc.id),
                             onRename: () => _renameDocument(doc),
                             onTranslate: _canTranslateDocument(doc) ? () => _translateDocument(doc) : null,
+                            onSplit: _canTranslateDocument(doc) ? () => _splitDocument(doc) : null,
                             canPasswordProtect:
                                 _canPasswordProtectDocument(doc),
                             onPasswordProtection: () =>
@@ -2115,6 +2148,7 @@ class _DocumentTile extends StatelessWidget {
   final VoidCallback onRemove;
   final VoidCallback onRename;
   final VoidCallback? onTranslate;
+  final VoidCallback? onSplit;
   final bool canPasswordProtect;
   final VoidCallback onPasswordProtection;
   final bool canShare;
@@ -2132,6 +2166,7 @@ class _DocumentTile extends StatelessWidget {
     required this.onRemove,
     required this.onRename,
     this.onTranslate,
+    this.onSplit,
     required this.canPasswordProtect,
     required this.onPasswordProtection,
     required this.canShare,
@@ -2212,6 +2247,7 @@ class _DocumentTile extends StatelessWidget {
           if (!isFirst || !isLast)
             CustomSemanticsAction(label: l10n.favoritesSortAlphabetically): () => onAction(_DocumentAction.sortAlphabetically),
           CustomSemanticsAction(label: l10n.translateDocument): ?onTranslate,
+          CustomSemanticsAction(label: l10n.splitDocument): ?onSplit,
           CustomSemanticsAction(
               label: doc.isFolder
                   ? l10n.removeFolder
@@ -2342,6 +2378,11 @@ class _DocumentTile extends StatelessWidget {
                     ExcludeSemantics(child: IconButton(
                       icon: const Icon(Icons.translate), tooltip: l10n.translateDocument,
                       onPressed: onTranslate,
+                    )),
+                  if (onSplit != null)
+                    ExcludeSemantics(child: IconButton(
+                      icon: const Icon(Icons.call_split), tooltip: l10n.splitDocument,
+                      onPressed: onSplit,
                     )),
                   if (!isFirst || !isLast)
                     IconButton(

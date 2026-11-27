@@ -1654,6 +1654,7 @@ final class SonarpadNativeListView: NSObject, FlutterPlatformView, UITableViewDa
     case "move_down": return "arrow.down"
     case "edit": return "pencil"
     case "translate": return "character.bubble"
+    case "split": return "arrow.triangle.branch"
     case "lock": return "lock"
     case "lock_open": return "lock.open"
     case "play": return "play.fill"

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:async';
 import 'dart:ui' show SemanticsAction;
 
 import 'package:flutter/material.dart';
@@ -9,6 +10,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sonarpad_mobile_starter/l10n/app_localizations.dart';
 import 'package:sonarpad_mobile_starter/models/document_item.dart';
 import 'package:sonarpad_mobile_starter/screens/document_split_screen.dart';
+import 'package:sonarpad_mobile_starter/screens/documents_screen.dart';
+import 'package:sonarpad_mobile_starter/widgets/universal_accessible_view.dart';
 import 'package:sonarpad_mobile_starter/services/document_library_service.dart';
 
 class _Paths extends PathProviderPlatform {
@@ -42,6 +45,41 @@ void main() {
     PathProviderPlatform.instance = originalPaths;
     await work.delete(recursive: true);
   });
+
+  for (final viaButton in [false, true]) {
+    testWidgets('closed document opens split via ${viaButton ? "button" : "custom action"}', (tester) async {
+      await tester.runAsync(() async {
+        await tester.pumpWidget(MaterialApp(
+          locale: const Locale('it'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: DocumentsScreen(folderId: source.parentId),
+        ));
+        await Future<void>.delayed(const Duration(milliseconds: 60));
+      });
+      await tester.pumpAndSettle();
+      final list = tester.widget<UniversalAccessibleList>(find.byType(UniversalAccessibleList));
+      final row = list.sections.expand((s) => s.rows).singleWhere((r) => r.id == source.id);
+      expect(row.actions.singleWhere((a) => a.id == 'split_document').label, 'Dividi documento');
+      expect(row.visualActions.singleWhere((a) => a.id == 'split_document').label, 'Dividi documento');
+      await tester.runAsync(() async {
+        if (viaButton) {
+          final button = find.byTooltip('Dividi documento');
+          expect(find.ancestor(of: button, matching: find.byType(ExcludeSemantics)), findsWidgets);
+          await tester.ensureVisible(button);
+          await tester.tap(button);
+        } else {
+          unawaited(Future<void>.value(list.onEvent!(AccessibleListEvent(
+            type: 'customAction', id: source.id, action: 'split_document'))));
+        }
+        await Future<void>.delayed(const Duration(milliseconds: 80));
+      });
+      await tester.pumpAndSettle();
+      expect(tester.widget<DocumentSplitScreen>(find.byType(DocumentSplitScreen)).text, text);
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.pumpAndSettle();
+    });
+  }
 
   Future<List<String>> readParts() async {
     final reopened = DocumentLibraryService();

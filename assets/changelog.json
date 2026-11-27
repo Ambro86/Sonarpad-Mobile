@@ -11,7 +11,7 @@
       "Ora puoi aprire anche i documenti Word in formato binario .doc. Il testo e i numeri delle tabelle si leggono nell’ordine delle celle.",
       "Ora si aprono anche gli EPUB in cui il percorso interno di container.xml usa maiuscole e minuscole diverse da quelle previste.",
       "Quando apri un file audio o video locale dai Documenti, nel lettore compare «Trasmetti con Chromecast». Se disattivi «Mostra Chromecast nei player compatibili» nelle impostazioni, il pulsante resta nascosto.",
-      "Tra le azioni del documento aperto trovi «Dividi documento». Scegli il numero di parti o i caratteri per parte con due slider accessibili, anche con valori personalizzati. Le parti vengono salvate come file TXT numerati nella stessa cartella dell’originale."
+      "Nell’elenco Documenti scegli «Dividi documento» dalle azioni secondarie del file o con il pulsante accanto al titolo. Scegli il numero di parti o i caratteri per parte con due slider accessibili, anche con valori personalizzati. Le parti vengono salvate come file TXT numerati nella stessa cartella dell’originale."
     ],
     "it_extra": [
       "Durante una diretta TV puoi usare «Canale precedente» e «Canale successivo» in fondo ai controlli per cambiare canale seguendo l’ordine della categoria, dei preferiti o dei risultati di ricerca. Compaiono solo le direzioni disponibili e i pulsanti si nascondono insieme agli altri controlli video."
@@ -25,7 +25,7 @@
       "You can now open binary Word .doc files. Text and numbers in tables are read in cell order.",
       "EPUB books now also open when the internal path to container.xml uses different capitalization.",
       "When you open a local audio or video file from Documents, the player now shows “Cast with Chromecast”. The button stays hidden if you turn off “Show Chromecast in compatible players” in Settings.",
-      "Choose “Split document” from the open document’s actions. Two accessible sliders let you split by number of parts or characters per part, including custom values. The numbered TXT files are saved alongside the original."
+      "In Documents, choose “Split document” from the file’s accessibility actions or use the button beside its title. Two accessible sliders let you split by number of parts or characters per part, including custom values. The numbered TXT files are saved alongside the original."
     ],
     "fr": [
       "SonarTube : correction des chaînes ouvertes depuis les favoris affichant « Aucune vidéo » après la synchronisation. L’identifiant correct de la chaîne est désormais conservé et les favoris déjà concernés sont récupérés, quelle que soit la langue de l’interface.",
@@ -36,7 +36,7 @@
       "Vous pouvez désormais ouvrir les documents Word au format binaire .doc. Le texte et les nombres des tableaux sont lus dans l’ordre des cellules.",
       "Les livres EPUB s’ouvrent désormais même si le chemin interne de container.xml utilise des majuscules ou des minuscules différentes.",
       "Lorsque vous ouvrez un fichier audio ou vidéo local depuis Documents, le lecteur affiche désormais « Diffuser avec Chromecast ». Le bouton reste masqué si vous désactivez « Afficher Chromecast dans les lecteurs compatibles » dans les réglages.",
-      "Dans les actions du document ouvert, choisissez « Diviser le document ». Deux curseurs accessibles permettent de choisir le nombre de parties ou de caractères par partie, y compris une valeur personnalisée. Les fichiers TXT numérotés sont enregistrés dans le même dossier que l’original."
+      "Dans Documents, choisissez « Diviser le document » dans les actions d’accessibilité du fichier ou utilisez le bouton à côté du titre. Deux curseurs accessibles permettent de choisir le nombre de parties ou de caractères par partie, y compris une valeur personnalisée. Les fichiers TXT numérotés sont enregistrés dans le même dossier que l’original."
     ],
     "es": [
       "SonarTube: corregidos los canales que mostraban «No hay vídeos» al abrirlos desde favoritos tras la sincronización. Ahora se conserva el identificador correcto del canal y se recuperan los favoritos afectados, independientemente del idioma de la interfaz.",
@@ -47,7 +47,7 @@
       "Ahora puedes abrir documentos de Word en formato binario .doc. El texto y los números de las tablas se leen en el orden de las celdas.",
       "Ahora también se abren los libros EPUB que usan mayúsculas y minúsculas distintas en la ruta interna de container.xml.",
       "Al abrir un archivo de audio o vídeo local desde Documentos, el reproductor muestra «Transmitir con Chromecast». El botón permanece oculto si desactivas «Mostrar Chromecast en reproductores compatibles» en los ajustes.",
-      "En las acciones del documento abierto, elige «Dividir documento». Dos controles deslizantes accesibles permiten elegir el número de partes o de caracteres por parte, con valores personalizados. Los archivos TXT numerados se guardan junto al original."
+      "En Documentos, elige «Dividir documento» en las acciones de accesibilidad del archivo o usa el botón junto al título. Dos controles deslizantes accesibles permiten elegir el número de partes o de caracteres por parte, con valores personalizados. Los archivos TXT numerados se guardan junto al original."
     ],
     "pt": [
       "SonarTube: corrigidos os canais que mostravam «Nenhum vídeo» ao abrir a partir dos favoritos após a sincronização. O identificador correto do canal é agora preservado e os favoritos afetados são recuperados, independentemente do idioma da interface.",
@@ -58,7 +58,7 @@
       "Já pode abrir documentos Word no formato binário .doc. O texto e os números das tabelas são lidos pela ordem das células.",
       "Agora também é possível abrir livros EPUB cujo caminho interno para container.xml usa maiúsculas e minúsculas diferentes.",
       "Ao abrir um ficheiro de áudio ou vídeo local a partir dos Documentos, o leitor apresenta «Transmitir com Chromecast». O botão fica oculto se desativar «Mostrar Chromecast nos leitores compatíveis» nas definições.",
-      "Nas ações do documento aberto, escolha «Dividir documento». Dois controlos deslizantes acessíveis permitem escolher o número de partes ou de caracteres por parte, incluindo valores personalizados. Os ficheiros TXT numerados são guardados na pasta do original."
+      "Em Documentos, escolha «Dividir documento» nas ações de acessibilidade do ficheiro ou use o botão junto ao título. Dois controlos deslizantes acessíveis permitem escolher o número de partes ou de caracteres por parte, incluindo valores personalizados. Os ficheiros TXT numerados são guardados na pasta do original."
     ],
     "pt_BR": [
       "SonarTube: corrigidos os canais que exibiam “Nenhum vídeo” ao abrir pelos favoritos após a sincronização. O identificador correto do canal agora é preservado e os favoritos afetados são recuperados, independentemente do idioma da interface.",
@@ -69,7 +69,7 @@
       "Agora você pode abrir documentos do Word no formato binário .doc. O texto e os números das tabelas são lidos na ordem das células.",
       "Agora também é possível abrir livros EPUB que usam maiúsculas e minúsculas diferentes no caminho interno de container.xml.",
       "Ao abrir um arquivo de áudio ou vídeo local em Documentos, o reprodutor exibe “Transmitir com Chromecast”. O botão fica oculto se você desativar “Mostrar Chromecast nos reprodutores compatíveis” nas configurações.",
-      "Nas ações do documento aberto, escolha «Dividir documento». Dois controles deslizantes acessíveis permitem escolher o número de partes ou de caracteres por parte, inclusive com valores personalizados. Os arquivos TXT numerados são salvos na pasta do original."
+      "Em Documentos, escolha «Dividir documento» nas ações de acessibilidade do arquivo ou use o botão ao lado do título. Dois controles deslizantes acessíveis permitem escolher o número de partes ou de caracteres por parte, inclusive com valores personalizados. Os arquivos TXT numerados são salvos na pasta do original."
     ],
     "pl": [
       "SonarTube: naprawiono wyświetlanie „Brak filmów” po otwarciu kanału z ulubionych po synchronizacji. Prawidłowy identyfikator kanału jest teraz zachowywany, a istniejące ulubione objęte problemem są odzyskiwane niezależnie od języka interfejsu.",
@@ -80,7 +80,7 @@
       "Możesz teraz otwierać dokumenty programu Word w formacie binarnym .doc. Tekst i liczby w tabelach są odczytywane w kolejności komórek.",
       "Teraz otwierają się również książki EPUB, w których ścieżka do pliku container.xml różni się wielkością liter.",
       "Po otwarciu lokalnego pliku audio lub wideo z Dokumentów w odtwarzaczu pojawia się przycisk „Przesyłaj przez Chromecast”. Przycisk pozostaje ukryty, jeśli w ustawieniach wyłączysz opcję „Pokazuj Chromecast w zgodnych odtwarzaczach”.",
-      "W akcjach otwartego dokumentu wybierz „Podziel dokument”. Dwa dostępne suwaki pozwalają ustawić liczbę części lub znaków na część, również według własnych wartości. Ponumerowane pliki TXT są zapisywane w folderze oryginału."
+      "Na liście dokumentów wybierz „Podziel dokument” w akcjach dostępności pliku lub użyj przycisku obok tytułu. Dwa dostępne suwaki pozwalają ustawić liczbę części lub znaków na część, również według własnych wartości. Ponumerowane pliki TXT są zapisywane w folderze oryginału."
     ],
     "cs": [
       "SonarTube: opraveno zobrazování „Žádná videa“ při otevření kanálu z oblíbených po synchronizaci. Nyní se zachovává správný identifikátor kanálu a opravují se již dotčené oblíbené položky bez ohledu na jazyk rozhraní.",
@@ -91,7 +91,7 @@
       "Nyní můžete otevírat dokumenty Wordu v binárním formátu .doc. Text a čísla v tabulkách se čtou v pořadí buněk.",
       "Nyní lze otevřít i knihy EPUB, které v interní cestě k souboru container.xml používají odlišnou velikost písmen.",
       "Při otevření místního zvukového souboru nebo videa z Dokumentů se v přehrávači zobrazí tlačítko „Odesílat přes Chromecast“. Pokud v nastavení vypnete možnost „Zobrazit Chromecast v podporovaných přehrávačích“, tlačítko zůstane skryté.",
-      "V akcích otevřeného dokumentu zvolte „Rozdělit dokument“. Dvěma přístupnými posuvníky nastavíte počet částí nebo počet znaků na část, včetně vlastních hodnot. Očíslované soubory TXT se uloží do stejné složky jako originál."
+      "V seznamu dokumentů vyberte „Rozdělit dokument“ v akcích přístupnosti souboru nebo použijte tlačítko vedle názvu. Dvěma přístupnými posuvníky nastavíte počet částí nebo počet znaků na část, včetně vlastních hodnot. Očíslované soubory TXT se uloží do stejné složky jako originál."
     ],
     "de": [
       "SonarTube: Kanäle aus den Favoriten zeigen nach der Synchronisierung nicht mehr fälschlich „Keine Videos“ an. Die korrekte Kanal-ID bleibt erhalten und bereits betroffene Favoriten werden unabhängig von der Sprache der Oberfläche wiederhergestellt.",
@@ -102,7 +102,7 @@
       "Word-Dokumente im Binärformat .doc lassen sich jetzt öffnen. Text und Zahlen in Tabellen werden in der Reihenfolge der Zellen gelesen.",
       "EPUB-Bücher lassen sich jetzt auch öffnen, wenn die Groß- und Kleinschreibung im internen Pfad zu container.xml abweicht.",
       "Beim Öffnen einer lokalen Audio- oder Videodatei aus „Dokumente“ erscheint im Player die Schaltfläche „Mit Chromecast übertragen“. Sie bleibt ausgeblendet, wenn „Chromecast in kompatiblen Playern anzeigen“ in den Einstellungen deaktiviert ist.",
-      "Wähle in den Aktionen des geöffneten Dokuments „Dokument teilen“. Mit zwei barrierefreien Schiebereglern wählst du die Anzahl der Teile oder die Zeichen pro Teil. Eigene Werte sind ebenfalls möglich. Die nummerierten TXT-Dateien werden im Ordner des Originals gespeichert."
+      "Wähle in der Dokumentliste „Dokument teilen“ über die Bedienungshilfen-Aktionen der Datei oder die Schaltfläche neben dem Titel. Mit zwei barrierefreien Schiebereglern wählst du die Anzahl der Teile oder die Zeichen pro Teil. Eigene Werte sind ebenfalls möglich. Die nummerierten TXT-Dateien werden im Ordner des Originals gespeichert."
     ],
     "zh_CN": [
       "SonarTube：修复同步后从收藏夹打开频道时显示“没有视频”的问题。现在会保留正确的频道 ID，并恢复已受影响的收藏项，不受界面语言影响。",
@@ -113,7 +113,7 @@
       "现在可以打开二进制 .doc 格式的 Word 文档，并按单元格顺序读取表格中的文字和数字。",
       "现在，即使 container.xml 的内部路径大小写不符合规范，也能打开 EPUB 图书。",
       "从“文档”打开本地音频或视频文件时，播放器现在会显示“通过 Chromecast 投放”按钮。如果在设置中关闭“在兼容的播放器中显示 Chromecast”，该按钮会保持隐藏。",
-      "在已打开文档的操作中选择“拆分文档”。通过两个无障碍滑块选择按份数或每份字符数拆分，也可输入自定义值。拆分后的 TXT 文件按顺序编号，保存在原文档所在的文件夹中。"
+      "在文档列表中，从文件的辅助功能操作中选择“拆分文档”，或使用标题旁边的按钮。通过两个无障碍滑块选择按份数或每份字符数拆分，也可输入自定义值。拆分后的 TXT 文件按顺序编号，保存在原文档所在的文件夹中。"
     ],
     "uk": [
       "SonarTube: виправлено появу повідомлення «Немає відео» під час відкриття каналу з обраного після синхронізації. Тепер зберігається правильний ідентифікатор каналу, а вже пошкоджені записи обраного відновлюються незалежно від мови інтерфейсу.",
@@ -124,7 +124,7 @@
       "Тепер можна відкривати документи Word у двійковому форматі .doc. Текст і числа в таблицях читаються в порядку розташування клітинок.",
       "Тепер відкриваються й книги EPUB, у яких внутрішній шлях до container.xml відрізняється регістром літер.",
       "Коли ви відкриваєте локальний аудіо- чи відеофайл із розділу документів, у програвачі з’являється кнопка «Транслювати через Chromecast». Якщо в налаштуваннях вимкнути «Показувати Chromecast у сумісних програвачах», кнопка залишиться прихованою.",
-      "У діях відкритого документа виберіть «Розділити документ». Два доступні повзунки дають змогу вибрати кількість частин або символів на частину, зокрема вказати власне значення. Пронумеровані файли TXT зберігаються в папці оригіналу."
+      "У списку документів виберіть «Розділити документ» серед дій доступності файлу або натисніть кнопку поруч із назвою. Два доступні повзунки дають змогу вибрати кількість частин або символів на частину, зокрема вказати власне значення. Пронумеровані файли TXT зберігаються в папці оригіналу."
     ],
     "ro": [
       "SonarTube: corectată afișarea mesajului „Niciun videoclip” la deschiderea unui canal din favorite după sincronizare. Identificatorul corect al canalului este acum păstrat, iar favoritele deja afectate sunt recuperate indiferent de limba interfeței.",
@@ -135,7 +135,7 @@
       "La deschiderea documentelor Word mai vechi (.doc), textul și numerele din tabele sunt acum citite în ordinea celulelor.",
       "Acum se deschid și cărțile EPUB în care calea internă către container.xml folosește alte combinații de majuscule și minuscule.",
       "Când deschizi un fișier audio sau video local din Documente, în player apare butonul „Transmite cu Chromecast”. Butonul rămâne ascuns dacă dezactivezi „Afișează Chromecast în playerele compatibile” în setări.",
-      "Din acțiunile documentului deschis, alege „Împarte documentul”. Două glisoare accesibile permit alegerea numărului de părți sau de caractere pe parte, inclusiv valori personalizate. Fișierele TXT numerotate sunt salvate în dosarul originalului."
+      "În lista Documente, alege „Împarte documentul” din acțiunile de accesibilitate ale fișierului sau folosește butonul de lângă titlu. Două glisoare accesibile permit alegerea numărului de părți sau de caractere pe parte, inclusiv valori personalizate. Fișierele TXT numerotate sunt salvate în dosarul originalului."
     ],
     "tr": [
       "SonarTube: eşitlemeden sonra favorilerden açılan kanallarda “Video yok” görünmesi düzeltildi. Artık doğru kanal kimliği korunur ve etkilenen mevcut favoriler arayüz dilinden bağımsız olarak kurtarılır.",
@@ -146,7 +146,7 @@
       "Artık ikili .doc biçimindeki Word belgelerini açabilirsiniz. Tablolardaki metin ve sayılar hücre sırasına göre okunur.",
       "container.xml dosyasının iç yolunda büyük ve küçük harf kullanımı farklı olan EPUB kitapları da artık açılabiliyor.",
       "Belgeler bölümünden yerel bir ses veya video dosyası açtığınızda oynatıcıda “Chromecast ile yayınla” düğmesi görünür. Ayarlarda “Uyumlu oynatıcılarda Chromecast göster” seçeneğini kapatırsanız düğme gizli kalır.",
-      "Açık belgenin işlemlerinden “Belgeyi böl” seçeneğini kullanın. İki erişilebilir kaydırıcıyla parça sayısını veya parça başına karakter sayısını belirleyebilir, özel değerler girebilirsiniz. Numaralı TXT dosyaları özgün belgeyle aynı klasöre kaydedilir."
+      "Belgeler listesinde dosyanın erişilebilirlik işlemlerinden “Belgeyi böl” seçeneğini veya başlığın yanındaki düğmeyi kullanın. İki erişilebilir kaydırıcıyla parça sayısını veya parça başına karakter sayısını belirleyebilir, özel değerler girebilirsiniz. Numaralı TXT dosyaları özgün belgeyle aynı klasöre kaydedilir."
     ],
     "nl": [
       "SonarTube: opgelost dat kanalen uit favorieten na synchronisatie “Geen video’s” toonden. De juiste kanaal-ID blijft nu behouden en bestaande getroffen favorieten worden hersteld, ongeacht de interfacetaal.",
@@ -157,7 +157,7 @@
       "Bij het openen van oudere Word-documenten (.doc) worden tekst en getallen in tabellen nu in de volgorde van de cellen gelezen.",
       "EPUB-boeken openen nu ook als het interne pad naar container.xml afwijkt in hoofdlettergebruik.",
       "Als je vanuit Documenten een lokaal audio- of videobestand opent, verschijnt in de speler de knop ‘Casten via Chromecast’. De knop blijft verborgen als je ‘Chromecast tonen in compatibele spelers’ uitschakelt in de instellingen.",
-      "Kies ‘Document splitsen’ bij de acties van het geopende document. Met twee toegankelijke schuifregelaars kies je het aantal delen of het aantal tekens per deel. Je kunt ook eigen waarden invoeren. De genummerde TXT-bestanden worden opgeslagen in dezelfde map als het origineel."
+      "Kies in de documentenlijst ‘Document splitsen’ via de toegankelijkheidsacties van het bestand of gebruik de knop naast de titel. Met twee toegankelijke schuifregelaars kies je het aantal delen of het aantal tekens per deel. Je kunt ook eigen waarden invoeren. De genummerde TXT-bestanden worden opgeslagen in dezelfde map als het origineel."
     ]
   },
   {

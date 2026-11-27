@@ -1,5 +1,4 @@
 import 'gemini_tts_key_navigation.dart';
-import 'document_split_screen.dart';
 import '../services/accessible_reading_tts.dart';
 import 'dart:async';
 import 'dart:convert';
@@ -2686,12 +2685,6 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
             overflow: TextOverflow.ellipsis,
           ),
           actions: [
-            if (!_paragraphSelectionMode && !_speaking && _chunks.isNotEmpty)
-              ExcludeSemantics(child: IconButton(
-                icon: const Icon(Icons.call_split),
-                tooltip: l10n.splitDocument,
-                onPressed: _openDocumentSplit,
-              )),
             if (_paragraphSelectionMode)
               IconButton(
                 icon: const Icon(Icons.delete),
@@ -2948,15 +2941,6 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
   }
 
 
-  Future<void> _openDocumentSplit() async {
-    final count = await Navigator.of(context).push<int>(MaterialPageRoute(
-      builder: (_) => DocumentSplitScreen(document: _currentDoc, text: _documentText),
-    ));
-    if (mounted && count != null) {
-      showStatusMessage(context, AppLocalizations.of(context).splitSaved(count));
-    }
-  }
-
   Widget _buildSharedAccessibleDocumentText(AppLocalizations l10n) {
     final rows = <AccessibleListRow>[
       if (!_speaking && _chunks.isNotEmpty)
@@ -2992,7 +2976,6 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
             id: 'start_selection',
             label: l10n.documentParagraphSelectionStartAction,
           ));
-          actions.add(AccessibleCustomAction(id: 'split_document', label: l10n.splitDocument));
         }
         actions.add(AccessibleCustomAction(
           id: 'set_bookmark',
@@ -3057,7 +3040,6 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
             case 'delete_selected': await _deleteSelectedParagraphs(); break;
             case 'exit_selection': _exitParagraphSelection(); break;
             case 'start_selection': _startParagraphSelection(index); break;
-            case 'split_document': await _openDocumentSplit(); break;
             case 'set_bookmark': await _setBookmark(index); break;
             case 'go_bookmark': await _openBookmarkPicker(); break;
           }
@@ -3116,7 +3098,6 @@ class _DocumentReaderScreenState extends State<DocumentReaderScreen> {
           actions[CustomSemanticsAction(
             label: l10n.documentParagraphSelectionStartAction,
           )] = () => _startParagraphSelection(i);
-          actions[CustomSemanticsAction(label: l10n.splitDocument)] = _openDocumentSplit;
         }
         if (_multipleDocumentBookmarksEnabled) {
           actions[CustomSemanticsAction(
