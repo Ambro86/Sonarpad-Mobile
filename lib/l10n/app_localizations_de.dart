@@ -5813,6 +5813,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get podcastRecorderMusicVolume => 'Lautstärke der Hintergrundmusik';
 
   @override
+  String get podcastRecorderListenToMusic =>
+      'Hintergrundmusik während der Aufnahme anhören. Verwende Kopfhörer, damit das Mikrofon die Hintergrundmusik nicht mit aufnimmt.';
+
+  @override
   String get podcastRecorderChooseMusic =>
       'Hintergrundmusik auswählen (optional)';
 

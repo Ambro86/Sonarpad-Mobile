@@ -5795,6 +5795,10 @@ class AppLocalizationsTr extends AppLocalizations {
   String get podcastRecorderMusicVolume => 'Fon müziği ses düzeyi';
 
   @override
+  String get podcastRecorderListenToMusic =>
+      'Kayıt sırasında fon müziğini dinle. Mikrofonun fon müziğini de kaydetmesini önlemek için kulaklık kullanın.';
+
+  @override
   String get podcastRecorderChooseMusic => 'Fon müziği seç (isteğe bağlı)';
 
   @override

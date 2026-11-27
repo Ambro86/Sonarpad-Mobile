@@ -4973,6 +4973,7 @@
   "podcastRecorderHint": "仅录制麦克风。可选背景音乐会在结束后添加，音量设置应用于整段录音。请使用耳机，避免录入扬声器中的屏幕阅读器语音。启用后台录音后，可以切换应用或锁定屏幕；否则录音将暂停。立体声效果取决于麦克风和设备。",
   "podcastRecorderMicVolume": "麦克风音量",
   "podcastRecorderMusicVolume": "背景音乐音量",
+  "podcastRecorderListenToMusic": "录音时收听背景音乐。请使用耳机，以免麦克风同时录下背景音乐。",
   "podcastRecorderChooseMusic": "选择背景音乐（可选）",
   "podcastRecorderRemoveMusic": "移除背景音乐",
   "podcastRecorderReady": "录音已就绪。调整音量、试听并保存。",

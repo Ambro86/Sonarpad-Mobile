@@ -7,6 +7,7 @@ import 'package:ffmpeg_kit_flutter_new/ffmpeg_session.dart';
 import 'package:ffmpeg_kit_flutter_new/return_code.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:media_kit/media_kit.dart' as mk;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
@@ -227,6 +228,8 @@ class PodcastRecorderService extends ChangeNotifier {
   bool continueInBackground = false;
   double microphoneVolume = 1;
   double musicVolume = .2;
+  bool listenToMusic = false;
+  mk.Player? _musicPlayer;
   String? musicPath;
   String? introPath;
   String? outroPath;
@@ -360,6 +363,7 @@ class PodcastRecorderService extends ChangeNotifier {
     if (value == RecordState.pause && state == PodcastCaptureState.recording) {
       _clock.stop();
       state = PodcastCaptureState.paused;
+      unawaited(_musicPlayer?.pause());
       unawaited(_awake(false));
       _notify();
     } else if (value == RecordState.stop &&
@@ -368,6 +372,7 @@ class PodcastRecorderService extends ChangeNotifier {
       _clock.stop();
       _ticker?.cancel();
       state = PodcastCaptureState.ready;
+      unawaited(_disposeMusicPlayer());
       unawaited(_awake(false));
       _captureChannelRead = _logCaptureChannels();
       _notify();
@@ -387,6 +392,13 @@ class PodcastRecorderService extends ChangeNotifier {
         throw const PodcastRecorderException('permission');
       }
       await _persist();
+      final base = musicPath;
+      if (listenToMusic && base != null) {
+        final player = _musicPlayer = mk.Player();
+        await player.open(mk.Media(Uri.file(base).toString()), play: false);
+        await player.setVolume(musicVolume * 100);
+        await player.setPlaylistMode(mk.PlaylistMode.single);
+      }
       await _microphone.start(
         _raw,
         channels: stereo ? 2 : 1,
@@ -398,14 +410,24 @@ class PodcastRecorderService extends ChangeNotifier {
       saved = false;
       recovered = false;
       state = PodcastCaptureState.recording;
-      await _awake(!continueInBackground);
       _ticker = Timer.periodic(const Duration(seconds: 1), (_) => _notify());
+      await _musicPlayer?.play();
+      await _awake(!continueInBackground);
       unawaited(AppLogger.log('Podcast recorder started; microphone only requestedChannels=${stereo ? 2 : 1}'));
+    } catch (_) {
+      await _disposeMusicPlayer();
+      rethrow;
     } finally {
       busy = false;
       _transition = false;
       _notify();
     }
+  }
+
+  Future<void> _disposeMusicPlayer() async {
+    final player = _musicPlayer;
+    _musicPlayer = null;
+    await player?.dispose();
   }
 
   Future<void> pause() async {
@@ -416,6 +438,7 @@ class PodcastRecorderService extends ChangeNotifier {
       await _microphone.pause();
       _clock.stop();
       state = PodcastCaptureState.paused;
+      await _musicPlayer?.pause();
       await _awake(false);
     } finally {
       busy = false;
@@ -432,6 +455,7 @@ class PodcastRecorderService extends ChangeNotifier {
       await _microphone.resume();
       _clock.start();
       state = PodcastCaptureState.recording;
+      await _musicPlayer?.play();
       await _awake(!continueInBackground);
     } finally {
       busy = false;
@@ -465,6 +489,7 @@ class PodcastRecorderService extends ChangeNotifier {
       _clock.stop();
       _ticker?.cancel();
       state = PodcastCaptureState.ready;
+      await _disposeMusicPlayer();
       if (!await File(_raw).exists() || await File(_raw).length() <= 44) {
         throw const PodcastRecorderException('empty');
       }
@@ -689,6 +714,7 @@ class PodcastRecorderService extends ChangeNotifier {
     state = PodcastCaptureState.idle;
     output = null;
     musicPath = null;
+    listenToMusic = false;
     saved = false;
     recovered = false;
     _clock.reset();
@@ -704,6 +730,7 @@ class PodcastRecorderService extends ChangeNotifier {
     _clock.stop();
     try {
       await _subscription?.cancel();
+      await _disposeMusicPlayer();
       await _captureChannelRead;
       await _mixer.cancel();
       if (state == PodcastCaptureState.recording ||

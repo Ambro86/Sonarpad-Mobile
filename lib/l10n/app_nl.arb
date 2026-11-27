@@ -6551,6 +6551,7 @@
   "podcastRecorderHint": "Neem alleen de microfoon op. Je kunt later optioneel achtergrondmuziek toevoegen. Volumeniveaus gelden voor de hele opname. Gebruik een koptelefoon om te voorkomen dat de schermlezer via de luidsprekers wordt opgenomen. Schakel achtergrondopname in om van app te wisselen of het scherm te vergrendelen; anders pauzeert de opname. Stereo hangt af van de microfoon en het apparaat.",
   "podcastRecorderMicVolume": "Microfoonvolume",
   "podcastRecorderMusicVolume": "Volume van achtergrondmuziek",
+  "podcastRecorderListenToMusic": "Achtergrondmuziek beluisteren tijdens de opname. Gebruik een koptelefoon om te voorkomen dat de microfoon ook de achtergrondmuziek opneemt.",
   "podcastRecorderChooseMusic": "Achtergrondmuziek kiezen (optioneel)",
   "podcastRecorderRemoveMusic": "Achtergrondmuziek verwijderen",
   "podcastRecorderReady": "Opname gereed. Pas het volume aan, luister en sla op.",

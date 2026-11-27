@@ -4976,6 +4976,7 @@
   "podcastRecorderHint": "Nahrává se pouze mikrofon. Volitelný hudební podklad se přidá po dokončení. Hlasitosti platí pro celou nahrávku. Použijte sluchátka, aby se nenahrával hlas čtečky obrazovky z reproduktorů. Zapněte nahrávání na pozadí, chcete-li přepínat aplikace nebo zamknout obrazovku; jinak se nahrávání pozastaví. Stereo závisí na mikrofonu a zařízení.",
   "podcastRecorderMicVolume": "Hlasitost mikrofonu",
   "podcastRecorderMusicVolume": "Hlasitost hudebního podkladu",
+  "podcastRecorderListenToMusic": "Poslouchat hudební podklad během nahrávání. Použijte sluchátka, aby mikrofon nezachytil i hudební podklad.",
   "podcastRecorderChooseMusic": "Vybrat hudební podklad (volitelné)",
   "podcastRecorderRemoveMusic": "Odebrat hudební podklad",
   "podcastRecorderReady": "Nahrávka je připravena. Upravte hlasitosti, poslechněte si ji a uložte.",

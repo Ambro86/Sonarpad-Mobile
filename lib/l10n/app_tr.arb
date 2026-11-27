@@ -4973,6 +4973,7 @@
   "podcastRecorderHint": "Yalnızca mikrofon kaydedilir. İsteğe bağlı fon müziği sonunda eklenir. Ses düzeyleri kaydın tamamına uygulanır. Ekran okuyucunun hoparlörden kayda girmemesi için kulaklık kullanın. Uygulama değiştirmek veya ekranı kilitlemek için arka planda kaydı etkinleştirin; aksi takdirde kayıt duraklatılır. Stereo, mikrofona ve cihaza bağlıdır.",
   "podcastRecorderMicVolume": "Mikrofon ses düzeyi",
   "podcastRecorderMusicVolume": "Fon müziği ses düzeyi",
+  "podcastRecorderListenToMusic": "Kayıt sırasında fon müziğini dinle. Mikrofonun fon müziğini de kaydetmesini önlemek için kulaklık kullanın.",
   "podcastRecorderChooseMusic": "Fon müziği seç (isteğe bağlı)",
   "podcastRecorderRemoveMusic": "Fon müziğini kaldır",
   "podcastRecorderReady": "Kayıt hazır. Ses düzeylerini ayarlayın, dinleyin ve kaydedin.",

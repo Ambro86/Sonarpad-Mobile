@@ -4979,6 +4979,7 @@
   "podcastRecorderHint": "Graba solo el micrófono. La música de fondo opcional se añade al terminar. Los volúmenes se aplican a toda la grabación. Usa auriculares para no grabar el lector de pantalla desde los altavoces. Activa la grabación en segundo plano para cambiar de aplicación o bloquear la pantalla; de lo contrario, se pausa. El estéreo depende del micrófono y del dispositivo.",
   "podcastRecorderMicVolume": "Volumen del micrófono",
   "podcastRecorderMusicVolume": "Volumen de la música de fondo",
+  "podcastRecorderListenToMusic": "Escuchar la música de fondo durante la grabación. Usa auriculares para evitar que el micrófono capte también la música de fondo.",
   "podcastRecorderChooseMusic": "Elegir música de fondo (opcional)",
   "podcastRecorderRemoveMusic": "Quitar música de fondo",
   "podcastRecorderReady": "Grabación lista. Ajusta los volúmenes, escucha y guarda.",

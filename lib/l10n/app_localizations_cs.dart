@@ -5786,6 +5786,10 @@ class AppLocalizationsCs extends AppLocalizations {
   String get podcastRecorderMusicVolume => 'Hlasitost hudebního podkladu';
 
   @override
+  String get podcastRecorderListenToMusic =>
+      'Poslouchat hudební podklad během nahrávání. Použijte sluchátka, aby mikrofon nezachytil i hudební podklad.';
+
+  @override
   String get podcastRecorderChooseMusic => 'Vybrat hudební podklad (volitelné)';
 
   @override

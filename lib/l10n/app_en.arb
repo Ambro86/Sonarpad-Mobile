@@ -4973,6 +4973,7 @@
   "podcastRecorderHint": "Record the microphone only. Optional background music is added afterwards. Volume levels apply to the entire recording. Use headphones to avoid recording screen reader speech from the speakers. Enable background recording to switch apps or lock the screen; otherwise recording pauses. Stereo depends on the microphone and device.",
   "podcastRecorderMicVolume": "Microphone volume",
   "podcastRecorderMusicVolume": "Background music volume",
+  "podcastRecorderListenToMusic": "Listen to the background music while recording. Use headphones to keep the microphone from picking up the background music.",
   "podcastRecorderChooseMusic": "Choose background music (optional)",
   "podcastRecorderRemoveMusic": "Remove background music",
   "podcastRecorderReady": "Recording ready. Adjust volumes, listen and save.",

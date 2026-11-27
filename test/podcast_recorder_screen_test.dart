@@ -140,6 +140,23 @@ void main() {
       expect(row(tester, 'intro-jingle').title, contains('facoltativa'));
       expect(row(tester, 'outro-jingle').title, contains('facoltativa'));
       expect(rows(tester).any((r) => r.id == 'remove-intro'), false);
+      expect(rows(tester).any((r) => r.id == 'listen-to-music'), false);
+      await tester.runAsync(() async {
+        final music = File('${root.path}/base.mp3');
+        await music.writeAsBytes([1]);
+        await service.chooseMusic(music.path);
+      });
+      await tester.pumpAndSettle();
+      final monitor = row(tester, 'listen-to-music');
+      expect(monitor.toggleValue, false);
+      expect(
+        monitor.title,
+        'Ascolta la base musicale durante la registrazione. '
+        'Usa le cuffie per evitare che il microfono registri anche la base musicale.',
+      );
+      await monitor.onValueChanged!(true);
+      await tester.pumpAndSettle();
+      expect(row(tester, 'listen-to-music').toggleValue, true);
       await tester.runAsync(service.close);
     },
   );

@@ -4979,6 +4979,7 @@
   "podcastRecorderHint": "Grave apenas o microfone. A música de fundo opcional é adicionada ao terminar. Os volumes se aplicam à gravação inteira. Use fones para não gravar o leitor de tela pelos alto-falantes. Ative a gravação em segundo plano para mudar de aplicativo ou bloquear a tela; caso contrário, a gravação é pausada. O estéreo depende do microfone e do dispositivo.",
   "podcastRecorderMicVolume": "Volume do microfone",
   "podcastRecorderMusicVolume": "Volume da música de fundo",
+  "podcastRecorderListenToMusic": "Ouvir a música de fundo durante a gravação. Use fones de ouvido para evitar que o microfone capte também a música de fundo.",
   "podcastRecorderChooseMusic": "Escolher música de fundo (opcional)",
   "podcastRecorderRemoveMusic": "Remover música de fundo",
   "podcastRecorderReady": "Gravação pronta. Ajuste os volumes, ouça e salve.",

@@ -6551,6 +6551,7 @@
   "podcastRecorderHint": "Registra solo il microfono. La base musicale facoltativa viene aggiunta al termine. I volumi si applicano a tutta la registrazione. Usa le cuffie per non registrare VoiceOver dagli altoparlanti. Con l’opzione background attiva puoi cambiare app o bloccare lo schermo; altrimenti la registrazione va in pausa. Lo stereo dipende dal microfono e dal dispositivo.",
   "podcastRecorderMicVolume": "Volume microfono",
   "podcastRecorderMusicVolume": "Volume base musicale",
+  "podcastRecorderListenToMusic": "Ascolta la base musicale durante la registrazione. Usa le cuffie per evitare che il microfono registri anche la base musicale.",
   "podcastRecorderChooseMusic": "Scegli base musicale (facoltativa)",
   "podcastRecorderRemoveMusic": "Rimuovi base musicale",
   "podcastRecorderReady": "Registrazione pronta. Regola i volumi, ascolta e salva.",

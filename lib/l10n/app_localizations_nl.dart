@@ -5800,6 +5800,10 @@ class AppLocalizationsNl extends AppLocalizations {
   String get podcastRecorderMusicVolume => 'Volume van achtergrondmuziek';
 
   @override
+  String get podcastRecorderListenToMusic =>
+      'Achtergrondmuziek beluisteren tijdens de opname. Gebruik een koptelefoon om te voorkomen dat de microfoon ook de achtergrondmuziek opneemt.';
+
+  @override
   String get podcastRecorderChooseMusic =>
       'Achtergrondmuziek kiezen (optioneel)';
 

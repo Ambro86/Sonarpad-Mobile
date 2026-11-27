@@ -5797,6 +5797,10 @@ class AppLocalizationsPl extends AppLocalizations {
   String get podcastRecorderMusicVolume => 'Głośność podkładu muzycznego';
 
   @override
+  String get podcastRecorderListenToMusic =>
+      'Słuchaj podkładu muzycznego podczas nagrywania. Użyj słuchawek, aby mikrofon nie nagrywał również podkładu muzycznego.';
+
+  @override
   String get podcastRecorderChooseMusic =>
       'Wybierz podkład muzyczny (opcjonalnie)';
 

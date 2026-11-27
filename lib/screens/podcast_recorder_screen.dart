@@ -476,6 +476,15 @@ class _PodcastRecorderScreenState extends State<PodcastRecorderScreen>
             onActivate: () => _chooseMusic(),
           ),
           if (_recorder.musicPath != null) ...[
+            if (!ready)
+              AccessibleListRow(
+                id: 'listen-to-music',
+                title: l10n.podcastRecorderListenToMusic,
+                kind: 'toggle',
+                toggleValue: _recorder.listenToMusic,
+                onValueChanged: (value) =>
+                    setState(() => _recorder.listenToMusic = value == true),
+              ),
             _volume(
               'music-volume',
               l10n.podcastRecorderMusicVolume,

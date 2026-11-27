@@ -6551,6 +6551,7 @@
   "podcastRecorderHint": "Nur das Mikrofon wird aufgenommen. Optionale Hintergrundmusik wird anschließend hinzugefügt. Die Lautstärken gelten für die gesamte Aufnahme. Verwenden Sie Kopfhörer, damit die Sprachausgabe nicht über die Lautsprecher mit aufgenommen wird. Aktivieren Sie die Hintergrundaufnahme, um Apps zu wechseln oder den Bildschirm zu sperren; andernfalls pausiert die Aufnahme. Stereo hängt vom Mikrofon und Gerät ab.",
   "podcastRecorderMicVolume": "Mikrofonlautstärke",
   "podcastRecorderMusicVolume": "Lautstärke der Hintergrundmusik",
+  "podcastRecorderListenToMusic": "Hintergrundmusik während der Aufnahme anhören. Verwende Kopfhörer, damit das Mikrofon die Hintergrundmusik nicht mit aufnimmt.",
   "podcastRecorderChooseMusic": "Hintergrundmusik auswählen (optional)",
   "podcastRecorderRemoveMusic": "Hintergrundmusik entfernen",
   "podcastRecorderReady": "Aufnahme bereit. Lautstärken einstellen, anhören und speichern.",

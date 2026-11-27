@@ -10430,6 +10430,12 @@ abstract class AppLocalizations {
   /// **'Volume base musicale'**
   String get podcastRecorderMusicVolume;
 
+  /// No description provided for @podcastRecorderListenToMusic.
+  ///
+  /// In it, this message translates to:
+  /// **'Ascolta la base musicale durante la registrazione. Usa le cuffie per evitare che il microfono registri anche la base musicale.'**
+  String get podcastRecorderListenToMusic;
+
   /// No description provided for @podcastRecorderChooseMusic.
   ///
   /// In it, this message translates to:

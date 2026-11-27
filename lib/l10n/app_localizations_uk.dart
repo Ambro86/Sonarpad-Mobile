@@ -5780,6 +5780,10 @@ class AppLocalizationsUk extends AppLocalizations {
   String get podcastRecorderMusicVolume => 'Гучність фонової музики';
 
   @override
+  String get podcastRecorderListenToMusic =>
+      'Слухати фонову музику під час запису. Використовуйте навушники, щоб мікрофон не записував також і фонову музику.';
+
+  @override
   String get podcastRecorderChooseMusic =>
       'Вибрати фонову музику (необов’язково)';
 

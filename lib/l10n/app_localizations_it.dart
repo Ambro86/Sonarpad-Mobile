@@ -5808,6 +5808,10 @@ class AppLocalizationsIt extends AppLocalizations {
   String get podcastRecorderMusicVolume => 'Volume base musicale';
 
   @override
+  String get podcastRecorderListenToMusic =>
+      'Ascolta la base musicale durante la registrazione. Usa le cuffie per evitare che il microfono registri anche la base musicale.';
+
+  @override
   String get podcastRecorderChooseMusic => 'Scegli base musicale (facoltativa)';
 
   @override

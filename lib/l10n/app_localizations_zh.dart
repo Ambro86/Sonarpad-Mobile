@@ -5566,6 +5566,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get podcastRecorderMusicVolume => '背景音乐音量';
 
   @override
+  String get podcastRecorderListenToMusic => '录音时收听背景音乐。请使用耳机，以免麦克风同时录下背景音乐。';
+
+  @override
   String get podcastRecorderChooseMusic => '选择背景音乐（可选）';
 
   @override
@@ -11494,6 +11497,9 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get podcastRecorderMusicVolume => '背景音乐音量';
+
+  @override
+  String get podcastRecorderListenToMusic => '录音时收听背景音乐。请使用耳机，以免麦克风同时录下背景音乐。';
 
   @override
   String get podcastRecorderChooseMusic => '选择背景音乐（可选）';

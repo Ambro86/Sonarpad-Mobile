@@ -5811,6 +5811,10 @@ class AppLocalizationsRo extends AppLocalizations {
   String get podcastRecorderMusicVolume => 'Volumul muzicii de fundal';
 
   @override
+  String get podcastRecorderListenToMusic =>
+      'Ascultă muzica de fundal în timpul înregistrării. Folosește căști pentru ca microfonul să nu capteze și muzica de fundal.';
+
+  @override
   String get podcastRecorderChooseMusic => 'Alege muzica de fundal (opțional)';
 
   @override

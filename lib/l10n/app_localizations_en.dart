@@ -5767,6 +5767,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get podcastRecorderMusicVolume => 'Background music volume';
 
   @override
+  String get podcastRecorderListenToMusic =>
+      'Listen to the background music while recording. Use headphones to keep the microphone from picking up the background music.';
+
+  @override
   String get podcastRecorderChooseMusic => 'Choose background music (optional)';
 
   @override
