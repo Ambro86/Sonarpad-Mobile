@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:just_audio/just_audio.dart' as ja;
 import 'package:media_kit/media_kit.dart';
 import 'package:sonarpad_mobile_starter/services/podcast_recorder_service.dart';
 
@@ -41,6 +42,13 @@ void main() {
       expect(raw.length, greaterThan(3 * 44100 * 2));
       final output = File(await recorder.render());
       expect(await output.length(), greaterThan(1024));
+      final preview = ja.AudioPlayer();
+      try {
+        final duration = await preview.setFilePath(output.path);
+        expect(duration?.inMilliseconds, greaterThan(3000));
+      } finally {
+        await preview.dispose();
+      }
     } finally {
       await recorder.close();
       await folder.delete(recursive: true);

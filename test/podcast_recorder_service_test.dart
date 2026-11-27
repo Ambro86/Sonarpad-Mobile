@@ -549,6 +549,23 @@ void main() {
     }
   }, skip: !hasFfmpeg ? 'Requires FFmpeg' : false);
 
+  test('an empty microphone track cannot produce a header-only podcast', () async {
+    final voice = '${root.path}/empty.wav', bed = '${root.path}/bed.wav';
+    await writeTone(voice, seconds: 0);
+    await writeTone(bed);
+    await expectLater(
+      ProcessMixer().render(PodcastRecorderService.mixArguments(
+        voice: voice,
+        background: bed,
+        destination: '${root.path}/empty.mp3',
+        microphone: 1,
+        music: .2,
+        format: PodcastOutputFormat.mp3,
+      )),
+      throwsStateError,
+    );
+  }, skip: !hasFfmpeg ? 'Requires FFmpeg' : false);
+
   test('real audio: gains, looping music, silence and duration', () async {
     final voice = '${root.path}/voice.wav', bed = '${root.path}/bed.wav';
     await writeTone(voice);

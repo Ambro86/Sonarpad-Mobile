@@ -70,6 +70,53 @@ class SonarpadTravelFocusPlugin: NSObject, FlutterPlugin {
   deinit { if let observer = observer { NotificationCenter.default.removeObserver(observer) } }
 }
 
+// The recorder owns the playAndRecord session while the backing track plays.
+final class SonarpadPodcastMonitor: NSObject, FlutterPlugin {
+  private var player: AVAudioPlayer?
+
+  static func register(with registrar: FlutterPluginRegistrar) {
+    let channel = FlutterMethodChannel(name: "sonarpad/podcast_monitor", binaryMessenger: registrar.messenger())
+    registrar.addMethodCallDelegate(SonarpadPodcastMonitor(), channel: channel)
+  }
+
+  func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+    switch call.method {
+    case "prepare":
+      guard let args = call.arguments as? [String: Any], let path = args["path"] as? String,
+            let volume = args["volume"] as? NSNumber else {
+        result(FlutterError(code: "arguments", message: "Missing backing track or volume", details: nil))
+        return
+      }
+      player?.stop()
+      player = nil
+      do {
+        let track = try AVAudioPlayer(contentsOf: URL(fileURLWithPath: path))
+        track.numberOfLoops = -1
+        track.volume = volume.floatValue
+        player = track
+        result(nil)
+      } catch {
+        result(FlutterError(code: "format", message: error.localizedDescription, details: nil))
+      }
+    case "play":
+      guard player?.play() == true else {
+        result(FlutterError(code: "playback", message: "Could not play backing track", details: nil))
+        return
+      }
+      result(nil)
+    case "pause":
+      player?.pause()
+      result(nil)
+    case "stop":
+      player?.stop()
+      player = nil
+      result(nil)
+    default:
+      result(FlutterMethodNotImplemented)
+    }
+  }
+}
+
 class SonarpadTTSPlugin: NSObject, FlutterPlugin, FlutterStreamHandler {
   private var eventSink: FlutterEventSink?
 
@@ -400,6 +447,7 @@ class SonarpadPhotoLibraryImportPlugin: NSObject, FlutterPlugin, PHPickerViewCon
     SonarpadDropboxAuth.register(with: engineBridge.pluginRegistry.registrar(forPlugin: "SonarpadDropboxAuth")!)
     SonarpadTravelFocusPlugin.register(with: engineBridge.pluginRegistry.registrar(forPlugin: "SonarpadTravelFocusPlugin")!)
     SonarpadTTSPlugin.register(with: engineBridge.pluginRegistry.registrar(forPlugin: "SonarpadTTSPlugin")!)
+    SonarpadPodcastMonitor.register(with: engineBridge.pluginRegistry.registrar(forPlugin: "SonarpadPodcastMonitor")!)
     SonarpadRaiPlayerPlugin.register(with: engineBridge.pluginRegistry.registrar(forPlugin: "SonarpadRaiPlayerPlugin")!)
     SonarpadSharedMediaPlugin.register(with: engineBridge.pluginRegistry.registrar(forPlugin: "SonarpadSharedMediaPlugin")!)
     if #available(iOS 14.0, *) {

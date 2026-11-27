@@ -230,6 +230,9 @@ class PodcastRecorderService extends ChangeNotifier {
   double musicVolume = .2;
   bool listenToMusic = false;
   mk.Player? _musicPlayer;
+  static const _iosMonitor = MethodChannel('sonarpad/podcast_monitor');
+  bool _iosMonitorPrepared = false;
+  Directory? _monitorTemp;
   String? musicPath;
   String? introPath;
   String? outroPath;
@@ -363,7 +366,7 @@ class PodcastRecorderService extends ChangeNotifier {
     if (value == RecordState.pause && state == PodcastCaptureState.recording) {
       _clock.stop();
       state = PodcastCaptureState.paused;
-      unawaited(_musicPlayer?.pause());
+      unawaited(_pauseMusic());
       unawaited(_awake(false));
       _notify();
     } else if (value == RecordState.stop &&
@@ -393,7 +396,9 @@ class PodcastRecorderService extends ChangeNotifier {
       }
       await _persist();
       final base = musicPath;
-      if (listenToMusic && base != null) {
+      if (listenToMusic && base != null && Platform.isIOS) {
+        await _prepareIosMusic(base);
+      } else if (listenToMusic && base != null) {
         final player = _musicPlayer = mk.Player();
         await player.open(mk.Media(Uri.file(base).toString()), play: false);
         await player.setVolume(musicVolume * 100);
@@ -411,11 +416,16 @@ class PodcastRecorderService extends ChangeNotifier {
       recovered = false;
       state = PodcastCaptureState.recording;
       _ticker = Timer.periodic(const Duration(seconds: 1), (_) => _notify());
-      await _musicPlayer?.play();
+      await _playMusic();
       await _awake(!continueInBackground);
       unawaited(AppLogger.log('Podcast recorder started; microphone only requestedChannels=${stereo ? 2 : 1}'));
     } catch (_) {
       await _disposeMusicPlayer();
+      if (state == PodcastCaptureState.recording) {
+        await _microphone.pause();
+        _clock.stop();
+        state = PodcastCaptureState.paused;
+      }
       rethrow;
     } finally {
       busy = false;
@@ -424,10 +434,53 @@ class PodcastRecorderService extends ChangeNotifier {
     }
   }
 
+  Future<void> _prepareIosMusic(String path) async {
+    Future<void> prepare(String file) => _iosMonitor.invokeMethod<void>(
+      'prepare', {'path': file, 'volume': musicVolume},
+    );
+    try {
+      await prepare(path);
+    } on PlatformException catch (error) {
+      if (error.code != 'format') rethrow;
+      // AVAudioPlayer cannot open every container accepted by the file picker.
+      final temp = _monitorTemp = await Directory.systemTemp.createTemp('podcast-bed-');
+      final wav = p.join(temp.path, 'monitor.wav');
+      await NativePodcastMixer().render(['-i', path, '-vn', '-c:a', 'pcm_s16le', wav]);
+      await prepare(wav);
+    }
+    _iosMonitorPrepared = true;
+  }
+
+  Future<void> _playMusic() async {
+    if (_iosMonitorPrepared) {
+      await _iosMonitor.invokeMethod<void>('play');
+    } else {
+      await _musicPlayer?.play();
+    }
+  }
+
+  Future<void> _pauseMusic() async {
+    if (_iosMonitorPrepared) {
+      await _iosMonitor.invokeMethod<void>('pause');
+    } else {
+      await _musicPlayer?.pause();
+    }
+  }
+
   Future<void> _disposeMusicPlayer() async {
     final player = _musicPlayer;
     _musicPlayer = null;
-    await player?.dispose();
+    final temp = _monitorTemp;
+    _monitorTemp = null;
+    try {
+      if (_iosMonitorPrepared) {
+        _iosMonitorPrepared = false;
+        await _iosMonitor.invokeMethod<void>('stop');
+      }
+      await player?.dispose();
+    } finally {
+      await temp?.delete(recursive: true);
+    }
   }
 
   Future<void> pause() async {
@@ -438,7 +491,7 @@ class PodcastRecorderService extends ChangeNotifier {
       await _microphone.pause();
       _clock.stop();
       state = PodcastCaptureState.paused;
-      await _musicPlayer?.pause();
+      await _pauseMusic();
       await _awake(false);
     } finally {
       busy = false;
@@ -455,7 +508,7 @@ class PodcastRecorderService extends ChangeNotifier {
       await _microphone.resume();
       _clock.start();
       state = PodcastCaptureState.recording;
-      await _musicPlayer?.play();
+      await _playMusic();
       await _awake(!continueInBackground);
     } finally {
       busy = false;
@@ -629,6 +682,8 @@ class PodcastRecorderService extends ChangeNotifier {
     }
     return [
       '-y',
+      '-abort_on',
+      'empty_output',
       '-i',
       voice,
       if (background != null) ...['-stream_loop', '-1', '-i', background],
