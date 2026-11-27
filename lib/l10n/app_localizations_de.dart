@@ -6195,4 +6195,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String splitSaved(int count) {
     return 'In Dokumente gespeicherte Teile: $count.';
   }
+
+  @override
+  String get splitMediaFile => 'Mediendatei teilen';
 }

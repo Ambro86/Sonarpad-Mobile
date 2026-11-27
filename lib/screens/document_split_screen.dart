@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
 import '../models/document_item.dart';
 import '../services/document_library_service.dart';
+import '../services/document_media_split_service.dart';
+import '../services/media_join_service.dart';
 import '../utils/status_message.dart';
 import '../widgets/universal_accessible_view.dart';
 
@@ -11,10 +13,18 @@ class DocumentSplitScreen extends StatefulWidget {
     super.key,
     required this.document,
     required this.text,
-  });
+  }) : media = null;
+
+  const DocumentSplitScreen.media({
+    super.key,
+    required this.document,
+    required MediaJoinItemInfo info,
+  }) : media = info,
+       text = '';
 
   final DocumentItem document;
   final String text;
+  final MediaJoinItemInfo? media;
 
   @override
   State<DocumentSplitScreen> createState() => _DocumentSplitScreenState();
@@ -72,19 +82,28 @@ class _DocumentSplitScreenState extends State<DocumentSplitScreen> {
     final value = index < choices.length
         ? choices[index]
         : int.tryParse((_byParts ? _customParts : _customCharacters).trim());
-    final length = widget.text.characters.length;
+    final media = widget.media;
+    final length = media == null
+        ? widget.text.characters.length
+        : DocumentMediaSplitService.maxParts(media);
     if (value == null || value < 1 || (_byParts && value > length)) {
       showStatusMessage(context, l.splitRange(length));
       return;
     }
     setState(() => _saving = true);
     try {
-      final count = await DocumentLibraryService().saveSplitDocument(
-        widget.document,
-        widget.text,
-        byParts: _byParts,
-        value: value,
-      );
+      final count = media != null
+          ? await DocumentLibraryService().saveSplitMedia(
+              widget.document,
+              media,
+              value,
+            )
+          : await DocumentLibraryService().saveSplitDocument(
+              widget.document,
+              widget.text,
+              byParts: _byParts,
+              value: value,
+            );
       if (mounted) Navigator.of(context).pop(count);
     } catch (_) {
       if (!mounted) return;
@@ -99,10 +118,11 @@ class _DocumentSplitScreenState extends State<DocumentSplitScreen> {
     final choices = _byParts ? _partCounts : _characterCounts;
     final index = _byParts ? _partIndex : _characterIndex;
     final label = _byParts ? l.splitPartCount : l.splitCharacterCount;
+    final title = widget.media == null ? l.splitDocument : l.splitMediaFile;
     return PopScope(
       canPop: !_saving,
       child: Scaffold(
-        appBar: SonarpadAppBar(title: Text(l.splitDocument)),
+        appBar: SonarpadAppBar(title: Text(title)),
         body: SafeArea(
           child: UniversalAccessibleList(
             transientRowIds: const [
@@ -114,13 +134,14 @@ class _DocumentSplitScreenState extends State<DocumentSplitScreen> {
             sections: [
               AccessibleListSection(
                 rows: [
-                  _slider(
-                    'split-method',
-                    l.splitMethod,
-                    [l.splitByParts, l.splitByCharacters],
-                    _byParts ? 0 : 1,
-                    (i) => _byParts = i == 0,
-                  ),
+                  if (widget.media == null)
+                    _slider(
+                      'split-method',
+                      l.splitMethod,
+                      [l.splitByParts, l.splitByCharacters],
+                      _byParts ? 0 : 1,
+                      (i) => _byParts = i == 0,
+                    ),
                   _slider(
                     _byParts ? 'split-parts' : 'split-characters',
                     label,
@@ -153,7 +174,7 @@ class _DocumentSplitScreenState extends State<DocumentSplitScreen> {
                     ),
                   AccessibleListRow(
                     id: 'save-parts',
-                    title: l.splitDocument,
+                    title: title,
                     enabled: !_saving,
                     finishEditingOnActivate: true,
                     onActivate: _save,

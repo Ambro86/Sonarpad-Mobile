@@ -5124,5 +5124,6 @@
         "type": "int"
       }
     }
-  }
+  },
+  "splitMediaFile": "Diviser le fichier multimédia"
 }

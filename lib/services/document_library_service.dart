@@ -14,6 +14,8 @@ import '../models/document_item.dart';
 import '../utils/app_logger.dart';
 import '../utils/document_unicode_normalizer.dart';
 import 'rar_document_archive.dart';
+import 'document_media_split_service.dart';
+import 'media_join_service.dart';
 
 class DocumentRenameConflictException implements Exception {
   const DocumentRenameConflictException();
@@ -294,17 +296,48 @@ class DocumentLibraryService {
             passwordSalt: source.passwordSalt));
         remaining -= size;
       }
-      await load();
-      await _persistPlacementsFor(pending);
-      _documents = [...pending, ..._documents];
-      await _save();
+      await _addSplitParts(pending);
       return count;
     } catch (_) {
-      for (final part in pending) {
-        final file = File(await resolveFilePath(part));
-        if (await file.exists()) await file.delete();
-      }
+      await _removeSplitFiles(pending);
       rethrow;
+    }
+  }
+
+  Future<int> saveSplitMedia(DocumentItem source, MediaJoinItemInfo info, int count,
+      {DocumentMediaSplitService? splitter}) async {
+    final work = await (await getTemporaryDirectory()).createTemp('media-split-');
+    final pending = <DocumentItem>[];
+    try {
+      final extension = source.extension.toLowerCase();
+      final files = await (splitter ?? DocumentMediaSplitService()).split(info, count, work, extension);
+      for (var i = 0; i < files.length; i++) {
+        final number = (i + 1).toString().padLeft(count.toString().length, '0');
+        final doc = await importFile(files[i], parentId: source.parentId,
+            originalName: '${p.basename(source.displayName)} - $number.$extension');
+        pending.add(doc.copyWith(passwordSalt: source.passwordSalt, passwordHash: source.passwordHash));
+      }
+      await _addSplitParts(pending);
+      return pending.length;
+    } catch (_) {
+      await _removeSplitFiles(pending);
+      rethrow;
+    } finally {
+      await work.delete(recursive: true);
+    }
+  }
+
+  Future<void> _addSplitParts(List<DocumentItem> pending) async {
+    await load();
+    await _persistPlacementsFor(pending);
+    _documents = [...pending, ..._documents];
+    await _save();
+  }
+
+  Future<void> _removeSplitFiles(List<DocumentItem> pending) async {
+    for (final part in pending) {
+      final file = File(await resolveFilePath(part));
+      if (await file.exists()) await file.delete();
     }
   }
 

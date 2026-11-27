@@ -6194,4 +6194,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String splitSaved(int count) {
     return 'Părți salvate în Documente: $count.';
   }
+
+  @override
+  String get splitMediaFile => 'Împarte fișierul media';
 }

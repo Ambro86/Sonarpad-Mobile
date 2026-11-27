@@ -6196,6 +6196,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String splitSaved(int count) {
     return 'Partes guardadas em Documentos: $count.';
   }
+
+  @override
+  String get splitMediaFile => 'Dividir ficheiro multimédia';
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
@@ -12382,4 +12385,7 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   String splitSaved(int count) {
     return 'Partes salvas em Documentos: $count.';
   }
+
+  @override
+  String get splitMediaFile => 'Dividir arquivo de mídia';
 }

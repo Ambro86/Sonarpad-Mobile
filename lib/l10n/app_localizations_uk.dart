@@ -6162,4 +6162,7 @@ class AppLocalizationsUk extends AppLocalizations {
   String splitSaved(int count) {
     return 'Частин збережено в Документах: $count.';
   }
+
+  @override
+  String get splitMediaFile => 'Розділити медіафайл';
 }

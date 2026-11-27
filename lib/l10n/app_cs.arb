@@ -5121,5 +5121,6 @@
         "type": "int"
       }
     }
-  }
+  },
+  "splitMediaFile": "Rozdělit mediální soubor"
 }

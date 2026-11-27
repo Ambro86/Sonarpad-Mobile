@@ -5929,6 +5929,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String splitSaved(int count) {
     return '已在文档中保存 $count 份。';
   }
+
+  @override
+  String get splitMediaFile => '拆分媒体文件';
 }
 
 /// The translations for Chinese, as used in China (`zh_CN`).
@@ -11856,4 +11859,7 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
   String splitSaved(int count) {
     return '已在文档中保存 $count 份。';
   }
+
+  @override
+  String get splitMediaFile => '拆分媒体文件';
 }

@@ -11111,6 +11111,12 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Parti salvate in Documenti: {count}.'**
   String splitSaved(int count);
+
+  /// No description provided for @splitMediaFile.
+  ///
+  /// In it, this message translates to:
+  /// **'Dividi file media'**
+  String get splitMediaFile;
 }
 
 class _AppLocalizationsDelegate

@@ -6166,4 +6166,7 @@ class AppLocalizationsCs extends AppLocalizations {
   String splitSaved(int count) {
     return 'Počet částí uložených do Dokumentů: $count.';
   }
+
+  @override
+  String get splitMediaFile => 'Rozdělit mediální soubor';
 }

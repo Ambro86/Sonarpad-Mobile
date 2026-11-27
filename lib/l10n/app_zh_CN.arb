@@ -5118,5 +5118,6 @@
         "type": "int"
       }
     }
-  }
+  },
+  "splitMediaFile": "拆分媒体文件"
 }

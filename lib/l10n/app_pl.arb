@@ -6699,5 +6699,6 @@
         "type": "int"
       }
     }
-  }
+  },
+  "splitMediaFile": "Podziel plik multimedialny"
 }

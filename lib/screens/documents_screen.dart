@@ -39,6 +39,7 @@ import 'document_editor_screen.dart';
 import 'audio_description_project_editor_screen.dart';
 import 'document_reader_screen.dart';
 import 'document_split_screen.dart';
+import '../services/media_join_service.dart';
 import 'document_rename_screen.dart';
 import 'document_translation_screen.dart';
 import 'dropbox_browser_screen.dart';
@@ -85,6 +86,9 @@ const Set<String> _localMediaDocumentExtensions = {
   ..._audioDocumentExtensions,
   ..._videoDocumentExtensions,
 };
+
+String _splitLabel(DocumentItem doc, AppLocalizations l) =>
+    _localMediaDocumentExtensions.contains(doc.extension.toLowerCase()) ? l.splitMediaFile : l.splitDocument;
 
 /// Schermata libreria documenti.
 /// Permette di aggiungere file dal dispositivo (PDF, DOCX, EPUB, TXT, ecc.)
@@ -1502,10 +1506,17 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
     _openingSplit = true;
     try {
       if (!await _authorizeDocumentOpen(doc) || !mounted) return;
-      final text = await _exportTextForDocument(doc, requestPdfPassword: true);
+      final DocumentSplitScreen screen;
+      if (_isLocalMediaDocument(doc)) {
+        final info = await MediaJoinService().probe(await _service.resolveFilePath(doc));
+        screen = DocumentSplitScreen.media(document: doc, info: info);
+      } else {
+        final text = await _exportTextForDocument(doc, requestPdfPassword: true);
+        screen = DocumentSplitScreen(document: doc, text: text);
+      }
       if (!mounted || ModalRoute.of(context)?.isCurrent != true) return;
       final count = await Navigator.of(context).push<int>(MaterialPageRoute(
-        builder: (_) => DocumentSplitScreen(document: doc, text: text),
+        builder: (_) => screen,
       ));
       if (count == null || !mounted) return;
       await _service.load();
@@ -1514,7 +1525,8 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
       _showSnack(AppLocalizations.of(context).splitSaved(count));
     } catch (error) {
       if (mounted && !(error is StateError && error.message == 'Cancelled')) {
-        _showSnack(AppLocalizations.of(context).noExportableTextFound);
+        final l = AppLocalizations.of(context);
+        _showSnack(_isLocalMediaDocument(doc) ? l.technicalErrorGeneric : l.noExportableTextFound);
       }
     } finally {
       _openingSplit = false;
@@ -1872,8 +1884,8 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
         if (folderDocs.length > 1) AccessibleCustomAction(id: 'sort_favorites', label: l10n.favoritesSortAlphabetically),
         if (_canTranslateDocument(doc))
           AccessibleCustomAction(id: 'translate', label: l10n.translateDocument),
-        if (_canTranslateDocument(doc))
-          AccessibleCustomAction(id: 'split_document', label: l10n.splitDocument),
+        if (_canTranslateDocument(doc) || _isLocalMediaDocument(doc))
+          AccessibleCustomAction(id: 'split_document', label: _splitLabel(doc, l10n)),
         AccessibleCustomAction(
           id: 'remove',
           label: doc.isFolder ? l10n.removeFolder : l10n.removeDocument,
@@ -1918,8 +1930,8 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
           if (folderDocs.length > 1) AccessibleVisualAction(id: 'sort_favorites', label: l10n.favoritesSortAlphabetically, icon: 'list'),
           if (_canTranslateDocument(doc))
             AccessibleVisualAction(id: 'translate', label: l10n.translateDocument, icon: 'translate'),
-          if (_canTranslateDocument(doc))
-            AccessibleVisualAction(id: 'split_document', label: l10n.splitDocument, icon: 'split'),
+          if (_canTranslateDocument(doc) || _isLocalMediaDocument(doc))
+            AccessibleVisualAction(id: 'split_document', label: _splitLabel(doc, l10n), icon: 'split'),
           if (!doc.isFolder)
             AccessibleVisualAction(
               id: 'select',
@@ -2108,7 +2120,7 @@ class _DocumentsScreenState extends State<DocumentsScreen> {
                             onRemove: () => _remove(doc.id),
                             onRename: () => _renameDocument(doc),
                             onTranslate: _canTranslateDocument(doc) ? () => _translateDocument(doc) : null,
-                            onSplit: _canTranslateDocument(doc) ? () => _splitDocument(doc) : null,
+                            onSplit: _canTranslateDocument(doc) || _isLocalMediaDocument(doc) ? () => _splitDocument(doc) : null,
                             canPasswordProtect:
                                 _canPasswordProtectDocument(doc),
                             onPasswordProtection: () =>
@@ -2247,7 +2259,7 @@ class _DocumentTile extends StatelessWidget {
           if (!isFirst || !isLast)
             CustomSemanticsAction(label: l10n.favoritesSortAlphabetically): () => onAction(_DocumentAction.sortAlphabetically),
           CustomSemanticsAction(label: l10n.translateDocument): ?onTranslate,
-          CustomSemanticsAction(label: l10n.splitDocument): ?onSplit,
+          CustomSemanticsAction(label: _splitLabel(doc, l10n)): ?onSplit,
           CustomSemanticsAction(
               label: doc.isFolder
                   ? l10n.removeFolder
@@ -2381,7 +2393,7 @@ class _DocumentTile extends StatelessWidget {
                     )),
                   if (onSplit != null)
                     ExcludeSemantics(child: IconButton(
-                      icon: const Icon(Icons.call_split), tooltip: l10n.splitDocument,
+                      icon: const Icon(Icons.call_split), tooltip: _splitLabel(doc, l10n),
                       onPressed: onSplit,
                     )),
                   if (!isFirst || !isLast)

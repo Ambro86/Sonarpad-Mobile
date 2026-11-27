@@ -5118,5 +5118,6 @@
         "type": "int"
       }
     }
-  }
+  },
+  "splitMediaFile": "Split media file"
 }

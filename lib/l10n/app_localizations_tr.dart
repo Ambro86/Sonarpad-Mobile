@@ -6173,4 +6173,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String splitSaved(int count) {
     return 'Belgelere kaydedilen parça sayısı: $count.';
   }
+
+  @override
+  String get splitMediaFile => 'Medya dosyasını böl';
 }
